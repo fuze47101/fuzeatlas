@@ -1,0 +1,347 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SourceSystem {
+  KNACK
+  CSV
+  MANUAL
+  API
+}
+
+enum TestType {
+  ICP
+  ANTIBACTERIAL
+  FUNGAL
+  ODOR
+  OTHER
+}
+
+enum DocKind {
+  REPORT
+  IMAGE
+  SUBMISSION_DOC
+  OTHER
+}
+
+model SourceRecord {
+  id             String       @id @default(cuid())
+  sourceSystem   SourceSystem @default(CSV)
+  sourceTable    String
+  sourceRecordId String?      // e.g., Knack "Record ID"
+  sourceKey      String?      // e.g., file row key, composite identifiers
+  raw            Json         // entire raw row (verbatim)
+  importedAt     DateTime     @default(now())
+
+  // Optional links (set during import if resolvable)
+  brandId        String?
+  factoryId      String?
+  labId          String?
+  submissionId   String?
+  testRunId      String?
+
+  brand          Brand?       @relation(fields: [brandId], references: [id])
+  factory        Factory?     @relation(fields: [factoryId], references: [id])
+  lab            Lab?         @relation(fields: [labId], references: [id])
+  submission     FabricSubmission? @relation(fields: [submissionId], references: [id])
+  testRun        TestRun?     @relation(fields: [testRunId], references: [id])
+
+  @@index([sourceTable])
+  @@index([sourceRecordId])
+}
+
+model Brand {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  customerType  String?
+  status        String?
+  leadSource    String?
+  initialContactDate DateTime?
+  addressRaw    String?
+
+  // raw capture for “store both”
+  raw           Json?
+
+  contacts      Contact[]
+  submissions   FabricSubmission[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Factory {
+  id            String   @id @default(cuid())
+  name          String
+  chineseName   String?
+  millType      String?
+  specialty     String?
+  annualSales   String?
+  leadSource    String?
+  initialContactDate DateTime?
+
+  addressRaw    String?
+
+  raw           Json?
+
+  contacts      Contact[]
+  submissions   FabricSubmission[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([name])
+}
+
+model Distributor {
+  id            String   @id @default(cuid())
+  name          String
+  chineseName   String?
+  specialty     String?
+  agentForFuze  String?
+  annualSales   String?
+
+  addressRaw    String?
+  raw           Json?
+
+  contacts      Contact[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([name])
+}
+
+model Lab {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  raw       Json?
+
+  testRuns  TestRun[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Contact {
+  id           String   @id @default(cuid())
+  first        String?
+  middle       String?
+  last         String?
+  title        String?
+  email        String?
+  phone        String?
+  addressRaw   String?
+
+  raw          Json?
+
+  // polymorphic-ish: a contact can belong to one of these
+  brandId      String?
+  factoryId    String?
+  distributorId String?
+
+  brand        Brand?       @relation(fields: [brandId], references: [id])
+  factory      Factory?     @relation(fields: [factoryId], references: [id])
+  distributor  Distributor? @relation(fields: [distributorId], references: [id])
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([email])
+  @@index([last])
+}
+
+model Fabric {
+  id            String   @id @default(cuid())
+
+  // Canonical “fabric concept” fields (normalized)
+  construction  String?  // knit/woven/etc.
+  color         String?
+  widthInches   Float?
+  weightGsm     Float?
+
+  // content as structured rows (normalized)
+  contents      FabricContent[]
+
+  // raw capture
+  raw           Json?
+
+  submissions   FabricSubmission[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model FabricContent {
+  id        String @id @default(cuid())
+  fabricId  String
+  material  String
+  percent   Float? // normalized percent 0–100
+  rawText   String? // e.g., "100%"
+
+  fabric    Fabric @relation(fields: [fabricId], references: [id])
+
+  @@index([fabricId])
+}
+
+model FabricSubmission {
+  id                   String   @id @default(cuid())
+
+  // Links
+  brandId               String?
+  factoryId             String?
+  fabricId              String?
+
+  brand                 Brand?   @relation(fields: [brandId], references: [id])
+  factory               Factory? @relation(fields: [factoryId], references: [id])
+  fabric                Fabric?  @relation(fields: [fabricId], references: [id])
+
+  // Submission identifiers (raw + normalized)
+  fuzeFabricNumber      Int?     // "FUZE Fabric #"
+  customerFabricCode    String?
+  factoryFabricCode     String?
+
+  // Application / process (stored raw + searchable normalized strings)
+  applicationMethod     String?
+  applicationRecipeRaw  String?
+  padRecipeRaw          String?
+  treatmentLocation     String?
+  applicationDate       DateTime?
+
+  washTarget            Int?      // normalized “Wash” if numeric
+
+  // Status flags (optional; derived from fabricdatabase columns)
+  icpSent               Boolean?
+  icpReceived           Boolean?
+  icpPassed             Boolean?
+  abSent                Boolean?
+  abReceived            Boolean?
+  abPassed              Boolean?
+
+  category              String?
+  programName           String?
+
+  // raw capture of the entire fabricdatabase row
+  raw                   Json?
+
+  testRuns              TestRun[]
+  documents             Document[]
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([fuzeFabricNumber])
+  @@index([customerFabricCode])
+  @@index([factoryFabricCode])
+}
+
+model TestRun {
+  id              String   @id @default(cuid())
+
+  submissionId     String?
+  labId            String?
+
+  submission       FabricSubmission? @relation(fields: [submissionId], references: [id])
+  lab              Lab?              @relation(fields: [labId], references: [id])
+
+  testType         TestType
+  testMethodRaw    String?  // e.g. "ASTM E2149"
+  testMethodStd    String?  // normalized (dropdown) if present
+  testReportNumber String?  // e.g. "TWNC00755197"
+
+  testDate         DateTime?
+  postWashDate     DateTime?
+  washCount        Int?     // normalized number
+  washLabelRaw     String?  // e.g. "10 Wash"
+
+  machineType      String?
+  testedMetal      String?  // e.g. "Silver (Ag)"
+
+  // raw capture of testreports row
+  raw              Json?
+
+  // Structured results (optional; depends on type)
+  icpResult        IcpResult?
+  abResult         AntibacterialResult?
+
+  documents        Document[]
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([testType])
+  @@index([testMethodStd])
+  @@index([washCount])
+  @@index([testDate])
+}
+
+model IcpResult {
+  id          String @id @default(cuid())
+  testRunId   String @unique
+  testRun     TestRun @relation(fields: [testRunId], references: [id])
+
+  // Normalized values for search
+  agValue     Float?
+  auValue     Float?
+
+  // raw values for defensibility (store both)
+  agRaw       String?
+  auRaw       String?
+
+  unit        String?  // if later determined (ppm, mg/kg, etc.)
+}
+
+model AntibacterialResult {
+  id          String @id @default(cuid())
+  testRunId   String @unique
+  testRun     TestRun @relation(fields: [testRunId], references: [id])
+
+  organism1   String?
+  organism2   String?
+
+  // normalized: interpret percent/log if possible later
+  result1     Float?
+  result2     Float?
+
+  // raw
+  organism1Raw String?
+  organism2Raw String?
+  result1Raw  String?
+  result2Raw  String?
+
+  pass        Boolean?
+}
+
+model Document {
+  id            String   @id @default(cuid())
+
+  kind          DocKind  @default(REPORT)
+  filename      String?
+  contentType   String?
+  sizeBytes     Int?
+
+  // S3 pointers
+  bucket        String?
+  key           String?  @unique
+  url           String?  // optional (presigned stored rarely)
+
+  // Links
+  submissionId  String?
+  testRunId     String?
+
+  submission    FabricSubmission? @relation(fields: [submissionId], references: [id])
+  testRun       TestRun?          @relation(fields: [testRunId], references: [id])
+
+  // raw capture for imports (e.g. Report 1 : URL, Image : URL)
+  raw           Json?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([submissionId])
+  @@index([testRunId])
+}
