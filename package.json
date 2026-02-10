@@ -10,7 +10,7 @@
     "prisma:generate": "prisma generate",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "db:import": "ts-node --transpile-only scripts/import-atlas.ts"
+    "db:import": "tsx scripts/import-atlas.ts"
   },
   "dependencies": {
     "@prisma/client": "6.19.2",
@@ -24,6 +24,7 @@
     "@types/react-dom": "^19.2.3",
     "prisma": "6.19.2",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
