@@ -1,0 +1,8 @@
+{
+  "/api/db/inspect/route": "/api/db/inspect",
+  "/_not-found/page": "/_not-found",
+  "/api/core/stats/route": "/api/core/stats",
+  "/api/health/route": "/api/health",
+  "/page": "/",
+  "/status/page": "/status"
+}

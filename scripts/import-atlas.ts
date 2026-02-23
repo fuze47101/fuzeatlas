@@ -289,7 +289,7 @@ async function main() {
           construction: r["Fabric Construction Description"] || null,
           color: r["Fabric Color"] || null,
           widthInches: asFloat(r["Full Width"]) ?? null,
-          weightGsm: asFloat(r["Weight (gsm)"] || r["Weight\n(gsm) " || "") ?? null,
+          weightGsm: asFloat(r["Weight (gsm)"] || r["Weight\n(gsm) "] || "") ?? null,
           raw: r,
         },
       });

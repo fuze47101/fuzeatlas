@@ -1,0 +1,53 @@
+{
+  "pages": {
+    "/_not-found/page": [
+      "static/chunks/webpack-078f6dfb37dff419.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-ebd51be49873d76c.js",
+      "static/chunks/main-app-f9b5d20365cb8be2.js",
+      "static/chunks/app/_not-found/page-ecde1f056dafad48.js"
+    ],
+    "/api/db/inspect/route": [
+      "static/chunks/webpack-078f6dfb37dff419.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-ebd51be49873d76c.js",
+      "static/chunks/main-app-f9b5d20365cb8be2.js",
+      "static/chunks/app/api/db/inspect/route-24f1e665eabdedf2.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-078f6dfb37dff419.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-ebd51be49873d76c.js",
+      "static/chunks/main-app-f9b5d20365cb8be2.js",
+      "static/chunks/app/layout-24f1e665eabdedf2.js"
+    ],
+    "/api/core/stats/route": [
+      "static/chunks/webpack-078f6dfb37dff419.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-ebd51be49873d76c.js",
+      "static/chunks/main-app-f9b5d20365cb8be2.js",
+      "static/chunks/app/api/core/stats/route-24f1e665eabdedf2.js"
+    ],
+    "/api/health/route": [
+      "static/chunks/webpack-078f6dfb37dff419.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-ebd51be49873d76c.js",
+      "static/chunks/main-app-f9b5d20365cb8be2.js",
+      "static/chunks/app/api/health/route-24f1e665eabdedf2.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-078f6dfb37dff419.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-ebd51be49873d76c.js",
+      "static/chunks/main-app-f9b5d20365cb8be2.js",
+      "static/chunks/app/page-24f1e665eabdedf2.js"
+    ],
+    "/status/page": [
+      "static/chunks/webpack-078f6dfb37dff419.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-ebd51be49873d76c.js",
+      "static/chunks/main-app-f9b5d20365cb8be2.js",
+      "static/chunks/app/status/page-24f1e665eabdedf2.js"
+    ]
+  }
+}
