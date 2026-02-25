@@ -4,3 +4,23 @@ node_modules
 
 # Next.js
 .next/
+
+# Next.js
+.next
+out
+
+# deps
+node_modules
+
+# env
+.env.local
+
+# Next.js
+.next
+out
+
+# deps
+node_modules
+
+# logs
+*.log

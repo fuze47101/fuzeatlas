@@ -1,86 +1,122 @@
-import Link from "next/link";
+export const dynamic = "force-dynamic";
 
-type Fabric = {
-  id: string;
-  fuzeFabricNumber?: number | null;
-  customerFabricCode?: string | null;
-  factoryFabricCode?: string | null;
-  construction?: string | null;
-  color?: string | null;
-  widthInches?: number | null;
-  weightGsm?: number | null;
-  applicationMethod?: string | null;
-  applicationDate?: string | null;
-  treatmentLocation?: string | null;
-  contents?: { material: string; percent?: number | null; rawText?: string | null }[];
-  raw?: any;
+type PageProps = {
+  params: Promise<{ id: string }>;
 };
 
-async function getFabric(id: string): Promise<Fabric | null> {
-  const base =
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+async function getFabric(id: string) {
+  // Use relative fetch so it works on Vercel too
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/fabrics/${id}`, {
+    cache: "no-store",
+  });
 
-  const res = await fetch(`${base}/api/fabrics?id=${encodeURIComponent(id)}`, { cache: "no-store" });
-  if (!res.ok) return null;
+  // If NEXT_PUBLIC_BASE_URL isn't set in dev, fall back to localhost
+  if (!res.ok && !process.env.NEXT_PUBLIC_BASE_URL) {
+    const res2 = await fetch(`http://localhost:3000/api/fabrics/${id}`, { cache: "no-store" });
+    return res2.json();
+  }
+
   return res.json();
 }
 
-export default async function FabricDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function FabricDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const fabric = await getFabric(id);
+  const data = await getFabric(id);
 
-  if (!fabric) {
+  if (!data?.ok) {
     return (
-      <div style={{ padding: 24 }}>
-        <h1>Fabric not found</h1>
-        <p><Link href="/">← Back</Link></p>
+      <div style={{ padding: 24, fontFamily: "ui-sans-serif, system-ui" }}>
+        <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Fabric</h1>
+        <div style={{ opacity: 0.8 }}>Not found.</div>
+        <div style={{ marginTop: 12, fontSize: 12, opacity: 0.6 }}>id: {id}</div>
       </div>
     );
   }
 
+  const f = data.item;
+
   return (
-    <div style={{ padding: 24, maxWidth: 1100 }}>
-      <p style={{ marginBottom: 16 }}>
-        <Link href="/">← Back to search</Link>
-      </p>
-
-      <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8 }}>
-        FUZE {fabric.fuzeFabricNumber ?? "—"}
-      </h1>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 18 }}>
-        <div><b>Customer Code:</b> {fabric.customerFabricCode ?? "—"}</div>
-        <div><b>Factory Code:</b> {fabric.factoryFabricCode ?? "—"}</div>
-        <div><b>Construction:</b> {fabric.construction ?? "—"}</div>
-        <div><b>Color:</b> {fabric.color ?? "—"}</div>
-        <div><b>Width (in):</b> {fabric.widthInches ?? "—"}</div>
-        <div><b>Weight (gsm):</b> {fabric.weightGsm ?? "—"}</div>
-        <div><b>Method:</b> {fabric.applicationMethod ?? "—"}</div>
-        <div><b>Date:</b> {fabric.applicationDate ?? "—"}</div>
-        <div style={{ gridColumn: "1 / -1" }}><b>Location:</b> {fabric.treatmentLocation ?? "—"}</div>
+    <div style={{ padding: 24, fontFamily: "ui-sans-serif, system-ui" }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 12 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 900 }}>Fabric</h1>
+        <div style={{ fontSize: 12, opacity: 0.6 }}>{f.id}</div>
       </div>
 
-      <h2 style={{ fontSize: 18, fontWeight: 800, marginTop: 24 }}>Contents</h2>
-      <ul>
-        {(fabric.contents || []).map((c, i) => (
-          <li key={i}>
-            {c.material}
-            {c.percent != null ? ` — ${c.percent}%` : ""}
-            {c.rawText ? ` (${c.rawText})` : ""}
-          </li>
-        ))}
-        {(fabric.contents || []).length === 0 && <li>—</li>}
-      </ul>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ border: "1px solid #e5e5e5", borderRadius: 14, padding: 14 }}>
+          <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 8 }}>Core</div>
+          <div style={{ display: "grid", gap: 6, fontSize: 14 }}>
+            <div><b>Construction:</b> {f.construction ?? "—"}</div>
+            <div><b>Color:</b> {f.color ?? "—"}</div>
+            <div><b>Width (in):</b> {f.widthInches ?? "—"}</div>
+            <div><b>Weight (gsm):</b> {f.weightGsm ?? "—"}</div>
+          </div>
+        </div>
 
-      <h2 style={{ fontSize: 18, fontWeight: 800, marginTop: 24 }}>Raw row</h2>
-      <pre style={{ whiteSpace: "pre-wrap", background: "#111", color: "#eee", padding: 12, borderRadius: 10 }}>
-        {JSON.stringify(fabric.raw ?? {}, null, 2)}
-      </pre>
+        <div style={{ border: "1px solid #e5e5e5", borderRadius: 14, padding: 14 }}>
+          <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 8 }}>Contents</div>
+          {f.contents?.length ? (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {f.contents.map((c: any) => (
+                <span
+                  key={c.id}
+                  style={{
+                    border: "1px solid #ddd",
+                    borderRadius: 999,
+                    padding: "6px 10px",
+                    fontSize: 12,
+                    background: "white",
+                  }}
+                >
+                  {c.material}
+                  {c.percent !== null && c.percent !== undefined ? ` ${c.percent}%` : ""}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <div style={{ opacity: 0.75 }}>—</div>
+          )}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 16, border: "1px solid #e5e5e5", borderRadius: 14, padding: 14 }}>
+        <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 8 }}>Submissions</div>
+        {f.submissions?.length ? (
+          <div style={{ display: "grid", gap: 10 }}>
+            {f.submissions.map((s: any) => (
+              <div key={s.id} style={{ borderTop: "1px solid #f0f0f0", paddingTop: 10 }}>
+                <div style={{ fontWeight: 800 }}>
+                  {s.fuzeFabricNumber !== null && s.fuzeFabricNumber !== undefined ? `FUZE ${s.fuzeFabricNumber}` : "—"}
+                </div>
+                <div style={{ fontSize: 13, opacity: 0.85 }}>
+                  {s.customerFabricCode ? `Cust: ${s.customerFabricCode}` : ""}
+                  {s.customerFabricCode && s.factoryFabricCode ? " • " : ""}
+                  {s.factoryFabricCode ? `Factory: ${s.factoryFabricCode}` : ""}
+                </div>
+                <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>
+                  {s.applicationMethod ?? "—"}
+                  {s.treatmentLocation ? ` • ${s.treatmentLocation}` : ""}
+                  {s.applicationDate ? ` • ${new Date(s.applicationDate).toLocaleDateString()}` : ""}
+                </div>
+                <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>
+                  {s.brand?.name ? `Brand: ${s.brand.name}` : ""}
+                  {s.brand?.name && s.factory?.name ? " • " : ""}
+                  {s.factory?.name ? `Factory: ${s.factory.name}` : ""}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ opacity: 0.75 }}>—</div>
+        )}
+      </div>
+
+      <div style={{ marginTop: 16, border: "1px solid #e5e5e5", borderRadius: 14, padding: 14 }}>
+        <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 8 }}>Raw</div>
+        <pre style={{ whiteSpace: "pre-wrap", fontSize: 12, margin: 0, opacity: 0.9 }}>
+{JSON.stringify(f.raw ?? {}, null, 2)}
+        </pre>
+      </div>
     </div>
   );
 }
