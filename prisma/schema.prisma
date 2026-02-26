@@ -345,3 +345,4 @@ model Document {
   @@index([submissionId])
   @@index([testRunId])
 }
+
