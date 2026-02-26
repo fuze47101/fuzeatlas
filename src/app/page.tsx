@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 type FabricContent = { material: string; percent: number | null };
-type FabricSubmission = {
+type FabricSubmission = 
   fuzeFabricNumber: number | null;
   customerFabricCode: string | null;
   factoryFabricCode: string | null;
@@ -286,7 +286,7 @@ export default function HomePage() {
         </button>
 
         <div style={{ fontWeight: 800 }}>
-          Total {total.toLocaleString()} • Page {page}/{pages}
+          Total {(total ?? 0).toLocaleString()} • Page {page}/{pages}
         </div>
 
         <div style={{ marginLeft: 6, display: "flex", gap: 8, alignItems: "center" }}>
