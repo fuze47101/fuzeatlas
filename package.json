@@ -1,31 +1,31 @@
 {
-  "name": "fuzeatlas",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "prisma:generate": "prisma generate",
-    "db:deploy": "prisma migrate deploy",
-    "db:studio": "prisma studio",
-    "db:import": "tsx scripts/import-atlas.ts"
-  },
-  "dependencies": {
-    "@prisma/client": "6.19.2",
-    "csv-parse": "^6.1.0",
-    "next": "^15.5.9",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^25.2.3",
-    "@types/react": "^19.2.13",
-    "@types/react-dom": "^19.2.3",
-    "prisma": "6.19.2",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
-    "typescript": "^5"
-  }
+    "name": "fuzeatlas",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+          "dev": "next dev",
+          "build": "prisma generate && next build",
+          "start": "next start",
+          "lint": "next lint",
+          "prisma:generate": "prisma generate",
+          "db:deploy": "prisma migrate deploy",
+          "db:studio": "prisma studio",
+          "db:import": "tsx scripts/import-atlas.ts"
+    },
+    "dependencies": {
+          "@prisma/client": "6.19.2",
+          "csv-parse": "^6.1.0",
+          "next": "^15.5.9",
+          "react": "^19.0.0",
+          "react-dom": "^19.0.0"
+    },
+    "devDependencies": {
+          "@types/node": "^25.2.3",
+          "@types/react": "^19.2.13",
+          "@types/react-dom": "^19.2.3",
+          "prisma": "6.19.2",
+          "ts-node": "^10.9.2",
+          "tsx": "^4.21.0",
+          "typescript": "^5"
+    }
 }
