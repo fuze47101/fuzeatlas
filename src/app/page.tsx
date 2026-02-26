@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 type FabricContent = { material: string; percent: number | null };
-type FabricSubmission = 
+type FabricSubmission =  {
   fuzeFabricNumber: number | null;
   customerFabricCode: string | null;
   factoryFabricCode: string | null;
