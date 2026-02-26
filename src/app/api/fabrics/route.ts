@@ -19,10 +19,34 @@ export async function GET(req: Request) {
         orderBy: { createdAt: "desc" },
         skip,
         take: pageSize,
+        include: {
+          contents: {
+            select: { material: true, percent: true },
+            orderBy: { material: "asc" },
+          },
+          submissions: {
+            select: {
+              fuzeFabricNumber: true,
+              customerFabricCode: true,
+              factoryFabricCode: true,
+              applicationMethod: true,
+              treatmentLocation: true,
+              applicationDate: true,
+            },
+            orderBy: { applicationDate: "desc" },
+            take: 1,
+          },
+        },
       }),
     ]);
 
-    return NextResponse.json({ ok: true, page, pageSize, total, fabrics });
+    // Shape each row so page.tsx gets `submission` (singular) not `submissions`
+    const items = fabrics.map((f) => {
+      const { submissions, ...rest } = f;
+      return { ...rest, submission: submissions[0] ?? null };
+    });
+
+    return NextResponse.json({ ok: true, page, pageSize, total, items });
   } catch (e: any) {
     return NextResponse.json(
       { ok: false, error: e?.message || "unknown error" },
