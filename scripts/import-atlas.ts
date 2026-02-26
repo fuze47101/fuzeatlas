@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import fs from "fs";
 import path from "path";
-import { prisma } from "../src/lib/db";
+import { prisma } from "../src/lib/prisma";
 
 type Row = Record<string, string>;
 
