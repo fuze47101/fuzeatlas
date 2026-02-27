@@ -157,7 +157,7 @@ model User {
 
 model Brand {
   id     String @id @default(cuid())
-  name   String
+  name   String @unique
   knackId String? @unique
 
   pipelineStage      PipelineStage @default(LEAD)
@@ -283,7 +283,7 @@ model Distributor {
 
 model Lab {
   id      String @id @default(cuid())
-  name    String
+  name    String @unique
   knackId String? @unique
 
   testRuns      TestRun[]
