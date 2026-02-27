@@ -344,7 +344,7 @@ model Fabric {
   construction String?
   color        String?
   weightGsm    Float?
-  widthInches  String?
+  widthInches  Float?
   yarnType     String?
   finishNote   String?
   note         String?
