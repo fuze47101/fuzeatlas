@@ -7,6 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
 enum SourceSystem {
   KNACK
   CSV
@@ -14,31 +18,87 @@ enum SourceSystem {
   API
 }
 
+enum PipelineStage {
+  LEAD
+  PRESENTATION
+  BRAND_TESTING
+  FACTORY_ONBOARDING
+  FACTORY_TESTING
+  PRODUCTION
+  BRAND_EXPANSION
+  ARCHIVE
+  CUSTOMER_WON
+}
+
 enum TestType {
   ICP
   ANTIBACTERIAL
   FUNGAL
   ODOR
+  UV
+  MICROFIBER
   OTHER
+}
+
+enum TestStatus {
+  REQUESTED
+  IN_PROGRESS
+  PASSED
+  FAILED
+  RETEST
+  PASSED_COMPLETE
 }
 
 enum DocKind {
   REPORT
   IMAGE
   SUBMISSION_DOC
+  SOW_DOC
   OTHER
 }
+
+enum SOWStatus {
+  DRAFT
+  SENT
+  SIGNED
+  ACTIVE
+  COMPLETE
+  CANCELLED
+}
+
+enum UserRole {
+  ADMIN
+  EMPLOYEE
+  SALES_MANAGER
+  SALES_REP
+  FABRIC_MANAGER
+  TESTING_MANAGER
+  FACTORY_MANAGER
+  FACTORY_USER
+  BRAND_USER
+  DISTRIBUTOR_USER
+  PUBLIC
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+// ─────────────────────────────────────────────
+// AUDIT / IMPORT TRACKING
+// ─────────────────────────────────────────────
 
 model SourceRecord {
   id             String       @id @default(cuid())
   sourceSystem   SourceSystem @default(CSV)
   sourceTable    String
-  sourceRecordId String? // e.g., Knack "Record ID"
-  sourceKey      String? // e.g., file row key, composite identifiers
-  raw            Json // entire raw row (verbatim)
+  sourceRecordId String?
+  sourceKey      String?
+  raw            Json
   importedAt     DateTime     @default(now())
 
-  // Optional links (set during import if resolvable)
   brandId      String?
   factoryId    String?
   labId        String?
@@ -51,102 +111,200 @@ model SourceRecord {
   submission FabricSubmission? @relation(fields: [submissionId], references: [id])
   testRun    TestRun?          @relation(fields: [testRunId], references: [id])
 
-  @@index([sourceTable])
+  @@index([sourceSystem, sourceTable])
   @@index([sourceRecordId])
-  @@index([brandId])
-  @@index([factoryId])
-  @@index([labId])
-  @@index([submissionId])
-  @@index([testRunId])
 }
 
+// ─────────────────────────────────────────────
+// USERS & AUTH
+// ─────────────────────────────────────────────
+
+model User {
+  id       String     @id @default(cuid())
+  name     String
+  email    String     @unique
+  password String?
+  role     UserRole   @default(PUBLIC)
+  status   UserStatus @default(ACTIVE)
+
+  salesManagerId String?
+  salesManager   User?   @relation("SalesManagerReps", fields: [salesManagerId], references: [id])
+  managedReps    User[]  @relation("SalesManagerReps")
+
+  brandId       String?
+  brand         Brand?       @relation("BrandUsers", fields: [brandId], references: [id])
+  factoryId     String?
+  factory       Factory?     @relation("FactoryUsers", fields: [factoryId], references: [id])
+  distributorId String?
+  distributor   Distributor? @relation("DistributorUsers", fields: [distributorId], references: [id])
+
+  assignedBrands    Brand[]    @relation("BrandSalesRep")
+  assignedFactories Factory[]  @relation("FactorySalesRep")
+
+  notes     Note[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([email])
+}
+
+// ─────────────────────────────────────────────
+// BRANDS / CUSTOMERS
+// ─────────────────────────────────────────────
+
 model Brand {
-  id                 String    @id @default(cuid())
-  name               String    @unique
+  id     String @id @default(cuid())
+  name   String
+  knackId String? @unique
+
+  pipelineStage      PipelineStage @default(LEAD)
   customerType       String?
-  status             String?
-  leadSource         String?
-  initialContactDate DateTime?
-  addressRaw         String?
+  leadReferralSource String?
+  dateOfInitialContact DateTime?
 
-  // raw capture for “store both”
-  raw Json?
+  website        String?
+  linkedInProfile String?
+  backgroundInfo String?
 
-  contacts      Contact[]
-  submissions   FabricSubmission[]
-  sourceRecords SourceRecord[] // ✅ added
+  projectType        String?
+  projectDescription String?
+  presentationDate   DateTime?
+  forecast           String?
+  deliverables       String?
+
+  salesRepId String?
+  salesRep   User?  @relation("BrandSalesRep", fields: [salesRepId], references: [id])
+
+  contacts    Contact[]
+  factories   BrandFactory[]
+  submissions FabricSubmission[]
+  fabrics     Fabric[]
+  sows        SOW[]
+  notes       Note[]
+  users       User[]         @relation("BrandUsers")
+  sourceRecords SourceRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([pipelineStage])
+  @@index([name])
 }
 
-model Factory {
-  id                 String    @id @default(cuid())
-  name               String
-  chineseName        String?
-  millType           String?
-  specialty          String?
-  annualSales        String?
-  leadSource         String?
-  initialContactDate DateTime?
+// ─────────────────────────────────────────────
+// FACTORIES / TEXTILE MILLS
+// ─────────────────────────────────────────────
 
-  addressRaw String?
-  raw        Json?
+model Factory {
+  id      String @id @default(cuid())
+  name    String
+  knackId String? @unique
+
+  chineseName  String?
+  millType     String?
+  specialty    String?
+  purchasing   String?
+  annualSales  String?
+
+  address          String?
+  city             String?
+  state            String?
+  country          String?
+  secondaryCountry String?
+
+  development          String?
+  presentationComplete Boolean?
+  customerType         String?
+  brandNominated       String?
+
+  salesRepId String?
+  salesRep   User?  @relation("FactorySalesRep", fields: [salesRepId], references: [id])
 
   contacts      Contact[]
+  brands        BrandFactory[]
   submissions   FabricSubmission[]
-  sourceRecords SourceRecord[] // ✅ added
+  fabrics       Fabric[]
+  users         User[]         @relation("FactoryUsers")
+  sourceRecords SourceRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([name])
+  @@index([country])
 }
 
+model BrandFactory {
+  id        String  @id @default(cuid())
+  brandId   String
+  factoryId String
+  brand     Brand   @relation(fields: [brandId], references: [id])
+  factory   Factory @relation(fields: [factoryId], references: [id])
+
+  isPrimary Boolean @default(false)
+  note      String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([brandId, factoryId])
+  @@index([brandId])
+  @@index([factoryId])
+}
+
+// ─────────────────────────────────────────────
+// DISTRIBUTORS
+// ─────────────────────────────────────────────
+
 model Distributor {
-  id           String  @id @default(cuid())
-  name         String
+  id      String @id @default(cuid())
+  name    String
+  knackId String? @unique
+
   chineseName  String?
   specialty    String?
   agentForFuze String?
   annualSales  String?
+  country      String?
 
-  addressRaw String?
-  raw        Json?
-
-  contacts Contact[]
+  contacts      Contact[]
+  users         User[]         @relation("DistributorUsers")
+  sourceRecords SourceRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([name])
 }
+
+// ─────────────────────────────────────────────
+// LABS
+// ─────────────────────────────────────────────
 
 model Lab {
-  id   String @id @default(cuid())
-  name String @unique
-  raw  Json?
+  id      String @id @default(cuid())
+  name    String
+  knackId String? @unique
 
   testRuns      TestRun[]
-  sourceRecords SourceRecord[] // ✅ added (fixes your error)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  sourceRecords SourceRecord[]
 }
 
+// ─────────────────────────────────────────────
+// CONTACTS
+// ─────────────────────────────────────────────
+
 model Contact {
-  id         String  @id @default(cuid())
-  first      String?
-  middle     String?
-  last       String?
+  id String @id @default(cuid())
+
   title      String?
-  email      String?
-  phone      String?
-  addressRaw String?
+  firstName  String?
+  middleName String?
+  lastName   String?
+  name       String?
 
-  raw Json?
+  email   String?
+  phone   String?
+  address String?
 
-  // a contact can belong to one of these
   brandId       String?
   factoryId     String?
   distributorId String?
@@ -158,46 +316,81 @@ model Contact {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([email])
-  @@index([last])
+  @@index([brandId])
+  @@index([factoryId])
 }
+
+// ─────────────────────────────────────────────
+// FABRICS
+// ─────────────────────────────────────────────
 
 model Fabric {
   id String @id @default(cuid())
 
-  // Canonical “fabric concept” fields (normalized)
+  fuzeNumber   Int?    @unique
+  customerCode String?
+  factoryCode  String?
+
   construction String?
   color        String?
-  widthInches  Float?
   weightGsm    Float?
+  fullWidth    String?
+  yarnType     String?
+  finishNote   String?
+  note         String?
 
-  contents FabricContent[]
+  brandId   String?
+  factoryId String?
+  brand     Brand?   @relation(fields: [brandId], references: [id])
+  factory   Factory? @relation(fields: [factoryId], references: [id])
 
-  // raw capture
   raw Json?
 
+  contents    FabricContent[]
   submissions FabricSubmission[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([fuzeNumber])
+  @@index([customerCode])
+  @@index([factoryCode])
+  @@index([brandId])
+  @@index([factoryId])
 }
 
 model FabricContent {
-  id       String  @id @default(cuid())
+  id       String @id @default(cuid())
   fabricId String
-  material String
-  percent  Float?
-  rawText  String?
+  fabric   Fabric @relation(fields: [fabricId], references: [id])
 
-  fabric Fabric @relation(fields: [fabricId], references: [id])
+  material      String
+  percent       Float?
+  rawText       String?
 
   @@index([fabricId])
+  @@index([material])
 }
+
+// ─────────────────────────────────────────────
+// MATERIAL NORMALIZATION
+// ─────────────────────────────────────────────
+
+model MaterialAlias {
+  id            String @id @default(cuid())
+  alias         String @unique
+  canonicalName String
+
+  @@index([canonicalName])
+}
+
+// ─────────────────────────────────────────────
+// FABRIC SUBMISSIONS (fabric + treatment context)
+// ─────────────────────────────────────────────
 
 model FabricSubmission {
   id String @id @default(cuid())
 
-  // Links
   brandId   String?
   factoryId String?
   fabricId  String?
@@ -206,12 +399,10 @@ model FabricSubmission {
   factory Factory? @relation(fields: [factoryId], references: [id])
   fabric  Fabric?  @relation(fields: [fabricId], references: [id])
 
-  // Submission identifiers (raw + normalized)
   fuzeFabricNumber   Int?
   customerFabricCode String?
   factoryFabricCode  String?
 
-  // Application / process
   applicationMethod    String?
   applicationRecipeRaw String?
   padRecipeRaw         String?
@@ -220,22 +411,27 @@ model FabricSubmission {
 
   washTarget Int?
 
-  // Status flags
+  status           String?
+  programName      String?
+  developmentStage String?
+  testStatus       String?
+  category         String?
+
   icpSent     Boolean?
   icpReceived Boolean?
   icpPassed   Boolean?
+
   abSent      Boolean?
   abReceived  Boolean?
   abPassed    Boolean?
 
-  category    String?
-  programName String?
+  progressPercent Float?
 
   raw Json?
 
   testRuns      TestRun[]
   documents     Document[]
-  sourceRecords SourceRecord[] // ✅ added (fixes your error)
+  sourceRecords SourceRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -243,7 +439,13 @@ model FabricSubmission {
   @@index([fuzeFabricNumber])
   @@index([customerFabricCode])
   @@index([factoryFabricCode])
+  @@index([status])
+  @@index([testStatus])
 }
+
+// ─────────────────────────────────────────────
+// TEST RUNS & RESULTS
+// ─────────────────────────────────────────────
 
 model TestRun {
   id String @id @default(cuid())
@@ -254,26 +456,36 @@ model TestRun {
   submission FabricSubmission? @relation(fields: [submissionId], references: [id])
   lab        Lab?              @relation(fields: [labId], references: [id])
 
+  testNumber       Int?
   testType         TestType
   testMethodRaw    String?
   testMethodStd    String?
   testReportNumber String?
+  fuzeInternalReportNumber String?
+  postWashReportNumber     String?
 
   testDate     DateTime?
   postWashDate DateTime?
+
   washCount    Int?
   washLabelRaw String?
 
   machineType String?
   testedMetal String?
 
+  agSerialNumber     String?
+  auSerialNumber     String?
+  fungalSerialNumber String?
+
   raw Json?
 
-  icpResult IcpResult?
-  abResult  AntibacterialResult?
+  icpResult    IcpResult?
+  abResult     AntibacterialResult?
+  fungalResult FungalResult?
+  odorResult   OdorResult?
 
   documents     Document[]
-  sourceRecords SourceRecord[] // ✅ added (fixes your error)
+  sourceRecords SourceRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -282,6 +494,7 @@ model TestRun {
   @@index([testMethodStd])
   @@index([washCount])
   @@index([testDate])
+  @@index([submissionId])
 }
 
 model IcpResult {
@@ -294,8 +507,7 @@ model IcpResult {
 
   agRaw String?
   auRaw String?
-
-  unit String?
+  unit  String?
 }
 
 model AntibacterialResult {
@@ -303,19 +515,85 @@ model AntibacterialResult {
   testRunId String  @unique
   testRun   TestRun @relation(fields: [testRunId], references: [id])
 
-  organism1 String?
-  organism2 String?
-
-  result1 Float?
-  result2 Float?
-
+  organism1    String?
+  organism2    String?
+  result1      Float?
+  result2      Float?
   organism1Raw String?
   organism2Raw String?
   result1Raw   String?
   result2Raw   String?
-
-  pass Boolean?
+  pass         Boolean?
 }
+
+model FungalResult {
+  id        String  @id @default(cuid())
+  testRunId String  @unique
+  testRun   TestRun @relation(fields: [testRunId], references: [id])
+
+  writtenResult String?
+  pass          Boolean?
+  raw           String?
+}
+
+model OdorResult {
+  id        String  @id @default(cuid())
+  testRunId String  @unique
+  testRun   TestRun @relation(fields: [testRunId], references: [id])
+
+  testedOdor String?
+  result     String?
+  pass       Boolean?
+}
+
+// ─────────────────────────────────────────────
+// SOW (Scope of Work)
+// ─────────────────────────────────────────────
+
+model SOW {
+  id      String    @id @default(cuid())
+  brandId String
+  brand   Brand     @relation(fields: [brandId], references: [id])
+
+  title               String?
+  expectations        String?
+  performanceCriteria String?
+  pricingTerms        String?
+  costControls        String?
+
+  signatory      String?
+  signatoryTitle String?
+  signatoryEmail String?
+
+  status SOWStatus @default(DRAFT)
+
+  milestones SOWMilestone[]
+  documents  Document[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([brandId])
+  @@index([status])
+}
+
+model SOWMilestone {
+  id    String @id @default(cuid())
+  sowId String
+  sow   SOW    @relation(fields: [sowId], references: [id])
+
+  title       String
+  description String?
+  dueDate     DateTime?
+  completedAt DateTime?
+  sortOrder   Int       @default(0)
+
+  @@index([sowId])
+}
+
+// ─────────────────────────────────────────────
+// DOCUMENTS / ATTACHMENTS
+// ─────────────────────────────────────────────
 
 model Document {
   id String @id @default(cuid())
@@ -325,17 +603,17 @@ model Document {
   contentType String?
   sizeBytes   Int?
 
-  // S3 pointers
   bucket String?
   key    String? @unique
   url    String?
 
-  // Links
   submissionId String?
   testRunId    String?
+  sowId        String?
 
   submission FabricSubmission? @relation(fields: [submissionId], references: [id])
   testRun    TestRun?          @relation(fields: [testRunId], references: [id])
+  sow        SOW?              @relation(fields: [sowId], references: [id])
 
   raw Json?
 
@@ -344,5 +622,30 @@ model Document {
 
   @@index([submissionId])
   @@index([testRunId])
+  @@index([sowId])
 }
 
+// ─────────────────────────────────────────────
+// NOTES / ACTIVITY LOG
+// ─────────────────────────────────────────────
+
+model Note {
+  id String @id @default(cuid())
+
+  date     DateTime?
+  content  String
+  noteType String?
+
+  brandId String?
+  brand   Brand?  @relation(fields: [brandId], references: [id])
+  userId  String?
+  user    User?   @relation(fields: [userId], references: [id])
+
+  contactName String?
+  taskStatus  String?
+
+  createdAt DateTime @default(now())
+
+  @@index([brandId])
+  @@index([date])
+}
