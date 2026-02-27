@@ -175,6 +175,8 @@ model Brand {
   forecast           String?
   deliverables       String?
 
+  raw Json?
+
   salesRepId String?
   salesRep   User?  @relation("BrandSalesRep", fields: [salesRepId], references: [id])
 
@@ -219,6 +221,8 @@ model Factory {
   presentationComplete Boolean?
   customerType         String?
   brandNominated       String?
+
+  raw Json?
 
   salesRepId String?
   salesRep   User?  @relation("FactorySalesRep", fields: [salesRepId], references: [id])
@@ -269,6 +273,8 @@ model Distributor {
   annualSales  String?
   country      String?
 
+  raw Json?
+
   contacts      Contact[]
   users         User[]         @relation("DistributorUsers")
   sourceRecords SourceRecord[]
@@ -285,6 +291,8 @@ model Lab {
   id      String @id @default(cuid())
   name    String @unique
   knackId String? @unique
+
+  raw Json?
 
   testRuns      TestRun[]
   sourceRecords SourceRecord[]
