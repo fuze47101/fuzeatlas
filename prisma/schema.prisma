@@ -103,13 +103,15 @@ model SourceRecord {
   factoryId    String?
   labId        String?
   submissionId String?
-  testRunId    String?
+  testRunId      String?
+  distributorId  String?
 
   brand      Brand?            @relation(fields: [brandId], references: [id])
   factory    Factory?          @relation(fields: [factoryId], references: [id])
   lab        Lab?              @relation(fields: [labId], references: [id])
   submission FabricSubmission? @relation(fields: [submissionId], references: [id])
   testRun    TestRun?          @relation(fields: [testRunId], references: [id])
+  distributor Distributor?      @relation(fields: [distributorId], references: [id])
 
   @@index([sourceSystem, sourceTable])
   @@index([sourceRecordId])
