@@ -42,7 +42,7 @@ export default function SearchableSelect({
       )
     : options;
 
-  const visible = filtered.slice(0, 8);
+  const visible = filtered.slice(0, 15);
 
   // Click outside to close
   useEffect(() => {
@@ -168,9 +168,9 @@ export default function SearchableSelect({
             </button>
           ))}
 
-          {filtered.length > 8 && (
+          {filtered.length > 15 && (
             <div className="px-3 py-1.5 text-xs text-slate-400 border-t border-slate-100">
-              {filtered.length - 8} more — type to narrow
+              {filtered.length - 15} more — type to narrow
             </div>
           )}
 

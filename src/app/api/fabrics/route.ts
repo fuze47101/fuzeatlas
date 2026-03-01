@@ -19,6 +19,8 @@ export async function GET() {
     const list = fabrics.map(f => ({
       id: f.id,
       fuzeNumber: f.fuzeNumber,
+      customerCode: f.customerCode || null,
+      factoryCode: f.factoryCode || null,
       construction: f.construction,
       color: f.color,
       weightGsm: f.weightGsm,

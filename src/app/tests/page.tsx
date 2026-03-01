@@ -47,6 +47,53 @@ export default function TestsPage() {
   // Assign modal state
   const [assigningTest, setAssigningTest] = useState<TestRun | null>(null);
 
+  // Edit modal state
+  const [editingTest, setEditingTest] = useState<TestRun | null>(null);
+  const [editForm, setEditForm] = useState<Record<string, any>>({});
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  const openEdit = (run: TestRun) => {
+    setEditingTest(run);
+    setEditForm({
+      testType: run.testType,
+      testReportNumber: run.testReportNumber || "",
+      lab: run.lab || "",
+      testDate: run.testDate || "",
+      washCount: run.washCount ?? "",
+      testMethodStd: run.testMethodStd || "",
+    });
+    setEditError(null);
+  };
+
+  const saveEdit = async () => {
+    if (!editingTest) return;
+    setEditSaving(true);
+    setEditError(null);
+    try {
+      const res = await fetch(`/api/tests/${editingTest.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          testType: editForm.testType,
+          testReportNumber: editForm.testReportNumber || null,
+          labName: editForm.lab || null,
+          testDate: editForm.testDate || null,
+          washCount: editForm.washCount || null,
+          testMethodStd: editForm.testMethodStd || null,
+        }),
+      });
+      const d = await res.json();
+      if (!d.ok) { setEditError(d.error || "Save failed"); return; }
+      setEditingTest(null);
+      loadData(filterType);
+    } catch (e: any) {
+      setEditError(e.message);
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
   const loadData = (type?: string) => {
     const params = new URLSearchParams();
     if (type) params.set("type", type);
@@ -171,6 +218,12 @@ export default function TestsPage() {
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-400">{run.testDate || ""}</span>
                   <button
+                    onClick={() => openEdit(run)}
+                    className="px-2 py-1 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50"
+                  >
+                    Edit
+                  </button>
+                  <button
                     onClick={() => setAssigningTest(run)}
                     className="px-2 py-1 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50"
                   >
@@ -252,16 +305,24 @@ export default function TestsPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <button
-                        onClick={() => setAssigningTest(run)}
-                        className={`px-2.5 py-1 text-xs font-medium rounded-lg border transition-colors ${
-                          run.brand || run.factory
-                            ? "text-green-700 border-green-200 hover:bg-green-50"
-                            : "text-blue-600 border-blue-200 hover:bg-blue-50"
-                        }`}
-                      >
-                        {run.brand || run.factory ? "Reassign" : "Assign"}
-                      </button>
+                      <div className="flex gap-1.5">
+                        <button
+                          onClick={() => openEdit(run)}
+                          className="px-2 py-1 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => setAssigningTest(run)}
+                          className={`px-2.5 py-1 text-xs font-medium rounded-lg border transition-colors ${
+                            run.brand || run.factory
+                              ? "text-green-700 border-green-200 hover:bg-green-50"
+                              : "text-blue-600 border-blue-200 hover:bg-blue-50"
+                          }`}
+                        >
+                          {run.brand || run.factory ? "Reassign" : "Assign"}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -289,6 +350,106 @@ export default function TestsPage() {
             loadData();
           }}
         />
+      )}
+
+      {/* Edit modal */}
+      {editingTest && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setEditingTest(null)} />
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-slate-900">Edit Test</h2>
+              <button onClick={() => setEditingTest(null)} className="text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              {editError && (
+                <div className="px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{editError}</div>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Test Type</label>
+                <select
+                  value={editForm.testType}
+                  onChange={(e) => setEditForm({ ...editForm, testType: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                >
+                  <option value="ICP">ICP</option>
+                  <option value="ANTIBACTERIAL">ANTIBACTERIAL</option>
+                  <option value="FUNGAL">FUNGAL</option>
+                  <option value="ODOR">ODOR</option>
+                  <option value="UV">UV</option>
+                  <option value="OTHER">OTHER</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Report #</label>
+                <input
+                  type="text"
+                  value={editForm.testReportNumber}
+                  onChange={(e) => setEditForm({ ...editForm, testReportNumber: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                  placeholder="e.g. 162201, TWNC01400561"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Lab</label>
+                <input
+                  type="text"
+                  value={editForm.lab}
+                  onChange={(e) => setEditForm({ ...editForm, lab: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                  placeholder="e.g. CTLA, ITS, SGS"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                  <input
+                    type="text"
+                    value={editForm.testDate}
+                    onChange={(e) => setEditForm({ ...editForm, testDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    placeholder="2/24/2026"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Wash Count</label>
+                  <input
+                    type="number"
+                    value={editForm.washCount}
+                    onChange={(e) => setEditForm({ ...editForm, washCount: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Test Method</label>
+                <input
+                  type="text"
+                  value={editForm.testMethodStd}
+                  onChange={(e) => setEditForm({ ...editForm, testMethodStd: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                  placeholder="e.g. ICP-MS, AATCC 100, ASTM E2149"
+                />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setEditingTest(null)}
+                className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveEdit}
+                disabled={editSaving}
+                className="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {editSaving ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

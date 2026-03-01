@@ -68,11 +68,24 @@ export default function AssignTestModal({
 
       if (faData.ok && faData.fabrics) {
         setFabrics(
-          faData.fabrics.map((f: any) => ({
-            id: f.id,
-            name: f.customerCode || f.fuzeNumber || f.factoryCode || f.id,
-            detail: f.construction || undefined,
-          }))
+          faData.fabrics.map((f: any) => {
+            // Build a readable display name from available fields
+            const parts: string[] = [];
+            if (f.fuzeNumber) parts.push(`FUZE-${f.fuzeNumber}`);
+            if (f.customerCode) parts.push(f.customerCode);
+            if (f.factoryCode && !f.customerCode) parts.push(f.factoryCode);
+            const name = parts.length > 0 ? parts.join(" / ") : f.id.slice(0, 8);
+            // Build detail line: construction + color + brand
+            const details: string[] = [];
+            if (f.construction) details.push(f.construction);
+            if (f.color) details.push(f.color);
+            if (f.brand) details.push(f.brand);
+            return {
+              id: f.id,
+              name,
+              detail: details.join(" · ") || undefined,
+            };
+          })
         );
       }
     });
