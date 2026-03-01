@@ -184,6 +184,7 @@ model Brand {
   factories   BrandFactory[]
   submissions FabricSubmission[]
   fabrics     Fabric[]
+  projects    Project[]
   sows        SOW[]
   notes       Note[]
   users       User[]         @relation("BrandUsers")
@@ -454,6 +455,28 @@ model FabricSubmission {
 }
 
 // ─────────────────────────────────────────────
+// PROJECTS (grouping tests under a brand)
+// ─────────────────────────────────────────────
+
+model Project {
+  id      String @id @default(cuid())
+  name    String
+  brandId String?
+  brand   Brand?  @relation(fields: [brandId], references: [id])
+
+  description String?
+
+  testRuns TestRun[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, brandId])
+  @@index([brandId])
+  @@index([name])
+}
+
+// ─────────────────────────────────────────────
 // TEST RUNS & RESULTS
 // ─────────────────────────────────────────────
 
@@ -462,9 +485,11 @@ model TestRun {
 
   submissionId String?
   labId        String?
+  projectId    String?
 
   submission FabricSubmission? @relation(fields: [submissionId], references: [id])
   lab        Lab?              @relation(fields: [labId], references: [id])
+  project    Project?          @relation(fields: [projectId], references: [id])
 
   testNumber       Int?
   testType         TestType
@@ -505,6 +530,7 @@ model TestRun {
   @@index([washCount])
   @@index([testDate])
   @@index([submissionId])
+  @@index([projectId])
 }
 
 model IcpResult {

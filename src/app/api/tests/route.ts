@@ -8,11 +8,14 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const filterType = searchParams.get("type") || "";
+    const filterProject = searchParams.get("project") || "";
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
     const pageSize = 50;
 
-    // Build where clause for type filter
-    const where = filterType ? { testType: filterType } : {};
+    // Build where clause for type + project filter
+    const where: any = {};
+    if (filterType) where.testType = filterType;
+    if (filterProject) where.projectId = filterProject;
 
     const [
       testRuns,
@@ -41,6 +44,7 @@ export async function GET(request: Request) {
               factory: { select: { name: true } },
             },
           },
+          project: { select: { id: true, name: true } },
           icpResult: true,
           abResult: true,
           fungalResult: true,
@@ -62,13 +66,15 @@ export async function GET(request: Request) {
       id: r.id,
       testType: r.testType,
       testReportNumber: r.testReportNumber || null,
-      testDate: r.dateSent || r.dateReceived || null,
+      testDate: r.testDate || null,
       testMethodStd: r.testMethodStd || null,
       washCount: r.washCount || null,
       lab: r.lab?.name || null,
       brand: r.submission?.brand?.name || null,
       factory: r.submission?.factory?.name || null,
       fuzeNumber: r.submission?.fuzeFabricNumber || null,
+      projectId: r.project?.id || null,
+      project: r.project?.name || null,
       hasIcp: r.icpResult != null,
       hasAb: r.abResult != null,
       hasFungal: r.fungalResult != null,

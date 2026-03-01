@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       brandId,
       factoryId,
       fabricId,
+      projectId,
       // Antibacterial
       organism1,
       organism2,
@@ -106,6 +107,7 @@ export async function POST(req: Request) {
         testedMetal: testedMetal || null,
         labId,
         submissionId: resolvedSubmissionId,
+        projectId: projectId || null,
         // Link document
         documents: documentId
           ? { connect: { id: documentId } }

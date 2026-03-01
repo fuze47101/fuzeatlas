@@ -14,6 +14,8 @@ interface TestRun {
   brand?: string;
   factory?: string;
   fuzeNumber?: string;
+  projectId?: string;
+  project?: string;
   hasIcp: boolean;
   hasAb: boolean;
   hasFungal: boolean;
@@ -25,6 +27,13 @@ interface TestData {
   typeBreakdown: { type: string; count: number }[];
   runs: TestRun[];
   resultCounts: { icp: number; fungal: number; odor: number; antibacterial: number };
+}
+
+interface ProjectOption {
+  id: string;
+  name: string;
+  brandName?: string;
+  testCount: number;
 }
 
 const TYPE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
@@ -42,7 +51,11 @@ export default function TestsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("");
+  const [filterProject, setFilterProject] = useState("");
   const [savedBanner, setSavedBanner] = useState(false);
+
+  // Projects for filter dropdown
+  const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
 
   // Assign modal state
   const [assigningTest, setAssigningTest] = useState<TestRun | null>(null);
@@ -86,7 +99,7 @@ export default function TestsPage() {
       const d = await res.json();
       if (!d.ok) { setEditError(d.error || "Save failed"); return; }
       setEditingTest(null);
-      loadData(filterType);
+      loadData(filterType, filterProject);
     } catch (e: any) {
       setEditError(e.message);
     } finally {
@@ -94,9 +107,10 @@ export default function TestsPage() {
     }
   };
 
-  const loadData = (type?: string) => {
+  const loadData = (type?: string, project?: string) => {
     const params = new URLSearchParams();
     if (type) params.set("type", type);
+    if (project) params.set("project", project);
     fetch(`/api/tests?${params.toString()}`)
       .then((r) => r.json())
       .then((d) => {
@@ -104,6 +118,18 @@ export default function TestsPage() {
       })
       .finally(() => setLoading(false));
   };
+
+  // Load projects for filter
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.ok && d.projects) {
+          setProjectOptions(d.projects);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     // Check for saved=true in URL
@@ -115,10 +141,10 @@ export default function TestsPage() {
     loadData();
   }, []);
 
-  // Re-fetch when filter type changes (server-side filtering)
+  // Re-fetch when filter type or project changes
   useEffect(() => {
-    loadData(filterType);
-  }, [filterType]);
+    loadData(filterType, filterProject);
+  }, [filterType, filterProject]);
 
   const filtered = data?.runs.filter((r) => {
     const q = search.toLowerCase();
@@ -129,6 +155,7 @@ export default function TestsPage() {
       (r.lab || "").toLowerCase().includes(q) ||
       (r.brand || "").toLowerCase().includes(q) ||
       (r.factory || "").toLowerCase().includes(q) ||
+      (r.project || "").toLowerCase().includes(q) ||
       (r.fuzeNumber || "").toLowerCase().includes(q);
     return matchesSearch;
   });
@@ -193,15 +220,29 @@ export default function TestsPage() {
         })}
       </div>
 
-      {/* Search */}
-      <div className="mb-4">
+      {/* Search + Project filter */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by type, report #, lab, brand, factory..."
-          className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          placeholder="Search by type, report #, lab, brand, factory, project..."
+          className="flex-1 px-4 py-2.5 border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
         />
+        {projectOptions.length > 0 && (
+          <select
+            value={filterProject}
+            onChange={(e) => setFilterProject(e.target.value)}
+            className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm text-slate-700 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[180px]"
+          >
+            <option value="">All Projects</option>
+            {projectOptions.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}{p.brandName ? ` (${p.brandName})` : ""} — {p.testCount}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* Table — responsive: cards on mobile, table on desktop */}
@@ -227,7 +268,7 @@ export default function TestsPage() {
                     onClick={() => setAssigningTest(run)}
                     className="px-2 py-1 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50"
                   >
-                    {run.brand || run.factory ? "Reassign" : "Assign"}
+                    {run.brand || run.factory || run.project ? "Reassign" : "Assign"}
                   </button>
                 </div>
               </div>
@@ -235,6 +276,7 @@ export default function TestsPage() {
                 <p className="text-sm font-medium text-slate-900">{run.testReportNumber}</p>
               )}
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+                {run.project && <span>Project: <span className="text-amber-700 font-medium">{run.project}</span></span>}
                 {run.lab && <span>Lab: {run.lab}</span>}
                 {run.brand && <span>Brand: <span className="text-slate-700 font-medium">{run.brand}</span></span>}
                 {run.factory && <span>Factory: <span className="text-slate-700 font-medium">{run.factory}</span></span>}
@@ -260,6 +302,7 @@ export default function TestsPage() {
                 <th className="text-left px-4 py-3 font-medium text-slate-600">Type</th>
                 <th className="text-left px-4 py-3 font-medium text-slate-600">Report #</th>
                 <th className="text-left px-4 py-3 font-medium text-slate-600">Lab</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">Project</th>
                 <th className="text-left px-4 py-3 font-medium text-slate-600">Brand</th>
                 <th className="text-left px-4 py-3 font-medium text-slate-600">Factory</th>
                 <th className="text-left px-4 py-3 font-medium text-slate-600">Date</th>
@@ -280,6 +323,15 @@ export default function TestsPage() {
                     </td>
                     <td className="px-4 py-3 text-slate-900 font-medium">{run.testReportNumber || "—"}</td>
                     <td className="px-4 py-3 text-slate-600">{run.lab || "—"}</td>
+                    <td className="px-4 py-3">
+                      {run.project ? (
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700">
+                          {run.project}
+                        </span>
+                      ) : (
+                        <span className="text-slate-300">—</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       {run.brand ? (
                         <span className="text-slate-900 font-medium">{run.brand}</span>
@@ -315,12 +367,12 @@ export default function TestsPage() {
                         <button
                           onClick={() => setAssigningTest(run)}
                           className={`px-2.5 py-1 text-xs font-medium rounded-lg border transition-colors ${
-                            run.brand || run.factory
+                            run.brand || run.factory || run.project
                               ? "text-green-700 border-green-200 hover:bg-green-50"
                               : "text-blue-600 border-blue-200 hover:bg-blue-50"
                           }`}
                         >
-                          {run.brand || run.factory ? "Reassign" : "Assign"}
+                          {run.brand || run.factory || run.project ? "Reassign" : "Assign"}
                         </button>
                       </div>
                     </td>
@@ -332,7 +384,7 @@ export default function TestsPage() {
         </div>
         {(!filtered || filtered.length === 0) && (
           <div className="p-12 text-center text-slate-400">
-            {search || filterType ? "No tests match your filters." : "No test results yet. Upload a test report to get started."}
+            {search || filterType || filterProject ? "No tests match your filters." : "No test results yet. Upload a test report to get started."}
           </div>
         )}
       </div>
@@ -344,10 +396,15 @@ export default function TestsPage() {
           testType={assigningTest.testType}
           currentBrand={assigningTest.brand}
           currentFactory={assigningTest.factory}
+          currentProject={assigningTest.project}
           onClose={() => setAssigningTest(null)}
           onAssigned={() => {
             setAssigningTest(null);
-            loadData();
+            loadData(filterType, filterProject);
+            // Refresh project list in case new one was created
+            fetch("/api/projects").then(r => r.json()).then(d => {
+              if (d.ok && d.projects) setProjectOptions(d.projects);
+            }).catch(() => {});
           }}
         />
       )}

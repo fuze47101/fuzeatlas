@@ -48,7 +48,7 @@ export async function GET(request: Request) {
         },
       }),
       prisma.icpResult.count(),
-      prisma.abResult.count(),
+      prisma.antibacterialResult.count(),
       prisma.fungalResult.count(),
       prisma.odorResult.count(),
     ]);

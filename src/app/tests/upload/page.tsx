@@ -81,14 +81,20 @@ export default function TestUploadPage() {
   const [brands, setBrands] = useState<SelectOption[]>([]);
   const [factories, setFactories] = useState<SelectOption[]>([]);
   const [fabrics, setFabrics] = useState<SelectOption[]>([]);
+  const [projects, setProjects] = useState<SelectOption[]>([]);
   const [brandId, setBrandId] = useState<string | null>(null);
   const [brandName, setBrandName] = useState<string | null>(null);
   const [factoryId, setFactoryId] = useState<string | null>(null);
   const [factoryName, setFactoryName] = useState<string | null>(null);
   const [fabricId, setFabricId] = useState<string | null>(null);
   const [fabricName, setFabricName] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const [projectName, setProjectName] = useState<string | null>(null);
   const [creating, setCreating] = useState<"brand" | "factory" | "fabric" | null>(null);
   const [createPrefill, setCreatePrefill] = useState("");
+  const [creatingProject, setCreatingProject] = useState(false);
+  const [newProjectName, setNewProjectName] = useState("");
+  const [projectSaving, setProjectSaving] = useState(false);
 
   // Confirm state
   const [confirming, setConfirming] = useState(false);
@@ -100,7 +106,8 @@ export default function TestUploadPage() {
       fetch("/api/brands").then((r) => r.json()),
       fetch("/api/factories").then((r) => r.json()),
       fetch("/api/fabrics").then((r) => r.json()),
-    ]).then(([bData, fData, faData]) => {
+      fetch("/api/projects").then((r) => r.json()),
+    ]).then(([bData, fData, faData, pData]) => {
       if (bData.ok && bData.grouped) {
         const all: SelectOption[] = [];
         for (const stage of Object.values(bData.grouped) as any[]) {
@@ -126,6 +133,15 @@ export default function TestUploadPage() {
             id: f.id,
             name: f.customerCode || f.fuzeNumber || f.factoryCode || f.id,
             detail: f.construction || undefined,
+          }))
+        );
+      }
+      if (pData.ok && pData.projects) {
+        setProjects(
+          pData.projects.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            detail: p.brandName ? `Brand: ${p.brandName}` : undefined,
           }))
         );
       }
@@ -251,6 +267,7 @@ export default function TestUploadPage() {
         brandId: brandId || null,
         factoryId: factoryId || null,
         fabricId: fabricId || null,
+        projectId: projectId || null,
       };
 
       if (testType === "ANTIBACTERIAL") {
@@ -546,10 +563,94 @@ export default function TestUploadPage() {
               {/* ── Assignment Section ─────────────────────── */}
               <div className="p-5 bg-green-50 border border-green-200 rounded-xl space-y-4">
                 <div>
-                  <h3 className="font-semibold text-green-900">Assign to Brand, Factory & Fabric</h3>
+                  <h3 className="font-semibold text-green-900">Assign to Project, Brand, Factory & Fabric</h3>
                   <p className="text-sm text-green-700 mt-0.5">
                     Link this test to its source. Optional — you can also assign after saving.
                   </p>
+                </div>
+
+                {/* Project */}
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <SearchableSelect
+                    label="Project"
+                    options={projects}
+                    value={projectId}
+                    displayValue={projectName}
+                    onChange={(id, name) => { setProjectId(id); setProjectName(name); }}
+                    onCreateNew={(text) => { setCreatingProject(true); setNewProjectName(text); }}
+                    placeholder="Search projects..."
+                    createLabel="Project"
+                  />
+                  {creatingProject && (
+                    <div className="flex items-end gap-2 mt-3">
+                      <div className="flex-1">
+                        <label className="block text-sm font-medium text-slate-700 mb-1">New Project Name</label>
+                        <input
+                          type="text"
+                          value={newProjectName}
+                          onChange={(e) => setNewProjectName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              if (!newProjectName.trim() || projectSaving) return;
+                              setProjectSaving(true);
+                              fetch("/api/projects", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ name: newProjectName.trim(), brandId: brandId || null }),
+                              })
+                                .then(r => r.json())
+                                .then(d => {
+                                  if (d.ok && d.project) {
+                                    setProjectId(d.project.id);
+                                    setProjectName(d.project.name);
+                                    setProjects(prev => [...prev, { id: d.project.id, name: d.project.name }]);
+                                    setCreatingProject(false);
+                                    setNewProjectName("");
+                                  }
+                                })
+                                .finally(() => setProjectSaving(false));
+                            }
+                          }}
+                          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                          placeholder="e.g. Nike Dri-FIT 2026"
+                          autoFocus
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (!newProjectName.trim() || projectSaving) return;
+                          setProjectSaving(true);
+                          fetch("/api/projects", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ name: newProjectName.trim(), brandId: brandId || null }),
+                          })
+                            .then(r => r.json())
+                            .then(d => {
+                              if (d.ok && d.project) {
+                                setProjectId(d.project.id);
+                                setProjectName(d.project.name);
+                                setProjects(prev => [...prev, { id: d.project.id, name: d.project.name }]);
+                                setCreatingProject(false);
+                                setNewProjectName("");
+                              }
+                            })
+                            .finally(() => setProjectSaving(false));
+                        }}
+                        disabled={projectSaving || !newProjectName.trim()}
+                        className="px-3 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 disabled:opacity-50"
+                      >
+                        {projectSaving ? "..." : "Create"}
+                      </button>
+                      <button
+                        onClick={() => { setCreatingProject(false); setNewProjectName(""); }}
+                        className="px-3 py-2 text-sm text-slate-500 border border-slate-300 rounded-lg hover:bg-slate-50"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
