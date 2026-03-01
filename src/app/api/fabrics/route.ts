@@ -1,86 +1,77 @@
+// @ts-nocheck
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
 
-function asInt(v: string | null, d: number) {
-  const n = v ? Number(v) : d;
-  return Number.isFinite(n) ? Math.max(1, Math.floor(n)) : d;
-}
+const prisma = new PrismaClient();
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const url = new URL(req.url);
-    const page = asInt(url.searchParams.get("page"), 1);
-    const pageSize = asInt(url.searchParams.get("pageSize"), 25);
-    const skip = (page - 1) * pageSize;
-
-    const [total, fabrics] = await Promise.all([
-      prisma.fabric.count(),
-      prisma.fabric.findMany({
-        orderBy: { createdAt: "desc" },
-        skip,
-        take: pageSize,
-        include: {
-          contents: {
-            select: { material: true, percent: true },
-            orderBy: { material: "asc" },
-          },
-          submissions: {
-            select: {
-              fuzeFabricNumber: true,
-              customerFabricCode: true,
-              factoryFabricCode: true,
-              applicationMethod: true,
-              treatmentLocation: true,
-              applicationDate: true,
-            },
-            orderBy: { applicationDate: "desc" },
-            take: 1,
-          },
-        },
-      }),
-    ]);
-
-    // Shape each row so page.tsx gets `submission` (singular) not `submissions`
-    const items = fabrics.map((f) => {
-      const { submissions, ...rest } = f;
-      return { ...rest, submission: submissions[0] ?? null };
+    const fabrics = await prisma.fabric.findMany({
+      include: {
+        brand: { select: { id: true, name: true } },
+        factory: { select: { id: true, name: true } },
+        contents: true,
+        _count: { select: { submissions: true } },
+      },
+      orderBy: { fuzeNumber: "desc" },
     });
 
-    return NextResponse.json({ ok: true, page, pageSize, total, items });
+    const list = fabrics.map(f => ({
+      id: f.id,
+      fuzeNumber: f.fuzeNumber,
+      construction: f.construction,
+      color: f.color,
+      weightGsm: f.weightGsm,
+      yarnType: f.yarnType,
+      brand: f.brand?.name || null,
+      brandId: f.brandId,
+      factory: f.factory?.name || null,
+      factoryId: f.factoryId,
+      contents: f.contents.map(c => `${c.material} ${c.percent ? c.percent + "%" : ""}`).join(", "),
+      submissionCount: f._count.submissions,
+    }));
+
+    return NextResponse.json({ ok: true, fabrics: list, total: fabrics.length });
   } catch (e: any) {
-    return NextResponse.json(
-      { ok: false, error: e?.message || "unknown error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json().catch(() => ({}));
+    const body = await req.json();
+    const { fuzeNumber, customerCode, factoryCode, construction, color,
+      weightGsm, widthInches, yarnType, finishNote, note, brandId, factoryId, contents } = body;
 
-    // schema-safe: only set fields that exist on your Fabric model
-    const data: any = {};
-    if (typeof body.construction === "string") data.construction = body.construction;
-    if (typeof body.color === "string") data.color = body.color;
-    if (typeof body.widthInches === "number") data.widthInches = body.widthInches;
-    if (typeof body.weightGsm === "number") data.weightGsm = body.weightGsm;
-    if (body.raw !== undefined) data.raw = body.raw;
+    const fabric = await prisma.fabric.create({
+      data: {
+        fuzeNumber: fuzeNumber ? parseInt(fuzeNumber) : null,
+        customerCode: customerCode || null,
+        factoryCode: factoryCode || null,
+        construction: construction || null,
+        color: color || null,
+        weightGsm: weightGsm ? parseFloat(weightGsm) : null,
+        widthInches: widthInches ? parseFloat(widthInches) : null,
+        yarnType: yarnType || null,
+        finishNote: finishNote || null,
+        note: note || null,
+        brandId: brandId || null,
+        factoryId: factoryId || null,
+        ...(contents && contents.length > 0 && {
+          contents: {
+            create: contents.filter((c: any) => c.material).map((c: any) => ({
+              material: c.material,
+              percent: c.percent ? parseFloat(c.percent) : null,
+              rawText: c.rawText || null,
+            })),
+          },
+        }),
+      },
+    });
 
-    // minimal validation: require at least one meaningful field
-    if (Object.keys(data).length === 0) {
-      return NextResponse.json(
-        { ok: false, error: "No valid Fabric fields provided." },
-        { status: 400 }
-      );
-    }
-
-    const fabric = await prisma.fabric.create({ data });
-    return NextResponse.json({ ok: true, fabric }, { status: 201 });
+    return NextResponse.json({ ok: true, fabric });
   } catch (e: any) {
-    return NextResponse.json(
-      { ok: false, error: e?.message || "unknown error" },
-      { status: 500 }
-    );
+    if (e.code === "P2002") return NextResponse.json({ ok: false, error: "A fabric with this FUZE number already exists" }, { status: 409 });
+    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
 }

@@ -1,180 +1,165 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 
 export default function FabricDetailPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [fabric, setFabric] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [form, setForm] = useState<any>({});
 
   useEffect(() => {
-    if (!id) return;
-    fetch(`/api/fabrics/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.ok && data.item) {
-          setFabric(data.item);
-        } else {
-          setError("Fabric not found.");
-        }
-      })
-      .catch(() => setError("Failed to load fabric."));
+    fetch(`/api/fabrics/${id}`).then(r => r.json()).then(j => {
+      if (j.ok) {
+        setFabric(j.fabric);
+        const f = j.fabric;
+        setForm({
+          fuzeNumber: f.fuzeNumber || "", customerCode: f.customerCode || "",
+          factoryCode: f.factoryCode || "", construction: f.construction || "",
+          color: f.color || "", weightGsm: f.weightGsm || "", widthInches: f.widthInches || "",
+          yarnType: f.yarnType || "", finishNote: f.finishNote || "", note: f.note || "",
+        });
+      }
+    }).finally(() => setLoading(false));
   }, [id]);
 
-  if (error) return <div style={{ padding: 32, color: "red" }}>{error}</div>;
-  if (!fabric) return <div style={{ padding: 32 }}>Loading...</div>;
+  const handleSave = async () => {
+    setSaving(true); setError(""); setSuccess("");
+    try {
+      const res = await fetch(`/api/fabrics/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      const j = await res.json();
+      if (j.ok) { setFabric({ ...fabric, ...j.fabric }); setEditing(false); setSuccess("Fabric updated"); setTimeout(() => setSuccess(""), 3000); }
+      else setError(j.error);
+    } catch (e: any) { setError(e.message); } finally { setSaving(false); }
+  };
 
-  const contentsStr = fabric.contents
-    ?.map((c: any) => `${c.material}${c.percent ? ` ${c.percent}%` : ""}`)
-    .join(", ");
+  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">Loading fabric...</div>;
+  if (!fabric) return <div className="flex items-center justify-center h-64 text-red-400">Fabric not found</div>;
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px 16px", fontFamily: "sans-serif" }}>
-      {/* Back */}
-      <Link href="/" style={{ color: "#0066cc", textDecoration: "none", fontSize: 14 }}>
-        ← Back to list
-      </Link>
-
-      {/* Fabric Header */}
-      <h1 style={{ marginTop: 16, marginBottom: 4, fontSize: 24, fontWeight: 700 }}>
-        Fabric Detail
-      </h1>
-
-      <div style={{ background: "#f8f9fa", border: "1px solid #dee2e6", borderRadius: 8, padding: 20, marginTop: 16, marginBottom: 32 }}>
-        <table style={{ borderCollapse: "collapse", width: "100%" }}>
-          <tbody>
-            {[
-              ["Construction", fabric.construction],
-              ["Color", fabric.color],
-              ["Width (inches)", fabric.widthInches],
-              ["Weight (GSM)", fabric.weightGsm],
-              ["Contents", contentsStr || "—"],
-            ].map(([label, value]) => (
-              <tr key={label as string}>
-                <td style={{ padding: "6px 16px 6px 0", fontWeight: 600, color: "#555", width: 160, verticalAlign: "top" }}>
-                  {label}
-                </td>
-                <td style={{ padding: "6px 0", color: "#222" }}>
-                  {(value as any) ?? "—"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="max-w-[1200px] mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <button onClick={() => router.push("/fabrics")} className="text-sm text-blue-600 hover:underline mb-1 block">&larr; Back to Fabrics</button>
+          <h1 className="text-2xl font-black text-slate-900">FUZE {fabric.fuzeNumber || "—"}</h1>
+          <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
+            {fabric.construction && <span>{fabric.construction}</span>}
+            {fabric.brand && <span>· {fabric.brand.name}</span>}
+            {fabric.factory && <span>· {fabric.factory.name}</span>}
+          </div>
+        </div>
+        <div className="flex gap-2">
+          {!editing ? (
+            <button onClick={() => setEditing(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">Edit Fabric</button>
+          ) : (
+            <>
+              <button onClick={() => setEditing(false)} className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold">Cancel</button>
+              <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold disabled:opacity-50">{saving ? "Saving..." : "Save"}</button>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Submissions */}
-      <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
-        Submissions ({fabric.submissions?.length ?? 0})
-      </h2>
+      {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
+      {success && <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{success}</div>}
 
-      {(!fabric.submissions || fabric.submissions.length === 0) && (
-        <p style={{ color: "#666" }}>No submissions yet.</p>
-      )}
-
-      {fabric.submissions?.map((sub: any) => (
-        <div key={sub.id} style={{ border: "1px solid #dee2e6", borderRadius: 8, marginBottom: 24, overflow: "hidden" }}>
-          {/* Submission Header */}
-          <div style={{ background: "#343a40", color: "#fff", padding: "12px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontWeight: 700, fontSize: 16 }}>
-              {sub.fuzeFabricNumber ? `FUZE ${sub.fuzeFabricNumber}` : "Submission"}
-            </span>
-            <span style={{ fontSize: 13, opacity: 0.8 }}>
-              {sub.brand?.name ?? ""}{sub.factory?.name ? ` · ${sub.factory.name}` : ""}
-            </span>
-          </div>
-
-          {/* Submission Details */}
-          <div style={{ padding: "16px 20px", background: "#fff" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 24px", marginBottom: 16 }}>
-              {[
-                ["Customer Code", sub.customerFabricCode],
-                ["Factory Code", sub.factoryFabricCode],
-                ["Application", sub.applicationMethod],
-                ["App Date", sub.applicationDate ? new Date(sub.applicationDate).toLocaleDateString() : null],
-                ["Wash Target", sub.washTarget ? `${sub.washTarget} washes` : null],
-                ["Program", sub.programName],
-                ["Category", sub.category],
-                ["Treatment Location", sub.treatmentLocation],
-              ].map(([label, value]) => (
-                <div key={label as string}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: "#888", textTransform: "uppercase" }}>{label}</span>
-                  <div style={{ fontSize: 14, color: "#222", marginTop: 2 }}>{(value as any) ?? "—"}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Status Flags */}
-            <div style={{ display: "flex", gap: 24, flexWrap: "wrap", paddingTop: 12, borderTop: "1px solid #eee", fontSize: 13 }}>
-              <div>
-                <strong>ICP:</strong>{" "}
-                {sub.icpSent ? "✓ Sent" : "Not sent"} →{" "}
-                {sub.icpReceived ? "✓ Received" : "Pending"} →{" "}
-                <PassBadge value={sub.icpPassed} />
+      <div className="grid grid-cols-3 gap-6">
+        {/* Left: Properties */}
+        <div className="col-span-2 bg-white rounded-xl p-6 shadow-sm border">
+          <h2 className="text-lg font-bold text-slate-900 mb-4">Fabric Properties</h2>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              ["FUZE Number","fuzeNumber"],["Customer Code","customerCode"],["Factory Code","factoryCode"],
+              ["Construction","construction"],["Color","color"],["Weight (GSM)","weightGsm"],
+              ["Width (in)","widthInches"],["Yarn Type","yarnType"],["Finish Note","finishNote"],
+            ].map(([label, field]) => (
+              <div key={field}>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{label}</label>
+                {editing ? (
+                  <input type={field === "weightGsm" || field === "widthInches" || field === "fuzeNumber" ? "number" : "text"}
+                    value={form[field] || ""} onChange={e => setForm({ ...form, [field]: e.target.value })} step="0.1"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                ) : (
+                  <div className="text-sm text-slate-900">{fabric[field] || "—"}</div>
+                )}
               </div>
-              <div>
-                <strong>AB:</strong>{" "}
-                {sub.abSent ? "✓ Sent" : "Not sent"} →{" "}
-                {sub.abReceived ? "✓ Received" : "Pending"} →{" "}
-                <PassBadge value={sub.abPassed} />
-              </div>
-            </div>
+            ))}
           </div>
-
-          {/* Test Runs */}
-          {sub.testRuns?.length > 0 && (
-            <div style={{ borderTop: "1px solid #dee2e6", padding: "16px 20px", background: "#fafafa" }}>
-              <h4 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 700, color: "#444" }}>
-                Test Runs ({sub.testRuns.length})
-              </h4>
-              {sub.testRuns.map((run: any) => (
-                <div key={run.id} style={{ background: "#fff", border: "1px solid #e9ecef", borderRadius: 6, padding: 14, marginBottom: 10 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                    <span style={{ fontWeight: 600, fontSize: 13 }}>{run.testType}</span>
-                    <span style={{ fontSize: 12, color: "#666" }}>
-                      {run.lab?.name ?? ""}
-                      {run.testDate ? ` · ${new Date(run.testDate).toLocaleDateString()}` : ""}
-                      {run.washCount != null ? ` · ${run.washCount} washes` : ""}
-                    </span>
-                  </div>
-                  {run.icpResult && (
-                    <div style={{ fontSize: 13 }}>
-                      <strong>ICP:</strong> Ag = {run.icpResult.agValue ?? "—"} {run.icpResult.unit ?? ""}
-                      {run.icpResult.auValue != null ? ` · Au = ${run.icpResult.auValue} ${run.icpResult.unit ?? ""}` : ""}
-                    </div>
-                  )}
-                  {run.abResult && (
-                    <div style={{ fontSize: 13, marginTop: 4 }}>
-                      <strong>AB:</strong> {run.abResult.organism1 ?? ""}: {run.abResult.result1 ?? "—"}
-                      {run.abResult.organism2 ? ` · ${run.abResult.organism2}: ${run.abResult.result2 ?? "—"}` : ""}
-                      {" · "}<PassBadge value={run.abResult.pass} />
-                    </div>
-                  )}
-                  {run.testReportNumber && (
-                    <div style={{ fontSize: 12, color: "#888", marginTop: 6 }}>
-                      Report: {run.testReportNumber}{run.testMethodStd ? ` · Method: ${run.testMethodStd}` : ""}
-                    </div>
-                  )}
-                </div>
-              ))}
+          {(editing || fabric.note) && (
+            <div className="mt-4">
+              <label className="block text-xs font-semibold text-slate-500 mb-1">Notes</label>
+              {editing ? (
+                <textarea value={form.note || ""} onChange={e => setForm({ ...form, note: e.target.value })} rows={2}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              ) : (
+                <div className="text-sm text-slate-700">{fabric.note || "—"}</div>
+              )}
             </div>
           )}
         </div>
-      ))}
-    </div>
-  );
-}
 
-function PassBadge({ value }: { value: boolean | null }) {
-  if (value === null || value === undefined) return <span style={{ color: "#999" }}>—</span>;
-  return (
-    <span style={{
-      padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700,
-      background: value ? "#d4edda" : "#f8d7da",
-      color: value ? "#155724" : "#721c24",
-    }}>
-      {value ? "PASS" : "FAIL"}
-    </span>
+        {/* Right: Content & relations */}
+        <div className="space-y-4">
+          {/* Content */}
+          <div className="bg-white rounded-xl p-4 shadow-sm border">
+            <h3 className="text-sm font-bold text-slate-900 mb-3">Fabric Content</h3>
+            {fabric.contents.length === 0 ? <p className="text-xs text-slate-400">No content defined</p> : (
+              <div className="space-y-2">
+                {fabric.contents.map((c: any) => (
+                  <div key={c.id} className="flex justify-between items-center">
+                    <span className="text-sm text-slate-700">{c.material}</span>
+                    <span className="text-sm font-bold text-slate-900">{c.percent ? `${c.percent}%` : ""}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Brand */}
+          {fabric.brand && (
+            <div className="bg-white rounded-xl p-4 shadow-sm border">
+              <h3 className="text-sm font-bold text-slate-900 mb-2">Brand</h3>
+              <div onClick={() => router.push(`/brands/${fabric.brand.id}`)} className="text-blue-600 hover:underline text-sm cursor-pointer">{fabric.brand.name}</div>
+            </div>
+          )}
+
+          {/* Factory */}
+          {fabric.factory && (
+            <div className="bg-white rounded-xl p-4 shadow-sm border">
+              <h3 className="text-sm font-bold text-slate-900 mb-2">Factory</h3>
+              <div onClick={() => router.push(`/factories/${fabric.factory.id}`)} className="text-blue-600 hover:underline text-sm cursor-pointer">{fabric.factory.name}</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Submissions */}
+      {fabric.submissions.length > 0 && (
+        <div className="bg-white rounded-xl p-6 shadow-sm border mt-6">
+          <h2 className="text-lg font-bold text-slate-900 mb-4">Test Submissions ({fabric.submissions.length})</h2>
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-xs text-slate-500 border-b">
+              <th className="pb-2">Fabric #</th><th className="pb-2">Status</th><th className="pb-2">Test Status</th><th className="pb-2">Tests</th><th className="pb-2">Date</th>
+            </tr></thead>
+            <tbody>
+              {fabric.submissions.map((s: any) => (
+                <tr key={s.id} className="border-b border-slate-100">
+                  <td className="py-2 font-bold">FUZE {s.fuzeFabricNumber}</td>
+                  <td className="py-2">{s.status || "—"}</td>
+                  <td className="py-2">{s.testStatus || "—"}</td>
+                  <td className="py-2">{s.testRuns.length} tests</td>
+                  <td className="py-2 text-slate-500">{s.createdAt ? new Date(s.createdAt).toLocaleDateString() : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 }
