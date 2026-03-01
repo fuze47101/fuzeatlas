@@ -4,8 +4,9 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
   try {
+    const params = await props.params;
     const sow = await prisma.sOW.findUnique({
       where: { id: params.id },
       include: {
@@ -22,8 +23,9 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, props: { params: Promise<{ id: string }> }) {
   try {
+    const params = await props.params;
     const body = await req.json();
     const data: any = {};
 
@@ -39,8 +41,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, props: { params: Promise<{ id: string }> }) {
   try {
+    const params = await props.params;
     // Delete milestones first, then SOW
     await prisma.sOWMilestone.deleteMany({ where: { sowId: params.id } });
     await prisma.sOW.delete({ where: { id: params.id } });
