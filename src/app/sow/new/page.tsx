@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const FINANCIAL_OPTIONS = [
@@ -10,6 +10,14 @@ const FINANCIAL_OPTIONS = [
 ];
 
 export default function NewSOWPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-slate-400">Loading...</div>}>
+      <NewSOWPageInner />
+    </Suspense>
+  );
+}
+
+function NewSOWPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const prefillBrandId = searchParams.get("brandId") || "";
