@@ -55,30 +55,51 @@ function parseTestReport(text: string): ParsedTestData {
   // ── Extract report number ──────────────────────────────
   let testReportNumber: string | null = null;
   const reportPatterns = [
+    // Lab-specific ID patterns (most specific first)
+    /CTLA\s*ID[.:\s]*([A-Z0-9][\w\-\/]*)/i,
+    /(?:TWN|SGS|ITS|NOA)\s*(?:report|ref|id|no)[.:\s]*([A-Z0-9][\w\-\/]+)/i,
+    // Generic patterns
     /report\s*(?:no|number|#|num)[.:\s]*([A-Z0-9][\w\-\/]+)/i,
     /test\s*report[.:\s]*([A-Z0-9][\w\-\/]+)/i,
     /report\s*id[.:\s]*([A-Z0-9][\w\-\/]+)/i,
     /certificate\s*(?:no|number|#)[.:\s]*([A-Z0-9][\w\-\/]+)/i,
+    /(?:COA|coa)[_\-\s]*(\d{4,})/i,
     /ref(?:erence)?[.:\s]*([A-Z0-9][\w\-\/]+)/i,
   ];
   for (const pat of reportPatterns) {
     const m = text.match(pat);
     if (m) { testReportNumber = m[1]; break; }
   }
+  // If still no report number, try extracting from the filename
+  // (the upload page can pass the filename as context later)
 
   // ── Extract lab name ───────────────────────────────────
+  // Order matters: longer / more specific names first to avoid
+  // false positives (e.g. "UL" matching "result", "should", etc.)
   let labName: string | null = null;
   const knownLabs = [
-    "SGS", "Intertek", "Bureau Veritas", "TÜV", "TUV", "Eurofins",
-    "NSF", "UL", "AATCC", "Hohenstein", "OEKO-TEX", "Testex",
-    "NOA", "ITS", "CTC", "ACTS", "Vartest", "Nelson Labs",
-    "Antimicrobial Test Laboratories", "ATL", "Silliker",
-    "EMSL Analytical", "Microchem Laboratory"
+    // Multi-word labs first
+    "Antimicrobial Test Laboratories", "EMSL Analytical",
+    "Microchem Laboratory", "Nelson Labs", "Bureau Veritas",
+    "Contract Testing Laboratories", "CTLA",
+    // Medium-length names
+    "Intertek", "Eurofins", "Hohenstein", "OEKO-TEX", "Testex",
+    "Vartest", "Silliker",
+    // Short acronyms — use word-boundary matching to avoid false positives
+    "SGS", "TÜV", "TUV", "NSF", "AATCC",
+    "NOA", "ITS", "CTC", "ACTS", "ATL",
   ];
+  // Short labs (<=3 chars) need word-boundary matching to avoid false hits
   for (const lab of knownLabs) {
-    if (text.toLowerCase().includes(lab.toLowerCase())) {
-      labName = lab;
-      break;
+    if (lab.length <= 3) {
+      // Use word boundary regex so "UL" doesn't match "result"
+      const re = new RegExp(`\\b${lab}\\b`, "i");
+      if (re.test(text)) { labName = lab; break; }
+    } else {
+      if (text.toLowerCase().includes(lab.toLowerCase())) {
+        labName = lab;
+        break;
+      }
     }
   }
 
