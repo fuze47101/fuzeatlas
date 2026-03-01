@@ -7,10 +7,10 @@ import { prisma } from "@/lib/prisma";
    by creating or finding a FabricSubmission bridge record.      */
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
     const { brandId, factoryId, fabricId } = body;
 
