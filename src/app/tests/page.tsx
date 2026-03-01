@@ -21,7 +21,7 @@ interface TestRun {
 
 interface TestData {
   total: number;
-  typeBreakdown: { testType: string; _count: { _all: number } }[];
+  typeBreakdown: { type: string; count: number }[];
   runs: TestRun[];
   resultCounts: { icp: number; fungal: number; odor: number; antibacterial: number };
 }
@@ -111,17 +111,22 @@ export default function TestsPage() {
       {/* Stats cards — scroll horizontally on mobile */}
       <div className="flex gap-3 mb-6 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 lg:grid-cols-6">
         {data?.typeBreakdown.map((t) => {
-          const colors = TYPE_COLORS[t.testType] || TYPE_COLORS.OTHER;
+          const colors = TYPE_COLORS[t.type] || TYPE_COLORS.OTHER;
           return (
             <button
-              key={t.testType}
-              onClick={() => setFilterType(filterType === t.testType ? "" : t.testType)}
-              className={`flex-shrink-0 p-3 rounded-xl border text-left transition-all min-w[120px] sm:min-w-0 ${filterType === t.testType ? `${colors.bg} border-current ${colors.text} ring-2 ring-current/20` : "bg-white border-slate-200 hover:border-slate-300"}`}>
+              key={t.type}
+              onClick={() => setFilterType(filterType === t.type ? "" : t.type)}
+              className={`flex-shrink-0 p-3 rounded-xl border text-left transition-all min-w-[120px] sm:min-w-0 ${
+                filterType === t.type
+                  ? `${colors.bg} border-current ${colors.text} ring-2 ring-current/20`
+                  : "bg-white border-slate-200 hover:border-slate-300"
+              }`}
+            >
               <div className="flex items-center gap-2 mb-1">
                 <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
-                <span className="text-xs font-medium uppercase tracking-wide">{t.testType}</span>
+                <span className="text-xs font-medium uppercase tracking-wide">{t.type}</span>
               </div>
-              <span className="text-lg font-bold">{t._count._all}</span>
+              <span className="text-lg font-bold">{t.count}</span>
             </button>
           );
         })}
