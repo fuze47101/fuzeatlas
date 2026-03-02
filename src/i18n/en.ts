@@ -9,6 +9,7 @@ const en = {
     testResults: "Test Results",
     labDirectory: "Lab Directory",
     sowGovernance: "SOW Governance",
+    weeklySummary: "Weekly Summary",
     ingestCsv: "Ingest CSV",
     testUpload: "Test Upload",
     subtitle: "Textile Intelligence Platform",

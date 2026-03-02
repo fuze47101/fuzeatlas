@@ -11,6 +11,7 @@ const zhTW: Translations = {
     testResults: "測試結果",
     labDirectory: "實驗室目錄",
     sowGovernance: "SOW 治理",
+    weeklySummary: "每週摘要",
     ingestCsv: "匯入 CSV",
     testUpload: "測試上傳",
     subtitle: "紡織智慧平台",

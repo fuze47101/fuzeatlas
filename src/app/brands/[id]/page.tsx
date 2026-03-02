@@ -301,25 +301,7 @@ export default function BrandDetailPage() {
       )}
 
       {tab === "contacts" && (
-        <div className="bg-white rounded-xl p-6 shadow-sm border">
-          {brand.contacts.length === 0 ? (
-            <p className="text-slate-400 text-sm text-center py-8">{t.contacts.noContacts}</p>
-          ) : (
-            <div className="space-y-3">
-              {brand.contacts.map((ct: any) => (
-                <div key={ct.id} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm">
-                    {(ct.firstName || ct.name || "?")[0]}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm text-slate-900">{ct.firstName} {ct.lastName} {ct.title && `(${ct.title})`}</div>
-                    <div className="text-xs text-slate-500">{ct.email} {ct.phone && `· ${ct.phone}`}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ContactsTab brandId={id as string} contacts={brand.contacts} onUpdate={(contacts: any[]) => setBrand({ ...brand, contacts, _count: { ...brand._count, contacts: contacts.length } })} t={t} />
       )}
 
       {tab === "products" && (
@@ -761,6 +743,160 @@ export default function BrandDetailPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── ContactsTab — inline CRUD for contacts ──────────── */
+function ContactsTab({ brandId, contacts: initial, onUpdate, t }: { brandId: string; contacts: any[]; onUpdate: (c: any[]) => void; t: any }) {
+  const [contacts, setContacts] = useState(initial);
+  const [showAdd, setShowAdd] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const empty = { firstName: "", lastName: "", title: "", email: "", phone: "" };
+  const [form, setForm] = useState(empty);
+
+  const sync = (updated: any[]) => { setContacts(updated); onUpdate(updated); };
+
+  const handleAdd = async () => {
+    if (!form.firstName.trim() && !form.email.trim()) return;
+    setSaving(true); setError("");
+    try {
+      const res = await fetch("/api/contacts", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, brandId }),
+      });
+      const j = await res.json();
+      if (j.ok) { sync([...contacts, j.contact]); setForm(empty); setShowAdd(false); }
+      else setError(j.error);
+    } catch (e: any) { setError(e.message); } finally { setSaving(false); }
+  };
+
+  const handleUpdate = async (id: string) => {
+    setSaving(true); setError("");
+    try {
+      const res = await fetch(`/api/contacts/${id}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const j = await res.json();
+      if (j.ok) { sync(contacts.map(c => c.id === id ? j.contact : c)); setEditingId(null); }
+      else setError(j.error);
+    } catch (e: any) { setError(e.message); } finally { setSaving(false); }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this contact?")) return;
+    try {
+      const res = await fetch(`/api/contacts/${id}`, { method: "DELETE" });
+      const j = await res.json();
+      if (j.ok) sync(contacts.filter(c => c.id !== id));
+      else setError(j.error);
+    } catch (e: any) { setError(e.message); }
+  };
+
+  const startEdit = (ct: any) => {
+    setEditingId(ct.id);
+    setForm({ firstName: ct.firstName || "", lastName: ct.lastName || "", title: ct.title || "", email: ct.email || "", phone: ct.phone || "" });
+  };
+
+  return (
+    <div className="bg-white rounded-xl p-6 shadow-sm border">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="font-bold text-slate-900">{t.contacts.title}</h3>
+        <button onClick={() => { setShowAdd(!showAdd); setForm(empty); setEditingId(null); }}
+          className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700">
+          + {t.contacts.addContact}
+        </button>
+      </div>
+
+      {error && <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs">{error}</div>}
+
+      {/* Add form */}
+      {showAdd && (
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">{t.contacts.firstName}</label>
+              <input type="text" value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" autoFocus />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">{t.contacts.lastName}</label>
+              <input type="text" value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">{t.contacts.jobTitle}</label>
+              <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">{t.contacts.email}</label>
+              <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">{t.contacts.phone}</label>
+              <input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={handleAdd} disabled={saving}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50">
+              {saving ? t.common.saving : t.contacts.addContact}
+            </button>
+            <button onClick={() => setShowAdd(false)}
+              className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">{t.common.cancel}</button>
+          </div>
+        </div>
+      )}
+
+      {/* Contact list */}
+      {contacts.length === 0 && !showAdd ? (
+        <p className="text-slate-400 text-sm text-center py-8">{t.contacts.noContacts}</p>
+      ) : (
+        <div className="space-y-2">
+          {contacts.map((ct: any) => (
+            editingId === ct.id ? (
+              <div key={ct.id} className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
+                  <input type="text" value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })}
+                    className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="First name" />
+                  <input type="text" value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })}
+                    className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Last name" />
+                  <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
+                    className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Title" />
+                  <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
+                    className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Email" />
+                  <input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
+                    className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Phone" />
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => handleUpdate(ct.id)} className="text-xs text-green-600 hover:underline font-semibold">{saving ? "..." : t.common.save}</button>
+                  <button onClick={() => setEditingId(null)} className="text-xs text-slate-500 hover:underline">{t.common.cancel}</button>
+                </div>
+              </div>
+            ) : (
+              <div key={ct.id} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg group">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm flex-shrink-0">
+                  {(ct.firstName || ct.name || "?")[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm text-slate-900">{ct.firstName} {ct.lastName} {ct.title && <span className="text-slate-500 font-normal">({ct.title})</span>}</div>
+                  <div className="text-xs text-slate-500 truncate">{ct.email}{ct.phone && ` · ${ct.phone}`}</div>
+                </div>
+                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => startEdit(ct)} className="text-xs text-blue-600 hover:underline">{t.common.edit}</button>
+                  <button onClick={() => handleDelete(ct.id)} className="text-xs text-red-500 hover:underline">{t.common.delete}</button>
+                </div>
+              </div>
+            )
+          ))}
         </div>
       )}
     </div>

@@ -11,6 +11,7 @@ const zhCN: Translations = {
     testResults: "测试结果",
     labDirectory: "实验室目录",
     sowGovernance: "SOW 治理",
+    weeklySummary: "每周摘要",
     ingestCsv: "导入 CSV",
     testUpload: "测试上传",
     subtitle: "纺织智能平台",
