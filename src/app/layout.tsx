@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
+import { AuthProvider } from "@/lib/AuthContext";
 import I18nProvider from "@/i18n/I18nProvider";
+import AuthLayout from "@/components/AuthLayout";
 
 export const metadata: Metadata = {
   title: "FUZE Atlas",
@@ -19,14 +20,11 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </head>
       <body className="bg-slate-50 text-slate-900 antialiased">
-        <I18nProvider>
-          <div className="flex min-h-screen">
-            <Sidebar />
-            <main className="flex-1 min-w-0 pt-14 lg:pt-0">
-              {children}
-            </main>
-          </div>
-        </I18nProvider>
+        <AuthProvider>
+          <I18nProvider>
+            <AuthLayout>{children}</AuthLayout>
+          </I18nProvider>
+        </AuthProvider>
       </body>
     </html>
   );

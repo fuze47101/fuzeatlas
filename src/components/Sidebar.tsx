@@ -5,12 +5,28 @@ import { useState, useEffect } from "react";
 import FuzeLogo from "./FuzeLogo";
 import { useI18n, LOCALES } from "@/i18n";
 import type { Locale } from "@/i18n";
+import { useAuth } from "@/lib/AuthContext";
+
+const ROLE_LABELS: Record<string, string> = {
+  ADMIN: "Admin",
+  EMPLOYEE: "Employee",
+  SALES_MANAGER: "Sales Manager",
+  SALES_REP: "Sales Rep",
+  FABRIC_MANAGER: "Fabric Manager",
+  TESTING_MANAGER: "Testing Manager",
+  FACTORY_MANAGER: "Factory Manager",
+  FACTORY_USER: "Factory",
+  BRAND_USER: "Brand",
+  DISTRIBUTOR_USER: "Distributor",
+  PUBLIC: "Public",
+};
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const { locale, setLocale, t } = useI18n();
+  const { user, logout } = useAuth();
 
   const NAV = [
     { href: "/dashboard", label: t.nav.dashboard, icon: "📊" },
@@ -22,6 +38,11 @@ export default function Sidebar() {
     { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
     { href: "/reports", label: t.nav.weeklySummary || "Weekly Summary", icon: "📈" },
   ];
+
+  // Admin-only nav items
+  if (user?.role === "ADMIN" || user?.role === "EMPLOYEE") {
+    NAV.push({ href: "/settings/users", label: "User Management", icon: "👥" });
+  }
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
@@ -138,6 +159,30 @@ export default function Sidebar() {
             </div>
           )}
         </div>
+
+        {/* User section */}
+        {user && (
+          <div className="px-3 pb-2">
+            <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
+              <div className="w-8 h-8 rounded-full bg-[#00b4c3] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                {user.name?.charAt(0)?.toUpperCase() || "?"}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-white truncate">{user.name}</p>
+                <p className="text-[10px] text-slate-400">{ROLE_LABELS[user.role] || user.role}</p>
+              </div>
+              <button
+                onClick={logout}
+                className="p-1.5 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition-colors flex-shrink-0"
+                title="Sign out"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-slate-800">
