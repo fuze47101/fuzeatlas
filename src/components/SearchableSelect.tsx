@@ -34,11 +34,11 @@ export default function SearchableSelect({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Filter options by search text
+  // Filter options by search text (String() guards against non-string names)
   const filtered = search.trim()
     ? options.filter((o) =>
-        o.name.toLowerCase().includes(search.toLowerCase()) ||
-        (o.detail && o.detail.toLowerCase().includes(search.toLowerCase()))
+        String(o.name).toLowerCase().includes(search.toLowerCase()) ||
+        (o.detail && String(o.detail).toLowerCase().includes(search.toLowerCase()))
       )
     : options;
 
