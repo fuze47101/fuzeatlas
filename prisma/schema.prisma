@@ -557,6 +557,14 @@ model TestRun {
 
   raw Json?
 
+  // Multi-test PDF support
+  testNumberInReport Int?      // Which test in a multi-test report (1, 2, ...)
+
+  // AI review
+  aiReviewData  Json?          // Merged anomaly review from dual-AI
+  aiReviewDate  DateTime?
+  aiReviewNotes String?        // Human-editable notes from AI flags
+
   icpResult    IcpResult?
   abResult     AntibacterialResult?
   fungalResult FungalResult?
@@ -594,6 +602,7 @@ model AntibacterialResult {
   testRunId String  @unique
   testRun   TestRun @relation(fields: [testRunId], references: [id])
 
+  // Legacy fields (kept for backward compat with CSV imports)
   organism1    String?
   organism2    String?
   result1      Float?
@@ -603,6 +612,32 @@ model AntibacterialResult {
   result1Raw   String?
   result2Raw   String?
   pass         Boolean?
+
+  // ── Rich fields for ITS-style reports ──────────────────
+  organism        String?   // "Staphylococcus aureus" or "Escherichia coli"
+  strainNumber    String?   // "ATCC 6538" or "ATCC 25922"
+  testMethodStd   String?   // "AATCC TM100-2019", "JIS L 1902:2015", "ASTM E2149-20"
+  brothMedia      String?   // "Cation Adjusted Mueller Hinton Broth"
+  surfactant      String?   // "0.05% Triton X-100"
+  sterilization   String?   // "UV Sterilization" / "No Sterilization"
+  contactTime     String?   // "24 Hours"
+  incubationTemp  String?   // "37±2°C" / "35±2°C"
+  agarMedium      String?   // "Nutrient Agar" / "Plate Count Agar"
+
+  // Numeric results (method-dependent)
+  inoculumCFU      Float?   // Starting inoculum concentration (CFU/mL)
+  controlCFU       Float?   // Control bacteria after incubation
+  treatedCFU       Float?   // Treated bacteria after incubation
+  percentReduction Float?   // For AATCC TM100 & ASTM E2149
+  growthValue      Float?   // F value (log growth)
+  activityValue    Float?   // JIS L 1902 "A" value
+
+  // Method-specific pass/fail
+  methodPass       Boolean? // Per method thresholds
+  methodPassReason String?  // "A=-0.2, requires A>=2.0 for Effect"
+
+  // All extracted data as JSON (preserves everything the parser found)
+  rawExtracted     Json?
 }
 
 model FungalResult {

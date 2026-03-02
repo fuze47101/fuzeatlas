@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 /* ── POST /api/tests/confirm ───────────────────────────────────
    Accepts reviewed test data and creates TestRun + result records.
+   Supports both legacy flat fields and rich ITS antibacterial fields.
    Optionally links to Brand/Factory/Fabric via FabricSubmission.  */
 export async function POST(req: Request) {
   try {
@@ -24,12 +25,34 @@ export async function POST(req: Request) {
       factoryId,
       fabricId,
       projectId,
-      // Antibacterial
+      // Legacy Antibacterial
       organism1,
       organism2,
       result1,
       result2,
       abPass,
+      // Rich Antibacterial (ITS parser)
+      testNumberInReport,
+      organism,
+      strainNumber,
+      brothMedia,
+      surfactant,
+      sterilization,
+      contactTime,
+      incubationTemp,
+      agarMedium,
+      inoculumCFU,
+      controlCFU,
+      treatedCFU,
+      percentReduction,
+      growthValue,
+      activityValue,
+      methodPass,
+      methodPassReason,
+      rawExtracted,
+      // AI review
+      aiReviewData,
+      aiReviewNotes,
       // ICP
       agValue,
       auValue,
@@ -74,7 +97,6 @@ export async function POST(req: Request) {
     // Resolve FabricSubmission if brand/factory/fabric provided
     let resolvedSubmissionId = submissionId || null;
     if (!resolvedSubmissionId && (brandId || factoryId || fabricId)) {
-      // Try to find existing submission with same combo
       const where: any = {};
       if (brandId) where.brandId = brandId;
       else where.brandId = null;
@@ -95,42 +117,76 @@ export async function POST(req: Request) {
     }
 
     // Create TestRun
-    const testRun = await prisma.testRun.create({
-      data: {
-        testType,
-        testReportNumber: testReportNumber || null,
-        testMethodStd: testMethodStd || null,
-        testMethodRaw: testMethodRaw || testMethodStd || null,
-        testDate: parsedDate,
-        washCount: washCount ? parseInt(String(washCount), 10) : null,
-        machineType: machineType || null,
-        testedMetal: testedMetal || null,
-        labId,
-        submissionId: resolvedSubmissionId,
-        projectId: projectId || null,
-        // Link document
-        documents: documentId
-          ? { connect: { id: documentId } }
-          : undefined,
-      },
-    });
+    const testRunData: any = {
+      testType,
+      testReportNumber: testReportNumber || null,
+      testMethodStd: testMethodStd || null,
+      testMethodRaw: testMethodRaw || testMethodStd || null,
+      testDate: parsedDate,
+      washCount: washCount ? parseInt(String(washCount), 10) : null,
+      machineType: machineType || null,
+      testedMetal: testedMetal || null,
+      labId,
+      submissionId: resolvedSubmissionId,
+      projectId: projectId || null,
+      // Rich fields
+      testNumberInReport: testNumberInReport ? parseInt(String(testNumberInReport), 10) : null,
+      aiReviewData: aiReviewData || null,
+      aiReviewDate: aiReviewData ? new Date() : null,
+      aiReviewNotes: aiReviewNotes || null,
+      // Link document
+      documents: documentId
+        ? { connect: { id: documentId } }
+        : undefined,
+    };
+
+    const testRun = await prisma.testRun.create({ data: testRunData });
 
     // Create type-specific result
-    if (testType === "ANTIBACTERIAL" && (organism1 || organism2 || result1 || result2)) {
-      await prisma.antibacterialResult.create({
-        data: {
-          testRunId: testRun.id,
-          organism1: organism1 || null,
-          organism2: organism2 || null,
-          result1: result1 ? parseFloat(String(result1)) : null,
-          result2: result2 ? parseFloat(String(result2)) : null,
-          organism1Raw: organism1 || null,
-          organism2Raw: organism2 || null,
-          result1Raw: result1 ? String(result1) : null,
-          result2Raw: result2 ? String(result2) : null,
-          pass: abPass != null ? Boolean(abPass) : overallPass != null ? Boolean(overallPass) : null,
-        },
-      });
+    if (testType === "ANTIBACTERIAL") {
+      // Check if we have rich ITS data or legacy flat data
+      const hasRichData = organism || strainNumber || brothMedia || inoculumCFU != null || activityValue != null;
+
+      const abData: any = {
+        testRunId: testRun.id,
+        // Legacy fields (always populated for backward compat)
+        organism1: organism || organism1 || null,
+        organism2: organism2 || null,
+        result1: percentReduction != null ? percentReduction : (result1 ? parseFloat(String(result1)) : null),
+        result2: result2 ? parseFloat(String(result2)) : null,
+        organism1Raw: organism || organism1 || null,
+        organism2Raw: organism2 || null,
+        result1Raw: percentReduction != null ? String(percentReduction) : (result1 ? String(result1) : null),
+        result2Raw: result2 ? String(result2) : null,
+        pass: methodPass != null ? Boolean(methodPass)
+            : abPass != null ? Boolean(abPass)
+            : overallPass != null ? Boolean(overallPass)
+            : null,
+      };
+
+      // Rich fields (from ITS parser)
+      if (hasRichData) {
+        abData.organism = organism || null;
+        abData.strainNumber = strainNumber || null;
+        abData.testMethodStd = testMethodStd || null;
+        abData.brothMedia = brothMedia || null;
+        abData.surfactant = surfactant || null;
+        abData.sterilization = sterilization || null;
+        abData.contactTime = contactTime || null;
+        abData.incubationTemp = incubationTemp || null;
+        abData.agarMedium = agarMedium || null;
+        abData.inoculumCFU = inoculumCFU != null ? parseFloat(String(inoculumCFU)) : null;
+        abData.controlCFU = controlCFU != null ? parseFloat(String(controlCFU)) : null;
+        abData.treatedCFU = treatedCFU != null ? parseFloat(String(treatedCFU)) : null;
+        abData.percentReduction = percentReduction != null ? parseFloat(String(percentReduction)) : null;
+        abData.growthValue = growthValue != null ? parseFloat(String(growthValue)) : null;
+        abData.activityValue = activityValue != null ? parseFloat(String(activityValue)) : null;
+        abData.methodPass = methodPass != null ? Boolean(methodPass) : null;
+        abData.methodPassReason = methodPassReason || null;
+        abData.rawExtracted = rawExtracted || null;
+      }
+
+      await prisma.antibacterialResult.create({ data: abData });
     }
 
     if (testType === "ICP" && (agValue || auValue)) {
