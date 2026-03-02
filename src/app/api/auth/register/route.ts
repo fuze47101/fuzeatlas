@@ -24,8 +24,12 @@ export async function POST(req: Request) {
 
     // Check if any users WITH passwords exist — first password-bearing user becomes ADMIN
     // This handles the case where users were imported from CSV without passwords
+    // Count users with a real password (not null, not empty string)
     const usersWithPassword = await prisma.user.count({
-      where: { password: { not: null } },
+      where: {
+        password: { not: null },
+        NOT: { password: "" },
+      },
     });
     const isFirstAdmin = usersWithPassword === 0;
 
