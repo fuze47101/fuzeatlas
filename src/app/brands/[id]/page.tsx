@@ -517,8 +517,8 @@ export default function BrandDetailPage() {
             {researching && (
               <div className="text-center py-12">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent mb-3" />
-                <p className="text-sm text-slate-500">AI is researching {brand.name}...</p>
-                <p className="text-xs text-slate-400 mt-1">This may take 15-30 seconds</p>
+                <p className="text-sm text-slate-500">Dual-AI is researching {brand.name}...</p>
+                <p className="text-xs text-slate-400 mt-1">Running Anthropic Claude + OpenAI GPT-4o in parallel (15-30 sec)</p>
               </div>
             )}
 
@@ -529,6 +529,9 @@ export default function BrandDetailPage() {
                   <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                     <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">1</span>
                     Company Overview
+                    {research._sources?.map((s: string) => (
+                      <span key={s} className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${s === "Anthropic" ? "bg-orange-100 text-orange-700" : "bg-emerald-100 text-emerald-700"}`}>{s}</span>
+                    ))}
                     {research.confidence && (
                       <span className={`px-2 py-0.5 rounded-full text-xs font-bold ml-auto ${research.confidence === "HIGH" ? "bg-green-100 text-green-700" : research.confidence === "MEDIUM" ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>
                         {research.confidence} confidence
@@ -568,7 +571,14 @@ export default function BrandDetailPage() {
                             </div>
                             <div className="text-xs text-slate-600 font-semibold">{c.title}</div>
                             <div className="flex gap-3 mt-1 text-xs">
-                              {c.email && <a href={`mailto:${c.email}`} className="text-blue-600 hover:underline">{c.email}</a>}
+                              {c.email && (
+                                <span className="flex items-center gap-1">
+                                  <a href={`mailto:${c.email}`} className="text-blue-600 hover:underline">{c.email}</a>
+                                  {c.emailConfidence && (
+                                    <span className={`px-1 py-0 rounded text-[9px] font-bold ${c.emailConfidence === "verified" ? "bg-green-100 text-green-700" : c.emailConfidence === "likely" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>{c.emailConfidence}</span>
+                                  )}
+                                </span>
+                              )}
                               {c.phone && <span className="text-slate-500">{c.phone}</span>}
                               {c.linkedin && <a href={c.linkedin} target="_blank" className="text-blue-600 hover:underline">LinkedIn</a>}
                             </div>
@@ -687,8 +697,8 @@ export default function BrandDetailPage() {
               <div className="text-center py-12">
                 <div className="text-4xl mb-3">🔍</div>
                 <p className="text-sm text-slate-600 font-semibold">Ready to research {brand.name}</p>
-                <p className="text-xs text-slate-400 mt-1">Click &ldquo;Run Research&rdquo; to get AI-powered intelligence on this brand</p>
-                <p className="text-xs text-slate-400">Finds decision makers, company info, products, and sales opportunities</p>
+                <p className="text-xs text-slate-400 mt-1">Fires Anthropic Claude + OpenAI GPT-4o in parallel, then merges the best intel from both</p>
+                <p className="text-xs text-slate-400">Finds C-suite contacts, emails, company intel, competitive landscape, and draft outreach</p>
               </div>
             )}
           </div>
