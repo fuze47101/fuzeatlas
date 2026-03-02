@@ -77,6 +77,28 @@ export async function POST(req: Request) {
       );
     }
 
+    // ── Duplicate Gate ────────────────────────────────────────
+    // Block exact duplicates: same report number + same test type + same testNumberInReport
+    const skipDuplicateCheck = body.forceDuplicate === true;
+    if (!skipDuplicateCheck && testReportNumber) {
+      const where: any = { testReportNumber };
+      if (testNumberInReport) {
+        where.testNumberInReport = parseInt(String(testNumberInReport), 10);
+      }
+      const existing = await prisma.testRun.findFirst({
+        where,
+        select: { id: true, testType: true, createdAt: true },
+      });
+      if (existing) {
+        return NextResponse.json({
+          ok: false,
+          error: `Duplicate detected: a test with report number "${testReportNumber}"${testNumberInReport ? ` (test #${testNumberInReport})` : ""} already exists (ID: ${existing.id}, created ${new Date(existing.createdAt).toLocaleDateString()}). To override, check "Allow duplicate" and resubmit.`,
+          duplicate: true,
+          existingTestId: existing.id,
+        }, { status: 409 });
+      }
+    }
+
     // Resolve lab
     let labId: string | null = null;
     if (labName) {

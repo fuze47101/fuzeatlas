@@ -189,6 +189,11 @@ export default function TestUploadPage() {
   const [confirming, setConfirming] = useState(false);
   const [confirmError, setConfirmError] = useState<string | null>(null);
 
+  // Duplicate detection
+  const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
+  const [existingTestIds, setExistingTestIds] = useState<string[]>([]);
+  const [forceDuplicate, setForceDuplicate] = useState(false);
+
   // Load dropdowns
   useEffect(() => {
     Promise.all([
@@ -251,6 +256,12 @@ export default function TestUploadPage() {
       setFilename(data.filename);
 
       if (data.parseError) setParseError(data.parseError);
+
+      // Duplicate detection from upload
+      if (data.duplicateWarning) {
+        setDuplicateWarning(data.duplicateWarning);
+        setExistingTestIds(data.existingTestIds || []);
+      }
 
       if (data.itsReport) {
         // ── ITS Taiwan rich parse
@@ -338,6 +349,7 @@ export default function TestUploadPage() {
           brandId: brandId || null,
           factoryId: factoryId || null,
           fabricId: fabricId || null,
+          forceDuplicate: forceDuplicate,
           projectId: projectId || null,
           // Rich antibacterial fields
           testNumberInReport: test.testIndex,
@@ -406,6 +418,7 @@ export default function TestUploadPage() {
         overallPass: overallPass === "true" ? true : overallPass === "false" ? false : null,
         brandId: brandId || null, factoryId: factoryId || null,
         fabricId: fabricId || null, projectId: projectId || null,
+        forceDuplicate: forceDuplicate,
       };
 
       if (testType === "ANTIBACTERIAL") {
@@ -937,6 +950,31 @@ export default function TestUploadPage() {
                 )}
               </div>
 
+              {/* Duplicate Warning Banner */}
+              {duplicateWarning && (
+                <div className="bg-amber-50 border border-amber-300 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl">⚠️</span>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-bold text-amber-800 mb-1">Possible Duplicate Detected</h4>
+                      <p className="text-sm text-amber-700">{duplicateWarning}</p>
+                      {existingTestIds.length > 0 && (
+                        <div className="mt-2 flex gap-2">
+                          {existingTestIds.map((tid) => (
+                            <a key={tid} href={`/tests/${tid}`} target="_blank" className="text-xs text-amber-800 underline hover:text-amber-900">View existing test →</a>
+                          ))}
+                        </div>
+                      )}
+                      <label className="mt-3 flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" checked={forceDuplicate} onChange={(e) => setForceDuplicate(e.target.checked)}
+                          className="w-4 h-4 rounded border-amber-400 text-amber-600 focus:ring-amber-500" />
+                        <span className="text-sm font-semibold text-amber-800">I confirm this is NOT a duplicate — save anyway</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Confirm Bar */}
               <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between">
                 <div className="text-sm text-slate-600">
@@ -948,7 +986,7 @@ export default function TestUploadPage() {
                 <div className="flex items-center gap-3">
                   {confirmError && <span className="text-sm text-red-600">{confirmError}</span>}
                   <button onClick={() => router.push("/tests")} className="px-4 py-2.5 text-slate-600 border border-slate-300 rounded-lg hover:bg-white">{t.common.cancel}</button>
-                  <button onClick={handleConfirm} disabled={confirming}
+                  <button onClick={handleConfirm} disabled={confirming || (!!duplicateWarning && !forceDuplicate)}
                     className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium">
                     {confirming ? `${t.common.saving}` : `${t.common.confirm} & ${t.common.save} All Tests`}
                   </button>
@@ -1162,6 +1200,31 @@ export default function TestUploadPage() {
                   )}
                 </div>
 
+                {/* Duplicate Warning Banner (Legacy) */}
+                {duplicateWarning && (
+                  <div className="mx-6 mt-4 p-4 bg-amber-50 border border-amber-300 rounded-xl">
+                    <div className="flex items-start gap-3">
+                      <span className="text-xl">⚠️</span>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-bold text-amber-800 mb-1">Possible Duplicate Detected</h4>
+                        <p className="text-sm text-amber-700">{duplicateWarning}</p>
+                        {existingTestIds.length > 0 && (
+                          <div className="mt-2 flex gap-2">
+                            {existingTestIds.map((tid) => (
+                              <a key={tid} href={`/tests/${tid}`} target="_blank" className="text-xs text-amber-800 underline hover:text-amber-900">View existing test →</a>
+                            ))}
+                          </div>
+                        )}
+                        <label className="mt-3 flex items-center gap-2 cursor-pointer">
+                          <input type="checkbox" checked={forceDuplicate} onChange={(e) => setForceDuplicate(e.target.checked)}
+                            className="w-4 h-4 rounded border-amber-400 text-amber-600 focus:ring-amber-500" />
+                          <span className="text-sm font-semibold text-amber-800">I confirm this is NOT a duplicate — save anyway</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Confirm bar */}
                 <div className="p-6 border-t border-slate-200 bg-slate-50 rounded-b-xl flex items-center justify-between">
                   <div className="text-sm text-slate-500">
@@ -1170,7 +1233,7 @@ export default function TestUploadPage() {
                   <div className="flex items-center gap-3">
                     {confirmError && <span className="text-sm text-red-600">{confirmError}</span>}
                     <button onClick={() => router.push("/tests")} className="px-4 py-2.5 text-slate-600 border border-slate-300 rounded-lg hover:bg-white">{t.common.cancel}</button>
-                    <button onClick={handleConfirm} disabled={confirming || !testType}
+                    <button onClick={handleConfirm} disabled={confirming || !testType || (!!duplicateWarning && !forceDuplicate)}
                       className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium">
                       {confirming ? `${t.common.saving}` : `${t.common.confirm} & ${t.common.save} ${t.tests.saveTest}`}
                     </button>

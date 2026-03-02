@@ -288,6 +288,37 @@ export async function POST(req: Request) {
       }
     }
 
+    // ── Duplicate Detection ─────────────────────────────────────
+    // Check if a test with the same report number already exists
+    let duplicateWarning: string | null = null;
+    let existingTestIds: string[] = [];
+    const reportNum = itsReport?.header?.reportNumber || parsed?.testReportNumber || null;
+
+    if (reportNum) {
+      const existingTests = await prisma.testRun.findMany({
+        where: { testReportNumber: reportNum },
+        select: { id: true, testType: true, testDate: true, createdAt: true },
+      });
+      if (existingTests.length > 0) {
+        existingTestIds = existingTests.map(t => t.id);
+        duplicateWarning = `A test report with number "${reportNum}" already exists (${existingTests.length} record${existingTests.length > 1 ? "s" : ""}). Confirming will create a duplicate.`;
+      }
+    }
+
+    // Also check by filename — same PDF uploaded before
+    const existingDocs = await prisma.document.findMany({
+      where: {
+        filename: file.name,
+        testRunId: { not: null },
+        id: { not: document.id },
+      },
+      select: { id: true, testRunId: true, createdAt: true },
+    });
+    if (existingDocs.length > 0 && !duplicateWarning) {
+      duplicateWarning = `A file named "${file.name}" has already been uploaded and linked to ${existingDocs.length} test(s). This may be a duplicate.`;
+      existingTestIds = existingDocs.map(d => d.testRunId).filter(Boolean) as string[];
+    }
+
     return NextResponse.json({
       ok: true,
       documentId: document.id,
@@ -306,6 +337,9 @@ export async function POST(req: Request) {
       // AI review results
       aiReview,
       parseError,
+      // Duplicate detection
+      duplicateWarning,
+      existingTestIds,
     });
   } catch (err: any) {
     console.error("Upload error:", err);
