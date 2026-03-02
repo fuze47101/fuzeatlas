@@ -16,10 +16,10 @@ We need to create and define the test names for our in-lab, in-house tests that 
 
 ---
 
-### Brand Delete Feature
-Add ability to delete brands from the system.
+### Brand Edit & Delete
+Need ability to edit brand names and delete garbage brands (e.g. `110*85,"",Won House,"","","",…` from bad CSV import rows). Priority cleanup item — 1,374 leads in pipeline, some are junk data that need to be removed or corrected.
 
-**Status:** Deferred — "future status after we full clean up"
+**Status:** Next up
 
 ---
 
