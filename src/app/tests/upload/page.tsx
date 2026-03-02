@@ -218,7 +218,7 @@ export default function TestUploadPage() {
       if (faData.ok && faData.fabrics) {
         setFabrics(faData.fabrics.map((f: any) => ({
           id: f.id,
-          name: f.customerCode || f.fuzeNumber || f.factoryCode || f.id,
+          name: String(f.customerCode || f.fuzeNumber || f.factoryCode || f.id),
           detail: f.construction || undefined,
         })));
       }
