@@ -45,7 +45,15 @@ export default function FabricDetailPage() {
     <div className="max-w-[1200px] mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <button onClick={() => router.push("/fabrics")} className="text-sm text-blue-600 hover:underline mb-1 block">&larr; Back to Fabrics</button>
+          <div className="flex items-center gap-3 mb-1">
+            <button onClick={() => router.push("/fabrics")} className="text-sm text-blue-600 hover:underline">&larr; Fabrics</button>
+            {fabric.brand && (
+              <>
+                <span className="text-slate-300">|</span>
+                <button onClick={() => router.push(`/brands/${fabric.brand.id}`)} className="text-sm text-blue-600 hover:underline">&larr; {fabric.brand.name}</button>
+              </>
+            )}
+          </div>
           <h1 className="text-2xl font-black text-slate-900">FUZE {fabric.fuzeNumber || "—"}</h1>
           <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
             {fabric.construction && <span>{fabric.construction}</span>}
