@@ -243,7 +243,7 @@ export default function BrandDetailPage() {
             <>
               <button onClick={() => setEditing(false)} className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-300">{t.common.cancel}</button>
               <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 disabled:opacity-50">
-                {saving ? t.common.saving : t.common.saveChanges}
+                {saving ? t.common.saving : t.common.save}
               </button>
             </>
           )}
@@ -255,7 +255,7 @@ export default function BrandDetailPage() {
 
       {/* Stats row */}
       <div className="grid grid-cols-6 gap-3 mb-6">
-        {[[t.brandTabs.products, c.products, "📦"],[t.brandTabs.fabrics, c.fabrics, "🧵"],[t.brandTabs.submissions, c.submissions, "📋"],[t.common.factories, c.factories, "🏭"],[t.brandTabs.contacts, c.contacts, "👤"],[t.brandTabs.sows, c.sows, "📄"]].map(([label, count, icon]) => (
+        {[[t.brandTabs.products, c.products, "📦"],[t.brandTabs.fabrics, c.fabrics, "🧵"],[t.brandTabs.submissions, c.submissions, "📋"],[t.brands.factories, c.factories, "🏭"],[t.brandTabs.contacts, c.contacts, "👤"],[t.brandTabs.sows, c.sows, "📄"]].map(([label, count, icon]) => (
           <div key={label as string} className="bg-white rounded-xl p-3 shadow-sm border text-center">
             <div className="text-lg">{icon}</div>
             <div className="text-xl font-black text-slate-900">{(count as number) || 0}</div>
@@ -421,7 +421,7 @@ export default function BrandDetailPage() {
           ) : (
             <table className="w-full text-sm">
               <thead><tr className="text-left text-xs text-slate-500 border-b">
-                <th className="pb-2">{t.common.fuzeNumber}</th><th className="pb-2">{t.common.construction}</th><th className="pb-2">{t.common.color}</th><th className="pb-2">{t.common.gsm}</th>
+                <th className="pb-2">{t.common.fabricNumber}</th><th className="pb-2">{t.common.construction}</th><th className="pb-2">{t.common.color}</th><th className="pb-2">{t.fabrics.gsm}</th>
               </tr></thead>
               <tbody>
                 {brand.fabrics.map((f: any) => (
@@ -596,7 +596,7 @@ export default function BrandDetailPage() {
                                 </span>
                               )}
                               {c.phone && <span className="text-slate-500">{c.phone}</span>}
-                              {c.linkedin && <a href={c.linkedin} target="_blank" className="text-blue-600 hover:underline">{t.common.linkedin}</a>}
+                              {c.linkedin && <a href={c.linkedin} target="_blank" className="text-blue-600 hover:underline">{t.brands.linkedin}</a>}
                             </div>
                             {c.relevance && <p className="text-xs text-slate-500 mt-1 italic">{c.relevance}</p>}
                           </div>

@@ -104,7 +104,7 @@ export default function SOWPrintPage() {
           {/* SOW Title & Meta */}
           <div className="mb-6">
             <h2 className="text-xl font-bold text-slate-900">
-              {sow.title || t.sow.untitledSow}
+              {sow.title || t.common.untitledSow}
             </h2>
             <div className="flex gap-6 mt-2 text-sm text-slate-500">
               <span>{t.sow.brand}: <strong className="text-slate-900">{sow.brand?.name || "—"}</strong></span>
