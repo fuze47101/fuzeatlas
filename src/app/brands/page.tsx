@@ -31,6 +31,7 @@ export default function BrandsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Brand | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [adminCode, setAdminCode] = useState("");
 
   const loadBrands = () => {
     fetch("/api/brands").then(r => r.json()).then(j => {
@@ -45,7 +46,7 @@ export default function BrandsPage() {
     setDeleting(true);
     setDeleteError(null);
     try {
-      const res = await fetch(`/api/brands/${deleteTarget.id}`, { method: "DELETE" });
+      const res = await fetch(`/api/brands/${deleteTarget.id}?code=${encodeURIComponent(adminCode)}`, { method: "DELETE" });
       const j = await res.json();
       if (j.ok) {
         setDeleteTarget(null);
@@ -126,7 +127,7 @@ export default function BrandsPage() {
                     </div>
                     {/* Quick delete button — visible on hover */}
                     <button
-                      onClick={(e) => { e.stopPropagation(); setDeleteTarget(b); setDeleteError(null); }}
+                      onClick={(e) => { e.stopPropagation(); setDeleteTarget(b); setDeleteError(null); setAdminCode(""); }}
                       className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
                       title="Delete brand"
                     >
@@ -163,6 +164,18 @@ export default function BrandsPage() {
             ) : (
               <p className="text-xs text-slate-500 mb-4">This brand has no linked records and can be safely removed.</p>
             )}
+            <div className="mb-4">
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Admin Code</label>
+              <input
+                type="password"
+                value={adminCode}
+                onChange={(e) => setAdminCode(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && adminCode) handleDelete(); }}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                placeholder="Enter admin code to confirm"
+                autoFocus
+              />
+            </div>
             {deleteError && (
               <div className="mb-3 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{deleteError}</div>
             )}
@@ -175,7 +188,7 @@ export default function BrandsPage() {
               </button>
               <button
                 onClick={handleDelete}
-                disabled={deleting}
+                disabled={deleting || !adminCode}
                 className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
                 {deleting ? "Deleting..." : "Delete"}

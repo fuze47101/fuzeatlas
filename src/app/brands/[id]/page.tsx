@@ -27,6 +27,7 @@ export default function BrandDetailPage() {
   const [tab, setTab] = useState<"details"|"contacts"|"fabrics"|"submissions"|"sows"|"notes">("details");
   const [deleting, setDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [adminCode, setAdminCode] = useState("");
 
   useEffect(() => {
     fetch(`/api/brands/${id}`)
@@ -90,7 +91,7 @@ export default function BrandDetailPage() {
     setDeleting(true);
     setError("");
     try {
-      const res = await fetch(`/api/brands/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/brands/${id}?code=${encodeURIComponent(adminCode)}`, { method: "DELETE" });
       const j = await res.json();
       if (j.ok) {
         router.push("/brands");
@@ -315,19 +316,31 @@ export default function BrandDetailPage() {
             <p className="text-sm text-slate-600 mb-1">
               Are you sure you want to delete <strong>{brand.name}</strong>?
             </p>
-            <p className="text-xs text-red-600 mb-4">
-              This will remove the brand and may fail if it has linked fabrics, submissions, or other records. You may need to reassign those first.
+            <p className="text-xs text-slate-500 mb-4">
+              This will fail if the brand has linked fabrics, submissions, or other records.
             </p>
+            <div className="mb-4">
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Admin Code</label>
+              <input
+                type="password"
+                value={adminCode}
+                onChange={(e) => setAdminCode(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && adminCode) handleDelete(); }}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                placeholder="Enter admin code to confirm"
+                autoFocus
+              />
+            </div>
             <div className="flex justify-end gap-3">
               <button
-                onClick={() => setShowDeleteConfirm(false)}
+                onClick={() => { setShowDeleteConfirm(false); setAdminCode(""); }}
                 className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                disabled={deleting}
+                disabled={deleting || !adminCode}
                 className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
                 {deleting ? "Deleting..." : "Yes, Delete"}

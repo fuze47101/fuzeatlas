@@ -73,10 +73,20 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
   }
 }
 
-export async function DELETE(_req: Request, props: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: Request, props: { params: Promise<{ id: string }> }) {
   try {
     const params = await props.params;
     const id = params.id;
+
+    // Admin code check
+    const url = new URL(req.url);
+    const adminCode = url.searchParams.get("code");
+    if (adminCode !== "FUZE2026") {
+      return NextResponse.json(
+        { ok: false, error: "Invalid admin code" },
+        { status: 403 }
+      );
+    }
 
     // Check for linked records — block delete if brand is in active use
     const brand = await prisma.brand.findUnique({
