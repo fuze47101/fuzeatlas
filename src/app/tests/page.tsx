@@ -253,7 +253,7 @@ export default function TestsPage() {
         {filtered?.map((run) => {
           const colors = TYPE_COLORS[run.testType] || TYPE_COLORS.OTHER;
           return (
-            <div key={run.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-2 cursor-pointer" onClick={() => window.location.href = `/tests/${run.id}`}
+            <div key={run.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-2 cursor-pointer" onClick={() => window.location.href = `/tests/${run.id}`}>
               <div className="flex items-center justify-between">
                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}>
                   {run.testType}

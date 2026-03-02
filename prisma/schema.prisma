@@ -327,7 +327,7 @@ model Lab {
   sourceRecords SourceRecord[]
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@index([country])
   @@index([icpApproved])
