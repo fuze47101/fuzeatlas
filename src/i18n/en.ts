@@ -7,6 +7,7 @@ const en = {
     fabrics: "Fabrics",
     factories: "Factories",
     testResults: "Test Results",
+    labDirectory: "Lab Directory",
     sowGovernance: "SOW Governance",
     ingestCsv: "Ingest CSV",
     testUpload: "Test Upload",

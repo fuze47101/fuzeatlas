@@ -18,6 +18,7 @@ export default function Sidebar() {
     { href: "/fabrics", label: t.nav.fabrics, icon: "🧵" },
     { href: "/factories", label: t.nav.factories, icon: "🏭" },
     { href: "/tests", label: t.nav.testResults, icon: "🧪" },
+    { href: "/labs", label: t.nav.labDirectory || "Lab Directory", icon: "🔬" },
     { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
   ];
 

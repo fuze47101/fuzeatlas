@@ -253,7 +253,7 @@ export default function TestsPage() {
         {filtered?.map((run) => {
           const colors = TYPE_COLORS[run.testType] || TYPE_COLORS.OTHER;
           return (
-            <div key={run.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-2">
+            <div key={run.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-2 cursor-pointer" onClick={() => window.location.href = `/tests/${run.id}`}
               <div className="flex items-center justify-between">
                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}>
                   {run.testType}
@@ -317,7 +317,7 @@ export default function TestsPage() {
               {filtered?.map((run) => {
                 const colors = TYPE_COLORS[run.testType] || TYPE_COLORS.OTHER;
                 return (
-                  <tr key={run.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <tr key={run.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onClick={() => window.location.href = `/tests/${run.id}`}>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}>
                         {run.testType}
@@ -361,13 +361,13 @@ export default function TestsPage() {
                     <td className="px-4 py-3">
                       <div className="flex gap-1.5">
                         <button
-                          onClick={() => openEdit(run)}
+                          onClick={(e) => { e.stopPropagation(); openEdit(run); }}
                           className="px-2 py-1 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
                         >
                           {t.common.edit}
                         </button>
                         <button
-                          onClick={() => setAssigningTest(run)}
+                          onClick={(e) => { e.stopPropagation(); setAssigningTest(run); }}
                           className={`px-2.5 py-1 text-xs font-medium rounded-lg border transition-colors ${
                             run.brand || run.factory || run.project
                               ? "text-green-700 border-green-200 hover:bg-green-50"

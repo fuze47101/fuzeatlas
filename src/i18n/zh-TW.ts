@@ -9,6 +9,7 @@ const zhTW: Translations = {
     fabrics: "面料",
     factories: "工廠",
     testResults: "測試結果",
+    labDirectory: "實驗室目錄",
     sowGovernance: "SOW 治理",
     ingestCsv: "匯入 CSV",
     testUpload: "測試上傳",

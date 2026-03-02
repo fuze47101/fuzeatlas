@@ -9,6 +9,7 @@ const zhCN: Translations = {
     fabrics: "面料",
     factories: "工厂",
     testResults: "测试结果",
+    labDirectory: "实验室目录",
     sowGovernance: "SOW 治理",
     ingestCsv: "导入 CSV",
     testUpload: "测试上传",

@@ -296,10 +296,41 @@ model Lab {
   name    String @unique
   knackId String? @unique
 
+  // Location
+  address   String?
+  city      String?
+  state     String?
+  country   String?
+  region    String?   // "Asia Pacific", "North America", "Europe", etc.
+
+  // Contact
+  website   String?
+  email     String?
+  phone     String?
+
+  // Capabilities & Certifications
+  accreditations String?  // "ISO 17025, TAF, CNAS" etc.
+  capabilities   String?  // Comma-separated: "ICP,ANTIBACTERIAL,FUNGAL,ODOR,UV"
+  icpApproved    Boolean @default(false)
+  abApproved     Boolean @default(false)
+  fungalApproved Boolean @default(false)
+  odorApproved   Boolean @default(false)
+  uvApproved     Boolean @default(false)
+
+  // Notes
+  notes     String?
+  active    Boolean @default(true)
+
   raw Json?
 
   testRuns      TestRun[]
   sourceRecords SourceRecord[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([country])
+  @@index([icpApproved])
 }
 
 // ─────────────────────────────────────────────
