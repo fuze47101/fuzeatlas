@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 import AssignTestModal from "@/components/AssignTestModal";
 
 interface TestRun {
@@ -47,6 +48,7 @@ const TYPE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
 };
 
 export default function TestsPage() {
+  const { t } = useI18n();
   const [data, setData] = useState<TestData | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -173,16 +175,16 @@ export default function TestsPage() {
       {/* Success banner */}
       {savedBanner && (
         <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm font-medium flex items-center gap-2">
-          <span className="text-emerald-500">&#10003;</span> Test result saved successfully
+          <span className="text-emerald-500">&#10003;</span> {t.tests.saveTest} {t.common.save}d successfully
         </div>
       )}
 
       {/* Header — stacks on mobile */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Test Results</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{t.tests.title}</h1>
           <p className="text-slate-500 text-sm mt-0.5">
-            {data?.total || 0} test runs — {data?.resultCounts?.antibacterial || 0} antibacterial, {data?.resultCounts?.icp || 0} ICP, {data?.resultCounts?.fungal || 0} fungal
+            {data?.total || 0} test runs — {data?.resultCounts?.antibacterial || 0} {t.tests.antibacterial}, {data?.resultCounts?.icp || 0} {t.tests.icp}, {data?.resultCounts?.fungal || 0} {t.tests.fungal}
           </p>
         </div>
         <Link
@@ -192,7 +194,7 @@ export default function TestsPage() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
-          Upload Test Report
+          {t.nav.testUpload}
         </Link>
       </div>
 
@@ -226,7 +228,7 @@ export default function TestsPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by type, report #, lab, brand, factory, project..."
+          placeholder={`${t.common.search} ${t.common.by} ${t.tests.testType}, ${t.tests.testReport}, ${t.tests.lab}, ${t.tests.brand}, ${t.tests.factory}, ${t.tests.project}...`}
           className="flex-1 px-4 py-2.5 border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
         />
         {projectOptions.length > 0 && (
@@ -235,7 +237,7 @@ export default function TestsPage() {
             onChange={(e) => setFilterProject(e.target.value)}
             className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm text-slate-700 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[180px]"
           >
-            <option value="">All Projects</option>
+            <option value="">{t.tests.project}</option>
             {projectOptions.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}{p.brandName ? ` (${p.brandName})` : ""} — {p.testCount}
@@ -262,13 +264,13 @@ export default function TestsPage() {
                     onClick={() => openEdit(run)}
                     className="px-2 py-1 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50"
                   >
-                    Edit
+                    {t.common.edit}
                   </button>
                   <button
                     onClick={() => setAssigningTest(run)}
                     className="px-2 py-1 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50"
                   >
-                    {run.brand || run.factory || run.project ? "Reassign" : "Assign"}
+                    {run.brand || run.factory || run.project ? t.tests.assignTest : t.tests.assignTest}
                   </button>
                 </div>
               </div>
@@ -276,11 +278,11 @@ export default function TestsPage() {
                 <p className="text-sm font-medium text-slate-900">{run.testReportNumber}</p>
               )}
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
-                {run.project && <span>Project: <span className="text-amber-700 font-medium">{run.project}</span></span>}
-                {run.lab && <span>Lab: {run.lab}</span>}
-                {run.brand && <span>Brand: <span className="text-slate-700 font-medium">{run.brand}</span></span>}
-                {run.factory && <span>Factory: <span className="text-slate-700 font-medium">{run.factory}</span></span>}
-                {run.washCount && <span>Washes: {run.washCount}</span>}
+                {run.project && <span>{t.tests.project}: <span className="text-amber-700 font-medium">{run.project}</span></span>}
+                {run.lab && <span>{t.tests.lab}: {run.lab}</span>}
+                {run.brand && <span>{t.tests.brand}: <span className="text-slate-700 font-medium">{run.brand}</span></span>}
+                {run.factory && <span>{t.tests.factory}: <span className="text-slate-700 font-medium">{run.factory}</span></span>}
+                {run.washCount && <span>{t.tests.washCount}: {run.washCount}</span>}
               </div>
               <div className="flex gap-2 mt-1">
                 {run.hasIcp && <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 text-xs rounded">ICP</span>}
@@ -299,15 +301,15 @@ export default function TestsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Type</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Report #</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Lab</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Project</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Brand</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Factory</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Date</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Washes</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Results</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">{t.common.type}</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">{t.tests.testReport}</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">{t.tests.lab}</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">{t.tests.project}</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">{t.tests.brand}</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">{t.tests.factory}</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">{t.common.date}</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">{t.tests.washCount}</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">{t.tests.result}</th>
                 <th className="text-left px-4 py-3 font-medium text-slate-600 w-24"></th>
               </tr>
             </thead>
@@ -362,7 +364,7 @@ export default function TestsPage() {
                           onClick={() => openEdit(run)}
                           className="px-2 py-1 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
                         >
-                          Edit
+                          {t.common.edit}
                         </button>
                         <button
                           onClick={() => setAssigningTest(run)}
@@ -372,7 +374,7 @@ export default function TestsPage() {
                               : "text-blue-600 border-blue-200 hover:bg-blue-50"
                           }`}
                         >
-                          {run.brand || run.factory || run.project ? "Reassign" : "Assign"}
+                          {run.brand || run.factory || run.project ? t.tests.assignTest : t.tests.assignTest}
                         </button>
                       </div>
                     </td>
@@ -384,7 +386,7 @@ export default function TestsPage() {
         </div>
         {(!filtered || filtered.length === 0) && (
           <div className="p-12 text-center text-slate-400">
-            {search || filterType || filterProject ? "No tests match your filters." : "No test results yet. Upload a test report to get started."}
+            {search || filterType || filterProject ? t.tests.noTests : t.tests.noTests}
           </div>
         )}
       </div>
@@ -415,7 +417,7 @@ export default function TestsPage() {
           <div className="absolute inset-0 bg-black/50" onClick={() => setEditingTest(null)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-900">Edit Test</h2>
+              <h2 className="text-lg font-semibold text-slate-900">{t.tests.editTest}</h2>
               <button onClick={() => setEditingTest(null)} className="text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>
             </div>
             <div className="px-6 py-5 space-y-4">
@@ -423,22 +425,22 @@ export default function TestsPage() {
                 <div className="px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{editError}</div>
               )}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Test Type</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{t.tests.testType}</label>
                 <select
                   value={editForm.testType}
                   onChange={(e) => setEditForm({ ...editForm, testType: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                 >
-                  <option value="ICP">ICP</option>
-                  <option value="ANTIBACTERIAL">ANTIBACTERIAL</option>
-                  <option value="FUNGAL">FUNGAL</option>
-                  <option value="ODOR">ODOR</option>
-                  <option value="UV">UV</option>
-                  <option value="OTHER">OTHER</option>
+                  <option value="ICP">{t.tests.icp}</option>
+                  <option value="ANTIBACTERIAL">{t.tests.antibacterial}</option>
+                  <option value="FUNGAL">{t.tests.fungal}</option>
+                  <option value="ODOR">{t.tests.odor}</option>
+                  <option value="UV">{t.tests.uv}</option>
+                  <option value="OTHER">{t.tests.other}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Report #</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{t.tests.testReport}</label>
                 <input
                   type="text"
                   value={editForm.testReportNumber}
@@ -448,7 +450,7 @@ export default function TestsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Lab</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{t.tests.lab}</label>
                 <input
                   type="text"
                   value={editForm.lab}
@@ -459,7 +461,7 @@ export default function TestsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{t.tests.testDate}</label>
                   <input
                     type="text"
                     value={editForm.testDate}
@@ -469,7 +471,7 @@ export default function TestsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Wash Count</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{t.tests.washCount}</label>
                   <input
                     type="number"
                     value={editForm.washCount}
@@ -480,7 +482,7 @@ export default function TestsPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Test Method</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{t.tests.methodStd}</label>
                 <input
                   type="text"
                   value={editForm.testMethodStd}
@@ -495,14 +497,14 @@ export default function TestsPage() {
                 onClick={() => setEditingTest(null)}
                 className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
               >
-                Cancel
+                {t.common.cancel}
               </button>
               <button
                 onClick={saveEdit}
                 disabled={editSaving}
                 className="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
-                {editSaving ? "Saving..." : "Save Changes"}
+                {editSaving ? `${t.common.saving}` : t.tests.saveChanges}
               </button>
             </div>
           </div>

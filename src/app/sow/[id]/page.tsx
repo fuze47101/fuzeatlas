@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 const STATUS_COLORS: Record<string,string> = {
   DRAFT: "bg-slate-200 text-slate-700", SENT: "bg-blue-100 text-blue-700",
@@ -12,6 +13,7 @@ const STATUSES = ["DRAFT","SENT","SIGNED","ACTIVE","COMPLETE","CANCELLED"];
 export default function SOWDetailPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { t } = useI18n();
   const [sow, setSow] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -32,7 +34,7 @@ export default function SOWDetailPage() {
     } catch (e: any) { setError(e.message); } finally { setSaving(false); }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">Loading SOW...</div>;
+  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">{t.common.loading}</div>;
   if (!sow) return <div className="flex items-center justify-center h-64 text-red-400">SOW not found</div>;
 
   let costData: any = {};
@@ -50,11 +52,11 @@ export default function SOWDetailPage() {
 
   return (
     <div className="max-w-[1200px] mx-auto">
-      <button onClick={() => router.push("/sow")} className="text-sm text-blue-600 hover:underline mb-2 block">&larr; Back to SOWs</button>
+      <button onClick={() => router.push("/sow")} className="text-sm text-blue-600 hover:underline mb-2 block">&larr; {t.sow.backToSow}</button>
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">{sow.title || "Untitled SOW"}</h1>
+          <h1 className="text-2xl font-black text-slate-900">{sow.title || t.sow.untitled}</h1>
           <div className="flex items-center gap-3 mt-1">
             <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${STATUS_COLORS[sow.status]}`}>{sow.status}</span>
             {sow.brand && <span className="text-sm text-slate-500 cursor-pointer hover:text-blue-600" onClick={() => router.push(`/brands/${sow.brand.id}`)}>{sow.brand.name}</span>}
@@ -64,7 +66,7 @@ export default function SOWDetailPage() {
         <div className="flex gap-2 flex-wrap">
           <button onClick={() => window.open(`/sow/${id}/print`, "_blank")}
             className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-white hover:bg-slate-900">
-            Print / PDF
+            {t.sow.printPdf}
           </button>
           {sow.signatoryEmail && (
             <button onClick={() => {
@@ -75,7 +77,7 @@ export default function SOWDetailPage() {
               window.open(`mailto:${sow.signatoryEmail}?subject=${subject}&body=${body}`, "_blank");
             }}
             className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-600 text-white hover:bg-purple-700">
-              Email for Signature
+              {t.sow.emailForSignature}
             </button>
           )}
           {STATUSES.filter(s => s !== sow.status).map(s => (
@@ -92,7 +94,7 @@ export default function SOWDetailPage() {
 
       {/* Stage-Gate Progress */}
       <div className="bg-white rounded-xl p-6 shadow-sm border mb-6">
-        <h2 className="text-lg font-bold text-slate-900 mb-4">Stage-Gate Progress</h2>
+        <h2 className="text-lg font-bold text-slate-900 mb-4">{t.sow.stageGate}</h2>
         <div className="space-y-3">
           {sow.milestones?.map((m: any, i: number) => (
             <div key={m.id} className={`flex items-center gap-4 p-3 rounded-lg border ${m.completedAt ? "bg-green-50 border-green-200" : "bg-slate-50 border-slate-200"}`}>
@@ -112,17 +114,17 @@ export default function SOWDetailPage() {
       <div className="grid grid-cols-2 gap-6">
         {/* Commercial Ownership */}
         <div className="bg-white rounded-xl p-5 shadow-sm border">
-          <h3 className="font-bold text-slate-900 mb-3">🏢 Commercial Ownership</h3>
+          <h3 className="font-bold text-slate-900 mb-3">🏢 {t.sow.commercialOwnership}</h3>
           <dl className="space-y-2 text-sm">
-            <Row label="Brand" value={sow.brand?.name} />
-            <Row label="Executive Sponsor" value={costData.executiveSponsor} />
-            <Row label="Sales Rep" value={costData.salesRepName} />
+            <Row label={t.sow.selectBrand} value={sow.brand?.name} />
+            <Row label={t.sow.executiveSponsor} value={costData.executiveSponsor} />
+            <Row label={t.sow.salesRepName} value={costData.salesRepName} />
           </dl>
         </div>
 
         {/* End Use */}
         <div className="bg-white rounded-xl p-5 shadow-sm border">
-          <h3 className="font-bold text-slate-900 mb-3">👕 End Use Definition</h3>
+          <h3 className="font-bold text-slate-900 mb-3">👕 {t.sow.endUseDefinition}</h3>
           {sow.products?.length > 0 && (
             <div className="mb-3">
               <span className="text-xs font-semibold text-slate-500">Products / SKUs</span>
@@ -138,46 +140,46 @@ export default function SOWDetailPage() {
             </div>
           )}
           <dl className="space-y-2 text-sm">
-            <Row label="Legacy SKU" value={costData.garmentSku} />
-            <Row label="Fabric Type" value={costData.fabricType} />
-            <Row label="GSM" value={costData.gsm} />
-            <Row label="Application Level" value={costData.applicationLevel ? `${costData.applicationLevel} mg/kg` : null} />
-            <Row label="Launch Season" value={costData.targetLaunchSeason} />
-            <Row label="Retail Channel" value={costData.retailChannel} />
+            <Row label={t.sow.garmentSku} value={costData.garmentSku} />
+            <Row label={t.sow.fabricType} value={costData.fabricType} />
+            <Row label={t.sow.gsm} value={costData.gsm} />
+            <Row label={t.sow.applicationLevel} value={costData.applicationLevel ? `${costData.applicationLevel} mg/kg` : null} />
+            <Row label={t.sow.targetLaunchSeason} value={costData.targetLaunchSeason} />
+            <Row label={t.sow.retailChannel} value={costData.retailChannel} />
           </dl>
         </div>
 
         {/* Volume */}
         <div className="bg-white rounded-xl p-5 shadow-sm border">
-          <h3 className="font-bold text-slate-900 mb-3">📊 Volume Forecast</h3>
+          <h3 className="font-bold text-slate-900 mb-3">📊 {t.sow.volumeForecast}</h3>
           <dl className="space-y-2 text-sm">
-            <Row label="Annual Units" value={costData.projectedAnnualUnits ? Number(costData.projectedAnnualUnits).toLocaleString() : null} />
-            <Row label="Garment Weight" value={costData.garmentWeight ? `${costData.garmentWeight} kg` : null} />
-            <Row label="Annual Liters" value={costData.calculatedAnnualLiters ? `${Number(costData.calculatedAnnualLiters).toLocaleString()} L` : null} />
-            <Row label="Projected Revenue" value={pricingData.projectedAnnualRevenue ? `$${Number(pricingData.projectedAnnualRevenue).toLocaleString()}` : null} />
-            <Row label="Commercialization Date" value={costData.targetCommercializationDate} />
+            <Row label={t.sow.projectedAnnualUnits} value={costData.projectedAnnualUnits ? Number(costData.projectedAnnualUnits).toLocaleString() : null} />
+            <Row label={t.sow.garmentWeight} value={costData.garmentWeight ? `${costData.garmentWeight} kg` : null} />
+            <Row label={t.sow.calculatedLiters} value={costData.calculatedAnnualLiters ? `${Number(costData.calculatedAnnualLiters).toLocaleString()} L` : null} />
+            <Row label={t.sow.projectedRevenue} value={pricingData.projectedAnnualRevenue ? `$${Number(pricingData.projectedAnnualRevenue).toLocaleString()}` : null} />
+            <Row label={t.sow.targetCommDate} value={costData.targetCommercializationDate} />
           </dl>
         </div>
 
         {/* Success Criteria */}
         <div className="bg-white rounded-xl p-5 shadow-sm border">
-          <h3 className="font-bold text-slate-900 mb-3">🎯 Success Criteria</h3>
+          <h3 className="font-bold text-slate-900 mb-3">🎯 {t.sow.successCriteria}</h3>
           <dl className="space-y-2 text-sm">
-            <Row label="ICP Target" value={perfData.icpTarget} />
-            <Row label="Standard" value={perfData.antimicrobialStandard} />
-            <Row label="Log Reduction" value={perfData.requiredLogReduction} />
-            <Row label="Wash Durability" value={perfData.washDurability} />
-            <Row label="Testing Lab" value={perfData.approvedTestingLab} />
+            <Row label={t.sow.icpTarget} value={perfData.icpTarget} />
+            <Row label={t.sow.antimicrobialStandard} value={perfData.antimicrobialStandard} />
+            <Row label={t.sow.requiredLogReduction} value={perfData.requiredLogReduction} />
+            <Row label={t.sow.washDurability} value={perfData.washDurability} />
+            <Row label={t.sow.approvedTestingLab} value={perfData.approvedTestingLab} />
           </dl>
         </div>
 
         {/* Financial */}
         <div className="bg-white rounded-xl p-5 shadow-sm border">
-          <h3 className="font-bold text-slate-900 mb-3">💰 Financial Participation</h3>
+          <h3 className="font-bold text-slate-900 mb-3">💰 {t.sow.financialTerms}</h3>
           <dl className="space-y-2 text-sm">
-            <Row label="Type" value={pricingData.financialParticipation?.replace(/_/g, " ")} />
-            {pricingData.developmentRetainer && <Row label="Retainer" value={`$${Number(pricingData.developmentRetainer).toLocaleString()}`} />}
-            <Row label="Commitment Volume" value={pricingData.commitmentVolumeLiters ? `${Number(pricingData.commitmentVolumeLiters).toLocaleString()} L` : null} />
+            <Row label={t.sow.financialParticipation} value={pricingData.financialParticipation?.replace(/_/g, " ")} />
+            {pricingData.developmentRetainer && <Row label={t.sow.developmentRetainer} value={`$${Number(pricingData.developmentRetainer).toLocaleString()}`} />}
+            <Row label={t.sow.commitmentVolume} value={pricingData.commitmentVolumeLiters ? `${Number(pricingData.commitmentVolumeLiters).toLocaleString()} L` : null} />
           </dl>
         </div>
 
@@ -197,7 +199,7 @@ export default function SOWDetailPage() {
       {/* Signatory */}
       {(sow.signatory || sow.signatoryTitle || sow.signatoryEmail) && (
         <div className="bg-white rounded-xl p-5 shadow-sm border mt-6">
-          <h3 className="font-bold text-slate-900 mb-3">✍️ Authorized Signatory</h3>
+          <h3 className="font-bold text-slate-900 mb-3">✍️ {t.sow.commitmentSignature}</h3>
           <div className="text-sm text-slate-700">
             {sow.signatory && <div className="font-semibold">{sow.signatory}</div>}
             {sow.signatoryTitle && <div className="text-slate-500">{sow.signatoryTitle}</div>}

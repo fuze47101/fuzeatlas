@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 
 type AnyJson = any;
 
 export default function StatusPage() {
+  const { t } = useI18n();
   const [health, setHealth] = useState<AnyJson>(null);
   const [stats, setStats] = useState<AnyJson>(null);
   const [err, setErr] = useState<string>("");
@@ -29,22 +31,22 @@ export default function StatusPage() {
 
   return (
     <div style={{ padding: 24, fontFamily: "ui-sans-serif, system-ui" }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700 }}>FUZE Atlas — Live Status</h1>
+      <h1 style={{ fontSize: 28, fontWeight: 700 }}>{t.dashboard.liveStatus}</h1>
 
       {!!err && (
         <div style={{ marginTop: 16, padding: 16, border: "1px solid #f66", borderRadius: 12 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 600 }}>Errors</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 600 }}>{t.common.errors}</h2>
           <pre style={{ whiteSpace: "pre-wrap" }}>{err}</pre>
         </div>
       )}
 
       <div style={{ marginTop: 16, padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600 }}>Health</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 600 }}>{t.dashboard.health}</h2>
         <pre style={{ whiteSpace: "pre-wrap" }}>{JSON.stringify(health, null, 2)}</pre>
       </div>
 
       <div style={{ marginTop: 16, padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600 }}>Core / Staging Counts</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 600 }}>{t.dashboard.coreStaging}</h2>
         <pre style={{ whiteSpace: "pre-wrap" }}>{JSON.stringify(stats, null, 2)}</pre>
       </div>
     </div>

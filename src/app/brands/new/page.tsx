@@ -1,20 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 const STAGES = [
   "LEAD","PRESENTATION","BRAND_TESTING","FACTORY_ONBOARDING",
   "FACTORY_TESTING","PRODUCTION","BRAND_EXPANSION","ARCHIVE","CUSTOMER_WON",
 ];
-const STAGE_LABELS: Record<string,string> = {
-  LEAD:"Lead", PRESENTATION:"Presentation", BRAND_TESTING:"Brand Testing",
-  FACTORY_ONBOARDING:"Factory Onboard", FACTORY_TESTING:"Factory Testing",
-  PRODUCTION:"Production", BRAND_EXPANSION:"Expansion", ARCHIVE:"Archive",
-  CUSTOMER_WON:"Won",
-};
 
 export default function NewBrandPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [users, setUsers] = useState<any[]>([]);
@@ -33,7 +29,7 @@ export default function NewBrandPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim()) { setError("Brand name is required"); return; }
+    if (!form.name.trim()) { setError(t.brands.brandNameRequired); return; }
     setSaving(true);
     setError("");
     try {
@@ -46,7 +42,7 @@ export default function NewBrandPage() {
       if (j.ok) {
         router.push(`/brands/${j.brand.id}`);
       } else {
-        setError(j.error || "Failed to create brand");
+        setError(j.error || t.brands.createBrandFailed);
       }
     } catch (e: any) {
       setError(e.message);
@@ -57,37 +53,37 @@ export default function NewBrandPage() {
 
   return (
     <div className="max-w-[800px] mx-auto">
-      <button onClick={() => router.push("/brands")} className="text-sm text-blue-600 hover:underline mb-2 block">&larr; Back to Pipeline</button>
-      <h1 className="text-2xl font-black text-slate-900 mb-6">Add New Brand</h1>
+      <button onClick={() => router.push("/brands")} className="text-sm text-blue-600 hover:underline mb-2 block">&larr; {t.brands.backToPipeline}</button>
+      <h1 className="text-2xl font-black text-slate-900 mb-6">{t.brands.addNewBrand}</h1>
 
       {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm border space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">Brand Name <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">{t.brands.brandName} <span className="text-red-500">*</span></label>
             <input type="text" value={form.name} onChange={e => set("name", e.target.value)} required
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">Pipeline Stage</label>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">{t.brands.pipelineStage}</label>
             <select value={form.pipelineStage} onChange={e => set("pipelineStage", e.target.value)}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              {STAGES.map(s => <option key={s} value={s}>{STAGE_LABELS[s]}</option>)}
+              {STAGES.map(s => <option key={s} value={s}>{t.stages[s as keyof typeof t.stages]}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">Customer Type</label>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">{t.brands.customerType}</label>
             <input type="text" value={form.customerType} onChange={e => set("customerType", e.target.value)}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">Lead/Referral Source</label>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">{t.brands.leadSource}</label>
             <input type="text" value={form.leadReferralSource} onChange={e => set("leadReferralSource", e.target.value)}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">Sales Rep</label>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">{t.brands.salesRep}</label>
             <select value={form.salesRepId} onChange={e => set("salesRepId", e.target.value)}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="">Select...</option>
@@ -145,9 +141,9 @@ export default function NewBrandPage() {
         </div>
 
         <div className="flex justify-end gap-3 pt-4 border-t">
-          <button type="button" onClick={() => router.push("/brands")} className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-300">Cancel</button>
+          <button type="button" onClick={() => router.push("/brands")} className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-300">{t.common.cancel}</button>
           <button type="submit" disabled={saving} className="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50">
-            {saving ? "Creating..." : "Create Brand"}
+            {saving ? t.common.creating : t.brands.createBrand}
           </button>
         </div>
       </form>

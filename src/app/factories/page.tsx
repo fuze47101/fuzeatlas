@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 export default function FactoriesPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [factories, setFactories] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [byCountry, setByCountry] = useState<Record<string,number>>({});
@@ -16,7 +18,7 @@ export default function FactoriesPage() {
     }).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">Loading factories...</div>;
+  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">{t.factories.loadingFactories}</div>;
 
   const q = search.toLowerCase();
   const filtered = factories.filter(f => !q || f.name.toLowerCase().includes(q) || (f.country && f.country.toLowerCase().includes(q)) || (f.specialty && f.specialty.toLowerCase().includes(q)));
@@ -26,13 +28,13 @@ export default function FactoriesPage() {
     <div className="max-w-[1400px] mx-auto">
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">Factories</h1>
-          <p className="text-sm text-slate-500 mt-1">{total.toLocaleString()} factories across {Object.keys(byCountry).length} countries</p>
+          <h1 className="text-2xl font-black text-slate-900">{t.factories.title}</h1>
+          <p className="text-sm text-slate-500 mt-1">{t.factories.factoriesAcrossCountries(total.toLocaleString(), Object.keys(byCountry).length)}</p>
         </div>
         <div className="flex items-center gap-3">
-          <input type="text" placeholder="Search factories..." value={search} onChange={e => setSearch(e.target.value)}
+          <input type="text" placeholder={t.factories.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)}
             className="px-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <button onClick={() => router.push("/factories/new")} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap">+ New Factory</button>
+          <button onClick={() => router.push("/factories/new")} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap">{t.factories.addNew}</button>
         </div>
       </div>
 
@@ -51,13 +53,13 @@ export default function FactoriesPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-50 text-left text-xs text-slate-500 uppercase tracking-wider">
-              <th className="px-4 py-3">Factory Name</th>
-              <th className="px-4 py-3">Type</th>
-              <th className="px-4 py-3">Specialty</th>
-              <th className="px-4 py-3">Country</th>
-              <th className="px-4 py-3 text-center">Brands</th>
-              <th className="px-4 py-3 text-center">Fabrics</th>
-              <th className="px-4 py-3 text-center">Submissions</th>
+              <th className="px-4 py-3">{t.factories.factoryName}</th>
+              <th className="px-4 py-3">{t.factories.millType}</th>
+              <th className="px-4 py-3">{t.factories.specialty}</th>
+              <th className="px-4 py-3">{t.factories.country}</th>
+              <th className="px-4 py-3 text-center">{t.factories.brands}</th>
+              <th className="px-4 py-3 text-center">{t.factories.fabrics}</th>
+              <th className="px-4 py-3 text-center">{t.dashboard.submissions}</th>
             </tr>
           </thead>
           <tbody>
@@ -77,7 +79,7 @@ export default function FactoriesPage() {
             ))}
           </tbody>
         </table>
-        {filtered.length === 0 && <div className="text-center py-12 text-slate-400">No factories match your search</div>}
+        {filtered.length === 0 && <div className="text-center py-12 text-slate-400">{t.factories.noFactories}</div>}
       </div>
     </div>
   );

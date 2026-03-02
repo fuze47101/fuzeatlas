@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 const STAGES = [
   "LEAD","PRESENTATION","BRAND_TESTING","FACTORY_ONBOARDING",
@@ -14,6 +15,7 @@ const STAGE_LABELS: Record<string,string> = {
 };
 
 export default function BrandDetailPage() {
+  const { t } = useI18n();
   const { id } = useParams();
   const router = useRouter();
   const [brand, setBrand] = useState<any>(null);
@@ -212,8 +214,8 @@ export default function BrandDetailPage() {
     }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">Loading brand...</div>;
-  if (!brand) return <div className="flex items-center justify-center h-64 text-red-400">Brand not found</div>;
+  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">{t.common.loading}</div>;
+  if (!brand) return <div className="flex items-center justify-center h-64 text-red-400">{t.brands.notFound}</div>;
 
   const c = brand._count;
 
@@ -222,26 +224,26 @@ export default function BrandDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <button onClick={() => router.push("/brands")} className="text-sm text-blue-600 hover:underline mb-1 block">&larr; Back to Pipeline</button>
+          <button onClick={() => router.push("/brands")} className="text-sm text-blue-600 hover:underline mb-1 block">&larr; {t.common.backToPipeline}</button>
           <h1 className="text-2xl font-black text-slate-900">{brand.name}</h1>
           <div className="flex items-center gap-3 mt-1">
             <span className="px-2 py-0.5 rounded-full text-xs font-bold text-white" style={{ background: stageColor(brand.pipelineStage) }}>
-              {STAGE_LABELS[brand.pipelineStage] || brand.pipelineStage}
+              {t.stages[brand.pipelineStage as keyof typeof t.stages] || brand.pipelineStage}
             </span>
-            {brand.salesRep && <span className="text-sm text-slate-500">Rep: {brand.salesRep.name}</span>}
+            {brand.salesRep && <span className="text-sm text-slate-500">{t.brands.rep}: {brand.salesRep.name}</span>}
           </div>
         </div>
         <div className="flex gap-2">
           {!editing ? (
             <>
-              <button onClick={() => setShowDeleteConfirm(true)} className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-semibold hover:bg-red-100">Delete</button>
-              <button onClick={() => setEditing(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">Edit Brand</button>
+              <button onClick={() => setShowDeleteConfirm(true)} className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-semibold hover:bg-red-100">{t.common.delete}</button>
+              <button onClick={() => setEditing(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">{t.brands.editBrand}</button>
             </>
           ) : (
             <>
-              <button onClick={() => setEditing(false)} className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-300">Cancel</button>
+              <button onClick={() => setEditing(false)} className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-300">{t.common.cancel}</button>
               <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 disabled:opacity-50">
-                {saving ? "Saving..." : "Save Changes"}
+                {saving ? t.common.saving : t.common.saveChanges}
               </button>
             </>
           )}
@@ -253,7 +255,7 @@ export default function BrandDetailPage() {
 
       {/* Stats row */}
       <div className="grid grid-cols-6 gap-3 mb-6">
-        {[["Products", c.products, "📦"],["Fabrics", c.fabrics, "🧵"],["Submissions", c.submissions, "📋"],["Factories", c.factories, "🏭"],["Contacts", c.contacts, "👤"],["SOWs", c.sows, "📄"]].map(([label, count, icon]) => (
+        {[[t.brandTabs.products, c.products, "📦"],[t.brandTabs.fabrics, c.fabrics, "🧵"],[t.brandTabs.submissions, c.submissions, "📋"],[t.common.factories, c.factories, "🏭"],[t.brandTabs.contacts, c.contacts, "👤"],[t.brandTabs.sows, c.sows, "📄"]].map(([label, count, icon]) => (
           <div key={label as string} className="bg-white rounded-xl p-3 shadow-sm border text-center">
             <div className="text-lg">{icon}</div>
             <div className="text-xl font-black text-slate-900">{(count as number) || 0}</div>
@@ -264,10 +266,10 @@ export default function BrandDetailPage() {
 
       {/* Tabs */}
       <div className="flex border-b border-slate-200 mb-4">
-        {(["details","contacts","products","fabrics","submissions","sows","notes","research"] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}>
-            {t.charAt(0).toUpperCase() + t.slice(1)}
+        {(["details","contacts","products","fabrics","submissions","sows","notes","research"] as const).map(tabKey => (
+          <button key={tabKey} onClick={() => setTab(tabKey)}
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${tab === tabKey ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}>
+            {t.brandTabs[tabKey as keyof typeof t.brandTabs]}
           </button>
         ))}
       </div>
@@ -276,24 +278,24 @@ export default function BrandDetailPage() {
       {tab === "details" && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Brand Name" field="name" form={form} setForm={setForm} editing={editing} required />
-            <Field label="Pipeline Stage" field="pipelineStage" form={form} setForm={setForm} editing={editing} type="select" options={STAGES.map(s => ({ value: s, label: STAGE_LABELS[s] }))} />
-            <Field label="Customer Type" field="customerType" form={form} setForm={setForm} editing={editing} />
-            <Field label="Lead/Referral Source" field="leadReferralSource" form={form} setForm={setForm} editing={editing} />
-            <Field label="Sales Rep" field="salesRepId" form={form} setForm={setForm} editing={editing} type="select" options={users.map(u => ({ value: u.id, label: u.name }))} />
-            <Field label="Website" field="website" form={form} setForm={setForm} editing={editing} />
-            <Field label="LinkedIn" field="linkedInProfile" form={form} setForm={setForm} editing={editing} />
-            <Field label="Date of Initial Contact" field="dateOfInitialContact" form={form} setForm={setForm} editing={editing} type="date" />
-            <Field label="Presentation Date" field="presentationDate" form={form} setForm={setForm} editing={editing} type="date" />
-            <Field label="Project Type" field="projectType" form={form} setForm={setForm} editing={editing} />
+            <Field label={t.brands.brandName} field="name" form={form} setForm={setForm} editing={editing} required />
+            <Field label={t.brands.pipelineStage} field="pipelineStage" form={form} setForm={setForm} editing={editing} type="select" options={STAGES.map(s => ({ value: s, label: t.stages[s as keyof typeof t.stages] || s }))} />
+            <Field label={t.brands.customerType} field="customerType" form={form} setForm={setForm} editing={editing} />
+            <Field label={t.brands.leadReferralSource} field="leadReferralSource" form={form} setForm={setForm} editing={editing} />
+            <Field label={t.brands.salesRep} field="salesRepId" form={form} setForm={setForm} editing={editing} type="select" options={users.map(u => ({ value: u.id, label: u.name }))} />
+            <Field label={t.brands.website} field="website" form={form} setForm={setForm} editing={editing} />
+            <Field label={t.brands.linkedin} field="linkedInProfile" form={form} setForm={setForm} editing={editing} />
+            <Field label={t.brands.dateInitialContact} field="dateOfInitialContact" form={form} setForm={setForm} editing={editing} type="date" />
+            <Field label={t.brands.presentationDate} field="presentationDate" form={form} setForm={setForm} editing={editing} type="date" />
+            <Field label={t.brands.projectType} field="projectType" form={form} setForm={setForm} editing={editing} />
             <div className="col-span-2">
-              <Field label="Background Info" field="backgroundInfo" form={form} setForm={setForm} editing={editing} type="textarea" />
+              <Field label={t.brands.backgroundInfo} field="backgroundInfo" form={form} setForm={setForm} editing={editing} type="textarea" />
             </div>
             <div className="col-span-2">
-              <Field label="Project Description" field="projectDescription" form={form} setForm={setForm} editing={editing} type="textarea" />
+              <Field label={t.brands.projectDescription} field="projectDescription" form={form} setForm={setForm} editing={editing} type="textarea" />
             </div>
-            <Field label="Forecast" field="forecast" form={form} setForm={setForm} editing={editing} />
-            <Field label="Deliverables" field="deliverables" form={form} setForm={setForm} editing={editing} />
+            <Field label={t.brands.forecast} field="forecast" form={form} setForm={setForm} editing={editing} />
+            <Field label={t.brands.deliverables} field="deliverables" form={form} setForm={setForm} editing={editing} />
           </div>
         </div>
       )}
@@ -301,7 +303,7 @@ export default function BrandDetailPage() {
       {tab === "contacts" && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           {brand.contacts.length === 0 ? (
-            <p className="text-slate-400 text-sm text-center py-8">No contacts yet</p>
+            <p className="text-slate-400 text-sm text-center py-8">{t.contacts.noContacts}</p>
           ) : (
             <div className="space-y-3">
               {brand.contacts.map((ct: any) => (
@@ -323,8 +325,8 @@ export default function BrandDetailPage() {
       {tab === "products" && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-slate-900">Products / SKUs</h3>
-            <button onClick={() => setShowAddProduct(true)} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700">+ Add Product</button>
+            <h3 className="font-bold text-slate-900">{t.products.skus}</h3>
+            <button onClick={() => setShowAddProduct(true)} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700">+ {t.products.addProduct}</button>
           </div>
 
           {/* Add product form */}
@@ -332,22 +334,22 @@ export default function BrandDetailPage() {
             <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="grid grid-cols-2 gap-3 mb-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Product Name <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">{t.products.productName} <span className="text-red-500">*</span></label>
                   <input type="text" value={productForm.name} onChange={e => setProductForm({ ...productForm, name: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Dri-FIT Running Tee" autoFocus />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Product Type</label>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">{t.products.productType}</label>
                   <input type="text" value={productForm.productType} onChange={e => setProductForm({ ...productForm, productType: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Garment, Textile, Turf" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">SKU / Style #</label>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">{t.products.sku}</label>
                   <input type="text" value={productForm.sku} onChange={e => setProductForm({ ...productForm, sku: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. NK-DRF-2026" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Description</label>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">{t.products.description}</label>
                   <input type="text" value={productForm.description} onChange={e => setProductForm({ ...productForm, description: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Short description" />
                 </div>
@@ -355,22 +357,22 @@ export default function BrandDetailPage() {
               <div className="flex gap-2">
                 <button onClick={handleAddProduct} disabled={productSaving || !productForm.name.trim()}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50">
-                  {productSaving ? "Saving..." : "Add Product"}
+                  {productSaving ? t.common.saving : t.products.addProduct}
                 </button>
                 <button onClick={() => { setShowAddProduct(false); setProductForm({ name: "", productType: "", sku: "", description: "" }); }}
-                  className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">Cancel</button>
+                  className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">{t.common.cancel}</button>
               </div>
             </div>
           )}
 
           {productsLoading ? (
-            <p className="text-slate-400 text-sm text-center py-8">Loading products...</p>
+            <p className="text-slate-400 text-sm text-center py-8">{t.common.loadingProducts}</p>
           ) : products.length === 0 ? (
-            <p className="text-slate-400 text-sm text-center py-8">No products yet. Add products/SKUs that this brand manufactures or sells.</p>
+            <p className="text-slate-400 text-sm text-center py-8">{t.products.noProducts}</p>
           ) : (
             <table className="w-full text-sm">
               <thead><tr className="text-left text-xs text-slate-500 border-b">
-                <th className="pb-2">Name</th><th className="pb-2">Type</th><th className="pb-2">SKU</th><th className="pb-2">Description</th><th className="pb-2">SOWs</th><th className="pb-2 w-20"></th>
+                <th className="pb-2">{t.common.name}</th><th className="pb-2">{t.common.type}</th><th className="pb-2">{t.products.sku}</th><th className="pb-2">{t.products.description}</th><th className="pb-2">{t.brandTabs.sows}</th><th className="pb-2 w-20"></th>
               </tr></thead>
               <tbody>
                 {products.map((p: any) => (
@@ -386,8 +388,8 @@ export default function BrandDetailPage() {
                         className="w-full px-2 py-1 border border-slate-300 rounded text-sm" /></td>
                       <td className="py-2">{p.sows?.length || 0}</td>
                       <td className="py-2 text-right">
-                        <button onClick={() => handleUpdateProduct(p.id)} className="text-xs text-green-600 hover:underline mr-2">{productSaving ? "..." : "Save"}</button>
-                        <button onClick={() => setEditingProduct(null)} className="text-xs text-slate-500 hover:underline">Cancel</button>
+                        <button onClick={() => handleUpdateProduct(p.id)} className="text-xs text-green-600 hover:underline mr-2">{productSaving ? "..." : t.common.save}</button>
+                        <button onClick={() => setEditingProduct(null)} className="text-xs text-slate-500 hover:underline">{t.common.cancel}</button>
                       </td>
                     </tr>
                   ) : (
@@ -399,9 +401,9 @@ export default function BrandDetailPage() {
                       <td className="py-2">{p.sows?.length || 0}</td>
                       <td className="py-2 text-right">
                         <button onClick={() => { setEditingProduct(p.id); setEditProductForm({ name: p.name, productType: p.productType || "", sku: p.sku || "", description: p.description || "" }); }}
-                          className="text-xs text-blue-600 hover:underline mr-2">Edit</button>
-                        <button onClick={() => { if (confirm("Delete this product?")) handleDeleteProduct(p.id); }}
-                          className="text-xs text-red-500 hover:underline">Delete</button>
+                          className="text-xs text-blue-600 hover:underline mr-2">{t.common.edit}</button>
+                        <button onClick={() => { if (confirm(t.products.deleteConfirm)) handleDeleteProduct(p.id); }}
+                          className="text-xs text-red-500 hover:underline">{t.common.delete}</button>
                       </td>
                     </tr>
                   )
@@ -415,11 +417,11 @@ export default function BrandDetailPage() {
       {tab === "fabrics" && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           {brand.fabrics.length === 0 ? (
-            <p className="text-slate-400 text-sm text-center py-8">No fabrics yet</p>
+            <p className="text-slate-400 text-sm text-center py-8">{t.common.noFabrics}</p>
           ) : (
             <table className="w-full text-sm">
               <thead><tr className="text-left text-xs text-slate-500 border-b">
-                <th className="pb-2">FUZE #</th><th className="pb-2">Construction</th><th className="pb-2">Color</th><th className="pb-2">GSM</th>
+                <th className="pb-2">{t.common.fuzeNumber}</th><th className="pb-2">{t.common.construction}</th><th className="pb-2">{t.common.color}</th><th className="pb-2">{t.common.gsm}</th>
               </tr></thead>
               <tbody>
                 {brand.fabrics.map((f: any) => (
@@ -439,11 +441,11 @@ export default function BrandDetailPage() {
       {tab === "submissions" && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           {brand.submissions.length === 0 ? (
-            <p className="text-slate-400 text-sm text-center py-8">No submissions yet</p>
+            <p className="text-slate-400 text-sm text-center py-8">{t.common.noSubmissions}</p>
           ) : (
             <table className="w-full text-sm">
               <thead><tr className="text-left text-xs text-slate-500 border-b">
-                <th className="pb-2">Fabric #</th><th className="pb-2">Status</th><th className="pb-2">Test Status</th><th className="pb-2">Date</th>
+                <th className="pb-2">{t.common.fabricNumber}</th><th className="pb-2">{t.common.status}</th><th className="pb-2">{t.common.testStatus}</th><th className="pb-2">{t.common.date}</th>
               </tr></thead>
               <tbody>
                 {brand.submissions.map((s: any) => (
@@ -463,17 +465,17 @@ export default function BrandDetailPage() {
       {tab === "sows" && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-slate-900">Statements of Work</h3>
-            <button onClick={() => router.push(`/sow/new?brandId=${id}`)} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700">+ New SOW</button>
+            <h3 className="font-bold text-slate-900">{t.common.statementsOfWork}</h3>
+            <button onClick={() => router.push(`/sow/new?brandId=${id}`)} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700">+ {t.common.newSow}</button>
           </div>
           {brand.sows.length === 0 ? (
-            <p className="text-slate-400 text-sm text-center py-8">No SOWs yet</p>
+            <p className="text-slate-400 text-sm text-center py-8">{t.common.noSows}</p>
           ) : (
             <div className="space-y-2">
               {brand.sows.map((s: any) => (
                 <div key={s.id} onClick={() => router.push(`/sow/${s.id}`)} className="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer flex justify-between items-center">
                   <div>
-                    <div className="font-semibold text-sm">{s.title || "Untitled SOW"}</div>
+                    <div className="font-semibold text-sm">{s.title || t.common.untitledSow}</div>
                     <div className="text-xs text-slate-500">{new Date(s.createdAt).toLocaleDateString()}</div>
                   </div>
                   <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${sowStatusColor(s.status)}`}>{s.status}</span>
@@ -487,13 +489,13 @@ export default function BrandDetailPage() {
       {tab === "notes" && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           {brand.notes.length === 0 ? (
-            <p className="text-slate-400 text-sm text-center py-8">No notes yet</p>
+            <p className="text-slate-400 text-sm text-center py-8">{t.common.noNotes}</p>
           ) : (
             <div className="space-y-3">
               {brand.notes.map((n: any) => (
                 <div key={n.id} className="p-3 bg-slate-50 rounded-lg">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-bold text-slate-600">{n.noteType || "Note"} {n.contactName && `· ${n.contactName}`}</span>
+                    <span className="text-xs font-bold text-slate-600">{n.noteType || t.common.note} {n.contactName && `· ${n.contactName}`}</span>
                     <span className="text-xs text-slate-400">{n.date ? new Date(n.date).toLocaleDateString() : ""}</span>
                   </div>
                   <p className="text-sm text-slate-700">{n.content}</p>
@@ -509,19 +511,19 @@ export default function BrandDetailPage() {
           <div className="bg-white rounded-xl p-6 shadow-sm border">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <h3 className="font-bold text-slate-900">AI Brand Intelligence</h3>
-                <p className="text-xs text-slate-500 mt-1">AI-powered research on {brand.name} — finds decision makers, company intel, and sales opportunities</p>
-                {researchDate && <p className="text-xs text-slate-400 mt-0.5">Last researched: {new Date(researchDate).toLocaleDateString()} at {new Date(researchDate).toLocaleTimeString()}</p>}
+                <h3 className="font-bold text-slate-900">{t.research.title}</h3>
+                <p className="text-xs text-slate-500 mt-1">{t.research.subtitle}</p>
+                {researchDate && <p className="text-xs text-slate-400 mt-0.5">{t.research.lastResearched} {new Date(researchDate).toLocaleDateString()} at {new Date(researchDate).toLocaleTimeString()}</p>}
               </div>
               <div className="flex gap-2">
                 <button onClick={() => handleResearch(false)} disabled={researching}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50">
-                  {researching ? "Researching..." : research ? "Re-run Research" : "Run Research"}
+                  {researching ? t.research.researching : research ? t.research.rerunResearch : t.research.runResearch}
                 </button>
                 {research && !researching && (
                   <button onClick={() => handleResearch(true)} disabled={researching}
                     className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 disabled:opacity-50">
-                    Save Contacts to Brand
+                    {t.research.saveContacts}
                   </button>
                 )}
               </div>
@@ -531,7 +533,7 @@ export default function BrandDetailPage() {
             {researching && (
               <div className="text-center py-12">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent mb-3" />
-                <p className="text-sm text-slate-500">Dual-AI is researching {brand.name}...</p>
+                <p className="text-sm text-slate-500">{t.research.dualAiResearching}</p>
                 <p className="text-xs text-slate-400 mt-1">Running Anthropic Claude + OpenAI GPT-4o in parallel (15-30 sec)</p>
               </div>
             )}
@@ -542,25 +544,25 @@ export default function BrandDetailPage() {
                 <div className="p-4 bg-slate-50 rounded-lg">
                   <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                     <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">1</span>
-                    Company Overview
+                    {t.research.companyOverview}
                     {research._sources?.map((s: string) => (
                       <span key={s} className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${s === "Anthropic" ? "bg-orange-100 text-orange-700" : "bg-emerald-100 text-emerald-700"}`}>{s}</span>
                     ))}
                     {research.confidence && (
                       <span className={`px-2 py-0.5 rounded-full text-xs font-bold ml-auto ${research.confidence === "HIGH" ? "bg-green-100 text-green-700" : research.confidence === "MEDIUM" ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>
-                        {research.confidence} confidence
+                        {t.research[research.confidence.toLowerCase() as 'high' | 'medium' | 'low']} {t.research.confidence}
                       </span>
                     )}
                   </h4>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
-                    {research.company?.name && <div><span className="text-slate-500">Name:</span> <strong>{research.company.name}</strong></div>}
-                    {research.company?.headquarters && <div><span className="text-slate-500">HQ:</span> <strong>{research.company.headquarters}</strong></div>}
-                    {research.company?.website && <div><span className="text-slate-500">Website:</span> <a href={research.company.website.startsWith("http") ? research.company.website : `https://${research.company.website}`} target="_blank" className="text-blue-600 hover:underline font-semibold">{research.company.website}</a></div>}
-                    {research.company?.linkedin && <div><span className="text-slate-500">LinkedIn:</span> <a href={research.company.linkedin} target="_blank" className="text-blue-600 hover:underline font-semibold">Profile</a></div>}
-                    {research.company?.employeeCount && <div><span className="text-slate-500">Employees:</span> <strong>{research.company.employeeCount}</strong></div>}
-                    {research.company?.revenue && <div><span className="text-slate-500">Revenue:</span> <strong>{research.company.revenue}</strong></div>}
-                    {research.company?.founded && <div><span className="text-slate-500">Founded:</span> <strong>{research.company.founded}</strong></div>}
-                    {research.company?.industry && <div><span className="text-slate-500">Industry:</span> <strong>{research.company.industry}</strong></div>}
+                    {research.company?.name && <div><span className="text-slate-500">{t.common.name}:</span> <strong>{research.company.name}</strong></div>}
+                    {research.company?.headquarters && <div><span className="text-slate-500">{t.research.headquarters}:</span> <strong>{research.company.headquarters}</strong></div>}
+                    {research.company?.website && <div><span className="text-slate-500">{t.brands.website}:</span> <a href={research.company.website.startsWith("http") ? research.company.website : `https://${research.company.website}`} target="_blank" className="text-blue-600 hover:underline font-semibold">{research.company.website}</a></div>}
+                    {research.company?.linkedin && <div><span className="text-slate-500">{t.brands.linkedin}:</span> <a href={research.company.linkedin} target="_blank" className="text-blue-600 hover:underline font-semibold">{t.common.profile}</a></div>}
+                    {research.company?.employeeCount && <div><span className="text-slate-500">{t.research.employees}:</span> <strong>{research.company.employeeCount}</strong></div>}
+                    {research.company?.revenue && <div><span className="text-slate-500">{t.research.revenue}:</span> <strong>{research.company.revenue}</strong></div>}
+                    {research.company?.founded && <div><span className="text-slate-500">{t.research.founded}:</span> <strong>{research.company.founded}</strong></div>}
+                    {research.company?.industry && <div><span className="text-slate-500">{t.research.industry}:</span> <strong>{research.company.industry}</strong></div>}
                   </div>
                   {research.company?.description && <p className="mt-2 text-sm text-slate-600">{research.company.description}</p>}
                 </div>
@@ -570,7 +572,7 @@ export default function BrandDetailPage() {
                   <div className="p-4 bg-green-50 rounded-lg">
                     <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                       <span className="inline-flex items-center justify-center w-6 h-6 bg-green-100 text-green-700 rounded-full text-xs font-bold">2</span>
-                      Key Decision Makers ({research.contacts.length})
+                      {t.research.keyDecisionMakers} ({research.contacts.length})
                     </h4>
                     <div className="space-y-3">
                       {research.contacts.map((c: any, i: number) => (
@@ -589,12 +591,12 @@ export default function BrandDetailPage() {
                                 <span className="flex items-center gap-1">
                                   <a href={`mailto:${c.email}`} className="text-blue-600 hover:underline">{c.email}</a>
                                   {c.emailConfidence && (
-                                    <span className={`px-1 py-0 rounded text-[9px] font-bold ${c.emailConfidence === "verified" ? "bg-green-100 text-green-700" : c.emailConfidence === "likely" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>{c.emailConfidence}</span>
+                                    <span className={`px-1 py-0 rounded text-[9px] font-bold ${c.emailConfidence === "verified" ? "bg-green-100 text-green-700" : c.emailConfidence === "likely" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>{t.research[c.emailConfidence as 'verified' | 'likely' | 'estimated']}</span>
                                   )}
                                 </span>
                               )}
                               {c.phone && <span className="text-slate-500">{c.phone}</span>}
-                              {c.linkedin && <a href={c.linkedin} target="_blank" className="text-blue-600 hover:underline">LinkedIn</a>}
+                              {c.linkedin && <a href={c.linkedin} target="_blank" className="text-blue-600 hover:underline">{t.common.linkedin}</a>}
                             </div>
                             {c.relevance && <p className="text-xs text-slate-500 mt-1 italic">{c.relevance}</p>}
                           </div>
@@ -609,7 +611,7 @@ export default function BrandDetailPage() {
                   <div className="p-4 bg-purple-50 rounded-lg">
                     <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                       <span className="inline-flex items-center justify-center w-6 h-6 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">3</span>
-                      FUZE Opportunity Analysis
+                      {t.research.opportunityAnalysis}
                       {research.opportunity.fitScore && (
                         <span className={`px-2 py-0.5 rounded-full text-xs font-bold ml-auto ${research.opportunity.fitScore >= 7 ? "bg-green-100 text-green-700" : research.opportunity.fitScore >= 4 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>
                           Fit: {research.opportunity.fitScore}/10
@@ -622,36 +624,36 @@ export default function BrandDetailPage() {
                     {research.opportunity.fitReason && <p className="text-sm text-slate-700 mb-3">{research.opportunity.fitReason}</p>}
                     {research.opportunity.bestProductLines?.length > 0 && (
                       <div className="mb-2">
-                        <span className="text-xs font-bold text-slate-600">Best product lines: </span>
+                        <span className="text-xs font-bold text-slate-600">{t.research.bestProductLines}: </span>
                         <span className="text-xs text-slate-700">{research.opportunity.bestProductLines.join(", ")}</span>
                       </div>
                     )}
                     {research.opportunity.currentAntimicrobial && (
                       <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
-                        <strong>Current antimicrobial:</strong> {research.opportunity.currentAntimicrobial}
+                        <strong>{t.research.currentAntimicrobial}:</strong> {research.opportunity.currentAntimicrobial}
                       </div>
                     )}
                     {research.opportunity.suggestedApproach && (
                       <div className="mb-3 p-3 bg-white border border-purple-200 rounded-lg">
-                        <span className="text-xs font-bold text-purple-700 block mb-1">Suggested Approach</span>
+                        <span className="text-xs font-bold text-purple-700 block mb-1">{t.research.suggestedApproach}</span>
                         <p className="text-sm text-slate-700">{research.opportunity.suggestedApproach}</p>
                       </div>
                     )}
                     {research.opportunity.openingMessage && (
                       <div className="p-3 bg-white border border-purple-200 rounded-lg">
-                        <span className="text-xs font-bold text-purple-700 block mb-1">Draft Opening Message</span>
+                        <span className="text-xs font-bold text-purple-700 block mb-1">{t.research.draftOpeningMessage}</span>
                         <p className="text-sm text-slate-700 italic">&ldquo;{research.opportunity.openingMessage}&rdquo;</p>
                       </div>
                     )}
                     {research.opportunity.objections?.length > 0 && (
                       <div className="mt-3">
-                        <span className="text-xs font-bold text-slate-600 block mb-2">Potential Objections & Counters</span>
+                        <span className="text-xs font-bold text-slate-600 block mb-2">{t.research.potentialObjections}</span>
                         <div className="space-y-2">
                           {research.opportunity.objections.map((obj: any, i: number) => (
                             <div key={i} className="text-xs">
-                              <span className="text-red-600 font-semibold">Objection: </span><span className="text-slate-700">{obj.objection}</span>
+                              <span className="text-red-600 font-semibold">{t.research.objection}: </span><span className="text-slate-700">{obj.objection}</span>
                               <br />
-                              <span className="text-green-600 font-semibold">Counter: </span><span className="text-slate-700">{obj.counter}</span>
+                              <span className="text-green-600 font-semibold">{t.research.counter}: </span><span className="text-slate-700">{obj.counter}</span>
                             </div>
                           ))}
                         </div>
@@ -665,13 +667,13 @@ export default function BrandDetailPage() {
                   <div className="p-4 bg-amber-50 rounded-lg">
                     <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                       <span className="inline-flex items-center justify-center w-6 h-6 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">4</span>
-                      Product & Market Intel
+                      {t.research.productMarketIntel}
                     </h4>
                     <div className="grid grid-cols-2 gap-4 text-xs">
-                      {research.products.categories?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">Product Categories</span>{research.products.categories.join(", ")}</div>}
-                      {research.products.targetMarkets?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">Target Markets</span>{research.products.targetMarkets.join(", ")}</div>}
-                      {research.products.keyBrands?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">Key Brands/Lines</span>{research.products.keyBrands.join(", ")}</div>}
-                      {research.products.sustainability?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">Sustainability</span>{research.products.sustainability.join(", ")}</div>}
+                      {research.products.categories?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">{t.research.productCategories}</span>{research.products.categories.join(", ")}</div>}
+                      {research.products.targetMarkets?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">{t.research.targetMarkets}</span>{research.products.targetMarkets.join(", ")}</div>}
+                      {research.products.keyBrands?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">{t.research.keyBrandsLines}</span>{research.products.keyBrands.join(", ")}</div>}
+                      {research.products.sustainability?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">{t.research.sustainability}</span>{research.products.sustainability.join(", ")}</div>}
                     </div>
                   </div>
                 )}
@@ -681,7 +683,7 @@ export default function BrandDetailPage() {
                   <div className="p-4 bg-sky-50 rounded-lg">
                     <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                       <span className="inline-flex items-center justify-center w-6 h-6 bg-sky-100 text-sky-700 rounded-full text-xs font-bold">5</span>
-                      Recent News & Triggers
+                      {t.research.recentNewsTriggers}
                     </h4>
                     <div className="space-y-2">
                       {research.news.map((n: any, i: number) => (
@@ -701,7 +703,7 @@ export default function BrandDetailPage() {
                 {/* Research Notes */}
                 {research.researchNotes && (
                   <div className="p-3 bg-slate-100 rounded-lg text-xs text-slate-600">
-                    <strong>Research Notes:</strong> {research.researchNotes}
+                    <strong>{t.research.researchNotes}:</strong> {research.researchNotes}
                   </div>
                 )}
               </div>
@@ -710,7 +712,7 @@ export default function BrandDetailPage() {
             {!research && !researching && (
               <div className="text-center py-12">
                 <div className="text-4xl mb-3">🔍</div>
-                <p className="text-sm text-slate-600 font-semibold">Ready to research {brand.name}</p>
+                <p className="text-sm text-slate-600 font-semibold">{t.research.readyToResearch}</p>
                 <p className="text-xs text-slate-400 mt-1">Fires Anthropic Claude + OpenAI GPT-4o in parallel, then merges the best intel from both</p>
                 <p className="text-xs text-slate-400">Finds C-suite contacts, emails, company intel, competitive landscape, and draft outreach</p>
               </div>
@@ -724,22 +726,22 @@ export default function BrandDetailPage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowDeleteConfirm(false)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
-            <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Brand</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">{t.brands.deleteBrand}</h3>
             <p className="text-sm text-slate-600 mb-1">
-              Are you sure you want to delete <strong>{brand.name}</strong>?
+              {t.brands.deleteConfirm} <strong>{brand.name}</strong>?
             </p>
             <p className="text-xs text-slate-500 mb-4">
-              This will fail if the brand has linked fabrics, submissions, or other records.
+              {t.brands.deleteWarning}
             </p>
             <div className="mb-4">
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Admin Code</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">{t.brands.adminCode}</label>
               <input
                 type="password"
                 value={adminCode}
                 onChange={(e) => setAdminCode(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter" && adminCode) handleDelete(); }}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                placeholder="Enter admin code to confirm"
+                placeholder={t.brands.enterAdminCode}
                 autoFocus
               />
             </div>
@@ -748,14 +750,14 @@ export default function BrandDetailPage() {
                 onClick={() => { setShowDeleteConfirm(false); setAdminCode(""); }}
                 className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
               >
-                Cancel
+                {t.common.cancel}
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleting || !adminCode}
                 className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
-                {deleting ? "Deleting..." : "Yes, Delete"}
+                {deleting ? t.common.deleting : t.brands.yesDelete}
               </button>
             </div>
           </div>
@@ -801,7 +803,7 @@ function Field({ label, field, form, setForm, editing, type = "text", options, r
         <label className="block text-xs font-semibold text-slate-500 mb-1">{label}</label>
         <select value={val} onChange={e => setForm({ ...form, [field]: e.target.value })}
           className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="">Select...</option>
+          <option value="">{t.common.select}</option>
           {options?.map((o: any) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       </div>

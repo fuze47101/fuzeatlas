@@ -1,17 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 const STAGES = [
   "LEAD","PRESENTATION","BRAND_TESTING","FACTORY_ONBOARDING",
   "FACTORY_TESTING","PRODUCTION","BRAND_EXPANSION","ARCHIVE","CUSTOMER_WON",
 ];
-const STAGE_LABELS: Record<string,string> = {
-  LEAD:"Lead", PRESENTATION:"Presentation", BRAND_TESTING:"Brand Testing",
-  FACTORY_ONBOARDING:"Factory Onboard", FACTORY_TESTING:"Factory Testing",
-  PRODUCTION:"Production", BRAND_EXPANSION:"Expansion", ARCHIVE:"Archive",
-  CUSTOMER_WON:"Won",
-};
 const STAGE_COLORS: Record<string,string> = {
   LEAD:"#94a3b8", PRESENTATION:"#60a5fa", BRAND_TESTING:"#a78bfa",
   FACTORY_ONBOARDING:"#f59e0b", FACTORY_TESTING:"#fb923c",
@@ -22,6 +17,7 @@ type Brand = { id: string; name: string; pipelineStage: string; salesRep: string
 
 export default function BrandsPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [grouped, setGrouped] = useState<Record<string, Brand[]>>({});
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -32,6 +28,19 @@ export default function BrandsPage() {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [adminCode, setAdminCode] = useState("");
+
+  // Build stage labels from translations
+  const STAGE_LABELS: Record<string, string> = {
+    LEAD: t.stages.LEAD,
+    PRESENTATION: t.stages.PRESENTATION,
+    BRAND_TESTING: t.stages.BRAND_TESTING,
+    FACTORY_ONBOARDING: t.stages.FACTORY_ONBOARDING,
+    FACTORY_TESTING: t.stages.FACTORY_TESTING,
+    PRODUCTION: t.stages.PRODUCTION,
+    BRAND_EXPANSION: t.stages.BRAND_EXPANSION,
+    ARCHIVE: t.stages.ARCHIVE,
+    CUSTOMER_WON: t.stages.CUSTOMER_WON,
+  };
 
   const loadBrands = () => {
     fetch("/api/brands").then(r => r.json()).then(j => {
@@ -69,7 +78,7 @@ export default function BrandsPage() {
     }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400 text-lg">Loading brand pipeline...</div>;
+  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400 text-lg">{t.brands.loading}</div>;
 
   const q = search.toLowerCase();
 
@@ -77,13 +86,13 @@ export default function BrandsPage() {
     <div className="max-w-[1600px] mx-auto">
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">Brand Pipeline</h1>
-          <p className="text-sm text-slate-500 mt-1">{total.toLocaleString()} brands across {STAGES.length} stages</p>
+          <h1 className="text-2xl font-black text-slate-900">{t.brands.title}</h1>
+          <p className="text-sm text-slate-500 mt-1">{t.brands.brandsAcrossStages(total, STAGES.length)}</p>
         </div>
         <div className="flex items-center gap-3">
-          <input type="text" placeholder="Search brands..." value={search} onChange={e => setSearch(e.target.value)}
+          <input type="text" placeholder={t.brands.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)}
             className="px-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-          <button onClick={() => router.push("/brands/new")} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap">+ New Brand</button>
+          <button onClick={() => router.push("/brands/new")} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap">{t.brands.addNew}</button>
         </div>
       </div>
 
@@ -120,16 +129,16 @@ export default function BrandsPage() {
                       <div className="font-bold text-sm text-slate-900 truncate pr-6">{b.name}</div>
                       {b.salesRep && <div className="text-[11px] text-slate-500 mt-1 truncate">{b.salesRep}</div>}
                       <div className="flex gap-3 mt-2 text-[11px] text-slate-500">
-                        {b.fabricCount > 0 && <span title="Fabrics">🧵 {b.fabricCount}</span>}
-                        {b.submissionCount > 0 && <span title="Submissions">📋 {b.submissionCount}</span>}
-                        {b.factoryCount > 0 && <span title="Factories">🏭 {b.factoryCount}</span>}
+                        {b.fabricCount > 0 && <span title={t.brands.fabrics}>🧵 {b.fabricCount}</span>}
+                        {b.submissionCount > 0 && <span title={t.brands.submissions}>📋 {b.submissionCount}</span>}
+                        {b.factoryCount > 0 && <span title={t.brands.factories}>🏭 {b.factoryCount}</span>}
                       </div>
                     </div>
                     {/* Quick delete button — always visible */}
                     <button
                       onClick={(e) => { e.stopPropagation(); setDeleteTarget(b); setDeleteError(null); setAdminCode(""); }}
                       className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full text-red-300 hover:text-red-600 hover:bg-red-50 transition-all"
-                      title="Delete brand"
+                      title={t.brands.deleteBrand}
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -137,7 +146,7 @@ export default function BrandsPage() {
                     </button>
                   </div>
                 ))}
-                {brands.length === 0 && <div className="text-xs text-slate-400 text-center py-8">No brands</div>}
+                {brands.length === 0 && <div className="text-xs text-slate-400 text-center py-8">{t.brands.noBrands}</div>}
               </div>
             </div>
           );
@@ -149,30 +158,30 @@ export default function BrandsPage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => { setDeleteTarget(null); setDeleteError(null); }} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
-            <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Brand</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">{t.brands.deleteBrand}</h3>
             <p className="text-sm text-slate-600 mb-1">
-              Delete <strong className="text-slate-900">{deleteTarget.name}</strong>?
+              {t.brands.deleteConfirm} <strong className="text-slate-900">{deleteTarget.name}</strong>?
             </p>
             {(deleteTarget.fabricCount > 0 || deleteTarget.submissionCount > 0 || deleteTarget.factoryCount > 0) ? (
               <p className="text-xs text-amber-600 mb-4">
-                This brand has {[
-                  deleteTarget.fabricCount > 0 && `${deleteTarget.fabricCount} fabric(s)`,
-                  deleteTarget.submissionCount > 0 && `${deleteTarget.submissionCount} submission(s)`,
-                  deleteTarget.factoryCount > 0 && `${deleteTarget.factoryCount} factory link(s)`,
-                ].filter(Boolean).join(", ")}. Delete may fail if there are linked records.
+                {t.brands.hasLinkedRecords} {[
+                  deleteTarget.fabricCount > 0 && `${deleteTarget.fabricCount} ${t.brands.fabrics.toLowerCase()}`,
+                  deleteTarget.submissionCount > 0 && `${deleteTarget.submissionCount} ${t.brands.submissions.toLowerCase()}`,
+                  deleteTarget.factoryCount > 0 && `${deleteTarget.factoryCount} ${t.brands.factories.toLowerCase()}`,
+                ].filter(Boolean).join(", ")}. {t.brands.deleteMayFail}
               </p>
             ) : (
-              <p className="text-xs text-slate-500 mb-4">This brand has no linked records and can be safely removed.</p>
+              <p className="text-xs text-slate-500 mb-4">{t.brands.noLinkedRecords}</p>
             )}
             <div className="mb-4">
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Admin Code</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">{t.brands.adminCode}</label>
               <input
                 type="password"
                 value={adminCode}
                 onChange={(e) => setAdminCode(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter" && adminCode) handleDelete(); }}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                placeholder="Enter admin code to confirm"
+                placeholder={t.brands.adminCodePlaceholder}
                 autoFocus
               />
             </div>
@@ -184,14 +193,14 @@ export default function BrandsPage() {
                 onClick={() => { setDeleteTarget(null); setDeleteError(null); }}
                 className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
               >
-                Cancel
+                {t.common.cancel}
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleting || !adminCode}
                 className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
-                {deleting ? "Deleting..." : "Delete"}
+                {deleting ? t.common.deleting : t.common.delete}
               </button>
             </div>
           </div>

@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 export default function SOWPrintPage() {
+  const { t } = useI18n();
   const { id } = useParams();
   const [sow, setSow] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -27,13 +29,13 @@ export default function SOWPrintPage() {
   if (loading)
     return (
       <div className="flex items-center justify-center h-screen text-slate-400">
-        Preparing SOW for print...
+        {t.sow.preparingForPrint}
       </div>
     );
   if (!sow)
     return (
       <div className="flex items-center justify-center h-screen text-red-400">
-        SOW not found
+        {t.sow.notFound}
       </div>
     );
 
@@ -66,16 +68,16 @@ export default function SOWPrintPage() {
       <div className="no-print fixed top-0 left-0 right-0 bg-white border-b border-slate-200 p-3 flex items-center justify-between z-50 shadow-sm">
         <div className="flex items-center gap-3">
           <a href={`/sow/${id}`} className="text-sm text-blue-600 hover:underline">
-            &larr; Back to SOW
+            &larr; {t.sow.backToSow}
           </a>
-          <span className="text-sm text-slate-400">Print Preview</span>
+          <span className="text-sm text-slate-400">{t.sow.printPreview}</span>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => window.print()}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700"
           >
-            Print / Save PDF
+            {t.sow.printSavePdf}
           </button>
         </div>
       </div>
@@ -90,7 +92,7 @@ export default function SOWPrintPage() {
               <img src="/fuze-logo-stacked.png" alt="FUZE Technologies" className="h-24" />
             </div>
             <p className="text-sm text-slate-500 mt-1">
-              Commercialization & Development Scope of Work
+              {t.sow.scopeOfWork}
             </p>
             <div className="mt-3 inline-block px-4 py-1 bg-slate-100 rounded-full">
               <span className="text-xs font-bold text-slate-600">
@@ -102,12 +104,12 @@ export default function SOWPrintPage() {
           {/* SOW Title & Meta */}
           <div className="mb-6">
             <h2 className="text-xl font-bold text-slate-900">
-              {sow.title || "Untitled SOW"}
+              {sow.title || t.sow.untitledSow}
             </h2>
             <div className="flex gap-6 mt-2 text-sm text-slate-500">
-              <span>Brand: <strong className="text-slate-900">{sow.brand?.name || "—"}</strong></span>
-              <span>Date: <strong className="text-slate-900">{today}</strong></span>
-              <span>SOW ID: <strong className="text-slate-900 font-mono text-xs">{sow.id}</strong></span>
+              <span>{t.sow.brand}: <strong className="text-slate-900">{sow.brand?.name || "—"}</strong></span>
+              <span>{t.sow.date}: <strong className="text-slate-900">{today}</strong></span>
+              <span>{t.sow.sowId}: <strong className="text-slate-900 font-mono text-xs">{sow.id}</strong></span>
             </div>
           </div>
 
@@ -115,14 +117,14 @@ export default function SOWPrintPage() {
           {sow.products?.length > 0 && (
             <div className="mb-6">
               <h3 className="text-sm font-bold text-slate-800 mb-2 uppercase tracking-wide">
-                Products / SKUs
+                {t.sow.productsSku}
               </h3>
               <table className="w-full text-sm border border-slate-300">
                 <thead>
                   <tr className="bg-slate-50">
-                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600">Product</th>
-                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600">Type</th>
-                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600">SKU</th>
+                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600">{t.sow.product}</th>
+                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600">{t.sow.type}</th>
+                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600">{t.sow.sku}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -139,53 +141,53 @@ export default function SOWPrintPage() {
           )}
 
           {/* Section 1: Commercial Ownership */}
-          <Section title="1. Commercial Ownership">
-            <Row label="Brand" value={sow.brand?.name} />
-            <Row label="Executive Sponsor" value={costData.executiveSponsor} />
-            <Row label="Sales Representative" value={costData.salesRepName} />
+          <Section title={`1. ${t.sow.commercialOwnership}`}>
+            <Row label={t.sow.brand} value={sow.brand?.name} />
+            <Row label={t.sow.executiveSponsor} value={costData.executiveSponsor} />
+            <Row label={t.sow.salesRepName} value={costData.salesRepName} />
           </Section>
 
           {/* Section 2: End Use Definition */}
-          <Section title="2. End Use Definition">
-            {costData.garmentSku && <Row label="Garment SKU / Style #" value={costData.garmentSku} />}
-            <Row label="Fabric Type" value={costData.fabricType} />
-            <Row label="GSM" value={costData.gsm} />
-            <Row label="Application Level" value={costData.applicationLevel ? `${costData.applicationLevel} mg/kg` : null} />
-            <Row label="Target Launch Season" value={costData.targetLaunchSeason} />
-            <Row label="Retail Channel" value={costData.retailChannel} />
+          <Section title={`2. ${t.sow.endUseDefinition}`}>
+            {costData.garmentSku && <Row label={t.sow.garmentSku} value={costData.garmentSku} />}
+            <Row label={t.sow.fabricType} value={costData.fabricType} />
+            <Row label={t.sow.gsm} value={costData.gsm} />
+            <Row label={t.sow.applicationLevel} value={costData.applicationLevel ? `${costData.applicationLevel} mg/kg` : null} />
+            <Row label={t.sow.targetLaunchSeason} value={costData.targetLaunchSeason} />
+            <Row label={t.sow.retailChannel} value={costData.retailChannel} />
           </Section>
 
           {/* Section 3: Volume Forecast */}
-          <Section title="3. Volume Forecast">
-            <Row label="Projected Annual Units" value={costData.projectedAnnualUnits ? Number(costData.projectedAnnualUnits).toLocaleString() : null} />
-            <Row label="Garment Weight" value={costData.garmentWeight ? `${costData.garmentWeight} kg` : null} />
-            <Row label="Calculated Annual Liters" value={costData.calculatedAnnualLiters ? `${Number(costData.calculatedAnnualLiters).toLocaleString()} L` : null} />
-            <Row label="Projected Annual Revenue" value={pricingData.projectedAnnualRevenue ? `$${Number(pricingData.projectedAnnualRevenue).toLocaleString()}` : null} />
-            <Row label="Target Commercialization Date" value={costData.targetCommercializationDate} />
+          <Section title={`3. ${t.sow.volumeForecast}`}>
+            <Row label={t.sow.projectedAnnualUnits} value={costData.projectedAnnualUnits ? Number(costData.projectedAnnualUnits).toLocaleString() : null} />
+            <Row label={t.sow.garmentWeight} value={costData.garmentWeight ? `${costData.garmentWeight} kg` : null} />
+            <Row label={t.sow.calculatedAnnualLiters} value={costData.calculatedAnnualLiters ? `${Number(costData.calculatedAnnualLiters).toLocaleString()} L` : null} />
+            <Row label={t.sow.projectedAnnualRevenue} value={pricingData.projectedAnnualRevenue ? `$${Number(pricingData.projectedAnnualRevenue).toLocaleString()}` : null} />
+            <Row label={t.sow.targetCommercializationDate} value={costData.targetCommercializationDate} />
           </Section>
 
           {/* Section 4: Success Criteria */}
-          <Section title="4. Success Criteria">
-            <Row label="ICP Target" value={perfData.icpTarget} />
-            <Row label="Antimicrobial Standard" value={perfData.antimicrobialStandard} />
-            <Row label="Required Log Reduction" value={perfData.requiredLogReduction} />
-            <Row label="Wash Durability" value={perfData.washDurability} />
-            <Row label="Approved Testing Lab" value={perfData.approvedTestingLab} />
+          <Section title={`4. ${t.sow.successCriteria}`}>
+            <Row label={t.sow.icpTarget} value={perfData.icpTarget} />
+            <Row label={t.sow.antimicrobialStandard} value={perfData.antimicrobialStandard} />
+            <Row label={t.sow.requiredLogReduction} value={perfData.requiredLogReduction} />
+            <Row label={t.sow.washDurability} value={perfData.washDurability} />
+            <Row label={t.sow.approvedTestingLab} value={perfData.approvedTestingLab} />
           </Section>
 
           {/* Section 5: Financial Participation */}
-          <Section title="5. Financial Participation">
-            <Row label="Participation Type" value={pricingData.financialParticipation?.replace(/_/g, " ")} />
+          <Section title={`5. ${t.sow.financialTerms}`}>
+            <Row label={t.sow.participationType} value={pricingData.financialParticipation?.replace(/_/g, " ")} />
             {pricingData.developmentRetainer && (
-              <Row label="Development Retainer" value={`$${Number(pricingData.developmentRetainer).toLocaleString()}`} />
+              <Row label={t.sow.developmentRetainer} value={`$${Number(pricingData.developmentRetainer).toLocaleString()}`} />
             )}
-            <Row label="Commitment Volume" value={pricingData.commitmentVolumeLiters ? `${Number(pricingData.commitmentVolumeLiters).toLocaleString()} L` : null} />
+            <Row label={t.sow.commitmentVolume} value={pricingData.commitmentVolumeLiters ? `${Number(pricingData.commitmentVolumeLiters).toLocaleString()} L` : null} />
           </Section>
 
           {/* Commercialization Commitment */}
           <div className="my-6 p-4 border-2 border-slate-800 rounded-lg">
             <h3 className="text-sm font-bold text-slate-900 mb-2">
-              COMMERCIALIZATION COMMITMENT
+              {t.sow.commercializationCommitment}
             </h3>
             <p className="text-sm text-slate-700 leading-relaxed">
               Upon successful completion of all technical validation criteria outlined in
@@ -200,15 +202,15 @@ export default function SOWPrintPage() {
           {sow.milestones?.length > 0 && (
             <div className="my-6">
               <h3 className="text-sm font-bold text-slate-800 mb-2 uppercase tracking-wide">
-                Stage-Gate Milestones
+                {t.sow.stageGateMilestones}
               </h3>
               <table className="w-full text-sm border border-slate-300">
                 <thead>
                   <tr className="bg-slate-50">
-                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600 w-12">Stage</th>
-                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600">Milestone</th>
-                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600">Description</th>
-                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600 w-24">Status</th>
+                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600 w-12">{t.sow.stage}</th>
+                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600">{t.sow.milestone}</th>
+                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600">{t.sow.description}</th>
+                    <th className="text-left px-3 py-2 border-b border-slate-300 font-semibold text-slate-600 w-24">{t.sow.status}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -219,9 +221,9 @@ export default function SOWPrintPage() {
                       <td className="px-3 py-2 text-slate-600">{m.description}</td>
                       <td className="px-3 py-2">
                         {m.completedAt ? (
-                          <span className="text-green-700 font-semibold">Complete</span>
+                          <span className="text-green-700 font-semibold">{t.sow.complete}</span>
                         ) : (
-                          <span className="text-slate-400">Pending</span>
+                          <span className="text-slate-400">{t.sow.pending}</span>
                         )}
                       </td>
                     </tr>
@@ -235,48 +237,48 @@ export default function SOWPrintPage() {
           <div className="page-break" />
           <div className="mt-8 pt-6 border-t-2 border-slate-800">
             <h3 className="text-sm font-bold text-slate-800 mb-6 uppercase tracking-wide">
-              Signatures
+              {t.sow.signatures}
             </h3>
 
             <div className="grid grid-cols-2 gap-8">
               {/* FUZE Technologies */}
               <div>
                 <p className="text-xs font-bold text-slate-500 mb-6">
-                  FUZE TECHNOLOGIES
+                  {t.sow.fuzeSignature}
                 </p>
                 <div className="border-b border-slate-400 mb-1 h-12" />
-                <p className="text-xs text-slate-500">Signature</p>
+                <p className="text-xs text-slate-500">{t.sow.signatureLine}</p>
                 <div className="mt-4 border-b border-slate-400 mb-1 h-6" />
-                <p className="text-xs text-slate-500">Print Name</p>
+                <p className="text-xs text-slate-500">{t.sow.printName}</p>
                 <div className="mt-4 border-b border-slate-400 mb-1 h-6" />
-                <p className="text-xs text-slate-500">Title</p>
+                <p className="text-xs text-slate-500">{t.sow.title}</p>
                 <div className="mt-4 border-b border-slate-400 mb-1 h-6" />
-                <p className="text-xs text-slate-500">Date</p>
+                <p className="text-xs text-slate-500">{t.sow.signatureDate}</p>
               </div>
 
               {/* Customer/Brand */}
               <div>
                 <p className="text-xs font-bold text-slate-500 mb-6">
-                  {sow.brand?.name?.toUpperCase() || "CUSTOMER"}
+                  {sow.brand?.name?.toUpperCase() || t.sow.customerSignature}
                 </p>
                 <div className="border-b border-slate-400 mb-1 h-12" />
-                <p className="text-xs text-slate-500">Signature</p>
+                <p className="text-xs text-slate-500">{t.sow.signatureLine}</p>
                 <div className="mt-4 border-b border-slate-400 mb-1 h-6" />
                 <p className="text-xs text-slate-500">
-                  Print Name
+                  {t.sow.printName}
                   {sow.signatory && (
                     <span className="text-slate-700 font-semibold ml-2">{sow.signatory}</span>
                   )}
                 </p>
                 <div className="mt-4 border-b border-slate-400 mb-1 h-6" />
                 <p className="text-xs text-slate-500">
-                  Title
+                  {t.sow.title}
                   {sow.signatoryTitle && (
                     <span className="text-slate-700 font-semibold ml-2">{sow.signatoryTitle}</span>
                   )}
                 </p>
                 <div className="mt-4 border-b border-slate-400 mb-1 h-6" />
-                <p className="text-xs text-slate-500">Date</p>
+                <p className="text-xs text-slate-500">{t.sow.signatureDate}</p>
               </div>
             </div>
           </div>
@@ -284,7 +286,7 @@ export default function SOWPrintPage() {
           {/* Footer */}
           <div className="mt-12 pt-4 border-t border-slate-200 text-center">
             <p className="text-[10px] text-slate-400">
-              FUZE Technologies — Confidential — {today}
+              {t.sow.footerText} — {today}
             </p>
           </div>
         </div>

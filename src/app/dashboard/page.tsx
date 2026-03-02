@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 
 type DashData = {
   counts: Record<string, number>;
@@ -21,17 +22,17 @@ const STAGE_COLORS: Record<string, string> = {
   CUSTOMER_WON: "#22c55e",
 };
 
-const STAGE_LABELS: Record<string, string> = {
-  LEAD: "Lead",
-  PRESENTATION: "Presentation",
-  BRAND_TESTING: "Brand Testing",
-  FACTORY_ONBOARDING: "Factory Onboard",
-  FACTORY_TESTING: "Factory Testing",
-  PRODUCTION: "Production",
-  BRAND_EXPANSION: "Expansion",
-  ARCHIVE: "Archive",
-  CUSTOMER_WON: "Won",
-};
+const getStageLabels = (t: any): Record<string, string> => ({
+  LEAD: t.dashboard.stageLead || "Lead",
+  PRESENTATION: t.dashboard.stagePresentation || "Presentation",
+  BRAND_TESTING: t.dashboard.stageBrandTesting || "Brand Testing",
+  FACTORY_ONBOARDING: t.dashboard.stageFactoryOnboarding || "Factory Onboard",
+  FACTORY_TESTING: t.dashboard.stageFactoryTesting || "Factory Testing",
+  PRODUCTION: t.dashboard.stageProduction || "Production",
+  BRAND_EXPANSION: t.dashboard.stageBrandExpansion || "Expansion",
+  ARCHIVE: t.dashboard.stageArchive || "Archive",
+  CUSTOMER_WON: t.dashboard.stageCustomerWon || "Won",
+});
 
 function StatCard({ label, value, icon, color }: { label: string; value: number | string; icon: string; color: string }) {
   return (
@@ -48,16 +49,16 @@ function StatCard({ label, value, icon, color }: { label: string; value: number 
   );
 }
 
-function PipelineBar({ data }: { data: { stage: string; count: number }[] }) {
+function PipelineBar({ data, brandPipelineLabel, stageLabels }: { data: { stage: string; count: number }[]; brandPipelineLabel: string; stageLabels: Record<string, string> }) {
   const max = Math.max(...data.map((d) => d.count), 1);
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-      <h3 className="text-sm font-bold text-slate-700 mb-4">Brand Pipeline</h3>
+      <h3 className="text-sm font-bold text-slate-700 mb-4">{brandPipelineLabel}</h3>
       <div className="space-y-2.5">
         {data.map((d) => (
           <div key={d.stage} className="flex items-center gap-3">
             <div className="w-28 text-xs font-semibold text-slate-600 text-right truncate">
-              {STAGE_LABELS[d.stage] || d.stage}
+              {stageLabels[d.stage] || d.stage}
             </div>
             <div className="flex-1 bg-slate-100 rounded-full h-7 relative overflow-hidden">
               <div
@@ -77,12 +78,12 @@ function PipelineBar({ data }: { data: { stage: string; count: number }[] }) {
   );
 }
 
-function TestTypeChart({ data }: { data: { type: string; count: number }[] }) {
+function TestTypeChart({ data, testsByTypeLabel }: { data: { type: string; count: number }[]; testsByTypeLabel: string }) {
   const total = data.reduce((s, d) => s + d.count, 0) || 1;
   const colors = ["#3b82f6", "#8b5cf6", "#f59e0b", "#ef4444", "#10b981", "#6366f1", "#ec4899"];
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-      <h3 className="text-sm font-bold text-slate-700 mb-4">Tests by Type</h3>
+      <h3 className="text-sm font-bold text-slate-700 mb-4">{testsByTypeLabel}</h3>
       <div className="flex gap-1 h-8 rounded-lg overflow-hidden mb-4">
         {data.map((d, i) => (
           <div
@@ -107,6 +108,7 @@ function TestTypeChart({ data }: { data: { type: string; count: number }[] }) {
 }
 
 export default function DashboardPage() {
+  const { t } = useI18n();
   const [data, setData] = useState<DashData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -117,67 +119,68 @@ export default function DashboardPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400 text-lg">Loading dashboard...</div>;
-  if (!data) return <div className="text-red-500 p-6">Failed to load dashboard data.</div>;
+  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400 text-lg">{t.dashboard.loadingDashboard}</div>;
+  if (!data) return <div className="text-red-500 p-6">{t.dashboard.loadFailed}</div>;
 
   const c = data.counts;
+  const stageLabels = getStageLabels(t);
 
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900">Dashboard</h1>
-        <p className="text-sm text-slate-500 mt-1">FUZE Atlas overview — all data at a glance</p>
+        <h1 className="text-2xl font-black text-slate-900">{t.dashboard.title}</h1>
+        <p className="text-sm text-slate-500 mt-1">{t.dashboard.subtitle}</p>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Fabrics" value={c.fabrics} icon="🧵" color="#3b82f6" />
-        <StatCard label="Brands" value={c.brands} icon="🎯" color="#8b5cf6" />
-        <StatCard label="Factories" value={c.factories} icon="🏭" color="#f59e0b" />
-        <StatCard label="Test Runs" value={c.testRuns} icon="🧪" color="#10b981" />
+        <StatCard label={t.dashboard.fabrics} value={c.fabrics} icon="🧵" color="#3b82f6" />
+        <StatCard label={t.dashboard.brands} value={c.brands} icon="🎯" color="#8b5cf6" />
+        <StatCard label={t.dashboard.factories} value={c.factories} icon="🏭" color="#f59e0b" />
+        <StatCard label={t.dashboard.testRuns} value={c.testRuns} icon="🧪" color="#10b981" />
       </div>
 
       {/* Second row - more stats */}
       <div className="grid grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
           <p className="text-2xl font-black text-blue-600">{c.icpResults}</p>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">ICP Results</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.icpResults}</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
           <p className="text-2xl font-black text-purple-600">{c.antibacterialResults}</p>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">Antibacterial</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.antibacterial}</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
           <p className="text-2xl font-black text-amber-600">{c.fungalResults}</p>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">Fungal</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.fungal}</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
           <p className="text-2xl font-black text-emerald-600">{c.submissions}</p>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">Submissions</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.submissions}</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
           <p className="text-2xl font-black text-slate-600">{c.labs}</p>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">Labs</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.labs}</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
           <p className="text-2xl font-black text-slate-600">{c.distributors}</p>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">Distributors</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.distributors}</p>
         </div>
       </div>
 
       {/* Pipeline + Test Types */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         <div className="lg:col-span-2">
-          <PipelineBar data={data.pipeline} />
+          <PipelineBar data={data.pipeline} brandPipelineLabel={t.dashboard.brandPipeline} stageLabels={stageLabels} />
         </div>
-        <TestTypeChart data={data.testTypes} />
+        <TestTypeChart data={data.testTypes} testsByTypeLabel={t.dashboard.testsByType} />
       </div>
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Recent Fabrics */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-          <h3 className="text-sm font-bold text-slate-700 mb-3">Recent Fabrics</h3>
+          <h3 className="text-sm font-bold text-slate-700 mb-3">{t.dashboard.recentFabrics}</h3>
           <div className="space-y-2">
             {data.recentFabrics.map((f: any) => (
               <a
@@ -202,7 +205,7 @@ export default function DashboardPage() {
 
         {/* Recent Tests */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-          <h3 className="text-sm font-bold text-slate-700 mb-3">Recent Test Runs</h3>
+          <h3 className="text-sm font-bold text-slate-700 mb-3">{t.dashboard.recentTests}</h3>
           <div className="space-y-2">
             {data.recentTests.map((t: any) => (
               <div key={t.id} className="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition-colors">

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 const STATUS_COLORS: Record<string,string> = {
   DRAFT: "bg-slate-200 text-slate-700", SENT: "bg-blue-100 text-blue-700",
@@ -10,6 +11,7 @@ const STATUS_COLORS: Record<string,string> = {
 
 export default function SOWListPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [sows, setSows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -18,7 +20,7 @@ export default function SOWListPage() {
     fetch("/api/sow").then(r => r.json()).then(j => { if (j.ok) setSows(j.sows); }).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">Loading SOWs...</div>;
+  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">{t.sow.loadingSows}</div>;
 
   const q = search.toLowerCase();
   const filtered = sows.filter(s => !q || (s.title && s.title.toLowerCase().includes(q)) || (s.brand?.name && s.brand.name.toLowerCase().includes(q)));
@@ -29,13 +31,13 @@ export default function SOWListPage() {
     <div className="max-w-[1400px] mx-auto">
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">Statements of Work</h1>
-          <p className="text-sm text-slate-500 mt-1">{sows.length} SOWs — Commercialization governance tracking</p>
+          <h1 className="text-2xl font-black text-slate-900">{t.sow.title}</h1>
+          <p className="text-sm text-slate-500 mt-1">{sows.length} {t.sow.subtitle}</p>
         </div>
         <div className="flex items-center gap-3">
-          <input type="text" placeholder="Search SOWs..." value={search} onChange={e => setSearch(e.target.value)}
+          <input type="text" placeholder={t.sow.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)}
             className="px-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <button onClick={() => router.push("/sow/new")} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap">+ New SOW</button>
+          <button onClick={() => router.push("/sow/new")} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap">{t.sow.addNew}</button>
         </div>
       </div>
 
@@ -65,7 +67,7 @@ export default function SOWListPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-3">
-                    <h3 className="font-bold text-slate-900">{s.title || "Untitled SOW"}</h3>
+                    <h3 className="font-bold text-slate-900">{s.title || t.sow.untitled}</h3>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${STATUS_COLORS[s.status]}`}>{s.status}</span>
                   </div>
                   <div className="text-sm text-slate-500 mt-1">
@@ -94,7 +96,7 @@ export default function SOWListPage() {
             </div>
           );
         })}
-        {filtered.length === 0 && <div className="text-center py-12 text-slate-400">No SOWs found. Create one to start the commercialization process.</div>}
+        {filtered.length === 0 && <div className="text-center py-12 text-slate-400">{t.sow.noSows}</div>}
       </div>
     </div>
   );

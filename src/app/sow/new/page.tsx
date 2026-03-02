@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 const FINANCIAL_OPTIONS = [
   { value: "BRAND_COVERS_AB_ICP", label: "Brand covers antimicrobial + ICP" },
@@ -20,6 +21,7 @@ export default function NewSOWPage() {
 function NewSOWPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useI18n();
   const prefillBrandId = searchParams.get("brandId") || "";
 
   const [saving, setSaving] = useState(false);
@@ -140,12 +142,12 @@ function NewSOWPageInner() {
   const gate0Pass = Object.values(gate0).every(Boolean);
 
   const steps = [
-    { label: "1. Commercial Ownership", icon: "🏢" },
-    { label: "2. End Use Definition", icon: "👕" },
-    { label: "3. Volume Forecast", icon: "📊" },
-    { label: "4. Success Criteria", icon: "🎯" },
-    { label: "5. Financial Participation", icon: "💰" },
-    { label: "6. Commitment & Sign", icon: "✍️" },
+    { label: t.sow.step1Title, icon: "🏢" },
+    { label: t.sow.step2Title, icon: "👕" },
+    { label: t.sow.step3Title, icon: "📊" },
+    { label: t.sow.step4Title, icon: "🎯" },
+    { label: t.sow.step5Title, icon: "💰" },
+    { label: t.sow.step6Title, icon: "✍️" },
   ];
 
   const handleSubmit = async () => {
@@ -172,8 +174,8 @@ function NewSOWPageInner() {
 
   return (
     <div className="max-w-[900px] mx-auto">
-      <button onClick={() => router.push("/sow")} className="text-sm text-blue-600 hover:underline mb-2 block">&larr; Back to SOWs</button>
-      <h1 className="text-2xl font-black text-slate-900 mb-1">New Commercialization SOW</h1>
+      <button onClick={() => router.push("/sow")} className="text-sm text-blue-600 hover:underline mb-2 block">&larr; {t.sow.backToSow}</button>
+      <h1 className="text-2xl font-black text-slate-900 mb-1">{t.sow.newSow}</h1>
       <p className="text-sm text-slate-500 mb-6">FUZE Technologies — Stage-Gate Commercialization & Development</p>
 
       {error && (
@@ -207,54 +209,54 @@ function NewSOWPageInner() {
         {/* Section 1: Commercial Ownership */}
         {step === 0 && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">🏢 Commercial Ownership
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">🏢 {t.sow.commercialOwnership}
               {!gate0Pass && <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Gate requirements below</span>}
             </h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Brand <span className="text-red-500">* GATE</span></label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.selectBrand} <span className="text-red-500">* GATE</span></label>
                 <select value={form.brandId} onChange={e => set("brandId", e.target.value)}
                   className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${!gate0.brandId ? "border-red-300 bg-red-50" : "border-slate-300"}`}>
-                  <option value="">Select brand...</option>
+                  <option value="">{t.common.selectOption}</option>
                   {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Executive Sponsor (Director+) <span className="text-red-500">* GATE</span></label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.executiveSponsor} <span className="text-red-500">* GATE</span></label>
                 <input type="text" value={form.executiveSponsor} onChange={e => set("executiveSponsor", e.target.value)}
                   placeholder="Name of Director+ sponsor"
                   className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${!gate0.executiveSponsor ? "border-red-300 bg-red-50" : "border-slate-300"}`} />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Factory <span className="text-red-500">* GATE</span></label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.factory} <span className="text-red-500">* GATE</span></label>
                 <select value={form.factoryId} onChange={e => set("factoryId", e.target.value)}
                   className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${!gate0.factoryId ? "border-red-300 bg-red-50" : "border-slate-300"}`}>
-                  <option value="">Select factory...</option>
+                  <option value="">{t.common.selectOption}</option>
                   {factories.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Distributor</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.distributor}</label>
                 <select value={form.distributorId} onChange={e => set("distributorId", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="">Select distributor...</option>
+                  <option value="">{t.common.selectOption}</option>
                   {distributors.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Sales Representative</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.salesRepName}</label>
                 <input type="text" value={form.salesRepName} onChange={e => set("salesRepName", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">SOW Title</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.common.title}</label>
                 <input type="text" value={form.title} onChange={e => set("title", e.target.value)} placeholder="Auto-generated if blank"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
             {/* Stage 0 gate status */}
             <div className="mt-4 p-3 bg-slate-50 rounded-lg">
-              <h3 className="text-xs font-bold text-slate-600 mb-2">Stage 0 — Commercial Qualification Gate</h3>
+              <h3 className="text-xs font-bold text-slate-600 mb-2">Stage 0 — Commercial Qualification Gate (GATE)</h3>
               <div className="grid grid-cols-3 gap-2 text-xs">
                 {[
                   ["Brand selected", gate0.brandId],
@@ -276,7 +278,7 @@ function NewSOWPageInner() {
         {/* Section 2: End Use */}
         {step === 1 && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-900">👕 End Use Definition</h2>
+            <h2 className="text-lg font-bold text-slate-900">👕 {t.sow.endUseDefinition}</h2>
 
             {/* Products section */}
             <div className={`p-4 rounded-lg border ${!gate0.garmentSku ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}`}>
@@ -335,27 +337,27 @@ function NewSOWPageInner() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Fabric Type</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.fabricType}</label>
                 <input type="text" value={form.fabricType} onChange={e => set("fabricType", e.target.value)} placeholder="e.g. Knit, Woven"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">GSM</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.gsm}</label>
                 <input type="number" value={form.gsm} onChange={e => set("gsm", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Application Level (mg/kg)</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.applicationLevel} (mg/kg)</label>
                 <input type="number" value={form.applicationLevel} onChange={e => set("applicationLevel", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Target Launch Season <span className="text-red-500">* GATE</span></label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.targetLaunchSeason} <span className="text-red-500">* GATE</span></label>
                 <input type="text" value={form.targetLaunchSeason} onChange={e => set("targetLaunchSeason", e.target.value)} placeholder="e.g. Fall 2026"
                   className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${!gate0.targetLaunchSeason ? "border-red-300 bg-red-50" : "border-slate-300"}`} />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Retail Channel</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.retailChannel}</label>
                 <input type="text" value={form.retailChannel} onChange={e => set("retailChannel", e.target.value)} placeholder="e.g. Direct, Wholesale, Amazon"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
@@ -366,32 +368,32 @@ function NewSOWPageInner() {
         {/* Section 3: Volume Forecast */}
         {step === 2 && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-900">📊 Volume Forecast</h2>
+            <h2 className="text-lg font-bold text-slate-900">📊 {t.sow.volumeForecast}</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Projected Annual Units <span className="text-red-500">* GATE</span></label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.projectedAnnualUnits} <span className="text-red-500">* GATE</span></label>
                 <input type="number" value={form.projectedAnnualUnits} onChange={e => set("projectedAnnualUnits", e.target.value)}
                   className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${!gate0.volume ? "border-red-300 bg-red-50" : "border-slate-300"}`} />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Garment Weight (kg)</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.garmentWeight}</label>
                 <input type="number" step="0.01" value={form.garmentWeight} onChange={e => set("garmentWeight", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Calculated Annual Liters</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.calculatedLiters}</label>
                 <input type="number" value={form.calculatedAnnualLiters} onChange={e => set("calculatedAnnualLiters", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50" />
                 <p className="text-[10px] text-slate-400 mt-1">Auto-calculated from units × weight × application level</p>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Projected Annual FUZE Revenue ($)</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.projectedRevenue}</label>
                 <input type="number" value={form.projectedAnnualRevenue} onChange={e => set("projectedAnnualRevenue", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 {belowThreshold && <p className="text-[10px] text-amber-600 mt-1">⚠️ Below $25K minimum threshold</p>}
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Target Commercialization Date</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.targetCommDate}</label>
                 <input type="date" value={form.targetCommercializationDate} onChange={e => set("targetCommercializationDate", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
@@ -402,33 +404,33 @@ function NewSOWPageInner() {
         {/* Section 4: Success Criteria */}
         {step === 3 && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-900">🎯 Success Criteria</h2>
+            <h2 className="text-lg font-bold text-slate-900">🎯 {t.sow.successCriteria}</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">ICP Target</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.icpTarget}</label>
                 <input type="text" value={form.icpTarget} onChange={e => set("icpTarget", e.target.value)} placeholder="e.g. Ag 100-150 mg/kg"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Antimicrobial Standard</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.antimicrobialStandard}</label>
                 <input type="text" value={form.antimicrobialStandard} onChange={e => set("antimicrobialStandard", e.target.value)} placeholder="e.g. AATCC 100, ISO 20743"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Required Log Reduction</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.requiredLogReduction}</label>
                 <input type="text" value={form.requiredLogReduction} onChange={e => set("requiredLogReduction", e.target.value)} placeholder="e.g. ≥ 2.0 log"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Wash Durability</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.washDurability}</label>
                 <input type="text" value={form.washDurability} onChange={e => set("washDurability", e.target.value)} placeholder="e.g. 50 washes"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div className="col-span-2">
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Approved Testing Lab</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.approvedTestingLab}</label>
                 <select value={form.approvedTestingLab} onChange={e => set("approvedTestingLab", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="">Select lab...</option>
+                  <option value="">{t.common.selectOption}</option>
                   {labs.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
                 </select>
               </div>
@@ -439,7 +441,7 @@ function NewSOWPageInner() {
         {/* Section 5: Financial Participation */}
         {step === 4 && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-900">💰 Financial Participation</h2>
+            <h2 className="text-lg font-bold text-slate-900">💰 {t.sow.financialTerms}</h2>
             <div className="space-y-3">
               {FINANCIAL_OPTIONS.map(opt => (
                 <label key={opt.value} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${form.financialParticipation === opt.value ? "bg-blue-50 border-blue-300" : "bg-white border-slate-200 hover:bg-slate-50"}`}>
@@ -451,7 +453,7 @@ function NewSOWPageInner() {
             </div>
             {form.financialParticipation === "DEV_RETAINER" && (
               <div className="mt-3">
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Development Retainer Amount ($)</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.developmentRetainer} Amount ($)</label>
                 <input type="number" value={form.developmentRetainer} onChange={e => set("developmentRetainer", e.target.value)} placeholder="10,000 - 25,000"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <p className="text-[10px] text-slate-400 mt-1">New product categories: $10,000 - $25,000</p>
@@ -463,13 +465,13 @@ function NewSOWPageInner() {
         {/* Section 6: Commitment & Signatures */}
         {step === 5 && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-900">✍️ Commercialization Commitment</h2>
+            <h2 className="text-lg font-bold text-slate-900">✍️ {t.sow.commitmentSignature}</h2>
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
               If technical success criteria are met, parties intend to commercialize within 6 months with projected annual volume.
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Commitment Volume (liters)</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.sow.commitmentVolume}</label>
                 <input type="number" value={form.commitmentVolumeLiters} onChange={e => set("commitmentVolumeLiters", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
@@ -477,17 +479,17 @@ function NewSOWPageInner() {
             <h3 className="text-sm font-bold text-slate-700 mt-4">Authorized Signatory</h3>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Name</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.common.name}</label>
                 <input type="text" value={form.signatory} onChange={e => set("signatory", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Title</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.common.title}</label>
                 <input type="text" value={form.signatoryTitle} onChange={e => set("signatoryTitle", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Email</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t.common.email}</label>
                 <input type="email" value={form.signatoryEmail} onChange={e => set("signatoryEmail", e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
@@ -516,7 +518,7 @@ function NewSOWPageInner() {
         <div className="flex justify-between mt-6 pt-4 border-t">
           <button type="button" onClick={() => step > 0 ? setStep(step - 1) : router.push("/sow")}
             className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-300">
-            {step === 0 ? "Cancel" : "← Previous"}
+            {step === 0 ? t.common.cancel : "← Previous"}
           </button>
           {step < 5 ? (
             <button type="button" onClick={() => setStep(step + 1)}
@@ -526,7 +528,7 @@ function NewSOWPageInner() {
           ) : (
             <button type="button" onClick={handleSubmit} disabled={saving || !gate0Pass}
               className="px-6 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
-              {saving ? "Creating SOW..." : "Create SOW & Pass Stage 0"}
+              {saving ? t.common.creating : `${t.sow.createSow} & Pass Stage 0`}
             </button>
           )}
         </div>

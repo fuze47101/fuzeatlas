@@ -1,18 +1,11 @@
 "use client";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 import SearchableSelect, { type SelectOption } from "@/components/SearchableSelect";
 import CreateInlineForm from "@/components/CreateInlineForm";
 
-const TEST_TYPES = [
-  { value: "ICP", label: "ICP (Metals Analysis)" },
-  { value: "ANTIBACTERIAL", label: "Antibacterial" },
-  { value: "FUNGAL", label: "Fungal" },
-  { value: "ODOR", label: "Odor" },
-  { value: "UV", label: "UV" },
-  { value: "MICROFIBER", label: "Microfiber" },
-  { value: "OTHER", label: "Other" },
-];
+// TEST_TYPES will be dynamically generated from i18n in the component
 
 interface ParsedData {
   testType: string | null;
@@ -33,6 +26,7 @@ interface ParsedData {
 }
 
 export default function TestUploadPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -341,21 +335,32 @@ export default function TestUploadPage() {
   };
 
   /* ── Render ─────────────────────────────────────────────── */
+  // Generate TEST_TYPES from i18n
+  const TEST_TYPES = [
+    { value: "ICP", label: `${t.tests.icp} (${t.tests.metalAnalysis})` },
+    { value: "ANTIBACTERIAL", label: t.tests.antibacterial },
+    { value: "FUNGAL", label: t.tests.fungal },
+    { value: "ODOR", label: t.tests.odor },
+    { value: "UV", label: t.tests.uv },
+    { value: "MICROFIBER", label: t.tests.microfiber },
+    { value: "OTHER", label: t.tests.other },
+  ];
+
   return (
     <div className="p-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Upload Test Report</h1>
+          <h1 className="text-2xl font-bold text-slate-900">{t.upload.title}</h1>
           <p className="text-slate-500 mt-1">
-            Drag & drop a lab test PDF — we&apos;ll parse it automatically for your review
+            {t.upload.dragDrop} — we&apos;ll parse it automatically for your review
           </p>
         </div>
         <button
           onClick={() => router.push("/tests")}
           className="px-4 py-2 text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
         >
-          ← Back to Tests
+          ← {t.common.back} to {t.nav.testResults}
         </button>
       </div>
 
@@ -397,7 +402,7 @@ export default function TestUploadPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-lg font-medium text-slate-700">Drop your test report PDF here</p>
+                <p className="text-lg font-medium text-slate-700">{t.upload.dragDrop}</p>
                 <p className="text-sm text-slate-500 mt-1">or click to browse — PDF up to 25MB</p>
               </div>
               <div className="flex flex-wrap justify-center gap-2 mt-4">
@@ -490,14 +495,14 @@ export default function TestUploadPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    Test Type <span className="text-red-500">*</span>
+                    {t.tests.testType} <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={testType}
                     onChange={(e) => setTestType(e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <option value="">Select type...</option>
+                    <option value="">{t.common.selectOption}</option>
                     {TEST_TYPES.map((t) => (
                       <option key={t.value} value={t.value}>{t.label}</option>
                     ))}
@@ -505,7 +510,7 @@ export default function TestUploadPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Report Number</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">{t.upload.testReport}</label>
                   <input
                     type="text"
                     value={testReportNumber}
@@ -516,7 +521,7 @@ export default function TestUploadPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Lab Name</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">{t.upload.labName}</label>
                   <input
                     type="text"
                     value={labName}
@@ -527,7 +532,7 @@ export default function TestUploadPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Test Date</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">{t.upload.testDate}</label>
                   <input
                     type="text"
                     value={testDate}
@@ -538,7 +543,7 @@ export default function TestUploadPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Test Method/Standard</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">{t.upload.testMethodStd}</label>
                   <input
                     type="text"
                     value={testMethodStd}
@@ -549,7 +554,7 @@ export default function TestUploadPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Wash Count</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">{t.upload.washCount}</label>
                   <input
                     type="number"
                     value={washCount}
@@ -563,7 +568,7 @@ export default function TestUploadPage() {
               {/* ── Assignment Section ─────────────────────── */}
               <div className="p-5 bg-green-50 border border-green-200 rounded-xl space-y-4">
                 <div>
-                  <h3 className="font-semibold text-green-900">Assign to Project, Brand, Factory & Fabric</h3>
+                  <h3 className="font-semibold text-green-900">Assign to {t.tests.project}, {t.tests.brand}, {t.tests.factory} & {t.tests.fabric}</h3>
                   <p className="text-sm text-green-700 mt-0.5">
                     Link this test to its source. Optional — you can also assign after saving.
                   </p>
@@ -572,19 +577,19 @@ export default function TestUploadPage() {
                 {/* Project */}
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
                   <SearchableSelect
-                    label="Project"
+                    label={t.tests.project}
                     options={projects}
                     value={projectId}
                     displayValue={projectName}
                     onChange={(id, name) => { setProjectId(id); setProjectName(name); }}
                     onCreateNew={(text) => { setCreatingProject(true); setNewProjectName(text); }}
-                    placeholder="Search projects..."
-                    createLabel="Project"
+                    placeholder={`${t.common.search} ${t.tests.project}...`}
+                    createLabel={t.tests.project}
                   />
                   {creatingProject && (
                     <div className="flex items-end gap-2 mt-3">
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-slate-700 mb-1">New Project Name</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">New {t.tests.project} Name</label>
                         <input
                           type="text"
                           value={newProjectName}
@@ -641,13 +646,13 @@ export default function TestUploadPage() {
                         disabled={projectSaving || !newProjectName.trim()}
                         className="px-3 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 disabled:opacity-50"
                       >
-                        {projectSaving ? "..." : "Create"}
+                        {projectSaving ? `${t.common.saving}` : t.common.create}
                       </button>
                       <button
                         onClick={() => { setCreatingProject(false); setNewProjectName(""); }}
                         className="px-3 py-2 text-sm text-slate-500 border border-slate-300 rounded-lg hover:bg-slate-50"
                       >
-                        Cancel
+                        {t.common.cancel}
                       </button>
                     </div>
                   )}
@@ -656,38 +661,38 @@ export default function TestUploadPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <SearchableSelect
-                      label="Brand"
+                      label={t.tests.brand}
                       options={brands}
                       value={brandId}
                       displayValue={brandName}
                       onChange={(id, name) => { setBrandId(id); setBrandName(name); }}
                       onCreateNew={(text) => { setCreating("brand"); setCreatePrefill(text); }}
-                      placeholder="Search brands..."
-                      createLabel="Brand"
+                      placeholder={`${t.common.search} ${t.tests.brand}...`}
+                      createLabel={t.tests.brand}
                     />
                   </div>
                   <div>
                     <SearchableSelect
-                      label="Factory"
+                      label={t.tests.factory}
                       options={factories}
                       value={factoryId}
                       displayValue={factoryName}
                       onChange={(id, name) => { setFactoryId(id); setFactoryName(name); }}
                       onCreateNew={(text) => { setCreating("factory"); setCreatePrefill(text); }}
-                      placeholder="Search factories..."
-                      createLabel="Factory"
+                      placeholder={`${t.common.search} ${t.tests.factory}...`}
+                      createLabel={t.tests.factory}
                     />
                   </div>
                   <div>
                     <SearchableSelect
-                      label="Fabric"
+                      label={t.tests.fabric}
                       options={fabrics}
                       value={fabricId}
                       displayValue={fabricName}
                       onChange={(id, name) => { setFabricId(id); setFabricName(name); }}
                       onCreateNew={(text) => { setCreating("fabric"); setCreatePrefill(text); }}
-                      placeholder="Search fabrics..."
-                      createLabel="Fabric"
+                      placeholder={`${t.common.search} ${t.tests.fabric}...`}
+                      createLabel={t.tests.fabric}
                     />
                   </div>
                 </div>
@@ -706,10 +711,10 @@ export default function TestUploadPage() {
               {/* ── Type-specific fields ──────────────────── */}
               {testType === "ANTIBACTERIAL" && (
                 <div className="p-5 bg-purple-50 border border-purple-200 rounded-xl space-y-4">
-                  <h3 className="font-semibold text-purple-900">Antibacterial Results</h3>
+                  <h3 className="font-semibold text-purple-900">{t.tests.antibacterial} Results</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-purple-800 mb-1.5">Organism 1</label>
+                      <label className="block text-sm font-medium text-purple-800 mb-1.5">{t.tests.organism} 1</label>
                       <input
                         type="text"
                         value={organism1}
@@ -719,7 +724,7 @@ export default function TestUploadPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-purple-800 mb-1.5">Result 1 (% reduction)</label>
+                      <label className="block text-sm font-medium text-purple-800 mb-1.5">{t.tests.result} 1 (% reduction)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -730,7 +735,7 @@ export default function TestUploadPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-purple-800 mb-1.5">Organism 2</label>
+                      <label className="block text-sm font-medium text-purple-800 mb-1.5">{t.tests.organism} 2</label>
                       <input
                         type="text"
                         value={organism2}
@@ -740,7 +745,7 @@ export default function TestUploadPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-purple-800 mb-1.5">Result 2 (% reduction)</label>
+                      <label className="block text-sm font-medium text-purple-800 mb-1.5">{t.tests.result} 2 (% reduction)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -756,7 +761,7 @@ export default function TestUploadPage() {
 
               {testType === "ICP" && (
                 <div className="p-5 bg-blue-50 border border-blue-200 rounded-xl space-y-4">
-                  <h3 className="font-semibold text-blue-900">ICP Metals Analysis</h3>
+                  <h3 className="font-semibold text-blue-900">{t.tests.icp} {t.tests.metalAnalysis}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-blue-800 mb-1.5">Silver (Ag)</label>
@@ -798,10 +803,10 @@ export default function TestUploadPage() {
 
               {testType === "FUNGAL" && (
                 <div className="p-5 bg-orange-50 border border-orange-200 rounded-xl space-y-4">
-                  <h3 className="font-semibold text-orange-900">Fungal Test Results</h3>
+                  <h3 className="font-semibold text-orange-900">{t.tests.fungal} {t.tests.result}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-orange-800 mb-1.5">Written Result</label>
+                      <label className="block text-sm font-medium text-orange-800 mb-1.5">Written {t.tests.result}</label>
                       <input
                         type="text"
                         value={fungalWrittenResult}
@@ -817,7 +822,7 @@ export default function TestUploadPage() {
                         onChange={(e) => setFungalPass(e.target.value)}
                         className="w-full px-3 py-2.5 border border-orange-300 rounded-lg text-slate-900 bg-white focus:ring-2 focus:ring-orange-500"
                       >
-                        <option value="">Select...</option>
+                        <option value="">{t.common.selectOption}</option>
                         <option value="true">Pass</option>
                         <option value="false">Fail</option>
                       </select>
@@ -828,10 +833,10 @@ export default function TestUploadPage() {
 
               {testType === "ODOR" && (
                 <div className="p-5 bg-rose-50 border border-rose-200 rounded-xl space-y-4">
-                  <h3 className="font-semibold text-rose-900">Odor Test Results</h3>
+                  <h3 className="font-semibold text-rose-900">{t.tests.odor} {t.tests.result}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-rose-800 mb-1.5">Tested Odor</label>
+                      <label className="block text-sm font-medium text-rose-800 mb-1.5">Tested {t.tests.odor}</label>
                       <input
                         type="text"
                         value={testedOdor}
@@ -841,7 +846,7 @@ export default function TestUploadPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-rose-800 mb-1.5">Result</label>
+                      <label className="block text-sm font-medium text-rose-800 mb-1.5">{t.tests.result}</label>
                       <input
                         type="text"
                         value={odorResultVal}
@@ -857,7 +862,7 @@ export default function TestUploadPage() {
                         onChange={(e) => setOdorPass(e.target.value)}
                         className="w-full px-3 py-2.5 border border-rose-300 rounded-lg text-slate-900 bg-white focus:ring-2 focus:ring-rose-500"
                       >
-                        <option value="">Select...</option>
+                        <option value="">{t.common.selectOption}</option>
                         <option value="true">Pass</option>
                         <option value="false">Fail</option>
                       </select>
@@ -868,7 +873,7 @@ export default function TestUploadPage() {
 
               {/* Overall pass/fail */}
               <div className="flex items-center gap-6 p-4 bg-slate-50 rounded-xl">
-                <label className="text-sm font-medium text-slate-700">Overall Result:</label>
+                <label className="text-sm font-medium text-slate-700">{t.tests.overallPass}:</label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
@@ -937,14 +942,14 @@ export default function TestUploadPage() {
                   onClick={() => router.push("/tests")}
                   className="px-4 py-2.5 text-slate-600 border border-slate-300 rounded-lg hover:bg-white"
                 >
-                  Cancel
+                  {t.common.cancel}
                 </button>
                 <button
                   onClick={handleConfirm}
                   disabled={confirming || !testType}
                   className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
-                  {confirming ? "Saving..." : "Confirm & Save Test"}
+                  {confirming ? `${t.common.saving}` : `${t.common.confirm} & ${t.common.save} ${t.tests.saveTest}`}
                 </button>
               </div>
             </div>

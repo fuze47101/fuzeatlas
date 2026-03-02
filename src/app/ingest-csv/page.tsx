@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import { useI18n } from "@/i18n";
 
 export default function IngestCsvPage() {
+  const { t } = useI18n();
   const [file, setFile] = useState<File | null>(null);
   const [sourceTable, setSourceTable] = useState("knack_export");
   const [busy, setBusy] = useState(false);
@@ -34,25 +36,24 @@ export default function IngestCsvPage() {
 
   return (
     <div style={{ maxWidth: 860, margin: "40px auto", padding: "0 16px" }}>
-      <h1 style={{ fontSize: 28, fontWeight: 900, marginBottom: 8 }}>Ingest CSV</h1>
+      <h1 style={{ fontSize: 28, fontWeight: 900, marginBottom: 8 }}>{t.ingest.title}</h1>
       <div style={{ color: "#555", marginBottom: 16 }}>
-        Upload a CSV export. We’ll create/update Fabrics, create Submissions when FUZE # exists,
-        and store every row in SourceRecord for traceability.
+        {t.ingest.subtitle}
       </div>
 
       <div style={{ display: "grid", gap: 12, padding: 16, border: "1px solid #eee", borderRadius: 14 }}>
         <label style={{ display: "grid", gap: 6 }}>
-          <div style={{ fontWeight: 800 }}>Source table label</div>
+          <div style={{ fontWeight: 800 }}>{t.ingest.sourceLabel}</div>
           <input
             value={sourceTable}
             onChange={(e) => setSourceTable(e.target.value)}
-            placeholder="knack_fabrics / knack_tests_icp / etc"
+            placeholder={t.ingest.sourcePlaceholder}
             style={{ padding: 10, borderRadius: 10, border: "1px solid #ddd" }}
           />
         </label>
 
         <label style={{ display: "grid", gap: 6 }}>
-          <div style={{ fontWeight: 800 }}>CSV file</div>
+          <div style={{ fontWeight: 800 }}>{t.ingest.csvFile}</div>
           <input
             type="file"
             accept=".csv,text/csv"
@@ -72,20 +73,20 @@ export default function IngestCsvPage() {
             cursor: busy ? "not-allowed" : "pointer",
           }}
         >
-          {busy ? "Ingesting…" : "Ingest"}
+          {busy ? t.ingest.ingesting : t.ingest.ingest}
         </button>
       </div>
 
       {err && (
         <div style={{ marginTop: 16, padding: 12, borderRadius: 12, border: "1px solid #f2c7c7", background: "#fff6f6" }}>
-          <div style={{ fontWeight: 900, marginBottom: 6 }}>Error</div>
+          <div style={{ fontWeight: 900, marginBottom: 6 }}>{t.ingest.error}</div>
           <div style={{ whiteSpace: "pre-wrap" }}>{err}</div>
         </div>
       )}
 
       {out && (
         <div style={{ marginTop: 16, padding: 12, borderRadius: 12, border: "1px solid #eee", background: "#fafafa" }}>
-          <div style={{ fontWeight: 900, marginBottom: 6 }}>Result</div>
+          <div style={{ fontWeight: 900, marginBottom: 6 }}>{t.ingest.result}</div>
           <pre style={{ whiteSpace: "pre-wrap", fontSize: 12, margin: 0 }}>{JSON.stringify(out, null, 2)}</pre>
         </div>
       )}
