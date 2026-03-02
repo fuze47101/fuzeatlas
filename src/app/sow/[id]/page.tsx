@@ -44,7 +44,7 @@ export default function SOWDetailPage() {
 
   const DRIFT_TRIGGERS = [
     { label: "No executive sponsor", check: !!costData.executiveSponsor },
-    { label: "No defined SKU or launch season", check: !!(costData.garmentSku && costData.targetLaunchSeason) },
+    { label: "No defined product/SKU or launch season", check: !!((costData.garmentSku || sow.products?.length > 0) && costData.targetLaunchSeason) },
     { label: "No volume forecast", check: !!(costData.projectedAnnualUnits || costData.calculatedAnnualLiters) },
   ];
 
@@ -61,7 +61,23 @@ export default function SOWDetailPage() {
             <span className="text-xs text-slate-400">Created {new Date(sow.createdAt).toLocaleDateString()}</span>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <button onClick={() => window.open(`/sow/${id}/print`, "_blank")}
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-white hover:bg-slate-900">
+            Print / PDF
+          </button>
+          {sow.signatoryEmail && (
+            <button onClick={() => {
+              const subject = encodeURIComponent(`SOW for Signature: ${sow.title || "FUZE Technologies"}`);
+              const body = encodeURIComponent(
+                `Hi ${sow.signatory || ""},\n\nPlease find attached the Scope of Work for your review and signature.\n\nSOW: ${sow.title || "Untitled"}\nBrand: ${sow.brand?.name || ""}\nStatus: ${sow.status}\n\nPlease review and sign at your earliest convenience.\n\nBest regards,\nFUZE Technologies`
+              );
+              window.open(`mailto:${sow.signatoryEmail}?subject=${subject}&body=${body}`, "_blank");
+            }}
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-600 text-white hover:bg-purple-700">
+              Email for Signature
+            </button>
+          )}
           {STATUSES.filter(s => s !== sow.status).map(s => (
             <button key={s} onClick={() => updateStatus(s)} disabled={saving}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${STATUS_COLORS[s]} hover:opacity-80 disabled:opacity-50`}>
@@ -107,8 +123,22 @@ export default function SOWDetailPage() {
         {/* End Use */}
         <div className="bg-white rounded-xl p-5 shadow-sm border">
           <h3 className="font-bold text-slate-900 mb-3">👕 End Use Definition</h3>
+          {sow.products?.length > 0 && (
+            <div className="mb-3">
+              <span className="text-xs font-semibold text-slate-500">Products / SKUs</span>
+              <div className="mt-1 space-y-1">
+                {sow.products.map((sp: any) => (
+                  <div key={sp.id} className="flex items-center gap-2 text-sm">
+                    <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-bold">{sp.product.productType || "Product"}</span>
+                    <span className="font-semibold text-slate-900">{sp.product.name}</span>
+                    {sp.product.sku && <span className="text-xs text-slate-400 font-mono">{sp.product.sku}</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <dl className="space-y-2 text-sm">
-            <Row label="Garment SKU" value={costData.garmentSku} />
+            <Row label="Legacy SKU" value={costData.garmentSku} />
             <Row label="Fabric Type" value={costData.fabricType} />
             <Row label="GSM" value={costData.gsm} />
             <Row label="Application Level" value={costData.applicationLevel ? `${costData.applicationLevel} mg/kg` : null} />

@@ -10,6 +10,7 @@ export async function GET() {
       include: {
         brand: { select: { id: true, name: true, pipelineStage: true } },
         milestones: { orderBy: { sortOrder: "asc" } },
+        products: { include: { product: { select: { id: true, name: true, sku: true } } } },
         _count: { select: { documents: true, milestones: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -43,6 +44,8 @@ export async function POST(req: Request) {
       // Existing fields
       expectations, performanceCriteria, pricingTerms, costControls,
       signatory, signatoryTitle, signatoryEmail,
+      // Products
+      productIds,
     } = body;
 
     if (!brandId) {
@@ -96,6 +99,9 @@ export async function POST(req: Request) {
         signatory: signatory || null,
         signatoryTitle: signatoryTitle || null,
         signatoryEmail: signatoryEmail || null,
+        products: productIds?.length > 0 ? {
+          create: productIds.map((pid: string) => ({ productId: pid })),
+        } : undefined,
         milestones: {
           create: [
             { title: "Stage 0 - Commercial Qualification", description: "Executive sponsor, SKU, factory, volume defined", sortOrder: 0, completedAt: new Date() },

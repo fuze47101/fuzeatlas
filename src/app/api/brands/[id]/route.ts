@@ -15,9 +15,10 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
         factories: { include: { factory: { select: { id: true, name: true, country: true } } } },
         fabrics: { select: { id: true, fuzeNumber: true, construction: true, color: true, weightGsm: true }, take: 20 },
         submissions: { select: { id: true, fuzeFabricNumber: true, status: true, testStatus: true, createdAt: true }, take: 20, orderBy: { createdAt: "desc" } },
+        products: { select: { id: true, name: true, productType: true, sku: true, description: true }, orderBy: { name: "asc" } },
         sows: { select: { id: true, title: true, status: true, createdAt: true }, orderBy: { createdAt: "desc" } },
         notes: { select: { id: true, content: true, noteType: true, date: true, contactName: true }, orderBy: { date: "desc" }, take: 20 },
-        _count: { select: { fabrics: true, submissions: true, factories: true, contacts: true, sows: true, notes: true } },
+        _count: { select: { fabrics: true, submissions: true, factories: true, contacts: true, products: true, sows: true, notes: true } },
       },
     });
 
@@ -120,6 +121,12 @@ export async function DELETE(req: Request, props: { params: Promise<{ id: string
     await prisma.contact.deleteMany({ where: { brandId: id } });
     await prisma.note.deleteMany({ where: { brandId: id } });
     await prisma.project.deleteMany({ where: { brandId: id } });
+    // Clean up products (and their SOW links)
+    const brandProducts = await prisma.product.findMany({ where: { brandId: id }, select: { id: true } });
+    if (brandProducts.length > 0) {
+      await prisma.sOWProduct.deleteMany({ where: { productId: { in: brandProducts.map(p => p.id) } } });
+      await prisma.product.deleteMany({ where: { brandId: id } });
+    }
     await prisma.brandFactory.deleteMany({ where: { brandId: id } });
     await prisma.sourceRecord.updateMany({ where: { brandId: id }, data: { brandId: null } });
 

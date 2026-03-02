@@ -12,6 +12,7 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
       include: {
         brand: { select: { id: true, name: true, pipelineStage: true, salesRepId: true } },
         milestones: { orderBy: { sortOrder: "asc" } },
+        products: { include: { product: true } },
         documents: true,
       },
     });

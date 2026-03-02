@@ -24,7 +24,14 @@ export default function BrandDetailPage() {
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState<any>({});
   const [users, setUsers] = useState<any[]>([]);
-  const [tab, setTab] = useState<"details"|"contacts"|"fabrics"|"submissions"|"sows"|"notes">("details");
+  const [tab, setTab] = useState<"details"|"contacts"|"products"|"fabrics"|"submissions"|"sows"|"notes">("details");
+  const [products, setProducts] = useState<any[]>([]);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [productForm, setProductForm] = useState({ name: "", productType: "", sku: "", description: "" });
+  const [productSaving, setProductSaving] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<string | null>(null);
+  const [editProductForm, setEditProductForm] = useState<any>({});
   const [deleting, setDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [adminCode, setAdminCode] = useState("");
@@ -107,6 +114,62 @@ export default function BrandDetailPage() {
     }
   };
 
+  const loadProducts = async () => {
+    setProductsLoading(true);
+    try {
+      const res = await fetch(`/api/brands/${id}/products`);
+      const j = await res.json();
+      if (j.ok) setProducts(j.products);
+    } catch {} finally { setProductsLoading(false); }
+  };
+
+  useEffect(() => {
+    if (tab === "products" && products.length === 0) loadProducts();
+  }, [tab]);
+
+  const handleAddProduct = async () => {
+    if (!productForm.name.trim()) return;
+    setProductSaving(true);
+    try {
+      const res = await fetch(`/api/brands/${id}/products`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(productForm),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setProducts(prev => [j.product, ...prev]);
+        setProductForm({ name: "", productType: "", sku: "", description: "" });
+        setShowAddProduct(false);
+      } else setError(j.error);
+    } catch (e: any) { setError(e.message); } finally { setProductSaving(false); }
+  };
+
+  const handleUpdateProduct = async (productId: string) => {
+    setProductSaving(true);
+    try {
+      const res = await fetch(`/api/products/${productId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editProductForm),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setProducts(prev => prev.map(p => p.id === productId ? { ...p, ...j.product } : p));
+        setEditingProduct(null);
+      } else setError(j.error);
+    } catch (e: any) { setError(e.message); } finally { setProductSaving(false); }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    try {
+      const res = await fetch(`/api/products/${productId}`, { method: "DELETE" });
+      const j = await res.json();
+      if (j.ok) setProducts(prev => prev.filter(p => p.id !== productId));
+      else setError(j.error);
+    } catch (e: any) { setError(e.message); }
+  };
+
   if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">Loading brand...</div>;
   if (!brand) return <div className="flex items-center justify-center h-64 text-red-400">Brand not found</div>;
 
@@ -147,8 +210,8 @@ export default function BrandDetailPage() {
       {success && <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{success}</div>}
 
       {/* Stats row */}
-      <div className="grid grid-cols-5 gap-3 mb-6">
-        {[["Fabrics", c.fabrics, "🧵"],["Submissions", c.submissions, "📋"],["Factories", c.factories, "🏭"],["Contacts", c.contacts, "👤"],["SOWs", c.sows, "📄"]].map(([label, count, icon]) => (
+      <div className="grid grid-cols-6 gap-3 mb-6">
+        {[["Products", c.products, "📦"],["Fabrics", c.fabrics, "🧵"],["Submissions", c.submissions, "📋"],["Factories", c.factories, "🏭"],["Contacts", c.contacts, "👤"],["SOWs", c.sows, "📄"]].map(([label, count, icon]) => (
           <div key={label as string} className="bg-white rounded-xl p-3 shadow-sm border text-center">
             <div className="text-lg">{icon}</div>
             <div className="text-xl font-black text-slate-900">{(count as number) || 0}</div>
@@ -159,7 +222,7 @@ export default function BrandDetailPage() {
 
       {/* Tabs */}
       <div className="flex border-b border-slate-200 mb-4">
-        {(["details","contacts","fabrics","submissions","sows","notes"] as const).map(t => (
+        {(["details","contacts","products","fabrics","submissions","sows","notes"] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -211,6 +274,98 @@ export default function BrandDetailPage() {
                 </div>
               ))}
             </div>
+          )}
+        </div>
+      )}
+
+      {tab === "products" && (
+        <div className="bg-white rounded-xl p-6 shadow-sm border">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-bold text-slate-900">Products / SKUs</h3>
+            <button onClick={() => setShowAddProduct(true)} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700">+ Add Product</button>
+          </div>
+
+          {/* Add product form */}
+          {showAddProduct && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">Product Name <span className="text-red-500">*</span></label>
+                  <input type="text" value={productForm.name} onChange={e => setProductForm({ ...productForm, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Dri-FIT Running Tee" autoFocus />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">Product Type</label>
+                  <input type="text" value={productForm.productType} onChange={e => setProductForm({ ...productForm, productType: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Garment, Textile, Turf" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">SKU / Style #</label>
+                  <input type="text" value={productForm.sku} onChange={e => setProductForm({ ...productForm, sku: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. NK-DRF-2026" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">Description</label>
+                  <input type="text" value={productForm.description} onChange={e => setProductForm({ ...productForm, description: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Short description" />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={handleAddProduct} disabled={productSaving || !productForm.name.trim()}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50">
+                  {productSaving ? "Saving..." : "Add Product"}
+                </button>
+                <button onClick={() => { setShowAddProduct(false); setProductForm({ name: "", productType: "", sku: "", description: "" }); }}
+                  className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">Cancel</button>
+              </div>
+            </div>
+          )}
+
+          {productsLoading ? (
+            <p className="text-slate-400 text-sm text-center py-8">Loading products...</p>
+          ) : products.length === 0 ? (
+            <p className="text-slate-400 text-sm text-center py-8">No products yet. Add products/SKUs that this brand manufactures or sells.</p>
+          ) : (
+            <table className="w-full text-sm">
+              <thead><tr className="text-left text-xs text-slate-500 border-b">
+                <th className="pb-2">Name</th><th className="pb-2">Type</th><th className="pb-2">SKU</th><th className="pb-2">Description</th><th className="pb-2">SOWs</th><th className="pb-2 w-20"></th>
+              </tr></thead>
+              <tbody>
+                {products.map((p: any) => (
+                  editingProduct === p.id ? (
+                    <tr key={p.id} className="border-b border-slate-100 bg-blue-50">
+                      <td className="py-2 pr-2"><input type="text" value={editProductForm.name || ""} onChange={e => setEditProductForm({ ...editProductForm, name: e.target.value })}
+                        className="w-full px-2 py-1 border border-slate-300 rounded text-sm" /></td>
+                      <td className="py-2 pr-2"><input type="text" value={editProductForm.productType || ""} onChange={e => setEditProductForm({ ...editProductForm, productType: e.target.value })}
+                        className="w-full px-2 py-1 border border-slate-300 rounded text-sm" /></td>
+                      <td className="py-2 pr-2"><input type="text" value={editProductForm.sku || ""} onChange={e => setEditProductForm({ ...editProductForm, sku: e.target.value })}
+                        className="w-full px-2 py-1 border border-slate-300 rounded text-sm" /></td>
+                      <td className="py-2 pr-2"><input type="text" value={editProductForm.description || ""} onChange={e => setEditProductForm({ ...editProductForm, description: e.target.value })}
+                        className="w-full px-2 py-1 border border-slate-300 rounded text-sm" /></td>
+                      <td className="py-2">{p.sows?.length || 0}</td>
+                      <td className="py-2 text-right">
+                        <button onClick={() => handleUpdateProduct(p.id)} className="text-xs text-green-600 hover:underline mr-2">{productSaving ? "..." : "Save"}</button>
+                        <button onClick={() => setEditingProduct(null)} className="text-xs text-slate-500 hover:underline">Cancel</button>
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr key={p.id} className="border-b border-slate-100 hover:bg-slate-50">
+                      <td className="py-2 font-semibold text-slate-900">{p.name}</td>
+                      <td className="py-2 text-slate-600">{p.productType || "—"}</td>
+                      <td className="py-2 font-mono text-xs text-slate-700">{p.sku || "—"}</td>
+                      <td className="py-2 text-slate-600">{p.description || "—"}</td>
+                      <td className="py-2">{p.sows?.length || 0}</td>
+                      <td className="py-2 text-right">
+                        <button onClick={() => { setEditingProduct(p.id); setEditProductForm({ name: p.name, productType: p.productType || "", sku: p.sku || "", description: p.description || "" }); }}
+                          className="text-xs text-blue-600 hover:underline mr-2">Edit</button>
+                        <button onClick={() => { if (confirm("Delete this product?")) handleDeleteProduct(p.id); }}
+                          className="text-xs text-red-500 hover:underline">Delete</button>
+                      </td>
+                    </tr>
+                  )
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       )}

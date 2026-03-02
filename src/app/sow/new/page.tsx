@@ -31,6 +31,11 @@ function NewSOWPageInner() {
   const [distributors, setDistributors] = useState<any[]>([]);
   const [labs, setLabs] = useState<any[]>([]);
   const [step, setStep] = useState(0);
+  const [brandProducts, setBrandProducts] = useState<any[]>([]);
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [newProduct, setNewProduct] = useState({ name: "", productType: "", sku: "", description: "" });
+  const [addingProduct, setAddingProduct] = useState(false);
 
   const [form, setForm] = useState({
     // Section 1: Commercial Ownership
@@ -68,6 +73,41 @@ function NewSOWPageInner() {
     fetch("/api/labs").then(r => r.json()).then(j => { if (j.ok) setLabs(j.labs); }).catch(() => {});
   }, []);
 
+  // Load products when brand changes
+  useEffect(() => {
+    if (form.brandId) {
+      fetch(`/api/brands/${form.brandId}/products`).then(r => r.json()).then(j => {
+        if (j.ok) setBrandProducts(j.products);
+      }).catch(() => {});
+    } else {
+      setBrandProducts([]);
+      setSelectedProductIds([]);
+    }
+  }, [form.brandId]);
+
+  const handleAddProductInline = async () => {
+    if (!newProduct.name.trim() || !form.brandId) return;
+    setAddingProduct(true);
+    try {
+      const res = await fetch(`/api/brands/${form.brandId}/products`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newProduct),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setBrandProducts(prev => [...prev, j.product]);
+        setSelectedProductIds(prev => [...prev, j.product.id]);
+        setNewProduct({ name: "", productType: "", sku: "", description: "" });
+        setShowAddProduct(false);
+      }
+    } catch {} finally { setAddingProduct(false); }
+  };
+
+  const toggleProduct = (pid: string) => {
+    setSelectedProductIds(prev => prev.includes(pid) ? prev.filter(x => x !== pid) : [...prev, pid]);
+  };
+
   const set = (f: string, v: string) => setForm(p => ({ ...p, [f]: v }));
 
   // Auto-calculate liters
@@ -91,7 +131,7 @@ function NewSOWPageInner() {
   // Stage 0 gate validation
   const gate0 = {
     executiveSponsor: !!form.executiveSponsor,
-    garmentSku: !!form.garmentSku,
+    garmentSku: !!(form.garmentSku || selectedProductIds.length > 0),
     targetLaunchSeason: !!form.targetLaunchSeason,
     factoryId: !!form.factoryId,
     volume: !!(form.projectedAnnualUnits || form.calculatedAnnualLiters),
@@ -114,7 +154,7 @@ function NewSOWPageInner() {
       const res = await fetch("/api/sow", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, productIds: selectedProductIds }),
       });
       const j = await res.json();
       if (j.ok) {
@@ -220,7 +260,7 @@ function NewSOWPageInner() {
                   ["Brand selected", gate0.brandId],
                   ["Executive Sponsor", gate0.executiveSponsor],
                   ["Factory assigned", gate0.factoryId],
-                  ["Garment SKU defined", gate0.garmentSku],
+                  ["Product/SKU defined", gate0.garmentSku],
                   ["Launch season set", gate0.targetLaunchSeason],
                   ["Volume forecasted", gate0.volume],
                 ].map(([label, pass]) => (
@@ -237,12 +277,63 @@ function NewSOWPageInner() {
         {step === 1 && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-slate-900">👕 End Use Definition</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Garment SKU / Style # <span className="text-red-500">* GATE</span></label>
-                <input type="text" value={form.garmentSku} onChange={e => set("garmentSku", e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${!gate0.garmentSku ? "border-red-300 bg-red-50" : "border-slate-300"}`} />
+
+            {/* Products section */}
+            <div className={`p-4 rounded-lg border ${!gate0.garmentSku ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}`}>
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-xs font-semibold text-slate-600">Products / SKUs <span className="text-red-500">* GATE</span></label>
+                {form.brandId && (
+                  <button type="button" onClick={() => setShowAddProduct(true)} className="text-xs text-blue-600 hover:underline font-semibold">+ Add Product</button>
+                )}
               </div>
+              {!form.brandId ? (
+                <p className="text-xs text-slate-400">Select a brand first to see products</p>
+              ) : brandProducts.length === 0 && !showAddProduct ? (
+                <p className="text-xs text-slate-400">No products for this brand. Add one or use the SKU field below.</p>
+              ) : (
+                <div className="space-y-1">
+                  {brandProducts.map(p => (
+                    <label key={p.id} className={`flex items-center gap-3 p-2 rounded-lg border cursor-pointer transition-colors ${selectedProductIds.includes(p.id) ? "bg-white border-green-300" : "bg-white/50 border-slate-200 hover:bg-white"}`}>
+                      <input type="checkbox" checked={selectedProductIds.includes(p.id)} onChange={() => toggleProduct(p.id)} className="accent-green-600" />
+                      <div className="flex-1">
+                        <span className="text-sm font-semibold text-slate-900">{p.name}</span>
+                        {p.productType && <span className="text-xs text-slate-500 ml-2">{p.productType}</span>}
+                        {p.sku && <span className="text-xs text-slate-400 ml-2 font-mono">{p.sku}</span>}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              )}
+              {showAddProduct && form.brandId && (
+                <div className="mt-2 p-3 bg-white rounded-lg border border-slate-200">
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <input type="text" value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
+                      className="px-2 py-1.5 border border-slate-300 rounded text-sm" placeholder="Product name *" autoFocus />
+                    <input type="text" value={newProduct.productType} onChange={e => setNewProduct({ ...newProduct, productType: e.target.value })}
+                      className="px-2 py-1.5 border border-slate-300 rounded text-sm" placeholder="Type (Garment, Textile...)" />
+                    <input type="text" value={newProduct.sku} onChange={e => setNewProduct({ ...newProduct, sku: e.target.value })}
+                      className="px-2 py-1.5 border border-slate-300 rounded text-sm" placeholder="SKU / Style #" />
+                    <input type="text" value={newProduct.description} onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
+                      className="px-2 py-1.5 border border-slate-300 rounded text-sm" placeholder="Description" />
+                  </div>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={handleAddProductInline} disabled={addingProduct || !newProduct.name.trim()}
+                      className="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded hover:bg-green-700 disabled:opacity-50">
+                      {addingProduct ? "..." : "Add"}
+                    </button>
+                    <button type="button" onClick={() => { setShowAddProduct(false); setNewProduct({ name: "", productType: "", sku: "", description: "" }); }}
+                      className="px-3 py-1 text-xs text-slate-500 border border-slate-300 rounded hover:bg-slate-50">Cancel</button>
+                  </div>
+                </div>
+              )}
+              <div className="mt-2">
+                <label className="block text-xs text-slate-500 mb-1">Or enter a legacy SKU / Style # directly</label>
+                <input type="text" value={form.garmentSku} onChange={e => set("garmentSku", e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. NK-DRF-2026" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1">Fabric Type</label>
                 <input type="text" value={form.fabricType} onChange={e => set("fabricType", e.target.value)} placeholder="e.g. Knit, Woven"

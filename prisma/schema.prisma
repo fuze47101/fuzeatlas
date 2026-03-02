@@ -185,6 +185,7 @@ model Brand {
   submissions FabricSubmission[]
   fabrics     Fabric[]
   projects    Project[]
+  products    Product[]
   sows        SOW[]
   notes       Note[]
   users       User[]         @relation("BrandUsers")
@@ -477,6 +478,46 @@ model Project {
 }
 
 // ─────────────────────────────────────────────
+// PRODUCTS / SKUs
+// ─────────────────────────────────────────────
+
+model Product {
+  id      String @id @default(cuid())
+  brandId String
+  brand   Brand  @relation(fields: [brandId], references: [id])
+
+  name        String
+  productType String?
+  sku         String?
+  description String?
+
+  sows SOWProduct[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([brandId, name])
+  @@index([brandId])
+  @@index([sku])
+}
+
+model SOWProduct {
+  id        String  @id @default(cuid())
+  sowId     String
+  productId String
+  sow       SOW     @relation(fields: [sowId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  note String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([sowId, productId])
+  @@index([sowId])
+  @@index([productId])
+}
+
+// ─────────────────────────────────────────────
 // TEST RUNS & RESULTS
 // ─────────────────────────────────────────────
 
@@ -604,6 +645,7 @@ model SOW {
   status SOWStatus @default(DRAFT)
 
   milestones SOWMilestone[]
+  products   SOWProduct[]
   documents  Document[]
 
   createdAt DateTime @default(now())
