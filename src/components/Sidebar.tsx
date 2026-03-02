@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import FuzeLogo from "./FuzeLogo";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
@@ -47,7 +48,7 @@ export default function Sidebar() {
             )}
           </svg>
         </button>
-        <span className="font-bold text-lg tracking-tight">FUZE Atlas</span>
+        <FuzeLogo size="sm" variant="light" />
         <div className="w-10" /> {/* spacer for centering */}
       </div>
 
@@ -69,9 +70,9 @@ export default function Sidebar() {
         `}
       >
         {/* Brand */}
-        <div className="px-6 py-6 border-b border-slate-800">
-          <h1 className="text-xl font-extrabold tracking-tight">FUZE Atlas</h1>
-          <p className="text-xs text-slate-400 mt-0.5">Textile Intelligence Platform</p>
+        <div className="px-6 py-5 border-b border-slate-800">
+          <FuzeLogo size="md" variant="light" />
+          <p className="text-[10px] text-slate-500 mt-1.5 ml-[42px]">Textile Intelligence Platform</p>
         </div>
 
         {/* Nav */}

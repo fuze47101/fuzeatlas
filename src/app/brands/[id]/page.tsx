@@ -24,7 +24,10 @@ export default function BrandDetailPage() {
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState<any>({});
   const [users, setUsers] = useState<any[]>([]);
-  const [tab, setTab] = useState<"details"|"contacts"|"products"|"fabrics"|"submissions"|"sows"|"notes">("details");
+  const [tab, setTab] = useState<"details"|"contacts"|"products"|"fabrics"|"submissions"|"sows"|"notes"|"research">("details");
+  const [research, setResearch] = useState<any>(null);
+  const [researching, setResearching] = useState(false);
+  const [researchError, setResearchError] = useState("");
   const [products, setProducts] = useState<any[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
@@ -170,6 +173,32 @@ export default function BrandDetailPage() {
     } catch (e: any) { setError(e.message); }
   };
 
+  const handleResearch = async (autoSaveContacts = false) => {
+    setResearching(true);
+    setResearchError("");
+    try {
+      const res = await fetch(`/api/brands/${id}/research`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ autoSaveContacts }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setResearch(j.research);
+        if (autoSaveContacts) {
+          setSuccess("Research complete — contacts saved!");
+          setTimeout(() => setSuccess(""), 4000);
+        }
+      } else {
+        setResearchError(j.error || "Research failed");
+      }
+    } catch (e: any) {
+      setResearchError(e.message);
+    } finally {
+      setResearching(false);
+    }
+  };
+
   if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">Loading brand...</div>;
   if (!brand) return <div className="flex items-center justify-center h-64 text-red-400">Brand not found</div>;
 
@@ -222,7 +251,7 @@ export default function BrandDetailPage() {
 
       {/* Tabs */}
       <div className="flex border-b border-slate-200 mb-4">
-        {(["details","contacts","products","fabrics","submissions","sows","notes"] as const).map(t => (
+        {(["details","contacts","products","fabrics","submissions","sows","notes","research"] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -459,6 +488,210 @@ export default function BrandDetailPage() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {tab === "research" && (
+        <div className="space-y-4">
+          <div className="bg-white rounded-xl p-6 shadow-sm border">
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h3 className="font-bold text-slate-900">AI Brand Intelligence</h3>
+                <p className="text-xs text-slate-500 mt-1">AI-powered research on {brand.name} — finds decision makers, company intel, and sales opportunities</p>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => handleResearch(false)} disabled={researching}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50">
+                  {researching ? "Researching..." : research ? "Re-run Research" : "Run Research"}
+                </button>
+                {research && !researching && (
+                  <button onClick={() => handleResearch(true)} disabled={researching}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 disabled:opacity-50">
+                    Save Contacts to Brand
+                  </button>
+                )}
+              </div>
+            </div>
+            {researchError && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mb-4">{researchError}</div>}
+
+            {researching && (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent mb-3" />
+                <p className="text-sm text-slate-500">AI is researching {brand.name}...</p>
+                <p className="text-xs text-slate-400 mt-1">This may take 15-30 seconds</p>
+              </div>
+            )}
+
+            {research && !researching && (
+              <div className="space-y-6">
+                {/* Company Overview */}
+                <div className="p-4 bg-slate-50 rounded-lg">
+                  <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">1</span>
+                    Company Overview
+                    {research.confidence && (
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-bold ml-auto ${research.confidence === "HIGH" ? "bg-green-100 text-green-700" : research.confidence === "MEDIUM" ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>
+                        {research.confidence} confidence
+                      </span>
+                    )}
+                  </h4>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
+                    {research.company?.name && <div><span className="text-slate-500">Name:</span> <strong>{research.company.name}</strong></div>}
+                    {research.company?.headquarters && <div><span className="text-slate-500">HQ:</span> <strong>{research.company.headquarters}</strong></div>}
+                    {research.company?.website && <div><span className="text-slate-500">Website:</span> <a href={research.company.website.startsWith("http") ? research.company.website : `https://${research.company.website}`} target="_blank" className="text-blue-600 hover:underline font-semibold">{research.company.website}</a></div>}
+                    {research.company?.linkedin && <div><span className="text-slate-500">LinkedIn:</span> <a href={research.company.linkedin} target="_blank" className="text-blue-600 hover:underline font-semibold">Profile</a></div>}
+                    {research.company?.employeeCount && <div><span className="text-slate-500">Employees:</span> <strong>{research.company.employeeCount}</strong></div>}
+                    {research.company?.revenue && <div><span className="text-slate-500">Revenue:</span> <strong>{research.company.revenue}</strong></div>}
+                    {research.company?.founded && <div><span className="text-slate-500">Founded:</span> <strong>{research.company.founded}</strong></div>}
+                    {research.company?.industry && <div><span className="text-slate-500">Industry:</span> <strong>{research.company.industry}</strong></div>}
+                  </div>
+                  {research.company?.description && <p className="mt-2 text-sm text-slate-600">{research.company.description}</p>}
+                </div>
+
+                {/* Key Contacts */}
+                {research.contacts?.length > 0 && (
+                  <div className="p-4 bg-green-50 rounded-lg">
+                    <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-6 h-6 bg-green-100 text-green-700 rounded-full text-xs font-bold">2</span>
+                      Key Decision Makers ({research.contacts.length})
+                    </h4>
+                    <div className="space-y-3">
+                      {research.contacts.map((c: any, i: number) => (
+                        <div key={i} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-green-200">
+                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold text-sm shrink-0">
+                            {(c.name || "?")[0]}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-sm text-slate-900">{c.name}</span>
+                              {c.priority && <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded">P{c.priority}</span>}
+                            </div>
+                            <div className="text-xs text-slate-600 font-semibold">{c.title}</div>
+                            <div className="flex gap-3 mt-1 text-xs">
+                              {c.email && <a href={`mailto:${c.email}`} className="text-blue-600 hover:underline">{c.email}</a>}
+                              {c.phone && <span className="text-slate-500">{c.phone}</span>}
+                              {c.linkedin && <a href={c.linkedin} target="_blank" className="text-blue-600 hover:underline">LinkedIn</a>}
+                            </div>
+                            {c.relevance && <p className="text-xs text-slate-500 mt-1 italic">{c.relevance}</p>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Opportunity Analysis */}
+                {research.opportunity && (
+                  <div className="p-4 bg-purple-50 rounded-lg">
+                    <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-6 h-6 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">3</span>
+                      FUZE Opportunity Analysis
+                      {research.opportunity.fitScore && (
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ml-auto ${research.opportunity.fitScore >= 7 ? "bg-green-100 text-green-700" : research.opportunity.fitScore >= 4 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>
+                          Fit: {research.opportunity.fitScore}/10
+                        </span>
+                      )}
+                      {research.opportunity.estimatedScale && (
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">{research.opportunity.estimatedScale}</span>
+                      )}
+                    </h4>
+                    {research.opportunity.fitReason && <p className="text-sm text-slate-700 mb-3">{research.opportunity.fitReason}</p>}
+                    {research.opportunity.bestProductLines?.length > 0 && (
+                      <div className="mb-2">
+                        <span className="text-xs font-bold text-slate-600">Best product lines: </span>
+                        <span className="text-xs text-slate-700">{research.opportunity.bestProductLines.join(", ")}</span>
+                      </div>
+                    )}
+                    {research.opportunity.currentAntimicrobial && (
+                      <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                        <strong>Current antimicrobial:</strong> {research.opportunity.currentAntimicrobial}
+                      </div>
+                    )}
+                    {research.opportunity.suggestedApproach && (
+                      <div className="mb-3 p-3 bg-white border border-purple-200 rounded-lg">
+                        <span className="text-xs font-bold text-purple-700 block mb-1">Suggested Approach</span>
+                        <p className="text-sm text-slate-700">{research.opportunity.suggestedApproach}</p>
+                      </div>
+                    )}
+                    {research.opportunity.openingMessage && (
+                      <div className="p-3 bg-white border border-purple-200 rounded-lg">
+                        <span className="text-xs font-bold text-purple-700 block mb-1">Draft Opening Message</span>
+                        <p className="text-sm text-slate-700 italic">&ldquo;{research.opportunity.openingMessage}&rdquo;</p>
+                      </div>
+                    )}
+                    {research.opportunity.objections?.length > 0 && (
+                      <div className="mt-3">
+                        <span className="text-xs font-bold text-slate-600 block mb-2">Potential Objections & Counters</span>
+                        <div className="space-y-2">
+                          {research.opportunity.objections.map((obj: any, i: number) => (
+                            <div key={i} className="text-xs">
+                              <span className="text-red-600 font-semibold">Objection: </span><span className="text-slate-700">{obj.objection}</span>
+                              <br />
+                              <span className="text-green-600 font-semibold">Counter: </span><span className="text-slate-700">{obj.counter}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Products & Market */}
+                {research.products && (
+                  <div className="p-4 bg-amber-50 rounded-lg">
+                    <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-6 h-6 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">4</span>
+                      Product & Market Intel
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4 text-xs">
+                      {research.products.categories?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">Product Categories</span>{research.products.categories.join(", ")}</div>}
+                      {research.products.targetMarkets?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">Target Markets</span>{research.products.targetMarkets.join(", ")}</div>}
+                      {research.products.keyBrands?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">Key Brands/Lines</span>{research.products.keyBrands.join(", ")}</div>}
+                      {research.products.sustainability?.length > 0 && <div><span className="font-bold text-slate-600 block mb-1">Sustainability</span>{research.products.sustainability.join(", ")}</div>}
+                    </div>
+                  </div>
+                )}
+
+                {/* News */}
+                {research.news?.length > 0 && (
+                  <div className="p-4 bg-sky-50 rounded-lg">
+                    <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-6 h-6 bg-sky-100 text-sky-700 rounded-full text-xs font-bold">5</span>
+                      Recent News & Triggers
+                    </h4>
+                    <div className="space-y-2">
+                      {research.news.map((n: any, i: number) => (
+                        <div key={i} className="text-sm">
+                          <div className="flex items-center gap-2">
+                            <strong className="text-slate-900">{n.headline}</strong>
+                            {n.date && <span className="text-xs text-slate-400">{n.date}</span>}
+                          </div>
+                          {n.summary && <p className="text-xs text-slate-600 mt-0.5">{n.summary}</p>}
+                          {n.relevance && <p className="text-xs text-sky-600 italic">{n.relevance}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Research Notes */}
+                {research.researchNotes && (
+                  <div className="p-3 bg-slate-100 rounded-lg text-xs text-slate-600">
+                    <strong>Research Notes:</strong> {research.researchNotes}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!research && !researching && (
+              <div className="text-center py-12">
+                <div className="text-4xl mb-3">🔍</div>
+                <p className="text-sm text-slate-600 font-semibold">Ready to research {brand.name}</p>
+                <p className="text-xs text-slate-400 mt-1">Click &ldquo;Run Research&rdquo; to get AI-powered intelligence on this brand</p>
+                <p className="text-xs text-slate-400">Finds decision makers, company info, products, and sales opportunities</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
 

@@ -85,6 +85,13 @@ export default function SOWPrintPage() {
         <div className="p-10 print:p-0">
           {/* Header */}
           <div className="text-center mb-8 pb-6 border-b-2 border-slate-800">
+            {/* Inline logo for print */}
+            <div className="flex justify-center mb-2">
+              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24 2L6 10v14c0 11.1 7.7 21.5 18 24 10.3-2.5 18-12.9 18-24V10L24 2z" fill="#1d4ed8" />
+                <path d="M16 14h16v4H21v4h9v4h-9v8h-5V14z" fill="white" />
+              </svg>
+            </div>
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">
               FUZE TECHNOLOGIES
             </h1>
