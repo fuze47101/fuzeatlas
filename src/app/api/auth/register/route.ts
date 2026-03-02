@@ -22,12 +22,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if any users exist — first user becomes ADMIN automatically
-    const userCount = await prisma.user.count();
-    const isFirstUser = userCount === 0;
+    // Check if any users WITH passwords exist — first password-bearing user becomes ADMIN
+    // This handles the case where users were imported from CSV without passwords
+    const usersWithPassword = await prisma.user.count({
+      where: { password: { not: null } },
+    });
+    const isFirstAdmin = usersWithPassword === 0;
 
-    // If not first user, require admin to create accounts
-    if (!isFirstUser) {
+    // If not first admin setup, require admin to create accounts
+    if (!isFirstAdmin) {
       const currentUser = await getCurrentUser();
       if (!currentUser || !hasMinRole(currentUser.role, "ADMIN")) {
         return NextResponse.json(
@@ -37,33 +40,50 @@ export async function POST(req: Request) {
       }
     }
 
-    // Check for existing email
+    // Check for existing user by email
     const existing = await prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() },
     });
-    if (existing) {
-      return NextResponse.json(
-        { ok: false, error: "An account with this email already exists" },
-        { status: 409 }
-      );
-    }
 
     // Hash password
     const hashedPassword = await hashPassword(password);
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email: email.toLowerCase().trim(),
-        password: hashedPassword,
-        role: isFirstUser ? "ADMIN" : (role || "EMPLOYEE"),
-        status: "ACTIVE",
-      },
-    });
+    let user;
 
-    // If first user, auto-login
-    if (isFirstUser) {
+    if (existing) {
+      // User exists from CSV import — update them with password + name + ADMIN role
+      if (isFirstAdmin) {
+        user = await prisma.user.update({
+          where: { id: existing.id },
+          data: {
+            name,
+            password: hashedPassword,
+            role: "ADMIN",
+            status: "ACTIVE",
+          },
+        });
+      } else {
+        // Not first admin, and email already exists — can't create duplicate
+        return NextResponse.json(
+          { ok: false, error: "An account with this email already exists" },
+          { status: 409 }
+        );
+      }
+    } else {
+      // Create new user
+      user = await prisma.user.create({
+        data: {
+          name,
+          email: email.toLowerCase().trim(),
+          password: hashedPassword,
+          role: isFirstAdmin ? "ADMIN" : (role || "EMPLOYEE"),
+          status: "ACTIVE",
+        },
+      });
+    }
+
+    // If first admin, auto-login
+    if (isFirstAdmin) {
       const sessionUser = {
         id: user.id,
         name: user.name,
