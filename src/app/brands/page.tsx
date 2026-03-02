@@ -27,9 +27,46 @@ export default function BrandsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    fetch("/api/brands").then(r => r.json()).then(j => { if (j.ok) { setGrouped(j.grouped); setTotal(j.total); } }).finally(() => setLoading(false));
-  }, []);
+  // Delete state
+  const [deleteTarget, setDeleteTarget] = useState<Brand | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const loadBrands = () => {
+    fetch("/api/brands").then(r => r.json()).then(j => {
+      if (j.ok) { setGrouped(j.grouped); setTotal(j.total); }
+    }).finally(() => setLoading(false));
+  };
+
+  useEffect(() => { loadBrands(); }, []);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch(`/api/brands/${deleteTarget.id}`, { method: "DELETE" });
+      const j = await res.json();
+      if (j.ok) {
+        setDeleteTarget(null);
+        // Remove from local state immediately
+        setGrouped(prev => {
+          const next = { ...prev };
+          for (const stage of Object.keys(next)) {
+            next[stage] = next[stage].filter(b => b.id !== deleteTarget.id);
+          }
+          return next;
+        });
+        setTotal(prev => prev - 1);
+      } else {
+        setDeleteError(j.error || "Delete failed");
+      }
+    } catch (e: any) {
+      setDeleteError(e.message);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   if (loading) return <div className="flex items-center justify-center h-64 text-slate-400 text-lg">Loading brand pipeline...</div>;
 
@@ -77,15 +114,26 @@ export default function BrandsPage() {
               </div>
               <div className="bg-slate-100 rounded-b-lg p-2 space-y-2 min-h-[200px] max-h-[70vh] overflow-y-auto">
                 {brands.map(b => (
-                  <div key={b.id} onClick={() => router.push(`/brands/${b.id}`)}
-                    className="bg-white rounded-lg p-3 shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer">
-                    <div className="font-bold text-sm text-slate-900 truncate">{b.name}</div>
-                    {b.salesRep && <div className="text-[11px] text-slate-500 mt-1 truncate">{b.salesRep}</div>}
-                    <div className="flex gap-3 mt-2 text-[11px] text-slate-500">
-                      {b.fabricCount > 0 && <span title="Fabrics">🧵 {b.fabricCount}</span>}
-                      {b.submissionCount > 0 && <span title="Submissions">📋 {b.submissionCount}</span>}
-                      {b.factoryCount > 0 && <span title="Factories">🏭 {b.factoryCount}</span>}
+                  <div key={b.id} className="bg-white rounded-lg p-3 shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group relative">
+                    <div onClick={() => router.push(`/brands/${b.id}`)}>
+                      <div className="font-bold text-sm text-slate-900 truncate pr-6">{b.name}</div>
+                      {b.salesRep && <div className="text-[11px] text-slate-500 mt-1 truncate">{b.salesRep}</div>}
+                      <div className="flex gap-3 mt-2 text-[11px] text-slate-500">
+                        {b.fabricCount > 0 && <span title="Fabrics">🧵 {b.fabricCount}</span>}
+                        {b.submissionCount > 0 && <span title="Submissions">📋 {b.submissionCount}</span>}
+                        {b.factoryCount > 0 && <span title="Factories">🏭 {b.factoryCount}</span>}
+                      </div>
                     </div>
+                    {/* Quick delete button — visible on hover */}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setDeleteTarget(b); setDeleteError(null); }}
+                      className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
+                      title="Delete brand"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                   </div>
                 ))}
                 {brands.length === 0 && <div className="text-xs text-slate-400 text-center py-8">No brands</div>}
@@ -94,6 +142,48 @@ export default function BrandsPage() {
           );
         })}
       </div>
+
+      {/* Delete confirmation modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => { setDeleteTarget(null); setDeleteError(null); }} />
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Brand</h3>
+            <p className="text-sm text-slate-600 mb-1">
+              Delete <strong className="text-slate-900">{deleteTarget.name}</strong>?
+            </p>
+            {(deleteTarget.fabricCount > 0 || deleteTarget.submissionCount > 0 || deleteTarget.factoryCount > 0) ? (
+              <p className="text-xs text-amber-600 mb-4">
+                This brand has {[
+                  deleteTarget.fabricCount > 0 && `${deleteTarget.fabricCount} fabric(s)`,
+                  deleteTarget.submissionCount > 0 && `${deleteTarget.submissionCount} submission(s)`,
+                  deleteTarget.factoryCount > 0 && `${deleteTarget.factoryCount} factory link(s)`,
+                ].filter(Boolean).join(", ")}. Delete may fail if there are linked records.
+              </p>
+            ) : (
+              <p className="text-xs text-slate-500 mb-4">This brand has no linked records and can be safely removed.</p>
+            )}
+            {deleteError && (
+              <div className="mb-3 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{deleteError}</div>
+            )}
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => { setDeleteTarget(null); setDeleteError(null); }}
+                className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleting ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

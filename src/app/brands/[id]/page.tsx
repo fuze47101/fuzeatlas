@@ -25,6 +25,8 @@ export default function BrandDetailPage() {
   const [form, setForm] = useState<any>({});
   const [users, setUsers] = useState<any[]>([]);
   const [tab, setTab] = useState<"details"|"contacts"|"fabrics"|"submissions"|"sows"|"notes">("details");
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     fetch(`/api/brands/${id}`)
@@ -84,6 +86,26 @@ export default function BrandDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/brands/${id}`, { method: "DELETE" });
+      const j = await res.json();
+      if (j.ok) {
+        router.push("/brands");
+      } else {
+        setError(j.error || "Failed to delete brand");
+        setShowDeleteConfirm(false);
+      }
+    } catch (e: any) {
+      setError(e.message);
+      setShowDeleteConfirm(false);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">Loading brand...</div>;
   if (!brand) return <div className="flex items-center justify-center h-64 text-red-400">Brand not found</div>;
 
@@ -105,7 +127,10 @@ export default function BrandDetailPage() {
         </div>
         <div className="flex gap-2">
           {!editing ? (
-            <button onClick={() => setEditing(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">Edit Brand</button>
+            <>
+              <button onClick={() => setShowDeleteConfirm(true)} className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-semibold hover:bg-red-100">Delete</button>
+              <button onClick={() => setEditing(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">Edit Brand</button>
+            </>
           ) : (
             <>
               <button onClick={() => setEditing(false)} className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-300">Cancel</button>
@@ -278,6 +303,37 @@ export default function BrandDetailPage() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowDeleteConfirm(false)} />
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Brand</h3>
+            <p className="text-sm text-slate-600 mb-1">
+              Are you sure you want to delete <strong>{brand.name}</strong>?
+            </p>
+            <p className="text-xs text-red-600 mb-4">
+              This will remove the brand and may fail if it has linked fabrics, submissions, or other records. You may need to reassign those first.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleting ? "Deleting..." : "Yes, Delete"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -76,7 +76,46 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
 export async function DELETE(_req: Request, props: { params: Promise<{ id: string }> }) {
   try {
     const params = await props.params;
-    await prisma.brand.delete({ where: { id: params.id } });
+    const id = params.id;
+
+    // Check for linked records — block delete if brand is in active use
+    const brand = await prisma.brand.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: { fabrics: true, submissions: true, factories: true, sows: true },
+        },
+      },
+    });
+
+    if (!brand) {
+      return NextResponse.json({ ok: false, error: "Brand not found" }, { status: 404 });
+    }
+
+    const c = brand._count;
+    if (c.fabrics > 0 || c.submissions > 0 || c.factories > 0 || c.sows > 0) {
+      const linked = [
+        c.fabrics > 0 && `${c.fabrics} fabric(s)`,
+        c.submissions > 0 && `${c.submissions} submission(s)`,
+        c.factories > 0 && `${c.factories} factory link(s)`,
+        c.sows > 0 && `${c.sows} SOW(s)`,
+      ].filter(Boolean).join(", ");
+      return NextResponse.json(
+        { ok: false, error: `Cannot delete — brand has ${linked}. Remove linked records first.` },
+        { status: 409 }
+      );
+    }
+
+    // Safe to delete — clean up lightweight records first
+    await prisma.contact.deleteMany({ where: { brandId: id } });
+    await prisma.note.deleteMany({ where: { brandId: id } });
+    await prisma.project.deleteMany({ where: { brandId: id } });
+    await prisma.brandFactory.deleteMany({ where: { brandId: id } });
+    await prisma.sourceRecord.updateMany({ where: { brandId: id }, data: { brandId: null } });
+
+    // Delete the brand
+    await prisma.brand.delete({ where: { id } });
+
     return NextResponse.json({ ok: true });
   } catch (e: any) {
     console.error("Brand delete error:", e);
