@@ -168,6 +168,8 @@ model Brand {
   website        String?
   linkedInProfile String?
   backgroundInfo String?
+  researchData   Json?
+  researchDate   DateTime?
 
   projectType        String?
   projectDescription String?

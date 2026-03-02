@@ -26,6 +26,7 @@ export default function BrandDetailPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [tab, setTab] = useState<"details"|"contacts"|"products"|"fabrics"|"submissions"|"sows"|"notes"|"research">("details");
   const [research, setResearch] = useState<any>(null);
+  const [researchDate, setResearchDate] = useState<string | null>(null);
   const [researching, setResearching] = useState(false);
   const [researchError, setResearchError] = useState("");
   const [products, setProducts] = useState<any[]>([]);
@@ -68,6 +69,17 @@ export default function BrandDetailPage() {
     fetch("/api/users")
       .then(r => r.json())
       .then(j => { if (j.ok) setUsers(j.users); })
+      .catch(() => {});
+
+    // Load saved research
+    fetch(`/api/brands/${id}/research`)
+      .then(r => r.json())
+      .then(j => {
+        if (j.ok && j.research) {
+          setResearch(j.research);
+          setResearchDate(j.researchDate || null);
+        }
+      })
       .catch(() => {});
   }, [id]);
 
@@ -185,6 +197,7 @@ export default function BrandDetailPage() {
       const j = await res.json();
       if (j.ok) {
         setResearch(j.research);
+        setResearchDate(new Date().toISOString());
         if (autoSaveContacts) {
           setSuccess("Research complete — contacts saved!");
           setTimeout(() => setSuccess(""), 4000);
@@ -498,6 +511,7 @@ export default function BrandDetailPage() {
               <div>
                 <h3 className="font-bold text-slate-900">AI Brand Intelligence</h3>
                 <p className="text-xs text-slate-500 mt-1">AI-powered research on {brand.name} — finds decision makers, company intel, and sales opportunities</p>
+                {researchDate && <p className="text-xs text-slate-400 mt-0.5">Last researched: {new Date(researchDate).toLocaleDateString()} at {new Date(researchDate).toLocaleTimeString()}</p>}
               </div>
               <div className="flex gap-2">
                 <button onClick={() => handleResearch(false)} disabled={researching}

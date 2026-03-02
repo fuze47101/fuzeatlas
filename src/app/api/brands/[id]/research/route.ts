@@ -354,7 +354,37 @@ function mergeObjections(a: any[] | undefined, b: any[] | undefined): any[] {
   return Array.from(map.values()).slice(0, 5);
 }
 
-// ─── MAIN ENDPOINT ──────────────────────────────────────
+// ─── GET: Load saved research ───────────────────────────
+
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
+  try {
+    const params = await props.params;
+    const brand = await prisma.brand.findUnique({
+      where: { id: params.id },
+      select: { researchData: true, researchDate: true },
+    });
+
+    if (!brand) {
+      return NextResponse.json({ ok: false, error: "Brand not found" }, { status: 404 });
+    }
+
+    if (!brand.researchData) {
+      return NextResponse.json({ ok: true, research: null });
+    }
+
+    return NextResponse.json({
+      ok: true,
+      research: brand.researchData,
+      researchDate: brand.researchDate,
+      sources: (brand.researchData as any)?._sources || [],
+    });
+  } catch (e: any) {
+    console.error("Load research error:", e);
+    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
+  }
+}
+
+// ─── POST: Run new research ─────────────────────────────
 
 export async function POST(req: Request, props: { params: Promise<{ id: string }> }) {
   try {
@@ -461,6 +491,15 @@ export async function POST(req: Request, props: { params: Promise<{ id: string }
         data: { linkedInProfile: research.company.linkedin },
       });
     }
+
+    // Save research results to brand
+    await prisma.brand.update({
+      where: { id: params.id },
+      data: {
+        researchData: research,
+        researchDate: new Date(),
+      },
+    });
 
     return NextResponse.json({
       ok: true,
