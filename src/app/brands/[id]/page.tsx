@@ -278,24 +278,24 @@ export default function BrandDetailPage() {
       {tab === "details" && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="grid grid-cols-2 gap-4">
-            <Field label={t.brands.brandName} field="name" form={form} setForm={setForm} editing={editing} required />
-            <Field label={t.brands.pipelineStage} field="pipelineStage" form={form} setForm={setForm} editing={editing} type="select" options={STAGES.map(s => ({ value: s, label: t.stages[s as keyof typeof t.stages] || s }))} />
-            <Field label={t.brands.customerType} field="customerType" form={form} setForm={setForm} editing={editing} />
-            <Field label={t.brands.leadReferralSource} field="leadReferralSource" form={form} setForm={setForm} editing={editing} />
-            <Field label={t.brands.salesRep} field="salesRepId" form={form} setForm={setForm} editing={editing} type="select" options={users.map(u => ({ value: u.id, label: u.name }))} />
-            <Field label={t.brands.website} field="website" form={form} setForm={setForm} editing={editing} />
-            <Field label={t.brands.linkedin} field="linkedInProfile" form={form} setForm={setForm} editing={editing} />
-            <Field label={t.brands.dateInitialContact} field="dateOfInitialContact" form={form} setForm={setForm} editing={editing} type="date" />
-            <Field label={t.brands.presentationDate} field="presentationDate" form={form} setForm={setForm} editing={editing} type="date" />
-            <Field label={t.brands.projectType} field="projectType" form={form} setForm={setForm} editing={editing} />
+            <Field label={t.brands.brandName} field="name" form={form} setForm={setForm} editing={editing} required t={t} />
+            <Field label={t.brands.pipelineStage} field="pipelineStage" form={form} setForm={setForm} editing={editing} type="select" options={STAGES.map(s => ({ value: s, label: t.stages[s as keyof typeof t.stages] || s }))} t={t} />
+            <Field label={t.brands.customerType} field="customerType" form={form} setForm={setForm} editing={editing} t={t} />
+            <Field label={t.brands.leadReferralSource} field="leadReferralSource" form={form} setForm={setForm} editing={editing} t={t} />
+            <Field label={t.brands.salesRep} field="salesRepId" form={form} setForm={setForm} editing={editing} type="select" options={users.map(u => ({ value: u.id, label: u.name }))} t={t} />
+            <Field label={t.brands.website} field="website" form={form} setForm={setForm} editing={editing} t={t} />
+            <Field label={t.brands.linkedin} field="linkedInProfile" form={form} setForm={setForm} editing={editing} t={t} />
+            <Field label={t.brands.dateInitialContact} field="dateOfInitialContact" form={form} setForm={setForm} editing={editing} type="date" t={t} />
+            <Field label={t.brands.presentationDate} field="presentationDate" form={form} setForm={setForm} editing={editing} type="date" t={t} />
+            <Field label={t.brands.projectType} field="projectType" form={form} setForm={setForm} editing={editing} t={t} />
             <div className="col-span-2">
-              <Field label={t.brands.backgroundInfo} field="backgroundInfo" form={form} setForm={setForm} editing={editing} type="textarea" />
+              <Field label={t.brands.backgroundInfo} field="backgroundInfo" form={form} setForm={setForm} editing={editing} type="textarea" t={t} />
             </div>
             <div className="col-span-2">
-              <Field label={t.brands.projectDescription} field="projectDescription" form={form} setForm={setForm} editing={editing} type="textarea" />
+              <Field label={t.brands.projectDescription} field="projectDescription" form={form} setForm={setForm} editing={editing} type="textarea" t={t} />
             </div>
-            <Field label={t.brands.forecast} field="forecast" form={form} setForm={setForm} editing={editing} />
-            <Field label={t.brands.deliverables} field="deliverables" form={form} setForm={setForm} editing={editing} />
+            <Field label={t.brands.forecast} field="forecast" form={form} setForm={setForm} editing={editing} t={t} />
+            <Field label={t.brands.deliverables} field="deliverables" form={form} setForm={setForm} editing={editing} t={t} />
           </div>
         </div>
       )}
@@ -785,7 +785,7 @@ function sowStatusColor(s: string) {
   return m[s] || "bg-slate-200 text-slate-700";
 }
 
-function Field({ label, field, form, setForm, editing, type = "text", options, required }: any) {
+function Field({ label, field, form, setForm, editing, type = "text", options, required, t }: any) {
   const val = form[field] || "";
 
   if (!editing) {
