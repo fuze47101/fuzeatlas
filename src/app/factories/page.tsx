@@ -29,7 +29,7 @@ export default function FactoriesPage() {
       <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-2xl font-black text-slate-900">{t.factories.title}</h1>
-          <p className="text-sm text-slate-500 mt-1">{t.factories.factoriesAcrossCountries(total.toLocaleString(), Object.keys(byCountry).length)}</p>
+          <p className="text-sm text-slate-500 mt-1">{`${total.toLocaleString()} ${t.factories.factoriesAcrossCountries.replace("{count}", String(Object.keys(byCountry).length))}`}</p>
         </div>
         <div className="flex items-center gap-3">
           <input type="text" placeholder={t.factories.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)}
