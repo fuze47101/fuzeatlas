@@ -12,13 +12,24 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
       include: {
         brand: { select: { id: true, name: true, pipelineStage: true, salesRepId: true } },
         milestones: { orderBy: { sortOrder: "asc" } },
-        products: { include: { product: true } },
         documents: true,
       },
     });
 
     if (!sow) return NextResponse.json({ ok: false, error: "SOW not found" }, { status: 404 });
-    return NextResponse.json({ ok: true, sow });
+
+    // Load products separately — table may not exist yet
+    let products = [];
+    try {
+      products = await prisma.sOWProduct.findMany({
+        where: { sowId: params.id },
+        include: { product: true },
+      });
+    } catch {
+      // SOWProduct table doesn't exist yet
+    }
+
+    return NextResponse.json({ ok: true, sow: { ...sow, products } });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }

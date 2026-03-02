@@ -10,13 +10,31 @@ export async function GET() {
       include: {
         brand: { select: { id: true, name: true, pipelineStage: true } },
         milestones: { orderBy: { sortOrder: "asc" } },
-        products: { include: { product: { select: { id: true, name: true, sku: true } } } },
         _count: { select: { documents: true, milestones: true } },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ ok: true, sows });
+    // Load products separately — SOWProduct table may not exist yet
+    let sowsWithProducts = sows;
+    try {
+      const sowIds = sows.map(s => s.id);
+      const sowProducts = await prisma.sOWProduct.findMany({
+        where: { sowId: { in: sowIds } },
+        include: { product: { select: { id: true, name: true, sku: true } } },
+      });
+      const productsBySow = {};
+      for (const sp of sowProducts) {
+        if (!productsBySow[sp.sowId]) productsBySow[sp.sowId] = [];
+        productsBySow[sp.sowId].push(sp);
+      }
+      sowsWithProducts = sows.map(s => ({ ...s, products: productsBySow[s.id] || [] }));
+    } catch {
+      // Product tables don't exist yet — return SOWs without products
+      sowsWithProducts = sows.map(s => ({ ...s, products: [] }));
+    }
+
+    return NextResponse.json({ ok: true, sows: sowsWithProducts });
   } catch (e: any) {
     console.error("SOW API error:", e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
@@ -99,9 +117,6 @@ export async function POST(req: Request) {
         signatory: signatory || null,
         signatoryTitle: signatoryTitle || null,
         signatoryEmail: signatoryEmail || null,
-        products: productIds?.length > 0 ? {
-          create: productIds.map((pid: string) => ({ productId: pid })),
-        } : undefined,
         milestones: {
           create: [
             { title: "Stage 0 - Commercial Qualification", description: "Executive sponsor, SKU, factory, volume defined", sortOrder: 0, completedAt: new Date() },
@@ -113,6 +128,17 @@ export async function POST(req: Request) {
       },
       include: { milestones: true },
     });
+
+    // Link products separately — table may not exist yet
+    if (productIds?.length > 0) {
+      try {
+        for (const pid of productIds) {
+          await prisma.sOWProduct.create({ data: { sowId: sow.id, productId: pid } });
+        }
+      } catch {
+        // SOWProduct table doesn't exist yet — skip product linking
+      }
+    }
 
     return NextResponse.json({ ok: true, sow, revenueWarning });
   } catch (e: any) {
