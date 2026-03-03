@@ -23,7 +23,13 @@ export type Competitor = {
   // Binder required
   binderRequired: boolean;
   binderGPerKg: number; // typical binder usage g/kg fabric
+  binderType: string;   // acrylic, polyurethane, silicone, etc.
+  binderPricePerKg: number; // estimated binder cost USD/kg of binder chemical
+  binderLeachPctLifetime: number; // % of binder that washes off over garment lifetime
+  binderVOC: boolean;       // does curing release volatile organic compounds?
+  binderFormaldehyde: boolean; // does binder contain formaldehyde crosslinker?
   curingRequired: boolean;
+  curingTempC: number;  // curing temperature °C (0 if none)
 
   // Leaching data (% of active agent lost)
   leachRateFirst10Washes: number; // percentage lost in first 10 washes
@@ -35,12 +41,14 @@ export type Competitor = {
   endOfLifeNote: string;
 
   // Cost data for comparison
-  // Estimated treatment cost per linear meter (USD, for a ~150gsm / 60in fabric)
-  estimatedCostPerMeterLow: number;   // low-dose application
-  estimatedCostPerMeterHigh: number;  // high-dose application
-  estimatedCostPerMeterTypical: number; // typical application
-  retreatmentPossible: boolean;       // can the fabric be re-treated?
-  retreatmentCostMultiplier: number;  // cost multiplier for re-treatment (usually > 1.0 due to stripping etc.)
+  // Distributor pricing (best estimates — override from admin when espionage data available)
+  chemicalPricePerKg: number;        // USD/kg of antimicrobial solution as purchased from distributor
+  chemicalPriceSource: string;       // where the estimate came from
+  estimatedCostPerMeterLow: number;  // low-dose all-in application cost per linear meter
+  estimatedCostPerMeterHigh: number; // high-dose all-in application cost per linear meter
+  estimatedCostPerMeterTypical: number; // typical all-in application cost per linear meter
+  retreatmentPossible: boolean;
+  retreatmentCostMultiplier: number;
 };
 
 export const COMPETITORS: Competitor[] = [
@@ -58,12 +66,20 @@ export const COMPETITORS: Competitor[] = [
     washClaimNote: "40-50 washes at 30 ppm odor dose",
     binderRequired: true,
     binderGPerKg: 15,
+    binderType: "Acrylic co-polymer with crosslinker",
+    binderPricePerKg: 3.50,
+    binderLeachPctLifetime: 12,
+    binderVOC: true,
+    binderFormaldehyde: true,
     curingRequired: true,
+    curingTempC: 160,
     leachRateFirst10Washes: 35,
     leachRatePerWash: 3.5,
     heavyMetalReleased: "Silver",
     aquaticToxicityNote: "Silver continues leaching in landfill conditions post-disposal",
     endOfLifeNote: "99%+ ingredients undisclosed on EPA label",
+    chemicalPricePerKg: 65,
+    chemicalPriceSource: "Estimate: LANXESS premium silver ion, branded distribution (China ≈$55-75/kg)",
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.07,
@@ -84,12 +100,20 @@ export const COMPETITORS: Competitor[] = [
     washClaimNote: "15-30 washes typical",
     binderRequired: true,
     binderGPerKg: 15,
+    binderType: "Acrylic emulsion binder",
+    binderPricePerKg: 3.00,
+    binderLeachPctLifetime: 15,
+    binderVOC: true,
+    binderFormaldehyde: true,
     curingRequired: true,
+    curingTempC: 150,
     leachRateFirst10Washes: 71,
     leachRatePerWash: 7.1,
     heavyMetalReleased: "Silver",
     aquaticToxicityNote: "31-90% silver lost in first 10 washes (median 71%). Swedish Water Association disputes safety claims.",
     endOfLifeNote: "Silver accumulates in lake/sea sediments, threatening bottom-dwelling organisms",
+    chemicalPricePerKg: 50,
+    chemicalPriceSource: "Estimate: AgCl salt-based, mid-tier Swedish brand (China ≈$40-60/kg)",
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.10,
     estimatedCostPerMeterTypical: 0.06,
@@ -110,12 +134,20 @@ export const COMPETITORS: Competitor[] = [
     washClaimNote: "15-30 washes",
     binderRequired: true,
     binderGPerKg: 15,
+    binderType: "Acrylic emulsion + liposome carrier",
+    binderPricePerKg: 4.00,
+    binderLeachPctLifetime: 18,
+    binderVOC: true,
+    binderFormaldehyde: true,
     curingRequired: true,
+    curingTempC: 150,
     leachRateFirst10Washes: 71,
     leachRatePerWash: 7.1,
     heavyMetalReleased: "Silver",
     aquaticToxicityNote: "Same silver chloride base as StayFresh with added vesicle compounds",
     endOfLifeNote: "Silver + organic vesicle compounds enter waterways",
+    chemicalPricePerKg: 60,
+    chemicalPriceSource: "Estimate: AgCl + liposome vesicles, premium antiviral variant (China ≈$50-70/kg)",
     estimatedCostPerMeterLow: 0.05,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.07,
@@ -136,12 +168,20 @@ export const COMPETITORS: Competitor[] = [
     washClaimNote: "25 washes standard",
     binderRequired: true,
     binderGPerKg: 20,
+    binderType: "Polyurethane crosslinked binder",
+    binderPricePerKg: 5.00,
+    binderLeachPctLifetime: 10,
+    binderVOC: true,
+    binderFormaldehyde: false,
     curingRequired: true,
+    curingTempC: 170,
     leachRateFirst10Washes: 68,
     leachRatePerWash: 6.8,
     heavyMetalReleased: "None (QAC organic compound)",
     aquaticToxicityNote: "QAC toxic to Daphnia magna at 5.8 μg/L. Classified as 'chemical class of emerging concern' (ES&T 2023).",
     endOfLifeNote: "Disrupts biological wastewater treatment. 51% of regions face high risk with direct sewage discharge.",
+    chemicalPricePerKg: 28,
+    chemicalPriceSource: "Estimate: Organosilane QAC commodity, Microban OEM distribution (China ≈$22-35/kg)",
     estimatedCostPerMeterLow: 0.03,
     estimatedCostPerMeterHigh: 0.10,
     estimatedCostPerMeterTypical: 0.05,
@@ -162,12 +202,20 @@ export const COMPETITORS: Competitor[] = [
     washClaimNote: "Up to 50 washes claimed",
     binderRequired: true,
     binderGPerKg: 20,
+    binderType: "Polyurethane crosslinked binder",
+    binderPricePerKg: 5.00,
+    binderLeachPctLifetime: 10,
+    binderVOC: true,
+    binderFormaldehyde: false,
     curingRequired: true,
+    curingTempC: 170,
     leachRateFirst10Washes: 55,
     leachRatePerWash: 5.5,
     heavyMetalReleased: "None (QAC organic compound)",
     aquaticToxicityNote: "Same QAC toxicity profile as standard Aegis. Suspected reproductive toxicity in mammals.",
     endOfLifeNote: "Decomposes to CO2, nitrous oxide, silicon dioxide over ~5 years in landfill",
+    chemicalPricePerKg: 35,
+    chemicalPriceSource: "Estimate: Enhanced SiQAC, premium Microban variant (China ≈$28-42/kg)",
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.07,
@@ -188,12 +236,20 @@ export const COMPETITORS: Competitor[] = [
     washClaimNote: "15-30 washes typical",
     binderRequired: true,
     binderGPerKg: 15,
+    binderType: "Acrylic co-polymer binder",
+    binderPricePerKg: 3.50,
+    binderLeachPctLifetime: 12,
+    binderVOC: true,
+    binderFormaldehyde: true,
     curingRequired: true,
+    curingTempC: 155,
     leachRateFirst10Washes: 50,
     leachRatePerWash: 5.0,
     heavyMetalReleased: "Silver",
     aquaticToxicityNote: "Silver ion leaching profile similar to other carrier-based systems",
     endOfLifeNote: "Silver persists in wastewater sludge used as agricultural fertilizer",
+    chemicalPricePerKg: 55,
+    chemicalPriceSource: "Estimate: Swiss silver ion carrier system, Rudolf/Sanitized distribution (China ≈$45-65/kg)",
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.06,
@@ -214,12 +270,20 @@ export const COMPETITORS: Competitor[] = [
     washClaimNote: "15-30 washes",
     binderRequired: true,
     binderGPerKg: 20,
+    binderType: "Silicone-modified acrylic binder",
+    binderPricePerKg: 4.50,
+    binderLeachPctLifetime: 14,
+    binderVOC: true,
+    binderFormaldehyde: true,
     curingRequired: true,
+    curingTempC: 160,
     leachRateFirst10Washes: 65,
     leachRatePerWash: 6.5,
     heavyMetalReleased: "None (QAC organic compound)",
     aquaticToxicityNote: "QAC emerging contaminant. Leaching rates 55-81% into laundry wastewater.",
     endOfLifeNote: "Dual environmental exposure from QAC + polymer chemistry",
+    chemicalPricePerKg: 30,
+    chemicalPriceSource: "Estimate: SilanQuat + polymer system, Swiss brand via Rudolf (China ≈$25-38/kg)",
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.06,
@@ -240,12 +304,20 @@ export const COMPETITORS: Competitor[] = [
     washClaimNote: "15-30 washes",
     binderRequired: true,
     binderGPerKg: 15,
+    binderType: "Acrylic co-polymer (Crescoating process)",
+    binderPricePerKg: 3.50,
+    binderLeachPctLifetime: 10,
+    binderVOC: true,
+    binderFormaldehyde: false,
     curingRequired: true,
+    curingTempC: 150,
     leachRateFirst10Washes: 45,
     leachRatePerWash: 4.5,
     heavyMetalReleased: "Zinc",
     aquaticToxicityNote: "ZnO nanoparticles show potential for bioaccumulation in aquatic food chains",
     endOfLifeNote: "Zinc nanoparticles can disrupt biological wastewater treatment",
+    chemicalPricePerKg: 40,
+    chemicalPriceSource: "Estimate: ZnO nano in-situ grown, Swiss HeiQ brand (China ≈$32-48/kg)",
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.06,
@@ -266,12 +338,20 @@ export const COMPETITORS: Competitor[] = [
     washClaimNote: "15-30 washes",
     binderRequired: true,
     binderGPerKg: 15,
+    binderType: "Acrylic + liposome vesicle carrier",
+    binderPricePerKg: 5.00,
+    binderLeachPctLifetime: 20,
+    binderVOC: true,
+    binderFormaldehyde: false,
     curingRequired: true,
+    curingTempC: 140,
     leachRateFirst10Washes: 80,
     leachRatePerWash: 8.0,
     heavyMetalReleased: "Silver + Zinc (dual metal)",
     aquaticToxicityNote: "Up to 80% silver released in first wash. Dual metal system doubles heavy metal load per garment.",
     endOfLifeNote: "Both silver and zinc persist in environment; silver in sludge, zinc bioaccumulates",
+    chemicalPricePerKg: 48,
+    chemicalPriceSource: "Estimate: Dual Ag+Zn+liposome system, premium Swiss brand (China ≈$38-58/kg)",
     estimatedCostPerMeterLow: 0.05,
     estimatedCostPerMeterHigh: 0.14,
     estimatedCostPerMeterTypical: 0.08,
@@ -312,7 +392,10 @@ export type CostComparison = {
   // Environmental multipliers (re-treatment = more chemistry, more binder, more leaching)
   competitorTotalChemistryMg: number;
   competitorTotalBinderG: number;
-  competitorTotalLeachMg: number;
+  competitorTotalLeachMg: number;       // active agent leached to water
+  competitorBinderLeachG: number;       // binder leached to water (microplastics / polymer)
+  competitorTotalDischargeToWaterMg: number; // everything: active agent + binder combined
+  competitorBinderCostTotal: number;    // total binder cost across all applications
   fuzeChemistryMg: number;
   fuzeBinderG: number;
   fuzeLeachMg: number;
@@ -353,7 +436,7 @@ export function calcCostComparison(
     ? competitor.binderGPerKg * fabricWeightKg * competitorApplicationsNeeded
     : 0;
 
-  // Leaching: each application cycle leaches over its wash range
+  // Leaching: each application cycle leaches its active agent over the wash range
   const washesPerCycle = competitor.maxWashClaim;
   let competitorTotalLeachMg = 0;
   for (let i = 0; i < competitorApplicationsNeeded; i++) {
@@ -361,6 +444,17 @@ export function calcCostComparison(
     const leachFraction = Math.min(1, (competitor.leachRatePerWash / 100) * washesThisCycle);
     competitorTotalLeachMg += compChemPerApp * leachFraction;
   }
+
+  // Binder leaching: binder also washes off over garment lifetime (microplastic / polymer discharge)
+  const binderPerApplicationG = competitor.binderRequired ? competitor.binderGPerKg * fabricWeightKg : 0;
+  const totalBinderAppliedG = binderPerApplicationG * competitorApplicationsNeeded;
+  const competitorBinderLeachG = totalBinderAppliedG * (competitor.binderLeachPctLifetime / 100);
+
+  // Total discharge to water: active agent (mg) + binder (g→mg)
+  const competitorTotalDischargeToWaterMg = competitorTotalLeachMg + (competitorBinderLeachG * 1000);
+
+  // Binder cost
+  const competitorBinderCostTotal = totalBinderAppliedG * (competitor.binderPricePerKg / 1000); // g * $/g
 
   const fuzeChemistryMg = fuzeDose * fabricWeightKg;
 
@@ -381,8 +475,11 @@ export function calcCostComparison(
     fuzeSavingsPerMeter,
     fuzeSavingsPct,
     competitorTotalChemistryMg,
-    competitorTotalBinderG,
+    competitorTotalBinderG: totalBinderAppliedG,
     competitorTotalLeachMg,
+    competitorBinderLeachG,
+    competitorTotalDischargeToWaterMg,
+    competitorBinderCostTotal,
     fuzeChemistryMg,
     fuzeBinderG: 0,
     fuzeLeachMg: 0,

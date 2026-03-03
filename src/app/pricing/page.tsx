@@ -426,44 +426,72 @@ export default function PricingPage() {
             </div>
 
             {/* Chemistry + Cost side-by-side for ACTIVE tier */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-red-50/50 border border-red-200/50 rounded-xl p-4">
-                <div className="text-xs font-semibold text-red-800/60 uppercase tracking-wider mb-2">
-                  {competitor.product} — to reach {targetWashes} washes
-                </div>
-                <div className="space-y-1.5 text-sm">
-                  <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">{competitor.chemistryLabel}</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Single app dosage</span><span className="font-medium text-slate-700">{competitor.dosageTypical} ppm</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Max per application</span><span className="font-medium text-red-600">{competitor.maxWashClaim} washes</span></div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Applications needed</span>
-                    <span className="font-bold text-red-600">{costComparisons.find(c => c.fuzeDose === dose)?.competitorApplicationsNeeded || 1}× treatments</span>
+            {(() => {
+              const cc = costComparisons.find(c => c.fuzeDose === dose);
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-red-50/50 border border-red-200/50 rounded-xl p-4">
+                    <div className="text-xs font-semibold text-red-800/60 uppercase tracking-wider mb-2">
+                      {competitor.product} — to reach {targetWashes} washes
+                    </div>
+                    <div className="space-y-1.5 text-sm">
+                      <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">{competitor.chemistryLabel}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Est. chemical price</span><span className="font-medium text-slate-700">${competitor.chemicalPricePerKg}/kg</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Single app dosage</span><span className="font-medium text-slate-700">{competitor.dosageTypical} ppm</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Max per application</span><span className="font-medium text-red-600">{competitor.maxWashClaim} washes</span></div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Applications needed</span>
+                        <span className="font-bold text-red-600">{cc?.competitorApplicationsNeeded || 1}× treatments</span>
+                      </div>
+                      <div className="border-t border-red-200/50 my-1 pt-1" />
+                      <div className="text-[10px] font-semibold text-red-700/60 uppercase tracking-wider">Binder Additive Required</div>
+                      <div className="flex justify-between"><span className="text-slate-500">Binder type</span><span className="font-medium text-red-600 text-xs">{competitor.binderType}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Binder per treatment</span><span className="font-medium text-red-600">{competitor.binderGPerKg} g/kg fabric</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Total binder applied</span><span className="font-bold text-red-600">{num(cc?.competitorTotalBinderG || 0, 2)} g</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Binder leaches</span><span className="font-medium text-red-600">{competitor.binderLeachPctLifetime}% over lifetime</span></div>
+                      {competitor.binderFormaldehyde && (
+                        <div className="flex justify-between"><span className="text-slate-500">Formaldehyde</span><span className="font-medium text-red-600">Contains crosslinker</span></div>
+                      )}
+                      {competitor.binderVOC && (
+                        <div className="flex justify-between"><span className="text-slate-500">VOC during curing</span><span className="font-medium text-red-600">Yes ({competitor.curingTempC}°C cure)</span></div>
+                      )}
+                      <div className="border-t border-red-200/50 my-1 pt-1" />
+                      <div className="text-[10px] font-semibold text-red-700/60 uppercase tracking-wider">Total Environmental Discharge</div>
+                      <div className="flex justify-between"><span className="text-slate-500">Active agent leached</span><span className="font-bold text-red-600">{num(cc?.competitorTotalLeachMg || 0, 1)} mg</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Binder leached</span><span className="font-bold text-red-600">{num((cc?.competitorBinderLeachG || 0) * 1000, 0)} mg</span></div>
+                      <div className="flex justify-between bg-red-100/50 -mx-1 px-1 rounded">
+                        <span className="text-slate-600 font-semibold">TOTAL to water</span>
+                        <span className="font-black text-red-700">{num(cc?.competitorTotalDischargeToWaterMg || 0, 0)} mg</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between"><span className="text-slate-500">Binder per treatment</span><span className="font-medium text-red-600">{competitor.binderRequired ? `${competitor.binderGPerKg} g/kg` : "None"}</span></div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Total chemistry</span>
-                    <span className="font-bold text-red-600">{num(costComparisons.find(c => c.fuzeDose === dose)?.competitorTotalChemistryMg || 0, 1)} mg</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Total leaching</span>
-                    <span className="font-bold text-red-600">{num(costComparisons.find(c => c.fuzeDose === dose)?.competitorTotalLeachMg || 0, 1)} mg to water</span>
-                  </div>
-                </div>
-              </div>
 
-              <div className="bg-emerald-50/50 border border-emerald-200/50 rounded-xl p-4">
-                <div className="text-xs font-semibold text-emerald-800/60 uppercase tracking-wider mb-2">FUZE {activeTier.id} — {activeTier.name}</div>
-                <div className="space-y-1.5 text-sm">
-                  <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">Silver Allotrope (Non-ionic)</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Dosage</span><span className="font-medium text-emerald-600">{dose} mg/kg ({(competitor.dosageTypical / dose).toFixed(0)}× less)</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Wash durability</span><span className="font-medium text-emerald-600">Lifetime (100+) — EPA verified</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Applications needed</span><span className="font-bold text-emerald-600">1× (lifetime)</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Binder required</span><span className="font-medium text-emerald-600">No</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Total chemistry</span><span className="font-bold text-emerald-600">{num(dose * (outputs.kgPerLinearMeter || 0.15), 2)} mg</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Total leaching</span><span className="font-bold text-emerald-600">0 mg — Zero emissions</span></div>
+                  <div className="bg-emerald-50/50 border border-emerald-200/50 rounded-xl p-4">
+                    <div className="text-xs font-semibold text-emerald-800/60 uppercase tracking-wider mb-2">FUZE {activeTier.id} — {activeTier.name}</div>
+                    <div className="space-y-1.5 text-sm">
+                      <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">Silver Allotrope (Non-ionic)</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Dosage</span><span className="font-medium text-emerald-600">{dose} mg/kg ({(competitor.dosageTypical / dose).toFixed(0)}× less)</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Wash durability</span><span className="font-medium text-emerald-600">Lifetime (100+) — EPA verified</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Applications needed</span><span className="font-bold text-emerald-600">1× (lifetime)</span></div>
+                      <div className="border-t border-emerald-200/50 my-1 pt-1" />
+                      <div className="text-[10px] font-semibold text-emerald-700/60 uppercase tracking-wider">No Binder Required</div>
+                      <div className="flex justify-between"><span className="text-slate-500">Binder type</span><span className="font-medium text-emerald-600">None — No additive needed</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Binder applied</span><span className="font-medium text-emerald-600">0 g</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Formaldehyde</span><span className="font-medium text-emerald-600">None</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">VOC emissions</span><span className="font-medium text-emerald-600">None — No curing</span></div>
+                      <div className="border-t border-emerald-200/50 my-1 pt-1" />
+                      <div className="text-[10px] font-semibold text-emerald-700/60 uppercase tracking-wider">Total Environmental Discharge</div>
+                      <div className="flex justify-between"><span className="text-slate-500">Active agent leached</span><span className="font-bold text-emerald-600">0 mg</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Binder leached</span><span className="font-bold text-emerald-600">0 mg</span></div>
+                      <div className="flex justify-between bg-emerald-100/50 -mx-1 px-1 rounded">
+                        <span className="text-slate-600 font-semibold">TOTAL to water</span>
+                        <span className="font-black text-emerald-700">0 mg</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Environmental Score Card */}
             <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 text-white">
@@ -476,37 +504,41 @@ export default function PricingPage() {
                 <Gradebadge grade={envScore.compositeGrade} score={envScore.compositeScore} />
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                 {(() => {
                   const cc = costComparisons.find(c => c.fuzeDose === dose);
                   return (<>
                     <div className="bg-white/10 rounded-xl p-4">
                       <div className="text-2xl font-bold text-emerald-400">{num(cc ? cc.competitorTotalChemistryMg - cc.fuzeChemistryMg : envScore.chemistrySavedMg, 1)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
-                      <div className="text-xs text-slate-400 mt-1">Chemistry eliminated</div>
+                      <div className="text-xs text-slate-400 mt-1">Active agent eliminated</div>
                       <div className="text-[10px] text-slate-500 mt-0.5">
                         {cc && cc.competitorApplicationsNeeded > 1
                           ? `Across ${cc.competitorApplicationsNeeded} competitor re-treatments`
-                          : "Active agent not manufactured, shipped, or applied"}
+                          : "Antimicrobial chemistry not manufactured or applied"}
+                      </div>
+                    </div>
+                    <div className="bg-white/10 rounded-xl p-4">
+                      <div className="text-2xl font-bold text-amber-400">{num(cc ? cc.competitorTotalBinderG : envScore.binderSavedG, 2)}<span className="text-sm font-normal text-slate-400"> g</span></div>
+                      <div className="text-xs text-slate-400 mt-1">Binder eliminated</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">
+                        {competitor.binderType}
+                        {competitor.binderFormaldehyde ? " + formaldehyde" : ""}
                       </div>
                     </div>
                     <div className="bg-white/10 rounded-xl p-4">
                       <div className="text-2xl font-bold text-blue-400">{num(cc ? cc.competitorTotalLeachMg : envScore.metalToWaterMg, 1)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
-                      <div className="text-xs text-slate-400 mt-1">Metals/toxins kept from water</div>
-                      <div className="text-[10px] text-slate-500 mt-0.5">Over {targetWashes} washes — factory + home laundry combined</div>
+                      <div className="text-xs text-slate-400 mt-1">Active agent kept from water</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">{competitor.heavyMetalReleased} not discharged</div>
                     </div>
                     <div className="bg-white/10 rounded-xl p-4">
-                      <div className="text-2xl font-bold text-amber-400">{num(cc ? cc.competitorTotalBinderG : envScore.binderSavedG, 2)}<span className="text-sm font-normal text-slate-400"> g</span></div>
-                      <div className="text-xs text-slate-400 mt-1">Binder chemistry saved</div>
-                      <div className="text-[10px] text-slate-500 mt-0.5">
-                        {cc && cc.competitorApplicationsNeeded > 1
-                          ? `${cc.competitorApplicationsNeeded}× binder applications eliminated`
-                          : "Petrochemical polymer not needed"}
-                      </div>
+                      <div className="text-2xl font-bold text-purple-400">{num((cc?.competitorBinderLeachG || 0) * 1000, 0)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
+                      <div className="text-xs text-slate-400 mt-1">Binder kept from water</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">Petrochemical polymer microplastics not shed</div>
                     </div>
-                    <div className="bg-white/10 rounded-xl p-4">
-                      <div className="text-2xl font-bold text-rose-400">{envScore.unprotectedWashes}<span className="text-sm font-normal text-slate-400"> washes</span></div>
-                      <div className="text-xs text-slate-400 mt-1">Unprotected gap</div>
-                      <div className="text-[10px] text-slate-500 mt-0.5">Even with re-treatment, competitor can&apos;t match FUZE EPA lifetime claim</div>
+                    <div className="bg-red-500/20 rounded-xl p-4 border border-red-500/30">
+                      <div className="text-2xl font-bold text-red-400">{num(cc?.competitorTotalDischargeToWaterMg || 0, 0)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
+                      <div className="text-xs text-red-300 mt-1 font-semibold">Total discharge eliminated</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">Active agent + binder combined — all kept from water</div>
                     </div>
                   </>);
                 })()}
@@ -625,13 +657,13 @@ export default function PricingPage() {
                   </div>
                   <div className="bg-gradient-to-br from-rose-50 to-rose-100/50 border border-rose-200 rounded-xl p-4">
                     <div className="text-rose-700 font-semibold text-sm mb-2">
-                      {cc ? `${num(cc.competitorTotalLeachMg, 0)} mg` : ""} Leaching Eliminated
+                      {cc ? `${num(cc.competitorTotalDischargeToWaterMg, 0)} mg` : ""} Total Discharge Eliminated
                     </div>
                     <p className="text-xs text-rose-600/80">
-                      Every wash with {competitor.product} releases {competitor.heavyMetalReleased.toLowerCase() !== "none" ? competitor.heavyMetalReleased.toLowerCase() : "toxic compounds"} into
-                      factory wastewater and your customer&apos;s home laundry.
-                      {cc && cc.competitorApplicationsNeeded > 1 && (<> With {cc.competitorApplicationsNeeded} treatments, that&apos;s {num(cc.competitorTotalLeachMg, 0)} mg of toxins per meter of fabric over {targetWashes} washes.</>)}
-                      {" "}FUZE leaches zero.
+                      {competitor.product} leaches {competitor.heavyMetalReleased.toLowerCase() !== "none" ? competitor.heavyMetalReleased.toLowerCase() : "toxic compounds"} plus
+                      {" "}{competitor.binderType.toLowerCase()} binder into factory wastewater and your customer&apos;s home laundry.
+                      {cc && (<> That&apos;s {num(cc.competitorTotalLeachMg, 0)} mg of active agent + {num(cc.competitorBinderLeachG * 1000, 0)} mg of binder polymer = {num(cc.competitorTotalDischargeToWaterMg, 0)} mg total per meter.</>)}
+                      {" "}FUZE discharges zero. No active agent. No binder. Nothing.
                     </p>
                   </div>
                   <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200 rounded-xl p-4">
