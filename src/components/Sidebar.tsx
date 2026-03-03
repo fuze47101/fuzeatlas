@@ -37,6 +37,7 @@ export default function Sidebar() {
     { href: "/labs", label: t.nav.labDirectory || "Lab Directory", icon: "🔬" },
     { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
     { href: "/reports", label: t.nav.weeklySummary || "Weekly Summary", icon: "📈" },
+    { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
   ];
 
   // Admin-only nav items
