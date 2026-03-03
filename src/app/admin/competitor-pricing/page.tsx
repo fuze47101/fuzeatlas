@@ -241,7 +241,15 @@ export default function CompetitorPricingAdmin() {
                     <span className={`w-3 h-3 rounded-full flex-shrink-0 ${hasOverride ? "bg-emerald-500" : "bg-amber-500"}`} />
                     <div className="min-w-0">
                       <h3 className="text-white font-semibold text-sm">{comp.product}</h3>
-                      <p className="text-slate-400 text-xs">{comp.company} — {comp.chemistryLabel}</p>
+                      <p className="text-slate-400 text-xs">
+                        {comp.company} — {comp.chemistryLabel}
+                        {comp.epaRegNumber && (
+                          <span className="ml-2 text-slate-500">
+                            EPA: {comp.epaRegNumber}
+                            {comp.epaRegYear && <span className="text-amber-500/70"> ({comp.epaRegYear})</span>}
+                          </span>
+                        )}
+                      </p>
                     </div>
                   </div>
 

@@ -694,6 +694,162 @@ export default function PricingPage() {
                 </div>
               );
             })()}
+
+            {/* ═══ EPA REGISTRATION COMPARISON ═══ */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <h3 className="text-base font-bold text-slate-800 mb-1">EPA Registration Comparison</h3>
+              <p className="text-xs text-slate-500 mb-4">
+                Many competitor products were registered decades ago under far less stringent efficacy and toxicity standards.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Competitor EPA */}
+                <div className="bg-red-50 border border-red-200 rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-3 h-3 rounded-full bg-red-500" />
+                    <span className="text-sm font-semibold text-red-800">{competitor.product}</span>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">EPA Reg #:</span>
+                      <span className="font-mono text-red-700 text-xs">{competitor.epaRegNumber}</span>
+                    </div>
+                    {competitor.epaRegYear && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">First registered:</span>
+                        <span className="font-bold text-red-700">
+                          {competitor.epaRegYear}
+                          <span className="text-slate-400 font-normal ml-1">({new Date().getFullYear() - competitor.epaRegYear} years ago)</span>
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Chemistry:</span>
+                      <span className="text-slate-700">{competitor.chemistryLabel}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Max wash claim:</span>
+                      <span className="text-slate-700">{competitor.maxWashClaim} washes</span>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-red-200 text-xs text-red-600/80">
+                      {competitor.epaRegNote}
+                    </div>
+                    {competitor.epaLabelUrl && (
+                      <a
+                        href={competitor.epaLabelUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-800 font-medium mt-1"
+                      >
+                        View EPA label / product page
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                {/* FUZE EPA */}
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-3 h-3 rounded-full bg-emerald-500" />
+                    <span className="text-sm font-semibold text-emerald-800">FUZE Antimicrobial</span>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">EPA Status:</span>
+                      <span className="font-bold text-emerald-700">EPA Lifetime Approval</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Durability:</span>
+                      <span className="font-bold text-emerald-700">Lifetime (100+ washes)</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Binder Required:</span>
+                      <span className="font-bold text-emerald-700">None</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Curing Required:</span>
+                      <span className="font-bold text-emerald-700">None</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Heavy Metal Leaching:</span>
+                      <span className="font-bold text-emerald-700">Zero</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Formaldehyde:</span>
+                      <span className="font-bold text-emerald-700">None</span>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-emerald-200 text-xs text-emerald-600/80">
+                      FUZE is the only antimicrobial textile treatment with EPA-verified lifetime durability. Single application, no binder, no curing, no environmental discharge.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Regulatory era context */}
+              {competitor.epaRegYear && competitor.epaRegYear < 2000 && (
+                <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
+                  <div className="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-1">Regulatory Context</div>
+                  <p className="text-xs text-amber-600/80">
+                    {competitor.product} was first EPA-registered in {competitor.epaRegYear} — {competitor.epaRegYear < 1990 ? "well before" : "before"} the EPA issued PRN 2000-1 in March 2000, which clarified the Treated Articles Exemption for antimicrobials.
+                    Products registered in this era had significantly lower requirements for proving efficacy, toxicity testing, and environmental impact than modern standards require.
+                    No modern-era re-evaluation of the original registration has been mandated.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* ═══ ALL COMPETITORS EPA TABLE ═══ */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <h3 className="text-base font-bold text-slate-800 mb-1">Full Competitor EPA Registry</h3>
+              <p className="text-xs text-slate-500 mb-4">{competitors.length} competitor products tracked across all chemistry types.</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-left">
+                      <th className="py-2 pr-3 font-semibold text-slate-500">Product</th>
+                      <th className="py-2 pr-3 font-semibold text-slate-500">Company</th>
+                      <th className="py-2 pr-3 font-semibold text-slate-500">Chemistry</th>
+                      <th className="py-2 pr-3 font-semibold text-slate-500">EPA Reg #</th>
+                      <th className="py-2 pr-3 font-semibold text-slate-500">Year</th>
+                      <th className="py-2 pr-3 font-semibold text-slate-500">Washes</th>
+                      <th className="py-2 font-semibold text-slate-500">Link</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {competitors.map(c => (
+                      <tr key={c.id} className={`border-b border-slate-100 ${c.id === competitorId ? "bg-red-50" : "hover:bg-slate-50"}`}>
+                        <td className="py-2 pr-3 font-medium text-slate-700">{c.product}</td>
+                        <td className="py-2 pr-3 text-slate-500">{c.company}</td>
+                        <td className="py-2 pr-3 text-slate-500">{c.chemistryLabel}</td>
+                        <td className="py-2 pr-3 font-mono text-slate-600">{c.epaRegNumber}</td>
+                        <td className="py-2 pr-3">
+                          {c.epaRegYear ? (
+                            <span className={c.epaRegYear < 2000 ? "text-amber-600 font-bold" : "text-slate-600"}>
+                              {c.epaRegYear}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400">—</span>
+                          )}
+                        </td>
+                        <td className="py-2 pr-3 text-slate-600">{c.maxWashClaim}</td>
+                        <td className="py-2">
+                          {c.epaLabelUrl ? (
+                            <a href={c.epaLabelUrl} target="_blank" rel="noopener noreferrer" className="text-[#00b4c3] hover:underline">
+                              View
+                            </a>
+                          ) : (
+                            <span className="text-slate-400">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
 
