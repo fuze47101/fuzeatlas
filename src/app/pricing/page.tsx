@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { calcQuote, money, CURRENCIES, type WidthUnit, type CostAdder } from "@/lib/fuze-calc";
-import { COMPETITORS, FUZE, calcEnvironmentalScore, calcCostComparison, type Competitor } from "@/lib/competitors";
+import { COMPETITORS, FUZE, calcEnvironmentalScore, calcCostComparison, applyOverrides, type Competitor, type PriceOverride } from "@/lib/competitors";
 
 // ─── Helpers ──────────────────────────────────
 function uid() { return Math.random().toString(16).slice(2); }
@@ -35,6 +35,19 @@ function Gradebadge({ grade, score }: { grade: string; score: number }) {
 
 // ─── Main Page ────────────────────────────────
 export default function PricingPage() {
+  // Admin price overrides (fetched from DB)
+  const [priceOverrides, setPriceOverrides] = useState<PriceOverride[]>([]);
+  const competitors = useMemo(() => applyOverrides([...COMPETITORS], priceOverrides), [priceOverrides]);
+
+  useEffect(() => {
+    fetch("/api/admin/competitor-pricing")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.ok && data.overrides) setPriceOverrides(data.overrides);
+      })
+      .catch(() => {}); // silent — use guesstimates if fetch fails
+  }, []);
+
   // Quote inputs
   const [gsm, setGsm] = useState(150);
   const [widthUnit, setWidthUnit] = useState<WidthUnit>("in");
@@ -57,7 +70,7 @@ export default function PricingPage() {
 
   // Competitor selection
   const [competitorId, setCompetitorId] = useState("");
-  const competitor = COMPETITORS.find(c => c.id === competitorId) || null;
+  const competitor = competitors.find(c => c.id === competitorId) || null;
 
   // Target washes locked to selected tier
   const activeTier = FUZE_TIERS.find(t => t.dose === dose) || FUZE_TIERS[0];
@@ -302,8 +315,13 @@ export default function PricingPage() {
 
       {/* ═══ BOTTOM SECTION: Competitor Comparison ═══ */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
-        <h2 className="text-lg font-semibold text-slate-800 mb-1">Competitor Displacement Analysis</h2>
-        <p className="text-sm text-slate-500 mb-6">Select the antimicrobial your customer currently uses to see environmental and cost savings.</p>
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-lg font-semibold text-slate-800">Competitor Displacement Analysis</h2>
+          <Link href="/admin/competitor-pricing" className="text-xs text-[#00b4c3] hover:underline font-medium">
+            Edit Competitor Pricing →
+          </Link>
+        </div>
+        <p className="text-sm text-slate-500 mb-6">Select the antimicrobial your customer currently uses to see environmental and cost savings.{priceOverrides.length > 0 && <span className="ml-2 text-emerald-600 font-medium">({priceOverrides.length} with real intel)</span>}</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
@@ -314,7 +332,7 @@ export default function PricingPage() {
               className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm"
             >
               <option value="">Select competitor...</option>
-              {COMPETITORS.map(c => (
+              {competitors.map(c => (
                 <option key={c.id} value={c.id}>{c.company} — {c.product}</option>
               ))}
             </select>

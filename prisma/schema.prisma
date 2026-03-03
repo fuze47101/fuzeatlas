@@ -87,6 +87,40 @@ enum UserStatus {
 }
 
 // ─────────────────────────────────────────────
+// COMPETITOR PRICE OVERRIDES (admin espionage data)
+// ─────────────────────────────────────────────
+
+model CompetitorPriceOverride {
+  id              String  @id @default(cuid())
+  competitorId    String  @unique  // matches id from COMPETITORS array in competitors.ts
+
+  // Distributor pricing (real espionage data from China distributors etc.)
+  chemicalPricePerKg         Float?   // USD/kg of antimicrobial as purchased
+  chemicalPriceSource        String?  // "China distributor quote", "India contact", etc.
+  chemicalPriceDate          DateTime? // when the price was obtained
+
+  // Binder pricing overrides
+  binderPricePerKg           Float?   // USD/kg of binder chemical
+
+  // Application cost overrides (per linear meter)
+  estimatedCostPerMeterLow      Float?
+  estimatedCostPerMeterHigh     Float?
+  estimatedCostPerMeterTypical  Float?
+
+  // Re-treatment multiplier override
+  retreatmentCostMultiplier  Float?
+
+  // Notes
+  notes          String?  // free-form notes about the source, confidence, etc.
+
+  updatedBy      String?  // user name who last updated
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([competitorId])
+}
+
+// ─────────────────────────────────────────────
 // AUDIT / IMPORT TRACKING
 // ─────────────────────────────────────────────
 

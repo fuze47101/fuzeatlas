@@ -486,6 +486,40 @@ export function calcCostComparison(
   };
 }
 
+// ─── Apply admin price overrides ─────────────
+// Takes the static COMPETITORS array and merges in any admin-entered overrides
+export type PriceOverride = {
+  competitorId: string;
+  chemicalPricePerKg?: number | null;
+  chemicalPriceSource?: string | null;
+  binderPricePerKg?: number | null;
+  estimatedCostPerMeterLow?: number | null;
+  estimatedCostPerMeterHigh?: number | null;
+  estimatedCostPerMeterTypical?: number | null;
+  retreatmentCostMultiplier?: number | null;
+};
+
+export function applyOverrides(
+  competitors: Competitor[],
+  overrides: PriceOverride[],
+): Competitor[] {
+  const overrideMap = new Map(overrides.map((o) => [o.competitorId, o]));
+  return competitors.map((comp) => {
+    const ov = overrideMap.get(comp.id);
+    if (!ov) return comp;
+    return {
+      ...comp,
+      chemicalPricePerKg: ov.chemicalPricePerKg ?? comp.chemicalPricePerKg,
+      chemicalPriceSource: ov.chemicalPriceSource ?? comp.chemicalPriceSource,
+      binderPricePerKg: ov.binderPricePerKg ?? comp.binderPricePerKg,
+      estimatedCostPerMeterLow: ov.estimatedCostPerMeterLow ?? comp.estimatedCostPerMeterLow,
+      estimatedCostPerMeterHigh: ov.estimatedCostPerMeterHigh ?? comp.estimatedCostPerMeterHigh,
+      estimatedCostPerMeterTypical: ov.estimatedCostPerMeterTypical ?? comp.estimatedCostPerMeterTypical,
+      retreatmentCostMultiplier: ov.retreatmentCostMultiplier ?? comp.retreatmentCostMultiplier,
+    };
+  });
+}
+
 // Environmental score calculation
 export type EnvScore = {
   chemistrySavedMg: number;

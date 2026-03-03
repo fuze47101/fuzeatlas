@@ -42,6 +42,7 @@ export default function Sidebar() {
 
   // Admin-only nav items
   if (user?.role === "ADMIN" || user?.role === "EMPLOYEE") {
+    NAV.push({ href: "/admin/competitor-pricing", label: "Competitor Intel", icon: "🕵️" });
     NAV.push({ href: "/settings/users", label: "User Management", icon: "👥" });
   }
 
