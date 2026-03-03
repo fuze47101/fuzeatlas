@@ -12,6 +12,14 @@ function num(n: number, digits = 4) {
   return n.toLocaleString(undefined, { maximumFractionDigits: digits });
 }
 
+// FUZE application tiers
+const FUZE_TIERS = [
+  { id: "F1", name: "Full Spectrum Integration", dose: 1.0, color: "from-emerald-500 to-emerald-600", desc: "99.99% antimicrobial · 100+ washes · EPA certified lifetime" },
+  { id: "F2", name: "Advanced Integration", dose: 0.75, color: "from-teal-500 to-teal-600", desc: "99.99% antimicrobial · 75+ washes · High durability" },
+  { id: "F3", name: "Core Integration", dose: 0.5, color: "from-cyan-500 to-cyan-600", desc: "99.99% antimicrobial · 50+ washes · Cost-optimized" },
+  { id: "F4", name: "Foundation Integration", dose: 0.25, color: "from-sky-500 to-sky-600", desc: "Effective antimicrobial · 25+ washes · Entry level" },
+] as const;
+
 function Gradebadge({ grade, score }: { grade: string; score: number }) {
   const color =
     score >= 90 ? "bg-emerald-500" :
@@ -138,6 +146,43 @@ export default function PricingPage() {
             </div>
           </div>
 
+          {/* FUZE Application Tier */}
+          <div className="mb-5">
+            <label className="block text-xs font-medium text-slate-600 mb-2">FUZE Application Tier</label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {FUZE_TIERS.map(tier => {
+                const selected = dose === tier.dose;
+                return (
+                  <button
+                    key={tier.id}
+                    onClick={() => setDose(tier.dose)}
+                    className={`relative rounded-xl p-3 text-left transition-all border-2 ${
+                      selected
+                        ? "border-[#00b4c3] bg-gradient-to-br from-[#00b4c3]/5 to-[#009ba8]/10 shadow-md ring-1 ring-[#00b4c3]/30"
+                        : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                    }`}
+                  >
+                    <div className={`inline-flex items-center gap-1.5 mb-1.5`}>
+                      <span className={`inline-block w-8 h-8 rounded-lg bg-gradient-to-br ${tier.color} text-white text-xs font-black flex items-center justify-center shadow-sm`}>
+                        {tier.id}
+                      </span>
+                      <span className="text-lg font-bold text-slate-800">{tier.dose} mg</span>
+                    </div>
+                    <div className="text-xs font-semibold text-slate-700 leading-tight">{tier.name}</div>
+                    <div className="text-[10px] text-slate-400 mt-1 leading-snug">{tier.desc}</div>
+                    {selected && (
+                      <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#00b4c3] flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Fabric Inputs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div>
@@ -151,45 +196,23 @@ export default function PricingPage() {
                 className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Target F1 (mg/kg)</label>
-              <input type="number" value={dose} min={0.1} max={2.0} step={0.05} onChange={(e) => setDose(Number(e.target.value))}
+              <label className="block text-xs font-medium text-slate-600 mb-1">FUZE Price ($/L)</label>
+              <input type="number" value={pricePerLiter} min={0} step={0.01} onChange={(e) => setPricePerLiter(Number(e.target.value))}
                 className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">F1 Price ($/L)</label>
-              <input type="number" value={pricePerLiter} min={0} step={0.01} onChange={(e) => setPricePerLiter(Number(e.target.value))}
+              <label className="block text-xs font-medium text-slate-600 mb-1">Discount (%)</label>
+              <input type="number" value={discountPercent} min={0} max={100} step={0.5} onChange={(e) => setDiscountPercent(Number(e.target.value))}
                 className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
             </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Discount (%)</label>
-              <input type="number" value={discountPercent} min={0} max={100} step={0.5} onChange={(e) => setDiscountPercent(Number(e.target.value))}
-                className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
-            </div>
-            <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">Job Length (m)</label>
               <input type="number" value={lengthMeters} min={0} placeholder="Optional"
                 onChange={(e) => setLengthMeters(e.target.value === "" ? "" : Number(e.target.value))}
                 className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
-            </div>
-          </div>
-
-          {/* Dose slider */}
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-1">
-              <label className="text-xs font-medium text-slate-600">Application Level</label>
-              <span className="text-sm font-semibold text-[#00b4c3]">{dose.toFixed(2)} mg/kg</span>
-            </div>
-            <input type="range" min={0.2} max={2.0} step={0.05} value={dose}
-              onChange={(e) => setDose(Number(e.target.value))}
-              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#00b4c3]" />
-            <div className="flex justify-between text-[10px] text-slate-400 mt-1">
-              <span>0.20</span>
-              <span>0.50 (cost-opt)</span>
-              <span>1.00 (recommended)</span>
-              <span>2.00</span>
             </div>
           </div>
 
@@ -216,7 +239,8 @@ export default function PricingPage() {
 
         {/* Quote Output */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-slate-800 mb-4">FUZE Quote</h2>
+          <h2 className="text-lg font-semibold text-slate-800 mb-1">FUZE Quote</h2>
+          <div className="text-xs text-slate-500 mb-4">{FUZE_TIERS.find(t => t.dose === dose)?.id || "Custom"} — {FUZE_TIERS.find(t => t.dose === dose)?.name || `${dose} mg/kg`} · {dose} mg/kg</div>
           <div className="bg-gradient-to-br from-[#00b4c3]/5 to-[#009ba8]/5 rounded-xl border border-[#00b4c3]/20 p-5 mb-4">
             <div className="text-xs text-slate-500 mb-1">Total Quoted Cost</div>
             <div className="text-3xl font-bold text-slate-900">{money(outputs.totalCostPerLinearMeter, currency, fx)}<span className="text-sm font-normal text-slate-500"> /m</span></div>
@@ -226,10 +250,10 @@ export default function PricingPage() {
           </div>
 
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between"><span className="text-slate-500">F1 cost</span><span className="font-medium">{money(outputs.fuzeCostPerLinearMeter, currency, fx)}/m</span></div>
+            <div className="flex justify-between"><span className="text-slate-500">{FUZE_TIERS.find(t => t.dose === dose)?.id || "FUZE"} cost</span><span className="font-medium">{money(outputs.fuzeCostPerLinearMeter, currency, fx)}/m</span></div>
             <div className="flex justify-between"><span className="text-slate-500">Adders</span><span className="font-medium">{money(outputs.addersPerLinearMeter, currency, fx)}/m</span></div>
             <div className="flex justify-between"><span className="text-slate-500">Fabric weight</span><span className="font-medium">{num(outputs.kgPerLinearMeter, 4)} kg/m</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">F1 stock/meter</span><span className="font-medium">{num(outputs.litersStockPerLinearMeter, 6)} L</span></div>
+            <div className="flex justify-between"><span className="text-slate-500">Stock/meter</span><span className="font-medium">{num(outputs.litersStockPerLinearMeter, 6)} L</span></div>
             {outputs.bottles19L !== undefined && (
               <>
                 <div className="border-t border-slate-100 pt-2 mt-2" />
@@ -241,16 +265,16 @@ export default function PricingPage() {
 
           {/* Performance note */}
           <div className="mt-4 p-3 bg-slate-50 rounded-lg text-xs text-slate-500">
-            {dose >= 1.0 ? (
-              <><span className="font-semibold text-emerald-600">Premium level:</span> 99.99% antimicrobial, 100+ washes. Eligible for FUZE certification.</>
-            ) : dose >= 0.5 ? (
-              <><span className="font-semibold text-amber-600">Cost-optimized:</span> 99.99% antimicrobial, up to 50 washes. Tighter process control recommended.</>
-            ) : (
-              <><span className="font-semibold text-orange-600">Below standard:</span> Effective but reduced durability. Validate for program requirements.</>
-            )}
+            {(() => {
+              const tier = FUZE_TIERS.find(t => t.dose === dose);
+              if (!tier) return <><span className="font-semibold text-slate-600">Custom dose:</span> {dose} mg/kg</>;
+              return <><span className={`font-semibold ${
+                tier.id === "F1" ? "text-emerald-600" : tier.id === "F2" ? "text-teal-600" : tier.id === "F3" ? "text-cyan-600" : "text-sky-600"
+              }`}>{tier.id} — {tier.name}:</span> {tier.desc}</>;
+            })()}
           </div>
 
-          <div className="mt-3 text-[10px] text-slate-400">F1 stock: 30 ppm · Bottle: 19 L</div>
+          <div className="mt-3 text-[10px] text-slate-400">FUZE stock: 30 ppm · Bottle: 19 L</div>
         </div>
       </div>
 
@@ -315,7 +339,7 @@ export default function PricingPage() {
               </div>
 
               <div className="bg-emerald-50/50 border border-emerald-200/50 rounded-xl p-4">
-                <div className="text-xs font-semibold text-emerald-800/60 uppercase tracking-wider mb-2">FUZE F1</div>
+                <div className="text-xs font-semibold text-emerald-800/60 uppercase tracking-wider mb-2">FUZE {FUZE_TIERS.find(t => t.dose === dose)?.id || "F1"} — {FUZE_TIERS.find(t => t.dose === dose)?.name || "Custom"}</div>
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">Silver Allotrope (Non-ionic)</span></div>
                   <div className="flex justify-between"><span className="text-slate-500">Dosage</span><span className="font-medium text-emerald-600">{dose} mg/kg ({(competitor.dosageTypical / dose).toFixed(0)}× less)</span></div>
@@ -399,7 +423,7 @@ export default function PricingPage() {
                 {/* FUZE bar */}
                 <div>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="font-medium text-emerald-600">FUZE F1</span>
+                    <span className="font-medium text-emerald-600">FUZE {FUZE_TIERS.find(t => t.dose === dose)?.id || "F1"}</span>
                     <span className="text-slate-500">{targetWashes}/{targetWashes} washes protected</span>
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-6 overflow-hidden">
