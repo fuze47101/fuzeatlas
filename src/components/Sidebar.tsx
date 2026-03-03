@@ -104,8 +104,26 @@ export default function Sidebar() {
           <p className="text-[10px] text-slate-500 mt-1.5">{t.nav.subtitle}</p>
         </div>
 
+        {/* Search */}
+        <div className="px-3 pt-4 pb-2">
+          <button
+            onClick={() => {
+              window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 bg-slate-800/50 hover:bg-slate-800 hover:text-white transition-colors border border-slate-700/50"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span>Search...</span>
+            <kbd className="ml-auto text-[10px] bg-slate-700 px-1.5 py-0.5 rounded font-mono text-slate-400">
+              ⌘K
+            </kbd>
+          </button>
+        </div>
+
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
           {NAV.map((item) => {
             const active = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
