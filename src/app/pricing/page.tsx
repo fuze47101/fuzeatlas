@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { calcQuote, money, CURRENCIES, type WidthUnit, type CostAdder } from "@/lib/fuze-calc";
-import { COMPETITORS, FUZE, calcEnvironmentalScore, type Competitor } from "@/lib/competitors";
+import { COMPETITORS, FUZE, calcEnvironmentalScore, calcCostComparison, type Competitor } from "@/lib/competitors";
 
 // ─── Helpers ──────────────────────────────────
 function uid() { return Math.random().toString(16).slice(2); }
@@ -12,12 +12,12 @@ function num(n: number, digits = 4) {
   return n.toLocaleString(undefined, { maximumFractionDigits: digits });
 }
 
-// FUZE application tiers
+// FUZE application tiers — each tier maps to a wash durability target for apples-to-apples comparison
 const FUZE_TIERS = [
-  { id: "F1", name: "Full Spectrum Integration", dose: 1.0, color: "from-emerald-500 to-emerald-600", desc: "99.99% antimicrobial · 100+ washes · EPA certified lifetime" },
-  { id: "F2", name: "Advanced Integration", dose: 0.75, color: "from-teal-500 to-teal-600", desc: "99.99% antimicrobial · 75+ washes · High durability" },
-  { id: "F3", name: "Core Integration", dose: 0.5, color: "from-cyan-500 to-cyan-600", desc: "99.99% antimicrobial · 50+ washes · Cost-optimized" },
-  { id: "F4", name: "Foundation Integration", dose: 0.25, color: "from-sky-500 to-sky-600", desc: "Effective antimicrobial · 25+ washes · Entry level" },
+  { id: "F1", name: "Full Spectrum Integration", dose: 1.0, washes: 100, color: "from-emerald-500 to-emerald-600", desc: "99.99% antimicrobial · 100+ washes · EPA certified lifetime" },
+  { id: "F2", name: "Advanced Integration", dose: 0.75, washes: 75, color: "from-teal-500 to-teal-600", desc: "99.99% antimicrobial · 75+ washes · High durability" },
+  { id: "F3", name: "Core Integration", dose: 0.5, washes: 50, color: "from-cyan-500 to-cyan-600", desc: "99.99% antimicrobial · 50+ washes · Cost-optimized" },
+  { id: "F4", name: "Foundation Integration", dose: 0.25, washes: 25, color: "from-sky-500 to-sky-600", desc: "Effective antimicrobial · 25+ washes · Entry level" },
 ] as const;
 
 function Gradebadge({ grade, score }: { grade: string; score: number }) {
@@ -57,8 +57,11 @@ export default function PricingPage() {
 
   // Competitor selection
   const [competitorId, setCompetitorId] = useState("");
-  const [targetWashes, setTargetWashes] = useState(50);
   const competitor = COMPETITORS.find(c => c.id === competitorId) || null;
+
+  // Target washes locked to selected tier
+  const activeTier = FUZE_TIERS.find(t => t.dose === dose) || FUZE_TIERS[0];
+  const targetWashes = activeTier.washes;
 
   // Calculate FUZE quote
   const outputs = useMemo(() => calcQuote({
@@ -73,10 +76,29 @@ export default function PricingPage() {
   // Environmental score
   const envScore = useMemo(() => {
     if (!competitor) return null;
-    // Approximate fabric weight for 1 meter of fabric
     const fabricWeightKg = outputs.kgPerLinearMeter || 0.15;
     return calcEnvironmentalScore(competitor, fabricWeightKg, targetWashes);
   }, [competitor, outputs.kgPerLinearMeter, targetWashes]);
+
+  // Apples-to-apples cost comparison across ALL tiers
+  const costComparisons = useMemo(() => {
+    if (!competitor) return null;
+    const fabricWeightKg = outputs.kgPerLinearMeter || 0.15;
+    return FUZE_TIERS.map(tier => {
+      const tierOutputs = calcQuote({
+        gsm, width, widthUnit, doseMgPerKg: tier.dose,
+        stockMgPerL: 30, pricePerLiter, discountPercent,
+        adders,
+      });
+      return calcCostComparison(
+        competitor,
+        tierOutputs.totalCostPerLinearMeter,
+        tier.dose,
+        tier.washes,
+        fabricWeightKg,
+      );
+    });
+  }, [competitor, gsm, width, widthUnit, pricePerLiter, discountPercent, adders, outputs.kgPerLinearMeter]);
 
   // Adder helpers
   const addRow = () => setAdders(prev => [...prev, { id: uid(), label: "Custom", centsPerMeter: 0, enabled: true }]);
@@ -283,7 +305,7 @@ export default function PricingPage() {
         <h2 className="text-lg font-semibold text-slate-800 mb-1">Competitor Displacement Analysis</h2>
         <p className="text-sm text-slate-500 mb-6">Select the antimicrobial your customer currently uses to see environmental and cost savings.</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">Current Competitor Product</label>
             <select
@@ -298,56 +320,147 @@ export default function PricingPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Target Wash Durability</label>
-            <div className="flex gap-2">
-              {[30, 50, 75, 100].map(w => (
-                <button key={w} onClick={() => setTargetWashes(w)}
-                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    targetWashes === w
-                      ? "bg-[#00b4c3] text-white shadow"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}>
-                  {w}
-                </button>
-              ))}
+            <label className="block text-xs font-medium text-slate-600 mb-1">Wash Target (locked to tier)</label>
+            <div className="h-10 rounded-lg bg-slate-50 border border-slate-200 px-3 flex items-center text-sm font-medium text-slate-700">
+              {activeTier.id} = {targetWashes} washes — each tier maps to its rated durability for apples-to-apples comparison
             </div>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Or enter custom washes</label>
-            <input type="number" value={targetWashes} min={1} max={200}
-              onChange={(e) => setTargetWashes(Number(e.target.value) || 50)}
-              className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
           </div>
         </div>
 
         {/* Competitor Info + Env Score */}
-        {competitor && envScore && (
+        {competitor && envScore && costComparisons && (
           <div className="space-y-6">
-            {/* Competitor Profile */}
+
+            {/* ═══ APPLES-TO-APPLES COST COMPARISON TABLE ═══ */}
+            <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl border border-slate-200 p-6">
+              <h3 className="text-base font-bold text-slate-800 mb-1">True Cost Comparison: FUZE vs {competitor.product}</h3>
+              <p className="text-xs text-slate-500 mb-4">
+                &ldquo;I pay {money(competitor.estimatedCostPerMeterTypical, currency, fx)}/m for {competitor.product}&rdquo; — but that only covers {competitor.maxWashClaim} washes.
+                Here&apos;s what it <span className="font-semibold">actually costs</span> to match FUZE at each durability level.
+              </p>
+
+              {/* Table header */}
+              <div className="grid grid-cols-7 gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider pb-2 border-b border-slate-200 mb-1">
+                <div className="col-span-1">Tier</div>
+                <div className="col-span-1 text-right">Washes</div>
+                <div className="col-span-1 text-right">FUZE Cost</div>
+                <div className="col-span-1 text-center">{competitor.product.split(" ")[0]} Apps</div>
+                <div className="col-span-1 text-right">{competitor.product.split(" ")[0]} Cost</div>
+                <div className="col-span-1 text-right">You Save</div>
+                <div className="col-span-1 text-right">Env. Impact</div>
+              </div>
+
+              {/* Table rows */}
+              {costComparisons.map((cc, idx) => {
+                const tier = FUZE_TIERS[idx];
+                const isActive = tier.dose === dose;
+                const compMoreExpensive = cc.competitorTotalCostPerMeter > cc.fuzeCostPerMeter;
+                return (
+                  <div key={tier.id}
+                    className={`grid grid-cols-7 gap-2 py-3 text-sm items-center rounded-lg transition-colors ${
+                      isActive ? "bg-[#00b4c3]/5 border border-[#00b4c3]/20 -mx-2 px-2" : "border-b border-slate-100"
+                    }`}>
+                    <div className="col-span-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex w-7 h-7 rounded-lg bg-gradient-to-br ${tier.color} text-white text-[10px] font-black items-center justify-center`}>
+                          {tier.id}
+                        </span>
+                        <div className="hidden md:block">
+                          <div className="text-xs font-semibold text-slate-700 leading-tight">{tier.name}</div>
+                          <div className="text-[10px] text-slate-400">{tier.dose} mg/kg</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-span-1 text-right font-semibold text-slate-700">{tier.washes}</div>
+                    <div className="col-span-1 text-right">
+                      <div className="font-bold text-emerald-600">{money(cc.fuzeCostPerMeter, currency, fx)}</div>
+                      <div className="text-[10px] text-slate-400">1 application</div>
+                    </div>
+                    <div className="col-span-1 text-center">
+                      <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${
+                        cc.competitorApplicationsNeeded > 1 ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-600"
+                      }`}>
+                        {cc.competitorApplicationsNeeded}×
+                      </div>
+                    </div>
+                    <div className="col-span-1 text-right">
+                      <div className={`font-bold ${compMoreExpensive ? "text-red-600" : "text-slate-700"}`}>{money(cc.competitorTotalCostPerMeter, currency, fx)}</div>
+                      {cc.competitorApplicationsNeeded > 1 && (
+                        <div className="text-[10px] text-red-500">{money(cc.competitorCostPerApplication, currency, fx)} × {cc.competitorApplicationsNeeded} apps</div>
+                      )}
+                    </div>
+                    <div className="col-span-1 text-right">
+                      {cc.fuzeSavingsPerMeter > 0 ? (
+                        <>
+                          <div className="font-bold text-emerald-600">{money(cc.fuzeSavingsPerMeter, currency, fx)}</div>
+                          <div className="text-[10px] text-emerald-500">{cc.fuzeSavingsPct.toFixed(0)}% cheaper</div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="font-bold text-amber-600">{money(Math.abs(cc.fuzeSavingsPerMeter), currency, fx)}</div>
+                          <div className="text-[10px] text-amber-500">premium for lifetime</div>
+                        </>
+                      )}
+                    </div>
+                    <div className="col-span-1 text-right">
+                      <div className="text-xs font-semibold text-red-600">{num(cc.competitorTotalChemistryMg, 0)} mg</div>
+                      <div className="text-[10px] text-slate-400">chemistry used</div>
+                      {cc.competitorTotalBinderG > 0 && (
+                        <div className="text-[10px] text-red-400">+{num(cc.competitorTotalBinderG, 1)}g binder</div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Explainer */}
+              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="text-xs font-semibold text-amber-800 mb-1">Why this matters</div>
+                <p className="text-xs text-amber-700">
+                  {competitor.product} only lasts {competitor.maxWashClaim} washes.
+                  {competitor.maxWashClaim < 100 && (<> To reach 100 washes, a factory would need to treat the fabric {Math.ceil(100 / competitor.maxWashClaim)} separate times — each re-treatment
+                  adds cost, binder, curing energy, and more leachable chemistry. </>)}
+                  FUZE is applied once and lasts the lifetime of the textile. When you compare actual cost-to-performance, FUZE is the clear winner.
+                </p>
+              </div>
+            </div>
+
+            {/* Chemistry + Cost side-by-side for ACTIVE tier */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-red-50/50 border border-red-200/50 rounded-xl p-4">
-                <div className="text-xs font-semibold text-red-800/60 uppercase tracking-wider mb-2">Competitor: {competitor.product}</div>
+                <div className="text-xs font-semibold text-red-800/60 uppercase tracking-wider mb-2">
+                  {competitor.product} — to reach {targetWashes} washes
+                </div>
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">{competitor.chemistryLabel}</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Typical dosage</span><span className="font-medium text-slate-700">{competitor.dosageTypical} ppm</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Max wash claim</span><span className="font-medium text-red-600">{competitor.maxWashClaim} washes</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Binder required</span><span className="font-medium text-red-600">{competitor.binderRequired ? `Yes (${competitor.binderGPerKg} g/kg)` : "No"}</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Curing required</span><span className="font-medium text-red-600">{competitor.curingRequired ? "Yes" : "No"}</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Leach rate (10 washes)</span><span className="font-medium text-red-600">{competitor.leachRateFirst10Washes}%</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Heavy metals released</span><span className="font-medium text-red-600">{competitor.heavyMetalReleased}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Single app dosage</span><span className="font-medium text-slate-700">{competitor.dosageTypical} ppm</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Max per application</span><span className="font-medium text-red-600">{competitor.maxWashClaim} washes</span></div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Applications needed</span>
+                    <span className="font-bold text-red-600">{costComparisons.find(c => c.fuzeDose === dose)?.competitorApplicationsNeeded || 1}× treatments</span>
+                  </div>
+                  <div className="flex justify-between"><span className="text-slate-500">Binder per treatment</span><span className="font-medium text-red-600">{competitor.binderRequired ? `${competitor.binderGPerKg} g/kg` : "None"}</span></div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Total chemistry</span>
+                    <span className="font-bold text-red-600">{num(costComparisons.find(c => c.fuzeDose === dose)?.competitorTotalChemistryMg || 0, 1)} mg</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Total leaching</span>
+                    <span className="font-bold text-red-600">{num(costComparisons.find(c => c.fuzeDose === dose)?.competitorTotalLeachMg || 0, 1)} mg to water</span>
+                  </div>
                 </div>
               </div>
 
               <div className="bg-emerald-50/50 border border-emerald-200/50 rounded-xl p-4">
-                <div className="text-xs font-semibold text-emerald-800/60 uppercase tracking-wider mb-2">FUZE {FUZE_TIERS.find(t => t.dose === dose)?.id || "F1"} — {FUZE_TIERS.find(t => t.dose === dose)?.name || "Custom"}</div>
+                <div className="text-xs font-semibold text-emerald-800/60 uppercase tracking-wider mb-2">FUZE {activeTier.id} — {activeTier.name}</div>
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">Silver Allotrope (Non-ionic)</span></div>
                   <div className="flex justify-between"><span className="text-slate-500">Dosage</span><span className="font-medium text-emerald-600">{dose} mg/kg ({(competitor.dosageTypical / dose).toFixed(0)}× less)</span></div>
                   <div className="flex justify-between"><span className="text-slate-500">Wash durability</span><span className="font-medium text-emerald-600">Lifetime (100+) — EPA verified</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Applications needed</span><span className="font-bold text-emerald-600">1× (lifetime)</span></div>
                   <div className="flex justify-between"><span className="text-slate-500">Binder required</span><span className="font-medium text-emerald-600">No</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Curing required</span><span className="font-medium text-emerald-600">No</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Leach rate</span><span className="font-medium text-emerald-600">0% — Zero ion emissions</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Heavy metals released</span><span className="font-medium text-emerald-600">None</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Total chemistry</span><span className="font-bold text-emerald-600">{num(dose * (outputs.kgPerLinearMeter || 0.15), 2)} mg</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Total leaching</span><span className="font-bold text-emerald-600">0 mg — Zero emissions</span></div>
                 </div>
               </div>
             </div>
@@ -364,26 +477,39 @@ export default function PricingPage() {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white/10 rounded-xl p-4">
-                  <div className="text-2xl font-bold text-emerald-400">{num(envScore.chemistrySavedMg, 1)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
-                  <div className="text-xs text-slate-400 mt-1">Chemistry eliminated</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">Active agent not manufactured, shipped, or applied</div>
-                </div>
-                <div className="bg-white/10 rounded-xl p-4">
-                  <div className="text-2xl font-bold text-blue-400">{num(envScore.metalToWaterMg, 1)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
-                  <div className="text-xs text-slate-400 mt-1">Metals/toxins kept from water</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">Over {targetWashes} home laundry cycles</div>
-                </div>
-                <div className="bg-white/10 rounded-xl p-4">
-                  <div className="text-2xl font-bold text-amber-400">{num(envScore.binderSavedG, 2)}<span className="text-sm font-normal text-slate-400"> g</span></div>
-                  <div className="text-xs text-slate-400 mt-1">Binder chemistry saved</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">Petrochemical polymer not needed</div>
-                </div>
-                <div className="bg-white/10 rounded-xl p-4">
-                  <div className="text-2xl font-bold text-rose-400">{envScore.unprotectedWashes}<span className="text-sm font-normal text-slate-400"> washes</span></div>
-                  <div className="text-xs text-slate-400 mt-1">Unprotected gap</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">Washes where competitor fails but customer expects protection</div>
-                </div>
+                {(() => {
+                  const cc = costComparisons.find(c => c.fuzeDose === dose);
+                  return (<>
+                    <div className="bg-white/10 rounded-xl p-4">
+                      <div className="text-2xl font-bold text-emerald-400">{num(cc ? cc.competitorTotalChemistryMg - cc.fuzeChemistryMg : envScore.chemistrySavedMg, 1)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
+                      <div className="text-xs text-slate-400 mt-1">Chemistry eliminated</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">
+                        {cc && cc.competitorApplicationsNeeded > 1
+                          ? `Across ${cc.competitorApplicationsNeeded} competitor re-treatments`
+                          : "Active agent not manufactured, shipped, or applied"}
+                      </div>
+                    </div>
+                    <div className="bg-white/10 rounded-xl p-4">
+                      <div className="text-2xl font-bold text-blue-400">{num(cc ? cc.competitorTotalLeachMg : envScore.metalToWaterMg, 1)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
+                      <div className="text-xs text-slate-400 mt-1">Metals/toxins kept from water</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">Over {targetWashes} washes — factory + home laundry combined</div>
+                    </div>
+                    <div className="bg-white/10 rounded-xl p-4">
+                      <div className="text-2xl font-bold text-amber-400">{num(cc ? cc.competitorTotalBinderG : envScore.binderSavedG, 2)}<span className="text-sm font-normal text-slate-400"> g</span></div>
+                      <div className="text-xs text-slate-400 mt-1">Binder chemistry saved</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">
+                        {cc && cc.competitorApplicationsNeeded > 1
+                          ? `${cc.competitorApplicationsNeeded}× binder applications eliminated`
+                          : "Petrochemical polymer not needed"}
+                      </div>
+                    </div>
+                    <div className="bg-white/10 rounded-xl p-4">
+                      <div className="text-2xl font-bold text-rose-400">{envScore.unprotectedWashes}<span className="text-sm font-normal text-slate-400"> washes</span></div>
+                      <div className="text-xs text-slate-400 mt-1">Unprotected gap</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">Even with re-treatment, competitor can&apos;t match FUZE EPA lifetime claim</div>
+                    </div>
+                  </>);
+                })()}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -417,68 +543,107 @@ export default function PricingPage() {
             </div>
 
             {/* Wash Durability Visual */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <div className="text-sm font-semibold text-slate-700 mb-4">Wash Protection Timeline — {targetWashes} Washes</div>
-              <div className="space-y-3">
-                {/* FUZE bar */}
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="font-medium text-emerald-600">FUZE {FUZE_TIERS.find(t => t.dose === dose)?.id || "F1"}</span>
-                    <span className="text-slate-500">{targetWashes}/{targetWashes} washes protected</span>
-                  </div>
-                  <div className="w-full bg-slate-100 rounded-full h-6 overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full flex items-center justify-end pr-2" style={{ width: "100%" }}>
-                      <span className="text-[10px] font-bold text-white">100%</span>
-                    </div>
-                  </div>
-                </div>
-                {/* Competitor bar */}
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="font-medium text-red-600">{competitor.product}</span>
-                    <span className="text-slate-500">{Math.min(competitor.maxWashClaim, targetWashes)}/{targetWashes} washes</span>
-                  </div>
-                  <div className="w-full bg-slate-100 rounded-full h-6 overflow-hidden relative">
-                    <div
-                      className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-l-full flex items-center justify-end pr-2"
-                      style={{ width: `${Math.min(100, (competitor.maxWashClaim / targetWashes) * 100)}%` }}
-                    >
-                      <span className="text-[10px] font-bold text-white">{Math.round((Math.min(competitor.maxWashClaim, targetWashes) / targetWashes) * 100)}%</span>
-                    </div>
-                    {envScore.unprotectedWashes > 0 && (
-                      <div className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-red-600">
-                        {envScore.unprotectedWashes} washes unprotected
+            {(() => {
+              const cc = costComparisons.find(c => c.fuzeDose === dose);
+              const apps = cc?.competitorApplicationsNeeded || 1;
+              return (
+                <div className="bg-white rounded-xl border border-slate-200 p-6">
+                  <div className="text-sm font-semibold text-slate-700 mb-4">Wash Protection Timeline — {targetWashes} Washes</div>
+                  <div className="space-y-4">
+                    {/* FUZE bar */}
+                    <div>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="font-medium text-emerald-600">FUZE {activeTier.id} — 1 Application</span>
+                        <span className="text-slate-500">{targetWashes}/{targetWashes} washes — {money(outputs.totalCostPerLinearMeter, currency, fx)}/m</span>
                       </div>
-                    )}
+                      <div className="w-full bg-slate-100 rounded-full h-7 overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full flex items-center justify-center" style={{ width: "100%" }}>
+                          <span className="text-[11px] font-bold text-white">Lifetime EPA Protection — Single Application</span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Competitor bar — segmented by re-treatments */}
+                    <div>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="font-medium text-red-600">{competitor.product} — {apps} Application{apps > 1 ? "s" : ""} Required</span>
+                        <span className="text-slate-500">{money(cc?.competitorTotalCostPerMeter || 0, currency, fx)}/m total</span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-7 overflow-hidden flex">
+                        {Array.from({ length: apps }).map((_, i) => {
+                          const segWidth = Math.min(competitor.maxWashClaim, targetWashes - i * competitor.maxWashClaim);
+                          const pct = (segWidth / targetWashes) * 100;
+                          const isLast = i === apps - 1;
+                          const colors = ["from-red-500 to-red-400", "from-orange-500 to-orange-400", "from-amber-500 to-amber-400", "from-yellow-500 to-yellow-400"];
+                          return (
+                            <div key={i}
+                              className={`h-full bg-gradient-to-r ${colors[i % colors.length]} flex items-center justify-center border-r border-white/30 ${i === 0 ? "rounded-l-full" : ""} ${isLast ? "rounded-r-full" : ""}`}
+                              style={{ width: `${pct}%` }}
+                            >
+                              <span className="text-[9px] font-bold text-white whitespace-nowrap px-1">
+                                App {i + 1}{i > 0 ? ` (+${Math.round((competitor.retreatmentCostMultiplier - 1) * 100)}% cost)` : ""}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {apps > 1 && (
+                        <div className="text-[10px] text-red-500 mt-1 text-center">
+                          Each re-treatment requires stripping, re-applying chemistry + binder, and curing again — increasing factory cost, waste, and environmental discharge
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Customer-Facing Messages */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200 rounded-xl p-4">
-                <div className="text-emerald-700 font-semibold text-sm mb-2">Zero Chemistry in Your Water</div>
-                <p className="text-xs text-emerald-600/80">
-                  Every wash with {competitor.product} releases {competitor.heavyMetalReleased.toLowerCase() !== "none" ? competitor.heavyMetalReleased.toLowerCase() : "toxic compounds"} into
-                  your local water system. With FUZE, your water stays clean.
-                </p>
-              </div>
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200 rounded-xl p-4">
-                <div className="text-blue-700 font-semibold text-sm mb-2">{(competitor.dosageTypical / dose).toFixed(0)}× Less Chemistry</div>
-                <p className="text-xs text-blue-600/80">
-                  FUZE uses {dose} mg/kg vs {competitor.product}&apos;s {competitor.dosageTypical} ppm.
-                  That&apos;s {(competitor.dosageTypical / dose).toFixed(0)} times less active material per kilogram of fabric.
-                </p>
-              </div>
-              <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200 rounded-xl p-4">
-                <div className="text-amber-700 font-semibold text-sm mb-2">The Only Lifetime Approval</div>
-                <p className="text-xs text-amber-600/80">
-                  {competitor.product} is limited to {competitor.maxWashClaim} washes. Your customer wants {targetWashes}.
-                  Only FUZE has EPA-verified lifetime durability. No re-treatment needed.
-                </p>
-              </div>
-            </div>
+            {(() => {
+              const cc = costComparisons.find(c => c.fuzeDose === dose);
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200 rounded-xl p-4">
+                    <div className="text-emerald-700 font-semibold text-sm mb-2">
+                      {cc && cc.fuzeSavingsPerMeter > 0
+                        ? `Save ${money(cc.fuzeSavingsPerMeter, currency, fx)}/m`
+                        : "True Cost Winner"}
+                    </div>
+                    <p className="text-xs text-emerald-600/80">
+                      {competitor.product} at {money(competitor.estimatedCostPerMeterTypical, currency, fx)}/m sounds cheap — but that&apos;s only {competitor.maxWashClaim} washes.
+                      {cc && cc.competitorApplicationsNeeded > 1 && (<> To match {activeTier.id}&apos;s {targetWashes}-wash durability, you&apos;d need {cc.competitorApplicationsNeeded} treatments costing {money(cc.competitorTotalCostPerMeter, currency, fx)}/m total.</>)}
+                    </p>
+                  </div>
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200 rounded-xl p-4">
+                    <div className="text-blue-700 font-semibold text-sm mb-2">
+                      {cc ? `${num(cc.competitorTotalChemistryMg - cc.fuzeChemistryMg, 0)} mg` : `${(competitor.dosageTypical / dose).toFixed(0)}×`} Less Chemistry
+                    </div>
+                    <p className="text-xs text-blue-600/80">
+                      {cc && cc.competitorApplicationsNeeded > 1
+                        ? <>{cc.competitorApplicationsNeeded} applications of {competitor.product} dumps {num(cc.competitorTotalChemistryMg, 0)} mg of {competitor.chemistryLabel.toLowerCase()} into the fabric. FUZE uses just {num(cc.fuzeChemistryMg, 1)} mg.</>
+                        : <>FUZE uses {dose} mg/kg vs {competitor.product}&apos;s {competitor.dosageTypical} ppm. That&apos;s {(competitor.dosageTypical / dose).toFixed(0)}× less active material per kilogram of fabric.</>}
+                    </p>
+                  </div>
+                  <div className="bg-gradient-to-br from-rose-50 to-rose-100/50 border border-rose-200 rounded-xl p-4">
+                    <div className="text-rose-700 font-semibold text-sm mb-2">
+                      {cc ? `${num(cc.competitorTotalLeachMg, 0)} mg` : ""} Leaching Eliminated
+                    </div>
+                    <p className="text-xs text-rose-600/80">
+                      Every wash with {competitor.product} releases {competitor.heavyMetalReleased.toLowerCase() !== "none" ? competitor.heavyMetalReleased.toLowerCase() : "toxic compounds"} into
+                      factory wastewater and your customer&apos;s home laundry.
+                      {cc && cc.competitorApplicationsNeeded > 1 && (<> With {cc.competitorApplicationsNeeded} treatments, that&apos;s {num(cc.competitorTotalLeachMg, 0)} mg of toxins per meter of fabric over {targetWashes} washes.</>)}
+                      {" "}FUZE leaches zero.
+                    </p>
+                  </div>
+                  <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200 rounded-xl p-4">
+                    <div className="text-amber-700 font-semibold text-sm mb-2">The Only Lifetime Approval</div>
+                    <p className="text-xs text-amber-600/80">
+                      {competitor.product} is limited to {competitor.maxWashClaim} washes — not EPA-approved beyond that.
+                      Only FUZE has EPA-verified lifetime durability. One application. No re-treatment. No gaps in protection.
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         )}
 
