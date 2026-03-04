@@ -11,12 +11,17 @@ export async function GET(request: Request) {
     const where: any = {};
     if (brandId) where.brandId = brandId;
 
+    const stage = searchParams.get("stage") || undefined;
+    if (stage) where.stage = stage;
+
     const projects = await prisma.project.findMany({
       where,
-      orderBy: { name: "asc" },
+      orderBy: { updatedAt: "desc" },
       include: {
         brand: { select: { id: true, name: true } },
-        _count: { select: { testRuns: true } },
+        factory: { select: { id: true, name: true, country: true } },
+        distributor: { select: { id: true, name: true } },
+        _count: { select: { testRuns: true, invoices: true } },
       },
     });
 
@@ -28,7 +33,23 @@ export async function GET(request: Request) {
         description: p.description,
         brandId: p.brandId,
         brandName: p.brand?.name || null,
+        stage: p.stage,
+        projectedValue: p.projectedValue,
+        actualValue: p.actualValue,
+        currency: p.currency,
+        probability: p.probability,
+        fuzeTier: p.fuzeTier,
+        annualVolumeMeters: p.annualVolumeMeters,
+        annualFuzeLiters: p.annualFuzeLiters,
+        factoryId: p.factoryId,
+        factoryName: p.factory?.name || null,
+        factoryCountry: p.factory?.country || null,
+        distributorId: p.distributorId,
+        distributorName: p.distributor?.name || null,
+        expectedProductionDate: p.expectedProductionDate,
+        actualProductionDate: p.actualProductionDate,
         testCount: p._count.testRuns,
+        invoiceCount: p._count.invoices,
       })),
     });
   } catch (err: any) {
@@ -41,7 +62,13 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, brandId, description } = body;
+    const {
+      name, brandId, description, stage,
+      projectedValue, currency, probability, fuzeTier,
+      annualVolumeMeters, annualFuzeLiters,
+      factoryId, distributorId,
+      expectedProductionDate, actualProductionDate,
+    } = body;
 
     if (!name || !name.trim()) {
       return NextResponse.json(
@@ -67,6 +94,17 @@ export async function POST(request: Request) {
         name: name.trim(),
         brandId: brandId || null,
         description: description || null,
+        stage: stage || "DEVELOPMENT",
+        projectedValue: projectedValue ? parseFloat(projectedValue) : null,
+        currency: currency || "USD",
+        probability: probability != null ? parseInt(probability, 10) : 50,
+        fuzeTier: fuzeTier || null,
+        annualVolumeMeters: annualVolumeMeters ? parseFloat(annualVolumeMeters) : null,
+        annualFuzeLiters: annualFuzeLiters ? parseFloat(annualFuzeLiters) : null,
+        factoryId: factoryId || null,
+        distributorId: distributorId || null,
+        expectedProductionDate: expectedProductionDate ? new Date(expectedProductionDate) : null,
+        actualProductionDate: actualProductionDate ? new Date(actualProductionDate) : null,
       },
     });
 

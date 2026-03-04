@@ -223,6 +223,7 @@ model Brand {
   projects    Project[]
   products    Product[]
   sows        SOW[]
+  invoices    Invoice[]
   notes       Note[]
   users       User[]         @relation("BrandUsers")
   sourceRecords SourceRecord[]
@@ -278,6 +279,10 @@ model Factory {
 
   raw Json?
 
+  // ─── Supply Chain: Default Distributor ─────────────
+  distributorId String?
+  distributor   Distributor? @relation("FactoryDistributor", fields: [distributorId], references: [id])
+
   salesRepId String?
   salesRep   User?  @relation("FactorySalesRep", fields: [salesRepId], references: [id])
 
@@ -285,6 +290,8 @@ model Factory {
   brands        BrandFactory[]
   submissions   FabricSubmission[]
   fabrics       Fabric[]
+  projects      Project[]      @relation("ProjectFactory")
+  invoices      Invoice[]
   users         User[]         @relation("FactoryUsers")
   sourceRecords SourceRecord[]
 
@@ -294,6 +301,7 @@ model Factory {
   @@index([name])
   @@index([country])
   @@index([profileComplete])
+  @@index([distributorId])
 }
 
 model BrandFactory {
@@ -331,6 +339,9 @@ model Distributor {
   raw Json?
 
   contacts      Contact[]
+  factories     Factory[]      @relation("FactoryDistributor")
+  projects      Project[]      @relation("ProjectDistributor")
+  invoices      Invoice[]
   users         User[]         @relation("DistributorUsers")
   sourceRecords SourceRecord[]
 
@@ -551,7 +562,28 @@ model Project {
 
   description String?
 
+  // ─── Commercial Pipeline Fields ─────────────
+  stage              String    @default("DEVELOPMENT")  // DEVELOPMENT, SAMPLING, TESTING, APPROVED, COMMERCIALIZATION, PRODUCTION, COMPLETE
+  projectedValue     Float?    // Projected annual revenue (USD or currency)
+  actualValue        Float?    // Realized revenue from invoices
+  currency           String    @default("USD")
+  probability        Int       @default(50)             // Win probability 0-100
+  fuzeTier           String?   // F1, F2, F3, F4
+  annualVolumeMeters Float?    // Projected annual production volume in meters
+  annualFuzeLiters   Float?    // Calculated: FUZE liters needed per year
+
+  // ─── Manufacturing Assignment ─────────────
+  factoryId     String?
+  factory       Factory?     @relation("ProjectFactory", fields: [factoryId], references: [id])
+  distributorId String?
+  distributor   Distributor? @relation("ProjectDistributor", fields: [distributorId], references: [id])
+
+  // ─── Timeline ─────────────
+  expectedProductionDate DateTime?
+  actualProductionDate   DateTime?
+
   testRuns TestRun[]
+  invoices Invoice[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -559,6 +591,9 @@ model Project {
   @@unique([name, brandId])
   @@index([brandId])
   @@index([name])
+  @@index([stage])
+  @@index([factoryId])
+  @@index([distributorId])
 }
 
 // ─────────────────────────────────────────────
@@ -845,4 +880,42 @@ model Note {
 
   @@index([brandId])
   @@index([date])
+}
+
+// ─────────────────────────────────────────────
+// INVOICES / REVENUE TRACKING
+// ─────────────────────────────────────────────
+
+model Invoice {
+  id String @id @default(cuid())
+
+  invoiceNumber String
+  invoiceDate   DateTime
+  dueDate       DateTime?
+  paidDate      DateTime?
+  amount        Float
+  currency      String   @default("USD")
+  status        String   @default("DRAFT")  // DRAFT, SENT, PAID, OVERDUE, CANCELLED
+  description   String?
+  notes         String?
+
+  // ─── Links ─────────────
+  distributorId String
+  distributor   Distributor @relation(fields: [distributorId], references: [id])
+  factoryId     String
+  factory       Factory     @relation(fields: [factoryId], references: [id])
+  brandId       String?
+  brand         Brand?      @relation(fields: [brandId], references: [id])
+  projectId     String?
+  project       Project?    @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([distributorId])
+  @@index([factoryId])
+  @@index([brandId])
+  @@index([projectId])
+  @@index([status])
+  @@index([invoiceDate])
 }

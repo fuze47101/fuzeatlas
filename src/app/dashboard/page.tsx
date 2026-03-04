@@ -8,6 +8,15 @@ type DashData = {
   testTypes: { type: string; count: number }[];
   recentFabrics: any[];
   recentTests: any[];
+  revenue?: {
+    totalPipeline: number;
+    weightedForecast: number;
+    actualRevenue: number;
+    invoicePaid: number;
+    invoiceOutstanding: number;
+    dealCount: number;
+    projectPipeline: { stage: string; count: number; value: number }[];
+  };
 };
 
 const STAGE_COLORS: Record<string, string> = {
@@ -139,6 +148,45 @@ export default function DashboardPage() {
         <StatCard label={t.dashboard.factories} value={c.factories} icon="🏭" color="#f59e0b" />
         <StatCard label={t.dashboard.testRuns} value={c.testRuns} icon="🧪" color="#10b981" />
       </div>
+
+      {/* Revenue Pipeline KPIs */}
+      {data.revenue && data.revenue.dealCount > 0 && (
+        <div className="mb-6">
+          <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wide mb-3">Revenue Pipeline</h2>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 text-white">
+              <p className="text-[10px] font-medium text-slate-300 uppercase">Total Pipeline</p>
+              <p className="text-xl font-black mt-0.5">
+                ${data.revenue.totalPipeline >= 1000 ? `${(data.revenue.totalPipeline / 1000).toFixed(0)}K` : data.revenue.totalPipeline.toFixed(0)}
+              </p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{data.revenue.dealCount} deals</p>
+            </div>
+            <div className="bg-white rounded-xl border border-emerald-200 p-4">
+              <p className="text-[10px] font-medium text-slate-400 uppercase">Weighted Forecast</p>
+              <p className="text-xl font-black text-emerald-600 mt-0.5">
+                ${data.revenue.weightedForecast >= 1000 ? `${(data.revenue.weightedForecast / 1000).toFixed(0)}K` : data.revenue.weightedForecast.toFixed(0)}
+              </p>
+            </div>
+            <div className="bg-white rounded-xl border border-blue-200 p-4">
+              <p className="text-[10px] font-medium text-slate-400 uppercase">Invoiced & Paid</p>
+              <p className="text-xl font-black text-blue-600 mt-0.5">
+                ${data.revenue.invoicePaid >= 1000 ? `${(data.revenue.invoicePaid / 1000).toFixed(0)}K` : data.revenue.invoicePaid.toFixed(0)}
+              </p>
+            </div>
+            <div className="bg-white rounded-xl border border-amber-200 p-4">
+              <p className="text-[10px] font-medium text-slate-400 uppercase">Outstanding</p>
+              <p className="text-xl font-black text-amber-600 mt-0.5">
+                ${data.revenue.invoiceOutstanding >= 1000 ? `${(data.revenue.invoiceOutstanding / 1000).toFixed(0)}K` : data.revenue.invoiceOutstanding.toFixed(0)}
+              </p>
+            </div>
+            <a href="/pipeline" className="bg-white rounded-xl border border-slate-200 p-4 hover:border-blue-300 transition-colors group">
+              <p className="text-[10px] font-medium text-slate-400 uppercase">View Pipeline</p>
+              <p className="text-sm font-bold text-blue-600 mt-1 group-hover:text-blue-700">Open Pipeline Board &rarr;</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">Manage deals by stage</p>
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* Second row - more stats */}
       <div className="grid grid-cols-3 lg:grid-cols-6 gap-4 mb-6">

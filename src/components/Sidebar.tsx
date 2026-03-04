@@ -56,6 +56,16 @@ export default function Sidebar() {
     { href: "/sustainability", label: "Sustainability Impact", icon: "🌍" },
   ];
 
+  // Revenue pipeline nav — visible to admin, employee, sales roles
+  if (isInternal) {
+    // Insert after dashboard (index 1)
+    NAV.splice(1, 0,
+      { href: "/pipeline", label: "Pipeline", icon: "📊" },
+      { href: "/revenue", label: "Revenue Forecast", icon: "💰" },
+      { href: "/invoices", label: "Invoices", icon: "🧾" },
+    );
+  }
+
   // Admin-only nav items
   if (user?.role === "ADMIN" || user?.role === "EMPLOYEE") {
     NAV.push({ href: "/admin/competitor-pricing", label: "Competitor Intel", icon: "🕵️" });

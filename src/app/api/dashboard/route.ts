@@ -76,6 +76,37 @@ export async function GET() {
       _count: true,
     });
 
+    // ─── Revenue Pipeline KPIs ─────────────
+    const allProjects = await prisma.project.findMany({
+      where: { projectedValue: { not: null } },
+      select: { projectedValue: true, actualValue: true, probability: true, stage: true },
+    });
+
+    const totalPipeline = allProjects.reduce((s, p) => s + (p.projectedValue || 0), 0);
+    const weightedForecast = allProjects.reduce(
+      (s, p) => s + (p.projectedValue || 0) * ((p.probability || 0) / 100), 0
+    );
+    const actualRevenue = allProjects.reduce((s, p) => s + (p.actualValue || 0), 0);
+
+    // Invoice metrics
+    const invoiceMetrics = await prisma.invoice.groupBy({
+      by: ["status"],
+      _sum: { amount: true },
+      _count: { id: true },
+    });
+    const invoicePaid = invoiceMetrics.find((m) => m.status === "PAID")?._sum?.amount || 0;
+    const invoiceOutstanding =
+      (invoiceMetrics.find((m) => m.status === "SENT")?._sum?.amount || 0) +
+      (invoiceMetrics.find((m) => m.status === "DRAFT")?._sum?.amount || 0) +
+      (invoiceMetrics.find((m) => m.status === "OVERDUE")?._sum?.amount || 0);
+
+    // Project stage breakdown
+    const projectPipeline = await prisma.project.groupBy({
+      by: ["stage"],
+      _count: { id: true },
+      _sum: { projectedValue: true },
+    });
+
     return NextResponse.json({
       ok: true,
       counts: {
@@ -87,6 +118,19 @@ export async function GET() {
       testTypes: testTypes.map((t) => ({ type: t.testType, count: t._count })),
       recentFabrics,
       recentTests,
+      revenue: {
+        totalPipeline: Math.round(totalPipeline * 100) / 100,
+        weightedForecast: Math.round(weightedForecast * 100) / 100,
+        actualRevenue: Math.round(actualRevenue * 100) / 100,
+        invoicePaid: Math.round(invoicePaid * 100) / 100,
+        invoiceOutstanding: Math.round(invoiceOutstanding * 100) / 100,
+        dealCount: allProjects.length,
+        projectPipeline: projectPipeline.map((p) => ({
+          stage: p.stage,
+          count: p._count.id,
+          value: p._sum.projectedValue || 0,
+        })),
+      },
     });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
