@@ -31,11 +31,21 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
     const params = await props.params;
     const body = await req.json();
     const data: any = {};
-    const fields = ["name","chineseName","millType","specialty","purchasing","annualSales",
-      "address","city","state","country","secondaryCountry","development","customerType","brandNominated","salesRepId"];
-    for (const f of fields) {
+    const strFields = ["name","chineseName","millType","specialty","purchasing","annualSales",
+      "address","city","state","country","secondaryCountry","development","customerType","brandNominated","salesRepId",
+      "productTypes","capabilities","certifications","fabricTypes","fuzeApplications",
+      "website","description"];
+    for (const f of strFields) {
       if (body[f] !== undefined) data[f] = body[f] || null;
     }
+    // Integer fields
+    const intFields = ["moqMeters","leadTimeDays","capacityMtMonth","yearEstablished","employeeCount"];
+    for (const f of intFields) {
+      if (body[f] !== undefined) data[f] = body[f] ? parseInt(body[f]) : null;
+    }
+    // Boolean fields
+    if (body.fuzeEnabled !== undefined) data.fuzeEnabled = body.fuzeEnabled;
+    if (body.profileComplete !== undefined) data.profileComplete = body.profileComplete;
     if (data.name) data.name = data.name.trim();
 
     const factory = await prisma.factory.update({ where: { id: params.id }, data });

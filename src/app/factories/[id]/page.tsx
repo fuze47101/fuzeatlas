@@ -2,6 +2,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
+import {
+  ALL_TAG_CATEGORIES,
+  parseTags,
+  getTagLabel,
+  calcProfileCompleteness,
+} from "@/lib/factoryDiscovery";
 
 const NOTE_TYPES = ["NOTE", "CALL", "EMAIL", "MEETING", "TASK", "FOLLOW_UP"];
 
@@ -16,7 +22,7 @@ export default function FactoryDetailPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState<any>({});
-  const [tab, setTab] = useState<"details"|"brands"|"fabrics"|"submissions"|"tests"|"contacts"|"notes">("details");
+  const [tab, setTab] = useState<"details"|"discovery"|"brands"|"fabrics"|"submissions"|"tests"|"contacts"|"notes">("details");
   const [users, setUsers] = useState<any[]>([]);
   // Tests state
   const [testRuns, setTestRuns] = useState<any[]>([]);
@@ -173,9 +179,10 @@ export default function FactoryDetailPage() {
 
       {/* Tabs */}
       <div className="flex border-b border-slate-200 mb-4 overflow-x-auto">
-        {(["details","brands","fabrics","submissions","tests","contacts","notes"] as const).map(tabName => {
+        {(["details","discovery","brands","fabrics","submissions","tests","contacts","notes"] as const).map(tabName => {
           const tabLabels: Record<string, string> = {
             details: t.brandTabs.details,
+            discovery: "Discovery Profile",
             brands: t.factories.brands,
             fabrics: t.factories.fabrics,
             submissions: t.dashboard.submissions || "Submissions",
@@ -228,6 +235,23 @@ export default function FactoryDetailPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── Discovery Profile Tab ── */}
+      {tab === "discovery" && (
+        <FactoryDiscoveryTab
+          factory={factory}
+          onSave={async (data: any) => {
+            setSaving(true); setError(""); setSuccess("");
+            try {
+              const res = await fetch(`/api/factories/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+              const j = await res.json();
+              if (j.ok) { setFactory({ ...factory, ...j.factory }); setSuccess("Discovery profile updated"); setTimeout(() => setSuccess(""), 3000); }
+              else setError(j.error);
+            } catch (e: any) { setError(e.message); } finally { setSaving(false); }
+          }}
+          saving={saving}
+        />
       )}
 
       {/* ── Brands Tab (Enhanced with link/unlink) ── */}
@@ -503,6 +527,176 @@ function FactoryContactsTab({ factoryId, contacts: initial, onUpdate, t }: { fac
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+/* ── FactoryDiscoveryTab — structured tags for search/discovery ── */
+function FactoryDiscoveryTab({ factory, onSave, saving }: { factory: any; onSave: (data: any) => Promise<void>; saving: boolean }) {
+  const [form, setForm] = useState(() => ({
+    productTypes: parseTags(factory.productTypes),
+    capabilities: parseTags(factory.capabilities),
+    certifications: parseTags(factory.certifications),
+    fabricTypes: parseTags(factory.fabricTypes),
+    fuzeApplications: parseTags(factory.fuzeApplications),
+    fuzeEnabled: factory.fuzeEnabled || false,
+    moqMeters: factory.moqMeters || "",
+    leadTimeDays: factory.leadTimeDays || "",
+    capacityMtMonth: factory.capacityMtMonth || "",
+    yearEstablished: factory.yearEstablished || "",
+    employeeCount: factory.employeeCount || "",
+    website: factory.website || "",
+    description: factory.description || "",
+  }));
+
+  const toggleTag = (category: string, value: string) => {
+    setForm((prev: any) => {
+      const current = prev[category] || [];
+      const next = current.includes(value) ? current.filter((v: string) => v !== value) : [...current, value];
+      return { ...prev, [category]: next };
+    });
+  };
+
+  const handleSave = () => {
+    const data: any = {
+      productTypes: JSON.stringify(form.productTypes),
+      capabilities: JSON.stringify(form.capabilities),
+      certifications: JSON.stringify(form.certifications),
+      fabricTypes: JSON.stringify(form.fabricTypes),
+      fuzeApplications: JSON.stringify(form.fuzeApplications),
+      fuzeEnabled: form.fuzeEnabled,
+      moqMeters: form.moqMeters || null,
+      leadTimeDays: form.leadTimeDays || null,
+      capacityMtMonth: form.capacityMtMonth || null,
+      yearEstablished: form.yearEstablished || null,
+      employeeCount: form.employeeCount || null,
+      website: form.website || null,
+      description: form.description || null,
+      profileComplete: calcProfileCompleteness({ ...factory, ...form, productTypes: JSON.stringify(form.productTypes), capabilities: JSON.stringify(form.capabilities), certifications: JSON.stringify(form.certifications), fabricTypes: JSON.stringify(form.fabricTypes) }) >= 50,
+    };
+    onSave(data);
+  };
+
+  const completeness = calcProfileCompleteness({
+    ...factory,
+    productTypes: JSON.stringify(form.productTypes),
+    capabilities: JSON.stringify(form.capabilities),
+    certifications: JSON.stringify(form.certifications),
+    fabricTypes: JSON.stringify(form.fabricTypes),
+    moqMeters: form.moqMeters,
+    leadTimeDays: form.leadTimeDays,
+    description: form.description,
+    fuzeEnabled: form.fuzeEnabled,
+  });
+
+  return (
+    <div className="space-y-6">
+      {/* Completeness bar */}
+      <div className="bg-white rounded-xl p-5 shadow-sm border">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h3 className="font-bold text-slate-900">Discovery Profile Completeness</h3>
+            <p className="text-xs text-slate-500 mt-0.5">Fill out this profile so brands can find this factory when searching</p>
+          </div>
+          <div className="text-right">
+            <span className={`text-2xl font-black ${completeness >= 80 ? "text-emerald-600" : completeness >= 50 ? "text-amber-500" : "text-red-500"}`}>{completeness}%</span>
+          </div>
+        </div>
+        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div className={`h-full rounded-full transition-all ${completeness >= 80 ? "bg-emerald-500" : completeness >= 50 ? "bg-amber-500" : "bg-red-400"}`} style={{ width: `${completeness}%` }} />
+        </div>
+      </div>
+
+      {/* Description & Basic Info */}
+      <div className="bg-white rounded-xl p-5 shadow-sm border">
+        <h3 className="font-bold text-slate-900 mb-4">Factory Description</h3>
+        <textarea
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          rows={3}
+          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3] mb-4"
+          placeholder="Describe this factory's strengths, specialties, and what makes them unique..."
+        />
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">MOQ (meters)</label>
+            <input type="number" value={form.moqMeters} onChange={(e) => setForm({ ...form, moqMeters: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="e.g. 3000" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">Lead Time (days)</label>
+            <input type="number" value={form.leadTimeDays} onChange={(e) => setForm({ ...form, leadTimeDays: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="e.g. 45" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">Capacity (MT/month)</label>
+            <input type="number" value={form.capacityMtMonth} onChange={(e) => setForm({ ...form, capacityMtMonth: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="e.g. 500" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">Year Established</label>
+            <input type="number" value={form.yearEstablished} onChange={(e) => setForm({ ...form, yearEstablished: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="e.g. 1998" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">Employees</label>
+            <input type="number" value={form.employeeCount} onChange={(e) => setForm({ ...form, employeeCount: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="e.g. 350" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">Website</label>
+            <input type="url" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="https://..." />
+          </div>
+        </div>
+        <div className="mt-4">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" checked={form.fuzeEnabled} onChange={(e) => setForm({ ...form, fuzeEnabled: e.target.checked })}
+              className="rounded border-slate-300 text-[#00b4c3] focus:ring-[#00b4c3] w-5 h-5" />
+            <div>
+              <span className="text-sm font-semibold text-slate-700">FUZE Treatment Enabled</span>
+              <p className="text-xs text-slate-500">This factory has active FUZE antimicrobial treatment capability</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      {/* Tag Sections */}
+      {ALL_TAG_CATEGORIES.map((cat) => (
+        <div key={cat.key} className="bg-white rounded-xl p-5 shadow-sm border">
+          <h3 className="font-bold text-slate-900 mb-1">{cat.icon} {cat.label}</h3>
+          <p className="text-xs text-slate-500 mb-3">Select all that apply</p>
+          <div className="flex flex-wrap gap-2">
+            {cat.tags.map((tag) => {
+              const active = (form[cat.key as keyof typeof form] as string[] || []).includes(tag.value);
+              return (
+                <button
+                  key={tag.value}
+                  onClick={() => toggleTag(cat.key, tag.value)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                    active
+                      ? "bg-[#00b4c3] text-white border-[#00b4c3] shadow-sm"
+                      : "bg-white text-slate-600 border-slate-200 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+                  }`}
+                >
+                  {active && "✓ "}{tag.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      {/* Save */}
+      <div className="flex justify-end">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="px-6 py-3 bg-[#00b4c3] text-white rounded-lg text-sm font-bold hover:bg-[#009aa8] disabled:opacity-50 shadow-lg shadow-[#00b4c3]/30 transition-all"
+        >
+          {saving ? "Saving..." : "Save Discovery Profile"}
+        </button>
+      </div>
     </div>
   );
 }

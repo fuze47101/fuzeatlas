@@ -25,6 +25,21 @@ export async function GET() {
       submissionCount: f._count.submissions,
       fabricCount: f._count.fabrics,
       contactCount: f._count.contacts,
+      // Discovery fields
+      productTypes: f.productTypes,
+      capabilities: f.capabilities,
+      certifications: f.certifications,
+      fabricTypes: f.fabricTypes,
+      fuzeEnabled: f.fuzeEnabled,
+      fuzeApplications: f.fuzeApplications,
+      moqMeters: f.moqMeters,
+      leadTimeDays: f.leadTimeDays,
+      capacityMtMonth: f.capacityMtMonth,
+      yearEstablished: f.yearEstablished,
+      employeeCount: f.employeeCount,
+      website: f.website,
+      description: f.description,
+      profileComplete: f.profileComplete,
     }));
 
     const byCountry: Record<string, number> = {};
@@ -44,7 +59,10 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, chineseName, millType, specialty, purchasing, annualSales,
       address, city, state, country, secondaryCountry, development,
-      customerType, brandNominated, salesRepId } = body;
+      customerType, brandNominated, salesRepId,
+      productTypes, capabilities, certifications, fabricTypes,
+      fuzeEnabled, fuzeApplications, moqMeters, leadTimeDays,
+      capacityMtMonth, yearEstablished, employeeCount, website, description } = body;
 
     if (!name || !name.trim()) {
       return NextResponse.json({ ok: false, error: "Factory name is required" }, { status: 400 });
@@ -67,6 +85,19 @@ export async function POST(req: Request) {
         customerType: customerType || null,
         brandNominated: brandNominated || null,
         salesRepId: salesRepId || null,
+        productTypes: productTypes || null,
+        capabilities: capabilities || null,
+        certifications: certifications || null,
+        fabricTypes: fabricTypes || null,
+        fuzeEnabled: fuzeEnabled ?? null,
+        fuzeApplications: fuzeApplications || null,
+        moqMeters: moqMeters ? parseInt(moqMeters) : null,
+        leadTimeDays: leadTimeDays ? parseInt(leadTimeDays) : null,
+        capacityMtMonth: capacityMtMonth ? parseInt(capacityMtMonth) : null,
+        yearEstablished: yearEstablished ? parseInt(yearEstablished) : null,
+        employeeCount: employeeCount ? parseInt(employeeCount) : null,
+        website: website || null,
+        description: description || null,
       },
     });
 

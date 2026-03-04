@@ -260,6 +260,22 @@ model Factory {
   customerType         String?
   brandNominated       String?
 
+  // ─── Searchable / Discovery Fields ─────────────
+  productTypes      String?   // JSON array: ["activewear","denim","intimates","socks","wovens","knits","outerwear","home_textiles","non_woven","medical","industrial"]
+  capabilities      String?   // JSON array: ["dyeing","finishing","printing","knitting","weaving","cut_sew","coating","laminating","embroidery","laser_cutting","digital_printing"]
+  certifications    String?   // JSON array: ["oeko_tex_100","bluesign","gots","grs","iso_9001","iso_14001","wrap","bsci","sedex","higg"]
+  fabricTypes       String?   // JSON array: ["jersey","interlock","pique","fleece","terry","mesh","rib","twill","poplin","satin","denim","nylon","polyester","cotton","blends","recycled"]
+  moqMeters         Int?      // Minimum order quantity in meters
+  leadTimeDays      Int?      // Typical lead time in days
+  capacityMtMonth   Int?      // Monthly capacity in metric tons
+  yearEstablished   Int?      // Year factory was established
+  employeeCount     Int?      // Approximate headcount
+  fuzeEnabled       Boolean?  // Has active FUZE treatment capability
+  fuzeApplications  String?   // JSON array: ["bath_exhaust","spray_finish","jeanologia","wash_cycle","yarn_dye"]
+  website           String?
+  description       String?   // Free-text about the factory, searchable
+  profileComplete   Boolean   @default(false)  // Whether discovery profile is filled out
+
   raw Json?
 
   salesRepId String?
@@ -277,6 +293,7 @@ model Factory {
 
   @@index([name])
   @@index([country])
+  @@index([profileComplete])
 }
 
 model BrandFactory {
