@@ -11,13 +11,15 @@ const FUZE_TIERS = [
   { id: "F4", dose: 0.25, washes: 25, label: "Foundation", color: "bg-sky-500" },
 ] as const;
 
+type FuzeTier = (typeof FUZE_TIERS)[number];
+
 const COMMON_MATERIALS = [
   "Cotton", "Polyester", "Nylon", "Spandex", "Elastane", "Rayon",
   "Modal", "Tencel", "Bamboo", "Wool", "Silk", "Linen", "Acrylic",
 ];
 
 function CostCard({ fabric }: { fabric: any }) {
-  const [tier, setTier] = useState(FUZE_TIERS[0]);
+  const [tier, setTier] = useState<FuzeTier>(FUZE_TIERS[0]);
   const outputs = useMemo(() => {
     if (!fabric.weightGsm || !fabric.widthInches) return null;
     return calcQuote({

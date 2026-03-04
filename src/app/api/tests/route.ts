@@ -12,10 +12,13 @@ export async function GET(request: Request) {
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
     const pageSize = 50;
 
-    // Build where clause for type + project filter
+    const brandId = searchParams.get("brandId") || "";
+
+    // Build where clause for type + project + brand filter
     const where: any = {};
     if (filterType) where.testType = filterType;
     if (filterProject) where.projectId = filterProject;
+    if (brandId) where.submission = { brandId };
 
     const [
       testRuns,

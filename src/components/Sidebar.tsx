@@ -36,6 +36,8 @@ export default function Sidebar() {
     { href: "/dashboard", label: t.nav.dashboard, icon: "📊" },
     { href: "/brand-portal/fabrics", label: "My Fabrics", icon: "🧵" },
     { href: "/brand-portal/submissions", label: "Submissions", icon: "📋" },
+    { href: "/brand-portal/tests", label: "Test Results", icon: "🧪" },
+    { href: "/brand-portal/contacts", label: "Contacts", icon: "👥" },
     { href: "/factory-search", label: "Factory Search", icon: "🔍" },
     { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
     { href: "/sustainability", label: "Sustainability Impact", icon: "🌍" },

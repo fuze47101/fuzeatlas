@@ -2,6 +2,28 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+/* ── GET /api/contacts?brandId=xxx ── list contacts ────────── */
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const brandId = searchParams.get("brandId");
+    const factoryId = searchParams.get("factoryId");
+
+    const where: any = {};
+    if (brandId) where.brandId = brandId;
+    if (factoryId) where.factoryId = factoryId;
+
+    const contacts = await prisma.contact.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
+
+    return NextResponse.json({ ok: true, contacts });
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
+  }
+}
+
 /* ── POST /api/contacts ── create a new contact ────────── */
 export async function POST(req: Request) {
   try {
