@@ -1,7 +1,7 @@
 // Revenue Pipeline & Forecast Calculation Utilities
 // Uses FUZE pricing from fuze-calc.ts to project revenue
 
-import { widthToMeters } from "./fuze-calc";
+import { widthToMeters } from "@/lib/fuze-calc";
 
 // ─── FUZE Tier Constants ─────────────────────────
 export const FUZE_TIERS_COMMERCIAL = {

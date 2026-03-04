@@ -3,6 +3,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import Sidebar from "./Sidebar";
 import GlobalSearch from "./GlobalSearch";
+import FuzeChat from "./FuzeChat";
 
 const NO_SIDEBAR_ROUTES = ["/login"];
 
@@ -30,6 +31,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <Sidebar />
       <main className="flex-1 min-w-0 pt-14 lg:pt-0">{children}</main>
       <GlobalSearch />
+      <FuzeChat />
     </div>
   );
 }

@@ -38,6 +38,7 @@ export default function Sidebar() {
     { href: "/brand-portal/submissions", label: "Submissions", icon: "📋" },
     { href: "/brand-portal/tests", label: "Test Results", icon: "🧪" },
     { href: "/brand-portal/contacts", label: "Contacts", icon: "👥" },
+    { href: "/brand-portal/chat", label: "FUZE AI Chat", icon: "💬" },
     { href: "/factory-search", label: "Factory Search", icon: "🔍" },
     { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
     { href: "/sustainability", label: "Sustainability Impact", icon: "🌍" },
