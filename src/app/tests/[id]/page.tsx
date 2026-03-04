@@ -886,22 +886,41 @@ export default function TestDetailPage() {
             {test.documents.map((doc) => (
               <div
                 key={doc.id}
-                className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg"
+                className="flex items-center justify-between p-3 bg-slate-50 rounded-lg group"
               >
-                <svg
-                  className="w-5 h-5 text-slate-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M4 3a2 2 0 012-2h5.293A1 1 0 0112 2.414l3.293 3.293A1 1 0 0115 7.121V16a2 2 0 01-2 2H6a2 2 0 01-2-2V3z" />
-                </svg>
-                <div>
-                  <p className="text-sm font-medium text-slate-900">
-                    {doc.filename}
-                  </p>
-                  {doc.kind && (
-                    <p className="text-xs text-slate-500">{doc.kind}</p>
-                  )}
+                <div className="flex items-center gap-3">
+                  <svg
+                    className="w-5 h-5 text-red-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M4 3a2 2 0 012-2h5.293A1 1 0 0112 2.414l3.293 3.293A1 1 0 0115 7.121V16a2 2 0 01-2 2H6a2 2 0 01-2-2V3z" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">
+                      {doc.filename}
+                    </p>
+                    {doc.kind && (
+                      <p className="text-xs text-slate-500">{doc.kind}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`/api/documents/${doc.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors"
+                  >
+                    View Report
+                  </a>
+                  <a
+                    href={`/api/documents/${doc.id}`}
+                    download={doc.filename}
+                    className="px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-300 transition-colors"
+                  >
+                    Download
+                  </a>
                 </div>
               </div>
             ))}
