@@ -28,7 +28,19 @@ export default function Sidebar() {
   const { locale, setLocale, t } = useI18n();
   const { user, logout } = useAuth();
 
-  const NAV = [
+  const isBrandUser = user?.role === "BRAND_USER";
+  const isInternal = !isBrandUser && user?.role !== "FACTORY_USER" && user?.role !== "DISTRIBUTOR_USER" && user?.role !== "PUBLIC";
+
+  const NAV = isBrandUser ? [
+    // Brand portal nav — limited view
+    { href: "/dashboard", label: t.nav.dashboard, icon: "📊" },
+    { href: "/brand-portal/fabrics", label: "My Fabrics", icon: "🧵" },
+    { href: "/brand-portal/submissions", label: "Submissions", icon: "📋" },
+    { href: "/factory-search", label: "Factory Search", icon: "🔍" },
+    { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
+    { href: "/sustainability", label: "Sustainability Impact", icon: "🌍" },
+  ] : [
+    // Internal / admin nav — full access
     { href: "/dashboard", label: t.nav.dashboard, icon: "📊" },
     { href: "/brands", label: t.nav.brandPipeline, icon: "🔥" },
     { href: "/fabrics", label: t.nav.fabrics, icon: "🧵" },
