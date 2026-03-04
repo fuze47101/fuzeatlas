@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 /* ── GET /api/invoices/[id] ── Invoice detail ──── */
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const invoice = await prisma.invoice.findUnique({
@@ -27,7 +27,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 }
 
 /* ── PUT /api/invoices/[id] ── Update invoice ──── */
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const body = await req.json();
@@ -65,7 +65,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 /* ── DELETE /api/invoices/[id] ── Soft delete (CANCELLED) ──── */
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const invoice = await prisma.invoice.update({
