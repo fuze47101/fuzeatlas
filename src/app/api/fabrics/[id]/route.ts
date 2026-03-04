@@ -53,8 +53,23 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
 export async function DELETE(_req: Request, props: { params: Promise<{ id: string }> }) {
   try {
     const params = await props.params;
-    await prisma.fabric.delete({ where: { id: params.id } });
-    return NextResponse.json({ ok: true });
+    const id = params.id;
+
+    // Delete related records first (no cascade in Prisma by default)
+    await prisma.fabricContent.deleteMany({ where: { fabricId: id } });
+
+    // Check for submissions — warn if any exist
+    const subCount = await prisma.fabricSubmission.count({ where: { fabricId: id } });
+    if (subCount > 0) {
+      // Unlink submissions instead of deleting them (preserve test data)
+      await prisma.fabricSubmission.updateMany({
+        where: { fabricId: id },
+        data: { fabricId: null },
+      });
+    }
+
+    await prisma.fabric.delete({ where: { id } });
+    return NextResponse.json({ ok: true, unlinkedSubmissions: subCount });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }

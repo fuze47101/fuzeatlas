@@ -10,12 +10,34 @@ export default function FabricsPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [deleting, setDeleting] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadFabrics = () => {
     fetch("/api/fabrics").then(r => r.json()).then(j => {
       if (j.ok) { setFabrics(j.fabrics); setTotal(j.total); }
     }).finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(loadFabrics, []);
+
+  const handleDelete = async (e: React.MouseEvent, id: string, fuzeNum: number | null) => {
+    e.stopPropagation();
+    const label = fuzeNum ? `FUZE ${fuzeNum}` : "this fabric";
+    if (!confirm(`Delete ${label}? This cannot be undone.`)) return;
+    setDeleting(id);
+    try {
+      const res = await fetch(`/api/fabrics/${id}`, { method: "DELETE" });
+      const j = await res.json();
+      if (j.ok) {
+        setFabrics(prev => prev.filter(f => f.id !== id));
+        setTotal(prev => prev - 1);
+      } else {
+        alert(j.error || "Failed to delete");
+      }
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">{t.fabrics.loadingFabrics}</div>;
 
@@ -55,6 +77,7 @@ export default function FabricsPage() {
               <th className="px-4 py-3">{t.fabrics.factory}</th>
               <th className="px-4 py-3">{t.fabrics.content}</th>
               <th className="px-4 py-3 text-center">{t.fabrics.submissions}</th>
+              <th className="px-4 py-3 w-10"></th>
             </tr>
           </thead>
           <tbody>
@@ -69,6 +92,16 @@ export default function FabricsPage() {
                 <td className="px-4 py-3 text-slate-600">{f.factory || "—"}</td>
                 <td className="px-4 py-3 text-xs text-slate-500 max-w-[200px] truncate">{f.contents || "—"}</td>
                 <td className="px-4 py-3 text-center font-bold">{f.submissionCount}</td>
+                <td className="px-4 py-3 text-center">
+                  <button
+                    onClick={(e) => handleDelete(e, f.id, f.fuzeNumber)}
+                    disabled={deleting === f.id}
+                    className="text-slate-300 hover:text-red-500 transition-colors text-xs disabled:opacity-50"
+                    title="Delete fabric"
+                  >
+                    {deleting === f.id ? "..." : "✕"}
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
