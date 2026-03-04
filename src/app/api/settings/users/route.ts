@@ -18,6 +18,12 @@ export async function GET() {
         role: true,
         status: true,
         createdAt: true,
+        brandId: true,
+        factoryId: true,
+        distributorId: true,
+        brand: { select: { name: true } },
+        factory: { select: { name: true } },
+        distributor: { select: { name: true } },
       },
       orderBy: { name: "asc" },
     });

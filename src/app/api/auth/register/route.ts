@@ -6,7 +6,7 @@ import { hashPassword, createToken, setSessionCookie, getCurrentUser, hasMinRole
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, password, role } = body;
+    const { name, email, password, role, brandId, factoryId, distributorId } = body;
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -82,6 +82,9 @@ export async function POST(req: Request) {
           password: hashedPassword,
           role: isFirstAdmin ? "ADMIN" : (role || "EMPLOYEE"),
           status: "ACTIVE",
+          ...(brandId && { brandId }),
+          ...(factoryId && { factoryId }),
+          ...(distributorId && { distributorId }),
         },
       });
     }

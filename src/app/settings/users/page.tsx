@@ -10,6 +10,14 @@ interface UserRecord {
   role: string;
   status: string;
   createdAt: string;
+  brandId?: string | null;
+  factoryId?: string | null;
+  distributorId?: string | null;
+}
+
+interface LookupItem {
+  id: string;
+  name: string;
 }
 
 const ROLES = [
@@ -37,6 +45,11 @@ const STATUS_COLORS: Record<string, string> = {
   PENDING: "bg-amber-100 text-amber-700",
 };
 
+// Roles that need entity assignment
+const NEEDS_BRAND = ["BRAND_USER"];
+const NEEDS_FACTORY = ["FACTORY_USER", "FACTORY_MANAGER"];
+const NEEDS_DISTRIBUTOR = ["DISTRIBUTOR_USER"];
+
 export default function UserManagementPage() {
   const { user: currentUser } = useAuth();
   const router = useRouter();
@@ -51,8 +64,16 @@ export default function UserManagementPage() {
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState("EMPLOYEE");
+  const [newBrandId, setNewBrandId] = useState("");
+  const [newFactoryId, setNewFactoryId] = useState("");
+  const [newDistributorId, setNewDistributorId] = useState("");
   const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Lookup data for dropdowns
+  const [brands, setBrands] = useState<LookupItem[]>([]);
+  const [factories, setFactories] = useState<LookupItem[]>([]);
+  const [distributors, setDistributors] = useState<LookupItem[]>([]);
 
   // Edit form
   const [editRole, setEditRole] = useState("");
@@ -67,6 +88,20 @@ export default function UserManagementPage() {
     setLoading(false);
   }, []);
 
+  // Fetch lookup data for entity assignment
+  const fetchLookups = useCallback(async () => {
+    try {
+      const [brandsRes, factoriesRes, distRes] = await Promise.all([
+        fetch("/api/brands").then(r => r.json()),
+        fetch("/api/factories").then(r => r.json()),
+        fetch("/api/distributors").then(r => r.json()),
+      ]);
+      if (brandsRes.brands) setBrands(brandsRes.brands.map((b: any) => ({ id: b.id, name: b.name })));
+      if (factoriesRes.factories) setFactories(factoriesRes.factories.map((f: any) => ({ id: f.id, name: f.name })));
+      if (distRes.distributors) setDistributors(distRes.distributors.map((d: any) => ({ id: d.id, name: d.name })));
+    } catch {}
+  }, []);
+
   useEffect(() => {
     // Only admins can access
     if (currentUser && currentUser.role !== "ADMIN" && currentUser.role !== "EMPLOYEE") {
@@ -74,7 +109,8 @@ export default function UserManagementPage() {
       return;
     }
     fetchUsers();
-  }, [currentUser, router, fetchUsers]);
+    fetchLookups();
+  }, [currentUser, router, fetchUsers, fetchLookups]);
 
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,6 +126,9 @@ export default function UserManagementPage() {
           email: newEmail,
           password: newPassword,
           role: newRole,
+          ...(NEEDS_BRAND.includes(newRole) && newBrandId && { brandId: newBrandId }),
+          ...(NEEDS_FACTORY.includes(newRole) && newFactoryId && { factoryId: newFactoryId }),
+          ...(NEEDS_DISTRIBUTOR.includes(newRole) && newDistributorId && { distributorId: newDistributorId }),
         }),
       });
       const data = await res.json();
@@ -99,6 +138,9 @@ export default function UserManagementPage() {
         setNewEmail("");
         setNewPassword("");
         setNewRole("EMPLOYEE");
+        setNewBrandId("");
+        setNewFactoryId("");
+        setNewDistributorId("");
         fetchUsers();
       } else {
         setFormError(data.error || "Failed to create user");
@@ -222,6 +264,56 @@ export default function UserManagementPage() {
                 ))}
               </select>
             </div>
+            {/* Entity assignment — shown based on role */}
+            {NEEDS_BRAND.includes(newRole) && (
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-slate-700 mb-1">Assign to Brand</label>
+                <select
+                  value={newBrandId}
+                  onChange={(e) => setNewBrandId(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  required
+                >
+                  <option value="">— Select Brand —</option>
+                  {brands.map((b) => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
+                  ))}
+                </select>
+                <p className="text-xs text-slate-400 mt-1">Brand users can only see data for their assigned brand</p>
+              </div>
+            )}
+            {NEEDS_FACTORY.includes(newRole) && (
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-slate-700 mb-1">Assign to Factory</label>
+                <select
+                  value={newFactoryId}
+                  onChange={(e) => setNewFactoryId(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  required
+                >
+                  <option value="">— Select Factory —</option>
+                  {factories.map((f) => (
+                    <option key={f.id} value={f.id}>{f.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {NEEDS_DISTRIBUTOR.includes(newRole) && (
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-slate-700 mb-1">Assign to Distributor</label>
+                <select
+                  value={newDistributorId}
+                  onChange={(e) => setNewDistributorId(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  required
+                >
+                  <option value="">— Select Distributor —</option>
+                  {distributors.map((d) => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="md:col-span-2">
               <button
                 type="submit"
