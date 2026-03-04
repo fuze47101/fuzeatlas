@@ -38,6 +38,7 @@ export default function Sidebar() {
     { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
     { href: "/reports", label: t.nav.weeklySummary || "Weekly Summary", icon: "📈" },
     { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
+    { href: "/sustainability", label: "Sustainability Impact", icon: "🌍" },
   ];
 
   // Admin-only nav items
