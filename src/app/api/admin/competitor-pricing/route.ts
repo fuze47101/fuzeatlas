@@ -7,8 +7,8 @@ import { getCurrentUser, hasMinRole } from "@/lib/auth";
 export async function GET() {
   try {
     const user = await getCurrentUser();
-    if (!user || !hasMinRole(user.role, "ADMIN")) {
-      return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
+    if (!user) {
+      return NextResponse.json({ ok: false, error: "Authentication required" }, { status: 401 });
     }
 
     const overrides = await prisma.competitorPriceOverride.findMany({

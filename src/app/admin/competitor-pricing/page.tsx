@@ -85,7 +85,6 @@ export default function CompetitorPricingAdmin() {
 
   useEffect(() => { fetchOverrides(); }, [fetchOverrides]);
 
-  // Clear flash after 3s
   useEffect(() => {
     if (flash) {
       const t = setTimeout(() => setFlash(null), 3000);
@@ -170,83 +169,78 @@ export default function CompetitorPricingAdmin() {
           value={editRow[key]}
           onChange={(e) => setEditRow({ ...editRow, [key]: e.target.value })}
           placeholder={placeholder}
-          className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white text-sm focus:border-[#00b4c3] focus:ring-1 focus:ring-[#00b4c3] outline-none"
+          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:border-[#00b4c3] focus:ring-1 focus:ring-[#00b4c3] outline-none"
         />
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-6 lg:p-10">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <Link href="/pricing" className="text-slate-400 hover:text-white transition-colors">
+            <Link href="/pricing" className="text-slate-400 hover:text-slate-700 transition-colors">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
-            <h1 className="text-2xl font-bold text-white">Competitor Pricing Intelligence</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Market Landscape</h1>
           </div>
-          <p className="text-sm text-slate-400">
-            Override guesstimate prices with real distributor quotes. Overrides flow into the Pricing & Environment comparison tool.
+          <p className="text-sm text-slate-500">
+            Antimicrobial textile treatment market — pricing, chemistry, and product comparison across providers.
           </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1.5 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-xs font-medium">
-            ADMIN ONLY — CONFIDENTIAL
-          </span>
         </div>
       </div>
 
       {/* Flash message */}
       {flash && (
         <div className={`mb-6 px-4 py-3 rounded-lg text-sm font-medium ${
-          flash.type === "ok" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400"
-            : "bg-red-500/10 border border-red-500/30 text-red-400"
+          flash.type === "ok" ? "bg-emerald-50 border border-emerald-200 text-emerald-700"
+            : "bg-red-50 border border-red-200 text-red-700"
         }`}>
           {flash.msg}
         </div>
       )}
 
       {/* Legend */}
-      <div className="mb-6 flex gap-4 text-xs text-slate-400">
+      <div className="mb-6 flex gap-6 text-xs text-slate-500">
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Real data (admin override)
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Verified data
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Guesstimate (research)
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Estimated
         </span>
       </div>
 
       {loading ? (
         <div className="text-center py-12 text-slate-400">Loading...</div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {COMPETITORS.map((comp) => {
             const ov = getOverride(comp.id);
             const hasOverride = !!ov;
             const isEditing = editingId === comp.id;
 
             return (
-              <div key={comp.id} className={`rounded-xl border transition-colors ${
+              <div key={comp.id} className={`bg-white rounded-xl border shadow-sm transition-colors ${
                 hasOverride
-                  ? "bg-slate-800/80 border-emerald-500/30"
-                  : "bg-slate-800/40 border-slate-700/50"
+                  ? "border-emerald-200"
+                  : "border-slate-200"
               }`}>
                 {/* Competitor header row */}
                 <div className="flex items-center justify-between px-5 py-4">
                   <div className="flex items-center gap-4 min-w-0">
-                    <span className={`w-3 h-3 rounded-full flex-shrink-0 ${hasOverride ? "bg-emerald-500" : "bg-amber-500"}`} />
+                    <span className={`w-3 h-3 rounded-full flex-shrink-0 ${hasOverride ? "bg-emerald-500" : "bg-amber-400"}`} />
                     <div className="min-w-0">
-                      <h3 className="text-white font-semibold text-sm">{comp.product}</h3>
-                      <p className="text-slate-400 text-xs">
+                      <h3 className="text-slate-900 font-semibold text-sm">{comp.product}</h3>
+                      <p className="text-slate-500 text-xs">
                         {comp.company} — {comp.chemistryLabel}
                         {comp.epaRegNumber && (
-                          <span className="ml-2 text-slate-500">
+                          <span className="ml-2 text-slate-400">
                             EPA: {comp.epaRegNumber}
-                            {comp.epaRegYear && <span className="text-amber-500/70"> ({comp.epaRegYear})</span>}
+                            {comp.epaRegYear && <span className="text-amber-600"> ({comp.epaRegYear})</span>}
                           </span>
                         )}
                       </p>
@@ -254,30 +248,29 @@ export default function CompetitorPricingAdmin() {
                   </div>
 
                   <div className="flex items-center gap-6 text-sm">
-                    {/* Current prices */}
                     <div className="text-right">
-                      <span className="text-xs text-slate-500 block">Chemical $/kg</span>
-                      <span className={`font-mono font-bold ${hasOverride ? "text-emerald-400" : "text-amber-400"}`}>
+                      <span className="text-xs text-slate-400 block">Chemical $/kg</span>
+                      <span className={`font-mono font-bold ${hasOverride ? "text-emerald-600" : "text-amber-600"}`}>
                         ${(ov?.chemicalPricePerKg ?? comp.chemicalPricePerKg).toFixed(0)}
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs text-slate-500 block">Binder $/kg</span>
-                      <span className={`font-mono font-bold ${hasOverride && ov?.binderPricePerKg ? "text-emerald-400" : "text-amber-400"}`}>
+                      <span className="text-xs text-slate-400 block">Binder $/kg</span>
+                      <span className={`font-mono font-bold ${hasOverride && ov?.binderPricePerKg ? "text-emerald-600" : "text-amber-600"}`}>
                         ${(ov?.binderPricePerKg ?? comp.binderPricePerKg).toFixed(2)}
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs text-slate-500 block">Typical $/m</span>
-                      <span className={`font-mono font-bold ${hasOverride && ov?.estimatedCostPerMeterTypical ? "text-emerald-400" : "text-amber-400"}`}>
+                      <span className="text-xs text-slate-400 block">Typical $/m</span>
+                      <span className={`font-mono font-bold ${hasOverride && ov?.estimatedCostPerMeterTypical ? "text-emerald-600" : "text-amber-600"}`}>
                         ${(ov?.estimatedCostPerMeterTypical ?? comp.estimatedCostPerMeterTypical).toFixed(3)}
                       </span>
                     </div>
 
                     {hasOverride && ov?.updatedAt && (
                       <div className="text-right">
-                        <span className="text-xs text-slate-500 block">Updated</span>
-                        <span className="text-xs text-slate-300">
+                        <span className="text-xs text-slate-400 block">Updated</span>
+                        <span className="text-xs text-slate-600">
                           {new Date(ov.updatedAt).toLocaleDateString()}
                         </span>
                       </div>
@@ -289,13 +282,13 @@ export default function CompetitorPricingAdmin() {
                           onClick={() => startEdit(comp)}
                           className="px-3 py-1.5 bg-[#00b4c3] text-white text-xs font-medium rounded-lg hover:bg-[#00a0b0] transition-colors"
                         >
-                          {hasOverride ? "Edit" : "Add Intel"}
+                          {hasOverride ? "Edit" : "Add Data"}
                         </button>
                       )}
                       {hasOverride && !isEditing && (
                         <button
                           onClick={() => deleteOverride(comp.id)}
-                          className="px-3 py-1.5 bg-red-500/10 text-red-400 text-xs font-medium rounded-lg hover:bg-red-500/20 border border-red-500/30 transition-colors"
+                          className="px-3 py-1.5 bg-red-50 text-red-500 text-xs font-medium rounded-lg hover:bg-red-100 border border-red-200 transition-colors"
                         >
                           Revert
                         </button>
@@ -306,27 +299,25 @@ export default function CompetitorPricingAdmin() {
 
                 {/* Source line */}
                 <div className="px-5 pb-3 -mt-1">
-                  <p className="text-xs text-slate-500 italic truncate">
+                  <p className="text-xs text-slate-400 italic truncate">
                     Source: {ov?.chemicalPriceSource ?? comp.chemicalPriceSource}
                   </p>
                 </div>
 
                 {/* Editing panel */}
                 {isEditing && editRow && (
-                  <div className="border-t border-slate-700/50 px-5 py-5 space-y-5">
+                  <div className="border-t border-slate-200 px-5 py-5 bg-slate-50 rounded-b-xl space-y-5">
                     <div className="text-xs font-medium text-[#00b4c3] uppercase tracking-wider mb-3">
-                      Enter Distributor Intelligence
+                      Update Market Data
                     </div>
 
-                    {/* Core pricing */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {field("Chemical Price ($/kg)", "chemicalPricePerKg", "number", comp.chemicalPricePerKg.toString())}
-                      {field("Source / Contact", "chemicalPriceSource", "text", "China distributor, agent name...")}
+                      {field("Source / Contact", "chemicalPriceSource", "text", "Distributor, agent name...")}
                       {field("Price Date", "chemicalPriceDate", "date")}
                       {field("Binder Price ($/kg)", "binderPricePerKg", "number", comp.binderPricePerKg.toString())}
                     </div>
 
-                    {/* Application costs */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {field("Cost/m Low ($)", "estimatedCostPerMeterLow", "number", comp.estimatedCostPerMeterLow.toString())}
                       {field("Cost/m High ($)", "estimatedCostPerMeterHigh", "number", comp.estimatedCostPerMeterHigh.toString())}
@@ -334,22 +325,20 @@ export default function CompetitorPricingAdmin() {
                       {field("Re-treatment Multiplier", "retreatmentCostMultiplier", "number", comp.retreatmentCostMultiplier.toString())}
                     </div>
 
-                    {/* Notes */}
                     <div>
                       <label className="block text-xs font-medium text-slate-500 mb-1">Notes</label>
                       <textarea
                         value={editRow.notes}
                         onChange={(e) => setEditRow({ ...editRow, notes: e.target.value })}
-                        placeholder="Confidence level, distributor details, market conditions..."
+                        placeholder="Confidence level, market conditions, additional context..."
                         rows={2}
-                        className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white text-sm focus:border-[#00b4c3] focus:ring-1 focus:ring-[#00b4c3] outline-none resize-none"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:border-[#00b4c3] focus:ring-1 focus:ring-[#00b4c3] outline-none resize-none"
                       />
                     </div>
 
-                    {/* Guesstimate reference */}
-                    <div className="p-3 bg-slate-700/30 rounded-lg">
-                      <p className="text-xs text-slate-400 mb-1 font-medium">Current Guesstimates (for reference):</p>
-                      <div className="grid grid-cols-4 gap-2 text-xs text-slate-500">
+                    <div className="p-3 bg-white rounded-lg border border-slate-200">
+                      <p className="text-xs text-slate-500 mb-1 font-medium">Current estimates (for reference):</p>
+                      <div className="grid grid-cols-4 gap-2 text-xs text-slate-400">
                         <span>Chemical: ${comp.chemicalPricePerKg}/kg</span>
                         <span>Binder: ${comp.binderPricePerKg}/kg</span>
                         <span>Typical: ${comp.estimatedCostPerMeterTypical}/m</span>
@@ -357,18 +346,17 @@ export default function CompetitorPricingAdmin() {
                       </div>
                     </div>
 
-                    {/* Actions */}
                     <div className="flex items-center gap-3">
                       <button
                         onClick={saveRow}
                         disabled={saving === editRow.competitorId}
                         className="px-5 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 disabled:opacity-50 transition-colors"
                       >
-                        {saving === editRow.competitorId ? "Saving..." : "Save Intelligence"}
+                        {saving === editRow.competitorId ? "Saving..." : "Save Data"}
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="px-5 py-2 text-slate-400 text-sm hover:text-white transition-colors"
+                        className="px-5 py-2 text-slate-500 text-sm hover:text-slate-700 transition-colors"
                       >
                         Cancel
                       </button>
@@ -383,17 +371,17 @@ export default function CompetitorPricingAdmin() {
 
       {/* Summary stats */}
       <div className="mt-8 grid grid-cols-3 gap-4">
-        <div className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50 text-center">
-          <p className="text-2xl font-bold text-emerald-400">{overrides.length}</p>
-          <p className="text-xs text-slate-400 mt-1">Real Intel Entries</p>
+        <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
+          <p className="text-2xl font-bold text-emerald-600">{overrides.length}</p>
+          <p className="text-xs text-slate-500 mt-1">Verified Entries</p>
         </div>
-        <div className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50 text-center">
-          <p className="text-2xl font-bold text-amber-400">{COMPETITORS.length - overrides.length}</p>
-          <p className="text-xs text-slate-400 mt-1">Still Guesstimates</p>
+        <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
+          <p className="text-2xl font-bold text-amber-500">{COMPETITORS.length - overrides.length}</p>
+          <p className="text-xs text-slate-500 mt-1">Estimated</p>
         </div>
-        <div className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50 text-center">
-          <p className="text-2xl font-bold text-white">{COMPETITORS.length}</p>
-          <p className="text-xs text-slate-400 mt-1">Total Competitors</p>
+        <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
+          <p className="text-2xl font-bold text-slate-800">{COMPETITORS.length}</p>
+          <p className="text-xs text-slate-500 mt-1">Total Products Tracked</p>
         </div>
       </div>
     </div>

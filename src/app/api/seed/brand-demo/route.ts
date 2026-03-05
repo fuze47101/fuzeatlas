@@ -21,7 +21,7 @@ export async function POST() {
       brand = await prisma.brand.create({
         data: {
           name: "Acme Clothing Company",
-          pipelineStage: "QUALIFIED",
+          pipelineStage: "BRAND_TESTING",
           customerType: "Enterprise",
           website: "https://acmeclothing.com",
           backgroundInfo: "Leading sportswear and activewear brand with global distribution. Interested in antimicrobial treatment for their performance athletic line and hospitality uniform division.",

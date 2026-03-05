@@ -21,6 +21,79 @@ const ROLE_LABELS: Record<string, string> = {
   PUBLIC: "Public",
 };
 
+interface NavItem {
+  href: string;
+  label: string;
+  icon: string;
+}
+
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+function NavSection({
+  group,
+  pathname,
+  expanded,
+  onToggle,
+}: {
+  group: NavGroup;
+  pathname: string;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  const hasActive = group.items.some(
+    (item) => pathname === item.href || pathname.startsWith(item.href + "/")
+  );
+
+  return (
+    <div>
+      <button
+        onClick={onToggle}
+        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors ${
+          hasActive
+            ? "text-[#00b4c3]"
+            : "text-slate-500 hover:text-slate-300"
+        }`}
+      >
+        <span>{group.label}</span>
+        <svg
+          className={`w-3.5 h-3.5 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {expanded && (
+        <div className="mt-0.5 space-y-0.5">
+          {group.items.map((item) => {
+            const active = pathname === item.href || pathname.startsWith(item.href + "/");
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`
+                  flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all
+                  ${active
+                    ? "bg-[#00b4c3] text-white shadow-lg shadow-[#00b4c3]/30"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  }
+                `}
+              >
+                <span className="text-base">{item.icon}</span>
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -30,48 +103,116 @@ export default function Sidebar() {
 
   const isBrandUser = user?.role === "BRAND_USER";
   const isInternal = !isBrandUser && user?.role !== "FACTORY_USER" && user?.role !== "DISTRIBUTOR_USER" && user?.role !== "PUBLIC";
+  const isAdmin = user?.role === "ADMIN" || user?.role === "EMPLOYEE";
 
-  const NAV = isBrandUser ? [
-    // Brand portal nav — limited view
-    { href: "/dashboard", label: t.nav.dashboard, icon: "📊" },
-    { href: "/brand-portal/fabrics", label: "My Fabrics", icon: "🧵" },
-    { href: "/brand-portal/submissions", label: "Submissions", icon: "📋" },
-    { href: "/brand-portal/tests", label: "Test Results", icon: "🧪" },
-    { href: "/brand-portal/contacts", label: "Contacts", icon: "👥" },
-    { href: "/brand-portal/chat", label: "FUZE AI Chat", icon: "💬" },
-    { href: "/factory-search", label: "Factory Search", icon: "🔍" },
-    { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
-    { href: "/sustainability", label: "Sustainability Impact", icon: "🌍" },
-  ] : [
-    // Internal / admin nav — full access
-    { href: "/dashboard", label: t.nav.dashboard, icon: "📊" },
-    { href: "/brands", label: t.nav.brandPipeline, icon: "🔥" },
-    { href: "/fabrics", label: t.nav.fabrics, icon: "🧵" },
-    { href: "/factories", label: t.nav.factories, icon: "🏭" },
-    { href: "/factory-search", label: "Factory Search", icon: "🔍" },
-    { href: "/tests", label: t.nav.testResults, icon: "🧪" },
-    { href: "/labs", label: t.nav.labDirectory || "Lab Directory", icon: "🔬" },
-    { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
-    { href: "/reports", label: t.nav.weeklySummary || "Weekly Summary", icon: "📈" },
-    { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
-    { href: "/sustainability", label: "Sustainability Impact", icon: "🌍" },
-  ];
+  // ─── Grouped navigation ─────────────────────────
+  // Top-level item (always visible, not in a group)
+  const topItem: NavItem = { href: "/dashboard", label: t.nav.dashboard, icon: "📊" };
 
-  // Revenue pipeline nav — visible to admin, employee, sales roles
-  if (isInternal) {
-    // Insert after dashboard (index 1)
-    NAV.splice(1, 0,
-      { href: "/pipeline", label: "Pipeline", icon: "📊" },
-      { href: "/revenue", label: "Revenue Forecast", icon: "💰" },
-      { href: "/invoices", label: "Invoices", icon: "🧾" },
-    );
+  // Build groups based on role
+  let groups: NavGroup[] = [];
+
+  if (isBrandUser) {
+    groups = [
+      {
+        label: "My Program",
+        items: [
+          { href: "/brand-portal/fabrics", label: "My Fabrics", icon: "🧵" },
+          { href: "/brand-portal/submissions", label: "Submissions", icon: "📋" },
+          { href: "/brand-portal/tests", label: "Test Results", icon: "🧪" },
+          { href: "/brand-portal/contacts", label: "Contacts", icon: "👥" },
+        ],
+      },
+      {
+        label: "Resources",
+        items: [
+          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
+          { href: "/factory-search", label: "Factory Search", icon: "🔍" },
+          { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
+          { href: "/sustainability", label: "Sustainability", icon: "🌍" },
+        ],
+      },
+    ];
+  } else {
+    groups = [
+      {
+        label: "Sales & Pipeline",
+        items: [
+          { href: "/brands", label: t.nav.brandPipeline, icon: "🔥" },
+          ...(isInternal
+            ? [
+                { href: "/pipeline", label: "Pipeline", icon: "📊" },
+                { href: "/revenue", label: "Revenue Forecast", icon: "💰" },
+                { href: "/invoices", label: "Invoices", icon: "🧾" },
+              ]
+            : []),
+        ],
+      },
+      {
+        label: "Products & Testing",
+        items: [
+          { href: "/fabrics", label: t.nav.fabrics, icon: "🧵" },
+          { href: "/factories", label: t.nav.factories, icon: "🏭" },
+          { href: "/factory-search", label: "Factory Search", icon: "🔍" },
+          { href: "/tests", label: t.nav.testResults, icon: "🧪" },
+          { href: "/labs", label: t.nav.labDirectory || "Lab Directory", icon: "🔬" },
+        ],
+      },
+      {
+        label: "Operations",
+        items: [
+          { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
+          { href: "/reports", label: t.nav.weeklySummary || "Weekly Summary", icon: "📈" },
+        ],
+      },
+      {
+        label: "Tools",
+        items: [
+          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
+          { href: "/admin/competitor-pricing", label: "Market Landscape", icon: "📊" },
+          { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
+          { href: "/sustainability", label: "Sustainability", icon: "🌍" },
+        ],
+      },
+    ];
+
+    // Admin group
+    if (isAdmin) {
+      groups.push({
+        label: "Admin",
+        items: [
+          { href: "/settings/users", label: "User Management", icon: "👥" },
+        ],
+      });
+    }
   }
 
-  // Admin-only nav items
-  if (user?.role === "ADMIN" || user?.role === "EMPLOYEE") {
-    NAV.push({ href: "/admin/competitor-pricing", label: "Competitor Intel", icon: "🕵️" });
-    NAV.push({ href: "/settings/users", label: "User Management", icon: "👥" });
-  }
+  // ─── Expanded state: auto-expand group containing active page ─────
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+
+  // Initialize expanded state — expand group with active route, collapse others
+  useEffect(() => {
+    const newState: Record<string, boolean> = {};
+    groups.forEach((g) => {
+      const hasActive = g.items.some(
+        (item) => pathname === item.href || pathname.startsWith(item.href + "/")
+      );
+      // If group has active item, always expand. Otherwise keep current state or default collapsed.
+      if (hasActive) {
+        newState[g.label] = true;
+      } else if (expandedGroups[g.label] !== undefined) {
+        newState[g.label] = expandedGroups[g.label];
+      } else {
+        newState[g.label] = false;
+      }
+    });
+    setExpandedGroups(newState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  const toggleGroup = (label: string) => {
+    setExpandedGroups((prev) => ({ ...prev, [label]: !prev[label] }));
+  };
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
@@ -88,6 +229,8 @@ export default function Sidebar() {
   }, []);
 
   const currentLocale = LOCALES.find(l => l.code === locale) || LOCALES[0];
+
+  const topActive = pathname === topItem.href;
 
   return (
     <>
@@ -107,7 +250,7 @@ export default function Sidebar() {
           </svg>
         </button>
         <FuzeLogo size="sm" layout="horizontal" theme="light" />
-        <div className="w-10" /> {/* spacer for centering */}
+        <div className="w-10" />
       </div>
 
       {/* Mobile overlay */}
@@ -153,25 +296,36 @@ export default function Sidebar() {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
-          {NAV.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(item.href + "/");
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                  ${active
-                    ? "bg-[#00b4c3] text-white shadow-lg shadow-[#00b4c3]/30"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                  }
-                `}
-              >
-                <span className="text-base">{item.icon}</span>
-                {item.label}
-              </Link>
-            );
-          })}
+          {/* Dashboard — always visible at top */}
+          <Link
+            href={topItem.href}
+            className={`
+              flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+              ${topActive
+                ? "bg-[#00b4c3] text-white shadow-lg shadow-[#00b4c3]/30"
+                : "text-slate-300 hover:bg-slate-800 hover:text-white"
+              }
+            `}
+          >
+            <span className="text-base">{topItem.icon}</span>
+            {topItem.label}
+          </Link>
+
+          {/* Divider */}
+          <div className="border-t border-slate-800 my-2" />
+
+          {/* Grouped nav sections */}
+          <div className="space-y-1">
+            {groups.map((group) => (
+              <NavSection
+                key={group.label}
+                group={group}
+                pathname={pathname}
+                expanded={expandedGroups[group.label] ?? false}
+                onToggle={() => toggleGroup(group.label)}
+              />
+            ))}
+          </div>
         </nav>
 
         {/* Language Switcher */}
