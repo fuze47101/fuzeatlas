@@ -107,6 +107,24 @@ export async function GET() {
       _sum: { projectedValue: true },
     });
 
+    // ─── Test Request metrics ─────────────
+    let testRequestStats = { pending: 0, approved: 0, inTesting: 0, total: 0, estimatedCost: 0 };
+    try {
+      const trStats = await prisma.testRequest.groupBy({
+        by: ["status"],
+        _count: { id: true },
+        _sum: { estimatedCost: true },
+      });
+      testRequestStats.total = trStats.reduce((s, r) => s + r._count.id, 0);
+      testRequestStats.pending = trStats.find((r) => r.status === "PENDING_APPROVAL")?._count?.id || 0;
+      testRequestStats.approved = trStats.find((r) => r.status === "APPROVED")?._count?.id || 0;
+      testRequestStats.inTesting = (trStats.find((r) => r.status === "SUBMITTED")?._count?.id || 0) +
+        (trStats.find((r) => r.status === "IN_PROGRESS")?._count?.id || 0);
+      testRequestStats.estimatedCost = trStats.reduce((s, r) => s + (r._sum.estimatedCost || 0), 0);
+    } catch {
+      // TestRequest table may not exist yet
+    }
+
     return NextResponse.json({
       ok: true,
       counts: {
@@ -118,6 +136,7 @@ export async function GET() {
       testTypes: testTypes.map((t) => ({ type: t.testType, count: t._count })),
       recentFabrics,
       recentTests,
+      testRequests: testRequestStats,
       revenue: {
         totalPipeline: Math.round(totalPipeline * 100) / 100,
         weightedForecast: Math.round(weightedForecast * 100) / 100,

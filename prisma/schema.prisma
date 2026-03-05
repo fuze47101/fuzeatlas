@@ -180,6 +180,8 @@ model User {
 
   notes          Note[]
   accessRequest  AccessRequest?
+  testRequestsCreated  TestRequest[] @relation("TestRequestRequester")
+  testRequestsApproved TestRequest[] @relation("TestRequestApprover")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -228,6 +230,7 @@ model Brand {
   invoices    Invoice[]
   notes       Note[]
   users       User[]         @relation("BrandUsers")
+  testRequests TestRequest[] @relation("TestRequestBrand")
   sourceRecords SourceRecord[]
 
   createdAt DateTime @default(now())
@@ -391,6 +394,7 @@ model Lab {
   customerNumber String?
 
   testRuns      TestRun[]
+  testRequests  TestRequest[]
   sourceRecords SourceRecord[]
   services      LabService[]
   documents     Document[]
@@ -488,6 +492,7 @@ model Fabric {
 
   contents    FabricContent[]
   submissions FabricSubmission[]
+  testRequests TestRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -570,6 +575,7 @@ model FabricSubmission {
   raw Json?
 
   testRuns      TestRun[]
+  testRequests  TestRequest[]
   documents     Document[]
   sourceRecords SourceRecord[]
 
@@ -615,8 +621,9 @@ model Project {
   expectedProductionDate DateTime?
   actualProductionDate   DateTime?
 
-  testRuns TestRun[]
-  invoices Invoice[]
+  testRuns     TestRun[]
+  testRequests TestRequest[]
+  invoices     Invoice[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -722,6 +729,7 @@ model TestRun {
 
   documents     Document[]
   sourceRecords SourceRecord[]
+  testRequestLines TestRequestLine[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -835,6 +843,7 @@ model SOW {
   products       SOWProduct[]
   documents      Document[]
   accessRequests AccessRequest[]
+  testRequests   TestRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1000,4 +1009,123 @@ model AccessRequest {
   @@index([status])
   @@index([email])
   @@index([company])
+}
+
+// ─────────────────────────────────────────────
+// TEST REQUESTS & APPROVAL WORKFLOW
+// ─────────────────────────────────────────────
+
+model TestRequest {
+  id String @id @default(cuid())
+
+  // Auto-generated PO number: FUZE-PO-YYYYMMDD-XXXX
+  poNumber      String    @unique
+  poDate        DateTime  @default(now())
+
+  // What we're testing
+  brandId       String?
+  brand         Brand?    @relation("TestRequestBrand", fields: [brandId], references: [id])
+  fabricId      String?
+  fabric        Fabric?   @relation(fields: [fabricId], references: [id])
+  submissionId  String?
+  submission    FabricSubmission? @relation(fields: [submissionId], references: [id])
+  projectId     String?
+  project       Project?  @relation(fields: [projectId], references: [id])
+  sowId         String?
+  sow           SOW?      @relation(fields: [sowId], references: [id])
+
+  // Where we're sending it
+  labId         String
+  lab           Lab       @relation(fields: [labId], references: [id])
+
+  // Lab tracking
+  labCustomerNumber String?   // Auto-filled from Lab.customerNumber
+  labAccountRef     String?   // Additional reference for lab
+
+  // Fabric identification on the PO
+  fuzeFabricNumber  String?   // e.g. "FUZE-1042"
+  customerFabricCode String?  // brand's code
+  factoryFabricCode  String?  // factory's code
+
+  // Status workflow: DRAFT → PENDING_APPROVAL → APPROVED → SUBMITTED → IN_PROGRESS → RESULTS_RECEIVED → COMPLETE → CANCELLED
+  status        String    @default("DRAFT")
+
+  // Approval
+  requestedById String?
+  requestedBy   User?     @relation("TestRequestRequester", fields: [requestedById], references: [id])
+  requestedAt   DateTime?
+
+  approvedById  String?
+  approvedBy    User?     @relation("TestRequestApprover", fields: [approvedById], references: [id])
+  approvedAt    DateTime?
+  rejectedAt    DateTime?
+  rejectedReason String?
+
+  // Cost tracking
+  estimatedCost Float?    // Sum of line items
+  actualCost    Float?    // After invoice reconciliation
+  currency      String    @default("USD")
+
+  // Priority & scheduling
+  priority      String    @default("NORMAL") // URGENT, HIGH, NORMAL, LOW
+  requestedCompletionDate DateTime?
+  actualCompletionDate    DateTime?
+
+  // Notes & instructions
+  specialInstructions String?  // Instructions for the lab
+  internalNotes       String?  // Internal notes (not sent to lab)
+
+  // Line items
+  lines         TestRequestLine[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status])
+  @@index([brandId])
+  @@index([labId])
+  @@index([fabricId])
+  @@index([projectId])
+  @@index([requestedById])
+  @@index([approvedById])
+  @@index([poDate])
+  @@index([priority])
+}
+
+model TestRequestLine {
+  id String @id @default(cuid())
+
+  testRequestId String
+  testRequest   TestRequest @relation(fields: [testRequestId], references: [id], onDelete: Cascade)
+
+  // Test details
+  testType      String    // ICP, ANTIBACTERIAL, FUNGAL, ODOR, UV, MICROFIBER
+  testMethod    String?   // AATCC 100, ASTM E2149, JIS L 1902, ICP-OES, etc.
+  description   String?   // Additional description or wash count spec
+
+  // Pricing (from LabService or manual)
+  quantity      Int       @default(1)
+  unitPrice     Float?    // USD per test
+  totalPrice    Float?    // quantity × unitPrice
+  rush          Boolean   @default(false)
+  rushPrice     Float?    // Rush surcharge
+
+  // Turnaround
+  estimatedDays Int?      // Expected TAT from lab
+
+  // Status per line
+  status        String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETE, CANCELLED
+
+  // Link back to actual test result when received
+  testRunId     String?
+  testRun       TestRun?  @relation(fields: [testRunId], references: [id])
+
+  notes         String?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([testRequestId])
+  @@index([testRunId])
+  @@index([status])
 }
