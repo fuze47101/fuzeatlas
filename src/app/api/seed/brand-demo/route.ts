@@ -21,13 +21,17 @@ export async function POST() {
       brand = await prisma.brand.create({
         data: {
           name: "Acme Clothing Company",
-          pipelineStage: "BRAND_TESTING",
           customerType: "Enterprise",
           website: "https://acmeclothing.com",
           backgroundInfo: "Leading sportswear and activewear brand with global distribution. Interested in antimicrobial treatment for their performance athletic line and hospitality uniform division.",
           dateOfInitialContact: new Date("2025-09-15"),
         },
       });
+      // Update pipeline stage with raw SQL to avoid Prisma enum cache issues
+      await prisma.$executeRawUnsafe(
+        `UPDATE "Brand" SET "pipelineStage" = 'BRAND_TESTING' WHERE id = $1`,
+        brand.id
+      );
     }
 
     // ─── 2. Create or find the brand user ─────────────────────────
