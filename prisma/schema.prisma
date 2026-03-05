@@ -185,6 +185,7 @@ model User {
   notifications Notification[] @relation("UserNotifications")
   auditLogs AuditLog[] @relation("UserAuditLogs")
   passwordResets PasswordResetToken[] @relation("PasswordResets")
+  organizedMeetings Meeting[] @relation("MeetingOrganizer")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -234,6 +235,7 @@ model Brand {
   notes       Note[]
   users       User[]         @relation("BrandUsers")
   testRequests TestRequest[] @relation("TestRequestBrand")
+  meetings     Meeting[]      @relation("MeetingBrand")
   sourceRecords SourceRecord[]
   engagement BrandEngagement? @relation("BrandEngagement")
 
@@ -631,6 +633,7 @@ model Project {
   testRuns     TestRun[]
   testRequests TestRequest[]
   invoices     Invoice[]
+  meetings     Meeting[] @relation("MeetingProject")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1393,4 +1396,52 @@ model BrandEngagement {
 
   @@index([overallScore])
   @@index([engagementTrend])
+}
+
+// ─────────────────────────────────────────────
+// MEETINGS / CALENDAR
+// ─────────────────────────────────────────────
+
+model Meeting {
+  id String @id @default(cuid())
+
+  title       String
+  description String?
+  meetingType String    @default("INTERNAL")   // INTERNAL, BRAND_PRESENTATION, TESTING_REVIEW, FACTORY_KICKOFF, PRODUCTION_REVIEW, SOW_REVIEW, CUSTOM
+
+  // Schedule
+  startTime   DateTime
+  endTime     DateTime
+  timezone    String    @default("Asia/Taipei")
+  location    String?                           // Physical location or "Microsoft Teams" / "Zoom"
+  teamsLink   String?                           // Auto-generated Teams deep link
+  calendarUrl String?                           // .ics download URL
+
+  // Relations
+  brandId   String?
+  brand     Brand?   @relation("MeetingBrand", fields: [brandId], references: [id])
+  projectId String?
+  project   Project? @relation("MeetingProject", fields: [projectId], references: [id])
+
+  // Pipeline trigger
+  pipelineStage String?                         // Which stage triggered this meeting
+  autoScheduled Boolean @default(false)         // Was this auto-created by pipeline movement?
+
+  // Organizer & attendees stored as JSON
+  organizerId String?
+  organizer   User?    @relation("MeetingOrganizer", fields: [organizerId], references: [id])
+  attendees   Json?                             // [{name, email, role}]
+
+  status    String   @default("SCHEDULED")      // SCHEDULED, COMPLETED, CANCELLED, RESCHEDULED
+  notes     String?                             // Post-meeting notes
+  outcome   String?                             // Meeting outcome summary
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([startTime])
+  @@index([brandId])
+  @@index([projectId])
+  @@index([status])
+  @@index([meetingType])
 }

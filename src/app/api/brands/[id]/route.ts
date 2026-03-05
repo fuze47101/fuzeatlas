@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { autoScheduleMeeting } from "@/app/api/meetings/route";
 
 const prisma = new PrismaClient();
 
@@ -57,6 +58,16 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
       dateOfInitialContact, presentationDate,
     } = body;
 
+    // Check if pipelineStage is changing (for auto-scheduling)
+    let oldStage: string | null = null;
+    if (pipelineStage !== undefined) {
+      const current = await prisma.brand.findUnique({
+        where: { id: params.id },
+        select: { pipelineStage: true },
+      });
+      oldStage = current?.pipelineStage || null;
+    }
+
     const brand = await prisma.brand.update({
       where: { id: params.id },
       data: {
@@ -77,7 +88,22 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
       },
     });
 
-    return NextResponse.json({ ok: true, brand });
+    // Auto-schedule meeting when pipeline stage changes
+    let autoMeeting = null;
+    if (pipelineStage && pipelineStage !== oldStage) {
+      const userId = req.headers.get("x-user-id") || "";
+      try {
+        autoMeeting = await autoScheduleMeeting({
+          brandId: params.id,
+          pipelineStage,
+          organizerId: userId,
+        });
+      } catch (e) {
+        console.warn("Auto-schedule meeting skipped:", e);
+      }
+    }
+
+    return NextResponse.json({ ok: true, brand, autoMeeting });
   } catch (e: any) {
     console.error("Brand update error:", e);
     if (e.code === "P2002") {
