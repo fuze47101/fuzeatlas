@@ -12,12 +12,13 @@ function num(n: number, digits = 4) {
   return n.toLocaleString(undefined, { maximumFractionDigits: digits });
 }
 
-// FUZE application tiers — each tier maps to a wash durability target for apples-to-apples comparison
+// FUZE application tiers — permanent integration at different concentration levels
+// Internal: dose drives pricing math. Customer-facing: tier name only, no mg references.
 const FUZE_TIERS = [
-  { id: "F1", name: "Full Spectrum Integration", dose: 1.0, washes: 100, color: "from-emerald-500 to-emerald-600", desc: "99.99% antimicrobial · 100+ washes · EPA certified lifetime" },
-  { id: "F2", name: "Advanced Integration", dose: 0.75, washes: 75, color: "from-teal-500 to-teal-600", desc: "99.99% antimicrobial · 75+ washes · High durability" },
-  { id: "F3", name: "Core Integration", dose: 0.5, washes: 50, color: "from-cyan-500 to-cyan-600", desc: "99.99% antimicrobial · 50+ washes · Cost-optimized" },
-  { id: "F4", name: "Foundation Integration", dose: 0.25, washes: 25, color: "from-sky-500 to-sky-600", desc: "Effective antimicrobial · 25+ washes · Entry level" },
+  { id: "F1", name: "Full Spectrum", dose: 1.0, washes: 100, color: "from-emerald-500 to-emerald-600", desc: "Maximum particle density · Passes all test standards · Full ancillary benefits (UV, wicking, cooling)" },
+  { id: "F2", name: "Advanced Performance", dose: 0.75, washes: 75, color: "from-teal-500 to-teal-600", desc: "High particle density · AATCC 100 & ASTM E2149 compatible · Enhanced fabric performance" },
+  { id: "F3", name: "Core Performance", dose: 0.5, washes: 50, color: "from-cyan-500 to-cyan-600", desc: "Balanced particle density · Optimized for ASTM E2149 contact testing · Cost-efficient integration" },
+  { id: "F4", name: "Essential Protection", dose: 0.25, washes: 25, color: "from-sky-500 to-sky-600", desc: "Permanent antimicrobial · Ideal for cotton-rich blends · ASTM E2149 contact testing" },
 ] as const;
 
 function Gradebadge({ grade, score }: { grade: string; score: number }) {
@@ -201,9 +202,8 @@ export default function PricingPage() {
                       <span className={`inline-block w-8 h-8 rounded-lg bg-gradient-to-br ${tier.color} text-white text-xs font-black flex items-center justify-center shadow-sm`}>
                         {tier.id}
                       </span>
-                      <span className="text-lg font-bold text-slate-800">{tier.dose} mg</span>
+                      <span className="text-sm font-bold text-slate-800">{tier.name}</span>
                     </div>
-                    <div className="text-xs font-semibold text-slate-700 leading-tight">{tier.name}</div>
                     <div className="text-[10px] text-slate-400 mt-1 leading-snug">{tier.desc}</div>
                     {selected && (
                       <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#00b4c3] flex items-center justify-center">
@@ -275,7 +275,7 @@ export default function PricingPage() {
         {/* Quote Output */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
           <h2 className="text-lg font-semibold text-slate-800 mb-1">FUZE Quote</h2>
-          <div className="text-xs text-slate-500 mb-4">{FUZE_TIERS.find(t => t.dose === dose)?.id || "Custom"} — {FUZE_TIERS.find(t => t.dose === dose)?.name || `${dose} mg/kg`} · {dose} mg/kg</div>
+          <div className="text-xs text-slate-500 mb-4">{FUZE_TIERS.find(t => t.dose === dose)?.id || "Custom"} — {FUZE_TIERS.find(t => t.dose === dose)?.name || "Custom Tier"}</div>
           <div className="bg-gradient-to-br from-[#00b4c3]/5 to-[#009ba8]/5 rounded-xl border border-[#00b4c3]/20 p-5 mb-4">
             <div className="text-xs text-slate-500 mb-1">Total Quoted Cost</div>
             <div className="text-3xl font-bold text-slate-900">{money(outputs.totalCostPerLinearMeter, currency, fx)}<span className="text-sm font-normal text-slate-500"> /m</span></div>
@@ -285,7 +285,7 @@ export default function PricingPage() {
           </div>
 
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between"><span className="text-slate-500">{FUZE_TIERS.find(t => t.dose === dose)?.id || "FUZE"} cost</span><span className="font-medium">{money(outputs.fuzeCostPerLinearMeter, currency, fx)}/m</span></div>
+            <div className="flex justify-between"><span className="text-slate-500">FUZE {FUZE_TIERS.find(t => t.dose === dose)?.id || ""} cost</span><span className="font-medium">{money(outputs.fuzeCostPerLinearMeter, currency, fx)}/m</span></div>
             <div className="flex justify-between"><span className="text-slate-500">Adders</span><span className="font-medium">{money(outputs.addersPerLinearMeter, currency, fx)}/m</span></div>
             <div className="flex justify-between"><span className="text-slate-500">Fabric weight</span><span className="font-medium">{num(outputs.kgPerLinearMeter, 4)} kg/m</span></div>
             <div className="flex justify-between"><span className="text-slate-500">Stock/meter</span><span className="font-medium">{num(outputs.litersStockPerLinearMeter, 6)} L</span></div>
@@ -302,14 +302,14 @@ export default function PricingPage() {
           <div className="mt-4 p-3 bg-slate-50 rounded-lg text-xs text-slate-500">
             {(() => {
               const tier = FUZE_TIERS.find(t => t.dose === dose);
-              if (!tier) return <><span className="font-semibold text-slate-600">Custom dose:</span> {dose} mg/kg</>;
+              if (!tier) return <><span className="font-semibold text-slate-600">Custom tier</span></>;
               return <><span className={`font-semibold ${
                 tier.id === "F1" ? "text-emerald-600" : tier.id === "F2" ? "text-teal-600" : tier.id === "F3" ? "text-cyan-600" : "text-sky-600"
-              }`}>{tier.id} — {tier.name}:</span> {tier.desc}</>;
+              }`}>{tier.id} — {tier.name}:</span> {tier.desc} · Permanent attachment — applied once, lasts the life of the textile.</>;
             })()}
           </div>
 
-          <div className="mt-3 text-[10px] text-slate-400">FUZE stock: 30 ppm · Bottle: 19 L</div>
+          <div className="mt-3 text-[10px] text-slate-400">FUZE stock concentration: 30 ppm · Bottle: 19 L</div>
         </div>
       </div>
 
@@ -338,9 +338,9 @@ export default function PricingPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Wash Target (locked to tier)</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Competitor Comparison Benchmark</label>
             <div className="h-10 rounded-lg bg-slate-50 border border-slate-200 px-3 flex items-center text-sm font-medium text-slate-700">
-              {activeTier.id} = {targetWashes} washes — each tier maps to its rated durability for apples-to-apples comparison
+              FUZE {activeTier.id} — Permanent integration vs competitor re-application cycles
             </div>
           </div>
         </div>
@@ -353,14 +353,14 @@ export default function PricingPage() {
             <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl border border-slate-200 p-6">
               <h3 className="text-base font-bold text-slate-800 mb-1">True Cost Comparison: FUZE vs {competitor.product}</h3>
               <p className="text-xs text-slate-500 mb-4">
-                &ldquo;I pay {money(competitor.estimatedCostPerMeterTypical, currency, fx)}/m for {competitor.product}&rdquo; — but that only covers {competitor.maxWashClaim} washes.
-                Here&apos;s what it <span className="font-semibold">actually costs</span> to match FUZE at each durability level.
+                &ldquo;I pay {money(competitor.estimatedCostPerMeterTypical, currency, fx)}/m for {competitor.product}&rdquo; — but that requires re-application as it leaches out.
+                Here&apos;s what it <span className="font-semibold">actually costs</span> compared to FUZE&apos;s permanent, one-time application.
               </p>
 
               {/* Table header */}
               <div className="grid grid-cols-7 gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider pb-2 border-b border-slate-200 mb-1">
                 <div className="col-span-1">Tier</div>
-                <div className="col-span-1 text-right">Washes</div>
+                <div className="col-span-1 text-right">Benchmark</div>
                 <div className="col-span-1 text-right">FUZE Cost</div>
                 <div className="col-span-1 text-center">{competitor.product.split(" ")[0]} Apps</div>
                 <div className="col-span-1 text-right">{competitor.product.split(" ")[0]} Cost</div>
@@ -385,7 +385,6 @@ export default function PricingPage() {
                         </span>
                         <div className="hidden md:block">
                           <div className="text-xs font-semibold text-slate-700 leading-tight">{tier.name}</div>
-                          <div className="text-[10px] text-slate-400">{tier.dose} mg/kg</div>
                         </div>
                       </div>
                     </div>
@@ -416,7 +415,7 @@ export default function PricingPage() {
                       ) : (
                         <>
                           <div className="font-bold text-amber-600">{money(Math.abs(cc.fuzeSavingsPerMeter), currency, fx)}</div>
-                          <div className="text-[10px] text-amber-500">premium for lifetime</div>
+                          <div className="text-[10px] text-amber-500">premium for permanent</div>
                         </>
                       )}
                     </div>
@@ -435,10 +434,10 @@ export default function PricingPage() {
               <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                 <div className="text-xs font-semibold text-amber-800 mb-1">Why this matters</div>
                 <p className="text-xs text-amber-700">
-                  {competitor.product} only lasts {competitor.maxWashClaim} washes.
-                  {competitor.maxWashClaim < 100 && (<> To reach 100 washes, a factory would need to treat the fabric {Math.ceil(100 / competitor.maxWashClaim)} separate times — each re-treatment
-                  adds cost, binder, curing energy, and more leachable chemistry. </>)}
-                  FUZE is applied once and lasts the lifetime of the textile. When you compare actual cost-to-performance, FUZE is the clear winner.
+                  {competitor.product} requires re-application because it leaches out over time.
+                  {competitor.maxWashClaim < 100 && (<> To maintain antimicrobial performance long-term, a factory would need to treat the fabric {Math.ceil(100 / competitor.maxWashClaim)} separate times — each re-treatment
+                  adds cost, binder, curing energy, and more leachable chemistry into waterways. </>)}
+                  FUZE attaches permanently to the fiber at the molecular level. One application, one cost, lifetime performance.
                 </p>
               </div>
             </div>
@@ -450,13 +449,13 @@ export default function PricingPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-red-50/50 border border-red-200/50 rounded-xl p-4">
                     <div className="text-xs font-semibold text-red-800/60 uppercase tracking-wider mb-2">
-                      {competitor.product} — to reach {targetWashes} washes
+                      {competitor.product} — Requires Re-Application
                     </div>
                     <div className="space-y-1.5 text-sm">
                       <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">{competitor.chemistryLabel}</span></div>
                       <div className="flex justify-between"><span className="text-slate-500">Est. chemical price</span><span className="font-medium text-slate-700">${competitor.chemicalPricePerKg}/kg</span></div>
                       <div className="flex justify-between"><span className="text-slate-500">Single app dosage</span><span className="font-medium text-slate-700">{competitor.dosageTypical} ppm</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Max per application</span><span className="font-medium text-red-600">{competitor.maxWashClaim} washes</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Durability claim</span><span className="font-medium text-red-600">{competitor.maxWashClaim} wash cycles before re-treatment</span></div>
                       <div className="flex justify-between">
                         <span className="text-slate-500">Applications needed</span>
                         <span className="font-bold text-red-600">{cc?.competitorApplicationsNeeded || 1}× treatments</span>
@@ -488,9 +487,9 @@ export default function PricingPage() {
                     <div className="text-xs font-semibold text-emerald-800/60 uppercase tracking-wider mb-2">FUZE {activeTier.id} — {activeTier.name}</div>
                     <div className="space-y-1.5 text-sm">
                       <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">Silver Allotrope (Non-ionic)</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Dosage</span><span className="font-medium text-emerald-600">{dose} mg/kg ({(competitor.dosageTypical / dose).toFixed(0)}× less)</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Wash durability</span><span className="font-medium text-emerald-600">Lifetime (100+) — EPA verified</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Applications needed</span><span className="font-bold text-emerald-600">1× (lifetime)</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Application</span><span className="font-medium text-emerald-600">Single permanent integration</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Attachment</span><span className="font-medium text-emerald-600">Permanent — EPA verified · Lasts life of textile</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Re-treatments needed</span><span className="font-bold text-emerald-600">None — applied once</span></div>
                       <div className="border-t border-emerald-200/50 my-1 pt-1" />
                       <div className="text-[10px] font-semibold text-emerald-700/60 uppercase tracking-wider">No Binder Required</div>
                       <div className="flex justify-between"><span className="text-slate-500">Binder type</span><span className="font-medium text-emerald-600">None — No additive needed</span></div>
@@ -517,7 +516,7 @@ export default function PricingPage() {
                 <div>
                   <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Environmental Impact Score</div>
                   <div className="text-xl font-bold mt-1">FUZE vs {competitor.product}</div>
-                  <div className="text-sm text-slate-400 mt-0.5">Per linear meter of fabric · {targetWashes} wash lifecycle</div>
+                  <div className="text-sm text-slate-400 mt-0.5">Per linear meter of fabric · Full product lifecycle</div>
                 </div>
                 <Gradebadge grade={envScore.compositeGrade} score={envScore.compositeScore} />
               </div>
