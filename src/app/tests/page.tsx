@@ -21,6 +21,7 @@ interface TestRun {
   hasAb: boolean;
   hasFungal: boolean;
   hasOdor: boolean;
+  brandVisible?: boolean;
 }
 
 interface TestData {
@@ -67,6 +68,49 @@ export default function TestsPage() {
   const [editForm, setEditForm] = useState<Record<string, any>>({});
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
+
+  // Batch stamp selection
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [batchStamping, setBatchStamping] = useState(false);
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const selectAll = () => {
+    if (!filtered) return;
+    if (selectedIds.size === filtered.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filtered.map((r) => r.id)));
+    }
+  };
+
+  const batchStamp = async (visible: boolean) => {
+    if (selectedIds.size === 0) return;
+    setBatchStamping(true);
+    try {
+      const res = await fetch("/api/tests/batch-stamp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ testRunIds: [...selectedIds], visible }),
+      });
+      const d = await res.json();
+      if (d.ok) {
+        setSelectedIds(new Set());
+        loadData(filterType, filterProject);
+      }
+    } catch (e) {
+      console.error("Batch stamp error:", e);
+    } finally {
+      setBatchStamping(false);
+    }
+  };
 
   const openEdit = (run: TestRun) => {
     setEditingTest(run);
@@ -247,6 +291,33 @@ export default function TestsPage() {
         )}
       </div>
 
+      {/* Batch stamp toolbar */}
+      {selectedIds.size > 0 && (
+        <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-[#00b4c3]/10 border border-[#00b4c3]/30 rounded-xl">
+          <span className="text-sm font-medium text-[#00b4c3]">{selectedIds.size} selected</span>
+          <button
+            onClick={() => batchStamp(true)}
+            disabled={batchStamping}
+            className="px-3 py-1.5 text-xs font-semibold bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa] disabled:opacity-50 transition-colors"
+          >
+            {batchStamping ? "Stamping..." : "✓ Stamp for Brand Portal"}
+          </button>
+          <button
+            onClick={() => batchStamp(false)}
+            disabled={batchStamping}
+            className="px-3 py-1.5 text-xs font-semibold bg-white text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-colors"
+          >
+            Unstamp Selected
+          </button>
+          <button
+            onClick={() => setSelectedIds(new Set())}
+            className="ml-auto text-xs text-slate-500 hover:text-slate-700"
+          >
+            Clear
+          </button>
+        </div>
+      )}
+
       {/* Table — responsive: cards on mobile, table on desktop */}
       {/* Mobile: card list */}
       <div className="sm:hidden space-y-3">
@@ -301,6 +372,14 @@ export default function TestsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
+                <th className="px-3 py-3 w-10">
+                  <input
+                    type="checkbox"
+                    checked={filtered ? selectedIds.size === filtered.length && filtered.length > 0 : false}
+                    onChange={selectAll}
+                    className="w-4 h-4 rounded border-slate-300 text-[#00b4c3] focus:ring-[#00b4c3]"
+                  />
+                </th>
                 <th className="text-left px-4 py-3 font-medium text-slate-600">{t.common.type}</th>
                 <th className="text-left px-4 py-3 font-medium text-slate-600">{t.tests.testReport}</th>
                 <th className="text-left px-4 py-3 font-medium text-slate-600">{t.tests.lab}</th>
@@ -317,11 +396,26 @@ export default function TestsPage() {
               {filtered?.map((run) => {
                 const colors = TYPE_COLORS[run.testType] || TYPE_COLORS.OTHER;
                 return (
-                  <tr key={run.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onClick={() => window.location.href = `/tests/${run.id}`}>
+                  <tr key={run.id} className={`border-b border-slate-100 hover:bg-slate-50 cursor-pointer ${selectedIds.has(run.id) ? "bg-[#00b4c3]/5" : ""}`} onClick={() => window.location.href = `/tests/${run.id}`}>
+                    <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(run.id)}
+                        onChange={() => toggleSelect(run.id)}
+                        className="w-4 h-4 rounded border-slate-300 text-[#00b4c3] focus:ring-[#00b4c3]"
+                      />
+                    </td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}>
-                        {run.testType}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}>
+                          {run.testType}
+                        </span>
+                        {run.brandVisible && (
+                          <span className="px-1.5 py-0.5 bg-[#00b4c3]/10 text-[#00b4c3] text-[10px] font-bold rounded" title="Visible to brand portal">
+                            BP
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-slate-900 font-medium">{run.testReportNumber || "—"}</td>
                     <td className="px-4 py-3 text-slate-600">{run.lab || "—"}</td>

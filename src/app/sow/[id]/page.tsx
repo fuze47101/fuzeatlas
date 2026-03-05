@@ -64,6 +64,13 @@ export default function SOWDetailPage() {
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
+          <a href={`/api/sow/${id}/pdf`} target="_blank" rel="noopener noreferrer"
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-600 text-white hover:bg-slate-700 flex items-center gap-1.5">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+            Download PDF
+          </a>
           <button onClick={() => window.open(`/sow/${id}/print`, "_blank")}
             className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-white hover:bg-slate-900">
             {t.sow.printPdf}
