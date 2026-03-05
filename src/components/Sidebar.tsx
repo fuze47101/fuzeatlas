@@ -182,6 +182,7 @@ export default function Sidebar() {
         label: "Admin",
         items: [
           { href: "/settings/users", label: "User Management", icon: "👥" },
+          { href: "/settings/access-requests", label: "Access Requests", icon: "📩" },
         ],
       });
     }

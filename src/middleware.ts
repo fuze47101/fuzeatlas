@@ -8,7 +8,7 @@ const JWT_SECRET = new TextEncoder().encode(
 const COOKIE_NAME = "fuze-session";
 
 // Routes that don't require authentication
-const PUBLIC_PATHS = ["/login", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check"];
+const PUBLIC_PATHS = ["/login", "/request-access", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/access-requests"];
 
 // Static file patterns to skip
 const STATIC_PATTERNS = [

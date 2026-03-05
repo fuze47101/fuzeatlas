@@ -178,6 +178,17 @@ function LoginForm() {
               This creates the first admin account. You can add more users later from Settings.
             </p>
           )}
+
+          {!isSetup && (
+            <div className="mt-4 pt-4 border-t border-slate-100 text-center">
+              <p className="text-xs text-slate-400">
+                Brand partner?{" "}
+                <a href="/request-access" className="text-[#00b4c3] hover:underline font-medium">
+                  Request portal access
+                </a>
+              </p>
+            </div>
+          )}
         </div>
 
         <p className="text-center mt-6 text-xs text-slate-500">
