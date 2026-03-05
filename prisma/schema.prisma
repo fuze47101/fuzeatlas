@@ -54,6 +54,7 @@ enum DocKind {
   IMAGE
   SUBMISSION_DOC
   SOW_DOC
+  LAB_FORM
   OTHER
 }
 
@@ -385,14 +386,45 @@ model Lab {
 
   raw Json?
 
+  // Customer account number at this lab
+  customerNumber String?
+
   testRuns      TestRun[]
   sourceRecords SourceRecord[]
+  services      LabService[]
+  documents     Document[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
   @@index([country])
   @@index([icpApproved])
+}
+
+// ─────────────────────────────────────────────
+// LAB SERVICES & PRICING
+// ─────────────────────────────────────────────
+
+model LabService {
+  id    String @id @default(cuid())
+  labId String
+  lab   Lab    @relation(fields: [labId], references: [id], onDelete: Cascade)
+
+  testType      String   // "ICP", "ANTIBACTERIAL", "FUNGAL", "ODOR", "UV", "MICROFIBER", etc.
+  testMethod    String?  // "AATCC 100", "ASTM E2149", "JIS L 1902", "ICP-OES", etc.
+  description   String?  // e.g. "Antibacterial - AATCC 100 (S. aureus + K. pneumoniae)"
+  priceUSD      Float?   // Our negotiated price per test
+  listPriceUSD  Float?   // Lab's list price (before discount)
+  turnaroundDays Int?    // Standard turnaround in business days
+  rushPriceUSD  Float?   // Rush/expedited price
+  rushDays      Int?     // Rush turnaround days
+  notes         String?  // Special conditions, minimum qty, etc.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([labId, testType, testMethod])
+  @@index([labId])
 }
 
 // ─────────────────────────────────────────────
@@ -842,10 +874,12 @@ model Document {
   submissionId String?
   testRunId    String?
   sowId        String?
+  labId        String?
 
   submission FabricSubmission? @relation(fields: [submissionId], references: [id])
   testRun    TestRun?          @relation(fields: [testRunId], references: [id])
   sow        SOW?              @relation(fields: [sowId], references: [id])
+  lab        Lab?              @relation(fields: [labId], references: [id])
 
   raw Json?
 
