@@ -29,7 +29,7 @@ export default function BrandPortalTestsPage() {
           setBrand(j.brand);
           // Now fetch tests filtered by brand submissions
           const submissionIds = j.submissions.map((s: any) => s.id);
-          return fetch(`/api/tests?brandId=${j.brand.id}`);
+          return fetch(`/api/tests?brandId=${j.brand.id}&brandVisible=true`);
         }
         throw new Error(j.error || "Failed to load");
       })

@@ -722,6 +722,11 @@ model TestRun {
   aiReviewDate  DateTime?
   aiReviewNotes String?        // Human-editable notes from AI flags
 
+  // Brand visibility: only "stamped" tests visible to brand users
+  brandVisible      Boolean  @default(false)
+  brandApprovedById String?
+  brandApprovedAt   DateTime?
+
   icpResult    IcpResult?
   abResult     AntibacterialResult?
   fungalResult FungalResult?

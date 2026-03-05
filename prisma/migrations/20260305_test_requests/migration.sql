@@ -89,3 +89,8 @@ CREATE INDEX IF NOT EXISTS "TestRequestLine_status_idx" ON "TestRequestLine"("st
 -- Foreign keys for TestRequestLine
 ALTER TABLE "TestRequestLine" ADD CONSTRAINT "TestRequestLine_testRequestId_fkey" FOREIGN KEY ("testRequestId") REFERENCES "TestRequest"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "TestRequestLine" ADD CONSTRAINT "TestRequestLine_testRunId_fkey" FOREIGN KEY ("testRunId") REFERENCES "TestRun"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- Add brand visibility stamp to TestRun
+ALTER TABLE "TestRun" ADD COLUMN IF NOT EXISTS "brandVisible" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "TestRun" ADD COLUMN IF NOT EXISTS "brandApprovedById" TEXT;
+ALTER TABLE "TestRun" ADD COLUMN IF NOT EXISTS "brandApprovedAt" TIMESTAMP(3);

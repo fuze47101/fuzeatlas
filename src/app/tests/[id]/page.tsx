@@ -106,6 +106,8 @@ interface TestRun {
   fungalResult?: { writtenResult?: string; pass?: boolean };
   odorResult?: { testedOdor?: string; result?: string; pass?: boolean };
   documents?: Document[];
+  brandVisible?: boolean;
+  brandApprovedAt?: string;
 }
 
 interface ApiResponse {
@@ -200,6 +202,39 @@ export default function TestDetailPage() {
         <span className={`px-3 py-1 rounded-full text-sm font-medium ${colors.bg} ${colors.text}`}>
           {test.testType}
         </span>
+
+        {/* Brand Visibility Stamp */}
+        <div className="ml-auto">
+          {test.brandVisible ? (
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold flex items-center gap-1.5">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                Approved for Brand Portal
+              </span>
+              <button
+                onClick={() => {
+                  fetch(`/api/tests/${test.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ brandVisible: false }) })
+                    .then(r => r.json()).then(d => { if (d.ok) setTest({ ...test, brandVisible: false, brandApprovedAt: undefined }); });
+                }}
+                className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                title="Remove from brand portal"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                fetch(`/api/tests/${test.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ brandVisible: true }) })
+                  .then(r => r.json()).then(d => { if (d.ok) setTest({ ...test, brandVisible: true, brandApprovedAt: new Date().toISOString() }); });
+              }}
+              className="px-4 py-1.5 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold hover:bg-emerald-100 hover:text-emerald-700 transition-colors flex items-center gap-1.5"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              Stamp for Brand Portal
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Header info */}

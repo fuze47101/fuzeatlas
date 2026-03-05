@@ -15,10 +15,13 @@ export async function GET(request: Request) {
     const brandId = searchParams.get("brandId") || "";
 
     // Build where clause for type + project + brand filter
+    const brandVisible = searchParams.get("brandVisible") || "";
+
     const where: any = {};
     if (filterType) where.testType = filterType;
     if (filterProject) where.projectId = filterProject;
     if (brandId) where.submission = { brandId };
+    if (brandVisible === "true") where.brandVisible = true;
 
     const [
       testRuns,
@@ -82,6 +85,7 @@ export async function GET(request: Request) {
       hasAb: r.abResult != null,
       hasFungal: r.fungalResult != null,
       hasOdor: r.odorResult != null,
+      brandVisible: r.brandVisible || false,
     }));
 
     return NextResponse.json({

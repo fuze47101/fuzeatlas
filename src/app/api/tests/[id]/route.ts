@@ -65,6 +65,8 @@ export async function PATCH(
       fungalWrittenResult, fungalPass,
       // Odor fields
       testedOdor, odorResult, odorPass,
+      // Brand visibility
+      brandVisible,
     } = body;
 
     // Verify test exists
@@ -101,6 +103,20 @@ export async function PATCH(
       }
     }
 
+    // Brand visibility stamp
+    const userId = req.headers.get("x-user-id") || null;
+    const brandVisData: any = {};
+    if (brandVisible !== undefined) {
+      brandVisData.brandVisible = Boolean(brandVisible);
+      if (brandVisible) {
+        brandVisData.brandApprovedById = userId;
+        brandVisData.brandApprovedAt = new Date();
+      } else {
+        brandVisData.brandApprovedById = null;
+        brandVisData.brandApprovedAt = null;
+      }
+    }
+
     // Update core TestRun fields
     const updated = await prisma.testRun.update({
       where: { id },
@@ -111,6 +127,7 @@ export async function PATCH(
         ...(washCount !== undefined && { washCount: washCount ? parseInt(String(washCount), 10) : null }),
         labId,
         testDate: parsedDate,
+        ...brandVisData,
       },
     });
 
