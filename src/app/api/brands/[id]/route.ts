@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { autoScheduleMeeting } from "@/app/api/meetings/route";
+import { autoScheduleMeeting } from "@/lib/meeting-templates";
 
 const prisma = new PrismaClient();
 

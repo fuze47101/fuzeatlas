@@ -184,3 +184,68 @@ export function generateIcsContent(params: {
 
   return ics.join("\r\n");
 }
+
+/**
+ * Auto-schedule a meeting when a brand moves to a new pipeline stage.
+ * This is a standalone function (not in a route file) so it can be imported anywhere.
+ */
+export async function autoScheduleMeeting(params: {
+  brandId: string;
+  projectId?: string;
+  pipelineStage: string;
+  organizerId: string;
+}) {
+  // Dynamic import to avoid circular deps with prisma
+  const { prisma } = await import("@/lib/prisma");
+
+  const template = PIPELINE_MEETING_TEMPLATES[params.pipelineStage];
+  if (!template) return null;
+
+  // Schedule 2 business days from now at 10 AM
+  const startTime = new Date();
+  let daysToAdd = 2;
+  while (daysToAdd > 0) {
+    startTime.setDate(startTime.getDate() + 1);
+    const day = startTime.getDay();
+    if (day !== 0 && day !== 6) daysToAdd--;
+  }
+  startTime.setHours(10, 0, 0, 0);
+
+  const endTime = new Date(startTime);
+  endTime.setMinutes(endTime.getMinutes() + template.durationMinutes);
+
+  // Get brand name for title
+  const brand = await prisma.brand.findUnique({
+    where: { id: params.brandId },
+    select: { name: true },
+  });
+
+  const title = `${brand?.name || "Brand"} — ${template.title}`;
+
+  const teamsLink = generateTeamsLink({
+    title,
+    startTime: startTime.toISOString(),
+    endTime: endTime.toISOString(),
+  });
+
+  const meeting = await prisma.meeting.create({
+    data: {
+      title,
+      description: template.description + "\n\nAgenda:\n" + template.agenda.map((a: string, i: number) => `${i + 1}. ${a}`).join("\n"),
+      meetingType: template.meetingType,
+      startTime,
+      endTime,
+      timezone: "Asia/Taipei",
+      location: "Microsoft Teams",
+      teamsLink,
+      brandId: params.brandId,
+      projectId: params.projectId || null,
+      pipelineStage: params.pipelineStage,
+      autoScheduled: true,
+      organizerId: params.organizerId,
+      status: "SCHEDULED",
+    },
+  });
+
+  return meeting;
+}
