@@ -144,6 +144,7 @@ export default function Sidebar() {
                 { href: "/pipeline", label: "Pipeline", icon: "📊" },
                 { href: "/revenue", label: "Revenue Forecast", icon: "💰" },
                 { href: "/invoices", label: "Invoices", icon: "🧾" },
+                { href: "/brand-engagement", label: "Brand Health", icon: "❤️" },
               ]
             : []),
         ],
@@ -152,6 +153,7 @@ export default function Sidebar() {
         label: "Products & Testing",
         items: [
           { href: "/fabrics", label: t.nav.fabrics, icon: "🧵" },
+          { href: "/recipes", label: "Recipe Library", icon: "📖" },
           { href: "/factories", label: t.nav.factories, icon: "🏭" },
           { href: "/factory-search", label: "Factory Search", icon: "🔍" },
           { href: "/test-requests", label: "Test Requests", icon: "📝" },
@@ -163,6 +165,7 @@ export default function Sidebar() {
         label: "Operations",
         items: [
           { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
+          { href: "/shipments", label: "Sample Tracking", icon: "📦" },
           { href: "/reports", label: t.nav.weeklySummary || "Weekly Summary", icon: "📈" },
         ],
       },
@@ -184,6 +187,8 @@ export default function Sidebar() {
         items: [
           { href: "/settings/users", label: "User Management", icon: "👥" },
           { href: "/settings/access-requests", label: "Access Requests", icon: "📩" },
+          { href: "/settings/exchange-rates", label: "Exchange Rates", icon: "💱" },
+          { href: "/settings/audit-log", label: "Audit Log", icon: "📜" },
         ],
       });
     }

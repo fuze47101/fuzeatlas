@@ -182,6 +182,9 @@ model User {
   accessRequest  AccessRequest?
   testRequestsCreated  TestRequest[] @relation("TestRequestRequester")
   testRequestsApproved TestRequest[] @relation("TestRequestApprover")
+  notifications Notification[] @relation("UserNotifications")
+  auditLogs AuditLog[] @relation("UserAuditLogs")
+  passwordResets PasswordResetToken[] @relation("PasswordResets")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -232,6 +235,7 @@ model Brand {
   users       User[]         @relation("BrandUsers")
   testRequests TestRequest[] @relation("TestRequestBrand")
   sourceRecords SourceRecord[]
+  engagement BrandEngagement? @relation("BrandEngagement")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -398,6 +402,7 @@ model Lab {
   sourceRecords SourceRecord[]
   services      LabService[]
   documents     Document[]
+  shipments SampleShipment[] @relation("LabShipments")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -493,6 +498,7 @@ model Fabric {
   contents    FabricContent[]
   submissions FabricSubmission[]
   testRequests TestRequest[]
+  shipments SampleShipment[] @relation("FabricShipments")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -578,6 +584,7 @@ model FabricSubmission {
   testRequests  TestRequest[]
   documents     Document[]
   sourceRecords SourceRecord[]
+  shipments SampleShipment[] @relation("SubmissionShipments")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1082,6 +1089,7 @@ model TestRequest {
 
   // Line items
   lines         TestRequestLine[]
+  shipments SampleShipment[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -1133,4 +1141,256 @@ model TestRequestLine {
   @@index([testRequestId])
   @@index([testRunId])
   @@index([status])
+}
+
+// ─────────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────────
+
+model Notification {
+  id String @id @default(cuid())
+
+  userId    String
+  user      User     @relation("UserNotifications", fields: [userId], references: [id])
+
+  type      String   // TEST_APPROVED, TEST_RESULTS, ACCESS_REQUEST, PO_STATUS, SOW_UPDATE, BRAND_ACTIVITY, SYSTEM
+  title     String
+  message   String
+  link      String?  // URL to navigate to
+
+  read      Boolean  @default(false)
+  readAt    DateTime?
+
+  metadata  Json?    // Extra context data
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
+  @@index([type])
+}
+
+// ─────────────────────────────────────────────
+// AUDIT LOG
+// ─────────────────────────────────────────────
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  userId    String?
+  user      User?    @relation("UserAuditLogs", fields: [userId], references: [id])
+
+  action    String   // CREATE, UPDATE, DELETE, APPROVE, REJECT, LOGIN, EXPORT, STAMP
+  entity    String   // Brand, Fabric, TestRequest, TestRun, SOW, User, AccessRequest
+  entityId  String?
+
+  description String
+  changes     Json?    // { field: { old: x, new: y } }
+  ipAddress   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────
+// PASSWORD RESET
+// ─────────────────────────────────────────────
+
+model PasswordResetToken {
+  id String @id @default(cuid())
+
+  userId    String
+  user      User    @relation("PasswordResets", fields: [userId], references: [id])
+
+  token     String  @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// SAMPLE SHIPMENTS & TRACKING
+// ─────────────────────────────────────────────
+
+model SampleShipment {
+  id String @id @default(cuid())
+
+  // What's being shipped
+  fabricId      String?
+  fabric        Fabric?  @relation("FabricShipments", fields: [fabricId], references: [id])
+  submissionId  String?
+  submission    FabricSubmission? @relation("SubmissionShipments", fields: [submissionId], references: [id])
+  testRequestId String?
+  testRequest   TestRequest? @relation(fields: [testRequestId], references: [id])
+
+  // Where
+  originName    String?   // "FUZE Lab Shanghai"
+  originAddress String?
+  destinationName    String?  // Lab name or factory
+  destinationAddress String?
+
+  labId         String?
+  lab           Lab?     @relation("LabShipments", fields: [labId], references: [id])
+
+  // Shipping details
+  carrier       String?   // FedEx, DHL, UPS, SF Express, local courier
+  trackingNumber String?
+  shipDate      DateTime?
+  estimatedArrival DateTime?
+  actualArrival   DateTime?
+
+  // Sample details
+  sampleCount   Int       @default(1)
+  sampleType    String?   // "Fabric swatch", "Treated sample", "Washed sample"
+  sampleCondition String? // "Good", "Damaged", "Sealed"
+  weight        Float?    // kg
+
+  // Status: PREPARING → SHIPPED → IN_TRANSIT → DELIVERED → AT_LAB → RETURNED
+  status        String    @default("PREPARING")
+
+  // Chain of custody
+  events        ShipmentEvent[]
+
+  notes         String?
+
+  createdBy     String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+  @@index([trackingNumber])
+  @@index([fabricId])
+  @@index([labId])
+  @@index([testRequestId])
+}
+
+model ShipmentEvent {
+  id String @id @default(cuid())
+
+  shipmentId String
+  shipment   SampleShipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  eventType  String    // CREATED, PICKED_UP, IN_TRANSIT, CUSTOMS, DELIVERED, RECEIVED_AT_LAB, CONDITION_NOTE, RETURNED
+  location   String?
+  handler    String?   // Person name
+  notes      String?
+  photoUrl   String?   // Optional photo of sample condition
+
+  createdAt  DateTime  @default(now())
+
+  @@index([shipmentId])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────
+// FABRIC RECIPE LIBRARY
+// ─────────────────────────────────────────────
+
+model FabricRecipe {
+  id String @id @default(cuid())
+
+  name          String    // "Cotton 180GSM Pad Application F2"
+
+  // Fabric characteristics this recipe applies to
+  fabricType    String?   // "Knit", "Woven", "Nonwoven"
+  fiberContent  String?   // "100% Cotton", "65/35 Poly-Cotton", etc.
+  gsmMin        Float?    // GSM range this recipe works for
+  gsmMax        Float?
+  yarnType      String?
+
+  // Treatment parameters
+  fuzeTier      String?   // F1, F2, F3, F4
+  applicationMethod String? // "Pad", "Exhaust", "Spray", "Foam"
+  padPickupPercent  Float?  // Pad pickup %
+  bathConcentration Float?  // g/L or ppm
+  squeezePressure   Float?  // bar/psi
+  dryingTemp        Float?  // Celsius
+  dryingTime        Float?  // minutes
+  curingTemp        Float?  // Celsius
+  curingTime        Float?  // minutes
+  phRange           String? // "4.5-5.5"
+
+  // Results achieved
+  avgIcpAg      Float?    // Average silver ppm from tests
+  avgReduction  Float?    // Average % reduction from AB tests
+  testMethod    String?   // "AATCC 100", "ASTM E2149"
+  passRate      Float?    // % of tests that passed
+
+  // Linked test runs that validated this recipe
+  validatedTestCount Int @default(0)
+
+  notes         String?
+  active        Boolean   @default(true)
+
+  createdById   String?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([fabricType])
+  @@index([fiberContent])
+  @@index([fuzeTier])
+  @@index([applicationMethod])
+}
+
+// ─────────────────────────────────────────────
+// CURRENCY & EXCHANGE RATES
+// ─────────────────────────────────────────────
+
+model ExchangeRate {
+  id String @id @default(cuid())
+
+  fromCurrency String   // "USD"
+  toCurrency   String   // "CNY"
+  rate         Float    // 1 USD = X CNY
+  source       String?  // "manual", "api", "bank"
+
+  effectiveDate DateTime
+
+  createdAt DateTime @default(now())
+
+  @@unique([fromCurrency, toCurrency, effectiveDate])
+  @@index([fromCurrency, toCurrency])
+  @@index([effectiveDate])
+}
+
+// ─────────────────────────────────────────────
+// BRAND ENGAGEMENT SCORING
+// ─────────────────────────────────────────────
+
+model BrandEngagement {
+  id String @id @default(cuid())
+
+  brandId     String    @unique
+  brand       Brand     @relation("BrandEngagement", fields: [brandId], references: [id])
+
+  // Scores (0-100)
+  overallScore     Int   @default(50)
+  communicationScore Int @default(50)  // Days since last note/contact
+  testingVelocity   Int @default(50)  // Tests completed per month
+  pipelineVelocity  Int @default(50)  // Speed moving through stages
+  paymentScore      Int @default(50)  // Invoice payment timeliness
+  engagementTrend   String @default("STABLE") // RISING, STABLE, DECLINING, AT_RISK
+
+  // Raw metrics
+  daysSinceLastContact Int?
+  testsLast30Days      Int @default(0)
+  testsLast90Days      Int @default(0)
+  avgInvoicePayDays    Float?
+  overdueInvoices      Int @default(0)
+  stageChanges90Days   Int @default(0)
+
+  lastCalculated DateTime @default(now())
+
+  @@index([overallScore])
+  @@index([engagementTrend])
 }
