@@ -62,9 +62,9 @@ export async function POST() {
     if (existingContacts === 0) {
       await prisma.contact.createMany({
         data: [
-          { name: "Sarah Chen", email: "sarah.chen@acmeclothing.com", role: "Product Development Manager", phone: "+1-555-0101", brandId: brand.id, isApprover: false },
-          { name: "James Rodriguez", email: "j.rodriguez@acmeclothing.com", role: "VP of Sourcing", phone: "+1-555-0102", brandId: brand.id, isApprover: true },
-          { name: "Min Liu", email: "min.liu@acmeclothing.com", role: "Quality Assurance Director", phone: "+1-555-0103", brandId: brand.id, isApprover: true },
+          { name: "Sarah Chen", email: "sarah.chen@acmeclothing.com", title: "Product Development Manager", phone: "+1-555-0101", brandId: brand.id },
+          { name: "James Rodriguez", email: "j.rodriguez@acmeclothing.com", title: "VP of Sourcing", phone: "+1-555-0102", brandId: brand.id },
+          { name: "Min Liu", email: "min.liu@acmeclothing.com", title: "Quality Assurance Director", phone: "+1-555-0103", brandId: brand.id },
         ],
       });
     }
