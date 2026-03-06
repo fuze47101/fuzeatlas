@@ -498,6 +498,42 @@ model Fabric {
 
   raw Json?
 
+  // Expanded fields (v2 intake form)
+  endUse           String?    // Product type: t-shirt, athletic, bedding, etc.
+  targetFuzeTier   String?    // F1, F2, F3, F4
+  annualVolume     String?    // Estimated annual volume
+  batchLotNumber   String?    // Manufacturer batch/lot
+  thickness        Float?     // mm
+  shrinkageLength  Float?     // % shrinkage length
+  shrinkageWidth   Float?     // % shrinkage width
+  fabricCategory   String?    // woven, knit, nonwoven
+  knitStitchType   String?    // jersey, rib, interlock, etc.
+  weavePattern     String?    // plain, twill, satin, etc.
+  gauge            String?    // knit gauge
+  threadCountWarp  Int?
+  threadCountWeft  Int?
+
+  // Pretreatment
+  pretreatment     Json?      // Full pretreatment data as JSON
+  fabricPh         Float?     // pH after pretreatment
+
+  // Dyeing
+  dyeApplied       Boolean?
+  dyeStage         String?    // yarn-dyed, piece-dyed, garment-dyed, greige
+  dyeClass         String?    // reactive, disperse, acid, vat, etc.
+  dyeDetails       Json?      // Full dye chemistry as JSON
+
+  // Chemical finishes
+  finishSoftener   Json?      // Softener details (type, ionic charge, concentration, etc.)
+  finishRepellent  Json?      // Water repellent details
+  finishWicking    Json?      // Moisture management details
+  finishWrinkleFree Json?     // Easy-care finish details
+  finishOther      Json?      // Other finishes (flame retardant, UV, anti-static, etc.)
+
+  // Intake metadata
+  intakeFormId     String?    // Reference to uploaded intake form
+  intakeParsedAt   DateTime?  // When the intake form was parsed
+
   contents    FabricContent[]
   submissions FabricSubmission[]
   testRequests TestRequest[]

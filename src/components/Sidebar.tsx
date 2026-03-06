@@ -139,10 +139,10 @@ export default function Sidebar() {
       {
         label: "Sales & Pipeline",
         items: [
-          { href: "/brands", label: t.nav.brandPipeline, icon: "🔥" },
+          { href: "/brands", label: "Brands", icon: "🔥" },
           ...(isInternal
             ? [
-                { href: "/pipeline", label: "Pipeline", icon: "📊" },
+                { href: "/pipeline", label: "Project Flow", icon: "📊" },
                 { href: "/revenue", label: "Revenue Forecast", icon: "💰" },
                 { href: "/invoices", label: "Invoices", icon: "🧾" },
                 { href: "/brand-engagement", label: "Brand Health", icon: "❤️" },
@@ -154,6 +154,7 @@ export default function Sidebar() {
         label: "Products & Testing",
         items: [
           { href: "/fabrics", label: t.nav.fabrics, icon: "🧵" },
+          { href: "/fabrics/intake", label: "Fabric Intake", icon: "📥" },
           { href: "/recipes", label: "Recipe Library", icon: "📖" },
           { href: "/factories", label: t.nav.factories, icon: "🏭" },
           { href: "/factory-search", label: "Factory Search", icon: "🔍" },
