@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { generateTeamsLink } from "@/lib/meeting-templates";
+import { sendBookingNotification, sendBookingConfirmation } from "@/lib/email";
 
 const prisma = new PrismaClient();
 
@@ -114,6 +115,69 @@ export async function POST(req: Request) {
         location: "Microsoft Teams",
       },
     });
+
+    // ── Send email notifications (fire-and-forget) ──
+    const formatDate = (d: Date) =>
+      d.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        timeZone: config?.timezone || "Asia/Taipei",
+      });
+    const formatTime = (d: Date) =>
+      d.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone: config?.timezone || "Asia/Taipei",
+      });
+
+    // Get brand name if applicable
+    let brandName: string | undefined;
+    if (brandId) {
+      const brand = await prisma.brand.findUnique({
+        where: { id: brandId },
+        select: { name: true },
+      });
+      brandName = brand?.name;
+    }
+
+    // Find admin/owner to notify (first ADMIN user, or fallback to SALES_MANAGER)
+    const adminUser = await prisma.user.findFirst({
+      where: { role: "ADMIN", status: "ACTIVE" },
+      select: { email: true },
+    });
+
+    const dateStr = formatDate(startTimeObj);
+    const startStr = formatTime(startTimeObj);
+    const endStr = formatTime(endTimeObj);
+
+    // Notify admin
+    if (adminUser?.email) {
+      sendBookingNotification({
+        adminEmail: adminUser.email,
+        bookerName: user.name || user.email,
+        bookerEmail: user.email,
+        brandName,
+        meetingTitle: meeting.title,
+        date: dateStr,
+        startTime: startStr,
+        endTime: endStr,
+        teamsLink: teamsLink || undefined,
+        meetingId: meeting.id,
+      }).catch((e) => console.warn("Booking notification failed:", e));
+    }
+
+    // Confirm to booker
+    sendBookingConfirmation({
+      bookerEmail: user.email,
+      bookerName: user.name || "there",
+      meetingTitle: meeting.title,
+      date: dateStr,
+      startTime: startStr,
+      endTime: endStr,
+      teamsLink: teamsLink || undefined,
+    }).catch((e) => console.warn("Booking confirmation failed:", e));
 
     return NextResponse.json({ ok: true, meeting });
   } catch (e: any) {
