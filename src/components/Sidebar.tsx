@@ -126,6 +126,7 @@ export default function Sidebar() {
       {
         label: "Resources",
         items: [
+          { href: "/book-meeting", label: "Book Meeting", icon: "📅" },
           { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
           { href: "/factory-search", label: "Factory Search", icon: "🔍" },
           { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
@@ -187,6 +188,7 @@ export default function Sidebar() {
         label: "Admin",
         items: [
           { href: "/settings/users", label: "User Management", icon: "👥" },
+          { href: "/settings/availability", label: "Availability Settings", icon: "⏰" },
           { href: "/settings/access-requests", label: "Access Requests", icon: "📩" },
           { href: "/settings/exchange-rates", label: "Exchange Rates", icon: "💱" },
           { href: "/settings/audit-log", label: "Audit Log", icon: "📜" },

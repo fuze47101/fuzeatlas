@@ -277,6 +277,23 @@ export default function LabDirectoryPage() {
     }
   };
 
+  const handleDocDelete = async (labId: string, docId: string, filename: string) => {
+    if (!confirm(`Delete "${filename}"?`)) return;
+    try {
+      const res = await fetch(`/api/labs/${labId}/documents?docId=${docId}`, { method: "DELETE" });
+      const d = await res.json();
+      if (d.ok) {
+        await loadLabDetail(labId);
+        setSuccess(`Deleted ${filename}`);
+        setTimeout(() => setSuccess(""), 3000);
+      } else {
+        setError(d.error || "Delete failed");
+      }
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
   const capCount = (lab: Lab) =>
     [lab.icpApproved, lab.abApproved, lab.fungalApproved, lab.odorApproved, lab.uvApproved]
       .filter(Boolean).length;
@@ -772,10 +789,18 @@ export default function LabDirectoryPage() {
                                   </p>
                                 </div>
                               </div>
-                              <a href={doc.url || `/api/documents/${doc.id}`} target="_blank" rel="noopener noreferrer"
-                                className="text-xs text-blue-600 hover:text-blue-800 font-medium">
-                                Download
-                              </a>
+                              <div className="flex items-center gap-2">
+                                <a href={doc.url || `/api/documents/${doc.id}`} target="_blank" rel="noopener noreferrer"
+                                  className="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                  Download
+                                </a>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleDocDelete(lab.id, doc.id, doc.filename); }}
+                                  className="text-xs text-red-400 hover:text-red-600 font-medium"
+                                >
+                                  Delete
+                                </button>
+                              </div>
                             </div>
                           ))}
                         </div>

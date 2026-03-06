@@ -42,6 +42,36 @@ export async function POST(
   }
 }
 
+/* ── DELETE /api/labs/[id]/documents?docId=xxx ── delete a lab document ── */
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const { searchParams } = new URL(req.url);
+    const docId = searchParams.get("docId");
+
+    if (!docId) {
+      return NextResponse.json({ ok: false, error: "docId query param required" }, { status: 400 });
+    }
+
+    // Verify doc belongs to this lab
+    const doc = await prisma.document.findFirst({
+      where: { id: docId, labId: id },
+    });
+    if (!doc) {
+      return NextResponse.json({ ok: false, error: "Document not found" }, { status: 404 });
+    }
+
+    await prisma.document.delete({ where: { id: docId } });
+
+    return NextResponse.json({ ok: true });
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
+  }
+}
+
 /* ── GET /api/labs/[id]/documents ── list lab forms ── */
 export async function GET(
   req: Request,

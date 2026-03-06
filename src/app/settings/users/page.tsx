@@ -43,6 +43,7 @@ const STATUS_COLORS: Record<string, string> = {
   ACTIVE: "bg-green-100 text-green-700",
   INACTIVE: "bg-slate-100 text-slate-500",
   PENDING: "bg-amber-100 text-amber-700",
+  SUSPENDED: "bg-red-100 text-red-700",
 };
 
 // Roles that need entity assignment
@@ -78,6 +79,17 @@ export default function UserManagementPage() {
   // Edit form
   const [editRole, setEditRole] = useState("");
   const [editStatus, setEditStatus] = useState("");
+
+  // Action dropdown
+  const [actionDropdownOpen, setActionDropdownOpen] = useState<string | null>(null);
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<"reset-password" | "change-role" | "suspend" | "remove" | null>(null);
+  const [modalUserId, setModalUserId] = useState<string | null>(null);
+  const [modalUser, setModalUser] = useState<UserRecord | null>(null);
+  const [generatedPassword, setGeneratedPassword] = useState("");
+  const [selectedNewRole, setSelectedNewRole] = useState("");
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -168,21 +180,52 @@ export default function UserManagementPage() {
     setSaving(false);
   };
 
-  const handleResetPassword = async (userId: string) => {
-    const newPw = prompt("Enter new password for this user (min 6 chars):");
-    if (!newPw || newPw.length < 6) return;
+  const handleOpenActionModal = (
+    type: "reset-password" | "change-role" | "suspend" | "remove",
+    userId: string,
+    userData: UserRecord
+  ) => {
+    setModalType(type);
+    setModalUserId(userId);
+    setModalUser(userData);
+    setModalOpen(true);
+    setActionDropdownOpen(null);
+
+    if (type === "change-role") {
+      setSelectedNewRole(userData.role);
+    }
+  };
+
+  const handleExecuteAction = async () => {
+    if (!modalUserId || !modalType) return;
+
+    let action = modalType;
+    const body: any = { action };
+
+    if (modalType === "change-role" && selectedNewRole) {
+      body.role = selectedNewRole;
+    }
 
     try {
-      const res = await fetch(`/api/settings/users/${userId}`, {
-        method: "PATCH",
+      const res = await fetch(`/api/users/${modalUserId}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: newPw }),
+        body: JSON.stringify(body),
       });
+
       const data = await res.json();
-      if (data.ok) alert("Password updated successfully");
-      else alert(data.error || "Failed to update password");
-    } catch {
-      alert("Network error");
+      if (data.ok) {
+        if (modalType === "reset-password" && data.generatedPassword) {
+          setGeneratedPassword(data.generatedPassword);
+        } else {
+          setModalOpen(false);
+          fetchUsers();
+        }
+      } else {
+        alert(data.error || "Action failed");
+      }
+    } catch (e: any) {
+      alert(e.message || "Network error");
     }
   };
 
@@ -406,26 +449,64 @@ export default function UserManagementPage() {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-end gap-2">
-                      {currentUser?.role === "ADMIN" && (
-                        <>
+                    <div className="relative">
+                      <button
+                        onClick={() => setActionDropdownOpen(actionDropdownOpen === u.id ? null : u.id)}
+                        className="text-xs px-3 py-1 bg-slate-100 text-slate-600 rounded hover:bg-slate-200"
+                      >
+                        Actions ▼
+                      </button>
+                      {actionDropdownOpen === u.id && (
+                        <div className="absolute right-0 mt-1 w-44 bg-white border border-slate-200 rounded-lg shadow-lg z-50">
                           <button
                             onClick={() => {
                               setEditingId(u.id);
                               setEditRole(u.role);
                               setEditStatus(u.status);
+                              setActionDropdownOpen(null);
                             }}
-                            className="text-xs px-3 py-1 bg-slate-100 text-slate-600 rounded hover:bg-slate-200"
+                            className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 border-b border-slate-100"
                           >
-                            Edit
+                            Edit Role/Status
                           </button>
                           <button
-                            onClick={() => handleResetPassword(u.id)}
-                            className="text-xs px-3 py-1 bg-amber-50 text-amber-600 rounded hover:bg-amber-100"
+                            onClick={() => handleOpenActionModal("reset-password", u.id, u)}
+                            className="block w-full text-left px-4 py-2 text-xs text-amber-600 hover:bg-amber-50 border-b border-slate-100"
                           >
-                            Reset PW
+                            Reset Password
                           </button>
-                        </>
+                          <button
+                            onClick={() => handleOpenActionModal("change-role", u.id, u)}
+                            className="block w-full text-left px-4 py-2 text-xs text-blue-600 hover:bg-blue-50 border-b border-slate-100"
+                          >
+                            Change Role
+                          </button>
+                          {u.status !== "SUSPENDED" && (
+                            <button
+                              onClick={() => handleOpenActionModal("suspend", u.id, u)}
+                              className="block w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 border-b border-slate-100"
+                            >
+                              Suspend
+                            </button>
+                          )}
+                          {u.status === "SUSPENDED" && (
+                            <button
+                              onClick={() => {
+                                handleExecuteAction();
+                                handleOpenActionModal("suspend", u.id, u);
+                              }}
+                              className="block w-full text-left px-4 py-2 text-xs text-green-600 hover:bg-green-50 border-b border-slate-100"
+                            >
+                              Unsuspend (Activate)
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleOpenActionModal("remove", u.id, u)}
+                            className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                          >
+                            Deactivate
+                          </button>
+                        </div>
                       )}
                     </div>
                   )}
@@ -435,6 +516,167 @@ export default function UserManagementPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Action Modal */}
+      {modalOpen && modalType && modalUser && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-200">
+            {/* Reset Password - Show Generated Password */}
+            {modalType === "reset-password" && generatedPassword && (
+              <>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">
+                  Password Reset
+                </h2>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                  <p className="text-xs text-amber-700 uppercase font-semibold mb-2">
+                    New Password Generated
+                  </p>
+                  <code className="block bg-white p-2 rounded border border-amber-200 text-sm font-mono text-slate-900 mb-3">
+                    {generatedPassword}
+                  </code>
+                  <p className="text-xs text-amber-700 mb-2">
+                    Share this password with {modalUser.name}. They can change it after login.
+                  </p>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(generatedPassword);
+                      alert("Password copied to clipboard");
+                    }}
+                    className="text-xs px-3 py-1 bg-amber-100 text-amber-700 rounded hover:bg-amber-200 font-medium"
+                  >
+                    Copy to Clipboard
+                  </button>
+                </div>
+                <button
+                  onClick={() => {
+                    setModalOpen(false);
+                    setGeneratedPassword("");
+                    fetchUsers();
+                  }}
+                  className="w-full px-4 py-2 bg-[#00b4c3] text-white font-medium rounded-lg hover:bg-[#009ba8]"
+                >
+                  Done
+                </button>
+              </>
+            )}
+
+            {/* Reset Password - Confirmation */}
+            {modalType === "reset-password" && !generatedPassword && (
+              <>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">
+                  Reset Password
+                </h2>
+                <p className="text-sm text-slate-600 mb-6">
+                  Generate a new password for <span className="font-semibold">{modalUser.name}</span>?
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setModalOpen(false)}
+                    className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 font-medium rounded-lg hover:bg-slate-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleExecuteAction}
+                    className="flex-1 px-4 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* Change Role */}
+            {modalType === "change-role" && !generatedPassword && (
+              <>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">
+                  Change Role
+                </h2>
+                <p className="text-sm text-slate-600 mb-4">
+                  Current role: <span className="font-semibold">{ROLE_LABELS[modalUser.role] || modalUser.role}</span>
+                </p>
+                <select
+                  value={selectedNewRole}
+                  onChange={(e) => setSelectedNewRole(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mb-6"
+                >
+                  {ROLES.map((r) => (
+                    <option key={r} value={r}>
+                      {ROLE_LABELS[r] || r}
+                    </option>
+                  ))}
+                </select>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setModalOpen(false)}
+                    className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 font-medium rounded-lg hover:bg-slate-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleExecuteAction}
+                    className="flex-1 px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600"
+                  >
+                    Change
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* Suspend */}
+            {modalType === "suspend" && !generatedPassword && (
+              <>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">
+                  Suspend User
+                </h2>
+                <p className="text-sm text-slate-600 mb-6">
+                  Suspend <span className="font-semibold">{modalUser.name}</span>? They will be unable to access the system.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setModalOpen(false)}
+                    className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 font-medium rounded-lg hover:bg-slate-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleExecuteAction}
+                    className="flex-1 px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600"
+                  >
+                    Suspend
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* Remove/Deactivate */}
+            {modalType === "remove" && !generatedPassword && (
+              <>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">
+                  Deactivate User
+                </h2>
+                <p className="text-sm text-slate-600 mb-6">
+                  Deactivate <span className="font-semibold">{modalUser.name}</span>? They will be unable to access the system.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setModalOpen(false)}
+                    className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 font-medium rounded-lg hover:bg-slate-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleExecuteAction}
+                    className="flex-1 px-4 py-2 bg-slate-700 text-white font-medium rounded-lg hover:bg-slate-800"
+                  >
+                    Deactivate
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

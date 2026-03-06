@@ -85,6 +85,7 @@ enum UserStatus {
   ACTIVE
   INACTIVE
   PENDING
+  SUSPENDED
 }
 
 // ─────────────────────────────────────────────
@@ -1444,4 +1445,20 @@ model Meeting {
   @@index([projectId])
   @@index([status])
   @@index([meetingType])
+}
+
+// ─────────────────────────────────────────────
+// AVAILABILITY CONFIG (for self-booking system)
+// ─────────────────────────────────────────────
+
+model AvailabilityConfig {
+  id                    String   @id @default("default")
+  availableDays         Json     @default("[2,4]")                    // 0=Sunday, 2=Tuesday, 4=Thursday, etc
+  startHour             Int      @default(9)                          // 9 = 9 AM
+  endHour               Int      @default(17)                         // 5 PM
+  slotDurationMinutes   Int      @default(60)
+  timezone              String   @default("Asia/Taipei")
+  blockedDates          Json     @default("[]")                       // ISO date strings
+  maxBookingsPerDay     Int      @default(3)
+  updatedAt             DateTime @updatedAt
 }
