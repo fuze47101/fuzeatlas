@@ -380,7 +380,8 @@ export async function GET(req: NextRequest) {
         try {
           approvedTests = await prisma.testRun.findMany({
             where: {
-              submission: { brandId, brandVisible: true },
+              brandVisible: true,
+              submission: { brandId },
             },
             take: 8,
             orderBy: { createdAt: "desc" },
@@ -444,69 +445,43 @@ export async function GET(req: NextRequest) {
       };
     }
 
-    // ─── Revenue Pipeline KPIs ─────────────
-    const allProjects = await prisma.project.findMany({
-      where: { projectedValue: { not: null } },
-      select: { projectedValue: true, actualValue: true, probability: true, stage: true },
-    });
+    // ─── Internal-only data (pipeline, revenue, test requests) ─────────────
+    // Only fetch for internal roles — not for BRAND_USER, FACTORY_USER, DISTRIBUTOR_USER
+    const isInternalRole = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "TESTING_MANAGER", "FABRIC_MANAGER", "FACTORY_MANAGER"].includes(userRole);
 
-    const totalPipeline = allProjects.reduce((s, p) => s + (p.projectedValue || 0), 0);
-    const weightedForecast = allProjects.reduce(
-      (s, p) => s + (p.projectedValue || 0) * ((p.probability || 0) / 100), 0
-    );
-    const actualRevenue = allProjects.reduce((s, p) => s + (p.actualValue || 0), 0);
+    let revenueData: any = null;
+    let testRequestStats: any = null;
 
-    // Invoice metrics
-    const invoiceMetrics = await prisma.invoice.groupBy({
-      by: ["status"],
-      _sum: { amount: true },
-      _count: { id: true },
-    });
-    const invoicePaid = invoiceMetrics.find((m) => m.status === "PAID")?._sum?.amount || 0;
-    const invoiceOutstanding =
-      (invoiceMetrics.find((m) => m.status === "SENT")?._sum?.amount || 0) +
-      (invoiceMetrics.find((m) => m.status === "DRAFT")?._sum?.amount || 0) +
-      (invoiceMetrics.find((m) => m.status === "OVERDUE")?._sum?.amount || 0);
-
-    // Project stage breakdown
-    const projectPipeline = await prisma.project.groupBy({
-      by: ["stage"],
-      _count: { id: true },
-      _sum: { projectedValue: true },
-    });
-
-    // ─── Test Request metrics ─────────────
-    let testRequestStats = { pending: 0, approved: 0, inTesting: 0, complete: 0, total: 0, estimatedCost: 0 };
-    try {
-      const trStats = await prisma.testRequest.groupBy({
-        by: ["status"],
-        _count: { id: true },
-        _sum: { estimatedCost: true },
+    if (isInternalRole) {
+      const allProjects = await prisma.project.findMany({
+        where: { projectedValue: { not: null } },
+        select: { projectedValue: true, actualValue: true, probability: true, stage: true },
       });
-      testRequestStats.total = trStats.reduce((s, r) => s + r._count.id, 0);
-      testRequestStats.pending = trStats.find((r) => r.status === "PENDING_APPROVAL")?._count?.id || 0;
-      testRequestStats.approved = trStats.find((r) => r.status === "APPROVED")?._count?.id || 0;
-      testRequestStats.inTesting = (trStats.find((r) => r.status === "SUBMITTED")?._count?.id || 0) +
-        (trStats.find((r) => r.status === "IN_PROGRESS")?._count?.id || 0);
-      testRequestStats.complete = trStats.find((r) => r.status === "COMPLETE")?._count?.id || 0;
-      testRequestStats.estimatedCost = trStats.reduce((s, r) => s + (r._sum.estimatedCost || 0), 0);
-    } catch {
-      // TestRequest table may not exist yet
-    }
 
-    return NextResponse.json({
-      ok: true,
-      role: userRole,
-      userId,
-      counts: {
-        fabrics, brands, factories, distributors, labs,
-        testRuns, icpResults, antibacterialResults, fungalResults, odorResults,
-        submissions, contacts, users: allUsers, notes,
-      },
-      pipeline,
-      testTypes: testTypes.map((t) => ({ type: t.testType, count: t._count })),
-      testRequests: testRequestStats,
-      revenue: {
+      const totalPipeline = allProjects.reduce((s, p) => s + (p.projectedValue || 0), 0);
+      const weightedForecast = allProjects.reduce(
+        (s, p) => s + (p.projectedValue || 0) * ((p.probability || 0) / 100), 0
+      );
+      const actualRevenue = allProjects.reduce((s, p) => s + (p.actualValue || 0), 0);
+
+      const invoiceMetrics = await prisma.invoice.groupBy({
+        by: ["status"],
+        _sum: { amount: true },
+        _count: { id: true },
+      });
+      const invoicePaid = invoiceMetrics.find((m) => m.status === "PAID")?._sum?.amount || 0;
+      const invoiceOutstanding =
+        (invoiceMetrics.find((m) => m.status === "SENT")?._sum?.amount || 0) +
+        (invoiceMetrics.find((m) => m.status === "DRAFT")?._sum?.amount || 0) +
+        (invoiceMetrics.find((m) => m.status === "OVERDUE")?._sum?.amount || 0);
+
+      const projectPipeline = await prisma.project.groupBy({
+        by: ["stage"],
+        _count: { id: true },
+        _sum: { projectedValue: true },
+      });
+
+      revenueData = {
         totalPipeline: Math.round(totalPipeline * 100) / 100,
         weightedForecast: Math.round(weightedForecast * 100) / 100,
         actualRevenue: Math.round(actualRevenue * 100) / 100,
@@ -518,9 +493,49 @@ export async function GET(req: NextRequest) {
           count: p._count.id,
           value: p._sum.projectedValue || 0,
         })),
-      },
+      };
+
+      // Test Request metrics
+      testRequestStats = { pending: 0, approved: 0, inTesting: 0, complete: 0, total: 0, estimatedCost: 0 };
+      try {
+        const trStats = await prisma.testRequest.groupBy({
+          by: ["status"],
+          _count: { id: true },
+          _sum: { estimatedCost: true },
+        });
+        testRequestStats.total = trStats.reduce((s, r) => s + r._count.id, 0);
+        testRequestStats.pending = trStats.find((r) => r.status === "PENDING_APPROVAL")?._count?.id || 0;
+        testRequestStats.approved = trStats.find((r) => r.status === "APPROVED")?._count?.id || 0;
+        testRequestStats.inTesting = (trStats.find((r) => r.status === "SUBMITTED")?._count?.id || 0) +
+          (trStats.find((r) => r.status === "IN_PROGRESS")?._count?.id || 0);
+        testRequestStats.complete = trStats.find((r) => r.status === "COMPLETE")?._count?.id || 0;
+        testRequestStats.estimatedCost = trStats.reduce((s, r) => s + (r._sum.estimatedCost || 0), 0);
+      } catch {
+        // TestRequest table may not exist yet
+      }
+    }
+
+    // Build response — only include internal data for internal roles
+    const response: any = {
+      ok: true,
+      role: userRole,
+      userId,
       ...roleSpecificData,
-    });
+    };
+
+    if (isInternalRole) {
+      response.counts = {
+        fabrics, brands, factories, distributors, labs,
+        testRuns, icpResults, antibacterialResults, fungalResults, odorResults,
+        submissions, contacts, users: allUsers, notes,
+      };
+      response.pipeline = pipeline;
+      response.testTypes = testTypes.map((t) => ({ type: t.testType, count: t._count }));
+      response.testRequests = testRequestStats;
+      response.revenue = revenueData;
+    }
+
+    return NextResponse.json(response);
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }

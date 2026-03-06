@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcrypt";
+import { hashPassword } from "@/lib/auth";
 
 /* ── POST /api/auth/reset-password ── reset password with token ────────── */
 export async function POST(req: Request) {
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     }
 
     // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await hashPassword(newPassword);
 
     // Update user password
     await prisma.user.update({
