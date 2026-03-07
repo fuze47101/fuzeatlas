@@ -198,7 +198,7 @@ export default function AccessRequestsPage() {
       {/* Request List */}
       {requests.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
-          <p className="text-slate-400">No {filter.toLowerCase()} access requests</p>
+          <p className="text-slate-400">No {typeTab.toLowerCase()} access requests</p>
         </div>
       ) : (
         <div className="space-y-3">
