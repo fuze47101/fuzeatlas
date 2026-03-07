@@ -102,7 +102,8 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
 
   const isBrandUser = user?.role === "BRAND_USER";
-  const isInternal = !isBrandUser && user?.role !== "FACTORY_USER" && user?.role !== "DISTRIBUTOR_USER" && user?.role !== "PUBLIC";
+  const isFactoryUser = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
+  const isInternal = !isBrandUser && user?.role !== "FACTORY_USER" && user?.role !== "FACTORY_MANAGER" && user?.role !== "DISTRIBUTOR_USER" && user?.role !== "PUBLIC";
   const isAdmin = user?.role === "ADMIN" || user?.role === "EMPLOYEE";
 
   // ─── Grouped navigation ─────────────────────────
@@ -131,6 +132,25 @@ export default function Sidebar() {
           { href: "/factory-search", label: "Factory Search", icon: "🔍" },
           { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
           { href: "/sustainability", label: "Sustainability", icon: "🌍" },
+        ],
+      },
+    ];
+  } else if (isFactoryUser) {
+    groups = [
+      {
+        label: "Factory Portal",
+        items: [
+          { href: "/factory-portal", label: "Dashboard", icon: "📊" },
+          { href: "/factory-portal/intake", label: "Submit Fabric", icon: "📥" },
+          { href: "/factory-portal/fabrics", label: "My Fabrics", icon: "🧵" },
+          { href: "/factory-portal/submissions", label: "Submissions", icon: "📋" },
+        ],
+      },
+      {
+        label: "Resources",
+        items: [
+          { href: "/pricing", label: "Pricing", icon: "💰" },
+          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
         ],
       },
     ];

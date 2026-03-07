@@ -12,10 +12,19 @@ interface AccessRequest {
   jobTitle?: string;
   company: string;
   website?: string;
+  requestType?: string;
+  // Brand fields
   fabricTypes?: string;
   annualVolume?: string;
   timeline?: string;
   currentAntimicrobial?: string;
+  // Factory fields
+  factoryLocation?: string;
+  capabilities?: string;
+  certifications?: string;
+  productTypes?: string;
+  monthlyCapacity?: string;
+  fuzeApplicationMethod?: string;
   notes?: string;
   status: string;
   reviewedAt?: string;
@@ -24,6 +33,7 @@ interface AccessRequest {
   sowId?: string;
   sow?: { id: string; title: string; status: string };
   user?: { id: string; name: string; email: string; role: string; status: string };
+  factory?: { id: string; name: string; country?: string };
   createdAt: string;
 }
 
@@ -33,7 +43,8 @@ export default function AccessRequestsPage() {
   const [requests, setRequests] = useState<AccessRequest[]>([]);
   const [stats, setStats] = useState<Stats>({ pending: 0, approved: 0, denied: 0 });
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("PENDING");
+  const [statusFilter, setStatusFilter] = useState("PENDING");
+  const [typeTab, setTypeTab] = useState<"ALL" | "BRAND" | "FACTORY">("ALL");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [processing, setProcessing] = useState<string | null>(null);
   const [success, setSuccess] = useState("");
@@ -42,10 +53,13 @@ export default function AccessRequestsPage() {
   // Approval result state
   const [lastApproval, setLastApproval] = useState<{ name: string; email: string; password: string } | null>(null);
 
-  const loadRequests = async (status?: string) => {
+  const loadRequests = async (status?: string, type?: string) => {
     try {
-      const params = status ? `?status=${status}` : "";
-      const res = await fetch(`/api/access-requests${params}`);
+      let params = [];
+      if (status) params.push(`status=${status}`);
+      if (type && type !== "ALL") params.push(`type=${type}`);
+      const url = `/api/access-requests${params.length ? "?" + params.join("&") : ""}`;
+      const res = await fetch(url);
       const d = await res.json();
       if (d.ok) {
         setRequests(d.requests);
@@ -58,7 +72,7 @@ export default function AccessRequestsPage() {
     }
   };
 
-  useEffect(() => { loadRequests(filter); }, [filter]);
+  useEffect(() => { loadRequests(statusFilter, typeTab); }, [statusFilter, typeTab]);
 
   const handleAction = async (id: string, action: "approve" | "deny", reviewNote?: string, deniedReason?: string) => {
     setProcessing(id);
@@ -76,7 +90,7 @@ export default function AccessRequestsPage() {
         }
         setSuccess(d.message);
         setTimeout(() => setSuccess(""), 8000);
-        loadRequests(filter);
+        loadRequests(statusFilter, typeTab);
       } else {
         setError(d.error);
       }
@@ -111,25 +125,42 @@ export default function AccessRequestsPage() {
             <span>/</span>
             <span className="text-slate-800 font-medium">Access Requests</span>
           </div>
-          <h1 className="text-2xl font-black text-slate-900">Brand Portal Access Requests</h1>
-          <p className="text-sm text-slate-500 mt-1">Review and approve brand portal access requests</p>
+          <h1 className="text-2xl font-black text-slate-900">Portal Access Requests</h1>
+          <p className="text-sm text-slate-500 mt-1">Review and approve brand and factory portal access requests</p>
         </div>
+      </div>
+
+      {/* Type Tabs */}
+      <div className="flex gap-2 mb-6 border-b border-slate-200">
+        {(["ALL", "BRAND", "FACTORY"] as const).map(tab => (
+          <button
+            key={tab}
+            onClick={() => setTypeTab(tab)}
+            className={`px-4 py-2 text-sm font-medium transition-all border-b-2 ${
+              typeTab === tab
+                ? "border-[#00b4c3] text-[#00b4c3]"
+                : "border-transparent text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            {tab === "ALL" ? "All Requests" : tab === "BRAND" ? "Brand Requests" : "Factory Requests"}
+          </button>
+        ))}
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <button onClick={() => setFilter("PENDING")}
-          className={`p-4 rounded-xl border-2 transition-all ${filter === "PENDING" ? "border-amber-400 bg-amber-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
+        <button onClick={() => setStatusFilter("PENDING")}
+          className={`p-4 rounded-xl border-2 transition-all ${statusFilter === "PENDING" ? "border-amber-400 bg-amber-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
           <div className="text-2xl font-black text-amber-600">{stats.pending}</div>
           <div className="text-xs font-medium text-slate-500">Pending Review</div>
         </button>
-        <button onClick={() => setFilter("APPROVED")}
-          className={`p-4 rounded-xl border-2 transition-all ${filter === "APPROVED" ? "border-emerald-400 bg-emerald-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
+        <button onClick={() => setStatusFilter("APPROVED")}
+          className={`p-4 rounded-xl border-2 transition-all ${statusFilter === "APPROVED" ? "border-emerald-400 bg-emerald-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
           <div className="text-2xl font-black text-emerald-600">{stats.approved}</div>
           <div className="text-xs font-medium text-slate-500">Approved</div>
         </button>
-        <button onClick={() => setFilter("DENIED")}
-          className={`p-4 rounded-xl border-2 transition-all ${filter === "DENIED" ? "border-red-400 bg-red-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
+        <button onClick={() => setStatusFilter("DENIED")}
+          className={`p-4 rounded-xl border-2 transition-all ${statusFilter === "DENIED" ? "border-red-400 bg-red-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
           <div className="text-2xl font-black text-red-600">{stats.denied}</div>
           <div className="text-xs font-medium text-slate-500">Denied</div>
         </button>
@@ -185,6 +216,15 @@ export default function AccessRequestsPage() {
                       <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusColors[req.status] || "bg-slate-100 text-slate-600"}`}>
                         {req.status}
                       </span>
+                      {req.requestType && (
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                          req.requestType === "FACTORY"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-purple-100 text-purple-800"
+                        }`}>
+                          {req.requestType === "FACTORY" ? "🏭 Factory" : "🏢 Brand"}
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-3 text-sm text-slate-500">
                       <span className="font-medium text-slate-700">{req.company}</span>
@@ -231,9 +271,11 @@ export default function AccessRequestsPage() {
                       </div>
 
                       <div className="space-y-3">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">Company</h4>
+                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                          {req.requestType === "FACTORY" ? "Factory" : "Company"}
+                        </h4>
                         <div>
-                          <p className="text-xs text-slate-500">Company</p>
+                          <p className="text-xs text-slate-500">{req.requestType === "FACTORY" ? "Factory Name" : "Company Name"}</p>
                           <p className="text-sm font-medium text-slate-800">{req.company}</p>
                         </div>
                         {req.website && (
@@ -244,13 +286,25 @@ export default function AccessRequestsPage() {
                               className="text-sm text-blue-600 hover:underline">{req.website}</a>
                           </div>
                         )}
-                        {req.annualVolume && (
+                        {req.requestType === "FACTORY" && req.factoryLocation && (
+                          <div>
+                            <p className="text-xs text-slate-500">Location</p>
+                            <p className="text-sm text-slate-800">{req.factoryLocation}</p>
+                          </div>
+                        )}
+                        {req.requestType === "FACTORY" && req.monthlyCapacity && (
+                          <div>
+                            <p className="text-xs text-slate-500">Monthly Capacity</p>
+                            <p className="text-sm text-slate-800">{req.monthlyCapacity}</p>
+                          </div>
+                        )}
+                        {req.requestType === "BRAND" && req.annualVolume && (
                           <div>
                             <p className="text-xs text-slate-500">Annual Volume</p>
                             <p className="text-sm text-slate-800">{req.annualVolume}</p>
                           </div>
                         )}
-                        {req.timeline && (
+                        {req.requestType === "BRAND" && req.timeline && (
                           <div>
                             <p className="text-xs text-slate-500">Timeline</p>
                             <p className="text-sm text-slate-800">{req.timeline}</p>
@@ -259,14 +313,40 @@ export default function AccessRequestsPage() {
                       </div>
 
                       <div className="space-y-3">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">Program Interest</h4>
-                        {req.fabricTypes && (
+                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                          {req.requestType === "FACTORY" ? "Details" : "Program Interest"}
+                        </h4>
+                        {req.requestType === "FACTORY" && req.capabilities && (
+                          <div>
+                            <p className="text-xs text-slate-500">Capabilities</p>
+                            <p className="text-sm text-slate-800">{req.capabilities}</p>
+                          </div>
+                        )}
+                        {req.requestType === "FACTORY" && req.certifications && (
+                          <div>
+                            <p className="text-xs text-slate-500">Certifications</p>
+                            <p className="text-sm text-slate-800">{req.certifications}</p>
+                          </div>
+                        )}
+                        {req.requestType === "FACTORY" && req.productTypes && (
+                          <div>
+                            <p className="text-xs text-slate-500">Product Types</p>
+                            <p className="text-sm text-slate-800">{req.productTypes}</p>
+                          </div>
+                        )}
+                        {req.requestType === "FACTORY" && req.fuzeApplicationMethod && (
+                          <div>
+                            <p className="text-xs text-slate-500">FUZE Application Interest</p>
+                            <p className="text-sm text-slate-800">{req.fuzeApplicationMethod}</p>
+                          </div>
+                        )}
+                        {req.requestType === "BRAND" && req.fabricTypes && (
                           <div>
                             <p className="text-xs text-slate-500">Fabric Types</p>
                             <p className="text-sm text-slate-800">{req.fabricTypes}</p>
                           </div>
                         )}
-                        {req.currentAntimicrobial && (
+                        {req.requestType === "BRAND" && req.currentAntimicrobial && (
                           <div>
                             <p className="text-xs text-slate-500">Current Antimicrobial</p>
                             <p className="text-sm text-slate-800 font-medium">{req.currentAntimicrobial}</p>

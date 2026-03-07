@@ -11,6 +11,8 @@ export async function POST(req: Request) {
       firstName, lastName, email, phone, jobTitle,
       company, website, fabricTypes, annualVolume,
       timeline, currentAntimicrobial, notes,
+      requestType, factoryLocation, capabilities, certifications,
+      productTypes, monthlyCapacity, fuzeApplicationMethod,
     } = body;
 
     // Validate required fields
@@ -63,10 +65,19 @@ export async function POST(req: Request) {
         jobTitle: jobTitle?.trim() || null,
         company: company.trim(),
         website: website?.trim() || null,
+        requestType: requestType || "BRAND",
+        // Brand fields
         fabricTypes: fabricTypes?.trim() || null,
         annualVolume: annualVolume || null,
         timeline: timeline || null,
         currentAntimicrobial: currentAntimicrobial?.trim() || null,
+        // Factory fields
+        factoryLocation: factoryLocation?.trim() || null,
+        capabilities: capabilities || null,
+        certifications: certifications || null,
+        productTypes: productTypes?.trim() || null,
+        monthlyCapacity: monthlyCapacity || null,
+        fuzeApplicationMethod: fuzeApplicationMethod || null,
         notes: notes?.trim() || null,
       },
     });
@@ -92,14 +103,17 @@ export async function GET(req: Request) {
 
     const url = new URL(req.url);
     const status = url.searchParams.get("status"); // PENDING, APPROVED, DENIED
+    const type = url.searchParams.get("type"); // BRAND, FACTORY, or null for all
     const where: any = {};
     if (status) where.status = status;
+    if (type) where.requestType = type;
 
     const requests = await prisma.accessRequest.findMany({
       where,
       include: {
         sow: { select: { id: true, title: true, status: true } },
         user: { select: { id: true, name: true, email: true, role: true, status: true } },
+        factory: { select: { id: true, name: true, country: true } },
       },
       orderBy: { createdAt: "desc" },
     });

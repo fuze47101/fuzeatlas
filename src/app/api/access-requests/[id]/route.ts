@@ -32,85 +32,168 @@ export async function PUT(
       const tempPassword = generateTempPassword();
       const hashedPassword = await hashPassword(tempPassword);
 
-      // Find or create the brand
-      let targetBrandId = brandId;
-      if (!targetBrandId) {
-        // Try to find existing brand by company name
-        const existingBrand = await prisma.brand.findUnique({
-          where: { name: request.company },
-        });
-        if (existingBrand) {
-          targetBrandId = existingBrand.id;
-        } else {
-          // Create new brand
-          const newBrand = await prisma.brand.create({
-            data: {
-              name: request.company,
-              website: request.website,
-              customerType: request.annualVolume || "Unknown",
-              backgroundInfo: [
-                request.fabricTypes ? `Fabric interests: ${request.fabricTypes}` : null,
-                request.currentAntimicrobial ? `Current antimicrobial: ${request.currentAntimicrobial}` : null,
-                request.notes || null,
-              ].filter(Boolean).join(". "),
-              dateOfInitialContact: request.createdAt,
-            },
+      if (request.requestType === "FACTORY") {
+        // ──── FACTORY REQUEST APPROVAL ────
+        let targetFactoryId = body.factoryId;
+        if (!targetFactoryId) {
+          // Try to find existing factory by name
+          const existingFactory = await prisma.factory.findUnique({
+            where: { name: request.company },
           });
-          targetBrandId = newBrand.id;
+          if (existingFactory) {
+            targetFactoryId = existingFactory.id;
+          } else {
+            // Create new factory
+            const newFactory = await prisma.factory.create({
+              data: {
+                name: request.company,
+                website: request.website,
+                country: request.factoryLocation?.split("/")[0]?.trim() || null,
+                city: request.factoryLocation?.split("/")[1]?.trim() || null,
+                capabilities: request.capabilities,
+                certifications: request.certifications,
+                productTypes: request.productTypes,
+                fuzeApplications: request.fuzeApplicationMethod,
+                description: request.notes,
+              },
+            });
+            targetFactoryId = newFactory.id;
+          }
         }
+
+        // Create the factory user account
+        const newUser = await prisma.user.create({
+          data: {
+            name: `${request.firstName} ${request.lastName}`,
+            email: request.email,
+            password: hashedPassword,
+            role: "FACTORY_USER",
+            status: "ACTIVE",
+            factoryId: targetFactoryId,
+          },
+        });
+
+        // Create a contact record for this person
+        await prisma.contact.create({
+          data: {
+            firstName: request.firstName,
+            lastName: request.lastName,
+            name: `${request.firstName} ${request.lastName}`,
+            email: request.email,
+            phone: request.phone,
+            title: request.jobTitle,
+            factoryId: targetFactoryId,
+          },
+        });
+
+        // Update the access request
+        await prisma.accessRequest.update({
+          where: { id },
+          data: {
+            status: "APPROVED",
+            reviewedBy: user.id,
+            reviewedAt: new Date(),
+            reviewNote: reviewNote || null,
+            userId: newUser.id,
+            factoryId: targetFactoryId,
+            sowId: sowId || null,
+          },
+        });
+
+        return NextResponse.json({
+          ok: true,
+          action: "approved",
+          user: {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+            tempPassword,
+          },
+          factory: { id: targetFactoryId, name: request.company },
+          message: `Factory account created for ${request.firstName} ${request.lastName}. Temporary password: ${tempPassword}`,
+        });
+      } else {
+        // ──── BRAND REQUEST APPROVAL ────
+        let targetBrandId = brandId;
+        if (!targetBrandId) {
+          // Try to find existing brand by company name
+          const existingBrand = await prisma.brand.findUnique({
+            where: { name: request.company },
+          });
+          if (existingBrand) {
+            targetBrandId = existingBrand.id;
+          } else {
+            // Create new brand
+            const newBrand = await prisma.brand.create({
+              data: {
+                name: request.company,
+                website: request.website,
+                customerType: request.annualVolume || "Unknown",
+                backgroundInfo: [
+                  request.fabricTypes ? `Fabric interests: ${request.fabricTypes}` : null,
+                  request.currentAntimicrobial ? `Current antimicrobial: ${request.currentAntimicrobial}` : null,
+                  request.notes || null,
+                ].filter(Boolean).join(". "),
+                dateOfInitialContact: request.createdAt,
+              },
+            });
+            targetBrandId = newBrand.id;
+          }
+        }
+
+        // Create the user account
+        const newUser = await prisma.user.create({
+          data: {
+            name: `${request.firstName} ${request.lastName}`,
+            email: request.email,
+            password: hashedPassword,
+            role: "BRAND_USER",
+            status: "ACTIVE",
+            brandId: targetBrandId,
+          },
+        });
+
+        // Create a contact record for this person
+        await prisma.contact.create({
+          data: {
+            firstName: request.firstName,
+            lastName: request.lastName,
+            name: `${request.firstName} ${request.lastName}`,
+            email: request.email,
+            phone: request.phone,
+            title: request.jobTitle,
+            brandId: targetBrandId,
+          },
+        });
+
+        // Update the access request
+        await prisma.accessRequest.update({
+          where: { id },
+          data: {
+            status: "APPROVED",
+            reviewedBy: user.id,
+            reviewedAt: new Date(),
+            reviewNote: reviewNote || null,
+            userId: newUser.id,
+            sowId: sowId || null,
+          },
+        });
+
+        return NextResponse.json({
+          ok: true,
+          action: "approved",
+          user: {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+            tempPassword,
+          },
+          brand: { id: targetBrandId, name: request.company },
+          message: `Account created for ${request.firstName} ${request.lastName}. Temporary password: ${tempPassword}`,
+        });
       }
-
-      // Create the user account
-      const newUser = await prisma.user.create({
-        data: {
-          name: `${request.firstName} ${request.lastName}`,
-          email: request.email,
-          password: hashedPassword,
-          role: "BRAND_USER",
-          status: "ACTIVE",
-          brandId: targetBrandId,
-        },
-      });
-
-      // Create a contact record for this person
-      await prisma.contact.create({
-        data: {
-          firstName: request.firstName,
-          lastName: request.lastName,
-          name: `${request.firstName} ${request.lastName}`,
-          email: request.email,
-          phone: request.phone,
-          title: request.jobTitle,
-          brandId: targetBrandId,
-        },
-      });
-
-      // Update the access request
-      await prisma.accessRequest.update({
-        where: { id },
-        data: {
-          status: "APPROVED",
-          reviewedBy: user.id,
-          reviewedAt: new Date(),
-          reviewNote: reviewNote || null,
-          userId: newUser.id,
-          sowId: sowId || null,
-        },
-      });
-
-      return NextResponse.json({
-        ok: true,
-        action: "approved",
-        user: {
-          id: newUser.id,
-          name: newUser.name,
-          email: newUser.email,
-          role: newUser.role,
-          tempPassword,
-        },
-        brand: { id: targetBrandId, name: request.company },
-        message: `Account created for ${request.firstName} ${request.lastName}. Temporary password: ${tempPassword}`,
-      });
 
     } else if (action === "deny") {
       await prisma.accessRequest.update({
