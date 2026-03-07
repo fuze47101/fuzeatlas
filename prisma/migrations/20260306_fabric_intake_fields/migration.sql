@@ -2,6 +2,8 @@
 ALTER TABLE "Fabric" ADD COLUMN "endUse" TEXT,
 ADD COLUMN "targetFuzeTier" TEXT,
 ADD COLUMN "annualVolume" TEXT,
+ADD COLUMN "quantityType" TEXT,
+ADD COLUMN "quantityUnit" TEXT,
 ADD COLUMN "batchLotNumber" TEXT,
 ADD COLUMN "thickness" DOUBLE PRECISION,
 ADD COLUMN "shrinkageLength" DOUBLE PRECISION,

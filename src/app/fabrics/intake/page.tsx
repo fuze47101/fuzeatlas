@@ -13,6 +13,8 @@ interface ParsedFabricData {
   batchLotNumber?: string;
   dateSubmitted?: string;
   quantity?: string;
+  quantityType?: string;
+  quantityUnit?: string;
   endUse?: string;
   targetFuzeTier?: string;
   annualVolume?: string;
@@ -62,6 +64,8 @@ export default function FabricIntakePage() {
   const [widthInches, setWidthInches] = useState("");
   const [thickness, setThickness] = useState("");
   const [fabricCategory, setFabricCategory] = useState("");
+  const [quantityType, setQuantityType] = useState("");
+  const [quantityUnit, setQuantityUnit] = useState("meters");
 
   // Confirm state
   const [confirming, setConfirming] = useState(false);
@@ -112,6 +116,8 @@ export default function FabricIntakePage() {
         if (p.widthInches) setWidthInches(String(p.widthInches));
         if (p.thickness) setThickness(String(p.thickness));
         if (p.fabricCategory) setFabricCategory(p.fabricCategory);
+        if (p.quantityType) setQuantityType(p.quantityType);
+        if (p.quantityUnit) setQuantityUnit(p.quantityUnit || "meters");
       }
     } catch (err: any) {
       setUploadError(err.message || "Upload failed");
@@ -175,6 +181,8 @@ export default function FabricIntakePage() {
         // Intake fields
         endUse: endUse || null,
         targetFuzeTier: targetFuzeTier || null,
+        quantityType: quantityType || null,
+        quantityUnit: quantityUnit || null,
         weightGsm: weightGsm ? parseFloat(weightGsm) : null,
         widthInches: widthInches ? parseFloat(widthInches) : null,
         thickness: thickness ? parseFloat(thickness) : null,
@@ -468,20 +476,58 @@ export default function FabricIntakePage() {
                 </div>
               </div>
 
-              {/* FUZE Tier */}
+              {/* Quantity Type & FUZE Tier */}
               <div className="border-t border-slate-200 pt-6">
-                <h3 className="font-semibold text-slate-900 mb-4">FUZE Tier</h3>
-                <select
-                  value={targetFuzeTier}
-                  onChange={(e) => setTargetFuzeTier(e.target.value)}
-                  className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 bg-white focus:ring-2 focus:ring-cyan-500"
-                >
-                  <option value="">Select tier...</option>
-                  <option value="F1">F1 - Entry Level</option>
-                  <option value="F2">F2 - Standard</option>
-                  <option value="F3">F3 - Advanced</option>
-                  <option value="F4">F4 - Premium</option>
-                </select>
+                <h3 className="font-semibold text-slate-900 mb-4">Quantity & Classification</h3>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Quantity Type <span className="text-red-500">*</span></label>
+                    <select
+                      value={quantityType}
+                      onChange={(e) => setQuantityType(e.target.value)}
+                      className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 bg-white focus:ring-2 focus:ring-cyan-500"
+                    >
+                      <option value="">Select type...</option>
+                      <option value="ACTUAL">Actual (confirmed order)</option>
+                      <option value="FORECAST">Forecast (projected)</option>
+                      <option value="DEVELOPMENT">Development (sample/trial)</option>
+                      <option value="RD">R&D (research)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Unit</label>
+                    <select
+                      value={quantityUnit}
+                      onChange={(e) => setQuantityUnit(e.target.value)}
+                      className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 bg-white focus:ring-2 focus:ring-cyan-500"
+                    >
+                      <option value="meters">Meters</option>
+                      <option value="yards">Yards</option>
+                      <option value="kg">KG</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Target FUZE Tier</label>
+                  <select
+                    value={targetFuzeTier}
+                    onChange={(e) => setTargetFuzeTier(e.target.value)}
+                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 bg-white focus:ring-2 focus:ring-cyan-500"
+                  >
+                    <option value="">Select tier...</option>
+                    <option value="F1">F1 - Full Spectrum</option>
+                    <option value="F2">F2 - Advanced Performance</option>
+                    <option value="F3">F3 - Core Performance</option>
+                    <option value="F4">F4 - Essential Protection</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Auto-assign note */}
+              <div className="border-t border-slate-200 pt-4">
+                <p className="text-sm text-slate-500 italic">
+                  A FUZE Fabric Number will be automatically assigned when this fabric is saved.
+                </p>
               </div>
 
               {/* Raw text */}

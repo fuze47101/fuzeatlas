@@ -502,6 +502,8 @@ model Fabric {
   endUse           String?    // Product type: t-shirt, athletic, bedding, etc.
   targetFuzeTier   String?    // F1, F2, F3, F4
   annualVolume     String?    // Estimated annual volume
+  quantityType     String?    // ACTUAL, FORECAST, DEVELOPMENT, RD
+  quantityUnit     String?    // meters, yards, kg
   batchLotNumber   String?    // Manufacturer batch/lot
   thickness        Float?     // mm
   shrinkageLength  Float?     // % shrinkage length
