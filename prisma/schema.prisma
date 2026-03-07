@@ -302,6 +302,7 @@ model Factory {
   brands        BrandFactory[]
   submissions   FabricSubmission[]
   fabrics       Fabric[]
+  fuzeTestRequests FuzeTestRequest[] @relation("FuzeTestFactory")
   projects      Project[]      @relation("ProjectFactory")
   invoices      Invoice[]
   users         User[]         @relation("FactoryUsers")
@@ -540,6 +541,7 @@ model Fabric {
   contents    FabricContent[]
   submissions FabricSubmission[]
   testRequests TestRequest[]
+  fuzeTestRequests FuzeTestRequest[] @relation("FuzeTestFabric")
   shipments SampleShipment[] @relation("FabricShipments")
 
   createdAt DateTime @default(now())
@@ -1199,6 +1201,47 @@ model TestRequestLine {
 
   @@index([testRequestId])
   @@index([testRunId])
+  @@index([status])
+}
+
+// ─────────────────────────────────────────────
+// FUZE TEST REQUESTS (Factory Portal)
+// ─────────────────────────────────────────────
+
+model FuzeTestRequest {
+  id            String   @id @default(cuid())
+
+  fabricId      String
+  fabric        Fabric   @relation("FuzeTestFabric", fields: [fabricId], references: [id])
+
+  factoryId     String?
+  factory       Factory? @relation("FuzeTestFactory", fields: [factoryId], references: [id])
+
+  requestedBy   String?  // User ID
+
+  // Selected tests (JSON array of test IDs from catalog)
+  selectedTests Json     // ["recipe-build", "antibacterial-screen"]
+
+  // Requirements
+  totalMoqMeters Float?
+  controlRequired Boolean @default(false)
+
+  // Shipping
+  trackingNumber  String?
+  shippedDate     DateTime?
+  receivedDate    DateTime?
+
+  // Status
+  status         String   @default("PENDING") // PENDING, SAMPLES_REQUESTED, SAMPLES_RECEIVED, IN_PROGRESS, COMPLETED, CANCELLED
+
+  notes          String?
+  adminNotes     String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([fabricId])
+  @@index([factoryId])
   @@index([status])
 }
 

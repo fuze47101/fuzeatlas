@@ -12,7 +12,12 @@ export default function RequestFactoryAccessPage() {
     jobTitle: "",
     company: "",
     website: "",
-    factoryLocation: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    stateProvince: "",
+    postalCode: "",
+    country: "",
     capabilities: [] as string[],
     certifications: [] as string[],
     productTypes: "",
@@ -170,25 +175,92 @@ export default function RequestFactoryAccessPage() {
                 <span className="w-6 h-6 rounded-full bg-[#00b4c3] text-white text-xs font-bold flex items-center justify-center">2</span>
                 Factory Details
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 space-y-4">
+                <div className="sm:col-span-2">
                   <label className="block text-xs font-medium text-slate-600 mb-1">Factory / Mill Name <span className="text-red-500">*</span></label>
                   <input type="text" required value={form.company} onChange={e => update("company", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                     placeholder="XYZ Textile Mill" />
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Location (Country / City) <span className="text-red-500">*</span></label>
-                  <input type="text" required value={form.factoryLocation} onChange={e => update("factoryLocation", e.target.value)}
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Address Line 1 <span className="text-red-500">*</span></label>
+                  <input type="text" required value={form.addressLine1} onChange={e => update("addressLine1", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="China / Zhejiang" />
+                    placeholder="Street address" />
                 </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Address Line 2</label>
+                  <input type="text" value={form.addressLine2} onChange={e => update("addressLine2", e.target.value)}
+                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+                    placeholder="Suite, building, floor, etc." />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">City <span className="text-red-500">*</span></label>
+                  <input type="text" required value={form.city} onChange={e => update("city", e.target.value)}
+                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+                    placeholder="e.g., Shanghai" />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">State / Province / Region</label>
+                  <input type="text" value={form.stateProvince} onChange={e => update("stateProvince", e.target.value)}
+                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+                    placeholder="e.g., Zhejiang" />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Postal Code</label>
+                  <input type="text" value={form.postalCode} onChange={e => update("postalCode", e.target.value)}
+                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+                    placeholder="e.g., 200000" />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">Country <span className="text-red-500">*</span></label>
+                  <select required value={form.country} onChange={e => update("country", e.target.value)}
+                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none">
+                    <option value="">Select country...</option>
+                    <optgroup label="Major Manufacturing Countries">
+                      <option value="China">China</option>
+                      <option value="Taiwan">Taiwan</option>
+                      <option value="Vietnam">Vietnam</option>
+                      <option value="Bangladesh">Bangladesh</option>
+                      <option value="India">India</option>
+                      <option value="Indonesia">Indonesia</option>
+                      <option value="Thailand">Thailand</option>
+                      <option value="Turkey">Turkey</option>
+                      <option value="Pakistan">Pakistan</option>
+                      <option value="Cambodia">Cambodia</option>
+                      <option value="Sri Lanka">Sri Lanka</option>
+                      <option value="Myanmar">Myanmar</option>
+                      <option value="South Korea">South Korea</option>
+                      <option value="Japan">Japan</option>
+                      <option value="Philippines">Philippines</option>
+                      <option value="Malaysia">Malaysia</option>
+                    </optgroup>
+                    <optgroup label="Americas">
+                      <option value="Mexico">Mexico</option>
+                      <option value="Honduras">Honduras</option>
+                      <option value="Guatemala">Guatemala</option>
+                      <option value="El Salvador">El Salvador</option>
+                      <option value="United States">United States</option>
+                    </optgroup>
+                    <optgroup label="Other">
+                      <option value="Other">Other</option>
+                    </optgroup>
+                  </select>
+                </div>
+
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">Website</label>
                   <input type="text" value={form.website} onChange={e => update("website", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                     placeholder="https://factory.com" />
                 </div>
+
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">Monthly Production Capacity</label>
                   <select value={form.monthlyCapacity} onChange={e => update("monthlyCapacity", e.target.value)}
