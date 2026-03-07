@@ -25,6 +25,7 @@ interface NavItem {
   href: string;
   label: string;
   icon: string;
+  badge?: number;
 }
 
 interface NavGroup {
@@ -46,6 +47,7 @@ function NavSection({
   const hasActive = group.items.some(
     (item) => pathname === item.href || pathname.startsWith(item.href + "/")
   );
+  const groupBadgeTotal = group.items.reduce((sum, item) => sum + (item.badge || 0), 0);
 
   return (
     <div>
@@ -57,7 +59,14 @@ function NavSection({
             : "text-slate-500 hover:text-slate-300"
         }`}
       >
-        <span>{group.label}</span>
+        <span className="flex items-center gap-2">
+          {group.label}
+          {!expanded && groupBadgeTotal > 0 && (
+            <span className="min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold px-1 animate-pulse">
+              {groupBadgeTotal}
+            </span>
+          )}
+        </span>
         <svg
           className={`w-3.5 h-3.5 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
           fill="none"
@@ -84,7 +93,14 @@ function NavSection({
                 `}
               >
                 <span className="text-base">{item.icon}</span>
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {item.badge && item.badge > 0 ? (
+                  <span className={`min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ${
+                    active ? "bg-white/25 text-white" : "bg-red-500 text-white animate-pulse"
+                  }`}>
+                    {item.badge}
+                  </span>
+                ) : null}
               </Link>
             );
           })}
@@ -105,6 +121,29 @@ export default function Sidebar() {
   const isFactoryUser = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
   const isInternal = !isBrandUser && user?.role !== "FACTORY_USER" && user?.role !== "FACTORY_MANAGER" && user?.role !== "DISTRIBUTOR_USER" && user?.role !== "PUBLIC";
   const isAdmin = user?.role === "ADMIN" || user?.role === "EMPLOYEE";
+
+  // ─── Pending counts for admin badges ─────────────────
+  const [pendingCounts, setPendingCounts] = useState<{
+    accessRequests: number;
+    testRequests: number;
+    total: number;
+  }>({ accessRequests: 0, testRequests: 0, total: 0 });
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    const fetchCounts = () => {
+      fetch("/api/admin/pending-counts")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.ok) setPendingCounts(d);
+        })
+        .catch(() => {});
+    };
+    fetchCounts();
+    // Poll every 30 seconds for live updates
+    const interval = setInterval(fetchCounts, 30000);
+    return () => clearInterval(interval);
+  }, [isAdmin]);
 
   // ─── Grouped navigation ─────────────────────────
   // Top-level item (always visible, not in a group)
@@ -180,7 +219,7 @@ export default function Sidebar() {
           { href: "/recipes", label: "Recipe Library", icon: "📖" },
           { href: "/factories", label: t.nav.factories, icon: "🏭" },
           { href: "/factory-search", label: "Factory Search", icon: "🔍" },
-          { href: "/test-requests", label: "Test Requests", icon: "📝" },
+          { href: "/test-requests", label: "Test Requests", icon: "📝", badge: pendingCounts.testRequests },
           { href: "/tests", label: t.nav.testResults, icon: "🧪" },
           { href: "/labs", label: t.nav.labDirectory || "Lab Directory", icon: "🔬" },
         ],
@@ -212,7 +251,7 @@ export default function Sidebar() {
         items: [
           { href: "/settings/users", label: "User Management", icon: "👥" },
           { href: "/settings/availability", label: "Availability Settings", icon: "⏰" },
-          { href: "/settings/access-requests", label: "Access Requests", icon: "📩" },
+          { href: "/settings/access-requests", label: "Access Requests", icon: "📩", badge: pendingCounts.accessRequests },
           { href: "/settings/exchange-rates", label: "Exchange Rates", icon: "💱" },
           { href: "/settings/audit-log", label: "Audit Log", icon: "📜" },
         ],
