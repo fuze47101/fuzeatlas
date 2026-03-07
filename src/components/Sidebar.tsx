@@ -413,7 +413,7 @@ export default function Sidebar() {
             </svg>
           </button>
           {langOpen && (
-            <div className="absolute bottom-full left-3 right-3 mb-1 bg-slate-800 rounded-lg shadow-xl border border-slate-700 overflow-hidden">
+            <div className="absolute bottom-full left-3 right-3 mb-1 bg-slate-800 rounded-lg shadow-xl border border-slate-700 overflow-hidden max-h-72 overflow-y-auto">
               {LOCALES.map((l) => (
                 <button
                   key={l.code}

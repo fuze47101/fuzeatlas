@@ -1,77 +1,79 @@
-// English translations
-const en = {
-  // ─── NAVIGATION ────────────────────────────────
+// Japanese translations (日本語)
+import type { Translations } from "./en";
+
+const ja: Translations = {
+  // ─── Navigation ──────────────────────────────
   nav: {
-    dashboard: "Dashboard",
-    brandPipeline: "Brand Pipeline",
-    fabrics: "Fabrics",
-    factories: "Factories",
-    testResults: "Test Results",
-    labDirectory: "Lab Directory",
-    sowGovernance: "SOW Governance",
-    weeklySummary: "Weekly Summary",
-    ingestCsv: "Ingest CSV",
-    testUpload: "Test Upload",
-    subtitle: "Textile Intelligence Platform",
+    dashboard: "ダッシュボード",
+    brandPipeline: "ブランドパイプライン",
+    fabrics: "生地",
+    factories: "工場",
+    testResults: "テスト結果",
+    labDirectory: "ラボディレクトリ",
+    sowGovernance: "SOWガバナンス",
+    weeklySummary: "週次サマリー",
+    ingestCsv: "CSV取込",
+    testUpload: "テストアップロード",
+    subtitle: "抗菌テキスタイルインテリジェンスプラットフォーム",
     company: "FUZE Biotech Inc.",
     version: "v2.2",
   },
 
-  // ─── COMMON ────────────────────────────────────
+  // ─── Common ──────────────────────────────────
   common: {
-    save: "Save",
-    saving: "Saving...",
-    cancel: "Cancel",
-    delete: "Delete",
-    deleting: "Deleting...",
-    create: "Create",
-    creating: "Creating...",
-    edit: "Edit",
-    back: "Back",
-    search: "Search",
-    filter: "Filter",
-    loading: "Loading...",
-    submit: "Submit",
-    close: "Close",
-    yes: "Yes",
-    no: "No",
-    confirm: "Confirm",
-    actions: "Actions",
-    name: "Name",
-    email: "Email",
-    phone: "Phone",
-    title: "Title",
-    status: "Status",
-    date: "Date",
-    type: "Type",
-    description: "Description",
-    notes: "Notes",
-    noResults: "No results found",
-    selectOption: "Select...",
-    select: "Select",
-    required: "required",
-    showMore: "Show more",
-    showLess: "Show less",
-    errors: "Errors",
-    backToPipeline: "Back to Pipeline",
-    loadingProducts: "Loading products...",
-    noFabrics: "No fabrics",
-    noNotes: "No notes",
-    noSows: "No SOWs",
-    noSubmissions: "No submissions",
-    note: "Note",
-    profile: "Profile",
-    statementsOfWork: "Statements of Work",
-    untitledSow: "Untitled SOW",
-    testStatus: "Test Status",
-    fabricNumber: "Fabric Number",
-    by: "by",
-    newSow: "New SOW",
-    color: "Color",
-    construction: "Construction",
+    save: "保存",
+    saving: "保存中...",
+    cancel: "キャンセル",
+    delete: "削除",
+    deleting: "削除中...",
+    create: "作成",
+    creating: "作成中...",
+    edit: "編集",
+    back: "戻る",
+    search: "検索",
+    filter: "フィルター",
+    loading: "読み込み中...",
+    submit: "送信",
+    close: "閉じる",
+    yes: "はい",
+    no: "いいえ",
+    confirm: "確認",
+    actions: "アクション",
+    name: "名前",
+    email: "メール",
+    phone: "電話",
+    title: "タイトル",
+    status: "ステータス",
+    date: "日付",
+    type: "タイプ",
+    description: "説明",
+    notes: "メモ",
+    noResults: "結果が見つかりません",
+    selectOption: "選択...",
+    select: "選択",
+    required: "必須",
+    showMore: "もっと見る",
+    showLess: "折りたたむ",
+    errors: "エラー",
+    backToPipeline: "パイプラインに戻る",
+    loadingProducts: "製品を読込中...",
+    noFabrics: "生地なし",
+    noNotes: "メモなし",
+    noSows: "SOWなし",
+    noSubmissions: "提出なし",
+    note: "メモ",
+    profile: "プロフィール",
+    statementsOfWork: "作業仕様書",
+    untitledSow: "無題のSOW",
+    testStatus: "テスト状況",
+    fabricNumber: "生地番号",
+    by: "作成者",
+    newSow: "新規SOW",
+    color: "色",
+    construction: "構造",
   },
 
-  // ─── DASHBOARD ─────────────────────────────────
+  // ─── Dashboard (English fallback — professional translation pending) ───
   dashboard: {
     title: "Dashboard",
     subtitle: "FUZE Atlas overview — all data at a glance",
@@ -105,7 +107,7 @@ const en = {
     stageCustomerWon: "Won",
   },
 
-  // ─── BRANDS ────────────────────────────────────
+  // ─── Brands (English fallback — professional translation pending) ───
   brands: {
     title: "Brand Pipeline",
     brandsAcrossStages: "brands across {count} stages",
@@ -155,7 +157,7 @@ const en = {
     submissions: "Submissions",
   },
 
-  // ─── BRAND DETAIL TABS ─────────────────────────
+  // ─── Brand Tabs (English fallback — professional translation pending) ───
   brandTabs: {
     details: "Details",
     contacts: "Contacts",
@@ -167,7 +169,7 @@ const en = {
     research: "AI Research",
   },
 
-  // ─── PIPELINE STAGES ───────────────────────────
+  // ─── Pipeline Stages (English fallback — professional translation pending) ───
   stages: {
     LEAD: "Lead",
     PRESENTATION: "Presentation",
@@ -180,7 +182,7 @@ const en = {
     CUSTOMER_WON: "Won",
   },
 
-  // ─── PRODUCTS ──────────────────────────────────
+  // ─── Products (English fallback — professional translation pending) ───
   products: {
     title: "Products",
     addProduct: "Add Product",
@@ -197,7 +199,7 @@ const en = {
     skus: "SKUs",
   },
 
-  // ─── CONTACTS ──────────────────────────────────
+  // ─── Contacts (English fallback — professional translation pending) ───
   contacts: {
     title: "Contacts",
     addContact: "Add Contact",
@@ -210,7 +212,7 @@ const en = {
     noContacts: "No contacts",
   },
 
-  // ─── FABRICS ───────────────────────────────────
+  // ─── Fabrics (English fallback — professional translation pending) ───
   fabrics: {
     title: "Fabrics",
     fabricsInLibrary: "fabrics in the library",
@@ -254,7 +256,7 @@ const en = {
     notes: "Notes",
   },
 
-  // ─── FACTORIES ─────────────────────────────────
+  // ─── Factories (English fallback — professional translation pending) ───
   factories: {
     title: "Factories",
     factoriesAcrossCountries: "factories across {count} countries",
@@ -311,7 +313,7 @@ const en = {
     profileCompleteness: "Profile Completeness",
   },
 
-  // ─── TESTS ─────────────────────────────────────
+  // ─── Tests (English fallback — professional translation pending) ───
   tests: {
     title: "Test Results",
     testType: "Test Type",
@@ -376,7 +378,7 @@ const en = {
     agarMedium: "Agar Medium",
   },
 
-  // ─── SOW ───────────────────────────────────────
+  // ─── SOW (English fallback — professional translation pending) ───
   sow: {
     title: "Statements of Work",
     subtitle: "SOWs — Commercialization governance tracking",
@@ -477,7 +479,7 @@ const en = {
     date: "Date",
   },
 
-  // ─── RESEARCH ──────────────────────────────────
+  // ─── Research (English fallback — professional translation pending) ───
   research: {
     title: "AI Brand Intelligence",
     subtitle: "AI-powered research on {name} — finds decision makers, company intel, and sales opportunities",
@@ -530,7 +532,7 @@ const en = {
     recentNewsTriggers: "Recent News & Triggers",
   },
 
-  // ─── CSV INGEST ────────────────────────────────
+  // ─── CSV Ingest (English fallback — professional translation pending) ───
   ingest: {
     title: "Ingest CSV",
     subtitle: "Upload a CSV export. We'll create/update Fabrics, create Submissions when FUZE # exists, and store every row in SourceRecord for traceability.",
@@ -543,7 +545,7 @@ const en = {
     result: "Result",
   },
 
-  // ─── TEST UPLOAD ───────────────────────────────
+  // ─── Test Upload (English fallback — professional translation pending) ───
   upload: {
     title: "Test Upload / Document Upload",
     dragDrop: "Drag files here or click to browse",
@@ -560,53 +562,53 @@ const en = {
     createNew: "Create New {entity}",
   },
 
-  // ─── SUBMISSION ────────────────────────────────
+  // ─── Submission (English fallback — professional translation pending) ───
   submission: {
     fuzeFabricNumber: "FUZE Fabric Number",
   },
 
-  // ─── NAME ──────────────────────────────────────
+  // ─── Name (English fallback — professional translation pending) ───
   name: {
     trim: "Name (trimmed)",
   },
 
-
-  // ─── LOGIN ──────────────────────────────────────
+  // ─── Login ──────────────────────────────────
   login: {
-    loading: "Loading...",
-    initialSetup: "Initial Setup",
-    signIn: "Sign In",
-    createAdminSubtitle: "Create your admin account to get started",
-    signInSubtitle: "Existing users — sign in to your account",
-    loginFailed: "Login failed",
-    yourName: "Your Name",
-    namePlaceholder: "Your full name",
-    email: "Email",
+    loading: "読み込み中...",
+    initialSetup: "初期設定",
+    signIn: "サインイン",
+    createAdminSubtitle: "開始するには管理者アカウントを作成してください",
+    signInSubtitle: "既存のユーザー — アカウントにサインイン",
+    loginFailed: "ログイン失敗",
+    yourName: "お名前",
+    namePlaceholder: "氏名を入力",
+    email: "メールアドレス",
     emailPlaceholder: "you@company.com",
-    password: "Password",
-    forgotPassword: "Forgot password?",
-    passwordSetupPlaceholder: "Choose a password (6+ chars)",
-    passwordPlaceholder: "Enter your password",
-    pleaseWait: "Please wait...",
-    createAdminBtn: "Create Admin Account",
-    signInBtn: "Sign In",
-    setupHelp: "This creates the first admin account. You can add more users later from Settings.",
-    brandAccessTitle: "Brand Partner Access",
-    brandAccessDesc: "Are you a brand looking for antimicrobial textile solutions? Request access to view your fabrics, test results, and manage your FUZE program.",
-    requestBrandAccess: "Request Brand Access",
-    factoryAccessTitle: "Factory / Mill Access",
-    factoryAccessDesc: "Are you a textile mill or factory partner? Register to submit fabrics, request FUZE testing, track results, and manage your production.",
-    requestFactoryAccess: "Request Factory Access",
-    faqTitle: "FUZE FAQ & Knowledge Base",
-    faqDesc: "Have questions about FUZE antimicrobial technology? Search our knowledge base.",
-    faqPlaceholder: "e.g. How does silver nanoparticle bonding work?",
-    faqSearch: "Search",
-    tagline: "Antimicrobial Textile Intelligence Platform",
-    footer: "FUZE Biotech Inc. · Antimicrobial Textile Solutions",
-    networkError: "Network error",
-    setupFailed: "Setup failed",
+    password: "パスワード",
+    forgotPassword: "パスワードをお忘れですか？",
+    passwordSetupPlaceholder: "パスワードを選択（6文字以上）",
+    passwordPlaceholder: "パスワードを入力",
+    pleaseWait: "お待ちください...",
+    createAdminBtn: "管理者アカウントを作成",
+    signInBtn: "サインイン",
+    setupHelp: "最初の管理者アカウントを作成します。後で設定からユーザーを追加できます。",
+    brandAccessTitle: "ブランドパートナーアクセス",
+    brandAccessDesc: "抗菌テキスタイルソリューションをお探しのブランドですか？生地、テスト結果の確認、FUZEプログラムの管理のためにアクセスをリクエストしてください。",
+    requestBrandAccess: "ブランドアクセスをリクエスト",
+    factoryAccessTitle: "工場 / 織物工場アクセス",
+    factoryAccessDesc: "テキスタイル工場またはファクトリーパートナーですか？生地の提出、FUZEテストのリクエスト、結果の追跡、生産管理のために登録してください。",
+    requestFactoryAccess: "工場アクセスをリクエスト",
+    faqTitle: "FUZE FAQ & ナレッジベース",
+    faqDesc: "FUZE抗菌技術について質問がありますか？ナレッジベースで検索してください。",
+    faqPlaceholder: "例：銀ナノ粒子の結合はどのように機能しますか？",
+    faqSearch: "検索",
+    tagline: "抗菌テキスタイルインテリジェンスプラットフォーム",
+    footer: "FUZE Biotech Inc. · 抗菌テキスタイルソリューション",
+    networkError: "ネットワークエラー",
+    setupFailed: "設定に失敗しました",
   },
-  // ─── LANGUAGE ──────────────────────────────────
+
+  // ─── Language ──────────────────────────────────
   language: {
     english: "English",
     zhTW: "繁體中文",
@@ -615,5 +617,4 @@ const en = {
   },
 };
 
-export default en;
-export type Translations = typeof en;
+export default ja;

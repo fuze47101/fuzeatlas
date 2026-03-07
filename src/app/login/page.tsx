@@ -2,12 +2,15 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import Image from "next/image";
+import LoginLanguageSwitcher from "@/components/LoginLanguageSwitcher";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, login } = useAuth();
+  const { t } = useI18n();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,7 +49,7 @@ function LoginForm() {
 
     const result = await login(email, password);
     if (!result.ok) {
-      setError(result.error || "Login failed");
+      setError(result.error || t.login.loginFailed);
     } else {
       const from = searchParams.get("from") || "/dashboard";
       router.push(from);
@@ -69,10 +72,10 @@ function LoginForm() {
       if (data.ok) {
         window.location.href = "/dashboard";
       } else {
-        setError(data.error || "Setup failed");
+        setError(data.error || t.login.setupFailed);
       }
     } catch {
-      setError("Network error");
+      setError(t.login.networkError);
     }
     setLoading(false);
   };
@@ -87,13 +90,16 @@ function LoginForm() {
   if (!setupChecked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-slate-400 text-sm">Loading...</div>
+        <div className="text-slate-400 text-sm">{t.login.loading}</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col relative">
+      {/* Language Switcher */}
+      <LoginLanguageSwitcher />
+
       {/* ── Top Logo Bar ── */}
       <div className="w-full py-6 flex justify-center">
         <div className="flex items-center gap-3">
@@ -111,7 +117,7 @@ function LoginForm() {
       {/* ── Tagline ── */}
       <div className="text-center mb-8">
         <p className="text-slate-400 text-sm tracking-wide">
-          Antimicrobial Textile Intelligence Platform
+          {t.login.tagline}
         </p>
       </div>
 
@@ -123,10 +129,10 @@ function LoginForm() {
           <div className="lg:w-[420px] flex-shrink-0">
             <div className="bg-white rounded-2xl shadow-2xl p-8">
               <h2 className="text-xl font-bold text-slate-900 mb-1">
-                {isSetup ? "Initial Setup" : "Sign In"}
+                {isSetup ? t.login.initialSetup : t.login.signIn}
               </h2>
               <p className="text-sm text-slate-500 mb-6">
-                {isSetup ? "Create your admin account to get started" : "Existing users — sign in to your account"}
+                {isSetup ? t.login.createAdminSubtitle : t.login.signInSubtitle}
               </p>
 
               {error && (
@@ -139,14 +145,14 @@ function LoginForm() {
                 {isSetup && (
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                      Your Name
+                      {t.login.yourName}
                     </label>
                     <input
                       type="text"
                       value={setupName}
                       onChange={(e) => setSetupName(e.target.value)}
                       className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                      placeholder="Andrew Chen"
+                      placeholder={t.login.namePlaceholder}
                       required
                     />
                   </div>
@@ -154,14 +160,14 @@ function LoginForm() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Email
+                    {t.login.email}
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="you@company.com"
+                    placeholder={t.login.emailPlaceholder}
                     required
                     autoFocus
                   />
@@ -170,11 +176,11 @@ function LoginForm() {
                 <div>
                   <div className="flex justify-between items-center mb-1">
                     <label className="block text-sm font-medium text-slate-700">
-                      Password
+                      {t.login.password}
                     </label>
                     {!isSetup && (
                       <a href="/forgot-password" className="text-xs text-[#00b4c3] hover:underline">
-                        Forgot password?
+                        {t.login.forgotPassword}
                       </a>
                     )}
                   </div>
@@ -183,7 +189,7 @@ function LoginForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder={isSetup ? "Choose a password (6+ chars)" : "Enter your password"}
+                    placeholder={isSetup ? t.login.passwordSetupPlaceholder : t.login.passwordPlaceholder}
                     required
                     minLength={isSetup ? 6 : 1}
                   />
@@ -195,16 +201,16 @@ function LoginForm() {
                   className="w-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-2.5 rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading
-                    ? "Please wait..."
+                    ? t.login.pleaseWait
                     : isSetup
-                    ? "Create Admin Account"
-                    : "Sign In"}
+                    ? t.login.createAdminBtn
+                    : t.login.signInBtn}
                 </button>
               </form>
 
               {isSetup && (
                 <p className="mt-4 text-xs text-slate-500 text-center">
-                  This creates the first admin account. You can add more users later from Settings.
+                  {t.login.setupHelp}
                 </p>
               )}
             </div>
@@ -224,13 +230,13 @@ function LoginForm() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-white group-hover:text-[#00b4c3] transition-colors">
-                      Brand Partner Access
+                      {t.login.brandAccessTitle}
                     </h3>
                     <p className="text-sm text-slate-400 mt-1 leading-relaxed">
-                      Are you a brand looking for antimicrobial textile solutions? Request access to view your fabrics, test results, and manage your FUZE program.
+                      {t.login.brandAccessDesc}
                     </p>
                     <span className="inline-flex items-center gap-1 mt-3 text-xs font-semibold text-[#00b4c3]">
-                      Request Brand Access
+                      {t.login.requestBrandAccess}
                       <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
@@ -250,13 +256,13 @@ function LoginForm() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
-                      Factory / Mill Access
+                      {t.login.factoryAccessTitle}
                     </h3>
                     <p className="text-sm text-slate-400 mt-1 leading-relaxed">
-                      Are you a textile mill or factory partner? Register to submit fabrics, request FUZE testing, track results, and manage your production.
+                      {t.login.factoryAccessDesc}
                     </p>
                     <span className="inline-flex items-center gap-1 mt-3 text-xs font-semibold text-amber-400">
-                      Request Factory Access
+                      {t.login.requestFactoryAccess}
                       <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
@@ -273,24 +279,24 @@ function LoginForm() {
                   </div>
                   <div className="flex-1">
                     <h3 className="text-lg font-bold text-white">
-                      FUZE FAQ &amp; Knowledge Base
+                      {t.login.faqTitle}
                     </h3>
                     <p className="text-sm text-slate-400 mt-1 mb-3">
-                      Have questions about FUZE antimicrobial technology? Search our knowledge base.
+                      {t.login.faqDesc}
                     </p>
                     <form onSubmit={handleFaqSearch} className="flex gap-2">
                       <input
                         type="text"
                         value={faqQuery}
                         onChange={(e) => setFaqQuery(e.target.value)}
-                        placeholder="e.g. How does silver nanoparticle bonding work?"
+                        placeholder={t.login.faqPlaceholder}
                         className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none"
                       />
                       <button
                         type="submit"
                         className="px-4 py-2 bg-violet-500 hover:bg-violet-600 text-white rounded-lg text-sm font-medium transition-colors flex-shrink-0"
                       >
-                        Search
+                        {t.login.faqSearch}
                       </button>
                     </form>
                   </div>
@@ -304,7 +310,7 @@ function LoginForm() {
       {/* Footer */}
       <div className="text-center py-4 border-t border-slate-800">
         <p className="text-xs text-slate-500">
-          FUZE Biotech Inc. &middot; Antimicrobial Textile Solutions &middot; v0.5.0
+          {t.login.footer} &middot; v0.5.0
         </p>
       </div>
     </div>

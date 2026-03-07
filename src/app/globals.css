@@ -3,3 +3,8 @@
 @tailwind utilities;
 
 body { @apply bg-slate-50 text-slate-900; }
+
+/* RTL support for Urdu */
+html[dir="rtl"] .sidebar-nav { direction: rtl; text-align: right; }
+html[dir="rtl"] input, html[dir="rtl"] textarea { direction: ltr; text-align: left; }
+html[dir="rtl"] [dir="ltr"] { direction: ltr; }
