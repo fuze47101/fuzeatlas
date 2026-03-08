@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/AuthContext";
 import I18nProvider from "@/i18n/I18nProvider";
 import AuthLayout from "@/components/AuthLayout";
+import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
   title: "FUZE Atlas",
@@ -22,7 +23,9 @@ export default function RootLayout({
       <body className="bg-slate-50 text-slate-900 antialiased">
         <AuthProvider>
           <I18nProvider>
-            <AuthLayout>{children}</AuthLayout>
+            <ToastProvider>
+              <AuthLayout>{children}</AuthLayout>
+            </ToastProvider>
           </I18nProvider>
         </AuthProvider>
       </body>

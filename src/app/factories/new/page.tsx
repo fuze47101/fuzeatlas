@@ -2,10 +2,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
+import { useToast } from "@/components/Toast";
 
 export default function NewFactoryPage() {
   const router = useRouter();
   const { t } = useI18n();
+  const toast = useToast();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({
@@ -23,7 +25,7 @@ export default function NewFactoryPage() {
     try {
       const res = await fetch("/api/factories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       const j = await res.json();
-      if (j.ok) router.push(`/factories/${j.factory.id}`);
+      if (j.ok) { toast.success(`Factory "${form.name}" created`); router.push(`/factories/${j.factory.id}`); }
       else setError(j.error || t.factories.failedToCreateFactory);
     } catch (e: any) { setError(e.message); } finally { setSaving(false); }
   };

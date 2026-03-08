@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasMinRole, hashPassword } from "@/lib/auth";
+import { sendAccessApprovedEmail, sendAccessDeniedEmail } from "@/lib/email";
 
 /* ── PUT /api/access-requests/[id] ── ADMIN: approve or deny ── */
 export async function PUT(
@@ -100,6 +101,15 @@ export async function PUT(
           },
         });
 
+        // Send approval email with credentials
+        await sendAccessApprovedEmail({
+          email: request.email,
+          name: `${request.firstName} ${request.lastName}`,
+          tempPassword,
+          companyName: request.company,
+          accountType: "factory",
+        });
+
         return NextResponse.json({
           ok: true,
           action: "approved",
@@ -180,6 +190,15 @@ export async function PUT(
           },
         });
 
+        // Send approval email with credentials
+        await sendAccessApprovedEmail({
+          email: request.email,
+          name: `${request.firstName} ${request.lastName}`,
+          tempPassword,
+          companyName: request.company,
+          accountType: "brand",
+        });
+
         return NextResponse.json({
           ok: true,
           action: "approved",
@@ -205,6 +224,14 @@ export async function PUT(
           reviewNote: reviewNote || null,
           deniedReason: deniedReason || "Request not approved at this time.",
         },
+      });
+
+      // Send denial email
+      await sendAccessDeniedEmail({
+        email: request.email,
+        name: `${request.firstName} ${request.lastName}`,
+        companyName: request.company,
+        reason: deniedReason,
       });
 
       return NextResponse.json({

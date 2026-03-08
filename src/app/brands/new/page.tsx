@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
+import { useToast } from "@/components/Toast";
 
 const STAGES = [
   "LEAD","PRESENTATION","BRAND_TESTING","FACTORY_ONBOARDING",
@@ -11,6 +12,7 @@ const STAGES = [
 export default function NewBrandPage() {
   const router = useRouter();
   const { t } = useI18n();
+  const toast = useToast();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [users, setUsers] = useState<any[]>([]);
@@ -40,6 +42,7 @@ export default function NewBrandPage() {
       });
       const j = await res.json();
       if (j.ok) {
+        toast.success(`Brand "${form.name}" created`);
         router.push(`/brands/${j.brand.id}`);
       } else {
         setError(j.error || t.brands.createBrandFailed);

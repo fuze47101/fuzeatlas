@@ -2,15 +2,19 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
+import { useToast } from "@/components/Toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function FabricsPage() {
   const router = useRouter();
   const { t } = useI18n();
+  const toast = useToast();
   const [fabrics, setFabrics] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; label: string } | null>(null);
 
   const loadFabrics = () => {
     fetch("/api/fabrics").then(r => r.json()).then(j => {
@@ -20,10 +24,16 @@ export default function FabricsPage() {
 
   useEffect(loadFabrics, []);
 
-  const handleDelete = async (e: React.MouseEvent, id: string, fuzeNum: number | null) => {
+  const handleDelete = (e: React.MouseEvent, id: string, fuzeNum: number | null) => {
     e.stopPropagation();
     const label = fuzeNum ? `FUZE ${fuzeNum}` : "this fabric";
-    if (!confirm(`Delete ${label}? This cannot be undone.`)) return;
+    setDeleteTarget({ id, label });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { id } = deleteTarget;
+    setDeleteTarget(null);
     setDeleting(id);
     try {
       const res = await fetch(`/api/fabrics/${id}`, { method: "DELETE" });
@@ -31,8 +41,9 @@ export default function FabricsPage() {
       if (j.ok) {
         setFabrics(prev => prev.filter(f => f.id !== id));
         setTotal(prev => prev - 1);
+        toast.success("Fabric deleted");
       } else {
-        alert(j.error || "Failed to delete");
+        toast.error(j.error || "Failed to delete");
       }
     } finally {
       setDeleting(null);
@@ -109,6 +120,18 @@ export default function FabricsPage() {
         {filtered.length === 0 && <div className="text-center py-12 text-slate-400">{t.fabrics.noFabrics}</div>}
         {filtered.length > 200 && <div className="text-center py-3 text-xs text-slate-400">{t.fabrics.showingFirst.replace('{first}', '200').replace('{total}', String(filtered.length))}</div>}
       </div>
+
+      {/* Delete Confirmation (F-023) */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title={`Delete ${deleteTarget?.label || "fabric"}?`}
+        message="This fabric and all its associated data will be permanently deleted. This cannot be undone."
+        confirmLabel="Delete Fabric"
+        variant="danger"
+        loading={!!deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

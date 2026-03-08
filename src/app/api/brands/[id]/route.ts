@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { autoScheduleMeeting } from "@/lib/meeting-templates";
+import { notifyPipelineChange } from "@/lib/notify";
 
 const prisma = new PrismaClient();
 
@@ -101,6 +102,18 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
       } catch (e) {
         console.warn("Auto-schedule meeting skipped:", e);
       }
+    }
+
+    // Notify team on pipeline stage change (F-032)
+    if (pipelineStage && pipelineStage !== oldStage) {
+      const userId = req.headers.get("x-user-id") || "";
+      await notifyPipelineChange({
+        brandId: params.id,
+        brandName: brand.name,
+        oldStage: oldStage || "LEAD",
+        newStage: pipelineStage,
+        changedBy: userId || undefined,
+      }).catch((e) => console.warn("Pipeline notification skipped:", e));
     }
 
     return NextResponse.json({ ok: true, brand, autoMeeting });

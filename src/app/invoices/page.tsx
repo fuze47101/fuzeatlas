@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { INVOICE_STATUSES, formatMoney, daysAgo } from "@/lib/revenue-calc";
 import { CURRENCIES } from "@/lib/fuze-calc";
+import { useToast } from "@/components/Toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 type Invoice = {
   id: string;
@@ -42,6 +44,8 @@ export default function InvoicesPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
+  const toast = useToast();
+  const [confirmAction, setConfirmAction] = useState<{ id: string; status: string; label: string } | null>(null);
 
   const [form, setForm] = useState({
     invoiceNumber: "",
@@ -100,6 +104,7 @@ export default function InvoicesPage() {
           dueDate: "", amount: "", currency: "USD", status: "DRAFT",
           distributorId: "", factoryId: "", brandId: "", projectId: "", description: "",
         });
+        toast.success("Invoice created");
         load();
       }
     } finally {
@@ -107,12 +112,23 @@ export default function InvoicesPage() {
     }
   };
 
-  const updateStatus = async (id: string, newStatus: string) => {
+  const updateStatus = (id: string, newStatus: string) => {
+    // Require confirmation for significant status changes (F-025)
+    if (newStatus === "PAID" || newStatus === "CANCELLED") {
+      const label = newStatus === "PAID" ? "Mark this invoice as paid?" : "Cancel this invoice?";
+      setConfirmAction({ id, status: newStatus, label });
+      return;
+    }
+    doStatusUpdate(id, newStatus);
+  };
+
+  const doStatusUpdate = async (id: string, newStatus: string) => {
     await fetch(`/api/invoices/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),
     });
+    toast.success(`Invoice marked as ${newStatus}`);
     load();
   };
 
@@ -318,6 +334,22 @@ export default function InvoicesPage() {
           </div>
         </div>
       )}
+
+      {/* Confirm Status Change (F-025) */}
+      <ConfirmDialog
+        open={!!confirmAction}
+        title={confirmAction?.label || "Confirm"}
+        message={confirmAction?.status === "PAID"
+          ? "This will record the invoice as paid and update revenue calculations. Are you sure?"
+          : "This will cancel the invoice. You can change the status back later if needed."}
+        confirmLabel={confirmAction?.status === "PAID" ? "Mark as Paid" : "Cancel Invoice"}
+        variant={confirmAction?.status === "CANCELLED" ? "danger" : "warning"}
+        onConfirm={() => {
+          if (confirmAction) doStatusUpdate(confirmAction.id, confirmAction.status);
+          setConfirmAction(null);
+        }}
+        onCancel={() => setConfirmAction(null)}
+      />
     </div>
   );
 }

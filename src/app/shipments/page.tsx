@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useToast } from "@/components/Toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 const STATUS_COLORS: Record<string, string> = {
   PREPARING: "bg-slate-100 text-slate-800",
@@ -18,6 +20,8 @@ export default function ShipmentsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const [showForm, setShowForm] = useState(false);
+  const toast = useToast();
+  const [confirmStatus, setConfirmStatus] = useState<{ id: string; status: string } | null>(null);
   const [formData, setFormData] = useState({
     fabricId: "",
     labId: "",
@@ -76,7 +80,11 @@ export default function ShipmentsPage() {
     }
   };
 
-  const handleStatusUpdate = async (shipmentId: string, newStatus: string) => {
+  const handleStatusUpdate = (shipmentId: string, newStatus: string) => {
+    setConfirmStatus({ id: shipmentId, status: newStatus });
+  };
+
+  const doStatusUpdate = async (shipmentId: string, newStatus: string) => {
     try {
       const res = await fetch(`/api/shipments/${shipmentId}`, {
         method: "PUT",
@@ -89,10 +97,12 @@ export default function ShipmentsPage() {
       });
       const data = await res.json();
       if (data.ok) {
+        toast.success(`Shipment status updated to ${newStatus.replace(/_/g, " ")}`);
         fetchShipments();
       }
     } catch (error) {
       console.error("Error updating shipment:", error);
+      toast.error("Failed to update shipment status");
     }
   };
 
@@ -382,6 +392,20 @@ export default function ShipmentsPage() {
           </div>
         )}
       </div>
+
+      {/* Confirm Status Change (F-026) */}
+      <ConfirmDialog
+        open={!!confirmStatus}
+        title={`Advance to ${confirmStatus?.status?.replace(/_/g, " ") || ""}?`}
+        message="This will update the shipment status and log a chain-of-custody event. This action can be reversed by an admin."
+        confirmLabel={`Update to ${confirmStatus?.status?.replace(/_/g, " ") || ""}`}
+        variant="warning"
+        onConfirm={() => {
+          if (confirmStatus) doStatusUpdate(confirmStatus.id, confirmStatus.status);
+          setConfirmStatus(null);
+        }}
+        onCancel={() => setConfirmStatus(null)}
+      />
     </div>
   );
 }

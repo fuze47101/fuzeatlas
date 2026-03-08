@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
+import { sendPasswordResetEmail } from "@/lib/email";
 
 /* ── POST /api/auth/forgot-password ── initiate password reset ────────── */
 export async function POST(req: Request) {
@@ -37,12 +38,16 @@ export async function POST(req: Request) {
       },
     });
 
-    // TODO: Send email with reset link: /reset-password?token={token}
-    // For now, return token in response for testing
+    // Send password reset email
+    await sendPasswordResetEmail({
+      email: user.email,
+      name: user.name,
+      resetToken: token,
+    });
+
     return NextResponse.json({
       ok: true,
       message: "If an account exists with that email, you'll receive a reset link.",
-      token, // Remove in production after email integration
     });
   } catch (error) {
     console.error("Error in forgot-password:", error);
