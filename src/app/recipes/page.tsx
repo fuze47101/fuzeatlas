@@ -1,7 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useToast } from "@/components/Toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function RecipesPage() {
+  const toast = useToast();
   const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -114,6 +117,7 @@ export default function RecipesPage() {
 
       const data = await res.json();
       if (data.ok) {
+        toast.success("Recipe created");
         setShowCreateForm(false);
         setNewRecipe({
           name: "",
@@ -142,6 +146,97 @@ export default function RecipesPage() {
       }
     } catch (error) {
       console.error("Error creating recipe:", error);
+      toast.error("Failed to create recipe");
+    }
+  };
+
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [editingRecipe, setEditingRecipe] = useState<any | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: "", fabricType: "", fiberContent: "", fuzeTier: "",
+    applicationMethod: "", avgIcpAg: "", avgReduction: "", passRate: "", notes: "",
+  });
+
+  const startEdit = (recipe: any) => {
+    setEditForm({
+      name: recipe.name || "",
+      fabricType: recipe.fabricType || "",
+      fiberContent: recipe.fiberContent || "",
+      fuzeTier: recipe.fuzeTier || "",
+      applicationMethod: recipe.applicationMethod || "",
+      avgIcpAg: recipe.avgIcpAg?.toString() || "",
+      avgReduction: recipe.avgReduction?.toString() || "",
+      passRate: recipe.passRate?.toString() || "",
+      notes: recipe.notes || "",
+    });
+    setEditingRecipe(recipe);
+  };
+
+  const saveEdit = async () => {
+    if (!editingRecipe) return;
+    try {
+      const payload = {
+        name: editForm.name,
+        fabricType: editForm.fabricType || null,
+        fiberContent: editForm.fiberContent || null,
+        fuzeTier: editForm.fuzeTier || null,
+        applicationMethod: editForm.applicationMethod || null,
+        avgIcpAg: editForm.avgIcpAg ? parseFloat(editForm.avgIcpAg) : null,
+        avgReduction: editForm.avgReduction ? parseFloat(editForm.avgReduction) : null,
+        passRate: editForm.passRate ? parseFloat(editForm.passRate) : null,
+        notes: editForm.notes || null,
+      };
+      const res = await fetch(`/api/recipes/${editingRecipe.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        toast.success("Recipe updated");
+        setEditingRecipe(null);
+        fetchRecipes();
+      } else {
+        toast.error(data.error || "Failed to update recipe");
+      }
+    } catch {
+      toast.error("Failed to update recipe");
+    }
+  };
+
+  const deleteRecipe = async (id: string) => {
+    try {
+      const res = await fetch(`/api/recipes/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.ok) {
+        toast.success("Recipe deleted");
+        fetchRecipes();
+      } else {
+        toast.error(data.error || "Failed to delete recipe");
+      }
+    } catch {
+      toast.error("Failed to delete recipe");
+    }
+  };
+
+  const cloneRecipe = async (recipe: any) => {
+    try {
+      const { id, createdAt, updatedAt, matchScore, ...rest } = recipe;
+      const payload = { ...rest, name: `${recipe.name} (Copy)` };
+      const res = await fetch("/api/recipes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        toast.success(`Recipe cloned as "${payload.name}"`);
+        fetchRecipes();
+      } else {
+        toast.error(data.error || "Failed to clone recipe");
+      }
+    } catch {
+      toast.error("Failed to clone recipe");
     }
   };
 
@@ -443,12 +538,133 @@ export default function RecipesPage() {
                       {recipe.notes}
                     </p>
                   )}
+
+                  {/* Action buttons */}
+                  <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100">
+                    <button onClick={() => startEdit(recipe)}
+                      className="flex-1 px-2 py-1.5 text-xs font-medium text-[#00b4c3] border border-[#00b4c3]/30 rounded-lg hover:bg-[#00b4c3]/5 transition-colors">
+                      Edit
+                    </button>
+                    <button onClick={() => cloneRecipe(recipe)}
+                      className="flex-1 px-2 py-1.5 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors">
+                      Clone
+                    </button>
+                    <button onClick={() => setDeleteConfirm(recipe.id)}
+                      className="flex-1 px-2 py-1.5 text-xs font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Edit Recipe Modal */}
+      {editingRecipe && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setEditingRecipe(null)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
+              <h2 className="text-lg font-bold text-slate-900">Edit Recipe</h2>
+              <button onClick={() => setEditingRecipe(null)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Recipe Name</label>
+                <input type="text" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Fabric Type</label>
+                  <select value={editForm.fabricType} onChange={(e) => setEditForm({ ...editForm, fabricType: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    <option value="">Select...</option>
+                    <option value="Knit">Knit</option>
+                    <option value="Woven">Woven</option>
+                    <option value="Nonwoven">Nonwoven</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Fiber Content</label>
+                  <input type="text" value={editForm.fiberContent} onChange={(e) => setEditForm({ ...editForm, fiberContent: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">FUZE Tier</label>
+                  <select value={editForm.fuzeTier} onChange={(e) => setEditForm({ ...editForm, fuzeTier: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    <option value="">Select...</option>
+                    <option value="F1">F1</option>
+                    <option value="F2">F2</option>
+                    <option value="F3">F3</option>
+                    <option value="F4">F4</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Application Method</label>
+                  <select value={editForm.applicationMethod} onChange={(e) => setEditForm({ ...editForm, applicationMethod: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    <option value="">Select...</option>
+                    <option value="Pad">Pad</option>
+                    <option value="Exhaust">Exhaust</option>
+                    <option value="Spray">Spray</option>
+                    <option value="Foam">Foam</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Avg ICP Ag (ppm)</label>
+                  <input type="number" value={editForm.avgIcpAg} onChange={(e) => setEditForm({ ...editForm, avgIcpAg: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Avg Reduction (%)</label>
+                  <input type="number" value={editForm.avgReduction} onChange={(e) => setEditForm({ ...editForm, avgReduction: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Pass Rate (%)</label>
+                  <input type="number" value={editForm.passRate} onChange={(e) => setEditForm({ ...editForm, passRate: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Notes</label>
+                <textarea value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" rows={3} />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end sticky bottom-0 bg-white">
+              <button onClick={() => setEditingRecipe(null)} className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">
+                Cancel
+              </button>
+              <button onClick={saveEdit} className="px-5 py-2 text-sm font-semibold bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa]">
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        open={!!deleteConfirm}
+        title="Delete Recipe?"
+        message="This will permanently delete this recipe from the library. This action cannot be undone."
+        confirmLabel="Delete Recipe"
+        variant="danger"
+        onConfirm={() => {
+          if (deleteConfirm) deleteRecipe(deleteConfirm);
+          setDeleteConfirm(null);
+        }}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </div>
   );
 }

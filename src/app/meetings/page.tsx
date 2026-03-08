@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/Toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface Meeting {
   id: string;
@@ -86,6 +88,18 @@ export default function MeetingsPage() {
     newAttendeeEmail: "",
   });
   const [creating, setCreating] = useState(false);
+  const toast = useToast();
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
+  const [completeModal, setCompleteModal] = useState<string | null>(null);
+  const [completeNotes, setCompleteNotes] = useState("");
+  const [completeOutcome, setCompleteOutcome] = useState("");
+  const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
+  const [editForm, setEditForm] = useState({
+    title: "", description: "", meetingType: "INTERNAL",
+    startDate: "", startTime: "10:00", duration: 60,
+    location: "", brandId: "", projectId: "",
+  });
 
   const loadMeetings = () => {
     const params = new URLSearchParams();
@@ -188,22 +202,96 @@ export default function MeetingsPage() {
           attendees: [], newAttendeeName: "", newAttendeeEmail: "",
         });
         setSelectedTemplate(null);
+        toast.success("Meeting scheduled");
         loadMeetings();
+      } else {
+        toast.error(d.error || "Failed to schedule meeting");
       }
     } catch (e) {
       console.error(e);
+      toast.error("Failed to schedule meeting");
     } finally {
       setCreating(false);
     }
   };
 
   const updateStatus = async (id: string, action: string, extra?: Record<string, any>) => {
-    await fetch(`/api/meetings/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action, ...extra }),
+    try {
+      await fetch(`/api/meetings/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, ...extra }),
+      });
+      toast.success(`Meeting ${action === "complete" ? "completed" : action === "cancel" ? "cancelled" : "updated"}`);
+      loadMeetings();
+    } catch {
+      toast.error("Failed to update meeting");
+    }
+  };
+
+  const deleteMeeting = async (id: string) => {
+    try {
+      const res = await fetch(`/api/meetings/${id}`, { method: "DELETE" });
+      const d = await res.json();
+      if (d.ok) {
+        toast.success("Meeting deleted");
+        loadMeetings();
+      } else {
+        toast.error(d.error || "Failed to delete meeting");
+      }
+    } catch {
+      toast.error("Failed to delete meeting");
+    }
+  };
+
+  const startEdit = (m: Meeting) => {
+    const start = new Date(m.startTime);
+    const end = new Date(m.endTime);
+    const durationMin = Math.round((end.getTime() - start.getTime()) / 60000);
+    setEditForm({
+      title: m.title,
+      description: m.description || "",
+      meetingType: m.meetingType,
+      startDate: start.toISOString().slice(0, 10),
+      startTime: start.toTimeString().slice(0, 5),
+      duration: durationMin,
+      location: m.location || "",
+      brandId: m.brandId || "",
+      projectId: m.projectId || "",
     });
-    loadMeetings();
+    setEditingMeeting(m);
+  };
+
+  const saveEdit = async () => {
+    if (!editingMeeting) return;
+    try {
+      const startDt = new Date(`${editForm.startDate}T${editForm.startTime}:00`);
+      const endDt = new Date(startDt.getTime() + editForm.duration * 60000);
+      const res = await fetch(`/api/meetings/${editingMeeting.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editForm.title,
+          description: editForm.description,
+          meetingType: editForm.meetingType,
+          startTime: startDt.toISOString(),
+          endTime: endDt.toISOString(),
+          location: editForm.location,
+          brandId: editForm.brandId || null,
+          projectId: editForm.projectId || null,
+        }),
+      });
+      const d = await res.json();
+      if (d.ok) {
+        toast.success("Meeting updated");
+        setEditingMeeting(null);
+        loadMeetings();
+      } else {
+        toast.error(d.error || "Failed to update meeting");
+      }
+    } catch {
+      toast.error("Failed to update meeting");
+    }
   };
 
   const formatDate = (iso: string) => {
@@ -438,26 +526,38 @@ export default function MeetingsPage() {
                     >
                       📅 Add to Calendar (.ics)
                     </a>
+                    <button
+                      onClick={() => startEdit(m)}
+                      className="px-3 py-1.5 text-xs font-semibold bg-white text-[#00b4c3] border border-[#00b4c3]/30 rounded-lg hover:bg-[#00b4c3]/5 transition-colors"
+                    >
+                      Edit
+                    </button>
                     {m.status === "SCHEDULED" && (
                       <>
                         <button
                           onClick={() => {
-                            const notes = prompt("Meeting notes (optional):");
-                            const outcome = prompt("Meeting outcome (optional):");
-                            updateStatus(m.id, "complete", { notes, outcome });
+                            setCompleteNotes("");
+                            setCompleteOutcome("");
+                            setCompleteModal(m.id);
                           }}
                           className="px-3 py-1.5 text-xs font-semibold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
                         >
                           ✓ Mark Complete
                         </button>
                         <button
-                          onClick={() => updateStatus(m.id, "cancel")}
-                          className="px-3 py-1.5 text-xs font-semibold bg-white text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                          onClick={() => setCancelConfirm(m.id)}
+                          className="px-3 py-1.5 text-xs font-semibold bg-white text-amber-600 border border-amber-200 rounded-lg hover:bg-amber-50 transition-colors"
                         >
-                          Cancel
+                          Cancel Meeting
                         </button>
                       </>
                     )}
+                    <button
+                      onClick={() => setDeleteConfirm(m.id)}
+                      className="px-3 py-1.5 text-xs font-semibold bg-white text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               )}
@@ -465,6 +565,180 @@ export default function MeetingsPage() {
           );
         })}
       </div>
+
+      {/* Complete Meeting Modal */}
+      {completeModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setCompleteModal(null)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="px-6 py-4 border-b border-slate-200">
+              <h2 className="text-lg font-bold text-slate-900">Complete Meeting</h2>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Meeting Notes (optional)</label>
+                <textarea
+                  value={completeNotes}
+                  onChange={(e) => setCompleteNotes(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                  rows={3}
+                  placeholder="Key discussion points..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Outcome (optional)</label>
+                <textarea
+                  value={completeOutcome}
+                  onChange={(e) => setCompleteOutcome(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                  rows={2}
+                  placeholder="Decisions made, action items..."
+                />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end">
+              <button onClick={() => setCompleteModal(null)} className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  updateStatus(completeModal, "complete", {
+                    notes: completeNotes || undefined,
+                    outcome: completeOutcome || undefined,
+                  });
+                  setCompleteModal(null);
+                }}
+                className="px-5 py-2 text-sm font-semibold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+              >
+                Complete Meeting
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Meeting Modal */}
+      {editingMeeting && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setEditingMeeting(null)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
+              <h2 className="text-lg font-bold text-slate-900">Edit Meeting</h2>
+              <button onClick={() => setEditingMeeting(null)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                <input type="text" value={editForm.title} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                  <input type="date" value={editForm.startDate} onChange={(e) => setEditForm({ ...editForm, startDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Time</label>
+                  <input type="time" value={editForm.startTime} onChange={(e) => setEditForm({ ...editForm, startTime: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Duration (min)</label>
+                  <select value={editForm.duration} onChange={(e) => setEditForm({ ...editForm, duration: Number(e.target.value) })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    <option value={15}>15 min</option>
+                    <option value={30}>30 min</option>
+                    <option value={45}>45 min</option>
+                    <option value={60}>1 hour</option>
+                    <option value={90}>1.5 hours</option>
+                    <option value={120}>2 hours</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
+                  <select value={editForm.meetingType} onChange={(e) => setEditForm({ ...editForm, meetingType: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    <option value="INTERNAL">Internal</option>
+                    <option value="BRAND_PRESENTATION">Brand Presentation</option>
+                    <option value="TESTING_REVIEW">Testing Review</option>
+                    <option value="FACTORY_KICKOFF">Factory Kickoff</option>
+                    <option value="PRODUCTION_REVIEW">Production Review</option>
+                    <option value="SOW_REVIEW">SOW Review</option>
+                    <option value="CUSTOM">Custom</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
+                <input type="text" value={editForm.location} onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Brand</label>
+                  <select value={editForm.brandId} onChange={(e) => setEditForm({ ...editForm, brandId: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    <option value="">— None —</option>
+                    {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Project</label>
+                  <select value={editForm.projectId} onChange={(e) => setEditForm({ ...editForm, projectId: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    <option value="">— None —</option>
+                    {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Description / Agenda</label>
+                <textarea value={editForm.description} onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" rows={4} />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end sticky bottom-0 bg-white">
+              <button onClick={() => setEditingMeeting(null)} className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">
+                Cancel
+              </button>
+              <button onClick={saveEdit} className="px-5 py-2 text-sm font-semibold bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa]">
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        open={!!deleteConfirm}
+        title="Delete Meeting?"
+        message="This will permanently delete this meeting. This action cannot be undone."
+        confirmLabel="Delete Meeting"
+        variant="danger"
+        onConfirm={() => {
+          if (deleteConfirm) deleteMeeting(deleteConfirm);
+          setDeleteConfirm(null);
+        }}
+        onCancel={() => setDeleteConfirm(null)}
+      />
+
+      {/* Cancel Confirmation */}
+      <ConfirmDialog
+        open={!!cancelConfirm}
+        title="Cancel Meeting?"
+        message="This will mark the meeting as cancelled. You can still view it in the cancelled filter."
+        confirmLabel="Cancel Meeting"
+        variant="warning"
+        onConfirm={() => {
+          if (cancelConfirm) updateStatus(cancelConfirm, "cancel");
+          setCancelConfirm(null);
+        }}
+        onCancel={() => setCancelConfirm(null)}
+      />
 
       {/* Create Meeting Modal */}
       {showCreate && (

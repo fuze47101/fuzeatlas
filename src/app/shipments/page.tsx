@@ -22,6 +22,10 @@ export default function ShipmentsPage() {
   const [showForm, setShowForm] = useState(false);
   const toast = useToast();
   const [confirmStatus, setConfirmStatus] = useState<{ id: string; status: string } | null>(null);
+  const [editingShipment, setEditingShipment] = useState<any | null>(null);
+  const [editForm, setEditForm] = useState({
+    carrier: "", trackingNumber: "", sampleCount: 1, sampleType: "", sampleCondition: "",
+  });
   const [formData, setFormData] = useState({
     fabricId: "",
     labId: "",
@@ -103,6 +107,38 @@ export default function ShipmentsPage() {
     } catch (error) {
       console.error("Error updating shipment:", error);
       toast.error("Failed to update shipment status");
+    }
+  };
+
+  const startEditShipment = (s: any) => {
+    setEditForm({
+      carrier: s.carrier || "",
+      trackingNumber: s.trackingNumber || "",
+      sampleCount: s.sampleCount || 1,
+      sampleType: s.sampleType || "",
+      sampleCondition: s.sampleCondition || "",
+    });
+    setEditingShipment(s);
+  };
+
+  const saveEditShipment = async () => {
+    if (!editingShipment) return;
+    try {
+      const res = await fetch(`/api/shipments/${editingShipment.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        toast.success("Shipment updated");
+        setEditingShipment(null);
+        fetchShipments();
+      } else {
+        toast.error(data.error || "Failed to update shipment");
+      }
+    } catch {
+      toast.error("Failed to update shipment");
     }
   };
 
@@ -352,6 +388,12 @@ export default function ShipmentsPage() {
 
                     {/* Status Transition Buttons */}
                     <div className="flex gap-2 flex-wrap">
+                      <button
+                        onClick={() => startEditShipment(shipment)}
+                        className="px-3 py-1.5 bg-white text-[#00b4c3] border border-[#00b4c3]/30 rounded-lg text-xs font-medium hover:bg-[#00b4c3]/5"
+                      >
+                        Edit Details
+                      </button>
                       {shipment.status === "PREPARING" && (
                         <button
                           onClick={() => handleStatusUpdate(shipment.id, "SHIPPED")}
@@ -392,6 +434,68 @@ export default function ShipmentsPage() {
           </div>
         )}
       </div>
+
+      {/* Edit Shipment Modal (F-004) */}
+      {editingShipment && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setEditingShipment(null)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-slate-900">Edit Shipment</h2>
+              <button onClick={() => setEditingShipment(null)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Carrier</label>
+                <select value={editForm.carrier} onChange={(e) => setEditForm({ ...editForm, carrier: e.target.value })}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none">
+                  <option value="">Select carrier</option>
+                  <option value="FedEx">FedEx</option>
+                  <option value="DHL">DHL</option>
+                  <option value="UPS">UPS</option>
+                  <option value="SF Express">SF Express</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Tracking Number</label>
+                <input type="text" value={editForm.trackingNumber} onChange={(e) => setEditForm({ ...editForm, trackingNumber: e.target.value })}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Sample Count</label>
+                  <input type="number" min="1" value={editForm.sampleCount} onChange={(e) => setEditForm({ ...editForm, sampleCount: parseInt(e.target.value) })}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Sample Type</label>
+                  <select value={editForm.sampleType} onChange={(e) => setEditForm({ ...editForm, sampleType: e.target.value })}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none">
+                    <option value="">Select type</option>
+                    <option value="Fabric swatch">Fabric swatch</option>
+                    <option value="Treated sample">Treated sample</option>
+                    <option value="Washed sample">Washed sample</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Sample Condition</label>
+                <input type="text" value={editForm.sampleCondition} onChange={(e) => setEditForm({ ...editForm, sampleCondition: e.target.value })}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
+                  placeholder="Good, Damaged, etc." />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end">
+              <button onClick={() => setEditingShipment(null)} className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">
+                Cancel
+              </button>
+              <button onClick={saveEditShipment} className="px-5 py-2 text-sm font-semibold bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa]">
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Confirm Status Change (F-026) */}
       <ConfirmDialog

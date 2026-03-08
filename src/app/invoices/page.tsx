@@ -46,6 +46,11 @@ export default function InvoicesPage() {
   const [saving, setSaving] = useState(false);
   const toast = useToast();
   const [confirmAction, setConfirmAction] = useState<{ id: string; status: string; label: string } | null>(null);
+  const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+  const [editForm, setEditForm] = useState({
+    invoiceDate: "", dueDate: "", amount: "", currency: "USD",
+    status: "DRAFT", description: "", notes: "", brandId: "", projectId: "",
+  });
 
   const [form, setForm] = useState({
     invoiceNumber: "",
@@ -130,6 +135,55 @@ export default function InvoicesPage() {
     });
     toast.success(`Invoice marked as ${newStatus}`);
     load();
+  };
+
+  const startEditInvoice = (inv: Invoice) => {
+    setEditForm({
+      invoiceDate: inv.invoiceDate ? new Date(inv.invoiceDate).toISOString().slice(0, 10) : "",
+      dueDate: inv.dueDate ? new Date(inv.dueDate).toISOString().slice(0, 10) : "",
+      amount: inv.amount.toString(),
+      currency: inv.currency,
+      status: inv.status,
+      description: inv.description || "",
+      notes: inv.notes || "",
+      brandId: inv.brand?.id || "",
+      projectId: inv.project?.id || "",
+    });
+    setEditingInvoice(inv);
+  };
+
+  const saveEditInvoice = async () => {
+    if (!editingInvoice) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/invoices/${editingInvoice.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          invoiceDate: editForm.invoiceDate,
+          dueDate: editForm.dueDate || null,
+          amount: editForm.amount,
+          currency: editForm.currency,
+          status: editForm.status,
+          description: editForm.description,
+          notes: editForm.notes,
+          brandId: editForm.brandId || null,
+          projectId: editForm.projectId || null,
+        }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        toast.success("Invoice updated");
+        setEditingInvoice(null);
+        load();
+      } else {
+        toast.error(j.error || "Failed to update invoice");
+      }
+    } catch {
+      toast.error("Failed to update invoice");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
@@ -242,14 +296,22 @@ export default function InvoicesPage() {
                   </td>
                   <td className="py-2.5 px-3 text-right text-xs text-slate-400">{inv.ageDays}d</td>
                   <td className="py-2.5 px-3">
-                    {inv.status !== "PAID" && inv.status !== "CANCELLED" && (
+                    <div className="flex items-center gap-2">
                       <button
-                        onClick={() => updateStatus(inv.id, "PAID")}
-                        className="text-xs text-emerald-600 hover:text-emerald-800 font-medium"
+                        onClick={() => startEditInvoice(inv)}
+                        className="text-xs text-[#00b4c3] hover:text-[#009aaa] font-medium"
                       >
-                        Mark Paid
+                        Edit
                       </button>
-                    )}
+                      {inv.status !== "PAID" && inv.status !== "CANCELLED" && (
+                        <button
+                          onClick={() => updateStatus(inv.id, "PAID")}
+                          className="text-xs text-emerald-600 hover:text-emerald-800 font-medium"
+                        >
+                          Mark Paid
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -329,6 +391,78 @@ export default function InvoicesPage() {
               <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-slate-600">Cancel</button>
               <button onClick={handleCreate} disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50">
                 {saving ? "Creating..." : "Create Invoice"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Invoice Modal (F-002) */}
+      {editingInvoice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setEditingInvoice(null)}>
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 m-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">Edit Invoice — {editingInvoice.invoiceNumber}</h3>
+            <div className="grid grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto">
+              <div>
+                <label className="text-xs font-medium text-slate-500">Invoice Date</label>
+                <input type="date" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.invoiceDate}
+                  onChange={(e) => setEditForm({ ...editForm, invoiceDate: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500">Due Date</label>
+                <input type="date" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.dueDate}
+                  onChange={(e) => setEditForm({ ...editForm, dueDate: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500">Amount</label>
+                <input type="number" step="0.01" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.amount}
+                  onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500">Currency</label>
+                <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.currency}
+                  onChange={(e) => setEditForm({ ...editForm, currency: e.target.value })}>
+                  {CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500">Status</label>
+                <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.status}
+                  onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}>
+                  {INVOICE_STATUSES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500">Brand</label>
+                <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.brandId}
+                  onChange={(e) => setEditForm({ ...editForm, brandId: e.target.value })}>
+                  <option value="">None</option>
+                  {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-500">Project</label>
+                <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.projectId}
+                  onChange={(e) => setEditForm({ ...editForm, projectId: e.target.value })}>
+                  <option value="">None</option>
+                  {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </div>
+              <div className="col-span-2">
+                <label className="text-xs font-medium text-slate-500">Description</label>
+                <input className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })} />
+              </div>
+              <div className="col-span-2">
+                <label className="text-xs font-medium text-slate-500">Notes</label>
+                <textarea className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.notes} rows={2}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })} />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
+              <button onClick={() => setEditingInvoice(null)} className="px-4 py-2 text-sm text-slate-600">Cancel</button>
+              <button onClick={saveEditInvoice} disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-[#00b4c3] hover:bg-[#009aaa] rounded-lg disabled:opacity-50">
+                {saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>
