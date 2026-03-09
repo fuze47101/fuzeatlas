@@ -76,9 +76,9 @@ const getStageLabels = (t: any): Record<string, string> => ({
   CUSTOMER_WON: t.dashboard.stageCustomerWon || "Won",
 });
 
-function StatCard({ label, value, icon, color }: { label: string; value: number | string; icon: string; color: string }) {
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:shadow-md transition-shadow">
+function StatCard({ label, value, icon, color, href }: { label: string; value: number | string; icon: string; color: string; href?: string }) {
+  const inner = (
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:shadow-md transition-shadow cursor-pointer">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{label}</p>
@@ -89,6 +89,8 @@ function StatCard({ label, value, icon, color }: { label: string; value: number 
       <div className="mt-3 h-1 rounded-full" style={{ background: color, opacity: 0.6 }} />
     </div>
   );
+  if (href) return <a href={href} className="block">{inner}</a>;
+  return inner;
 }
 
 function PipelineBar({ data, brandPipelineLabel, stageLabels }: { data: { stage: string; count: number }[]; brandPipelineLabel: string; stageLabels: Record<string, string> }) {
@@ -244,10 +246,10 @@ function AdminDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label={t.dashboard.fabrics} value={c.fabrics} icon="🧵" color="#3b82f6" />
-        <StatCard label={t.dashboard.brands} value={c.brands} icon="🎯" color="#8b5cf6" />
-        <StatCard label={t.dashboard.factories} value={c.factories} icon="🏭" color="#f59e0b" />
-        <StatCard label={t.dashboard.testRuns} value={c.testRuns} icon="🧪" color="#10b981" />
+        <StatCard label={t.dashboard.fabrics} value={c.fabrics} icon="🧵" color="#3b82f6" href="/fabrics" />
+        <StatCard label={t.dashboard.brands} value={c.brands} icon="🎯" color="#8b5cf6" href="/brands" />
+        <StatCard label={t.dashboard.factories} value={c.factories} icon="🏭" color="#f59e0b" href="/factories" />
+        <StatCard label={t.dashboard.testRuns} value={c.testRuns} icon="🧪" color="#10b981" href="/test-reports" />
       </div>
 
       {/* Revenue Pipeline KPIs */}
@@ -407,10 +409,10 @@ function SalesDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* Pipeline Overview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Brands" value={data.brandCount || 0} icon="🎯" color="#8b5cf6" />
-        <StatCard label="Upcoming Meetings" value={data.upcomingMeetings || 0} icon="📅" color="#3b82f6" />
-        <StatCard label="Pipeline Value" value={data.revenue?.totalPipeline || 0} icon="💰" color="#10b981" />
-        <StatCard label="Weighted Forecast" value={data.revenue?.weightedForecast || 0} icon="📊" color="#f59e0b" />
+        <StatCard label="Brands" value={data.brandCount || 0} icon="🎯" color="#8b5cf6" href="/brands" />
+        <StatCard label="Upcoming Meetings" value={data.upcomingMeetings || 0} icon="📅" color="#3b82f6" href="/meetings" />
+        <StatCard label="Pipeline Value" value={data.revenue?.totalPipeline || 0} icon="💰" color="#10b981" href="/pipeline" />
+        <StatCard label="Weighted Forecast" value={data.revenue?.weightedForecast || 0} icon="📊" color="#f59e0b" href="/revenue" />
       </div>
 
       {/* Brand Engagement Scores */}
@@ -545,10 +547,10 @@ function FabricDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* Fabric Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Total Fabrics" value={data.fabricCount || 0} icon="🧵" color="#3b82f6" />
-        <StatCard label="Awaiting Review" value={data.submissionsAwaitingReview || 0} icon="📋" color="#f59e0b" />
-        <StatCard label="Recipe Matches" value={data.recipeLibraryMatches || 0} icon="📚" color="#8b5cf6" />
-        <StatCard label="Test Runs" value={data.counts?.testRuns || 0} icon="🧪" color="#10b981" />
+        <StatCard label="Total Fabrics" value={data.fabricCount || 0} icon="🧵" color="#3b82f6" href="/fabrics" />
+        <StatCard label="Awaiting Review" value={data.submissionsAwaitingReview || 0} icon="📋" color="#f59e0b" href="/fabrics" />
+        <StatCard label="Recipe Matches" value={data.recipeLibraryMatches || 0} icon="📚" color="#8b5cf6" href="/recipes" />
+        <StatCard label="Test Runs" value={data.counts?.testRuns || 0} icon="🧪" color="#10b981" href="/test-reports" />
       </div>
 
       {/* Recent Fabrics */}
@@ -592,8 +594,8 @@ function FactoryDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* Factory Overview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Fabrics in Factory" value={data.factoryFabrics?.length || 0} icon="🧵" color="#3b82f6" />
-        <StatCard label="Test Results" value={data.factoryTestResults?.length || 0} icon="🧪" color="#10b981" />
+        <StatCard label="Fabrics in Factory" value={data.factoryFabrics?.length || 0} icon="🧵" color="#3b82f6" href="/factory-portal/fabrics" />
+        <StatCard label="Test Results" value={data.factoryTestResults?.length || 0} icon="🧪" color="#10b981" href="/factory-portal/tests" />
         <StatCard label="Upcoming Meetings" value={data.upcomingMeetings || 0} icon="📅" color="#f59e0b" />
         <StatCard label="Factory ID" value={data.factoryId?.substring(0, 8).toUpperCase() || "—"} icon="🏭" color="#8b5cf6" />
       </div>
@@ -705,9 +707,9 @@ function DistributorDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* Overview Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Brands" value={data.distributorBrands?.length || 0} icon="🎯" color="#8b5cf6" />
-        <StatCard label="Factories" value={data.factoriesCount || 0} icon="🏭" color="#f59e0b" />
-        <StatCard label="Total Tests" value={data.counts?.testRuns || 0} icon="🧪" color="#10b981" />
+        <StatCard label="Brands" value={data.distributorBrands?.length || 0} icon="🎯" color="#8b5cf6" href="/brands" />
+        <StatCard label="Factories" value={data.factoriesCount || 0} icon="🏭" color="#f59e0b" href="/factories" />
+        <StatCard label="Total Tests" value={data.counts?.testRuns || 0} icon="🧪" color="#10b981" href="/test-reports" />
         <StatCard label="Contacts" value={data.counts?.contacts || 0} icon="👥" color="#3b82f6" />
       </div>
 

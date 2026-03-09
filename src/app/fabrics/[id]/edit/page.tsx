@@ -4,15 +4,19 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
 import { useToast } from "@/components/Toast";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function FabricEditPage() {
   const { id } = useParams();
   const router = useRouter();
   const { t } = useI18n();
   const toast = useToast();
+  const { user } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState("");
   const [fabric, setFabric] = useState<any>(null);
 
@@ -563,7 +567,34 @@ export default function FabricEditPage() {
 
         {/* Action bar */}
         <div className="p-6 border-t border-slate-200 bg-slate-50 rounded-b-xl flex items-center justify-between">
-          <p className="text-sm text-slate-500">FUZE {fabric.fuzeNumber} — editing all fabric properties</p>
+          <div className="flex items-center gap-3">
+            <p className="text-sm text-slate-500">FUZE {fabric.fuzeNumber} — editing all fabric properties</p>
+            {(user?.role === "ADMIN" || user?.role === "EMPLOYEE") && !showDeleteConfirm && (
+              <button onClick={() => setShowDeleteConfirm(true)} className="px-3 py-1.5 text-xs text-red-600 border border-red-200 rounded-lg hover:bg-red-50">
+                Delete Fabric
+              </button>
+            )}
+            {showDeleteConfirm && (
+              <div className="flex items-center gap-2 ml-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                <span className="text-xs text-red-700 font-medium">Permanently delete this fabric?</span>
+                <button onClick={async () => {
+                  setDeleting(true);
+                  try {
+                    const res = await fetch(`/api/fabrics/${id}`, { method: "DELETE" });
+                    const j = await res.json();
+                    if (j.ok) {
+                      toast.success("Fabric deleted" + (j.unlinkedSubmissions > 0 ? ` (${j.unlinkedSubmissions} submissions preserved)` : ""));
+                      router.push("/fabrics");
+                    } else { setError(j.error); setShowDeleteConfirm(false); }
+                  } catch (e: any) { setError(e.message); setShowDeleteConfirm(false); }
+                  finally { setDeleting(false); }
+                }} disabled={deleting} className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50">
+                  {deleting ? "Deleting..." : "Yes, Delete"}
+                </button>
+                <button onClick={() => setShowDeleteConfirm(false)} className="px-3 py-1 text-xs text-slate-600 border border-slate-300 rounded hover:bg-white">No</button>
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-3">
             <button onClick={() => router.push(`/fabrics/${id}`)} className="px-4 py-2.5 text-slate-600 border border-slate-300 rounded-lg hover:bg-white">Cancel</button>
             <button onClick={handleSave} disabled={saving} className="px-6 py-2.5 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:opacity-50 font-medium">
