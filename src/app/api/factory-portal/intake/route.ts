@@ -29,23 +29,39 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate FUZE number
-    const timestamp = Date.now().toString().slice(-6);
-    const random = Math.random().toString(36).substring(2, 7).toUpperCase();
-    const fuzeNumber = `FUZE-${timestamp}-${random}`;
+    // Auto-increment FUZE number (Int)
+    const lastFabric = await prisma.fabric.findFirst({
+      where: { fuzeNumber: { not: null } },
+      orderBy: { fuzeNumber: "desc" },
+      select: { fuzeNumber: true },
+    });
+    const fuzeNumber = (lastFabric?.fuzeNumber || 1000) + 1;
 
-    // Create fabric
+    // Build note from fabric name + supplier
+    const noteParts = [`Intake: ${fabricName.trim()}`];
+    if (supplier?.trim()) noteParts.push(`Supplier: ${supplier.trim()}`);
+
+    // Create fabric — map form fields to actual Prisma schema columns
     const fabric = await prisma.fabric.create({
       data: {
         fuzeNumber,
-        fabricName: fabricName.trim(),
-        weight: weight ? parseInt(weight) : null,
-        content: content?.trim() || null,
-        supplier: supplier?.trim() || null,
+        weightGsm: weight ? parseFloat(weight) : null,
+        construction: content?.trim() || null,  // fiber content → construction
+        note: noteParts.join(" | "),
         factoryId,
-        status: "ACTIVE",
       },
     });
+
+    // If fiber content was provided as plain text, create a FabricContent row
+    if (content?.trim()) {
+      await prisma.fabricContent.create({
+        data: {
+          fabricId: fabric.id,
+          material: content.trim(),
+          rawText: content.trim(),
+        },
+      });
+    }
 
     // Create initial submission
     const submission = await prisma.fabricSubmission.create({
