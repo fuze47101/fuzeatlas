@@ -715,6 +715,7 @@ ALTER TABLE "FabricContent" ADD COLUMN IF NOT EXISTS "percent" DOUBLE PRECISION;
 ALTER TABLE "FabricContent" ADD COLUMN IF NOT EXISTS "rawText" TEXT;
 
 -- Update FabricSubmission table to add missing columns
+ALTER TABLE "FabricSubmission" ADD COLUMN IF NOT EXISTS "status" TEXT;
 ALTER TABLE "FabricSubmission" ADD COLUMN IF NOT EXISTS "developmentStage" TEXT;
 ALTER TABLE "FabricSubmission" ADD COLUMN IF NOT EXISTS "testStatus" TEXT;
 ALTER TABLE "FabricSubmission" ADD COLUMN IF NOT EXISTS "progressPercent" DOUBLE PRECISION;
