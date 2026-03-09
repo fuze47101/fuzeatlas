@@ -10,8 +10,9 @@ interface Submission {
   status: string;
   fabric: {
     id: string;
-    fabricName: string;
-    fuzeNumber: string;
+    note?: string;
+    fuzeNumber: number | null;
+    construction?: string;
   };
   createdAt: string;
   testResults?: {
@@ -105,13 +106,15 @@ export default function FactorySubmissionsPage() {
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1">
-                    <h3 className="font-bold text-slate-900 truncate">{submission.fabric.fabricName}</h3>
+                    <h3 className="font-bold text-slate-900 truncate">
+                      {submission.fabric.note?.replace("Intake: ", "").split(" | ")[0] || submission.fabric.construction || `FUZE-${submission.fabric.fuzeNumber}`}
+                    </h3>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${statusColors[submission.status] || "bg-slate-100 text-slate-600"}`}>
                       {submission.status}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-slate-600">
-                    <span className="font-mono font-medium">{submission.fabric.fuzeNumber}</span>
+                    <span className="font-mono font-medium">FUZE-{submission.fabric.fuzeNumber}</span>
                     <span>·</span>
                     <span>Submitted {new Date(submission.createdAt).toLocaleDateString()}</span>
                   </div>

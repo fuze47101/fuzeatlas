@@ -36,10 +36,21 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await req.json();
+    const { name, fabricType, fiberContent, gsmMin, gsmMax, yarnType,
+      fuzeTier, applicationMethod, padPickupPercent, bathConcentration,
+      squeezePressure, dryingTemp, dryingTime, curingTemp, curingTime, phRange,
+      avgIcpAg, avgReduction, testMethod, passRate, validatedTestCount,
+      notes, active, createdById } = body;
 
     const recipe = await prisma.fabricRecipe.update({
       where: { id },
-      data: body,
+      data: {
+        name, fabricType, fiberContent, gsmMin, gsmMax, yarnType,
+        fuzeTier, applicationMethod, padPickupPercent, bathConcentration,
+        squeezePressure, dryingTemp, dryingTime, curingTemp, curingTime, phRange,
+        avgIcpAg, avgReduction, testMethod, passRate, validatedTestCount,
+        notes, active, createdById,
+      },
     });
 
     return NextResponse.json({ ok: true, recipe });

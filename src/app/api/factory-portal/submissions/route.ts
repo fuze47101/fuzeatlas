@@ -23,8 +23,9 @@ export async function GET(req: Request) {
         fabric: {
           select: {
             id: true,
-            fabricName: true,
+            note: true,
             fuzeNumber: true,
+            construction: true,
           },
         },
         testRequests: {

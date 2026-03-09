@@ -75,9 +75,20 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    const { name, fabricType, fiberContent, gsmMin, gsmMax, yarnType,
+      fuzeTier, applicationMethod, padPickupPercent, bathConcentration,
+      squeezePressure, dryingTemp, dryingTime, curingTemp, curingTime, phRange,
+      avgIcpAg, avgReduction, testMethod, passRate, validatedTestCount,
+      notes, active, createdById } = body;
 
     const recipe = await prisma.fabricRecipe.create({
-      data: body,
+      data: {
+        name, fabricType, fiberContent, gsmMin, gsmMax, yarnType,
+        fuzeTier, applicationMethod, padPickupPercent, bathConcentration,
+        squeezePressure, dryingTemp, dryingTime, curingTemp, curingTime, phRange,
+        avgIcpAg, avgReduction, testMethod, passRate, validatedTestCount,
+        notes, active, createdById,
+      },
     });
 
     return NextResponse.json({ ok: true, recipe });

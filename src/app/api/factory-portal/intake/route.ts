@@ -68,7 +68,7 @@ export async function POST(req: Request) {
       data: {
         fabricId: fabric.id,
         status: "SUBMITTED",
-        notes: notes?.trim() || null,
+        raw: notes?.trim() ? { intakeNotes: notes.trim() } : undefined,
       },
     });
 
