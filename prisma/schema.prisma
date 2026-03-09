@@ -198,6 +198,7 @@ model User {
   passwordResets PasswordResetToken[] @relation("PasswordResets")
   organizedMeetings Meeting[] @relation("MeetingOrganizer")
   complianceUploads ComplianceDocument[]
+  sampleTrials     SampleTrialRequest[] @relation("TrialRequester")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -247,6 +248,7 @@ model Brand {
   notes       Note[]
   users       User[]         @relation("BrandUsers")
   testRequests TestRequest[] @relation("TestRequestBrand")
+  sampleTrials SampleTrialRequest[] @relation("TrialBrand")
   meetings     Meeting[]      @relation("MeetingBrand")
   sourceRecords SourceRecord[]
   engagement BrandEngagement? @relation("BrandEngagement")
@@ -319,6 +321,7 @@ model Factory {
   users         User[]         @relation("FactoryUsers")
   sourceRecords SourceRecord[]
   accessRequests AccessRequest[] @relation("AccessRequestFactory")
+  sampleTrials   SampleTrialRequest[] @relation("FactoryTrials")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -419,6 +422,7 @@ model Lab {
   services      LabService[]
   documents     Document[]
   shipments SampleShipment[] @relation("LabShipments")
+  sampleTrials SampleTrialRequest[] @relation("TrialIcpLab")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -553,6 +557,7 @@ model Fabric {
   submissions FabricSubmission[]
   testRequests TestRequest[]
   fuzeTestRequests FuzeTestRequest[] @relation("FuzeTestFabric")
+  sampleTrials     SampleTrialRequest[] @relation("FabricTrials")
   shipments SampleShipment[] @relation("FabricShipments")
 
   createdAt DateTime @default(now())
@@ -1601,4 +1606,82 @@ model ComplianceDocument {
 
   @@index([category])
   @@index([uploadedById])
+}
+
+// ─────────────────────────────────────────────
+// SAMPLE TRIAL REQUESTS
+// Factory requests FUZE product sample for trial application
+// ─────────────────────────────────────────────
+
+model SampleTrialRequest {
+  id                  String   @id @default(cuid())
+
+  // Who's requesting
+  factoryId           String
+  factory             Factory  @relation("FactoryTrials", fields: [factoryId], references: [id])
+  requestedById       String
+  requestedBy         User     @relation("TrialRequester", fields: [requestedById], references: [id])
+
+  // What fabric (must exist — if not, factory submits fabric first)
+  fabricId            String
+  fabric              Fabric   @relation("FabricTrials", fields: [fabricId], references: [id])
+
+  // For whom — brand partnership or self-development
+  purposeType         String   // BRAND_PARTNERSHIP | SELF_DEVELOPMENT
+  brandId             String?
+  brand               Brand?   @relation("TrialBrand", fields: [brandId], references: [id])
+  partnershipNote     String?  // Free text if brand not in system yet
+
+  // Trial details
+  trialType           String   // LAB_TRIAL | PRODUCTION_TRIAL
+  totalMeters         Float    // Total fabric meters/yards to be treated
+  totalUnit           String   @default("meters") // meters | yards
+  targetFuzeTier      String?  // F1, F2, F3, F4
+  applicationMethod   String?  // exhaust | pad | spray
+
+  // FUZE sample shipment
+  sampleVolumeLiters  Float?   // Calculated from fabric params + tier
+  shippingAddress     String?  // Factory address for sample delivery
+  shippingCity        String?
+  shippingCountry     String?
+  shippingContactName String?
+  shippingContactPhone String?
+
+  // ICP Lab commitment (mandatory)
+  icpLabId            String?
+  icpLab              Lab?     @relation("TrialIcpLab", fields: [icpLabId], references: [id])
+  icpLabOther         String?  // If lab not yet in system
+  icpCommitDate       DateTime? // When they commit to send for ICP testing
+
+  // Status workflow
+  // SUBMITTED → UNDER_REVIEW → APPROVED → SAMPLE_SHIPPED →
+  // SAMPLE_RECEIVED → TRIAL_IN_PROGRESS → ICP_PENDING →
+  // ICP_SUBMITTED → COMPLETE  (or REJECTED at any point)
+  status              String   @default("SUBMITTED")
+
+  // Admin tracking
+  approvedById        String?
+  approvedAt          DateTime?
+  rejectedReason      String?
+  sampleTrackingNumber String?
+  sampleShippedDate   DateTime?
+  sampleReceivedDate  DateTime?
+
+  // ICP follow-up
+  icpTestRunId        String?  // Links to actual ICP TestRun when results submitted
+  icpSubmittedAt      DateTime?
+  icpAgValue          Float?   // Quick-reference Ag result
+  icpAuValue          Float?   // Quick-reference Au result
+
+  notes               String?
+  adminNotes          String?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([factoryId])
+  @@index([fabricId])
+  @@index([brandId])
+  @@index([status])
+  @@index([icpLabId])
 }

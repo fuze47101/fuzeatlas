@@ -126,6 +126,17 @@ export default function FactoryPortalPage() {
           </div>
           <div className="text-sm text-[#00b4c3] font-medium">View submissions →</div>
         </Link>
+        <Link href="/factory-portal/sample-trial"
+          className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="font-bold text-lg mb-1">Request FUZE Sample</h3>
+              <p className="text-sm text-purple-200">Request product samples for fabric treatment trials</p>
+            </div>
+            <span className="text-3xl">🧪</span>
+          </div>
+          <div className="text-sm text-white/80">Start a trial request →</div>
+        </Link>
         <Link href="/pricing"
           className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all">
           <div className="flex items-start justify-between mb-4">

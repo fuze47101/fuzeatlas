@@ -185,6 +185,7 @@ export default function Sidebar() {
           { href: "/factory-portal/fabrics", label: "My Fabrics", icon: "🧵" },
           { href: "/factory-portal/submissions", label: "Submissions", icon: "📋" },
           { href: "/factory-portal/tests", label: "Test Results", icon: "🧪" },
+          { href: "/factory-portal/sample-trial", label: "Sample Trials", icon: "🧪" },
           { href: "/factory-portal/request-test", label: "Request Test", icon: "📋" },
         ],
       },
