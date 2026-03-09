@@ -166,6 +166,7 @@ export default function Sidebar() {
       {
         label: "Resources",
         items: [
+          { href: "/compliance-library", label: "Compliance Library", icon: "📋" },
           { href: "/book-meeting", label: "Book Meeting", icon: "📅" },
           { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
           { href: "/factory-search", label: "Factory Search", icon: "🔍" },
@@ -190,6 +191,7 @@ export default function Sidebar() {
       {
         label: "Resources",
         items: [
+          { href: "/compliance-library", label: "Compliance Library", icon: "📋" },
           { href: "/pricing", label: "Pricing", icon: "💰" },
           { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
         ],
@@ -234,8 +236,9 @@ export default function Sidebar() {
         ],
       },
       {
-        label: "Tools",
+        label: "Tools & Resources",
         items: [
+          { href: "/compliance-library", label: "Compliance Library", icon: "📋" },
           { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
           { href: "/admin/competitor-pricing", label: "Market Landscape", icon: "📊" },
           { href: "/pricing", label: "Pricing & Environment", icon: "💰" },

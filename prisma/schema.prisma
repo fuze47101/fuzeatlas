@@ -58,6 +58,16 @@ enum DocKind {
   OTHER
 }
 
+enum ComplianceCategory {
+  SDS_MSDS
+  TDS
+  BLUESIGN
+  ZDHC
+  OEKO_TEX
+  GOTS
+  OTHER
+}
+
 enum SOWStatus {
   DRAFT
   SENT
@@ -187,6 +197,7 @@ model User {
   auditLogs AuditLog[] @relation("UserAuditLogs")
   passwordResets PasswordResetToken[] @relation("PasswordResets")
   organizedMeetings Meeting[] @relation("MeetingOrganizer")
+  complianceUploads ComplianceDocument[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -1559,4 +1570,35 @@ model AvailabilityConfig {
   blockedDates          Json     @default("[]")                       // ISO date strings
   maxBookingsPerDay     Int      @default(3)
   updatedAt             DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────
+// COMPLIANCE LIBRARY — SDS, TDS, Bluesign, ZDHC, Oeko-Tex, GOTS
+// ─────────────────────────────────────────────
+
+model ComplianceDocument {
+  id String @id @default(cuid())
+
+  title       String
+  description String?
+  category    ComplianceCategory @default(OTHER)
+  version     String?
+  filename    String?
+  contentType String?
+  sizeBytes   Int?
+  url         String?
+  data        String?            // base64 data URL for inline storage
+
+  // Role-based visibility: JSON array of role strings e.g. ["ADMIN","BRAND_USER","FACTORY_USER"]
+  // If empty/null, only ADMIN can see it
+  visibleTo Json @default("[\"ADMIN\",\"EMPLOYEE\",\"BRAND_USER\",\"FACTORY_USER\",\"FACTORY_MANAGER\"]")
+
+  uploadedById String?
+  uploadedBy   User?   @relation(fields: [uploadedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([uploadedById])
 }
