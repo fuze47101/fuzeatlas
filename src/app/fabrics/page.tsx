@@ -71,7 +71,7 @@ export default function FabricsPage() {
         <div className="flex items-center gap-3">
           <input type="text" placeholder={t.fabrics.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)}
             className="px-4 py-2 border border-slate-300 rounded-lg text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <button onClick={() => router.push("/fabrics/new")} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap">+ {t.fabrics.addNew}</button>
+          <button onClick={() => router.push("/fabrics/intake")} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap">+ {t.fabrics.addNew}</button>
         </div>
       </div>
 
