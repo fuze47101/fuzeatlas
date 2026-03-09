@@ -46,7 +46,7 @@ export const FUZE_TEST_CATALOG: FuzeTestService[] = [
     id: "icp-analysis",
     name: "ICP Metal Content Analysis",
     description:
-      "Inductively Coupled Plasma analysis to measure silver and/or gold particle content in treated fabric.",
+      "Inductively Coupled Plasma analysis to measure allotrope metal content (Ag/Au) in treated fabric.",
     category: "quality",
     moqMeters: 0.25,
     controlRequired: false,

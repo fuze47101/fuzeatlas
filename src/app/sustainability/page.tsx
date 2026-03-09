@@ -220,21 +220,21 @@ export default function SustainabilityPage() {
               <span className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-sm flex-shrink-0">1</span>
               <div>
                 <div className="text-sm font-semibold text-slate-800">Recycled Metal Source</div>
-                <p className="text-xs text-slate-500">Silver and gold nanoparticles synthesized from metals recovered from electronic waste streams. No virgin mining required.</p>
+                <p className="text-xs text-slate-500">High density allotrope synthesized from metals recovered from electronic waste streams. No virgin mining required.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <span className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-sm flex-shrink-0">2</span>
               <div>
                 <div className="text-sm font-semibold text-slate-800">Laser Synthesis</div>
-                <p className="text-xs text-slate-500">30 amp laser is the sole energy source for nanoparticle production. No heat, no pressure, no chemical reactions. Just physics.</p>
+                <p className="text-xs text-slate-500">30 amp laser is the sole energy source for meta-material production. No heat, no pressure, no chemical reactions. Just physics.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <span className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-sm flex-shrink-0">3</span>
               <div>
                 <div className="text-sm font-semibold text-slate-800">99.98% Pure Water</div>
-                <p className="text-xs text-slate-500">Product is 99.98% deionized water with nanoparticle suspension. No binders, no surfactants, no stabilizers, no additives of any kind.</p>
+                <p className="text-xs text-slate-500">Product is 99.98% deionized water with FUZE meta-material suspension. No binders, no surfactants, no stabilizers, no additives of any kind.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">

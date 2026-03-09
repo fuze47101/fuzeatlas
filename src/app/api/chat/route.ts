@@ -151,13 +151,13 @@ function getFallbackResponse(message: string): string {
     return "FUZE can be applied through three methods: **exhaust method** (in dye bath), **pad-dry-cure** (padder application), or **spray** (for specialized substrates). Standard textile finishing equipment works — no special machinery needed. The treatment requires curing at 150–170°C for 2–3 minutes.";
   }
   if (q.includes("pfas") || q.includes("environment") || q.includes("sustain") || q.includes("green")) {
-    return "FUZE is completely **PFAS-free** and has a low environmental impact. Silver concentrations in wastewater are well below regulatory limits. The treatment extends garment life (reducing textile waste), doesn't affect recyclability, and supports ESG goals aligned with SDG 3 and SDG 12.";
+    return "FUZE is completely **PFAS-free** and has a low environmental impact. Trace element concentrations in wastewater are well below regulatory limits. The treatment extends garment life (reducing textile waste), doesn't affect recyclability, and supports ESG goals aligned with SDG 3 and SDG 12.";
   }
   if (q.includes("start") || q.includes("begin") || q.includes("onboard") || q.includes("get going")) {
     return "Getting started with FUZE is straightforward:\n1. **Consultation** — We discuss your fabric types and requirements\n2. **Sampling** — Treatment at a partner factory (2-4 weeks)\n3. **Testing** — Lab validation of treated samples (1-2 weeks)\n4. **Approval** — Review results and confirm production specs\n5. **Production** — Full-scale treatment begins\n\nYour FUZE sales representative can kick this off, or you can submit fabric specs through the brand portal.";
   }
-  if (q.includes("nano") || q.includes("silver")) {
-    return "FUZE uses **conventional silver-based technology**, not nanosilver. The active ingredient is a silver salt compound that is EPA registered and classified as a conventional antimicrobial. It's safe, proven, and well-characterized.";
+  if (q.includes("nano") || q.includes("silver") || q.includes("allotrope") || q.includes("meta-material")) {
+    return "FUZE is a **high density allotrope** — a proprietary meta-material created through laser synthesis from recycled metals. It is not a nanoparticle, not an ion, and not a salt. It is EPA registered and classified as a conventional antimicrobial. FUZE bonds permanently to textile fibers during the finishing process.";
   }
   if (q.includes("virus") || q.includes("antiviral") || q.includes("covid")) {
     return "FUZE has demonstrated antiviral efficacy per **ISO 18184** testing on select tiers (F1 and F2). For specific pathogen test data, please contact your FUZE sales representative.";

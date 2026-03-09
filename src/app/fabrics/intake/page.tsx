@@ -541,9 +541,22 @@ export default function FabricIntakePage() {
                         <label className={labelClass}>Fabric Category</label>
                         <select value={fabricCategory} onChange={(e) => setFabricCategory(e.target.value)} className={inputClass + " bg-white"}>
                           <option value="">Select...</option>
-                          <option value="woven">Woven</option>
-                          <option value="knit">Knit</option>
-                          <option value="nonwoven">Nonwoven</option>
+                          <optgroup label="Textiles">
+                            <option value="woven">Woven</option>
+                            <option value="knit">Knit</option>
+                            <option value="nonwoven">Nonwoven</option>
+                          </optgroup>
+                          <optgroup label="Non-Textile Substrates">
+                            <option value="down_fill">Down / Feather Fill</option>
+                            <option value="synthetic_fill">Synthetic Fill / Insulation</option>
+                            <option value="carpet">Carpet / Rug</option>
+                            <option value="artificial_turf">Artificial Turf / Grass</option>
+                            <option value="mattress">Mattress / Bedding Composite</option>
+                            <option value="foam">Foam / Padding</option>
+                            <option value="leather">Leather / Synthetic Leather</option>
+                            <option value="composite">Composite / Multi-layer</option>
+                            <option value="other_substrate">Other Non-Textile</option>
+                          </optgroup>
                         </select>
                       </div>
                     </div>
@@ -787,7 +800,9 @@ export default function FabricIntakePage() {
                 <div>
                   <label className={labelClass}>Category <span className="text-red-500">*</span></label>
                   <select value={fabricCategory} onChange={(e) => setFabricCategory(e.target.value)} className={inputClass + " bg-white"}>
-                    <option value="">Select...</option><option value="woven">Woven</option><option value="knit">Knit</option><option value="nonwoven">Nonwoven</option>
+                    <option value="">Select...</option>
+                    <optgroup label="Textiles"><option value="woven">Woven</option><option value="knit">Knit</option><option value="nonwoven">Nonwoven</option></optgroup>
+                    <optgroup label="Non-Textile Substrates"><option value="down_fill">Down / Feather Fill</option><option value="synthetic_fill">Synthetic Fill / Insulation</option><option value="carpet">Carpet / Rug</option><option value="artificial_turf">Artificial Turf / Grass</option><option value="mattress">Mattress / Bedding Composite</option><option value="foam">Foam / Padding</option><option value="leather">Leather / Synthetic Leather</option><option value="composite">Composite / Multi-layer</option><option value="other_substrate">Other Non-Textile</option></optgroup>
                   </select>
                 </div>
               </div>
@@ -1006,7 +1021,7 @@ export default function FabricIntakePage() {
             {/* ═══ Section 6: Chemical Finishes ═══ */}
             <div className="border-t border-slate-200 pt-6">
               <h3 className="font-semibold text-slate-900 mb-1">Chemical Finishes</h3>
-              <p className="text-xs text-red-600 font-medium mb-1">CRITICAL: Chemical finishes directly impact silver nanoparticle bonding and antimicrobial efficacy.</p>
+              <p className="text-xs text-red-600 font-medium mb-1">CRITICAL: Chemical finishes directly impact FUZE bonding and antimicrobial efficacy.</p>
               <p className="text-xs text-slate-500 mb-4">Incomplete finish data is the #1 cause of unexpected test anomalies.</p>
 
               {/* Softeners */}

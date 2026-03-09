@@ -486,7 +486,7 @@ export default function PricingPage() {
                   <div className="bg-emerald-50/50 border border-emerald-200/50 rounded-xl p-4">
                     <div className="text-xs font-semibold text-emerald-800/60 uppercase tracking-wider mb-2">FUZE {activeTier.id} — {activeTier.name}</div>
                     <div className="space-y-1.5 text-sm">
-                      <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">Silver Allotrope (Non-ionic)</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">High Density Allotrope (Non-ionic)</span></div>
                       <div className="flex justify-between"><span className="text-slate-500">Application</span><span className="font-medium text-emerald-600">Single permanent integration</span></div>
                       <div className="flex justify-between"><span className="text-slate-500">Attachment</span><span className="font-medium text-emerald-600">Permanent — EPA verified · Lasts life of textile</span></div>
                       <div className="flex justify-between"><span className="text-slate-500">Re-treatments needed</span><span className="font-bold text-emerald-600">None — applied once</span></div>

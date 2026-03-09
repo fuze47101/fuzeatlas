@@ -599,7 +599,7 @@ const en = {
     requestFactoryAccess: "Request Factory Access",
     faqTitle: "FUZE FAQ & Knowledge Base",
     faqDesc: "Have questions about FUZE antimicrobial technology? Search our knowledge base.",
-    faqPlaceholder: "e.g. How does silver nanoparticle bonding work?",
+    faqPlaceholder: "e.g. How does FUZE bonding work?",
     faqSearch: "Search",
     tagline: "Antimicrobial Textile Intelligence Platform",
     footer: "FUZE Biotech Inc. · Antimicrobial Textile Solutions",

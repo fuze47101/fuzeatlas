@@ -418,7 +418,7 @@ export default function TestDetailPage() {
             {test.icpResult.agValue !== undefined && (
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">
-                  Silver (Ag)
+                  Ag Content
                 </p>
                 <div className="flex items-baseline gap-2">
                   <p

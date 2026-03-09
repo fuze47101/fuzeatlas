@@ -279,7 +279,7 @@ export async function POST() {
           },
         });
 
-        // ICP Silver content test
+        // ICP metal content test
         const t2 = await prisma.testRun.create({
           data: {
             submissionId: submissions[0].id,

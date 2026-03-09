@@ -474,7 +474,7 @@ export default function ComplianceLibraryPage() {
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Title *</label>
                 <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="e.g. FUZE Silver SDS v4.2" />
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="e.g. FUZE SDS v4.2" />
               </div>
 
               <div>

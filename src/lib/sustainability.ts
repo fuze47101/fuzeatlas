@@ -9,8 +9,8 @@ import type { Competitor } from "./competitors";
 
 export const FUZE_SUSTAINABILITY = {
   // Production
-  productComposition: "99.98% deionized water + recycled silver/gold nanoparticles",
-  energySource: "30 amp laser — sole energy input for nanoparticle synthesis",
+  productComposition: "99.98% deionized water + recycled high density allotrope",
+  energySource: "30 amp laser — sole energy input for meta-material synthesis",
   metalSource: "Recycled from mixed electronic waste stream (e-waste recovery)",
   productionEffluent: 0,       // liters of wastewater per liter produced
   productionVOC: 0,            // grams VOC emitted per liter produced
@@ -161,7 +161,7 @@ export function calcSustainabilityScore(
     compChemCO2 = compChemKg * competitorApps * 5.0; // generic petrochemical
   }
 
-  // FUZE chemistry CO2 (recycled silver — much lower)
+  // FUZE chemistry CO2 (recycled allotrope — much lower)
   const fuzeChemCO2 = fuzeChemKg * EF.silverRecycledKgCO2PerKg;
   const chemistryProductionCO2 = compChemCO2 - fuzeChemCO2;
 
@@ -322,7 +322,7 @@ export function generateESGClaims(
   claims.push({
     category: "Circular Economy",
     headline: "Made from Recycled Electronics",
-    detail: "FUZE's silver nanoparticles are synthesized from metals recovered from electronic waste streams — diverting e-waste from landfills and reducing virgin mining demand by 85%.",
+    detail: "FUZE's high density allotrope is synthesized from metals recovered from electronic waste streams — diverting e-waste from landfills and reducing virgin mining demand by 85%.",
     metric: `${(score.recycledMetalCO2Saved * annualMeters).toFixed(2)} kg CO₂ offset via recycling`,
     icon: "♻️",
   });

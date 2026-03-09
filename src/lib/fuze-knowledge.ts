@@ -5,7 +5,7 @@ export const FUZE_KNOWLEDGE = `
 # FUZE Antimicrobial Technology — Knowledge Base
 
 ## What is FUZE?
-FUZE is a proprietary antimicrobial textile treatment technology developed by FUZE Biotech. It provides durable antimicrobial protection to fabrics and textiles by incorporating silver-based antimicrobial agents into the textile finishing process. FUZE treatments protect textiles against bacteria, fungi, mold, and odor-causing microorganisms while maintaining fabric hand feel, breathability, and performance characteristics.
+FUZE is a proprietary antimicrobial textile treatment technology developed by FUZE Biotech. It provides durable antimicrobial protection to fabrics and textiles through a high density allotrope that bonds during the textile finishing process. FUZE treatments protect textiles against bacteria, fungi, mold, and odor-causing microorganisms while maintaining fabric hand feel, breathability, and performance characteristics.
 
 ## Product Tiers
 FUZE offers four antimicrobial treatment tiers, each engineered for different durability and performance requirements:
@@ -16,15 +16,15 @@ FUZE offers four antimicrobial treatment tiers, each engineered for different du
 - **F4 — Foundation**: 0.25 mg/kg dose, rated for 25 wash cycles. Entry-level treatment for seasonal or limited-use products where basic antimicrobial protection is sufficient.
 
 ## How FUZE Works
-FUZE antimicrobial agents bond with the textile fibers during the finishing process. The silver-based active ingredient disrupts microbial cell membranes and metabolic processes. Key mechanism points:
+FUZE antimicrobial agents bond with the textile fibers during the finishing process. The high density allotrope active ingredient disrupts microbial cell membranes and metabolic processes. Key mechanism points:
 - The treatment is applied at the mill/factory level during textile finishing
-- Silver ions are released in controlled amounts when moisture is present
+- Active agents are released in controlled amounts when moisture is present
 - Effective against gram-positive bacteria (S. aureus, MRSA), gram-negative bacteria (E. coli, K. pneumoniae), and fungi (C. albicans, A. niger)
 - Does NOT wash out — the treatment is bonded to the fiber structure
 - Passes AATCC 100 (antibacterial), AATCC 30 (antifungal), and ISO 20743 standard tests
 
 ## FUZE Stock Solution (F1 Concentrate)
-- **Concentration**: 30 ppm (mg/L) silver-based active ingredient
+- **Concentration**: 30 ppm (mg/L) high density allotrope active ingredient
 - **Bottle size**: 19 liters per unit
 - **Default price**: $36 per liter (volume discounts available)
 - **Storage**: Cool, dry place away from direct sunlight. Shelf life 24 months unopened.
@@ -56,7 +56,7 @@ Each tier is validated for its rated wash cycles at 60°C with standard detergen
 - **EPA registered** antimicrobial agent
 - **EU Biocidal Products Regulation (BPR)** compliant
 - Non-toxic, non-irritating, and non-sensitizing per dermatological testing
-- No formaldehyde, no heavy metals (beyond trace silver), no carcinogenic compounds
+- No formaldehyde, no heavy metals, no carcinogenic compounds
 - Safe for direct skin contact, including sensitive skin and infant applications
 
 ## Application & Factory Process
@@ -86,7 +86,7 @@ FUZE can be applied to virtually any textile substrate:
 - **No PFAS**: FUZE is completely PFAS-free
 - **Low carbon footprint**: Treatment adds minimal energy to existing finishing processes
 - **Reduced textile waste**: By extending garment life through odor/microbial control, fewer textiles are discarded
-- **Water impact**: Silver concentrations in wastewater are well below regulatory limits
+- **Water impact**: Trace element concentrations in wastewater are well below regulatory limits
 - **Circular economy compatible**: Does not affect recyclability of base textiles
 - **ESG aligned**: Supports corporate sustainability goals and SDG 3 (Good Health), SDG 12 (Responsible Production)
 
@@ -122,8 +122,8 @@ Standard MOQ is 1 unit (19L bottle). For enterprise customers, custom packaging 
 ### How quickly can we get FUZE?
 Standard distributor stock orders ship within 3-5 business days. Custom or large orders may require 2-4 weeks lead time.
 
-### Does FUZE contain nanosilver?
-No. FUZE uses conventional silver-based technology, not nanosilver. The active ingredient is a silver salt compound that is EPA registered and classified as a conventional antimicrobial.
+### What is FUZE made of?
+FUZE is a high density allotrope — a proprietary meta-material that is EPA registered and classified as a conventional antimicrobial. It is not a nanoparticle, not an ion, and not a salt. It is a unique material form created through laser synthesis from recycled metals.
 
 ### Can we combine FUZE with other finishes?
 Yes. FUZE is compatible with most common textile finishes including softeners, water repellents (except PFAS-based), flame retardants, and moisture management treatments. We recommend a compatibility test for novel finish combinations.

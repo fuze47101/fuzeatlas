@@ -392,7 +392,9 @@ export default function FabricEditPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div><label className={labelClass}>Category</label>
                 <select value={fabricCategory} onChange={(e) => setFabricCategory(e.target.value)} className={inputClass + " bg-white"}>
-                  <option value="">Select...</option><option value="woven">Woven</option><option value="knit">Knit</option><option value="nonwoven">Nonwoven</option>
+                  <option value="">Select...</option>
+                  <optgroup label="Textiles"><option value="woven">Woven</option><option value="knit">Knit</option><option value="nonwoven">Nonwoven</option></optgroup>
+                  <optgroup label="Non-Textile Substrates"><option value="down_fill">Down / Feather Fill</option><option value="synthetic_fill">Synthetic Fill / Insulation</option><option value="carpet">Carpet / Rug</option><option value="artificial_turf">Artificial Turf / Grass</option><option value="mattress">Mattress / Bedding Composite</option><option value="foam">Foam / Padding</option><option value="leather">Leather / Synthetic Leather</option><option value="composite">Composite / Multi-layer</option><option value="other_substrate">Other Non-Textile</option></optgroup>
                 </select></div>
             </div>
             {fabricCategory === "woven" && (
@@ -532,7 +534,7 @@ export default function FabricEditPage() {
           {/* Section 6: Chemical Finishes */}
           <div className="border-t border-slate-200 pt-6">
             <h3 className="font-semibold text-slate-900 mb-1">Chemical Finishes</h3>
-            <p className="text-xs text-red-600 font-medium mb-4">Chemical finishes directly impact silver nanoparticle bonding and antimicrobial efficacy.</p>
+            <p className="text-xs text-red-600 font-medium mb-4">Chemical finishes directly impact FUZE bonding and antimicrobial efficacy.</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div><label className={labelClass}>Silicone Softener?</label><select value={ext.silSoftener} onChange={e => setField("silSoftener", e.target.value)} className={inputClass + " bg-white"}><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option><option value="unknown">Unknown</option></select></div>
               <div><label className={labelClass}>Water Repellent?</label><select value={ext.waterRepellent} onChange={e => setField("waterRepellent", e.target.value)} className={inputClass + " bg-white"}><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option><option value="unknown">Unknown</option></select></div>

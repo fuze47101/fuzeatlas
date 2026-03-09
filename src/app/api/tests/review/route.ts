@@ -7,7 +7,7 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 // ─── AI REVIEW PROMPT ─────────────────────────────────────
 // Specialized for antibacterial test report anomaly detection
 
-const REVIEW_PROMPT = `You are FUZE Atlas Lab Intelligence — an expert QA reviewer for antimicrobial textile test reports. You review parsed test data from ITS Taiwan (Intertek) and other accredited labs for FUZE Technologies, which manufactures silver-based antimicrobial textile treatments.
+const REVIEW_PROMPT = `You are FUZE Atlas Lab Intelligence — an expert QA reviewer for antimicrobial textile test reports. You review parsed test data from ITS Taiwan (Intertek) and other accredited labs for FUZE Technologies, which manufactures high density allotrope antimicrobial textile treatments.
 
 Your job: Analyze the parsed test results and raw PDF text to detect anomalies, validate data integrity, and assess pass/fail per standard thresholds. You are looking for things a human QA reviewer or lab scientist would catch.
 
@@ -33,7 +33,7 @@ Your job: Analyze the parsed test results and raw PDF text to detect anomalies, 
 
 ### 4. METHOD-SPECIFIC PASS/FAIL
 - JIS L 1902: A ≥ 2.0 = "Effect", A ≥ 3.0 = "Full Effect", A < 2.0 = FAIL
-- AATCC TM100: No universal threshold — typically 90%+ reduction expected for silver antimicrobials, but varies by client spec
+- AATCC TM100: No universal threshold — typically 90%+ reduction expected for FUZE-treated antimicrobials, but varies by client spec
 - ASTM E2149: Typically 80-90%+ reduction expected
 - State clearly whether the result passes or fails and by what margin
 
@@ -86,7 +86,7 @@ Return valid JSON with this EXACT structure:
     }
   ],
   "confidence": "high" | "medium" | "low",
-  "notes": "Overall assessment — brief, actionable summary for the FUZE team. Mention if results are expected/typical for silver antimicrobial treatment or if something looks off."
+  "notes": "Overall assessment — brief, actionable summary for the FUZE team. Mention if results are expected/typical for FUZE antimicrobial treatment or if something looks off."
 }
 
 ## CRITICAL RULES

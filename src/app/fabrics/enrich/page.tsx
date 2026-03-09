@@ -14,8 +14,8 @@ export default function FabricEnrichmentPage() {
   const [icpApplyResult, setIcpApplyResult] = useState<any>(null);
   const [loading, setLoading] = useState("");
 
-  if (user && user.role !== "ADMIN" && user.role !== "EMPLOYEE") {
-    return <div className="max-w-4xl mx-auto p-8 text-center text-red-500 font-bold">Admin access required</div>;
+  if (user && user.role !== "ADMIN") {
+    return <div className="max-w-4xl mx-auto p-8 text-center text-red-500 font-bold">Super admin access required</div>;
   }
 
   const runScan = async () => {

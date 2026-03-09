@@ -1107,7 +1107,7 @@ export default function TestUploadPage() {
                       <h3 className="font-semibold text-blue-900">{t.tests.icp} {t.tests.metalAnalysis}</h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-blue-800 mb-1.5">Silver (Ag)</label>
+                          <label className="block text-sm font-medium text-blue-800 mb-1.5">Ag Content</label>
                           <input type="number" step="0.001" value={agValue} onChange={(e) => setAgValue(e.target.value)} placeholder="e.g. 150.5" className="w-full px-3 py-2.5 border border-blue-300 rounded-lg text-slate-900 placeholder:text-slate-400 bg-white focus:ring-2 focus:ring-blue-500" />
                         </div>
                         <div>
