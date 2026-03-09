@@ -8,7 +8,7 @@ import { getCurrentUser } from "@/lib/auth";
  *  Creates a FabricSubmission + TestRun + IcpResult,
  *  then links back to the SampleTrialRequest.
  * ─────────────────────────────────────────────────── */
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
