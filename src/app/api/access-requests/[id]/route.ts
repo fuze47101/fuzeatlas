@@ -71,6 +71,7 @@ export async function PUT(
             role: "FACTORY_USER",
             status: "ACTIVE",
             factoryId: targetFactoryId,
+            mustChangePassword: true,
           },
         });
 
@@ -152,7 +153,7 @@ export async function PUT(
           }
         }
 
-        // Create the user account
+        // Create the brand user account
         const newUser = await prisma.user.create({
           data: {
             name: `${request.firstName} ${request.lastName}`,
@@ -161,6 +162,7 @@ export async function PUT(
             role: "BRAND_USER",
             status: "ACTIVE",
             brandId: targetBrandId,
+            mustChangePassword: true,
           },
         });
 

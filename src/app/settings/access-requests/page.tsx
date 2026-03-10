@@ -39,6 +39,13 @@ interface AccessRequest {
 
 interface Stats { pending: number; approved: number; denied: number; }
 
+interface CompanyOption {
+  id: string;
+  name: string;
+  country?: string;
+  type: "brand" | "factory" | "distributor";
+}
+
 export default function AccessRequestsPage() {
   const [requests, setRequests] = useState<AccessRequest[]>([]);
   const [stats, setStats] = useState<Stats>({ pending: 0, approved: 0, denied: 0 });
@@ -52,6 +59,13 @@ export default function AccessRequestsPage() {
 
   // Approval result state
   const [lastApproval, setLastApproval] = useState<{ name: string; email: string; password: string } | null>(null);
+
+  // Company linking state
+  const [companies, setCompanies] = useState<CompanyOption[]>([]);
+  const [approveModal, setApproveModal] = useState<string | null>(null); // request ID being approved
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string>("");
+  const [companySearch, setCompanySearch] = useState("");
+  const [createNewCompany, setCreateNewCompany] = useState(false);
 
   const loadRequests = async (status?: string, type?: string) => {
     try {
@@ -74,20 +88,95 @@ export default function AccessRequestsPage() {
 
   useEffect(() => { loadRequests(statusFilter, typeTab); }, [statusFilter, typeTab]);
 
-  const handleAction = async (id: string, action: "approve" | "deny", reviewNote?: string, deniedReason?: string) => {
+  // Load companies (brands, factories) for the linking dropdown
+  useEffect(() => {
+    const loadCompanies = async () => {
+      try {
+        const [brandsRes, factoriesRes] = await Promise.all([
+          fetch("/api/brands"),
+          fetch("/api/factories"),
+        ]);
+        const brandsData = await brandsRes.json();
+        const factoriesData = await factoriesRes.json();
+        const opts: CompanyOption[] = [];
+        if (brandsData.brands) {
+          brandsData.brands.forEach((b: any) => opts.push({ id: b.id, name: b.name, country: b.country, type: "brand" }));
+        } else if (brandsData.grouped) {
+          Object.values(brandsData.grouped).forEach((arr: any) =>
+            arr.forEach((b: any) => opts.push({ id: b.id, name: b.name, country: b.country, type: "brand" }))
+          );
+        }
+        if (factoriesData.factories) {
+          factoriesData.factories.forEach((f: any) => opts.push({ id: f.id, name: f.name, country: f.country, type: "factory" }));
+        }
+        setCompanies(opts);
+      } catch { }
+    };
+    loadCompanies();
+  }, []);
+
+  const openApproveModal = (reqId: string) => {
+    const req = requests.find(r => r.id === reqId);
+    setApproveModal(reqId);
+    setSelectedCompanyId("");
+    setCompanySearch(req?.company || "");
+    setCreateNewCompany(false);
+  };
+
+  const handleApproveWithCompany = async () => {
+    if (!approveModal) return;
+    const req = requests.find(r => r.id === approveModal);
+    if (!req) return;
+
+    setProcessing(approveModal);
+    setError("");
+    try {
+      const payload: any = { action: "approve" };
+      if (selectedCompanyId && !createNewCompany) {
+        if (req.requestType === "FACTORY") {
+          payload.factoryId = selectedCompanyId;
+        } else {
+          payload.brandId = selectedCompanyId;
+        }
+      }
+      // If createNewCompany is true, we send no ID — API creates a new entity
+
+      const res = await fetch(`/api/access-requests/${approveModal}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const d = await res.json();
+      if (d.ok) {
+        if (d.user) {
+          setLastApproval({ name: d.user.name, email: d.user.email, password: d.user.tempPassword });
+        }
+        setSuccess(d.message);
+        setTimeout(() => setSuccess(""), 8000);
+        setApproveModal(null);
+        loadRequests(statusFilter, typeTab);
+      } else {
+        setError(d.error);
+      }
+    } catch {
+      setError("Failed to process request");
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const handleDeny = async (id: string) => {
+    const reason = prompt("Reason for denial (optional):");
     setProcessing(id);
     setError("");
     try {
       const res = await fetch(`/api/access-requests/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, reviewNote, deniedReason }),
+        body: JSON.stringify({ action: "deny", deniedReason: reason || undefined }),
       });
       const d = await res.json();
       if (d.ok) {
-        if (action === "approve" && d.user) {
-          setLastApproval({ name: d.user.name, email: d.user.email, password: d.user.tempPassword });
-        }
         setSuccess(d.message);
         setTimeout(() => setSuccess(""), 8000);
         loadRequests(statusFilter, typeTab);
@@ -387,24 +476,17 @@ export default function AccessRequestsPage() {
                     {isPending && (
                       <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
                         <button
-                          onClick={() => handleAction(req.id, "approve")}
+                          onClick={() => openApproveModal(req.id)}
                           disabled={processing === req.id}
                           className="px-5 py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-2"
                         >
-                          {processing === req.id ? (
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
-                          Approve & Create Account
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          Approve & Link Company
                         </button>
                         <button
-                          onClick={() => {
-                            const reason = prompt("Reason for denial (optional):");
-                            handleAction(req.id, "deny", undefined, reason || undefined);
-                          }}
+                          onClick={() => handleDeny(req.id)}
                           disabled={processing === req.id}
                           className="px-5 py-2.5 border border-red-300 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-50 disabled:opacity-50"
                         >
@@ -419,6 +501,130 @@ export default function AccessRequestsPage() {
           })}
         </div>
       )}
+      {/* ── Approve & Link Company Modal ── */}
+      {approveModal && (() => {
+        const req = requests.find(r => r.id === approveModal);
+        if (!req) return null;
+        const isFactory = req.requestType === "FACTORY";
+        const relevantCompanies = companies.filter(c =>
+          (isFactory ? c.type === "factory" : c.type === "brand") &&
+          c.name.toLowerCase().includes(companySearch.toLowerCase())
+        );
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={() => setApproveModal(null)}>
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden"
+              onClick={e => e.stopPropagation()}>
+              {/* Modal Header */}
+              <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                <h3 className="text-lg font-bold text-slate-900">Approve Access Request</h3>
+                <p className="text-sm text-slate-500 mt-0.5">
+                  <span className="font-medium">{req.firstName} {req.lastName}</span> from{" "}
+                  <span className="font-medium text-slate-700">{req.company}</span>
+                </p>
+              </div>
+
+              <div className="px-6 py-5 space-y-4">
+                {/* What they typed */}
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-xs font-semibold text-amber-700 mb-1">Company name they provided:</p>
+                  <p className="text-sm font-bold text-slate-800">{req.company}</p>
+                  <p className="text-xs text-amber-600 mt-1">
+                    {isFactory ? "🏭 Factory" : "🏢 Brand"} request
+                  </p>
+                </div>
+
+                {/* Link to existing or create new */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Link to existing {isFactory ? "factory" : "brand"}:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={`Search ${isFactory ? "factories" : "brands"}...`}
+                    value={companySearch}
+                    onChange={e => { setCompanySearch(e.target.value); setCreateNewCompany(false); }}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent"
+                  />
+
+                  {/* Company list */}
+                  <div className="mt-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg">
+                    {relevantCompanies.length === 0 ? (
+                      <div className="p-3 text-center text-sm text-slate-400">
+                        No matching {isFactory ? "factories" : "brands"} found
+                      </div>
+                    ) : (
+                      relevantCompanies.map(c => (
+                        <button
+                          key={c.id}
+                          onClick={() => { setSelectedCompanyId(c.id); setCreateNewCompany(false); }}
+                          className={`w-full text-left px-3 py-2.5 text-sm border-b border-slate-100 last:border-0 transition-colors ${
+                            selectedCompanyId === c.id && !createNewCompany
+                              ? "bg-[#00b4c3]/10 text-[#00b4c3] font-semibold"
+                              : "hover:bg-slate-50 text-slate-700"
+                          }`}
+                        >
+                          <span className="font-medium">{c.name}</span>
+                          {c.country && <span className="text-slate-400 ml-2 text-xs">{c.country}</span>}
+                          {selectedCompanyId === c.id && !createNewCompany && (
+                            <span className="float-right text-[#00b4c3]">&#10003;</span>
+                          )}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Or create new */}
+                <button
+                  onClick={() => { setCreateNewCompany(true); setSelectedCompanyId(""); }}
+                  className={`w-full p-3 border-2 rounded-lg text-sm font-medium text-left transition-all ${
+                    createNewCompany
+                      ? "border-[#00b4c3] bg-[#00b4c3]/5 text-[#00b4c3]"
+                      : "border-dashed border-slate-300 text-slate-500 hover:border-slate-400"
+                  }`}
+                >
+                  + Create new {isFactory ? "factory" : "brand"}: <span className="font-bold">"{req.company}"</span>
+                  {createNewCompany && <span className="float-right">&#10003;</span>}
+                </button>
+
+                {!selectedCompanyId && !createNewCompany && (
+                  <p className="text-xs text-amber-600">
+                    Please select an existing {isFactory ? "factory" : "brand"} or choose to create a new one
+                  </p>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-3">
+                <button
+                  onClick={() => setApproveModal(null)}
+                  className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleApproveWithCompany}
+                  disabled={(!selectedCompanyId && !createNewCompany) || processing === approveModal}
+                  className="px-5 py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {processing === approveModal ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                  {selectedCompanyId && !createNewCompany
+                    ? `Approve & Link to ${companies.find(c => c.id === selectedCompanyId)?.name || "Company"}`
+                    : `Approve & Create "${req.company}"`
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
