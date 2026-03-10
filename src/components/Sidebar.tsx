@@ -286,6 +286,7 @@ export default function Sidebar() {
           { href: "/settings/exchange-rates", label: "Exchange Rates", icon: "💱" },
           { href: "/settings/audit-log", label: "Audit Log", icon: "📜" },
           { href: "/admin/distributor-docs", label: "Distributor Docs", icon: "📂" },
+          { href: "/admin/sample-trials", label: "Sample Trials", icon: "🧪" },
         ],
       });
     }

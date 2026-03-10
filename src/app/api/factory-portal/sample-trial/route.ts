@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { sendTrialAdminNotification } from "@/lib/email";
 
 /* ── GET  /api/factory-portal/sample-trial ── list trials for factory ── */
 export async function GET(req: Request) {
@@ -187,6 +188,25 @@ export async function POST(req: Request) {
         icpLab: { select: { name: true, city: true, country: true } },
       },
     });
+
+    // ── Notify admins of new trial request (non-blocking) ──
+    const fabricInfo = `${trial.fabric?.fuzeNumber ? `FUZE-${trial.fabric.fuzeNumber}` : ""} ${trial.fabric?.customerCode || ""}`.trim() || "N/A";
+    prisma.user.findMany({
+      where: { role: { in: ["ADMIN", "EMPLOYEE"] }, email: { not: null } },
+      select: { email: true },
+    }).then((admins: any[]) => {
+      const emails = admins.map((a: any) => a.email).filter(Boolean);
+      if (emails.length > 0) {
+        sendTrialAdminNotification({
+          adminEmails: emails,
+          trialId: trial.id,
+          factoryName: effectiveFactoryId || "Unknown",
+          fabricInfo,
+          requestedByName: user.name || user.email || "Factory User",
+          event: "NEW_REQUEST",
+        }).catch((err: any) => console.error("Admin trial notification failed:", err));
+      }
+    }).catch(() => {});
 
     return NextResponse.json({ ok: true, trial });
   } catch (e: any) {

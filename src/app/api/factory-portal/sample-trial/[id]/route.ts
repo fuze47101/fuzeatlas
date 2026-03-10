@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { sendTrialStatusEmail, sendTrialAdminNotification } from "@/lib/email";
 
 /* ── GET /api/factory-portal/sample-trial/[id] ── trial detail ── */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -127,6 +128,51 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         icpLab: { select: { id: true, name: true, city: true, country: true } },
       },
     });
+
+    // ── Send email notifications on status changes (non-blocking) ──
+    if (updateData.status && updateData.status !== trial.status) {
+      const newStatus = updateData.status;
+      const fabricInfo = updated.fabric
+        ? `${updated.fabric.fuzeNumber ? `FUZE-${updated.fabric.fuzeNumber}` : ""} ${updated.fabric.customerCode || updated.fabric.factoryCode || ""}`.trim()
+        : "N/A";
+      const factoryName = updated.factory?.name || "Unknown Factory";
+
+      // Notify the factory user who requested the trial
+      if (updated.requestedBy?.email) {
+        sendTrialStatusEmail({
+          email: updated.requestedBy.email,
+          name: updated.requestedBy.name || "Factory User",
+          trialId: id,
+          factoryName,
+          fabricInfo,
+          newStatus,
+          trackingNumber: updated.sampleTrackingNumber || undefined,
+          rejectedReason: body.rejectedReason || undefined,
+          adminNotes: body.adminNotes || undefined,
+          icpLabName: updated.icpLab?.name || undefined,
+        }).catch((err: any) => console.error("Trial email failed:", err));
+      }
+
+      // Notify admins when ICP results are submitted
+      if (newStatus === "ICP_SUBMITTED") {
+        prisma.user.findMany({
+          where: { role: { in: ["ADMIN", "EMPLOYEE"] }, email: { not: null } },
+          select: { email: true },
+        }).then((admins: any[]) => {
+          const emails = admins.map((a: any) => a.email).filter(Boolean);
+          if (emails.length > 0) {
+            sendTrialAdminNotification({
+              adminEmails: emails,
+              trialId: id,
+              factoryName,
+              fabricInfo,
+              requestedByName: updated.requestedBy?.name || "Factory User",
+              event: "ICP_SUBMITTED",
+            }).catch((err: any) => console.error("Admin trial email failed:", err));
+          }
+        }).catch(() => {});
+      }
+    }
 
     return NextResponse.json({ ok: true, trial: updated });
   } catch (e: any) {

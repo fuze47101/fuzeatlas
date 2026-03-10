@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasMinRole } from "@/lib/auth";
+import { uploadToS3, generateS3Key, isS3Configured, S3_PREFIXES } from "@/lib/s3";
 
 // GET: List all distributor documents (admin view)
 export async function GET(req: Request) {
@@ -58,7 +59,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const {
       distributorId, docType, title, description,
-      filename, contentType, sizeBytes, url,
+      filename, contentType, sizeBytes, url, base64Data,
       factoryId, invoiceId,
       shipmentRef, batchNumber, poNumber,
       portOfOrigin, portOfDest, hsCode,
@@ -72,6 +73,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Title is required" }, { status: 400 });
     }
 
+    // Upload file to S3 if base64 data is provided
+    let fileUrl = url || null;
+    let s3Bucket: string | null = null;
+    let s3Key: string | null = null;
+
+    if (base64Data && isS3Configured()) {
+      const buffer = Buffer.from(base64Data, "base64");
+      const key = generateS3Key(S3_PREFIXES.DISTRIBUTOR_DOCS, filename || "document.pdf", distributorId);
+      const s3Result = await uploadToS3(key, buffer, contentType || "application/pdf", {
+        distributorId,
+        docType: docType || "OTHER",
+        originalFilename: filename || "document.pdf",
+      });
+      fileUrl = s3Result.url;
+      s3Bucket = s3Result.bucket;
+      s3Key = s3Result.key;
+    }
+
     const doc = await prisma.distributorDocument.create({
       data: {
         distributorId,
@@ -81,7 +100,9 @@ export async function POST(req: Request) {
         filename: filename || null,
         contentType: contentType || null,
         sizeBytes: sizeBytes || null,
-        url: url || null,
+        url: fileUrl,
+        bucket: s3Bucket,
+        key: s3Key,
         factoryId: factoryId || null,
         invoiceId: invoiceId || null,
         shipmentRef: shipmentRef || null,

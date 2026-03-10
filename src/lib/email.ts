@@ -521,6 +521,144 @@ export async function sendPaymentReminderEmail(params: {
   });
 }
 
+// ─── Sample Trial Status Notifications (F-025) ───
+
+export async function sendTrialStatusEmail(params: {
+  email: string;
+  name: string;
+  trialId: string;
+  factoryName: string;
+  fabricInfo: string;
+  newStatus: string;
+  trackingNumber?: string;
+  rejectedReason?: string;
+  adminNotes?: string;
+  icpLabName?: string;
+}) {
+  const {
+    email, name, trialId, factoryName, fabricInfo,
+    newStatus, trackingNumber, rejectedReason, adminNotes, icpLabName,
+  } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+  const trialUrl = `${baseUrl}/factory-portal/sample-trial/${trialId}`;
+
+  const statusConfig: Record<string, { label: string; color: string; message: string }> = {
+    UNDER_REVIEW: {
+      label: "Under Review",
+      color: "#d97706",
+      message: "Your FUZE sample trial request is being reviewed by the FUZE team.",
+    },
+    APPROVED: {
+      label: "Approved",
+      color: "#059669",
+      message: "Your FUZE sample trial request has been approved. The FUZE sample will be prepared for shipment.",
+    },
+    REJECTED: {
+      label: "Not Approved",
+      color: "#dc2626",
+      message: rejectedReason
+        ? `Your FUZE sample trial request was not approved. Reason: ${rejectedReason}`
+        : "Your FUZE sample trial request was not approved at this time. Please contact your FUZE representative for details.",
+    },
+    SAMPLE_SHIPPED: {
+      label: "Sample Shipped",
+      color: "#059669",
+      message: trackingNumber
+        ? `Your FUZE sample has been shipped! Tracking number: ${trackingNumber}`
+        : "Your FUZE sample has been shipped! You will receive it shortly.",
+    },
+    ICP_PENDING: {
+      label: "ICP Testing Required",
+      color: "#d97706",
+      message: icpLabName
+        ? `Please send your treated fabric sample to ${icpLabName} for ICP validation testing. Submit the results through the portal once available.`
+        : "Please send your treated fabric sample to your designated ICP lab for validation testing.",
+    },
+    ICP_SUBMITTED: {
+      label: "ICP Results Received",
+      color: "#2563eb",
+      message: "ICP test results have been submitted and are being reviewed by the FUZE team.",
+    },
+    COMPLETE: {
+      label: "Complete",
+      color: "#059669",
+      message: "Your FUZE sample trial has been completed successfully. Thank you for your partnership.",
+    },
+  };
+
+  const config = statusConfig[newStatus];
+  if (!config) return { ok: true, skipped: true };
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">Sample Trial Update</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${name}, there's an update on your FUZE sample trial request.
+    </p>
+    <div style="background: #f9fafb; border-left: 4px solid ${config.color}; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+      <p style="margin: 0 0 8px; color: ${config.color}; font-weight: 700; font-size: 16px;">${config.label}</p>
+      <p style="margin: 0 0 8px; color: #4b5563;"><strong>Factory:</strong> ${factoryName}</p>
+      <p style="margin: 0 0 8px; color: #4b5563;"><strong>Fabric:</strong> ${fabricInfo}</p>
+      <p style="margin: 8px 0 0; color: #4b5563;">${config.message}</p>
+      ${adminNotes ? `<p style="margin: 8px 0 0; color: #6b7280; font-style: italic;">Note: ${adminNotes}</p>` : ""}
+    </div>
+    <div style="margin: 24px 0;">
+      <a href="${trialUrl}" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+        View Trial Details
+      </a>
+    </div>
+    <p style="color: #9ca3af; font-size: 13px;">
+      If you have questions, contact your FUZE representative.
+    </p>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: `FUZE Sample Trial — ${config.label}`,
+    html,
+  });
+}
+
+// Notify admin when a new trial request is submitted or ICP results are submitted
+export async function sendTrialAdminNotification(params: {
+  adminEmails: string[];
+  trialId: string;
+  factoryName: string;
+  fabricInfo: string;
+  requestedByName: string;
+  event: "NEW_REQUEST" | "ICP_SUBMITTED";
+}) {
+  const { adminEmails, trialId, factoryName, fabricInfo, requestedByName, event } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+  const trialUrl = `${baseUrl}/admin/sample-trials`;
+
+  const isNew = event === "NEW_REQUEST";
+  const title = isNew ? "New Sample Trial Request" : "ICP Results Submitted";
+  const message = isNew
+    ? `<strong>${requestedByName}</strong> from <strong>${factoryName}</strong> has submitted a new FUZE sample trial request.`
+    : `<strong>${factoryName}</strong> has submitted ICP test results for review.`;
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">${title}</h2>
+    <p style="color: #4b5563; line-height: 1.6;">${message}</p>
+    <div style="background: #f9fafb; border-left: 4px solid ${FUZE_COLOR}; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+      <p style="margin: 0 0 4px; color: #4b5563;"><strong>Factory:</strong> ${factoryName}</p>
+      <p style="margin: 0 0 4px; color: #4b5563;"><strong>Fabric:</strong> ${fabricInfo}</p>
+      <p style="margin: 0; color: #4b5563;"><strong>Requested by:</strong> ${requestedByName}</p>
+    </div>
+    <div style="margin: 24px 0;">
+      <a href="${trialUrl}" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+        Review in Admin
+      </a>
+    </div>
+  `);
+
+  return sendEmail({
+    to: adminEmails,
+    subject: `${isNew ? "New" : "ICP Results"}: Sample Trial — ${factoryName}`,
+    html,
+  });
+}
+
 // ─── Meeting Reminder (F-022) ───
 
 export async function sendMeetingReminderEmail(params: {
