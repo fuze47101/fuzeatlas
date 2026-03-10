@@ -8,7 +8,23 @@ const JWT_SECRET = new TextEncoder().encode(
 const COOKIE_NAME = "fuze-session";
 
 // Routes that don't require authentication
-const PUBLIC_PATHS = ["/login", "/request-access", "/forgot-password", "/reset-password", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/access-requests"];
+const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/forgot-password", "/reset-password", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/access-requests"];
+
+// Routes restricted to internal roles only (ADMIN, EMPLOYEE, SALES_*, TESTING_*, FABRIC_*)
+// Factory, Brand, and Distributor users CANNOT access these even with a valid session
+const INTERNAL_ONLY_PATHS = [
+  "/pipeline", "/revenue", "/invoices", "/brand-engagement",
+  "/brands", "/factories", "/factory-search",
+  "/fabrics", "/recipes",
+  "/test-requests", "/tests", "/labs",
+  "/sow", "/meetings", "/shipments", "/reports",
+  "/settings", "/admin",
+  "/api/admin", "/api/pipeline", "/api/revenue",
+  "/api/settings", "/api/invoices",
+];
+
+// Roles that are considered "external" (cannot access internal pages)
+const EXTERNAL_ROLES = ["FACTORY_USER", "FACTORY_MANAGER", "BRAND_USER", "BRAND_MANAGER", "DISTRIBUTOR_USER", "PUBLIC"];
 
 // Static file patterns to skip
 const STATIC_PATTERNS = [
@@ -54,6 +70,27 @@ export async function middleware(req: NextRequest) {
 
     if (!user || user.status !== "ACTIVE") {
       throw new Error("Invalid session");
+    }
+
+    // Block external users from internal-only routes
+    if (EXTERNAL_ROLES.includes(user.role)) {
+      const isInternalRoute = INTERNAL_ONLY_PATHS.some((p) => pathname.startsWith(p));
+      if (isInternalRoute) {
+        if (pathname.startsWith("/api/")) {
+          return NextResponse.json(
+            { ok: false, error: "Access denied" },
+            { status: 403 }
+          );
+        }
+        // Redirect external users to their portal
+        const role = user.role;
+        if (role === "FACTORY_USER" || role === "FACTORY_MANAGER") {
+          return NextResponse.redirect(new URL("/factory-portal", req.url));
+        } else if (role === "BRAND_USER" || role === "BRAND_MANAGER") {
+          return NextResponse.redirect(new URL("/brand-portal", req.url));
+        }
+        return NextResponse.redirect(new URL("/login", req.url));
+      }
     }
 
     // Add user info to headers for downstream use

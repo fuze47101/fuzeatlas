@@ -146,8 +146,12 @@ export default function Sidebar() {
   }, [isAdmin]);
 
   // ─── Grouped navigation ─────────────────────────
-  // Top-level item (always visible, not in a group)
-  const topItem: NavItem = { href: "/dashboard", label: t.nav.dashboard, icon: "📊" };
+  // Top-level item (always visible, not in a group) — route by role
+  const topItem: NavItem = isFactoryUser
+    ? { href: "/factory-portal", label: t.nav.dashboard, icon: "📊" }
+    : isBrandUser
+    ? { href: "/brand-portal", label: t.nav.dashboard, icon: "📊" }
+    : { href: "/dashboard", label: t.nav.dashboard, icon: "📊" };
 
   // Build groups based on role
   let groups: NavGroup[] = [];
@@ -180,7 +184,6 @@ export default function Sidebar() {
       {
         label: "Factory Portal",
         items: [
-          { href: "/factory-portal", label: "Dashboard", icon: "📊" },
           { href: "/factory-portal/intake", label: "Submit Fabric", icon: "📥" },
           { href: "/factory-portal/fabrics", label: "My Fabrics", icon: "🧵" },
           { href: "/factory-portal/submissions", label: "Submissions", icon: "📋" },

@@ -760,7 +760,9 @@ export default function DashboardPage() {
   } else if (data.role === "FABRIC_MANAGER") {
     return <FabricDashboard data={data} t={t} />;
   } else if (data.role === "FACTORY_MANAGER" || data.role === "FACTORY_USER") {
-    return <FactoryDashboard data={data} t={t} />;
+    // Redirect factory users to their dedicated portal
+    if (typeof window !== "undefined") window.location.href = "/factory-portal";
+    return <div className="flex items-center justify-center h-64 text-slate-400 text-lg">Redirecting to Factory Portal...</div>;
   } else if (data.role === "BRAND_USER") {
     return <BrandDashboard data={data} t={t} />;
   } else if (data.role === "DISTRIBUTOR_USER") {

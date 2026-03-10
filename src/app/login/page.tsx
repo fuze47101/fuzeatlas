@@ -23,11 +23,18 @@ function LoginForm() {
   const [setupName, setSetupName] = useState("");
   const [setupChecked, setSetupChecked] = useState(false);
 
+  // Role-based default landing page
+  const getDefaultRoute = (role?: string) => {
+    if (role === "FACTORY_USER" || role === "FACTORY_MANAGER") return "/factory-portal";
+    if (role === "BRAND_USER" || role === "BRAND_MANAGER") return "/brand-portal";
+    return "/dashboard";
+  };
+
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      const from = searchParams.get("from") || "/dashboard";
-      router.push(from);
+      const from = searchParams.get("from");
+      router.push(from || getDefaultRoute(user.role));
     }
   }, [user, router, searchParams]);
 
@@ -51,8 +58,8 @@ function LoginForm() {
     if (!result.ok) {
       setError(result.error || t.login.loginFailed);
     } else {
-      const from = searchParams.get("from") || "/dashboard";
-      router.push(from);
+      const from = searchParams.get("from");
+      router.push(from || getDefaultRoute(result.user?.role));
     }
     setLoading(false);
   };

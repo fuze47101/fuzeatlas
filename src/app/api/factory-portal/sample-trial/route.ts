@@ -112,6 +112,16 @@ export async function POST(req: Request) {
     if (!icpLabId && !icpLabOther) {
       return NextResponse.json({ ok: false, error: "ICP lab commitment is mandatory. Select a lab or provide lab details." }, { status: 400 });
     }
+    // Shipping validation — factory pays freight on US-origin samples
+    if (!shippingAddress || !shippingCity || !shippingCountry) {
+      return NextResponse.json({ ok: false, error: "Shipping address, city, and country are required." }, { status: 400 });
+    }
+    if (!shippingContactName || !shippingContactPhone) {
+      return NextResponse.json({ ok: false, error: "Shipping contact name and phone are required." }, { status: 400 });
+    }
+    if (!shippingCarrier || !shippingAccountNumber) {
+      return NextResponse.json({ ok: false, error: "Freight carrier and account number are required. FUZE provides samples free — you provide the shipping account." }, { status: 400 });
+    }
 
     // Verify fabric exists and belongs to factory
     const fabric = await prisma.fabric.findUnique({
