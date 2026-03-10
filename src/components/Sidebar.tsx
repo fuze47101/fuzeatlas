@@ -285,6 +285,7 @@ export default function Sidebar() {
           { href: "/settings/access-requests", label: "Access Requests", icon: "📩", badge: pendingCounts.accessRequests },
           { href: "/settings/exchange-rates", label: "Exchange Rates", icon: "💱" },
           { href: "/settings/audit-log", label: "Audit Log", icon: "📜" },
+          { href: "/admin/distributor-docs", label: "Distributor Docs", icon: "📂" },
         ],
       });
     }
