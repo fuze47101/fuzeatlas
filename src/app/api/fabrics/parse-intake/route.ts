@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { uploadToS3, generateS3Key, isS3Configured, S3_PREFIXES } from "@/lib/s3";
 
 const prisma = new PrismaClient();
 
@@ -342,9 +343,24 @@ export async function POST(req: Request) {
       extractError = `PDF text extraction failed: ${err.message}`;
     }
 
-    // Store document record
-    const base64 = buffer.toString("base64");
-    const dataUrl = `data:application/pdf;base64,${base64}`;
+    // Upload to S3 if configured, otherwise fall back to base64
+    let fileUrl: string;
+    let s3Bucket: string | null = null;
+    let s3Key: string | null = null;
+
+    if (isS3Configured()) {
+      const key = generateS3Key(S3_PREFIXES.FABRIC_INTAKE, file.name);
+      const s3Result = await uploadToS3(key, buffer, file.type, {
+        originalFilename: file.name,
+        uploadedAt: new Date().toISOString(),
+      });
+      fileUrl = s3Result.url;
+      s3Bucket = s3Result.bucket;
+      s3Key = s3Result.key;
+    } else {
+      const base64 = buffer.toString("base64");
+      fileUrl = `data:application/pdf;base64,${base64}`;
+    }
 
     const document = await prisma.document.create({
       data: {
@@ -352,7 +368,9 @@ export async function POST(req: Request) {
         filename: file.name,
         contentType: file.type,
         sizeBytes: file.size,
-        url: dataUrl,
+        url: fileUrl,
+        bucket: s3Bucket,
+        key: s3Key,
       },
     });
 

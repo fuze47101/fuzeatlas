@@ -1,8 +1,9 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { uploadToS3, generateS3Key, deleteFromS3, isS3Configured, S3_PREFIXES } from "@/lib/s3";
 
-/* ── POST /api/labs/[id]/documents ── upload a lab form (base64) ── */
+/* ── POST /api/labs/[id]/documents ── upload a lab form ── */
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -16,14 +17,28 @@ export async function POST(
       return NextResponse.json({ ok: false, error: "Filename required" }, { status: 400 });
     }
 
-    // Verify lab exists
     const lab = await prisma.lab.findUnique({ where: { id } });
     if (!lab) {
       return NextResponse.json({ ok: false, error: "Lab not found" }, { status: 404 });
     }
 
-    // For now, store the document reference with base64 data in a JSON field
-    // In production this would go to S3/Vercel Blob
+    let fileUrl = url || null;
+    let s3Bucket: string | null = null;
+    let s3Key: string | null = null;
+
+    // Upload base64 data to S3 if available and configured
+    if (base64Data && isS3Configured()) {
+      const buffer = Buffer.from(base64Data, "base64");
+      const key = generateS3Key(S3_PREFIXES.LAB_DOCS, filename, id);
+      const s3Result = await uploadToS3(key, buffer, contentType || "application/pdf", {
+        labId: id,
+        originalFilename: filename,
+      });
+      fileUrl = s3Result.url;
+      s3Bucket = s3Result.bucket;
+      s3Key = s3Result.key;
+    }
+
     const doc = await prisma.document.create({
       data: {
         kind: "LAB_FORM",
@@ -31,8 +46,11 @@ export async function POST(
         contentType: contentType || "application/pdf",
         sizeBytes: sizeBytes || null,
         labId: id,
-        url: url || null,
-        raw: base64Data ? { base64: base64Data } : null,
+        url: fileUrl,
+        bucket: s3Bucket,
+        key: s3Key,
+        // Legacy fallback: store base64 in raw if S3 not configured
+        raw: (!isS3Configured() && base64Data) ? { base64: base64Data } : null,
       },
     });
 
@@ -62,6 +80,11 @@ export async function DELETE(
     });
     if (!doc) {
       return NextResponse.json({ ok: false, error: "Document not found" }, { status: 404 });
+    }
+
+    // Delete from S3 if stored there
+    if (doc.key && isS3Configured()) {
+      try { await deleteFromS3(doc.key); } catch (e) { console.error("S3 delete error:", e); }
     }
 
     await prisma.document.delete({ where: { id: docId } });

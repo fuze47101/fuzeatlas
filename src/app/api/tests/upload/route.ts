@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { parseITSReport } from "@/lib/parsers/testReportParser";
 import type { ParsedITSReport } from "@/lib/parsers/testReportParser";
+import { uploadToS3, generateS3Key, isS3Configured, S3_PREFIXES } from "@/lib/s3";
 
 /* ── PDF text extraction (lightweight, no native deps) ────────── */
 async function extractPdfText(buffer: Buffer): Promise<string> {
@@ -238,9 +239,25 @@ export async function POST(req: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Store as base64 data URL
-    const base64 = buffer.toString("base64");
-    const dataUrl = `data:application/pdf;base64,${base64}`;
+    // Upload to S3 if configured, otherwise fall back to base64
+    let fileUrl: string;
+    let s3Bucket: string | null = null;
+    let s3Key: string | null = null;
+
+    if (isS3Configured()) {
+      const key = generateS3Key(S3_PREFIXES.TEST_REPORTS, file.name);
+      const s3Result = await uploadToS3(key, buffer, file.type, {
+        originalFilename: file.name,
+        uploadedAt: new Date().toISOString(),
+      });
+      fileUrl = s3Result.url;
+      s3Bucket = s3Result.bucket;
+      s3Key = s3Result.key;
+    } else {
+      // Fallback: base64 data URL (legacy)
+      const base64 = buffer.toString("base64");
+      fileUrl = `data:application/pdf;base64,${base64}`;
+    }
 
     // Extract text from PDF
     let pdfText = "";
@@ -258,7 +275,9 @@ export async function POST(req: Request) {
         filename: file.name,
         contentType: file.type,
         sizeBytes: file.size,
-        url: dataUrl,
+        url: fileUrl,
+        bucket: s3Bucket,
+        key: s3Key,
       },
     });
 
