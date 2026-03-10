@@ -263,6 +263,23 @@ export default function Sidebar() {
     }
   }
 
+  // If admin/internal user is browsing factory portal pages, prepend factory portal nav
+  if (pathname.startsWith("/factory-portal") && isAdmin && !isBrandUser && !isFactoryUser) {
+    const factoryPortalGroup: NavGroup = {
+      label: "Factory Portal",
+      items: [
+        { href: "/factory-portal", label: "Dashboard", icon: "📊" },
+        { href: "/factory-portal/intake", label: "Submit Fabric", icon: "📥" },
+        { href: "/factory-portal/fabrics", label: "My Fabrics", icon: "🧵" },
+        { href: "/factory-portal/submissions", label: "Submissions", icon: "📋" },
+        { href: "/factory-portal/tests", label: "Test Results", icon: "🧪" },
+        { href: "/factory-portal/sample-trial", label: "Sample Trials", icon: "🧪" },
+        { href: "/factory-portal/request-test", label: "Request Test", icon: "📋" },
+      ],
+    };
+    groups.unshift(factoryPortalGroup);
+  }
+
   // ─── Expanded state: auto-expand group containing active page ─────
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
