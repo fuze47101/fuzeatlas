@@ -41,7 +41,15 @@ export async function GET() {
       });
     }
 
-    return NextResponse.json({ ok: true, grouped, total: brands.length });
+    // Return both grouped (for pipeline view) and flat brands array (for dropdowns)
+    const brandsFlat = brands.map((b) => ({
+      id: b.id,
+      name: b.name,
+      pipelineStage: b.pipelineStage || "LEAD",
+      customerType: b.customerType,
+    }));
+
+    return NextResponse.json({ ok: true, grouped, brands: brandsFlat, total: brands.length });
   } catch (e: any) {
     console.error("Brands API error:", e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });

@@ -344,6 +344,7 @@ export default function AdminDistributorDocsPage() {
                 <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden md:table-cell">Factory</th>
                 <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden lg:table-cell">References</th>
                 <th className="text-left px-4 py-3 font-semibold text-slate-700">Date</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-700 w-20">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -383,6 +384,20 @@ export default function AdminDistributorDocsPage() {
                         Exp: {new Date(doc.expiresAt).toLocaleDateString()}
                       </div>
                     )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-1.5">
+                      <a href={`/api/admin/distributor-docs/${doc.id}/pdf`} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#00b4c3]/10 hover:bg-[#00b4c3]/20 text-[#009ba8] rounded-lg text-xs font-medium transition-colors"
+                        title="Download PDF">
+                        PDF
+                      </a>
+                      <a href={`/admin/distributor-docs/${doc.id}/print`} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors"
+                        title="Print preview">
+                        Print
+                      </a>
+                    </div>
                   </td>
                 </tr>
               ))}

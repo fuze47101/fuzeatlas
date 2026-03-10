@@ -6,11 +6,21 @@ import { getCurrentUser } from "@/lib/auth";
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "FACTORY_USER" && user.role !== "FACTORY_MANAGER")) {
+    if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+
+    const isAdmin = user.role === "ADMIN" || user.role === "EMPLOYEE";
+    const isFactory = user.role === "FACTORY_USER" || user.role === "FACTORY_MANAGER";
+
+    if (!isFactory && !isAdmin) {
       return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 403 });
     }
 
-    const factoryId = user.factoryId;
+    // Admin can optionally pass ?factoryId= to view a specific factory's fabrics
+    const url0 = new URL(req.url);
+    const factoryId = isAdmin
+      ? url0.searchParams.get("factoryId") || user.factoryId
+      : user.factoryId;
+
     if (!factoryId) {
       return NextResponse.json({ ok: false, error: "Factory not found" }, { status: 404 });
     }

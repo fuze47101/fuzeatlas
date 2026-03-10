@@ -34,7 +34,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const { agValue, auValue, unit, testMethod, labReportRef, notes } = body;
 
     if (agValue == null || agValue < 0) {
-      return NextResponse.json({ ok: false, error: "Ag (allotrope) value is required and must be >= 0" }, { status: 400 });
+      return NextResponse.json({ ok: false, error: "Ag value is required and must be >= 0" }, { status: 400 });
     }
 
     // Create FabricSubmission → TestRun → IcpResult

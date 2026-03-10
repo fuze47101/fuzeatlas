@@ -57,6 +57,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const isAdmin = user.role === "ADMIN" || user.role === "EMPLOYEE";
     const isFactory = user.factoryId === trial.factoryId;
 
+    if (!isAdmin && !isFactory) {
+      return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
+    }
+
     // Status transitions
     const VALID_STATUSES = [
       "SUBMITTED", "UNDER_REVIEW", "APPROVED", "REJECTED",
@@ -110,10 +114,17 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       where: { id },
       data: updateData,
       include: {
-        fabric: { select: { fuzeNumber: true, customerCode: true } },
-        brand: { select: { name: true } },
-        factory: { select: { name: true } },
-        icpLab: { select: { name: true, city: true, country: true } },
+        fabric: {
+          select: {
+            id: true, fuzeNumber: true, customerCode: true, factoryCode: true,
+            construction: true, weightGsm: true, widthInches: true, fabricCategory: true,
+            contents: { select: { material: true, percent: true }, orderBy: { percent: "desc" } },
+          },
+        },
+        brand: { select: { id: true, name: true } },
+        factory: { select: { id: true, name: true, country: true, city: true } },
+        requestedBy: { select: { id: true, name: true, email: true } },
+        icpLab: { select: { id: true, name: true, city: true, country: true } },
       },
     });
 

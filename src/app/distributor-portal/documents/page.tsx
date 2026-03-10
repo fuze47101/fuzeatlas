@@ -201,12 +201,22 @@ export default function DistributorDocumentsPage() {
                   {doc.filename && (
                     <span className="text-xs text-slate-400">{doc.filename} {doc.sizeBytes ? `(${formatSize(doc.sizeBytes)})` : ""}</span>
                   )}
-                  {doc.url && (
-                    <a href={doc.url} target="_blank" rel="noopener noreferrer"
-                      className="px-3 py-1.5 bg-[#00b4c3] text-white rounded-lg text-xs font-semibold hover:bg-[#009ba8] transition-colors">
-                      View / Download
+                  <div className="flex gap-2">
+                    {doc.url && (
+                      <a href={doc.url} target="_blank" rel="noopener noreferrer"
+                        className="px-3 py-1.5 bg-[#00b4c3] text-white rounded-lg text-xs font-semibold hover:bg-[#009ba8] transition-colors">
+                        View / Download
+                      </a>
+                    )}
+                    <a href={`/api/admin/distributor-docs/${doc.id}/pdf`} target="_blank" rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors">
+                      PDF
                     </a>
-                  )}
+                    <a href={`/admin/distributor-docs/${doc.id}/print`} target="_blank" rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-lg text-xs font-medium transition-colors">
+                      Print
+                    </a>
+                  </div>
                   {doc.expiresAt && !isExpired(doc.expiresAt) && (
                     <span className="text-[10px] text-amber-600">Expires: {new Date(doc.expiresAt).toLocaleDateString()}</span>
                   )}
