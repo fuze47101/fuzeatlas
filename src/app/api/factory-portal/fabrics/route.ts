@@ -15,24 +15,43 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: "Factory not found" }, { status: 404 });
     }
 
+    // Optional search filter
+    const url = new URL(req.url);
+    const search = url.searchParams.get("search") || "";
+
+    const where: any = { factoryId };
+
+    if (search) {
+      where.OR = [
+        { customerCode: { contains: search, mode: "insensitive" } },
+        { construction: { contains: search, mode: "insensitive" } },
+        { factoryCode: { contains: search, mode: "insensitive" } },
+        { note: { contains: search, mode: "insensitive" } },
+      ];
+      const numSearch = parseInt(search);
+      if (!isNaN(numSearch)) {
+        where.OR.push({ fuzeNumber: numSearch });
+      }
+    }
+
     const fabrics = await prisma.fabric.findMany({
-      where: { factoryId },
+      where,
       select: {
         id: true,
         fuzeNumber: true,
         customerCode: true,
+        factoryCode: true,
         note: true,
         weightGsm: true,
+        widthInches: true,
         construction: true,
+        yarnType: true,
         createdAt: true,
       },
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({
-      ok: true,
-      fabrics,
-    });
+    return NextResponse.json({ ok: true, fabrics });
   } catch (e: any) {
     console.error("Factory fabrics error:", e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });

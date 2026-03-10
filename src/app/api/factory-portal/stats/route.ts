@@ -38,12 +38,17 @@ export async function GET(req: Request) {
       },
     });
 
+    const sampleTrials = await prisma.sampleTrialRequest.count({
+      where: { factoryId },
+    });
+
     return NextResponse.json({
       ok: true,
       stats: {
         activeFabrics,
         pendingSubmissions,
         completedTests,
+        sampleTrials,
       },
     });
   } catch (e: any) {

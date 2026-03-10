@@ -170,6 +170,7 @@ export default function Sidebar() {
       {
         label: "Resources",
         items: [
+          { href: "/fabric-library", label: "FUZE Fabric Library", icon: "📚" },
           { href: "/compliance-library", label: "Compliance Library", icon: "📋" },
           { href: "/book-meeting", label: "Book Meeting", icon: "📅" },
           { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
@@ -195,6 +196,7 @@ export default function Sidebar() {
       {
         label: "Resources",
         items: [
+          { href: "/fabric-library", label: "FUZE Fabric Library", icon: "📚" },
           { href: "/compliance-library", label: "Compliance Library", icon: "📋" },
           { href: "/pricing", label: "Pricing", icon: "💰" },
           { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },

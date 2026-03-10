@@ -14,7 +14,7 @@ const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/
 // Factory, Brand, and Distributor users CANNOT access these even with a valid session
 const INTERNAL_ONLY_PATHS = [
   "/pipeline", "/revenue", "/invoices", "/brand-engagement",
-  "/brands", "/factories", "/factory-search",
+  "/brands", "/factories",
   "/fabrics", "/recipes",
   "/test-requests", "/tests", "/labs",
   "/sow", "/meetings", "/shipments", "/reports",

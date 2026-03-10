@@ -9,9 +9,12 @@ interface Fabric {
   id: string;
   fuzeNumber: number | null;
   customerCode?: string;
+  factoryCode?: string;
   note?: string;
   weightGsm?: number;
+  widthInches?: number;
   construction?: string;
+  yarnType?: string;
   createdAt: string;
 }
 
@@ -21,6 +24,8 @@ export default function FactoryFabricsPage() {
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (user?.role !== "FACTORY_USER" && user?.role !== "FACTORY_MANAGER") {
@@ -30,7 +35,8 @@ export default function FactoryFabricsPage() {
 
     const loadFabrics = async () => {
       try {
-        const res = await fetch("/api/factory-portal/fabrics");
+        const qs = search ? `?search=${encodeURIComponent(search)}` : "";
+        const res = await fetch(`/api/factory-portal/fabrics${qs}`);
         const data = await res.json();
         if (data.ok) {
           setFabrics(data.fabrics);
@@ -45,7 +51,13 @@ export default function FactoryFabricsPage() {
     };
 
     loadFabrics();
-  }, [user, router]);
+  }, [user, router, search]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => setSearch(searchInput), 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   if (loading) {
     return (
@@ -54,12 +66,6 @@ export default function FactoryFabricsPage() {
       </div>
     );
   }
-
-  const statusColors: Record<string, string> = {
-    ACTIVE: "bg-emerald-100 text-emerald-800",
-    ARCHIVED: "bg-slate-100 text-slate-800",
-    PENDING: "bg-amber-100 text-amber-800",
-  };
 
   return (
     <div className="p-4 sm:p-8 max-w-6xl mx-auto">
@@ -72,7 +78,9 @@ export default function FactoryFabricsPage() {
             <span className="text-slate-800 font-medium">My Fabrics</span>
           </div>
           <h1 className="text-2xl font-black text-slate-900">My Fabrics</h1>
-          <p className="text-sm text-slate-500 mt-1">All fabrics submitted for FUZE treatment</p>
+          <p className="text-sm text-slate-500 mt-1">
+            {fabrics.length} fabric{fabrics.length !== 1 ? "s" : ""} registered for FUZE treatment
+          </p>
         </div>
         <Link href="/factory-portal/intake"
           className="px-4 py-2.5 bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white rounded-lg font-semibold text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all">
@@ -80,46 +88,88 @@ export default function FactoryFabricsPage() {
         </Link>
       </div>
 
+      {/* Search */}
+      {fabrics.length > 0 || search ? (
+        <div className="mb-6">
+          <div className="relative max-w-md">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search by code, construction, FUZE number..."
+              className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+            />
+          </div>
+        </div>
+      ) : null}
+
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{error}</div>
       )}
 
-      {/* Fabrics List */}
+      {/* Fabrics Table */}
       {fabrics.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
-          <p className="text-slate-500 mb-4">No fabrics yet</p>
-          <Link href="/factory-portal/intake"
-            className="text-[#00b4c3] hover:underline font-medium text-sm">
-            Submit your first fabric →
-          </Link>
+          <p className="text-slate-500 mb-2">
+            {search ? "No fabrics match your search" : "No fabrics yet"}
+          </p>
+          {search ? (
+            <button
+              onClick={() => { setSearchInput(""); setSearch(""); }}
+              className="text-[#00b4c3] hover:underline font-medium text-sm"
+            >
+              Clear search
+            </button>
+          ) : (
+            <Link href="/factory-portal/intake"
+              className="text-[#00b4c3] hover:underline font-medium text-sm">
+              Submit your first fabric &rarr;
+            </Link>
+          )}
         </div>
       ) : (
-        <div className="space-y-2">
-          {fabrics.map(fabric => (
-            <Link key={fabric.id} href={`/fabrics/${fabric.id}`}
-              className="block bg-white border border-slate-200 rounded-xl p-4 hover:border-[#00b4c3] hover:shadow-md transition-all">
-              <div className="flex items-center justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1">
-                    <h3 className="font-bold text-slate-900 truncate">
-                      {fabric.note?.replace("Intake: ", "").split(" | ")[0] || fabric.construction || `FUZE-${fabric.fuzeNumber}`}
-                    </h3>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap bg-emerald-100 text-emerald-800">
-                      Active
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-slate-600">
-                    <span className="font-mono font-medium">FUZE-{fabric.fuzeNumber}</span>
-                    {fabric.customerCode && <><span>·</span><span>{fabric.customerCode}</span></>}
-                    {fabric.weightGsm && <><span>·</span><span>{fabric.weightGsm} GSM</span></>}
-                  </div>
-                </div>
-                <div className="text-right ml-4">
-                  <p className="text-xs text-slate-400">{new Date(fabric.createdAt).toLocaleDateString()}</p>
-                </div>
-              </div>
-            </Link>
-          ))}
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th className="text-left px-4 py-3 font-semibold text-slate-700">FUZE #</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-700">Your Code</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden sm:table-cell">Construction</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden md:table-cell">Weight</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden md:table-cell">Yarn</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden lg:table-cell">Added</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {fabrics.map(fabric => (
+                <tr key={fabric.id}
+                    className="hover:bg-slate-50 transition-colors cursor-pointer"
+                    onClick={() => router.push(`/fabrics/${fabric.id}`)}>
+                  <td className="px-4 py-3">
+                    <span className="font-mono font-bold text-[#00b4c3]">FUZE-{fabric.fuzeNumber}</span>
+                  </td>
+                  <td className="px-4 py-3 text-slate-700">
+                    {fabric.customerCode || fabric.factoryCode || "—"}
+                  </td>
+                  <td className="px-4 py-3 text-slate-600 hidden sm:table-cell truncate max-w-[200px]">
+                    {fabric.construction || "—"}
+                  </td>
+                  <td className="px-4 py-3 text-slate-600 hidden md:table-cell">
+                    {fabric.weightGsm ? `${fabric.weightGsm} GSM` : "—"}
+                  </td>
+                  <td className="px-4 py-3 text-slate-600 hidden md:table-cell">
+                    {fabric.yarnType || "—"}
+                  </td>
+                  <td className="px-4 py-3 text-slate-400 text-xs hidden lg:table-cell">
+                    {new Date(fabric.createdAt).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

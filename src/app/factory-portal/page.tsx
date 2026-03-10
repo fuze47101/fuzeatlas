@@ -9,12 +9,13 @@ interface Stats {
   activeFabrics: number;
   pendingSubmissions: number;
   completedTests: number;
+  sampleTrials: number;
 }
 
 export default function FactoryPortalPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [stats, setStats] = useState<Stats>({ activeFabrics: 0, pendingSubmissions: 0, completedTests: 0 });
+  const [stats, setStats] = useState<Stats>({ activeFabrics: 0, pendingSubmissions: 0, completedTests: 0, sampleTrials: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function FactoryPortalPage() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-start justify-between">
             <div>
@@ -87,6 +88,15 @@ export default function FactoryPortalPage() {
               <p className="text-3xl font-black text-slate-900">{stats.completedTests}</p>
             </div>
             <span className="text-3xl">✅</span>
+          </div>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm text-slate-600 mb-1">Sample Trials</p>
+              <p className="text-3xl font-black text-slate-900">{stats.sampleTrials}</p>
+            </div>
+            <span className="text-3xl">🧪</span>
           </div>
         </div>
       </div>
