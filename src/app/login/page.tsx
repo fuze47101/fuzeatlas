@@ -58,6 +58,8 @@ function LoginForm() {
     const result = await login(email, password);
     if (!result.ok) {
       setError(result.error || t.login.loginFailed);
+    } else if (result.mustChangePassword) {
+      router.push("/change-password");
     } else {
       const from = searchParams.get("from");
       router.push(from || getDefaultRoute(result.user?.role));

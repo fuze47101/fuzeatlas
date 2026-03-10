@@ -175,6 +175,13 @@ model User {
   role     UserRole   @default(PUBLIC)
   status   UserStatus @default(ACTIVE)
 
+  // Security flags
+  mustChangePassword Boolean  @default(false)  // Force password change on next login
+  emailVerified      Boolean  @default(false)  // Email address verified
+  emailVerifyToken   String?  @unique          // Verification token
+  emailVerifyExpiry  DateTime?                 // Token expiry
+  passwordChangedAt  DateTime?                 // Last password change timestamp
+
   salesManagerId String?
   salesManager   User?   @relation("SalesManagerReps", fields: [salesManagerId], references: [id])
   managedReps    User[]  @relation("SalesManagerReps")

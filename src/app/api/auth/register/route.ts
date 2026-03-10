@@ -74,7 +74,8 @@ export async function POST(req: Request) {
         );
       }
     } else {
-      // Create new user
+      // Create new user — non-admin users must change password on first login
+      const isExternalRole = ["FACTORY_USER", "FACTORY_MANAGER", "BRAND_USER", "DISTRIBUTOR_USER"].includes(role);
       user = await prisma.user.create({
         data: {
           name,
@@ -82,6 +83,7 @@ export async function POST(req: Request) {
           password: hashedPassword,
           role: isFirstAdmin ? "ADMIN" : (role || "EMPLOYEE"),
           status: "ACTIVE",
+          mustChangePassword: !isFirstAdmin && isExternalRole,
           ...(brandId && { brandId }),
           ...(factoryId && { factoryId }),
           ...(distributorId && { distributorId }),

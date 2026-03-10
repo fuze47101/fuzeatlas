@@ -278,6 +278,43 @@ export async function sendAccessDeniedEmail(params: {
   });
 }
 
+// ─── Email Verification (F-023) ───
+
+export async function sendEmailVerification(params: {
+  email: string;
+  name: string;
+  verifyToken: string;
+}) {
+  const { email, name, verifyToken } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+  const verifyUrl = `${baseUrl}/verify-email?token=${verifyToken}`;
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">Verify Your Email</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${name}, please verify your email address to complete your FUZE Atlas account setup.
+    </p>
+    <div style="margin: 24px 0; text-align: center;">
+      <a href="${verifyUrl}" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 14px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 16px;">
+        Verify Email Address
+      </a>
+    </div>
+    <p style="color: #4b5563; line-height: 1.6; font-size: 14px;">
+      This link will expire in 24 hours. If you did not create a FUZE Atlas account, you can safely ignore this email.
+    </p>
+    <p style="color: #9ca3af; font-size: 12px; margin-top: 24px;">
+      If the button doesn't work, copy this link into your browser:<br/>
+      <a href="${verifyUrl}" style="color: ${FUZE_COLOR}; word-break: break-all;">${verifyUrl}</a>
+    </p>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: "FUZE Atlas — Verify Your Email",
+    html,
+  });
+}
+
 // ─── SOW Status Change Email (F-017) ───
 
 export async function sendSOWStatusEmail(params: {

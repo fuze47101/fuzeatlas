@@ -107,7 +107,7 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
         const hashedPassword = await hashPassword(newPw);
         const updatedUser = await prisma.user.update({
           where: { id: params.id },
-          data: { password: hashedPassword },
+          data: { password: hashedPassword, mustChangePassword: true },
           select: { id: true, name: true, email: true, role: true },
         });
         return NextResponse.json({

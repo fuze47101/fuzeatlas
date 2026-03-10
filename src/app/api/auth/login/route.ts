@@ -64,7 +64,12 @@ export async function POST(req: Request) {
     const token = await createToken(sessionUser);
     await setSessionCookie(token);
 
-    return NextResponse.json({ ok: true, user: sessionUser });
+    return NextResponse.json({
+      ok: true,
+      user: sessionUser,
+      mustChangePassword: user.mustChangePassword || false,
+      emailVerified: user.emailVerified || false,
+    });
   } catch (err: any) {
     console.error("Login error:", err);
     return NextResponse.json(

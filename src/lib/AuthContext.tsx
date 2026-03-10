@@ -15,7 +15,7 @@ interface AuthUser {
 interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<{ ok: boolean; error?: string; user?: AuthUser }>;
+  login: (email: string, password: string) => Promise<{ ok: boolean; error?: string; user?: AuthUser; mustChangePassword?: boolean }>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await res.json();
       if (data.ok && data.user) {
         setUser(data.user);
-        return { ok: true, user: data.user };
+        return { ok: true, user: data.user, mustChangePassword: data.mustChangePassword };
       }
       return { ok: false, error: data.error || "Login failed" };
     } catch {
