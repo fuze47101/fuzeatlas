@@ -766,7 +766,8 @@ export default function DashboardPage() {
   } else if (data.role === "BRAND_USER") {
     return <BrandDashboard data={data} t={t} />;
   } else if (data.role === "DISTRIBUTOR_USER") {
-    return <DistributorDashboard data={data} t={t} />;
+    if (typeof window !== "undefined") window.location.href = "/distributor-portal";
+    return <div className="flex items-center justify-center h-64 text-slate-400 text-lg">Redirecting to Distributor Portal...</div>;
   }
 
   // Fallback to admin dashboard for unknown roles

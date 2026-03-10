@@ -322,6 +322,7 @@ model Factory {
   sourceRecords SourceRecord[]
   accessRequests AccessRequest[] @relation("AccessRequestFactory")
   sampleTrials   SampleTrialRequest[] @relation("FactoryTrials")
+  distributorDocs DistributorDocument[] @relation("DistributorDocFactory")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -370,6 +371,7 @@ model Distributor {
   factories     Factory[]      @relation("FactoryDistributor")
   projects      Project[]      @relation("ProjectDistributor")
   invoices      Invoice[]
+  documents     DistributorDocument[]
   users         User[]         @relation("DistributorUsers")
   sourceRecords SourceRecord[]
 
@@ -1036,6 +1038,68 @@ model Invoice {
   @@index([projectId])
   @@index([status])
   @@index([invoiceDate])
+}
+
+// ─────────────────────────────────────────────
+// DISTRIBUTOR DOCUMENTS
+// ─────────────────────────────────────────────
+
+model DistributorDocument {
+  id String @id @default(cuid())
+
+  distributorId String
+  distributor   Distributor @relation(fields: [distributorId], references: [id])
+
+  // Document classification
+  docType     DistDocType  @default(OTHER)
+  title       String                // "Certificate of Analysis - Batch 2024-03"
+  description String?
+
+  // File info
+  filename    String?
+  contentType String?
+  sizeBytes   Int?
+  url         String?               // S3/R2 URL or external link
+  bucket      String?
+  key         String?    @unique
+
+  // Optional links to related entities
+  factoryId   String?
+  factory     Factory?   @relation("DistributorDocFactory", fields: [factoryId], references: [id])
+  invoiceId   String?
+
+  // Shipping/logistics metadata
+  shipmentRef   String?             // tracking number or shipment ID
+  batchNumber   String?             // production batch reference
+  poNumber      String?             // purchase order
+  portOfOrigin  String?
+  portOfDest    String?
+  hsCode        String?             // harmonized system code
+
+  uploadedBy  String?               // user ID who uploaded
+  expiresAt   DateTime?             // for time-sensitive docs like C of A
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([distributorId])
+  @@index([docType])
+  @@index([factoryId])
+  @@index([createdAt])
+}
+
+enum DistDocType {
+  CERTIFICATE_OF_ANALYSIS   // C of A
+  BILL_OF_LADING            // BOL
+  COMMERCIAL_INVOICE
+  PACKING_LIST
+  CUSTOMS_DECLARATION
+  IMPORT_PERMIT
+  EXPORT_PERMIT
+  PHYTOSANITARY_CERT
+  INSURANCE_CERT
+  SDS_MSDS                  // Safety Data Sheet
+  OTHER
 }
 
 // ─────────────────────────────────────────────

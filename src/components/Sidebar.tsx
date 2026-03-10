@@ -119,7 +119,8 @@ export default function Sidebar() {
 
   const isBrandUser = user?.role === "BRAND_USER";
   const isFactoryUser = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
-  const isInternal = !isBrandUser && user?.role !== "FACTORY_USER" && user?.role !== "FACTORY_MANAGER" && user?.role !== "DISTRIBUTOR_USER" && user?.role !== "PUBLIC";
+  const isDistributorUser = user?.role === "DISTRIBUTOR_USER";
+  const isInternal = !isBrandUser && !isFactoryUser && !isDistributorUser && user?.role !== "PUBLIC";
   const isAdmin = user?.role === "ADMIN" || user?.role === "EMPLOYEE";
 
   // ─── Pending counts for admin badges ─────────────────
@@ -151,6 +152,8 @@ export default function Sidebar() {
     ? { href: "/factory-portal", label: t.nav.dashboard, icon: "📊" }
     : isBrandUser
     ? { href: "/brand-portal", label: t.nav.dashboard, icon: "📊" }
+    : isDistributorUser
+    ? { href: "/distributor-portal", label: t.nav.dashboard, icon: "📊" }
     : { href: "/dashboard", label: t.nav.dashboard, icon: "📊" };
 
   // Build groups based on role
@@ -191,6 +194,25 @@ export default function Sidebar() {
           { href: "/factory-portal/tests", label: "Test Results", icon: "🧪" },
           { href: "/factory-portal/sample-trial", label: "Sample Trials", icon: "🧪" },
           { href: "/factory-portal/request-test", label: "Request Test", icon: "📋" },
+        ],
+      },
+      {
+        label: "Resources",
+        items: [
+          { href: "/fabric-library", label: "FUZE Fabric Library", icon: "📚" },
+          { href: "/compliance-library", label: "Compliance Library", icon: "📋" },
+          { href: "/pricing", label: "Pricing", icon: "💰" },
+          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
+        ],
+      },
+    ];
+  } else if (isDistributorUser) {
+    groups = [
+      {
+        label: "Distributor Portal",
+        items: [
+          { href: "/distributor-portal/documents", label: "Document Library", icon: "📂" },
+          { href: "/distributor-portal/invoices", label: "Invoices", icon: "📄" },
         ],
       },
       {
