@@ -1643,9 +1643,19 @@ model SampleTrialRequest {
   sampleVolumeLiters  Float?   // Calculated from fabric params + tier
   shippingAddress     String?  // Factory address for sample delivery
   shippingCity        String?
+  shippingState       String?
+  shippingPostalCode  String?
   shippingCountry     String?
   shippingContactName String?
   shippingContactPhone String?
+  shippingContactEmail String?
+
+  // Shipping account — factory pays freight on US-origin samples
+  shippingCarrier       String?  // FedEx, DHL, UPS, etc.
+  shippingAccountNumber String?  // Their carrier account number for billing
+  shippingMethod        String?  // EXPRESS | STANDARD | ECONOMY
+  shippingOrigin        String?  @default("US") // US = ships from FUZE USA, DISTRIBUTOR = in-country
+  shippingNotes         String?  // Special instructions, broker info, customs notes
 
   // ICP Lab commitment (mandatory)
   icpLabId            String?

@@ -90,9 +90,16 @@ export default function SampleTrialPage() {
   const [icpLabOther, setIcpLabOther] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
   const [shippingCity, setShippingCity] = useState("");
+  const [shippingState, setShippingState] = useState("");
+  const [shippingPostalCode, setShippingPostalCode] = useState("");
   const [shippingCountry, setShippingCountry] = useState("");
   const [shippingContactName, setShippingContactName] = useState("");
   const [shippingContactPhone, setShippingContactPhone] = useState("");
+  const [shippingContactEmail, setShippingContactEmail] = useState("");
+  const [shippingCarrier, setShippingCarrier] = useState("");
+  const [shippingAccountNumber, setShippingAccountNumber] = useState("");
+  const [shippingMethod, setShippingMethod] = useState("STANDARD");
+  const [shippingNotes, setShippingNotes] = useState("");
   const [notes, setNotes] = useState("");
 
   // Computed sample volume
@@ -157,9 +164,16 @@ export default function SampleTrialPage() {
           applicationMethod: applicationMethod || null,
           shippingAddress,
           shippingCity,
+          shippingState: shippingState || null,
+          shippingPostalCode: shippingPostalCode || null,
           shippingCountry,
           shippingContactName,
           shippingContactPhone,
+          shippingContactEmail: shippingContactEmail || null,
+          shippingCarrier: shippingCarrier || null,
+          shippingAccountNumber: shippingAccountNumber || null,
+          shippingMethod,
+          shippingNotes: shippingNotes || null,
           icpLabId: icpLabId || null,
           icpLabOther: icpLabOther || null,
           notes: notes || null,
@@ -196,8 +210,15 @@ export default function SampleTrialPage() {
     setIcpLabOther("");
     setShippingAddress("");
     setShippingCity("");
+    setShippingState("");
+    setShippingPostalCode("");
     setShippingCountry("");
     setShippingContactName("");
+    setShippingContactEmail("");
+    setShippingCarrier("");
+    setShippingAccountNumber("");
+    setShippingMethod("STANDARD");
+    setShippingNotes("");
     setShippingContactPhone("");
     setNotes("");
     setError("");
@@ -492,17 +513,23 @@ export default function SampleTrialPage() {
             </div>
           </div>
 
-          {/* Step 5: Shipping Address */}
+          {/* Step 5: Shipping & Freight */}
           <div className="bg-white border border-slate-200 rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-8 h-8 rounded-full bg-[#00b4c3] text-white text-sm font-bold flex items-center justify-center">5</div>
-              <h2 className="text-lg font-semibold text-slate-900">FUZE Sample Delivery Address</h2>
+              <h2 className="text-lg font-semibold text-slate-900">Shipping & Freight Account</h2>
             </div>
-            <p className="text-xs text-slate-500 mb-4 ml-11">Where should we ship the FUZE product sample?</p>
+            <p className="text-xs text-slate-500 mb-2 ml-11">Where should we ship the FUZE product sample?</p>
+
+            {/* Shipping policy notice */}
+            <div className="mb-4 ml-11 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
+              <strong>Shipping Policy:</strong> FUZE provides sample product at no charge. For shipments originating from FUZE USA, the requesting party is responsible for freight costs. Please provide your carrier account number below so shipping can be billed directly to your account. In-country distributor shipments are handled on a case-by-case basis.
+            </div>
 
             <div className="space-y-3">
+              {/* Delivery address */}
               <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">Factory / Delivery Address</label>
+                <label className="text-sm font-medium text-slate-700 mb-1 block">Factory / Delivery Address *</label>
                 <textarea value={shippingAddress} onChange={(e) => setShippingAddress(e.target.value)}
                   placeholder="Street address, building, unit..."
                   rows={2}
@@ -510,28 +537,93 @@ export default function SampleTrialPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-medium text-slate-700 mb-1 block">City</label>
+                  <label className="text-sm font-medium text-slate-700 mb-1 block">City *</label>
                   <input type="text" value={shippingCity} onChange={(e) => setShippingCity(e.target.value)}
                     className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-700 mb-1 block">Country</label>
-                  <input type="text" value={shippingCountry} onChange={(e) => setShippingCountry(e.target.value)}
+                  <label className="text-sm font-medium text-slate-700 mb-1 block">State / Province</label>
+                  <input type="text" value={shippingState} onChange={(e) => setShippingState(e.target.value)}
                     className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-medium text-slate-700 mb-1 block">Contact Name</label>
+                  <label className="text-sm font-medium text-slate-700 mb-1 block">Postal / ZIP Code</label>
+                  <input type="text" value={shippingPostalCode} onChange={(e) => setShippingPostalCode(e.target.value)}
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-700 mb-1 block">Country *</label>
+                  <input type="text" value={shippingCountry} onChange={(e) => setShippingCountry(e.target.value)}
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                </div>
+              </div>
+
+              {/* Contact info */}
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="text-sm font-medium text-slate-700 mb-1 block">Contact Name *</label>
                   <input type="text" value={shippingContactName} onChange={(e) => setShippingContactName(e.target.value)}
                     className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-700 mb-1 block">Contact Phone</label>
+                  <label className="text-sm font-medium text-slate-700 mb-1 block">Contact Phone *</label>
                   <input type="text" value={shippingContactPhone} onChange={(e) => setShippingContactPhone(e.target.value)}
                     placeholder="+1 555 123 4567"
                     className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
                 </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-700 mb-1 block">Contact Email</label>
+                  <input type="email" value={shippingContactEmail} onChange={(e) => setShippingContactEmail(e.target.value)}
+                    placeholder="shipping@factory.com"
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                </div>
+              </div>
+
+              {/* Carrier / Freight Account */}
+              <div className="mt-2 pt-4 border-t border-slate-200">
+                <p className="text-sm font-semibold text-slate-800 mb-3">Freight Account Information</p>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-sm font-medium text-slate-700 mb-1 block">Carrier *</label>
+                    <select value={shippingCarrier} onChange={(e) => setShippingCarrier(e.target.value)}
+                      className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]">
+                      <option value="">Select carrier...</option>
+                      <option value="FedEx">FedEx</option>
+                      <option value="DHL">DHL Express</option>
+                      <option value="UPS">UPS</option>
+                      <option value="TNT">TNT</option>
+                      <option value="SF Express">SF Express</option>
+                      <option value="Aramex">Aramex</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-700 mb-1 block">Account Number *</label>
+                    <input type="text" value={shippingAccountNumber} onChange={(e) => setShippingAccountNumber(e.target.value)}
+                      placeholder="Your carrier account #"
+                      className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-700 mb-1 block">Shipping Speed</label>
+                    <select value={shippingMethod} onChange={(e) => setShippingMethod(e.target.value)}
+                      className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]">
+                      <option value="EXPRESS">Express (1-3 days)</option>
+                      <option value="STANDARD">Standard (5-7 days)</option>
+                      <option value="ECONOMY">Economy (7-14 days)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Shipping notes for customs / broker */}
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-1 block">Shipping Notes</label>
+                <textarea value={shippingNotes} onChange={(e) => setShippingNotes(e.target.value)}
+                  placeholder="Customs broker info, import license #, special handling, delivery hours..."
+                  rows={2}
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
               </div>
             </div>
           </div>

@@ -320,15 +320,36 @@ export default function TrialDetailPage() {
         </div>
       </div>
 
-      {/* Shipping */}
+      {/* Shipping & Freight */}
       {(trial.shippingAddress || trial.shippingCity || trial.shippingCountry) && (
         <div className="bg-white border border-slate-200 rounded-xl p-6 mb-6">
-          <h3 className="text-sm font-bold text-slate-700 mb-2">Shipping Address</h3>
-          <div className="text-sm text-slate-700">
-            {trial.shippingContactName && <p className="font-medium">{trial.shippingContactName}</p>}
-            {trial.shippingAddress && <p>{trial.shippingAddress}</p>}
-            <p>{[trial.shippingCity, trial.shippingCountry].filter(Boolean).join(", ")}</p>
-            {trial.shippingContactPhone && <p className="text-slate-500">{trial.shippingContactPhone}</p>}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-sm font-bold text-slate-700 mb-2">Delivery Address</h3>
+              <div className="text-sm text-slate-700">
+                {trial.shippingContactName && <p className="font-medium">{trial.shippingContactName}</p>}
+                {trial.shippingAddress && <p>{trial.shippingAddress}</p>}
+                <p>{[trial.shippingCity, trial.shippingState, trial.shippingPostalCode].filter(Boolean).join(", ")}</p>
+                <p>{trial.shippingCountry}</p>
+                {trial.shippingContactPhone && <p className="text-slate-500 mt-1">Phone: {trial.shippingContactPhone}</p>}
+                {trial.shippingContactEmail && <p className="text-slate-500">Email: {trial.shippingContactEmail}</p>}
+              </div>
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-700 mb-2">Freight Account</h3>
+              <div className="text-sm text-slate-700 space-y-1">
+                {trial.shippingCarrier && <p><span className="text-slate-500">Carrier:</span> {trial.shippingCarrier}</p>}
+                {trial.shippingAccountNumber && <p><span className="text-slate-500">Account #:</span> {trial.shippingAccountNumber}</p>}
+                {trial.shippingMethod && <p><span className="text-slate-500">Method:</span> {trial.shippingMethod === "EXPRESS" ? "Express (1-3 days)" : trial.shippingMethod === "ECONOMY" ? "Economy (7-14 days)" : "Standard (5-7 days)"}</p>}
+                {!trial.shippingCarrier && !trial.shippingAccountNumber && <p className="text-amber-600 text-xs italic">No freight account provided — shipping arrangement pending</p>}
+              </div>
+              {trial.shippingNotes && (
+                <div className="mt-3">
+                  <h3 className="text-sm font-bold text-slate-700 mb-1">Shipping Notes</h3>
+                  <p className="text-sm text-slate-600">{trial.shippingNotes}</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
