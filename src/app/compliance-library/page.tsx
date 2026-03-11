@@ -236,38 +236,25 @@ export default function ComplianceLibraryPage() {
 
       let s3Key: string | null = null;
 
-      // If a file is selected, upload to S3 via presigned URL
+      // If a file is selected, upload to S3 via server
       if (selectedFile) {
-        setUploadProgress("Preparing upload...");
-
-        // Step 1: Get presigned upload URL from server
-        const urlRes = await fetch("/api/compliance-docs/upload-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            filename: selectedFile.name,
-            contentType: selectedFile.type || "application/octet-stream",
-          }),
-        });
-        const urlData = await urlRes.json();
-
-        if (!urlData.ok) {
-          throw new Error(urlData.error || "Failed to get upload URL");
-        }
-
-        // Step 2: Upload file directly to S3
         setUploadProgress("Uploading file...");
-        const uploadRes = await fetch(urlData.uploadUrl, {
-          method: "PUT",
-          headers: { "Content-Type": selectedFile.type || "application/octet-stream" },
-          body: selectedFile,
-        });
 
-        if (!uploadRes.ok) {
-          throw new Error("Failed to upload file to storage");
+        // Upload via FormData (server handles S3 — no CORS issues)
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        const uploadRes = await fetch("/api/compliance-docs/upload-url", {
+          method: "POST",
+          body: formData,
+        });
+        const uploadData = await uploadRes.json();
+
+        if (!uploadData.ok) {
+          throw new Error(uploadData.error || "Upload failed");
         }
 
-        s3Key = urlData.s3Key;
+        s3Key = uploadData.s3Key;
         setUploadProgress("Saving record...");
       }
 
@@ -437,9 +424,9 @@ export default function ComplianceLibraryPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Compliance Library</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Document Center</h1>
           <p className="text-slate-500 text-sm mt-0.5">
-            SDS, TDS, Bluesign, ZDHC, Oeko-Tex, GOTS, EPA, CoA & more — {totalDocs} document{totalDocs !== 1 ? "s" : ""}
+            Compliance, certifications & shipping documents — {totalDocs} document{totalDocs !== 1 ? "s" : ""}
           </p>
         </div>
         {isAdmin && (
