@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { getPresignedDownloadUrl, isS3Configured } from "@/lib/s3";
 
 /* ── GET /api/compliance-docs ── List compliance documents (role-gated) ──── */
 export async function GET(req: Request) {
@@ -22,7 +23,21 @@ export async function GET(req: Request) {
     const docs = await prisma.complianceDocument.findMany({
       where,
       orderBy: [{ category: "asc" }, { title: "asc" }],
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        category: true,
+        version: true,
+        filename: true,
+        contentType: true,
+        sizeBytes: true,
+        url: true,
+        s3Key: true,
+        // Exclude 'data' from list query — large base64 blobs kill performance
+        visibleTo: true,
+        createdAt: true,
+        updatedAt: true,
         uploadedBy: { select: { id: true, name: true } },
       },
     });
@@ -34,17 +49,33 @@ export async function GET(req: Request) {
       return Array.isArray(roles) && roles.includes(userRole);
     });
 
+    // Generate presigned download URLs for S3 docs
+    const s3Ready = isS3Configured();
+    const enriched = await Promise.all(
+      visible.map(async (doc: any) => {
+        if (doc.s3Key && s3Ready) {
+          try {
+            const downloadUrl = await getPresignedDownloadUrl(doc.s3Key, 3600, doc.filename || undefined);
+            return { ...doc, downloadUrl };
+          } catch {
+            return { ...doc, downloadUrl: null };
+          }
+        }
+        return { ...doc, downloadUrl: doc.url || null };
+      }),
+    );
+
     // Build category summary
     const categories: Record<string, number> = {};
-    visible.forEach((doc: any) => {
+    enriched.forEach((doc: any) => {
       categories[doc.category] = (categories[doc.category] || 0) + 1;
     });
 
     return NextResponse.json({
       ok: true,
-      documents: visible,
+      documents: enriched,
       categories,
-      total: visible.length,
+      total: enriched.length,
     });
   } catch (err: any) {
     console.error("Error fetching compliance docs:", err);
@@ -52,7 +83,7 @@ export async function GET(req: Request) {
   }
 }
 
-/* ── POST /api/compliance-docs ── Upload new compliance document (admin only) ──── */
+/* ── POST /api/compliance-docs ── Create new compliance document record (admin only) ──── */
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser(req);
@@ -70,7 +101,8 @@ export async function POST(req: Request) {
       contentType,
       sizeBytes,
       url,
-      data,
+      data,       // legacy base64 (small files only)
+      s3Key,      // S3 key from presigned upload flow
       visibleTo,
     } = body;
 
@@ -86,9 +118,10 @@ export async function POST(req: Request) {
         version: version || null,
         filename: filename || null,
         contentType: contentType || null,
-        sizeBytes: sizeBytes ? parseInt(sizeBytes) : null,
+        sizeBytes: sizeBytes ? parseInt(String(sizeBytes)) : null,
         url: url || null,
         data: data || null,
+        s3Key: s3Key || null,
         visibleTo: visibleTo || ["ADMIN", "EMPLOYEE", "BRAND_USER", "FACTORY_USER", "FACTORY_MANAGER"],
         uploadedById: user.id,
       },

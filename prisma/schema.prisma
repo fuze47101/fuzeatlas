@@ -58,15 +58,9 @@ enum DocKind {
   OTHER
 }
 
-enum ComplianceCategory {
-  SDS_MSDS
-  TDS
-  BLUESIGN
-  ZDHC
-  OEKO_TEX
-  GOTS
-  OTHER
-}
+// ComplianceCategory is now a free-form String on ComplianceDocument.category
+// Built-in values: SDS_MSDS, TDS, BLUESIGN, ZDHC, OEKO_TEX, GOTS, EPA, REACH, COA, COC, ISO, IMPORT_EXPORT, OTHER
+// Admins can also create custom categories
 
 enum SOWStatus {
   DRAFT
@@ -1657,13 +1651,14 @@ model ComplianceDocument {
 
   title       String
   description String?
-  category    ComplianceCategory @default(OTHER)
+  category    String   @default("OTHER") // Flexible string categories (SDS_MSDS, TDS, BLUESIGN, ZDHC, OEKO_TEX, GOTS, EPA, REACH, COA, COC, ISO, IMPORT_EXPORT, OTHER, or custom)
   version     String?
   filename    String?
   contentType String?
   sizeBytes   Int?
   url         String?
-  data        String?            // base64 data URL for inline storage
+  data        String?            // base64 data URL for inline storage (legacy — prefer S3)
+  s3Key       String?            // S3 object key for files uploaded via presigned URL
 
   // Role-based visibility: JSON array of role strings e.g. ["ADMIN","BRAND_USER","FACTORY_USER"]
   // If empty/null, only ADMIN can see it

@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { deleteFromS3, isS3Configured } from "@/lib/s3";
 
 /* ── GET /api/compliance-docs/[id] ── Get single document ──── */
 export async function GET(
@@ -85,11 +86,26 @@ export async function DELETE(
 ) {
   try {
     const user = await getCurrentUser(req);
-    if (!user || (user.role !== "ADMIN" && user.role !== "EMPLOYEE")) {
-      return NextResponse.json({ ok: false, error: "Only admins can delete compliance documents" }, { status: 403 });
+    if (!user || user.role !== "ADMIN") {
+      return NextResponse.json({ ok: false, error: "Only administrators can delete compliance documents" }, { status: 403 });
     }
 
     const { id } = await params;
+
+    // Clean up S3 file if present
+    const doc = await prisma.complianceDocument.findUnique({
+      where: { id },
+      select: { s3Key: true },
+    });
+
+    if (doc?.s3Key && isS3Configured()) {
+      try {
+        await deleteFromS3(doc.s3Key);
+      } catch (e) {
+        console.warn("Failed to delete S3 object:", e);
+      }
+    }
+
     await prisma.complianceDocument.delete({ where: { id } });
     return NextResponse.json({ ok: true });
   } catch (err: any) {
