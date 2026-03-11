@@ -38,7 +38,7 @@ export async function PUT(
         let targetFactoryId = body.factoryId;
         if (!targetFactoryId) {
           // Try to find existing factory by name
-          const existingFactory = await prisma.factory.findUnique({
+          const existingFactory = await prisma.factory.findFirst({
             where: { name: request.company },
           });
           if (existingFactory) {
@@ -129,7 +129,7 @@ export async function PUT(
         let targetBrandId = brandId;
         if (!targetBrandId) {
           // Try to find existing brand by company name
-          const existingBrand = await prisma.brand.findUnique({
+          const existingBrand = await prisma.brand.findFirst({
             where: { name: request.company },
           });
           if (existingBrand) {
