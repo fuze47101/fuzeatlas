@@ -202,38 +202,72 @@ export default function FabricEnrichmentPage() {
           if (!data?.ok) return null;
           return (
             <div>
-              <div className="grid grid-cols-4 gap-3 mb-4">
+              <div className="grid grid-cols-4 gap-3 mb-2">
                 <div className="p-3 bg-slate-50 rounded-lg text-center"><p className="text-2xl font-black">{data.totalWithoutIcp}</p><p className="text-[10px] text-slate-500 uppercase">Without ICP</p></div>
                 <div className="p-3 bg-purple-50 rounded-lg text-center"><p className="text-2xl font-black text-purple-700">{data.profilesGenerated}</p><p className="text-[10px] text-purple-500 uppercase">Profiles</p></div>
-                <div className="p-3 bg-green-50 rounded-lg text-center"><p className="text-2xl font-black text-green-700">{data.confidenceBreakdown?.HIGH || 0}</p><p className="text-[10px] text-green-500 uppercase">High Conf.</p></div>
-                <div className="p-3 bg-amber-50 rounded-lg text-center"><p className="text-2xl font-black text-amber-700">{(data.confidenceBreakdown?.MEDIUM || 0) + (data.confidenceBreakdown?.LOW || 0)}</p><p className="text-[10px] text-amber-500 uppercase">Med/Low</p></div>
+                <div className="p-3 bg-green-50 rounded-lg text-center"><p className="text-2xl font-black text-green-700">{data.summary?.astm2149PassRate || "—"}</p><p className="text-[10px] text-green-500 uppercase">ASTM Pass</p></div>
+                <div className="p-3 bg-blue-50 rounded-lg text-center"><p className="text-2xl font-black text-blue-700">{data.summary?.aatcc100PassRate || "—"}</p><p className="text-[10px] text-blue-500 uppercase">AATCC Pass</p></div>
               </div>
+              {data.summary?.tierDistribution && (
+                <div className="grid grid-cols-4 gap-3 mb-4">
+                  <div className="p-2 bg-purple-50 rounded-lg text-center"><p className="text-lg font-black text-purple-700">{data.summary.tierDistribution.F1}</p><p className="text-[10px] text-purple-500">F1 (1.0 mg/kg)</p></div>
+                  <div className="p-2 bg-blue-50 rounded-lg text-center"><p className="text-lg font-black text-blue-700">{data.summary.tierDistribution.F2}</p><p className="text-[10px] text-blue-500">F2 (0.75 mg/kg)</p></div>
+                  <div className="p-2 bg-emerald-50 rounded-lg text-center"><p className="text-lg font-black text-emerald-700">{data.summary.tierDistribution.F3}</p><p className="text-[10px] text-emerald-500">F3 (0.50 mg/kg)</p></div>
+                  <div className="p-2 bg-slate-50 rounded-lg text-center"><p className="text-lg font-black text-slate-700">{data.summary.tierDistribution.F4}</p><p className="text-[10px] text-slate-500">F4 (0.25 mg/kg)</p></div>
+                </div>
+              )}
               {data.results && data.results.length > 0 && (
                 <div>
                   <h3 className="text-sm font-bold text-slate-700 mb-2">ICP Profile Preview (first {data.results.length})</h3>
+                  {data.summary && (
+                    <div className="grid grid-cols-4 gap-3 mb-3">
+                      <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center">
+                        <p className="text-xs text-purple-600">ASTM E2149 Pass</p>
+                        <p className="text-lg font-black text-purple-700">{data.summary.astm2149PassRate}</p>
+                      </div>
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
+                        <p className="text-xs text-blue-600">AATCC 100 Pass</p>
+                        <p className="text-lg font-black text-blue-700">{data.summary.aatcc100PassRate}</p>
+                      </div>
+                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+                        <p className="text-xs text-slate-600">Ag Range</p>
+                        <p className="text-lg font-black text-slate-700">{data.summary.agRange}</p>
+                      </div>
+                      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center">
+                        <p className="text-xs text-emerald-600">Model</p>
+                        <p className="text-lg font-black text-emerald-700">{data.summary.model}</p>
+                      </div>
+                    </div>
+                  )}
                   <div className="max-h-80 overflow-y-auto border rounded-lg">
                     <table className="w-full text-xs">
                       <thead className="bg-slate-50 sticky top-0"><tr>
                         <th className="p-2 text-left">FUZE #</th>
                         <th className="p-2 text-left">Fiber</th>
-                        <th className="p-2 text-left">Category</th>
-                        <th className="p-2 text-right">Ag (ppm)</th>
-                        <th className="p-2 text-right">Range</th>
+                        <th className="p-2 text-center">Tier</th>
+                        <th className="p-2 text-right">Ag (mg/kg)</th>
                         <th className="p-2 text-center">Conf.</th>
-                        <th className="p-2 text-left">AB Estimate</th>
+                        <th className="p-2 text-center">ASTM E2149</th>
+                        <th className="p-2 text-center">AATCC 100</th>
                       </tr></thead>
                       <tbody>
                         {data.results.map((r: any) => (
                           <tr key={r.id} className="border-t">
                             <td className="p-2 font-bold">{r.fuzeNumber || "—"}</td>
-                            <td className="p-2">{r.dominantFiber || "—"}</td>
-                            <td className="p-2">{r.category || "—"}</td>
+                            <td className="p-2">{r.dominantFiber || "—"}{r.isCotton ? " 🌿" : ""}</td>
+                            <td className="p-2 text-center">
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${r.assignedTier === "F1" ? "bg-purple-100 text-purple-700" : r.assignedTier === "F2" ? "bg-blue-100 text-blue-700" : r.assignedTier === "F3" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700"}`}>{r.assignedTier}</span>
+                            </td>
                             <td className="p-2 text-right font-mono font-bold">{r.icpEstimate.agPpm}</td>
-                            <td className="p-2 text-right text-slate-400">{r.icpEstimate.agRange[0]}-{r.icpEstimate.agRange[1]}</td>
                             <td className="p-2 text-center">
                               <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${r.confidence === "HIGH" ? "bg-green-100 text-green-700" : r.confidence === "MEDIUM" ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>{r.confidence}</span>
                             </td>
-                            <td className="p-2">{r.antibacterialCorrelation.expectedReduction} {r.antibacterialCorrelation.pass ? "PASS" : "FAIL"}</td>
+                            <td className="p-2 text-center">
+                              <span className={r.astm2149?.pass ? "text-green-700" : "text-red-600"}>{r.astm2149?.reduction || r.antibacterialCorrelation?.expectedReduction || "—"}</span>
+                            </td>
+                            <td className="p-2 text-center">
+                              <span className={r.aatcc100?.pass ? "text-green-700" : "text-red-600"}>{r.aatcc100?.reduction || "—"}</span>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
