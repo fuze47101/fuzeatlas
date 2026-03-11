@@ -101,7 +101,7 @@ export default function FactorySubmissionsPage() {
       ) : (
         <div className="space-y-3">
           {submissions.map(submission => (
-            <Link key={submission.id} href={`/fabric-submissions/${submission.id}`}
+            <Link key={submission.id} href={`/fabrics/${submission.fabric.id}`}
               className="block bg-white border border-slate-200 rounded-xl p-4 hover:border-[#00b4c3] hover:shadow-md transition-all">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
