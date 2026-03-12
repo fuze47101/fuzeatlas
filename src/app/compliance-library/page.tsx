@@ -133,8 +133,8 @@ export default function ComplianceLibraryPage() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 100 * 1024 * 1024) {
-      toast.error("File too large. Maximum 100MB.");
+    if (file.size > 500 * 1024 * 1024) {
+      toast.error("File too large. Maximum 500MB.");
       return;
     }
     setSelectedFile(file);
@@ -144,8 +144,8 @@ export default function ComplianceLibraryPage() {
   };
 
   const processDroppedFile = (file: File) => {
-    if (file.size > 100 * 1024 * 1024) {
-      toast.error("File too large. Maximum 100MB.");
+    if (file.size > 500 * 1024 * 1024) {
+      toast.error("File too large. Maximum 500MB.");
       return;
     }
     setSelectedFile(file);
@@ -236,25 +236,38 @@ export default function ComplianceLibraryPage() {
 
       let s3Key: string | null = null;
 
-      // If a file is selected, upload to S3 via server
+      // If a file is selected, upload directly to S3 via presigned URL
       if (selectedFile) {
-        setUploadProgress("Uploading file...");
+        setUploadProgress("Preparing upload...");
 
-        // Upload via FormData (server handles S3 — no CORS issues)
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-
-        const uploadRes = await fetch("/api/compliance-docs/upload-url", {
+        // Step 1: Get presigned upload URL from our API
+        const urlRes = await fetch("/api/compliance-docs/upload-url", {
           method: "POST",
-          body: formData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filename: selectedFile.name,
+            contentType: selectedFile.type || "application/octet-stream",
+          }),
         });
-        const uploadData = await uploadRes.json();
+        const urlData = await urlRes.json();
 
-        if (!uploadData.ok) {
-          throw new Error(uploadData.error || "Upload failed");
+        if (!urlData.ok) {
+          throw new Error(urlData.error || "Failed to prepare upload");
         }
 
-        s3Key = uploadData.s3Key;
+        // Step 2: Upload file directly to S3 (bypasses Vercel size limits)
+        setUploadProgress(`Uploading ${formatFileSize(selectedFile.size)}...`);
+        const s3Res = await fetch(urlData.uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": selectedFile.type || "application/octet-stream" },
+          body: selectedFile,
+        });
+
+        if (!s3Res.ok) {
+          throw new Error("Upload to storage failed — please try again");
+        }
+
+        s3Key = urlData.s3Key;
         setUploadProgress("Saving record...");
       }
 
@@ -416,7 +429,7 @@ export default function ComplianceLibraryPage() {
           <div className="bg-white rounded-2xl shadow-2xl px-12 py-10 border-2 border-dashed border-[#00b4c3] text-center">
             <p className="text-4xl mb-3">{"\u{1F4E4}"}</p>
             <p className="text-lg font-semibold text-slate-800">Drop file to upload</p>
-            <p className="text-sm text-slate-500 mt-1">Release to add a compliance document</p>
+            <p className="text-sm text-slate-500 mt-1">Release to add a document</p>
           </div>
         </div>
       )}
@@ -595,7 +608,7 @@ export default function ComplianceLibraryPage() {
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
               <h2 className="text-lg font-bold text-slate-900">
-                {editingDoc ? "Edit Document" : "Upload Compliance Document"}
+                {editingDoc ? "Edit Document" : "Upload Document"}
               </h2>
               <button onClick={() => { setShowUpload(false); setEditingDoc(null); resetForm(); }} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
             </div>
@@ -628,9 +641,9 @@ export default function ComplianceLibraryPage() {
                         <p className="text-sm font-medium text-slate-700">
                           {isDragging ? "Drop file here" : "Drag & drop a file here"}
                         </p>
-                        <p className="text-xs text-slate-400 mt-1">or click to browse (PDF, DOC, images, ZIP — max 100MB)</p>
+                        <p className="text-xs text-slate-400 mt-1">or click to browse (PDF, DOC, video, images, ZIP — up to 500MB)</p>
                         <input type="file" className="hidden" onChange={handleFileSelect}
-                          accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.xlsx,.xls,.csv,.txt,.zip" />
+                          accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.xlsx,.xls,.csv,.txt,.zip,.mp4,.mov,.avi,.wmv,.webm,.mp3,.wav,.pptx,.ppt,.svg,.webp,.tiff,.bmp" />
                       </label>
                     )}
                   </div>
