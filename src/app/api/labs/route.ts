@@ -60,15 +60,16 @@ export async function GET(req: Request) {
       orderBy: [{ country: "asc" }, { name: "asc" }],
     });
 
-    // Build country distribution for filter dropdown
-    const allLabs = await prisma.lab.findMany({
+    // Build country distribution from a single groupBy query (replaces redundant full table scan)
+    const countryGroups = await prisma.lab.groupBy({
+      by: ["country"],
+      _count: { id: true },
       where: { active: true },
-      select: { country: true },
     });
     const countries: Record<string, number> = {};
-    allLabs.forEach((l) => {
-      const c = l.country || "Unknown";
-      countries[c] = (countries[c] || 0) + 1;
+    countryGroups.forEach((g) => {
+      const c = g.country || "Unknown";
+      countries[c] = g._count.id;
     });
 
     return NextResponse.json({

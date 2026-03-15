@@ -6,31 +6,30 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const sows = await prisma.sOW.findMany({
-      include: {
-        brand: { select: { id: true, name: true, pipelineStage: true } },
-        milestones: { orderBy: { sortOrder: "asc" } },
-        _count: { select: { documents: true, milestones: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    // Load products separately — SOWProduct table may not exist yet
-    let sowsWithProducts = sows;
+    // Include products directly in the query (eliminates separate product fetch)
+    let sowsWithProducts;
     try {
-      const sowIds = sows.map(s => s.id);
-      const sowProducts = await prisma.sOWProduct.findMany({
-        where: { sowId: { in: sowIds } },
-        include: { product: { select: { id: true, name: true, sku: true } } },
+      sowsWithProducts = await prisma.sOW.findMany({
+        include: {
+          brand: { select: { id: true, name: true, pipelineStage: true } },
+          milestones: { orderBy: { sortOrder: "asc" } },
+          products: {
+            include: { product: { select: { id: true, name: true, sku: true } } },
+          },
+          _count: { select: { documents: true, milestones: true } },
+        },
+        orderBy: { createdAt: "desc" },
       });
-      const productsBySow = {};
-      for (const sp of sowProducts) {
-        if (!productsBySow[sp.sowId]) productsBySow[sp.sowId] = [];
-        productsBySow[sp.sowId].push(sp);
-      }
-      sowsWithProducts = sows.map(s => ({ ...s, products: productsBySow[s.id] || [] }));
     } catch {
-      // Product tables don't exist yet — return SOWs without products
+      // Fallback if products relation doesn't exist yet
+      const sows = await prisma.sOW.findMany({
+        include: {
+          brand: { select: { id: true, name: true, pipelineStage: true } },
+          milestones: { orderBy: { sortOrder: "asc" } },
+          _count: { select: { documents: true, milestones: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
       sowsWithProducts = sows.map(s => ({ ...s, products: [] }));
     }
 
@@ -129,12 +128,13 @@ export async function POST(req: Request) {
       include: { milestones: true },
     });
 
-    // Link products separately — table may not exist yet
+    // Batch-create product links (replaces N+1 loop)
     if (productIds?.length > 0) {
       try {
-        for (const pid of productIds) {
-          await prisma.sOWProduct.create({ data: { sowId: sow.id, productId: pid } });
-        }
+        await prisma.sOWProduct.createMany({
+          data: productIds.map((pid: string) => ({ sowId: sow.id, productId: pid })),
+          skipDuplicates: true,
+        });
       } catch {
         // SOWProduct table doesn't exist yet — skip product linking
       }

@@ -161,10 +161,15 @@ export async function GET(req: Request) {
       orderBy: { createdAt: "desc" },
     });
 
+    // Single groupBy query replaces 3 separate count queries
+    const statsData = await prisma.accessRequest.groupBy({
+      by: ["status"],
+      _count: { id: true },
+    });
     const stats = {
-      pending: await prisma.accessRequest.count({ where: { status: "PENDING" } }),
-      approved: await prisma.accessRequest.count({ where: { status: "APPROVED" } }),
-      denied: await prisma.accessRequest.count({ where: { status: "DENIED" } }),
+      pending: statsData.find((s: any) => s.status === "PENDING")?._count.id || 0,
+      approved: statsData.find((s: any) => s.status === "APPROVED")?._count.id || 0,
+      denied: statsData.find((s: any) => s.status === "DENIED")?._count.id || 0,
     };
 
     return NextResponse.json({ ok: true, requests, stats });

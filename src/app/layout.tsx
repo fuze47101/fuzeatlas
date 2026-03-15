@@ -6,8 +6,34 @@ import AuthLayout from "@/components/AuthLayout";
 import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
-  title: "FUZE Atlas",
-  description: "Textile Intelligence Platform — FUZE Biotech Inc.",
+  title: {
+    default: "FUZE Atlas — Textile Intelligence Platform",
+    template: "%s | FUZE Atlas",
+  },
+  description:
+    "FUZE Atlas is the textile intelligence platform by FUZE Biotech. Manage antimicrobial testing, compliance documentation, brand partnerships, and factory operations in one place.",
+  metadataBase: new URL("https://fuzeatlas.vercel.app"),
+  openGraph: {
+    type: "website",
+    siteName: "FUZE Atlas",
+    title: "FUZE Atlas — Textile Intelligence Platform",
+    description:
+      "Manage antimicrobial testing, compliance, brand partnerships, and factory operations. Powered by FUZE Biotech.",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "FUZE Atlas — Textile Intelligence Platform",
+    description:
+      "Manage antimicrobial testing, compliance, brand partnerships, and factory operations.",
+  },
+  robots: {
+    index: false, // internal app — keep out of search until ready
+    follow: false,
+  },
+  icons: {
+    icon: "/fuze-icon.png",
+  },
 };
 
 export default function RootLayout({
