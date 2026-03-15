@@ -5,15 +5,16 @@ import { getCampaign, executeCampaign, getAudienceRecipients } from '@/lib/campa
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const userId = request.headers.get('x-user-id');
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const campaign = getCampaign(params.id);
+    const campaign = getCampaign(id);
     if (!campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
     }
@@ -29,14 +30,14 @@ export async function POST(
     }
 
     // Execute the campaign
-    const result = await executeCampaign(params.id);
+    const result = await executeCampaign(id);
 
     return NextResponse.json({
       ok: true,
       sent: result.sent,
       failed: result.failed,
       recipients: recipients.length,
-      campaign: getCampaign(params.id),
+      campaign: getCampaign(id),
     });
   } catch (err: any) {
     console.error('[API] POST /campaigns/[id]/send error:', err.message);

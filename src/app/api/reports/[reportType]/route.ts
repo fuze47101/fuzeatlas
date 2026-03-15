@@ -23,9 +23,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
  */
 export async function GET(
   req: Request,
-  { params }: { params: { reportType: string } }
+  { params }: { params: Promise<{ reportType: string }> }
 ) {
   try {
+    const { reportType: reportTypeParam } = await params;
     // Check auth
     const userId = req.headers.get("x-user-id");
     if (!userId) {
@@ -36,7 +37,7 @@ export async function GET(
     }
 
     const url = new URL(req.url);
-    const reportType = params.reportType.toLowerCase();
+    const reportType = reportTypeParam.toLowerCase();
     const format = url.searchParams.get("format") || "html";
     const to = url.searchParams.get("to");
     const brandId = url.searchParams.get("brandId");
