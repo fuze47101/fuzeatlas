@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { aiFetch, getUserIdFromHeaders } from "@/lib/ai-fetch";
 
 const prisma = new PrismaClient();
 
@@ -157,21 +158,25 @@ Return valid JSON with this EXACT structure:
 
 // ─── AI CALLER FUNCTIONS ────────────────────────────────
 
-async function callAnthropic(userMessage: string): Promise<any> {
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": ANTHROPIC_API_KEY!,
-      "anthropic-version": "2023-06-01",
+async function callAnthropic(userMessage: string, userId?: string): Promise<any> {
+  const { response } = await aiFetch(
+    "https://api.anthropic.com/v1/messages",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ANTHROPIC_API_KEY!,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 8000,
+        system: RESEARCH_PROMPT,
+        messages: [{ role: "user", content: userMessage }],
+      }),
     },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 8000,
-      system: RESEARCH_PROMPT,
-      messages: [{ role: "user", content: userMessage }],
-    }),
-  });
+    { provider: "anthropic", callerRoute: "research", userId }
+  );
 
   if (!response.ok) {
     const errText = await response.text();
@@ -184,23 +189,27 @@ async function callAnthropic(userMessage: string): Promise<any> {
   return parseAIJson(text, "Anthropic");
 }
 
-async function callOpenAI(userMessage: string): Promise<any> {
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${OPENAI_API_KEY}`,
+async function callOpenAI(userMessage: string, userId?: string): Promise<any> {
+  const { response } = await aiFetch(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        max_tokens: 8000,
+        messages: [
+          { role: "system", content: RESEARCH_PROMPT },
+          { role: "user", content: userMessage },
+        ],
+        temperature: 0.3,
+      }),
     },
-    body: JSON.stringify({
-      model: "gpt-4o",
-      max_tokens: 8000,
-      messages: [
-        { role: "system", content: RESEARCH_PROMPT },
-        { role: "user", content: userMessage },
-      ],
-      temperature: 0.3,
-    }),
-  });
+    { provider: "openai", callerRoute: "research", userId }
+  );
 
   if (!response.ok) {
     const errText = await response.text();
@@ -425,12 +434,15 @@ export async function POST(req: Request, props: { params: Promise<{ id: string }
     if (brand.projectDescription) userMessage += `\nProject description: ${brand.projectDescription}`;
     userMessage += `\n\nReturn the FULL JSON intelligence brief. Be thorough, aggressive, and specific. The sales team is depending on this to close deals.`;
 
+    // Extract user ID for audit logging
+    const userId = getUserIdFromHeaders(req.headers);
+
     // Fire both AIs in parallel
     const promises: Promise<any>[] = [];
-    if (hasAnthropic) promises.push(callAnthropic(userMessage));
+    if (hasAnthropic) promises.push(callAnthropic(userMessage, userId));
     else promises.push(Promise.resolve(null));
 
-    if (hasOpenAI) promises.push(callOpenAI(userMessage));
+    if (hasOpenAI) promises.push(callOpenAI(userMessage, userId));
     else promises.push(Promise.resolve(null));
 
     const [anthropicResult, openaiResult] = await Promise.all(promises);

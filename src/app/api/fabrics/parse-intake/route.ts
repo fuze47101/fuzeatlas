@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { uploadToS3, generateS3Key, isS3Configured, S3_PREFIXES } from "@/lib/s3";
+import { aiFetch, getUserIdFromHeaders } from "@/lib/ai-fetch";
 
 const prisma = new PrismaClient();
 
@@ -13,7 +14,7 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
 }
 
 // ─── Call LLM for fabric data parsing ───────────────
-async function parseFabricDataWithLLM(pdfText: string): Promise<any> {
+async function parseFabricDataWithLLM(pdfText: string, userId?: string): Promise<any> {
   try {
     // Try OpenAI first
     const apiKey = process.env.OPENAI_API_KEY;
@@ -140,22 +141,26 @@ Return ONLY valid JSON with these fields (null if not found):
   "confidence": number
 }`;
 
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+      const { response: res } = await aiFetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: `Parse this fabric intake form:\n\n${pdfText.substring(0, 4000)}` },
+            ],
+            temperature: 0.2,
+            max_tokens: 2000,
+          }),
         },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: `Parse this fabric intake form:\n\n${pdfText.substring(0, 4000)}` },
-          ],
-          temperature: 0.2,
-          max_tokens: 2000,
-        }),
-      });
+        { provider: "openai", callerRoute: "fabric-intake", userId }
+      );
 
       if (res.ok) {
         const data = await res.json();
@@ -224,25 +229,29 @@ Return ONLY valid JSON with these fields (null if not found):
   "confidence": number
 }`;
 
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": anthropicKey,
-          "anthropic-version": "2023-06-01",
+      const { response: res } = await aiFetch(
+        "https://api.anthropic.com/v1/messages",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": anthropicKey,
+            "anthropic-version": "2023-06-01",
+          },
+          body: JSON.stringify({
+            model: "claude-haiku-4-5-20251001",
+            max_tokens: 2000,
+            system: systemPrompt,
+            messages: [
+              {
+                role: "user",
+                content: `Parse this fabric intake form:\n\n${pdfText.substring(0, 4000)}`,
+              },
+            ],
+          }),
         },
-        body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001",
-          max_tokens: 2000,
-          system: systemPrompt,
-          messages: [
-            {
-              role: "user",
-              content: `Parse this fabric intake form:\n\n${pdfText.substring(0, 4000)}`,
-            },
-          ],
-        }),
-      });
+        { provider: "anthropic", callerRoute: "fabric-intake", userId }
+      );
 
       if (res.ok) {
         const data = await res.json();
@@ -378,9 +387,11 @@ export async function POST(req: Request) {
     let parsed: any = null;
     let parseError: string | null = null;
 
+    const userId = getUserIdFromHeaders(req.headers);
+
     if (pdfText && !extractError) {
       try {
-        parsed = await parseFabricDataWithLLM(pdfText);
+        parsed = await parseFabricDataWithLLM(pdfText, userId);
       } catch (err: any) {
         parseError = `Parsing failed: ${err.message}`;
       }

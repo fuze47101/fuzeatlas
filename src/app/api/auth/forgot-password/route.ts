@@ -3,10 +3,21 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 /* ── POST /api/auth/forgot-password ── initiate password reset ────────── */
 export async function POST(req: Request) {
   try {
+    // ── Rate limit: 3 reset requests per IP per 15 minutes ──
+    const ip = getClientIp(req.headers);
+    const rl = checkRateLimit(`forgot:${ip}`, { limit: 3, windowSec: 900 });
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { ok: false, error: "Too many requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } }
+      );
+    }
+
     const { email } = await req.json();
 
     if (!email) {

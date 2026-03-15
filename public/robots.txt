@@ -1,0 +1,13 @@
+# FUZE Atlas - Textile Intelligence Platform
+User-agent: *
+Allow: /login
+Allow: /request-access
+Allow: /book-meeting
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /pipeline
+Disallow: /settings
+Disallow: /admin
+
+# Sitemap
+# Sitemap: https://fuzeatlas.vercel.app/sitemap.xml

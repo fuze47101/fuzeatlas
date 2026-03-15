@@ -1,25 +1,30 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from "next/server";
 import { FUZE_KNOWLEDGE } from "@/lib/fuze-knowledge";
+import { aiFetch, getUserIdFromHeaders } from "@/lib/ai-fetch";
 
 // ─── OpenAI Chat Completion ─────────────────────────
-async function callOpenAI(messages: any[]) {
+async function callOpenAI(messages: any[], userId?: string) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY not configured");
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+  const { response: res } = await aiFetch(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages,
+        temperature: 0.4,
+        max_tokens: 1000,
+      }),
     },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      messages,
-      temperature: 0.4,
-      max_tokens: 1000,
-    }),
-  });
+    { provider: "openai", callerRoute: "chat", userId }
+  );
 
   if (!res.ok) {
     const err = await res.text();
@@ -31,7 +36,7 @@ async function callOpenAI(messages: any[]) {
 }
 
 // ─── Anthropic Chat Completion (fallback) ─────────────────────────
-async function callAnthropic(messages: any[]) {
+async function callAnthropic(messages: any[], userId?: string) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY not configured");
 
@@ -39,23 +44,27 @@ async function callAnthropic(messages: any[]) {
   const systemMsg = messages.find((m: any) => m.role === "system")?.content || "";
   const userMessages = messages.filter((m: any) => m.role !== "system");
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
+  const { response: res } = await aiFetch(
+    "https://api.anthropic.com/v1/messages",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 1000,
+        system: systemMsg,
+        messages: userMessages.map((m: any) => ({
+          role: m.role,
+          content: m.content,
+        })),
+      }),
     },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1000,
-      system: systemMsg,
-      messages: userMessages.map((m: any) => ({
-        role: m.role,
-        content: m.content,
-      })),
-    }),
-  });
+    { provider: "anthropic", callerRoute: "chat", userId }
+  );
 
   if (!res.ok) {
     const err = await res.text();
@@ -102,15 +111,16 @@ export async function POST(req: NextRequest) {
       { role: "user", content: messages },
     ];
 
+    const userId = getUserIdFromHeaders(req.headers);
     let reply: string;
 
     // Try OpenAI first, fall back to Anthropic
     try {
-      reply = await callOpenAI(conversationHistory);
+      reply = await callOpenAI(conversationHistory, userId);
     } catch (openaiErr) {
       console.warn("OpenAI failed, trying Anthropic:", openaiErr);
       try {
-        reply = await callAnthropic(conversationHistory);
+        reply = await callAnthropic(conversationHistory, userId);
       } catch (anthropicErr) {
         console.error("Both AI providers failed:", anthropicErr);
         // Final fallback: pattern matching

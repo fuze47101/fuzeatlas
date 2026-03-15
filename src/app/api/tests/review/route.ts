@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
+import { aiFetch, getUserIdFromHeaders } from "@/lib/ai-fetch";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -99,21 +100,25 @@ Return valid JSON with this EXACT structure:
 
 // ─── AI CALLER FUNCTIONS ────────────────────────────────
 
-async function callAnthropicReview(userMessage: string): Promise<any> {
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": ANTHROPIC_API_KEY!,
-      "anthropic-version": "2023-06-01",
+async function callAnthropicReview(userMessage: string, userId?: string): Promise<any> {
+  const { response } = await aiFetch(
+    "https://api.anthropic.com/v1/messages",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ANTHROPIC_API_KEY!,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 4000,
+        system: REVIEW_PROMPT,
+        messages: [{ role: "user", content: userMessage }],
+      }),
     },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 4000,
-      system: REVIEW_PROMPT,
-      messages: [{ role: "user", content: userMessage }],
-    }),
-  });
+    { provider: "anthropic", callerRoute: "test-review", userId }
+  );
 
   if (!response.ok) {
     const errText = await response.text();
@@ -126,23 +131,27 @@ async function callAnthropicReview(userMessage: string): Promise<any> {
   return parseAIJson(text, "Anthropic");
 }
 
-async function callOpenAIReview(userMessage: string): Promise<any> {
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${OPENAI_API_KEY}`,
+async function callOpenAIReview(userMessage: string, userId?: string): Promise<any> {
+  const { response } = await aiFetch(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        max_tokens: 4000,
+        messages: [
+          { role: "system", content: REVIEW_PROMPT },
+          { role: "user", content: userMessage },
+        ],
+        temperature: 0.1, // Low temp for QA precision
+      }),
     },
-    body: JSON.stringify({
-      model: "gpt-4o",
-      max_tokens: 4000,
-      messages: [
-        { role: "system", content: REVIEW_PROMPT },
-        { role: "user", content: userMessage },
-      ],
-      temperature: 0.1, // Low temp for QA precision
-    }),
-  });
+    { provider: "openai", callerRoute: "test-review", userId }
+  );
 
   if (!response.ok) {
     const errText = await response.text();
@@ -307,11 +316,12 @@ export async function POST(req: Request) {
     }
 
     const userMessage = buildReviewMessage(tests, rawText || "");
+    const userId = getUserIdFromHeaders(req.headers);
 
     // Fire both AIs in parallel
     const promises: Promise<any>[] = [];
-    promises.push(hasAnthropic ? callAnthropicReview(userMessage) : Promise.resolve(null));
-    promises.push(hasOpenAI ? callOpenAIReview(userMessage) : Promise.resolve(null));
+    promises.push(hasAnthropic ? callAnthropicReview(userMessage, userId) : Promise.resolve(null));
+    promises.push(hasOpenAI ? callOpenAIReview(userMessage, userId) : Promise.resolve(null));
 
     const [anthropicResult, openaiResult] = await Promise.all(promises);
 

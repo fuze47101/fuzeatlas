@@ -1761,3 +1761,23 @@ model SampleTrialRequest {
   @@index([status])
   @@index([icpLabId])
 }
+
+// ─────────────────────────────────────────────
+// API CALL AUDIT LOG
+// ─────────────────────────────────────────────
+
+model ApiCallLog {
+  id          String   @id @default(cuid())
+  provider    String   // "openai" | "anthropic"
+  callerRoute String   // "chat" | "research" | "test-review" | "fabric-intake"
+  userId      String?  // from x-user-id header (who triggered it)
+  statusCode  Int      // HTTP status from the AI API
+  durationMs  Int      // how long the call took
+  attempt     Int      @default(0) // retry attempt number
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId])
+  @@index([provider])
+  @@index([statusCode])
+}
