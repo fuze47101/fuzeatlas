@@ -75,8 +75,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const userRole = req.headers.get('x-user-role') || 'PUBLIC';
-    const userId = req.headers.get('x-user-id');
-    const sessionId = req.headers.get('x-session-id');
+    const userId = req.headers.get('x-user-id') ?? undefined;
+    const sessionId = req.headers.get('x-session-id') ?? undefined;
 
     const body = await req.json();
     const { eventType, metadata } = body;
