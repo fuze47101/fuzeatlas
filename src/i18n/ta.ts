@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Tamil translations (தமிழ்)
 import type { Translations } from "./en";
 

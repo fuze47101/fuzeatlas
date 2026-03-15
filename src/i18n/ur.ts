@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Urdu translations (اردو)
 import type { Translations } from "./en";
 

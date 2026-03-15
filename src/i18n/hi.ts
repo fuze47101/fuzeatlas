@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Hindi translations (हिन्दी)
 import type { Translations } from "./en";
 

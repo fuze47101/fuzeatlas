@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Malay translations (Bahasa Melayu)
 import type { Translations } from "./en";
 

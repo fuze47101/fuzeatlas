@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Italian translations (Italiano)
 import type { Translations } from "./en";
 

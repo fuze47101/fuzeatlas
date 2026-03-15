@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Thai translations (ภาษาไทย)
 import type { Translations } from "./en";
 

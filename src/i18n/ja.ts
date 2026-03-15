@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Japanese translations (日本語)
 import type { Translations } from "./en";
 

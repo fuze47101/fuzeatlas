@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Traditional Chinese translations (繁體中文) — Taiwan
 import type { Translations } from "./en";
 

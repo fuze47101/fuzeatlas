@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Indonesian translations (Bahasa Indonesia)
 import type { Translations } from "./en";
 

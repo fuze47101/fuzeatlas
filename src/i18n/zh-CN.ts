@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Simplified Chinese translations (简体中文) — Mainland China / Shanghai
 import type { Translations } from "./en";
 

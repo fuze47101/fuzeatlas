@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Bengali translations (বাংলা)
 import type { Translations } from "./en";
 

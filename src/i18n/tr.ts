@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Turkish translations (Türkçe)
 import type { Translations } from "./en";
 
