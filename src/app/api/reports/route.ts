@@ -9,7 +9,12 @@ import {
 } from "@/lib/pdf-reports";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy-init to avoid build-time error when RESEND_API_KEY isn't set
+let _resend: Resend | null = null;
+function getResend() {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY);
+  return _resend;
+}
 
 /**
  * GET /api/reports
@@ -447,7 +452,7 @@ export async function GET(req: Request) {
     if (format === "email" && to) {
       const emailSubject = `FUZE Atlas Report: ${type}`;
 
-      const result = await resend.emails.send({
+      const result = await getResend().emails.send({
         from: process.env.RESEND_FROM_EMAIL || "noreply@fuzeatlas.com",
         to,
         subject: emailSubject,
