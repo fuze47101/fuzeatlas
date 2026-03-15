@@ -1,0 +1,74 @@
+version: 2
+updates:
+  # Enable Dependabot updates for npm dependencies
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      # Check for updates weekly on Mondays
+      interval: 'weekly'
+      day: 'monday'
+      time: '03:00'
+      timezone: 'UTC'
+    # Automatically create PRs for dependency updates
+    open-pull-requests-limit: 10
+    # Group dependency updates by type to reduce number of PRs
+    groups:
+      patch-and-minor:
+        dependency-types:
+          - 'production'
+        update-types:
+          - 'minor'
+          - 'patch'
+      major:
+        dependency-types:
+          - 'production'
+        update-types:
+          - 'major'
+      dev-dependencies:
+        dependency-types:
+          - 'development'
+    # Assign reviewers to PRs
+    reviewers:
+      - 'dependabot'
+    # Add labels to PRs
+    labels:
+      - 'dependencies'
+      - 'automated'
+    # Auto-merge patch and minor updates if CI passes
+    auto-merge:
+      - match:
+          dependency-type: 'development'
+          update-type: 'patch'
+      - match:
+          dependency-type: 'development'
+          update-type: 'minor'
+    # Require CI to pass before auto-merge
+    allow-auto-merge: true
+
+  # Enable Dependabot updates for GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      # Check for updates weekly on Mondays
+      interval: 'weekly'
+      day: 'monday'
+      time: '03:00'
+      timezone: 'UTC'
+    # Keep the number of open PRs manageable
+    open-pull-requests-limit: 5
+    # Assign reviewers
+    reviewers:
+      - 'dependabot'
+    # Add labels
+    labels:
+      - 'github-actions'
+      - 'automated'
+    # Auto-merge GitHub Actions updates if CI passes
+    auto-merge:
+      - match:
+          dependency-type: 'all'
+          update-type: 'patch'
+      - match:
+          dependency-type: 'all'
+          update-type: 'minor'
+    allow-auto-merge: true

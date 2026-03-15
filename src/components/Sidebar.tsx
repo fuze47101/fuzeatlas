@@ -258,6 +258,7 @@ export default function Sidebar() {
         label: "Operations",
         items: [
           { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
+          { href: "/shipping-docs", label: "Shipping Docs", icon: "🚢" },
           { href: "/meetings", label: "Meetings", icon: "📅" },
           { href: "/shipments", label: "Sample Tracking", icon: "📦" },
           { href: "/reports", label: t.nav.weeklySummary || "Weekly Summary", icon: "📈" },
