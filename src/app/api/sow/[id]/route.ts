@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { getCurrentUser } from "@/lib/auth";
 import { notifySOWStatusChange } from "@/lib/notify";
 import { sendSOWStatusEmail } from "@/lib/email";
+import { pushSOWUpdate } from "@/lib/notify-realtime";
 
 const prisma = new PrismaClient();
 
@@ -60,7 +61,8 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
     // Fire notifications on status change
     if (body.status && oldSow && body.status !== oldSow.status) {
       const currentUser = await getCurrentUser().catch(() => null);
-      await notifySOWStatusChange({
+      // DB notification + real-time SSE push
+      await pushSOWUpdate({
         sowId: params.id,
         sowTitle: oldSow.title || `SOW for ${oldSow.brand?.name || "Unknown"}`,
         newStatus: body.status,

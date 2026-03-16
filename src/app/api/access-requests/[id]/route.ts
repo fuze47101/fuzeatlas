@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasMinRole, hashPassword } from "@/lib/auth";
 import { sendAccessApprovedEmail, sendAccessDeniedEmail } from "@/lib/email";
+import { pushAccessRequest } from "@/lib/notify-realtime";
 
 /* ── PUT /api/access-requests/[id] ── ADMIN: approve or deny ── */
 export async function PUT(

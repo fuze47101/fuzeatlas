@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { pushTestRequestStatus } from "@/lib/notify-realtime";
+import { sendTestRequestStatusEmail } from "@/lib/email";
 
 const prisma = new PrismaClient();
 
@@ -146,10 +148,94 @@ export async function POST(req: Request) {
       },
     });
 
+    // ── Bridge: Auto-create admin TestRequest (PO) in DRAFT status ──
+    let adminPO = null;
+    try {
+      // Generate PO number: FUZE-PO-YYYYMMDD-XXXX
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10).replace(/-/g, "");
+      const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+      const poNumber = `FUZE-PO-${dateStr}-${rand}`;
+
+      // Look up fabric's brand
+      const fabricWithBrand = await prisma.fabric.findUnique({
+        where: { id: fabricId },
+        select: { brandId: true, fuzeNumber: true, customerCode: true, factoryCode: true },
+      });
+
+      // Map selected tests to TestRequestLine items
+      const TEST_TYPE_MAP: Record<string, string> = {
+        icp: "ICP", antibacterial: "ANTIBACTERIAL", fungal: "FUNGAL",
+        odor: "ODOR", uv: "UV", microfiber: "MICROFIBER",
+      };
+
+      const lineData = (selectedTests || []).map((testKey: string) => ({
+        testType: TEST_TYPE_MAP[testKey.toLowerCase()] || testKey.toUpperCase(),
+        description: `Factory-requested ${testKey} test`,
+        quantity: 1,
+        status: "PENDING",
+      }));
+
+      adminPO = await prisma.testRequest.create({
+        data: {
+          poNumber,
+          brandId: fabricWithBrand?.brandId || null,
+          fabricId,
+          status: "DRAFT",
+          priority: "NORMAL",
+          requestedById: userId,
+          requestedAt: now,
+          internalNotes: `Auto-created from factory test request ${testRequest.id}.\nFactory: ${user.factory?.name || user.factoryId}\nNotes: ${notes || "None"}`,
+          fuzeFabricNumber: fabricWithBrand?.fuzeNumber ? String(fabricWithBrand.fuzeNumber) : null,
+          customerFabricCode: fabricWithBrand?.customerCode || null,
+          factoryFabricCode: fabricWithBrand?.factoryCode || null,
+          lines: lineData.length > 0 ? { createMany: { data: lineData } } : undefined,
+        },
+      });
+
+      // Link the factory request to the admin PO
+      await prisma.fuzeTestRequest.update({
+        where: { id: testRequest.id },
+        data: { notes: `${notes || ""}\n[Linked to PO: ${poNumber}]`.trim() },
+      });
+    } catch (poErr) {
+      console.error("Auto-create admin PO failed (non-fatal):", poErr);
+    }
+
+    // ── Notify admins (non-blocking) ──
+    (async () => {
+      try {
+        const admins = await prisma.user.findMany({
+          where: { role: { in: ["ADMIN", "EMPLOYEE"] }, email: { not: null }, status: "ACTIVE" },
+          select: { id: true, email: true, name: true },
+        });
+        for (const admin of admins) {
+          if (admin.email) {
+            sendTestRequestStatusEmail({
+              email: admin.email,
+              name: admin.name || "Admin",
+              poNumber: adminPO?.poNumber || testRequest.id,
+              newStatus: "DRAFT",
+              testRequestId: adminPO?.id || testRequest.id,
+            }).catch(() => {});
+          }
+        }
+        // Push real-time notification
+        await pushTestRequestStatus({
+          testRequestId: adminPO?.id || testRequest.id,
+          status: "DRAFT",
+          createdByUserId: userId,
+        });
+      } catch (err) {
+        console.error("[NOTIFY] Factory test request notification failed:", err);
+      }
+    })();
+
     return NextResponse.json({
       ok: true,
       message: "Test request created successfully",
       requestId: testRequest.id,
+      adminPONumber: adminPO?.poNumber || null,
     });
   } catch (error) {
     console.error("Error creating test request:", error);

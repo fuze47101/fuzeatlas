@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { sendTrialAdminNotification } from "@/lib/email";
+import { pushAccessRequest } from "@/lib/notify-realtime";
 
 /* ── GET  /api/factory-portal/sample-trial ── list trials for factory ── */
 export async function GET(req: Request) {

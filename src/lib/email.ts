@@ -689,3 +689,87 @@ export async function sendMeetingReminderEmail(params: {
     html,
   });
 }
+
+// ─── Shipping Instructions Email (F-033) ───
+
+export async function sendShippingInstructionsEmail(params: {
+  email: string;
+  name: string;
+  testRequestId: string;
+  poNumber: string;
+  labName: string;
+  labAddress: string;
+  labCity: string;
+  labState?: string;
+  labCountry: string;
+  labEmail?: string;
+  labPhone?: string;
+  testTypes: string[];
+  fabricInfo: string;
+  samplePrepInstructions: string;
+}) {
+  const {
+    email, name, testRequestId, poNumber,
+    labName, labAddress, labCity, labState, labCountry, labEmail, labPhone,
+    testTypes, fabricInfo, samplePrepInstructions,
+  } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+  const trUrl = `${baseUrl}/test-requests`;
+
+  const labFullAddress = [labAddress, labCity, labState, labCountry].filter(Boolean).join(", ");
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">Shipping Instructions — Test Request Approved</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${name}, your test request <strong>${poNumber}</strong> has been approved.
+      Please prepare and ship your fabric samples to the lab below.
+    </p>
+
+    <div style="background: #f0fdf4; border-left: 4px solid #059669; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+      <p style="margin: 0 0 8px; color: #059669; font-weight: 700; font-size: 16px;">Ship Samples To:</p>
+      <p style="margin: 0 0 4px; color: #1a1a2e; font-weight: 600; font-size: 15px;">${labName}</p>
+      <p style="margin: 0 0 4px; color: #4b5563;">${labFullAddress}</p>
+      ${labEmail ? `<p style="margin: 0 0 4px; color: #4b5563;">Email: ${labEmail}</p>` : ""}
+      ${labPhone ? `<p style="margin: 0; color: #4b5563;">Phone: ${labPhone}</p>` : ""}
+    </div>
+
+    <div style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 16px; margin: 20px 0; border-radius: 8px;">
+      <p style="margin: 0 0 12px; color: #1a1a2e; font-weight: 600;">Test Details</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>PO Number:</strong> ${poNumber}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Fabric:</strong> ${fabricInfo}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Test Types:</strong> ${testTypes.join(", ")}</p>
+    </div>
+
+    <div style="background: #fffbeb; border-left: 4px solid #d97706; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+      <p style="margin: 0 0 8px; color: #d97706; font-weight: 700;">Sample Preparation Instructions</p>
+      <div style="color: #4b5563; line-height: 1.8;">${samplePrepInstructions}</div>
+    </div>
+
+    <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 16px; margin: 20px 0; border-radius: 8px;">
+      <p style="margin: 0 0 8px; color: #0369a1; font-weight: 600;">General Shipping Guidelines</p>
+      <ul style="margin: 0; padding-left: 20px; color: #4b5563; line-height: 1.8;">
+        <li>Label each sample with the <strong>PO number (${poNumber})</strong> and fabric code</li>
+        <li>Include a copy of this email or a packing list with your shipment</li>
+        <li>Ship within <strong>5 business days</strong> of receiving this email</li>
+        <li>Use a tracked shipping method and record the tracking number in the portal</li>
+        <li>Store samples in a cool, dry place until shipment</li>
+      </ul>
+    </div>
+
+    <div style="margin: 24px 0;">
+      <a href="${trUrl}" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+        View in Portal
+      </a>
+    </div>
+
+    <p style="color: #9ca3af; font-size: 13px;">
+      Questions about shipping? Contact your FUZE representative or reply to this email.
+    </p>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: `Ship Samples — ${poNumber} — ${labName}`,
+    html,
+  });
+}

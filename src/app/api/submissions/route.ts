@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { pushNewSubmission } from "@/lib/notify-realtime";
+import { sendNewSubmissionEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -49,6 +51,44 @@ export async function POST(req: Request) {
     if (body.raw !== undefined) data.raw = body.raw;
 
     const submission = await prisma.fabricSubmission.create({ data });
+
+    // ── Notify admins of new submission (non-blocking) ──
+    (async () => {
+      try {
+        // Look up factory and fabric names for the notification
+        const fabric = await prisma.fabric.findUnique({
+          where: { id: fabricId },
+          select: { fuzeNumber: true, customerCode: true, factory: { select: { name: true } } },
+        });
+        const factoryName = fabric?.factory?.name || "Unknown Factory";
+        const fabricInfo = fabric?.fuzeNumber ? `FUZE-${fabric.fuzeNumber}` : fabric?.customerCode || fabricId;
+
+        // Push real-time notification
+        await pushNewSubmission({
+          factoryName,
+          fabricName: fabricInfo,
+          submittedBy: factoryName,
+        });
+
+        // Send email to admins
+        const admins = await prisma.user.findMany({
+          where: { role: { in: ["ADMIN", "EMPLOYEE"] }, email: { not: "" } },
+          select: { email: true },
+        });
+        const adminEmails = admins.map((a: any) => a.email).filter(Boolean) as string[];
+        if (adminEmails.length > 0) {
+          await sendNewSubmissionEmail({
+            adminEmails,
+            factoryName,
+            fabricName: fabricInfo,
+            submittedBy: factoryName,
+          });
+        }
+      } catch (err) {
+        console.error("[NOTIFY] Submission notification failed:", err);
+      }
+    })();
+
     return NextResponse.json({ ok: true, submission }, { status: 201 });
   } catch (e: any) {
     return NextResponse.json(

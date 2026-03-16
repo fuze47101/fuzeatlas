@@ -2,7 +2,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { sendTrialStatusEmail, sendTrialAdminNotification } from "@/lib/email";
+import { sendTrialStatusEmail, sendTrialAdminNotification, sendShippingInstructionsEmail } from "@/lib/email";
+import { pushCustomNotification } from "@/lib/notify-realtime";
 
 /* ── GET /api/factory-portal/sample-trial/[id] ── trial detail ── */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -151,6 +152,52 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
           adminNotes: body.adminNotes || undefined,
           icpLabName: updated.icpLab?.name || undefined,
         }).catch((err: any) => console.error("Trial email failed:", err));
+      }
+
+      // Push real-time notification to factory user
+      if (updated.requestedBy?.id) {
+        const STATUS_LABELS: Record<string, string> = {
+          UNDER_REVIEW: "Under Review", APPROVED: "Approved", REJECTED: "Rejected",
+          SAMPLE_SHIPPED: "Sample Shipped", SAMPLE_RECEIVED: "Sample Received",
+          TRIAL_IN_PROGRESS: "Trial In Progress", ICP_PENDING: "ICP Pending",
+          ICP_SUBMITTED: "ICP Submitted", COMPLETE: "Complete",
+        };
+        pushCustomNotification(
+          updated.requestedBy.id,
+          "TRIAL_STATUS",
+          `Sample Trial ${STATUS_LABELS[newStatus] || newStatus}`,
+          `Your sample trial for ${fabricInfo} has been updated to ${STATUS_LABELS[newStatus] || newStatus}.`,
+          `/factory-portal/sample-trial`,
+          { trialId: id, status: newStatus },
+        ).catch((err: any) => console.error("Trial push notification failed:", err));
+      }
+
+      // Send shipping instructions to factory when ICP lab testing is needed
+      if (newStatus === "ICP_PENDING" && updated.icpLab && updated.requestedBy?.email) {
+        (async () => {
+          try {
+            const lab = updated.icpLab;
+            await sendShippingInstructionsEmail({
+              email: updated.requestedBy.email,
+              name: updated.requestedBy.name || "Factory User",
+              testRequestId: id,
+              poNumber: `TRIAL-${id.slice(0, 8).toUpperCase()}`,
+              labName: lab.name || "ICP Lab",
+              labAddress: "",
+              labCity: lab.city || "",
+              labCountry: lab.country || "",
+              labEmail: lab.email || undefined,
+              testTypes: ["ICP-OES"],
+              fabricInfo,
+              samplePrepInstructions:
+                "<strong>ICP-OES Sample Prep:</strong> After applying the FUZE treatment per the provided recipe, " +
+                "cut 2 swatches of minimum 10cm x 10cm from the treated fabric. Package each swatch individually in a " +
+                "sealed bag. Label with the trial ID and FUZE number. Ship to the lab address above within 3 business days.",
+            });
+          } catch (err) {
+            console.error("[SHIPPING] ICP shipping instructions failed:", err);
+          }
+        })();
       }
 
       // Notify admins when ICP results are submitted

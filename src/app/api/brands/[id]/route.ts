@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { autoScheduleMeeting } from "@/lib/meeting-templates";
-import { notifyPipelineChange } from "@/lib/notify";
+import { pushPipelineChange } from "@/lib/notify-realtime";
 
 const prisma = new PrismaClient();
 
@@ -107,7 +107,7 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
     // Notify team on pipeline stage change (F-032)
     if (pipelineStage && pipelineStage !== oldStage) {
       const userId = req.headers.get("x-user-id") || "";
-      await notifyPipelineChange({
+      await pushPipelineChange({
         brandId: params.id,
         brandName: brand.name,
         oldStage: oldStage || "LEAD",

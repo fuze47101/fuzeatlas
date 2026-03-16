@@ -1,8 +1,41 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { pushTestRequestStatus } from "@/lib/notify-realtime";
+import { sendTestRequestStatusEmail, sendShippingInstructionsEmail } from "@/lib/email";
 
 const prisma = new PrismaClient();
+
+/** Fire notification + email for test request status changes (non-blocking) */
+async function notifyTestRequestChange(testRequestId: string, newStatus: string, existing: any) {
+  try {
+    // Push real-time notification
+    await pushTestRequestStatus({
+      testRequestId,
+      status: newStatus,
+      createdByUserId: existing.requestedById || undefined,
+    });
+
+    // Send email to the requester
+    if (existing.requestedById) {
+      const requester = await prisma.user.findUnique({
+        where: { id: existing.requestedById },
+        select: { email: true, name: true },
+      });
+      if (requester?.email) {
+        await sendTestRequestStatusEmail({
+          email: requester.email,
+          name: requester.name || "Team",
+          poNumber: existing.poNumber || testRequestId,
+          newStatus,
+          testRequestId,
+        });
+      }
+    }
+  } catch (err) {
+    console.error("[NOTIFY] Test request notification failed:", err);
+  }
+}
 
 // ─── GET: Single test request with full details ─────────────────────────
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -93,6 +126,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
           requestedAt: new Date(),
         },
       });
+      notifyTestRequestChange(id, "PENDING_APPROVAL", existing).catch(() => {});
       return NextResponse.json({ ok: true, testRequest: updated, message: "Submitted for approval" });
     }
 
@@ -115,6 +149,73 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
           rejectedReason: null,
         },
       });
+      notifyTestRequestChange(id, "APPROVED", existing).catch(() => {});
+
+      // ── Send shipping instructions to requester on approval ──
+      (async () => {
+        try {
+          // Fetch full test request with lab + fabric + requester + lines
+          const fullTR = await prisma.testRequest.findUnique({
+            where: { id },
+            include: {
+              lab: { select: { name: true, address: true, city: true, state: true, country: true, email: true, phone: true } },
+              fabric: { select: { fuzeNumber: true, customerCode: true, factoryCode: true, construction: true, weightGsm: true } },
+              requestedBy: { select: { email: true, name: true } },
+              lines: { select: { testType: true, testMethod: true } },
+            },
+          });
+          if (!fullTR?.lab || !fullTR.requestedBy?.email) return;
+
+          // Build sample prep instructions based on test types
+          const testTypes = fullTR.lines.map((l: any) => l.testType);
+          const prepParts: string[] = [];
+          if (testTypes.includes("ICP")) {
+            prepParts.push("<strong>ICP-OES:</strong> Provide 2 swatches, each minimum 10cm x 10cm. Unwashed. Do not contaminate with metals.");
+          }
+          if (testTypes.includes("ANTIBACTERIAL")) {
+            prepParts.push("<strong>Antibacterial (AATCC 100 / JIS L 1902):</strong> Provide 6 swatches, 4.8cm diameter (±0.5cm). Include untreated control swatches of the same fabric.");
+          }
+          if (testTypes.includes("FUNGAL")) {
+            prepParts.push("<strong>Antifungal (AATCC 30):</strong> Provide 3 swatches, minimum 5cm x 5cm each.");
+          }
+          if (testTypes.includes("ODOR")) {
+            prepParts.push("<strong>Odor Reduction:</strong> Provide 3 swatches, minimum 10cm x 10cm. Seal in individual zip-lock bags.");
+          }
+          if (testTypes.includes("UV")) {
+            prepParts.push("<strong>UV Protection:</strong> Provide 2 swatches, minimum 15cm x 15cm.");
+          }
+          if (prepParts.length === 0) {
+            prepParts.push("Provide test swatches per the lab's standard requirements. Contact your FUZE representative if unsure.");
+          }
+
+          const fabricInfo = [
+            fullTR.fabric?.fuzeNumber ? `FUZE-${fullTR.fabric.fuzeNumber}` : null,
+            fullTR.fabric?.customerCode,
+            fullTR.fabric?.construction,
+            fullTR.fabric?.weightGsm ? `${fullTR.fabric.weightGsm} GSM` : null,
+          ].filter(Boolean).join(" | ") || "See PO for details";
+
+          await sendShippingInstructionsEmail({
+            email: fullTR.requestedBy.email,
+            name: fullTR.requestedBy.name || "Team",
+            testRequestId: id,
+            poNumber: fullTR.poNumber || id,
+            labName: fullTR.lab.name,
+            labAddress: fullTR.lab.address || "",
+            labCity: fullTR.lab.city || "",
+            labState: fullTR.lab.state || undefined,
+            labCountry: fullTR.lab.country || "",
+            labEmail: fullTR.lab.email || undefined,
+            labPhone: fullTR.lab.phone || undefined,
+            testTypes: testTypes,
+            fabricInfo,
+            samplePrepInstructions: prepParts.join("<br><br>"),
+          });
+        } catch (shipErr) {
+          console.error("[SHIPPING] Shipping instructions email failed:", shipErr);
+        }
+      })();
+
       return NextResponse.json({ ok: true, testRequest: updated, message: "Test request approved" });
     }
 
@@ -134,6 +235,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
           rejectedReason: body.rejectedReason || null,
         },
       });
+      notifyTestRequestChange(id, "REJECTED", existing).catch(() => {});
       return NextResponse.json({ ok: true, testRequest: updated, message: "Test request rejected — returned to draft" });
     }
 
@@ -146,6 +248,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         where: { id },
         data: { status: "SUBMITTED" },
       });
+      notifyTestRequestChange(id, "SUBMITTED", existing).catch(() => {});
       return NextResponse.json({ ok: true, testRequest: updated, message: "Marked as submitted to lab" });
     }
 
@@ -158,6 +261,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         where: { id },
         data: { status: "IN_PROGRESS" },
       });
+      notifyTestRequestChange(id, "IN_PROGRESS", existing).catch(() => {});
       return NextResponse.json({ ok: true, testRequest: updated, message: "Marked as in progress" });
     }
 
@@ -167,6 +271,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         where: { id },
         data: { status: "RESULTS_RECEIVED" },
       });
+      notifyTestRequestChange(id, "RESULTS_RECEIVED", existing).catch(() => {});
       return NextResponse.json({ ok: true, testRequest: updated, message: "Results received" });
     }
 
@@ -180,6 +285,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
           actualCost: body.actualCost ?? existing.actualCost,
         },
       });
+      notifyTestRequestChange(id, "COMPLETE", existing).catch(() => {});
       return NextResponse.json({ ok: true, testRequest: updated, message: "Test request completed" });
     }
 
@@ -197,6 +303,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             : `Cancelled: ${body.reason || "No reason given"}`,
         },
       });
+      notifyTestRequestChange(id, "CANCELLED", existing).catch(() => {});
       return NextResponse.json({ ok: true, testRequest: updated, message: "Test request cancelled" });
     }
 

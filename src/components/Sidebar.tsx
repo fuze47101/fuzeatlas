@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import FuzeLogo from "./FuzeLogo";
+import { NotificationBell } from "./NotificationBell";
 import { useI18n, LOCALES } from "@/i18n";
 import type { Locale } from "@/i18n";
 import { useAuth } from "@/lib/AuthContext";
@@ -373,7 +374,9 @@ export default function Sidebar() {
           </svg>
         </button>
         <FuzeLogo size="sm" layout="horizontal" theme="light" />
-        <div className="w-10" />
+        <div className="relative">
+          <NotificationBell />
+        </div>
       </div>
 
       {/* Mobile overlay */}
@@ -395,7 +398,12 @@ export default function Sidebar() {
       >
         {/* Brand */}
         <div className="px-6 py-5 border-b border-slate-800">
-          <FuzeLogo size="md" layout="horizontal" theme="light" />
+          <div className="flex items-center justify-between">
+            <FuzeLogo size="md" layout="horizontal" theme="light" />
+            <div className="relative">
+              <NotificationBell />
+            </div>
+          </div>
           <p className="text-[10px] text-slate-500 mt-1.5">{t.nav.subtitle}</p>
         </div>
 
