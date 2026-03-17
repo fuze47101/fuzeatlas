@@ -1,8 +1,304 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { calcQuote, money, type CalcInputs, type CalcOutputs } from "@/lib/fuze-calc";
+
+/* ── Test Request Modal ── */
+function TestRequestModal({
+  fabric,
+  onClose,
+  onSuccess,
+}: {
+  fabric: any;
+  onClose: () => void;
+  onSuccess: (result: any) => void;
+}) {
+  const [labs, setLabs] = useState<any[]>([]);
+  const [selectedLab, setSelectedLab] = useState<string>("");
+  const [selectedTests, setSelectedTests] = useState<Record<string, boolean>>({});
+  const [rushTests, setRushTests] = useState<Record<string, boolean>>({});
+  const [instructions, setInstructions] = useState("");
+  const [priority, setPriority] = useState("NORMAL");
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("/api/brand-portal/test-request")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok) {
+          setLabs(j.labs);
+          // Auto-select FUZE lab if it exists
+          const fuzeLab = j.labs.find((l: any) => l.name.toLowerCase().includes("fuze"));
+          if (fuzeLab) setSelectedLab(fuzeLab.id);
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const currentLab = labs.find((l) => l.id === selectedLab);
+  const services = currentLab?.services || [];
+
+  const toggleTest = (testMethod: string) => {
+    setSelectedTests((prev) => ({ ...prev, [testMethod]: !prev[testMethod] }));
+  };
+  const toggleRush = (testMethod: string) => {
+    setRushTests((prev) => ({ ...prev, [testMethod]: !prev[testMethod] }));
+  };
+
+  const selectedServices = services.filter((s: any) => selectedTests[s.testMethod]);
+  const totalCost = selectedServices.reduce((sum: number, s: any) => {
+    const rush = rushTests[s.testMethod] ? (s.rushPriceUSD || 0) : 0;
+    return sum + (s.priceUSD || 0) + rush;
+  }, 0);
+  const maxDays = selectedServices.reduce((max: number, s: any) => {
+    const days = rushTests[s.testMethod] ? (s.rushDays || s.turnaroundDays || 0) : (s.turnaroundDays || 0);
+    return Math.max(max, days);
+  }, 0);
+
+  const handleSubmit = async () => {
+    if (!selectedLab) return setError("Please select a laboratory");
+    if (selectedServices.length === 0) return setError("Please select at least one test");
+    setSubmitting(true); setError("");
+    try {
+      const res = await fetch("/api/brand-portal/test-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fabricId: fabric.id,
+          labId: selectedLab,
+          priority,
+          specialInstructions: instructions || null,
+          services: selectedServices.map((s: any) => ({
+            testType: s.testType,
+            testMethod: s.testMethod,
+            quantity: 1,
+            rush: rushTests[s.testMethod] || false,
+          })),
+        }),
+      });
+      const j = await res.json();
+      if (j.ok) onSuccess(j.testRequest);
+      else setError(j.error || "Failed to submit");
+    } catch (e: any) { setError(e.message); }
+    finally { setSubmitting(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="bg-gradient-to-r from-[#00b4c3] to-emerald-500 p-6 rounded-t-2xl text-white">
+          <h2 className="text-xl font-black">Request Testing</h2>
+          <p className="text-white/80 text-sm mt-1">
+            FUZE {fabric.fuzeNumber} — {fabric.customerCode || fabric.construction || "Fabric"}
+          </p>
+        </div>
+
+        <div className="p-6">
+          {loading ? (
+            <div className="text-center py-8 text-slate-400">Loading available tests...</div>
+          ) : (
+            <>
+              {/* Lab Selection */}
+              <div className="mb-6">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Select Laboratory
+                </label>
+                <div className="grid gap-2">
+                  {labs.map((lab: any) => (
+                    <button
+                      key={lab.id}
+                      onClick={() => { setSelectedLab(lab.id); setSelectedTests({}); setRushTests({}); }}
+                      className={`flex items-center justify-between p-3 rounded-xl border-2 text-left transition-all ${
+                        selectedLab === lab.id
+                          ? "border-[#00b4c3] bg-[#00b4c3]/5"
+                          : "border-slate-200 hover:border-slate-300"
+                      }`}
+                    >
+                      <div>
+                        <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                          {lab.name}
+                          {lab.name.toLowerCase().includes("fuze") && (
+                            <span className="px-2 py-0.5 bg-[#00b4c3] text-white text-[10px] font-bold rounded-full">INTERNAL</span>
+                          )}
+                        </div>
+                        <div className="text-xs text-slate-500 mt-0.5">
+                          {[lab.city, lab.country].filter(Boolean).join(", ")}
+                          {lab.services.length > 0 && ` · ${lab.services.length} tests available`}
+                        </div>
+                      </div>
+                      {selectedLab === lab.id && (
+                        <div className="w-5 h-5 rounded-full bg-[#00b4c3] flex items-center justify-center">
+                          <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Test Selection */}
+              {currentLab && services.length > 0 && (
+                <div className="mb-6">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                    Select Tests
+                  </label>
+                  <div className="space-y-2">
+                    {services.map((svc: any) => (
+                      <div
+                        key={svc.testMethod}
+                        className={`rounded-xl border-2 transition-all ${
+                          selectedTests[svc.testMethod]
+                            ? "border-[#00b4c3] bg-[#00b4c3]/5"
+                            : "border-slate-200"
+                        }`}
+                      >
+                        <button
+                          onClick={() => toggleTest(svc.testMethod)}
+                          className="w-full p-4 text-left"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-xs font-bold text-[#00b4c3] bg-[#00b4c3]/10 px-2 py-0.5 rounded">
+                                  {svc.testMethod}
+                                </span>
+                                <span className="font-bold text-sm text-slate-900">{svc.testType.replace(/_/g, " ")}</span>
+                                {svc.preferred && (
+                                  <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded">
+                                    ★ {svc.preferredNote || "Recommended"}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-slate-500 mt-1 line-clamp-2">{svc.description}</p>
+                            </div>
+                            <div className="text-right ml-4 shrink-0">
+                              <div className="text-sm font-black text-slate-900">${svc.priceUSD}</div>
+                              <div className="text-[10px] text-slate-500">{svc.turnaroundDays} days</div>
+                            </div>
+                          </div>
+                        </button>
+                        {/* Rush option */}
+                        {selectedTests[svc.testMethod] && svc.rushPriceUSD && (
+                          <div className="px-4 pb-3 flex items-center gap-2">
+                            <button
+                              onClick={() => toggleRush(svc.testMethod)}
+                              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                                rushTests[svc.testMethod]
+                                  ? "bg-amber-100 text-amber-700 border border-amber-300"
+                                  : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                              }`}
+                            >
+                              ⚡ Rush (+${svc.rushPriceUSD}, {svc.rushDays} days)
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {currentLab && services.length === 0 && (
+                <div className="text-center py-6 text-slate-400 text-sm">
+                  No test services configured for this lab yet.
+                </div>
+              )}
+
+              {/* Priority */}
+              {selectedServices.length > 0 && (
+                <>
+                  <div className="mb-4">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Priority</label>
+                    <div className="flex gap-2">
+                      {["NORMAL", "HIGH", "URGENT"].map((p) => (
+                        <button
+                          key={p}
+                          onClick={() => setPriority(p)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                            priority === p
+                              ? p === "URGENT" ? "bg-red-100 text-red-700 border border-red-300"
+                                : p === "HIGH" ? "bg-amber-100 text-amber-700 border border-amber-300"
+                                : "bg-slate-900 text-white"
+                              : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                      Special Instructions (optional)
+                    </label>
+                    <textarea
+                      value={instructions}
+                      onChange={(e) => setInstructions(e.target.value)}
+                      rows={2}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+                      placeholder="Any special requirements or notes for the lab..."
+                    />
+                  </div>
+
+                  {/* Cost Summary */}
+                  <div className="bg-gradient-to-r from-slate-50 to-[#00b4c3]/5 rounded-xl border p-4 mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-slate-500 uppercase">Order Summary</span>
+                      <span className="text-xs text-slate-500">{selectedServices.length} test{selectedServices.length !== 1 ? "s" : ""}</span>
+                    </div>
+                    {selectedServices.map((s: any) => (
+                      <div key={s.testMethod} className="flex items-center justify-between text-sm py-1">
+                        <span className="text-slate-700">
+                          <span className="font-mono text-xs text-[#00b4c3]">{s.testMethod}</span> {s.testType.replace(/_/g, " ")}
+                          {rushTests[s.testMethod] && <span className="text-amber-600 text-xs ml-1">⚡ Rush</span>}
+                        </span>
+                        <span className="font-semibold text-slate-900">
+                          ${(s.priceUSD || 0) + (rushTests[s.testMethod] ? (s.rushPriceUSD || 0) : 0)}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="border-t mt-2 pt-2 flex items-center justify-between">
+                      <div>
+                        <div className="font-black text-lg text-slate-900">${totalCost}</div>
+                        <div className="text-[10px] text-slate-500">Est. {maxDays} business days</div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
+
+              {/* Actions */}
+              <div className="flex gap-3">
+                {selectedServices.length > 0 && (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                    className="flex-1 px-6 py-3 bg-[#00b4c3] text-white rounded-xl text-sm font-black hover:bg-[#009aa8] disabled:opacity-50 shadow-lg shadow-[#00b4c3]/30 transition-all"
+                  >
+                    {submitting ? "Submitting..." : `Submit Request · $${totalCost}`}
+                  </button>
+                )}
+                <button onClick={onClose} className="px-4 py-3 text-sm text-slate-600 border border-slate-300 rounded-xl hover:bg-slate-50">
+                  Cancel
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const FUZE_TIERS = [
   { id: "F1", dose: 1.0, washes: 100, label: "Full Spectrum", color: "bg-emerald-500" },
@@ -70,6 +366,7 @@ export default function BrandPortalFabricsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [testingFabric, setTestingFabric] = useState<any>(null); // fabric being submitted for testing
 
   // New fabric form
   const [form, setForm] = useState({
@@ -287,17 +584,16 @@ export default function BrandPortalFabricsPage() {
               <th className="px-4 py-3">GSM</th>
               <th className="px-4 py-3">Width</th>
               <th className="px-4 py-3">FUZE Cost</th>
-              <th className="px-4 py-3 text-center">Submissions</th>
+              <th className="px-4 py-3 text-center">Action</th>
             </tr>
           </thead>
           <tbody>
             {data.fabrics.map((f: any) => (
               <tr
                 key={f.id}
-                onClick={() => router.push(`/fabrics/${f.id}`)}
-                className="border-t border-slate-100 hover:bg-blue-50 cursor-pointer transition-colors"
+                className="border-t border-slate-100 hover:bg-blue-50 transition-colors"
               >
-                <td className="px-4 py-3 font-bold text-[#00b4c3]">FUZE {f.fuzeNumber || "—"}</td>
+                <td className="px-4 py-3 font-bold text-[#00b4c3] cursor-pointer" onClick={() => router.push(`/fabrics/${f.id}`)}>FUZE {f.fuzeNumber || "—"}</td>
                 <td className="px-4 py-3 text-slate-700">{f.customerCode || "—"}</td>
                 <td className="px-4 py-3 text-slate-700">{f.construction || "—"}</td>
                 <td className="px-4 py-3 text-xs text-slate-600">
@@ -310,7 +606,14 @@ export default function BrandPortalFabricsPage() {
                 <td className="px-4 py-3">
                   <CostCard fabric={f} />
                 </td>
-                <td className="px-4 py-3 text-center font-bold">{f.submissionCount || 0}</td>
+                <td className="px-4 py-3 text-center">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setTestingFabric(f); }}
+                    className="px-3 py-1.5 bg-[#00b4c3] text-white rounded-lg text-xs font-bold hover:bg-[#009aa8] shadow-sm shadow-[#00b4c3]/20 transition-all whitespace-nowrap"
+                  >
+                    🧪 Request Testing
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -329,6 +632,21 @@ export default function BrandPortalFabricsPage() {
           </div>
         )}
       </div>
+
+      {/* Test Request Modal */}
+      {testingFabric && (
+        <TestRequestModal
+          fabric={testingFabric}
+          onClose={() => setTestingFabric(null)}
+          onSuccess={(result) => {
+            setTestingFabric(null);
+            setSuccess(`Test request ${result.poNumber} submitted to ${result.labName}! Estimated cost: $${result.estimatedCost}. Your request is pending review.`);
+            // Refresh data to update submission counts
+            fetch("/api/brand-portal").then((r) => r.json()).then((j) => { if (j.ok) setData(j); });
+            setTimeout(() => setSuccess(""), 8000);
+          }}
+        />
+      )}
     </div>
   );
 }
