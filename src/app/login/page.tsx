@@ -309,6 +309,28 @@ function LoginForm() {
                         {t.login.faqSearch}
                       </button>
                     </form>
+                    {/* Suggested questions */}
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {[
+                        "How does FUZE bonding work?",
+                        "What is ICP testing?",
+                        "Application levels & dosing",
+                        "Cotton vs synthetics",
+                        "Wash durability",
+                        "Is FUZE safe?",
+                        "Lab testing process",
+                        "How to read ICP results",
+                      ].map((q) => (
+                        <button
+                          key={q}
+                          type="button"
+                          onClick={() => { setFaqQuery(q); router.push(`/brand-portal/chat?q=${encodeURIComponent(q)}`); }}
+                          className="px-2.5 py-1 bg-slate-700/60 hover:bg-violet-500/30 border border-slate-600 hover:border-violet-400 text-slate-300 hover:text-white rounded-full text-[11px] transition-all cursor-pointer"
+                        >
+                          {q}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

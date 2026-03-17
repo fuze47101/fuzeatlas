@@ -34,18 +34,30 @@ export default function FactoriesPage() {
         <div className="flex items-center gap-3">
           <input type="text" placeholder={t.factories.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)}
             className="px-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <button onClick={() => router.push("/factory-search")} className="px-4 py-2 border border-[#00b4c3] text-[#00b4c3] rounded-lg text-sm font-bold hover:bg-[#00b4c3] hover:text-white whitespace-nowrap transition-colors">Discovery View</button>
           <button onClick={() => router.push("/factories/new")} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap">{t.factories.addNew}</button>
         </div>
       </div>
 
-      {/* Country distribution */}
+      {/* Country distribution — click to filter */}
       <div className="flex gap-2 mb-6 flex-wrap">
-        {topCountries.map(([country, count]) => (
-          <div key={country} className="bg-white rounded-lg px-3 py-2 shadow-sm border text-center min-w-[100px]">
-            <div className="text-lg font-black text-slate-900">{count}</div>
-            <div className="text-[11px] text-slate-500 truncate">{country}</div>
-          </div>
-        ))}
+        {topCountries.map(([country, count]) => {
+          const isActive = search.toLowerCase() === country.toLowerCase();
+          return (
+            <button
+              key={country}
+              onClick={() => setSearch(isActive ? "" : country)}
+              className={`rounded-lg px-3 py-2 shadow-sm border text-center min-w-[100px] transition-all cursor-pointer ${
+                isActive
+                  ? "bg-[#00b4c3] border-[#00b4c3] ring-2 ring-[#00b4c3]/30"
+                  : "bg-white hover:border-[#00b4c3] hover:shadow-md"
+              }`}
+            >
+              <div className={`text-lg font-black ${isActive ? "text-white" : "text-slate-900"}`}>{count}</div>
+              <div className={`text-[11px] truncate ${isActive ? "text-white/80" : "text-slate-500"}`}>{country}</div>
+            </button>
+          );
+        })}
       </div>
 
       {/* Table */}

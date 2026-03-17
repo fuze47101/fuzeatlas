@@ -306,7 +306,12 @@ export default function FactorySearchPage() {
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black text-slate-900">Factory Discovery</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-black text-slate-900">Factory Discovery</h1>
+              <button onClick={() => router.push("/factories")} className="px-3 py-1 border border-slate-300 text-slate-600 rounded-lg text-xs font-medium hover:bg-slate-50 transition-colors">
+                Table View
+              </button>
+            </div>
             <p className="text-sm text-slate-500 mt-1">
               Search {factories.length} factories by product type, capability, certification, and more
             </p>

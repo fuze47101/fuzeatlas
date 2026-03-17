@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUZE Atlas — System Analysis & Roadmap</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; line-height: 1.6; }
+  .header { background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%); padding: 40px 0; border-bottom: 3px solid #00b4c3; }
+  .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .header h1 { font-size: 32px; color: #fff; margin-bottom: 8px; }
+  .header h1 span { color: #00b4c3; }
+  .header p { color: #8b949e; font-size: 16px; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+  /* Score Cards */
+  .score-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 24px 0; }
+  .score-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; text-align: center; }
+  .score-card .number { font-size: 36px; font-weight: 700; color: #00b4c3; }
+  .score-card .label { font-size: 13px; color: #8b949e; margin-top: 4px; }
+  .score-card.green .number { color: #3fb950; }
+  .score-card.amber .number { color: #d29922; }
+  .score-card.red .number { color: #f85149; }
+
+  /* Section */
+  .section { background: #161b22; border: 1px solid #30363d; border-radius: 12px; margin: 24px 0; overflow: hidden; }
+  .section-header { padding: 20px 24px; border-bottom: 1px solid #30363d; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .section-header h2 { font-size: 20px; color: #fff; }
+  .section-header .badge { background: #00b4c3; color: #fff; font-size: 12px; padding: 2px 10px; border-radius: 12px; font-weight: 600; }
+  .section-header .badge.amber { background: #d29922; }
+  .section-header .badge.red { background: #f85149; }
+  .section-header .badge.green { background: #3fb950; }
+  .section-body { padding: 24px; }
+
+  /* Feature Grid */
+  .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .feature-item { padding: 16px; border: 1px solid #30363d; border-radius: 8px; background: #0d1117; }
+  .feature-item h4 { color: #fff; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .feature-item p { color: #8b949e; font-size: 13px; }
+  .status { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+  .status.done { background: #3fb950; }
+  .status.partial { background: #d29922; }
+  .status.missing { background: #f85149; }
+  .status.planned { background: #6e7681; }
+
+  /* Workflow Diagram */
+  .workflow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; padding: 16px 0; overflow-x: auto; }
+  .wf-step { background: #0d1117; border: 2px solid #30363d; border-radius: 8px; padding: 12px 16px; min-width: 140px; text-align: center; position: relative; }
+  .wf-step.active { border-color: #3fb950; }
+  .wf-step.partial { border-color: #d29922; }
+  .wf-step.missing { border-color: #f85149; border-style: dashed; }
+  .wf-step h5 { color: #fff; font-size: 13px; margin-bottom: 4px; }
+  .wf-step p { color: #8b949e; font-size: 11px; }
+  .wf-arrow { color: #30363d; font-size: 24px; padding: 0 8px; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 10px 12px; color: #8b949e; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #30363d; }
+  td { padding: 10px 12px; border-bottom: 1px solid #21262d; font-size: 14px; }
+  tr:hover td { background: #1c2128; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .tag.done { background: #1b3a2d; color: #3fb950; }
+  .tag.partial { background: #3d2e00; color: #d29922; }
+  .tag.missing { background: #3d1418; color: #f85149; }
+  .tag.planned { background: #1c2128; color: #6e7681; }
+
+  /* Priority List */
+  .priority-list { counter-reset: priority; }
+  .priority-item { display: flex; gap: 16px; padding: 16px; border: 1px solid #30363d; border-radius: 8px; margin: 8px 0; background: #0d1117; }
+  .priority-item .num { background: #00b4c3; color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .priority-item.high .num { background: #f85149; }
+  .priority-item.med .num { background: #d29922; }
+  .priority-item .content h4 { color: #fff; margin-bottom: 4px; }
+  .priority-item .content p { color: #8b949e; font-size: 13px; }
+  .priority-item .est { color: #00b4c3; font-size: 12px; margin-top: 6px; font-weight: 600; }
+
+  /* Legend */
+  .legend { display: flex; gap: 20px; padding: 12px 0; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8b949e; }
+
+  @media (max-width: 768px) {
+    .score-row { grid-template-columns: repeat(2, 1fr); }
+    .feature-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <h1><span>FUZE Atlas</span> — System Analysis & Roadmap</h1>
+    <p>Comprehensive audit of what's built, what's wired, and what's next &bull; March 15, 2026</p>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- Score Cards -->
+<div class="score-row">
+  <div class="score-card green">
+    <div class="number">56</div>
+    <div class="label">Database Models</div>
+  </div>
+  <div class="score-card green">
+    <div class="number">135+</div>
+    <div class="label">API Endpoints</div>
+  </div>
+  <div class="score-card green">
+    <div class="number">70+</div>
+    <div class="label">UI Pages</div>
+  </div>
+  <div class="score-card amber">
+    <div class="number">68%</div>
+    <div class="label">Wired Up</div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="status done"></span> Built & Working</div>
+  <div class="legend-item"><span class="status partial"></span> Built, Not Wired</div>
+  <div class="legend-item"><span class="status missing"></span> Missing / Needs Build</div>
+  <div class="legend-item"><span class="status planned"></span> Planned / Future</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION: CORE WORKFLOW STATUS -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <h2>The Core Workflow — Where We Are</h2>
+    <span class="badge amber">Gaps Identified</span>
+  </div>
+  <div class="section-body">
+    <p style="color: #8b949e; margin-bottom: 16px;">The ideal end-to-end flow: Register → Approve → Upload Fabrics → Request Tests → Ship Samples → Get Results</p>
+
+    <div class="workflow">
+      <div class="wf-step active">
+        <h5>1. Register</h5>
+        <p>Brand/Factory submits access request</p>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step active">
+        <h5>2. Admin Approves</h5>
+        <p>Creates user + attaches to company</p>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step active">
+        <h5>3. Upload Fabrics</h5>
+        <p>Portal users add fabric specs</p>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step partial">
+        <h5>4. Request Tests</h5>
+        <p>Factory requests testing on fabrics</p>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step missing">
+        <h5>5. Shipping Instructions</h5>
+        <p>Get lab address + prep/ship instructions</p>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step active">
+        <h5>6. Results & Interpretation</h5>
+        <p>AI-powered test analysis</p>
+      </div>
+    </div>
+
+    <h3 style="color: #fff; margin: 24px 0 12px;">Step-by-Step Breakdown</h3>
+    <table>
+      <thead>
+        <tr><th>Step</th><th>Status</th><th>What Exists</th><th>What's Missing</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:#fff">1. Registration</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>Public /request-access form, factory access form, email notifications to admins</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">2. Admin Approval</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>Approval API generates temp password, auto-creates Brand/Factory if new, sends welcome email, user must change password on first login</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">3. Upload Fabrics</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>Brand portal fabric form (customer code, construction, GSM, fiber content, factory assignment). Factory portal intake form. Auto-generates FUZE number.</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">4a. Request Tests (Admin PO)</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>Full TestRequest PO workflow with line items, lab pricing, status tracking (DRAFT → COMPLETE), PDF generation</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">4b. Factory Test Request</strong></td>
+          <td><span class="tag partial">PARTIAL</span></td>
+          <td>Factory portal /request-test page exists, API endpoint exists. But it's basic — just a form POST.</td>
+          <td>No connection between factory test request and the admin PO system. Factory user can't see what happens after request. No status updates pushed back to factory.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">4c. Sample Trial Request</strong></td>
+          <td><span class="tag partial">PARTIAL</span></td>
+          <td>SampleTrialRequest model, factory portal page, API for create/list/update, admin review page, status flow (SUBMITTED → UNDER_REVIEW → APPROVED → SAMPLE_SHIPPED → ICP_PENDING → COMPLETE)</td>
+          <td>Missing: automatic shipping instructions on approval, no link to generate shipping label/customs docs, email triggers not wired to status changes</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">5. Shipping Instructions</strong></td>
+          <td><span class="tag missing">MISSING</span></td>
+          <td>Lab model has address fields. Shipping docs generator exists. SampleShipment model exists with chain-of-custody tracking.</td>
+          <td><strong>No automated flow:</strong> When a test is approved, the factory needs to receive: (1) which lab to ship to, (2) lab address + contact, (3) sample prep instructions, (4) shipping label/customs form. None of this is triggered automatically.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">6. Test Results</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>AI-powered test interpretation, compliance checking, FUZE tier classification, anomaly detection, wash durability analysis. Full UI with risk gauge.</td>
+          <td>Brand-visible stamping works but notification to brand user when results are ready is not wired.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION: NOTIFICATION SYSTEM -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Notification System — What's Wired vs Not</h2>
+    <span class="badge red">Critical Gap</span>
+  </div>
+  <div class="section-body">
+    <p style="color: #8b949e; margin-bottom: 16px;">The infrastructure is solid — SSE streaming, notification hooks, email templates — but almost nothing is actually calling it.</p>
+
+    <h3 style="color: #fff; margin-bottom: 12px;">Infrastructure (All Built)</h3>
+    <div class="feature-grid">
+      <div class="feature-item">
+        <h4><span class="status done"></span> SSE Streaming Endpoint</h4>
+        <p>/api/notifications/stream — Server-sent events with keepalive, reconnect</p>
+      </div>
+      <div class="feature-item">
+        <h4><span class="status done"></span> useNotifications Hook</h4>
+        <p>React hook managing EventSource connection, state, mark-as-read</p>
+      </div>
+      <div class="feature-item">
+        <h4><span class="status done"></span> NotificationBell Component</h4>
+        <p>Bell icon with unread badge, dropdown, toast — 301 lines, fully styled</p>
+      </div>
+      <div class="feature-item">
+        <h4><span class="status done"></span> notify-realtime.ts Push Functions</h4>
+        <p>pushTestResult, pushSOWUpdate, pushAccessRequest, pushNewSubmission, pushTestRequestStatus, pushSystemAlert</p>
+      </div>
+      <div class="feature-item">
+        <h4><span class="status done"></span> 15+ Email Templates</h4>
+        <p>Resend integration, FUZE-branded HTML emails for every event type</p>
+      </div>
+      <div class="feature-item">
+        <h4><span class="status done"></span> Notification DB Model</h4>
+        <p>userId, type, title, message, link, metadata, read status, timestamps</p>
+      </div>
+    </div>
+
+    <h3 style="color: #fff; margin: 24px 0 12px;">What's NOT Wired</h3>
+    <table>
+      <thead>
+        <tr><th>Component</th><th>Status</th><th>Issue</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:#fff">NotificationBell in Layout</strong></td>
+          <td><span class="tag missing">NOT IMPORTED</span></td>
+          <td>NotificationBell component exists but is not imported in layout.tsx or any page. Users literally cannot see notifications.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Push functions in API routes</strong></td>
+          <td><span class="tag missing">ZERO CALLS</span></td>
+          <td>notify-realtime.ts exports 7 push functions. None of them are imported or called from any API route. Zero integration.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Email triggers on status changes</strong></td>
+          <td><span class="tag partial">2 OF 15</span></td>
+          <td>Only access-request approval and password reset actually send emails. The other 13 templates (test results, SOW status, submission alerts, trial updates, payment reminders, meeting notifications) exist but are never called.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION: FEATURE INVENTORY -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Full Feature Inventory</h2>
+    <span class="badge green">56 Models · 135+ APIs</span>
+  </div>
+  <div class="section-body">
+    <table>
+      <thead>
+        <tr><th>Feature Area</th><th>Status</th><th>Models</th><th>APIs</th><th>Pages</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:#fff">Auth & Access Control</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>User, AccessRequest, PasswordResetToken</td>
+          <td>10</td>
+          <td>5</td>
+          <td>JWT + cookies, 11 roles, first-user auto-admin, approval workflow</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Brand Management</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>Brand, BrandFactory, BrandEngagement, Contact</td>
+          <td>8</td>
+          <td>4</td>
+          <td>Pipeline stages, sales rep assignment, engagement scoring</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Factory Management</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>Factory, Contact</td>
+          <td>4</td>
+          <td>4</td>
+          <td>Capabilities, certifications, discovery/search</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Brand Portal</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>—</td>
+          <td>5</td>
+          <td>6</td>
+          <td>Fabrics, tests, submissions, contacts, AI chat, cost calculator</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Factory Portal</strong></td>
+          <td><span class="tag partial">PARTIAL</span></td>
+          <td>FuzeTestRequest, SampleTrialRequest</td>
+          <td>8</td>
+          <td>7</td>
+          <td>Intake, fabrics, submissions, test request, sample trial. Missing: shipping instructions flow, status notifications.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Fabric Management</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>Fabric, FabricContent, FabricSubmission, FabricRecipe, MaterialAlias</td>
+          <td>6</td>
+          <td>6</td>
+          <td>FUZE numbering, composition, AI enrichment, recipe library, cost calc</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Testing & Lab Work</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>TestRun, TestRequest, TestRequestLine, IcpResult, AntibacterialResult, FungalResult, OdorResult</td>
+          <td>25+</td>
+          <td>5</td>
+          <td>PO workflow, PDF upload/parse, AI interpretation, batch processing, certificate generation</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Lab Directory</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>Lab, LabService</td>
+          <td>3</td>
+          <td>1</td>
+          <td>Capabilities, accreditations, pricing, turnaround times</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">AI Test Interpretation</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>—</td>
+          <td>3</td>
+          <td>—</td>
+          <td>Rules-based expert system, FUZE tier, compliance, anomaly detection, wash durability</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Analytics Dashboard</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>—</td>
+          <td>3</td>
+          <td>1</td>
+          <td>12 analytics dimensions, time ranges, pure CSS charts</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Projects & Revenue</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>Project, Product, SOWProduct, Invoice</td>
+          <td>5</td>
+          <td>3</td>
+          <td>Pipeline Kanban, revenue forecasting, probability weighting</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">SOW (Scope of Work)</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>SOW, SOWMilestone</td>
+          <td>4</td>
+          <td>4</td>
+          <td>DRAFT → SIGNED → ACTIVE → COMPLETE, milestones, PDF gen</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Shipping & Logistics</strong></td>
+          <td><span class="tag partial">PARTIAL</span></td>
+          <td>SampleShipment, ShipmentEvent</td>
+          <td>3</td>
+          <td>2</td>
+          <td>Shipping doc generator (4 types), shipment tracking model. Not connected to test request flow.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Notifications</strong></td>
+          <td><span class="tag partial">PARTIAL</span></td>
+          <td>Notification</td>
+          <td>3</td>
+          <td>0</td>
+          <td>DB + SSE + hook + component all built. Nothing wired into layout or triggered from API routes.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Email System</strong></td>
+          <td><span class="tag partial">PARTIAL</span></td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+          <td>15 templates built, Resend integrated. Only 2 actually triggered (access approval, password reset).</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Drip Campaigns</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>Campaign (schema)</td>
+          <td>4</td>
+          <td>1</td>
+          <td>Campaign creation, preview, send. Built in P4A.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">PDF Reports</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>—</td>
+          <td>3</td>
+          <td>1</td>
+          <td>PDFKit generation, test report PDF, SOW PDF, test request PO PDF</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Compliance Library</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>ComplianceDocument</td>
+          <td>3</td>
+          <td>1</td>
+          <td>SDS, TDS, Bluesign, ZDHC, Oeko-Tex, GOTS with role-based visibility</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Meetings & Scheduling</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>Meeting, AvailabilityConfig</td>
+          <td>7</td>
+          <td>2</td>
+          <td>ICS files, Teams/Zoom links, self-booking, availability config</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">i18n (18 Languages)</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+          <td>EN, ES, IT, VI, TH, KM, TA, UR, HI, BN, JA, KO, ZH-CN, ZH-TW, ID, MS, TR</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Distributor Portal</strong></td>
+          <td><span class="tag partial">STUB</span></td>
+          <td>Distributor, DistributorDocument</td>
+          <td>3</td>
+          <td>3</td>
+          <td>Basic docs/invoices pages. Minimal functionality.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Competitor Intelligence</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>CompetitorPriceOverride</td>
+          <td>1</td>
+          <td>1</td>
+          <td>51KB competitive data, pricing espionage, admin management page</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Global Search</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>—</td>
+          <td>1</td>
+          <td>—</td>
+          <td>Full-text across brands, factories, fabrics, tests</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">Audit Logging</strong></td>
+          <td><span class="tag done">DONE</span></td>
+          <td>AuditLog, ApiCallLog</td>
+          <td>1</td>
+          <td>1</td>
+          <td>CREATE, UPDATE, DELETE, APPROVE, REJECT, LOGIN, EXPORT, STAMP</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION: WHAT'S NEXT -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <h2>What's Next — Prioritized Action Plan</h2>
+    <span class="badge">ROADMAP</span>
+  </div>
+  <div class="section-body">
+
+    <h3 style="color: #f85149; margin-bottom: 12px;">🔴 Phase 5A — Wire Everything Up (Highest Priority)</h3>
+    <p style="color: #8b949e; margin-bottom: 16px;">The biggest gap isn't missing features — it's that existing features aren't connected to each other.</p>
+
+    <div class="priority-list">
+      <div class="priority-item high">
+        <div class="num">1</div>
+        <div class="content">
+          <h4>Wire NotificationBell into App Layout</h4>
+          <p>Import NotificationBell into Sidebar or AuthLayout. It already uses useNotifications hook + SSE. Just needs to be rendered for logged-in users. ~20 lines of change.</p>
+          <div class="est">⏱ ~15 minutes</div>
+        </div>
+      </div>
+
+      <div class="priority-item high">
+        <div class="num">2</div>
+        <div class="content">
+          <h4>Wire Push Notifications into API Routes</h4>
+          <p>Import notify-realtime.ts push functions into the API routes that change status. Key integration points:<br>
+          • Test status changes → pushTestResult + sendTestResultsEmail<br>
+          • Test request status → pushTestRequestStatus + sendTestRequestStatusEmail<br>
+          • SOW status → pushSOWUpdate + sendSOWStatusEmail<br>
+          • Access request submitted → pushAccessRequest (already sends email)<br>
+          • New submission → pushNewSubmission + sendNewSubmissionEmail<br>
+          • Sample trial status → push + sendTrialStatusEmail<br>
+          • Pipeline stage change → pushPipelineChange</p>
+          <div class="est">⏱ ~2 hours</div>
+        </div>
+      </div>
+
+      <div class="priority-item high">
+        <div class="num">3</div>
+        <div class="content">
+          <h4>Wire Email Triggers</h4>
+          <p>13 of 15 email templates are never called. Each status-change API route needs a one-line call to the appropriate send function from lib/email.ts. Can be done alongside push notification wiring.</p>
+          <div class="est">⏱ ~1 hour (done with #2)</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="color: #d29922; margin: 32px 0 12px;">🟡 Phase 5B — Complete the Test Request → Shipping Flow</h3>
+    <p style="color: #8b949e; margin-bottom: 16px;">The factory-facing workflow for "I want to test my fabric" needs to be seamless end-to-end.</p>
+
+    <div class="priority-list">
+      <div class="priority-item med">
+        <div class="num">4</div>
+        <div class="content">
+          <h4>Factory Test Request → Admin PO Bridge</h4>
+          <p>When a factory user submits a test request from the portal, it should auto-create a TestRequest (PO) in DRAFT status for admin review. Currently the factory form and the admin PO system are separate worlds. Need to link FuzeTestRequest → TestRequest creation.</p>
+          <div class="est">⏱ ~2 hours</div>
+        </div>
+      </div>
+
+      <div class="priority-item med">
+        <div class="num">5</div>
+        <div class="content">
+          <h4>Shipping Instructions on Test Approval</h4>
+          <p>When admin approves a test request, automatically:<br>
+          1. Look up the assigned lab's address + contact info<br>
+          2. Generate sample prep instructions (based on test type)<br>
+          3. Create a SampleShipment record<br>
+          4. Send email to factory user with lab address, prep instructions, and shipping guidelines<br>
+          5. Show shipping status in factory portal</p>
+          <div class="est">⏱ ~3 hours</div>
+        </div>
+      </div>
+
+      <div class="priority-item med">
+        <div class="num">6</div>
+        <div class="content">
+          <h4>Sample Trial → Shipping Integration</h4>
+          <p>When a SampleTrialRequest is APPROVED and status moves to SAMPLE_SHIPPED:<br>
+          1. Auto-generate shipping docs (customs, packing list) using existing generator<br>
+          2. Create SampleShipment record for chain-of-custody<br>
+          3. Email factory with tracking + ICP lab instructions<br>
+          4. Show progress in factory portal trial detail page</p>
+          <div class="est">⏱ ~2 hours</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="color: #00b4c3; margin: 32px 0 12px;">🔵 Phase 5C — Polish & UX</h3>
+
+    <div class="priority-list">
+      <div class="priority-item">
+        <div class="num">7</div>
+        <div class="content">
+          <h4>Factory Portal Dashboard Overhaul</h4>
+          <p>Factory users need a clear home screen showing: pending trials, test status, shipping to-dos, and fabric inventory. Current factory portal overview is basic.</p>
+          <div class="est">⏱ ~2 hours</div>
+        </div>
+      </div>
+
+      <div class="priority-item">
+        <div class="num">8</div>
+        <div class="content">
+          <h4>Brand Portal — Test Results Notification + View</h4>
+          <p>When tests are stamped as brand-visible, the brand user should get a notification and be able to view the AI interpretation component from their portal.</p>
+          <div class="est">⏱ ~1 hour</div>
+        </div>
+      </div>
+
+      <div class="priority-item">
+        <div class="num">9</div>
+        <div class="content">
+          <h4>Onboarding Flow / First-Login Experience</h4>
+          <p>New users (brand/factory) change their password and land on a portal with no guidance. Need a simple onboarding: welcome message, quick tour of what they can do, prompt to upload first fabric.</p>
+          <div class="est">⏱ ~2 hours</div>
+        </div>
+      </div>
+
+      <div class="priority-item">
+        <div class="num">10</div>
+        <div class="content">
+          <h4>Admin Pending Items Dashboard</h4>
+          <p>/api/admin/pending-counts exists. Wire it into the admin dashboard to show: pending access requests, draft test POs, sample trials awaiting review, overdue invoices.</p>
+          <div class="est">⏱ ~1 hour</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="color: #6e7681; margin: 32px 0 12px;">⚪ Phase 6 — Future Features</h3>
+
+    <div class="priority-list">
+      <div class="priority-item">
+        <div class="num">11</div>
+        <div class="content">
+          <h4>White-Label Brand Portals</h4>
+          <p>Custom branding per brand (logo, colors, custom domain). Discussed earlier — "custom branded portal" for brands.</p>
+          <div class="est">⏱ ~4 hours</div>
+        </div>
+      </div>
+      <div class="priority-item">
+        <div class="num">12</div>
+        <div class="content">
+          <h4>Distributor Portal Buildout</h4>
+          <p>Currently a stub. Needs: inventory tracking, order management, document workflows, territory management.</p>
+          <div class="est">⏱ ~6 hours</div>
+        </div>
+      </div>
+      <div class="priority-item">
+        <div class="num">13</div>
+        <div class="content">
+          <h4>Automated Payment Reminders (Cron)</h4>
+          <p>Email template exists (sendPaymentReminderEmail). Need a scheduled job to check overdue invoices daily and send reminders.</p>
+          <div class="est">⏱ ~1 hour</div>
+        </div>
+      </div>
+      <div class="priority-item">
+        <div class="num">14</div>
+        <div class="content">
+          <h4>E2E Test Coverage</h4>
+          <p>Playwright is configured but test coverage is minimal. Key flows to test: registration → approval → fabric upload → test request.</p>
+          <div class="est">⏱ ~4 hours</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION: SAMPLE TRIAL WORKFLOW DESIGN -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Sample Trial Request — Complete Workflow Design</h2>
+    <span class="badge amber">Needs Wiring</span>
+  </div>
+  <div class="section-body">
+    <p style="color: #8b949e; margin-bottom: 20px;">The SampleTrialRequest model and basic UI exist. Here's the complete flow that needs to be wired:</p>
+
+    <div class="workflow">
+      <div class="wf-step active">
+        <h5>SUBMITTED</h5>
+        <p>Factory fills form: fabric, brand partner, FUZE tier, volume, ICP lab</p>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step active">
+        <h5>UNDER_REVIEW</h5>
+        <p>Admin sees it in /admin/sample-trials</p>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step partial">
+        <h5>APPROVED</h5>
+        <p>Admin approves → needs to trigger shipping instructions</p>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step missing">
+        <h5>SAMPLE_SHIPPED</h5>
+        <p>FUZE ships samples to factory → track shipment</p>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step partial">
+        <h5>ICP_PENDING</h5>
+        <p>Factory applies treatment, sends fabric to ICP lab</p>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step active">
+        <h5>COMPLETE</h5>
+        <p>ICP results submitted → interpretation</p>
+      </div>
+    </div>
+
+    <h3 style="color: #fff; margin: 24px 0 12px;">What Needs to Happen at Each Status Change</h3>
+    <table>
+      <thead>
+        <tr><th>Transition</th><th>Auto-Actions</th><th>Notifications</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:#fff">→ SUBMITTED</strong></td>
+          <td>Create SampleTrialRequest record. Log in AuditLog.</td>
+          <td>Push notification to all admins. Email admins (sendTrialAdminNotification — already exists).</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">→ APPROVED</strong></td>
+          <td>Calculate FUZE sample volume needed (from lib/fuze-calc). Log approval.</td>
+          <td>Email factory user: approval confirmation + expected timeline. Push notification to factory user.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">→ SAMPLE_SHIPPED</strong></td>
+          <td>Create SampleShipment record. Generate shipping docs. Record tracking number.</td>
+          <td>Email factory: tracking number + estimated delivery + sample handling instructions (storage temp, shelf life). Push notification.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">→ ICP_PENDING</strong></td>
+          <td>Auto-create TestRequest PO for ICP testing at selected lab. Generate sample prep instructions for factory (based on treatment method).</td>
+          <td>Email factory: ICP lab address + shipping instructions for treated fabric + required sample size + labeling requirements. Push notification.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">→ COMPLETE</strong></td>
+          <td>Link ICP results to trial. Run AI interpretation. Update factory's fuzeEnabled status if results pass.</td>
+          <td>Email factory + brand partner: results summary with FUZE tier. Push notification to all parties.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION: TECH STACK -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Tech Stack Summary</h2>
+    <span class="badge green">Production Ready</span>
+  </div>
+  <div class="section-body">
+    <div class="feature-grid">
+      <div class="feature-item">
+        <h4>Framework</h4>
+        <p>Next.js 15.5.9, React 19, TypeScript 5</p>
+      </div>
+      <div class="feature-item">
+        <h4>Database</h4>
+        <p>PostgreSQL + Prisma 6.19.2 (56 models, 8 enums)</p>
+      </div>
+      <div class="feature-item">
+        <h4>Auth</h4>
+        <p>Custom JWT (jose), bcryptjs, HTTP-only cookies, 11 roles</p>
+      </div>
+      <div class="feature-item">
+        <h4>Email</h4>
+        <p>Resend API, 15+ branded HTML templates</p>
+      </div>
+      <div class="feature-item">
+        <h4>Storage</h4>
+        <p>AWS S3 with presigned upload URLs</p>
+      </div>
+      <div class="feature-item">
+        <h4>AI</h4>
+        <p>OpenAI/Anthropic (chat, enrichment), rules-based expert system (test interpretation)</p>
+      </div>
+      <div class="feature-item">
+        <h4>Real-time</h4>
+        <p>Server-Sent Events (SSE) with keepalive + reconnect</p>
+      </div>
+      <div class="feature-item">
+        <h4>Deployment</h4>
+        <p>Vercel (production + dev), GitHub auto-deploy</p>
+      </div>
+      <div class="feature-item">
+        <h4>PDF Generation</h4>
+        <p>PDFKit (reports, POs, SOWs, shipping docs, certificates)</p>
+      </div>
+      <div class="feature-item">
+        <h4>i18n</h4>
+        <p>18 languages with React context provider</p>
+      </div>
+      <div class="feature-item">
+        <h4>Security</h4>
+        <p>HSTS, CSP, rate limiting, audit logging, role hierarchy</p>
+      </div>
+      <div class="feature-item">
+        <h4>Monitoring</h4>
+        <p>Sentry error tracking, API call logging</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION: RECOMMENDED NEXT SESSION -->
+<!-- ============================================ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Recommended Build Order — Next Session</h2>
+    <span class="badge">ACTION ITEMS</span>
+  </div>
+  <div class="section-body">
+    <p style="color: #8b949e; margin-bottom: 16px;">If we start building right now, here's the most impactful order:</p>
+
+    <table>
+      <thead>
+        <tr><th>#</th><th>Task</th><th>Impact</th><th>Est.</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:#00b4c3">1</strong></td>
+          <td><strong style="color:#fff">Wire NotificationBell into Sidebar/Layout</strong><br><span style="color:#8b949e;font-size:12px">Import component, render for authenticated users</span></td>
+          <td><span class="tag done">HIGH</span></td>
+          <td>15 min</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#00b4c3">2</strong></td>
+          <td><strong style="color:#fff">Wire push notifications + email triggers into all status-change API routes</strong><br><span style="color:#8b949e;font-size:12px">Import notify-realtime functions, add calls at each status transition</span></td>
+          <td><span class="tag done">HIGH</span></td>
+          <td>2 hrs</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#00b4c3">3</strong></td>
+          <td><strong style="color:#fff">Bridge factory test request → admin PO system</strong><br><span style="color:#8b949e;font-size:12px">Auto-create TestRequest when factory submits test request</span></td>
+          <td><span class="tag done">HIGH</span></td>
+          <td>2 hrs</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#00b4c3">4</strong></td>
+          <td><strong style="color:#fff">Shipping instructions flow on test approval</strong><br><span style="color:#8b949e;font-size:12px">Auto-email lab address + sample prep instructions when admin approves</span></td>
+          <td><span class="tag partial">MED</span></td>
+          <td>3 hrs</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#00b4c3">5</strong></td>
+          <td><strong style="color:#fff">Complete sample trial status change automations</strong><br><span style="color:#8b949e;font-size:12px">Auto-actions + notifications at each trial status transition</span></td>
+          <td><span class="tag partial">MED</span></td>
+          <td>2 hrs</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#00b4c3">6</strong></td>
+          <td><strong style="color:#fff">Verify build + deploy</strong><br><span style="color:#8b949e;font-size:12px">TypeScript check, push to dev, confirm READY, push to production</span></td>
+          <td><span class="tag done">HIGH</span></td>
+          <td>15 min</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="color: #00b4c3; margin-top: 24px; font-weight: 600; font-size: 15px;">Total estimated time: ~9-10 hours of focused build work</p>
+    <p style="color: #8b949e; margin-top: 8px;">Items 1-3 alone would make the biggest difference — they turn disconnected features into a working system.</p>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
