@@ -190,6 +190,43 @@ export default function AccessRequestsPage() {
     }
   };
 
+  const [resending, setResending] = useState<string | null>(null);
+
+  const handleResendEmail = async (id: string) => {
+    setResending(id);
+    setError("");
+    try {
+      const res = await fetch(`/api/access-requests/${id}/resend-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const d = await res.json();
+      if (d.ok) {
+        setLastApproval({
+          name: requests.find(r => r.id === id)?.firstName + " " + requests.find(r => r.id === id)?.lastName || "",
+          email: requests.find(r => r.id === id)?.email || "",
+          password: d.tempPassword,
+        });
+        setSuccess(d.message);
+        setTimeout(() => setSuccess(""), 8000);
+      } else {
+        // Even on failure, if tempPassword is returned show it
+        if (d.tempPassword) {
+          setLastApproval({
+            name: requests.find(r => r.id === id)?.firstName + " " + requests.find(r => r.id === id)?.lastName || "",
+            email: requests.find(r => r.id === id)?.email || "",
+            password: d.tempPassword,
+          });
+        }
+        setError(d.error || "Failed to resend email");
+      }
+    } catch {
+      setError("Failed to resend email");
+    } finally {
+      setResending(null);
+    }
+  };
+
   const statusColors: Record<string, string> = {
     PENDING: "bg-amber-100 text-amber-800",
     APPROVED: "bg-emerald-100 text-emerald-800",
@@ -457,10 +494,28 @@ export default function AccessRequestsPage() {
                     {/* Approved user info */}
                     {req.user && (
                       <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg mb-4">
-                        <p className="text-xs font-semibold text-emerald-700 mb-1">Account Created</p>
-                        <p className="text-sm text-slate-700">
-                          User: <span className="font-medium">{req.user.name}</span> · Email: <span className="font-mono">{req.user.email}</span> · Role: <span className="font-medium">{req.user.role}</span>
-                        </p>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-xs font-semibold text-emerald-700 mb-1">Account Created</p>
+                            <p className="text-sm text-slate-700">
+                              User: <span className="font-medium">{req.user.name}</span> · Email: <span className="font-mono">{req.user.email}</span> · Role: <span className="font-medium">{req.user.role}</span>
+                            </p>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleResendEmail(req.id); }}
+                            disabled={resending === req.id}
+                            className="px-3 py-1.5 bg-[#00b4c3] text-white rounded-lg text-xs font-semibold hover:bg-[#009daa] disabled:opacity-50 flex items-center gap-1.5 shrink-0"
+                          >
+                            {resending === req.id ? (
+                              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                            )}
+                            Resend Email
+                          </button>
+                        </div>
                       </div>
                     )}
 
