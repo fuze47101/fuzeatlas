@@ -451,6 +451,8 @@ model LabService {
   turnaroundDays Int?    // Standard turnaround in business days
   rushPriceUSD  Float?   // Rush/expedited price
   rushDays      Int?     // Rush turnaround days
+  preferred     Boolean  @default(false) // FUZE-recommended lab for this specific test
+  preferredNote String?  // e.g. "Best price", "Fastest turnaround", "Best accuracy"
   notes         String?  // Special conditions, minimum qty, etc.
 
   createdAt DateTime @default(now())

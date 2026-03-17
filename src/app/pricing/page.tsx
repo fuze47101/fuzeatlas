@@ -50,7 +50,7 @@ export default function PricingPage() {
   }, []);
 
   // Quote inputs
-  const [gsm, setGsm] = useState(150);
+  const [gsm, setGsm] = useState<number | "">(150);
   const [widthUnit, setWidthUnit] = useState<WidthUnit>("in");
   const [width, setWidth] = useState(60);
   const [dose, setDose] = useState(1.0);
@@ -79,7 +79,7 @@ export default function PricingPage() {
 
   // Calculate FUZE quote
   const outputs = useMemo(() => calcQuote({
-    gsm, width, widthUnit, doseMgPerKg: dose,
+    gsm: gsm || 0, width, widthUnit, doseMgPerKg: dose,
     stockMgPerL: 30, pricePerLiter, discountPercent,
     lengthMeters: typeof lengthMeters === "number" ? lengthMeters : undefined,
     adders,
@@ -100,7 +100,7 @@ export default function PricingPage() {
     const fabricWeightKg = outputs.kgPerLinearMeter || 0.15;
     return FUZE_TIERS.map(tier => {
       const tierOutputs = calcQuote({
-        gsm, width, widthUnit, doseMgPerKg: tier.dose,
+        gsm: gsm || 0, width, widthUnit, doseMgPerKg: tier.dose,
         stockMgPerL: 30, pricePerLiter, discountPercent,
         adders,
       });
@@ -222,7 +222,8 @@ export default function PricingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">Fabric Weight (GSM)</label>
-              <input type="number" value={gsm} min={0} onChange={(e) => setGsm(Number(e.target.value))}
+              <input type="number" value={gsm} min={0} onChange={(e) => setGsm(e.target.value === "" ? "" : Number(e.target.value))}
+                onBlur={() => { if (gsm === "") setGsm(0); }}
                 className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
             </div>
             <div>

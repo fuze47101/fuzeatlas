@@ -6,6 +6,7 @@
  * 1. Merge duplicate labs (ITS GT/ITS Guatemala, ITS SHA/ITS Shanghai, etc.)
  * 2. Rename "NOA (Shanghai)" → "VL Shanghai"
  * 3. Remove "MISTI Batch" (if it exists)
+ * 3b. Remove "Shandong" (mistaken entry — ICP tests done in USA)
  * 4. Add "FPC Testing Center" (Taiwan)
  * 5. Normalize country names (china → China, etc.)
  *
@@ -107,6 +108,25 @@ async function main() {
     }
   } else {
     console.log(`  ⚠ "MISTI Batch" not found — skipping`);
+  }
+
+  // ── 3b. Remove "Shandong" (mistaken entry — ICP tested in USA, not a real lab) ──
+  const shandong = await prisma.lab.findFirst({
+    where: { name: { contains: "Shandong", mode: "insensitive" } },
+  });
+
+  if (shandong) {
+    const linkedTests = await prisma.testRun.count({ where: { labId: shandong.id } });
+    const linkedTrials = await prisma.sampleTrialRequest.count({ where: { icpLabId: shandong.id } });
+    if (linkedTests > 0 || linkedTrials > 0) {
+      await prisma.lab.update({ where: { id: shandong.id }, data: { active: false } });
+      console.log(`  ✅ Deactivated "Shandong" (had ${linkedTests} tests, ${linkedTrials} trials)`);
+    } else {
+      await prisma.lab.delete({ where: { id: shandong.id } });
+      console.log(`  ✅ Deleted "Shandong" (no linked records)`);
+    }
+  } else {
+    console.log(`  ⚠ "Shandong" not found — skipping`);
   }
 
   // ── 4. Add "FPC Testing Center" (Taiwan) ──

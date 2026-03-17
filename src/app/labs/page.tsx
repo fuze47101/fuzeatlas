@@ -12,6 +12,8 @@ interface LabService {
   turnaroundDays: number | null;
   rushPriceUSD: number | null;
   rushDays: number | null;
+  preferred: boolean;
+  preferredNote: string;
   notes: string;
 }
 
@@ -79,8 +81,10 @@ const EMPTY_FORM = {
 const EMPTY_SERVICE: LabService = {
   testType: "ANTIBACTERIAL", testMethod: "", description: "",
   priceUSD: null, listPriceUSD: null, turnaroundDays: null,
-  rushPriceUSD: null, rushDays: null, notes: "",
+  rushPriceUSD: null, rushDays: null, preferred: false, preferredNote: "", notes: "",
 };
+
+const PREFERRED_NOTES = ["Best Price", "Best Accuracy", "Fastest Turnaround", "FUZE Recommended"];
 
 export default function LabDirectoryPage() {
   const [labs, setLabs] = useState<Lab[]>([]);
@@ -479,6 +483,22 @@ export default function LabDirectoryPage() {
                   </div>
                 )}
 
+                {/* Preferred toggle + note */}
+                <div className="mt-3 flex items-center gap-4 p-2 rounded-lg bg-white border border-slate-200">
+                  <label className="flex items-center gap-2 text-sm cursor-pointer shrink-0">
+                    <input type="checkbox" checked={svc.preferred} onChange={e => updateService(idx, { preferred: e.target.checked })}
+                      className="w-4 h-4 text-[#00b4c3] rounded border-slate-300 focus:ring-[#00b4c3]" />
+                    <span className={`font-semibold text-xs ${svc.preferred ? "text-[#00b4c3]" : "text-slate-500"}`}>FUZE Preferred</span>
+                  </label>
+                  {svc.preferred && (
+                    <select value={svc.preferredNote || ""} onChange={e => updateService(idx, { preferredNote: e.target.value })}
+                      className="flex-1 px-2 py-1 border border-[#00b4c3]/30 rounded-lg text-xs text-[#00b4c3] bg-[#00b4c3]/5">
+                      <option value="">Select reason...</option>
+                      {PREFERRED_NOTES.map(n => <option key={n} value={n}>{n}</option>)}
+                    </select>
+                  )}
+                </div>
+
                 <div className="mt-2">
                   <input type="text" value={svc.notes} onChange={e => updateService(idx, { notes: e.target.value })}
                     className="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs text-slate-500"
@@ -567,8 +587,9 @@ export default function LabDirectoryPage() {
           {labs.map(lab => {
             const isExpanded = expandedLab === lab.id;
             const editing = isEditing(lab.id);
+            const hasPreferred = lab.services?.some((s: any) => s.preferred) || false;
             return (
-              <div key={lab.id} className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+              <div key={lab.id} className={`bg-white border rounded-xl shadow-sm overflow-hidden ${hasPreferred ? "border-[#00b4c3]/40" : "border-slate-200"}`}>
                 {/* Lab Header Row */}
                 <div
                   className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors"
@@ -582,6 +603,11 @@ export default function LabDirectoryPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-1">
                       <h3 className="font-bold text-slate-900 truncate">{lab.name}</h3>
+                      {hasPreferred && (
+                        <span className="flex-shrink-0 px-2 py-0.5 bg-[#00b4c3]/10 text-[#00b4c3] text-xs rounded-full font-bold">
+                          FUZE Preferred
+                        </span>
+                      )}
                       {lab._count.testRuns > 0 && (
                         <span className="flex-shrink-0 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full font-medium">
                           {lab._count.testRuns} tests
@@ -724,16 +750,23 @@ export default function LabDirectoryPage() {
                                   ? ((1 - svc.priceUSD / svc.listPriceUSD) * 100).toFixed(0) + "%"
                                   : "—";
                                 return (
-                                  <tr key={svc.id} className="border-b border-slate-100">
+                                  <tr key={svc.id} className={`border-b ${svc.preferred ? "border-[#00b4c3]/20 bg-[#00b4c3]/[0.03]" : "border-slate-100"}`}>
                                     <td className="py-2 pr-3">
-                                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                        svc.testType === "ICP" ? "bg-blue-50 text-blue-700" :
-                                        svc.testType === "ANTIBACTERIAL" ? "bg-purple-50 text-purple-700" :
-                                        svc.testType === "FUNGAL" ? "bg-orange-50 text-orange-700" :
-                                        svc.testType === "ODOR" ? "bg-rose-50 text-rose-700" :
-                                        svc.testType === "UV" ? "bg-indigo-50 text-indigo-700" :
-                                        "bg-slate-50 text-slate-700"
-                                      }`}>{svc.testType}</span>
+                                      <div className="flex items-center gap-1.5">
+                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                          svc.testType === "ICP" ? "bg-blue-50 text-blue-700" :
+                                          svc.testType === "ANTIBACTERIAL" ? "bg-purple-50 text-purple-700" :
+                                          svc.testType === "FUNGAL" ? "bg-orange-50 text-orange-700" :
+                                          svc.testType === "ODOR" ? "bg-rose-50 text-rose-700" :
+                                          svc.testType === "UV" ? "bg-indigo-50 text-indigo-700" :
+                                          "bg-slate-50 text-slate-700"
+                                        }`}>{svc.testType}</span>
+                                        {svc.preferred && (
+                                          <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-[#00b4c3]/10 text-[#00b4c3]" title={svc.preferredNote || "FUZE Preferred"}>
+                                            ★ {svc.preferredNote || "Preferred"}
+                                          </span>
+                                        )}
+                                      </div>
                                     </td>
                                     <td className="py-2 pr-3 font-mono text-slate-600">{svc.testMethod || "—"}</td>
                                     <td className="py-2 pr-3 text-slate-600">{svc.description || "—"}</td>

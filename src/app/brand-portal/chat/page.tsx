@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -24,6 +25,9 @@ export default function BrandChatPage() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const autoSentRef = useRef(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -32,6 +36,15 @@ export default function BrandChatPage() {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  // Auto-send question from ?q= parameter (e.g. from FAQ buttons on login page)
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q && !autoSentRef.current && messages.length === 0) {
+      autoSentRef.current = true;
+      sendMessage(q);
+    }
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || loading) return;
@@ -107,6 +120,15 @@ export default function BrandChatPage() {
     <div className="h-[calc(100vh-3.5rem)] lg:h-screen flex flex-col bg-slate-50">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center gap-4 flex-shrink-0">
+        <button
+          onClick={() => router.back()}
+          className="w-9 h-9 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-colors shrink-0"
+          title="Go back"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
         <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#00b4c3] to-[#0090a0] flex items-center justify-center text-white text-xl font-bold shadow-lg">
           F
         </div>
@@ -115,6 +137,14 @@ export default function BrandChatPage() {
           <p className="text-sm text-slate-500">Ask anything about FUZE antimicrobial technology</p>
         </div>
         <div className="ml-auto flex items-center gap-2">
+          {messages.length > 0 && (
+            <button
+              onClick={() => { setMessages([]); autoSentRef.current = false; router.replace("/brand-portal/chat"); }}
+              className="px-3 py-1.5 text-xs font-medium text-slate-500 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              New Chat
+            </button>
+          )}
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             Online
@@ -174,6 +204,21 @@ export default function BrandChatPage() {
               )}
             </div>
           ))}
+
+          {/* Suggested follow-up questions after getting an answer */}
+          {messages.length > 0 && !loading && messages[messages.length - 1].role === "assistant" && (
+            <div className="flex flex-wrap gap-2 ml-11">
+              {SUGGESTED.filter(s => !messages.some(m => m.role === "user" && m.content === s.q)).slice(0, 4).map((item) => (
+                <button
+                  key={item.q}
+                  onClick={() => sendMessage(item.q)}
+                  className="px-3 py-1.5 bg-white rounded-full border border-slate-200 text-xs text-slate-500 hover:border-[#00b4c3] hover:text-[#00b4c3] transition-all"
+                >
+                  {item.icon} {item.q}
+                </button>
+              ))}
+            </div>
+          )}
 
           {loading && (
             <div className="flex justify-start gap-3">

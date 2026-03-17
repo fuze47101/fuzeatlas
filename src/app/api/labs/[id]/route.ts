@@ -91,6 +91,8 @@ export async function PUT(
               rushPriceUSD: svc.rushPriceUSD != null ? Number(svc.rushPriceUSD) : null,
               rushDays: svc.rushDays != null ? Number(svc.rushDays) : null,
               notes: svc.notes || null,
+              preferred: Boolean(svc.preferred || false),
+              preferredNote: svc.preferredNote || null,
             },
           });
         } else {
@@ -107,6 +109,8 @@ export async function PUT(
               rushPriceUSD: svc.rushPriceUSD != null ? Number(svc.rushPriceUSD) : null,
               rushDays: svc.rushDays != null ? Number(svc.rushDays) : null,
               notes: svc.notes || null,
+              preferred: Boolean(svc.preferred || false),
+              preferredNote: svc.preferredNote || null,
             },
           });
         }
