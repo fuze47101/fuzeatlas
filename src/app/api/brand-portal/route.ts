@@ -21,7 +21,7 @@ export async function GET() {
 
     const brand = await prisma.brand.findUnique({
       where: { id: brandId },
-      select: { id: true, name: true, pipelineStage: true, country: true, segment: true },
+      select: { id: true, name: true, pipelineStage: true, customerType: true },
     });
 
     if (!brand) {
@@ -107,7 +107,8 @@ export async function GET() {
       stats,
     });
   } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
+    console.error("Brand portal GET error:", e);
+    return NextResponse.json({ ok: false, error: "Failed to load brand portal data" }, { status: 500 });
   }
 }
 
@@ -181,6 +182,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true, fabric: { ...fabric, fuzeNumber: nextFuzeNumber } });
   } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
+    console.error("Brand portal POST error:", e);
+    return NextResponse.json({ ok: false, error: "Failed to create fabric" }, { status: 500 });
   }
 }
