@@ -125,6 +125,90 @@ export async function PUT(
           factory: { id: targetFactoryId, name: request.company },
           message: `Factory account created for ${request.firstName} ${request.lastName}. Temporary password: ${tempPassword}`,
         });
+      } else if (request.requestType === "LAB") {
+        // ──── LAB REQUEST APPROVAL ────
+        let targetLabId = body.labId;
+        if (!targetLabId) {
+          // Try to find existing lab by company name
+          const existingLab = await prisma.lab.findFirst({
+            where: { name: { equals: request.company, mode: "insensitive" } },
+          });
+          if (existingLab) {
+            targetLabId = existingLab.id;
+          } else {
+            // Create new lab
+            const newLab = await prisma.lab.create({
+              data: {
+                name: request.company,
+                website: request.website,
+                email: request.email,
+                notes: request.notes,
+                active: true,
+              },
+            });
+            targetLabId = newLab.id;
+          }
+        }
+
+        // Create the lab user account
+        const newUser = await prisma.user.create({
+          data: {
+            name: `${request.firstName} ${request.lastName}`,
+            email: request.email,
+            password: hashedPassword,
+            role: "LAB_USER",
+            status: "ACTIVE",
+            labId: targetLabId,
+            mustChangePassword: true,
+          },
+        });
+
+        // Create a contact record
+        await prisma.contact.create({
+          data: {
+            firstName: request.firstName,
+            lastName: request.lastName,
+            name: `${request.firstName} ${request.lastName}`,
+            email: request.email,
+            phone: request.phone,
+            title: request.jobTitle,
+          },
+        });
+
+        // Update the access request
+        await prisma.accessRequest.update({
+          where: { id },
+          data: {
+            status: "APPROVED",
+            reviewedBy: user.id,
+            reviewedAt: new Date(),
+            reviewNote: reviewNote || null,
+            userId: newUser.id,
+          },
+        });
+
+        // Send approval email
+        await sendAccessApprovedEmail({
+          email: request.email,
+          name: `${request.firstName} ${request.lastName}`,
+          tempPassword,
+          companyName: request.company,
+          accountType: "lab",
+        });
+
+        return NextResponse.json({
+          ok: true,
+          action: "approved",
+          user: {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+            tempPassword,
+          },
+          lab: { id: targetLabId, name: request.company },
+          message: `Lab account created for ${request.firstName} ${request.lastName}. Temporary password: ${tempPassword}`,
+        });
       } else {
         // ──── BRAND REQUEST APPROVAL ────
         let targetBrandId = brandId;

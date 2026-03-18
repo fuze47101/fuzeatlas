@@ -9,6 +9,7 @@ export default function RequestAccessPage() {
   const { t } = useI18n();
   const ra = t.requestAccess || ({} as any);
 
+  const [requestType, setRequestType] = useState("BRAND");
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -37,7 +38,7 @@ export default function RequestAccessPage() {
       const res = await fetch("/api/access-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, requestType }),
       });
       const data = await res.json();
       if (data.ok) {
@@ -114,6 +115,31 @@ export default function RequestAccessPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Account Type Selector */}
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-2">I am requesting access as a:</label>
+              <div className="flex gap-2">
+                {[
+                  { key: "BRAND", label: "Brand / Customer", icon: "🏢" },
+                  { key: "FACTORY", label: "Factory", icon: "🏭" },
+                  { key: "LAB", label: "Laboratory", icon: "🔬" },
+                ].map((opt) => (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={() => setRequestType(opt.key)}
+                    className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all border-2 ${
+                      requestType === opt.key
+                        ? "border-[#00b4c3] bg-[#00b4c3]/5 text-[#00b4c3]"
+                        : "border-slate-200 text-slate-500 hover:border-slate-300"
+                    }`}
+                  >
+                    {opt.icon} {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Personal Info */}
             <div>
               <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">

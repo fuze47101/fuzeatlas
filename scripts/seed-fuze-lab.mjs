@@ -74,7 +74,7 @@ async function main() {
       testType: "RECIPE_DEVELOPMENT",
       testMethod: "FZ-100",
       description:
-        "FUZE Recipe Development Protocol — Determines optimal application parameters for FUZE treatment including bath concentration, pickup rates, and process settings. Covers exhaust, pad-dry-cure, and spray application methods. Delivers a certified Recipe Card for production scale-up.",
+        "The essential first step for every FUZE-treated fabric. Our scientists determine optimal application parameters for your specific fabric — fiber composition, weight, and target tier. Delivers a certified FUZE Recipe Card for consistent, repeatable production. Covers exhaust, pad-dry-cure, and spray methods.",
       priceUSD: 450,
       listPriceUSD: 450,
       turnaroundDays: 10,
@@ -88,7 +88,7 @@ async function main() {
       testType: "ANTIMICROBIAL",
       testMethod: "FZ-200",
       description:
-        "FUZE Antimicrobial Verification — Internal ASTM E2149 dynamic shake flask protocol. Measures antimicrobial efficacy of silver and gold nanoparticles on treated fabrics. Reports log reduction values against standard organisms at specified wash counts.",
+        "Fast, reliable antimicrobial efficacy testing at a fraction of external lab cost. Using the ASTM E2149 dynamic shake flask method, we measure log reduction at 0, 25, 50, 75, and 100 wash cycles. Confirms your treatment performs to spec before third-party certification.",
       priceUSD: 280,
       listPriceUSD: 350,
       turnaroundDays: 7,
@@ -102,7 +102,7 @@ async function main() {
       testType: "PERFORMANCE",
       testMethod: "FZ-300",
       description:
-        "Borealis Performance Protocol — Comprehensive thermal and moisture management analysis using the FUZE wind tunnel system. Measures evaporative cooling rate, wicking distance and speed, thermal regulation, and drying time via IR thermography at 15-second intervals. Tests include baseline, 520nm photoactivation, and 4 mph airflow conditions in all combinations.",
+        "FUZE's proprietary comprehensive performance test. Fabric is analyzed in our wind tunnel under 8 condition combinations using IR thermography. Measures evaporative cooling, wicking speed, thermal regulation, and drying time — then adds solar activation and airflow. The test that proves the technology works.",
       priceUSD: 850,
       listPriceUSD: 850,
       turnaroundDays: 14,
@@ -116,7 +116,7 @@ async function main() {
       testType: "SOLAR_PERFORMANCE",
       testMethod: "FZ-400",
       description:
-        "Helios Solar Activation Protocol — Evaluates photocatalytic performance of FUZE-treated fabrics and down products under simulated solar conditions. Measures UV-activated antimicrobial enhancement, thermal regulation under UV exposure, moisture management with solar activation, and self-cleaning photocatalytic response.",
+        "Evaluates photocatalytic performance of FUZE-treated fabrics and down under simulated solar conditions. Quantifies UV-enhanced antimicrobial response, thermal regulation under solar load, moisture management, and self-cleaning efficiency. Essential for outdoor, athletic, and bedding products.",
       priceUSD: 950,
       listPriceUSD: 950,
       turnaroundDays: 14,
@@ -130,7 +130,7 @@ async function main() {
       testType: "HEAT_DEFLECTION",
       testMethod: "FZ-500",
       description:
-        "Solaris IR Heat Deflection Protocol — Measures infrared heat refraction and thermal barrier performance of FUZE-treated fabrics. Uses calibrated IR lamp source over 6\" test hoop with precision heat absorption plate. Quantifies heat transmission reduction, IR reflectance improvement, and thermal barrier coefficient vs. untreated control.",
+        "Measures how effectively FUZE-treated fabric deflects infrared heat. Calibrated IR source over fabric specimen on precision heat plate quantifies thermal barrier performance, heat transmission reduction, and IR reflectance improvement. Critical for hot-climate apparel, outdoor gear, and automotive textiles.",
       priceUSD: 650,
       listPriceUSD: 650,
       turnaroundDays: 10,

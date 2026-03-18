@@ -19,6 +19,7 @@ const ROLE_LABELS: Record<string, string> = {
   FACTORY_USER: "Factory",
   BRAND_USER: "Brand",
   DISTRIBUTOR_USER: "Distributor",
+  LAB_USER: "Lab",
   PUBLIC: "Public",
 };
 
@@ -121,7 +122,8 @@ export default function Sidebar() {
   const isBrandUser = user?.role === "BRAND_USER";
   const isFactoryUser = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
   const isDistributorUser = user?.role === "DISTRIBUTOR_USER";
-  const isInternal = !isBrandUser && !isFactoryUser && !isDistributorUser && user?.role !== "PUBLIC";
+  const isLabUser = user?.role === "LAB_USER";
+  const isInternal = !isBrandUser && !isFactoryUser && !isDistributorUser && !isLabUser && user?.role !== "PUBLIC";
   const isAdmin = user?.role === "ADMIN" || user?.role === "EMPLOYEE";
 
   // ─── Pending counts for admin badges ─────────────────
@@ -155,6 +157,8 @@ export default function Sidebar() {
     ? { href: "/brand-portal", label: t.nav.dashboard, icon: "📊" }
     : isDistributorUser
     ? { href: "/distributor-portal", label: t.nav.dashboard, icon: "📊" }
+    : isLabUser
+    ? { href: "/lab-portal", label: t.nav.dashboard, icon: "📊" }
     : { href: "/dashboard", label: t.nav.dashboard, icon: "📊" };
 
   // Build groups based on role
@@ -222,6 +226,24 @@ export default function Sidebar() {
           { href: "/fabric-library", label: "FUZE Fabric Library", icon: "📚" },
           { href: "/compliance-library", label: "Document Center", icon: "📋" },
           { href: "/pricing", label: "Pricing", icon: "💰" },
+          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
+        ],
+      },
+    ];
+  } else if (isLabUser) {
+    groups = [
+      {
+        label: "Lab Portal",
+        items: [
+          { href: "/lab-portal/catalog", label: "Test Catalog", icon: "🧪" },
+          { href: "/lab-portal/requests", label: "Test Requests", icon: "📋" },
+          { href: "/lab-portal/forms", label: "Forms & Documents", icon: "📄" },
+          { href: "/lab-portal/profile", label: "Lab Profile", icon: "🏢" },
+        ],
+      },
+      {
+        label: "Resources",
+        items: [
           { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
         ],
       },

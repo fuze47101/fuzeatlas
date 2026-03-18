@@ -82,6 +82,7 @@ enum UserRole {
   FACTORY_USER
   BRAND_USER
   DISTRIBUTOR_USER
+  LAB_USER
   PUBLIC
 }
 
@@ -186,6 +187,8 @@ model User {
   factory       Factory?     @relation("FactoryUsers", fields: [factoryId], references: [id])
   distributorId String?
   distributor   Distributor? @relation("DistributorUsers", fields: [distributorId], references: [id])
+  labId         String?
+  lab           Lab?         @relation("LabUsers", fields: [labId], references: [id])
 
   assignedBrands    Brand[]    @relation("BrandSalesRep")
   assignedFactories Factory[]  @relation("FactorySalesRep")
@@ -419,6 +422,7 @@ model Lab {
   // Customer account number at this lab
   customerNumber String?
 
+  users         User[]       @relation("LabUsers")
   testRuns      TestRun[]
   testRequests  TestRequest[]
   sourceRecords SourceRecord[]
