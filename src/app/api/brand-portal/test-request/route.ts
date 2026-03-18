@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
 
 /* ── GET /api/brand-portal/test-request ── List available labs + services for brand users */
 export async function GET() {
@@ -180,6 +181,87 @@ export async function POST(req: Request) {
         lines: true,
       },
     });
+
+    // ── Notify lab via email ──
+    const labRecord = await prisma.lab.findUnique({
+      where: { id: labId },
+      select: { email: true, name: true, users: { select: { email: true }, where: { status: "ACTIVE" } } },
+    });
+    const labEmails = [
+      ...(labRecord?.email ? [labRecord.email] : []),
+      ...(labRecord?.users?.map((u: any) => u.email) || []),
+    ].filter(Boolean);
+
+    // Also notify admins
+    const admins = await prisma.user.findMany({
+      where: { role: "ADMIN", status: "ACTIVE" },
+      select: { email: true },
+    });
+    const adminEmails = admins.map((a) => a.email).filter(Boolean);
+
+    const testList = lineData.map((l: any) => `${l.testMethod || l.testType} - $${l.totalPrice || 0}`).join(", ");
+    const brandRecord = await prisma.brand.findUnique({ where: { id: brandId }, select: { name: true } });
+
+    if (labEmails.length > 0) {
+      sendEmail({
+        to: labEmails,
+        subject: `🧪 New Test Request ${poNumber} — ${brandRecord?.name || "FUZE Customer"}`,
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+            <div style="background:#00b4c3;padding:20px 24px;border-radius:8px 8px 0 0">
+              <h2 style="color:#fff;margin:0">New Test Request</h2>
+            </div>
+            <div style="background:#f9f9f9;padding:24px;border:1px solid #e0e0e0;border-top:none;border-radius:0 0 8px 8px">
+              <table style="width:100%;border-collapse:collapse;font-size:14px">
+                <tr><td style="padding:8px 0;color:#888;width:130px">PO Number</td><td style="padding:8px 0;font-weight:600">${poNumber}</td></tr>
+                <tr><td style="padding:8px 0;color:#888">Brand</td><td style="padding:8px 0">${brandRecord?.name || "—"}</td></tr>
+                <tr><td style="padding:8px 0;color:#888">Fabric</td><td style="padding:8px 0">FUZE ${fabric.fuzeNumber || "—"} (${fabric.customerCode || "—"})</td></tr>
+                <tr><td style="padding:8px 0;color:#888">Tests</td><td style="padding:8px 0">${testList}</td></tr>
+                <tr><td style="padding:8px 0;color:#888">Priority</td><td style="padding:8px 0;font-weight:600">${priority || "NORMAL"}</td></tr>
+                <tr><td style="padding:8px 0;color:#888">Estimated Cost</td><td style="padding:8px 0;font-weight:600">$${estimatedCost}</td></tr>
+                ${specialInstructions ? `<tr><td style="padding:8px 0;color:#888">Instructions</td><td style="padding:8px 0">${specialInstructions}</td></tr>` : ""}
+              </table>
+              <div style="margin-top:20px;text-align:center">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com"}/lab-portal/requests"
+                   style="display:inline-block;background:#00b4c3;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600">
+                  View in Lab Portal
+                </a>
+              </div>
+            </div>
+          </div>
+        `,
+      }).catch((err) => console.error("Failed to send lab notification:", err));
+    }
+
+    // Notify admins too
+    if (adminEmails.length > 0) {
+      sendEmail({
+        to: adminEmails,
+        subject: `🧪 Test Request ${poNumber} — ${brandRecord?.name || "Customer"} → ${labRecord?.name || "Lab"}`,
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+            <div style="background:#1A1A2E;padding:20px 24px;border-radius:8px 8px 0 0">
+              <h2 style="color:#00b4c3;margin:0">Test Request Submitted</h2>
+            </div>
+            <div style="background:#f9f9f9;padding:24px;border:1px solid #e0e0e0;border-top:none;border-radius:0 0 8px 8px">
+              <p style="font-size:14px;color:#333"><strong>${brandRecord?.name}</strong> submitted a test request to <strong>${labRecord?.name}</strong></p>
+              <table style="width:100%;border-collapse:collapse;font-size:14px">
+                <tr><td style="padding:6px 0;color:#888;width:130px">PO</td><td style="padding:6px 0;font-weight:600">${poNumber}</td></tr>
+                <tr><td style="padding:6px 0;color:#888">Tests</td><td style="padding:6px 0">${testList}</td></tr>
+                <tr><td style="padding:6px 0;color:#888">Cost</td><td style="padding:6px 0">$${estimatedCost}</td></tr>
+                <tr><td style="padding:6px 0;color:#888">Priority</td><td style="padding:6px 0">${priority || "NORMAL"}</td></tr>
+              </table>
+              <div style="margin-top:20px;text-align:center">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com"}/test-requests"
+                   style="display:inline-block;background:#00b4c3;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600">
+                  Review Request
+                </a>
+              </div>
+            </div>
+          </div>
+        `,
+      }).catch((err) => console.error("Failed to send admin notification:", err));
+    }
 
     return NextResponse.json({
       ok: true,

@@ -473,15 +473,23 @@ export default function BrandDetailPage() {
           ) : (
             <table className="w-full text-sm">
               <thead><tr className="text-left text-xs text-slate-500 border-b">
-                <th className="pb-2">{t.common.fabricNumber}</th><th className="pb-2">{t.common.construction}</th><th className="pb-2">{t.common.color}</th><th className="pb-2">{t.fabrics.gsm}</th>
+                <th className="pb-2">{t.common.fabricNumber}</th><th className="pb-2">{t.common.construction}</th><th className="pb-2">{t.common.color}</th><th className="pb-2">{t.fabrics.gsm}</th><th className="pb-2 text-center">Action</th>
               </tr></thead>
               <tbody>
                 {brand.fabrics.map((f: any) => (
-                  <tr key={f.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onClick={() => router.push(`/fabrics/${f.id}`)}>
-                    <td className="py-2 font-bold text-blue-600">FUZE {f.fuzeNumber}</td>
+                  <tr key={f.id} className="border-b border-slate-100 hover:bg-slate-50">
+                    <td className="py-2 font-bold text-blue-600 cursor-pointer" onClick={() => router.push(`/fabrics/${f.id}`)}>FUZE {f.fuzeNumber}</td>
                     <td className="py-2">{f.construction}</td>
                     <td className="py-2">{f.color}</td>
                     <td className="py-2">{f.weightGsm}</td>
+                    <td className="py-2 text-center">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); router.push(`/test-requests?fabricId=${f.id}&brandId=${id}`); }}
+                        className="px-3 py-1.5 bg-[#00b4c3] text-white rounded-lg text-[11px] font-bold hover:bg-[#009aa8] shadow-sm transition-all whitespace-nowrap"
+                      >
+                        🧪 Request Testing
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

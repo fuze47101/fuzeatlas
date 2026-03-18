@@ -149,6 +149,24 @@ export default function Sidebar() {
     return () => clearInterval(interval);
   }, [isAdmin]);
 
+  // ─── Lab pending request counts ─────────────────
+  const [labPendingCount, setLabPendingCount] = useState(0);
+
+  useEffect(() => {
+    if (!isLabUser) return;
+    const fetchLabCounts = () => {
+      fetch("/api/lab-portal")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.ok) setLabPendingCount(d.stats?.pendingRequests || 0);
+        })
+        .catch(() => {});
+    };
+    fetchLabCounts();
+    const interval = setInterval(fetchLabCounts, 30000);
+    return () => clearInterval(interval);
+  }, [isLabUser]);
+
   // ─── Grouped navigation ─────────────────────────
   // Top-level item (always visible, not in a group) — route by role
   const topItem: NavItem = isFactoryUser
@@ -236,7 +254,7 @@ export default function Sidebar() {
         label: "Lab Portal",
         items: [
           { href: "/lab-portal/catalog", label: "Test Catalog", icon: "🧪" },
-          { href: "/lab-portal/requests", label: "Test Requests", icon: "📋" },
+          { href: "/lab-portal/requests", label: "Test Requests", icon: "📋", badge: labPendingCount },
           { href: "/lab-portal/forms", label: "Forms & Documents", icon: "📄" },
           { href: "/lab-portal/profile", label: "Lab Profile", icon: "🏢" },
         ],
