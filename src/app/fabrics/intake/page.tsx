@@ -46,6 +46,7 @@ export default function FabricIntakePage() {
   const toast = useToast();
   const { user } = useAuth();
   const isExternalUser = user?.role === "BRAND_USER" || user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
+  const externalBackUrl = (user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER") ? "/factory-portal/fabrics" : "/brand-portal/fabrics";
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Tab / mode state
@@ -336,7 +337,7 @@ export default function FabricIntakePage() {
       }
 
       toast.success("Fabric created successfully");
-      router.push(isExternalUser ? "/brand-portal/fabrics" : `/fabrics/${data.fabric.id}?saved=true`);
+      router.push(isExternalUser ? externalBackUrl : `/fabrics/${data.fabric.id}?saved=true`);
     } catch (err: any) {
       setConfirmError(err.message || "Failed to save");
     } finally {
@@ -376,7 +377,7 @@ export default function FabricIntakePage() {
             ↓ Download Blank Form (PDF)
           </button>
           <button
-            onClick={() => router.push(isExternalUser ? "/brand-portal/fabrics" : "/fabrics")}
+            onClick={() => router.push(isExternalUser ? externalBackUrl : "/fabrics")}
             className="px-4 py-2 text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50 text-sm"
           >
             ← Back to Fabrics
@@ -631,7 +632,7 @@ export default function FabricIntakePage() {
                   </div>
                   <div className="flex items-center gap-3">
                     {confirmError && <span className="text-sm text-red-600">{confirmError}</span>}
-                    <button onClick={() => router.push(isExternalUser ? "/brand-portal/fabrics" : "/fabrics")} className="px-4 py-2.5 text-slate-600 border border-slate-300 rounded-lg hover:bg-white">
+                    <button onClick={() => router.push(isExternalUser ? externalBackUrl : "/fabrics")} className="px-4 py-2.5 text-slate-600 border border-slate-300 rounded-lg hover:bg-white">
                       Cancel
                     </button>
                     <button
