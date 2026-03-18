@@ -141,6 +141,7 @@ export default function FactoryFabricsPage() {
                 <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden md:table-cell">Weight</th>
                 <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden md:table-cell">Yarn</th>
                 <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden lg:table-cell">Added</th>
+                <th className="text-center px-4 py-3 font-semibold text-slate-700">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -164,6 +165,14 @@ export default function FactoryFabricsPage() {
                   </td>
                   <td className="px-4 py-3 text-slate-400 text-xs hidden lg:table-cell">
                     {new Date(fabric.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <button
+                      onClick={() => router.push(`/factory-portal/request-test?fabricId=${fabric.id}`)}
+                      className="px-3 py-1.5 bg-[#00b4c3] text-white rounded-lg text-[11px] font-bold hover:bg-[#009aa8] shadow-sm transition-all whitespace-nowrap"
+                    >
+                      🧪 Request Testing
+                    </button>
                   </td>
                 </tr>
               ))}

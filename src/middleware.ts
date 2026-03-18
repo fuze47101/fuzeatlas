@@ -27,6 +27,7 @@ const INTERNAL_ONLY_PATHS = [
 const EXTERNAL_ALLOWED_PATHS = [
   "/fabrics/intake",
   "/api/fabrics/parse-intake",
+  "/api/brand-portal/test-request",
 ];
 
 // Roles that are considered "external" (cannot access internal pages)

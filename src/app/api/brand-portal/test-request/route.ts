@@ -60,15 +60,16 @@ export async function GET() {
   }
 }
 
-/* ── POST /api/brand-portal/test-request ── Brand user submits a test request */
+/* ── POST /api/brand-portal/test-request ── Brand or factory user submits a test request */
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 
-    const brandId = user.brandId;
-    if (!brandId) {
-      return NextResponse.json({ ok: false, error: "No brand associated" }, { status: 403 });
+    const brandId = user.brandId || null;
+    const factoryId = user.factoryId || null;
+    if (!brandId && !factoryId) {
+      return NextResponse.json({ ok: false, error: "No brand or factory associated" }, { status: 403 });
     }
 
     const body = await req.json();
@@ -80,14 +81,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Select at least one test" }, { status: 400 });
     }
 
-    // Verify fabric belongs to this brand
+    // Verify fabric belongs to this user's brand or factory
+    const fabricWhere: any = { id: fabricId };
+    if (brandId) fabricWhere.brandId = brandId;
+    else if (factoryId) fabricWhere.factoryId = factoryId;
     const fabric = await prisma.fabric.findFirst({
-      where: { id: fabricId, brandId },
-      select: { id: true, fuzeNumber: true, customerCode: true, factoryCode: true },
+      where: fabricWhere,
+      select: { id: true, fuzeNumber: true, customerCode: true, factoryCode: true, brandId: true },
     });
     if (!fabric) {
       return NextResponse.json({ ok: false, error: "Fabric not found" }, { status: 404 });
     }
+    // Use the fabric's brandId if available (factory may submit for a brand)
+    const effectiveBrandId = brandId || fabric.brandId || null;
 
     // Generate PO number
     const today = new Date();
@@ -139,13 +145,13 @@ export async function POST(req: Request) {
 
     // Create submission if one doesn't exist for this fabric
     let submission = await prisma.fabricSubmission.findFirst({
-      where: { fabricId: fabric.id, brandId },
+      where: { fabricId: fabric.id, ...(effectiveBrandId ? { brandId: effectiveBrandId } : {}) },
     });
 
     if (!submission) {
       submission = await prisma.fabricSubmission.create({
         data: {
-          brandId,
+          brandId: effectiveBrandId,
           fabricId: fabric.id,
           fuzeFabricNumber: fabric.fuzeNumber ? String(fabric.fuzeNumber) : null,
           customerFabricCode: fabric.customerCode || null,
@@ -161,7 +167,7 @@ export async function POST(req: Request) {
     const testRequest = await prisma.testRequest.create({
       data: {
         poNumber,
-        brandId,
+        brandId: effectiveBrandId,
         fabricId: fabric.id,
         submissionId: submission.id,
         labId,
@@ -200,7 +206,7 @@ export async function POST(req: Request) {
     const adminEmails = admins.map((a) => a.email).filter(Boolean);
 
     const testList = lineData.map((l: any) => `${l.testMethod || l.testType} - $${l.totalPrice || 0}`).join(", ");
-    const brandRecord = await prisma.brand.findUnique({ where: { id: brandId }, select: { name: true } });
+    const brandRecord = effectiveBrandId ? await prisma.brand.findUnique({ where: { id: effectiveBrandId }, select: { name: true } }) : null;
 
     if (labEmails.length > 0) {
       sendEmail({
