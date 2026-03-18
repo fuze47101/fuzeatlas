@@ -23,6 +23,12 @@ const INTERNAL_ONLY_PATHS = [
   "/api/settings", "/api/invoices",
 ];
 
+// Exemptions: internal paths that external users CAN access
+const EXTERNAL_ALLOWED_PATHS = [
+  "/fabrics/intake",
+  "/api/fabrics/parse-intake",
+];
+
 // Roles that are considered "external" (cannot access internal pages)
 const EXTERNAL_ROLES = ["FACTORY_USER", "FACTORY_MANAGER", "BRAND_USER", "BRAND_MANAGER", "DISTRIBUTOR_USER", "LAB_USER", "PUBLIC"];
 
@@ -88,7 +94,8 @@ export async function middleware(req: NextRequest) {
 
     // Block external users from internal-only routes
     if (EXTERNAL_ROLES.includes(user.role)) {
-      const isInternalRoute = INTERNAL_ONLY_PATHS.some((p) => pathname.startsWith(p));
+      const isExempt = EXTERNAL_ALLOWED_PATHS.some((p) => pathname.startsWith(p));
+      const isInternalRoute = !isExempt && INTERNAL_ONLY_PATHS.some((p) => pathname.startsWith(p));
       if (isInternalRoute) {
         if (pathname.startsWith("/api/")) {
           return NextResponse.json(

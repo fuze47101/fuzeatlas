@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
 import { useToast } from "@/components/Toast";
+import { useAuth } from "@/lib/AuthContext";
 
 interface ParsedFabricData {
   brandCompanyName?: string;
@@ -43,6 +44,8 @@ export default function FabricIntakePage() {
   const router = useRouter();
   const { t } = useI18n();
   const toast = useToast();
+  const { user } = useAuth();
+  const isExternalUser = user?.role === "BRAND_USER" || user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Tab / mode state
@@ -133,8 +136,15 @@ export default function FabricIntakePage() {
   const [confirming, setConfirming] = useState(false);
   const [confirmError, setConfirmError] = useState<string | null>(null);
 
-  // Load brands & factories for the manual form
+  // Auto-set brandId/factoryId for external users
   useEffect(() => {
+    if (user?.brandId) setBrandId(user.brandId);
+    if (user?.factoryId) setFactoryId(user.factoryId);
+  }, [user]);
+
+  // Load brands & factories for the manual form (internal users only)
+  useEffect(() => {
+    if (isExternalUser) return; // External users don't need the picker
     fetch("/api/brands").then(r => r.json()).then(j => {
       if (j.ok) {
         const all: any[] = [];
@@ -143,7 +153,7 @@ export default function FabricIntakePage() {
       }
     }).catch(() => {});
     fetch("/api/factories").then(r => r.json()).then(j => { if (j.ok) setFactories(j.factories); }).catch(() => {});
-  }, []);
+  }, [isExternalUser]);
 
   // ─── PDF Upload handling ───
   const handleUpload = useCallback(async (file: File) => {
@@ -326,7 +336,7 @@ export default function FabricIntakePage() {
       }
 
       toast.success("Fabric created successfully");
-      router.push(`/fabrics/${data.fabric.id}?saved=true`);
+      router.push(isExternalUser ? "/brand-portal/fabrics" : `/fabrics/${data.fabric.id}?saved=true`);
     } catch (err: any) {
       setConfirmError(err.message || "Failed to save");
     } finally {
@@ -366,7 +376,7 @@ export default function FabricIntakePage() {
             ↓ Download Blank Form (PDF)
           </button>
           <button
-            onClick={() => router.push("/fabrics")}
+            onClick={() => router.push(isExternalUser ? "/brand-portal/fabrics" : "/fabrics")}
             className="px-4 py-2 text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50 text-sm"
           >
             ← Back to Fabrics
@@ -621,7 +631,7 @@ export default function FabricIntakePage() {
                   </div>
                   <div className="flex items-center gap-3">
                     {confirmError && <span className="text-sm text-red-600">{confirmError}</span>}
-                    <button onClick={() => router.push("/fabrics")} className="px-4 py-2.5 text-slate-600 border border-slate-300 rounded-lg hover:bg-white">
+                    <button onClick={() => router.push(isExternalUser ? "/brand-portal/fabrics" : "/fabrics")} className="px-4 py-2.5 text-slate-600 border border-slate-300 rounded-lg hover:bg-white">
                       Cancel
                     </button>
                     <button

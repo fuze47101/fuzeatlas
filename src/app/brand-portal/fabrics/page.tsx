@@ -446,17 +446,26 @@ export default function BrandPortalFabricsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">My Fabrics</h1>
+          <h1 className="text-2xl font-black text-slate-900">Fabrics</h1>
           <p className="text-sm text-slate-500 mt-1">
             {data.brand.name} — {data.fabrics.length} fabric{data.fabrics.length !== 1 ? "s" : ""} registered
           </p>
         </div>
-        <button
-          onClick={() => setShowAdd(!showAdd)}
-          className="px-4 py-2 bg-[#00b4c3] text-white rounded-lg text-sm font-bold hover:bg-[#009aa8] shadow-lg shadow-[#00b4c3]/30 transition-all"
-        >
-          + Add Fabric
-        </button>
+        <div className="flex gap-2">
+          <a
+            href="/FUZE_Fabric_Intake_Form.pdf"
+            download="FUZE_Fabric_Intake_Form.pdf"
+            className="px-4 py-2 text-[#00b4c3] bg-[#00b4c3]/10 border border-[#00b4c3]/30 rounded-lg text-sm font-bold hover:bg-[#00b4c3]/20 transition-all"
+          >
+            ↓ Download Form (PDF)
+          </a>
+          <button
+            onClick={() => router.push("/fabrics/intake")}
+            className="px-4 py-2 bg-[#00b4c3] text-white rounded-lg text-sm font-bold hover:bg-[#009aa8] shadow-lg shadow-[#00b4c3]/30 transition-all"
+          >
+            + Add Fabric
+          </button>
+        </div>
       </div>
 
       {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
