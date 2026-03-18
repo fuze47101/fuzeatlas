@@ -163,8 +163,7 @@ export default function BrandPortalSubmissionsPage() {
         {filtered.map((s: any) => (
           <div
             key={s.id}
-            className="bg-white rounded-xl border border-slate-200 hover:border-[#00b4c3] hover:shadow-md transition-all p-5 cursor-pointer"
-            onClick={() => router.push(`/fabrics/${s.fabric?.id || ""}`)}
+            className="bg-white rounded-xl border border-slate-200 hover:border-[#00b4c3] hover:shadow-md transition-all p-5"
           >
             <div className="flex items-start justify-between mb-3">
               <div>

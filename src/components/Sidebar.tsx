@@ -187,7 +187,7 @@ export default function Sidebar() {
       {
         label: "My Program",
         items: [
-          { href: "/brand-portal/fabrics", label: "My Fabrics", icon: "🧵" },
+          { href: "/brand-portal/fabrics", label: "Fabrics", icon: "🧵" },
           { href: "/brand-portal/submissions", label: "Submissions", icon: "📋" },
           { href: "/brand-portal/tests", label: "Test Results", icon: "🧪" },
           { href: "/brand-portal/contacts", label: "Contacts", icon: "👥" },

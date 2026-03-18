@@ -593,7 +593,7 @@ export default function BrandPortalFabricsPage() {
                 key={f.id}
                 className="border-t border-slate-100 hover:bg-blue-50 transition-colors"
               >
-                <td className="px-4 py-3 font-bold text-[#00b4c3] cursor-pointer" onClick={() => router.push(`/fabrics/${f.id}`)}>FUZE {f.fuzeNumber || "—"}</td>
+                <td className="px-4 py-3 font-bold text-[#00b4c3]">FUZE {f.fuzeNumber || "—"}</td>
                 <td className="px-4 py-3 text-slate-700">{f.customerCode || "—"}</td>
                 <td className="px-4 py-3 text-slate-700">{f.construction || "—"}</td>
                 <td className="px-4 py-3 text-xs text-slate-600">
