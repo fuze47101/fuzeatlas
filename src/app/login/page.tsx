@@ -28,6 +28,7 @@ function LoginForm() {
     if (role === "FACTORY_USER" || role === "FACTORY_MANAGER") return "/factory-portal";
     if (role === "BRAND_USER" || role === "BRAND_MANAGER") return "/brand-portal";
     if (role === "DISTRIBUTOR_USER") return "/distributor-portal";
+    if (role === "LAB_USER") return "/lab-portal";
     return "/dashboard";
   };
 

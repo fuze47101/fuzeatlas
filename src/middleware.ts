@@ -24,7 +24,7 @@ const INTERNAL_ONLY_PATHS = [
 ];
 
 // Roles that are considered "external" (cannot access internal pages)
-const EXTERNAL_ROLES = ["FACTORY_USER", "FACTORY_MANAGER", "BRAND_USER", "BRAND_MANAGER", "DISTRIBUTOR_USER", "PUBLIC"];
+const EXTERNAL_ROLES = ["FACTORY_USER", "FACTORY_MANAGER", "BRAND_USER", "BRAND_MANAGER", "DISTRIBUTOR_USER", "LAB_USER", "PUBLIC"];
 
 // Static file patterns to skip
 const STATIC_PATTERNS = [
@@ -72,6 +72,20 @@ export async function middleware(req: NextRequest) {
       throw new Error("Invalid session");
     }
 
+    // Redirect external users from root "/" to their portal
+    if (EXTERNAL_ROLES.includes(user.role) && pathname === "/") {
+      const role = user.role;
+      if (role === "FACTORY_USER" || role === "FACTORY_MANAGER") {
+        return NextResponse.redirect(new URL("/factory-portal", req.url));
+      } else if (role === "BRAND_USER" || role === "BRAND_MANAGER") {
+        return NextResponse.redirect(new URL("/brand-portal", req.url));
+      } else if (role === "DISTRIBUTOR_USER") {
+        return NextResponse.redirect(new URL("/distributor-portal", req.url));
+      } else if (role === "LAB_USER") {
+        return NextResponse.redirect(new URL("/lab-portal", req.url));
+      }
+    }
+
     // Block external users from internal-only routes
     if (EXTERNAL_ROLES.includes(user.role)) {
       const isInternalRoute = INTERNAL_ONLY_PATHS.some((p) => pathname.startsWith(p));
@@ -90,6 +104,8 @@ export async function middleware(req: NextRequest) {
           return NextResponse.redirect(new URL("/brand-portal", req.url));
         } else if (role === "DISTRIBUTOR_USER") {
           return NextResponse.redirect(new URL("/distributor-portal", req.url));
+        } else if (role === "LAB_USER") {
+          return NextResponse.redirect(new URL("/lab-portal", req.url));
         }
         return NextResponse.redirect(new URL("/login", req.url));
       }
