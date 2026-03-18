@@ -146,8 +146,7 @@ export default function FactoryFabricsPage() {
             <tbody className="divide-y divide-slate-100">
               {fabrics.map(fabric => (
                 <tr key={fabric.id}
-                    className="hover:bg-slate-50 transition-colors cursor-pointer"
-                    onClick={() => router.push(`/fabrics/${fabric.id}`)}>
+                    className="hover:bg-slate-50 transition-colors">
                   <td className="px-4 py-3">
                     <span className="font-mono font-bold text-[#00b4c3]">FUZE-{fabric.fuzeNumber}</span>
                   </td>
