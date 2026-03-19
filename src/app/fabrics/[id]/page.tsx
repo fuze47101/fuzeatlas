@@ -45,6 +45,8 @@ export default function FabricDetailPage() {
   const { user } = useAuth();
   const [fabric, setFabric] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showTestModal, setShowTestModal] = useState(false);
+  const [testSuccess, setTestSuccess] = useState("");
 
   const isExternal = user?.role === "BRAND_USER" || user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER" || user?.role === "LAB_USER";
   const backUrl = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER"
@@ -90,10 +92,20 @@ export default function FabricDetailPage() {
             {fabric.brand && <span>· {fabric.brand.name}</span>}
           </div>
         </div>
-        {!isExternal && (
-          <button onClick={() => router.push(`/fabrics/${id}/edit`)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">Edit</button>
-        )}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowTestModal(true)}
+            className="px-4 py-2 bg-[#00b4c3] text-white rounded-lg text-sm font-bold hover:bg-[#009aa8] shadow-lg shadow-[#00b4c3]/30"
+          >
+            🧪 Request Testing
+          </button>
+          {!isExternal && (
+            <button onClick={() => router.push(`/fabrics/${id}/edit`)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">Edit</button>
+          )}
+        </div>
       </div>
+
+      {testSuccess && <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{testSuccess}</div>}
 
       {/* ═══════════════════════════════════════════ */}
       {/* SECTION 1: Basic Properties */}
@@ -325,6 +337,112 @@ export default function FabricDetailPage() {
           />
         </div>
       )}
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* Test Request Modal */}
+      {/* ═══════════════════════════════════════════ */}
+      {showTestModal && fabric && <TestRequestModalInline fabric={fabric} onClose={() => setShowTestModal(false)} onSuccess={(result: any) => {
+        setShowTestModal(false);
+        setTestSuccess(`Test request ${result.poNumber} submitted to ${result.labName}! Estimated cost: $${result.estimatedCost}. Pending review.`);
+        setTimeout(() => setTestSuccess(""), 8000);
+      }} />}
+    </div>
+  );
+}
+
+/* ── Inline Test Request Modal ── */
+function TestRequestModalInline({ fabric, onClose, onSuccess }: { fabric: any; onClose: () => void; onSuccess: (r: any) => void }) {
+  const [labs, setLabs] = useState<any[]>([]);
+  const [selectedLab, setSelectedLab] = useState("");
+  const [selectedTests, setSelectedTests] = useState<Record<string, boolean>>({});
+  const [rushTests, setRushTests] = useState<Record<string, boolean>>({});
+  const [instructions, setInstructions] = useState("");
+  const [priority, setPriority] = useState("NORMAL");
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("/api/brand-portal/test-request").then(r => r.json()).then(j => { if (j.ok) setLabs(j.labs); }).finally(() => setLoading(false));
+  }, []);
+
+  const currentLab = labs.find(l => l.id === selectedLab);
+  const services = currentLab?.services || [];
+  const toggle = (m: string) => setSelectedTests(p => ({ ...p, [m]: !p[m] }));
+  const toggleR = (m: string) => setRushTests(p => ({ ...p, [m]: !p[m] }));
+  const sel = services.filter((s: any) => selectedTests[s.testMethod]);
+  const total = sel.reduce((s: number, v: any) => s + (v.priceUSD || 0) + (rushTests[v.testMethod] ? (v.rushPriceUSD || 0) : 0), 0);
+
+  const submit = async () => {
+    if (!selectedLab) return setError("Select a laboratory");
+    if (sel.length === 0) return setError("Select at least one test");
+    setSubmitting(true); setError("");
+    try {
+      const r = await fetch("/api/brand-portal/test-request", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fabricId: fabric.id, labId: selectedLab, priority, specialInstructions: instructions || null,
+          services: sel.map((s: any) => ({ testType: s.testType, testMethod: s.testMethod, quantity: 1, rush: rushTests[s.testMethod] || false })) }) });
+      const j = await r.json();
+      if (j.ok) onSuccess(j.testRequest); else setError(j.error || "Failed");
+    } catch (e: any) { setError(e.message); } finally { setSubmitting(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="bg-gradient-to-r from-[#00b4c3] to-emerald-500 p-6 rounded-t-2xl text-white">
+          <h2 className="text-xl font-black">Request Testing</h2>
+          <p className="text-white/80 text-sm mt-1">FUZE {fabric.fuzeNumber} — {fabric.customerCode || fabric.construction || "Fabric"}</p>
+        </div>
+        <div className="p-6">
+          {loading ? <div className="text-center py-8 text-slate-400">Loading...</div> : (<>
+            <div className="mb-6">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Select Laboratory</label>
+              <select value={selectedLab} onChange={e => { setSelectedLab(e.target.value); setSelectedTests({}); setRushTests({}); }}
+                className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-semibold bg-white focus:border-[#00b4c3] focus:outline-none">
+                <option value="">— Choose a laboratory —</option>
+                {labs.filter((l: any) => l.services.length > 0).map((l: any) => (
+                  <option key={l.id} value={l.id}>{l.name} — {[l.city, l.country].filter(Boolean).join(", ")} ({l.services.length} tests)</option>
+                ))}
+              </select>
+            </div>
+            {currentLab && services.length > 0 && (
+              <div className="mb-6 space-y-2">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Select Tests</label>
+                {services.map((s: any) => (
+                  <div key={s.testMethod} className={`rounded-xl border-2 ${selectedTests[s.testMethod] ? "border-[#00b4c3] bg-[#00b4c3]/5" : "border-slate-200"}`}>
+                    <button onClick={() => toggle(s.testMethod)} className="w-full p-4 text-left">
+                      <div className="flex justify-between"><div>
+                        <span className="font-mono text-xs font-bold text-[#00b4c3] bg-[#00b4c3]/10 px-2 py-0.5 rounded mr-2">{s.testMethod}</span>
+                        <span className="font-bold text-sm text-slate-900">{s.testType.replace(/_/g, " ")}</span>
+                        {s.preferred && <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded">★ {s.preferredNote}</span>}
+                        <p className="text-xs text-slate-500 mt-1 line-clamp-2">{s.description}</p>
+                      </div><div className="text-right ml-4 shrink-0"><div className="text-sm font-black">${s.priceUSD}</div><div className="text-[10px] text-slate-500">{s.turnaroundDays}d</div></div></div>
+                    </button>
+                    {selectedTests[s.testMethod] && s.rushPriceUSD && (
+                      <div className="px-4 pb-3"><button onClick={() => toggleR(s.testMethod)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${rushTests[s.testMethod] ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
+                        ⚡ Rush (+${s.rushPriceUSD}, {s.rushDays}d)</button></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            {sel.length > 0 && (
+              <div className="bg-gradient-to-r from-slate-50 to-[#00b4c3]/5 rounded-xl border p-4 mb-4">
+                <div className="font-black text-lg text-slate-900">${total}</div>
+                <div className="text-[10px] text-slate-500">{sel.length} test{sel.length !== 1 ? "s" : ""}</div>
+              </div>
+            )}
+            {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
+            <div className="flex gap-3">
+              {sel.length > 0 && <button onClick={submit} disabled={submitting}
+                className="flex-1 px-6 py-3 bg-[#00b4c3] text-white rounded-xl text-sm font-black hover:bg-[#009aa8] disabled:opacity-50 shadow-lg shadow-[#00b4c3]/30">
+                {submitting ? "Submitting..." : `Submit Request · $${total}`}</button>}
+              <button onClick={onClose} className="px-4 py-3 text-sm text-slate-600 border border-slate-300 rounded-xl hover:bg-slate-50">Cancel</button>
+            </div>
+          </>)}
+        </div>
+      </div>
     </div>
   );
 }
