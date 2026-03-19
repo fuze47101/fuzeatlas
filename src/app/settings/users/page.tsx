@@ -85,7 +85,7 @@ export default function UserManagementPage() {
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"reset-password" | "change-role" | "suspend" | "remove" | null>(null);
+  const [modalType, setModalType] = useState<"reset-password" | "change-role" | "suspend" | "remove" | "delete" | null>(null);
   const [modalUserId, setModalUserId] = useState<string | null>(null);
   const [modalUser, setModalUser] = useState<UserRecord | null>(null);
   const [generatedPassword, setGeneratedPassword] = useState("");
@@ -181,7 +181,7 @@ export default function UserManagementPage() {
   };
 
   const handleOpenActionModal = (
-    type: "reset-password" | "change-role" | "suspend" | "remove",
+    type: "reset-password" | "change-role" | "suspend" | "remove" | "delete",
     userId: string,
     userData: UserRecord
   ) => {
@@ -502,9 +502,15 @@ export default function UserManagementPage() {
                           )}
                           <button
                             onClick={() => handleOpenActionModal("remove", u.id, u)}
-                            className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50"
+                            className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 border-b border-slate-100"
                           >
                             Deactivate
+                          </button>
+                          <button
+                            onClick={() => handleOpenActionModal("delete", u.id, u)}
+                            className="block w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 font-semibold"
+                          >
+                            Delete Permanently
                           </button>
                         </div>
                       )}
@@ -670,6 +676,34 @@ export default function UserManagementPage() {
                     className="flex-1 px-4 py-2 bg-slate-700 text-white font-medium rounded-lg hover:bg-slate-800"
                   >
                     Deactivate
+                  </button>
+                </div>
+              </>
+            )}
+
+            {modalType === "delete" && !generatedPassword && (
+              <>
+                <h2 className="text-lg font-bold text-red-600 mb-4">
+                  Permanently Delete User
+                </h2>
+                <p className="text-sm text-slate-600 mb-2">
+                  This will <span className="font-semibold text-red-600">permanently delete</span> <span className="font-semibold">{modalUser.name}</span> ({modalUser.email}) from the system.
+                </p>
+                <p className="text-sm text-red-500 mb-6">
+                  This action cannot be undone. All associated data (notifications, audit logs, notes) will also be removed.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setModalOpen(false)}
+                    className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 font-medium rounded-lg hover:bg-slate-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleExecuteAction}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700"
+                  >
+                    Delete Permanently
                   </button>
                 </div>
               </>

@@ -124,10 +124,24 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
             { status: 400 }
           );
         }
+        // Build update data — include association changes if provided
+        const roleUpdateData: any = { role };
+        if (body.brandId !== undefined) roleUpdateData.brandId = body.brandId || null;
+        if (body.factoryId !== undefined) roleUpdateData.factoryId = body.factoryId || null;
+        if (body.labId !== undefined) roleUpdateData.labId = body.labId || null;
+        if (body.distributorId !== undefined) roleUpdateData.distributorId = body.distributorId || null;
+        // Auto-clear mismatched associations when switching role type
+        if (role === "FACTORY_USER" || role === "FACTORY_MANAGER") {
+          roleUpdateData.brandId = roleUpdateData.brandId === undefined ? null : roleUpdateData.brandId;
+        } else if (role === "BRAND_USER") {
+          roleUpdateData.factoryId = roleUpdateData.factoryId === undefined ? null : roleUpdateData.factoryId;
+        } else if (role === "LAB_USER") {
+          roleUpdateData.brandId = null; roleUpdateData.factoryId = null;
+        }
         const roleChangedUser = await prisma.user.update({
           where: { id: params.id },
-          data: { role },
-          select: { id: true, name: true, email: true, role: true, status: true },
+          data: roleUpdateData,
+          select: { id: true, name: true, email: true, role: true, status: true, brandId: true, factoryId: true, labId: true },
         });
         return NextResponse.json({
           ok: true,
@@ -146,6 +160,32 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
           ok: true,
           message: "User removed (deactivated) successfully",
           user: removedUser,
+        });
+
+      case "delete":
+        // Hard delete — permanently removes the user from the database
+        // First disconnect relations that would block deletion
+        await prisma.user.update({
+          where: { id: params.id },
+          data: {
+            brandId: null, factoryId: null, distributorId: null, labId: null,
+            salesManagerId: null,
+          },
+        });
+        // Delete related records that reference this user
+        await prisma.notification.deleteMany({ where: { userId: params.id } });
+        await prisma.auditLog.deleteMany({ where: { userId: params.id } });
+        await prisma.passwordResetToken.deleteMany({ where: { userId: params.id } });
+        await prisma.note.deleteMany({ where: { authorId: params.id } });
+        // Delete the user
+        const deletedUser = await prisma.user.delete({
+          where: { id: params.id },
+          select: { id: true, name: true, email: true },
+        });
+        return NextResponse.json({
+          ok: true,
+          message: `User ${deletedUser.name} permanently deleted`,
+          user: deletedUser,
         });
 
       default:
