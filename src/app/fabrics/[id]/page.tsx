@@ -400,8 +400,8 @@ function TestRequestModalInline({ fabric, onClose, onSuccess }: { fabric: any; o
               <select value={selectedLab} onChange={e => { setSelectedLab(e.target.value); setSelectedTests({}); setRushTests({}); }}
                 className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-semibold bg-white focus:border-[#00b4c3] focus:outline-none">
                 <option value="">— Choose a laboratory —</option>
-                {labs.filter((l: any) => l.services.length > 0).map((l: any) => (
-                  <option key={l.id} value={l.id}>{l.name} — {[l.city, l.country].filter(Boolean).join(", ")} ({l.services.length} tests)</option>
+                {labs.map((l: any) => (
+                  <option key={l.id} value={l.id}>{l.name} — {[l.city, l.country].filter(Boolean).join(", ")}{l.services.length > 0 ? ` (${l.services.length} tests)` : " — Contact for pricing"}</option>
                 ))}
               </select>
             </div>

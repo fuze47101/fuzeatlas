@@ -473,14 +473,15 @@ export default function BrandDetailPage() {
           ) : (
             <table className="w-full text-sm">
               <thead><tr className="text-left text-xs text-slate-500 border-b">
-                <th className="pb-2">{t.common.fabricNumber}</th><th className="pb-2">{t.common.construction}</th><th className="pb-2">{t.common.color}</th><th className="pb-2">{t.fabrics.gsm}</th><th className="pb-2 text-center">Action</th>
+                <th className="pb-2">{t.common.fabricNumber}</th><th className="pb-2">Brand Code</th><th className="pb-2">Factory Code</th><th className="pb-2">{t.common.construction}</th><th className="pb-2">{t.fabrics.gsm}</th><th className="pb-2 text-center">Action</th>
               </tr></thead>
               <tbody>
                 {brand.fabrics.map((f: any) => (
                   <tr key={f.id} className="border-b border-slate-100 hover:bg-slate-50">
                     <td className="py-2 font-bold text-blue-600 cursor-pointer" onClick={() => router.push(`/fabrics/${f.id}`)}>FUZE {f.fuzeNumber}</td>
+                    <td className="py-2 text-slate-600">{f.customerCode || "—"}</td>
+                    <td className="py-2 text-slate-600">{f.factoryCode || "—"}</td>
                     <td className="py-2">{f.construction}</td>
-                    <td className="py-2">{f.color}</td>
                     <td className="py-2">{f.weightGsm}</td>
                     <td className="py-2 text-center">
                       <button

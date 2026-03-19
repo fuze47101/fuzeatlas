@@ -68,8 +68,8 @@ function TestRequestModal({ fabric, onClose, onSuccess }: { fabric: any; onClose
                 <select value={selectedLab} onChange={(e) => { setSelectedLab(e.target.value); setSelectedTests({}); setRushTests({}); }}
                   className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-semibold text-slate-900 bg-white focus:border-[#00b4c3] focus:outline-none">
                   <option value="">— Choose a laboratory —</option>
-                  {labs.filter((l: any) => l.services.length > 0).map((lab: any) => (
-                    <option key={lab.id} value={lab.id}>{lab.name} — {[lab.city, lab.country].filter(Boolean).join(", ")} ({lab.services.length} tests)</option>
+                  {labs.map((lab: any) => (
+                    <option key={lab.id} value={lab.id}>{lab.name} — {[lab.city, lab.country].filter(Boolean).join(", ")}{lab.services.length > 0 ? ` (${lab.services.length} tests)` : " — Contact for pricing"}</option>
                   ))}
                 </select>
               </div>
@@ -289,10 +289,10 @@ export default function FactoryFabricsPage() {
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
                 <th className="text-left px-4 py-3 font-semibold text-slate-700">FUZE #</th>
-                <th className="text-left px-4 py-3 font-semibold text-slate-700">Your Code</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-700">Factory Code</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-700">Brand Code</th>
                 <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden sm:table-cell">Construction</th>
                 <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden md:table-cell">Weight</th>
-                <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden md:table-cell">Yarn</th>
                 <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden lg:table-cell">Added</th>
                 <th className="text-center px-4 py-3 font-semibold text-slate-700">Action</th>
               </tr>
@@ -304,17 +304,13 @@ export default function FactoryFabricsPage() {
                   <td className="px-4 py-3">
                     <span className="font-mono font-bold text-[#00b4c3] cursor-pointer hover:underline" onClick={() => router.push(`/fabrics/${fabric.id}`)}>FUZE-{fabric.fuzeNumber}</span>
                   </td>
-                  <td className="px-4 py-3 text-slate-700">
-                    {fabric.customerCode || fabric.factoryCode || "—"}
-                  </td>
+                  <td className="px-4 py-3 text-slate-700">{fabric.factoryCode || "—"}</td>
+                  <td className="px-4 py-3 text-slate-700">{fabric.customerCode || "—"}</td>
                   <td className="px-4 py-3 text-slate-600 hidden sm:table-cell truncate max-w-[200px]">
                     {fabric.construction || "—"}
                   </td>
                   <td className="px-4 py-3 text-slate-600 hidden md:table-cell">
                     {fabric.weightGsm ? `${fabric.weightGsm} GSM` : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-slate-600 hidden md:table-cell">
-                    {fabric.yarnType || "—"}
                   </td>
                   <td className="px-4 py-3 text-slate-400 text-xs hidden lg:table-cell">
                     {new Date(fabric.createdAt).toLocaleDateString()}

@@ -117,20 +117,11 @@ function TestRequestModal({
                   style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" }}
                 >
                   <option value="">— Choose a laboratory —</option>
-                  {labs.filter((l: any) => l.services.length > 0).map((lab: any) => (
+                  {labs.map((lab: any) => (
                     <option key={lab.id} value={lab.id}>
-                      {lab.name} — {[lab.city, lab.country].filter(Boolean).join(", ")} ({lab.services.length} tests)
+                      {lab.name} — {[lab.city, lab.country].filter(Boolean).join(", ")}{lab.services.length > 0 ? ` (${lab.services.length} tests)` : " — Contact for pricing"}
                     </option>
                   ))}
-                  {labs.filter((l: any) => l.services.length === 0).length > 0 && (
-                    <optgroup label="Labs without test services">
-                      {labs.filter((l: any) => l.services.length === 0).map((lab: any) => (
-                        <option key={lab.id} value={lab.id} disabled>
-                          {lab.name} — No tests configured
-                        </option>
-                      ))}
-                    </optgroup>
-                  )}
                 </select>
                 {currentLab && (
                   <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
@@ -586,11 +577,11 @@ export default function BrandPortalFabricsPage() {
           <thead>
             <tr className="bg-slate-50 text-left text-xs text-slate-500 uppercase tracking-wider">
               <th className="px-4 py-3">FUZE #</th>
-              <th className="px-4 py-3">Your Code</th>
+              <th className="px-4 py-3">Brand Code</th>
+              <th className="px-4 py-3">Factory Code</th>
               <th className="px-4 py-3">Construction</th>
               <th className="px-4 py-3">Composition</th>
               <th className="px-4 py-3">GSM</th>
-              <th className="px-4 py-3">Width</th>
               <th className="px-4 py-3">FUZE Cost</th>
               <th className="px-4 py-3 text-center">Action</th>
             </tr>
@@ -603,6 +594,7 @@ export default function BrandPortalFabricsPage() {
               >
                 <td className="px-4 py-3 font-bold text-[#00b4c3] cursor-pointer hover:underline" onClick={() => router.push(`/fabrics/${f.id}`)}>FUZE {f.fuzeNumber || "—"}</td>
                 <td className="px-4 py-3 text-slate-700">{f.customerCode || "—"}</td>
+                <td className="px-4 py-3 text-slate-700">{f.factoryCode || "—"}</td>
                 <td className="px-4 py-3 text-slate-700">{f.construction || "—"}</td>
                 <td className="px-4 py-3 text-xs text-slate-600">
                   {f.contents && f.contents.length > 0
@@ -610,7 +602,6 @@ export default function BrandPortalFabricsPage() {
                     : "—"}
                 </td>
                 <td className="px-4 py-3 text-slate-700">{f.weightGsm || "—"}</td>
-                <td className="px-4 py-3 text-slate-700">{f.widthInches ? `${f.widthInches}"` : "—"}</td>
                 <td className="px-4 py-3">
                   <CostCard fabric={f} />
                 </td>

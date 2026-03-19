@@ -15,7 +15,7 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
         salesRep: { select: { id: true, name: true, email: true } },
         contacts: true,
         factories: { include: { factory: { select: { id: true, name: true, country: true } } } },
-        fabrics: { select: { id: true, fuzeNumber: true, construction: true, color: true, weightGsm: true }, take: 20 },
+        fabrics: { select: { id: true, fuzeNumber: true, customerCode: true, factoryCode: true, construction: true, color: true, weightGsm: true }, take: 20, orderBy: { createdAt: "desc" } },
         submissions: { select: { id: true, fuzeFabricNumber: true, status: true, testStatus: true, createdAt: true }, take: 20, orderBy: { createdAt: "desc" } },
         sows: { select: { id: true, title: true, status: true, createdAt: true }, orderBy: { createdAt: "desc" } },
         notes: { select: { id: true, content: true, noteType: true, date: true, contactName: true }, orderBy: { date: "desc" }, take: 20 },
