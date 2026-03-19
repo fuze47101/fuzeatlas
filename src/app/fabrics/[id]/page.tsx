@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
 import { useAuth } from "@/lib/AuthContext";
+import FuzePickupCalculator from "@/components/FuzePickupCalculator";
 
 /* ── Helper: render a JSON object as labeled fields ── */
 function JsonSection({ title, data, fields }: { title: string; data: any; fields: [string, string][] }) {
@@ -298,6 +299,30 @@ export default function FabricDetailPage() {
           >
             Complete Fabric Data
           </button>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* FUZE Pickup & Application Calculator */}
+      {/* ═══════════════════════════════════════════ */}
+      {fabric.weightGsm && fabric.widthInches && (
+        <div className="bg-white rounded-xl p-6 shadow-sm border mb-6">
+          <FuzePickupCalculator
+            defaultGsm={fabric.weightGsm}
+            defaultWidth={fabric.widthInches}
+            onSaveResults={async (results: any) => {
+              try {
+                await fetch(`/api/fabrics/${id}`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    raw: { ...(fabric.raw || {}), pickupCalculation: results },
+                  }),
+                });
+                alert("Calculator results saved to fabric record");
+              } catch { alert("Failed to save"); }
+            }}
+          />
         </div>
       )}
     </div>
