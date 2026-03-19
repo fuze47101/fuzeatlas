@@ -43,7 +43,7 @@ interface CompanyOption {
   id: string;
   name: string;
   country?: string;
-  type: "brand" | "factory" | "distributor";
+  type: "brand" | "factory" | "distributor" | "lab";
 }
 
 export default function AccessRequestsPage() {
@@ -51,7 +51,7 @@ export default function AccessRequestsPage() {
   const [stats, setStats] = useState<Stats>({ pending: 0, approved: 0, denied: 0 });
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("PENDING");
-  const [typeTab, setTypeTab] = useState<"ALL" | "BRAND" | "FACTORY">("ALL");
+  const [typeTab, setTypeTab] = useState<"ALL" | "BRAND" | "FACTORY" | "LAB">("ALL");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [processing, setProcessing] = useState<string | null>(null);
   const [success, setSuccess] = useState("");
@@ -92,12 +92,14 @@ export default function AccessRequestsPage() {
   useEffect(() => {
     const loadCompanies = async () => {
       try {
-        const [brandsRes, factoriesRes] = await Promise.all([
+        const [brandsRes, factoriesRes, labsRes] = await Promise.all([
           fetch("/api/brands"),
           fetch("/api/factories"),
+          fetch("/api/labs"),
         ]);
         const brandsData = await brandsRes.json();
         const factoriesData = await factoriesRes.json();
+        const labsData = await labsRes.json();
         const opts: CompanyOption[] = [];
         if (brandsData.brands) {
           brandsData.brands.forEach((b: any) => opts.push({ id: b.id, name: b.name, country: b.country, type: "brand" }));
@@ -108,6 +110,9 @@ export default function AccessRequestsPage() {
         }
         if (factoriesData.factories) {
           factoriesData.factories.forEach((f: any) => opts.push({ id: f.id, name: f.name, country: f.country, type: "factory" }));
+        }
+        if (labsData.labs) {
+          labsData.labs.forEach((l: any) => opts.push({ id: l.id, name: l.name, country: l.country, type: "lab" }));
         }
         setCompanies(opts);
       } catch { }
@@ -135,6 +140,8 @@ export default function AccessRequestsPage() {
       if (selectedCompanyId && !createNewCompany) {
         if (req.requestType === "FACTORY") {
           payload.factoryId = selectedCompanyId;
+        } else if (req.requestType === "LAB") {
+          payload.labId = selectedCompanyId;
         } else {
           payload.brandId = selectedCompanyId;
         }
@@ -561,8 +568,12 @@ export default function AccessRequestsPage() {
         const req = requests.find(r => r.id === approveModal);
         if (!req) return null;
         const isFactory = req.requestType === "FACTORY";
+        const isLab = req.requestType === "LAB";
+        const entityType = isFactory ? "factory" : isLab ? "lab" : "brand";
+        const entityLabel = isFactory ? "factory" : isLab ? "laboratory" : "brand";
+        const entityIcon = isFactory ? "🏭" : isLab ? "🔬" : "🏢";
         const relevantCompanies = companies.filter(c =>
-          (isFactory ? c.type === "factory" : c.type === "brand") &&
+          c.type === entityType &&
           c.name.toLowerCase().includes(companySearch.toLowerCase())
         );
         return (
@@ -585,18 +596,18 @@ export default function AccessRequestsPage() {
                   <p className="text-xs font-semibold text-amber-700 mb-1">Company name they provided:</p>
                   <p className="text-sm font-bold text-slate-800">{req.company}</p>
                   <p className="text-xs text-amber-600 mt-1">
-                    {isFactory ? "🏭 Factory" : "🏢 Brand"} request
+                    {entityIcon} {entityLabel.charAt(0).toUpperCase() + entityLabel.slice(1)} request
                   </p>
                 </div>
 
                 {/* Link to existing or create new */}
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Link to existing {isFactory ? "factory" : "brand"}:
+                    Link to existing {entityLabel}:
                   </label>
                   <input
                     type="text"
-                    placeholder={`Search ${isFactory ? "factories" : "brands"}...`}
+                    placeholder={`Search ${entityLabel === "factory" ? "factories" : entityLabel + "s"}...`}
                     value={companySearch}
                     onChange={e => { setCompanySearch(e.target.value); setCreateNewCompany(false); }}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent"
@@ -606,7 +617,7 @@ export default function AccessRequestsPage() {
                   <div className="mt-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg">
                     {relevantCompanies.length === 0 ? (
                       <div className="p-3 text-center text-sm text-slate-400">
-                        No matching {isFactory ? "factories" : "brands"} found
+                        No matching {entityLabel === "factory" ? "factories" : entityLabel + "s"} found
                       </div>
                     ) : (
                       relevantCompanies.map(c => (
@@ -639,13 +650,13 @@ export default function AccessRequestsPage() {
                       : "border-dashed border-slate-300 text-slate-500 hover:border-slate-400"
                   }`}
                 >
-                  + Create new {isFactory ? "factory" : "brand"}: <span className="font-bold">"{req.company}"</span>
+                  + Create new {entityLabel}: <span className="font-bold">"{req.company}"</span>
                   {createNewCompany && <span className="float-right">&#10003;</span>}
                 </button>
 
                 {!selectedCompanyId && !createNewCompany && (
                   <p className="text-xs text-amber-600">
-                    Please select an existing {isFactory ? "factory" : "brand"} or choose to create a new one
+                    Please select an existing {entityLabel} or choose to create a new one
                   </p>
                 )}
               </div>
