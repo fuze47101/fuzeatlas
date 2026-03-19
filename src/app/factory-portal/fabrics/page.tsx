@@ -302,7 +302,7 @@ export default function FactoryFabricsPage() {
                 <tr key={fabric.id}
                     className="hover:bg-slate-50 transition-colors">
                   <td className="px-4 py-3">
-                    <span className="font-mono font-bold text-[#00b4c3]">FUZE-{fabric.fuzeNumber}</span>
+                    <span className="font-mono font-bold text-[#00b4c3] cursor-pointer hover:underline" onClick={() => router.push(`/fabrics/${fabric.id}`)}>FUZE-{fabric.fuzeNumber}</span>
                   </td>
                   <td className="px-4 py-3 text-slate-700">
                     {fabric.customerCode || fabric.factoryCode || "—"}
