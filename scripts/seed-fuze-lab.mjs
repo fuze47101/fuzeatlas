@@ -75,10 +75,10 @@ async function main() {
       testMethod: "FZ-100",
       description:
         "The essential first step for every FUZE-treated fabric. Our scientists determine optimal application parameters for your specific fabric — fiber composition, weight, and target tier. Delivers a certified FUZE Recipe Card for consistent, repeatable production. Covers exhaust, pad-dry-cure, and spray methods.",
-      priceUSD: 450,
-      listPriceUSD: 450,
+      priceUSD: 120,
+      listPriceUSD: 120,
       turnaroundDays: 10,
-      rushPriceUSD: 675,
+      rushPriceUSD: 180,
       rushDays: 5,
       preferred: true,
       preferredNote: "FUZE Recommended",
