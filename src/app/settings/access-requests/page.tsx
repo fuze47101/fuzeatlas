@@ -572,10 +572,38 @@ export default function AccessRequestsPage() {
         const entityType = isFactory ? "factory" : isLab ? "lab" : "brand";
         const entityLabel = isFactory ? "factory" : isLab ? "laboratory" : "brand";
         const entityIcon = isFactory ? "🏭" : isLab ? "🔬" : "🏢";
-        const relevantCompanies = companies.filter(c =>
-          c.type === entityType &&
-          c.name.toLowerCase().includes(companySearch.toLowerCase())
-        );
+        // Fuzzy match: matches initials (BV → Bureau Veritas), partial words,
+        // and substrings. Scores results for best-match sorting.
+        const fuzzyMatch = (name: string, query: string): number => {
+          if (!query) return 1;
+          const n = name.toLowerCase();
+          const q = query.toLowerCase().trim();
+          // Exact substring match (highest)
+          if (n.includes(q)) return 100;
+          // Initials match: "BV" matches "Bureau Veritas", "ITS" matches "ITS - Taiwan"
+          const words = n.split(/[\s\-—/,]+/).filter(Boolean);
+          const initials = words.map(w => w[0]).join("");
+          if (initials.includes(q)) return 90;
+          // Abbreviation: first letters of each query word match first letters of name words
+          const qWords = q.split(/\s+/);
+          if (qWords.length > 1) {
+            const qInitials = qWords.map(w => w[0]).join("");
+            if (initials.includes(qInitials)) return 85;
+          }
+          // Any word starts with query
+          if (words.some(w => w.startsWith(q))) return 80;
+          // All query tokens found somewhere in name
+          const tokens = q.split(/\s+/);
+          if (tokens.every(t => n.includes(t))) return 70;
+          // Any query token found
+          if (tokens.some(t => n.includes(t))) return 50;
+          return 0;
+        };
+        const relevantCompanies = companies
+          .filter(c => c.type === entityType)
+          .map(c => ({ ...c, score: fuzzyMatch(c.name, companySearch) }))
+          .filter(c => !companySearch || c.score > 0)
+          .sort((a, b) => b.score - a.score);
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
             onClick={() => setApproveModal(null)}>
