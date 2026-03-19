@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useI18n } from "@/i18n";
 import LoginLanguageSwitcher from "@/components/LoginLanguageSwitcher";
@@ -8,8 +9,12 @@ import LoginLanguageSwitcher from "@/components/LoginLanguageSwitcher";
 export default function RequestAccessPage() {
   const { t } = useI18n();
   const ra = t.requestAccess || ({} as any);
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get("type");
 
-  const [requestType, setRequestType] = useState("BRAND");
+  const [requestType, setRequestType] = useState(
+    typeParam === "LAB" ? "LAB" : typeParam === "FACTORY" ? "FACTORY" : "BRAND"
+  );
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",

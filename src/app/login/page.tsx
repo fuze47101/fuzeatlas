@@ -282,6 +282,32 @@ function LoginForm() {
                 </div>
               </a>
 
+              {/* Lab Access Card */}
+              <a
+                href="/request-access?type=LAB"
+                className="group block bg-gradient-to-br from-slate-800 to-slate-800/80 border border-slate-700 rounded-2xl p-6 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-500/10 transition-all"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-lg group-hover:scale-105 transition-transform">
+                    🔬
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">
+                      {t.login.labAccessTitle}
+                    </h3>
+                    <p className="text-sm text-slate-400 mt-1 leading-relaxed">
+                      {t.login.labAccessDesc}
+                    </p>
+                    <span className="inline-flex items-center gap-1 mt-3 text-xs font-semibold text-emerald-400">
+                      {t.login.requestLabAccess}
+                      <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </a>
+
               {/* FAQ Search Card */}
               <div className="bg-gradient-to-br from-slate-800 to-slate-800/80 border border-slate-700 rounded-2xl p-6">
                 <div className="flex items-start gap-4">
