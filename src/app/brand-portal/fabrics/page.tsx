@@ -110,37 +110,36 @@ function TestRequestModal({
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                   Select Laboratory
                 </label>
-                <div className="grid gap-2">
-                  {labs.map((lab: any) => (
-                    <button
-                      key={lab.id}
-                      onClick={() => { setSelectedLab(lab.id); setSelectedTests({}); setRushTests({}); }}
-                      className={`flex items-center justify-between p-3 rounded-xl border-2 text-left transition-all ${
-                        selectedLab === lab.id
-                          ? "border-[#00b4c3] bg-[#00b4c3]/5"
-                          : "border-slate-200 hover:border-slate-300"
-                      }`}
-                    >
-                      <div>
-                        <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                          {lab.name}
-                          {lab.name.toLowerCase().includes("fuze") && (
-                            <span className="px-2 py-0.5 bg-[#00b4c3] text-white text-[10px] font-bold rounded-full">INTERNAL</span>
-                          )}
-                        </div>
-                        <div className="text-xs text-slate-500 mt-0.5">
-                          {[lab.city, lab.country].filter(Boolean).join(", ")}
-                          {lab.services.length > 0 && ` · ${lab.services.length} tests available`}
-                        </div>
-                      </div>
-                      {selectedLab === lab.id && (
-                        <div className="w-5 h-5 rounded-full bg-[#00b4c3] flex items-center justify-center">
-                          <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                        </div>
-                      )}
-                    </button>
+                <select
+                  value={selectedLab}
+                  onChange={(e) => { setSelectedLab(e.target.value); setSelectedTests({}); setRushTests({}); }}
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-semibold text-slate-900 bg-white focus:border-[#00b4c3] focus:outline-none focus:ring-2 focus:ring-[#00b4c3]/20 appearance-none cursor-pointer"
+                  style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" }}
+                >
+                  <option value="">— Choose a laboratory —</option>
+                  {labs.filter((l: any) => l.services.length > 0).map((lab: any) => (
+                    <option key={lab.id} value={lab.id}>
+                      {lab.name} — {[lab.city, lab.country].filter(Boolean).join(", ")} ({lab.services.length} tests)
+                    </option>
                   ))}
-                </div>
+                  {labs.filter((l: any) => l.services.length === 0).length > 0 && (
+                    <optgroup label="Labs without test services">
+                      {labs.filter((l: any) => l.services.length === 0).map((lab: any) => (
+                        <option key={lab.id} value={lab.id} disabled>
+                          {lab.name} — No tests configured
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+                </select>
+                {currentLab && (
+                  <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+                    {currentLab.name.toLowerCase().includes("fuze") && (
+                      <span className="px-2 py-0.5 bg-[#00b4c3] text-white text-[10px] font-bold rounded-full">INTERNAL LAB</span>
+                    )}
+                    {currentLab.accreditations && <span>{currentLab.accreditations}</span>}
+                  </div>
+                )}
               </div>
 
               {/* Test Selection */}
