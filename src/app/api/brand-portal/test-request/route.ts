@@ -4,13 +4,35 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 
-/* ── GET /api/brand-portal/test-request ── List available labs + services for brand users */
+/* ── GET /api/brand-portal/test-request ── List available labs + services ── */
 export async function GET() {
   try {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 
-    // Fetch active labs with their services
+    // LAB_USER can only see their own lab
+    if (user.role === "LAB_USER" && user.labId) {
+      const myLab = await prisma.lab.findUnique({
+        where: { id: user.labId },
+        include: { services: { orderBy: { testMethod: "asc" } } },
+      });
+      return NextResponse.json({
+        ok: true,
+        labs: myLab ? [{
+          id: myLab.id, name: myLab.name, city: myLab.city, country: myLab.country,
+          accreditations: myLab.accreditations,
+          services: myLab.services.map((s) => ({
+            id: s.id, testType: s.testType, testMethod: s.testMethod, description: s.description,
+            priceUSD: s.priceUSD, turnaroundDays: s.turnaroundDays,
+            rushPriceUSD: s.rushPriceUSD, rushDays: s.rushDays,
+            preferred: s.preferred, preferredNote: s.preferredNote,
+          })),
+        }] : [],
+      });
+    }
+
+    // Brand/Factory/Admin users: show all active labs but hide other labs' pricing for non-admin
+    const isAdmin = user.role === "ADMIN" || user.role === "EMPLOYEE";
     const labs = await prisma.lab.findMany({
       where: { active: true },
       include: {
@@ -45,7 +67,9 @@ export async function GET() {
           testType: s.testType,
           testMethod: s.testMethod,
           description: s.description,
+          // Brand/factory users see FUZE price; admins see both
           priceUSD: s.priceUSD,
+          ...(isAdmin ? { listPriceUSD: s.listPriceUSD } : {}),
           turnaroundDays: s.turnaroundDays,
           rushPriceUSD: s.rushPriceUSD,
           rushDays: s.rushDays,
