@@ -35,7 +35,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https:",
               "font-src 'self' data:",
-              "connect-src 'self' https://api.openai.com https://api.anthropic.com https://api.x.ai https://*.vercel-insights.com https://*.vercel-analytics.com",
+              "connect-src 'self' https://api.openai.com https://api.anthropic.com https://api.x.ai https://*.vercel-insights.com https://*.vercel-analytics.com https://*.s3.us-east-2.amazonaws.com https://*.s3.amazonaws.com",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",
