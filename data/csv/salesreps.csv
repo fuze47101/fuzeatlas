@@ -1,0 +1,47 @@
+﻿"Name","Name : Title","Name : First","Name : Middle","Name : Last","Email","Password","Sales Manager","User Roles","User Status","Record ID"
+"Andrew Peterson","","Andrew","","Peterson","andrew@fuze47.com","*********","Steve Savage","Sales Reps
+Sales Managers
+Factory Manager
+Fabric Manager
+Testing Manager","active","5a593400dab80b2fa7ffd0d1"
+"Steve Savage","","Steve","","Savage","stevesavage@fuze47.com","*********","Steve Savage","Sales Managers
+Sales Reps
+Fabric Manager
+Testing Manager","active","5a593400dab80b2fa7ffd0d3"
+"Scott Pace","","Scott","","Pace","scott@fuze47.com","*********","Steve Savage","Sales Reps
+Sales Managers
+Factory Manager
+Fabric Manager
+Testing Manager","active","6760732c43561802b3962366"
+"Tina Hong","","Tina","","Hong","tina@fuze47.com","*********","Steve Savage","Sales Reps
+Factory Manager
+Fabric Manager
+Testing Manager","active","676076ddf8635a02d6d15423"
+"Kaylee Pace","","Kaylee","","Pace","kaylee@fuze47.com","*********","Steve Savage","Sales Reps
+Sales Managers
+Factory Manager
+Fabric Manager
+Testing Manager","active","676340c0417aa6032aea3d94"
+"None None","","None","","None","none@fuze47.com","*********","Steve Savage","Sales Reps","active","676593587abfb80301910491"
+"Hubert Liao","","Hubert","","Liao","hubert_liao@globalshine.com.tw","*********","","Sales Reps
+Factory Manager
+Fabric Manager
+Testing Manager","active","67aed4ff677d2403271c4e87"
+"Tandy X","","Tandy","","X","tandy@fuze47.com","*********","","Sales Reps
+Factory Manager
+Fabric Manager
+Testing Manager","active","67aed516fffed202bdcf6309"
+"Ryan Prince","","Ryan","","Prince","ryan.prince@fuze47.com","*********","","Sales Reps
+Factory Manager
+Testing Manager
+Sales Managers
+Fabric Manager","active","68c437a30d2c2402b7636bec"
+"Andrew Peterson","","Andrew","","Peterson","andrew@801inc.com","*********","","Sales Reps
+Sales Managers
+Factory Manager
+Fabric Manager
+Testing Manager","active","68e4464a5740e502ca592fca"
+"Kathir Ramakrishnan","","Kathir","","Ramakrishnan","kathir@harrisandmenukchem.com","*********","","Sales Reps
+Factory Manager
+Fabric Manager
+Testing Manager","active","68e44a2474643b02d095f5b9"

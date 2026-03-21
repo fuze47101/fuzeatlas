@@ -1,0 +1,30 @@
+﻿"Name","Name : Title","Name : First","Name : Middle","Name : Last","Email","Password","User Roles","User Status","Record ID"
+"Steve Savage","","Steve","","Savage","stevesavage@fuze47.com","*********","Sales Managers
+Sales Reps
+Fabric Manager
+Testing Manager","active","67633c2d70360102a7473925"
+"Andrew Peterson","","Andrew","","Peterson","andrew@fuze47.com","*********","Sales Reps
+Sales Managers
+Factory Manager
+Fabric Manager
+Testing Manager","active","6764c628b0051e031c156165"
+"Kaylee Pace","","Kaylee","","Pace","kaylee@fuze47.com","*********","Sales Reps
+Sales Managers
+Factory Manager
+Fabric Manager
+Testing Manager","active","6764c648c715b902f2788235"
+"Scott Pace","","Scott","","Pace","scott@fuze47.com","*********","Sales Reps
+Sales Managers
+Factory Manager
+Fabric Manager
+Testing Manager","active","6764c64d7abfb803018e7eb3"
+"Ryan Prince","","Ryan","","Prince","ryan.prince@fuze47.com","*********","Sales Reps
+Factory Manager
+Testing Manager
+Sales Managers
+Fabric Manager","active","68c437a30d2c2402b7636be9"
+"Andrew Peterson","","Andrew","","Peterson","andrew@801inc.com","*********","Sales Reps
+Sales Managers
+Factory Manager
+Fabric Manager
+Testing Manager","active","68e4464a5740e502ca592fc9"

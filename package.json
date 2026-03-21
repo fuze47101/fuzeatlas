@@ -1,0 +1,50 @@
+{
+  "name": "fuzeatlas",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "postinstall": "prisma generate",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,json,css}\"",
+    "test:e2e": "npx playwright test",
+    "test:e2e:headed": "npx playwright test --headed",
+    "prepare": "husky || true",
+    "prisma:generate": "prisma generate",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "db:import": "tsx scripts/import-atlas.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1005.0",
+    "@aws-sdk/s3-request-presigner": "^3.1005.0",
+    "@prisma/client": "6.19.2",
+    "autoprefixer": "^10.4.20",
+    "bcryptjs": "^2.4.3",
+    "csv-parse": "^6.1.0",
+    "jose": "^5.9.6",
+    "next": "^15.5.9",
+    "pdf-parse": "^1.1.4",
+    "pdfkit": "^0.17.2",
+    "postcss": "^8.5.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "resend": "^6.9.3",
+    "tailwindcss": "^3.4.17"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.4.0",
+    "prisma": "6.19.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  }
+}

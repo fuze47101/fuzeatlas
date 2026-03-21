@@ -1,0 +1,22 @@
+ASSIGNMENT FEATURE + BUG FIX - File Copy Map
+===============================================
+
+From your fuzeatlas repo root, on the dev branch:
+
+# --- NEW FILES (create dirs first) ---
+mkdir -p "src/app/api/tests/[id]/assign"
+cp assignment-feature/api-tests-assign-route.ts   "src/app/api/tests/[id]/assign/route.ts"
+cp assignment-feature/SearchableSelect.tsx          src/components/SearchableSelect.tsx
+cp assignment-feature/CreateInlineForm.tsx          src/components/CreateInlineForm.tsx
+cp assignment-feature/AssignTestModal.tsx            src/components/AssignTestModal.tsx
+
+# --- UPDATED FILES (replace existing) ---
+cp assignment-feature/api-tests-confirm-route.ts   src/app/api/tests/confirm/route.ts
+cp assignment-feature/api-tests-list-route.ts      src/app/api/tests/route.ts
+cp assignment-feature/tests-upload-page.tsx         src/app/tests/upload/page.tsx
+cp assignment-feature/tests-page.tsx                src/app/tests/page.tsx
+
+# --- COMMIT & PUSH ---
+git add -A
+git commit -m "feat: test-to-entity assignment + fix type filter mismatch"
+git push origin dev

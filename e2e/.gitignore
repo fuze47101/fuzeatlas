@@ -1,0 +1,28 @@
+# Playwright test results
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Test artifacts
+screenshots/
+videos/
+traces/
+*.trace
+
+# Environment files
+.env.local
+.env.test
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies (should be in root node_modules, but just in case)
+node_modules/
