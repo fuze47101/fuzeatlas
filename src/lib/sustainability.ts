@@ -88,6 +88,209 @@ const EMISSION_FACTORS = {
   transportKgCO2PerKgKm: 0.00003,         // kg CO2 per kg·km ocean freight
 };
 
+// ═══════════════════════════════════════════════════════
+// UPSTREAM CHEMICAL PLANT MANUFACTURING COSTS
+// What happens at the chemical facility BEFORE the
+// antimicrobial reaches the textile factory
+// ═══════════════════════════════════════════════════════
+
+export type UpstreamManufacturing = {
+  processName: string;
+  rawMaterials: { name: string; kgPerKgProduct: number; costPerKg: number }[];
+  reactionChemicals: { name: string; kgPerKgProduct: number; costPerKg: number }[];
+  facilityEnergyKwhPerKg: number;    // kWh to produce 1 kg of antimicrobial product
+  facilityWaterLitersPerKg: number;  // liters of process water per kg product
+  facilityWasteKgPerKg: number;      // kg chemical waste per kg product
+  facilityVOCgPerKg: number;         // grams VOC emitted per kg product at plant
+  facilityCO2PerKg: number;          // total kg CO2 to manufacture 1 kg at the chemical plant
+};
+
+export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
+  silver_chloride: {
+    processName: "Ion Exchange / Chemical Reduction",
+    rawMaterials: [
+      { name: "Silver nitrate (AgNO₃)", kgPerKgProduct: 0.63, costPerKg: 850 },
+      { name: "Zeolite powder (aluminosilicate)", kgPerKgProduct: 3.0, costPerKg: 2.50 },
+    ],
+    reactionChemicals: [
+      { name: "Sodium borohydride (reducing agent)", kgPerKgProduct: 0.15, costPerKg: 45 },
+      { name: "Hydrochloric acid (wash/purification)", kgPerKgProduct: 0.5, costPerKg: 0.35 },
+      { name: "Deionized water (reaction medium)", kgPerKgProduct: 200, costPerKg: 0.002 },
+    ],
+    facilityEnergyKwhPerKg: 85,
+    facilityWaterLitersPerKg: 500,
+    facilityWasteKgPerKg: 4.2,
+    facilityVOCgPerKg: 12,
+    facilityCO2PerKg: 120,
+  },
+  silver_ion: {
+    processName: "Polymeric Silver Ion Delivery System",
+    rawMaterials: [
+      { name: "Silver salt precursor", kgPerKgProduct: 0.45, costPerKg: 750 },
+      { name: "Organic polymer matrix", kgPerKgProduct: 2.0, costPerKg: 8.50 },
+    ],
+    reactionChemicals: [
+      { name: "Proprietary solvents", kgPerKgProduct: 1.5, costPerKg: 3.20 },
+      { name: "Stabilizing agents", kgPerKgProduct: 0.3, costPerKg: 12 },
+    ],
+    facilityEnergyKwhPerKg: 65,
+    facilityWaterLitersPerKg: 350,
+    facilityWasteKgPerKg: 3.1,
+    facilityVOCgPerKg: 45,
+    facilityCO2PerKg: 95,
+  },
+  silver_nano: {
+    processName: "Flame Spray Pyrolysis / Chemical Reduction",
+    rawMaterials: [
+      { name: "Silver nitrate (AgNO₃)", kgPerKgProduct: 0.63, costPerKg: 850 },
+      { name: "Silicon dioxide (silica carrier)", kgPerKgProduct: 5.0, costPerKg: 1.80 },
+    ],
+    reactionChemicals: [
+      { name: "Reducing agents (citrate/borohydride)", kgPerKgProduct: 0.2, costPerKg: 40 },
+      { name: "Surfactants (stabilizers)", kgPerKgProduct: 0.3, costPerKg: 8 },
+      { name: "Acetone/ethanol (wash solvent)", kgPerKgProduct: 2.0, costPerKg: 1.50 },
+    ],
+    facilityEnergyKwhPerKg: 120,
+    facilityWaterLitersPerKg: 400,
+    facilityWasteKgPerKg: 5.8,
+    facilityVOCgPerKg: 85,
+    facilityCO2PerKg: 145,
+  },
+  qac_silane: {
+    processName: "Organosilane Quaternary Ammonium Synthesis",
+    rawMaterials: [
+      { name: "Trimethoxysilylpropyl chloride", kgPerKgProduct: 0.6, costPerKg: 25 },
+      { name: "Octadecyldimethylamine", kgPerKgProduct: 0.4, costPerKg: 18 },
+    ],
+    reactionChemicals: [
+      { name: "Methanol (solvent — VOC source)", kgPerKgProduct: 2.5, costPerKg: 0.50 },
+      { name: "Hydrochloric acid", kgPerKgProduct: 0.3, costPerKg: 0.35 },
+      { name: "Polyvinyl alcohol (binder precursor)", kgPerKgProduct: 1.0, costPerKg: 2.80 },
+      { name: "Acrylate ester polymers", kgPerKgProduct: 0.8, costPerKg: 3.50 },
+      { name: "Paraffin/microcrystalline wax", kgPerKgProduct: 0.5, costPerKg: 1.20 },
+    ],
+    facilityEnergyKwhPerKg: 45,
+    facilityWaterLitersPerKg: 200,
+    facilityWasteKgPerKg: 3.8,
+    facilityVOCgPerKg: 180,    // methanol + solvent off-gassing
+    facilityCO2PerKg: 55,
+  },
+  zinc_pyrithione: {
+    processName: "Zinc Salt + Pyrithione Complexation",
+    rawMaterials: [
+      { name: "Zinc oxide/sulfate", kgPerKgProduct: 0.35, costPerKg: 3.50 },
+      { name: "Sodium pyrithione", kgPerKgProduct: 0.65, costPerKg: 28 },
+    ],
+    reactionChemicals: [
+      { name: "Sulfuric acid (pH adjustment)", kgPerKgProduct: 0.3, costPerKg: 0.12 },
+      { name: "Polyamine carrier system", kgPerKgProduct: 1.2, costPerKg: 6.50 },
+      { name: "Urea formaldehyde crosslinker", kgPerKgProduct: 0.4, costPerKg: 1.80 },
+    ],
+    facilityEnergyKwhPerKg: 35,
+    facilityWaterLitersPerKg: 180,
+    facilityWasteKgPerKg: 2.5,
+    facilityVOCgPerKg: 65,
+    facilityCO2PerKg: 42,
+  },
+  copper: {
+    processName: "Copper Oxide Nanoparticle Synthesis",
+    rawMaterials: [
+      { name: "Copper sulfate/acetate", kgPerKgProduct: 0.5, costPerKg: 5.50 },
+      { name: "Polydopamine binder", kgPerKgProduct: 0.8, costPerKg: 45 },
+    ],
+    reactionChemicals: [
+      { name: "Sodium hypophosphite (reducing agent)", kgPerKgProduct: 0.3, costPerKg: 8 },
+      { name: "Ascorbic acid (alt. reducer)", kgPerKgProduct: 0.2, costPerKg: 12 },
+      { name: "CTAB surfactant (stabilizer)", kgPerKgProduct: 0.15, costPerKg: 35 },
+    ],
+    facilityEnergyKwhPerKg: 55,
+    facilityWaterLitersPerKg: 300,
+    facilityWasteKgPerKg: 3.5,
+    facilityVOCgPerKg: 25,
+    facilityCO2PerKg: 65,
+  },
+  fuze: {
+    processName: "Liquid Laser Ablation (30A, 1m² table, solar-capable)",
+    rawMaterials: [
+      { name: "Recycled electronics (e-waste feedstock)", kgPerKgProduct: 0.001, costPerKg: 0.50 },
+      { name: "18 MΩ ultrapure DI water", kgPerKgProduct: 50, costPerKg: 0.003 },
+    ],
+    reactionChemicals: [],  // ZERO reaction chemicals
+    facilityEnergyKwhPerKg: 3.6,   // 30A × 120V × 1hr = 3.6 kWh
+    facilityWaterLitersPerKg: 50,   // only the DI water carrier — becomes the product
+    facilityWasteKgPerKg: 0,        // ZERO waste
+    facilityVOCgPerKg: 0,           // ZERO VOCs
+    facilityCO2PerKg: 0.05,         // laser energy only on low-carbon grid
+  },
+};
+
+// ═══════════════════════════════════════════════════════
+// WASTEWATER REMEDIATION COSTS AT TEXTILE FACTORY
+// What the factory pays to clean up after applying
+// the competitor's antimicrobial treatment
+// ═══════════════════════════════════════════════════════
+
+export type RemediationCost = {
+  chemicals: { name: string; kgPerM3Wastewater: number; costPerKg: number }[];
+  energyKwhPerM3: number;       // energy to run treatment (pumps, reactors, filtration)
+  totalCostPerM3: number;       // total USD per cubic meter of wastewater treated
+  method: string;
+};
+
+export const REMEDIATION_COSTS: Record<string, RemediationCost> = {
+  silver: {
+    chemicals: [
+      { name: "Caustic soda (NaOH) — pH adjustment", kgPerM3Wastewater: 2.5, costPerKg: 0.45 },
+      { name: "Aluminum polychloride (coagulant)", kgPerM3Wastewater: 0.8, costPerKg: 0.65 },
+      { name: "Ferric chloride (flocculant)", kgPerM3Wastewater: 0.5, costPerKg: 0.40 },
+      { name: "Lime Ca(OH)₂ (AgCl precipitation)", kgPerM3Wastewater: 1.2, costPerKg: 0.12 },
+      { name: "Hydrochloric acid (silver precipitation)", kgPerM3Wastewater: 0.3, costPerKg: 0.35 },
+    ],
+    energyKwhPerM3: 2.5,
+    totalCostPerM3: 3.85,
+    method: "Chemical precipitation + coagulation-flocculation + microfiltration",
+  },
+  quat: {
+    chemicals: [
+      { name: "Caustic soda (NaOH) — pH control", kgPerM3Wastewater: 1.8, costPerKg: 0.45 },
+      { name: "Polymer flocculants", kgPerM3Wastewater: 0.3, costPerKg: 4.50 },
+      { name: "Activated carbon (adsorption)", kgPerM3Wastewater: 1.5, costPerKg: 1.20 },
+      { name: "Biosorbents (MBBR media)", kgPerM3Wastewater: 0.05, costPerKg: 25 },
+    ],
+    energyKwhPerM3: 4.0,
+    totalCostPerM3: 5.20,
+    method: "Moving Bed Biofilm Reactor (MBBR) + sorption + aerobic degradation",
+  },
+  copper: {
+    chemicals: [
+      { name: "Caustic soda (NaOH) — hydroxide precipitation", kgPerM3Wastewater: 3.0, costPerKg: 0.45 },
+      { name: "Ferric sulfate (coagulant)", kgPerM3Wastewater: 1.0, costPerKg: 0.55 },
+      { name: "Sodium sulfide (sulphide precipitation)", kgPerM3Wastewater: 0.4, costPerKg: 1.80 },
+      { name: "Chelating agents (EDTA)", kgPerM3Wastewater: 0.2, costPerKg: 3.50 },
+    ],
+    energyKwhPerM3: 5.5,
+    totalCostPerM3: 6.10,
+    method: "Hydroxide/sulphide precipitation + adsorption + electrochemical + membrane filtration",
+  },
+  zinc: {
+    chemicals: [
+      { name: "Caustic soda (NaOH) — pH 8-9.5", kgPerM3Wastewater: 3.5, costPerKg: 0.45 },
+      { name: "Sodium sulfide (93.75% Zn removal)", kgPerM3Wastewater: 0.8, costPerKg: 1.80 },
+      { name: "Sodium trithiocarbonate", kgPerM3Wastewater: 0.3, costPerKg: 8.50 },
+      { name: "SRB culture media (bioreactor)", kgPerM3Wastewater: 0.1, costPerKg: 15 },
+    ],
+    energyKwhPerM3: 6.0,
+    totalCostPerM3: 7.45,
+    method: "SRB bioreactor + sulphide precipitation + electrocoagulation",
+  },
+  fuze: {
+    chemicals: [],  // ZERO chemicals needed
+    energyKwhPerM3: 0,
+    totalCostPerM3: 0,
+    method: "No treatment required — carrier is 18 MΩ ultrapure water",
+  },
+};
+
 export type SustainabilityScore = {
   // Per linear meter
   co2SavedPerMeter: number;           // kg CO2 saved vs competitor per linear meter
@@ -95,6 +298,23 @@ export type SustainabilityScore = {
   chemicalEliminatedPerMeter: number; // mg of toxic chemistry not used
   binderEliminatedPerMeter: number;   // grams of polymer binder not used
   energySavedPerMeter: number;        // kWh factory energy saved (no curing)
+
+  // Upstream chemical plant costs (NEW)
+  upstreamPlantCO2PerMeter: number;          // kg CO2 at chemical plant per meter
+  upstreamPlantWasteKgPerMeter: number;      // kg chemical waste at plant per meter
+  upstreamPlantVOCgPerMeter: number;         // grams VOC at plant per meter
+  upstreamPlantWaterLitersPerMeter: number;  // liters process water at plant per meter
+  upstreamRawMaterialCostPerMeter: number;   // USD raw material cost per meter
+
+  // Wastewater remediation at textile factory (NEW)
+  remediationCostPerMeter: number;           // USD wastewater treatment cost per meter
+  remediationChemicalsKgPerMeter: number;    // kg of treatment chemicals per meter
+  remediationEnergyKwhPerMeter: number;      // kWh for wastewater treatment per meter
+
+  // True total cost (antimicrobial + binder + curing energy + remediation)
+  trueTotalCostPerMeter: number;             // competitor full cost per meter
+  fuzeTrueCostPerMeter: number;              // FUZE full cost per meter (just the product)
+  hiddenCostPerMeter: number;                // the costs competitors don't show you
 
   // Per 10,000 garments (the number brands think in)
   co2SavedPer10kGarments: number;
@@ -233,12 +453,68 @@ export function calcSustainabilityScore(
     score >= 65 ? "B" :
     score >= 50 ? "C" : "D";
 
+  // ── Upstream chemical plant manufacturing ──
+  const chemType = competitor.chemistryType;
+  const upstreamKey = chemType.includes("silver") || chemType === "silver_ion" ? "silver_chloride"
+    : chemType === "qac_silane" ? "qac_silane"
+    : chemType.includes("zinc") ? "zinc_pyrithione"
+    : chemType === "copper" ? "copper"
+    : chemType === "silver_nano" ? "silver_nano"
+    : "silver_chloride"; // default fallback
+  const compUpstream = UPSTREAM_MANUFACTURING[upstreamKey] || UPSTREAM_MANUFACTURING.silver_chloride;
+  const fuzeUpstream = UPSTREAM_MANUFACTURING.fuze;
+
+  // kg of antimicrobial product used per meter of fabric
+  const compProductKgPerMeter = (competitor.dosageTypical * fabricWeightKg) / 1000000 * 1000; // mg/kg → g → scale
+  const fuzeProductKgPerMeter = (1.0 * fabricWeightKg) / 1000000 * 1000;
+
+  const upstreamPlantCO2PerMeter = (compProductKgPerMeter * compUpstream.facilityCO2PerKg * competitorApps) - (fuzeProductKgPerMeter * fuzeUpstream.facilityCO2PerKg);
+  const upstreamPlantWasteKgPerMeter = compProductKgPerMeter * compUpstream.facilityWasteKgPerKg * competitorApps;
+  const upstreamPlantVOCgPerMeter = compProductKgPerMeter * compUpstream.facilityVOCgPerKg * competitorApps;
+  const upstreamPlantWaterLitersPerMeter = compProductKgPerMeter * compUpstream.facilityWaterLitersPerKg * competitorApps;
+
+  // Raw material cost at the chemical plant
+  const compRawCostPerKg = compUpstream.rawMaterials.reduce((sum, m) => sum + m.kgPerKgProduct * m.costPerKg, 0)
+    + compUpstream.reactionChemicals.reduce((sum, m) => sum + m.kgPerKgProduct * m.costPerKg, 0);
+  const upstreamRawMaterialCostPerMeter = compProductKgPerMeter * compRawCostPerKg * competitorApps;
+
+  // ── Wastewater remediation at textile factory ──
+  const remKey = chemType.includes("silver") || chemType === "silver_ion" || chemType === "silver_nano" ? "silver"
+    : chemType === "qac_silane" ? "quat"
+    : chemType.includes("zinc") ? "zinc"
+    : chemType === "copper" ? "copper"
+    : "silver";
+  const compRemediation = REMEDIATION_COSTS[remKey] || REMEDIATION_COSTS.silver;
+
+  const remediationCostPerMeter = compWastewaterM3 * compRemediation.totalCostPerM3;
+  const remediationChemicalsKgPerMeter = compRemediation.chemicals.reduce((sum, c) => sum + c.kgPerM3Wastewater, 0) * compWastewaterM3;
+  const remediationEnergyKwhPerMeter = compRemediation.energyKwhPerM3 * compWastewaterM3;
+
+  // ── True total cost per meter ──
+  // Competitor: antimicrobial product + binder + curing energy + wastewater remediation
+  const compProductCostPerMeter = competitor.estimatedCostPerMeterTypical * competitorApps;
+  const curingEnergyCostPerMeter = energySavedPerMeter * 0.10; // $0.10/kWh avg industrial electricity
+  const trueTotalCostPerMeter = compProductCostPerMeter + remediationCostPerMeter + curingEnergyCostPerMeter;
+  const fuzeTrueCostPerMeter = 0.27; // F1 typical at $36/L — matches calculator
+  const hiddenCostPerMeter = trueTotalCostPerMeter - compProductCostPerMeter; // the costs they don't tell you about
+
   return {
     co2SavedPerMeter,
     waterSavedPerMeter,
     chemicalEliminatedPerMeter,
     binderEliminatedPerMeter,
     energySavedPerMeter,
+    upstreamPlantCO2PerMeter,
+    upstreamPlantWasteKgPerMeter,
+    upstreamPlantVOCgPerMeter,
+    upstreamPlantWaterLitersPerMeter,
+    upstreamRawMaterialCostPerMeter,
+    remediationCostPerMeter,
+    remediationChemicalsKgPerMeter,
+    remediationEnergyKwhPerMeter,
+    trueTotalCostPerMeter,
+    fuzeTrueCostPerMeter,
+    hiddenCostPerMeter,
     co2SavedPer10kGarments,
     waterSavedPer10kGarments,
     chemicalEliminated10kGarments,
