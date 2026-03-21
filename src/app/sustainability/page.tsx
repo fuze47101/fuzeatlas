@@ -187,6 +187,79 @@ export default function SustainabilityPage() {
         </div>
       </div>
 
+      {/* NEW: Upstream Chemical Plant Manufacturing */}
+      <div className="bg-white rounded-2xl border border-red-200 shadow-sm p-6 mb-8">
+        <h2 className="text-base font-semibold text-red-800 mb-1">🏭 What Happens at {competitor.company}&apos;s Chemical Plant</h2>
+        <p className="text-xs text-slate-500 mb-4">Before {competitor.product} even reaches a textile factory, this is the environmental cost of manufacturing it — per {num(annualMeters, 0)} meters of fabric.</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-red-700">{num(score.upstreamPlantCO2PerMeter * annualMeters, 1)}</div>
+            <div className="text-xs font-semibold text-red-600 mt-1">kg CO₂ at Chemical Plant</div>
+          </div>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-red-700">{num(score.upstreamPlantWasteKgPerMeter * annualMeters, 1)}</div>
+            <div className="text-xs font-semibold text-red-600 mt-1">kg Chemical Waste</div>
+          </div>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-red-700">{num(score.upstreamPlantVOCgPerMeter * annualMeters / 1000, 1)}</div>
+            <div className="text-xs font-semibold text-red-600 mt-1">kg VOCs Emitted at Plant</div>
+          </div>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-red-700">{num(score.upstreamPlantWaterLitersPerMeter * annualMeters, 0)}</div>
+            <div className="text-xs font-semibold text-red-600 mt-1">L Process Water</div>
+          </div>
+        </div>
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+          <div className="text-xs font-semibold text-emerald-700">FUZE Manufacturing: 30-amp liquid laser ablation on a 1m² table. Recycled electronics feedstock. Solar-capable. Zero chemicals. Zero waste. Zero VOCs.</div>
+        </div>
+      </div>
+
+      {/* NEW: Wastewater Remediation Costs */}
+      <div className="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 mb-8">
+        <h2 className="text-base font-semibold text-amber-800 mb-1">💰 Hidden Cost: Factory Wastewater Remediation</h2>
+        <p className="text-xs text-slate-500 mb-4">After applying {competitor.product}, the factory must treat contaminated wastewater before discharge. These costs are never shown in the antimicrobial price quote.</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+            <div className="text-3xl font-black text-amber-700">${num(score.remediationCostPerMeter * annualMeters, 2)}</div>
+            <div className="text-xs font-semibold text-amber-600 mt-1">Remediation Cost / {num(annualMeters, 0)} m</div>
+          </div>
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+            <div className="text-3xl font-black text-amber-700">{num(score.remediationChemicalsKgPerMeter * annualMeters, 1)}</div>
+            <div className="text-xs font-semibold text-amber-600 mt-1">kg Treatment Chemicals</div>
+            <div className="text-[10px] text-amber-500 mt-1">Caustic soda, flocculants, precipitants, acids</div>
+          </div>
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+            <div className="text-3xl font-black text-amber-700">{num(score.remediationEnergyKwhPerMeter * annualMeters, 1)}</div>
+            <div className="text-xs font-semibold text-amber-600 mt-1">kWh Treatment Energy</div>
+            <div className="text-[10px] text-amber-500 mt-1">Pumps, reactors, filtration systems</div>
+          </div>
+        </div>
+
+        {/* True total cost comparison */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-red-50 border border-red-300 rounded-xl p-5">
+            <div className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-2">{competitor.product} True Cost per Meter</div>
+            <div className="text-3xl font-black text-red-700">${num(score.trueTotalCostPerMeter, 4)}<span className="text-sm font-normal text-red-400">/m</span></div>
+            <div className="text-xs text-red-500 mt-2 space-y-1">
+              <div>Antimicrobial: ${num(competitor.estimatedCostPerMeterTypical, 4)}/m</div>
+              <div>+ Wastewater remediation: ${num(score.remediationCostPerMeter, 4)}/m</div>
+              <div>+ Curing energy: ${num(score.energySavedPerMeter * 0.10, 4)}/m</div>
+              <div className="font-bold pt-1 border-t border-red-200">Hidden costs: ${num(score.hiddenCostPerMeter, 4)}/m</div>
+            </div>
+          </div>
+          <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-5">
+            <div className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-2">FUZE True Cost per Meter</div>
+            <div className="text-3xl font-black text-emerald-700">${num(score.fuzeTrueCostPerMeter, 4)}<span className="text-sm font-normal text-emerald-400">/m</span></div>
+            <div className="text-xs text-emerald-500 mt-2 space-y-1">
+              <div>FUZE F1 treatment: ${num(score.fuzeTrueCostPerMeter, 4)}/m</div>
+              <div>+ Wastewater remediation: $0.0000/m</div>
+              <div>+ Curing energy: $0.0000/m</div>
+              <div className="font-bold pt-1 border-t border-emerald-200">Hidden costs: $0.0000/m</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Annual impact at brand scale */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
         <h2 className="text-base font-semibold text-slate-800 mb-1">Annual Brand Impact at {num(annualMeters, 0)} Meters/Year</h2>
