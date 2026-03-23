@@ -176,8 +176,9 @@ export async function POST(req: Request) {
       submission = await prisma.fabricSubmission.create({
         data: {
           brandId: effectiveBrandId,
+          factoryId: factoryId,
           fabricId: fabric.id,
-          fuzeFabricNumber: fabric.fuzeNumber ? String(fabric.fuzeNumber) : null,
+          fuzeFabricNumber: fabric.fuzeNumber ?? null,
           customerFabricCode: fabric.customerCode || null,
           factoryFabricCode: fabric.factoryCode || null,
           status: "Submitted",
