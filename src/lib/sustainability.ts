@@ -86,6 +86,17 @@ const EMISSION_FACTORS = {
 
   // Transport (minor but included for completeness)
   transportKgCO2PerKgKm: 0.00003,         // kg CO2 per kg·km ocean freight
+
+  // Stage 4: Consumer & Municipal
+  homeWashWaterLiters: 50,                 // liters per home wash cycle (avg front-loader)
+  municipalWaterTreatmentKgCO2PerM3: 0.27, // kg CO2 per m3 municipal water treatment (advanced)
+  municipalTreatmentCostPerM3: 2.50,       // USD per m3 municipal wastewater treatment (US avg)
+  municipalMetalRemovalCostPerMg: 0.0045,  // USD per mg heavy metal removed at POTW
+  bioaccumulationFactorSilver: 0.85,       // high — silver persists in aquatic sediment
+  bioaccumulationFactorZinc: 0.55,         // moderate — some bioavailability
+  bioaccumulationFactorCopper: 0.75,       // high — toxic to aquatic organisms at low conc
+  bioaccumulationFactorQAC: 0.40,          // moderate — degrades slowly, toxic to microorganisms
+  landfillLeachateTreatmentCostPerKg: 0.08, // USD per kg textile in landfill (leachate mgmt)
 };
 
 // ═══════════════════════════════════════════════════════
@@ -311,7 +322,17 @@ export type SustainabilityScore = {
   remediationChemicalsKgPerMeter: number;    // kg of treatment chemicals per meter
   remediationEnergyKwhPerMeter: number;      // kWh for wastewater treatment per meter
 
-  // True total cost (antimicrobial + binder + curing energy + remediation)
+  // Stage 4: Consumer & Municipal (home laundering + municipal water treatment)
+  consumerLeachedMetalMgPerWash: number;       // mg of active agent leached per wash cycle per garment
+  consumerTotalLeachedMgLifetime: number;      // total mg leached over garment lifetime
+  consumerWaterContaminatedLitersLifetime: number; // liters of home wash water contaminated
+  municipalTreatmentCostPerGarment: number;    // USD municipal cost to treat leached metals
+  municipalCO2PerGarmentLifetime: number;      // kg CO2 from municipal treatment of leached metals
+  landfillLeachateCostPerGarment: number;      // USD end-of-life landfill leachate treatment
+  consumerBioaccumulationFactor: number;       // 0-1 environmental persistence score
+  consumerMicroplasticShedGPerWash: number;    // grams of binder microplastic shed per wash
+
+  // True total cost (antimicrobial + binder + curing energy + remediation + consumer)
   trueTotalCostPerMeter: number;             // competitor full cost per meter
   fuzeTrueCostPerMeter: number;              // FUZE full cost per meter (just the product)
   hiddenCostPerMeter: number;                // the costs competitors don't show you
@@ -490,11 +511,51 @@ export function calcSustainabilityScore(
   const remediationChemicalsKgPerMeter = compRemediation.chemicals.reduce((sum, c) => sum + c.kgPerM3Wastewater, 0) * compWastewaterM3;
   const remediationEnergyKwhPerMeter = compRemediation.energyKwhPerM3 * compWastewaterM3;
 
+  // ── Stage 4: Consumer & Municipal ──
+  // How much active agent leaches during home laundering
+  const garmentFabricKg = fabricWeightKg * metersPerGarment;
+  const totalActiveOnGarmentMg = competitor.dosageTypical * garmentFabricKg; // mg on one garment
+  const leachPerWashPct = competitor.leachRatePerWash / 100;  // convert % to decimal
+  const leachFirst10Pct = competitor.leachRateFirst10Washes / 100;
+
+  // Leached metal per wash: first 10 washes use accelerated rate, then steady-state
+  const leachedFirst10Mg = totalActiveOnGarmentMg * leachFirst10Pct;
+  const leachedPerWashAfter10Mg = totalActiveOnGarmentMg * leachPerWashPct;
+  const washesAfterFirst10 = Math.max(0, targetWashes - 10);
+  const consumerTotalLeachedMgLifetime = leachedFirst10Mg + (leachedPerWashAfter10Mg * washesAfterFirst10);
+  const consumerLeachedMetalMgPerWash = consumerTotalLeachedMgLifetime / Math.max(1, targetWashes);
+
+  // Contaminated wash water
+  const consumerWaterContaminatedLitersLifetime = targetWashes * EF.homeWashWaterLiters;
+
+  // Municipal water treatment burden
+  const consumerWaterM3 = consumerWaterContaminatedLitersLifetime / 1000;
+  const municipalTreatmentCostPerGarment = (consumerTotalLeachedMgLifetime * EF.municipalMetalRemovalCostPerMg)
+    + (consumerWaterM3 * EF.municipalTreatmentCostPerM3 * 0.05); // 5% attributable to antimicrobial contamination
+  const municipalCO2PerGarmentLifetime = consumerWaterM3 * EF.municipalWaterTreatmentKgCO2PerM3 * 0.05;
+
+  // End-of-life landfill leachate
+  const landfillLeachateCostPerGarment = garmentFabricKg * EF.landfillLeachateTreatmentCostPerKg;
+
+  // Bioaccumulation factor
+  const consumerBioaccumulationFactor =
+    (chemType.includes("silver") || chemType === "silver_ion" || chemType === "silver_nano") ? EF.bioaccumulationFactorSilver
+    : chemType === "copper" ? EF.bioaccumulationFactorCopper
+    : chemType.includes("zinc") ? EF.bioaccumulationFactorZinc
+    : EF.bioaccumulationFactorQAC;
+
+  // Microplastic shedding from binder (if binder present)
+  const consumerMicroplasticShedGPerWash = competitor.binderRequired
+    ? (competitor.binderGPerKg * garmentFabricKg * (competitor.binderLeachPctLifetime / 100)) / targetWashes
+    : 0;
+
   // ── True total cost per meter ──
-  // Competitor: antimicrobial product + binder + curing energy + wastewater remediation
+  // Competitor: antimicrobial product + binder + curing energy + wastewater remediation + consumer municipal
   const compProductCostPerMeter = competitor.estimatedCostPerMeterTypical * competitorApps;
   const curingEnergyCostPerMeter = energySavedPerMeter * 0.10; // $0.10/kWh avg industrial electricity
-  const trueTotalCostPerMeter = compProductCostPerMeter + remediationCostPerMeter + curingEnergyCostPerMeter;
+  const municipalCostPerMeter = municipalTreatmentCostPerGarment / metersPerGarment;
+  const landfillCostPerMeter = landfillLeachateCostPerGarment / metersPerGarment;
+  const trueTotalCostPerMeter = compProductCostPerMeter + remediationCostPerMeter + curingEnergyCostPerMeter + municipalCostPerMeter + landfillCostPerMeter;
   const fuzeTrueCostPerMeter = 0.27; // F1 typical at $36/L — matches calculator
   const hiddenCostPerMeter = trueTotalCostPerMeter - compProductCostPerMeter; // the costs they don't tell you about
 
@@ -512,6 +573,14 @@ export function calcSustainabilityScore(
     remediationCostPerMeter,
     remediationChemicalsKgPerMeter,
     remediationEnergyKwhPerMeter,
+    consumerLeachedMetalMgPerWash,
+    consumerTotalLeachedMgLifetime,
+    consumerWaterContaminatedLitersLifetime,
+    municipalTreatmentCostPerGarment,
+    municipalCO2PerGarmentLifetime,
+    landfillLeachateCostPerGarment,
+    consumerBioaccumulationFactor,
+    consumerMicroplasticShedGPerWash,
     trueTotalCostPerMeter,
     fuzeTrueCostPerMeter,
     hiddenCostPerMeter,

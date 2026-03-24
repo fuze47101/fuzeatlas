@@ -82,6 +82,10 @@ ${getReportStyles()}
   ${renderCoverPage(params, today)}
   ${renderExecutiveSummary(results, params)}
   ${renderFUZETechnology()}
+  ${renderLifecycleStage1(results, params)}
+  ${renderLifecycleStage2(results, params)}
+  ${renderLifecycleStage3(results, params)}
+  ${renderLifecycleStage4(results, params)}
   ${renderCompetitorComparison(results, params)}
   ${results.map((r, i) => renderCompetitorTeardown(r, params, i)).join("")}
   ${renderESGSummary(results, params)}
@@ -120,6 +124,10 @@ function getReportStyles(): string {
     /* Section headers */
     .section-header { background: #0d2b3e; color: white; padding: 16px 24px; margin: 40px -50px 24px -50px; font-size: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
     .section-header span { color: #00b4c3; margin-right: 8px; }
+    .stage1-header { background: #1e3a8a !important; }
+    .stage2-header { background: #92400e !important; }
+    .stage3-header { background: #ea580c !important; }
+    .stage4-header { background: #8b5cf6 !important; }
 
     /* Tables */
     .data-table { width: 100%; border-collapse: collapse; margin: 16px 0 24px 0; font-size: 11px; }
@@ -219,6 +227,13 @@ function renderCoverPage(params: ReportParams, today: string): string {
   </div>`;
 }
 
+// Helper function for number formatting
+const num = (n: number, d = 2) => {
+  if (n === 0) return "0";
+  if (isNaN(n) || !isFinite(n)) return "0";
+  return n.toFixed(d);
+};
+
 function renderExecutiveSummary(results: CompetitorResult[], params: ReportParams): string {
   const avgScore = results.reduce((s, r) => s + r.score.sustainabilityScore, 0) / results.length;
   const avgCO2 = results.reduce((s, r) => s + r.score.co2SavedPerMeter, 0) / results.length;
@@ -257,6 +272,206 @@ function renderExecutiveSummary(results: CompetitorResult[], params: ReportParam
       binders, curing energy, and wastewater remediation. Over ${(params.annualMeters/1000).toFixed(0)}k annual meters,
       that's <strong>$${(avgCost * params.annualMeters).toFixed(0)}</strong> in real savings.
     </div>
+  </div>`;
+}
+
+function renderLifecycleStage1(results: CompetitorResult[], params: ReportParams): string {
+  const rows = results.map(r => {
+    const c = r.competitor;
+    const s = r.score;
+    const mfgCO2Annual = (s.co2SavedPerMeter * params.annualMeters);
+    return `<tr>
+      <td><strong>${c.product}</strong></td>
+      <td>${num(s.co2SavedPerMeter, 3)}</td>
+      <td>${num(mfgCO2Annual >= 1000 ? mfgCO2Annual / 1000 : mfgCO2Annual, mfgCO2Annual >= 1000 ? 1 : 0)} ${mfgCO2Annual >= 1000 ? "t" : "kg"}</td>
+      <td class="success">$0.000</td>
+      <td class="success">0 kg</td>
+      <td class="success">0 L</td>
+    </tr>`;
+  }).join("");
+
+  return `
+  <div class="page-break"></div>
+  <div class="container">
+    <div class="section-header" style="background: #1e3a8a;"><span>03</span> Lifecycle Stage 1: Chemical Plant Manufacturing</div>
+    <p class="text-sm">
+      Upstream impacts from antimicrobial chemical production, including CO₂ from synthesis, process waste, VOC emissions,
+      and water consumption at the manufacturing facility. FUZE uses recycled electronics feedstock with 85% lower upstream emissions.
+    </p>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:25%">Product</th>
+          <th>CO₂ per Meter (kg)</th>
+          <th>Annual CO₂ Savings @ ${(params.annualMeters/1000).toFixed(0)}k m</th>
+          <th>Waste Cost</th>
+          <th>VOC Emissions</th>
+          <th>Water Consumed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="fuze-row">
+          <td><strong>FUZE FTP F1</strong></td>
+          <td class="success">0.000</td>
+          <td class="success">—</td>
+          <td class="success">$0.000</td>
+          <td class="success">0 kg</td>
+          <td class="success">0 L</td>
+        </tr>
+        ${rows}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function renderLifecycleStage2(results: CompetitorResult[], params: ReportParams): string {
+  const rows = results.map(r => {
+    const c = r.competitor;
+    const s = r.score;
+    const curingCO2Annual = (s.energySavedPerMeter * params.annualMeters);
+    return `<tr>
+      <td><strong>${c.product}</strong></td>
+      <td>${c.curingRequired ? `${c.curingTempC}°C` : "None"}</td>
+      <td>${c.binderRequired ? c.binderGPerKg + "g/kg " + c.binderType : "None"}</td>
+      <td>${num(s.energySavedPerMeter, 3)}</td>
+      <td>${num(curingCO2Annual >= 1000 ? curingCO2Annual / 1000 : curingCO2Annual, curingCO2Annual >= 1000 ? 1 : 0)} ${curingCO2Annual >= 1000 ? "t" : "kg"}</td>
+      <td>${c.binderVOC ? "Yes" : "No"}</td>
+    </tr>`;
+  }).join("");
+
+  return `
+  <div class="container">
+    <div class="section-header" style="background: #92400e;"><span>04</span> Lifecycle Stage 2: Factory Application</div>
+    <p class="text-sm">
+      Application-stage impacts at the textile mill: curing temperatures, binder chemical usage, energy consumption,
+      VOC emissions during drying and thermal processing. FUZE requires no curing (air dry only) and zero binders.
+    </p>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:20%">Product</th>
+          <th>Curing Temp</th>
+          <th>Binder Required</th>
+          <th>Energy/Meter (kWh)</th>
+          <th>Curing CO₂/year</th>
+          <th>VOC Emissions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="fuze-row">
+          <td><strong>FUZE FTP F1</strong></td>
+          <td class="success">None</td>
+          <td class="success">None</td>
+          <td class="success">0.000</td>
+          <td class="success">—</td>
+          <td class="success">No</td>
+        </tr>
+        ${rows}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function renderLifecycleStage3(results: CompetitorResult[], params: ReportParams): string {
+  const rows = results.map(r => {
+    const c = r.competitor;
+    const s = r.score;
+    const remCostAnnual = (s.remediationCostPerMeter * params.annualMeters);
+    return `<tr>
+      <td><strong>${c.product}</strong></td>
+      <td>${num(s.remediationCostPerMeter, 3)}</td>
+      <td>${num(remCostAnnual >= 1000 ? remCostAnnual / 1000 : remCostAnnual, remCostAnnual >= 1000 ? 1 : 0)} ${remCostAnnual >= 1000 ? "k" : ""}</td>
+      <td>${s.waterSavedPerMeter > 0 ? num(s.waterSavedPerMeter, 2) : "0"}</td>
+      <td>${(s.waterSavedPerMeter * params.annualMeters / 1000).toFixed(1)}</td>
+      <td class="success">0.000</td>
+    </tr>`;
+  }).join("");
+
+  return `
+  <div class="container">
+    <div class="section-header" style="background: #ea580c;"><span>05</span> Lifecycle Stage 3: Factory Wastewater Remediation</div>
+    <p class="text-sm">
+      Post-application treatment costs: chemical remediation of metals in wastewater, energy for treatment,
+      sludge handling, and regulatory compliance. FUZE produces no wastewater requiring treatment.
+    </p>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:20%">Product</th>
+          <th>Treatment Cost/m ($)</th>
+          <th>Annual Treatment Cost @ ${(params.annualMeters/1000).toFixed(0)}k m</th>
+          <th>Water Contaminated/m (L)</th>
+          <th>Annual Water Treated (k L)</th>
+          <th>Remediation Cost (FUZE saves)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="fuze-row">
+          <td><strong>FUZE FTP F1</strong></td>
+          <td class="success">$0.000</td>
+          <td class="success">—</td>
+          <td class="success">0</td>
+          <td class="success">—</td>
+          <td class="success">$0.000</td>
+        </tr>
+        ${rows}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function renderLifecycleStage4(results: CompetitorResult[], params: ReportParams): string {
+  const rows = results.map(r => {
+    const c = r.competitor;
+    const s = r.score;
+    const bioaccumDesc = (s.consumerBioaccumulationFactor || 0) > 0.7 ? "High persistence"
+      : (s.consumerBioaccumulationFactor || 0) >= 0.4 ? "Moderate"
+      : "Low";
+    const annualWaterContam = (s.consumerWaterContaminatedLitersLifetime || 0) / (params.targetWashes > 0 ? params.targetWashes : 1) * params.targetWashes;
+    return `<tr>
+      <td><strong>${c.product}</strong></td>
+      <td>${num(s.consumerLeachedMetalMgPerWash || 0, 2)}</td>
+      <td>${num(s.consumerTotalLeachedMgLifetime || 0, 1)}</td>
+      <td>${num((s.consumerWaterContaminatedLitersLifetime || 0) / 1000, 1)}</td>
+      <td>$${num(s.municipalTreatmentCostPerGarment || 0, 3)}</td>
+      <td>${num(s.consumerMicroplasticShedGPerWash || 0, 3)}</td>
+      <td>${bioaccumDesc}</td>
+    </tr>`;
+  }).join("");
+
+  return `
+  <div class="container">
+    <div class="section-header" style="background: #8b5cf6;"><span>06</span> Lifecycle Stage 4: Consumer & Municipal Impact</div>
+    <p class="text-sm">
+      End-of-life impacts: metal leaching during home washing cycles, contamination of household wastewater,
+      municipal treatment costs, microplastic shedding from binder degradation, and bioaccumulation in aquatic ecosystems.
+      FUZE has zero leaching and zero microplastic shedding over the garment lifetime.
+    </p>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:20%">Product</th>
+          <th>Metal/Wash (mg)</th>
+          <th>Lifetime Metal (mg)</th>
+          <th>Water Contaminated (k L)</th>
+          <th>Municipal Treat. Cost ($)</th>
+          <th>Microplastic/Wash (g)</th>
+          <th>Bioaccumulation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="fuze-row">
+          <td><strong>FUZE FTP F1</strong></td>
+          <td class="success">0.00</td>
+          <td class="success">0.0</td>
+          <td class="success">0.0</td>
+          <td class="success">$0.000</td>
+          <td class="success">0.000</td>
+          <td class="success">None</td>
+        </tr>
+        ${rows}
+      </tbody>
+    </table>
   </div>`;
 }
 
@@ -311,7 +526,7 @@ function renderCompetitorComparison(results: CompetitorResult[], params: ReportP
   return `
   <div class="page-break"></div>
   <div class="container">
-    <div class="section-header"><span>03</span> Competitive Comparison Matrix</div>
+    <div class="section-header"><span>07</span> Competitive Comparison Matrix</div>
     <p class="text-sm">Side-by-side comparison of ${results.length} competing antimicrobial technologies against FUZE.
     FUZE Advantage Score reflects environmental improvement when switching to FUZE (higher = more improvement).</p>
     <table class="data-table">
@@ -425,6 +640,41 @@ function renderCompetitorTeardown(result: CompetitorResult, params: ReportParams
       </div>
 
       <div style="margin-top:16px;">
+        <div style="font-size:12px; font-weight:700; color:#1a1a2e; margin-bottom:8px;">Consumer & Municipal Stage 4 Impact</div>
+        <div class="comp-grid">
+          <div class="comp-stat">
+            <div class="comp-stat-label">Metal Leached/Wash</div>
+            <div class="comp-stat-value" style="color:${(s.consumerLeachedMetalMgPerWash || 0) > 0 ? '#dc3545' : '#28a745'}">${num(s.consumerLeachedMetalMgPerWash || 0, 2)} mg</div>
+          </div>
+          <div class="comp-stat">
+            <div class="comp-stat-label">Total Lifetime Metal</div>
+            <div class="comp-stat-value" style="color:${(s.consumerTotalLeachedMgLifetime || 0) > 0 ? '#dc3545' : '#28a745'}">${num(s.consumerTotalLeachedMgLifetime || 0, 1)} mg</div>
+          </div>
+          <div class="comp-stat">
+            <div class="comp-stat-label">Water Contaminated</div>
+            <div class="comp-stat-value" style="color:${(s.consumerWaterContaminatedLitersLifetime || 0) > 0 ? '#dc3545' : '#28a745'}">${num((s.consumerWaterContaminatedLitersLifetime || 0) / 1000, 1)}k L</div>
+          </div>
+          <div class="comp-stat">
+            <div class="comp-stat-label">Municipal Treatment Cost</div>
+            <div class="comp-stat-value" style="color:${(s.municipalTreatmentCostPerGarment || 0) > 0 ? '#dc3545' : '#28a745'}">$${num(s.municipalTreatmentCostPerGarment || 0, 3)}</div>
+          </div>
+          <div class="comp-stat">
+            <div class="comp-stat-label">Microplastic/Wash</div>
+            <div class="comp-stat-value" style="color:${(s.consumerMicroplasticShedGPerWash || 0) > 0 ? '#dc3545' : '#28a745'}">${num(s.consumerMicroplasticShedGPerWash || 0, 3)} g</div>
+          </div>
+          <div class="comp-stat">
+            <div class="comp-stat-label">Bioaccumulation Factor</div>
+            <div class="comp-stat-value" style="color:${(s.consumerBioaccumulationFactor || 0) > 0.7 ? '#dc3545' : (s.consumerBioaccumulationFactor || 0) >= 0.4 ? '#e67e22' : '#28a745'}">
+              ${num(s.consumerBioaccumulationFactor || 0, 2)}
+              <div style="font-size:9px; color:#666; margin-top:2px;">
+                ${(s.consumerBioaccumulationFactor || 0) > 0.7 ? "High persistence" : (s.consumerBioaccumulationFactor || 0) >= 0.4 ? "Moderate" : "Low"}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
         <div style="font-size:12px; font-weight:700; color:#1a1a2e; margin-bottom:8px;">True Cost Breakdown (per linear meter)</div>
         <div class="cost-bar-container">
           <div class="cost-bar-label">
@@ -487,7 +737,7 @@ function renderESGSummary(results: CompetitorResult[], params: ReportParams): st
   return `
   <div class="page-break"></div>
   <div class="container">
-    <div class="section-header"><span>04</span> ESG Impact Claims</div>
+    <div class="section-header"><span>09</span> ESG Impact Claims</div>
     <p class="text-sm">
       The following claims are generated from verified data comparing FUZE against ${worst.competitor.product}
       at ${(params.annualMeters/1000).toFixed(0)}k annual meters. These claims can be used in brand sustainability reports,
@@ -510,12 +760,16 @@ function renderCostAnalysis(results: CompetitorResult[], params: ReportParams): 
   const rows = results.map(r => {
     const c = r.competitor;
     const s = r.score;
+    const stage1 = s.co2SavedPerMeter * 0.05; // approx mfg cost impact
+    const stage2 = c.curingRequired ? (s.energySavedPerMeter * 0.10) : 0;
+    const stage3 = s.remediationCostPerMeter;
     return `<tr>
       <td><strong>${c.product}</strong></td>
       <td>$${c.estimatedCostPerMeterTypical.toFixed(3)}</td>
+      <td>$${stage1.toFixed(3)}</td>
       <td>${c.binderRequired ? "$" + ((c.binderGPerKg * c.binderPricePerKg / 1000) * 0.15).toFixed(3) : "—"}</td>
-      <td>${c.curingRequired ? "$" + (s.energySavedPerMeter * 0.10).toFixed(3) : "—"}</td>
-      <td>$${s.remediationCostPerMeter.toFixed(3)}</td>
+      <td>${c.curingRequired ? "$" + stage2.toFixed(3) : "—"}</td>
+      <td>$${stage3.toFixed(3)}</td>
       <td><strong>$${s.trueTotalCostPerMeter.toFixed(3)}</strong></td>
       <td class="success">$${(s.trueTotalCostPerMeter - s.fuzeTrueCostPerMeter).toFixed(3)}</td>
     </tr>`;
@@ -523,19 +777,21 @@ function renderCostAnalysis(results: CompetitorResult[], params: ReportParams): 
 
   return `
   <div class="container">
-    <div class="section-header"><span>05</span> True Cost Analysis</div>
+    <div class="section-header"><span>10</span> True Cost Analysis: 4 Lifecycle Stages</div>
     <p class="text-sm">
-      Competing antimicrobials advertise only the chemical cost. The true cost includes binder chemicals,
-      curing energy, and wastewater remediation — costs that are real but rarely disclosed.
+      Competing antimicrobials advertise only the chemical cost. The true cost includes manufacturing (Stage 1),
+      application (Stage 2), binder + curing (Stage 2), and wastewater remediation (Stage 3) — costs that are real but rarely disclosed.
+      Stage 4 (consumer/municipal) impacts are quantified separately above.
     </p>
     <table class="data-table">
       <thead>
         <tr>
           <th>Product</th>
-          <th>Chemical</th>
-          <th>Binder</th>
-          <th>Curing</th>
-          <th>Remediation</th>
+          <th>Chemical Cost</th>
+          <th>Stage 1: Mfg</th>
+          <th>Stage 2: Binder</th>
+          <th>Stage 2: Curing</th>
+          <th>Stage 3: Remediation</th>
           <th>True Total</th>
           <th>FUZE Saves</th>
         </tr>
@@ -544,6 +800,7 @@ function renderCostAnalysis(results: CompetitorResult[], params: ReportParams): 
         <tr class="fuze-row">
           <td><strong>FUZE FTP F1</strong></td>
           <td>$0.270</td>
+          <td>$0.000</td>
           <td>—</td>
           <td>—</td>
           <td>—</td>
@@ -553,14 +810,14 @@ function renderCostAnalysis(results: CompetitorResult[], params: ReportParams): 
         ${rows}
       </tbody>
     </table>
-    <p class="text-xs" style="margin-top:8px;">All costs per linear meter. Chemical costs based on distributor pricing at typical dosage on ${params.gsm} GSM fabric.</p>
+    <p class="text-xs" style="margin-top:8px;">All costs per linear meter. Chemical costs based on distributor pricing at typical dosage on ${params.gsm} GSM fabric. Stage costs are calculated from sustainability modeling.</p>
   </div>`;
 }
 
 function renderCertifications(): string {
   return `
   <div class="container">
-    <div class="section-header"><span>06</span> Certifications &amp; Registrations</div>
+    <div class="section-header"><span>11</span> Certifications &amp; Registrations</div>
     <div class="cert-grid">
       ${FUZE_SUSTAINABILITY.certifications.map(cert => `
         <div class="cert-card no-break">

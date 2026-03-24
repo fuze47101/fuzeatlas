@@ -238,85 +238,155 @@ export default function SustainabilityPage() {
         </div>
       </div>
 
-      {/* Per 10,000 garments — the headline number */}
-      <div className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 rounded-2xl p-8 mb-8 text-white">
-        <div className="text-xs font-semibold text-emerald-200 uppercase tracking-wider mb-4">Per 10,000 Garments — Switching from {competitor.product} to FUZE</div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div>
-            <div className="text-4xl font-black">{num(score.co2SavedPer10kGarments, 1)}</div>
-            <div className="text-emerald-200 text-sm font-medium mt-1">kg CO₂ eliminated</div>
-            <div className="text-emerald-300/60 text-xs mt-1">≈ {num(score.co2SavedPer10kGarments / 2.3, 0)} car trips across America</div>
+      {/* Lifecycle Stage Navigator */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between gap-3 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div className="flex-1 flex items-center gap-2">
+            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+              <span className="font-bold text-red-700">1</span>
+            </div>
+            <div className="text-sm font-semibold text-slate-700">Chemical Plant</div>
+            <svg className="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
           </div>
-          <div>
-            <div className="text-4xl font-black">{num(score.waterSavedPer10kGarments, 0)}</div>
-            <div className="text-emerald-200 text-sm font-medium mt-1">liters water saved</div>
-            <div className="text-emerald-300/60 text-xs mt-1">Contaminated wastewater not created</div>
+          <div className="flex-1 flex items-center gap-2">
+            <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+              <span className="font-bold text-amber-700">2</span>
+            </div>
+            <div className="text-sm font-semibold text-slate-700">Factory Application</div>
+            <svg className="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
           </div>
-          <div>
-            <div className="text-4xl font-black">{num(score.chemicalEliminated10kGarments / 1000, 1)}</div>
-            <div className="text-emerald-200 text-sm font-medium mt-1">grams chemistry eliminated</div>
-            <div className="text-emerald-300/60 text-xs mt-1">{competitor.heavyMetalReleased} not entering supply chain</div>
+          <div className="flex-1 flex items-center gap-2">
+            <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+              <span className="font-bold text-orange-700">3</span>
+            </div>
+            <div className="text-sm font-semibold text-slate-700">Wastewater Remediation</div>
+            <svg className="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
           </div>
-          <div>
-            <div className="text-4xl font-black">{num(score.binderEliminated10kGarments / 1000, 2)}</div>
-            <div className="text-emerald-200 text-sm font-medium mt-1">kg binder eliminated</div>
-            <div className="text-emerald-300/60 text-xs mt-1">Zero petrochemical polymer binder</div>
+          <div className="flex-1 flex items-center gap-2">
+            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+              <span className="font-bold text-purple-700">4</span>
+            </div>
+            <div className="text-sm font-semibold text-slate-700">Consumer & Municipal</div>
           </div>
         </div>
       </div>
 
-      {/* NEW: Upstream Chemical Plant Manufacturing */}
-      <div className="bg-white rounded-2xl border border-red-200 shadow-sm p-6 mb-8">
-        <h2 className="text-base font-semibold text-red-800 mb-1">🏭 What Happens at {competitor.company}&apos;s Chemical Plant</h2>
-        <p className="text-xs text-slate-500 mb-4">Before {competitor.product} even reaches a textile factory, this is the environmental cost of manufacturing it — per {num(annualMeters, 0)} meters of fabric.</p>
+      {/* STAGE 1: Chemical Plant Manufacturing */}
+      <div className="bg-red-50 rounded-2xl border border-red-200 shadow-sm p-6 mb-8">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0">
+            <span className="font-bold text-white text-lg">1</span>
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-red-900">Stage 1: Chemical Plant Manufacturing</h2>
+            <p className="text-sm text-red-700 mt-1">Before {competitor.product} ever reaches a factory — {competitor.company}&apos;s manufacturing footprint</p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+          <div className="bg-white border border-red-200 rounded-xl p-4 text-center">
             <div className="text-2xl font-black text-red-700">{num(score.upstreamPlantCO2PerMeter * annualMeters, 1)}</div>
-            <div className="text-xs font-semibold text-red-600 mt-1">kg CO₂ at Chemical Plant</div>
+            <div className="text-xs font-semibold text-red-600 mt-2">kg CO₂ at Plant</div>
+            <div className="text-[10px] text-red-500 mt-1">{num(score.upstreamPlantCO2PerMeter, 4)}/m</div>
           </div>
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+          <div className="bg-white border border-red-200 rounded-xl p-4 text-center">
             <div className="text-2xl font-black text-red-700">{num(score.upstreamPlantWasteKgPerMeter * annualMeters, 1)}</div>
-            <div className="text-xs font-semibold text-red-600 mt-1">kg Chemical Waste</div>
+            <div className="text-xs font-semibold text-red-600 mt-2">kg Chemical Waste</div>
+            <div className="text-[10px] text-red-500 mt-1">{num(score.upstreamPlantWasteKgPerMeter, 4)}/m</div>
           </div>
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+          <div className="bg-white border border-red-200 rounded-xl p-4 text-center">
             <div className="text-2xl font-black text-red-700">{num(score.upstreamPlantVOCgPerMeter * annualMeters / 1000, 1)}</div>
-            <div className="text-xs font-semibold text-red-600 mt-1">kg VOCs Emitted at Plant</div>
+            <div className="text-xs font-semibold text-red-600 mt-2">kg VOCs Emitted</div>
+            <div className="text-[10px] text-red-500 mt-1">{num(score.upstreamPlantVOCgPerMeter, 2)}/m</div>
           </div>
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+          <div className="bg-white border border-red-200 rounded-xl p-4 text-center">
             <div className="text-2xl font-black text-red-700">{num(score.upstreamPlantWaterLitersPerMeter * annualMeters, 0)}</div>
-            <div className="text-xs font-semibold text-red-600 mt-1">L Process Water</div>
+            <div className="text-xs font-semibold text-red-600 mt-2">L Process Water</div>
+            <div className="text-[10px] text-red-500 mt-1">{num(score.upstreamPlantWaterLitersPerMeter, 1)}/m</div>
           </div>
         </div>
+
         <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-          <div className="text-xs font-semibold text-emerald-700">FUZE Manufacturing: 30-amp liquid laser ablation on a 1m² table. Recycled electronics feedstock. Solar-capable. Zero chemicals. Zero waste. Zero VOCs.</div>
+          <div className="text-xs font-semibold text-emerald-700 mb-2">FUZE Manufacturing Profile</div>
+          <p className="text-xs text-emerald-600">30-amp liquid laser ablation on a 1m² table. Recycled electronics feedstock. Solar-capable. <strong>Zero chemicals. Zero waste. Zero VOCs. Zero process water.</strong></p>
         </div>
       </div>
 
-      {/* NEW: Wastewater Remediation Costs */}
-      <div className="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 mb-8">
-        <h2 className="text-base font-semibold text-amber-800 mb-1">💰 Hidden Cost: Factory Wastewater Remediation</h2>
-        <p className="text-xs text-slate-500 mb-4">After applying {competitor.product}, the factory must treat contaminated wastewater before discharge. These costs are never shown in the antimicrobial price quote.</p>
+      {/* STAGE 2: Factory Application */}
+      <div className="bg-amber-50 rounded-2xl border border-amber-200 shadow-sm p-6 mb-8">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-amber-600 flex items-center justify-center flex-shrink-0">
+            <span className="font-bold text-white text-lg">2</span>
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-amber-900">Stage 2: Textile Factory Application</h2>
+            <p className="text-sm text-amber-700 mt-1">Energy, binders, and equipment costs to apply at the mill</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div className="bg-white border border-amber-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-amber-700">{num(score.energySavedPerMeter, 3)}</div>
+            <div className="text-xs font-semibold text-amber-600 mt-2">kWh Curing Energy Saved</div>
+            <div className="text-[10px] text-amber-500 mt-1">FUZE: {competitor.curingRequired ? `No ${competitor.curingTempC}°C oven` : "No curing needed"}</div>
+          </div>
+          <div className="bg-white border border-amber-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-amber-700">{num(score.binderEliminatedPerMeter, 1)}</div>
+            <div className="text-xs font-semibold text-amber-600 mt-2">g Binder Eliminated</div>
+            <div className="text-[10px] text-amber-500 mt-1">Zero petrochemical polymer</div>
+          </div>
+          <div className="bg-white border border-amber-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-amber-700">{competitor.binderFormaldehyde ? "Yes" : "No"}</div>
+            <div className="text-xs font-semibold text-amber-600 mt-2">Formaldehyde Binder?</div>
+            <div className="text-[10px] text-amber-500 mt-1">{competitor.binderRequired ? (competitor.binderFormaldehyde ? "Toxic crosslinker required" : "Binder required") : "Not required"}</div>
+          </div>
+          <div className="bg-white border border-amber-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-amber-700">{competitor.binderVOC ? "Yes" : "No"}</div>
+            <div className="text-xs font-semibold text-amber-600 mt-2">VOC at Application?</div>
+            <div className="text-[10px] text-amber-500 mt-1">{competitor.binderVOC ? "Off-gassing required" : "Zero off-gassing"}</div>
+          </div>
+        </div>
+
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+          <div className="text-xs font-semibold text-emerald-700 mb-2">FUZE Application Profile</div>
+          <p className="text-xs text-emerald-600"><strong>No binder.</strong> <strong>No curing.</strong> <strong>No energy.</strong> <strong>No VOCs.</strong> Integrates into existing dye bath, exhaust, or spray equipment. Zero additional steps. Bonds at ambient temperature.</p>
+        </div>
+      </div>
+
+      {/* STAGE 3: Factory Wastewater Remediation */}
+      <div className="bg-orange-50 rounded-2xl border border-orange-200 shadow-sm p-6 mb-8">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center flex-shrink-0">
+            <span className="font-bold text-white text-lg">3</span>
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-orange-900">Stage 3: Factory Wastewater Remediation</h2>
+            <p className="text-sm text-orange-700 mt-1">Cleaning contaminated wastewater before discharge</p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
-            <div className="text-3xl font-black text-amber-700">${num(score.remediationCostPerMeter * annualMeters, 2)}</div>
-            <div className="text-xs font-semibold text-amber-600 mt-1">Remediation Cost / {num(annualMeters, 0)} m</div>
+          <div className="bg-white border border-orange-200 rounded-xl p-4 text-center">
+            <div className="text-3xl font-black text-orange-700">${num(score.remediationCostPerMeter * annualMeters, 2)}</div>
+            <div className="text-xs font-semibold text-orange-600 mt-2">Remediation Cost</div>
+            <div className="text-[10px] text-orange-500 mt-1">${num(score.remediationCostPerMeter, 4)}/m</div>
           </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
-            <div className="text-3xl font-black text-amber-700">{num(score.remediationChemicalsKgPerMeter * annualMeters, 1)}</div>
-            <div className="text-xs font-semibold text-amber-600 mt-1">kg Treatment Chemicals</div>
-            <div className="text-[10px] text-amber-500 mt-1">Caustic soda, flocculants, precipitants, acids</div>
+          <div className="bg-white border border-orange-200 rounded-xl p-4 text-center">
+            <div className="text-3xl font-black text-orange-700">{num(score.remediationChemicalsKgPerMeter * annualMeters, 1)}</div>
+            <div className="text-xs font-semibold text-orange-600 mt-2">kg Treatment Chemicals</div>
+            <div className="text-[10px] text-orange-500 mt-1">Caustic soda, flocculants, acids</div>
           </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
-            <div className="text-3xl font-black text-amber-700">{num(score.remediationEnergyKwhPerMeter * annualMeters, 1)}</div>
-            <div className="text-xs font-semibold text-amber-600 mt-1">kWh Treatment Energy</div>
-            <div className="text-[10px] text-amber-500 mt-1">Pumps, reactors, filtration systems</div>
+          <div className="bg-white border border-orange-200 rounded-xl p-4 text-center">
+            <div className="text-3xl font-black text-orange-700">{num(score.remediationEnergyKwhPerMeter * annualMeters, 1)}</div>
+            <div className="text-xs font-semibold text-orange-600 mt-2">kWh Treatment Energy</div>
+            <div className="text-[10px] text-orange-500 mt-1">Pumps, reactors, filtration</div>
           </div>
         </div>
 
         {/* True total cost comparison */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-red-50 border border-red-300 rounded-xl p-5">
-            <div className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-2">{competitor.product} True Cost per Meter</div>
+            <div className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-2">{competitor.product} True Cost/Meter</div>
             <div className="text-3xl font-black text-red-700">${num(score.trueTotalCostPerMeter, 4)}<span className="text-sm font-normal text-red-400">/m</span></div>
             <div className="text-xs text-red-500 mt-2 space-y-1">
               <div>Antimicrobial: ${num(competitor.estimatedCostPerMeterTypical, 4)}/m</div>
@@ -326,7 +396,7 @@ export default function SustainabilityPage() {
             </div>
           </div>
           <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-5">
-            <div className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-2">FUZE True Cost per Meter</div>
+            <div className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-2">FUZE True Cost/Meter</div>
             <div className="text-3xl font-black text-emerald-700">${num(score.fuzeTrueCostPerMeter, 4)}<span className="text-sm font-normal text-emerald-400">/m</span></div>
             <div className="text-xs text-emerald-500 mt-2 space-y-1">
               <div>FUZE F1 treatment: ${num(score.fuzeTrueCostPerMeter, 4)}/m</div>
@@ -334,6 +404,89 @@ export default function SustainabilityPage() {
               <div>+ Curing energy: $0.0000/m</div>
               <div className="font-bold pt-1 border-t border-emerald-200">Hidden costs: $0.0000/m</div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* STAGE 4: Consumer & Municipal */}
+      <div className="bg-purple-50 rounded-2xl border border-purple-200 shadow-sm p-6 mb-8">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+            <span className="font-bold text-white text-lg">4</span>
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-purple-900">Stage 4: Consumer Laundering & Municipal Water</h2>
+            <p className="text-sm text-purple-700 mt-1">What happens when consumers wash their clothes</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+          <div className="bg-white border border-purple-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-purple-700">{num(score.consumerLeachedMetalMgPerWash, 2)}</div>
+            <div className="text-xs font-semibold text-purple-600 mt-2">mg Metal/Wash</div>
+            <div className="text-[10px] text-purple-500 mt-1">Per garment, per wash cycle</div>
+          </div>
+          <div className="bg-white border border-purple-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-purple-700">{num(score.consumerTotalLeachedMgLifetime, 1)}</div>
+            <div className="text-xs font-semibold text-purple-600 mt-2">mg Total Leached</div>
+            <div className="text-[10px] text-purple-500 mt-1">Lifetime of garment</div>
+          </div>
+          <div className="bg-white border border-purple-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-purple-700">{num(score.consumerWaterContaminatedLitersLifetime, 0)}</div>
+            <div className="text-xs font-semibold text-purple-600 mt-2">L Contaminated Water</div>
+            <div className="text-[10px] text-purple-500 mt-1">Lifetime wash cycles</div>
+          </div>
+          <div className="bg-white border border-purple-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-purple-700">${num(score.municipalTreatmentCostPerGarment, 3)}</div>
+            <div className="text-xs font-semibold text-purple-600 mt-2">Municipal Cost</div>
+            <div className="text-[10px] text-purple-500 mt-1">Per garment treatment</div>
+          </div>
+          <div className="bg-white border border-purple-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-purple-700">{num(score.consumerMicroplasticShedGPerWash, 3)}</div>
+            <div className="text-xs font-semibold text-purple-600 mt-2">g Microplastic/Wash</div>
+            <div className="text-[10px] text-purple-500 mt-1">From binder shedding</div>
+          </div>
+          <div className="bg-white border border-purple-200 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-purple-700">{num(score.consumerBioaccumulationFactor, 2)}</div>
+            <div className="text-xs font-semibold text-purple-600 mt-2">Bioaccumulation</div>
+            <div className="text-[10px] text-purple-500 mt-1">0–1 persistence scale</div>
+          </div>
+        </div>
+
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+          <div className="text-xs font-semibold text-emerald-700 mb-2">FUZE Consumer Profile</div>
+          <p className="text-xs text-emerald-600"><strong>Zero leaching.</strong> <strong>Zero microplastic.</strong> <strong>Zero municipal burden.</strong> FUZE metamaterial does not leach into home wash water. No binder = no polymer shedding. Zero treatment cost at municipal water facilities.</p>
+        </div>
+      </div>
+
+      {/* Per 10,000 garments — the headline number */}
+      <div className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 rounded-2xl p-8 mb-8 text-white">
+        <div className="text-xs font-semibold text-emerald-200 uppercase tracking-wider mb-4">Per 10,000 Garments — Switching from {competitor.product} to FUZE</div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+          <div>
+            <div className="text-3xl font-black">{num(score.co2SavedPer10kGarments, 1)}</div>
+            <div className="text-emerald-200 text-sm font-medium mt-1">kg CO₂</div>
+            <div className="text-emerald-300/60 text-xs mt-1">Eliminated across all 4 stages</div>
+          </div>
+          <div>
+            <div className="text-3xl font-black">{num(score.waterSavedPer10kGarments, 0)}</div>
+            <div className="text-emerald-200 text-sm font-medium mt-1">L Water Saved</div>
+            <div className="text-emerald-300/60 text-xs mt-1">No contamination</div>
+          </div>
+          <div>
+            <div className="text-3xl font-black">{num(score.chemicalEliminated10kGarments / 1000, 1)}</div>
+            <div className="text-emerald-200 text-sm font-medium mt-1">g Chemistry</div>
+            <div className="text-emerald-300/60 text-xs mt-1">{competitor.heavyMetalReleased} not entering supply chain</div>
+          </div>
+          <div>
+            <div className="text-3xl font-black">{num(score.binderEliminated10kGarments / 1000, 2)}</div>
+            <div className="text-emerald-200 text-sm font-medium mt-1">kg Binder</div>
+            <div className="text-emerald-300/60 text-xs mt-1">Zero petrochemical polymer</div>
+          </div>
+          <div>
+            <div className="text-3xl font-black">${num(score.hiddenCostPerMeter * 10000 * 1.5, 0)}</div>
+            <div className="text-emerald-200 text-sm font-medium mt-1">Hidden Cost Avoided</div>
+            <div className="text-emerald-300/60 text-xs mt-1">Total true cost savings</div>
           </div>
         </div>
       </div>
