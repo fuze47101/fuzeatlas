@@ -113,6 +113,7 @@ export async function POST(req: Request) {
         brandId: null,
         factoryId: null,
         distributorId: null,
+        labId: null,
       };
       const token = await createToken(sessionUser);
       await setSessionCookie(token);

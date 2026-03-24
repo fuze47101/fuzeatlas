@@ -77,6 +77,7 @@ export async function POST(req: Request) {
       brandId: user.brandId,
       factoryId: user.factoryId,
       distributorId: user.distributorId,
+      labId: user.labId,
     };
 
     const token = await createToken(sessionUser);

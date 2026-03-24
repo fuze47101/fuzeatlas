@@ -19,6 +19,7 @@ export interface SessionUser {
   brandId?: string | null;
   factoryId?: string | null;
   distributorId?: string | null;
+  labId?: string | null;
 }
 
 /* ── JWT helpers ─────────────────────────────────────── */
@@ -92,6 +93,7 @@ const ROLE_LEVEL: Record<string, number> = {
   TESTING_MANAGER: 70,
   FACTORY_MANAGER: 70,
   SALES_REP: 50,
+  LAB_USER: 30,
   FACTORY_USER: 30,
   BRAND_USER: 30,
   DISTRIBUTOR_USER: 30,

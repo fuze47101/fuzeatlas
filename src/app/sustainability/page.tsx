@@ -31,6 +31,10 @@ export default function SustainabilityPage() {
   const [targetWashes, setTargetWashes] = useState(100);
   const [metersPerGarment, setMetersPerGarment] = useState(1.5);
   const [annualMeters, setAnnualMeters] = useState(100000);
+  const [brandName, setBrandName] = useState("");
+  const [preparedFor, setPreparedFor] = useState("");
+  const [reportMode, setReportMode] = useState<"single" | "all">("all");
+  const [exporting, setExporting] = useState(false);
 
   const competitor = competitors.find(c => c.id === competitorId) || competitors[0];
 
@@ -123,6 +127,80 @@ export default function SustainabilityPage() {
             <label className="block text-xs font-medium text-slate-500 mb-1">Annual Production (m)</label>
             <input type="number" value={annualMeters} onChange={e => setAnnualMeters(+e.target.value)}
               className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
+          </div>
+        </div>
+      </div>
+
+      {/* Export Report Controls */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 mb-8 border border-slate-700">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-base font-semibold text-white">Export Sustainability + Competitive Intelligence Report</h2>
+            <p className="text-xs text-slate-400 mt-1">Generate a branded PDF-ready report with full competitor teardowns, EPA data, and environmental impact analysis.</p>
+          </div>
+          <button
+            disabled={exporting}
+            onClick={async () => {
+              setExporting(true);
+              try {
+                const res = await fetch("/api/reports/sustainability-competitive", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    gsm,
+                    widthInches: width,
+                    targetWashes,
+                    metersPerGarment,
+                    annualMeters,
+                    competitorIds: reportMode === "all" ? "all" : [competitorId],
+                    brandName: brandName || undefined,
+                    preparedFor: preparedFor || undefined,
+                  }),
+                });
+                if (!res.ok) throw new Error("Report generation failed");
+                const html = await res.text();
+                const blob = new Blob([html], { type: "text/html" });
+                const url = URL.createObjectURL(blob);
+                window.open(url, "_blank");
+              } catch (err) {
+                alert("Failed to generate report. Check console for details.");
+                console.error(err);
+              } finally {
+                setExporting(false);
+              }
+            }}
+            className="px-6 py-3 bg-gradient-to-r from-[#00b4c3] to-emerald-500 text-white font-bold rounded-xl text-sm hover:from-[#00a0b0] hover:to-emerald-600 transition-all shadow-lg shadow-teal-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 flex-shrink-0"
+          >
+            {exporting ? (
+              <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" /><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" /></svg> Generating...</>
+            ) : (
+              <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> Export PDF Report</>
+            )}
+          </button>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">Report Scope</label>
+            <select value={reportMode} onChange={e => setReportMode(e.target.value as "single" | "all")}
+              className="w-full h-10 rounded-lg border border-slate-600 bg-slate-800 text-white px-3 text-sm">
+              <option value="all">All Competitors (Full Teardown)</option>
+              <option value="single">Selected Competitor Only</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">Brand Name (optional)</label>
+            <input type="text" value={brandName} onChange={e => setBrandName(e.target.value)} placeholder="e.g. Levi's, H&M"
+              className="w-full h-10 rounded-lg border border-slate-600 bg-slate-800 text-white px-3 text-sm placeholder-slate-500" />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">Prepared For (optional)</label>
+            <input type="text" value={preparedFor} onChange={e => setPreparedFor(e.target.value)} placeholder="e.g. John Smith, VP Sustainability"
+              className="w-full h-10 rounded-lg border border-slate-600 bg-slate-800 text-white px-3 text-sm placeholder-slate-500" />
+          </div>
+          <div className="flex items-end">
+            <div className="text-xs text-slate-500">
+              Opens in new tab as print-ready HTML. Use <kbd className="px-1.5 py-0.5 bg-slate-700 rounded text-slate-300 font-mono">Ctrl+P</kbd> → Save as PDF.
+            </div>
           </div>
         </div>
       </div>
@@ -368,6 +446,12 @@ export default function SustainabilityPage() {
         <Link href="/pricing" className="flex-1 text-center py-3 bg-[#00b4c3] text-white rounded-xl font-semibold text-sm hover:bg-[#00a0b0] transition-colors">
           Pricing & Environmental Comparison Tool →
         </Link>
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="flex-1 text-center py-3 bg-slate-900 text-white rounded-xl font-semibold text-sm hover:bg-slate-800 transition-colors"
+        >
+          ↑ Export Full Report
+        </button>
       </div>
     </div>
   );
