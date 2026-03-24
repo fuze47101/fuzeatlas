@@ -332,6 +332,11 @@ export type SustainabilityScore = {
   consumerBioaccumulationFactor: number;       // 0-1 environmental persistence score
   consumerMicroplasticShedGPerWash: number;    // grams of binder microplastic shed per wash
 
+  // Environmental grade (competitor gets D/F, FUZE always A)
+  competitorEnvironmentalGrade: string;         // F, D, D+, C, C+, B based on environmental harm
+  competitorRecyclable: boolean;                // false if binder/chemistry prevents textile recycling
+  recyclabilityNote: string;                    // explanation of why recyclable or not
+
   // True total cost (antimicrobial + binder + curing energy + remediation + consumer)
   trueTotalCostPerMeter: number;             // competitor full cost per meter
   fuzeTrueCostPerMeter: number;              // FUZE full cost per meter (just the product)
@@ -549,6 +554,35 @@ export function calcSustainabilityScore(
     ? (competitor.binderGPerKg * garmentFabricKg * (competitor.binderLeachPctLifetime / 100)) / targetWashes
     : 0;
 
+  // ── Competitor Environmental Grade (inverted — measures environmental HARM) ──
+  // Higher harm score = worse grade. FUZE always gets "A".
+  let harmScore = 0;
+  if (competitor.binderRequired) harmScore += 20;        // binders = petrochemical polymers
+  if (competitor.curingRequired) harmScore += 15;        // curing ovens = energy + CO2
+  if (competitor.leachRatePerWash > 0) harmScore += 20;  // leaches into water systems
+  if (competitor.binderFormaldehyde) harmScore += 15;     // carcinogenic crosslinker
+  if (competitor.binderVOC) harmScore += 10;              // volatile organic compounds at factory
+  if (consumerBioaccumulationFactor > 0.5) harmScore += 10; // persists in environment
+  if (consumerMicroplasticShedGPerWash > 0) harmScore += 10; // microplastic pollution
+
+  const competitorEnvironmentalGrade =
+    harmScore >= 80 ? "F" :
+    harmScore >= 65 ? "D" :
+    harmScore >= 50 ? "D+" :
+    harmScore >= 35 ? "C" :
+    harmScore >= 20 ? "C+" : "B";
+
+  // ── Recyclability Assessment ──
+  // Binders create cross-linked polymer coatings that contaminate fiber recycling streams.
+  // Chemical treatments embedded in the fiber matrix prevent clean fiber recovery.
+  // Relevant to California SB 707 (Responsible Textile Recovery Act).
+  const competitorRecyclable = !competitor.binderRequired && !competitor.curingRequired;
+  const recyclabilityNote = competitor.binderRequired
+    ? `${competitor.binderType} binder creates cross-linked polymer coating that contaminates fiber recycling streams. Non-compliant with emerging textile circularity standards (CA SB 707).`
+    : competitor.curingRequired
+    ? `High-temperature curing alters fiber structure, reducing recyclability. Chemical residues may contaminate recycling streams.`
+    : `Chemistry does not use binders or curing, but active agent residues may still affect recycling purity.`;
+
   // ── True total cost per meter ──
   // Competitor: antimicrobial product + binder + curing energy + wastewater remediation + consumer municipal
   const compProductCostPerMeter = competitor.estimatedCostPerMeterTypical * competitorApps;
@@ -581,6 +615,9 @@ export function calcSustainabilityScore(
     landfillLeachateCostPerGarment,
     consumerBioaccumulationFactor,
     consumerMicroplasticShedGPerWash,
+    competitorEnvironmentalGrade,
+    competitorRecyclable,
+    recyclabilityNote,
     trueTotalCostPerMeter,
     fuzeTrueCostPerMeter,
     hiddenCostPerMeter,

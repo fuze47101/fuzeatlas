@@ -61,6 +61,13 @@ export default function SustainabilityPage() {
     score.sustainabilityScore >= 70 ? "from-teal-500 to-teal-600" :
     score.sustainabilityScore >= 50 ? "from-amber-500 to-amber-600" : "from-red-500 to-red-600";
 
+  const competitorGradeColor =
+    score.competitorEnvironmentalGrade === "F" ? "from-red-600 to-red-700" :
+    score.competitorEnvironmentalGrade === "D" ? "from-red-500 to-orange-600" :
+    score.competitorEnvironmentalGrade === "D+" ? "from-orange-500 to-orange-600" :
+    score.competitorEnvironmentalGrade === "C" ? "from-amber-500 to-amber-600" :
+    score.competitorEnvironmentalGrade === "C+" ? "from-yellow-500 to-amber-500" : "from-teal-500 to-teal-600";
+
   return (
     <div className="max-w-7xl mx-auto p-6 pb-20">
       {/* Hero header */}
@@ -235,6 +242,92 @@ export default function SustainabilityPage() {
           <div className="text-3xl font-black text-amber-700">{num(score.energySavedPerMeter, 3)}<span className="text-sm font-normal text-amber-500"> kWh</span></div>
           <div className="text-sm font-semibold text-amber-800 mt-1">Factory Energy Saved per Meter</div>
           <div className="text-xs text-amber-600/70 mt-2">{competitor.curingRequired ? `No ${competitor.curingTempC}°C curing oven needed — FUZE bonds at ambient temperature` : "Competitor also doesn't require curing"}</div>
+        </div>
+      </div>
+
+      {/* Environmental Grade Cards + Recyclability */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Grade Cards */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Environmental Rating</div>
+          <div className="flex items-center justify-center gap-8">
+            {/* FUZE Grade */}
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white font-black text-5xl shadow-xl mb-3">
+                A
+              </div>
+              <div className="text-sm font-bold text-emerald-700">FUZE</div>
+              <div className="text-[10px] text-slate-500 mt-1">Zero binders, zero curing,<br />zero leaching, recyclable</div>
+            </div>
+
+            <div className="text-2xl font-black text-slate-300">vs</div>
+
+            {/* Competitor Grade */}
+            <div className="text-center">
+              <div className={`inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br ${competitorGradeColor} text-white font-black text-5xl shadow-xl mb-3`}>
+                {score.competitorEnvironmentalGrade}
+              </div>
+              <div className="text-sm font-bold text-red-700">{competitor.product}</div>
+              <div className="text-[10px] text-slate-500 mt-1">
+                {competitor.binderRequired ? "Binder required" : ""}
+                {competitor.binderRequired && competitor.curingRequired ? ", " : ""}
+                {competitor.curingRequired ? `${competitor.curingTempC}°C curing` : ""}
+                {(competitor.binderRequired || competitor.curingRequired) && competitor.leachRatePerWash > 0 ? ", " : ""}
+                {competitor.leachRatePerWash > 0 ? "leaches metals" : ""}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recyclability Assessment */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Textile Recyclability</div>
+          <div className="flex items-center justify-center gap-8">
+            {/* FUZE Recyclable */}
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-xl mb-3">
+                <svg className="w-14 h-14 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                </svg>
+              </div>
+              <div className="text-sm font-bold text-emerald-700">FUZE</div>
+              <div className="text-[10px] text-emerald-600 mt-1 font-semibold">Fully Recyclable</div>
+              <div className="text-[10px] text-slate-500">No binders, no coatings<br />Clean fiber recovery</div>
+            </div>
+
+            <div className="text-2xl font-black text-slate-300">vs</div>
+
+            {/* Competitor Recyclable */}
+            <div className="text-center">
+              <div className={`inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br ${score.competitorRecyclable ? "from-emerald-500 to-emerald-600" : "from-red-500 to-red-600"} shadow-xl mb-3`}>
+                {score.competitorRecyclable ? (
+                  <svg className="w-14 h-14 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                  </svg>
+                ) : (
+                  <svg className="w-14 h-14 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" />
+                  </svg>
+                )}
+              </div>
+              <div className="text-sm font-bold text-red-700">{competitor.product}</div>
+              <div className={`text-[10px] mt-1 font-semibold ${score.competitorRecyclable ? "text-emerald-600" : "text-red-600"}`}>
+                {score.competitorRecyclable ? "Recyclable" : "Not Recyclable"}
+              </div>
+              <div className="text-[10px] text-slate-500">{score.recyclabilityNote.split('.')[0]}.</div>
+            </div>
+          </div>
+
+          {/* SB 707 callout */}
+          <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-3">
+            <div className="flex items-start gap-2">
+              <span className="text-base flex-shrink-0">⚖️</span>
+              <div>
+                <div className="text-xs font-bold text-amber-800">California SB 707 — Responsible Textile Recovery Act</div>
+                <p className="text-[10px] text-amber-700 mt-1">Requires textile producers to fund and implement collection and recycling programs. Chemical binders and curing agents that prevent clean fiber recovery create compliance risk and increased producer responsibility fees. FUZE-treated textiles remain fully recyclable.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

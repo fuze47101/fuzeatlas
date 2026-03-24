@@ -81,6 +81,7 @@ ${getReportStyles()}
 <body>
   ${renderCoverPage(params, today)}
   ${renderExecutiveSummary(results, params)}
+  ${renderGradeAndRecyclability(results)}
   ${renderFUZETechnology()}
   ${renderLifecycleStage1(results, params)}
   ${renderLifecycleStage2(results, params)}
@@ -197,6 +198,28 @@ function getReportStyles(): string {
     .cert-name { font-weight: 700; font-size: 12px; color: #1a1a2e; }
     .cert-note { font-size: 10px; color: #666; margin-top: 2px; }
 
+    /* Grade cards */
+    .grade-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; margin: 24px 0; }
+    .grade-card { text-align: center; padding: 24px; border-radius: 12px; }
+    .grade-card-fuze { background: linear-gradient(135deg, #059669, #10b981); color: white; }
+    .grade-card-comp { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; }
+    .grade-card-comp-c { background: linear-gradient(135deg, #d97706, #f59e0b); color: white; }
+    .grade-letter { font-size: 56px; font-weight: 900; line-height: 1; margin-bottom: 8px; }
+    .grade-label { font-size: 13px; font-weight: 700; }
+    .grade-sub { font-size: 10px; opacity: 0.8; margin-top: 4px; }
+    .grade-vs { font-size: 24px; font-weight: 800; color: #ccc; }
+
+    .recycle-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; margin: 24px 0; }
+    .recycle-card { text-align: center; padding: 24px; border-radius: 12px; border: 2px solid #e5e7eb; }
+    .recycle-card-yes { border-color: #059669; background: #f0fdf4; }
+    .recycle-card-no { border-color: #dc2626; background: #fef2f2; }
+    .recycle-icon { font-size: 48px; margin-bottom: 8px; }
+    .recycle-label { font-size: 13px; font-weight: 700; }
+    .recycle-name { font-size: 11px; color: #666; margin-top: 4px; }
+    .sb707-box { background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 16px 0; }
+    .sb707-title { font-size: 12px; font-weight: 700; color: #92400e; margin-bottom: 4px; }
+    .sb707-text { font-size: 10px; color: #78350f; }
+
     /* Misc */
     .text-sm { font-size: 12px; color: #555; margin-bottom: 12px; }
     .text-xs { font-size: 10px; color: #999; }
@@ -271,6 +294,65 @@ function renderExecutiveSummary(results: CompetitorResult[], params: ReportParam
       <strong>$${avgCost.toFixed(3)}/meter</strong> in hidden costs that competing antimicrobials don't disclose —
       binders, curing energy, and wastewater remediation. Over ${(params.annualMeters/1000).toFixed(0)}k annual meters,
       that's <strong>$${(avgCost * params.annualMeters).toFixed(0)}</strong> in real savings.
+    </div>
+  </div>`;
+}
+
+function renderGradeAndRecyclability(results: CompetitorResult[]): string {
+  const gradeRows = results.map(r => {
+    const g = r.score.competitorEnvironmentalGrade;
+    const gradeClass = (g === "F" || g === "D") ? "grade-card-comp" : "grade-card-comp-c";
+    const recyclableIcon = r.score.competitorRecyclable ? "👍" : "👎";
+    const recyclableText = r.score.competitorRecyclable ? "Recyclable" : "Not Recyclable";
+    const recyclableClass = r.score.competitorRecyclable ? "recycle-card-yes" : "recycle-card-no";
+    return `
+      <div class="no-break" style="margin-bottom: 24px;">
+        <div style="font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px;">${r.competitor.product} <span style="font-size: 11px; color: #666; font-weight: 400;">— ${r.competitor.company}</span></div>
+        <div class="grade-grid">
+          <div class="grade-card grade-card-fuze">
+            <div class="grade-letter">A</div>
+            <div class="grade-label">FUZE</div>
+            <div class="grade-sub">Zero binders · Zero curing · Zero leaching</div>
+          </div>
+          <div class="grade-vs">vs</div>
+          <div class="grade-card ${gradeClass}">
+            <div class="grade-letter">${g}</div>
+            <div class="grade-label">${r.competitor.product}</div>
+            <div class="grade-sub">${r.competitor.binderRequired ? "Binder required" : ""}${r.competitor.binderRequired && r.competitor.curingRequired ? " · " : ""}${r.competitor.curingRequired ? r.competitor.curingTempC + "°C curing" : ""}${r.competitor.leachRatePerWash > 0 ? " · Leaches metals" : ""}</div>
+          </div>
+        </div>
+        <div class="recycle-grid">
+          <div class="recycle-card recycle-card-yes">
+            <div class="recycle-icon">👍</div>
+            <div class="recycle-label" style="color: #059669;">Fully Recyclable</div>
+            <div class="recycle-name">FUZE</div>
+          </div>
+          <div class="grade-vs">vs</div>
+          <div class="recycle-card ${recyclableClass}">
+            <div class="recycle-icon">${recyclableIcon}</div>
+            <div class="recycle-label" style="color: ${r.score.competitorRecyclable ? "#059669" : "#dc2626"};">${recyclableText}</div>
+            <div class="recycle-name">${r.competitor.product}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join("");
+
+  return `
+  <div class="page-break"></div>
+  <div class="container">
+    <div class="section-header"><span>02</span> Environmental Rating &amp; Textile Recyclability</div>
+    <p class="text-sm">
+      FUZE receives an <strong style="color: #059669;">A</strong> environmental rating — zero binders, zero curing energy,
+      zero leaching, zero VOCs, and fully recyclable textiles. Each competitor is graded on the same criteria.
+    </p>
+    ${gradeRows}
+    <div class="sb707-box">
+      <div class="sb707-title">⚖️ California SB 707 — Responsible Textile Recovery Act</div>
+      <div class="sb707-text">
+        Requires textile producers to fund collection and recycling programs. Chemical binders and curing agents
+        that prevent clean fiber recovery create compliance risk and increased producer responsibility fees.
+        FUZE-treated textiles remain fully recyclable — no binders, no coatings, no contamination of recycling streams.
+      </div>
     </div>
   </div>`;
 }
@@ -519,6 +601,8 @@ function renderCompetitorComparison(results: CompetitorResult[], params: ReportP
       <td>${c.binderRequired ? `<span class="danger">Yes</span><br><span class="muted">${c.binderGPerKg}g/kg ${c.binderType.split(" ")[0]}</span>` : '<span class="success">No</span>'}</td>
       <td>${c.curingRequired ? `<span class="danger">${c.curingTempC}°C</span>` : '<span class="success">None</span>'}</td>
       <td>${c.leachRateFirst10Washes > 0 ? `<span class="danger">${c.leachRateFirst10Washes}%</span><br><span class="muted">first 10 washes</span>` : '<span class="success">0%</span>'}</td>
+      <td><span style="display:inline-block; padding:2px 10px; border-radius:4px; font-weight:800; font-size:12px; color:white; background:${(s.competitorEnvironmentalGrade === "F" || s.competitorEnvironmentalGrade === "D") ? "#dc2626" : s.competitorEnvironmentalGrade.startsWith("C") ? "#d97706" : "#059669"};">${s.competitorEnvironmentalGrade}</span></td>
+      <td>${s.competitorRecyclable ? '<span class="success">👍</span>' : '<span class="danger">👎</span>'}</td>
       <td><span class="comp-grade ${gradeClass}" style="font-size:11px; padding:2px 8px;">${s.grade}</span></td>
     </tr>`;
   }).join("");
@@ -528,16 +612,18 @@ function renderCompetitorComparison(results: CompetitorResult[], params: ReportP
   <div class="container">
     <div class="section-header"><span>07</span> Competitive Comparison Matrix</div>
     <p class="text-sm">Side-by-side comparison of ${results.length} competing antimicrobial technologies against FUZE.
-    FUZE Advantage Score reflects environmental improvement when switching to FUZE (higher = more improvement).</p>
+    Environmental Rating grades each product on binders, curing, leaching, VOCs, and recyclability. Recyclable column indicates SB 707 compliance for textile circularity.</p>
     <table class="data-table">
       <thead>
         <tr>
-          <th style="width:20%">Product</th>
+          <th style="width:18%">Product</th>
           <th>Chemistry</th>
           <th>EPA Reg.</th>
           <th>Binder</th>
           <th>Curing</th>
           <th>Leach</th>
+          <th>Rating</th>
+          <th>♻️</th>
           <th>Score</th>
         </tr>
       </thead>
@@ -549,6 +635,8 @@ function renderCompetitorComparison(results: CompetitorResult[], params: ReportP
           <td><span class="success">None</span></td>
           <td><span class="success">None</span></td>
           <td><span class="success">0%</span></td>
+          <td><span style="display:inline-block; padding:2px 10px; border-radius:4px; font-weight:800; font-size:12px; color:white; background:#059669;">A</span></td>
+          <td><span class="success">👍</span></td>
           <td>—</td>
         </tr>
         ${rows}
@@ -578,6 +666,21 @@ function renderCompetitorTeardown(result: CompetitorResult, params: ReportParams
           <div class="comp-company">${c.company} · ${c.chemistryLabel}</div>
         </div>
         <div class="comp-grade ${gradeClass}">${s.grade}</div>
+      </div>
+
+      <div style="display:flex; gap:16px; margin-bottom:16px;">
+        <div style="flex:1; display:flex; align-items:center; gap:12px; padding:12px 16px; background:linear-gradient(135deg,#059669,#10b981); border-radius:8px; color:white;">
+          <span style="font-size:32px; font-weight:900;">A</span>
+          <div><div style="font-size:11px; font-weight:700;">FUZE Environmental Rating</div><div style="font-size:9px; opacity:0.8;">Zero binders · Zero curing · Zero leaching</div></div>
+        </div>
+        <div style="flex:1; display:flex; align-items:center; gap:12px; padding:12px 16px; background:linear-gradient(135deg,${(s.competitorEnvironmentalGrade === "F" || s.competitorEnvironmentalGrade === "D") ? "#dc2626,#ef4444" : "#d97706,#f59e0b"}); border-radius:8px; color:white;">
+          <span style="font-size:32px; font-weight:900;">${s.competitorEnvironmentalGrade}</span>
+          <div><div style="font-size:11px; font-weight:700;">${c.product} Rating</div><div style="font-size:9px; opacity:0.8;">${c.binderRequired ? "Binder req." : ""}${c.curingRequired ? " · Curing" : ""}${c.leachRatePerWash > 0 ? " · Leaches" : ""}</div></div>
+        </div>
+        <div style="flex:0.6; display:flex; align-items:center; gap:8px; padding:12px 16px; background:${s.competitorRecyclable ? "#f0fdf4" : "#fef2f2"}; border:2px solid ${s.competitorRecyclable ? "#059669" : "#dc2626"}; border-radius:8px;">
+          <span style="font-size:24px;">${s.competitorRecyclable ? "👍" : "👎"}</span>
+          <div><div style="font-size:10px; font-weight:700; color:${s.competitorRecyclable ? "#059669" : "#dc2626"};">${s.competitorRecyclable ? "Recyclable" : "Not Recyclable"}</div><div style="font-size:8px; color:#666;">SB 707</div></div>
+        </div>
       </div>
 
       <div class="comp-grid">

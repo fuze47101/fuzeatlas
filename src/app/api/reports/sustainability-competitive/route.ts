@@ -48,6 +48,10 @@ export async function POST(req: Request) {
       );
     }
 
+    // Sanitize string inputs to prevent XSS in generated HTML
+    const escapeHTML = (s?: string) =>
+      s ? s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;") : s;
+
     const params: ReportParams = {
       gsm: Number(gsm),
       widthInches: Number(widthInches),
@@ -55,8 +59,8 @@ export async function POST(req: Request) {
       metersPerGarment: Number(metersPerGarment),
       annualMeters: Number(annualMeters),
       competitorIds,
-      brandName,
-      preparedFor,
+      brandName: escapeHTML(brandName),
+      preparedFor: escapeHTML(preparedFor),
     };
 
     const html = generateSustainabilityCompetitiveReport(params);
