@@ -672,7 +672,7 @@ export default function ComplianceLibraryPage() {
                     onChange={(e) => setForm({ ...form, category: e.target.value, customCategory: "" })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                   >
-                    {BUILT_IN_CATEGORIES.map((c) => (
+                    {allCategories.map((c) => (
                       <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
                     ))}
                     <option value="__CUSTOM__">{"\u{2795}"} Custom Category...</option>
