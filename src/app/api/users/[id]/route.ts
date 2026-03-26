@@ -176,7 +176,7 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
         await prisma.notification.deleteMany({ where: { userId: params.id } });
         await prisma.auditLog.deleteMany({ where: { userId: params.id } });
         await prisma.passwordResetToken.deleteMany({ where: { userId: params.id } });
-        await prisma.note.deleteMany({ where: { authorId: params.id } });
+        await prisma.note.deleteMany({ where: { userId: params.id } });
         // Delete the user
         const deletedUser = await prisma.user.delete({
           where: { id: params.id },
