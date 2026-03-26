@@ -306,6 +306,7 @@ export async function POST(req: Request) {
     });
   } catch (e: any) {
     console.error("Brand test-request POST error:", e);
-    return NextResponse.json({ ok: false, error: "Failed to create test request" }, { status: 500 });
+    const detail = e?.meta?.cause || e?.meta?.target || e?.message || "Unknown error";
+    return NextResponse.json({ ok: false, error: `Failed to create test request: ${detail}` }, { status: 500 });
   }
 }
