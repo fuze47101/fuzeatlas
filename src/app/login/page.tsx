@@ -35,8 +35,12 @@ function LoginForm() {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      const from = searchParams.get("from");
-      router.push(from || getDefaultRoute(user.role));
+      if (user.mustChangePassword) {
+        router.push("/change-password");
+      } else {
+        const from = searchParams.get("from");
+        router.push(from || getDefaultRoute(user.role));
+      }
     }
   }, [user, router, searchParams]);
 
