@@ -227,6 +227,7 @@ export default function Sidebar() {
           { href: "/compliance-library", label: "Document Center", icon: "📋" },
           { href: "/pricing", label: "Pricing", icon: "💰" },
           { href: "/pricing/calculator", label: "Application Calculator", icon: "🧮" },
+          { href: "/sustainability", label: "Sustainability", icon: "🌱" },
           { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
         ],
       },

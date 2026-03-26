@@ -10,6 +10,7 @@ interface AuthUser {
   brandId?: string | null;
   factoryId?: string | null;
   distributorId?: string | null;
+  mustChangePassword?: boolean;
 }
 
 interface AuthContextType {
@@ -63,8 +64,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       const data = await res.json();
       if (data.ok && data.user) {
-        setUser(data.user);
-        return { ok: true, user: data.user, mustChangePassword: data.mustChangePassword };
+        const enrichedUser = { ...data.user, mustChangePassword: data.mustChangePassword || false };
+        setUser(enrichedUser);
+        return { ok: true, user: enrichedUser, mustChangePassword: data.mustChangePassword };
       }
       return { ok: false, error: data.error || "Login failed" };
     } catch {

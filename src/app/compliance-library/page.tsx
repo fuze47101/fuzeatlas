@@ -77,6 +77,17 @@ export default function ComplianceLibraryPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [pageDragOver, setPageDragOver] = useState(false);
 
+  // Category management state
+  const [managingCategory, setManagingCategory] = useState<string | null>(null);
+  const [categoryAction, setCategoryAction] = useState<"rename" | "delete" | null>(null);
+  const [renameTo, setRenameTo] = useState("");
+  const [deleteMoveTo, setDeleteMoveTo] = useState("OTHER");
+  const [catSaving, setCatSaving] = useState(false);
+
+  // Quick move state
+  const [movingDoc, setMovingDoc] = useState<string | null>(null);
+  const [moveTarget, setMoveTarget] = useState("");
+
   const isAdmin = user?.role === "ADMIN" || user?.role === "EMPLOYEE";
   const canDelete = user?.role === "ADMIN";
 
@@ -387,6 +398,76 @@ export default function ComplianceLibraryPage() {
     }
   };
 
+  // ── Category management ──
+  const renameCategory = async () => {
+    if (!managingCategory || !renameTo.trim()) return;
+    setCatSaving(true);
+    try {
+      const res = await fetch("/api/compliance-docs/categories", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ oldCategory: managingCategory, newCategory: renameTo.trim() }),
+      });
+      const d = await res.json();
+      if (d.ok) {
+        toast.success(`Renamed category — ${d.updated} document${d.updated !== 1 ? "s" : ""} updated`);
+        setManagingCategory(null);
+        setCategoryAction(null);
+        setRenameTo("");
+        if (activeCategory === managingCategory) setActiveCategory(d.newCategory);
+        load();
+        fetch("/api/compliance-docs").then((r) => r.json()).then((d) => { if (d.ok) setCategoryCounts(d.categories || {}); });
+      } else {
+        toast.error(d.error || "Rename failed");
+      }
+    } catch { toast.error("Rename failed"); }
+    finally { setCatSaving(false); }
+  };
+
+  const deleteCategory = async () => {
+    if (!managingCategory || !deleteMoveTo) return;
+    setCatSaving(true);
+    try {
+      const res = await fetch("/api/compliance-docs/categories", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: managingCategory, moveTo: deleteMoveTo }),
+      });
+      const d = await res.json();
+      if (d.ok) {
+        toast.success(`Category deleted — ${d.moved} document${d.moved !== 1 ? "s" : ""} moved to ${getCategoryMeta(d.to).label}`);
+        setManagingCategory(null);
+        setCategoryAction(null);
+        if (activeCategory === managingCategory) setActiveCategory(null);
+        load();
+        fetch("/api/compliance-docs").then((r) => r.json()).then((d) => { if (d.ok) setCategoryCounts(d.categories || {}); });
+      } else {
+        toast.error(d.error || "Delete failed");
+      }
+    } catch { toast.error("Delete failed"); }
+    finally { setCatSaving(false); }
+  };
+
+  const quickMoveDoc = async (docId: string, targetCategory: string) => {
+    try {
+      const res = await fetch(`/api/compliance-docs/${docId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: targetCategory }),
+      });
+      const d = await res.json();
+      if (d.ok) {
+        toast.success(`Moved to ${getCategoryMeta(targetCategory).label}`);
+        setMovingDoc(null);
+        setMoveTarget("");
+        load();
+        fetch("/api/compliance-docs").then((r) => r.json()).then((d) => { if (d.ok) setCategoryCounts(d.categories || {}); });
+      } else {
+        toast.error(d.error || "Move failed");
+      }
+    } catch { toast.error("Move failed"); }
+  };
+
   const downloadDoc = (doc: ComplianceDoc) => {
     if (doc.downloadUrl) {
       window.open(doc.downloadUrl, "_blank");
@@ -467,19 +548,29 @@ export default function ComplianceLibraryPage() {
           <p className="text-lg font-bold text-slate-900">{totalDocs}</p>
         </button>
         {allCategories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
-            className={`rounded-xl border p-3 text-left transition-all ${
-              activeCategory === cat.id
-                ? "bg-[#00b4c3]/10 border-[#00b4c3] ring-1 ring-[#00b4c3]/20"
-                : "bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm"
-            }`}
-          >
-            <span className="text-lg">{cat.icon}</span>
-            <p className="text-xs font-semibold text-slate-800 mt-1 leading-tight">{cat.label}</p>
-            <p className="text-lg font-bold text-slate-900">{categoryCounts[cat.id] || 0}</p>
-          </button>
+          <div key={cat.id} className="relative group">
+            <button
+              onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
+              className={`w-full rounded-xl border p-3 text-left transition-all ${
+                activeCategory === cat.id
+                  ? "bg-[#00b4c3]/10 border-[#00b4c3] ring-1 ring-[#00b4c3]/20"
+                  : "bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm"
+              }`}
+            >
+              <span className="text-lg">{cat.icon}</span>
+              <p className="text-xs font-semibold text-slate-800 mt-1 leading-tight">{cat.label}</p>
+              <p className="text-lg font-bold text-slate-900">{categoryCounts[cat.id] || 0}</p>
+            </button>
+            {isAdmin && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setManagingCategory(cat.id); setCategoryAction(null); setRenameTo(cat.label); setDeleteMoveTo("OTHER"); }}
+                className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600"
+                title="Manage category"
+              >
+                {"\u2699"}
+              </button>
+            )}
+          </div>
         ))}
       </div>
 
@@ -573,6 +664,46 @@ export default function ComplianceLibraryPage() {
                             >
                               Download
                             </button>
+                          )}
+                          {isAdmin && (
+                            <div className="relative">
+                              {movingDoc === doc.id ? (
+                                <div className="flex items-center gap-1">
+                                  <select
+                                    value={moveTarget}
+                                    onChange={(e) => setMoveTarget(e.target.value)}
+                                    className="text-xs border border-slate-300 rounded px-1.5 py-0.5 max-w-[120px]"
+                                    autoFocus
+                                  >
+                                    <option value="">Move to...</option>
+                                    {allCategories.filter((c) => c.id !== doc.category).map((c) => (
+                                      <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
+                                    ))}
+                                  </select>
+                                  <button
+                                    onClick={() => moveTarget && quickMoveDoc(doc.id, moveTarget)}
+                                    disabled={!moveTarget}
+                                    className="text-[10px] text-green-600 hover:text-green-800 font-bold disabled:opacity-30"
+                                  >
+                                    {"\u2713"}
+                                  </button>
+                                  <button
+                                    onClick={() => { setMovingDoc(null); setMoveTarget(""); }}
+                                    className="text-[10px] text-slate-400 hover:text-slate-600 font-bold"
+                                  >
+                                    {"\u2717"}
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => { setMovingDoc(doc.id); setMoveTarget(""); }}
+                                  className="text-xs text-slate-500 hover:text-slate-700 font-medium"
+                                  title="Move to another category"
+                                >
+                                  Move
+                                </button>
+                              )}
+                            </div>
                           )}
                           {isAdmin && (
                             <button
@@ -672,7 +803,7 @@ export default function ComplianceLibraryPage() {
                     onChange={(e) => setForm({ ...form, category: e.target.value, customCategory: "" })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                   >
-                    {BUILT_IN_CATEGORIES.map((c) => (
+                    {allCategories.map((c) => (
                       <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
                     ))}
                     <option value="__CUSTOM__">{"\u{2795}"} Custom Category...</option>
@@ -758,6 +889,110 @@ export default function ComplianceLibraryPage() {
         }}
         onCancel={() => setDeleteConfirm(null)}
       />
+
+      {/* Category Management Modal */}
+      {managingCategory && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => { setManagingCategory(null); setCategoryAction(null); }} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-slate-900">
+                Manage: {getCategoryMeta(managingCategory).icon} {getCategoryMeta(managingCategory).label}
+              </h2>
+              <button onClick={() => { setManagingCategory(null); setCategoryAction(null); }} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+            </div>
+            <div className="px-6 py-5">
+              <p className="text-sm text-slate-500 mb-4">
+                {categoryCounts[managingCategory] || 0} document{(categoryCounts[managingCategory] || 0) !== 1 ? "s" : ""} in this category
+              </p>
+
+              {!categoryAction && (
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setCategoryAction("rename")}
+                    className="flex-1 px-4 py-3 bg-[#00b4c3]/10 text-[#00b4c3] rounded-xl hover:bg-[#00b4c3]/20 font-medium text-sm transition-colors"
+                  >
+                    {"\u270F\uFE0F"} Rename Category
+                  </button>
+                  {canDelete && (
+                    <button
+                      onClick={() => setCategoryAction("delete")}
+                      className="flex-1 px-4 py-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 font-medium text-sm transition-colors"
+                    >
+                      {"\u{1F5D1}"} Delete Category
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {categoryAction === "rename" && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">New category name</label>
+                    <input
+                      type="text"
+                      value={renameTo}
+                      onChange={(e) => setRenameTo(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3]/30 focus:border-[#00b4c3]"
+                      placeholder="e.g. Certificates of Analysis"
+                      autoFocus
+                    />
+                    <p className="text-xs text-slate-400 mt-1">
+                      Will be stored as: {renameTo.trim().toUpperCase().replace(/[\s-]+/g, "_") || "..."}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={renameCategory}
+                      disabled={catSaving || !renameTo.trim()}
+                      className="flex-1 px-4 py-2 bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa] font-medium text-sm disabled:opacity-50 transition-colors"
+                    >
+                      {catSaving ? "Renaming..." : `Rename ${categoryCounts[managingCategory] || 0} doc${(categoryCounts[managingCategory] || 0) !== 1 ? "s" : ""}`}
+                    </button>
+                    <button onClick={() => setCategoryAction(null)} className="px-4 py-2 text-slate-500 hover:text-slate-700 text-sm font-medium">
+                      Back
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {categoryAction === "delete" && (
+                <div className="space-y-3">
+                  <div className="px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-xs text-amber-700">
+                      All {categoryCounts[managingCategory] || 0} document{(categoryCounts[managingCategory] || 0) !== 1 ? "s" : ""} will be moved to the category you select below.
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Move documents to</label>
+                    <select
+                      value={deleteMoveTo}
+                      onChange={(e) => setDeleteMoveTo(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    >
+                      {allCategories.filter((c) => c.id !== managingCategory).map((c) => (
+                        <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={deleteCategory}
+                      disabled={catSaving || !deleteMoveTo}
+                      className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm disabled:opacity-50 transition-colors"
+                    >
+                      {catSaving ? "Deleting..." : "Delete Category & Move Docs"}
+                    </button>
+                    <button onClick={() => setCategoryAction(null)} className="px-4 py-2 text-slate-500 hover:text-slate-700 text-sm font-medium">
+                      Back
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
