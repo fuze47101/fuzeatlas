@@ -12,6 +12,7 @@ import {
   sendTestingStartedEmail,
   sendResultsReadyEmail,
 } from "@/lib/email";
+import { getNotifyEmails } from "@/lib/notify-workflow";
 
 const prisma = new PrismaClient();
 
@@ -371,15 +372,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             fullTR?.fabric?.customerCode,
           ].filter(Boolean).join(" | ") || "See PO";
 
-          // Email admins
-          const admins = await prisma.user.findMany({
-            where: { role: { in: ["ADMIN", "EMPLOYEE"] }, status: "ACTIVE" },
-            select: { email: true },
-          });
-          const adminEmails = admins.map(a => a.email).filter(Boolean);
-          if (adminEmails.length > 0) {
+          // Route notifications: lab team + admins + AM get shipped notice, customer gets confirmation
+          const notify = await getNotifyEmails(id, "SAMPLE_SHIPPED");
+
+          if (notify.toInternal.length > 0) {
             await sendSampleShippedNotification({
-              adminEmails,
+              adminEmails: notify.toInternal,
               poNumber: existing.poNumber || id,
               fabricInfo,
               carrier,
@@ -389,11 +387,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             });
           }
 
-          // Confirm to customer
-          if (fullTR?.requestedBy?.email) {
+          if (notify.toCustomer.length > 0) {
             await sendShipmentConfirmedEmail({
-              email: fullTR.requestedBy.email,
-              name: fullTR.requestedBy.name || "Team",
+              email: notify.toCustomer[0],
+              name: notify.targets.customer?.name || "Team",
               poNumber: existing.poNumber || id,
               carrier,
               trackingNumber,
@@ -447,41 +444,55 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         data: { status: newStatus },
       });
 
-      // Send email to customer
+      // Send email to customer + AM
       (async () => {
         try {
+          const notify = await getNotifyEmails(id, "SAMPLE_RECEIVED");
           const fullTR = await prisma.testRequest.findUnique({
             where: { id },
             include: {
               fabric: { select: { fuzeNumber: true, customerCode: true } },
-              requestedBy: { select: { email: true, name: true } },
               lines: { select: { testType: true } },
             },
           });
-          if (!fullTR?.requestedBy?.email) return;
 
           const fabricInfo = [
-            fullTR.fabric?.fuzeNumber ? `FUZE-${fullTR.fabric.fuzeNumber}` : null,
-            fullTR.fabric?.customerCode,
+            fullTR?.fabric?.fuzeNumber ? `FUZE-${fullTR.fabric.fuzeNumber}` : null,
+            fullTR?.fabric?.customerCode,
           ].filter(Boolean).join(" | ") || "See PO";
 
+          const customerEmail = notify.toCustomer[0];
+          const customerName = notify.targets.customer?.name || "Team";
+          if (!customerEmail) return;
+
           if (condition === "DAMAGED" || condition === "INSUFFICIENT") {
+            // Notify customer of issue
             await sendSampleIssueEmail({
-              email: fullTR.requestedBy.email,
-              name: fullTR.requestedBy.name || "Team",
-              poNumber: fullTR.poNumber || id,
+              email: customerEmail,
+              name: customerName,
+              poNumber: existing.poNumber || id,
               fabricInfo,
               issueDescription: receivedNotes || `Sample condition: ${condition}. Please contact the lab for next steps.`,
             });
+            // Also notify AM of the issue
+            if (notify.targets.accountManager?.email) {
+              await sendSampleIssueEmail({
+                email: notify.targets.accountManager.email,
+                name: notify.targets.accountManager.name,
+                poNumber: existing.poNumber || id,
+                fabricInfo,
+                issueDescription: `Customer sample issue — ${condition}: ${receivedNotes || "No details provided."}`,
+              });
+            }
           } else {
             await sendSampleReceivedEmail({
-              email: fullTR.requestedBy.email,
-              name: fullTR.requestedBy.name || "Team",
-              poNumber: fullTR.poNumber || id,
+              email: customerEmail,
+              name: customerName,
+              poNumber: existing.poNumber || id,
               fabricInfo,
               receivedDate: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
               condition: condition || "Good",
-              testTypes: fullTR.lines.map((l: any) => l.testType),
+              testTypes: fullTR?.lines.map((l: any) => l.testType) || [],
             });
           }
         } catch (emailErr) {
@@ -526,36 +537,54 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
       notifyTestRequestChange(id, "IN_PROGRESS", existing).catch(() => {});
 
-      // Send testing started email
+      // Send testing started email to customer + AM
       (async () => {
         try {
+          const notify = await getNotifyEmails(id, "TESTING_STARTED");
           const fullTR = await prisma.testRequest.findUnique({
             where: { id },
             include: {
               fabric: { select: { fuzeNumber: true, customerCode: true } },
-              requestedBy: { select: { email: true, name: true } },
               lines: { select: { testType: true, testMethod: true, estimatedDays: true } },
             },
           });
-          if (!fullTR?.requestedBy?.email) return;
 
           const fabricInfo = [
-            fullTR.fabric?.fuzeNumber ? `FUZE-${fullTR.fabric.fuzeNumber}` : null,
-            fullTR.fabric?.customerCode,
+            fullTR?.fabric?.fuzeNumber ? `FUZE-${fullTR.fabric.fuzeNumber}` : null,
+            fullTR?.fabric?.customerCode,
           ].filter(Boolean).join(" | ") || "See PO";
 
-          await sendTestingStartedEmail({
-            email: fullTR.requestedBy.email,
-            name: fullTR.requestedBy.name || "Team",
-            poNumber: fullTR.poNumber || id,
-            fabricInfo,
-            testLines: fullTR.lines.map((l: any) => ({
-              testType: l.testType,
-              testMethod: l.testMethod || undefined,
-              estimatedDays: l.estimatedDays || undefined,
-            })),
-            estimatedCompletionDate: estCompletion.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
-          });
+          const testLineData = fullTR?.lines.map((l: any) => ({
+            testType: l.testType,
+            testMethod: l.testMethod || undefined,
+            estimatedDays: l.estimatedDays || undefined,
+          })) || [];
+
+          const estDateStr = estCompletion.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+          // Email customer
+          if (notify.toCustomer[0]) {
+            await sendTestingStartedEmail({
+              email: notify.toCustomer[0],
+              name: notify.targets.customer?.name || "Team",
+              poNumber: existing.poNumber || id,
+              fabricInfo,
+              testLines: testLineData,
+              estimatedCompletionDate: estDateStr,
+            });
+          }
+
+          // Email AM
+          if (notify.targets.accountManager?.email) {
+            await sendTestingStartedEmail({
+              email: notify.targets.accountManager.email,
+              name: notify.targets.accountManager.name,
+              poNumber: existing.poNumber || id,
+              fabricInfo,
+              testLines: testLineData,
+              estimatedCompletionDate: estDateStr,
+            });
+          }
         } catch (emailErr) {
           console.error("[EMAIL] start_testing email failed:", emailErr);
         }
