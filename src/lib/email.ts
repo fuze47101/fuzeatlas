@@ -773,3 +773,339 @@ export async function sendShippingInstructionsEmail(params: {
     html,
   });
 }
+
+// ─── Test Request Confirmation Email (F-034) ───
+// Sent to customer when they submit a test request
+
+export async function sendTestRequestConfirmationEmail(params: {
+  email: string;
+  name: string;
+  poNumber: string;
+  testTypes: string[];
+  fabricInfo: string;
+  labName: string;
+  estimatedCost?: number;
+}) {
+  const { email, name, poNumber, testTypes, fabricInfo, labName, estimatedCost } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">Test Request Received</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${name}, we've received your test request. Our team will review and approve it shortly.
+    </p>
+    <div style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 16px; margin: 20px 0; border-radius: 8px;">
+      <p style="margin: 0 0 8px; color: #1a1a2e; font-weight: 600;">Request Details</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>PO Number:</strong> ${poNumber}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Fabric:</strong> ${fabricInfo}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Tests:</strong> ${testTypes.join(", ")}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Lab:</strong> ${labName}</p>
+      ${estimatedCost ? `<p style="margin: 0; color: #4b5563;"><strong>Estimated Cost:</strong> $${estimatedCost.toFixed(2)}</p>` : ""}
+    </div>
+    <p style="color: #4b5563; line-height: 1.6;">
+      <strong>What happens next:</strong> Once approved, you'll receive shipping instructions with the lab address and sample requirements.
+    </p>
+    <div style="margin: 24px 0;">
+      <a href="${baseUrl}/factory-portal" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+        View in Portal
+      </a>
+    </div>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: `Test Request Received — ${poNumber}`,
+    html,
+  });
+}
+
+// ─── Sample Shipped Notification (F-035) ───
+// Sent to admins + lab when customer enters tracking number
+
+export async function sendSampleShippedNotification(params: {
+  adminEmails: string[];
+  poNumber: string;
+  fabricInfo: string;
+  carrier: string;
+  trackingNumber: string;
+  customerName: string;
+  shipDate?: string;
+}) {
+  const { adminEmails, poNumber, fabricInfo, carrier, trackingNumber, customerName, shipDate } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">Sample Shipped</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      <strong>${customerName}</strong> has shipped samples for test request <strong>${poNumber}</strong>.
+    </p>
+    <div style="background: #f0fdf4; border-left: 4px solid #059669; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+      <p style="margin: 0 0 8px; color: #059669; font-weight: 700;">Shipment Details</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>PO:</strong> ${poNumber}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Fabric:</strong> ${fabricInfo}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Carrier:</strong> ${carrier}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Tracking:</strong> ${trackingNumber}</p>
+      ${shipDate ? `<p style="margin: 0; color: #4b5563;"><strong>Ship Date:</strong> ${shipDate}</p>` : ""}
+    </div>
+    <div style="margin: 24px 0;">
+      <a href="${baseUrl}/shipments" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+        View Shipments
+      </a>
+    </div>
+  `);
+
+  return sendEmail({
+    to: adminEmails,
+    subject: `Sample Shipped — ${poNumber} — ${carrier} ${trackingNumber}`,
+    html,
+  });
+}
+
+// ─── Shipment Confirmed to Customer (F-036) ───
+// Sent to customer confirming we recorded their tracking number
+
+export async function sendShipmentConfirmedEmail(params: {
+  email: string;
+  name: string;
+  poNumber: string;
+  carrier: string;
+  trackingNumber: string;
+}) {
+  const { email, name, poNumber, carrier, trackingNumber } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">Shipment Recorded</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${name}, we've recorded your shipment for <strong>${poNumber}</strong>.
+    </p>
+    <div style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 16px; margin: 20px 0; border-radius: 8px;">
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Carrier:</strong> ${carrier}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Tracking:</strong> ${trackingNumber}</p>
+    </div>
+    <p style="color: #4b5563; line-height: 1.6;">
+      We'll notify you as soon as your sample arrives at our lab. You can track your request status in the portal at any time.
+    </p>
+    <div style="margin: 24px 0;">
+      <a href="${baseUrl}/factory-portal" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+        Track Your Request
+      </a>
+    </div>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: `Shipment Confirmed — ${poNumber}`,
+    html,
+  });
+}
+
+// ─── Sample Received at Lab (F-037) ───
+// Auto-reply to customer when lab marks sample received
+
+export async function sendSampleReceivedEmail(params: {
+  email: string;
+  name: string;
+  poNumber: string;
+  fabricInfo: string;
+  receivedDate: string;
+  condition: string;
+  testTypes: string[];
+}) {
+  const { email, name, poNumber, fabricInfo, receivedDate, condition, testTypes } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">Sample Received at Lab</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${name}, your sample has been received at our lab.
+    </p>
+    <div style="background: #f0fdf4; border-left: 4px solid #059669; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Received:</strong> ${receivedDate}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Condition:</strong> ${condition}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>PO Number:</strong> ${poNumber}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Fabric:</strong> ${fabricInfo}</p>
+      <p style="margin: 0; color: #4b5563;"><strong>Tests:</strong> ${testTypes.join(", ")}</p>
+    </div>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Your sample is now in our testing queue. We'll notify you when testing begins with an estimated completion date.
+    </p>
+    <div style="margin: 24px 0;">
+      <a href="${baseUrl}/factory-portal" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+        Track Your Request
+      </a>
+    </div>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: `Sample Received — ${poNumber}`,
+    html,
+  });
+}
+
+// ─── Sample Issue Email (F-038) ───
+// Sent to customer when received sample has problems
+
+export async function sendSampleIssueEmail(params: {
+  email: string;
+  name: string;
+  poNumber: string;
+  fabricInfo: string;
+  issueDescription: string;
+}) {
+  const { email, name, poNumber, fabricInfo, issueDescription } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">Sample Issue — ${poNumber}</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${name}, we received your sample but found an issue that needs to be resolved before testing can begin.
+    </p>
+    <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+      <p style="margin: 0 0 8px; color: #dc2626; font-weight: 700;">Issue Details</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>PO:</strong> ${poNumber}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Fabric:</strong> ${fabricInfo}</p>
+      <p style="margin: 8px 0 0; color: #4b5563;">${issueDescription}</p>
+    </div>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Testing is on hold until this issue is resolved. Please contact us to discuss next steps.
+    </p>
+    <div style="margin: 24px 0;">
+      <a href="mailto:lab@fuzebiotech.com" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+        Contact Lab
+      </a>
+    </div>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: `Sample Issue — ${poNumber}`,
+    html,
+  });
+}
+
+// ─── Testing Started Email (F-039) ───
+// Sent to customer when testing begins with estimated completion
+
+export async function sendTestingStartedEmail(params: {
+  email: string;
+  name: string;
+  poNumber: string;
+  fabricInfo: string;
+  testLines: { testType: string; testMethod?: string; estimatedDays?: number }[];
+  estimatedCompletionDate: string;
+}) {
+  const { email, name, poNumber, fabricInfo, testLines, estimatedCompletionDate } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+
+  const testListHtml = testLines.map(l =>
+    `<li style="margin: 4px 0; color: #4b5563;">${l.testType}${l.testMethod ? ` (${l.testMethod})` : ""}${l.estimatedDays ? ` — Est. ${l.estimatedDays} days` : ""}</li>`
+  ).join("");
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">Testing Started</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${name}, testing has begun on your sample.
+    </p>
+    <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>PO:</strong> ${poNumber}</p>
+      <p style="margin: 0 0 6px; color: #4b5563;"><strong>Fabric:</strong> ${fabricInfo}</p>
+      <p style="margin: 0 0 8px; color: #4b5563;"><strong>Tests in progress:</strong></p>
+      <ul style="margin: 0; padding-left: 20px;">${testListHtml}</ul>
+    </div>
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; margin: 20px 0; border-radius: 8px; text-align: center;">
+      <p style="margin: 0 0 4px; color: #059669; font-weight: 700; font-size: 14px;">Estimated Completion</p>
+      <p style="margin: 0; color: #1a1a2e; font-weight: 700; font-size: 20px;">${estimatedCompletionDate}</p>
+    </div>
+    <p style="color: #4b5563; line-height: 1.6;">
+      We'll email you as soon as results are ready.
+    </p>
+    <div style="margin: 24px 0;">
+      <a href="${baseUrl}/factory-portal" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+        Track Your Request
+      </a>
+    </div>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: `Testing Started — ${poNumber} — Est. Complete ${estimatedCompletionDate}`,
+    html,
+  });
+}
+
+// ─── Enhanced Results Ready Email (F-040) ───
+// Sent to customer with results summary table when admin stamps
+
+export async function sendResultsReadyEmail(params: {
+  email: string;
+  name: string;
+  poNumber: string;
+  fabricInfo: string;
+  overallResult: "PASSED" | "FAILED" | "MIXED";
+  results: { testType: string; testMethod?: string; result: string; passed: boolean; detail?: string }[];
+}) {
+  const { email, name, poNumber, fabricInfo, overallResult, results } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+
+  const overallColor = overallResult === "PASSED" ? "#059669" : overallResult === "FAILED" ? "#dc2626" : "#d97706";
+  const overallBg = overallResult === "PASSED" ? "#f0fdf4" : overallResult === "FAILED" ? "#fef2f2" : "#fffbeb";
+
+  const resultsRows = results.map(r => `
+    <tr>
+      <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #1a1a2e;">${r.testType}${r.testMethod ? `<br><span style="color: #9ca3af; font-size: 12px;">${r.testMethod}</span>` : ""}</td>
+      <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">${r.result}</td>
+      <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">
+        <span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; color: white; background: ${r.passed ? "#059669" : "#dc2626"};">${r.passed ? "PASS" : "FAIL"}</span>
+      </td>
+    </tr>
+  `).join("");
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">Test Results Ready</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${name}, your test results for <strong>${poNumber}</strong> are ready.
+    </p>
+
+    <div style="background: ${overallBg}; border: 2px solid ${overallColor}; padding: 16px; margin: 20px 0; border-radius: 8px; text-align: center;">
+      <p style="margin: 0 0 4px; color: ${overallColor}; font-size: 14px; font-weight: 600;">Overall Result</p>
+      <p style="margin: 0; color: ${overallColor}; font-size: 28px; font-weight: 700;">${overallResult}</p>
+      <p style="margin: 6px 0 0; color: #4b5563; font-size: 13px;">${fabricInfo}</p>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+      <thead>
+        <tr style="background: #f9fafb;">
+          <th style="padding: 10px 12px; text-align: left; color: #1a1a2e; font-size: 13px; border-bottom: 2px solid #e5e7eb;">Test</th>
+          <th style="padding: 10px 12px; text-align: left; color: #1a1a2e; font-size: 13px; border-bottom: 2px solid #e5e7eb;">Result</th>
+          <th style="padding: 10px 12px; text-align: center; color: #1a1a2e; font-size: 13px; border-bottom: 2px solid #e5e7eb;">Status</th>
+        </tr>
+      </thead>
+      <tbody>${resultsRows}</tbody>
+    </table>
+
+    ${results.some(r => r.detail) ? `
+      <div style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 16px; margin: 20px 0; border-radius: 8px;">
+        <p style="margin: 0 0 8px; color: #1a1a2e; font-weight: 600; font-size: 13px;">Details</p>
+        ${results.filter(r => r.detail).map(r => `<p style="margin: 0 0 4px; color: #4b5563; font-size: 13px;"><strong>${r.testType}:</strong> ${r.detail}</p>`).join("")}
+      </div>
+    ` : ""}
+
+    <div style="margin: 24px 0; text-align: center;">
+      <a href="${baseUrl}/factory-portal" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500; margin: 0 8px;">
+        View Full Results
+      </a>
+    </div>
+
+    <p style="color: #9ca3af; font-size: 13px; text-align: center;">
+      Thank you for choosing FUZE.
+    </p>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: `Test Results — ${poNumber} — ${overallResult}`,
+    html,
+  });
+}

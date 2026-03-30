@@ -1235,6 +1235,11 @@ model TestRequest {
   specialInstructions String?  // Instructions for the lab
   internalNotes       String?  // Internal notes (not sent to lab)
 
+  // Lab testing workflow
+  testingStartedAt         DateTime?   // When admin clicks "Start Testing"
+  testingStartedById       String?     // Who started it
+  estimatedCompletionDate  DateTime?   // Calculated when testing starts
+
   // Line items
   lines         TestRequestLine[]
   shipments SampleShipment[]
@@ -1444,6 +1449,13 @@ model SampleShipment {
 
   // Status: PREPARING → SHIPPED → IN_TRANSIT → DELIVERED → AT_LAB → RETURNED
   status        String    @default("PREPARING")
+
+  // Receiving details
+  receivedCondition  String?   // GOOD, DAMAGED, INSUFFICIENT
+  receivedPieces     Int?      // Number of pieces received
+  controlIncluded    Boolean?  // Was control sample included
+  receivedNotes      String?   // Free text notes on receiving
+  receivedById       String?   // Who marked it received
 
   // Chain of custody
   events        ShipmentEvent[]

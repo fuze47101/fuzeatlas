@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendResultsReadyEmail } from "@/lib/email";
 
 /* ── GET /api/tests/[id] ── fetch single test run with all details */
 export async function GET(
@@ -197,6 +198,124 @@ export async function PATCH(
           },
         });
       }
+    }
+
+    // ── Send enhanced results email when stamping for brand visibility ──
+    if (brandVisible === true) {
+      (async () => {
+        try {
+          // Get the full test run with related data
+          const fullTest = await prisma.testRun.findUnique({
+            where: { id },
+            include: {
+              submission: {
+                select: {
+                  fuzeFabricNumber: true,
+                  fabric: { select: { fuzeNumber: true, customerCode: true } },
+                  factory: { select: { name: true } },
+                  brand: { select: { name: true } },
+                },
+              },
+              icpResult: true,
+              abResult: true,
+              fungalResult: true,
+              odorResult: true,
+              // Check if this test is linked to a TestRequestLine
+              testRequestLines: {
+                select: {
+                  testRequest: {
+                    select: {
+                      id: true,
+                      poNumber: true,
+                      requestedBy: { select: { email: true, name: true } },
+                    },
+                  },
+                },
+              },
+            },
+          });
+          if (!fullTest) return;
+
+          // Find the customer to email (from test request or submission)
+          let customerEmail: string | null = null;
+          let customerName = "Team";
+          let poNumber = "";
+
+          if (fullTest.testRequestLines?.length > 0) {
+            const trLine = fullTest.testRequestLines[0];
+            customerEmail = trLine.testRequest?.requestedBy?.email || null;
+            customerName = trLine.testRequest?.requestedBy?.name || "Team";
+            poNumber = trLine.testRequest?.poNumber || "";
+          }
+
+          if (!customerEmail) return; // No customer to notify
+
+          const fabricInfo = [
+            fullTest.submission?.fuzeFabricNumber ? `FUZE-${fullTest.submission.fuzeFabricNumber}` : null,
+            fullTest.submission?.fabric?.customerCode,
+          ].filter(Boolean).join(" | ") || "See test report";
+
+          // Build result entry
+          const results: any[] = [];
+          let passed = false;
+
+          if (fullTest.testType === "ICP" && fullTest.icpResult) {
+            const val = fullTest.icpResult.agValue;
+            passed = val != null && val >= 0.25;
+            results.push({
+              testType: "ICP Analysis",
+              testMethod: "ICP-OES",
+              result: val != null ? `${val} mg/kg` : "See report",
+              passed,
+              detail: val != null ? `Ag content: ${val} mg/kg` : undefined,
+            });
+          } else if (fullTest.testType === "ANTIBACTERIAL" && fullTest.abResult) {
+            passed = fullTest.abResult.pass === true;
+            const r1 = fullTest.abResult.result1;
+            results.push({
+              testType: "Antibacterial",
+              testMethod: fullTest.testMethodStd || "AATCC 100",
+              result: r1 != null ? `${r1}% reduction` : "See report",
+              passed,
+              detail: r1 != null ? `Bacterial reduction: ${r1}%` : undefined,
+            });
+          } else if (fullTest.testType === "FUNGAL" && fullTest.fungalResult) {
+            passed = fullTest.fungalResult.pass === true;
+            results.push({
+              testType: "Antifungal",
+              testMethod: fullTest.testMethodStd || "AATCC 30",
+              result: fullTest.fungalResult.writtenResult || "See report",
+              passed,
+            });
+          } else if (fullTest.testType === "ODOR" && fullTest.odorResult) {
+            passed = fullTest.odorResult.pass === true;
+            results.push({
+              testType: "Odor Reduction",
+              testMethod: fullTest.testMethodStd || "",
+              result: fullTest.odorResult.result || "See report",
+              passed,
+            });
+          } else {
+            results.push({
+              testType: fullTest.testType || "Test",
+              testMethod: fullTest.testMethodStd || "",
+              result: "See full report",
+              passed: true,
+            });
+          }
+
+          await sendResultsReadyEmail({
+            email: customerEmail,
+            name: customerName,
+            poNumber: poNumber || `Test ${fullTest.testReportNumber || id}`,
+            fabricInfo,
+            overallResult: passed ? "PASSED" : "FAILED",
+            results,
+          });
+        } catch (emailErr) {
+          console.error("[EMAIL] Results ready email failed:", emailErr);
+        }
+      })();
     }
 
     return NextResponse.json({ ok: true, testRunId: id, message: "Test run updated" });

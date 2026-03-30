@@ -218,6 +218,7 @@ export default function Sidebar() {
           { href: "/factory-portal/tests", label: "Test Results", icon: "🧪" },
           { href: "/factory-portal/sample-trial", label: "Sample Trials", icon: "🧪" },
           { href: "/factory-portal/request-test", label: "Request Test", icon: "📋" },
+          { href: "/factory-portal/my-requests", label: "My Requests", icon: "📦" },
         ],
       },
       {
