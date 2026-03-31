@@ -13,6 +13,7 @@ import {
   calcSustainabilityScore,
   generateESGClaims,
   FUZE_SUSTAINABILITY,
+  UPSTREAM_MANUFACTURING,
   type SustainabilityScore,
   type ESGClaim,
 } from "./sustainability";
@@ -357,19 +358,91 @@ function renderGradeAndRecyclability(results: CompetitorResult[]): string {
   </div>`;
 }
 
+function resolveUpstreamKey(chemType: string): string {
+  return chemType === "silver_ion" ? "silver_ion"
+    : chemType === "silver_nano" ? "silver_nano"
+    : chemType === "silver_chloride" ? "silver_chloride"
+    : chemType.includes("silver") ? "silver_chloride"
+    : chemType === "qac_silane" ? "qac_silane"
+    : chemType.includes("zinc") ? "zinc_pyrithione"
+    : chemType === "copper" ? "copper"
+    : "silver_chloride";
+}
+
 function renderLifecycleStage1(results: CompetitorResult[], params: ReportParams): string {
-  const rows = results.map(r => {
+  // Build detailed per-competitor blocks (matching the web UI detail level)
+  const competitorBlocks = results.map(r => {
     const c = r.competitor;
     const s = r.score;
-    const mfgCO2Annual = (s.co2SavedPerMeter * params.annualMeters);
-    return `<tr>
-      <td><strong>${c.product}</strong></td>
-      <td>${num(s.co2SavedPerMeter, 3)}</td>
-      <td>${num(mfgCO2Annual >= 1000 ? mfgCO2Annual / 1000 : mfgCO2Annual, mfgCO2Annual >= 1000 ? 1 : 0)} ${mfgCO2Annual >= 1000 ? "t" : "kg"}</td>
-      <td class="success">$0.000</td>
-      <td class="success">0 kg</td>
-      <td class="success">0 L</td>
-    </tr>`;
+    const upKey = resolveUpstreamKey(c.chemistryType);
+    const upstream = UPSTREAM_MANUFACTURING[upKey] || UPSTREAM_MANUFACTURING.silver_chloride;
+    const annualCO2 = s.upstreamPlantCO2PerMeter * params.annualMeters;
+    const annualWaste = s.upstreamPlantWasteKgPerMeter * params.annualMeters;
+    const annualVOC = s.upstreamPlantVOCgPerMeter * params.annualMeters / 1000; // g → kg
+    const annualWater = s.upstreamPlantWaterLitersPerMeter * params.annualMeters;
+
+    // CO2 breakdown section
+    const breakdownHtml = upstream.co2Breakdown ? `
+      <div style="background:#fff;border:1px solid #fecaca;border-radius:8px;padding:12px;margin-top:10px;">
+        <div style="font-size:10px;font-weight:700;color:#991b1b;margin-bottom:8px;">
+          CO₂ Breakdown — ${num(upstream.facilityCO2PerKg, 0)} kg CO₂/kg product
+        </div>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td style="width:33%;text-align:center;padding:6px;vertical-align:top;">
+              <div style="font-size:18px;font-weight:900;color:#b91c1c;">${num(upstream.co2Breakdown.mining, 0)}</div>
+              <div style="font-size:9px;font-weight:700;color:#dc2626;">kg CO₂ — Mining</div>
+              <div style="font-size:8px;color:#ef4444;margin-top:2px;">Ore extraction, crushing, concentration</div>
+            </td>
+            <td style="width:33%;text-align:center;padding:6px;border-left:1px solid #fecaca;border-right:1px solid #fecaca;vertical-align:top;">
+              <div style="font-size:18px;font-weight:900;color:#b91c1c;">${num(upstream.co2Breakdown.refining, 0)}</div>
+              <div style="font-size:9px;font-weight:700;color:#dc2626;">kg CO₂ — Refining</div>
+              <div style="font-size:8px;color:#ef4444;margin-top:2px;">Smelting, electrolytic purification</div>
+            </td>
+            <td style="width:33%;text-align:center;padding:6px;vertical-align:top;">
+              <div style="font-size:18px;font-weight:900;color:#b91c1c;">${num(upstream.co2Breakdown.synthesis, 0)}</div>
+              <div style="font-size:9px;font-weight:700;color:#dc2626;">kg CO₂ — Synthesis</div>
+              <div style="font-size:8px;color:#ef4444;margin-top:2px;">Product formulation, compounding</div>
+            </td>
+          </tr>
+        </table>
+        <div style="font-size:7.5px;color:#9ca3af;border-top:1px solid #fecaca;padding-top:6px;margin-top:6px;">
+          ${upstream.co2Breakdown.source}
+        </div>
+      </div>` : "";
+
+    return `
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:#991b1b;margin-bottom:8px;">${c.product} <span style="font-weight:400;color:#6b7280;">(${c.company})</span></div>
+
+        <!-- 4-column metrics grid -->
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fecaca;border-radius:8px;">
+              <div style="font-size:20px;font-weight:900;color:#b91c1c;">${num(annualCO2, 1)}</div>
+              <div style="font-size:9px;font-weight:700;color:#dc2626;margin-top:4px;">kg CO₂ at Plant</div>
+              <div style="font-size:8px;color:#ef4444;margin-top:2px;">${num(s.upstreamPlantCO2PerMeter, 4)}/m</div>
+            </td>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fecaca;border-radius:8px;">
+              <div style="font-size:20px;font-weight:900;color:#b91c1c;">${num(annualWaste, 1)}</div>
+              <div style="font-size:9px;font-weight:700;color:#dc2626;margin-top:4px;">kg Chemical Waste</div>
+              <div style="font-size:8px;color:#ef4444;margin-top:2px;">${num(s.upstreamPlantWasteKgPerMeter, 4)}/m</div>
+            </td>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fecaca;border-radius:8px;">
+              <div style="font-size:20px;font-weight:900;color:#b91c1c;">${num(annualVOC, 1)}</div>
+              <div style="font-size:9px;font-weight:700;color:#dc2626;margin-top:4px;">kg VOCs Emitted</div>
+              <div style="font-size:8px;color:#ef4444;margin-top:2px;">${num(s.upstreamPlantVOCgPerMeter, 2)}g/m</div>
+            </td>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fecaca;border-radius:8px;">
+              <div style="font-size:20px;font-weight:900;color:#b91c1c;">${num(annualWater, 0)}</div>
+              <div style="font-size:9px;font-weight:700;color:#dc2626;margin-top:4px;">L Process Water</div>
+              <div style="font-size:8px;color:#ef4444;margin-top:2px;">${num(s.upstreamPlantWaterLitersPerMeter, 1)}L/m</div>
+            </td>
+          </tr>
+        </table>
+
+        ${breakdownHtml}
+      </div>`;
   }).join("");
 
   return `
@@ -377,48 +450,85 @@ function renderLifecycleStage1(results: CompetitorResult[], params: ReportParams
   <div class="container">
     <div class="section-header" style="background: #1e3a8a;"><span>03</span> Lifecycle Stage 1: Chemical Plant Manufacturing</div>
     <p class="text-sm">
-      Upstream impacts from antimicrobial chemical production, including CO₂ from synthesis, process waste, VOC emissions,
-      and water consumption at the manufacturing facility. FUZE uses recycled electronics feedstock with 85% lower upstream emissions.
+      Upstream impacts from antimicrobial chemical production, including CO₂ from mining, refining, and synthesis, plus process waste,
+      VOC emissions, and water consumption at the manufacturing facility. All figures calculated per ${(params.annualMeters/1000).toFixed(0)}k meters annually.
     </p>
-    <table class="data-table">
-      <thead>
+
+    <!-- FUZE Profile -->
+    <div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:12px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:#047857;margin-bottom:4px;">FUZE FTP F1 — Manufacturing Profile</div>
+      <div style="font-size:9.5px;color:#059669;">
+        30-amp liquid laser ablation on a 1m² table. Recycled electronics feedstock. Solar-capable.
+        <strong>Zero virgin mining. Zero chemicals. Zero waste. Zero VOCs. Zero process water.</strong>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-top:8px;">
         <tr>
-          <th style="width:25%">Product</th>
-          <th>CO₂ per Meter (kg)</th>
-          <th>Annual CO₂ Savings @ ${(params.annualMeters/1000).toFixed(0)}k m</th>
-          <th>Waste Cost</th>
-          <th>VOC Emissions</th>
-          <th>Water Consumed</th>
+          <td style="width:25%;text-align:center;padding:6px;background:#d1fae5;border-radius:6px;">
+            <div style="font-size:16px;font-weight:900;color:#047857;">0</div>
+            <div style="font-size:8px;color:#059669;">kg CO₂</div>
+          </td>
+          <td style="width:25%;text-align:center;padding:6px;background:#d1fae5;border-radius:6px;">
+            <div style="font-size:16px;font-weight:900;color:#047857;">0</div>
+            <div style="font-size:8px;color:#059669;">kg Waste</div>
+          </td>
+          <td style="width:25%;text-align:center;padding:6px;background:#d1fae5;border-radius:6px;">
+            <div style="font-size:16px;font-weight:900;color:#047857;">0</div>
+            <div style="font-size:8px;color:#059669;">kg VOCs</div>
+          </td>
+          <td style="width:25%;text-align:center;padding:6px;background:#d1fae5;border-radius:6px;">
+            <div style="font-size:16px;font-weight:900;color:#047857;">0</div>
+            <div style="font-size:8px;color:#059669;">L Water</div>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        <tr class="fuze-row">
-          <td><strong>FUZE FTP F1</strong></td>
-          <td class="success">0.000</td>
-          <td class="success">—</td>
-          <td class="success">$0.000</td>
-          <td class="success">0 kg</td>
-          <td class="success">0 L</td>
-        </tr>
-        ${rows}
-      </tbody>
-    </table>
+      </table>
+    </div>
+
+    <!-- Competitor detail blocks -->
+    ${competitorBlocks}
   </div>`;
 }
 
 function renderLifecycleStage2(results: CompetitorResult[], params: ReportParams): string {
-  const rows = results.map(r => {
+  const competitorBlocks = results.map(r => {
     const c = r.competitor;
     const s = r.score;
-    const curingCO2Annual = (s.energySavedPerMeter * params.annualMeters);
-    return `<tr>
-      <td><strong>${c.product}</strong></td>
-      <td>${c.curingRequired ? `${c.curingTempC}°C` : "None"}</td>
-      <td>${c.binderRequired ? c.binderGPerKg + "g/kg " + c.binderType : "None"}</td>
-      <td>${num(s.energySavedPerMeter, 3)}</td>
-      <td>${num(curingCO2Annual >= 1000 ? curingCO2Annual / 1000 : curingCO2Annual, curingCO2Annual >= 1000 ? 1 : 0)} ${curingCO2Annual >= 1000 ? "t" : "kg"}</td>
-      <td>${c.binderVOC ? "Yes" : "No"}</td>
-    </tr>`;
+    const annualCuringEnergy = s.energySavedPerMeter * params.annualMeters;
+
+    return `
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:8px;">${c.product} <span style="font-weight:400;color:#6b7280;">(${c.company})</span></div>
+
+        <table style="width:100%;border-collapse:separate;border-spacing:4px;">
+          <tr>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fde68a;border-radius:8px;">
+              <div style="font-size:18px;font-weight:900;color:#b45309;">${num(s.energySavedPerMeter, 3)}</div>
+              <div style="font-size:9px;font-weight:700;color:#d97706;margin-top:4px;">kWh Curing Energy/m</div>
+              <div style="font-size:8px;color:#f59e0b;margin-top:2px;">${c.curingRequired ? `Requires ${c.curingTempC}°C oven` : "No curing"}</div>
+            </td>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fde68a;border-radius:8px;">
+              <div style="font-size:18px;font-weight:900;color:#b45309;">${num(s.binderEliminatedPerMeter, 1)}</div>
+              <div style="font-size:9px;font-weight:700;color:#d97706;margin-top:4px;">g Binder/m</div>
+              <div style="font-size:8px;color:#f59e0b;margin-top:2px;">${c.binderRequired ? c.binderGPerKg + "g/kg " + c.binderType : "None required"}</div>
+            </td>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fde68a;border-radius:8px;">
+              <div style="font-size:18px;font-weight:900;color:${c.binderFormaldehyde ? "#b91c1c" : "#b45309"};">${c.binderFormaldehyde ? "Yes" : "No"}</div>
+              <div style="font-size:9px;font-weight:700;color:#d97706;margin-top:4px;">Formaldehyde Binder?</div>
+              <div style="font-size:8px;color:${c.binderFormaldehyde ? "#ef4444" : "#f59e0b"};margin-top:2px;">${c.binderRequired ? (c.binderFormaldehyde ? "Toxic crosslinker required" : "Binder required") : "Not required"}</div>
+            </td>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fde68a;border-radius:8px;">
+              <div style="font-size:18px;font-weight:900;color:${c.binderVOC ? "#b91c1c" : "#b45309"};">${c.binderVOC ? "Yes" : "No"}</div>
+              <div style="font-size:9px;font-weight:700;color:#d97706;margin-top:4px;">VOC at Application?</div>
+              <div style="font-size:8px;color:${c.binderVOC ? "#ef4444" : "#f59e0b"};margin-top:2px;">${c.binderVOC ? "Off-gassing during cure" : "Zero off-gassing"}</div>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Annual totals bar -->
+        <div style="background:#fff;border:1px solid #fde68a;border-radius:8px;padding:8px;margin-top:6px;text-align:center;">
+          <span style="font-size:14px;font-weight:900;color:#b45309;">${num(annualCuringEnergy >= 1000 ? annualCuringEnergy / 1000 : annualCuringEnergy, annualCuringEnergy >= 1000 ? 1 : 0)}</span>
+          <span style="font-size:9px;font-weight:700;color:#d97706;margin-left:4px;">${annualCuringEnergy >= 1000 ? "MWh" : "kWh"} annual curing energy @ ${(params.annualMeters/1000).toFixed(0)}k m/yr</span>
+        </div>
+      </div>`;
   }).join("");
 
   return `
@@ -426,99 +536,185 @@ function renderLifecycleStage2(results: CompetitorResult[], params: ReportParams
     <div class="section-header" style="background: #92400e;"><span>04</span> Lifecycle Stage 2: Factory Application</div>
     <p class="text-sm">
       Application-stage impacts at the textile mill: curing temperatures, binder chemical usage, energy consumption,
-      VOC emissions during drying and thermal processing. FUZE requires no curing (air dry only) and zero binders.
+      VOC emissions during drying and thermal processing. All figures per ${(params.annualMeters/1000).toFixed(0)}k meters annually.
     </p>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th style="width:20%">Product</th>
-          <th>Curing Temp</th>
-          <th>Binder Required</th>
-          <th>Energy/Meter (kWh)</th>
-          <th>Curing CO₂/year</th>
-          <th>VOC Emissions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="fuze-row">
-          <td><strong>FUZE FTP F1</strong></td>
-          <td class="success">None</td>
-          <td class="success">None</td>
-          <td class="success">0.000</td>
-          <td class="success">—</td>
-          <td class="success">No</td>
-        </tr>
-        ${rows}
-      </tbody>
-    </table>
+
+    <!-- FUZE Profile -->
+    <div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:12px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:#047857;margin-bottom:4px;">FUZE FTP F1 — Application Profile</div>
+      <div style="font-size:9.5px;color:#059669;">
+        <strong>No binder. No curing. No energy. No VOCs.</strong>
+        Integrates into existing dye bath, exhaust, or spray equipment. Zero additional steps. Bonds at ambient temperature.
+      </div>
+    </div>
+
+    <!-- Competitor detail blocks -->
+    ${competitorBlocks}
   </div>`;
 }
 
 function renderLifecycleStage3(results: CompetitorResult[], params: ReportParams): string {
-  const rows = results.map(r => {
+  const competitorBlocks = results.map(r => {
     const c = r.competitor;
     const s = r.score;
-    const remCostAnnual = (s.remediationCostPerMeter * params.annualMeters);
-    return `<tr>
-      <td><strong>${c.product}</strong></td>
-      <td>${num(s.remediationCostPerMeter, 3)}</td>
-      <td>${num(remCostAnnual >= 1000 ? remCostAnnual / 1000 : remCostAnnual, remCostAnnual >= 1000 ? 1 : 0)} ${remCostAnnual >= 1000 ? "k" : ""}</td>
-      <td>${s.waterSavedPerMeter > 0 ? num(s.waterSavedPerMeter, 2) : "0"}</td>
-      <td>${(s.waterSavedPerMeter * params.annualMeters / 1000).toFixed(1)}</td>
-      <td class="success">0.000</td>
-    </tr>`;
+    const annualRemGlobal = s.remediationCostPerMeter * params.annualMeters;
+    const annualRemUS = s.remediationCostPerMeterUS * params.annualMeters;
+    const annualChemicals = s.remediationChemicalsKgPerMeter * params.annualMeters;
+    const annualEnergy = s.remediationEnergyKwhPerMeter * params.annualMeters;
+    const annualWater = s.waterSavedPerMeter * params.annualMeters;
+
+    return `
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:#9a3412;margin-bottom:8px;">${c.product} <span style="font-weight:400;color:#6b7280;">(${c.company})</span></div>
+
+        <!-- 4-column metrics grid -->
+        <table style="width:100%;border-collapse:separate;border-spacing:4px;">
+          <tr>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fed7aa;border-radius:8px;">
+              <div style="font-size:20px;font-weight:900;color:#ea580c;">$${num(annualRemGlobal, 0)}</div>
+              <div style="font-size:9px;font-weight:700;color:#ea580c;margin-top:4px;">Global Avg Remediation</div>
+              <div style="font-size:8px;color:#f97316;margin-top:2px;">$${num(s.remediationCostPerMeter, 3)}/m</div>
+            </td>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fecaca;border-radius:8px;">
+              <div style="font-size:20px;font-weight:900;color:#b91c1c;">$${num(annualRemUS, 0)}</div>
+              <div style="font-size:9px;font-weight:700;color:#dc2626;margin-top:4px;">US/EU Remediation</div>
+              <div style="font-size:8px;color:#ef4444;margin-top:2px;">$${num(s.remediationCostPerMeterUS, 3)}/m — EPA limits</div>
+            </td>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fed7aa;border-radius:8px;">
+              <div style="font-size:20px;font-weight:900;color:#ea580c;">${num(annualChemicals, 1)}</div>
+              <div style="font-size:9px;font-weight:700;color:#ea580c;margin-top:4px;">kg Treatment Chemicals</div>
+              <div style="font-size:8px;color:#f97316;margin-top:2px;">Caustic soda, flocculants, acids</div>
+            </td>
+            <td style="width:25%;text-align:center;padding:8px;background:#fff;border:1px solid #fed7aa;border-radius:8px;">
+              <div style="font-size:20px;font-weight:900;color:#ea580c;">${num(annualEnergy, 1)}</div>
+              <div style="font-size:9px;font-weight:700;color:#ea580c;margin-top:4px;">kWh Treatment Energy</div>
+              <div style="font-size:8px;color:#f97316;margin-top:2px;">Pumps, reactors, filtration</div>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Annual contaminated water -->
+        <div style="background:#fff;border:1px solid #fed7aa;border-radius:8px;padding:8px;margin-top:6px;text-align:center;">
+          <span style="font-size:18px;font-weight:900;color:#b91c1c;">${num(annualWater, 0)}</span>
+          <span style="font-size:9px;font-weight:700;color:#ea580c;margin-left:6px;">L Contaminated Wastewater @ ${(params.annualMeters/1000).toFixed(0)}k m/yr</span>
+          <span style="font-size:8px;color:#f97316;margin-left:6px;">(${num(s.waterSavedPerMeter, 2)} L/m)</span>
+        </div>
+
+        <!-- Remediation scope -->
+        ${s.remediationScope ? `
+        <div style="background:#fff;border:1px solid #fed7aa;border-radius:8px;padding:8px;margin-top:6px;">
+          <span style="font-size:8px;color:#9a3412;"><strong>Scope:</strong> ${s.remediationScope}</span>
+        </div>` : ""}
+
+        <!-- True cost comparison -->
+        <table style="width:100%;border-collapse:separate;border-spacing:4px;margin-top:6px;">
+          <tr>
+            <td style="width:50%;vertical-align:top;padding:10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;">
+              <div style="font-size:8px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">${c.product} True Cost/Meter</div>
+              <div style="font-size:22px;font-weight:900;color:#b91c1c;">$${num(s.trueTotalCostPerMeter, 4)}<span style="font-size:10px;font-weight:400;color:#ef4444;">/m</span></div>
+              <div style="font-size:8px;color:#ef4444;margin-top:4px;line-height:1.5;">
+                Antimicrobial: $${num(c.estimatedCostPerMeterTypical, 4)}/m<br/>
+                + Wastewater remediation: $${num(s.remediationCostPerMeter, 4)}/m<br/>
+                + Curing energy: $${num(s.energySavedPerMeter * 0.10, 4)}/m<br/>
+                <strong style="border-top:1px solid #fecaca;display:inline-block;padding-top:2px;margin-top:2px;">Hidden costs: $${num(s.hiddenCostPerMeter, 4)}/m</strong>
+              </div>
+            </td>
+            <td style="width:50%;vertical-align:top;padding:10px;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;">
+              <div style="font-size:8px;font-weight:700;color:#047857;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">FUZE True Cost/Meter</div>
+              <div style="font-size:22px;font-weight:900;color:#047857;">$${num(s.fuzeTrueCostPerMeter, 4)}<span style="font-size:10px;font-weight:400;color:#059669;">/m</span></div>
+              <div style="font-size:8px;color:#059669;margin-top:4px;line-height:1.5;">
+                FUZE F1 treatment: $${num(s.fuzeTrueCostPerMeter, 4)}/m<br/>
+                + Wastewater remediation: $0.0000/m<br/>
+                + Curing energy: $0.0000/m<br/>
+                <strong style="border-top:1px solid #a7f3d0;display:inline-block;padding-top:2px;margin-top:2px;">Hidden costs: $0.0000/m</strong>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>`;
   }).join("");
 
   return `
+  <div class="page-break"></div>
   <div class="container">
     <div class="section-header" style="background: #ea580c;"><span>05</span> Lifecycle Stage 3: Factory Wastewater Remediation</div>
     <p class="text-sm">
-      Post-application treatment costs: chemical remediation of metals in wastewater, energy for treatment,
-      sludge handling, and regulatory compliance. FUZE produces no wastewater requiring treatment.
+      Chemistry-specific treatment costs to remove antimicrobial contaminants from factory wastewater.
+      Does not include baseline dye/BOD treatment. Global average reflects SE Asia/South Asia textile hub rates.
+      US/EU rates reflect stricter EPA discharge limits (5 µg/L) requiring additional polishing stages.
+      FUZE produces no wastewater requiring treatment — carrier is 18 MΩ ultrapure water.
     </p>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th style="width:20%">Product</th>
-          <th>Treatment Cost/m ($)</th>
-          <th>Annual Treatment Cost @ ${(params.annualMeters/1000).toFixed(0)}k m</th>
-          <th>Water Contaminated/m (L)</th>
-          <th>Annual Water Treated (k L)</th>
-          <th>Remediation Cost (FUZE saves)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="fuze-row">
-          <td><strong>FUZE FTP F1</strong></td>
-          <td class="success">$0.000</td>
-          <td class="success">—</td>
-          <td class="success">0</td>
-          <td class="success">—</td>
-          <td class="success">$0.000</td>
-        </tr>
-        ${rows}
-      </tbody>
-    </table>
+
+    <!-- FUZE Profile -->
+    <div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:12px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:#047857;margin-bottom:4px;">FUZE FTP F1 — Zero Remediation</div>
+      <div style="font-size:9.5px;color:#059669;">
+        <strong>$0 remediation. 0 L contaminated water. 0 kg treatment chemicals. 0 kWh treatment energy.</strong>
+        Carrier is 18 MΩ ultrapure water — dischargeable without treatment.
+      </div>
+    </div>
+
+    <!-- Competitor detail blocks -->
+    ${competitorBlocks}
+
+    <p class="text-sm" style="margin-top:8px;color:#92400e;font-size:8px;">
+      <strong>Sources:</strong> Aurubis EFD 2024; EPA effluent guidelines 40 CFR 433; WHO/UNIDO textile effluent treatment benchmarks.
+      Remediation via chemical precipitation (NaOH + FeCl₃) + coagulation-flocculation + microfiltration.
+    </p>
   </div>`;
 }
 
 function renderLifecycleStage4(results: CompetitorResult[], params: ReportParams): string {
-  const rows = results.map(r => {
+  const competitorBlocks = results.map(r => {
     const c = r.competitor;
     const s = r.score;
     const bioaccumDesc = (s.consumerBioaccumulationFactor || 0) > 0.7 ? "High persistence"
       : (s.consumerBioaccumulationFactor || 0) >= 0.4 ? "Moderate"
       : "Low";
-    const annualWaterContam = (s.consumerWaterContaminatedLitersLifetime || 0) / (params.targetWashes > 0 ? params.targetWashes : 1) * params.targetWashes;
-    return `<tr>
-      <td><strong>${c.product}</strong></td>
-      <td>${num(s.consumerLeachedMetalMgPerWash || 0, 2)}</td>
-      <td>${num(s.consumerTotalLeachedMgLifetime || 0, 1)}</td>
-      <td>${num((s.consumerWaterContaminatedLitersLifetime || 0) / 1000, 1)}</td>
-      <td>$${num(s.municipalTreatmentCostPerGarment || 0, 3)}</td>
-      <td>${num(s.consumerMicroplasticShedGPerWash || 0, 3)}</td>
-      <td>${bioaccumDesc}</td>
-    </tr>`;
+    const bioaccumColor = (s.consumerBioaccumulationFactor || 0) > 0.7 ? "#b91c1c"
+      : (s.consumerBioaccumulationFactor || 0) >= 0.4 ? "#ea580c" : "#16a34a";
+
+    return `
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:#6b21a8;margin-bottom:8px;">${c.product} <span style="font-weight:400;color:#6b7280;">(${c.company})</span></div>
+
+        <table style="width:100%;border-collapse:separate;border-spacing:4px;">
+          <tr>
+            <td style="width:33%;text-align:center;padding:8px;background:#fff;border:1px solid #e9d5ff;border-radius:8px;">
+              <div style="font-size:18px;font-weight:900;color:#7c3aed;">${num(s.consumerLeachedMetalMgPerWash || 0, 2)}</div>
+              <div style="font-size:9px;font-weight:700;color:#7c3aed;margin-top:4px;">mg Metal/Wash</div>
+              <div style="font-size:8px;color:#8b5cf6;margin-top:2px;">Per garment, per wash cycle</div>
+            </td>
+            <td style="width:33%;text-align:center;padding:8px;background:#fff;border:1px solid #e9d5ff;border-radius:8px;">
+              <div style="font-size:18px;font-weight:900;color:#7c3aed;">${num(s.consumerTotalLeachedMgLifetime || 0, 1)}</div>
+              <div style="font-size:9px;font-weight:700;color:#7c3aed;margin-top:4px;">mg Total Leached</div>
+              <div style="font-size:8px;color:#8b5cf6;margin-top:2px;">Lifetime of garment</div>
+            </td>
+            <td style="width:33%;text-align:center;padding:8px;background:#fff;border:1px solid #e9d5ff;border-radius:8px;">
+              <div style="font-size:18px;font-weight:900;color:#7c3aed;">${num(s.consumerWaterContaminatedLitersLifetime || 0, 0)}</div>
+              <div style="font-size:9px;font-weight:700;color:#7c3aed;margin-top:4px;">L Contaminated Water</div>
+              <div style="font-size:8px;color:#8b5cf6;margin-top:2px;">Lifetime wash cycles</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="width:33%;text-align:center;padding:8px;background:#fff;border:1px solid #e9d5ff;border-radius:8px;">
+              <div style="font-size:18px;font-weight:900;color:#7c3aed;">$${num(s.municipalTreatmentCostPerGarment || 0, 3)}</div>
+              <div style="font-size:9px;font-weight:700;color:#7c3aed;margin-top:4px;">Municipal Cost</div>
+              <div style="font-size:8px;color:#8b5cf6;margin-top:2px;">Per garment treatment</div>
+            </td>
+            <td style="width:33%;text-align:center;padding:8px;background:#fff;border:1px solid #e9d5ff;border-radius:8px;">
+              <div style="font-size:18px;font-weight:900;color:#7c3aed;">${num(s.consumerMicroplasticShedGPerWash || 0, 3)}</div>
+              <div style="font-size:9px;font-weight:700;color:#7c3aed;margin-top:4px;">g Microplastic/Wash</div>
+              <div style="font-size:8px;color:#8b5cf6;margin-top:2px;">From binder shedding</div>
+            </td>
+            <td style="width:33%;text-align:center;padding:8px;background:#fff;border:1px solid #e9d5ff;border-radius:8px;">
+              <div style="font-size:18px;font-weight:900;color:${bioaccumColor};">${num(s.consumerBioaccumulationFactor || 0, 2)}</div>
+              <div style="font-size:9px;font-weight:700;color:#7c3aed;margin-top:4px;">Bioaccumulation</div>
+              <div style="font-size:8px;color:${bioaccumColor};margin-top:2px;">${bioaccumDesc}</div>
+            </td>
+          </tr>
+        </table>
+      </div>`;
   }).join("");
 
   return `
@@ -527,33 +723,19 @@ function renderLifecycleStage4(results: CompetitorResult[], params: ReportParams
     <p class="text-sm">
       End-of-life impacts: metal leaching during home washing cycles, contamination of household wastewater,
       municipal treatment costs, microplastic shedding from binder degradation, and bioaccumulation in aquatic ecosystems.
-      FUZE has zero leaching and zero microplastic shedding over the garment lifetime.
     </p>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th style="width:20%">Product</th>
-          <th>Metal/Wash (mg)</th>
-          <th>Lifetime Metal (mg)</th>
-          <th>Water Contaminated (k L)</th>
-          <th>Municipal Treat. Cost ($)</th>
-          <th>Microplastic/Wash (g)</th>
-          <th>Bioaccumulation</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="fuze-row">
-          <td><strong>FUZE FTP F1</strong></td>
-          <td class="success">0.00</td>
-          <td class="success">0.0</td>
-          <td class="success">0.0</td>
-          <td class="success">$0.000</td>
-          <td class="success">0.000</td>
-          <td class="success">None</td>
-        </tr>
-        ${rows}
-      </tbody>
-    </table>
+
+    <!-- FUZE Profile -->
+    <div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:12px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:#047857;margin-bottom:4px;">FUZE FTP F1 — Consumer Profile</div>
+      <div style="font-size:9.5px;color:#059669;">
+        <strong>Zero leaching. Zero microplastic. Zero municipal burden.</strong>
+        FUZE metamaterial does not leach into home wash water. No binder = no polymer shedding. Zero treatment cost at municipal water facilities.
+      </div>
+    </div>
+
+    <!-- Competitor detail blocks -->
+    ${competitorBlocks}
   </div>`;
 }
 

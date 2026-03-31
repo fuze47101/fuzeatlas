@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { calcQuote, money, type WidthUnit } from "@/lib/fuze-calc";
 import { COMPETITORS, applyOverrides, type Competitor, type PriceOverride } from "@/lib/competitors";
-import { calcSustainabilityScore, generateESGClaims, FUZE_SUSTAINABILITY } from "@/lib/sustainability";
+import { calcSustainabilityScore, generateESGClaims, FUZE_SUSTAINABILITY, UPSTREAM_MANUFACTURING } from "@/lib/sustainability";
 
 function num(n: number, digits = 2) {
   if (!Number.isFinite(n)) return "0";
@@ -33,7 +33,7 @@ export default function SustainabilityPage() {
   const [annualMeters, setAnnualMeters] = useState(100000);
   const [brandName, setBrandName] = useState("");
   const [preparedFor, setPreparedFor] = useState("");
-  const [reportMode, setReportMode] = useState<"single" | "all">("all");
+  const [reportMode, setReportMode] = useState<"single" | "all">("single");
   const [exporting, setExporting] = useState(false);
 
   const competitor = competitors.find(c => c.id === competitorId) || competitors[0];
@@ -55,6 +55,20 @@ export default function SustainabilityPage() {
     () => generateESGClaims(score, competitor, annualMeters),
     [score, competitor, annualMeters],
   );
+
+  // Resolve upstream data for CO2 breakdown display
+  const upstreamData = useMemo(() => {
+    const ct = competitor.chemistryType;
+    const key = ct === "silver_ion" ? "silver_ion"
+      : ct === "silver_nano" ? "silver_nano"
+      : ct === "silver_chloride" ? "silver_chloride"
+      : ct.includes("silver") ? "silver_chloride"
+      : ct === "qac_silane" ? "qac_silane"
+      : ct.includes("zinc") ? "zinc_pyrithione"
+      : ct === "copper" ? "copper"
+      : "silver_chloride";
+    return UPSTREAM_MANUFACTURING[key] || UPSTREAM_MANUFACTURING.silver_chloride;
+  }, [competitor]);
 
   const gradeColor =
     score.sustainabilityScore >= 90 ? "from-emerald-500 to-emerald-600" :
@@ -181,7 +195,7 @@ export default function SustainabilityPage() {
             {exporting ? (
               <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" /><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" /></svg> Generating...</>
             ) : (
-              <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> Export PDF Report</>
+              <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> {reportMode === "single" ? `Export ${competitor?.product || "Competitor"} vs FUZE` : "Export All Competitors"}</>
             )}
           </button>
         </div>
@@ -190,8 +204,8 @@ export default function SustainabilityPage() {
             <label className="block text-xs font-medium text-slate-400 mb-1">Report Scope</label>
             <select value={reportMode} onChange={e => setReportMode(e.target.value as "single" | "all")}
               className="w-full h-10 rounded-lg border border-slate-600 bg-slate-800 text-white px-3 text-sm">
-              <option value="all">All Competitors (Full Teardown)</option>
               <option value="single">Selected Competitor Only</option>
+              <option value="all">All Competitors (Full Teardown)</option>
             </select>
           </div>
           <div>
@@ -399,6 +413,31 @@ export default function SustainabilityPage() {
           </div>
         </div>
 
+        {/* CO2 Breakdown: Mining → Refining → Synthesis */}
+        {upstreamData.co2Breakdown && (
+          <div className="bg-white border border-red-200 rounded-xl p-4 mb-4">
+            <div className="text-xs font-semibold text-red-800 mb-3">CO₂ Breakdown — {num(upstreamData.facilityCO2PerKg, 0)} kg CO₂/kg product</div>
+            <div className="grid grid-cols-3 gap-3 mb-3">
+              <div className="text-center">
+                <div className="text-lg font-black text-red-700">{num(upstreamData.co2Breakdown.mining, 0)}</div>
+                <div className="text-[10px] font-semibold text-red-600">kg CO₂ — Mining</div>
+                <div className="text-[9px] text-red-400 mt-0.5">Ore extraction, crushing, concentration</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-black text-red-700">{num(upstreamData.co2Breakdown.refining, 0)}</div>
+                <div className="text-[10px] font-semibold text-red-600">kg CO₂ — Refining</div>
+                <div className="text-[9px] text-red-400 mt-0.5">Smelting, electrolytic purification</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-black text-red-700">{num(upstreamData.co2Breakdown.synthesis, 0)}</div>
+                <div className="text-[10px] font-semibold text-red-600">kg CO₂ — Synthesis</div>
+                <div className="text-[9px] text-red-400 mt-0.5">Product formulation, compounding</div>
+              </div>
+            </div>
+            <div className="text-[9px] text-gray-400 border-t border-red-100 pt-2">{upstreamData.co2Breakdown.source}</div>
+          </div>
+        )}
+
         <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
           <div className="text-xs font-semibold text-emerald-700 mb-2">FUZE Manufacturing Profile</div>
           <p className="text-xs text-emerald-600">30-amp liquid laser ablation on a 1m² table. Recycled electronics feedstock. Solar-capable. <strong>Zero chemicals. Zero waste. Zero VOCs. Zero process water.</strong></p>
@@ -458,22 +497,32 @@ export default function SustainabilityPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div className="bg-white border border-orange-200 rounded-xl p-4 text-center">
-            <div className="text-3xl font-black text-orange-700">${num(score.remediationCostPerMeter * annualMeters, 2)}</div>
-            <div className="text-xs font-semibold text-orange-600 mt-2">Remediation Cost</div>
-            <div className="text-[10px] text-orange-500 mt-1">${num(score.remediationCostPerMeter, 4)}/m</div>
+            <div className="text-2xl font-black text-orange-700">${num(score.remediationCostPerMeter * annualMeters, 1)}</div>
+            <div className="text-xs font-semibold text-orange-600 mt-2">Global Avg Remediation</div>
+            <div className="text-[10px] text-orange-500 mt-1">${num(score.remediationCostPerMeter, 3)}/m</div>
+          </div>
+          <div className="bg-white border border-red-300 rounded-xl p-4 text-center">
+            <div className="text-2xl font-black text-red-700">${num(score.remediationCostPerMeterUS * annualMeters, 1)}</div>
+            <div className="text-xs font-semibold text-red-600 mt-2">US/EU Remediation</div>
+            <div className="text-[10px] text-red-500 mt-1">${num(score.remediationCostPerMeterUS, 3)}/m — EPA limits</div>
           </div>
           <div className="bg-white border border-orange-200 rounded-xl p-4 text-center">
-            <div className="text-3xl font-black text-orange-700">{num(score.remediationChemicalsKgPerMeter * annualMeters, 1)}</div>
+            <div className="text-2xl font-black text-orange-700">{num(score.remediationChemicalsKgPerMeter * annualMeters, 1)}</div>
             <div className="text-xs font-semibold text-orange-600 mt-2">kg Treatment Chemicals</div>
             <div className="text-[10px] text-orange-500 mt-1">Caustic soda, flocculants, acids</div>
           </div>
           <div className="bg-white border border-orange-200 rounded-xl p-4 text-center">
-            <div className="text-3xl font-black text-orange-700">{num(score.remediationEnergyKwhPerMeter * annualMeters, 1)}</div>
+            <div className="text-2xl font-black text-orange-700">{num(score.remediationEnergyKwhPerMeter * annualMeters, 1)}</div>
             <div className="text-xs font-semibold text-orange-600 mt-2">kWh Treatment Energy</div>
             <div className="text-[10px] text-orange-500 mt-1">Pumps, reactors, filtration</div>
           </div>
+        </div>
+
+        {/* Remediation scope explanation */}
+        <div className="bg-white border border-orange-100 rounded-xl p-3 mb-4">
+          <div className="text-[10px] text-orange-700"><strong>What this covers:</strong> {score.remediationScope}</div>
         </div>
 
         {/* True total cost comparison */}
@@ -693,10 +742,39 @@ export default function SustainabilityPage() {
           Pricing & Environmental Comparison Tool →
         </Link>
         <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="flex-1 text-center py-3 bg-slate-900 text-white rounded-xl font-semibold text-sm hover:bg-slate-800 transition-colors"
+          disabled={exporting}
+          onClick={async () => {
+            setExporting(true);
+            try {
+              const res = await fetch("/api/reports/sustainability-competitive", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  gsm,
+                  widthInches: width,
+                  targetWashes,
+                  metersPerGarment,
+                  annualMeters,
+                  competitorIds: [competitorId],
+                  brandName: brandName || undefined,
+                  preparedFor: preparedFor || undefined,
+                }),
+              });
+              if (!res.ok) throw new Error("Report generation failed");
+              const html = await res.text();
+              const blob = new Blob([html], { type: "text/html" });
+              const url = URL.createObjectURL(blob);
+              window.open(url, "_blank");
+            } catch (err) {
+              alert("Failed to generate report. Check console for details.");
+              console.error(err);
+            } finally {
+              setExporting(false);
+            }
+          }}
+          className="flex-1 text-center py-3 bg-slate-900 text-white rounded-xl font-semibold text-sm hover:bg-slate-800 transition-colors disabled:opacity-50"
         >
-          ↑ Export Full Report
+          {exporting ? "Generating..." : `Export ${competitor.product} vs FUZE Report`}
         </button>
       </div>
     </div>
