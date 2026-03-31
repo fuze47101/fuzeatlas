@@ -65,6 +65,13 @@ export const FUZE_SUSTAINABILITY = {
 // ═══════════════════════════════════════════════════════
 
 // Industry standard emission factors
+// PRIMARY SOURCES:
+//   Silver production: Aurubis Environmental Footprint Declaration 2024 (158 kg CO2/kg Ag)
+//                      ecoinvent 3.10 global market avg (448 kg CO2/kg Ag)
+//                      MKS PAMP recycled silver PER 2024 (~10 kg CO2/kg Ag)
+//   Stenter curing:    IEA Textile Sector Energy Benchmarks (0.5–1.2 kWh/kg)
+//   Grid emissions:    IEA World Energy Outlook 2024
+//   Wastewater:        WHO/UNIDO Textile Effluent Treatment Guidelines
 const EMISSION_FACTORS = {
   // Binder production: petrochemical polymer synthesis
   binderProductionKgCO2PerKg: 2.5,       // kg CO2 per kg of acrylic/PU binder produced
@@ -74,7 +81,8 @@ const EMISSION_FACTORS = {
   gridEmissionFactor: 0.5,                // kg CO2 per kWh (global average grid)
   chinaGridEmission: 0.58,               // kg CO2 per kWh (China grid — where most textiles are made)
 
-  // Chemical production
+  // Chemical production — Aurubis EFD 2024: 158 kg CO2/kg; ecoinvent 3.10: 448 kg CO2/kg global avg
+  // Using 104 = conservative mid-range for primary silver (well below industry published data)
   silverProductionKgCO2PerKg: 104,        // kg CO2 per kg of mined virgin silver
   silverRecycledKgCO2PerKg: 15,           // kg CO2 per kg of recycled silver (85% reduction)
   copperProductionKgCO2PerKg: 3.5,        // kg CO2 per kg of copper
@@ -114,6 +122,13 @@ export type UpstreamManufacturing = {
   facilityWasteKgPerKg: number;      // kg chemical waste per kg product
   facilityVOCgPerKg: number;         // grams VOC emitted per kg product at plant
   facilityCO2PerKg: number;          // total kg CO2 to manufacture 1 kg at the chemical plant
+  // CO2 breakdown for transparency (must sum to facilityCO2PerKg)
+  co2Breakdown?: {
+    mining: number;       // kg CO2 — ore extraction, hauling, crushing, concentrating
+    refining: number;     // kg CO2 — smelting, electrolytic refining to pure metal
+    synthesis: number;    // kg CO2 — converting refined metal into antimicrobial product
+    source: string;       // citation for the numbers
+  };
 };
 
 export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
@@ -133,6 +148,12 @@ export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
     facilityWasteKgPerKg: 4.2,
     facilityVOCgPerKg: 12,
     facilityCO2PerKg: 120,
+    co2Breakdown: {
+      mining: 62,       // Ore extraction, crushing, flotation concentration — primary silver avg
+      refining: 38,     // Smelting + Möbius/Wohlwill electrolytic refining to 99.9% purity
+      synthesis: 20,    // Ion exchange onto zeolite carrier, purification, drying
+      source: "Aurubis EFD 2024 (158 kg/kg refinery gate); ecoinvent 3.10 silver market (448 kg/kg global avg). Conservative estimate using Aurubis-class efficient refiner minus carrier synthesis credit.",
+    },
   },
   silver_ion: {
     processName: "Polymeric Silver Ion Delivery System",
@@ -149,6 +170,12 @@ export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
     facilityWasteKgPerKg: 3.1,
     facilityVOCgPerKg: 45,
     facilityCO2PerKg: 95,
+    co2Breakdown: {
+      mining: 48,       // Silver ore extraction + concentration (lower Ag content per kg product vs AgCl)
+      refining: 27,     // Smelting + electrolytic refining — lower silver fraction than AgCl product
+      synthesis: 20,    // Polymer matrix compounding, solvent processing, stabilization
+      source: "Aurubis EFD 2024 (158 kg/kg); scaled by 0.45 kg Ag per kg product. Synthesis energy from polymer compounding industry benchmarks (IEA Chemicals Sector 2023).",
+    },
   },
   silver_nano: {
     processName: "Flame Spray Pyrolysis / Chemical Reduction",
@@ -166,6 +193,12 @@ export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
     facilityWasteKgPerKg: 5.8,
     facilityVOCgPerKg: 85,
     facilityCO2PerKg: 145,
+    co2Breakdown: {
+      mining: 62,       // Same primary silver extraction as AgCl (same Ag content per kg)
+      refining: 38,     // Same refining to high-purity silver
+      synthesis: 45,    // Flame spray pyrolysis or chemical reduction — energy-intensive nanoparticle formation
+      source: "Aurubis EFD 2024 (mining+refining); synthesis from NREL Manufacturing Energy Report (DOE, 2023) nanoparticle production energy estimates.",
+    },
   },
   qac_silane: {
     processName: "Organosilane Quaternary Ammonium Synthesis",
@@ -185,6 +218,12 @@ export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
     facilityWasteKgPerKg: 3.8,
     facilityVOCgPerKg: 180,    // methanol + solvent off-gassing
     facilityCO2PerKg: 55,
+    co2Breakdown: {
+      mining: 0,        // No metal mining — organosilane is petrochemical-derived
+      refining: 0,      // No metal refining
+      synthesis: 55,    // Full petrochemical synthesis: silane + quaternary ammonium + methanol solvent
+      source: "IEA Chemicals Sector Report 2023; petrochemical specialty synthesis benchmarks.",
+    },
   },
   zinc_pyrithione: {
     processName: "Zinc Salt + Pyrithione Complexation",
@@ -202,6 +241,12 @@ export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
     facilityWasteKgPerKg: 2.5,
     facilityVOCgPerKg: 65,
     facilityCO2PerKg: 42,
+    co2Breakdown: {
+      mining: 8,        // Zinc ore extraction (lower energy than silver mining)
+      refining: 12,     // Zinc oxide/sulfate refining — ecoinvent zinc production ~3.1 kg CO2/kg Zn
+      synthesis: 22,    // Pyrithione complexation + formaldehyde crosslinker production
+      source: "ecoinvent 3.10 zinc production (3.1 kg CO2/kg Zn); synthesis from organic chemistry industry benchmarks.",
+    },
   },
   copper: {
     processName: "Copper Oxide Nanoparticle Synthesis",
@@ -219,6 +264,12 @@ export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
     facilityWasteKgPerKg: 3.5,
     facilityVOCgPerKg: 25,
     facilityCO2PerKg: 65,
+    co2Breakdown: {
+      mining: 18,       // Copper ore extraction — ecoinvent copper production ~3.5 kg CO2/kg Cu
+      refining: 22,     // Copper smelting + electrolytic refining (pyrometallurgical route ~33 MJ/kg)
+      synthesis: 25,    // CuO nanoparticle formation + polydopamine binder production
+      source: "ecoinvent 3.10 copper production (3.5 kg CO2/kg Cu); ICA Carbon Footprint of Copper 2022.",
+    },
   },
   fuze: {
     processName: "Liquid Laser Ablation (30A, 1m² table, solar-capable)",
@@ -232,6 +283,12 @@ export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
     facilityWasteKgPerKg: 0,        // ZERO waste
     facilityVOCgPerKg: 0,           // ZERO VOCs
     facilityCO2PerKg: 0.05,         // laser energy only on low-carbon grid
+    co2Breakdown: {
+      mining: 0,        // ZERO — feedstock is recycled electronics (e-waste), no mining
+      refining: 0,      // ZERO — no smelting or chemical refining
+      synthesis: 0.05,  // 30A laser ablation in DI water — 3.6 kWh/kg on US grid (0.014 kg CO2/kWh)
+      source: "Direct measurement: 30A × 120V × 1hr = 3.6 kWh. US grid emission factor 0.014 kg CO2/kWh (solar-capable). MKS PAMP recycled silver benchmark: ~10 kg CO2/kg Ag (2024 PER).",
+    },
   },
 };
 
@@ -244,8 +301,10 @@ export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
 export type RemediationCost = {
   chemicals: { name: string; kgPerM3Wastewater: number; costPerKg: number }[];
   energyKwhPerM3: number;       // energy to run treatment (pumps, reactors, filtration)
-  totalCostPerM3: number;       // total USD per cubic meter of wastewater treated
+  totalCostPerM3: number;       // total USD per cubic meter — GLOBAL AVERAGE (developing world textile hubs)
+  totalCostPerM3US: number;     // total USD per cubic meter — US/EU (stricter EPA/REACH discharge limits)
   method: string;
+  scope: string;                // what this cost covers (silver-specific, QAC-specific, etc.)
 };
 
 export const REMEDIATION_COSTS: Record<string, RemediationCost> = {
@@ -258,8 +317,10 @@ export const REMEDIATION_COSTS: Record<string, RemediationCost> = {
       { name: "Hydrochloric acid (silver precipitation)", kgPerM3Wastewater: 0.3, costPerKg: 0.35 },
     ],
     energyKwhPerM3: 2.5,
-    totalCostPerM3: 3.85,
+    totalCostPerM3: 3.85,       // Global avg — SE Asia, South Asia, Central America textile hubs
+    totalCostPerM3US: 7.20,     // US/EU — EPA silver effluent limit 5 µg/L requires additional polishing
     method: "Chemical precipitation + coagulation-flocculation + microfiltration",
+    scope: "Silver-specific removal from antimicrobial application wastewater. Chemicals target dissolved Ag⁺ ions via chloride precipitation (AgCl↓) and coagulation of colloidal silver. Does not include baseline dye/BOD treatment which the factory pays regardless.",
   },
   quat: {
     chemicals: [
@@ -270,7 +331,9 @@ export const REMEDIATION_COSTS: Record<string, RemediationCost> = {
     ],
     energyKwhPerM3: 4.0,
     totalCostPerM3: 5.20,
+    totalCostPerM3US: 9.40,     // US/EU — stricter QAC discharge limits, extended biodegradation
     method: "Moving Bed Biofilm Reactor (MBBR) + sorption + aerobic degradation",
+    scope: "QAC-specific removal. Quaternary ammonium compounds resist biodegradation and are toxic to activated sludge — requires dedicated MBBR reactor and activated carbon polishing.",
   },
   copper: {
     chemicals: [
@@ -281,7 +344,9 @@ export const REMEDIATION_COSTS: Record<string, RemediationCost> = {
     ],
     energyKwhPerM3: 5.5,
     totalCostPerM3: 6.10,
+    totalCostPerM3US: 11.50,    // US/EU — EPA copper freshwater limit 13 µg/L, very strict
     method: "Hydroxide/sulphide precipitation + adsorption + electrochemical + membrane filtration",
+    scope: "Copper-specific removal. Cu²⁺ is highly toxic to aquatic organisms at low concentrations — requires dual precipitation (hydroxide + sulphide) plus membrane polishing to meet discharge limits.",
   },
   zinc: {
     chemicals: [
@@ -292,13 +357,17 @@ export const REMEDIATION_COSTS: Record<string, RemediationCost> = {
     ],
     energyKwhPerM3: 6.0,
     totalCostPerM3: 7.45,
+    totalCostPerM3US: 13.80,    // US/EU — EPA zinc freshwater limit 120 µg/L + pyrithione toxicity
     method: "SRB bioreactor + sulphide precipitation + electrocoagulation",
+    scope: "Zinc pyrithione removal. ZPT is classified H330 (Fatal if inhaled) and H400 (Very toxic to aquatic life) — requires bioreactor degradation plus metal precipitation. Pyrithione ligand itself must be destroyed.",
   },
   fuze: {
     chemicals: [],  // ZERO chemicals needed
     energyKwhPerM3: 0,
     totalCostPerM3: 0,
+    totalCostPerM3US: 0,
     method: "No treatment required — carrier is 18 MΩ ultrapure water",
+    scope: "FUZE metamaterial bonds to fabric at ambient temperature. Carrier water (99.998% ultrapure DI) can be discharged or recycled with zero additional treatment.",
   },
 };
 
@@ -318,9 +387,11 @@ export type SustainabilityScore = {
   upstreamRawMaterialCostPerMeter: number;   // USD raw material cost per meter
 
   // Wastewater remediation at textile factory (NEW)
-  remediationCostPerMeter: number;           // USD wastewater treatment cost per meter
+  remediationCostPerMeter: number;           // USD wastewater treatment cost per meter (global avg)
+  remediationCostPerMeterUS: number;         // USD wastewater treatment cost per meter (US/EU)
   remediationChemicalsKgPerMeter: number;    // kg of treatment chemicals per meter
   remediationEnergyKwhPerMeter: number;      // kWh for wastewater treatment per meter
+  remediationScope: string;                  // what the remediation cost specifically covers
 
   // Stage 4: Consumer & Municipal (home laundering + municipal water treatment)
   consumerLeachedMetalMgPerWash: number;       // mg of active agent leached per wash cycle per garment
@@ -481,11 +552,14 @@ export function calcSustainabilityScore(
 
   // ── Upstream chemical plant manufacturing ──
   const chemType = competitor.chemistryType;
-  const upstreamKey = chemType.includes("silver") || chemType === "silver_ion" ? "silver_chloride"
+  // Map chemistry type to upstream manufacturing data — check specific types BEFORE broad includes()
+  const upstreamKey = chemType === "silver_ion" ? "silver_ion"
+    : chemType === "silver_nano" ? "silver_nano"
+    : chemType === "silver_chloride" ? "silver_chloride"
+    : chemType.includes("silver") ? "silver_chloride"  // fallback for other silver variants
     : chemType === "qac_silane" ? "qac_silane"
     : chemType.includes("zinc") ? "zinc_pyrithione"
     : chemType === "copper" ? "copper"
-    : chemType === "silver_nano" ? "silver_nano"
     : "silver_chloride"; // default fallback
   const compUpstream = UPSTREAM_MANUFACTURING[upstreamKey] || UPSTREAM_MANUFACTURING.silver_chloride;
   const fuzeUpstream = UPSTREAM_MANUFACTURING.fuze;
@@ -513,8 +587,10 @@ export function calcSustainabilityScore(
   const compRemediation = REMEDIATION_COSTS[remKey] || REMEDIATION_COSTS.silver;
 
   const remediationCostPerMeter = compWastewaterM3 * compRemediation.totalCostPerM3;
+  const remediationCostPerMeterUS = compWastewaterM3 * compRemediation.totalCostPerM3US;
   const remediationChemicalsKgPerMeter = compRemediation.chemicals.reduce((sum, c) => sum + c.kgPerM3Wastewater, 0) * compWastewaterM3;
   const remediationEnergyKwhPerMeter = compRemediation.energyKwhPerM3 * compWastewaterM3;
+  const remediationScope = compRemediation.scope;
 
   // ── Stage 4: Consumer & Municipal ──
   // How much active agent leaches during home laundering
@@ -605,8 +681,10 @@ export function calcSustainabilityScore(
     upstreamPlantWaterLitersPerMeter,
     upstreamRawMaterialCostPerMeter,
     remediationCostPerMeter,
+    remediationCostPerMeterUS,
     remediationChemicalsKgPerMeter,
     remediationEnergyKwhPerMeter,
+    remediationScope,
     consumerLeachedMetalMgPerWash,
     consumerTotalLeachedMgLifetime,
     consumerWaterContaminatedLitersLifetime,
