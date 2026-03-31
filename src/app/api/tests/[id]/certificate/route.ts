@@ -72,8 +72,9 @@ export async function GET(
     let isPassed = false;
 
     if (testRun.testType === "ICP" && testRun.icpResult) {
-      // ICP tests are considered passed if they have results
-      isPassed = !!(testRun.icpResult.agValue || testRun.icpResult.auValue);
+      // ICP passes if Ag content meets minimum F4 threshold (0.10 mg/kg)
+      const ag = testRun.icpResult.agValue;
+      isPassed = typeof ag === "number" && ag >= 0.10;
     } else if (testRun.testType === "ANTIBACTERIAL" && testRun.abResult) {
       isPassed = testRun.abResult.methodPass !== false;
     } else if (testRun.testType === "FUNGAL" && testRun.fungalResult) {

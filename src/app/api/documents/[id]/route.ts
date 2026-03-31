@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getPresignedDownloadUrl, isS3Configured } from "@/lib/s3";
 
 /* ── GET /api/documents/[id] ── return document with base64 URL for viewing */
 export async function GET(
@@ -18,6 +19,8 @@ export async function GET(
         contentType: true,
         sizeBytes: true,
         url: true,
+        bucket: true,
+        key: true,
         kind: true,
       },
     });
@@ -45,7 +48,17 @@ export async function GET(
       }
     }
 
-    // If it's a regular URL, redirect to it
+    // If we have an S3 key, generate a presigned URL for secure access
+    if (doc.key && isS3Configured()) {
+      const presignedUrl = await getPresignedDownloadUrl(
+        doc.key,
+        3600, // 1 hour
+        doc.filename || undefined,
+      );
+      return NextResponse.redirect(presignedUrl);
+    }
+
+    // Fallback: redirect to stored URL (may not work for private S3 objects)
     if (doc.url) {
       return NextResponse.redirect(doc.url);
     }

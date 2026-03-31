@@ -208,7 +208,7 @@ export default function TestDetailPage() {
           {/* Certificate Download Button */}
           {(() => {
             let hasPassed = false;
-            if (test.testType === "ICP" && test.icpResult) hasPassed = !!(test.icpResult.agValue || test.icpResult.auValue);
+            if (test.testType === "ICP" && test.icpResult) hasPassed = typeof test.icpResult.agValue === "number" && test.icpResult.agValue >= 0.10;
             else if (test.testType === "ANTIBACTERIAL" && test.abResult) hasPassed = test.abResult.methodPass !== false;
             else if (test.testType === "FUNGAL" && test.fungalResult) hasPassed = test.fungalResult.pass === true;
             else if (test.testType === "ODOR" && test.odorResult) hasPassed = test.odorResult.pass === true;
