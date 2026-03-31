@@ -195,7 +195,7 @@ export default function SustainabilityPage() {
             {exporting ? (
               <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" /><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" /></svg> Generating...</>
             ) : (
-              <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> Export PDF Report</>
+              <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> {reportMode === "single" ? `Export ${competitor?.product || "Competitor"} vs FUZE` : "Export All Competitors"}</>
             )}
           </button>
         </div>
@@ -742,10 +742,39 @@ export default function SustainabilityPage() {
           Pricing & Environmental Comparison Tool →
         </Link>
         <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="flex-1 text-center py-3 bg-slate-900 text-white rounded-xl font-semibold text-sm hover:bg-slate-800 transition-colors"
+          disabled={exporting}
+          onClick={async () => {
+            setExporting(true);
+            try {
+              const res = await fetch("/api/reports/sustainability-competitive", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  gsm,
+                  widthInches: width,
+                  targetWashes,
+                  metersPerGarment,
+                  annualMeters,
+                  competitorIds: [competitorId],
+                  brandName: brandName || undefined,
+                  preparedFor: preparedFor || undefined,
+                }),
+              });
+              if (!res.ok) throw new Error("Report generation failed");
+              const html = await res.text();
+              const blob = new Blob([html], { type: "text/html" });
+              const url = URL.createObjectURL(blob);
+              window.open(url, "_blank");
+            } catch (err) {
+              alert("Failed to generate report. Check console for details.");
+              console.error(err);
+            } finally {
+              setExporting(false);
+            }
+          }}
+          className="flex-1 text-center py-3 bg-slate-900 text-white rounded-xl font-semibold text-sm hover:bg-slate-800 transition-colors disabled:opacity-50"
         >
-          ↑ Export Full Report
+          {exporting ? "Generating..." : `Export ${competitor.product} vs FUZE Report`}
         </button>
       </div>
     </div>

@@ -237,10 +237,11 @@ export async function POST(req: Request) {
       requestId: testRequest.id,
       adminPONumber: adminPO?.poNumber || null,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating test request:", error);
+    const detail = error?.meta?.cause || error?.meta?.target || error?.message || "Unknown error";
     return NextResponse.json(
-      { ok: false, error: "Server error" },
+      { ok: false, error: `Failed to create test request: ${detail}` },
       { status: 500 }
     );
   }
