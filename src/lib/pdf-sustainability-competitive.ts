@@ -459,13 +459,14 @@ function renderLifecycleStage3(results: CompetitorResult[], params: ReportParams
     const c = r.competitor;
     const s = r.score;
     const remCostAnnual = (s.remediationCostPerMeter * params.annualMeters);
+    const remCostAnnualUS = (s.remediationCostPerMeterUS * params.annualMeters);
     return `<tr>
       <td><strong>${c.product}</strong></td>
-      <td>${num(s.remediationCostPerMeter, 3)}</td>
-      <td>${num(remCostAnnual >= 1000 ? remCostAnnual / 1000 : remCostAnnual, remCostAnnual >= 1000 ? 1 : 0)} ${remCostAnnual >= 1000 ? "k" : ""}</td>
+      <td>$${num(s.remediationCostPerMeter, 3)}</td>
+      <td style="color:#b91c1c;font-weight:700">$${num(remCostAnnual, 0)}</td>
+      <td>$${num(s.remediationCostPerMeterUS, 3)}</td>
+      <td style="color:#b91c1c;font-weight:700">$${num(remCostAnnualUS, 0)}</td>
       <td>${s.waterSavedPerMeter > 0 ? num(s.waterSavedPerMeter, 2) : "0"}</td>
-      <td>${(s.waterSavedPerMeter * params.annualMeters / 1000).toFixed(1)}</td>
-      <td class="success">0.000</td>
     </tr>`;
   }).join("");
 
@@ -473,32 +474,38 @@ function renderLifecycleStage3(results: CompetitorResult[], params: ReportParams
   <div class="container">
     <div class="section-header" style="background: #ea580c;"><span>05</span> Lifecycle Stage 3: Factory Wastewater Remediation</div>
     <p class="text-sm">
-      Post-application treatment costs: chemical remediation of metals in wastewater, energy for treatment,
-      sludge handling, and regulatory compliance. FUZE produces no wastewater requiring treatment.
+      Chemistry-specific treatment costs to remove antimicrobial contaminants from factory wastewater.
+      Does not include baseline dye/BOD treatment. Global average reflects SE Asia/South Asia textile hub rates.
+      US/EU rates reflect stricter EPA discharge limits (silver: 5 µg/L) requiring additional polishing stages.
+      FUZE produces no wastewater requiring treatment — carrier is 18 MΩ ultrapure water.
     </p>
     <table class="data-table">
       <thead>
         <tr>
-          <th style="width:20%">Product</th>
-          <th>Treatment Cost/m ($)</th>
-          <th>Annual Treatment Cost @ ${(params.annualMeters/1000).toFixed(0)}k m</th>
+          <th style="width:18%">Product</th>
+          <th>Global Avg/m</th>
+          <th>Global Annual @ ${(params.annualMeters/1000).toFixed(0)}k m</th>
+          <th>US/EU Rate/m</th>
+          <th>US/EU Annual @ ${(params.annualMeters/1000).toFixed(0)}k m</th>
           <th>Water Contaminated/m (L)</th>
-          <th>Annual Water Treated (k L)</th>
-          <th>Remediation Cost (FUZE saves)</th>
         </tr>
       </thead>
       <tbody>
         <tr class="fuze-row">
           <td><strong>FUZE FTP F1</strong></td>
           <td class="success">$0.000</td>
-          <td class="success">—</td>
-          <td class="success">0</td>
-          <td class="success">—</td>
+          <td class="success">$0</td>
           <td class="success">$0.000</td>
+          <td class="success">$0</td>
+          <td class="success">0</td>
         </tr>
         ${rows}
       </tbody>
     </table>
+    <p class="text-sm" style="margin-top:8px;color:#92400e;font-size:9px;">
+      <strong>Sources:</strong> Aurubis EFD 2024; EPA effluent guidelines 40 CFR 433; WHO/UNIDO textile effluent treatment benchmarks.
+      Silver remediation via chemical precipitation (NaOH + FeCl₃) + coagulation-flocculation + microfiltration.
+    </p>
   </div>`;
 }
 

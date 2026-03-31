@@ -33,7 +33,7 @@ export default function SustainabilityPage() {
   const [annualMeters, setAnnualMeters] = useState(100000);
   const [brandName, setBrandName] = useState("");
   const [preparedFor, setPreparedFor] = useState("");
-  const [reportMode, setReportMode] = useState<"single" | "all">("all");
+  const [reportMode, setReportMode] = useState<"single" | "all">("single");
   const [exporting, setExporting] = useState(false);
 
   const competitor = competitors.find(c => c.id === competitorId) || competitors[0];
@@ -204,8 +204,8 @@ export default function SustainabilityPage() {
             <label className="block text-xs font-medium text-slate-400 mb-1">Report Scope</label>
             <select value={reportMode} onChange={e => setReportMode(e.target.value as "single" | "all")}
               className="w-full h-10 rounded-lg border border-slate-600 bg-slate-800 text-white px-3 text-sm">
-              <option value="all">All Competitors (Full Teardown)</option>
               <option value="single">Selected Competitor Only</option>
+              <option value="all">All Competitors (Full Teardown)</option>
             </select>
           </div>
           <div>
