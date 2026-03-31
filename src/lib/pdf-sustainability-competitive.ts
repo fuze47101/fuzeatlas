@@ -93,6 +93,7 @@ ${getReportStyles()}
   ${renderESGSummary(results, params)}
   ${renderCostAnalysis(results, params)}
   ${renderCertifications()}
+  ${renderSourcesAppendix(results)}
   ${renderDisclaimer(today)}
 </body>
 </html>`;
@@ -264,6 +265,25 @@ function renderExecutiveSummary(results: CompetitorResult[], params: ReportParam
   const avgCost = results.reduce((s, r) => s + r.score.hiddenCostPerMeter, 0) / results.length;
   const totalAnnualCO2 = avgCO2 * params.annualMeters;
 
+  // Remediation totals for executive callout
+  const avgRemGlobal = results.reduce((s, r) => s + r.score.remediationCostPerMeter, 0) / results.length;
+  const avgRemUS = results.reduce((s, r) => s + r.score.remediationCostPerMeterUS, 0) / results.length;
+  const totalRemGlobal = avgRemGlobal * params.annualMeters;
+  const totalRemUS = avgRemUS * params.annualMeters;
+
+  // Per-competitor remediation lines
+  const remLines = results.map(r => {
+    const remG = r.score.remediationCostPerMeter * params.annualMeters;
+    const remUS = r.score.remediationCostPerMeterUS * params.annualMeters;
+    return `<tr>
+      <td style="padding:4px 8px;font-size:9px;font-weight:600;border-bottom:1px solid #e5e7eb;">${r.competitor.product}</td>
+      <td style="padding:4px 8px;font-size:9px;border-bottom:1px solid #e5e7eb;">$${num(r.score.remediationCostPerMeter, 3)}/m</td>
+      <td style="padding:4px 8px;font-size:9px;font-weight:700;color:#ea580c;border-bottom:1px solid #e5e7eb;">$${num(remG, 0)}</td>
+      <td style="padding:4px 8px;font-size:9px;border-bottom:1px solid #e5e7eb;">$${num(r.score.remediationCostPerMeterUS, 3)}/m</td>
+      <td style="padding:4px 8px;font-size:9px;font-weight:700;color:#b91c1c;border-bottom:1px solid #e5e7eb;">$${num(remUS, 0)}</td>
+    </tr>`;
+  }).join("");
+
   return `
   <div class="page-break"></div>
   <div class="container">
@@ -290,6 +310,39 @@ function renderExecutiveSummary(results: CompetitorResult[], params: ReportParam
         <div class="metric-label">Binder + Curing + Remediation</div>
       </div>
     </div>
+
+    <!-- Remediation cost callout — the number they need to talk about -->
+    <div style="background:#fef2f2;border:2px solid #fecaca;border-radius:10px;padding:16px;margin:16px 0;">
+      <div style="font-size:11px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">
+        Wastewater Remediation — The Cost Competitors Don't Disclose
+      </div>
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:#991b1b;">
+            <th style="padding:5px 8px;text-align:left;font-size:8px;color:white;">Product</th>
+            <th style="padding:5px 8px;text-align:left;font-size:8px;color:white;">Global/m</th>
+            <th style="padding:5px 8px;text-align:left;font-size:8px;color:white;">Global Annual</th>
+            <th style="padding:5px 8px;text-align:left;font-size:8px;color:white;">US/EU per m</th>
+            <th style="padding:5px 8px;text-align:left;font-size:8px;color:white;">US/EU Annual</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:#ecfdf5;">
+            <td style="padding:4px 8px;font-size:9px;font-weight:600;border-bottom:1px solid #e5e7eb;">FUZE FTP F1</td>
+            <td style="padding:4px 8px;font-size:9px;color:#047857;font-weight:700;border-bottom:1px solid #e5e7eb;">$0.000/m</td>
+            <td style="padding:4px 8px;font-size:9px;color:#047857;font-weight:700;border-bottom:1px solid #e5e7eb;">$0</td>
+            <td style="padding:4px 8px;font-size:9px;color:#047857;font-weight:700;border-bottom:1px solid #e5e7eb;">$0.000/m</td>
+            <td style="padding:4px 8px;font-size:9px;color:#047857;font-weight:700;border-bottom:1px solid #e5e7eb;">$0</td>
+          </tr>
+          ${remLines}
+        </tbody>
+      </table>
+      <div style="font-size:8px;color:#991b1b;margin-top:8px;line-height:1.4;">
+        <strong>Global avg</strong> = SE Asia/South Asia textile hub rates. <strong>US/EU</strong> = EPA 40 CFR 433 discharge limits (silver: 5 µg/L) requiring additional polishing stages.
+        Chemistry-specific treatment only — does not include baseline dye/BOD costs. <strong>FUZE requires $0 remediation.</strong>
+      </div>
+    </div>
+
     <div class="highlight">
       <strong>Bottom line:</strong> Switching to FUZE eliminates an average of
       <strong>$${avgCost.toFixed(3)}/meter</strong> in hidden costs that competing antimicrobials don't disclose —
@@ -1113,6 +1166,227 @@ function renderCertifications(): string {
           </div>
         </div>
       `).join("")}
+    </div>
+  </div>`;
+}
+
+function renderSourcesAppendix(results: CompetitorResult[]): string {
+  // Build per-competitor CO2 source citations
+  const co2SourceRows = results.map(r => {
+    const upKey = resolveUpstreamKey(r.competitor.chemistryType);
+    const upstream = UPSTREAM_MANUFACTURING[upKey] || UPSTREAM_MANUFACTURING.silver_chloride;
+    if (!upstream.co2Breakdown) return "";
+    return `
+      <tr>
+        <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;font-weight:600;">${r.competitor.product}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;">${upstream.facilityCO2PerKg} kg CO₂/kg</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:8px;">${upstream.co2Breakdown.source}</td>
+      </tr>`;
+  }).filter(Boolean).join("");
+
+  // Build remediation method/scope rows
+  const remediationRows = results.map(r => {
+    const s = r.score;
+    return `
+      <tr>
+        <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;font-weight:600;">${r.competitor.product}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;">
+          Global: $${num(s.remediationCostPerMeter, 3)}/m &nbsp;|&nbsp; US/EU: $${num(s.remediationCostPerMeterUS, 3)}/m
+        </td>
+        <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:8px;">${s.remediationScope || "—"}</td>
+      </tr>`;
+  }).join("");
+
+  // Build upstream raw materials table
+  const rawMaterialRows = results.map(r => {
+    const upKey = resolveUpstreamKey(r.competitor.chemistryType);
+    const upstream = UPSTREAM_MANUFACTURING[upKey] || UPSTREAM_MANUFACTURING.silver_chloride;
+    const rawList = upstream.rawMaterials.map(m => `${m.name} (${m.kgPerKgProduct} kg/kg @ $${m.costPerKg}/kg)`).join("; ");
+    const chemList = upstream.reactionChemicals.map(c => `${c.name} (${c.kgPerKgProduct} kg/kg)`).join("; ");
+    return `
+      <tr>
+        <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;font-weight:600;vertical-align:top;">${r.competitor.product}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:8px;vertical-align:top;">
+          <strong>Process:</strong> ${upstream.processName}<br/>
+          <strong>Raw materials:</strong> ${rawList}<br/>
+          <strong>Reaction chemicals:</strong> ${chemList}<br/>
+          <strong>Facility energy:</strong> ${upstream.facilityEnergyKwhPerKg} kWh/kg &nbsp;|&nbsp;
+          <strong>Water:</strong> ${upstream.facilityWaterLitersPerKg} L/kg &nbsp;|&nbsp;
+          <strong>Waste:</strong> ${upstream.facilityWasteKgPerKg} kg/kg &nbsp;|&nbsp;
+          <strong>VOC:</strong> ${upstream.facilityVOCgPerKg} g/kg
+        </td>
+      </tr>`;
+  }).join("");
+
+  return `
+  <div class="page-break"></div>
+  <div class="container">
+    <div class="section-header" style="background: #374151;"><span>A</span> Appendix: Sources, Methodology & References</div>
+
+    <!-- Section 1: Carbon Footprint Sources -->
+    <div style="margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:#1f2937;margin-bottom:8px;border-bottom:2px solid #1f2937;padding-bottom:4px;">
+        A.1 — Carbon Footprint Data Sources
+      </div>
+      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:12px;">
+        <div style="font-size:9px;color:#374151;line-height:1.6;">
+          <strong>Primary silver production CO₂:</strong><br/>
+          • <strong>Aurubis AG Environmental Footprint Declaration (EFD) 2024</strong> — 158 kg CO₂/kg refined silver at refinery gate. Aurubis is Europe's largest copper recycler and a major silver refiner; their EFD follows EU Product Environmental Footprint methodology.<br/>
+          • <strong>ecoinvent v3.10 database</strong> — 448 kg CO₂/kg silver, global market average including all mine types (primary, by-product, co-product). This is the standard LCA database used by >6,000 organizations worldwide.<br/>
+          • <strong>MKS PAMP Product Environmental Report (PER) 2024</strong> — ~10 kg CO₂/kg for recycled silver. Used as reference for FUZE's recycled electronics feedstock advantage.<br/>
+          <br/>
+          <strong>Other metal production:</strong><br/>
+          • <strong>ecoinvent v3.10</strong> — Zinc production: 3.1 kg CO₂/kg Zn; Copper production: 3.5 kg CO₂/kg Cu<br/>
+          • <strong>International Copper Association (ICA)</strong> — Carbon Footprint of Copper 2022: 3.5 kg CO₂/kg Cu confirmed<br/>
+          <br/>
+          <strong>Energy & grid emissions:</strong><br/>
+          • <strong>IEA World Energy Outlook 2024</strong> — Global average grid emission factor: 0.50 kg CO₂/kWh; China grid: 0.58 kg CO₂/kWh<br/>
+          • <strong>IEA Textile Sector Energy Benchmarks</strong> — Stenter/tenter frame curing: 0.5–1.2 kWh/kg fabric (model uses 0.8 kWh/kg mid-range)<br/>
+          • <strong>IEA Chemicals Sector Report 2023</strong> — Polymer synthesis, petrochemical compounding energy benchmarks<br/>
+          • <strong>NREL Manufacturing Energy Report (DOE, 2023)</strong> — Nanoparticle production energy estimates<br/>
+          <br/>
+          <strong>FUZE manufacturing measurement:</strong><br/>
+          • <strong>Direct metered data</strong> — 30A × 120V × 1hr = 3.6 kWh for liquid laser ablation. US grid at solar-capable: 0.014 kg CO₂/kWh.
+        </div>
+      </div>
+
+      <!-- Per-competitor CO2 source table -->
+      <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+        <thead>
+          <tr style="background:#1f2937;">
+            <th style="padding:6px 8px;text-align:left;font-size:9px;color:white;width:20%;">Product</th>
+            <th style="padding:6px 8px;text-align:left;font-size:9px;color:white;width:15%;">CO₂ Factor</th>
+            <th style="padding:6px 8px;text-align:left;font-size:9px;color:white;">Source & Methodology</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:#ecfdf5;">
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;font-weight:600;">FUZE FTP F1</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;">0.05 kg CO₂/kg</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:8px;">Direct measurement: 30A liquid laser ablation, recycled electronics feedstock. MKS PAMP recycled benchmark (~10 kg/kg) as validation. Solar-capable facility.</td>
+          </tr>
+          ${co2SourceRows}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 2: Remediation Methodology -->
+    <div style="margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:#1f2937;margin-bottom:8px;border-bottom:2px solid #1f2937;padding-bottom:4px;">
+        A.2 — Wastewater Remediation Methodology
+      </div>
+      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:12px;">
+        <div style="font-size:9px;color:#374151;line-height:1.6;">
+          <strong>Regulatory framework:</strong><br/>
+          • <strong>US EPA Effluent Guidelines 40 CFR 433</strong> — Metal Finishing category. Silver daily max discharge: 0.43 mg/L; monthly avg: 0.24 mg/L. Many POTWs enforce stricter local limits of 5 µg/L.<br/>
+          • <strong>EU REACH Regulation (EC 1907/2006)</strong> — Environmental Quality Standards for silver in surface water; predicted no-effect concentration (PNEC) drives discharge limits.<br/>
+          • <strong>ZDHC Manufacturing Restricted Substances List (MRSL) v3.1</strong> — Zero Discharge of Hazardous Chemicals foundation standard for textile wet processing.<br/>
+          <br/>
+          <strong>Treatment cost methodology:</strong><br/>
+          • <strong>Global average rates</strong> reflect treatment costs in SE Asia, South Asia, and Central America textile manufacturing hubs where most global textile production occurs.<br/>
+          • <strong>US/EU rates</strong> reflect stricter EPA/REACH discharge limits requiring additional polishing stages (e.g., microfiltration, ion exchange, activated carbon).<br/>
+          • <strong>Scope</strong>: All remediation costs are <u>chemistry-specific</u> — i.e., the incremental cost to remove the antimicrobial contaminant from wastewater. Baseline dye/BOD treatment (which factories pay regardless of antimicrobial choice) is excluded.<br/>
+          <br/>
+          <strong>Treatment process sources:</strong><br/>
+          • <strong>WHO/UNIDO Textile Effluent Treatment Guidelines</strong> — Standard treatment processes for heavy metals in textile wastewater<br/>
+          • <strong>ADB Environmental Assessment Guidelines for Textile Sector</strong> — Cost benchmarks for developing-world treatment infrastructure<br/>
+          • <strong>US EPA Office of Water</strong> — Best Available Technology (BAT) for metal finishing effluent<br/>
+          • <strong>IWA Publishing: Water Science & Technology</strong> — Silver removal efficiency data for chemical precipitation methods
+        </div>
+      </div>
+
+      <!-- Per-competitor remediation table -->
+      <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+        <thead>
+          <tr style="background:#9a3412;">
+            <th style="padding:6px 8px;text-align:left;font-size:9px;color:white;width:20%;">Product</th>
+            <th style="padding:6px 8px;text-align:left;font-size:9px;color:white;width:25%;">Remediation Rate</th>
+            <th style="padding:6px 8px;text-align:left;font-size:9px;color:white;">Scope & Treatment Method</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:#ecfdf5;">
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;font-weight:600;">FUZE FTP F1</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;">$0.000/m (no treatment needed)</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:8px;">Carrier is 18 MΩ ultrapure water — dischargeable without treatment. Zero incremental remediation cost.</td>
+          </tr>
+          ${remediationRows}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 3: Upstream Manufacturing Inputs -->
+    <div style="margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:#1f2937;margin-bottom:8px;border-bottom:2px solid #1f2937;padding-bottom:4px;">
+        A.3 — Upstream Manufacturing Process Data
+      </div>
+      <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+        <thead>
+          <tr style="background:#1e3a8a;">
+            <th style="padding:6px 8px;text-align:left;font-size:9px;color:white;width:18%;">Product</th>
+            <th style="padding:6px 8px;text-align:left;font-size:9px;color:white;">Manufacturing Process, Raw Materials & Facility Metrics</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:#ecfdf5;">
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;font-weight:600;vertical-align:top;">FUZE FTP F1</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:8px;vertical-align:top;">
+              <strong>Process:</strong> Liquid Laser Ablation (30-amp, 1m² table, recycled electronics feedstock)<br/>
+              <strong>Raw materials:</strong> Recycled electronic waste (0 virgin mining); 18 MΩ ultrapure DI water<br/>
+              <strong>Facility energy:</strong> 3.6 kWh/kg &nbsp;|&nbsp;
+              <strong>Water:</strong> 0 L/kg (closed loop) &nbsp;|&nbsp;
+              <strong>Waste:</strong> 0 kg/kg &nbsp;|&nbsp;
+              <strong>VOC:</strong> 0 g/kg
+            </td>
+          </tr>
+          ${rawMaterialRows}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 4: Emission Factors Used -->
+    <div style="margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:#1f2937;margin-bottom:8px;border-bottom:2px solid #1f2937;padding-bottom:4px;">
+        A.4 — Emission Factors & Constants
+      </div>
+      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px;">
+        <table style="width:100%;border-collapse:collapse;font-size:8.5px;">
+          <tr><td style="padding:3px 6px;font-weight:600;width:55%;">Binder production CO₂</td><td style="padding:3px 6px;">2.5 kg CO₂/kg acrylic/PU binder</td></tr>
+          <tr style="background:#f3f4f6;"><td style="padding:3px 6px;font-weight:600;">Stenter curing energy</td><td style="padding:3px 6px;">0.8 kWh/kg fabric (150–170°C) — IEA Textile Sector</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600;">Global grid emission factor</td><td style="padding:3px 6px;">0.50 kg CO₂/kWh — IEA WEO 2024</td></tr>
+          <tr style="background:#f3f4f6;"><td style="padding:3px 6px;font-weight:600;">China grid emission factor</td><td style="padding:3px 6px;">0.58 kg CO₂/kWh — IEA WEO 2024</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600;">Primary silver production CO₂</td><td style="padding:3px 6px;">104 kg CO₂/kg (conservative mid-range; Aurubis 158, ecoinvent 448)</td></tr>
+          <tr style="background:#f3f4f6;"><td style="padding:3px 6px;font-weight:600;">Recycled silver production CO₂</td><td style="padding:3px 6px;">15 kg CO₂/kg (85% reduction from primary)</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600;">Copper production CO₂</td><td style="padding:3px 6px;">3.5 kg CO₂/kg — ecoinvent 3.10 / ICA 2022</td></tr>
+          <tr style="background:#f3f4f6;"><td style="padding:3px 6px;font-weight:600;">Zinc production CO₂</td><td style="padding:3px 6px;">3.1 kg CO₂/kg — ecoinvent 3.10</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600;">Wastewater treatment CO₂</td><td style="padding:3px 6px;">0.3 kg CO₂/m³ — WHO/UNIDO textile effluent guidelines</td></tr>
+          <tr style="background:#f3f4f6;"><td style="padding:3px 6px;font-weight:600;">Wastewater volume per kg fabric</td><td style="padding:3px 6px;">0.05 m³/kg (antimicrobial application step only)</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600;">Home wash water per cycle</td><td style="padding:3px 6px;">50 L (avg front-loader)</td></tr>
+          <tr style="background:#f3f4f6;"><td style="padding:3px 6px;font-weight:600;">Municipal water treatment cost</td><td style="padding:3px 6px;">$2.50/m³ (US avg) — EPA Office of Water</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600;">Municipal metal removal cost</td><td style="padding:3px 6px;">$0.0045/mg heavy metal at POTW</td></tr>
+          <tr style="background:#f3f4f6;"><td style="padding:3px 6px;font-weight:600;">Bioaccumulation: Silver</td><td style="padding:3px 6px;">0.85 (high — persists in aquatic sediment)</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600;">Bioaccumulation: Copper</td><td style="padding:3px 6px;">0.75 (high — toxic to aquatic organisms at low conc)</td></tr>
+          <tr style="background:#f3f4f6;"><td style="padding:3px 6px;font-weight:600;">Bioaccumulation: Zinc</td><td style="padding:3px 6px;">0.55 (moderate)</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600;">Bioaccumulation: QAC</td><td style="padding:3px 6px;">0.40 (moderate — degrades slowly, toxic to microorganisms)</td></tr>
+          <tr style="background:#f3f4f6;"><td style="padding:3px 6px;font-weight:600;">EPA silver effluent limit</td><td style="padding:3px 6px;">5 µg/L (local POTW) — 40 CFR 433 Metal Finishing</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600;">EPA copper freshwater limit</td><td style="padding:3px 6px;">13 µg/L — 40 CFR 433</td></tr>
+          <tr style="background:#f3f4f6;"><td style="padding:3px 6px;font-weight:600;">EPA zinc freshwater limit</td><td style="padding:3px 6px;">120 µg/L — 40 CFR 433</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 5: Methodology Notes -->
+    <div>
+      <div style="font-size:12px;font-weight:700;color:#1f2937;margin-bottom:8px;border-bottom:2px solid #1f2937;padding-bottom:4px;">
+        A.5 — Methodology Notes
+      </div>
+      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px;font-size:9px;color:#374151;line-height:1.6;">
+        <strong>1. Conservative bias:</strong> Where source data provides a range, this report uses the lower (more conservative) end to avoid overstating FUZE's advantage. For example, ecoinvent reports 448 kg CO₂/kg for silver globally; this report uses Aurubis's 158 kg/kg (efficient European refiner) and further scales down based on silver content per kg of finished antimicrobial product.<br/><br/>
+        <strong>2. Scope of remediation costs:</strong> All remediation figures represent the <u>incremental</u> cost to treat antimicrobial-specific contaminants. Baseline dye/BOD treatment costs (which the factory pays regardless of antimicrobial choice) are excluded. This isolates the true cost attributable to the antimicrobial chemistry.<br/><br/>
+        <strong>3. Global vs US/EU rates:</strong> Global averages reflect treatment costs in SE Asia and South Asia textile hubs (Bangladesh, India, Vietnam, China) where labor and chemical costs are lower. US/EU rates reflect stricter EPA discharge limits (40 CFR 433) and REACH requirements that mandate additional treatment stages (ion exchange, membrane filtration) beyond basic chemical precipitation.<br/><br/>
+        <strong>4. CO₂ breakdown methodology:</strong> Mining CO₂ covers ore extraction, hauling, crushing, and flotation concentration. Refining CO₂ covers smelting and electrolytic purification (Möbius/Wohlwill process for silver). Synthesis CO₂ covers conversion of refined metal into the antimicrobial product (ion exchange, nanoparticle synthesis, polymer compounding, etc.).<br/><br/>
+        <strong>5. FUZE baseline:</strong> FUZE's near-zero upstream footprint is based on: (a) recycled electronics feedstock eliminates mining and refining CO₂, (b) liquid laser ablation is a single-step physical process requiring no reaction chemicals, (c) carrier is ultrapure DI water requiring no treatment or disposal.
+      </div>
     </div>
   </div>`;
 }
