@@ -212,7 +212,7 @@ export default function Sidebar() {
       {
         label: "Factory Portal",
         items: [
-          { href: "/fabrics/intake", label: "Submit Fabric", icon: "📥" },
+          { href: "/factory-portal/intake", label: "Submit Fabric", icon: "📥" },
           { href: "/factory-portal/fabrics", label: "Fabrics", icon: "🧵" },
           { href: "/factory-portal/submissions", label: "Submissions", icon: "📋" },
           { href: "/factory-portal/tests", label: "Test Results", icon: "🧪" },

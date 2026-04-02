@@ -176,6 +176,7 @@ export default function FactoryFabricsPage() {
   const [search, setSearch] = useState("");
   const [testingFabric, setTestingFabric] = useState<any>(null);
   const [success, setSuccess] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user?.role !== "FACTORY_USER" && user?.role !== "FACTORY_MANAGER") {
@@ -209,6 +210,26 @@ export default function FactoryFabricsPage() {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
+  const handleDelete = async (fabricId: string) => {
+    if (!confirm("Delete this fabric? This cannot be undone.")) return;
+    setDeletingId(fabricId);
+    try {
+      const res = await fetch(`/api/fabrics/${fabricId}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.ok) {
+        setFabrics((prev) => prev.filter((f) => f.id !== fabricId));
+        setSuccess("Fabric deleted successfully.");
+        setTimeout(() => setSuccess(""), 5000);
+      } else {
+        setError(data.error || "Failed to delete fabric");
+      }
+    } catch {
+      setError("Failed to delete fabric");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -232,7 +253,7 @@ export default function FactoryFabricsPage() {
             {fabrics.length} fabric{fabrics.length !== 1 ? "s" : ""} registered for FUZE treatment
           </p>
         </div>
-        <Link href="/fabrics/intake"
+        <Link href="/factory-portal/intake"
           className="px-4 py-2.5 bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white rounded-lg font-semibold text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all">
           + Add Fabric
         </Link>
@@ -316,12 +337,28 @@ export default function FactoryFabricsPage() {
                     {new Date(fabric.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <button
-                      onClick={() => setTestingFabric(fabric)}
-                      className="px-3 py-1.5 bg-[#00b4c3] text-white rounded-lg text-[11px] font-bold hover:bg-[#009aa8] shadow-sm transition-all whitespace-nowrap"
-                    >
-                      🧪 Request Testing
-                    </button>
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => setTestingFabric(fabric)}
+                        className="px-3 py-1.5 bg-[#00b4c3] text-white rounded-lg text-[11px] font-bold hover:bg-[#009aa8] shadow-sm transition-all whitespace-nowrap"
+                      >
+                        🧪 Test
+                      </button>
+                      <button
+                        onClick={() => router.push(`/fabrics/${fabric.id}`)}
+                        className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-[11px] font-bold hover:bg-slate-200 transition-all whitespace-nowrap"
+                      >
+                        View
+                      </button>
+                      <button
+                        onClick={() => handleDelete(fabric.id)}
+                        disabled={deletingId === fabric.id}
+                        className="px-2 py-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg text-[11px] transition-all disabled:opacity-50"
+                        title="Delete fabric"
+                      >
+                        {deletingId === fabric.id ? "..." : "✕"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

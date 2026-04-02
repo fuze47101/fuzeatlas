@@ -48,7 +48,9 @@ export default function FabricDetailPage() {
   const [showTestModal, setShowTestModal] = useState(false);
   const [testSuccess, setTestSuccess] = useState("");
 
-  const isExternal = user?.role === "BRAND_USER" || user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER" || user?.role === "LAB_USER";
+  const isFactory = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
+  const isExternal = user?.role === "BRAND_USER" || user?.role === "LAB_USER";
+  const canEdit = !isExternal; // Internal users + factory users can edit
   const backUrl = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER"
     ? "/factory-portal/fabrics"
     : user?.role === "BRAND_USER"
@@ -99,7 +101,7 @@ export default function FabricDetailPage() {
           >
             🧪 Request Testing
           </button>
-          {!isExternal && (
+          {canEdit && (
             <button onClick={() => router.push(`/fabrics/${id}/edit`)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">Edit</button>
           )}
         </div>
