@@ -90,8 +90,9 @@ export async function POST(req: Request) {
     });
     const adminEmails = admins.map((a) => a.email).filter(Boolean);
     const rt = requestType || "BRAND";
-    const typeLabel = rt === "FACTORY" ? "Factory" : rt === "LAB" ? "Laboratory" : "Brand";
-    const typeBadge = rt === "FACTORY" ? "🏭" : rt === "LAB" ? "🔬" : "🏢";
+    const isFactory = rt === "FACTORY";
+    const typeLabel = isFactory ? "Factory" : rt === "LAB" ? "Laboratory" : "Brand";
+    const typeBadge = isFactory ? "🏭" : rt === "LAB" ? "🔬" : "🏢";
 
     if (adminEmails.length > 0) {
       sendEmail({
