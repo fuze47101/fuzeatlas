@@ -251,6 +251,7 @@ export default function Sidebar() {
           { href: "/fabric-library", label: "FUZE Fabric Library", icon: "📚" },
           { href: "/compliance-library", label: "Document Center", icon: "📋" },
           { href: "/pricing", label: "Pricing", icon: "💰" },
+          { href: "/sustainability", label: "Sustainability", icon: "🌱" },
           { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
         ],
       },
