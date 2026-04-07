@@ -328,6 +328,7 @@ export default function Sidebar() {
       groups.push({
         label: "Admin",
         items: [
+          { href: "/notifications", label: "Notifications", icon: "🔔" },
           { href: "/settings/users", label: "User Management", icon: "👥" },
           { href: "/settings/availability", label: "Availability Settings", icon: "⏰" },
           { href: "/settings/access-requests", label: "Access Requests", icon: "📩", badge: pendingCounts.accessRequests },
