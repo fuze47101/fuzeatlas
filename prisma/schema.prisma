@@ -204,6 +204,7 @@ model User {
   complianceUploads ComplianceDocument[]
   sampleTrials     SampleTrialRequest[] @relation("TrialRequester")
   fuzeOrders       FuzeOrder[]          @relation("OrderUser")
+  managedOrders    FuzeOrder[]          @relation("OrderAccountManager")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -255,6 +256,7 @@ model Brand {
   testRequests TestRequest[] @relation("TestRequestBrand")
   sampleTrials SampleTrialRequest[] @relation("TrialBrand")
   fuzeConsumptions FuzeConsumption[] @relation("ConsumptionBrand")
+  fuzeOrders       FuzeOrder[]      @relation("OrderBrand")
   meetings     Meeting[]      @relation("MeetingBrand")
   sourceRecords SourceRecord[]
   engagement BrandEngagement? @relation("BrandEngagement")
@@ -331,6 +333,7 @@ model Factory {
   distributorDocs DistributorDocument[] @relation("DistributorDocFactory")
   fuzeOrders      FuzeOrder[]          @relation("FactoryOrders")
   fuzeConsumptions FuzeConsumption[]   @relation("FactoryConsumption")
+  distributorPricing DistributorPricing[] @relation("FactoryDistributorPricing")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -383,6 +386,8 @@ model Distributor {
   users         User[]         @relation("DistributorUsers")
   sourceRecords SourceRecord[]
   fuzeOrders    FuzeOrder[]    @relation("OrderDistributor")
+  pricing       DistributorPricing[] @relation("DistributorPricing")
+  inventory     DistributorInventory? @relation("DistributorInventory")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -573,6 +578,7 @@ model Fabric {
   fuzeTestRequests FuzeTestRequest[] @relation("FuzeTestFabric")
   sampleTrials     SampleTrialRequest[] @relation("FabricTrials")
   fuzeConsumptions FuzeConsumption[] @relation("ConsumptionFabric")
+  fuzeOrders       FuzeOrder[]      @relation("OrderFabric")
   shipments SampleShipment[] @relation("FabricShipments")
 
   createdAt DateTime @default(now())
@@ -1807,8 +1813,83 @@ model ApiCallLog {
 }
 
 // ─────────────────────────────────────────────
+// DISTRIBUTOR PRICING & INVENTORY
+// Distributors maintain their own pricing per region/factory
+// and keep inventory levels current in Atlas
+// ─────────────────────────────────────────────
+
+model DistributorPricing {
+  id              String   @id @default(cuid())
+
+  distributorId   String
+  distributor     Distributor @relation("DistributorPricing", fields: [distributorId], references: [id])
+
+  // Scope: can be per-factory, per-region, or default
+  factoryId       String?  // If set, price applies to this factory only
+  factory         Factory? @relation("FactoryDistributorPricing", fields: [factoryId], references: [id])
+  region          String?  // APAC, EMEA, LATAM, NAM, etc. — if set, applies to region
+  country         String?  // If set, applies to this country only
+
+  // FUZE product pricing
+  pricePerLiter   Float    // Distributor's price to factory
+  currency        String   @default("USD")
+  minOrderLiters  Float?   // Minimum order volume
+  leadTimeDays    Int?     // Estimated delivery time
+
+  // Tiered volume discounts (JSON array)
+  // [{ minLiters: 100, discountPct: 5 }, { minLiters: 500, discountPct: 10 }]
+  volumeDiscounts Json?
+
+  // Hangtag pricing
+  hangtagPricePerUnit Float?  // Price per hangtag
+  hangtagMinOrder     Int?    // Minimum hangtag order
+
+  isDefault       Boolean  @default(false)  // Default pricing for this distributor
+  active          Boolean  @default(true)
+
+  notes           String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([distributorId])
+  @@index([factoryId])
+  @@index([region])
+}
+
+model DistributorInventory {
+  id              String   @id @default(cuid())
+
+  distributorId   String
+  distributor     Distributor @relation("DistributorInventory", fields: [distributorId], references: [id])
+
+  // Stock on hand
+  fuzeStockLiters Float    @default(0)  // Current FUZE product stock in liters
+  fuzeStockBottles Int     @default(0)  // Current stock in 19L bottles
+  hangtagStock    Int      @default(0)  // Hangtags in stock
+
+  // Reorder thresholds
+  reorderPointLiters Float?  // Auto-alert when stock drops below
+  reorderQtyLiters   Float?  // Suggested reorder quantity
+
+  // Last updated
+  lastStockUpdate DateTime?
+  lastAuditDate   DateTime?
+  updatedById     String?
+
+  notes           String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([distributorId])
+}
+
+// ─────────────────────────────────────────────
 // FUZE PRODUCT ORDERS & CONSUMPTION
-// Tracks factory FUZE product orders and actual usage
+// ALL orders flow through Atlas:
+// Factory submits → Quote generated → Account Manager approves →
+// Routed to distributor or direct from USA → Fulfilled → Delivered
 // ─────────────────────────────────────────────
 
 model FuzeOrder {
@@ -1822,35 +1903,69 @@ model FuzeOrder {
 
   // What was ordered
   orderNumber     String   @unique  // FUZE-ORD-YYYYMMDD-XXXX
-  volumeLiters    Float    // Total liters ordered
-  fuzeTier        String?  // F1/F2/F3/F4 — what concentration they need
+  orderType       String   @default("PRODUCTION")  // PRODUCTION | SAMPLE | HANGTAG
+  volumeLiters    Float?   // Total liters ordered (for PRODUCTION/SAMPLE)
+  fuzeTier        String?  // F1/F2/F3/F4
   bottles         Int?     // Number of 19L bottles
 
-  // Pricing
-  pricePerLiter   Float?   // USD
-  totalPrice      Float?   // USD
-  currency        String   @default("USD")
-  discountPct     Float?   // Volume discount
+  // Hangtag orders
+  hangtagQty      Int?     // Number of hangtags (for HANGTAG orders)
+  hangtagDesign   String?  // Design variant
 
-  // Shipping
-  shippingOrigin  String?  // US | DISTRIBUTOR
+  // Brand & fabric context (what is this order for?)
+  brandId         String?
+  brand           Brand?   @relation("OrderBrand", fields: [brandId], references: [id])
+  fabricId        String?
+  fabric          Fabric?  @relation("OrderFabric", fields: [fabricId], references: [id])
+  purposeNote     String?  // "New account development", "Production run for Rhone Q3", etc.
+
+  // Quote (auto-generated from distributor pricing)
+  quoteNumber     String?  // FUZE-QTE-YYYYMMDD-XXXX
+  pricePerLiter   Float?   // From distributor pricing or manual
+  pricePerHangtag Float?   // For hangtag orders
+  totalPrice      Float?
+  currency        String   @default("USD")
+  discountPct     Float?   // Volume discount applied
+  quoteExpiresAt  DateTime?
+  quoteAccepted   Boolean  @default(false)
+  quoteAcceptedAt DateTime?
+
+  // Fulfillment routing
+  fulfillmentSource String?  // DISTRIBUTOR | DIRECT_USA
   distributorId   String?
   distributor     Distributor? @relation("OrderDistributor", fields: [distributorId], references: [id])
+
+  // Account manager approval
+  accountManagerId String?
+  accountManager   User?   @relation("OrderAccountManager", fields: [accountManagerId], references: [id])
+  approvedAt      DateTime?
+  approvedById    String?
+
+  // Sample support (FUZE subsidizes sample costs)
+  isSampleSubsidized Boolean @default(false)
+  subsidyAmount      Float?   // USD amount FUZE covers
+  subsidyNote        String?
+
+  // Shipping
   trackingNumber  String?
   carrier         String?
   shippedDate     DateTime?
   deliveredDate   DateTime?
   shippingAddress String?
+  shippingCity    String?
+  shippingCountry String?
 
-  // Status: DRAFT → CONFIRMED → PROCESSING → SHIPPED → DELIVERED → CANCELLED
+  // Status workflow:
+  // DRAFT → QUOTED → PENDING_APPROVAL → APPROVED → PROCESSING → SHIPPED → DELIVERED → CANCELLED
   status          String   @default("DRAFT")
 
   // Reorder tracking
   isReorder       Boolean  @default(false)
-  previousOrderId String?  // Link to last order for reorder chain
+  previousOrderId String?
 
   notes           String?
   adminNotes      String?
+  factoryNotes    String?  // Factory's internal notes
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -1858,7 +1973,11 @@ model FuzeOrder {
   consumptions    FuzeConsumption[]
 
   @@index([factoryId])
+  @@index([brandId])
+  @@index([distributorId])
+  @@index([accountManagerId])
   @@index([status])
+  @@index([orderType])
   @@index([orderNumber])
   @@index([createdAt])
 }

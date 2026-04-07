@@ -219,6 +219,7 @@ export default function Sidebar() {
           { href: "/factory-portal/sample-trial", label: "Sample Trials", icon: "🧪" },
           { href: "/factory-portal/request-test", label: "Request Test", icon: "📋" },
           { href: "/factory-portal/my-requests", label: "My Requests", icon: "📦" },
+          { href: "/factory-portal/orders", label: "Order FUZE", icon: "🛒" },
         ],
       },
       {
@@ -239,6 +240,8 @@ export default function Sidebar() {
         label: "Distributor Portal",
         items: [
           { href: "/distributor-portal/documents", label: "Document Library", icon: "📂" },
+          { href: "/distributor-portal/orders", label: "Orders", icon: "📦" },
+          { href: "/distributor-portal/inventory", label: "Inventory & Pricing", icon: "📊" },
           { href: "/distributor-portal/invoices", label: "Invoices", icon: "📄" },
         ],
       },
@@ -303,6 +306,7 @@ export default function Sidebar() {
       {
         label: "Operations",
         items: [
+          { href: "/admin/orders", label: "Order Management", icon: "📦" },
           { href: "/admin/consumption", label: "Consumption & Reorder", icon: "📊" },
           { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
           { href: "/shipping-docs", label: "Shipping Docs", icon: "🚢" },
@@ -354,6 +358,7 @@ export default function Sidebar() {
         { href: "/factory-portal/tests", label: "Test Results", icon: "🧪" },
         { href: "/factory-portal/sample-trial", label: "Sample Trials", icon: "🧪" },
         { href: "/factory-portal/request-test", label: "Request Test", icon: "📋" },
+        { href: "/factory-portal/orders", label: "Order FUZE", icon: "🛒" },
       ],
     };
     groups.unshift(factoryPortalGroup);
