@@ -1112,3 +1112,145 @@ export async function sendResultsReadyEmail(params: {
     html,
   });
 }
+
+// ─── Order Notification Emails ───
+
+/** Notify account manager of new order needing approval */
+export async function sendNewOrderEmail(params: {
+  email: string;
+  managerName: string;
+  orderNumber: string;
+  orderType: string;
+  factoryName: string;
+  volumeLiters?: number;
+  hangtagQty?: number;
+  totalPrice: number;
+  currency: string;
+  brandName?: string;
+}) {
+  const { email, managerName, orderNumber, orderType, factoryName, volumeLiters, hangtagQty, totalPrice, currency, brandName } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+  const detail = volumeLiters ? `${volumeLiters}L (${Math.ceil(volumeLiters / 19)} bottles)` : hangtagQty ? `${hangtagQty.toLocaleString()} hangtags` : "";
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">New Order Awaiting Approval</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${managerName}, a new ${orderType.toLowerCase()} order requires your approval.
+    </p>
+
+    <div style="background: #fffbeb; border: 2px solid #f59e0b; padding: 20px; margin: 20px 0; border-radius: 8px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 6px 0; color: #92400e; font-weight: 600;">Order</td><td style="padding: 6px 0; color: #1a1a2e;">${orderNumber}</td></tr>
+        <tr><td style="padding: 6px 0; color: #92400e; font-weight: 600;">Type</td><td style="padding: 6px 0; color: #1a1a2e;">${orderType}</td></tr>
+        <tr><td style="padding: 6px 0; color: #92400e; font-weight: 600;">Factory</td><td style="padding: 6px 0; color: #1a1a2e;">${factoryName}</td></tr>
+        ${brandName ? `<tr><td style="padding: 6px 0; color: #92400e; font-weight: 600;">Brand</td><td style="padding: 6px 0; color: #1a1a2e;">${brandName}</td></tr>` : ""}
+        <tr><td style="padding: 6px 0; color: #92400e; font-weight: 600;">Quantity</td><td style="padding: 6px 0; color: #1a1a2e;">${detail}</td></tr>
+        <tr><td style="padding: 6px 0; color: #92400e; font-weight: 600;">Total</td><td style="padding: 6px 0; color: #1a1a2e; font-size: 18px; font-weight: 700;">${new Intl.NumberFormat("en-US", { style: "currency", currency }).format(totalPrice)}</td></tr>
+      </table>
+    </div>
+
+    <div style="margin: 24px 0; text-align: center;">
+      <a href="${baseUrl}/admin/orders" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+        Review & Approve
+      </a>
+    </div>
+  `);
+
+  return sendEmail({ to: email, subject: `Action Required: ${orderType} Order ${orderNumber} — ${factoryName}`, html });
+}
+
+/** Notify factory when order status changes */
+export async function sendOrderStatusEmail(params: {
+  email: string;
+  contactName: string;
+  orderNumber: string;
+  newStatus: string;
+  factoryName: string;
+  trackingNumber?: string;
+  carrier?: string;
+}) {
+  const { email, contactName, orderNumber, newStatus, factoryName, trackingNumber, carrier } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+
+  const statusInfo: Record<string, { color: string; bg: string; label: string; message: string }> = {
+    APPROVED: { color: "#059669", bg: "#f0fdf4", label: "Approved", message: "Your order has been approved and will be processed shortly." },
+    PROCESSING: { color: "#7c3aed", bg: "#f5f3ff", label: "Processing", message: "Your order is being prepared for shipment." },
+    SHIPPED: { color: "#4f46e5", bg: "#eef2ff", label: "Shipped", message: trackingNumber ? `Your order has shipped! Tracking: ${trackingNumber}${carrier ? ` (${carrier})` : ""}.` : "Your order has been shipped!" },
+    DELIVERED: { color: "#059669", bg: "#f0fdf4", label: "Delivered", message: "Your order has been delivered. Thank you for choosing FUZE." },
+    CANCELLED: { color: "#dc2626", bg: "#fef2f2", label: "Cancelled", message: "Your order has been cancelled. Please contact your account manager with any questions." },
+  };
+
+  const info = statusInfo[newStatus] || { color: "#6b7280", bg: "#f9fafb", label: newStatus, message: `Your order status has been updated to ${newStatus}.` };
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">Order Update</h2>
+    <p style="color: #4b5563; line-height: 1.6;">Hi ${contactName},</p>
+
+    <div style="background: ${info.bg}; border: 2px solid ${info.color}; padding: 20px; margin: 20px 0; border-radius: 8px; text-align: center;">
+      <p style="margin: 0 0 4px; color: ${info.color}; font-size: 14px; font-weight: 600;">Order ${orderNumber}</p>
+      <p style="margin: 0; color: ${info.color}; font-size: 28px; font-weight: 700;">${info.label}</p>
+    </div>
+
+    <p style="color: #4b5563; line-height: 1.6;">${info.message}</p>
+
+    ${trackingNumber && newStatus === "SHIPPED" ? `
+    <div style="background: #f9fafb; padding: 16px; margin: 20px 0; border-radius: 8px; border: 1px solid #e5e7eb;">
+      <p style="margin: 0 0 4px; color: #1a1a2e; font-weight: 600;">Tracking Information</p>
+      <p style="margin: 0; color: #4b5563;">
+        ${carrier ? `<strong>Carrier:</strong> ${carrier}<br>` : ""}
+        <strong>Tracking:</strong> ${trackingNumber}
+      </p>
+    </div>
+    ` : ""}
+
+    <div style="margin: 24px 0; text-align: center;">
+      <a href="${baseUrl}/factory-portal/orders" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+        View Order Details
+      </a>
+    </div>
+  `);
+
+  return sendEmail({ to: email, subject: `FUZE Order ${orderNumber} — ${info.label}`, html });
+}
+
+/** Notify distributor of new order to fulfill */
+export async function sendDistributorOrderEmail(params: {
+  email: string;
+  distributorName: string;
+  orderNumber: string;
+  factoryName: string;
+  volumeLiters?: number;
+  hangtagQty?: number;
+  shippingAddress?: string;
+  shippingCity?: string;
+  shippingCountry?: string;
+}) {
+  const { email, distributorName, orderNumber, factoryName, volumeLiters, hangtagQty, shippingAddress, shippingCity, shippingCountry } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+  const detail = volumeLiters ? `${volumeLiters}L (${Math.ceil(volumeLiters / 19)} bottles)` : hangtagQty ? `${hangtagQty.toLocaleString()} hangtags` : "";
+  const shipTo = [shippingAddress, shippingCity, shippingCountry].filter(Boolean).join(", ");
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">New Order for Fulfillment</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${distributorName}, a new order has been approved and is ready for fulfillment.
+    </p>
+
+    <div style="background: #f0fdf4; border: 2px solid #059669; padding: 20px; margin: 20px 0; border-radius: 8px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 6px 0; color: #065f46; font-weight: 600;">Order</td><td style="padding: 6px 0; color: #1a1a2e;">${orderNumber}</td></tr>
+        <tr><td style="padding: 6px 0; color: #065f46; font-weight: 600;">Factory</td><td style="padding: 6px 0; color: #1a1a2e;">${factoryName}</td></tr>
+        <tr><td style="padding: 6px 0; color: #065f46; font-weight: 600;">Quantity</td><td style="padding: 6px 0; color: #1a1a2e;">${detail}</td></tr>
+        ${shipTo ? `<tr><td style="padding: 6px 0; color: #065f46; font-weight: 600;">Ship To</td><td style="padding: 6px 0; color: #1a1a2e;">${shipTo}</td></tr>` : ""}
+      </table>
+    </div>
+
+    <div style="margin: 24px 0; text-align: center;">
+      <a href="${baseUrl}/distributor-portal/orders" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+        View & Fulfill Order
+      </a>
+    </div>
+  `);
+
+  return sendEmail({ to: email, subject: `Fulfillment Required: ${orderNumber} — ${factoryName}`, html });
+}

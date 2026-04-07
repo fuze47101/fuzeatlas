@@ -2,6 +2,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { notifyNewOrder, notifyOrderStatusChange, notifyLowInventory } from "@/lib/notify";
+import { sendNewOrderEmail, sendOrderStatusEmail, sendDistributorOrderEmail } from "@/lib/email";
 
 const BOTTLE_LITERS = 19;
 const DEFAULT_PRICE_PER_LITER = 36; // USD fallback
@@ -301,6 +303,43 @@ export async function POST(req: Request) {
       },
     });
 
+    // ─── Trigger notifications (fire-and-forget) ───
+    try {
+      // In-app notification to AM + admins
+      notifyNewOrder({
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        orderType: order.orderType,
+        factoryName: order.factory?.name || "Unknown",
+        volumeLiters: order.volumeLiters || undefined,
+        hangtagQty: order.hangtagQty || undefined,
+        totalPrice: order.totalPrice || 0,
+        accountManagerId: accountManagerId || undefined,
+        brandName: order.brand?.name || undefined,
+      });
+
+      // Email notification to account manager
+      if (accountManagerId) {
+        const am = await prisma.user.findUnique({ where: { id: accountManagerId }, select: { email: true, name: true } });
+        if (am?.email) {
+          sendNewOrderEmail({
+            email: am.email,
+            managerName: am.name || "Account Manager",
+            orderNumber: order.orderNumber,
+            orderType: order.orderType,
+            factoryName: order.factory?.name || "Unknown",
+            volumeLiters: order.volumeLiters || undefined,
+            hangtagQty: order.hangtagQty || undefined,
+            totalPrice: order.totalPrice || 0,
+            currency: order.currency,
+            brandName: order.brand?.name || undefined,
+          });
+        }
+      }
+    } catch (notifyErr) {
+      console.error("[ORDER] Notification error (non-blocking):", notifyErr);
+    }
+
     return NextResponse.json({ ok: true, order });
   } catch (e: any) {
     console.error("Orders POST error:", e);
@@ -384,10 +423,104 @@ export async function PATCH(req: Request) {
       where: { id: orderId },
       data,
       include: {
-        factory: { select: { name: true } },
-        distributor: { select: { name: true } },
+        factory: { select: { id: true, name: true } },
+        distributor: { select: { id: true, name: true } },
       },
     });
+
+    // ─── Trigger notifications on status changes (fire-and-forget) ───
+    try {
+      const shouldNotify = ["APPROVED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"].includes(updated.status);
+      if (shouldNotify) {
+        // In-app notification to factory
+        notifyOrderStatusChange({
+          orderId: updated.id,
+          orderNumber: updated.orderNumber,
+          newStatus: updated.status,
+          factoryId: updated.factoryId,
+          factoryName: updated.factory?.name || "Unknown",
+          trackingNumber: updated.trackingNumber || undefined,
+          carrier: updated.carrier || undefined,
+          distributorId: updated.distributorId || undefined,
+        });
+
+        // Email to factory contact (ordered by user)
+        if (updated.orderedById) {
+          const orderer = await prisma.user.findUnique({ where: { id: updated.orderedById }, select: { email: true, name: true } });
+          if (orderer?.email) {
+            sendOrderStatusEmail({
+              email: orderer.email,
+              contactName: orderer.name || "Factory Team",
+              orderNumber: updated.orderNumber,
+              newStatus: updated.status,
+              factoryName: updated.factory?.name || "Unknown",
+              trackingNumber: updated.trackingNumber || undefined,
+              carrier: updated.carrier || undefined,
+            });
+          }
+        }
+
+        // When order is approved, notify distributor to fulfill
+        if (updated.status === "APPROVED" && updated.distributorId) {
+          const distUsers = await prisma.user.findMany({
+            where: { distributorId: updated.distributorId, status: "ACTIVE" },
+            select: { email: true, name: true },
+          });
+          for (const du of distUsers) {
+            if (du.email) {
+              sendDistributorOrderEmail({
+                email: du.email,
+                distributorName: du.name || updated.distributor?.name || "Distributor",
+                orderNumber: updated.orderNumber,
+                factoryName: updated.factory?.name || "Unknown",
+                volumeLiters: updated.volumeLiters || undefined,
+                hangtagQty: updated.hangtagQty || undefined,
+                shippingAddress: updated.shippingAddress || undefined,
+                shippingCity: updated.shippingCity || undefined,
+                shippingCountry: updated.shippingCountry || undefined,
+              });
+            }
+          }
+        }
+
+        // After shipment, check distributor inventory for low-stock alert
+        if (updated.status === "SHIPPED" && updated.distributorId) {
+          try {
+            const inv = await prisma.distributorInventory.findUnique({ where: { distributorId: updated.distributorId } });
+            if (inv && inv.fuzeStockLiters < inv.reorderThresholdLiters) {
+              const dist = await prisma.distributor.findUnique({ where: { id: updated.distributorId }, select: { name: true } });
+              notifyLowInventory({
+                distributorId: updated.distributorId,
+                distributorName: dist?.name || "Distributor",
+                currentLiters: inv.fuzeStockLiters,
+                thresholdLiters: inv.reorderThresholdLiters,
+              });
+            }
+          } catch {}
+        }
+      }
+
+      // When order is delivered, auto-log consumption for the factory
+      if (updated.status === "DELIVERED" && updated.volumeLiters) {
+        try {
+          await prisma.fuzeConsumption.create({
+            data: {
+              factoryId: updated.factoryId,
+              brandId: updated.brandId || null,
+              fabricId: updated.fabricId || null,
+              litersUsed: updated.volumeLiters,
+              fuzeTier: updated.fuzeTier || "F1",
+              orderId: updated.id,
+              notes: `Auto-logged from delivered order ${updated.orderNumber}`,
+            },
+          });
+        } catch (consErr) {
+          console.error("[ORDER] Auto-consumption log error:", consErr);
+        }
+      }
+    } catch (notifyErr) {
+      console.error("[ORDER] Notification error (non-blocking):", notifyErr);
+    }
 
     return NextResponse.json({ ok: true, order: updated });
   } catch (e: any) {

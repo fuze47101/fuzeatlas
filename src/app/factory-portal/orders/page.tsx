@@ -904,6 +904,36 @@ export default function FactoryOrdersPage() {
                     {acceptingQuote ? "Accepting..." : "Accept Quote"}
                   </button>
                 )}
+                {selectedOrder.status === "DELIVERED" && (
+                  <button
+                    onClick={() => {
+                      // Pre-fill reorder form from previous order
+                      setForm({
+                        orderType: selectedOrder.orderType,
+                        volumeLiters: selectedOrder.volumeLiters ? String(selectedOrder.volumeLiters) : "",
+                        bottles: selectedOrder.bottles ? String(selectedOrder.bottles) : "",
+                        fuzeTier: selectedOrder.fuzeTier || "F1",
+                        brandId: selectedOrder.brand?.id || selectedOrder.brandId || "",
+                        fabricId: selectedOrder.fabric?.id || selectedOrder.fabricId || "",
+                        hangtagQty: selectedOrder.hangtagQty ? String(selectedOrder.hangtagQty) : "",
+                        hangtagDesign: selectedOrder.hangtagDesign || "",
+                        purposeNote: `Reorder of ${selectedOrder.orderNumber}`,
+                        shippingAddress: selectedOrder.shippingAddress || "",
+                        shippingCity: selectedOrder.shippingCity || "",
+                        shippingCountry: selectedOrder.shippingCountry || "",
+                        notes: "",
+                      });
+                      setSelectedOrder(null);
+                      setShowNewOrder(true);
+                      setQuote(null);
+                      setError("");
+                      setSuccess("");
+                    }}
+                    className="flex-1 px-5 py-3 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009aa8] transition-colors"
+                  >
+                    Reorder
+                  </button>
+                )}
                 {["DRAFT", "QUOTED"].includes(selectedOrder.status) && (
                   <button
                     onClick={() => handleCancelOrder(selectedOrder.id)}

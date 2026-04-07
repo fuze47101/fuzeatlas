@@ -250,3 +250,122 @@ export async function notifyTestRequestStatus(params: {
     });
   }
 }
+
+// ─── Order Notifications ───
+
+/** When a factory places a new order — notify account manager + admins */
+export async function notifyNewOrder(params: {
+  orderId: string;
+  orderNumber: string;
+  orderType: string;
+  factoryName: string;
+  volumeLiters?: number;
+  hangtagQty?: number;
+  totalPrice?: number;
+  accountManagerId?: string;
+  brandName?: string;
+}) {
+  const { orderId, orderNumber, orderType, factoryName, volumeLiters, hangtagQty, totalPrice, accountManagerId, brandName } = params;
+
+  const detail = volumeLiters ? `${volumeLiters}L` : hangtagQty ? `${hangtagQty} hangtags` : "";
+  const brandNote = brandName ? ` for ${brandName}` : "";
+
+  // Notify account manager
+  if (accountManagerId) {
+    await createNotification({
+      userId: accountManagerId,
+      type: "PO_STATUS",
+      title: `New ${orderType} Order: ${orderNumber}`,
+      message: `${factoryName} placed a ${orderType.toLowerCase()} order${brandNote} — ${detail}. Awaiting your approval.`,
+      link: `/admin/orders`,
+    });
+  }
+
+  // Notify all admins
+  await notifyAdmins(
+    "PO_STATUS",
+    `New Order: ${orderNumber}`,
+    `${factoryName} placed a ${orderType.toLowerCase()} order${brandNote} — ${detail}. Total: $${(totalPrice || 0).toFixed(2)}.`,
+    `/admin/orders`
+  );
+}
+
+/** When order status changes — notify factory + relevant parties */
+export async function notifyOrderStatusChange(params: {
+  orderId: string;
+  orderNumber: string;
+  newStatus: string;
+  factoryId: string;
+  factoryName: string;
+  trackingNumber?: string;
+  carrier?: string;
+  distributorId?: string;
+}) {
+  const { orderId, orderNumber, newStatus, factoryId, factoryName, trackingNumber, carrier, distributorId } = params;
+
+  const statusLabels: Record<string, string> = {
+    APPROVED: "Approved",
+    PROCESSING: "Processing",
+    SHIPPED: "Shipped",
+    DELIVERED: "Delivered",
+    CANCELLED: "Cancelled",
+  };
+
+  const label = statusLabels[newStatus] || newStatus;
+  let message = `Order ${orderNumber} is now ${label.toLowerCase()}.`;
+  if (newStatus === "SHIPPED" && trackingNumber) {
+    message = `Order ${orderNumber} has been shipped! Tracking: ${trackingNumber}${carrier ? ` (${carrier})` : ""}.`;
+  }
+
+  // Notify factory users
+  const factoryUsers = await prisma.user.findMany({
+    where: { factoryId, status: "ACTIVE" },
+    select: { id: true },
+  });
+
+  await Promise.all(
+    factoryUsers.map((u: any) =>
+      createNotification({
+        userId: u.id,
+        type: "PO_STATUS",
+        title: `Order ${label}: ${orderNumber}`,
+        message,
+        link: `/factory-portal/orders`,
+      })
+    )
+  );
+
+  // If shipped/delivered, also notify distributor users
+  if (distributorId && ["SHIPPED", "DELIVERED"].includes(newStatus)) {
+    const distUsers = await prisma.user.findMany({
+      where: { distributorId, status: "ACTIVE" },
+      select: { id: true },
+    });
+    await Promise.all(
+      distUsers.map((u: any) =>
+        createNotification({
+          userId: u.id,
+          type: "PO_STATUS",
+          title: `Order ${label}: ${orderNumber}`,
+          message: `Order ${orderNumber} for ${factoryName}: ${label.toLowerCase()}.`,
+          link: `/distributor-portal/orders`,
+        })
+      )
+    );
+  }
+}
+
+/** When distributor inventory hits low threshold */
+export async function notifyLowInventory(params: {
+  distributorId: string;
+  distributorName: string;
+  currentLiters: number;
+  thresholdLiters: number;
+}) {
+  await notifyAdmins(
+    "SYSTEM",
+    `Low Inventory Alert: ${params.distributorName}`,
+    `${params.distributorName} stock is at ${params.currentLiters}L (threshold: ${params.thresholdLiters}L). Reorder needed.`,
+    `/admin/consumption`
+  );
+}
