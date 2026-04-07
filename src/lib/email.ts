@@ -366,11 +366,14 @@ export async function sendTestRequestStatusEmail(params: {
   email: string;
   name: string;
   testRequestId: string;
-  status: string;
+  status?: string;
+  newStatus?: string;
+  poNumber?: string;
   brandName?: string;
   note?: string;
 }) {
-  const { email, name, testRequestId, status, brandName, note } = params;
+  const { email, name, testRequestId, brandName, note, poNumber } = params;
+  const status = params.status || params.newStatus || "Unknown";
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
 
   const statusLabels: Record<string, string> = {
