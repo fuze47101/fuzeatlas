@@ -262,7 +262,20 @@ export default function AdminOrdersPage() {
                         <td className="px-4 py-3 text-slate-700">
                           {order.volumeLiters ? `${order.volumeLiters}L` : order.hangtagQty ? `${order.hangtagQty} tags` : "—"}
                         </td>
-                        <td className="px-4 py-3 text-slate-700">{order.brand?.name || "—"}</td>
+                        <td className="px-4 py-3 text-slate-700">
+                          {order.brandAllocations?.length > 0 ? (
+                            <div className="space-y-0.5">
+                              {order.brandAllocations.map((a: any, i: number) => (
+                                <div key={i} className="flex items-center gap-1">
+                                  <span className="text-xs">{a.brand?.name}</span>
+                                  {order.brandAllocations.length > 1 && (
+                                    <span className="text-[10px] text-slate-400 bg-slate-100 px-1 rounded">{a.allocatedPct}%</span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          ) : order.brand?.name || "—"}
+                        </td>
                         <td className="px-4 py-3 font-semibold text-slate-900">{formatCurrency(order.totalPrice || 0, order.currency)}</td>
                         <td className="px-4 py-3 text-slate-600 text-xs">
                           {order.fulfillmentSource === "DIRECT_USA" ? "Direct USA" : order.distributor?.name || "—"}
@@ -345,7 +358,25 @@ export default function AdminOrdersPage() {
                 <div><p className="text-slate-500">FUZE Tier</p><p className="font-semibold">{selectedOrder.fuzeTier || "—"}</p></div>
                 <div><p className="text-slate-500">Price/L</p><p className="font-semibold">{formatCurrency(selectedOrder.pricePerLiter || 0)}</p></div>
                 <div><p className="text-slate-500">Total</p><p className="font-bold text-lg">{formatCurrency(selectedOrder.totalPrice || 0)}</p></div>
-                {selectedOrder.brand?.name && <div><p className="text-slate-500">Brand</p><p className="font-semibold">{selectedOrder.brand.name}</p></div>}
+                {selectedOrder.brandAllocations?.length > 0 ? (
+                  <div className={selectedOrder.brandAllocations.length > 1 ? "col-span-2" : ""}>
+                    <p className="text-slate-500 mb-1">Brand Attribution</p>
+                    <div className="space-y-1">
+                      {selectedOrder.brandAllocations.map((a: any, i: number) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <span className="font-semibold">{a.brand?.name}</span>
+                          {selectedOrder.brandAllocations.length > 1 && (
+                            <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
+                              {a.allocatedPct}% — {a.allocatedLiters ? `${a.allocatedLiters}L` : ""}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : selectedOrder.brand?.name ? (
+                  <div><p className="text-slate-500">Brand</p><p className="font-semibold">{selectedOrder.brand.name}</p></div>
+                ) : null}
                 {selectedOrder.fabric?.fuzeNumber && <div><p className="text-slate-500">Fabric</p><p className="font-semibold">{selectedOrder.fabric.fuzeNumber}</p></div>}
                 <div><p className="text-slate-500">Fulfillment</p><p className="font-semibold">{selectedOrder.fulfillmentSource === "DIRECT_USA" ? "Direct from USA" : selectedOrder.distributor?.name || "TBD"}</p></div>
                 <div><p className="text-slate-500">Account Manager</p><p className="font-semibold">{selectedOrder.accountManager?.name || "Unassigned"}</p></div>

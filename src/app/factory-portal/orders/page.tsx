@@ -29,6 +29,13 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }>
   CANCELLED: { bg: "bg-red-100", text: "text-red-700", label: "Cancelled" },
 };
 
+interface BrandAllocation {
+  brandId: string;
+  brandName: string;
+  allocatedPct: string;
+  notes: string;
+}
+
 interface OrderFormData {
   orderType: string;
   volumeLiters: string;
@@ -43,6 +50,7 @@ interface OrderFormData {
   shippingCity: string;
   shippingCountry: string;
   notes: string;
+  brandAllocations: BrandAllocation[];
 }
 
 const INITIAL_FORM: OrderFormData = {
@@ -59,6 +67,7 @@ const INITIAL_FORM: OrderFormData = {
   shippingCity: "",
   shippingCountry: "",
   notes: "",
+  brandAllocations: [{ brandId: "", brandName: "", allocatedPct: "100", notes: "" }],
 };
 
 export default function FactoryOrdersPage() {
@@ -78,6 +87,11 @@ export default function FactoryOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showRequestBrand, setShowRequestBrand] = useState(false);
+  const [newBrandName, setNewBrandName] = useState("");
+  const [newBrandWebsite, setNewBrandWebsite] = useState("");
+  const [newBrandContact, setNewBrandContact] = useState("");
+  const [requestingBrand, setRequestingBrand] = useState(false);
 
   const isFactory = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
   const isAdmin = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"].includes(user?.role || "");
@@ -135,17 +149,38 @@ export default function FactoryOrdersPage() {
     setSuccess("");
     setSubmitting(true);
 
+    // Validate at least one brand is selected
+    const validAllocations = form.brandAllocations.filter((a) => a.brandId);
+    if (validAllocations.length === 0) {
+      setError("Please select at least one brand this order is for. If the brand isn't listed, use 'Request New Brand' to add it.");
+      setSubmitting(false);
+      return;
+    }
+
+    // Validate percentages sum to ~100
+    const totalPct = validAllocations.reduce((sum, a) => sum + (Number(a.allocatedPct) || 0), 0);
+    if (validAllocations.length > 1 && (totalPct < 95 || totalPct > 105)) {
+      setError(`Brand volume allocations should total 100%. Currently: ${totalPct}%`);
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const payload: any = {
         orderType: form.orderType,
         fuzeTier: form.fuzeTier,
-        brandId: form.brandId || undefined,
+        brandId: validAllocations[0]?.brandId || undefined, // Primary brand for backward compat
         fabricId: form.fabricId || undefined,
         purposeNote: form.purposeNote || undefined,
         shippingAddress: form.shippingAddress || undefined,
         shippingCity: form.shippingCity || undefined,
         shippingCountry: form.shippingCountry || undefined,
         notes: form.notes || undefined,
+        brandAllocations: validAllocations.map((a) => ({
+          brandId: a.brandId,
+          allocatedPct: Number(a.allocatedPct) || (100 / validAllocations.length),
+          notes: a.notes || undefined,
+        })),
       };
 
       if (form.orderType === "HANGTAG") {
@@ -362,7 +397,13 @@ export default function FactoryOrdersPage() {
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500 mt-1">
                         {order.volumeLiters && <span>{order.volumeLiters}L ({order.bottles || Math.ceil(order.volumeLiters / 19)} bottles)</span>}
                         {order.hangtagQty && <span>{order.hangtagQty.toLocaleString()} hangtags</span>}
-                        {order.brand?.name && <span>Brand: {order.brand.name}</span>}
+                        {order.brandAllocations?.length > 0 ? (
+                          <span>
+                            {order.brandAllocations.length === 1
+                              ? `Brand: ${order.brandAllocations[0]?.brand?.name || order.brand?.name || "—"}`
+                              : `Brands: ${order.brandAllocations.map((a: any) => a.brand?.name).filter(Boolean).join(", ")}`}
+                          </span>
+                        ) : order.brand?.name ? <span>Brand: {order.brand.name}</span> : null}
                         {order.fabric?.fuzeNumber && <span>Fabric: {order.fabric.fuzeNumber}</span>}
                         {order.fuzeTier && <span>Tier: {order.fuzeTier}</span>}
                       </div>
@@ -619,38 +660,268 @@ export default function FactoryOrdersPage() {
                   </div>
                 )}
 
-                {/* Brand & Fabric Context */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Brand (optional)</label>
-                    <select
-                      value={form.brandId}
-                      onChange={(e) => setForm({ ...form, brandId: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    >
-                      <option value="">Select brand...</option>
-                      {brands.map((b) => (
-                        <option key={b.id} value={b.id}>{b.name}</option>
-                      ))}
-                    </select>
-                    <p className="text-xs text-slate-400 mt-1">Which brand is this order for?</p>
+                {/* ─── Brand Attribution (REQUIRED) ─── */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-semibold text-slate-700">
+                      Brand(s) this order is for <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                      {form.brandAllocations.length < 5 && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setForm({
+                              ...form,
+                              brandAllocations: [
+                                ...form.brandAllocations,
+                                { brandId: "", brandName: "", allocatedPct: "", notes: "" },
+                              ],
+                            })
+                          }
+                          className="text-xs text-[#00b4c3] hover:text-[#009aa8] font-medium"
+                        >
+                          + Add Another Brand
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Fabric (optional)</label>
-                    <select
-                      value={form.fabricId}
-                      onChange={(e) => setForm({ ...form, fabricId: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    >
-                      <option value="">Select fabric...</option>
-                      {fabrics.map((f) => (
-                        <option key={f.id} value={f.id}>
-                          {f.fuzeNumber || f.customerCode || f.id}
-                        </option>
-                      ))}
-                    </select>
-                    <p className="text-xs text-slate-400 mt-1">Which fabric is being treated?</p>
+                  <p className="text-xs text-slate-400 mb-3">
+                    Every order must be linked to at least one brand. This tracks usage for account management, commissions, and brand rebates.
+                    {form.brandAllocations.length > 1 && " Split the volume percentage across brands."}
+                  </p>
+
+                  <div className="space-y-3">
+                    {form.brandAllocations.map((alloc, idx) => {
+                      // Filter out brands already selected in other rows
+                      const selectedIds = form.brandAllocations
+                        .filter((_, i) => i !== idx)
+                        .map((a) => a.brandId);
+                      const availableBrands = brands.filter(
+                        (b) => !selectedIds.includes(b.id) || b.id === alloc.brandId
+                      );
+
+                      return (
+                        <div
+                          key={idx}
+                          className="flex flex-col sm:flex-row gap-2 items-start bg-slate-50 rounded-lg p-3 border border-slate-200"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <select
+                              value={alloc.brandId}
+                              onChange={(e) => {
+                                const updated = [...form.brandAllocations];
+                                const brand = brands.find((b) => b.id === e.target.value);
+                                updated[idx] = {
+                                  ...updated[idx],
+                                  brandId: e.target.value,
+                                  brandName: brand?.name || "",
+                                };
+                                // Auto-set 100% if single brand
+                                if (updated.filter((a) => a.brandId).length === 1) {
+                                  updated[idx].allocatedPct = "100";
+                                }
+                                setForm({ ...form, brandAllocations: updated });
+                              }}
+                              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+                              required={idx === 0}
+                            >
+                              <option value="">Select brand...</option>
+                              {availableBrands.map((b) => (
+                                <option key={b.id} value={b.id}>
+                                  {b.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {form.brandAllocations.filter((a) => a.brandId).length > 1 && (
+                            <div className="w-24 shrink-0">
+                              <div className="relative">
+                                <input
+                                  type="number"
+                                  value={alloc.allocatedPct}
+                                  onChange={(e) => {
+                                    const updated = [...form.brandAllocations];
+                                    updated[idx] = { ...updated[idx], allocatedPct: e.target.value };
+                                    setForm({ ...form, brandAllocations: updated });
+                                  }}
+                                  placeholder="%"
+                                  min="1"
+                                  max="100"
+                                  className="w-full px-3 py-2 pr-7 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none text-right"
+                                />
+                                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                                  %
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {form.brandAllocations.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = form.brandAllocations.filter((_, i) => i !== idx);
+                                // If only one left, set it to 100%
+                                if (updated.length === 1 && updated[0].brandId) {
+                                  updated[0].allocatedPct = "100";
+                                }
+                                setForm({ ...form, brandAllocations: updated });
+                              }}
+                              className="p-2 text-slate-400 hover:text-red-500 transition shrink-0"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
+
+                  {/* Allocation total indicator */}
+                  {form.brandAllocations.filter((a) => a.brandId).length > 1 && (
+                    <div className="mt-2 flex items-center gap-2">
+                      {(() => {
+                        const total = form.brandAllocations.reduce(
+                          (sum, a) => sum + (Number(a.allocatedPct) || 0),
+                          0
+                        );
+                        const isValid = total >= 95 && total <= 105;
+                        return (
+                          <>
+                            <div
+                              className={`h-1.5 flex-1 rounded-full ${
+                                isValid ? "bg-green-200" : "bg-red-200"
+                              }`}
+                            >
+                              <div
+                                className={`h-full rounded-full transition-all ${
+                                  isValid ? "bg-green-500" : "bg-red-500"
+                                }`}
+                                style={{ width: `${Math.min(100, total)}%` }}
+                              />
+                            </div>
+                            <span
+                              className={`text-xs font-medium ${
+                                isValid ? "text-green-600" : "text-red-600"
+                              }`}
+                            >
+                              {total}%
+                            </span>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {/* Request New Brand */}
+                  <div className="mt-3">
+                    {!showRequestBrand ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowRequestBrand(true)}
+                        className="text-sm text-[#00b4c3] hover:text-[#009aa8] font-medium flex items-center gap-1"
+                      >
+                        <span>🏢</span> Brand not listed? Request to add it
+                      </button>
+                    ) : (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm font-semibold text-amber-800">Request New Brand</h4>
+                          <button
+                            type="button"
+                            onClick={() => setShowRequestBrand(false)}
+                            className="text-amber-400 hover:text-amber-600 text-sm"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <p className="text-xs text-amber-700">
+                          Submit a request and FUZE will reach out to the brand and add them to the system.
+                          You can continue placing your order once the brand is approved.
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <input
+                            type="text"
+                            value={newBrandName}
+                            onChange={(e) => setNewBrandName(e.target.value)}
+                            placeholder="Brand name *"
+                            className="px-3 py-2 border border-amber-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 outline-none"
+                          />
+                          <input
+                            type="text"
+                            value={newBrandWebsite}
+                            onChange={(e) => setNewBrandWebsite(e.target.value)}
+                            placeholder="Website (optional)"
+                            className="px-3 py-2 border border-amber-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 outline-none"
+                          />
+                          <input
+                            type="text"
+                            value={newBrandContact}
+                            onChange={(e) => setNewBrandContact(e.target.value)}
+                            placeholder="Your contact there (optional)"
+                            className="px-3 py-2 border border-amber-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 outline-none"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          disabled={!newBrandName.trim() || requestingBrand}
+                          onClick={async () => {
+                            setRequestingBrand(true);
+                            try {
+                              const res = await fetch("/api/orders/request-brand", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                  brandName: newBrandName.trim(),
+                                  website: newBrandWebsite.trim() || undefined,
+                                  contactName: newBrandContact.trim() || undefined,
+                                }),
+                              });
+                              const data = await res.json();
+                              if (data.ok) {
+                                setSuccess(`Brand "${newBrandName}" request submitted! FUZE will review and reach out.`);
+                                setShowRequestBrand(false);
+                                setNewBrandName("");
+                                setNewBrandWebsite("");
+                                setNewBrandContact("");
+                                // Reload brands in case it was auto-created
+                                loadContext();
+                              } else {
+                                setError(data.error || "Failed to submit brand request");
+                              }
+                            } catch {
+                              setError("Failed to submit brand request");
+                            } finally {
+                              setRequestingBrand(false);
+                            }
+                          }}
+                          className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 transition disabled:opacity-50"
+                        >
+                          {requestingBrand ? "Submitting..." : "Submit Brand Request"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Fabric Context */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Fabric (optional)</label>
+                  <select
+                    value={form.fabricId}
+                    onChange={(e) => setForm({ ...form, fabricId: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+                  >
+                    <option value="">Select fabric...</option>
+                    {fabrics.map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.fuzeNumber || f.customerCode || f.id}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-slate-400 mt-1">Which fabric is being treated?</p>
                 </div>
 
                 {/* Purpose Note */}

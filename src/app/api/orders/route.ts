@@ -148,6 +148,10 @@ export async function GET(req: Request) {
         distributor: { select: { id: true, name: true } },
         orderedBy: { select: { id: true, name: true } },
         accountManager: { select: { id: true, name: true } },
+        brandAllocations: {
+          include: { brand: { select: { id: true, name: true } } },
+          orderBy: { allocatedPct: "desc" },
+        },
       },
       orderBy: { createdAt: "desc" },
       take: 100,
@@ -190,6 +194,7 @@ export async function POST(req: Request) {
       brandId, fabricId, purposeNote,
       shippingAddress, shippingCity, shippingCountry,
       notes,
+      brandAllocations, // Array of { brandId, allocatedPct, notes }
     } = body;
 
     // Factory users can only order for their own factory
@@ -303,6 +308,33 @@ export async function POST(req: Request) {
       },
     });
 
+    // ─── Create brand allocations ───
+    const allocationRecords = [];
+    if (brandAllocations && Array.isArray(brandAllocations) && brandAllocations.length > 0) {
+      for (const alloc of brandAllocations) {
+        if (!alloc.brandId) continue;
+        const effectiveVol = order.volumeLiters || 0;
+        const allocLiters = effectiveVol * ((Number(alloc.allocatedPct) || 100) / 100);
+        const record = await prisma.orderBrandAllocation.create({
+          data: {
+            orderId: order.id,
+            brandId: alloc.brandId,
+            allocatedPct: Number(alloc.allocatedPct) || 100,
+            allocatedLiters: allocLiters || null,
+            hangtagQty: order.hangtagQty ? Math.round(order.hangtagQty * ((Number(alloc.allocatedPct) || 100) / 100)) : null,
+            notes: alloc.notes || null,
+          },
+          include: { brand: { select: { id: true, name: true } } },
+        });
+        allocationRecords.push(record);
+      }
+    }
+
+    // Build brand names for notifications
+    const brandNames = allocationRecords.length > 0
+      ? allocationRecords.map((a) => a.brand?.name).filter(Boolean).join(", ")
+      : order.brand?.name || undefined;
+
     // ─── Trigger notifications (fire-and-forget) ───
     try {
       // In-app notification to AM + admins
@@ -315,7 +347,7 @@ export async function POST(req: Request) {
         hangtagQty: order.hangtagQty || undefined,
         totalPrice: order.totalPrice || 0,
         accountManagerId: accountManagerId || undefined,
-        brandName: order.brand?.name || undefined,
+        brandName: brandNames,
       });
 
       // Email notification to account manager
@@ -332,7 +364,7 @@ export async function POST(req: Request) {
             hangtagQty: order.hangtagQty || undefined,
             totalPrice: order.totalPrice || 0,
             currency: order.currency,
-            brandName: order.brand?.name || undefined,
+            brandName: brandNames,
           });
         }
       }
@@ -340,7 +372,7 @@ export async function POST(req: Request) {
       console.error("[ORDER] Notification error (non-blocking):", notifyErr);
     }
 
-    return NextResponse.json({ ok: true, order });
+    return NextResponse.json({ ok: true, order: { ...order, brandAllocations: allocationRecords } });
   } catch (e: any) {
     console.error("Orders POST error:", e);
     return NextResponse.json({ ok: false, error: e.message || "Failed to create order" }, { status: 500 });

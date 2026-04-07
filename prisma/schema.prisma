@@ -257,6 +257,7 @@ model Brand {
   sampleTrials SampleTrialRequest[] @relation("TrialBrand")
   fuzeConsumptions FuzeConsumption[] @relation("ConsumptionBrand")
   fuzeOrders       FuzeOrder[]      @relation("OrderBrand")
+  orderAllocations OrderBrandAllocation[] @relation("BrandOrderAllocations")
   meetings     Meeting[]      @relation("MeetingBrand")
   sourceRecords SourceRecord[]
   engagement BrandEngagement? @relation("BrandEngagement")
@@ -1971,6 +1972,7 @@ model FuzeOrder {
   updatedAt       DateTime @updatedAt
 
   consumptions    FuzeConsumption[]
+  brandAllocations OrderBrandAllocation[]
 
   @@index([factoryId])
   @@index([brandId])
@@ -1980,6 +1982,36 @@ model FuzeOrder {
   @@index([orderType])
   @@index([orderNumber])
   @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────
+// ORDER BRAND ALLOCATION
+// Tracks which brands a factory is ordering FUZE for
+// Enables: AM commission credit, brand rebates, volume tracking
+// ─────────────────────────────────────────────
+model OrderBrandAllocation {
+  id              String   @id @default(cuid())
+
+  orderId         String
+  order           FuzeOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  brandId         String
+  brand           Brand    @relation("BrandOrderAllocations", fields: [brandId], references: [id])
+
+  // Volume allocation for this brand
+  allocatedLiters Float?   // Liters allocated to this brand
+  allocatedPct    Float?   // Percentage of order volume (0-100)
+  hangtagQty      Int?     // Hangtags for this brand (hangtag orders)
+
+  // Notes from factory about this brand's usage
+  notes           String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([orderId, brandId])
+  @@index([brandId])
+  @@index([orderId])
 }
 
 model FuzeConsumption {
