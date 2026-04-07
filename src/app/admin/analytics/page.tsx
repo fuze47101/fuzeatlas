@@ -80,15 +80,17 @@ export default function AnalyticsDashboard() {
   const containerStyle: React.CSSProperties = {
     background: "#f0fafb",
     minHeight: "100vh",
-    padding: "2rem",
+    padding: "1rem",
     fontFamily: "system-ui, -apple-system, sans-serif",
   };
 
   const headerStyle: React.CSSProperties = {
     marginBottom: "2rem",
     display: "flex",
+    flexWrap: "wrap",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: "1rem",
   };
 
   const titleStyle: React.CSSProperties = {
@@ -100,6 +102,7 @@ export default function AnalyticsDashboard() {
 
   const rangeButtonContainerStyle: React.CSSProperties = {
     display: "flex",
+    flexWrap: "wrap",
     gap: "0.5rem",
   };
 
@@ -154,7 +157,7 @@ export default function AnalyticsDashboard() {
 
   const chartsGridStyle: React.CSSProperties = {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(500px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 500px), 1fr))",
     gap: "1rem",
     marginBottom: "2rem",
   };

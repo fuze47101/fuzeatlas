@@ -238,11 +238,11 @@ export default function UserManagementPage() {
   }
 
   return (
-    <div className="p-6 lg:p-10 max-w-5xl">
+    <div className="p-4 sm:p-6 lg:p-10 max-w-5xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">User Management</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">User Management</h1>
           <p className="text-sm text-slate-500 mt-1">{users.length} user{users.length !== 1 ? "s" : ""} registered</p>
         </div>
         <button
@@ -370,157 +370,294 @@ export default function UserManagementPage() {
         </div>
       )}
 
-      {/* User List */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-slate-200 bg-slate-50">
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Name</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Email</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Role</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Status</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <tr key={u.id} className="border-b border-slate-100 hover:bg-slate-50">
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-[#00b4c3] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                      {u.name?.charAt(0)?.toUpperCase() || "?"}
-                    </div>
-                    <span className="text-sm font-medium text-slate-900">{u.name}</span>
+      {/* User List — Mobile: card layout, Desktop: table */}
+      {/* Mobile view (< md) */}
+      <div className="md:hidden space-y-3">
+        {users.map((u) => (
+          <div key={u.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-[#00b4c3] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                  {u.name?.charAt(0)?.toUpperCase() || "?"}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-sm font-medium text-slate-900 truncate flex items-center gap-1">
+                    {u.name}
                     {u.id === currentUser?.id && (
                       <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded font-medium">You</span>
                     )}
                   </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-slate-600">{u.email}</td>
-                <td className="px-4 py-3">
-                  {editingId === u.id ? (
-                    <select
-                      value={editRole}
-                      onChange={(e) => setEditRole(e.target.value)}
-                      className="border border-slate-300 rounded px-2 py-1 text-xs"
+                  <div className="text-xs text-slate-500 truncate">{u.email}</div>
+                </div>
+              </div>
+              <span className={`text-[10px] px-2 py-1 rounded-full font-medium flex-shrink-0 ${STATUS_COLORS[u.status] || "bg-slate-100 text-slate-500"}`}>
+                {u.status}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-full font-medium">
+                {ROLE_LABELS[u.role] || u.role}
+              </span>
+              <div className="relative">
+                <button
+                  onClick={() => setActionDropdownOpen(actionDropdownOpen === u.id ? null : u.id)}
+                  className="text-xs px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 min-h-[32px]"
+                >
+                  Actions ▼
+                </button>
+                {actionDropdownOpen === u.id && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg z-50">
+                    <button
+                      onClick={() => {
+                        setEditingId(u.id);
+                        setEditRole(u.role);
+                        setEditStatus(u.status);
+                        setActionDropdownOpen(null);
+                      }}
+                      className="block w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 border-b border-slate-100"
                     >
-                      {ROLES.map((r) => (
-                        <option key={r} value={r}>{ROLE_LABELS[r] || r}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-full font-medium">
-                      {ROLE_LABELS[u.role] || u.role}
-                    </span>
-                  )}
-                </td>
-                <td className="px-4 py-3">
-                  {editingId === u.id ? (
-                    <select
-                      value={editStatus}
-                      onChange={(e) => setEditStatus(e.target.value)}
-                      className="border border-slate-300 rounded px-2 py-1 text-xs"
+                      Edit Role/Status
+                    </button>
+                    <button
+                      onClick={() => handleOpenActionModal("reset-password", u.id, u)}
+                      className="block w-full text-left px-4 py-2.5 text-sm text-amber-600 hover:bg-amber-50 border-b border-slate-100"
                     >
-                      <option value="ACTIVE">Active</option>
-                      <option value="INACTIVE">Inactive</option>
-                      <option value="PENDING">Pending</option>
-                    </select>
-                  ) : (
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_COLORS[u.status] || "bg-slate-100 text-slate-500"}`}>
-                      {u.status}
-                    </span>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  {editingId === u.id ? (
-                    <div className="flex items-center justify-end gap-2">
+                      Reset Password
+                    </button>
+                    <button
+                      onClick={() => handleOpenActionModal("change-role", u.id, u)}
+                      className="block w-full text-left px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 border-b border-slate-100"
+                    >
+                      Change Role
+                    </button>
+                    {u.status !== "SUSPENDED" && (
                       <button
-                        onClick={() => handleUpdateUser(u.id)}
-                        disabled={saving}
-                        className="text-xs px-3 py-1 bg-[#00b4c3] text-white rounded hover:bg-[#009ba8]"
+                        onClick={() => handleOpenActionModal("suspend", u.id, u)}
+                        className="block w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 border-b border-slate-100"
                       >
-                        Save
+                        Suspend
                       </button>
-                      <button
-                        onClick={() => setEditingId(null)}
-                        className="text-xs px-3 py-1 bg-slate-200 text-slate-600 rounded hover:bg-slate-300"
-                      >
-                        Cancel
-                      </button>
+                    )}
+                    <button
+                      onClick={() => handleOpenActionModal("remove", u.id, u)}
+                      className="block w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 border-b border-slate-100"
+                    >
+                      Deactivate
+                    </button>
+                    <button
+                      onClick={() => handleOpenActionModal("delete", u.id, u)}
+                      className="block w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-semibold"
+                    >
+                      Delete Permanently
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* Inline edit for mobile */}
+            {editingId === u.id && (
+              <div className="mt-3 pt-3 border-t border-slate-200 space-y-2">
+                <div>
+                  <label className="text-xs text-slate-500">Role</label>
+                  <select
+                    value={editRole}
+                    onChange={(e) => setEditRole(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
+                  >
+                    {ROLES.map((r) => (
+                      <option key={r} value={r}>{ROLE_LABELS[r] || r}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-slate-500">Status</label>
+                  <select
+                    value={editStatus}
+                    onChange={(e) => setEditStatus(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
+                  >
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                    <option value="PENDING">Pending</option>
+                  </select>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleUpdateUser(u.id)}
+                    disabled={saving}
+                    className="flex-1 text-sm px-3 py-2 bg-[#00b4c3] text-white rounded-lg hover:bg-[#009ba8]"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setEditingId(null)}
+                    className="flex-1 text-sm px-3 py-2 bg-slate-200 text-slate-600 rounded-lg hover:bg-slate-300"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop view (>= md) */}
+      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-slate-200 bg-slate-50">
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Name</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase hidden lg:table-cell">Email</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Role</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Status</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((u) => (
+                <tr key={u.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-[#00b4c3] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        {u.name?.charAt(0)?.toUpperCase() || "?"}
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-sm font-medium text-slate-900">{u.name}</span>
+                        {u.id === currentUser?.id && (
+                          <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded font-medium ml-1">You</span>
+                        )}
+                        <div className="text-xs text-slate-400 lg:hidden truncate">{u.email}</div>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="relative">
-                      <button
-                        onClick={() => setActionDropdownOpen(actionDropdownOpen === u.id ? null : u.id)}
-                        className="text-xs px-3 py-1 bg-slate-100 text-slate-600 rounded hover:bg-slate-200"
+                  </td>
+                  <td className="px-4 py-3 text-sm text-slate-600 hidden lg:table-cell">{u.email}</td>
+                  <td className="px-4 py-3">
+                    {editingId === u.id ? (
+                      <select
+                        value={editRole}
+                        onChange={(e) => setEditRole(e.target.value)}
+                        className="border border-slate-300 rounded px-2 py-1 text-xs"
                       >
-                        Actions ▼
-                      </button>
-                      {actionDropdownOpen === u.id && (
-                        <div className="absolute right-0 mt-1 w-44 bg-white border border-slate-200 rounded-lg shadow-lg z-50">
-                          <button
-                            onClick={() => {
-                              setEditingId(u.id);
-                              setEditRole(u.role);
-                              setEditStatus(u.status);
-                              setActionDropdownOpen(null);
-                            }}
-                            className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 border-b border-slate-100"
-                          >
-                            Edit Role/Status
-                          </button>
-                          <button
-                            onClick={() => handleOpenActionModal("reset-password", u.id, u)}
-                            className="block w-full text-left px-4 py-2 text-xs text-amber-600 hover:bg-amber-50 border-b border-slate-100"
-                          >
-                            Reset Password
-                          </button>
-                          <button
-                            onClick={() => handleOpenActionModal("change-role", u.id, u)}
-                            className="block w-full text-left px-4 py-2 text-xs text-blue-600 hover:bg-blue-50 border-b border-slate-100"
-                          >
-                            Change Role
-                          </button>
-                          {u.status !== "SUSPENDED" && (
-                            <button
-                              onClick={() => handleOpenActionModal("suspend", u.id, u)}
-                              className="block w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 border-b border-slate-100"
-                            >
-                              Suspend
-                            </button>
-                          )}
-                          {u.status === "SUSPENDED" && (
+                        {ROLES.map((r) => (
+                          <option key={r} value={r}>{ROLE_LABELS[r] || r}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-full font-medium">
+                        {ROLE_LABELS[u.role] || u.role}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    {editingId === u.id ? (
+                      <select
+                        value={editStatus}
+                        onChange={(e) => setEditStatus(e.target.value)}
+                        className="border border-slate-300 rounded px-2 py-1 text-xs"
+                      >
+                        <option value="ACTIVE">Active</option>
+                        <option value="INACTIVE">Inactive</option>
+                        <option value="PENDING">Pending</option>
+                      </select>
+                    ) : (
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_COLORS[u.status] || "bg-slate-100 text-slate-500"}`}>
+                        {u.status}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    {editingId === u.id ? (
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleUpdateUser(u.id)}
+                          disabled={saving}
+                          className="text-xs px-3 py-1 bg-[#00b4c3] text-white rounded hover:bg-[#009ba8]"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingId(null)}
+                          className="text-xs px-3 py-1 bg-slate-200 text-slate-600 rounded hover:bg-slate-300"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <button
+                          onClick={() => setActionDropdownOpen(actionDropdownOpen === u.id ? null : u.id)}
+                          className="text-xs px-3 py-1 bg-slate-100 text-slate-600 rounded hover:bg-slate-200"
+                        >
+                          Actions ▼
+                        </button>
+                        {actionDropdownOpen === u.id && (
+                          <div className="absolute right-0 mt-1 w-44 bg-white border border-slate-200 rounded-lg shadow-lg z-50">
                             <button
                               onClick={() => {
-                                handleExecuteAction();
-                                handleOpenActionModal("suspend", u.id, u);
+                                setEditingId(u.id);
+                                setEditRole(u.role);
+                                setEditStatus(u.status);
+                                setActionDropdownOpen(null);
                               }}
-                              className="block w-full text-left px-4 py-2 text-xs text-green-600 hover:bg-green-50 border-b border-slate-100"
+                              className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 border-b border-slate-100"
                             >
-                              Unsuspend (Activate)
+                              Edit Role/Status
                             </button>
-                          )}
-                          <button
-                            onClick={() => handleOpenActionModal("remove", u.id, u)}
-                            className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 border-b border-slate-100"
-                          >
-                            Deactivate
-                          </button>
-                          <button
-                            onClick={() => handleOpenActionModal("delete", u.id, u)}
-                            className="block w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 font-semibold"
-                          >
-                            Delete Permanently
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                            <button
+                              onClick={() => handleOpenActionModal("reset-password", u.id, u)}
+                              className="block w-full text-left px-4 py-2 text-xs text-amber-600 hover:bg-amber-50 border-b border-slate-100"
+                            >
+                              Reset Password
+                            </button>
+                            <button
+                              onClick={() => handleOpenActionModal("change-role", u.id, u)}
+                              className="block w-full text-left px-4 py-2 text-xs text-blue-600 hover:bg-blue-50 border-b border-slate-100"
+                            >
+                              Change Role
+                            </button>
+                            {u.status !== "SUSPENDED" && (
+                              <button
+                                onClick={() => handleOpenActionModal("suspend", u.id, u)}
+                                className="block w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 border-b border-slate-100"
+                              >
+                                Suspend
+                              </button>
+                            )}
+                            {u.status === "SUSPENDED" && (
+                              <button
+                                onClick={() => {
+                                  handleExecuteAction();
+                                  handleOpenActionModal("suspend", u.id, u);
+                                }}
+                                className="block w-full text-left px-4 py-2 text-xs text-green-600 hover:bg-green-50 border-b border-slate-100"
+                              >
+                                Unsuspend (Activate)
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleOpenActionModal("remove", u.id, u)}
+                              className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 border-b border-slate-100"
+                            >
+                              Deactivate
+                            </button>
+                            <button
+                              onClick={() => handleOpenActionModal("delete", u.id, u)}
+                              className="block w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 font-semibold"
+                            >
+                              Delete Permanently
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Action Modal */}

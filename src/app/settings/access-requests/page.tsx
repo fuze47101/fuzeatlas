@@ -281,7 +281,7 @@ export default function AccessRequestsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
         <button onClick={() => setStatusFilter("PENDING")}
           className={`p-4 rounded-xl border-2 transition-all ${statusFilter === "PENDING" ? "border-amber-400 bg-amber-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
           <div className="text-2xl font-black text-amber-600">{stats.pending}</div>
@@ -359,11 +359,11 @@ export default function AccessRequestsPage() {
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-slate-500">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
                       <span className="font-medium text-slate-700">{req.company}</span>
-                      {req.jobTitle && <><span>·</span><span>{req.jobTitle}</span></>}
-                      <span>·</span>
-                      <span>{req.email}</span>
+                      {req.jobTitle && <><span className="hidden sm:inline">·</span><span>{req.jobTitle}</span></>}
+                      <span className="hidden sm:inline">·</span>
+                      <span className="truncate max-w-[200px] sm:max-w-none">{req.email}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 ml-4">
