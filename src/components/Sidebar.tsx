@@ -308,6 +308,7 @@ export default function Sidebar() {
         label: "Operations",
         items: [
           { href: "/admin/orders", label: "Order Management", icon: "📦" },
+          { href: "/admin/worldwide-inventory", label: "Worldwide Inventory", icon: "🌍" },
           { href: "/admin/consumption", label: "Consumption & Reorder", icon: "📊" },
           { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
           { href: "/shipping-docs", label: "Shipping Docs", icon: "🚢" },
