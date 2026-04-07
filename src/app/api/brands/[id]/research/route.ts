@@ -7,6 +7,8 @@ const prisma = new PrismaClient();
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const GROK_API_KEY = process.env.GROK_API_KEY;
+const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
 
 // ─── THE PROMPT ─────────────────────────────────────────
 // This is the core research prompt shared by both AI models.
@@ -222,6 +224,75 @@ async function callOpenAI(userMessage: string, userId?: string): Promise<any> {
   return parseAIJson(text, "OpenAI");
 }
 
+async function callGrok(userMessage: string, userId?: string): Promise<any> {
+  // Grok uses the OpenAI-compatible API at api.x.ai
+  const { response } = await aiFetch(
+    "https://api.x.ai/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${GROK_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "grok-3-latest",
+        max_tokens: 8000,
+        messages: [
+          { role: "system", content: RESEARCH_PROMPT + "\n\nIMPORTANT: You have real-time access to X/Twitter and current news. Prioritize finding RECENT information (last 6 months): executive changes, new product launches, sustainability announcements, funding rounds, M&A activity. Cross-reference social media posts from company accounts and key executives." },
+          { role: "user", content: userMessage },
+        ],
+        temperature: 0.3,
+      }),
+    },
+    { provider: "openai" as any, callerRoute: "research-grok", userId }
+  );
+
+  if (!response.ok) {
+    const errText = await response.text();
+    console.error("Grok API error:", errText);
+    return null;
+  }
+
+  const result = await response.json();
+  const text = result.choices?.[0]?.message?.content || "";
+  return parseAIJson(text, "Grok");
+}
+
+async function callPerplexity(userMessage: string, userId?: string): Promise<any> {
+  if (!PERPLEXITY_API_KEY) return null;
+
+  const { response } = await aiFetch(
+    "https://api.perplexity.ai/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${PERPLEXITY_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "sonar-pro",
+        max_tokens: 8000,
+        messages: [
+          { role: "system", content: RESEARCH_PROMPT + "\n\nIMPORTANT: You search the web in real-time. CITE ALL SOURCES. Every factual claim must come from a verifiable web source. Focus on: LinkedIn profiles (verify they exist), company websites, press releases, SEC filings, industry databases. Flag anything you cannot verify with a source." },
+          { role: "user", content: userMessage },
+        ],
+        temperature: 0.2,
+      }),
+    },
+    { provider: "openai" as any, callerRoute: "research-perplexity", userId }
+  );
+
+  if (!response.ok) {
+    const errText = await response.text();
+    console.error("Perplexity API error:", errText);
+    return null;
+  }
+
+  const result = await response.json();
+  const text = result.choices?.[0]?.message?.content || "";
+  return parseAIJson(text, "Perplexity");
+}
+
 function parseAIJson(text: string, source: string): any {
   try {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -236,39 +307,48 @@ function parseAIJson(text: string, source: string): any {
 }
 
 // ─── MERGE FUNCTION ─────────────────────────────────────
-// Takes results from both AIs and merges them intelligently
+// Takes results from all AIs and merges them intelligently
 
-function mergeResearch(anthropic: any, openai: any): any {
-  // If only one succeeded, use it
-  if (!anthropic && !openai) return null;
-  if (!anthropic) return { ...openai, _sources: ["OpenAI"] };
-  if (!openai) return { ...anthropic, _sources: ["Anthropic"] };
+function mergeResearch(anthropic: any, openai: any, grok?: any, perplexity?: any): any {
+  const results = [
+    { data: anthropic, name: "Anthropic" },
+    { data: openai, name: "OpenAI" },
+    { data: grok, name: "Grok" },
+    { data: perplexity, name: "Perplexity" },
+  ].filter(r => r.data);
 
-  // Both succeeded — merge intelligently
-  const merged: any = { _sources: ["Anthropic", "OpenAI"] };
+  if (results.length === 0) return null;
+  if (results.length === 1) return { ...results[0].data, _sources: [results[0].name] };
 
-  // Company: prefer whichever has more complete data
-  const ac = anthropic.company || {};
-  const oc = openai.company || {};
+  // Multiple succeeded — merge intelligently
+  const merged: any = { _sources: results.map(r => r.name) };
+
+  // Company: merge all sources — first non-null wins for each field
+  const companies = results.map(r => r.data.company || {});
+  const pick = (field: string) => {
+    for (const c of companies) { if (c[field]) return c[field]; }
+    return null;
+  };
   merged.company = {
-    name: ac.name || oc.name,
-    legalName: ac.legalName || oc.legalName,
-    website: ac.website || oc.website,
-    linkedin: ac.linkedin || oc.linkedin,
-    headquarters: ac.headquarters || oc.headquarters,
-    founded: ac.founded || oc.founded,
-    employeeCount: ac.employeeCount || oc.employeeCount,
-    revenue: ac.revenue || oc.revenue,
-    ticker: ac.ticker || oc.ticker,
-    description: ac.description || oc.description,
-    parentCompany: ac.parentCompany || oc.parentCompany,
-    industry: ac.industry || oc.industry,
-    keyMarkets: uniqueMerge(ac.keyMarkets, oc.keyMarkets),
+    name: pick("name"),
+    legalName: pick("legalName"),
+    website: pick("website"),
+    linkedin: pick("linkedin"),
+    headquarters: pick("headquarters"),
+    founded: pick("founded"),
+    employeeCount: pick("employeeCount"),
+    revenue: pick("revenue"),
+    ticker: pick("ticker"),
+    description: pick("description"),
+    parentCompany: pick("parentCompany"),
+    industry: pick("industry"),
+    keyMarkets: uniqueMerge(...companies.map((c: any) => c.keyMarkets)),
   };
 
-  // Contacts: merge and deduplicate by name
+  // Contacts: merge and deduplicate by name from ALL sources
   const contactMap = new Map<string, any>();
-  for (const c of [...(anthropic.contacts || []), ...(openai.contacts || [])]) {
+  for (const r of results) {
+  for (const c of (r.data.contacts || [])) {
     const key = (c.name || "").toLowerCase().trim();
     if (!key) continue;
     const existing = contactMap.get(key);
@@ -288,77 +368,93 @@ function mergeResearch(anthropic: any, openai: any): any {
       });
     }
   }
+  }
   merged.contacts = Array.from(contactMap.values()).sort((a, b) => (a.priority || 99) - (b.priority || 99));
 
-  // Products: merge arrays
-  const ap = anthropic.products || {};
-  const op = openai.products || {};
+  // Products: merge arrays from all sources
+  const products = results.map(r => r.data.products || {});
   merged.products = {
-    categories: uniqueMerge(ap.categories, op.categories),
-    keyBrands: uniqueMerge(ap.keyBrands, op.keyBrands),
-    targetMarkets: uniqueMerge(ap.targetMarkets, op.targetMarkets),
-    knownSuppliers: uniqueMerge(ap.knownSuppliers, op.knownSuppliers),
-    sustainability: uniqueMerge(ap.sustainability, op.sustainability),
-    materialsStrategy: uniqueMerge(ap.materialsStrategy, op.materialsStrategy),
-    recentLaunches: uniqueMerge(ap.recentLaunches, op.recentLaunches),
+    categories: uniqueMerge(...products.map((p: any) => p.categories)),
+    keyBrands: uniqueMerge(...products.map((p: any) => p.keyBrands)),
+    targetMarkets: uniqueMerge(...products.map((p: any) => p.targetMarkets)),
+    knownSuppliers: uniqueMerge(...products.map((p: any) => p.knownSuppliers)),
+    sustainability: uniqueMerge(...products.map((p: any) => p.sustainability)),
+    materialsStrategy: uniqueMerge(...products.map((p: any) => p.materialsStrategy)),
+    recentLaunches: uniqueMerge(...products.map((p: any) => p.recentLaunches)),
   };
 
-  // Opportunity: prefer Anthropic's analysis (tends to be sharper) but merge arrays
-  const ao = anthropic.opportunity || {};
-  const oo = openai.opportunity || {};
+  // Opportunity: prefer Anthropic's analysis but merge arrays from all
+  const opportunities = results.map(r => r.data.opportunity || {});
+  const pickOpp = (field: string) => {
+    // Pick the longest/most detailed string value
+    let best: any = null;
+    for (const o of opportunities) {
+      if (o[field] && (!best || String(o[field]).length > String(best).length)) best = o[field];
+    }
+    return best;
+  };
   merged.opportunity = {
-    fitScore: ao.fitScore || oo.fitScore,
-    fitReason: (ao.fitReason?.length || 0) > (oo.fitReason?.length || 0) ? ao.fitReason : oo.fitReason,
-    bestProductLines: uniqueMerge(ao.bestProductLines, oo.bestProductLines),
-    estimatedScale: ao.estimatedScale || oo.estimatedScale,
-    currentAntimicrobial: ao.currentAntimicrobial || oo.currentAntimicrobial,
-    competitors: uniqueMerge(ao.competitors, oo.competitors),
-    displacementAngle: ao.displacementAngle || oo.displacementAngle,
-    objections: mergeObjections(ao.objections, oo.objections),
-    suggestedApproach: ao.suggestedApproach || oo.suggestedApproach,
-    openingMessage: ao.openingMessage || oo.openingMessage,
+    fitScore: pickOpp("fitScore"),
+    fitReason: pickOpp("fitReason"),
+    bestProductLines: uniqueMerge(...opportunities.map((o: any) => o.bestProductLines)),
+    estimatedScale: pickOpp("estimatedScale"),
+    currentAntimicrobial: pickOpp("currentAntimicrobial"),
+    competitors: uniqueMerge(...opportunities.map((o: any) => o.competitors)),
+    displacementAngle: pickOpp("displacementAngle"),
+    objections: mergeObjections(...opportunities.map((o: any) => o.objections)),
+    suggestedApproach: pickOpp("suggestedApproach"),
+    openingMessage: pickOpp("openingMessage"),
   };
 
-  // News: merge and deduplicate by headline similarity
+  // News: merge and deduplicate from all sources
   const newsMap = new Map<string, any>();
-  for (const n of [...(anthropic.news || []), ...(openai.news || [])]) {
-    const key = (n.headline || "").toLowerCase().substring(0, 40);
-    if (!key || newsMap.has(key)) continue;
-    newsMap.set(key, n);
+  for (const r of results) {
+    for (const n of (r.data.news || [])) {
+      const key = (n.headline || "").toLowerCase().substring(0, 40);
+      if (!key || newsMap.has(key)) continue;
+      newsMap.set(key, n);
+    }
   }
   merged.news = Array.from(newsMap.values());
 
-  // Confidence: take the higher confidence
-  const confRank = { HIGH: 3, MEDIUM: 2, LOW: 1 };
-  const ac_conf = confRank[anthropic.confidence] || 1;
-  const oc_conf = confRank[openai.confidence] || 1;
-  merged.confidence = ac_conf >= oc_conf ? anthropic.confidence : openai.confidence;
+  // Confidence: take the highest across all sources
+  const confRank: Record<string, number> = { HIGH: 3, MEDIUM: 2, LOW: 1 };
+  let bestConf = "LOW";
+  for (const r of results) {
+    if ((confRank[r.data.confidence] || 0) > (confRank[bestConf] || 0)) {
+      bestConf = r.data.confidence;
+    }
+  }
+  merged.confidence = bestConf;
 
-  // Research notes: combine both
+  // Research notes: combine all
   const notes = [
-    anthropic.researchNotes && `[Anthropic] ${anthropic.researchNotes}`,
-    openai.researchNotes && `[OpenAI] ${openai.researchNotes}`,
-    "Results merged from dual-AI research (Anthropic Claude + OpenAI GPT-4o) for maximum coverage.",
+    ...results.map(r => r.data.researchNotes ? `[${r.name}] ${r.data.researchNotes}` : null),
+    `Results merged from ${results.length}-AI research (${results.map(r => r.name).join(" + ")}) for maximum coverage and hallucination reduction.`,
   ].filter(Boolean).join(" | ");
   merged.researchNotes = notes;
 
   return merged;
 }
 
-function uniqueMerge(a: string[] | undefined, b: string[] | undefined): string[] {
+function uniqueMerge(...arrays: (string[] | undefined)[]): string[] {
   const set = new Set<string>();
-  for (const item of [...(a || []), ...(b || [])]) {
-    if (item) set.add(item);
+  for (const arr of arrays) {
+    for (const item of (arr || [])) {
+      if (item) set.add(item);
+    }
   }
   return Array.from(set);
 }
 
-function mergeObjections(a: any[] | undefined, b: any[] | undefined): any[] {
+function mergeObjections(...arrays: (any[] | undefined)[]): any[] {
   const map = new Map<string, any>();
-  for (const obj of [...(a || []), ...(b || [])]) {
-    const key = (obj.objection || "").toLowerCase().substring(0, 30);
-    if (!key || map.has(key)) continue;
-    map.set(key, obj);
+  for (const arr of arrays) {
+    for (const obj of (arr || [])) {
+      const key = (obj?.objection || "").toLowerCase().substring(0, 30);
+      if (!key || map.has(key)) continue;
+      map.set(key, obj);
+    }
   }
   return Array.from(map.values()).slice(0, 5);
 }
@@ -402,10 +498,12 @@ export async function POST(req: Request, props: { params: Promise<{ id: string }
 
     const hasAnthropic = !!ANTHROPIC_API_KEY;
     const hasOpenAI = !!OPENAI_API_KEY;
+    const hasGrok = !!GROK_API_KEY;
+    const hasPerplexity = !!PERPLEXITY_API_KEY;
 
-    if (!hasAnthropic && !hasOpenAI) {
+    if (!hasAnthropic && !hasOpenAI && !hasGrok) {
       return NextResponse.json(
-        { ok: false, error: "No AI API keys configured. Add ANTHROPIC_API_KEY and/or OPENAI_API_KEY to your .env file." },
+        { ok: false, error: "No AI API keys configured. Add ANTHROPIC_API_KEY, OPENAI_API_KEY, and/or GROK_API_KEY to your .env file." },
         { status: 500 }
       );
     }
@@ -437,23 +535,21 @@ export async function POST(req: Request, props: { params: Promise<{ id: string }
     // Extract user ID for audit logging
     const userId = getUserIdFromHeaders(req.headers);
 
-    // Fire both AIs in parallel
-    const promises: Promise<any>[] = [];
-    if (hasAnthropic) promises.push(callAnthropic(userMessage, userId));
-    else promises.push(Promise.resolve(null));
+    // Fire ALL AIs in parallel — Anthropic + OpenAI + Grok + Perplexity
+    const [anthropicResult, openaiResult, grokResult, perplexityResult] = await Promise.all([
+      hasAnthropic ? callAnthropic(userMessage, userId) : Promise.resolve(null),
+      hasOpenAI ? callOpenAI(userMessage, userId) : Promise.resolve(null),
+      hasGrok ? callGrok(userMessage, userId) : Promise.resolve(null),
+      hasPerplexity ? callPerplexity(userMessage, userId) : Promise.resolve(null),
+    ]);
 
-    if (hasOpenAI) promises.push(callOpenAI(userMessage, userId));
-    else promises.push(Promise.resolve(null));
-
-    const [anthropicResult, openaiResult] = await Promise.all(promises);
-
-    // Merge results
-    const research = mergeResearch(anthropicResult, openaiResult);
+    // Merge results from all sources
+    const research = mergeResearch(anthropicResult, openaiResult, grokResult, perplexityResult);
 
     if (!research) {
       return NextResponse.json({
         ok: false,
-        error: "Both AI models failed to return valid results. Check API keys and try again.",
+        error: "All AI models failed to return valid results. Check API keys and try again.",
       }, { status: 500 });
     }
 
