@@ -203,6 +203,7 @@ model User {
   organizedMeetings Meeting[] @relation("MeetingOrganizer")
   complianceUploads ComplianceDocument[]
   sampleTrials     SampleTrialRequest[] @relation("TrialRequester")
+  fuzeOrders       FuzeOrder[]          @relation("OrderUser")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -253,6 +254,7 @@ model Brand {
   users       User[]         @relation("BrandUsers")
   testRequests TestRequest[] @relation("TestRequestBrand")
   sampleTrials SampleTrialRequest[] @relation("TrialBrand")
+  fuzeConsumptions FuzeConsumption[] @relation("ConsumptionBrand")
   meetings     Meeting[]      @relation("MeetingBrand")
   sourceRecords SourceRecord[]
   engagement BrandEngagement? @relation("BrandEngagement")
@@ -327,6 +329,8 @@ model Factory {
   accessRequests AccessRequest[] @relation("AccessRequestFactory")
   sampleTrials   SampleTrialRequest[] @relation("FactoryTrials")
   distributorDocs DistributorDocument[] @relation("DistributorDocFactory")
+  fuzeOrders      FuzeOrder[]          @relation("FactoryOrders")
+  fuzeConsumptions FuzeConsumption[]   @relation("FactoryConsumption")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -378,6 +382,7 @@ model Distributor {
   documents     DistributorDocument[]
   users         User[]         @relation("DistributorUsers")
   sourceRecords SourceRecord[]
+  fuzeOrders    FuzeOrder[]    @relation("OrderDistributor")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -567,6 +572,7 @@ model Fabric {
   testRequests TestRequest[]
   fuzeTestRequests FuzeTestRequest[] @relation("FuzeTestFabric")
   sampleTrials     SampleTrialRequest[] @relation("FabricTrials")
+  fuzeConsumptions FuzeConsumption[] @relation("ConsumptionFabric")
   shipments SampleShipment[] @relation("FabricShipments")
 
   createdAt DateTime @default(now())
@@ -1798,4 +1804,100 @@ model ApiCallLog {
   @@index([userId])
   @@index([provider])
   @@index([statusCode])
+}
+
+// ─────────────────────────────────────────────
+// FUZE PRODUCT ORDERS & CONSUMPTION
+// Tracks factory FUZE product orders and actual usage
+// ─────────────────────────────────────────────
+
+model FuzeOrder {
+  id              String   @id @default(cuid())
+
+  // Who ordered
+  factoryId       String
+  factory         Factory  @relation("FactoryOrders", fields: [factoryId], references: [id])
+  orderedById     String?
+  orderedBy       User?    @relation("OrderUser", fields: [orderedById], references: [id])
+
+  // What was ordered
+  orderNumber     String   @unique  // FUZE-ORD-YYYYMMDD-XXXX
+  volumeLiters    Float    // Total liters ordered
+  fuzeTier        String?  // F1/F2/F3/F4 — what concentration they need
+  bottles         Int?     // Number of 19L bottles
+
+  // Pricing
+  pricePerLiter   Float?   // USD
+  totalPrice      Float?   // USD
+  currency        String   @default("USD")
+  discountPct     Float?   // Volume discount
+
+  // Shipping
+  shippingOrigin  String?  // US | DISTRIBUTOR
+  distributorId   String?
+  distributor     Distributor? @relation("OrderDistributor", fields: [distributorId], references: [id])
+  trackingNumber  String?
+  carrier         String?
+  shippedDate     DateTime?
+  deliveredDate   DateTime?
+  shippingAddress String?
+
+  // Status: DRAFT → CONFIRMED → PROCESSING → SHIPPED → DELIVERED → CANCELLED
+  status          String   @default("DRAFT")
+
+  // Reorder tracking
+  isReorder       Boolean  @default(false)
+  previousOrderId String?  // Link to last order for reorder chain
+
+  notes           String?
+  adminNotes      String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  consumptions    FuzeConsumption[]
+
+  @@index([factoryId])
+  @@index([status])
+  @@index([orderNumber])
+  @@index([createdAt])
+}
+
+model FuzeConsumption {
+  id              String   @id @default(cuid())
+
+  // Who used it
+  factoryId       String
+  factory         Factory  @relation("FactoryConsumption", fields: [factoryId], references: [id])
+
+  // Against which order
+  orderId         String?
+  order           FuzeOrder? @relation(fields: [orderId], references: [id])
+
+  // Usage details
+  litersUsed      Float    // How many liters consumed
+  metersProcessed Float?   // How many meters of fabric treated
+  applicationMethod String? // exhaust | pad | spray
+  fuzeTier        String?  // F1/F2/F3/F4
+
+  // Production context
+  brandId         String?
+  brand           Brand?   @relation("ConsumptionBrand", fields: [brandId], references: [id])
+  fabricId        String?
+  fabric          Fabric?  @relation("ConsumptionFabric", fields: [fabricId], references: [id])
+  productionRunId String?  // Factory's internal reference
+
+  // Date of consumption
+  usageDate       DateTime @default(now())
+  reportedById    String?
+
+  notes           String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([factoryId])
+  @@index([orderId])
+  @@index([usageDate])
+  @@index([brandId])
 }

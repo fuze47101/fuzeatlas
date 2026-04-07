@@ -303,6 +303,7 @@ export default function Sidebar() {
       {
         label: "Operations",
         items: [
+          { href: "/admin/consumption", label: "Consumption & Reorder", icon: "📊" },
           { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
           { href: "/shipping-docs", label: "Shipping Docs", icon: "🚢" },
           { href: "/meetings", label: "Meetings", icon: "📅" },
