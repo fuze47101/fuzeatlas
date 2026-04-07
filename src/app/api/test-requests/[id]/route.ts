@@ -2,7 +2,17 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { pushTestRequestStatus } from "@/lib/notify-realtime";
-import { sendTestRequestStatusEmail, sendShippingInstructionsEmail } from "@/lib/email";
+import {
+  sendTestRequestStatusEmail,
+  sendShippingInstructionsEmail,
+  sendSampleShippedNotification,
+  sendShipmentConfirmedEmail,
+  sendSampleReceivedEmail,
+  sendSampleIssueEmail,
+  sendTestingStartedEmail,
+  sendResultsReadyEmail,
+} from "@/lib/email";
+import { getNotifyEmails } from "@/lib/notify-workflow";
 
 const prisma = new PrismaClient();
 
@@ -287,6 +297,300 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       });
       notifyTestRequestChange(id, "COMPLETE", existing).catch(() => {});
       return NextResponse.json({ ok: true, testRequest: updated, message: "Test request completed" });
+    }
+
+    // ─── Action: Mark Shipped (customer enters tracking) ─────────────────────────
+    if (action === "mark_shipped") {
+      if (!["APPROVED", "SUBMITTED"].includes(existing.status)) {
+        return NextResponse.json({ ok: false, error: "Cannot mark as shipped from current status" }, { status: 400 });
+      }
+      const { carrier, trackingNumber, shipDate, sampleCount } = body;
+      if (!carrier || !trackingNumber) {
+        return NextResponse.json({ ok: false, error: "Carrier and tracking number are required" }, { status: 400 });
+      }
+
+      // Find or create the shipment for this test request
+      let shipment = await prisma.sampleShipment.findFirst({
+        where: { testRequestId: id },
+      });
+      if (shipment) {
+        shipment = await prisma.sampleShipment.update({
+          where: { id: shipment.id },
+          data: {
+            carrier,
+            trackingNumber,
+            shipDate: shipDate ? new Date(shipDate) : new Date(),
+            sampleCount: sampleCount || 1,
+            status: "SHIPPED",
+          },
+        });
+      } else {
+        shipment = await prisma.sampleShipment.create({
+          data: {
+            testRequestId: id,
+            fabricId: existing.fabricId,
+            labId: existing.labId,
+            destinationName: existing.lab?.name || "FUZE Lab",
+            carrier,
+            trackingNumber,
+            shipDate: shipDate ? new Date(shipDate) : new Date(),
+            sampleCount: sampleCount || 1,
+            status: "SHIPPED",
+            createdBy: userId,
+          },
+        });
+      }
+
+      // Add shipment event
+      await prisma.shipmentEvent.create({
+        data: {
+          shipmentId: shipment.id,
+          eventType: "SHIPPED",
+          notes: `Shipped via ${carrier} — ${trackingNumber}`,
+          handler: userId,
+        },
+      });
+
+      // Update TestRequest status
+      const updated = await prisma.testRequest.update({
+        where: { id },
+        data: { status: "SUBMITTED" },
+      });
+
+      // Send emails (non-blocking)
+      (async () => {
+        try {
+          const fullTR = await prisma.testRequest.findUnique({
+            where: { id },
+            include: {
+              fabric: { select: { fuzeNumber: true, customerCode: true } },
+              requestedBy: { select: { email: true, name: true } },
+            },
+          });
+          const fabricInfo = [
+            fullTR?.fabric?.fuzeNumber ? `FUZE-${fullTR.fabric.fuzeNumber}` : null,
+            fullTR?.fabric?.customerCode,
+          ].filter(Boolean).join(" | ") || "See PO";
+
+          // Route notifications: lab team + admins + AM get shipped notice, customer gets confirmation
+          const notify = await getNotifyEmails(id, "SAMPLE_SHIPPED");
+
+          if (notify.toInternal.length > 0) {
+            await sendSampleShippedNotification({
+              adminEmails: notify.toInternal,
+              poNumber: existing.poNumber || id,
+              fabricInfo,
+              carrier,
+              trackingNumber,
+              customerName: fullTR?.requestedBy?.name || "Customer",
+              shipDate: shipDate || new Date().toISOString().split("T")[0],
+            });
+          }
+
+          if (notify.toCustomer.length > 0) {
+            await sendShipmentConfirmedEmail({
+              email: notify.toCustomer[0],
+              name: notify.targets.customer?.name || "Team",
+              poNumber: existing.poNumber || id,
+              carrier,
+              trackingNumber,
+            });
+          }
+        } catch (emailErr) {
+          console.error("[EMAIL] mark_shipped emails failed:", emailErr);
+        }
+      })();
+
+      return NextResponse.json({ ok: true, testRequest: updated, shipment, message: "Sample marked as shipped" });
+    }
+
+    // ─── Action: Receive Sample (lab/admin marks received) ─────────────────────────
+    if (action === "receive_sample") {
+      const { condition, pieces, controlIncluded, receivedNotes } = body;
+
+      // Find the shipment
+      const shipment = await prisma.sampleShipment.findFirst({
+        where: { testRequestId: id },
+      });
+
+      if (shipment) {
+        await prisma.sampleShipment.update({
+          where: { id: shipment.id },
+          data: {
+            status: condition === "GOOD" ? "AT_LAB" : "AT_LAB",
+            actualArrival: new Date(),
+            receivedCondition: condition || "GOOD",
+            receivedPieces: pieces || null,
+            controlIncluded: controlIncluded ?? null,
+            receivedNotes: receivedNotes || null,
+            receivedById: userId,
+          },
+        });
+
+        await prisma.shipmentEvent.create({
+          data: {
+            shipmentId: shipment.id,
+            eventType: "RECEIVED",
+            notes: `Received — Condition: ${condition || "GOOD"}${receivedNotes ? ` — ${receivedNotes}` : ""}`,
+            handler: userId,
+          },
+        });
+      }
+
+      // Update TestRequest status
+      const newStatus = (condition === "DAMAGED" || condition === "INSUFFICIENT") ? existing.status : "SUBMITTED";
+      const updated = await prisma.testRequest.update({
+        where: { id },
+        data: { status: newStatus },
+      });
+
+      // Send email to customer + AM
+      (async () => {
+        try {
+          const notify = await getNotifyEmails(id, "SAMPLE_RECEIVED");
+          const fullTR = await prisma.testRequest.findUnique({
+            where: { id },
+            include: {
+              fabric: { select: { fuzeNumber: true, customerCode: true } },
+              lines: { select: { testType: true } },
+            },
+          });
+
+          const fabricInfo = [
+            fullTR?.fabric?.fuzeNumber ? `FUZE-${fullTR.fabric.fuzeNumber}` : null,
+            fullTR?.fabric?.customerCode,
+          ].filter(Boolean).join(" | ") || "See PO";
+
+          const customerEmail = notify.toCustomer[0];
+          const customerName = notify.targets.customer?.name || "Team";
+          if (!customerEmail) return;
+
+          if (condition === "DAMAGED" || condition === "INSUFFICIENT") {
+            // Notify customer of issue
+            await sendSampleIssueEmail({
+              email: customerEmail,
+              name: customerName,
+              poNumber: existing.poNumber || id,
+              fabricInfo,
+              issueDescription: receivedNotes || `Sample condition: ${condition}. Please contact the lab for next steps.`,
+            });
+            // Also notify AM of the issue
+            if (notify.targets.accountManager?.email) {
+              await sendSampleIssueEmail({
+                email: notify.targets.accountManager.email,
+                name: notify.targets.accountManager.name,
+                poNumber: existing.poNumber || id,
+                fabricInfo,
+                issueDescription: `Customer sample issue — ${condition}: ${receivedNotes || "No details provided."}`,
+              });
+            }
+          } else {
+            await sendSampleReceivedEmail({
+              email: customerEmail,
+              name: customerName,
+              poNumber: existing.poNumber || id,
+              fabricInfo,
+              receivedDate: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
+              condition: condition || "Good",
+              testTypes: fullTR?.lines.map((l: any) => l.testType) || [],
+            });
+          }
+        } catch (emailErr) {
+          console.error("[EMAIL] receive_sample emails failed:", emailErr);
+        }
+      })();
+
+      return NextResponse.json({ ok: true, testRequest: updated, message: condition === "DAMAGED" || condition === "INSUFFICIENT" ? "Sample received with issue — customer notified" : "Sample received — customer notified" });
+    }
+
+    // ─── Action: Start Testing (admin/lab starts testing) ─────────────────────────
+    if (action === "start_testing") {
+      if (!["SUBMITTED", "APPROVED"].includes(existing.status)) {
+        return NextResponse.json({ ok: false, error: "Cannot start testing from current status" }, { status: 400 });
+      }
+
+      // Calculate estimated completion from max turnaround days
+      const lines = await prisma.testRequestLine.findMany({
+        where: { testRequestId: id },
+        select: { testType: true, testMethod: true, estimatedDays: true },
+      });
+      const maxDays = Math.max(...lines.map((l: any) => l.estimatedDays || 10), 10);
+      const estCompletion = new Date();
+      estCompletion.setDate(estCompletion.getDate() + maxDays);
+
+      // Update TestRequest
+      const updated = await prisma.testRequest.update({
+        where: { id },
+        data: {
+          status: "IN_PROGRESS",
+          testingStartedAt: new Date(),
+          testingStartedById: userId,
+          estimatedCompletionDate: estCompletion,
+        },
+      });
+
+      // Update all lines to IN_PROGRESS
+      await prisma.testRequestLine.updateMany({
+        where: { testRequestId: id, status: "PENDING" },
+        data: { status: "IN_PROGRESS" },
+      });
+
+      notifyTestRequestChange(id, "IN_PROGRESS", existing).catch(() => {});
+
+      // Send testing started email to customer + AM
+      (async () => {
+        try {
+          const notify = await getNotifyEmails(id, "TESTING_STARTED");
+          const fullTR = await prisma.testRequest.findUnique({
+            where: { id },
+            include: {
+              fabric: { select: { fuzeNumber: true, customerCode: true } },
+              lines: { select: { testType: true, testMethod: true, estimatedDays: true } },
+            },
+          });
+
+          const fabricInfo = [
+            fullTR?.fabric?.fuzeNumber ? `FUZE-${fullTR.fabric.fuzeNumber}` : null,
+            fullTR?.fabric?.customerCode,
+          ].filter(Boolean).join(" | ") || "See PO";
+
+          const testLineData = fullTR?.lines.map((l: any) => ({
+            testType: l.testType,
+            testMethod: l.testMethod || undefined,
+            estimatedDays: l.estimatedDays || undefined,
+          })) || [];
+
+          const estDateStr = estCompletion.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+          // Email customer
+          if (notify.toCustomer[0]) {
+            await sendTestingStartedEmail({
+              email: notify.toCustomer[0],
+              name: notify.targets.customer?.name || "Team",
+              poNumber: existing.poNumber || id,
+              fabricInfo,
+              testLines: testLineData,
+              estimatedCompletionDate: estDateStr,
+            });
+          }
+
+          // Email AM
+          if (notify.targets.accountManager?.email) {
+            await sendTestingStartedEmail({
+              email: notify.targets.accountManager.email,
+              name: notify.targets.accountManager.name,
+              poNumber: existing.poNumber || id,
+              fabricInfo,
+              testLines: testLineData,
+              estimatedCompletionDate: estDateStr,
+            });
+          }
+        } catch (emailErr) {
+          console.error("[EMAIL] start_testing email failed:", emailErr);
+        }
+      })();
+
+      return NextResponse.json({ ok: true, testRequest: updated, message: `Testing started — est. completion ${estCompletion.toLocaleDateString()}` });
     }
 
     // ─── Action: Cancel ─────────────────────────

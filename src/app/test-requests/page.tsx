@@ -820,10 +820,31 @@ export default function TestRequestsPage() {
                         </button>
                       )}
                       {req.status === "SUBMITTED" && (
-                        <button onClick={() => handleAction(req.id, "in_progress")} disabled={processing === req.id}
-                          className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50">
-                          Mark In Progress
-                        </button>
+                        <>
+                          <button onClick={() => {
+                            const condition = prompt("Sample condition? (GOOD / DAMAGED / INSUFFICIENT)", "GOOD");
+                            if (condition !== null) {
+                              const notes = condition !== "GOOD" ? prompt("Describe the issue:") : null;
+                              handleAction(req.id, "receive_sample", {
+                                condition: condition.toUpperCase(),
+                                receivedNotes: notes || undefined,
+                              });
+                            }
+                          }} disabled={processing === req.id}
+                            className="px-5 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-semibold hover:bg-teal-700 disabled:opacity-50 flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            Receive Sample
+                          </button>
+                          <button onClick={() => handleAction(req.id, "start_testing")} disabled={processing === req.id}
+                            className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                            </svg>
+                            Start Testing
+                          </button>
+                        </>
                       )}
                       {req.status === "IN_PROGRESS" && (
                         <button onClick={() => handleAction(req.id, "results_received")} disabled={processing === req.id}
