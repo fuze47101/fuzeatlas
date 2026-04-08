@@ -165,6 +165,11 @@ export default function DistributorManagementPage() {
             d={d}
             expanded={expanded === d.id}
             onToggle={() => setExpanded(expanded === d.id ? null : d.id)}
+            onUpdate={() => {
+              fetch("/api/admin/distributors")
+                .then((r) => r.json())
+                .then((j) => { if (j.ok) { setDistributors(j.distributors || []); setSummary(j.summary || null); } });
+            }}
           />
         ))}
         {filtered.length === 0 && (
@@ -190,11 +195,74 @@ function DistributorCard({
   d,
   expanded,
   onToggle,
+  onUpdate,
 }: {
   d: Distributor;
   expanded: boolean;
   onToggle: () => void;
+  onUpdate: () => void;
 }) {
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [form, setForm] = useState({
+    name: d.name,
+    chineseName: d.chineseName || "",
+    country: d.country || "",
+    region: d.region || "",
+    city: d.city || "",
+    address: d.address || "",
+    email: d.email || "",
+    phone: d.phone || "",
+    website: d.website || "",
+    localCurrency: d.localCurrency || "",
+    coverageCountries: d.coverageCountries.join(", "),
+    status: d.status,
+    notes: d.notes || "",
+  });
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveMsg(null);
+    try {
+      const coverageArr = form.coverageCountries
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const res = await fetch(`/api/admin/distributors/${d.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          chineseName: form.chineseName || null,
+          country: form.country || null,
+          region: form.region || null,
+          city: form.city || null,
+          address: form.address || null,
+          email: form.email || null,
+          phone: form.phone || null,
+          website: form.website || null,
+          localCurrency: form.localCurrency || null,
+          coverageCountries: coverageArr,
+          status: form.status,
+          active: form.status !== "INACTIVE",
+          notes: form.notes || null,
+        }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setSaveMsg({ ok: true, msg: "Saved!" });
+        setEditing(false);
+        onUpdate();
+      } else {
+        setSaveMsg({ ok: false, msg: j.error || "Save failed" });
+      }
+    } catch (e: any) {
+      setSaveMsg({ ok: false, msg: e.message });
+    } finally {
+      setSaving(false);
+    }
+  };
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       {/* Header row */}
@@ -257,6 +325,85 @@ function DistributorCard({
       {/* Expanded detail */}
       {expanded && (
         <div className="border-t border-slate-100 px-5 py-4 bg-slate-50">
+          {/* Edit toggle + save message */}
+          <div className="flex items-center justify-between mb-3">
+            <button
+              onClick={() => setEditing(!editing)}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${editing ? "bg-slate-600 text-white" : "bg-blue-50 text-blue-700 hover:bg-blue-100"}`}
+            >
+              {editing ? "✕ Cancel Edit" : "✏️ Edit Distributor"}
+            </button>
+            {saveMsg && (
+              <span className={`text-xs font-semibold ${saveMsg.ok ? "text-emerald-600" : "text-red-600"}`}>
+                {saveMsg.msg}
+              </span>
+            )}
+          </div>
+
+          {/* ─── Edit Form ─── */}
+          {editing && (
+            <div className="bg-white border border-blue-200 rounded-xl p-4 mb-4 space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <EditField label="Name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
+                <EditField label="Chinese Name" value={form.chineseName} onChange={(v) => setForm({ ...form, chineseName: v })} />
+                <EditField label="Country" value={form.country} onChange={(v) => setForm({ ...form, country: v })} />
+                <EditField label="Region" value={form.region} onChange={(v) => setForm({ ...form, region: v })} placeholder="South Asia, Middle East, East Asia..." />
+                <EditField label="City" value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
+                <EditField label="Local Currency" value={form.localCurrency} onChange={(v) => setForm({ ...form, localCurrency: v })} placeholder="INR, AED, EUR, CNY..." />
+                <EditField label="Email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
+                <EditField label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+                <EditField label="Website" value={form.website} onChange={(v) => setForm({ ...form, website: v })} />
+                <div className="sm:col-span-2">
+                  <EditField label="Address" value={form.address} onChange={(v) => setForm({ ...form, address: v })} />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Status</label>
+                  <select
+                    value={form.status}
+                    onChange={(e) => setForm({ ...form, status: e.target.value })}
+                    className="w-full px-2 py-1.5 border border-slate-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                    <option value="ONBOARDING">Onboarding</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <EditField
+                  label="Coverage Countries (comma separated)"
+                  value={form.coverageCountries}
+                  onChange={(v) => setForm({ ...form, coverageCountries: v })}
+                  placeholder="India, Bangladesh, Sri Lanka..."
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Notes</label>
+                <textarea
+                  value={form.notes}
+                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                  rows={2}
+                  className="w-full px-2 py-1.5 border border-slate-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSave}
+                  disabled={saving || !form.name.trim()}
+                  className="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  {saving ? "Saving..." : "💾 Save Changes"}
+                </button>
+                <button
+                  onClick={() => setEditing(false)}
+                  className="px-4 py-2 bg-white border text-slate-600 text-xs font-semibold rounded-lg hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Mobile stats */}
           <div className="sm:hidden grid grid-cols-4 gap-3 mb-4">
             <div className="text-center">
@@ -425,6 +572,21 @@ function DistributorCard({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function EditField({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return (
+    <div>
+      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">{label}</label>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full px-2 py-1.5 border border-slate-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
     </div>
   );
 }

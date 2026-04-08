@@ -110,7 +110,7 @@ export async function POST(req: Request) {
     const allDistributors = await prisma.distributor.findMany({ select: { id: true, name: true, active: true, status: true } });
 
     // All known aliases for matching
-    const allAliases = ["Honghao", "honghao-chemical", "Zen Kem", "Zen Kem Kimya", "POLIMEROS", "Polimeros y Derivados"];
+    const allAliases = ["Zen Kem", "Zen Kem Kimya", "POLIMEROS", "Polimeros y Derivados"];
 
     for (const dist of allDistributors) {
       const dLower = dist.name.toLowerCase();
@@ -130,7 +130,6 @@ export async function POST(req: Request) {
       // Try to find existing by name (case-insensitive partial match)
       // Also check known aliases: Honghao-Chemical = Texwell, Zen Kem Kimya = SRS-Turkey
       const aliases: Record<string, string[]> = {
-        "Texwell": ["Honghao", "honghao-chemical", "鸿浩"],
         "SRS-Turkey": ["Zen Kem", "Zen Kem Kimya"],
         "Mercado Global": ["POLIMEROS", "Polimeros y Derivados"],
       };
