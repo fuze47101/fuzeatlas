@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword, createToken, setSessionCookie } from "@/lib/auth";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { notifyUserLogin } from "@/lib/notify";
+import { sendLoginNotificationEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -82,6 +84,59 @@ export async function POST(req: Request) {
 
     const token = await createToken(sessionUser);
     await setSessionCookie(token);
+
+    // ─── Fire-and-forget login notification to AMs + admins ───
+    try {
+      // In-app notification
+      notifyUserLogin({
+        userId: user.id,
+        userName: user.name || "",
+        userEmail: user.email,
+        userRole: user.role,
+        brandId: user.brandId,
+        factoryId: user.factoryId,
+        distributorId: user.distributorId,
+      });
+
+      // Email notification to AM (for brand/factory logins only)
+      const isBrandOrFactory = ["BRAND_USER", "BRAND_MANAGER", "FACTORY_USER", "FACTORY_MANAGER"].includes(user.role);
+      if (isBrandOrFactory) {
+        (async () => {
+          try {
+            let entityName = "";
+            let entityType = "";
+            let salesRepId: string | null = null;
+
+            if (user.brandId) {
+              const brand = await prisma.brand.findUnique({ where: { id: user.brandId }, select: { name: true, salesRepId: true } });
+              entityName = brand?.name || "Unknown brand";
+              entityType = "Brand";
+              salesRepId = brand?.salesRepId || null;
+            } else if (user.factoryId) {
+              const factory = await prisma.factory.findUnique({ where: { id: user.factoryId }, select: { name: true, salesRepId: true } });
+              entityName = factory?.name || "Unknown factory";
+              entityType = "Factory";
+              salesRepId = factory?.salesRepId || null;
+            }
+
+            if (salesRepId) {
+              const am = await prisma.user.findUnique({ where: { id: salesRepId }, select: { email: true, name: true } });
+              if (am?.email) {
+                sendLoginNotificationEmail({
+                  email: am.email,
+                  managerName: am.name || "Account Manager",
+                  userName: user.name || user.email,
+                  entityType,
+                  entityName,
+                });
+              }
+            }
+          } catch {}
+        })();
+      }
+    } catch {
+      // Non-blocking
+    }
 
     return NextResponse.json({
       ok: true,

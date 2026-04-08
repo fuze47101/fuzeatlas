@@ -204,6 +204,7 @@ export default function Sidebar() {
           { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
           { href: "/pricing/calculator", label: "Application Calculator", icon: "🧮" },
           { href: "/sustainability", label: "Sustainability", icon: "🌍" },
+          { href: "/admin/esg-reports", label: "ESG Impact Report", icon: "🌱" },
         ],
       },
     ];
@@ -310,6 +311,8 @@ export default function Sidebar() {
           { href: "/admin/orders", label: "Order Management", icon: "📦" },
           { href: "/admin/worldwide-inventory", label: "Worldwide Inventory", icon: "🌍" },
           { href: "/admin/consumption", label: "Consumption & Reorder", icon: "📊" },
+          { href: "/admin/esg-reports", label: "ESG Impact Reports", icon: "🌱" },
+          { href: "/admin/conversion-tracking", label: "Sample → Production", icon: "🔄" },
           { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
           { href: "/shipping-docs", label: "Shipping Docs", icon: "🚢" },
           { href: "/meetings", label: "Meetings", icon: "📅" },

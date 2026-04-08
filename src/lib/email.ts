@@ -1254,3 +1254,84 @@ export async function sendDistributorOrderEmail(params: {
 
   return sendEmail({ to: email, subject: `Fulfillment Required: ${orderNumber} — ${factoryName}`, html });
 }
+
+/**
+ * Send low inventory alert to distributor + admins
+ */
+export async function sendLowInventoryEmail(params: {
+  distributorEmail: string;
+  distributorName: string;
+  currentLiters: number;
+  thresholdLiters: number;
+  bottles: number;
+  adminEmails?: string[];
+}) {
+  const { distributorEmail, distributorName, currentLiters, thresholdLiters, bottles, adminEmails } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+
+  const html = emailWrapper(`
+    <h2 style="color: #dc2626; margin: 0 0 16px;">⚠️ Low Inventory Alert</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      ${distributorName} FUZE stock has dropped below the reorder threshold.
+    </p>
+
+    <div style="background: #fef2f2; border: 2px solid #dc2626; padding: 20px; margin: 20px 0; border-radius: 8px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 6px 0; color: #991b1b; font-weight: 600;">Distributor</td><td style="padding: 6px 0; color: #1a1a2e; font-weight: 600;">${distributorName}</td></tr>
+        <tr><td style="padding: 6px 0; color: #991b1b; font-weight: 600;">Current Stock</td><td style="padding: 6px 0; color: #dc2626; font-weight: 700; font-size: 18px;">${currentLiters} L (${bottles} bottles)</td></tr>
+        <tr><td style="padding: 6px 0; color: #991b1b; font-weight: 600;">Reorder Threshold</td><td style="padding: 6px 0; color: #1a1a2e;">${thresholdLiters} L</td></tr>
+        <tr><td style="padding: 6px 0; color: #991b1b; font-weight: 600;">Below By</td><td style="padding: 6px 0; color: #dc2626;">${Math.round(thresholdLiters - currentLiters)} L</td></tr>
+      </table>
+    </div>
+
+    <div style="margin: 24px 0; text-align: center;">
+      <a href="${baseUrl}/admin/worldwide-inventory" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+        View Worldwide Inventory
+      </a>
+    </div>
+  `);
+
+  const subject = `⚠️ Low Inventory: ${distributorName} — ${currentLiters}L remaining`;
+
+  // Send to distributor
+  const promises = [sendEmail({ to: distributorEmail, subject, html })];
+
+  // Also send to admins
+  if (adminEmails && adminEmails.length > 0) {
+    promises.push(sendEmail({ to: adminEmails, subject, html }));
+  }
+
+  return Promise.all(promises);
+}
+
+/**
+ * Send login activity notification email to account manager
+ */
+export async function sendLoginNotificationEmail(params: {
+  email: string;
+  managerName: string;
+  userName: string;
+  entityType: string;
+  entityName: string;
+}) {
+  const { email, managerName, userName, entityType, entityName } = params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a2e; margin: 0 0 16px;">${entityType} Activity: ${entityName}</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+      Hi ${managerName}, <strong>${userName}</strong> from <strong>${entityName}</strong> just logged into FUZE Atlas.
+    </p>
+    <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
+      This is a good time to check if they need support or have any pending orders.
+    </p>
+
+    <div style="margin: 24px 0; text-align: center;">
+      <a href="${baseUrl}/dashboard" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+        Open FUZE Atlas
+      </a>
+    </div>
+  `);
+
+  return sendEmail({ to: email, subject: `${entityType} Login: ${userName} from ${entityName}`, html });
+}

@@ -20,13 +20,15 @@ export async function GET(req: Request) {
 
     // ─── 1. Distributor inventory breakdown ───
     const distributors = await prisma.distributor.findMany({
-      where: { status: "ACTIVE" },
+      where: { active: true },
       select: {
         id: true,
         name: true,
         country: true,
         region: true,
         city: true,
+        localCurrency: true,
+        coverageCountries: true,
         inventory: {
           select: {
             fuzeStockLiters: true,

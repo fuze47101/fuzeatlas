@@ -375,7 +375,27 @@ model Distributor {
   specialty    String?
   agentForFuze String?
   annualSales  String?
+
+  // Location
   country      String?
+  region       String?   // "South Asia", "Middle East", "East Asia", "Europe", "Latin America", etc.
+  city         String?
+  address      String?
+
+  // Contact
+  email        String?
+  phone        String?
+  website      String?
+
+  // Status
+  status       String   @default("ACTIVE")  // ACTIVE, INACTIVE, ONBOARDING
+  active       Boolean  @default(true)
+
+  // Coverage — countries this distributor serves
+  coverageCountries String?  // JSON array: ["India","Bangladesh","Sri Lanka"]
+  localCurrency     String?  // Primary local currency code: INR, AED, EUR, TWD, CNY, etc.
+
+  notes        String?
 
   raw Json?
 

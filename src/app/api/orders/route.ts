@@ -33,6 +33,44 @@ async function generateQuoteNumber(): Promise<string> {
 }
 
 /**
+ * Find a distributor that covers the given country.
+ * If no match, returns null → order ships direct from USA.
+ * We do NOT cross-ship between distributors (e.g. Taiwan to Vietnam) —
+ * too expensive for the distributor to absorb import/export costs.
+ */
+async function findDistributorByCountry(country: string) {
+  // Find all active distributors with coverage data
+  const distributors = await prisma.distributor.findMany({
+    where: { active: true },
+    select: { id: true, name: true, country: true, coverageCountries: true },
+  });
+
+  for (const d of distributors) {
+    // Check coverageCountries JSON array
+    if (d.coverageCountries) {
+      try {
+        const coverage = typeof d.coverageCountries === "string"
+          ? JSON.parse(d.coverageCountries)
+          : d.coverageCountries;
+        if (Array.isArray(coverage)) {
+          const match = coverage.some((c: string) =>
+            c.toLowerCase() === country.toLowerCase()
+          );
+          if (match) return d;
+        }
+      } catch {}
+    }
+    // Fallback: check if distributor's own country matches
+    if (d.country && d.country.toLowerCase() === country.toLowerCase()) {
+      return d;
+    }
+  }
+
+  // No distributor covers this country → ship direct from USA
+  return null;
+}
+
+/**
  * Resolve the best distributor + pricing for a factory order
  */
 async function resolveDistributorPricing(factoryId: string, volumeLiters?: number) {
@@ -42,8 +80,36 @@ async function resolveDistributorPricing(factoryId: string, volumeLiters?: numbe
     select: { distributorId: true, country: true },
   });
 
+  // 2. If no assigned distributor, try geo-routing by country
+  if (!factory?.distributorId && factory?.country) {
+    const geoDistributor = await findDistributorByCountry(factory.country);
+    if (geoDistributor) {
+      // Auto-assign this distributor to the factory for future orders
+      try {
+        await prisma.factory.update({
+          where: { id: factoryId },
+          data: { distributorId: geoDistributor.id },
+        });
+      } catch {}
+
+      // Find pricing for geo-matched distributor
+      const pricing = await prisma.distributorPricing.findFirst({
+        where: { distributorId: geoDistributor.id, active: true, isDefault: true },
+      });
+      return {
+        source: "DISTRIBUTOR",
+        distributorId: geoDistributor.id,
+        pricePerLiter: pricing?.pricePerLiter || DEFAULT_PRICE_PER_LITER,
+        currency: pricing?.currency || "USD",
+        discount: 0,
+        leadTimeDays: pricing?.leadTimeDays,
+        hangtagPricePerUnit: pricing?.hangtagPricePerUnit,
+      };
+    }
+  }
+
   if (!factory?.distributorId) {
-    // No distributor → direct from USA
+    // No distributor found → direct from USA
     return { source: "DIRECT_USA", distributorId: null, pricePerLiter: DEFAULT_PRICE_PER_LITER, discount: 0 };
   }
 

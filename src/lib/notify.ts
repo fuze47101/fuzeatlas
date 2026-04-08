@@ -14,6 +14,7 @@ type NotificationType =
   | "PO_STATUS"
   | "SOW_UPDATE"
   | "BRAND_ACTIVITY"
+  | "USER_LOGIN"
   | "SYSTEM";
 
 interface NotifyParams {
@@ -368,4 +369,81 @@ export async function notifyLowInventory(params: {
     `${params.distributorName} stock is at ${params.currentLiters}L (threshold: ${params.thresholdLiters}L). Reorder needed.`,
     `/admin/consumption`
   );
+}
+
+/**
+ * Notify account managers when a brand or factory user logs into Atlas.
+ * - Brand users: notify brand's salesRep (account manager)
+ * - Factory users: notify factory's salesRep
+ * - Also notifies all ADMIN users
+ */
+export async function notifyUserLogin(params: {
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userRole: string;
+  brandId?: string | null;
+  factoryId?: string | null;
+  distributorId?: string | null;
+}) {
+  try {
+    const { userId, userName, userEmail, userRole, brandId, factoryId, distributorId } = params;
+
+    // Only notify on brand, factory, and distributor logins
+    const isBrand = userRole === "BRAND_USER" || userRole === "BRAND_MANAGER";
+    const isFactory = userRole === "FACTORY_USER" || userRole === "FACTORY_MANAGER";
+    const isDistributor = userRole === "DISTRIBUTOR_USER";
+
+    if (!isBrand && !isFactory && !isDistributor) return;
+
+    let entityName = "";
+    let entityType = "";
+    let accountManagerId: string | null = null;
+    let link = "/dashboard";
+
+    if (isBrand && brandId) {
+      const brand = await prisma.brand.findUnique({
+        where: { id: brandId },
+        select: { name: true, salesRepId: true },
+      });
+      entityName = brand?.name || "Unknown brand";
+      entityType = "Brand";
+      accountManagerId = brand?.salesRepId || null;
+      link = `/pipeline?brand=${brandId}`;
+    } else if (isFactory && factoryId) {
+      const factory = await prisma.factory.findUnique({
+        where: { id: factoryId },
+        select: { name: true, salesRepId: true },
+      });
+      entityName = factory?.name || "Unknown factory";
+      entityType = "Factory";
+      accountManagerId = factory?.salesRepId || null;
+      link = `/factory-portal`;
+    } else if (isDistributor && distributorId) {
+      entityName = "Distributor";
+      entityType = "Distributor";
+      // Distributors → notify all admins
+    }
+
+    const displayName = userName || userEmail;
+    const title = `${entityType} Login: ${entityName}`;
+    const message = `${displayName} from ${entityName} just logged into FUZE Atlas.`;
+
+    // Notify the assigned account manager
+    if (accountManagerId) {
+      await createNotification({
+        userId: accountManagerId,
+        type: "USER_LOGIN",
+        title,
+        message,
+        link,
+      });
+    }
+
+    // Also notify all admins
+    await notifyAdmins("USER_LOGIN", title, message, link);
+  } catch (err) {
+    // Non-blocking — don't break login if notification fails
+    console.error("[LOGIN-NOTIFY] Error:", err);
+  }
 }
