@@ -20,16 +20,27 @@ interface PendingTest {
   poNumber?: string;
   status: string;
   expectedReadyDate?: string;
+  requestedCompletionDate?: string;
+  estimatedCompletionDate?: string;
+  testingStartedAt?: string;
+  actualCompletionDate?: string;
   testTypes: string[];
   fabricInfo?: string;
   brandName?: string;
   factoryName?: string;
+  labName?: string;
+  priority?: number;
+  specialInstructions?: string;
+  lineCount: number;
+  completedLines: number;
   createdAt: string;
   reportUploaded: boolean;
 }
 
 const STATUS_COLORS: Record<string, string> = {
   SUBMITTED: "bg-blue-100 text-blue-700",
+  PENDING_APPROVAL: "bg-amber-100 text-amber-700",
+  APPROVED: "bg-blue-100 text-blue-700",
   IN_PROGRESS: "bg-cyan-100 text-cyan-700",
   RESULTS_RECEIVED: "bg-purple-100 text-purple-700",
   COMPLETE: "bg-emerald-100 text-emerald-700",
@@ -307,65 +318,474 @@ export default function LabUploadPage() {
       )}
 
       {tab === "pending" && (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b bg-slate-50 flex items-center justify-between">
-            <h3 className="font-bold text-slate-900">Pending & Active Tests</h3>
-            <span className="text-sm text-slate-500">{pendingTests.length} total</span>
+        <PendingTestsPanel
+          pendingTests={pendingTests}
+          loading={loadingPending}
+          onRefresh={() => {
+            setLoadingPending(true);
+            fetch("/api/lab-portal/pending-tests")
+              .then(r => r.json())
+              .then(j => { if (j.ok) setPendingTests(j.tests || []); })
+              .catch(() => {})
+              .finally(() => setLoadingPending(false));
+          }}
+          onSwitchToUpload={() => setTab("upload")}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ─── Pending Tests Panel with Lab Actions ─── */
+function PendingTestsPanel({
+  pendingTests,
+  loading,
+  onRefresh,
+  onSwitchToUpload,
+}: {
+  pendingTests: PendingTest[];
+  loading: boolean;
+  onRefresh: () => void;
+  onSwitchToUpload: () => void;
+}) {
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [expandedTest, setExpandedTest] = useState<string | null>(null);
+  const [readyDate, setReadyDate] = useState<Record<string, string>>({});
+  const [noteText, setNoteText] = useState<Record<string, string>>({});
+  const [actionMsg, setActionMsg] = useState<{ id: string; msg: string; ok: boolean } | null>(null);
+
+  const doAction = async (action: string, testRequestId: string, extra: Record<string, any> = {}) => {
+    setActionLoading(`${testRequestId}-${action}`);
+    setActionMsg(null);
+    try {
+      const res = await fetch("/api/lab-portal/test-actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, testRequestId, ...extra }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setActionMsg({ id: testRequestId, msg: `${action.replace(/_/g, " ")} completed`, ok: true });
+        onRefresh();
+      } else {
+        setActionMsg({ id: testRequestId, msg: j.error || "Action failed", ok: false });
+      }
+    } catch (e: any) {
+      setActionMsg({ id: testRequestId, msg: e.message, ok: false });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const canAccept = (status: string) => ["SUBMITTED", "PENDING_APPROVAL", "APPROVED"].includes(status);
+  const canLinkReport = (status: string) => ["IN_PROGRESS", "RESULTS_RECEIVED"].includes(status);
+
+  if (loading) {
+    return <div className="p-12 text-center text-slate-400">Loading...</div>;
+  }
+
+  if (pendingTests.length === 0) {
+    return (
+      <div className="bg-white border border-slate-200 rounded-xl p-12 text-center text-slate-400">
+        <div className="text-4xl mb-2">✅</div>
+        <div>No pending tests</div>
+      </div>
+    );
+  }
+
+  // Group by status
+  const awaitingAccept = pendingTests.filter(t => canAccept(t.status));
+  const inProgress = pendingTests.filter(t => t.status === "IN_PROGRESS");
+  const resultsReceived = pendingTests.filter(t => t.status === "RESULTS_RECEIVED");
+  const other = pendingTests.filter(t => !canAccept(t.status) && t.status !== "IN_PROGRESS" && t.status !== "RESULTS_RECEIVED");
+
+  return (
+    <div className="space-y-4">
+      {/* Summary strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center">
+          <p className="text-lg font-black text-amber-700">{awaitingAccept.length}</p>
+          <p className="text-[10px] font-semibold text-amber-600 uppercase">Awaiting Accept</p>
+        </div>
+        <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3 text-center">
+          <p className="text-lg font-black text-cyan-700">{inProgress.length}</p>
+          <p className="text-[10px] font-semibold text-cyan-600 uppercase">In Progress</p>
+        </div>
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center">
+          <p className="text-lg font-black text-purple-700">{resultsReceived.length}</p>
+          <p className="text-[10px] font-semibold text-purple-600 uppercase">Results Ready</p>
+        </div>
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+          <p className="text-lg font-black text-slate-600">{pendingTests.length}</p>
+          <p className="text-[10px] font-semibold text-slate-500 uppercase">Total Active</p>
+        </div>
+      </div>
+
+      {/* Awaiting Accept section */}
+      {awaitingAccept.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-amber-700 mb-2 flex items-center gap-2">
+            ⏳ Awaiting Lab Acceptance ({awaitingAccept.length})
+          </h3>
+          <div className="space-y-2">
+            {awaitingAccept.map(test => (
+              <TestCard
+                key={test.id}
+                test={test}
+                expanded={expandedTest === test.id}
+                onToggle={() => setExpandedTest(expandedTest === test.id ? null : test.id)}
+                actionLoading={actionLoading}
+                actionMsg={actionMsg}
+                readyDate={readyDate}
+                setReadyDate={setReadyDate}
+                noteText={noteText}
+                setNoteText={setNoteText}
+                doAction={doAction}
+                onSwitchToUpload={onSwitchToUpload}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* In Progress section */}
+      {inProgress.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-cyan-700 mb-2 flex items-center gap-2">
+            🔬 In Progress ({inProgress.length})
+          </h3>
+          <div className="space-y-2">
+            {inProgress.map(test => (
+              <TestCard
+                key={test.id}
+                test={test}
+                expanded={expandedTest === test.id}
+                onToggle={() => setExpandedTest(expandedTest === test.id ? null : test.id)}
+                actionLoading={actionLoading}
+                actionMsg={actionMsg}
+                readyDate={readyDate}
+                setReadyDate={setReadyDate}
+                noteText={noteText}
+                setNoteText={setNoteText}
+                doAction={doAction}
+                onSwitchToUpload={onSwitchToUpload}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Results Received */}
+      {resultsReceived.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-purple-700 mb-2 flex items-center gap-2">
+            📋 Results Received ({resultsReceived.length})
+          </h3>
+          <div className="space-y-2">
+            {resultsReceived.map(test => (
+              <TestCard
+                key={test.id}
+                test={test}
+                expanded={expandedTest === test.id}
+                onToggle={() => setExpandedTest(expandedTest === test.id ? null : test.id)}
+                actionLoading={actionLoading}
+                actionMsg={actionMsg}
+                readyDate={readyDate}
+                setReadyDate={setReadyDate}
+                noteText={noteText}
+                setNoteText={setNoteText}
+                doAction={doAction}
+                onSwitchToUpload={onSwitchToUpload}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Other */}
+      {other.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-slate-600 mb-2">Other ({other.length})</h3>
+          <div className="space-y-2">
+            {other.map(test => (
+              <TestCard
+                key={test.id}
+                test={test}
+                expanded={expandedTest === test.id}
+                onToggle={() => setExpandedTest(expandedTest === test.id ? null : test.id)}
+                actionLoading={actionLoading}
+                actionMsg={actionMsg}
+                readyDate={readyDate}
+                setReadyDate={setReadyDate}
+                noteText={noteText}
+                setNoteText={setNoteText}
+                doAction={doAction}
+                onSwitchToUpload={onSwitchToUpload}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Single Test Card ─── */
+function TestCard({
+  test,
+  expanded,
+  onToggle,
+  actionLoading,
+  actionMsg,
+  readyDate,
+  setReadyDate,
+  noteText,
+  setNoteText,
+  doAction,
+  onSwitchToUpload,
+}: {
+  test: PendingTest;
+  expanded: boolean;
+  onToggle: () => void;
+  actionLoading: string | null;
+  actionMsg: { id: string; msg: string; ok: boolean } | null;
+  readyDate: Record<string, string>;
+  setReadyDate: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  noteText: Record<string, string>;
+  setNoteText: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  doAction: (action: string, id: string, extra?: Record<string, any>) => Promise<void>;
+  onSwitchToUpload: () => void;
+}) {
+  const canAccept = ["SUBMITTED", "PENDING_APPROVAL", "APPROVED"].includes(test.status);
+  const isInProgress = test.status === "IN_PROGRESS";
+  const progress = test.lineCount > 0 ? Math.round((test.completedLines / test.lineCount) * 100) : 0;
+
+  return (
+    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+      {/* Header */}
+      <button
+        onClick={onToggle}
+        className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-slate-50 transition"
+      >
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm font-bold text-slate-800">{test.poNumber || test.id.substring(0, 8)}</span>
+            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${STATUS_COLORS[test.status] || "bg-slate-100 text-slate-600"}`}>
+              {test.status?.replace(/_/g, " ")}
+            </span>
+            {test.priority && test.priority <= 2 && (
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700">PRIORITY</span>
+            )}
+          </div>
+          <div className="flex items-center gap-3 mt-1 text-xs text-slate-500 flex-wrap">
+            <span>{test.brandName || "—"}</span>
+            <span className="text-slate-300">|</span>
+            <span>{test.factoryName || "—"}</span>
+            {test.fabricInfo && (
+              <>
+                <span className="text-slate-300">|</span>
+                <span className="truncate max-w-[200px]">{test.fabricInfo}</span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Quick stats */}
+        <div className="hidden sm:flex items-center gap-4 text-center">
+          <div>
+            <p className="text-xs font-bold text-slate-600">{test.testTypes?.join(", ") || "—"}</p>
+            <p className="text-[9px] text-slate-400">Tests</p>
+          </div>
+          <div>
+            <p className="text-xs font-bold text-slate-600">{test.completedLines}/{test.lineCount}</p>
+            <p className="text-[9px] text-slate-400">Lines Done</p>
+          </div>
+          <div>
+            <p className="text-xs font-bold text-slate-600">
+              {test.estimatedCompletionDate
+                ? new Date(test.estimatedCompletionDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                : "—"}
+            </p>
+            <p className="text-[9px] text-slate-400">ETA</p>
+          </div>
+        </div>
+
+        {/* Report status */}
+        <div className="text-center">
+          {test.reportUploaded ? (
+            <span className="text-emerald-600 text-xs font-bold">✅</span>
+          ) : (
+            <span className="text-slate-300 text-xs">—</span>
+          )}
+        </div>
+
+        <span className="text-slate-400">{expanded ? "▾" : "▸"}</span>
+      </button>
+
+      {/* Expanded actions */}
+      {expanded && (
+        <div className="border-t border-slate-100 px-4 py-4 bg-slate-50 space-y-4">
+          {/* Mobile info */}
+          <div className="sm:hidden text-xs text-slate-500 space-y-1">
+            <p>Tests: {test.testTypes?.join(", ") || "—"}</p>
+            <p>Lines: {test.completedLines}/{test.lineCount} complete</p>
           </div>
 
-          {loadingPending ? (
-            <div className="p-12 text-center text-slate-400">Loading...</div>
-          ) : pendingTests.length === 0 ? (
-            <div className="p-12 text-center text-slate-400">
-              <div className="text-4xl mb-2">✅</div>
-              <div>No pending tests</div>
+          {/* Progress bar */}
+          {test.lineCount > 0 && (
+            <div>
+              <div className="flex justify-between text-xs text-slate-500 mb-1">
+                <span>Progress: {test.completedLines}/{test.lineCount} lines</span>
+                <span>{progress}%</span>
+              </div>
+              <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#00b4c3] rounded-full transition-all"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
-          ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-slate-50 text-left">
-                  <th className="px-4 py-3 font-semibold text-slate-600">PO / Request</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Tests</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Brand</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Status</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Expected Ready</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Report</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pendingTests.map(test => (
-                  <tr key={test.id} className="border-b border-slate-100 hover:bg-slate-50">
-                    <td className="px-4 py-3">
-                      <div className="font-semibold text-slate-900">{test.poNumber || test.id.substring(0, 8)}</div>
-                      <div className="text-xs text-slate-500">{test.factoryName}</div>
-                    </td>
-                    <td className="px-4 py-3">{test.testTypes?.join(", ") || "—"}</td>
-                    <td className="px-4 py-3 text-slate-600">{test.brandName || "—"}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded text-xs font-bold ${STATUS_COLORS[test.status] || "bg-slate-100 text-slate-600"}`}>
-                        {test.status?.replace(/_/g, " ")}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">
-                      {test.expectedReadyDate ? new Date(test.expectedReadyDate).toLocaleDateString() : "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      {test.reportUploaded ? (
-                        <span className="text-emerald-600 font-bold text-xs">✅ Uploaded</span>
-                      ) : (
-                        <button
-                          onClick={() => setTab("upload")}
-                          className="px-3 py-1 bg-[#00b4c3] text-white rounded text-xs font-semibold hover:bg-[#009aa8]"
-                        >
-                          Upload
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           )}
+
+          {/* Timeline dates */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+            <div className="bg-white border rounded-lg p-2">
+              <p className="text-slate-400">Submitted</p>
+              <p className="font-semibold text-slate-700">
+                {new Date(test.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+              </p>
+            </div>
+            <div className="bg-white border rounded-lg p-2">
+              <p className="text-slate-400">Testing Started</p>
+              <p className="font-semibold text-slate-700">
+                {test.testingStartedAt
+                  ? new Date(test.testingStartedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                  : "—"}
+              </p>
+            </div>
+            <div className="bg-white border rounded-lg p-2">
+              <p className="text-slate-400">Expected Ready</p>
+              <p className="font-semibold text-slate-700">
+                {test.estimatedCompletionDate
+                  ? new Date(test.estimatedCompletionDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                  : test.requestedCompletionDate
+                  ? new Date(test.requestedCompletionDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                  : "—"}
+              </p>
+            </div>
+            <div className="bg-white border rounded-lg p-2">
+              <p className="text-slate-400">Completed</p>
+              <p className="font-semibold text-slate-700">
+                {test.actualCompletionDate
+                  ? new Date(test.actualCompletionDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                  : "—"}
+              </p>
+            </div>
+          </div>
+
+          {/* Special instructions */}
+          {test.specialInstructions && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+              <p className="font-bold text-amber-700 mb-1">Notes / Instructions</p>
+              <p className="whitespace-pre-wrap">{test.specialInstructions}</p>
+            </div>
+          )}
+
+          {/* Action message */}
+          {actionMsg && actionMsg.id === test.id && (
+            <div className={`p-2 rounded-lg text-xs font-semibold ${actionMsg.ok ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-red-50 text-red-700 border border-red-200"}`}>
+              {actionMsg.ok ? "✅" : "❌"} {actionMsg.msg}
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div className="flex flex-wrap gap-2">
+            {/* Accept & Start Testing */}
+            {canAccept && (
+              <div className="flex items-center gap-2 bg-white border rounded-lg p-2">
+                <input
+                  type="date"
+                  value={readyDate[test.id] || ""}
+                  onChange={(e) => setReadyDate(prev => ({ ...prev, [test.id]: e.target.value }))}
+                  className="px-2 py-1 border border-slate-300 rounded text-xs"
+                  placeholder="Expected ready date"
+                />
+                <button
+                  onClick={() => doAction("accept", test.id, { expectedReadyDate: readyDate[test.id] || undefined })}
+                  disabled={actionLoading === `${test.id}-accept`}
+                  className="px-4 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 disabled:opacity-50 whitespace-nowrap"
+                >
+                  {actionLoading === `${test.id}-accept` ? "..." : "✅ Accept & Start Testing"}
+                </button>
+              </div>
+            )}
+
+            {/* Set / Update expected ready date */}
+            {isInProgress && (
+              <div className="flex items-center gap-2 bg-white border rounded-lg p-2">
+                <input
+                  type="date"
+                  value={readyDate[test.id] || ""}
+                  onChange={(e) => setReadyDate(prev => ({ ...prev, [test.id]: e.target.value }))}
+                  className="px-2 py-1 border border-slate-300 rounded text-xs"
+                />
+                <button
+                  onClick={() => {
+                    if (!readyDate[test.id]) return;
+                    doAction("set_ready_date", test.id, { expectedReadyDate: readyDate[test.id] });
+                  }}
+                  disabled={!readyDate[test.id] || actionLoading === `${test.id}-set_ready_date`}
+                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap"
+                >
+                  {actionLoading === `${test.id}-set_ready_date` ? "..." : "📅 Update ETA"}
+                </button>
+              </div>
+            )}
+
+            {/* Upload / Link Report */}
+            {!test.reportUploaded && (
+              <button
+                onClick={onSwitchToUpload}
+                className="px-4 py-1.5 bg-[#00b4c3] text-white rounded-lg text-xs font-bold hover:bg-[#009aa8]"
+              >
+                📤 Upload Report
+              </button>
+            )}
+
+            {test.reportUploaded && (
+              <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold">
+                ✅ Report Uploaded
+              </span>
+            )}
+          </div>
+
+          {/* Add note */}
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={noteText[test.id] || ""}
+              onChange={(e) => setNoteText(prev => ({ ...prev, [test.id]: e.target.value }))}
+              placeholder="Add a note..."
+              className="flex-1 px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && noteText[test.id]?.trim()) {
+                  doAction("add_note", test.id, { notes: noteText[test.id].trim() });
+                  setNoteText(prev => ({ ...prev, [test.id]: "" }));
+                }
+              }}
+            />
+            <button
+              onClick={() => {
+                if (!noteText[test.id]?.trim()) return;
+                doAction("add_note", test.id, { notes: noteText[test.id].trim() });
+                setNoteText(prev => ({ ...prev, [test.id]: "" }));
+              }}
+              disabled={!noteText[test.id]?.trim() || actionLoading === `${test.id}-add_note`}
+              className="px-3 py-1.5 bg-slate-600 text-white rounded-lg text-xs font-bold hover:bg-slate-700 disabled:opacity-50"
+            >
+              {actionLoading === `${test.id}-add_note` ? "..." : "💬 Add Note"}
+            </button>
+          </div>
         </div>
       )}
     </div>

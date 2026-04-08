@@ -313,10 +313,10 @@ function AdminDashboard({ data, t }: { data: DashData; t: any }) {
           <p className="text-2xl font-black text-slate-600">{c.labs}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.labs}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
+        <a href="/admin/distributors" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
           <p className="text-2xl font-black text-slate-600">{c.distributors}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.distributors}</p>
-        </div>
+        </a>
       </div>
 
       {/* Pipeline + Test Types */}

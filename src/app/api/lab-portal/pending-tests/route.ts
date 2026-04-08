@@ -17,7 +17,7 @@ export async function GET() {
     }
 
     const isLabUser = user.role === "LAB_USER" && user.labId;
-    const isInternal = user.role === "ADMIN" || user.role === "EMPLOYEE";
+    const isInternal = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"].includes(user.role);
 
     if (!isLabUser && !isInternal) {
       return NextResponse.json({ ok: false, error: "Access denied" }, { status: 403 });
@@ -74,7 +74,11 @@ export async function GET() {
         id: tr.id,
         poNumber: tr.poNumber,
         status: tr.status,
-        expectedReadyDate: tr.requestedCompletionDate,
+        expectedReadyDate: tr.estimatedCompletionDate || tr.requestedCompletionDate,
+        requestedCompletionDate: tr.requestedCompletionDate,
+        estimatedCompletionDate: tr.estimatedCompletionDate,
+        testingStartedAt: tr.testingStartedAt,
+        actualCompletionDate: tr.actualCompletionDate,
         testTypes: [...new Set(tr.lines.map((l) => l.testType))],
         fabricInfo: tr.fabric
           ? `${tr.fabric.fuzeNumber || ""} ${tr.fabric.customerCode || ""} ${tr.fabric.construction || ""}`.trim()
