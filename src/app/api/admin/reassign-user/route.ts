@@ -97,7 +97,7 @@ export async function GET() {
         name: true,
         email: true,
         role: true,
-        active: true,
+        status: true,
         distributorId: true,
         distributor: { select: { name: true } },
         factoryId: true,
