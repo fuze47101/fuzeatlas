@@ -7,6 +7,7 @@ import { NotificationBell } from "./NotificationBell";
 import { useI18n, LOCALES } from "@/i18n";
 import type { Locale } from "@/i18n";
 import { useAuth } from "@/lib/AuthContext";
+import ViewAsSwitcher from "./ViewAsSwitcher";
 
 const ROLE_LABELS: Record<string, string> = {
   ADMIN: "Admin",
@@ -117,14 +118,15 @@ export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const { locale, setLocale, t } = useI18n();
-  const { user, logout } = useAuth();
+  const { user, logout, impersonation } = useAuth();
 
   const isBrandUser = user?.role === "BRAND_USER";
   const isFactoryUser = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
   const isDistributorUser = user?.role === "DISTRIBUTOR_USER";
   const isLabUser = user?.role === "LAB_USER";
   const isInternal = !isBrandUser && !isFactoryUser && !isDistributorUser && !isLabUser && user?.role !== "PUBLIC";
-  const isAdmin = user?.role === "ADMIN" || user?.role === "EMPLOYEE";
+  const isAdmin = (user?.role === "ADMIN" || user?.role === "EMPLOYEE") && !impersonation?.active;
+  const isRealAdmin = impersonation?.active || user?.role === "ADMIN"; // true admin identity regardless of impersonation
 
   // ─── Pending counts for admin badges ─────────────────
   const [pendingCounts, setPendingCounts] = useState<{
@@ -551,6 +553,13 @@ export default function Sidebar() {
             </div>
           )}
         </div>
+
+        {/* View As switcher — Admin only (or when impersonating) */}
+        {(user?.role === "ADMIN" || impersonation?.active) && (
+          <div className="px-3 pb-2">
+            <ViewAsSwitcher />
+          </div>
+        )}
 
         {/* User section */}
         {user && (
