@@ -155,9 +155,9 @@ function TestTypeChart({ data, testsByTypeLabel }: { data: { type: string; count
 // Role-specific dashboard components
 // ─────────────────────────────────────────
 
-function QuickActionCard({ label, value, icon, color }: { label: string; value: number; icon: string; color: string }) {
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:shadow-md transition-shadow">
+function QuickActionCard({ label, value, icon, color, href }: { label: string; value: number; icon: string; color: string; href?: string }) {
+  const inner = (
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer">
       <div className="flex items-center gap-3">
         <div className="text-2xl">{icon}</div>
         <div className="flex-1">
@@ -167,6 +167,8 @@ function QuickActionCard({ label, value, icon, color }: { label: string; value: 
       </div>
     </div>
   );
+  if (href) return <a href={href} className="block">{inner}</a>;
+  return inner;
 }
 
 function MeetingsList({ meetings, label }: { meetings: number; label: string }) {
@@ -238,10 +240,10 @@ function AdminDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* Quick Actions Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <QuickActionCard label="Pending Approvals" value={data.pendingAccessRequests || 0} icon="⏳" color="#f59e0b" />
-        <QuickActionCard label="Unread Notifications" value={data.unreadNotifications || 0} icon="🔔" color="#ef4444" />
-        <QuickActionCard label="Upcoming Meetings" value={data.upcomingMeetings || 0} icon="📅" color="#3b82f6" />
-        <QuickActionCard label="Access Requests" value={data.pendingAccessRequests || 0} icon="🔐" color="#8b5cf6" />
+        <QuickActionCard label="Pending Approvals" value={data.pendingAccessRequests || 0} icon="⏳" color="#f59e0b" href="/settings/access-requests" />
+        <QuickActionCard label="Unread Notifications" value={data.unreadNotifications || 0} icon="🔔" color="#ef4444" href="/notifications" />
+        <QuickActionCard label="Upcoming Meetings" value={data.upcomingMeetings || 0} icon="📅" color="#3b82f6" href="/meetings" />
+        <QuickActionCard label="Access Requests" value={data.pendingAccessRequests || 0} icon="🔐" color="#8b5cf6" href="/settings/access-requests" />
       </div>
 
       {/* KPI Cards */}
@@ -293,26 +295,26 @@ function AdminDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* Second row - more stats */}
       <div className="grid grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
+        <a href="/tests" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
           <p className="text-2xl font-black text-blue-600">{c.icpResults}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.icpResults}</p>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
+        </a>
+        <a href="/tests" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
           <p className="text-2xl font-black text-purple-600">{c.antibacterialResults}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.antibacterial}</p>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
+        </a>
+        <a href="/tests" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
           <p className="text-2xl font-black text-amber-600">{c.fungalResults}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.fungal}</p>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
+        </a>
+        <a href="/fabrics" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
           <p className="text-2xl font-black text-emerald-600">{c.submissions}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.submissions}</p>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center">
+        </a>
+        <a href="/labs" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
           <p className="text-2xl font-black text-slate-600">{c.labs}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.labs}</p>
-        </div>
+        </a>
         <a href="/admin/distributors" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
           <p className="text-2xl font-black text-slate-600">{c.distributors}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.distributors}</p>

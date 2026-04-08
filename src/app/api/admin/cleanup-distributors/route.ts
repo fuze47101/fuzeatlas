@@ -109,8 +109,13 @@ export async function POST(req: Request) {
     // ─── Step 1: Deactivate all non-real distributors ───
     const allDistributors = await prisma.distributor.findMany({ select: { id: true, name: true, active: true, status: true } });
 
+    // All known aliases for matching
+    const allAliases = ["Honghao", "honghao-chemical", "Zen Kem", "Zen Kem Kimya", "POLIMEROS", "Polimeros y Derivados"];
+
     for (const dist of allDistributors) {
-      const isReal = realNames.some(rn => dist.name.toLowerCase().includes(rn.toLowerCase()) || rn.toLowerCase().includes(dist.name.toLowerCase()));
+      const dLower = dist.name.toLowerCase();
+      const isReal = realNames.some(rn => dLower.includes(rn.toLowerCase()) || rn.toLowerCase().includes(dLower))
+        || allAliases.some(alias => dLower.includes(alias.toLowerCase()));
       if (!isReal) {
         await prisma.distributor.update({
           where: { id: dist.id },
@@ -123,10 +128,20 @@ export async function POST(req: Request) {
     // ─── Step 2: Upsert real distributors ───
     for (const rd of realDistributors) {
       // Try to find existing by name (case-insensitive partial match)
-      let existing = allDistributors.find(d =>
-        d.name.toLowerCase().includes(rd.name.toLowerCase()) ||
-        rd.name.toLowerCase().includes(d.name.toLowerCase())
-      );
+      // Also check known aliases: Honghao-Chemical = Texwell, Zen Kem Kimya = SRS-Turkey
+      const aliases: Record<string, string[]> = {
+        "Texwell": ["Honghao", "honghao-chemical", "鸿浩"],
+        "SRS-Turkey": ["Zen Kem", "Zen Kem Kimya"],
+        "Mercado Global": ["POLIMEROS", "Polimeros y Derivados"],
+      };
+      const rdAliases = aliases[rd.name] || [];
+
+      let existing = allDistributors.find(d => {
+        const dLower = d.name.toLowerCase();
+        const rdLower = rd.name.toLowerCase();
+        if (dLower.includes(rdLower) || rdLower.includes(dLower)) return true;
+        return rdAliases.some(alias => dLower.includes(alias.toLowerCase()));
+      });
 
       let distributorId: string;
 
