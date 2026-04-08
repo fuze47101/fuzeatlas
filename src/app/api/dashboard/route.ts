@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       prisma.fabric.count(),
       prisma.brand.count(),
       prisma.factory.count(),
-      prisma.distributor.count(),
+      prisma.distributor.count({ where: { active: true } }),
       prisma.lab.count(),
       prisma.testRun.count(),
       prisma.icpResult.count(),
