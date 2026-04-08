@@ -80,11 +80,11 @@ export async function GET() {
         localCurrency: d.localCurrency,
         notes: d.notes,
         // Inventory
-        stockLiters: d.inventory?.stockLiters || 0,
-        stockKg: d.inventory?.stockKg || 0,
-        stockBottles: d.inventory?.stockBottles || 0,
-        reorderThresholdLiters: d.inventory?.reorderThresholdLiters || 0,
-        lowStock: (d.inventory?.stockLiters || 0) <= (d.inventory?.reorderThresholdLiters || 0),
+        stockLiters: d.inventory?.fuzeStockLiters || 0,
+        stockKg: (d.inventory?.fuzeStockLiters || 0) * 0.03,
+        stockBottles: d.inventory?.fuzeStockBottles || 0,
+        reorderThresholdLiters: d.inventory?.reorderPointLiters || 0,
+        lowStock: (d.inventory?.fuzeStockLiters || 0) <= (d.inventory?.reorderPointLiters || 0),
         // Counts
         factoryCount: d._count.factories,
         orderCount: d._count.fuzeOrders,
