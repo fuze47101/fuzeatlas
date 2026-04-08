@@ -23,7 +23,7 @@ export async function GET() {
         pricing: { take: 5, orderBy: { createdAt: "desc" } },
         factories: { select: { id: true, name: true, country: true } },
         contacts: { select: { id: true, name: true, email: true, phone: true, title: true } },
-        users: { select: { id: true, name: true, email: true, role: true, active: true } },
+        users: { select: { id: true, name: true, email: true, role: true, status: true } },
         _count: {
           select: {
             fuzeOrders: true,

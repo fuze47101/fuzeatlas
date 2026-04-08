@@ -530,8 +530,8 @@ function DistributorCard({
                     {d.users.map((u) => (
                       <p key={u.id} className="text-xs text-slate-600">
                         {u.name} — {u.email}{" "}
-                        <span className={u.active ? "text-emerald-500" : "text-slate-400"}>
-                          ({u.active ? "Active" : "Inactive"})
+                        <span className={u.status === "ACTIVE" ? "text-emerald-500" : "text-slate-400"}>
+                          ({u.status === "ACTIVE" ? "Active" : "Inactive"})
                         </span>
                       </p>
                     ))}
