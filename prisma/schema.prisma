@@ -514,6 +514,27 @@ model Contact {
   phone   String?
   address String?
 
+  // Enrichment fields
+  personalEmail    String?
+  linkedinUrl      String?
+  jobTitle         String?   // VP Supply Chain, Director Sourcing, etc.
+  seniority        String?   // vp, director, c_suite, manager
+  emailStatus      String?   // verified, unavailable, extrapolated
+  enrichedAt       DateTime?
+  enrichmentSource String?   // apollo, manual, research
+  apolloId         String?   // Apollo person ID for re-enrichment
+
+  // Outreach tracking
+  outreachStatus   String?   @default("not_contacted") // not_contacted, contacted, responded, meeting_booked, not_interested
+  lastContactedAt  DateTime?
+  lastResponseAt   DateTime?
+  outreachCount    Int       @default(0)
+
+  // Categorization
+  vertical         String?   // apparel, hospitality, workwear, home_textiles
+  decisionMaker    Boolean   @default(false)
+  companyRevenue   String?
+
   brandId       String?
   factoryId     String?
   distributorId String?
@@ -522,11 +543,49 @@ model Contact {
   factory     Factory?     @relation(fields: [factoryId], references: [id])
   distributor Distributor? @relation(fields: [distributorId], references: [id])
 
+  outreachMessages OutreachMessage[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([brandId])
   @@index([factoryId])
+  @@index([outreachStatus])
+  @@index([emailStatus])
+  @@index([vertical])
+}
+
+// ─────────────────────────────────────────────
+// OUTREACH MESSAGES (SMS + Email tracking)
+// ─────────────────────────────────────────────
+
+model OutreachMessage {
+  id String @id @default(cuid())
+
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  channel     String   // sms, email
+  template    String?  // intro, sustainability, competitive, sample_offer, followup
+  subject     String?  // email subject line
+  body        String   // full message body sent
+  toAddress   String   // phone number or email address used
+
+  status      String   @default("sent") // sent, delivered, failed, bounced, replied
+  sentAt      DateTime @default(now())
+  deliveredAt DateTime?
+  failReason  String?
+
+  // Twilio/Resend tracking
+  externalId  String?  // Twilio SID or Resend message ID
+  sentBy      String?  // user ID or "system"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([contactId])
+  @@index([channel])
+  @@index([sentAt])
 }
 
 // ─────────────────────────────────────────────

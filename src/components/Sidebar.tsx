@@ -287,6 +287,7 @@ export default function Sidebar() {
           ...(isInternal
             ? [
                 { href: "/admin/brand-discovery", label: "Brand Discovery", icon: "🌎" },
+                { href: "/admin/lead-management", label: "Lead Management", icon: "📞" },
                 { href: "/pipeline", label: "Project Flow", icon: "📊" },
                 { href: "/revenue", label: "Revenue Forecast", icon: "💰" },
                 { href: "/invoices", label: "Invoices", icon: "🧾" },
