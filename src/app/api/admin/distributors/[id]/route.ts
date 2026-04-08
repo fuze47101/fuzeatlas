@@ -6,13 +6,14 @@ import { getCurrentUser } from "@/lib/auth";
 /**
  * GET /api/admin/distributors/[id] — single distributor detail
  */
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 
     const d = await prisma.distributor.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         inventory: true,
         pricing: true,
@@ -35,8 +36,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
  * Body: { name?, chineseName?, country?, region?, city?, address?,
  *         email?, phone?, website?, status?, active?, coverageCountries?, localCurrency?, notes? }
  */
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
     if (!["ADMIN", "EMPLOYEE"].includes(user.role)) {
@@ -68,7 +70,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     }
 
     const updated = await prisma.distributor.update({
-      where: { id: params.id },
+      where: { id },
       data,
       select: {
         id: true, name: true, chineseName: true, country: true, region: true,
@@ -87,8 +89,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 /**
  * DELETE /api/admin/distributors/[id] — deactivate (not hard delete)
  */
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
     if (user.role !== "ADMIN") {
@@ -96,7 +99,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     }
 
     await prisma.distributor.update({
-      where: { id: params.id },
+      where: { id },
       data: { active: false, status: "INACTIVE" },
     });
 
