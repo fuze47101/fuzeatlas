@@ -1,14 +1,14 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getRealUser } from "@/lib/auth";
 import { cookies } from "next/headers";
 
 const IMPERSONATE_COOKIE = "fuze-impersonate";
 
 export async function GET() {
   try {
-    const sessionUser = await getCurrentUser();
+    const sessionUser = await getRealUser();
     if (!sessionUser) {
       return NextResponse.json({ ok: false, error: "Not authenticated" }, { status: 401 });
     }

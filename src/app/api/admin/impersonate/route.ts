@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getRealUser } from "@/lib/auth";
 import { cookies } from "next/headers";
 
 const IMPERSONATE_COOKIE = "fuze-impersonate";
@@ -9,7 +9,7 @@ const IMPERSONATE_COOKIE = "fuze-impersonate";
 // POST — start or stop impersonation
 export async function POST(req: Request) {
   try {
-    const user = await getCurrentUser();
+    const user = await getRealUser();
     if (!user) {
       return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
     }
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
 // GET — list users available for impersonation
 export async function GET() {
   try {
-    const user = await getCurrentUser();
+    const user = await getRealUser();
     if (!user) {
       return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
     }

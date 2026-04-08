@@ -63,7 +63,53 @@ export async function clearSessionCookie() {
 }
 
 /* ── Get current user from cookie ────────────────────── */
+const IMPERSONATE_COOKIE = "fuze-impersonate";
+
 export async function getCurrentUser(): Promise<SessionUser | null> {
+  const token = await getSessionCookie();
+  if (!token) return null;
+  const realUser = await verifyToken(token);
+  if (!realUser) return null;
+
+  // Check for impersonation — only ADMIN can impersonate
+  if (realUser.role === "ADMIN") {
+    try {
+      const cookieStore = await cookies();
+      const impersonateId = cookieStore.get(IMPERSONATE_COOKIE)?.value;
+      if (impersonateId) {
+        // Dynamic import to avoid circular dependency
+        const { prisma } = await import("@/lib/prisma");
+        const target = await prisma.user.findUnique({
+          where: { id: impersonateId },
+          select: {
+            id: true, name: true, email: true, role: true, status: true,
+            brandId: true, factoryId: true, distributorId: true, labId: true,
+          },
+        });
+        if (target) {
+          return {
+            id: target.id,
+            name: target.name,
+            email: target.email,
+            role: target.role,
+            status: target.status,
+            brandId: target.brandId,
+            factoryId: target.factoryId,
+            distributorId: target.distributorId,
+            labId: target.labId,
+          };
+        }
+      }
+    } catch {
+      // If impersonation lookup fails, fall through to real user
+    }
+  }
+
+  return realUser;
+}
+
+/** Get the REAL logged-in user, ignoring impersonation. Use for audit logs and permission gates. */
+export async function getRealUser(): Promise<SessionUser | null> {
   const token = await getSessionCookie();
   if (!token) return null;
   return verifyToken(token);
