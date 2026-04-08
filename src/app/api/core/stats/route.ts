@@ -30,7 +30,7 @@ export async function GET() {
       prisma.factory.count(),
       prisma.lab.count(),
       prisma.contact.count(),
-      prisma.distributor.count(),
+      prisma.distributor.count({ where: { active: true } }),
       prisma.document.count(),
       prisma.sourceRecord.count(),
     ]);
