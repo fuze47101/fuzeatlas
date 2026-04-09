@@ -106,6 +106,20 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         updateData.status = "ICP_PENDING";
       }
       if (body.notes !== undefined) updateData.notes = body.notes;
+
+      // Allow factory to edit shipping/delivery details
+      if (body.shippingContactName !== undefined) updateData.shippingContactName = body.shippingContactName;
+      if (body.shippingAddress !== undefined) updateData.shippingAddress = body.shippingAddress;
+      if (body.shippingCity !== undefined) updateData.shippingCity = body.shippingCity;
+      if (body.shippingState !== undefined) updateData.shippingState = body.shippingState;
+      if (body.shippingPostalCode !== undefined) updateData.shippingPostalCode = body.shippingPostalCode;
+      if (body.shippingCountry !== undefined) updateData.shippingCountry = body.shippingCountry;
+      if (body.shippingContactPhone !== undefined) updateData.shippingContactPhone = body.shippingContactPhone;
+      if (body.shippingContactEmail !== undefined) updateData.shippingContactEmail = body.shippingContactEmail;
+      if (body.shippingCarrier !== undefined) updateData.shippingCarrier = body.shippingCarrier;
+      if (body.shippingAccountNumber !== undefined) updateData.shippingAccountNumber = body.shippingAccountNumber;
+      if (body.shippingMethod !== undefined) updateData.shippingMethod = body.shippingMethod;
+      if (body.shippingNotes !== undefined) updateData.shippingNotes = body.shippingNotes;
     }
 
     if (Object.keys(updateData).length === 0) {

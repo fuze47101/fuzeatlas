@@ -8,6 +8,20 @@ import {
   FuzeTestService,
 } from "@/lib/fuze-test-catalog";
 
+interface CatalogTest {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  moqMeters: number;
+  controlRequired: boolean;
+  controlNote: string | null;
+  turnaroundDays: number;
+  estimatedCostUsd: number | null;
+  methods: string[];
+  active: boolean;
+}
+
 interface Fabric {
   id: string;
   fuzeNumber?: number;
@@ -29,6 +43,29 @@ export default function RequestFuzeTestPage() {
   const [notes, setNotes] = useState("");
   const [trackingNumber, setTrackingNumber] = useState("");
   const [showTrackingInput, setShowTrackingInput] = useState(false);
+
+  // Dynamic test catalog from API (admin-managed pricing)
+  const [testCatalog, setTestCatalog] = useState<CatalogTest[]>([]);
+
+  // Load test catalog from API
+  useEffect(() => {
+    const loadCatalog = async () => {
+      try {
+        const res = await fetch("/api/admin/test-catalog");
+        const d = await res.json();
+        if (d.ok && d.catalog) {
+          setTestCatalog(d.catalog.filter((t: CatalogTest) => t.active));
+        } else {
+          // Fallback to static catalog if API fails
+          setTestCatalog(FUZE_TEST_CATALOG.map((t) => ({ ...t, active: true })) as CatalogTest[]);
+        }
+      } catch {
+        // Fallback to static catalog on network error
+        setTestCatalog(FUZE_TEST_CATALOG.map((t) => ({ ...t, active: true })) as CatalogTest[]);
+      }
+    };
+    loadCatalog();
+  }, []);
 
   // Load user's fabrics
   useEffect(() => {
@@ -65,7 +102,7 @@ export default function RequestFuzeTestPage() {
     setSelectedTests(next);
   };
 
-  const selectedTestObjects = FUZE_TEST_CATALOG.filter((t) =>
+  const selectedTestObjects = testCatalog.filter((t) =>
     selectedTests.has(t.id)
   );
 
@@ -243,7 +280,7 @@ export default function RequestFuzeTestPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {FUZE_TEST_CATALOG.map((test) => (
+            {testCatalog.map((test) => (
               <label
                 key={test.id}
                 className="relative p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-[#00b4c3] hover:bg-[#00b4c3]/5"

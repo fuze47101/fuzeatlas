@@ -497,6 +497,28 @@ model LabService {
   @@index([labId])
 }
 
+model TestCatalogItem {
+  id              String  @id @default(cuid())
+  testKey         String  @unique  // "recipe-build", "antibacterial-screen", etc.
+  name            String
+  description     String?
+  category        String  @default("performance") // recipe_build, performance, quality, certification
+  moqMeters       Float   @default(1)
+  controlRequired Boolean @default(false)
+  controlNote     String?
+  turnaroundDays  Int     @default(7)
+  estimatedCostUsd Float?
+  methods         String[] // test methods included
+  active          Boolean @default(true)
+  sortOrder       Int     @default(0)
+
+  updatedBy       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([active])
+}
+
 // ─────────────────────────────────────────────
 // CONTACTS
 // ─────────────────────────────────────────────

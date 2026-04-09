@@ -306,6 +306,7 @@ export default function Sidebar() {
           { href: "/test-requests", label: "Test Requests", icon: "📝", badge: pendingCounts.testRequests },
           { href: "/tests", label: t.nav.testResults, icon: "🧪" },
           { href: "/labs", label: t.nav.labDirectory || "Lab Directory", icon: "🔬" },
+          ...(isAdmin ? [{ href: "/admin/test-catalog", label: "Test Catalog & Pricing", icon: "💲" }] : []),
         ],
       },
       {

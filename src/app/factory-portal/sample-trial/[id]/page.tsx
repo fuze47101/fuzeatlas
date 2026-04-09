@@ -62,6 +62,24 @@ export default function TrialDetailPage() {
   const [icpNotes, setIcpNotes] = useState("");
   const [icpSubmitting, setIcpSubmitting] = useState(false);
 
+  // Shipping edit state
+  const [editingShipping, setEditingShipping] = useState(false);
+  const [savingShipping, setSavingShipping] = useState(false);
+  const [shipForm, setShipForm] = useState({
+    shippingContactName: "",
+    shippingAddress: "",
+    shippingCity: "",
+    shippingState: "",
+    shippingPostalCode: "",
+    shippingCountry: "",
+    shippingContactPhone: "",
+    shippingContactEmail: "",
+    shippingCarrier: "",
+    shippingAccountNumber: "",
+    shippingMethod: "",
+    shippingNotes: "",
+  });
+
   // Admin fields
   const [adminStatus, setAdminStatus] = useState("");
   const [adminTracking, setAdminTracking] = useState("");
@@ -142,6 +160,47 @@ export default function TrialDetailPage() {
       setError("Network error");
     } finally {
       setIcpSubmitting(false);
+    }
+  };
+
+  const startEditShipping = () => {
+    setShipForm({
+      shippingContactName: trial?.shippingContactName || "",
+      shippingAddress: trial?.shippingAddress || "",
+      shippingCity: trial?.shippingCity || "",
+      shippingState: trial?.shippingState || "",
+      shippingPostalCode: trial?.shippingPostalCode || "",
+      shippingCountry: trial?.shippingCountry || "",
+      shippingContactPhone: trial?.shippingContactPhone || "",
+      shippingContactEmail: trial?.shippingContactEmail || "",
+      shippingCarrier: trial?.shippingCarrier || "",
+      shippingAccountNumber: trial?.shippingAccountNumber || "",
+      shippingMethod: trial?.shippingMethod || "",
+      shippingNotes: trial?.shippingNotes || "",
+    });
+    setEditingShipping(true);
+  };
+
+  const saveShipping = async () => {
+    setSavingShipping(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/factory-portal/sample-trial/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(shipForm),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setTrial(data.trial);
+        setEditingShipping(false);
+      } else {
+        setError(data.error || "Failed to update shipping details");
+      }
+    } catch {
+      setError("Network error");
+    } finally {
+      setSavingShipping(false);
     }
   };
 
@@ -321,36 +380,157 @@ export default function TrialDetailPage() {
       </div>
 
       {/* Shipping & Freight */}
-      {(trial.shippingAddress || trial.shippingCity || trial.shippingCountry) && (
+      {(trial.shippingAddress || trial.shippingCity || trial.shippingCountry || editingShipping) && (
         <div className="bg-white border border-slate-200 rounded-xl p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-sm font-bold text-slate-700 mb-2">Delivery Address</h3>
-              <div className="text-sm text-slate-700">
-                {trial.shippingContactName && <p className="font-medium">{trial.shippingContactName}</p>}
-                {trial.shippingAddress && <p>{trial.shippingAddress}</p>}
-                <p>{[trial.shippingCity, trial.shippingState, trial.shippingPostalCode].filter(Boolean).join(", ")}</p>
-                <p>{trial.shippingCountry}</p>
-                {trial.shippingContactPhone && <p className="text-slate-500 mt-1">Phone: {trial.shippingContactPhone}</p>}
-                {trial.shippingContactEmail && <p className="text-slate-500">Email: {trial.shippingContactEmail}</p>}
+          {!editingShipping ? (
+            <>
+              <div className="flex items-center justify-between mb-4">
+                <div />
+                {trial.status !== "COMPLETE" && trial.status !== "REJECTED" && (
+                  <button onClick={startEditShipping}
+                    className="text-xs font-medium text-[#00b4c3] hover:text-[#009ba8] flex items-center gap-1">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                    Edit
+                  </button>
+                )}
               </div>
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-700 mb-2">Freight Account</h3>
-              <div className="text-sm text-slate-700 space-y-1">
-                {trial.shippingCarrier && <p><span className="text-slate-500">Carrier:</span> {trial.shippingCarrier}</p>}
-                {trial.shippingAccountNumber && <p><span className="text-slate-500">Account #:</span> {trial.shippingAccountNumber}</p>}
-                {trial.shippingMethod && <p><span className="text-slate-500">Method:</span> {trial.shippingMethod === "EXPRESS" ? "Express (1-3 days)" : trial.shippingMethod === "ECONOMY" ? "Economy (7-14 days)" : "Standard (5-7 days)"}</p>}
-                {!trial.shippingCarrier && !trial.shippingAccountNumber && <p className="text-amber-600 text-xs italic">No freight account provided — shipping arrangement pending</p>}
-              </div>
-              {trial.shippingNotes && (
-                <div className="mt-3">
-                  <h3 className="text-sm font-bold text-slate-700 mb-1">Shipping Notes</h3>
-                  <p className="text-sm text-slate-600">{trial.shippingNotes}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-700 mb-2">Delivery Address</h3>
+                  <div className="text-sm text-slate-700">
+                    {trial.shippingContactName && <p className="font-medium">{trial.shippingContactName}</p>}
+                    {trial.shippingAddress && <p>{trial.shippingAddress}</p>}
+                    <p>{[trial.shippingCity, trial.shippingState, trial.shippingPostalCode].filter(Boolean).join(", ")}</p>
+                    <p>{trial.shippingCountry}</p>
+                    {trial.shippingContactPhone && <p className="text-slate-500 mt-1">Phone: {trial.shippingContactPhone}</p>}
+                    {trial.shippingContactEmail && <p className="text-slate-500">Email: {trial.shippingContactEmail}</p>}
+                  </div>
                 </div>
-              )}
-            </div>
-          </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-700 mb-2">Freight Account</h3>
+                  <div className="text-sm text-slate-700 space-y-1">
+                    {trial.shippingCarrier && <p><span className="text-slate-500">Carrier:</span> {trial.shippingCarrier}</p>}
+                    {trial.shippingAccountNumber && <p><span className="text-slate-500">Account #:</span> {trial.shippingAccountNumber}</p>}
+                    {trial.shippingMethod && <p><span className="text-slate-500">Method:</span> {trial.shippingMethod === "EXPRESS" ? "Express (1-3 days)" : trial.shippingMethod === "ECONOMY" ? "Economy (7-14 days)" : "Standard (5-7 days)"}</p>}
+                    {!trial.shippingCarrier && !trial.shippingAccountNumber && <p className="text-amber-600 text-xs italic">No freight account provided — shipping arrangement pending</p>}
+                  </div>
+                  {trial.shippingNotes && (
+                    <div className="mt-3">
+                      <h3 className="text-sm font-bold text-slate-700 mb-1">Shipping Notes</h3>
+                      <p className="text-sm text-slate-600">{trial.shippingNotes}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-slate-700">Edit Delivery & Freight Details</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left: Delivery Address */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">Delivery Address</h4>
+                  <div>
+                    <label className="text-xs font-medium text-slate-600 mb-1 block">Contact Name</label>
+                    <input type="text" value={shipForm.shippingContactName} onChange={(e) => setShipForm({ ...shipForm, shippingContactName: e.target.value })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-slate-600 mb-1 block">Address</label>
+                    <input type="text" value={shipForm.shippingAddress} onChange={(e) => setShipForm({ ...shipForm, shippingAddress: e.target.value })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-medium text-slate-600 mb-1 block">City</label>
+                      <input type="text" value={shipForm.shippingCity} onChange={(e) => setShipForm({ ...shipForm, shippingCity: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-slate-600 mb-1 block">State/Province</label>
+                      <input type="text" value={shipForm.shippingState} onChange={(e) => setShipForm({ ...shipForm, shippingState: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-medium text-slate-600 mb-1 block">Postal Code</label>
+                      <input type="text" value={shipForm.shippingPostalCode} onChange={(e) => setShipForm({ ...shipForm, shippingPostalCode: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-slate-600 mb-1 block">Country</label>
+                      <input type="text" value={shipForm.shippingCountry} onChange={(e) => setShipForm({ ...shipForm, shippingCountry: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-medium text-slate-600 mb-1 block">Phone</label>
+                      <input type="text" value={shipForm.shippingContactPhone} onChange={(e) => setShipForm({ ...shipForm, shippingContactPhone: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-slate-600 mb-1 block">Email</label>
+                      <input type="email" value={shipForm.shippingContactEmail} onChange={(e) => setShipForm({ ...shipForm, shippingContactEmail: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: Freight Account */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">Freight Account</h4>
+                  <div>
+                    <label className="text-xs font-medium text-slate-600 mb-1 block">Carrier</label>
+                    <select value={shipForm.shippingCarrier} onChange={(e) => setShipForm({ ...shipForm, shippingCarrier: e.target.value })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]">
+                      <option value="">Select carrier...</option>
+                      <option value="DHL">DHL</option>
+                      <option value="FEDEX">FedEx</option>
+                      <option value="UPS">UPS</option>
+                      <option value="TNT">TNT</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-slate-600 mb-1 block">Account Number</label>
+                    <input type="text" value={shipForm.shippingAccountNumber} onChange={(e) => setShipForm({ ...shipForm, shippingAccountNumber: e.target.value })}
+                      placeholder="Your carrier account #"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-slate-600 mb-1 block">Shipping Method</label>
+                    <select value={shipForm.shippingMethod} onChange={(e) => setShipForm({ ...shipForm, shippingMethod: e.target.value })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]">
+                      <option value="">Select method...</option>
+                      <option value="EXPRESS">Express (1-3 days)</option>
+                      <option value="STANDARD">Standard (5-7 days)</option>
+                      <option value="ECONOMY">Economy (7-14 days)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-slate-600 mb-1 block">Shipping Notes</label>
+                    <textarea value={shipForm.shippingNotes} onChange={(e) => setShipForm({ ...shipForm, shippingNotes: e.target.value })}
+                      rows={3} placeholder="Special instructions, broker info, etc."
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-3 mt-5">
+                <button onClick={saveShipping} disabled={savingShipping}
+                  className="px-6 py-2.5 bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white rounded-lg font-semibold text-sm hover:shadow-lg disabled:opacity-50">
+                  {savingShipping ? "Saving..." : "Save Changes"}
+                </button>
+                <button onClick={() => setEditingShipping(false)} disabled={savingShipping}
+                  className="px-6 py-2.5 bg-slate-100 text-slate-600 rounded-lg font-medium text-sm hover:bg-slate-200">
+                  Cancel
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
 
