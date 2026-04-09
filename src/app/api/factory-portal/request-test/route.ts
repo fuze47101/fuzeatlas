@@ -1,25 +1,24 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { pushTestRequestStatus } from "@/lib/notify-realtime";
 import { sendTestRequestStatusEmail } from "@/lib/email";
-
-const prisma = new PrismaClient();
 
 /* ── GET /api/factory-portal/request-test ── list factory's test requests ── */
 export async function GET(req: Request) {
   try {
-    const userId = req.headers.get("x-user-id");
-    if (!userId) {
+    const sessionUser = await getCurrentUser();
+    if (!sessionUser) {
       return NextResponse.json(
         { ok: false, error: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    // Get user's factory
+    // Get user's factory (use DB lookup for full relations)
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: sessionUser.id },
       include: { factory: true },
     });
 
@@ -82,15 +81,16 @@ export async function GET(req: Request) {
 /* ── POST /api/factory-portal/request-test ── create a FUZE test request ── */
 export async function POST(req: Request) {
   try {
-    const userId = req.headers.get("x-user-id");
-    if (!userId) {
+    const sessionUser = await getCurrentUser();
+    if (!sessionUser) {
       return NextResponse.json(
         { ok: false, error: "Unauthorized" },
         { status: 401 }
       );
     }
+    const userId = sessionUser.id;
 
-    // Get user's factory
+    // Get user's factory (use DB lookup for full relations)
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: { factory: true },
@@ -181,7 +181,7 @@ export async function POST(req: Request) {
           poNumber,
           brandId: fabricWithBrand?.brandId || null,
           fabricId,
-          status: "DRAFT",
+          status: "PENDING_APPROVAL",
           priority: "NORMAL",
           requestedById: userId,
           requestedAt: now,
@@ -215,7 +215,7 @@ export async function POST(req: Request) {
               email: admin.email,
               name: admin.name || "Admin",
               poNumber: adminPO?.poNumber || testRequest.id,
-              newStatus: "DRAFT",
+              newStatus: "PENDING_APPROVAL",
               testRequestId: adminPO?.id || testRequest.id,
             }).catch(() => {});
           }
@@ -223,7 +223,7 @@ export async function POST(req: Request) {
         // Push real-time notification
         await pushTestRequestStatus({
           testRequestId: adminPO?.id || testRequest.id,
-          status: "DRAFT",
+          status: "PENDING_APPROVAL",
           createdByUserId: userId,
         });
       } catch (err) {

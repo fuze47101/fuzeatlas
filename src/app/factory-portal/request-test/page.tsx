@@ -354,6 +354,25 @@ export default function RequestFuzeTestPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Estimated cost total */}
+              {selectedTestObjects.some((t) => t.estimatedCostUsd) && (
+                <div className="pt-3 mt-3 border-t border-blue-200">
+                  <p className="font-medium text-slate-900 mb-1">Estimated Cost:</p>
+                  <div className="space-y-1 text-sm text-slate-700">
+                    {selectedTestObjects.filter((t) => t.estimatedCostUsd).map((t) => (
+                      <div key={t.id} className="flex justify-between">
+                        <span>{t.name}</span>
+                        <span className="font-semibold">${t.estimatedCostUsd?.toLocaleString()}</span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between pt-2 border-t border-blue-200 font-bold text-slate-900">
+                      <span>Total Estimated</span>
+                      <span>${selectedTestObjects.reduce((sum, t) => sum + (t.estimatedCostUsd || 0), 0).toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

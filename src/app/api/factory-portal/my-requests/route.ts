@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 
 /**
  * GET /api/factory-portal/my-requests
@@ -9,13 +10,12 @@ import { prisma } from "@/lib/prisma";
  */
 export async function GET(req: Request) {
   try {
-    const userId = req.headers.get("x-user-id");
-    const userRole = req.headers.get("x-user-role");
-    const factoryId = req.headers.get("x-factory-id");
-
-    if (!userId) {
+    const sessionUser = await getCurrentUser();
+    if (!sessionUser) {
       return NextResponse.json({ ok: false, error: "Not authenticated" }, { status: 401 });
     }
+    const userId = sessionUser.id;
+    const factoryId = sessionUser.factoryId;
 
     // Build filter: show requests from this user, or from their factory
     const where: any = {

@@ -23,6 +23,7 @@ export const FUZE_TEST_CATALOG: FuzeTestService[] = [
     controlNote:
       "CRITICAL: If the sample has ANY prior FUZE treatment (exhaust, spray, or other method), you MUST supply an equal yardage of UNTREATED control fabric from the same lot/batch. Without a matching control, results cannot be validated.",
     turnaroundDays: 10,
+    estimatedCostUsd: 800,
     methods: [
       "Pad application",
       "Exhaust application",
@@ -40,6 +41,7 @@ export const FUZE_TEST_CATALOG: FuzeTestService[] = [
     controlRequired: true,
     controlNote: "Supply matching untreated control fabric.",
     turnaroundDays: 7,
+    estimatedCostUsd: 450,
     methods: ["AATCC 100", "ASTM E2149"],
   },
   {
@@ -51,6 +53,7 @@ export const FUZE_TEST_CATALOG: FuzeTestService[] = [
     moqMeters: 0.25,
     controlRequired: false,
     turnaroundDays: 5,
+    estimatedCostUsd: 250,
     methods: ["ICP-OES", "ICP-MS"],
   },
   {
@@ -63,6 +66,7 @@ export const FUZE_TEST_CATALOG: FuzeTestService[] = [
     controlRequired: true,
     controlNote: "Supply matching untreated control fabric.",
     turnaroundDays: 14,
+    estimatedCostUsd: 1200,
     methods: ["AATCC 100 post-wash", "ICP post-wash"],
   },
   {
@@ -94,6 +98,7 @@ export const FUZE_TEST_CATALOG: FuzeTestService[] = [
     controlRequired: true,
     controlNote: "Supply matching untreated control fabric.",
     turnaroundDays: 14,
+    estimatedCostUsd: 500,
     methods: ["ASTM G21", "AATCC 30"],
   },
   {
@@ -106,6 +111,7 @@ export const FUZE_TEST_CATALOG: FuzeTestService[] = [
     controlRequired: true,
     controlNote: "Supply matching untreated control fabric.",
     turnaroundDays: 10,
+    estimatedCostUsd: 400,
     methods: ["Modified AATCC 100 (odor panel)"],
   },
 ];

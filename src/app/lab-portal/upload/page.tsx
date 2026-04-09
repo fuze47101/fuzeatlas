@@ -265,24 +265,101 @@ export default function LabUploadPage() {
                 </div>
               )}
 
-              {/* Legacy parsed results */}
+              {/* Parsed results with verification */}
               {result.parsed && (
                 <div className="space-y-3">
                   <div className="text-sm font-semibold text-[#00b4c3] uppercase">Parsed Report Data</div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-                    {result.parsed.testType && <div><span className="text-slate-500">Type:</span> <strong>{result.parsed.testType}</strong></div>}
-                    {result.parsed.testReportNumber && <div><span className="text-slate-500">Report #:</span> <strong>{result.parsed.testReportNumber}</strong></div>}
-                    {result.parsed.labName && <div><span className="text-slate-500">Lab:</span> <strong>{result.parsed.labName}</strong></div>}
-                    {result.parsed.testDate && <div><span className="text-slate-500">Date:</span> <strong>{result.parsed.testDate}</strong></div>}
-                    {result.parsed.testMethodStd && <div><span className="text-slate-500">Method:</span> <strong>{result.parsed.testMethodStd}</strong></div>}
-                    {result.parsed.washCount !== null && <div><span className="text-slate-500">Washes:</span> <strong>{result.parsed.washCount}</strong></div>}
+
+                  {/* Confidence indicator */}
+                  <div className={`p-3 rounded-lg text-sm ${
+                    result.parsed.confidence >= 70
+                      ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
+                      : result.parsed.confidence >= 50
+                      ? "bg-amber-50 border border-amber-200 text-amber-800"
+                      : "bg-red-50 border border-red-200 text-red-800"
+                  }`}>
+                    <div className="flex items-center gap-2 font-semibold mb-1">
+                      <span>{result.parsed.confidence >= 70 ? "✅" : result.parsed.confidence >= 50 ? "⚠️" : "❗"}</span>
+                      Parse confidence: {result.parsed.confidence}%
+                    </div>
+                    {result.parsed.confidence < 50 && (
+                      <p className="text-xs mt-1">
+                        Low confidence — the parser could not extract all fields from this report format.
+                        The file was uploaded successfully, but please verify the details below are correct.
+                      </p>
+                    )}
                   </div>
-                  <div className="text-sm mt-2">
-                    <span className="text-slate-500">Parse confidence:</span>{" "}
-                    <strong className={result.parsed.confidence >= 70 ? "text-emerald-600" : result.parsed.confidence >= 50 ? "text-amber-600" : "text-red-600"}>
-                      {result.parsed.confidence}%
-                    </strong>
+
+                  {/* Extracted fields table */}
+                  <div className="border border-slate-200 rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-slate-50">
+                          <th className="text-left px-4 py-2 text-slate-600 font-medium w-1/3">Field</th>
+                          <th className="text-left px-4 py-2 text-slate-600 font-medium">Extracted Value</th>
+                          <th className="text-center px-4 py-2 text-slate-600 font-medium w-16">OK?</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        <tr>
+                          <td className="px-4 py-2 text-slate-500">Test Type</td>
+                          <td className="px-4 py-2 font-medium">{result.parsed.testType || <span className="text-slate-300 italic">Not detected</span>}</td>
+                          <td className="px-4 py-2 text-center">{result.parsed.testType ? "✅" : "—"}</td>
+                        </tr>
+                        <tr>
+                          <td className="px-4 py-2 text-slate-500">Report #</td>
+                          <td className="px-4 py-2 font-medium">{result.parsed.testReportNumber || <span className="text-slate-300 italic">Not detected</span>}</td>
+                          <td className="px-4 py-2 text-center">{result.parsed.testReportNumber ? "✅" : "—"}</td>
+                        </tr>
+                        <tr>
+                          <td className="px-4 py-2 text-slate-500">Lab</td>
+                          <td className="px-4 py-2 font-medium">{result.parsed.labName || <span className="text-slate-300 italic">Not detected</span>}</td>
+                          <td className="px-4 py-2 text-center">{result.parsed.labName ? "✅" : "—"}</td>
+                        </tr>
+                        <tr>
+                          <td className="px-4 py-2 text-slate-500">Test Date</td>
+                          <td className="px-4 py-2 font-medium">{result.parsed.testDate || <span className="text-slate-300 italic">Not detected</span>}</td>
+                          <td className="px-4 py-2 text-center">{result.parsed.testDate ? "✅" : "—"}</td>
+                        </tr>
+                        <tr>
+                          <td className="px-4 py-2 text-slate-500">Test Method</td>
+                          <td className="px-4 py-2 font-medium">{result.parsed.testMethodStd || <span className="text-slate-300 italic">Not detected</span>}</td>
+                          <td className="px-4 py-2 text-center">{result.parsed.testMethodStd ? "✅" : "—"}</td>
+                        </tr>
+                        <tr>
+                          <td className="px-4 py-2 text-slate-500">Wash Count</td>
+                          <td className="px-4 py-2 font-medium">{result.parsed.washCount !== null && result.parsed.washCount !== undefined ? result.parsed.washCount : <span className="text-slate-300 italic">N/A</span>}</td>
+                          <td className="px-4 py-2 text-center">{result.parsed.washCount !== null && result.parsed.washCount !== undefined ? "✅" : "—"}</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
+
+                  {/* Status summary */}
+                  <div className="p-3 bg-slate-50 rounded-lg text-sm text-slate-600">
+                    {(() => {
+                      const fields = [result.parsed.testType, result.parsed.testReportNumber, result.parsed.labName, result.parsed.testDate, result.parsed.testMethodStd];
+                      const detected = fields.filter(Boolean).length;
+                      return (
+                        <span>
+                          <strong>{detected}</strong> of <strong>5</strong> key fields detected.
+                          {detected <= 2
+                            ? " The report was stored successfully — an admin can manually review and fill in the missing details."
+                            : detected <= 4
+                            ? " Most fields extracted. Please verify the data above is accurate."
+                            : " All key fields extracted successfully."}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                </div>
+              )}
+
+              {/* No parsed data at all */}
+              {!result.parsed && !result.itsReport && (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
+                  ⚠️ The report was uploaded and stored, but automatic parsing is not available for this report format.
+                  An admin will review the file manually.
                 </div>
               )}
 
