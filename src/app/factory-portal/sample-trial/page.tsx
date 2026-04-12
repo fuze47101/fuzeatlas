@@ -101,6 +101,8 @@ export default function SampleTrialPage() {
   const [shippingMethod, setShippingMethod] = useState("STANDARD");
   const [shippingNotes, setShippingNotes] = useState("");
   const [notes, setNotes] = useState("");
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set());
 
   // Computed sample volume
   const selectedFabric = fabrics.find((f) => f.id === fabricId);
@@ -146,6 +148,28 @@ export default function SampleTrialPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setFieldErrors(new Set());
+
+    // Validate required fields
+    const missing = new Set<string>();
+    if (!fabricId) missing.add("fabricId");
+    if (!purposeType) missing.add("purposeType");
+    if (!trialType) missing.add("trialType");
+    if (!totalMeters) missing.add("totalMeters");
+    if (!icpLabId && !icpLabOther) missing.add("icpLab");
+    if (!shippingAddress) missing.add("shippingAddress");
+    if (!shippingCity) missing.add("shippingCity");
+    if (!shippingCountry) missing.add("shippingCountry");
+    if (!shippingContactName) missing.add("shippingContactName");
+    if (!shippingContactPhone) missing.add("shippingContactPhone");
+    if (!acknowledged) missing.add("acknowledged");
+
+    if (missing.size > 0) {
+      setFieldErrors(missing);
+      setError(`Please complete all required fields${!acknowledged ? " and acknowledge the shipping & ICP policies" : ""} before submitting.`);
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -221,6 +245,8 @@ export default function SampleTrialPage() {
     setShippingNotes("");
     setShippingContactPhone("");
     setNotes("");
+    setAcknowledged(false);
+    setFieldErrors(new Set());
     setError("");
   };
 
@@ -258,6 +284,10 @@ export default function SampleTrialPage() {
       </div>
     );
   }
+
+  // Field error border helper
+  const errBorder = (field: string) =>
+    fieldErrors.has(field) ? "border-red-400 ring-2 ring-red-200" : "border-slate-300";
 
   // Group labs by country for dropdown
   const labsByCountry: Record<string, Lab[]> = {};
@@ -332,10 +362,6 @@ export default function SampleTrialPage() {
       {/* ────── FORM TAB ────── */}
       {tab === "form" && (
         <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>
-          )}
-
           {/* Step 1: Select Fabric */}
           <div className="bg-white border border-slate-200 rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
@@ -349,8 +375,8 @@ export default function SampleTrialPage() {
               </div>
             ) : (
               <>
-                <select value={fabricId} onChange={(e) => setFabricId(e.target.value)} required
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg text-slate-900 focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3] text-sm">
+                <select value={fabricId} onChange={(e) => { setFabricId(e.target.value); setFieldErrors((p) => { const n = new Set(p); n.delete("fabricId"); return n; }); }} required
+                  className={`w-full px-4 py-3 border ${errBorder("fabricId")} rounded-lg text-slate-900 focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3] text-sm`}>
                   <option value="">Choose a fabric...</option>
                   {fabrics.map((f) => (
                     <option key={f.id} value={f.id}>
@@ -530,16 +556,16 @@ export default function SampleTrialPage() {
               {/* Delivery address */}
               <div>
                 <label className="text-sm font-medium text-slate-700 mb-1 block">Factory / Delivery Address *</label>
-                <textarea value={shippingAddress} onChange={(e) => setShippingAddress(e.target.value)}
+                <textarea value={shippingAddress} onChange={(e) => { setShippingAddress(e.target.value); setFieldErrors((p) => { const n = new Set(p); n.delete("shippingAddress"); return n; }); }}
                   placeholder="Street address, building, unit..."
                   rows={2}
-                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                  className={`w-full px-4 py-2.5 border ${errBorder("shippingAddress")} rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]`} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-sm font-medium text-slate-700 mb-1 block">City *</label>
-                  <input type="text" value={shippingCity} onChange={(e) => setShippingCity(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                  <input type="text" value={shippingCity} onChange={(e) => { setShippingCity(e.target.value); setFieldErrors((p) => { const n = new Set(p); n.delete("shippingCity"); return n; }); }}
+                    className={`w-full px-4 py-2.5 border ${errBorder("shippingCity")} rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]`} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 mb-1 block">State / Province</label>
@@ -555,8 +581,8 @@ export default function SampleTrialPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 mb-1 block">Country *</label>
-                  <input type="text" value={shippingCountry} onChange={(e) => setShippingCountry(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                  <input type="text" value={shippingCountry} onChange={(e) => { setShippingCountry(e.target.value); setFieldErrors((p) => { const n = new Set(p); n.delete("shippingCountry"); return n; }); }}
+                    className={`w-full px-4 py-2.5 border ${errBorder("shippingCountry")} rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]`} />
                 </div>
               </div>
 
@@ -564,14 +590,14 @@ export default function SampleTrialPage() {
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-sm font-medium text-slate-700 mb-1 block">Contact Name *</label>
-                  <input type="text" value={shippingContactName} onChange={(e) => setShippingContactName(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                  <input type="text" value={shippingContactName} onChange={(e) => { setShippingContactName(e.target.value); setFieldErrors((p) => { const n = new Set(p); n.delete("shippingContactName"); return n; }); }}
+                    className={`w-full px-4 py-2.5 border ${errBorder("shippingContactName")} rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]`} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 mb-1 block">Contact Phone *</label>
-                  <input type="text" value={shippingContactPhone} onChange={(e) => setShippingContactPhone(e.target.value)}
+                  <input type="text" value={shippingContactPhone} onChange={(e) => { setShippingContactPhone(e.target.value); setFieldErrors((p) => { const n = new Set(p); n.delete("shippingContactPhone"); return n; }); }}
                     placeholder="+1 555 123 4567"
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
+                    className={`w-full px-4 py-2.5 border ${errBorder("shippingContactPhone")} rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]`} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 mb-1 block">Contact Email</label>
@@ -640,8 +666,31 @@ export default function SampleTrialPage() {
               className="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm placeholder:text-slate-400 focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3]" />
           </div>
 
+          {/* Acknowledgment Checkbox */}
+          <div className={`p-4 rounded-xl border-2 ${fieldErrors.has("acknowledged") ? "border-red-400 bg-red-50" : acknowledged ? "border-emerald-300 bg-emerald-50" : "border-slate-200 bg-white"}`}>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" checked={acknowledged} onChange={(e) => { setAcknowledged(e.target.checked); setFieldErrors((p) => { const n = new Set(p); n.delete("acknowledged"); return n; }); }}
+                className="mt-0.5 w-5 h-5 rounded border-slate-300 text-[#00b4c3] focus:ring-[#00b4c3]" />
+              <div className="text-sm text-slate-700">
+                <span className="font-semibold">I acknowledge and understand:</span>
+                <ul className="mt-1 space-y-1 text-xs text-slate-600 list-disc ml-4">
+                  <li><strong>Shipping Policy:</strong> FUZE provides sample product at no charge. The requesting party is responsible for freight costs from FUZE USA. A valid carrier account number must be provided.</li>
+                  <li><strong>ICP Testing Requirement:</strong> After treatment, treated fabric <strong>must</strong> be sent to an approved ICP lab for validation testing. ICP results must be submitted through this portal to complete the trial process.</li>
+                </ul>
+              </div>
+            </label>
+          </div>
+
+          {/* Error near submit */}
+          {error && (
+            <div className="p-4 bg-red-50 border border-red-300 rounded-lg text-red-700 text-sm font-medium flex items-center gap-2">
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+              {error}
+            </div>
+          )}
+
           {/* Submit */}
-          <button type="submit" disabled={submitting || !fabricId || !purposeType || !trialType || !totalMeters || (!icpLabId && !icpLabOther)}
+          <button type="submit" disabled={submitting}
             className="w-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-3.5 rounded-xl font-semibold text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all disabled:opacity-50">
             {submitting ? "Submitting Request..." : "Submit Sample Trial Request"}
           </button>

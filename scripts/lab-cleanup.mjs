@@ -138,7 +138,7 @@ async function main() {
     await prisma.lab.create({
       data: {
         name: "FPC Testing Center",
-        city: "Taipei",
+        city: "Miaoli",
         country: "Taiwan",
         region: "Asia Pacific",
         icpApproved: true,
@@ -149,7 +149,7 @@ async function main() {
         notes: "Added per Tina Hong's recommendation (March 2026)",
       },
     });
-    console.log(`  ✅ Added "FPC Testing Center" (Taipei, Taiwan)`);
+    console.log(`  ✅ Added "FPC Testing Center" (Miaoli, Taiwan)`);
   } else {
     console.log(`  ⚠ "FPC" lab already exists — skipping`);
   }

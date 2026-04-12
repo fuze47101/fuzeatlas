@@ -5,8 +5,8 @@ import { getCurrentUser } from "@/lib/auth";
 
 /**
  * GET /api/factory-portal/my-requests
- * Returns all test requests for the current user (by requestedById)
- * Used by factory portal "My Test Requests" page
+ * Returns all FUZE test requests for the current factory user.
+ * Queries fuzeTestRequest (where factory portal submissions actually live).
  */
 export async function GET(req: Request) {
   try {
@@ -19,52 +19,46 @@ export async function GET(req: Request) {
 
     // Build filter: show requests from this user, or from their factory
     const where: any = {
-      OR: [
-        { requestedById: userId },
-      ],
+      OR: [{ requestedBy: userId }],
     };
 
-    // If factory user, also show requests linked to fabrics from their factory
     if (factoryId) {
-      where.OR.push({
-        fabric: { factoryId: factoryId },
-      });
+      where.OR.push({ factoryId });
     }
 
-    const requests = await prisma.testRequest.findMany({
+    const requests = await prisma.fuzeTestRequest.findMany({
       where,
       include: {
-        lab: { select: { id: true, name: true } },
-        fabric: { select: { id: true, fuzeNumber: true, customerCode: true, factoryCode: true } },
-        lines: {
+        fabric: {
           select: {
             id: true,
-            testType: true,
-            testMethod: true,
-            estimatedDays: true,
-            status: true,
-            unitPrice: true,
-            totalPrice: true,
+            fuzeNumber: true,
+            customerCode: true,
+            factoryCode: true,
           },
-        },
-        shipments: {
-          select: {
-            id: true,
-            carrier: true,
-            trackingNumber: true,
-            shipDate: true,
-            status: true,
-            actualArrival: true,
-            receivedCondition: true,
-          },
-          orderBy: { createdAt: "desc" },
-          take: 1,
         },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ ok: true, requests });
+    // Also try to find any linked admin TestRequests (POs) for status context
+    const formatted = requests.map((r: any) => ({
+      id: r.id,
+      fabricId: r.fabricId,
+      fabric: r.fabric,
+      selectedTests: r.selectedTests || [],
+      status: r.status,
+      controlRequired: r.controlRequired,
+      totalMoqMeters: r.totalMoqMeters,
+      trackingNumber: r.trackingNumber,
+      shippedDate: r.shippedDate,
+      receivedDate: r.receivedDate,
+      notes: r.notes,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+    }));
+
+    return NextResponse.json({ ok: true, requests: formatted });
   } catch (error: any) {
     console.error("Error fetching factory test requests:", error);
     return NextResponse.json(

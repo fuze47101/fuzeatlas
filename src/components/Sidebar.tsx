@@ -267,6 +267,7 @@ export default function Sidebar() {
           { href: "/lab-portal/catalog", label: "Test Catalog", icon: "🧪" },
           { href: "/lab-portal/requests", label: "Test Requests", icon: "📋", badge: labPendingCount },
           { href: "/lab-portal/upload", label: "Upload Reports", icon: "📤" },
+          { href: "/lab-portal/uploads", label: "Upload History", icon: "📊" },
           { href: "/lab-portal/forms", label: "Forms & Documents", icon: "📄" },
           { href: "/lab-portal/profile", label: "Lab Profile", icon: "🏢" },
         ],

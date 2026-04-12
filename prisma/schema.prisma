@@ -1308,9 +1308,9 @@ model TestRequest {
   sowId         String?
   sow           SOW?      @relation(fields: [sowId], references: [id])
 
-  // Where we're sending it
-  labId         String
-  lab           Lab       @relation(fields: [labId], references: [id])
+  // Where we're sending it (optional — assigned after admin approval for factory requests)
+  labId         String?
+  lab           Lab?      @relation(fields: [labId], references: [id])
 
   // Lab tracking
   labCustomerNumber String?   // Auto-filled from Lab.customerNumber

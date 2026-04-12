@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { parseITSReport } from "@/lib/parsers/testReportParser";
 import type { ParsedITSReport } from "@/lib/parsers/testReportParser";
 import { uploadToS3, generateS3Key, isS3Configured, S3_PREFIXES } from "@/lib/s3";
@@ -221,6 +222,10 @@ function isITSReport(text: string): boolean {
 /* ── POST /api/tests/upload ─────────────────────────────────── */
 export async function POST(req: Request) {
   try {
+    // Capture uploading user (lab or admin) for attribution
+    const sessionUser = await getCurrentUser().catch(() => null);
+    const uploaderLabId = sessionUser?.labId || null;
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
 
@@ -278,6 +283,7 @@ export async function POST(req: Request) {
         url: fileUrl,
         bucket: s3Bucket,
         key: s3Key,
+        labId: uploaderLabId,
       },
     });
 
