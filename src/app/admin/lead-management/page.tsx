@@ -222,6 +222,18 @@ export default function LeadManagementPage() {
     } catch {}
   };
 
+  // Quick action: mark LinkedIn reached or email sent
+  const handleOutreachCheck = async (contactId: string, action: "linkedin_reached" | "email_sent") => {
+    try {
+      await fetch(`/api/admin/outreach/contact/${contactId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      fetchData();
+    } catch {}
+  };
+
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
       <div className="flex items-center justify-between mb-6">
@@ -316,6 +328,8 @@ export default function LeadManagementPage() {
                   <th className="px-4 py-3">Title</th>
                   <th className="px-4 py-3">Email</th>
                   <th className="px-4 py-3">Phone</th>
+                  <th className="px-3 py-3 text-center">LI</th>
+                  <th className="px-3 py-3 text-center">Emailed</th>
                   <th className="px-4 py-3">Outreach</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
@@ -343,16 +357,18 @@ export default function LeadManagementPage() {
                             {contact.firstName} {contact.lastName}
                             {!contact.firstName && contact.name}
                           </div>
-                          {contact.linkedinUrl && (
-                            <a href={contact.linkedinUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline">
-                              LinkedIn
-                            </a>
-                          )}
-                          {contact.enrichedAt && (
-                            <span className="ml-1 text-xs text-purple-500" title={`Enriched ${new Date(contact.enrichedAt).toLocaleDateString()}`}>
-                              enriched
-                            </span>
-                          )}
+                          <div className="flex items-center gap-2 mt-1">
+                            {contact.linkedinUrl && (
+                              <a href={contact.linkedinUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#0077B5] text-white rounded text-[10px] font-bold hover:bg-[#006097] transition">
+                                in Profile
+                              </a>
+                            )}
+                            {contact.enrichedAt && (
+                              <span className="text-xs text-purple-500" title={`Enriched ${new Date(contact.enrichedAt).toLocaleDateString()}`}>
+                                enriched
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-4 py-3 text-xs text-gray-600 max-w-[200px] truncate">
                           {contact.jobTitle || contact.title || "—"}
@@ -376,6 +392,53 @@ export default function LeadManagementPage() {
                         </td>
                         <td className="px-4 py-3 text-xs">
                           {contact.phone || <span className="text-gray-400">—</span>}
+                        </td>
+                        {/* LinkedIn Reached Checkbox */}
+                        <td className="px-3 py-3 text-center">
+                          {contact.linkedinUrl ? (
+                            <button
+                              onClick={() => {
+                                if (contact.outreachCount > 0 && contact.outreachStatus !== "not_contacted") return; // Already marked
+                                handleOutreachCheck(contact.id, "linkedin_reached");
+                              }}
+                              className={`w-6 h-6 rounded border-2 inline-flex items-center justify-center transition ${
+                                contact.outreachMessages?.some((m: any) => m.channel === "linkedin") ||
+                                (contact.outreachCount > 0 && contact.lastContactedAt)
+                                  ? "bg-[#0077B5] border-[#0077B5] text-white"
+                                  : "border-gray-300 hover:border-[#0077B5] text-transparent hover:text-[#0077B5]"
+                              }`}
+                              title={contact.lastContactedAt ? `Reached ${new Date(contact.lastContactedAt).toLocaleDateString()}` : "Mark as LinkedIn reached"}
+                            >
+                              ✓
+                            </button>
+                          ) : (
+                            <span className="text-gray-300 text-xs">—</span>
+                          )}
+                        </td>
+                        {/* Email Sent Checkbox */}
+                        <td className="px-3 py-3 text-center">
+                          {contact.email ? (
+                            <button
+                              onClick={() => {
+                                if (contact.outreachMessages?.some((m: any) => m.channel === "email")) return;
+                                handleOutreachCheck(contact.id, "email_sent");
+                              }}
+                              className={`w-6 h-6 rounded border-2 inline-flex items-center justify-center transition ${
+                                contact.outreachMessages?.some((m: any) => m.channel === "email")
+                                  ? "bg-blue-600 border-blue-600 text-white"
+                                  : contact.outreachCount >= 2
+                                  ? "bg-blue-600 border-blue-600 text-white"
+                                  : "border-gray-300 hover:border-blue-500 text-transparent hover:text-blue-500"
+                              }`}
+                              title={contact.outreachMessages?.find((m: any) => m.channel === "email")
+                                ? `Emailed ${new Date(contact.outreachMessages.find((m: any) => m.channel === "email").sentAt).toLocaleDateString()}`
+                                : "Mark as emailed"}
+                            >
+                              ✓
+                            </button>
+                          ) : (
+                            <span className="text-gray-300 text-xs">—</span>
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           <select
@@ -438,7 +501,7 @@ export default function LeadManagementPage() {
                         </Link>
                         <div className="text-xs text-gray-400 mt-1">{brand.pipelineStage?.replace(/_/g, " ")}</div>
                       </td>
-                      <td colSpan={6} className="px-4 py-3 text-gray-400 text-xs italic">
+                      <td colSpan={8} className="px-4 py-3 text-gray-400 text-xs italic">
                         No contacts — needs enrichment
                       </td>
                     </tr>

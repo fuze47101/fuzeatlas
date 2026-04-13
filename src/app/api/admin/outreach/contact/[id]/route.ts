@@ -23,13 +23,28 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
 
-    const allowedFields = ["outreachStatus", "vertical", "decisionMaker", "notes"];
+    const allowedFields = ["outreachStatus", "vertical", "decisionMaker", "notes", "outreachCount", "lastContactedAt", "lastResponseAt"];
     const updateData: any = {};
 
     for (const field of allowedFields) {
       if (body[field] !== undefined) {
         updateData[field] = body[field];
       }
+    }
+
+    // Handle special action: mark LinkedIn reached or email sent
+    if (body.action === "linkedin_reached") {
+      updateData.outreachStatus = updateData.outreachStatus || "contacted";
+      updateData.lastContactedAt = new Date();
+      // Increment outreach count
+      const current = await prisma.contact.findUnique({ where: { id }, select: { outreachCount: true } });
+      updateData.outreachCount = (current?.outreachCount || 0) + 1;
+    }
+    if (body.action === "email_sent") {
+      updateData.outreachStatus = updateData.outreachStatus || "contacted";
+      updateData.lastContactedAt = new Date();
+      const current = await prisma.contact.findUnique({ where: { id }, select: { outreachCount: true } });
+      updateData.outreachCount = (current?.outreachCount || 0) + 1;
     }
 
     if (Object.keys(updateData).length === 0) {
