@@ -92,12 +92,12 @@ export async function POST(req: Request) {
   }
 
   if (brandsToValidate.length === 0) {
-    const stats = await getValidationStats();
+    const statsResult = await getValidationStats();
     return NextResponse.json({
       ok: true,
       message: "No brands to validate",
       processed: 0,
-      ...stats,
+      stats: statsResult.stats,
     });
   }
 
@@ -140,7 +140,7 @@ export async function POST(req: Request) {
     }
   }
 
-  const stats = await getValidationStats();
+  const statsResult = await getValidationStats();
 
   return NextResponse.json({
     ok: true,
@@ -156,7 +156,7 @@ export async function POST(req: Request) {
       reason: r.reason,
       error: r.error,
     })),
-    ...stats,
+    stats: statsResult.stats,
   });
 }
 
