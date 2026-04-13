@@ -40,6 +40,8 @@ export default function RequestFuzeTestPage() {
   // Form state
   const [selectedFabric, setSelectedFabric] = useState("");
   const [selectedTests, setSelectedTests] = useState<Set<string>>(new Set());
+  const [otherTestSelected, setOtherTestSelected] = useState(false);
+  const [otherTestDescription, setOtherTestDescription] = useState("");
   const [notes, setNotes] = useState("");
   const [trackingNumber, setTrackingNumber] = useState("");
   const [showTrackingInput, setShowTrackingInput] = useState(false);
@@ -126,8 +128,13 @@ export default function RequestFuzeTestPage() {
       return;
     }
 
-    if (selectedTests.size === 0) {
+    if (selectedTests.size === 0 && !otherTestSelected) {
       setError("Please select at least one test");
+      return;
+    }
+
+    if (otherTestSelected && !otherTestDescription.trim()) {
+      setError("Please describe the test you need in the 'Other' field");
       return;
     }
 
@@ -142,10 +149,15 @@ export default function RequestFuzeTestPage() {
         },
         body: JSON.stringify({
           fabricId: selectedFabric,
-          selectedTests: Array.from(selectedTests),
+          selectedTests: [
+            ...Array.from(selectedTests),
+            ...(otherTestSelected ? ["other"] : []),
+          ],
           controlRequired: controlRequiredForAny,
           totalMoqMeters: totalMoq,
-          notes,
+          notes: otherTestSelected && otherTestDescription.trim()
+            ? `${notes ? notes + "\n\n" : ""}[Other Test Requested]: ${otherTestDescription.trim()}`
+            : notes,
           trackingNumber: trackingNumber || null,
         }),
       });
@@ -195,6 +207,8 @@ export default function RequestFuzeTestPage() {
               setSubmitted(false);
               setSelectedFabric("");
               setSelectedTests(new Set());
+              setOtherTestSelected(false);
+              setOtherTestDescription("");
               setNotes("");
               setTrackingNumber("");
             }}
@@ -331,6 +345,38 @@ export default function RequestFuzeTestPage() {
                 </div>
               </label>
             ))}
+
+            {/* Other Test Option */}
+            <label
+              className="relative p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-[#00b4c3] hover:bg-[#00b4c3]/5"
+              style={{
+                borderColor: otherTestSelected ? "#00b4c3" : "#e2e8f0",
+                backgroundColor: otherTestSelected ? "rgba(0, 180, 195, 0.05)" : "transparent",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={otherTestSelected}
+                onChange={() => setOtherTestSelected(!otherTestSelected)}
+                className="absolute top-4 right-4 w-5 h-5 rounded border-slate-300 text-[#00b4c3] focus:ring-[#00b4c3]"
+              />
+              <div className="pr-8">
+                <h3 className="font-semibold text-slate-900 text-sm mb-1">Other</h3>
+                <p className="text-slate-600 text-xs mb-3">
+                  Request a test method not listed above. Describe the test and we will provide a quote.
+                </p>
+                {otherTestSelected && (
+                  <textarea
+                    value={otherTestDescription}
+                    onChange={(e) => setOtherTestDescription(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder="Describe the test method, standard, or requirements..."
+                    rows={3}
+                    className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+                  />
+                )}
+              </div>
+            </label>
           </div>
         </div>
 
@@ -523,7 +569,7 @@ export default function RequestFuzeTestPage() {
         <div className="flex gap-3">
           <button
             type="submit"
-            disabled={submitting || selectedTests.size === 0}
+            disabled={submitting || (selectedTests.size === 0 && !otherTestSelected)}
             className="flex-1 bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-3 rounded-lg font-semibold text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all disabled:opacity-50"
           >
             {submitting ? "Submitting..." : "Submit Test Request"}

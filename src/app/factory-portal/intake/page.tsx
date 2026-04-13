@@ -11,6 +11,7 @@ export default function FactoryIntakePage() {
   const [form, setForm] = useState({
     fabricName: "",
     weight: "",
+    width: "",
     content: "",
     supplier: "",
     notes: "",
@@ -36,6 +37,7 @@ export default function FactoryIntakePage() {
       const formData = new FormData();
       formData.append("fabricName", form.fabricName);
       formData.append("weight", form.weight);
+      formData.append("width", form.width);
       formData.append("content", form.content);
       formData.append("supplier", form.supplier);
       formData.append("notes", form.notes);
@@ -130,16 +132,22 @@ export default function FactoryIntakePage() {
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                     placeholder="e.g., Premium Knit Jersey" />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">Weight (GSM)</label>
-                    <input type="text" value={form.weight} onChange={e => update("weight", e.target.value)}
+                    <label className="block text-xs font-medium text-slate-600 mb-1">Weight (GSM) <span className="text-red-500">*</span></label>
+                    <input type="text" required value={form.weight} onChange={e => update("weight", e.target.value)}
                       className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                       placeholder="e.g., 180" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">Fiber Content</label>
-                    <input type="text" value={form.content} onChange={e => update("content", e.target.value)}
+                    <label className="block text-xs font-medium text-slate-600 mb-1">Full Width (inches) <span className="text-red-500">*</span></label>
+                    <input type="text" required value={form.width} onChange={e => update("width", e.target.value)}
+                      className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+                      placeholder="e.g., 60" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">Fiber Content <span className="text-red-500">*</span></label>
+                    <input type="text" required value={form.content} onChange={e => update("content", e.target.value)}
                       className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                       placeholder="e.g., 100% Polyester" />
                   </div>

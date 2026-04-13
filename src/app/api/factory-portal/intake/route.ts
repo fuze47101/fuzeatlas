@@ -18,13 +18,21 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const fabricName = formData.get("fabricName")?.toString() || "";
     const weight = formData.get("weight")?.toString() || null;
+    const width = formData.get("width")?.toString() || null;
     const content = formData.get("content")?.toString() || null;
     const supplier = formData.get("supplier")?.toString() || null;
     const notes = formData.get("notes")?.toString() || null;
 
-    if (!fabricName.trim()) {
+    // Validate required fields
+    const missing: string[] = [];
+    if (!fabricName.trim()) missing.push("Fabric Name");
+    if (!weight?.trim()) missing.push("Weight (GSM)");
+    if (!width?.trim()) missing.push("Full Width");
+    if (!content?.trim()) missing.push("Fiber Content");
+
+    if (missing.length > 0) {
       return NextResponse.json(
-        { ok: false, error: "Fabric name is required" },
+        { ok: false, error: `Required fields missing: ${missing.join(", ")}` },
         { status: 400 }
       );
     }
@@ -46,6 +54,7 @@ export async function POST(req: Request) {
       data: {
         fuzeNumber,
         weightGsm: weight ? parseFloat(weight) : null,
+        widthInches: width ? parseFloat(width) : null,
         construction: content?.trim() || null,  // fiber content → construction
         note: noteParts.join(" | "),
         factoryId,
