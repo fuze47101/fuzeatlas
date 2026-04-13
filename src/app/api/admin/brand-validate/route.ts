@@ -391,7 +391,7 @@ async function getValidationStats() {
 // ──────────────────────────────────────────────
 
 async function executeCleanup(body: any) {
-  const action = body.action as "archive_irrelevant" | "delete_dead" | "preview";
+  const action = body.action as string;
 
   if (action === "preview" || !action) {
     const irrelevant = await prisma.brand.findMany({
@@ -422,10 +422,28 @@ async function executeCleanup(body: any) {
     return { ok: true, archived: result.count, message: `Archived ${result.count} irrelevant brands` };
   }
 
-  if (action === "delete_dead") {
+  if (action === "archive_unknown") {
+    const result = await prisma.brand.updateMany({
+      where: {
+        validationStatus: "unknown",
+        pipelineStage: "LEAD",
+      },
+      data: { pipelineStage: "ARCHIVE" },
+    });
+    return { ok: true, archived: result.count, message: `Archived ${result.count} unknown brands` };
+  }
+
+  // Generic safe-delete helper for any validation status
+  const deleteStatuses = ["dead", "irrelevant", "unknown"];
+  if (action === "delete_dead" || action === "delete_irrelevant" || action === "delete_unknown") {
+    const targetStatus = action.replace("delete_", "");
+    if (!deleteStatuses.includes(targetStatus)) {
+      return { ok: false, error: `Cannot delete status: ${targetStatus}` };
+    }
+
     // Safety: only delete brands with zero activity
-    const deadBrands = await prisma.brand.findMany({
-      where: { validationStatus: "dead", pipelineStage: "LEAD" },
+    const targetBrands = await prisma.brand.findMany({
+      where: { validationStatus: targetStatus, pipelineStage: { in: ["LEAD", "ARCHIVE"] } },
       select: {
         id: true,
         name: true,
@@ -442,7 +460,7 @@ async function executeCleanup(body: any) {
       },
     });
 
-    const safeToDelete = deadBrands.filter(
+    const safeToDelete = targetBrands.filter(
       (b) =>
         b._count.submissions === 0 &&
         b._count.fabrics === 0 &&
@@ -465,10 +483,10 @@ async function executeCleanup(body: any) {
     return {
       ok: true,
       deleted: ids.length,
-      blocked: deadBrands.length - ids.length,
-      message: `Deleted ${ids.length} dead brands. ${deadBrands.length - ids.length} had activity and were skipped.`,
+      blocked: targetBrands.length - ids.length,
+      message: `Deleted ${ids.length} ${targetStatus} brands. ${targetBrands.length - ids.length} had activity and were skipped.`,
     };
   }
 
-  return { ok: false, error: "Invalid action. Use: preview, archive_irrelevant, delete_dead" };
+  return { ok: false, error: "Invalid action. Use: preview, archive_irrelevant, archive_unknown, delete_dead, delete_irrelevant, delete_unknown" };
 }

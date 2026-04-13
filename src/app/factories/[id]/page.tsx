@@ -8,6 +8,7 @@ import {
   getTagLabel,
   calcProfileCompleteness,
 } from "@/lib/factoryDiscovery";
+import ActivityFeed from "@/components/ActivityFeed";
 
 const NOTE_TYPES = ["NOTE", "CALL", "EMAIL", "MEETING", "TASK", "FOLLOW_UP"];
 
@@ -22,7 +23,7 @@ export default function FactoryDetailPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState<any>({});
-  const [tab, setTab] = useState<"details"|"discovery"|"brands"|"fabrics"|"submissions"|"tests"|"contacts"|"notes">("details");
+  const [tab, setTab] = useState<"details"|"discovery"|"brands"|"fabrics"|"submissions"|"tests"|"contacts"|"notes"|"activity">("details");
   const [users, setUsers] = useState<any[]>([]);
   // Tests state
   const [testRuns, setTestRuns] = useState<any[]>([]);
@@ -179,7 +180,7 @@ export default function FactoryDetailPage() {
 
       {/* Tabs */}
       <div className="flex border-b border-slate-200 mb-4 overflow-x-auto">
-        {(["details","discovery","brands","fabrics","submissions","tests","contacts","notes"] as const).map(tabName => {
+        {(["details","discovery","brands","fabrics","submissions","tests","contacts","notes","activity"] as const).map(tabName => {
           const tabLabels: Record<string, string> = {
             details: t.brandTabs.details,
             discovery: "Discovery Profile",
@@ -189,6 +190,7 @@ export default function FactoryDetailPage() {
             tests: t.nav.testResults || "Tests",
             contacts: t.contacts.title,
             notes: t.brandTabs.notes || "Notes",
+            activity: "CRM Activity",
           };
           return (
             <button key={tabName} onClick={() => setTab(tabName)}
@@ -396,6 +398,11 @@ export default function FactoryDetailPage() {
       {/* ── Notes Tab (NEW) ── */}
       {tab === "notes" && (
         <FactoryNotesTab factoryId={id as string} t={t} />
+      )}
+
+      {/* ── CRM Activity Tab ── */}
+      {tab === "activity" && (
+        <ActivityFeed entityType="factory" entityId={id as string} />
       )}
 
       {/* Delete confirmation modal */}

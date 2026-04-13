@@ -344,6 +344,7 @@ model Factory {
   fuzeOrders      FuzeOrder[]          @relation("FactoryOrders")
   fuzeConsumptions FuzeConsumption[]   @relation("FactoryConsumption")
   distributorPricing DistributorPricing[] @relation("FactoryDistributorPricing")
+  notes           Note[]               @relation("FactoryNotes")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1119,10 +1120,12 @@ model Note {
   content  String
   noteType String?
 
-  brandId String?
-  brand   Brand?  @relation(fields: [brandId], references: [id])
-  userId  String?
-  user    User?   @relation(fields: [userId], references: [id])
+  brandId   String?
+  brand     Brand?   @relation(fields: [brandId], references: [id])
+  factoryId String?
+  factory   Factory? @relation("FactoryNotes", fields: [factoryId], references: [id])
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
 
   contactName String?
   taskStatus  String?
@@ -1130,6 +1133,7 @@ model Note {
   createdAt DateTime @default(now())
 
   @@index([brandId])
+  @@index([factoryId])
   @@index([date])
 }
 

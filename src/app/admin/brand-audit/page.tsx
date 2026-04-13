@@ -148,12 +148,15 @@ export default function BrandAuditPage() {
 
   // Cleanup actions
   const runCleanup = async (action: string) => {
-    const confirm = window.confirm(
-      action === "delete_dead"
-        ? "DELETE all dead/non-existent brands? This cannot be undone."
-        : "ARCHIVE all irrelevant brands? They will be moved to Archive stage."
-    );
-    if (!confirm) return;
+    const messages: Record<string, string> = {
+      delete_dead: "DELETE all dead/non-existent brands with no activity? This cannot be undone.",
+      delete_irrelevant: "DELETE all irrelevant brands with no activity? This cannot be undone.",
+      delete_unknown: "DELETE all unknown brands with no activity? This cannot be undone.",
+      archive_irrelevant: "ARCHIVE all irrelevant LEAD brands? They will be moved to Archive stage.",
+      archive_unknown: "ARCHIVE all unknown LEAD brands? They will be moved to Archive stage.",
+    };
+    const ok = window.confirm(messages[action] || `Run cleanup action: ${action}?`);
+    if (!ok) return;
 
     const res = await fetch("/api/admin/brand-validate", {
       method: "POST",
@@ -255,37 +258,63 @@ export default function BrandAuditPage() {
       )}
 
       {/* Action Buttons */}
-      <div className="bg-white border rounded-xl p-4 mb-6">
+      <div className="bg-white border rounded-xl p-4 mb-6 space-y-3">
+        {/* Validate */}
         <div className="flex flex-wrap gap-3 items-center">
-          <p className="text-sm font-bold text-slate-700 mr-2">Actions:</p>
+          <p className="text-sm font-bold text-slate-700 w-20">Validate:</p>
           <button
             onClick={() => runValidation(25)}
             disabled={validating}
             className="px-4 py-2 text-sm font-bold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
           >
-            {validating ? "Validating..." : "Validate Next 25"}
+            {validating ? "Validating..." : "Next 25"}
           </button>
           <button
             onClick={() => runValidation(50)}
             disabled={validating}
             className="px-4 py-2 text-sm font-bold rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition disabled:opacity-50"
           >
-            {validating ? "Validating..." : "Validate Next 50"}
+            {validating ? "Validating..." : "Next 50"}
           </button>
-          <div className="border-l border-slate-200 pl-3 ml-1">
-            <button
-              onClick={() => runCleanup("archive_irrelevant")}
-              className="px-3 py-2 text-sm font-bold rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 transition mr-2"
-            >
-              Archive Irrelevant
-            </button>
-            <button
-              onClick={() => runCleanup("delete_dead")}
-              className="px-3 py-2 text-sm font-bold rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition"
-            >
-              Delete Dead
-            </button>
-          </div>
+        </div>
+        {/* Archive */}
+        <div className="flex flex-wrap gap-3 items-center">
+          <p className="text-sm font-bold text-slate-700 w-20">Archive:</p>
+          <button
+            onClick={() => runCleanup("archive_irrelevant")}
+            className="px-3 py-2 text-sm font-bold rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 transition"
+          >
+            Irrelevant ({stats?.byStatus.irrelevant || 0})
+          </button>
+          <button
+            onClick={() => runCleanup("archive_unknown")}
+            className="px-3 py-2 text-sm font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition"
+          >
+            Unknown ({stats?.byStatus.unknown || 0})
+          </button>
+        </div>
+        {/* Delete */}
+        <div className="flex flex-wrap gap-3 items-center">
+          <p className="text-sm font-bold text-red-600 w-20">Delete:</p>
+          <button
+            onClick={() => runCleanup("delete_dead")}
+            className="px-3 py-2 text-sm font-bold rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition"
+          >
+            Dead ({stats?.byStatus.dead || 0})
+          </button>
+          <button
+            onClick={() => runCleanup("delete_irrelevant")}
+            className="px-3 py-2 text-sm font-bold rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
+          >
+            Irrelevant ({stats?.byStatus.irrelevant || 0})
+          </button>
+          <button
+            onClick={() => runCleanup("delete_unknown")}
+            className="px-3 py-2 text-sm font-bold rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition"
+          >
+            Unknown ({stats?.byStatus.unknown || 0})
+          </button>
+          <span className="text-[10px] text-slate-400 italic">Only brands with zero activity are deleted</span>
         </div>
       </div>
 
@@ -360,7 +389,9 @@ export default function BrandAuditPage() {
                 <tr key={b.id} className="hover:bg-slate-50 transition">
                   <td className="px-4 py-3">
                     <div>
-                      <p className="font-bold text-slate-800">{b.name}</p>
+                      <Link href={`/brands/${b.id}`} className="font-bold text-blue-700 hover:text-blue-900 hover:underline">
+                        {b.name}
+                      </Link>
                       {b.website && (
                         <a href={b.website.startsWith("http") ? b.website : `https://${b.website}`} target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-500 hover:underline truncate block max-w-[200px]">
                           {b.website}
@@ -408,8 +439,8 @@ export default function BrandAuditPage() {
         {/* Mobile cards */}
         <div className="md:hidden space-y-2 p-3">
           {filtered.slice(0, 50).map((b) => (
-            <div key={b.id} className="rounded-xl p-3 border border-slate-100">
-              <p className="font-bold text-sm text-slate-800">{b.name}</p>
+            <Link key={b.id} href={`/brands/${b.id}`} className="block rounded-xl p-3 border border-slate-100 hover:bg-slate-50 transition">
+              <p className="font-bold text-sm text-blue-700">{b.name}</p>
               <div className="flex flex-wrap gap-1 mt-1">
                 {b.validationStatus && (
                   <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${STATUS_COLORS[b.validationStatus] || STATUS_COLORS.unknown}`}>
@@ -425,7 +456,7 @@ export default function BrandAuditPage() {
               {b.validationReason && (
                 <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{b.validationReason}</p>
               )}
-            </div>
+            </Link>
           ))}
         </div>
       </div>

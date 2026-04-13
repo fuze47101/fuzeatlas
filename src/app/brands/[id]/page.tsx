@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
+import ActivityFeed from "@/components/ActivityFeed";
 
 const STAGES = [
   "LEAD","PRESENTATION","BRAND_TESTING","FACTORY_ONBOARDING",
@@ -33,7 +34,7 @@ export default function BrandDetailPage() {
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState<any>({});
   const [users, setUsers] = useState<any[]>([]);
-  const [tab, setTab] = useState<"details"|"contacts"|"products"|"fabrics"|"factories"|"submissions"|"sows"|"notes"|"tests"|"research">("details");
+  const [tab, setTab] = useState<"details"|"contacts"|"activity"|"products"|"fabrics"|"factories"|"submissions"|"sows"|"notes"|"tests"|"research">("details");
   const [research, setResearch] = useState<any>(null);
   const [researchDate, setResearchDate] = useState<string | null>(null);
   const [researching, setResearching] = useState(false);
@@ -328,6 +329,7 @@ export default function BrandDetailPage() {
           const tabLabels: Record<string, string> = {
             details: t.brandTabs.details,
             contacts: t.brandTabs.contacts,
+            activity: "CRM Activity",
             products: t.brandTabs.products,
             fabrics: t.brandTabs.fabrics,
             factories: t.brands.factories || "Factories",
@@ -639,6 +641,11 @@ export default function BrandDetailPage() {
             </div>
           )}
         </div>
+      )}
+
+      {/* ── CRM Activity Tab ── */}
+      {tab === "activity" && (
+        <ActivityFeed entityType="brand" entityId={id as string} />
       )}
 
       {/* ── Notes Tab (Enhanced with CRUD) ── */}
