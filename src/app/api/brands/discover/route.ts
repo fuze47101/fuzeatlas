@@ -196,9 +196,15 @@ function deduplicateAndValidate(allBrands: any[]): any[] {
 
 export async function POST(req: Request) {
   try {
-    const user = await import("@/lib/auth").then(m => m.getCurrentUser());
-    if (!user || (user.role !== "ADMIN" && user.role !== "EMPLOYEE")) {
-      return NextResponse.json({ ok: false, error: "Admin only" }, { status: 403 });
+    // Allow cron jobs via secret header
+    const cronSecret = req.headers.get("x-cron-secret");
+    const isCron = cronSecret && process.env.CRON_SECRET && cronSecret === process.env.CRON_SECRET;
+
+    if (!isCron) {
+      const user = await import("@/lib/auth").then(m => m.getCurrentUser());
+      if (!user || (user.role !== "ADMIN" && user.role !== "EMPLOYEE")) {
+        return NextResponse.json({ ok: false, error: "Admin only" }, { status: 403 });
+      }
     }
 
     const body = await req.json();
