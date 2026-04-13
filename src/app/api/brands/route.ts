@@ -47,6 +47,15 @@ export async function GET() {
       name: b.name,
       pipelineStage: b.pipelineStage || "LEAD",
       customerType: b.customerType,
+      website: b.website,
+      backgroundInfo: b.backgroundInfo,
+      validationStatus: (b as any).validationStatus || null,
+      validationReason: (b as any).validationReason || null,
+      validationDate: (b as any).validationDate || null,
+      fuzeRelevance: (b as any).fuzeRelevance || null,
+      textileCategory: (b as any).textileCategory || null,
+      companyStatus: (b as any).companyStatus || null,
+      createdAt: b.createdAt,
     }));
 
     return NextResponse.json({ ok: true, grouped, brands: brandsFlat, total: brands.length });

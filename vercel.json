@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/brand-discovery",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/brand-validation",
+      "schedule": "0 */6 * * *"
     }
   ]
 }

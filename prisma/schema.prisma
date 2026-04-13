@@ -240,6 +240,15 @@ model Brand {
 
   raw Json?
 
+  // Validation fields (Phase 1 brand audit)
+  validationStatus  String?   // verified | irrelevant | dead | duplicate | pending | unknown
+  validationReason  String?   // AI-generated explanation for the classification
+  validationDate    DateTime? // When last validated
+  fuzeRelevance     String?   // high | medium | low | none — can we sell FUZE to them?
+  textileCategory   String?   // What they actually make: apparel, home textiles, workwear, etc.
+  companyStatus     String?   // active | closed | acquired | unknown
+  validationData    Json?     // Full AI response + web research results
+
   salesRepId String?
   salesRep   User?  @relation("BrandSalesRep", fields: [salesRepId], references: [id])
 

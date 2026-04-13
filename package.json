@@ -21,7 +21,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1005.0",
     "@aws-sdk/s3-request-presigner": "^3.1005.0",
-    "@prisma/client": "6.19.2",
+    "@prisma/client": "^6.19.3",
     "autoprefixer": "^10.4.20",
     "bcryptjs": "^2.4.3",
     "csv-parse": "^6.1.0",
@@ -43,7 +43,7 @@
     "husky": "^9.0.0",
     "lint-staged": "^15.0.0",
     "prettier": "^3.4.0",
-    "prisma": "6.19.2",
+    "prisma": "^6.19.3",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5"
