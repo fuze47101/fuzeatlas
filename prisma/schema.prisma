@@ -407,6 +407,7 @@ model Distributor {
   users         User[]         @relation("DistributorUsers")
   sourceRecords SourceRecord[]
   fuzeOrders    FuzeOrder[]    @relation("OrderDistributor")
+  testRequests  TestRequest[]  @relation("TestRequestDistributor")
   pricing       DistributorPricing[] @relation("DistributorPricing")
   inventory     DistributorInventory? @relation("DistributorInventory")
 
@@ -1312,6 +1313,11 @@ model TestRequest {
   labId         String?
   lab           Lab?      @relation(fields: [labId], references: [id])
 
+  // Distributor assignment (admin assigns after request comes in)
+  distributorId String?
+  distributor   Distributor? @relation("TestRequestDistributor", fields: [distributorId], references: [id])
+  pricingTier   String?      // F1, F2, F3, F4 — set by account manager on first order
+
   // Lab tracking
   labCustomerNumber String?   // Auto-filled from Lab.customerNumber
   labAccountRef     String?   // Additional reference for lab
@@ -1364,6 +1370,7 @@ model TestRequest {
   @@index([status])
   @@index([brandId])
   @@index([labId])
+  @@index([distributorId])
   @@index([fabricId])
   @@index([projectId])
   @@index([requestedById])

@@ -79,6 +79,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             services: true,
           },
         },
+        distributor: { select: { id: true, name: true, region: true, country: true, coverageCountries: true } },
         requestedBy: { select: { id: true, name: true, email: true } },
         approvedBy: { select: { id: true, name: true, email: true } },
         lines: {
@@ -629,6 +630,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       const newLab = await prisma.lab.findUnique({ where: { id: body.labId }, select: { customerNumber: true } });
       updateData.labCustomerNumber = newLab?.customerNumber || null;
     }
+    if (body.distributorId !== undefined) updateData.distributorId = body.distributorId || null;
+    if (body.pricingTier !== undefined) updateData.pricingTier = body.pricingTier || null;
     if (body.priority !== undefined) updateData.priority = body.priority;
     if (body.specialInstructions !== undefined) updateData.specialInstructions = body.specialInstructions;
     if (body.internalNotes !== undefined) updateData.internalNotes = body.internalNotes;

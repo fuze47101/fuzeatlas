@@ -39,6 +39,8 @@ interface TestRequestLine {
   notes?: string;
 }
 
+interface DistributorOption { id: string; name: string; region?: string; country?: string; }
+
 interface TestRequest {
   id: string;
   poNumber: string;
@@ -51,6 +53,9 @@ interface TestRequest {
   fabric?: { id: string; fuzeNumber?: number; customerCode?: string; construction?: string; weightGsm?: number };
   labId: string;
   lab?: { id: string; name: string; customerNumber?: string };
+  distributorId?: string;
+  distributor?: { id: string; name: string; region?: string; country?: string };
+  pricingTier?: string;
   projectId?: string;
   project?: { id: string; name: string };
   sowId?: string;
@@ -120,6 +125,7 @@ export default function TestRequestsPage() {
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [sows, setSOWs] = useState<SOWOption[]>([]);
   const [labServices, setLabServices] = useState<LabService[]>([]);
+  const [distributors, setDistributors] = useState<DistributorOption[]>([]);
 
   // Create form fields
   const [createLabId, setCreateLabId] = useState("");
@@ -168,6 +174,9 @@ export default function TestRequestsPage() {
       setFabrics(fabricsRes.fabrics || fabricsRes || []);
       setProjects(projectsRes.projects || projectsRes || []);
       setSOWs(sowsRes.sows || sowsRes || []);
+      // Load distributors
+      const distRes = await fetch("/api/admin/distributors").then(r => r.json());
+      setDistributors((distRes.distributors || []).filter((d: any) => d.status === "ACTIVE"));
     } catch {
       // Silently fail — dropdowns will be empty
     }
@@ -695,6 +704,81 @@ export default function TestRequestsPage() {
                         {req.requestedCompletionDate && (
                           <div><span className="text-xs text-slate-500">Due:</span> <span className="text-sm text-slate-800">{new Date(req.requestedCompletionDate).toLocaleDateString()}</span></div>
                         )}
+                      </div>
+                    </div>
+
+                    {/* Distributor & Pricing Assignment */}
+                    <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                      <h4 className="text-xs font-bold text-amber-800 uppercase mb-3">Fulfillment Assignment</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-600 mb-1">Distributor</label>
+                          <select
+                            value={(req as any).distributorId || ""}
+                            onChange={async (e) => {
+                              const distId = e.target.value || null;
+                              setProcessing(req.id);
+                              try {
+                                await fetch(`/api/test-requests/${req.id}`, {
+                                  method: "PUT",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ distributorId: distId }),
+                                });
+                                loadRequests();
+                                setSuccess("Distributor assigned");
+                                setTimeout(() => setSuccess(""), 3000);
+                              } catch { setError("Failed to assign distributor"); }
+                              setProcessing(null);
+                            }}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3]"
+                          >
+                            <option value="">— Select Distributor —</option>
+                            {distributors.map((d) => (
+                              <option key={d.id} value={d.id}>{d.name} {d.region ? `(${d.region})` : ""}</option>
+                            ))}
+                          </select>
+                          {(req as any).distributor && (
+                            <p className="mt-1 text-xs text-amber-700">
+                              Current: <strong>{(req as any).distributor.name}</strong>
+                              {(req as any).distributor.country && ` — ${(req as any).distributor.country}`}
+                            </p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-600 mb-1">Pricing Tier</label>
+                          <select
+                            value={(req as any).pricingTier || ""}
+                            onChange={async (e) => {
+                              const tier = e.target.value || null;
+                              setProcessing(req.id);
+                              try {
+                                await fetch(`/api/test-requests/${req.id}`, {
+                                  method: "PUT",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ pricingTier: tier }),
+                                });
+                                loadRequests();
+                                setSuccess("Pricing tier set");
+                                setTimeout(() => setSuccess(""), 3000);
+                              } catch { setError("Failed to set pricing tier"); }
+                              setProcessing(null);
+                            }}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3]"
+                          >
+                            <option value="">— Select Tier —</option>
+                            <option value="F1">F1 — Full Spectrum (1.0 mg/kg)</option>
+                            <option value="F2">F2 — Advanced Performance (0.75 mg/kg)</option>
+                            <option value="F3">F3 — Core Performance (0.5 mg/kg)</option>
+                            <option value="F4">F4 — Essential Protection (0.25 mg/kg)</option>
+                          </select>
+                        </div>
+                        <div className="flex items-end">
+                          {(req as any).pricingTier && (req as any).distributorId && (
+                            <div className="px-3 py-2 bg-emerald-100 text-emerald-800 rounded-lg text-xs font-bold">
+                              Assigned: {(req as any).pricingTier} via {(req as any).distributor?.name || "distributor"}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
