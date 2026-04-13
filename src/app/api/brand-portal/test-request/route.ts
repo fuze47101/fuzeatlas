@@ -275,7 +275,7 @@ export async function POST(req: Request) {
               <h2 style="color:#00b4c3;margin:0">Test Request Submitted</h2>
             </div>
             <div style="background:#f9f9f9;padding:24px;border:1px solid #e0e0e0;border-top:none;border-radius:0 0 8px 8px">
-              <p style="font-size:14px;color:#333"><strong>${brandRecord?.name}</strong> submitted a test request to <strong>${labRecord?.name}</strong></p>
+              <p style="font-size:14px;color:#333"><strong>${brandRecord?.name || "A customer"}</strong> submitted a test request to <strong>${labRecord?.name || "FUZE Atlas Lab"}</strong></p>
               <table style="width:100%;border-collapse:collapse;font-size:14px">
                 <tr><td style="padding:6px 0;color:#888;width:130px">PO</td><td style="padding:6px 0;font-weight:600">${poNumber}</td></tr>
                 <tr><td style="padding:6px 0;color:#888">Tests</td><td style="padding:6px 0">${testList}</td></tr>

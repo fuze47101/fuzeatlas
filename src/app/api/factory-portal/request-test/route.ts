@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { pushTestRequestStatus } from "@/lib/notify-realtime";
-import { sendTestRequestStatusEmail } from "@/lib/email";
+import { sendEmail, sendTestRequestStatusEmail } from "@/lib/email";
 
 /* ── GET /api/factory-portal/request-test ── list factory's test requests ── */
 export async function GET(req: Request) {
@@ -209,17 +209,44 @@ export async function POST(req: Request) {
           where: { role: { in: ["ADMIN", "EMPLOYEE"] }, email: { not: null }, status: "ACTIVE" },
           select: { id: true, email: true, name: true },
         });
+
+        const factoryName = user.factory?.name || "A factory";
+        const poNum = adminPO?.poNumber || testRequest.id;
+        const testList = (selectedTests || []).map((t: string) => t.toUpperCase()).join(", ");
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
+
+        const adminHtml = `
+          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+            <div style="background:#1A1A2E;padding:20px 24px;border-radius:8px 8px 0 0">
+              <h2 style="color:#00b4c3;margin:0">Test Request Submitted</h2>
+            </div>
+            <div style="background:#f9f9f9;padding:24px;border:1px solid #e0e0e0;border-top:none;border-radius:0 0 8px 8px">
+              <p style="font-size:14px;color:#333"><strong>${factoryName}</strong> submitted a test request to <strong>FUZE Atlas Lab</strong></p>
+              <table style="width:100%;border-collapse:collapse;font-size:14px">
+                <tr><td style="padding:6px 0;color:#888;width:130px">PO</td><td style="padding:6px 0;font-weight:600">${poNum}</td></tr>
+                <tr><td style="padding:6px 0;color:#888">Tests</td><td style="padding:6px 0">${testList}</td></tr>
+                <tr><td style="padding:6px 0;color:#888">Priority</td><td style="padding:6px 0">NORMAL</td></tr>
+              </table>
+              <div style="margin-top:20px;text-align:center">
+                <a href="${baseUrl}/test-requests"
+                   style="display:inline-block;background:#00b4c3;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600">
+                  Review Request
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+
         for (const admin of admins) {
           if (admin.email) {
-            sendTestRequestStatusEmail({
-              email: admin.email,
-              name: admin.name || "Admin",
-              poNumber: adminPO?.poNumber || testRequest.id,
-              newStatus: "PENDING_APPROVAL",
-              testRequestId: adminPO?.id || testRequest.id,
+            sendEmail({
+              to: admin.email,
+              subject: `🧪 Test Request ${poNum} — ${factoryName} → FUZE Atlas Lab`,
+              html: adminHtml,
             }).catch(() => {});
           }
         }
+
         // Push real-time notification
         await pushTestRequestStatus({
           testRequestId: adminPO?.id || testRequest.id,
