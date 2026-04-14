@@ -500,6 +500,7 @@ export async function PATCH(req: Request) {
           shippedDate: new Date(),
           trackingNumber: updateData.trackingNumber || null,
           carrier: updateData.carrier || null,
+          batchId: updateData.batchId || order.batchId || null,
         };
         // Deduct from distributor inventory if applicable
         if (order.distributorId && order.volumeLiters) {
@@ -514,6 +515,34 @@ export async function PATCH(req: Request) {
             });
           } catch {} // Inventory record may not exist yet
         }
+        // Log lifecycle event so the timeline + QR page reflect it
+        try {
+          let batchLabel = "";
+          if (updateData.batchId) {
+            const b = await prisma.productionBatch.findUnique({
+              where: { id: updateData.batchId },
+              select: { batchCode: true },
+            });
+            if (b) batchLabel = ` · batch ${b.batchCode}`;
+          }
+          const from = order.distributorId ? "SHIPPED_FROM_DISTRIBUTOR" : "SHIPPED_FROM_FUZE";
+          await prisma.orderLifecycleEvent.create({
+            data: {
+              orderId: order.id,
+              eventType: from,
+              title: `Shipped via ${updateData.carrier || "carrier"}${batchLabel}`,
+              description: updateData.trackingNumber ? `Tracking: ${updateData.trackingNumber}` : null,
+              actorId: user.id,
+              actorName: user.name || user.email,
+              data: {
+                trackingNumber: updateData.trackingNumber,
+                carrier: updateData.carrier,
+                batchId: updateData.batchId,
+              },
+              isPublic: true,
+            },
+          });
+        } catch {}
         break;
 
       case "deliver":

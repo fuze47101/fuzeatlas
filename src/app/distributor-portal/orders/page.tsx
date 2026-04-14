@@ -21,19 +21,21 @@ export default function DistributorOrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
+  const [batches, setBatches] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [shipForm, setShipForm] = useState({ trackingNumber: "", carrier: "" });
+  const [shipForm, setShipForm] = useState({ trackingNumber: "", carrier: "", batchId: "" });
   const [updating, setUpdating] = useState(false);
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
     if (user?.role !== "DISTRIBUTOR_USER" && !["ADMIN", "EMPLOYEE"].includes(user?.role || "")) {
-      router.push("/dashboard");
+      router.push("/home");
       return;
     }
     loadOrders();
+    loadBatches();
   }, [user]);
 
   async function loadOrders() {
@@ -49,6 +51,14 @@ export default function DistributorOrdersPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function loadBatches() {
+    try {
+      const res = await fetch("/api/admin/batches");
+      const data = await res.json();
+      if (data.ok) setBatches((data.batches || []).filter((b: any) => b.qcPassed));
+    } catch {}
   }
 
   async function handleAction(orderId: string, action: string, extraData?: any) {
@@ -249,6 +259,26 @@ export default function DistributorOrdersPage() {
                       className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none"
                     />
                   </div>
+                  {batches.length > 0 && (
+                    <div className="mb-3">
+                      <label className="block text-xs font-semibold text-purple-800 mb-1">
+                        Production Batch (which batch did these bottles come from?)
+                      </label>
+                      <select
+                        value={shipForm.batchId}
+                        onChange={(e) => setShipForm({ ...shipForm, batchId: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none bg-white"
+                      >
+                        <option value="">— Select batch —</option>
+                        {batches.map((b) => (
+                          <option key={b.id} value={b.id}>
+                            {b.batchCode} · {b.volumeProducedLiters}L · {new Date(b.productionDate).toLocaleDateString()}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="text-[10px] text-purple-700 mt-1">Ties the QR sticker to this order's lifecycle timeline.</p>
+                    </div>
+                  )}
                   <button
                     onClick={() => handleAction(selectedOrder.id, "ship", shipForm)}
                     disabled={updating}
@@ -277,6 +307,12 @@ export default function DistributorOrdersPage() {
                 </div>
               )}
 
+              <a
+                href={`/factory-portal/orders/${selectedOrder.id}`}
+                className="block w-full text-center px-4 py-2.5 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 transition-colors"
+              >
+                Open full lifecycle view →
+              </a>
               <button
                 onClick={() => setSelectedOrder(null)}
                 className="w-full px-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg font-semibold hover:bg-slate-200 transition-colors"

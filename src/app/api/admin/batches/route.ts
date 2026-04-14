@@ -21,8 +21,12 @@ function generateBatchCode() {
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || !["ADMIN", "EMPLOYEE"].includes(user.role)) {
-      return NextResponse.json({ ok: false, error: "Admin access required" }, { status: 403 });
+    if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+    // Admin/Employee/Distributor all allowed to read batch list (distributors
+    // need it when selecting which batch they're shipping from).
+    const allowed = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "DISTRIBUTOR_USER"];
+    if (!allowed.includes(user.role)) {
+      return NextResponse.json({ ok: false, error: "Access denied" }, { status: 403 });
     }
     const batches = await prisma.productionBatch.findMany({
       orderBy: { productionDate: "desc" },
