@@ -24,7 +24,7 @@ function generateTestNumber() {
  * Pure calculation so the UI can preview before saving, and the
  * server can recompute canonical values on save.
  */
-export function computeRecipe(input: any) {
+function computeRecipe(input: any) {
   const dry = Number(input.drySampleWeight) || 0;
   const wetDryToWet = Number(input.wetAfterBathWeight) || 0;
   const preWet = Number(input.preWetSampleWeight) || 0;
