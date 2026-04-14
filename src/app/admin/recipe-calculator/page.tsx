@@ -23,6 +23,18 @@ const TIER_MG_PER_KG: Record<string, number> = { F1: 1.0, F2: 0.75, F3: 0.5, F4:
 const ROLLER_CIRCUMFERENCE_M = 0.41;
 const HZ_TO_M_PER_MIN = 0.295;
 const HZ_TO_RPM = HZ_TO_M_PER_MIN / ROLLER_CIRCUMFERENCE_M;
+const STANDARD_BATHS_L = [50, 100, 200, 300, 400];
+
+// For a given bath volume (L) at a given pickup %, how much FUZE stock (L) to add?
+//   bath_conc (mg/L) = tier_mg_per_kg / (pickup/100)
+//   total active needed (mg) = bath_conc × bath_L
+//   FUZE stock volume (L) = total_mg / stock_mg_per_L  (units: mg / (mg/L) = L)
+function fuzeLitersForBath(bathL: number, pickupPct: number, mgPerKg: number, stock: number): number {
+  if (!pickupPct || !bathL) return 0;
+  const bathConc = mgPerKg / (pickupPct / 100);
+  const totalMgNeeded = bathConc * bathL;
+  return totalMgNeeded / stock;
+}
 
 function computeRecipe(input: any) {
   const dry = Number(input.drySampleWeight) || 0;
@@ -445,16 +457,29 @@ export default function RecipeCalculatorPage() {
         {step === 4 && (
           <div className="space-y-4">
             <div className="p-4 bg-cyan-50 border border-cyan-200 rounded-lg text-sm text-slate-700">
-              💧 Submerge the same sample in clean DI water for 10 sec, let drain 3 sec, then pad at 4 bar / 10 Hz. Weigh immediately (within 10 sec of padding).
+              <p className="font-bold mb-2">💧 Dry-to-wet pickup — protocol</p>
+              <ol className="space-y-1 pl-5 list-decimal">
+                <li>Submerge dry sample in clean DI water for <strong>10 sec</strong></li>
+                <li>Let drain <strong>3 sec</strong> from one corner</li>
+                <li>Feed through pad at <strong>4 bar / 10 Hz — single pass</strong></li>
+                <li>Weigh <strong>immediately</strong> (within 10 sec of padding)</li>
+              </ol>
+              <p className="mt-2 text-xs text-amber-800 bg-amber-100 rounded px-2 py-1">
+                ⚠ <strong>Do NOT re-pad to lower the weight.</strong> Single pass at 4 bar IS the pickup. Re-padding measures squeezer over-squeeze, not pickup. If a second pass drops mass >5% your squeezer has a consistency issue.
+              </p>
+              <p className="mt-2 text-xs text-slate-600">
+                📊 <strong>Best practice:</strong> run in triplicate and take the mean.
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-slate-600">Dry weight (reference)</label>
+                <label className="text-xs font-semibold text-slate-600">Dry weight (from Step 2)</label>
                 <div className="px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 font-mono text-slate-600">{form.drySampleWeight || "—"} g</div>
               </div>
               <div>
                 <label className="text-xs font-semibold text-slate-600">Wet weight after pad (g) *</label>
                 <input type="number" step="0.001" value={form.wetAfterBathWeight} onChange={(e) => set("wetAfterBathWeight", e.target.value)} placeholder="e.g. 3.30" className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-lg font-bold" autoFocus />
+                <p className="text-[10px] text-slate-500 mt-1">Single-pass weight. Don't re-pad.</p>
               </div>
             </div>
             {calc.pickupDryToWetPct !== undefined && (
@@ -471,28 +496,45 @@ export default function RecipeCalculatorPage() {
         {step === 5 && (
           <div className="space-y-4">
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-slate-700">
-              🌊 <strong>Optional.</strong> Only needed if your production treats wet-on-wet fabric. Pre-wet a fresh sample, weigh, pad, weigh again.
+              <p className="font-bold mb-2">🌊 Wet-to-wet pickup — when & how</p>
+              <p className="mb-2"><strong>When to run it:</strong> if your production treats fabric that arrives wet (from scouring, bleaching, etc.). The existing water dilutes the treatment bath, so net active-ingredient pickup is lower than dry-to-wet.</p>
+              <p className="font-semibold mt-2">Protocol (on a fresh sample):</p>
+              <ol className="space-y-1 pl-5 list-decimal mt-1">
+                <li>Weigh dry (use the dry weight from Step 2)</li>
+                <li><strong>Pre-wet with WATER ONLY:</strong> submerge 10 sec, drain 3 sec, pad at 4 bar → weigh = <strong>W_prewet</strong></li>
+                <li><strong>Dip in TREATMENT BATH:</strong> submerge 10 sec, drain 3 sec, pad at 4 bar → weigh = <strong>W_final</strong></li>
+                <li>Net wet-to-wet pickup % = (W_final − W_prewet) / W_dry × 100</li>
+              </ol>
+              <p className="mt-2 text-[11px] text-slate-600">Skip this step if your production runs dry fabric into the bath.</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-slate-600">Pre-wet weight (g)</label>
+                <label className="text-xs font-semibold text-slate-600">Pre-wet weight (g) — water only</label>
                 <input type="number" step="0.001" value={form.preWetSampleWeight} onChange={(e) => set("preWetSampleWeight", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
+                <p className="text-[10px] text-slate-500 mt-1">After water dip + pad, before bath</p>
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-600">Wet after pad (from pre-wet) (g)</label>
+                <label className="text-xs font-semibold text-slate-600">Wet after bath pad (g) — final</label>
                 <input type="number" step="0.001" value={form.wetAfterBathFromPreWet} onChange={(e) => set("wetAfterBathFromPreWet", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
+                <p className="text-[10px] text-slate-500 mt-1">After treatment dip + pad</p>
               </div>
             </div>
             {calc.pickupWetToWetPct !== undefined && (
               <div className="p-4 bg-slate-900 rounded-lg text-white">
-                <p className="text-xs font-bold uppercase text-white/60">Pre-wet moisture</p>
-                <p className="text-xl font-mono font-bold">{calc.preWetMoisturePct.toFixed(1)}%</p>
-                <p className="text-xs font-bold uppercase text-white/60 mt-2">Wet-to-wet pickup</p>
-                <p className="text-3xl font-black text-[#00b4c3]">{calc.pickupWetToWetPct.toFixed(1)}%</p>
-                <p className="text-xs text-white/50 mt-1">This will be used for the dilution calc (overrides dry-to-wet).</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs font-bold uppercase text-white/60">Pre-wet moisture</p>
+                    <p className="text-xl font-mono font-bold">{calc.preWetMoisturePct.toFixed(1)}%</p>
+                    <p className="text-[10px] text-white/50">water picked up before bath</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase text-white/60">Net wet-to-wet pickup</p>
+                    <p className="text-3xl font-black text-[#00b4c3]">{calc.pickupWetToWetPct.toFixed(1)}%</p>
+                    <p className="text-[10px] text-white/50">used for dilution calc</p>
+                  </div>
+                </div>
               </div>
             )}
-            <p className="text-xs text-slate-500">Not doing wet-to-wet? Just click Next.</p>
           </div>
         )}
 
@@ -500,31 +542,71 @@ export default function RecipeCalculatorPage() {
         {step === 6 && (
           <div className="space-y-4">
             <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-slate-700">
-              🏭 <strong>Optional.</strong> Enter the target production fabric mass (kg) and we'll compute total FUZE liters for a real run at each tier.
+              🏭 Two ways to plan a production run. Use either (or both).
             </div>
-            <div className="grid grid-cols-2 gap-3">
+
+            {/* QUICK BATH VOLUME TABLE */}
+            {pickupUsed && (
               <div>
-                <label className="text-xs font-semibold text-slate-600">Target fabric mass (kg)</label>
-                <input type="number" step="1" value={form.targetProductionKg} onChange={(e) => set("targetProductionKg", e.target.value)} placeholder="e.g. 1000" className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-600">Stock FUZE (mg/L)</label>
-                <input type="number" step="0.1" value={form.stockMgPerL} onChange={(e) => set("stockMgPerL", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
-                <p className="text-[10px] text-slate-400 mt-0.5">Standard: 30 mg/L</p>
-              </div>
-            </div>
-            {calc.targetBathVolumeL && (
-              <div className="p-4 bg-slate-900 rounded-lg text-white space-y-1">
-                <div className="flex justify-between"><span className="text-white/70 text-sm">Total bath volume</span><span className="font-mono font-bold">{calc.targetBathVolumeL.toFixed(1)} L</span></div>
-                {["F1","F2","F3","F4"].map(t => (
-                  <div key={t} className="flex justify-between text-sm">
-                    <span className="text-white/70">{t} FUZE needed</span>
-                    <span className="font-mono font-bold text-[#00b4c3]">{calc[`${t}_liters`]?.toFixed(2) || "—"} L</span>
-                  </div>
-                ))}
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">Quick bath reference — FUZE stock needed per bath size</p>
+                <div className="overflow-x-auto bg-slate-900 text-white rounded-lg">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-white/20 text-xs text-white/60">
+                        <th className="text-left px-3 py-2">Bath Volume</th>
+                        <th className="text-right px-3 py-2">F1</th>
+                        <th className="text-right px-3 py-2">F2</th>
+                        <th className="text-right px-3 py-2">F3</th>
+                        <th className="text-right px-3 py-2">F4</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {STANDARD_BATHS_L.map((bathL) => (
+                        <tr key={bathL} className="border-b border-white/10">
+                          <td className="px-3 py-2 font-mono font-bold">{bathL} L bath</td>
+                          {["F1","F2","F3","F4"].map(t => {
+                            const lFuze = fuzeLitersForBath(bathL, pickupUsed, TIER_MG_PER_KG[t], Number(form.stockMgPerL) || 30);
+                            return (
+                              <td key={t} className="px-3 py-2 text-right font-mono text-[#00b4c3] font-bold">
+                                {lFuze >= 1 ? lFuze.toFixed(2) + " L" : (lFuze * 1000).toFixed(0) + " mL"}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1">Pickup {pickupUsed.toFixed(1)}% · Stock {form.stockMgPerL} mg/L · Add the rest as water to reach the bath volume.</p>
               </div>
             )}
-            <p className="text-xs text-slate-500">Skip if you just want the recipe (no production planning).</p>
+
+            {/* TARGET FABRIC MASS */}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">Or by target fabric mass</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-600">Target fabric mass (kg)</label>
+                  <input type="number" step="1" value={form.targetProductionKg} onChange={(e) => set("targetProductionKg", e.target.value)} placeholder="e.g. 1000" className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-600">Stock FUZE (mg/L)</label>
+                  <input type="number" step="0.1" value={form.stockMgPerL} onChange={(e) => set("stockMgPerL", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
+                  <p className="text-[10px] text-slate-400 mt-0.5">Standard: 30 mg/L</p>
+                </div>
+              </div>
+              {calc.targetBathVolumeL && (
+                <div className="mt-3 p-4 bg-slate-900 rounded-lg text-white space-y-1">
+                  <div className="flex justify-between"><span className="text-white/70 text-sm">Total bath volume for {form.targetProductionKg} kg</span><span className="font-mono font-bold">{calc.targetBathVolumeL.toFixed(1)} L</span></div>
+                  {["F1","F2","F3","F4"].map(t => (
+                    <div key={t} className="flex justify-between text-sm">
+                      <span className="text-white/70">{t} FUZE needed</span>
+                      <span className="font-mono font-bold text-[#00b4c3]">{calc[`${t}_liters`]?.toFixed(2) || "—"} L</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -562,6 +644,41 @@ export default function RecipeCalculatorPage() {
                 ))}
               </div>
             </div>
+
+            {/* QUICK BATH TABLE on review too */}
+            {pickupUsed && (
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Quick bath reference</p>
+                <div className="overflow-x-auto bg-slate-900 text-white rounded-lg">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-white/20 text-xs text-white/60">
+                        <th className="text-left px-3 py-2">Bath</th>
+                        <th className="text-right px-3 py-2">F1</th>
+                        <th className="text-right px-3 py-2">F2</th>
+                        <th className="text-right px-3 py-2">F3</th>
+                        <th className="text-right px-3 py-2">F4</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {STANDARD_BATHS_L.map((bathL) => (
+                        <tr key={bathL} className="border-b border-white/10">
+                          <td className="px-3 py-2 font-mono">{bathL} L</td>
+                          {["F1","F2","F3","F4"].map(t => {
+                            const lFuze = fuzeLitersForBath(bathL, pickupUsed, TIER_MG_PER_KG[t], Number(form.stockMgPerL) || 30);
+                            return (
+                              <td key={t} className="px-3 py-2 text-right font-mono text-[#00b4c3]">
+                                {lFuze >= 1 ? lFuze.toFixed(2) + " L" : (lFuze * 1000).toFixed(0) + " mL"}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
             <div>
               <label className="text-xs font-semibold text-slate-600">Notes (optional)</label>

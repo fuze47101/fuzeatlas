@@ -183,6 +183,42 @@ export default function PrintTestCardPage() {
           )}
         </section>
 
+        {/* Quick bath reference */}
+        {pickupUsed && (
+          <section className="mb-4">
+            <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">Quick bath reference — FUZE stock per bath</h2>
+            <div className="border border-slate-300 rounded">
+              <table className="w-full text-xs">
+                <thead className="bg-slate-100">
+                  <tr>
+                    <th className="text-left px-2 py-1">Bath</th>
+                    <th className="text-right px-2 py-1">F1</th>
+                    <th className="text-right px-2 py-1">F2</th>
+                    <th className="text-right px-2 py-1">F3</th>
+                    <th className="text-right px-2 py-1">F4</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[50, 100, 200, 300, 400].map((bathL) => {
+                    const conc = (tier: number) => tier / (pickupUsed / 100);
+                    const lFuze = (tier: number) => (conc(tier) * bathL) / (test.stockMgPerL || 30);
+                    return (
+                      <tr key={bathL} className="border-t border-slate-200">
+                        <td className="px-2 py-1 font-mono">{bathL} L</td>
+                        <td className="px-2 py-1 text-right font-mono">{lFuze(1.0) >= 1 ? lFuze(1.0).toFixed(2) + " L" : (lFuze(1.0) * 1000).toFixed(0) + " mL"}</td>
+                        <td className="px-2 py-1 text-right font-mono">{lFuze(0.75) >= 1 ? lFuze(0.75).toFixed(2) + " L" : (lFuze(0.75) * 1000).toFixed(0) + " mL"}</td>
+                        <td className="px-2 py-1 text-right font-mono">{lFuze(0.5) >= 1 ? lFuze(0.5).toFixed(2) + " L" : (lFuze(0.5) * 1000).toFixed(0) + " mL"}</td>
+                        <td className="px-2 py-1 text-right font-mono">{lFuze(0.25) >= 1 ? lFuze(0.25).toFixed(2) + " L" : (lFuze(0.25) * 1000).toFixed(0) + " mL"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-[9px] text-slate-500 mt-1">Pickup {pickupUsed.toFixed(1)}% · Stock {test.stockMgPerL} mg/L · Top up with water to reach bath volume.</p>
+          </section>
+        )}
+
         {test.notes && (
           <section className="mb-4 text-sm">
             <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-1">Notes</h2>

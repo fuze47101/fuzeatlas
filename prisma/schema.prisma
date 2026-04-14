@@ -1787,8 +1787,9 @@ model RecipeBenchTest {
   curingTime        Float?  // minutes
   liquorRatio       String? // "1:10" for exhaust
 
-  // Raw measurements (grams)
+  // Raw measurements (grams) — primary values are the mean across sample runs
   sampleAreaCm2         Float?  // area of the cut sample (default 100 cm² with FUZE cutter)
+  sampleRuns            Json?   // [{run:1, dry, wet, preWet?, wetFromPreWet?}, ...]  for triplicate
   drySampleWeight       Float   // dry fabric before any wetting
   wetAfterBathWeight    Float   // dry-to-wet pad: dry → bath → pad → weigh
   preWetSampleWeight    Float?  // wet-to-wet pad: pre-wet the fabric first

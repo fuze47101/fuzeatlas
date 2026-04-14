@@ -56,6 +56,7 @@ export default function RecipeSOPPage() {
             <ul className="text-slate-700 leading-snug list-disc pl-4">
               <li>FUZE mini pad bath (HTAI P-B0) — <strong>4 bar squeeze (0.4 MPa)</strong>, 41 cm roller circumference</li>
               <li>VFD calibration: <strong>m/min ≈ Hz × 0.295</strong>, e.g. 10 Hz = ~3.0 m/min, 20 Hz = ~5.9 m/min</li>
+              <li>100 cm² fabric cutter · Analytical balance (0.01 g)</li>
               <li>Analytical balance (0.01 g precision or better)</li>
               <li>Clean deionized water</li>
               <li>Fabric sample (10 × 10 cm recommended)</li>
@@ -73,6 +74,19 @@ export default function RecipeSOPPage() {
             <div><strong>F2</strong>: 0.75 mg/kg OWF<br /><strong>F3</strong>: 0.5 mg/kg OWF</div>
             <div><strong>F4</strong>: 0.25 mg/kg OWF<br />(light performance)</div>
           </div>
+        </section>
+
+        {/* Critical protocol rules */}
+        <section className="mb-5 bg-amber-50 border-l-4 border-amber-500 px-4 py-3 text-xs">
+          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide">⚠ Critical Protocol Rules</h2>
+          <ol className="space-y-1 pl-5 list-decimal text-slate-700">
+            <li><strong>Single pass, 4 bar, weigh within 10 seconds.</strong> Do NOT re-pad to lower the wet weight — that measures squeezer over-squeeze, not pickup.</li>
+            <li><strong>Squeezer consistency check:</strong> if a 2nd pass drops mass by more than 5%, flag the squeezer — it isn't at equilibrium on the first pass.</li>
+            <li><strong>Run each fabric in triplicate</strong> (3 separate samples), record each run's pickup, report the mean. Flag the batch if any run deviates >10% from the mean.</li>
+            <li><strong>Dry-to-wet vs wet-to-wet:</strong> dry-to-wet is the lab default. Wet-to-wet requires a fresh sample, pre-wetted with <em>water only</em> and padded first, THEN dipped into the treatment bath. Net pickup = (W_final − W_prewet) / W_dry × 100.</li>
+            <li><strong>Temperature:</strong> bath and fabric conditioned to 20–25 °C before weighing. Cold fabric ≠ ambient pickup.</li>
+            <li><strong>Weigh fast:</strong> every 10 seconds of delay after padding, water evaporates and your pickup reading drops.</li>
+          </ol>
         </section>
 
         {/* Procedure */}
