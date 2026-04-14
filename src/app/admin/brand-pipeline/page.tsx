@@ -121,6 +121,8 @@ export default function BrandPipelinePage() {
     if (stageFilter !== "all") params.set("stage", stageFilter);
     if (relevanceFilter !== "all") params.set("relevance", relevanceFilter);
     params.set("view", viewFilter);
+    // Hard-scope this page to LEAD-only brands; Accounts page lives separately.
+    params.set("mode", "pipeline");
 
     try {
       const res = await fetch(`/api/admin/brand-pipeline?${params.toString()}`);

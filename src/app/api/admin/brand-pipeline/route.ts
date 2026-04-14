@@ -29,9 +29,34 @@ export async function GET(req: Request) {
     const relevance = url.searchParams.get("relevance");
     const search = url.searchParams.get("search");
     const view = url.searchParams.get("view") || "actionable";
+    // mode: "pipeline" (LEAD only) | "accounts" (post-LEAD) | undefined (both)
+    const mode = url.searchParams.get("mode");
 
     // Build where clause
     const conditions: any[] = [];
+
+    // Pipeline vs Accounts split:
+    // "pipeline" shows only LEAD brands (prospects being worked)
+    // "accounts" shows brands that have received a presentation or more
+    // (PRESENTATION, BRAND_TESTING, FACTORY_ONBOARDING, FACTORY_TESTING,
+    // PRODUCTION, BRAND_EXPANSION, CUSTOMER_WON)
+    if (mode === "pipeline") {
+      conditions.push({ pipelineStage: "LEAD" });
+    } else if (mode === "accounts") {
+      conditions.push({
+        pipelineStage: {
+          in: [
+            "PRESENTATION",
+            "BRAND_TESTING",
+            "FACTORY_ONBOARDING",
+            "FACTORY_TESTING",
+            "PRODUCTION",
+            "BRAND_EXPANSION",
+            "CUSTOMER_WON",
+          ],
+        },
+      });
+    }
 
     if (view === "actionable") {
       // Brands you can actually work with: have contacts, or past LEAD, or verified with high relevance
