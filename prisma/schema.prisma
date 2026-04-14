@@ -2216,6 +2216,7 @@ model FuzeOrder {
 
   consumptions    FuzeConsumption[]
   brandAllocations OrderBrandAllocation[]
+  lifecycleEvents OrderLifecycleEvent[] @relation("OrderLifecycle")
 
   @@index([factoryId])
   @@index([brandId])
@@ -2255,6 +2256,42 @@ model OrderBrandAllocation {
   @@unique([orderId, brandId])
   @@index([brandId])
   @@index([orderId])
+}
+
+// ─────────────────────────────────────────────
+// ORDER LIFECYCLE EVENTS
+// Unified audit trail for a FuzeOrder: ship → receive → treat → test → certify
+// Feeds the public shipment verification page (QR destination)
+// ─────────────────────────────────────────────
+model OrderLifecycleEvent {
+  id        String   @id @default(cuid())
+
+  orderId   String
+  order     FuzeOrder @relation("OrderLifecycle", fields: [orderId], references: [id], onDelete: Cascade)
+
+  eventType String   // ORDER_PLACED | QUOTE_ACCEPTED | APPROVED | SHIPPED_FROM_FUZE |
+                     // SHIPPED_FROM_DISTRIBUTOR | IN_TRANSIT | CUSTOMS |
+                     // RECEIVED_AT_FACTORY | TREATMENT_APPLIED | ICP_SAMPLE_SUBMITTED |
+                     // ICP_CERTIFIED | BRAND_NOTIFIED | CANCELLED | NOTE
+  title     String   // Short human-readable label
+  description String? // Longer narrative
+  location  String?
+  actorId   String?  // User who logged the event
+  actorName String?  // Cached display name
+
+  // Structured payload for specific event types
+  data      Json?    // { metersProcessed, litersUsed, method, trackingNumber, carrier, labId, certificateUrl, ... }
+
+  photoUrl  String?
+  documentUrl String? // Link to SDS/COA/BOL/certificate
+
+  isPublic  Boolean  @default(true)  // Hide internal notes from public QR page
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([eventType])
+  @@index([createdAt])
 }
 
 model FuzeConsumption {

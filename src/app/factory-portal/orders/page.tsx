@@ -441,7 +441,7 @@ export default function FactoryOrdersPage() {
             return (
               <div
                 key={order.id}
-                onClick={() => setSelectedOrder(order)}
+                onClick={() => router.push(`/factory-portal/orders/${order.id}`)}
                 className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 hover:border-[#00b4c3]/40 hover:shadow-md transition-all cursor-pointer"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
