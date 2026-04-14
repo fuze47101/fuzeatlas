@@ -1776,6 +1776,7 @@ model RecipeBenchTest {
   liquorRatio       String? // "1:10" for exhaust
 
   // Raw measurements (grams)
+  sampleAreaCm2         Float?  // area of the cut sample (default 100 cm² with FUZE cutter)
   drySampleWeight       Float   // dry fabric before any wetting
   wetAfterBathWeight    Float   // dry-to-wet pad: dry → bath → pad → weigh
   preWetSampleWeight    Float?  // wet-to-wet pad: pre-wet the fabric first

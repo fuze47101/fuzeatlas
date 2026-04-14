@@ -145,6 +145,7 @@ export async function POST(req: Request) {
         curingTime: body.curingTime ? Number(body.curingTime) : null,
         liquorRatio: body.liquorRatio || null,
 
+        sampleAreaCm2: body.sampleAreaCm2 ? Number(body.sampleAreaCm2) : 100,
         drySampleWeight: Number(body.drySampleWeight),
         wetAfterBathWeight: Number(body.wetAfterBathWeight),
         preWetSampleWeight: body.preWetSampleWeight ? Number(body.preWetSampleWeight) : null,
