@@ -59,8 +59,31 @@ const translations: Record<Locale, Translations> = {
   vi, bn, hi, ta, ko, th, tr, ja, id, ms, ur, es, it, km,
 };
 
+/**
+ * Deep fallback merge — walks the English source and fills in any
+ * missing keys in the requested locale with the English value.
+ * Ensures no screen ever renders an undefined/empty string even
+ * when a translation file is incomplete.
+ */
+function deepFallback<T extends Record<string, any>>(target: Partial<T>, source: T): T {
+  if (typeof source !== "object" || source === null) return (target as T) ?? source;
+  const out: any = Array.isArray(source) ? [] : {};
+  for (const key of Object.keys(source)) {
+    const src = (source as any)[key];
+    const tgt = (target as any)?.[key];
+    if (typeof src === "object" && src !== null && !Array.isArray(src)) {
+      out[key] = deepFallback(tgt ?? {}, src);
+    } else {
+      out[key] = tgt !== undefined && tgt !== null && tgt !== "" ? tgt : src;
+    }
+  }
+  return out;
+}
+
 export function getTranslations(locale: Locale): Translations {
-  return translations[locale] || en;
+  const t = translations[locale];
+  if (!t || locale === "en") return en;
+  return deepFallback(t, en);
 }
 
 // Context

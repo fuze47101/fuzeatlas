@@ -2,6 +2,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -120,6 +121,7 @@ const MODULES = [
 
 export default function HomePage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const router = useRouter();
   const [time, setTime] = useState(new Date());
 
@@ -142,10 +144,24 @@ export default function HomePage() {
   }, [user]);
 
   const hour = time.getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const greeting = hour < 12 ? t.home.goodMorning : hour < 18 ? t.home.goodAfternoon : t.home.goodEvening;
   const firstName = user?.name?.split(" ")[0] || "";
 
-  const modules = MODULES.filter((m) => !m.adminOnly || isAdmin);
+  // Translate module labels/blurbs
+  const translatedModules = MODULES.map((m) => {
+    const tMap: Record<string, { label: string; blurb: string }> = {
+      "business-development": { label: t.home.bizDev, blurb: t.home.bizDevBlurb },
+      "operations": { label: t.home.operations, blurb: t.home.operationsBlurb },
+      "quality-labs": { label: t.home.qualityLabs, blurb: t.home.qualityLabsBlurb },
+      "partners": { label: t.home.partners, blurb: t.home.partnersBlurb },
+      "resources": { label: t.home.resources, blurb: t.home.resourcesBlurb },
+      "admin": { label: t.home.admin, blurb: t.home.adminBlurb },
+    };
+    const translated = tMap[m.key];
+    return translated ? { ...m, label: translated.label, blurb: translated.blurb } : m;
+  });
+
+  const modules = translatedModules.filter((m) => !m.adminOnly || isAdmin);
 
   return (
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
@@ -157,7 +173,7 @@ export default function HomePage() {
         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">
           {greeting}{firstName ? `, ${firstName}` : ""}
         </h1>
-        <p className="text-slate-600 mt-1">Pick a module to get going. The left nav will scope to it.</p>
+        <p className="text-slate-600 mt-1">{t.home.subtitle}</p>
       </div>
 
       {/* Module Cards */}
@@ -169,7 +185,7 @@ export default function HomePage() {
 
       {/* Shortcut bar */}
       <div className="mt-10 pt-6 border-t border-slate-200">
-        <p className="text-xs font-bold uppercase text-slate-400 tracking-wide mb-3">Quick Jump</p>
+        <p className="text-xs font-bold uppercase text-slate-400 tracking-wide mb-3">{t.home.quickJump}</p>
         <div className="flex flex-wrap gap-2">
           <Link href="/dashboard" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">📊 KPI Dashboard</Link>
           <Link href="/admin/orders-dashboard" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">📦 Orders</Link>

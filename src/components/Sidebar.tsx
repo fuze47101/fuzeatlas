@@ -179,7 +179,7 @@ export default function Sidebar() {
     ? { href: "/distributor-portal", label: t.nav.dashboard, icon: "📊" }
     : isLabUser
     ? { href: "/lab-portal", label: t.nav.dashboard, icon: "📊" }
-    : { href: "/home", label: "Home", icon: "🏠" };
+    : { href: "/home", label: t.nav.home || "Home", icon: "🏠" };
 
   // Build groups based on role
   let groups: NavGroup[] = [];
@@ -286,72 +286,72 @@ export default function Sidebar() {
     // ═══════════════════════════════════════════════════════════════
     groups = [
       {
-        label: "🎯 Business Development",
+        label: t.nav.groupBizDev,
         items: [
           ...(isInternal
             ? [
-                { href: "/admin/brand-pipeline", label: "Brand Pipeline (Leads)", icon: "🔥" },
-                { href: "/admin/accounts", label: "Accounts", icon: "⭐" },
-                { href: "/admin/brand-discovery", label: "Brand Intelligence", icon: "🌎" },
-                { href: "/admin/conversion-tracking", label: "Sample → Production", icon: "🔄" },
-                { href: "/pipeline", label: "Deals & Revenue", icon: "💰" },
-                { href: "/invoices", label: "Invoices", icon: "🧾" },
+                { href: "/admin/brand-pipeline", label: t.nav.brandPipelineLeads, icon: "🔥" },
+                { href: "/admin/accounts", label: t.nav.accounts, icon: "⭐" },
+                { href: "/admin/brand-discovery", label: t.nav.brandIntelligence, icon: "🌎" },
+                { href: "/admin/conversion-tracking", label: t.nav.sampleToProduction, icon: "🔄" },
+                { href: "/pipeline", label: t.nav.dealsAndRevenue, icon: "💰" },
+                { href: "/invoices", label: t.nav.invoices, icon: "🧾" },
               ]
             : [
-                { href: "/brands", label: "Brands", icon: "🔥" },
+                { href: "/brands", label: t.nav.brands, icon: "🔥" },
               ]),
         ],
       },
       {
-        label: "📦 Operations",
+        label: t.nav.groupOps,
         items: [
-          { href: "/dashboard", label: "KPI Dashboard", icon: "📊" },
-          { href: "/admin/orders-dashboard", label: "Orders Dashboard", icon: "📦" },
-          { href: "/admin/orders", label: "Order Management", icon: "📦" },
-          { href: "/admin/distributor-restock", label: "Distributor Restocks", icon: "💧" },
-          { href: "/admin/worldwide-inventory", label: "Worldwide Inventory", icon: "🌍" },
-          { href: "/admin/consumption", label: "Consumption & Reorder", icon: "📈" },
-          { href: "/shipments", label: "Sample Tracking", icon: "📦" },
-          { href: "/shipping-docs", label: "Shipping Docs", icon: "🚢" },
+          { href: "/dashboard", label: t.nav.kpiDashboard, icon: "📊" },
+          { href: "/admin/orders-dashboard", label: t.nav.ordersDashboard, icon: "📦" },
+          { href: "/admin/orders", label: t.nav.orderManagement, icon: "📦" },
+          { href: "/admin/distributor-restock", label: t.nav.distributorRestocks, icon: "💧" },
+          { href: "/admin/worldwide-inventory", label: t.nav.worldwideInventory, icon: "🌍" },
+          { href: "/admin/consumption", label: t.nav.consumptionReorder, icon: "📈" },
+          { href: "/shipments", label: t.nav.sampleTracking, icon: "📦" },
+          { href: "/shipping-docs", label: t.nav.shippingDocs, icon: "🚢" },
         ],
       },
       {
-        label: "🧪 Quality & Labs",
+        label: t.nav.groupQualityLabs,
         items: [
           { href: "/fabrics", label: t.nav.fabrics, icon: "🧵" },
-          { href: "/fabrics/intake", label: "Fabric Intake", icon: "📥" },
-          { href: "/recipes", label: "Recipe Library", icon: "📖" },
-          { href: "/test-requests", label: "Test Requests", icon: "📝", badge: pendingCounts.testRequests },
+          { href: "/fabrics/intake", label: t.nav.fabricIntake, icon: "📥" },
+          { href: "/recipes", label: t.nav.recipeLibrary, icon: "📖" },
+          { href: "/test-requests", label: t.nav.testRequests, icon: "📝", badge: pendingCounts.testRequests },
           { href: "/tests", label: t.nav.testResults, icon: "🧪" },
-          { href: "/admin/ongoing-tests", label: "Ongoing Tests Tracker", icon: "🔬" },
-          { href: "/admin/sample-trials", label: "Sample Trials", icon: "🧪" },
+          { href: "/admin/ongoing-tests", label: t.nav.ongoingTests, icon: "🔬" },
+          { href: "/admin/sample-trials", label: t.nav.sampleTrials, icon: "🧪" },
           { href: "/labs", label: t.nav.labDirectory || "Lab Directory", icon: "🔬" },
-          ...(isAdmin ? [{ href: "/admin/test-catalog", label: "Test Catalog & Pricing", icon: "💲" }] : []),
+          ...(isAdmin ? [{ href: "/admin/test-catalog", label: t.nav.testCatalog, icon: "💲" }] : []),
         ],
       },
       {
-        label: "🤝 Partners",
+        label: t.nav.groupPartners,
         items: [
-          { href: "/brands", label: "Brands", icon: "👕" },
+          { href: "/brands", label: t.nav.brands, icon: "👕" },
           { href: "/factories", label: t.nav.factories, icon: "🏭" },
-          { href: "/admin/distributors", label: "Distributor Network", icon: "🌍" },
-          { href: "/admin/distributor-docs", label: "Distributor Docs", icon: "📂" },
+          { href: "/admin/distributors", label: t.nav.distributorNetwork, icon: "🌍" },
+          { href: "/admin/distributor-docs", label: t.nav.distributorDocs, icon: "📂" },
         ],
       },
       {
-        label: "📚 Resources & Docs",
+        label: t.nav.groupResourcesDocs,
         items: [
-          { href: "/admin/product-documents", label: "Product Documents (TDS/SDS)", icon: "📘" },
-          { href: "/admin/batches", label: "Production Batches", icon: "🏭" },
-          { href: "/compliance-library", label: "Document Center", icon: "📋" },
+          { href: "/admin/product-documents", label: t.nav.productDocuments, icon: "📘" },
+          { href: "/admin/batches", label: t.nav.productionBatches, icon: "🏭" },
+          { href: "/compliance-library", label: t.nav.documentCenter, icon: "📋" },
           { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
-          { href: "/meetings", label: "Meetings", icon: "📅" },
+          { href: "/meetings", label: t.nav.meetings, icon: "📅" },
           { href: "/reports", label: t.nav.weeklySummary || "Weekly Summary", icon: "📈" },
-          { href: "/admin/competitor-pricing", label: "Market Landscape", icon: "📊" },
-          { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
-          { href: "/pricing/calculator", label: "Application Calculator", icon: "🧮" },
-          { href: "/sustainability", label: "Sustainability", icon: "🌱" },
-          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
+          { href: "/admin/competitor-pricing", label: t.nav.marketLandscape, icon: "📊" },
+          { href: "/pricing", label: t.nav.pricingAndEnvironment, icon: "💰" },
+          { href: "/pricing/calculator", label: t.nav.applicationCalculator, icon: "🧮" },
+          { href: "/sustainability", label: t.nav.sustainability, icon: "🌱" },
+          { href: "/brand-portal/chat", label: t.nav.fuzeFaq, icon: "💬" },
         ],
       },
     ];
@@ -359,14 +359,14 @@ export default function Sidebar() {
     // Admin group
     if (isAdmin) {
       groups.push({
-        label: "⚙️ Admin",
+        label: t.nav.groupAdminEmoji,
         items: [
-          { href: "/notifications", label: "Notifications", icon: "🔔" },
-          { href: "/settings/users", label: "User Management", icon: "👥" },
-          { href: "/settings/availability", label: "Availability Settings", icon: "⏰" },
-          { href: "/settings/access-requests", label: "Access Requests", icon: "📩", badge: pendingCounts.accessRequests },
-          { href: "/settings/exchange-rates", label: "Exchange Rates", icon: "💱" },
-          { href: "/settings/audit-log", label: "Audit Log", icon: "📜" },
+          { href: "/notifications", label: t.nav.notifications, icon: "🔔" },
+          { href: "/settings/users", label: t.nav.userManagement, icon: "👥" },
+          { href: "/settings/availability", label: t.nav.availabilitySettings, icon: "⏰" },
+          { href: "/settings/access-requests", label: t.nav.accessRequests, icon: "📩", badge: pendingCounts.accessRequests },
+          { href: "/settings/exchange-rates", label: t.nav.exchangeRates, icon: "💱" },
+          { href: "/settings/audit-log", label: t.nav.auditLog, icon: "📜" },
         ],
       });
     }
