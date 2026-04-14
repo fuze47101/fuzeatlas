@@ -20,6 +20,59 @@ import { useEffect, useMemo, useState } from "react";
 const STOCK_MG_PER_L = 30;
 const TIER_MG_PER_KG: Record<string, number> = { F1: 1.0, F2: 0.75, F3: 0.5, F4: 0.25 };
 
+/**
+ * Sanity checks on raw measurements. Returns an array of warnings
+ * with severity so the UI can flag suspicious entries BEFORE the
+ * tech commits a bad record. None of these are hard errors — they
+ * just nudge the tech to double-check.
+ */
+function validateInputs(input: any, calc: any) {
+  const warnings: { severity: "error" | "warn" | "info"; field: string; msg: string }[] = [];
+  const dry = Number(input.drySampleWeight) || 0;
+  const wet = Number(input.wetAfterBathWeight) || 0;
+  const preWet = Number(input.preWetSampleWeight) || 0;
+  const wetFromPre = Number(input.wetAfterBathFromPreWet) || 0;
+  const gsm = Number(input.fabricWeightGsm) || 0;
+  const pressure = Number(input.squeezePressure) || 0;
+  const stock = Number(input.stockMgPerL) || 30;
+
+  if (dry > 0 && wet > 0 && wet <= dry) {
+    warnings.push({ severity: "error", field: "wetAfterBathWeight", msg: "Wet weight must be greater than dry weight." });
+  }
+  if (dry > 0 && wet / dry > 3) {
+    warnings.push({ severity: "warn", field: "wetAfterBathWeight", msg: "Pickup appears unusually high (>200%). Re-check weighing." });
+  }
+  if (preWet > 0 && dry > 0 && preWet <= dry) {
+    warnings.push({ severity: "error", field: "preWetSampleWeight", msg: "Pre-wet weight should be greater than dry weight." });
+  }
+  if (preWet > 0 && wetFromPre > 0 && wetFromPre <= preWet) {
+    warnings.push({ severity: "error", field: "wetAfterBathFromPreWet", msg: "Wet-after-pad (from pre-wet) must be greater than pre-wet weight." });
+  }
+  if (calc.pickupDryToWetPct !== undefined) {
+    if (calc.pickupDryToWetPct < 30) {
+      warnings.push({ severity: "warn", field: "wetAfterBathWeight", msg: `Pickup ${calc.pickupDryToWetPct.toFixed(1)}% is low for pad. Typical range 50-100%. Sample may be over-squeezed.` });
+    } else if (calc.pickupDryToWetPct > 120) {
+      warnings.push({ severity: "warn", field: "wetAfterBathWeight", msg: `Pickup ${calc.pickupDryToWetPct.toFixed(1)}% is high. Normal for nonwoven / heavy knits; unusual for plain weave.` });
+    }
+  }
+  if (calc.pickupWetToWetPct !== undefined && calc.pickupDryToWetPct !== undefined && calc.pickupWetToWetPct > calc.pickupDryToWetPct + 10) {
+    warnings.push({ severity: "warn", field: "wetAfterBathFromPreWet", msg: "Wet-to-wet pickup higher than dry-to-wet — unusual. Verify measurements." });
+  }
+  if (gsm > 0 && (gsm < 30 || gsm > 700)) {
+    warnings.push({ severity: "info", field: "fabricWeightGsm", msg: `${gsm} g/m² is outside the typical 30-700 range.` });
+  }
+  if (pressure > 0 && (pressure < 1 || pressure > 8)) {
+    warnings.push({ severity: "info", field: "squeezePressure", msg: `${pressure} bar is outside the typical 2-6 bar pad range (FUZE lab mini pad = 4 bar).` });
+  }
+  if (stock < 10 || stock > 60) {
+    warnings.push({ severity: "warn", field: "stockMgPerL", msg: `Stock ${stock} mg/L — standard is 30. Confirm before saving.` });
+  }
+  if (dry > 0 && dry < 0.5) {
+    warnings.push({ severity: "info", field: "drySampleWeight", msg: "Sample under 0.5g is very small — scale precision matters a lot." });
+  }
+  return warnings;
+}
+
 function computeRecipe(input: any) {
   const dry = Number(input.drySampleWeight) || 0;
   const wetDryToWet = Number(input.wetAfterBathWeight) || 0;
@@ -75,7 +128,7 @@ export default function RecipeCalculatorPage() {
     fiberContent: "",
     fabricWeightGsm: "",
     applicationMethod: "PAD_DRY_CURE",
-    squeezePressure: "",
+    squeezePressure: "4",  // FUZE lab mini pad bath runs at 4 bar
     dryingTemp: "",
     dryingTime: "",
     curingTemp: "",
@@ -112,6 +165,9 @@ export default function RecipeCalculatorPage() {
   }
 
   const calc = useMemo(() => computeRecipe(form), [form]);
+  const warnings = useMemo(() => validateInputs(form, calc), [form, calc]);
+  const warnFor = (field: string) => warnings.filter(w => w.field === field);
+  const hasBlockingError = warnings.some(w => w.severity === "error");
 
   function set(k: string, v: any) {
     setForm((f: any) => ({ ...f, [k]: v }));
@@ -161,13 +217,80 @@ export default function RecipeCalculatorPage() {
 
   return (
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-black text-slate-900">Recipe Calculator</h1>
-        <p className="text-slate-600">
-          Enter bench-test measurements → live calculation of pickup rate, bath
-          concentrations, dilutions, and FUZE volumes for F1–F4.
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-black text-slate-900">Recipe Calculator</h1>
+          <p className="text-slate-600">
+            Enter bench-test measurements → live calculation of pickup rate, bath
+            concentrations, dilutions, and FUZE volumes for F1–F4.
+          </p>
+        </div>
+        <div className="flex gap-2 flex-shrink-0">
+          <a href="/admin/recipe-calculator/sop" target="_blank" className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-800">
+            📋 Print SOP
+          </a>
+        </div>
       </div>
+
+      {/* Step-by-step guide — collapsible */}
+      <details className="mb-6 bg-gradient-to-br from-cyan-50 to-sky-50 border-2 border-[#00b4c3]/40 rounded-xl overflow-hidden" open>
+        <summary className="cursor-pointer px-5 py-3 font-bold text-slate-900 flex items-center justify-between">
+          <span>📖 Bench Test Procedure</span>
+          <span className="text-xs font-normal text-slate-500">click to collapse</span>
+        </summary>
+        <div className="px-5 pb-5 pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+          {[
+            {
+              n: 1,
+              t: "Cut a clean fabric sample",
+              d: "10×10 cm (or consistent sample size) from the fabric you're testing. Note the fabric ID, type, and g/m².",
+            },
+            {
+              n: 2,
+              t: "Weigh the dry sample",
+              d: "Record the dry weight in grams. Enter in section 3 → Dry sample weight.",
+            },
+            {
+              n: 3,
+              t: "Dip in clean water · pad @ 4 bar",
+              d: "Fully submerge the sample in clean water, feed through the mini pad bath at 4 bar. Immediately weigh.",
+            },
+            {
+              n: 4,
+              t: "Record post-pad wet weight",
+              d: "Enter in section 3 → Wet weight after pad. Live calc will show pickup %.",
+            },
+            {
+              n: 5,
+              t: "(Optional) Wet-to-wet run",
+              d: "If you treat on wet fabric in production: weigh the pre-wet sample, then dip-and-pad, then weigh again. Fill both wet-to-wet fields.",
+            },
+            {
+              n: 6,
+              t: "Check on-screen Live Calculation",
+              d: "Pickup %, bath concentration, dilution ratios and FUZE mL per L are computed. Watch for yellow sanity warnings.",
+            },
+            {
+              n: 7,
+              t: "(Optional) Scale to production",
+              d: "Enter target fabric mass in kg to see total FUZE liters + bath volume needed for an actual run.",
+            },
+            {
+              n: 8,
+              t: "Save + Graduate or Print",
+              d: "Save the bench test to persist the record. Graduate to FabricRecipe to publish for the factory. Print Test Card for the lab bench.",
+            },
+          ].map((s) => (
+            <div key={s.n} className="bg-white rounded-lg border border-slate-200 p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-6 h-6 rounded-full bg-[#00b4c3] text-white text-xs font-black flex items-center justify-center">{s.n}</span>
+                <p className="font-bold text-slate-900 text-xs">{s.t}</p>
+              </div>
+              <p className="text-xs text-slate-600 leading-snug">{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </details>
 
       {error && <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>}
       {success && <div className="mb-4 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">✓ {success}</div>}
@@ -278,10 +401,12 @@ export default function RecipeCalculatorPage() {
                 <div>
                   <label className="text-xs font-semibold text-slate-700">Dry sample weight (g) *</label>
                   <input type="number" step="0.01" value={form.drySampleWeight} onChange={(e) => set("drySampleWeight", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white" />
+                  {warnFor("drySampleWeight").map((w, i) => <WarnLine key={i} {...w} />)}
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-700">Wet weight after pad (g) *</label>
                   <input type="number" step="0.01" value={form.wetAfterBathWeight} onChange={(e) => set("wetAfterBathWeight", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white" />
+                  {warnFor("wetAfterBathWeight").map((w, i) => <WarnLine key={i} {...w} />)}
                 </div>
               </div>
             </div>
@@ -292,10 +417,12 @@ export default function RecipeCalculatorPage() {
                 <div>
                   <label className="text-xs font-semibold text-slate-700">Pre-wet weight (g)</label>
                   <input type="number" step="0.01" value={form.preWetSampleWeight} onChange={(e) => set("preWetSampleWeight", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white" />
+                  {warnFor("preWetSampleWeight").map((w, i) => <WarnLine key={i} {...w} />)}
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-700">Wet weight after pad from pre-wet (g)</label>
                   <input type="number" step="0.01" value={form.wetAfterBathFromPreWet} onChange={(e) => set("wetAfterBathFromPreWet", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white" />
+                  {warnFor("wetAfterBathFromPreWet").map((w, i) => <WarnLine key={i} {...w} />)}
                 </div>
               </div>
             </div>
@@ -328,8 +455,22 @@ export default function RecipeCalculatorPage() {
               <label className="text-xs font-semibold text-slate-600">Notes</label>
               <textarea value={form.notes} onChange={(e) => set("notes", e.target.value)} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
             </div>
-            <button onClick={save} disabled={saving} className="mt-3 w-full px-4 py-3 bg-[#00b4c3] text-white rounded-lg font-bold hover:bg-[#009aa8] disabled:opacity-50">
-              {saving ? "Saving..." : "Save Bench Test"}
+            {warnings.length > 0 && (
+              <div className={`mt-3 p-3 rounded-lg border text-xs ${hasBlockingError ? "border-red-300 bg-red-50" : "border-amber-300 bg-amber-50"}`}>
+                <p className={`font-bold mb-1 ${hasBlockingError ? "text-red-800" : "text-amber-800"}`}>
+                  {hasBlockingError ? "⛔ Fix these before saving" : "⚠ Sanity checks — review before saving"}
+                </p>
+                <ul className="list-disc pl-5 space-y-0.5">
+                  {warnings.map((w, i) => (
+                    <li key={i} className={w.severity === "error" ? "text-red-700" : w.severity === "warn" ? "text-amber-700" : "text-slate-600"}>
+                      {w.msg}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <button onClick={save} disabled={saving || hasBlockingError} className="mt-3 w-full px-4 py-3 bg-[#00b4c3] text-white rounded-lg font-bold hover:bg-[#009aa8] disabled:opacity-50 disabled:cursor-not-allowed">
+              {saving ? "Saving..." : hasBlockingError ? "Fix errors above to save" : "Save Bench Test"}
             </button>
           </div>
         </div>
@@ -403,6 +544,7 @@ export default function RecipeCalculatorPage() {
                   <th className="text-right px-3 py-2">F3 dil</th>
                   <th className="text-right px-3 py-2">F4 dil</th>
                   <th className="text-right px-3 py-2">Date</th>
+                  <th className="text-right px-3 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -419,6 +561,35 @@ export default function RecipeCalculatorPage() {
                       <td className="px-3 py-2 text-right font-mono text-xs">1:{t.f3DilutionRatio ? t.f3DilutionRatio.toFixed(1) : "—"}</td>
                       <td className="px-3 py-2 text-right font-mono text-xs">1:{t.f4DilutionRatio ? t.f4DilutionRatio.toFixed(1) : "—"}</td>
                       <td className="px-3 py-2 text-right text-xs text-slate-500">{new Date(t.testDate).toLocaleDateString()}</td>
+                      <td className="px-3 py-2 text-right whitespace-nowrap">
+                        <a
+                          href={`/admin/recipe-calculator/${t.id}/print`}
+                          target="_blank"
+                          className="text-xs text-[#00b4c3] font-semibold hover:underline mr-2"
+                        >
+                          🖨 Print
+                        </a>
+                        {t.graduatedRecipeId ? (
+                          <span className="text-xs text-emerald-700 font-semibold">✓ Graduated</span>
+                        ) : (
+                          <button
+                            onClick={async () => {
+                              if (!confirm(`Graduate ${t.testNumber} into 4 published FabricRecipes (F1–F4)?`)) return;
+                              const res = await fetch(`/api/admin/recipe-bench-tests/${t.id}/graduate`, { method: "POST" });
+                              const d = await res.json();
+                              if (d.ok) {
+                                setSuccess(d.message);
+                                loadRecent();
+                              } else {
+                                setError(d.error);
+                              }
+                            }}
+                            className="text-xs text-[#00b4c3] font-semibold hover:underline"
+                          >
+                            ⭐ Graduate
+                          </button>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}
@@ -436,6 +607,20 @@ function Row({ label, value, highlight = false }: { label: string; value: string
     <div className="flex items-center justify-between text-sm">
       <span className="text-white/70">{label}</span>
       <span className={`font-mono ${highlight ? "text-[#00b4c3] font-bold" : ""}`}>{value}</span>
+    </div>
+  );
+}
+
+function WarnLine({ severity, msg }: { severity: "error" | "warn" | "info"; msg: string }) {
+  const cls = severity === "error"
+    ? "text-red-700 bg-red-50 border-red-200"
+    : severity === "warn"
+    ? "text-amber-700 bg-amber-50 border-amber-200"
+    : "text-slate-600 bg-slate-50 border-slate-200";
+  const icon = severity === "error" ? "⛔" : severity === "warn" ? "⚠" : "ⓘ";
+  return (
+    <div className={`mt-1 px-2 py-1 text-[11px] rounded border ${cls}`}>
+      {icon} {msg}
     </div>
   );
 }
