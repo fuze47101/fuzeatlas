@@ -41,6 +41,7 @@ const MODULES = [
     items: [
       { label: "Orders Dashboard", href: "/admin/orders-dashboard" },
       { label: "Order Management", href: "/admin/orders" },
+      { label: "Production Batches", href: "/admin/batches" },
       { label: "Distributor Restocks", href: "/admin/distributor-restock" },
       { label: "Worldwide Inventory", href: "/admin/worldwide-inventory" },
       { label: "Consumption & Reorder", href: "/admin/consumption" },
@@ -87,6 +88,7 @@ const MODULES = [
     blurb: "Document library, SDS/TDS/COA, SOWs, pricing",
     landing: "/compliance-library",
     items: [
+      { label: "Product Documents (TDS/SDS)", href: "/admin/product-documents" },
       { label: "Document Center", href: "/compliance-library" },
       { label: "SOWs", href: "/sow" },
       { label: "Meetings", href: "/meetings" },

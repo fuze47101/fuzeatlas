@@ -341,6 +341,8 @@ export default function Sidebar() {
       {
         label: "📚 Resources & Docs",
         items: [
+          { href: "/admin/product-documents", label: "Product Documents (TDS/SDS)", icon: "📘" },
+          { href: "/admin/batches", label: "Production Batches", icon: "🏭" },
           { href: "/compliance-library", label: "Document Center", icon: "📋" },
           { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
           { href: "/meetings", label: "Meetings", icon: "📅" },

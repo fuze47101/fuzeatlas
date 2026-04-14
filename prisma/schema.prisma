@@ -2198,6 +2198,10 @@ model FuzeOrder {
   isReorder       Boolean  @default(false)
   previousOrderId String?
 
+  // Production batch this order was filled from (set at ship time)
+  batchId         String?
+  batch           ProductionBatch? @relation("OrderBatch", fields: [batchId], references: [id])
+
   // Fabric spec & wastage (factory production orders)
   fabricWeightGsm    Float?   // Fabric weight in g/m²
   fabricLengthMeters Float?   // Total fabric length
@@ -2256,6 +2260,96 @@ model OrderBrandAllocation {
   @@unique([orderId, brandId])
   @@index([brandId])
   @@index([orderId])
+}
+
+// ─────────────────────────────────────────────
+// PRODUCTION BATCH
+// Every FUZE production run creates a batch. One QR sticker design
+// is printed per batch and applied identically to every carboy from
+// that batch. Scanning the QR (batch-level) returns batch-specific
+// COA plus the product-wide TDS and SDS.
+// ─────────────────────────────────────────────
+model ProductionBatch {
+  id              String   @id @default(cuid())
+  batchCode       String   @unique  // FB-YYYYMMDD-XXXX e.g. FB-20260413-0007
+  productionDate  DateTime
+  volumeProducedLiters Float
+  bottlesFilled   Int?     // 19L carboys filled from this batch
+
+  // Documents specific to this batch
+  coaDocUrl       String?  // Certificate of Analysis (per-batch)
+  coaUploadedAt   DateTime?
+  coaUploadedById String?
+
+  // Production details
+  ablationRunIds  String?  // JSON: ["run-001","run-002"]
+  concentrationMgPerL Float? @default(30)
+  qcPassed        Boolean  @default(true)
+  qcNotes         String?
+
+  notes           String?
+
+  // Orders fulfilled from this batch (set at ship time)
+  orders          FuzeOrder[] @relation("OrderBatch")
+  scans           BatchScanLog[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([batchCode])
+  @@index([productionDate])
+}
+
+// ─────────────────────────────────────────────
+// BATCH SCAN AUDIT LOG
+// Every time someone scans a batch QR (requires Atlas login), we
+// record it. Becomes a traceability trail for customers, auditors,
+// and forensic investigations if QC issues ever arise.
+// ─────────────────────────────────────────────
+model BatchScanLog {
+  id        String   @id @default(cuid())
+
+  batchId   String
+  batch     ProductionBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  userId    String?  // Atlas user who scanned (null if public access later enabled)
+  userName  String?  // Cached display name
+  userRole  String?  // ADMIN, FACTORY_USER, BRAND_USER, etc.
+
+  ipAddress String?
+  userAgent String?
+  location  String?  // Factory name / brand name / free text
+
+  createdAt DateTime @default(now())
+
+  @@index([batchId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────
+// PRODUCT DOCUMENTS (Global — TDS, master SDS)
+// These are product-wide documents that apply to every batch of
+// FUZE. Stored once, referenced everywhere. COA is per-batch (on
+// ProductionBatch.coaDocUrl).
+// ─────────────────────────────────────────────
+model ProductDocument {
+  id          String   @id @default(cuid())
+  docType     String   @unique  // TDS | SDS | PRODUCT_SPEC | HANDLING_GUIDE | APPLICATION_GUIDE
+  title       String
+  description String?
+  fileUrl     String
+  version     String?  // e.g. "v3.1"
+  effectiveDate DateTime?
+  expiresAt   DateTime?
+
+  uploadedById String?
+  uploadedByName String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([docType])
 }
 
 // ─────────────────────────────────────────────
