@@ -73,7 +73,6 @@ const en = {
     worldwideInventory: "Worldwide Inventory",
     consumptionReorder: "Consumption & Reorder",
     ongoingTests: "Ongoing Tests Tracker",
-    sampleTrials: "Sample Trials",
     testCatalog: "Test Catalog & Pricing",
     distributorNetwork: "Distributor Network",
     productDocuments: "Product Documents (TDS/SDS)",
