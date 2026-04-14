@@ -585,13 +585,13 @@ export async function PATCH(req: Request) {
         if (updated.status === "SHIPPED" && updated.distributorId) {
           try {
             const inv = await prisma.distributorInventory.findUnique({ where: { distributorId: updated.distributorId } });
-            if (inv && inv.fuzeStockLiters < inv.reorderThresholdLiters) {
+            if (inv && inv.fuzeStockLiters < (inv.reorderPointLiters || 100)) {
               const dist = await prisma.distributor.findUnique({ where: { id: updated.distributorId }, select: { name: true } });
               notifyLowInventory({
                 distributorId: updated.distributorId,
                 distributorName: dist?.name || "Distributor",
                 currentLiters: inv.fuzeStockLiters,
-                thresholdLiters: inv.reorderThresholdLiters,
+                thresholdLiters: inv.reorderPointLiters || 100,
               });
             }
           } catch {}

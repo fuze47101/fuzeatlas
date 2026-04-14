@@ -38,7 +38,7 @@ export async function GET(req: Request) {
           fuzeStockLiters: 0,
           fuzeStockBottles: 0,
           hangtagStock: 0,
-          reorderThresholdLiters: 100,
+          reorderPointLiters: 100,
           lastStockUpdate: new Date(),
         },
       });
@@ -96,7 +96,7 @@ export async function PATCH(req: Request) {
     if (body.fuzeStockLiters !== undefined) updateData.fuzeStockLiters = Number(body.fuzeStockLiters);
     if (body.fuzeStockBottles !== undefined) updateData.fuzeStockBottles = Number(body.fuzeStockBottles);
     if (body.hangtagStock !== undefined) updateData.hangtagStock = Number(body.hangtagStock);
-    if (body.reorderThresholdLiters !== undefined) updateData.reorderThresholdLiters = Number(body.reorderThresholdLiters);
+    if (body.reorderPointLiters !== undefined) updateData.reorderPointLiters = Number(body.reorderPointLiters);
 
     const inventory = await prisma.distributorInventory.upsert({
       where: { distributorId },
@@ -106,7 +106,7 @@ export async function PATCH(req: Request) {
         fuzeStockLiters: updateData.fuzeStockLiters || 0,
         fuzeStockBottles: updateData.fuzeStockBottles || 0,
         hangtagStock: updateData.hangtagStock || 0,
-        reorderThresholdLiters: updateData.reorderThresholdLiters || 100,
+        reorderPointLiters: updateData.reorderPointLiters || 100,
         lastStockUpdate: new Date(),
       },
     });

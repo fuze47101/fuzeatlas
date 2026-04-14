@@ -24,7 +24,7 @@ export default function DistributorInventoryPage() {
     fuzeStockLiters: "",
     fuzeStockBottles: "",
     hangtagStock: "",
-    reorderThresholdLiters: "",
+    reorderPointLiters: "",
   });
 
   // Pricing form
@@ -66,7 +66,7 @@ export default function DistributorInventoryPage() {
           fuzeStockLiters: String(invData.inventory?.fuzeStockLiters || 0),
           fuzeStockBottles: String(invData.inventory?.fuzeStockBottles || 0),
           hangtagStock: String(invData.inventory?.hangtagStock || 0),
-          reorderThresholdLiters: String(invData.inventory?.reorderThresholdLiters || 100),
+          reorderPointLiters: String(invData.inventory?.reorderPointLiters || 100),
         });
       }
       if (pricingData.ok) {
@@ -163,7 +163,7 @@ export default function DistributorInventoryPage() {
 
   const stockLiters = inventory?.fuzeStockLiters || 0;
   const stockBottles = inventory?.fuzeStockBottles || 0;
-  const threshold = inventory?.reorderThresholdLiters || 100;
+  const threshold = inventory?.reorderPointLiters || 100;
   const isLow = stockLiters < threshold;
 
   return (
@@ -260,8 +260,8 @@ export default function DistributorInventoryPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Reorder Threshold (L)</label>
                 <input
                   type="number"
-                  value={invForm.reorderThresholdLiters}
-                  onChange={(e) => setInvForm({ ...invForm, reorderThresholdLiters: e.target.value })}
+                  value={invForm.reorderPointLiters}
+                  onChange={(e) => setInvForm({ ...invForm, reorderPointLiters: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none"
                 />
               </div>

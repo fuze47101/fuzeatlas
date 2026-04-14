@@ -284,18 +284,16 @@ export default function Sidebar() {
       {
         label: "Sales & Pipeline",
         items: [
-          { href: "/brands", label: "Brands", icon: "🔥" },
           ...(isInternal
             ? [
-                { href: "/admin/brand-discovery", label: "Brand Discovery", icon: "🌎" },
-                { href: "/admin/brand-audit", label: "Brand Audit", icon: "🔍" },
-                { href: "/admin/lead-management", label: "Lead Management", icon: "📞" },
-                { href: "/pipeline", label: "Project Flow", icon: "📊" },
-                { href: "/revenue", label: "Revenue Forecast", icon: "💰" },
+                { href: "/admin/brand-pipeline", label: "Brand Pipeline", icon: "🔥" },
+                { href: "/admin/brand-discovery", label: "Brand Intelligence", icon: "🌎" },
+                { href: "/pipeline", label: "Deals & Revenue", icon: "💰" },
                 { href: "/invoices", label: "Invoices", icon: "🧾" },
-                { href: "/brand-engagement", label: "Brand Health", icon: "❤️" },
               ]
-            : []),
+            : [
+                { href: "/brands", label: "Brands", icon: "🔥" },
+              ]),
         ],
       },
       {
