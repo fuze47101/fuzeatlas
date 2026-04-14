@@ -335,7 +335,8 @@ export default function AdminDistributorDocsPage() {
         </div>
       ) : (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[700px]">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
                 <th className="text-left px-4 py-3 font-semibold text-slate-700">Type</th>
@@ -403,6 +404,7 @@ export default function AdminDistributorDocsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>
