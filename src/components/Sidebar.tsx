@@ -242,9 +242,10 @@ export default function Sidebar() {
       {
         label: "Distributor Portal",
         items: [
-          { href: "/distributor-portal/documents", label: "Document Library", icon: "📂" },
-          { href: "/distributor-portal/orders", label: "Orders", icon: "📦" },
+          { href: "/distributor-portal/restock", label: "Restock from FUZE", icon: "💧" },
+          { href: "/distributor-portal/orders", label: "Factory Orders", icon: "📦" },
           { href: "/distributor-portal/inventory", label: "Inventory & Pricing", icon: "📊" },
+          { href: "/distributor-portal/documents", label: "Document Library", icon: "📂" },
           { href: "/distributor-portal/invoices", label: "Invoices", icon: "📄" },
         ],
       },
@@ -350,6 +351,7 @@ export default function Sidebar() {
           { href: "/settings/exchange-rates", label: "Exchange Rates", icon: "💱" },
           { href: "/settings/audit-log", label: "Audit Log", icon: "📜" },
           { href: "/admin/distributors", label: "Distributor Network", icon: "🌍" },
+          { href: "/admin/distributor-restock", label: "Restock Management", icon: "💧" },
           { href: "/admin/distributor-docs", label: "Distributor Docs", icon: "📂" },
           { href: "/admin/sample-trials", label: "Sample Trials", icon: "🧪" },
         ],

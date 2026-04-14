@@ -111,6 +111,28 @@ export default function DistributorPortalPage() {
 
       {/* Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Link href="/distributor-portal/restock"
+          className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="font-bold text-lg mb-1">Restock from FUZE</h3>
+              <p className="text-sm text-white/80">Order carboys, gaylords, or containers direct from FUZE HQ</p>
+            </div>
+            <span className="text-3xl">💧</span>
+          </div>
+          <div className="text-sm text-white/90 font-semibold">Place new order &rarr;</div>
+        </Link>
+        <Link href="/distributor-portal/inventory"
+          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">Inventory & Pricing</h3>
+              <p className="text-sm text-slate-600">Stock levels and factory pricing tiers</p>
+            </div>
+            <span className="text-3xl">📦</span>
+          </div>
+          <div className="text-sm text-[#00b4c3] font-medium">Manage inventory &rarr;</div>
+        </Link>
         <Link href="/distributor-portal/documents"
           className="bg-gradient-to-br from-[#00b4c3] to-[#009ba8] rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all">
           <div className="flex items-start justify-between mb-4">

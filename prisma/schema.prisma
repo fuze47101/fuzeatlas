@@ -422,9 +422,69 @@ model Distributor {
   testRequests  TestRequest[]  @relation("TestRequestDistributor")
   pricing       DistributorPricing[] @relation("DistributorPricing")
   inventory     DistributorInventory? @relation("DistributorInventory")
+  restockOrders DistributorRestockOrder[] @relation("DistributorRestockOrders")
+
+  // FUZE → Distributor pricing (what FUZE charges this distributor for restock)
+  fuzeRestockPricePerLiter Float?   // USD/L that FUZE charges this distributor
+  fuzeRestockCurrency      String?  @default("USD")
+  fuzeRestockNotes         String?  // Admin notes on pricing terms
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────
+// DISTRIBUTOR RESTOCK ORDERS
+// Distributors ordering FUZE product FROM FUZE HQ
+// Units: CARBOY (19L), GAYLORD (32 carboys / 608L),
+// CONTAINER_20 (10 gaylords / 6,080L), CONTAINER_40 (20 gaylords / 12,160L)
+// ─────────────────────────────────────────────
+model DistributorRestockOrder {
+  id              String   @id @default(cuid())
+  orderNumber     String   @unique  // FUZE-RST-YYYYMMDD-XXXX
+
+  distributorId   String
+  distributor     Distributor @relation("DistributorRestockOrders", fields: [distributorId], references: [id])
+
+  orderedById     String?  // User who placed the order
+  // What was ordered
+  unitType        String   // CARBOY | GAYLORD | CONTAINER_20 | CONTAINER_40
+  unitQuantity    Int      // Number of those units
+  totalLiters     Float    // Computed total liters
+
+  // Quote / pricing
+  pricePerLiter   Float
+  currency        String   @default("USD")
+  totalPrice      Float
+  quoteAcceptedAt DateTime?
+
+  // Shipping
+  shippingAddress String?
+  shippingCity    String?
+  shippingCountry String?
+  trackingNumber  String?
+  carrier         String?
+  shippedDate     DateTime?
+  estimatedDelivery DateTime?
+  deliveredDate   DateTime?
+  receivedConfirmedAt DateTime?  // Distributor confirms receipt
+
+  // Status workflow:
+  // DRAFT → PENDING_APPROVAL → APPROVED → PROCESSING → SHIPPED → DELIVERED → RECEIVED → CANCELLED
+  status          String   @default("PENDING_APPROVAL")
+
+  approvedAt      DateTime?
+  approvedById    String?
+
+  notes           String?
+  adminNotes      String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([distributorId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 // ─────────────────────────────────────────────
