@@ -787,65 +787,66 @@ export default function AccessRequestsPage() {
 
                 {/* Link to existing or create new (hidden for internal roles) */}
                 {!["ADMIN","EMPLOYEE","SALES_MANAGER","SALES_REP"].includes(overrideRole) && (
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Link to existing {entityLabel}:
-                  </label>
-                  <input
-                    type="text"
-                    placeholder={`Search ${entityLabel === "factory" ? "factories" : entityLabel + "s"}...`}
-                    value={companySearch}
-                    onChange={e => { setCompanySearch(e.target.value); setCreateNewCompany(false); }}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent"
-                  />
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Link to existing {entityLabel}:
+                      </label>
+                      <input
+                        type="text"
+                        placeholder={`Search ${entityLabel === "factory" ? "factories" : entityLabel + "s"}...`}
+                        value={companySearch}
+                        onChange={e => { setCompanySearch(e.target.value); setCreateNewCompany(false); }}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent"
+                      />
 
-                  {/* Company list */}
-                  <div className="mt-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg">
-                    {relevantCompanies.length === 0 ? (
-                      <div className="p-3 text-center text-sm text-slate-400">
-                        No matching {entityLabel === "factory" ? "factories" : entityLabel + "s"} found
+                      {/* Company list */}
+                      <div className="mt-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg">
+                        {relevantCompanies.length === 0 ? (
+                          <div className="p-3 text-center text-sm text-slate-400">
+                            No matching {entityLabel === "factory" ? "factories" : entityLabel + "s"} found
+                          </div>
+                        ) : (
+                          relevantCompanies.map(c => (
+                            <button
+                              key={c.id}
+                              onClick={() => { setSelectedCompanyId(c.id); setCreateNewCompany(false); }}
+                              className={`w-full text-left px-3 py-2.5 text-sm border-b border-slate-100 last:border-0 transition-colors ${
+                                selectedCompanyId === c.id && !createNewCompany
+                                  ? "bg-[#00b4c3]/10 text-[#00b4c3] font-semibold"
+                                  : "hover:bg-slate-50 text-slate-700"
+                              }`}
+                            >
+                              <span className="font-medium">{c.name}</span>
+                              {c.country && <span className="text-slate-400 ml-2 text-xs">{c.country}</span>}
+                              {selectedCompanyId === c.id && !createNewCompany && (
+                                <span className="float-right text-[#00b4c3]">&#10003;</span>
+                              )}
+                            </button>
+                          ))
+                        )}
                       </div>
-                    ) : (
-                      relevantCompanies.map(c => (
-                        <button
-                          key={c.id}
-                          onClick={() => { setSelectedCompanyId(c.id); setCreateNewCompany(false); }}
-                          className={`w-full text-left px-3 py-2.5 text-sm border-b border-slate-100 last:border-0 transition-colors ${
-                            selectedCompanyId === c.id && !createNewCompany
-                              ? "bg-[#00b4c3]/10 text-[#00b4c3] font-semibold"
-                              : "hover:bg-slate-50 text-slate-700"
-                          }`}
-                        >
-                          <span className="font-medium">{c.name}</span>
-                          {c.country && <span className="text-slate-400 ml-2 text-xs">{c.country}</span>}
-                          {selectedCompanyId === c.id && !createNewCompany && (
-                            <span className="float-right text-[#00b4c3]">&#10003;</span>
-                          )}
-                        </button>
-                      ))
+                    </div>
+
+                    {/* Or create new */}
+                    <button
+                      onClick={() => { setCreateNewCompany(true); setSelectedCompanyId(""); }}
+                      className={`w-full p-3 border-2 rounded-lg text-sm font-medium text-left transition-all ${
+                        createNewCompany
+                          ? "border-[#00b4c3] bg-[#00b4c3]/5 text-[#00b4c3]"
+                          : "border-dashed border-slate-300 text-slate-500 hover:border-slate-400"
+                      }`}
+                    >
+                      + Create new {entityLabel}: <span className="font-bold">"{req.company}"</span>
+                      {createNewCompany && <span className="float-right">&#10003;</span>}
+                    </button>
+
+                    {!selectedCompanyId && !createNewCompany && (
+                      <p className="text-xs text-amber-600">
+                        Please select an existing {entityLabel} or choose to create a new one
+                      </p>
                     )}
                   </div>
-                </div>
-
-                {/* Or create new */}
-                <button
-                  onClick={() => { setCreateNewCompany(true); setSelectedCompanyId(""); }}
-                  className={`w-full p-3 border-2 rounded-lg text-sm font-medium text-left transition-all ${
-                    createNewCompany
-                      ? "border-[#00b4c3] bg-[#00b4c3]/5 text-[#00b4c3]"
-                      : "border-dashed border-slate-300 text-slate-500 hover:border-slate-400"
-                  }`}
-                >
-                  + Create new {entityLabel}: <span className="font-bold">"{req.company}"</span>
-                  {createNewCompany && <span className="float-right">&#10003;</span>}
-                </button>
-
-                {!selectedCompanyId && !createNewCompany && (
-                  <p className="text-xs text-amber-600">
-                    Please select an existing {entityLabel} or choose to create a new one
-                  </p>
-                )}
-                </div>
                 )}
               </div>
 
