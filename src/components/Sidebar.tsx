@@ -313,6 +313,7 @@ export default function Sidebar() {
       {
         label: "Operations",
         items: [
+          { href: "/admin/orders-dashboard", label: "Orders Dashboard", icon: "📊" },
           { href: "/admin/orders", label: "Order Management", icon: "📦" },
           { href: "/admin/worldwide-inventory", label: "Worldwide Inventory", icon: "🌍" },
           { href: "/admin/consumption", label: "Consumption & Reorder", icon: "📊" },
