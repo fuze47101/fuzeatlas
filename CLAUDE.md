@@ -21,14 +21,18 @@ Andrew Peterson, CEO/Founder of FUZE Biotech. Building antimicrobial textile tre
 | **metamaterial** | What we call our active ingredient (elemental silver produced via liquid laser ablation from recycled electronics) |
 | **F1/F2/F3/F4** | Treatment tiers: 1.0 / 0.75 / 0.5 / 0.25 mg/kg on fabric |
 | **Stock concentration** | 30 mg/L in delivered FUZE |
-| **Standard bottle** | 19L |
+| **Standard bottle (Carboy)** | 19L — smallest order unit |
+| **Gaylord** | 32 carboys (608L) — minimum international shipment |
+| **20' container** | 10 gaylords (6,080L) |
+| **40' container** | 20 gaylords (12,160L) |
 | **Three methods** | Exhaust (dyebath), Pad-Dry-Cure, Spray (6" head spacing, 15 m/min) |
 | **Liquid laser ablation** | Our production method — 30-amp laser on 1m² table, solar-capable, recycled electronics feedstock |
+| **No shelf life** | FUZE does not expire — factories can maintain stock indefinitely |
 
 ## Platforms
 | Platform | What | Where |
 |----------|------|-------|
-| **FUZE Atlas** | Multi-portal Next.js app (Admin/Brand/Factory/Lab) | fuzeatlas.com, Vercel |
+| **FUZE Atlas** | Multi-portal Next.js app (Admin/Brand/Factory/Lab/Distributor) | fuzeatlas.com, Vercel |
 | **fuzefaq.com** | Public landing page + calculator + sustainability | Railway, fuzecost repo |
 | **fuzeatlas repo** | github.com/fuze47101/fuzeatlas.git | Main branch = production |
 | **fuzecost repo** | github.com/fuze47101/fuzecost.git | Main branch = Railway deploy |
@@ -45,24 +49,39 @@ Andrew Peterson, CEO/Founder of FUZE Biotech. Building antimicrobial textile tre
 | Name | Role |
 |------|------|
 | **Andrew** | CEO/Founder, admin |
+| **Barth** | Account Manager — NY hospitality, Welspun brand contact |
 | **Tina** | Lab operations, manages testing with ITS/VL/FPC labs |
 | **Kaylee** | Employee — reported email deliverability issues |
-| **Danny, Kathir, Tandy** | Distributor roles (reassigned via /api/admin/reassign-user) |
+| **Danny** | Distributor role |
+| **Kathir** | Harris & Menuk distributor lead — also factory AM for Welspun India |
+| **Tandy** | Distributor role |
+
+## Active Distributors (9 total)
+1. Harris & Menuk
+2. SRS
+3. SRS-Dubai (separate warehouse location)
+4. SRS-Turkey (alias: Zen Kem Kimya, separate warehouse location)
+5. Mercado Global (alias: POLIMEROS)
+6. Global Shine
+7. Texwell (40' container shipping tomorrow)
+8. Hi-Goal
+9. FUZE Direct (USA — SLC headquarters)
+
+**Honghao-Chemical is NOT Texwell** — they are separate entities.
+All other distributors (Archroma, CHT, DyStar, Pulcra, etc.) are INACTIVE — they were chemical suppliers, not distributors.
 
 ## Active Projects
 | Project | Status |
 |---------|--------|
-| **NY Hospitality Market** | Next week — QR codes on calculators → fuzefaq.com |
-| **fuzefaq.com launch** | LIVE — needs terminology fixes, logo sizing |
-| **Distributor Network Management** | BUILT — page + API + cleanup done, deployed pending push |
-| **Lab Portal (Tina)** | BUILT — accept/start testing, set ETA, upload report, add notes |
-| **Ongoing Tests Tracker (AM view)** | BUILT — /admin/ongoing-tests with filters, overdue alerts |
-| **Dashboard Cards Linked** | DONE — all stat cards clickable to their pages |
-| **View As / Impersonation** | NEXT — admin can view any portal as any role without logout |
-| **Factory Sample Request Workflow** | PLANNED — see details below |
-| **Mobile View Fix** | NEW — admin pages broken on iPhone |
-| **Notification System** | NEW — department-based employee notifications |
-| **Email Deliverability** | CRITICAL — all system emails going to spam |
+| **NY Hospitality Market** | Active — QR codes on calculators → fuzefaq.com |
+| **fuzefaq.com** | LIVE |
+| **CRM Overhaul** | DONE — unified ActivityFeed, multi-manager, AM notifications |
+| **Brand Pipeline** | DONE — enriched-first, relevance sort, per-user outreach checkmarks |
+| **Distributor Portal Ordering** | NEXT — restock from FUZE, factory order flow |
+| **Supply Chain Transparency** | PLANNED — order→ship→receive→treat→test→certify pipeline |
+| **Daily CRM Digest Email** | BUILDING — morning email to Andrew with all activity highlights |
+| **Mobile View Fix** | PLANNED — admin pages broken on iPhone |
+| **Email Deliverability** | CRITICAL — all system emails going to spam (Resend + SPF/DKIM/DMARC) |
 | **Helios Project** | UPCOMING — Raspberry Pi demo programming for Nike |
 
 ## CRITICAL: Next.js 15 Gotchas
@@ -83,20 +102,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 ```typescript
 // WRONG — User model has NO `active` field
 where: { active: true }
-select: { active: true }
 
 // RIGHT — User uses status enum (ACTIVE/INACTIVE)
 where: { status: "ACTIVE" }
-select: { status: true }
 ```
 **Note: Distributor model DOES use `active: true` boolean. These are DIFFERENT models.**
 
 ### 3. DistributorInventory Field Names
 ```typescript
 // WRONG
-fuzeStockLiters  // doesn't exist as stockLiters
-stockKg          // doesn't exist
-stockBottles     // doesn't exist
 reorderThresholdLiters // doesn't exist
 
 // RIGHT
@@ -114,118 +128,137 @@ pricingType: "DEFAULT"
 isDefault: true
 ```
 
-## Git Workflow
-- **ALWAYS use `--no-verify`** on commits — ESLint pre-commit hook is broken
-- **Clear lock files before push**: `rm -f .git/HEAD.lock .git/index.lock`
-- Production branch: `main` (auto-deploys to Vercel)
+### 5. BrandEngagement Is a Separate Model
+```typescript
+// WRONG — these fields are NOT on Brand
+where: { engagementScore: true }
 
-## Distributor Data (Cleaned Up)
-Only 7 real active distributors:
-1. Harris & Menuk
-2. SRS
-3. SRS-Turkey (alias: Zen Kem Kimya)
-4. Mercado Global (alias: POLIMEROS)
-5. Global Shine
-6. Texwell
-7. Hi-Goal
-
-**Honghao-Chemical is NOT Texwell** — they are separate entities.
-All other distributors (Archroma, CHT, DyStar, Pulcra, etc.) are INACTIVE — they were chemical suppliers, not distributors.
-
-## Built Features (This Session — April 7, 2026)
-
-### Distributor Network Page (`/admin/distributors`)
-- Summary cards, search, filter by region/status
-- Expandable DistributorCard with inventory, coverage, contacts, factories, revenue
-- Inline edit mode for all fields (name, country, region, city, address, email, phone, website, currency, coverage, status, notes)
-- API: `/api/admin/distributors` (list), `/api/admin/distributors/[id]` (GET/PATCH/DELETE)
-- Cleanup endpoint: `/api/admin/cleanup-distributors` (already run successfully)
-
-### Lab Portal Enhancements (`/lab-portal/upload`)
-- PendingTestsPanel with status grouping: Awaiting Accept / In Progress / Results Received
-- TestCard component: Accept & Start Testing, Set/Update ETA, Upload Report, Add Note
-- Progress bars, timeline dates, special instructions display
-- API: `/api/lab-portal/test-actions` (accept, set_ready_date, link_report, update_status, add_note)
-
-### Ongoing Tests Tracker (`/admin/ongoing-tests`)
-- AM-visible dashboard: Total, Awaiting Accept, In Progress, Results Ready, Overdue
-- Desktop table + mobile cards, search, status/lab filters
-- Progress bars, ETA with overdue highlighting, days active
-- API: `/api/admin/ongoing-tests` (scoped: AMs see their brands, Admins see all)
-
-### Dashboard Improvements
-- All stat cards now clickable → link to appropriate pages
-- Distributor count fixed to only show active distributors
-- Sidebar updated with Distributor Network + Ongoing Tests Tracker links
-
-### User Reassignment (`/api/admin/reassign-user`)
-- GET: lists all users with roles + all distributors
-- POST: reassign user role and link to distributor/factory/brand/lab
-
-## Pending Deployment
-Commit `8db64c7` (params fix) is committed locally but **needs to be pushed**. Run from your machine:
-```bash
-cd fuzeatlas && git push
+// RIGHT — BrandEngagement is a separate model related via `engagement`
+select: { engagement: { select: { overallScore: true, engagementTrend: true } } }
+// Access: b.engagement?.overallScore
 ```
-This unblocks ALL Vercel deployments. Production was stuck on `c9af2b8`.
 
-## New Feature Details
+## Git Workflow
+- **ALWAYS use `--no-verify`** on commits — ESLint pre-commit hook is broken (no eslint.config.js)
+- **Clear lock files before commit**: `rm -f .git/HEAD.lock .git/index.lock`
+- Production branch: `main` (auto-deploys to Vercel)
+- **Prisma migrations**: Use `npx prisma db push` (shadow DB migration is broken due to constraint conflict)
 
-### Factory Sample Request Workflow (PLANNED)
-- Factory submits request → includes shipping account + approval → FUZE ships → tracking emailed back
-- Shipping from regional distributor if available, otherwise direct from USA (SLC)
-- Free samples — factory provides their shipping account #
-- Onboarding flow after: upload fabric → dilution calculator → request testing
+## Key Models & Relationships
 
-### Lab Test Report Upload (Tina Request — PARTIALLY BUILT)
-- Labs log in and upload reports directly
-- List of ongoing tests with expected ready dates visible to labs AND AMs
-- Reports auto-filed and linked to correct test run/submission
+### EntityManager (NEW — multi-manager)
+```
+entityType: BRAND | FACTORY | DISTRIBUTOR
+entityId: string
+userId: string
+role: ACCOUNT_MANAGER | FACTORY_LEAD | DISTRIBUTOR_LEAD | SUPPORT
+isPrimary: boolean
+```
+Falls back to brand.salesRepId / factory.salesRepId if no EntityManagers assigned.
 
-### Mobile View Fix (PLANNED)
-- Admin pages on iPhone: can't select users, change password, review accounts
+### ContactOutreach (NEW — per-user outreach tracking)
+```
+contactId + userId + type (LINKEDIN | EMAIL) — unique constraint
+```
+Toggle via POST /api/admin/contact-outreach
 
-### Employee Notification System (PLANNED)
-- Department notification groups (Lab, Shipping, Sales, etc.)
-- Employees in multiple groups
-- Andrew not receiving access request notifications
+### Brand Pipeline Views
+API: `/api/admin/brand-pipeline?view=actionable|enriched|verified|all|everything`
+Default sort: relevance (high→medium→low→none) → enriched → stage → A-Z
+Stage filter defaults to LEAD on the page.
 
-### Email Deliverability (CRITICAL — BLOCKS NOTIFICATIONS)
-- All system emails going to spam (confirmed by Kaylee)
-- Need SPF/DKIM/DMARC audit on sending domain
-- Email provider: Resend
+### CRM (ActivityFeed component)
+- Single unified CRM on brands (2nd tab) and factories (2nd tab)
+- Removed standalone Notes tabs — ActivityFeed is the one CRM interface
+- Always-visible "Log Activity" form at top
+- Fires notifyCRMActivity() → notifies all EntityManagers + admins
+
+### Notification System
+- Model: userId, type, title, message, link, read
+- SSE streaming: `/api/notifications/stream`
+- Types: TEST_APPROVED, TEST_RESULTS, ACCESS_REQUEST, PO_STATUS, SOW_UPDATE, BRAND_ACTIVITY, USER_LOGIN, SYSTEM
+- notifyCRMActivity: fires to EntityManagers, falls back to salesRepId, always includes admins
+
+## Order Flow Architecture (PLANNED)
+### Distributor Restock
+- Distributor orders from FUZE: carboys, gaylords, or containers
+- Minimum international: 1 gaylord (32 × 19L)
+- FUZE sets price per liter to distributor
+
+### Factory Orders
+- 5 pricing tiers set BY each distributor (local currency: NTD, RMB, TRY, etc.)
+- Distributor assigns factory to a tier
+- Factory selects fabric spec → auto-calculates FUZE volume needed → gets quote
+- Factory approves → attaches PO → order to FUZE + distributor
+- Brands should be assigned to orders (even if ongoing)
+
+### QA/QC Pipeline
+Order placed → Product shipped → Received → Treatment applied → ICP submitted → ICP certified → Brand notified
+
+### QR Code on Shipment
+Each order gets QR → links to SDS, COA for the shipment. Factory scans on receive + on application.
+
+## Built Features (Sessions — April 7-13, 2026)
+
+### Sales & Pipeline Consolidation
+- Brand Pipeline (`/admin/brand-pipeline`): unified brands + contacts + outreach + activity
+- Smart view modes: actionable, enriched, verified, all, everything
+- Per-user LinkedIn/Email outreach checkmarks (ContactOutreach model)
+- Relevance-first sorting (high → medium → low → none)
+- Stage filter defaults to LEAD for working through leads
+
+### CRM Overhaul
+- ActivityFeed component: big always-visible log form, type buttons, 3-col contacts, timeline with filters
+- Brand detail: CRM tab added (was missing), now 2nd tab, standalone Notes removed
+- Factory detail: CRM tab moved to 2nd position, standalone Notes removed
+- EntityManager model for multi-manager assignments
+- CRM notifications to all managers when activity is logged
+
+### Conversion Tracking (`/admin/conversion-tracking`)
+- Fixes 404 — renders existing API data
+- Summary cards: Factories Sampled, Converted, Conversion Rate, Avg Days
+
+### Distributor Inventory Fix
+- Fixed field mismatch: reorderThresholdLiters → reorderPointLiters across 4+ files
+
+### Brand Audit Improvements
+- Brand names clickable, cleanup buttons reorganized with live counts
+
+### Sidebar Consolidation
+- Sales & Pipeline: Brand Pipeline, Brand Intelligence, Deals & Revenue, Invoices
 
 ## Tech Stack
 - FUZE Atlas: Next.js 15.5 / Prisma 6.19 / PostgreSQL (Railway) / Vercel
 - fuzefaq.com: Next.js serving static HTML / Railway
 - DB: PostgreSQL on Railway (caboose.proxy.rlwy.net:28355)
-- Email: Resend (transactional emails)
-- Sending domain: needs SPF/DKIM/DMARC audit
-
-## Proactive Sales Strategy
-- Use Apollo/enrichment tools to research target brands proactively
-- Build competitive intelligence on brands using competitor antimicrobials
-- Identify brands with sustainability mandates → FUZE's zero-binder, zero-curing advantage
-- Feed research into outreach sequences and call prep
+- Email: Resend (transactional emails) — deliverability needs SPF/DKIM/DMARC audit
+- Enrichment: Apollo (contacts, LinkedIn, email)
 
 ## Preferences
 - Move fast — meetings next week, lots to do
 - Direct communication, no fluff
 - Brand language is sacred — FUZE and metamaterial, never silver/nano
+- Commission system needed but save for later
 → Full glossary: memory/glossary.md
 
 ## Platform Wish List (Priority Order)
-1. **Environmental Impact Reports for Brands (ESG)** — Auto-generate quarterly reports: chemical binders eliminated, wastewater saved, curing energy avoided. HIGHEST PRIORITY.
-2. **Consumption & Reorder Dashboard** — Track factory FUZE usage, projected run-out dates, automated reorder triggers.
-3. **Competitive Intelligence Dashboard (EPA Scraping)** — Live dashboard tracking competitor registrations, formulation changes, regulatory actions.
-4. **Real-Time Test Tracking (FedEx-style)** — Live tracking page with push notifications at each stage.
-5. **AI Test Interpretation at Scale** — Auto-generate plain-English summaries with branded PDF certificates.
-6. **Brand Self-Service QR Verification** — QR codes on hang tags → verification page.
-7. **Factory Performance Scoring** — Score factories on first-pass rates. "FUZE Certified Factory" rating.
-8. **API for Brand PLM Integration** — REST API with webhooks for large brands.
+1. **Environmental Impact Reports for Brands (ESG)** — Auto-generate quarterly reports
+2. **Consumption & Reorder Dashboard** — Track factory FUZE usage, projected run-out, automated reorder
+3. **Competitive Intelligence Dashboard (EPA Scraping)** — Live dashboard tracking competitors
+4. **Real-Time Test Tracking (FedEx-style)** — Live tracking with push notifications
+5. **AI Test Interpretation at Scale** — Plain-English summaries with branded PDF certificates
+6. **Brand Self-Service QR Verification** — QR codes on hang tags → verification page
+7. **Factory Performance Scoring** — First-pass rates, "FUZE Certified Factory" rating
+8. **API for Brand PLM Integration** — REST API with webhooks
 
 ## Competitive Intelligence Project
 - **Stage 1**: Full-force attack on traditional antimicrobials (silver chloride, zinc pyrithione, copper, quats, Noble Biometal embedded silver)
 - **Stage 2**: Bio-based antimicrobial comparison (chitosan, etc.)
-- **Depth**: PhD-level. Manufacturing process, VOCs, curing requirements, leaching, toxicity, washoff, binders, wastewater cleanup, full EPA filing data
+- **Depth**: PhD-level analysis
 - **Target competitors**: NordShield, Noble Biometal, Microban, Sciessent, Sanitized AG, Ultra-Fresh, BioPrism, Aegis, Silvadur
+
+## Regulatory Context (Active Sales Leverage)
+- **Texas AG investigating Lululemon** (April 2026) — PFAS/"forever chemicals" in activewear
+- **California SB 707** — restricting PFAS in textiles
+- FUZE advantage: zero PFAS, zero binders, zero curing, zero toxic chemistry
+- Use in outreach messaging to brands
