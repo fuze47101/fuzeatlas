@@ -82,7 +82,7 @@ export default function RecipeSOPPage() {
           <ol className="space-y-1 pl-5 list-decimal text-slate-700">
             <li><strong>Single pass, 4 bar, weigh within 10 seconds.</strong> Do NOT re-pad to lower the wet weight — that measures squeezer over-squeeze, not pickup.</li>
             <li><strong>Squeezer consistency check:</strong> if a 2nd pass drops mass by more than 5%, flag the squeezer — it isn't at equilibrium on the first pass.</li>
-            <li><strong>Run each fabric in triplicate</strong> (3 separate samples), record each run's pickup, report the mean. Flag the batch if any run deviates >10% from the mean.</li>
+            <li><strong>Run each fabric in triplicate</strong> (3 separate samples), record each run's pickup, report the mean. Flag the batch if any run deviates &gt;10% from the mean.</li>
             <li><strong>Dry-to-wet vs wet-to-wet:</strong> dry-to-wet is the lab default. Wet-to-wet requires a fresh sample, pre-wetted with <em>water only</em> and padded first, THEN dipped into the treatment bath. Net pickup = (W_final − W_prewet) / W_dry × 100.</li>
             <li><strong>Temperature:</strong> bath and fabric conditioned to 20–25 °C before weighing. Cold fabric ≠ ambient pickup.</li>
             <li><strong>Weigh fast:</strong> every 10 seconds of delay after padding, water evaporates and your pickup reading drops.</li>

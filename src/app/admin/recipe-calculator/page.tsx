@@ -120,11 +120,12 @@ function validateStep(step: number, input: any, calc: any) {
 const STEPS = [
   { n: 1, title: "Select Fabric", desc: "Link this test to a fabric in Atlas" },
   { n: 2, title: "Cut & Weigh Dry", desc: "100 cm² cutter → weigh sample → auto GSM" },
-  { n: 3, title: "Set Method + VFD", desc: "Pad-Dry-Cure, 4 bar, 10 Hz ≈ 3 m/min" },
-  { n: 4, title: "Dip → Pad → Weigh Wet", desc: "Measure pickup from dry-to-wet" },
-  { n: 5, title: "Wet-to-Wet (optional)", desc: "For wet-on-wet production recipes" },
-  { n: 6, title: "Production Scale (optional)", desc: "Total FUZE liters for a real run" },
-  { n: 7, title: "Review & Save", desc: "Confirm all four tier recipes" },
+  { n: 3, title: "Set Method + VFD", desc: "Vertical pad, 4 bar, 10 Hz ≈ 3 m/min" },
+  { n: 4, title: "Dip → Pad → Weigh Wet", desc: "Triplicate runs → mean pickup" },
+  { n: 5, title: "Prepare Test Bath", desc: "Mix FUZE stock + water for the bench treatment" },
+  { n: 6, title: "Wet-to-Wet (optional)", desc: "For wet-on-wet production recipes" },
+  { n: 7, title: "Production Scale (optional)", desc: "Total FUZE liters for a real run" },
+  { n: 8, title: "Review & Save → ICP", desc: "Confirm recipes, save, bag & tag for ICP" },
 ];
 
 export default function RecipeCalculatorPage() {
@@ -170,6 +171,9 @@ export default function RecipeCalculatorPage() {
     wetAfterBathFromPreWet: "",
     targetProductionKg: "",
     stockMgPerL: String(STOCK_MG_PER_L),
+    // Test bath prep (for bench treatment → ICP sample)
+    testedAtTier: "F1",
+    testBathVolumeL: "1",
     qcPassed: true,
     notes: "",
   });
@@ -265,10 +269,26 @@ export default function RecipeCalculatorPage() {
           wet: Number(r.wet),
           pickup: ((Number(r.wet) - Number(r.dry)) / Number(r.dry)) * 100,
         }));
+
+      // Compute test bath amounts for persistence
+      const tier = form.testedAtTier || "F1";
+      const bathL = Number(form.testBathVolumeL) || 1;
+      const stock = Number(form.stockMgPerL) || STOCK_MG_PER_L;
+      const pickup = runStats.meanPickup;
+      const testBathFuzeMl = pickup ? ((TIER_MG_PER_KG[tier] / (pickup / 100)) * bathL * 1000) / stock : null;
+      const testBathWaterMl = testBathFuzeMl !== null ? bathL * 1000 - testBathFuzeMl : null;
+      const icpExpectedPpm = TIER_MG_PER_KG[tier] * 1000;
+
       const res = await fetch("/api/admin/recipe-bench-tests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, sampleRuns: sampleRunsPayload }),
+        body: JSON.stringify({
+          ...form,
+          sampleRuns: sampleRunsPayload,
+          testBathFuzeMl,
+          testBathWaterMl,
+          icpExpectedPpm,
+        }),
       });
       const d = await res.json();
       if (d.ok) {
@@ -292,6 +312,52 @@ export default function RecipeCalculatorPage() {
     if (d.ok) {
       alert(d.message);
       loadRecent();
+    }
+  }
+
+  // ICP submission + result entry on save screen
+  const [icpForm, setIcpForm] = useState<any>({ icpLab: "", icpSampleId: "", icpMeasuredPpm: "", icpReportUrl: "" });
+  const [icpSaving, setIcpSaving] = useState(false);
+  const [icpState, setIcpState] = useState<"idle" | "submitted" | "complete">("idle");
+
+  async function submitToIcp() {
+    if (!savedTestId) return;
+    setIcpSaving(true);
+    try {
+      const res = await fetch(`/api/admin/recipe-bench-tests/${savedTestId}/icp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "submit",
+          icpLab: icpForm.icpLab,
+          icpSampleId: icpForm.icpSampleId,
+          testedAtTier: form.testedAtTier,
+          testBathVolumeL: Number(form.testBathVolumeL),
+          icpExpectedPpm: TIER_MG_PER_KG[form.testedAtTier || "F1"] * 1000,
+        }),
+      });
+      if ((await res.json()).ok) setIcpState("submitted");
+    } finally {
+      setIcpSaving(false);
+    }
+  }
+
+  async function enterIcpResult() {
+    if (!savedTestId || !icpForm.icpMeasuredPpm) return;
+    setIcpSaving(true);
+    try {
+      const res = await fetch(`/api/admin/recipe-bench-tests/${savedTestId}/icp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "enter-result",
+          icpMeasuredPpm: Number(icpForm.icpMeasuredPpm),
+          icpReportUrl: icpForm.icpReportUrl,
+        }),
+      });
+      if ((await res.json()).ok) setIcpState("complete");
+    } finally {
+      setIcpSaving(false);
     }
   }
 
@@ -574,8 +640,82 @@ export default function RecipeCalculatorPage() {
           </div>
         )}
 
-        {/* Step 5: Wet-to-wet */}
-        {step === 5 && (
+        {/* Step 5: Prepare Test Bath */}
+        {step === 5 && (() => {
+          const tier = form.testedAtTier || "F1";
+          const bathL = Number(form.testBathVolumeL) || 1;
+          const stock = Number(form.stockMgPerL) || STOCK_MG_PER_L;
+          const bathConc = pickupUsed ? TIER_MG_PER_KG[tier] / (pickupUsed / 100) : 0;
+          const fuzeMl = pickupUsed ? (bathConc * bathL * 1000) / stock : 0;
+          const waterMl = bathL * 1000 - fuzeMl;
+          const expectedPpm = TIER_MG_PER_KG[tier] * 1000; // mg/kg = ppm by weight
+          return (
+            <div className="space-y-4">
+              <div className="p-4 bg-violet-50 border border-violet-200 rounded-lg text-sm text-slate-700">
+                <p className="font-bold mb-2">🧪 Prepare the bench test bath</p>
+                <p>The FUZE mini pad is a <strong>vertical padder</strong> — the fabric moves upward through a bath held in the reservoir between the two pads pressed together. Mix a small test bath at the target tier concentration, pour into the reservoir, then pad a fresh fabric sample through it.</p>
+                <p className="mt-2 text-xs text-slate-600">Typical bench test uses <strong>1 L</strong> for the reservoir. Smaller 0.5 L batches are fine if you're tight on sample material.</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-1 block">Target tier</label>
+                  <div className="grid grid-cols-4 gap-1">
+                    {["F1","F2","F3","F4"].map((t) => (
+                      <button key={t} type="button" onClick={() => set("testedAtTier", t)} className={`p-2 rounded border text-xs font-bold ${tier === t ? "border-[#00b4c3] bg-[#00b4c3]/10 text-[#00b4c3]" : "border-slate-200 text-slate-600"}`}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">{tier} = {TIER_MG_PER_KG[tier]} mg/kg OWF target</p>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-600 mb-1 block">Bath volume (reservoir)</label>
+                  <div className="grid grid-cols-3 gap-1">
+                    {["0.5","1","2"].map((v) => (
+                      <button key={v} type="button" onClick={() => set("testBathVolumeL", v)} className={`p-2 rounded border text-xs font-bold ${String(form.testBathVolumeL) === v ? "border-[#00b4c3] bg-[#00b4c3]/10 text-[#00b4c3]" : "border-slate-200 text-slate-600"}`}>
+                        {v} L
+                      </button>
+                    ))}
+                  </div>
+                  <input type="number" step="0.1" value={form.testBathVolumeL} onChange={(e) => set("testBathVolumeL", e.target.value)} className="mt-1 w-full px-2 py-1 border border-slate-300 rounded text-xs font-mono" />
+                </div>
+              </div>
+
+              {pickupUsed ? (
+                <div className="p-4 bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg text-white">
+                  <p className="text-xs font-bold uppercase tracking-wide text-[#00b4c3] mb-3">Recipe — measure these exactly</p>
+                  <div className="grid grid-cols-3 gap-3 mb-3">
+                    <div className="bg-white/5 rounded p-3">
+                      <p className="text-[10px] text-white/60 uppercase">Bath concentration</p>
+                      <p className="text-xl font-mono font-black">{bathConc.toFixed(2)} <span className="text-xs text-white/60">mg/L</span></p>
+                    </div>
+                    <div className="bg-[#00b4c3]/20 border border-[#00b4c3]/40 rounded p-3">
+                      <p className="text-[10px] text-[#00b4c3] uppercase">FUZE stock to add</p>
+                      <p className="text-2xl font-mono font-black text-[#00b4c3]">{fuzeMl.toFixed(1)} <span className="text-xs">mL</span></p>
+                      <p className="text-[10px] text-white/60">≈ {fuzeMl.toFixed(1)} g (water-based)</p>
+                    </div>
+                    <div className="bg-white/5 rounded p-3">
+                      <p className="text-[10px] text-white/60 uppercase">Water to add</p>
+                      <p className="text-2xl font-mono font-black">{waterMl.toFixed(0)} <span className="text-xs text-white/60">mL</span></p>
+                    </div>
+                  </div>
+                  <div className="text-xs text-white/70 space-y-1">
+                    <p>📝 <strong>Protocol:</strong> measure {fuzeMl.toFixed(1)} mL of 30 mg/L FUZE stock into a clean beaker. Top up to <strong>{bathL} L</strong> total with DI water. Stir gently.</p>
+                    <p>🎯 <strong>Expected on fabric:</strong> ~{expectedPpm.toFixed(0)} ppm Ag (for ICP verification)</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
+                  ⚠ Complete Step 4 first — pickup % is required to compute the bath recipe.
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* Step 6: Wet-to-wet */}
+        {step === 6 && (
           <div className="space-y-4">
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-slate-700">
               <p className="font-bold mb-2">🌊 Wet-to-wet pickup — when & how</p>
@@ -621,7 +761,7 @@ export default function RecipeCalculatorPage() {
         )}
 
         {/* Step 6: Production */}
-        {step === 6 && (
+        {step === 7 && (
           <div className="space-y-4">
             <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-slate-700">
               🏭 Two ways to plan a production run. Use either (or both).
@@ -693,7 +833,7 @@ export default function RecipeCalculatorPage() {
         )}
 
         {/* Step 7: Review + save */}
-        {step === 7 && (
+        {step === 8 && (
           <div className="space-y-5">
             <div className="p-4 bg-slate-50 rounded-lg">
               <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Test summary</p>
@@ -792,6 +932,46 @@ export default function RecipeCalculatorPage() {
                 <div className="grid grid-cols-2 gap-2">
                   <button onClick={graduate} className="px-4 py-2 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 text-sm">⭐ Graduate to FabricRecipe</button>
                   <button onClick={() => { setSavedTestId(""); setSavedTestNumber(""); setStep(1); setRuns([{dry:"",wet:""},{dry:"",wet:""},{dry:"",wet:""}]); setForm((f: any) => ({ ...f, drySampleWeight: "", wetAfterBathWeight: "", preWetSampleWeight: "", wetAfterBathFromPreWet: "", targetProductionKg: "", notes: "" })); }} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg text-sm">+ New Test</button>
+                </div>
+
+                {/* ICP submission + result */}
+                <div className="mt-4 p-4 bg-violet-50 border border-violet-200 rounded-lg">
+                  <p className="text-xs font-black uppercase tracking-wide text-violet-900 mb-2">🧫 ICP Validation</p>
+                  {icpState === "idle" && (
+                    <div className="space-y-2">
+                      <p className="text-xs text-slate-700">Bag &amp; tag the treated sample, fill the submission form, send to the ICP lab. Expected Ag on fabric: <strong>{(TIER_MG_PER_KG[form.testedAtTier || "F1"] * 1000).toFixed(0)} ppm</strong>.</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input placeholder="Lab (ITS, VL, FPC...)" value={icpForm.icpLab} onChange={(e) => setIcpForm({ ...icpForm, icpLab: e.target.value })} className="px-3 py-2 border border-slate-300 rounded text-sm" />
+                        <input placeholder="Lab sample ID" value={icpForm.icpSampleId} onChange={(e) => setIcpForm({ ...icpForm, icpSampleId: e.target.value })} className="px-3 py-2 border border-slate-300 rounded text-sm" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button disabled={icpSaving} onClick={submitToIcp} className="px-4 py-2 bg-violet-600 text-white font-semibold rounded-lg text-sm">Mark Submitted to ICP</button>
+                        <a href={`/admin/recipe-calculator/${savedTestId}/icp-form`} target="_blank" className="px-4 py-2 bg-slate-900 text-white font-semibold rounded-lg text-sm text-center">🖨 Print ICP Form</a>
+                      </div>
+                    </div>
+                  )}
+                  {(icpState === "submitted" || icpState === "complete") && (
+                    <div className="space-y-2">
+                      <p className="text-xs text-emerald-700">✓ Submitted to ICP. Enter the measured Ag ppm when the result comes back.</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input type="number" step="0.1" placeholder="Measured Ag (ppm)" value={icpForm.icpMeasuredPpm} onChange={(e) => setIcpForm({ ...icpForm, icpMeasuredPpm: e.target.value })} className="px-3 py-2 border border-slate-300 rounded text-sm font-mono font-bold" />
+                        <input placeholder="ICP report PDF URL" value={icpForm.icpReportUrl} onChange={(e) => setIcpForm({ ...icpForm, icpReportUrl: e.target.value })} className="px-3 py-2 border border-slate-300 rounded text-sm" />
+                      </div>
+                      <button disabled={icpSaving || !icpForm.icpMeasuredPpm} onClick={enterIcpResult} className="w-full px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg text-sm disabled:opacity-50">Save ICP Result</button>
+                      {icpForm.icpMeasuredPpm && (() => {
+                        const expected = TIER_MG_PER_KG[form.testedAtTier || "F1"] * 1000;
+                        const measured = Number(icpForm.icpMeasuredPpm);
+                        const affinity = expected > 0 ? (measured / expected) * 100 : 0;
+                        const within = affinity >= 90 && affinity <= 110;
+                        return (
+                          <div className={`p-3 rounded border text-xs ${within ? "border-emerald-300 bg-emerald-50 text-emerald-800" : "border-amber-300 bg-amber-50 text-amber-800"}`}>
+                            <p><strong>Affinity:</strong> {affinity.toFixed(1)}% ({within ? "✓ within 90-110% target" : "⚠ outside target — adjust recipe"}).</p>
+                            <p className="mt-0.5">Expected {expected} ppm · Measured {measured} ppm.</p>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -178,6 +178,13 @@ export async function POST(req: Request) {
 
         stockMgPerL: Number(body.stockMgPerL) || STOCK_MG_PER_L,
 
+        // Test bath + ICP expected
+        testedAtTier: body.testedAtTier || null,
+        testBathVolumeL: body.testBathVolumeL ? Number(body.testBathVolumeL) : null,
+        testBathFuzeMl: body.testBathFuzeMl ?? null,
+        testBathWaterMl: body.testBathWaterMl ?? null,
+        icpExpectedPpm: body.icpExpectedPpm ?? null,
+
         qcPassed: body.qcPassed !== false,
         notes: body.notes || null,
         createdById: user.id,

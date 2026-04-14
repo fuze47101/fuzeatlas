@@ -1828,6 +1828,24 @@ model RecipeBenchTest {
   // Stock concentration reference (should be 30 mg/L, but snapshot in case it changes)
   stockMgPerL           Float   @default(30)
 
+  // Test bath actually prepared + tier applied for ICP validation
+  testedAtTier          String?   // "F1" | "F2" | "F3" | "F4"
+  testBathVolumeL       Float?    // 0.5 or 1.0 typical
+  testBathFuzeMl        Float?    // mL of FUZE stock added to bath
+  testBathWaterMl       Float?    // mL of water to reach the target volume
+
+  // ICP validation — sample sent to lab, result entered when received
+  icpLab                String?     // ITS, VL, FPC, etc
+  icpSampleId           String?     // lab's tracking number
+  icpSubmittedAt        DateTime?
+  icpSubmittedById      String?
+  icpExpectedPpm        Float?      // expected Ag ppm on fabric (from recipe target)
+  icpMeasuredPpm        Float?      // actual ICP result
+  icpResultReceivedAt   DateTime?
+  icpReportUrl          String?     // uploaded PDF link
+  icpNotes              String?
+  affinityPct           Float?      // measured / expected × 100  (100% = perfect)
+
   // Graduation into a published recipe
   graduatedRecipeId     String?
   qcPassed              Boolean @default(true)

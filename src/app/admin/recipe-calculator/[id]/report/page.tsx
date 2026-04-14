@@ -269,11 +269,38 @@ export default function RecipeReportPage() {
           </div>
         </section>
 
+        {/* TEST BATH + ICP */}
+        {test.testedAtTier && (
+          <section className="mb-6">
+            <h2 className="font-black text-xs uppercase tracking-widest text-slate-500 mb-3">Bench Test Bath + ICP Validation</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="border border-[#00b4c3] rounded p-3 text-xs">
+                <p className="text-slate-500 uppercase text-[10px] mb-1">Test bath applied</p>
+                <p className="font-bold text-slate-900">Tier {test.testedAtTier} · {fmt(test.testBathVolumeL, 2)} L reservoir</p>
+                <p className="font-mono mt-1">FUZE stock: <strong>{fmt(test.testBathFuzeMl, 1)} mL</strong> · Water: <strong>{fmt(test.testBathWaterMl, 0)} mL</strong></p>
+              </div>
+              <div className="border border-slate-300 rounded p-3 text-xs">
+                <p className="text-slate-500 uppercase text-[10px] mb-1">ICP verification</p>
+                <p className="font-mono"><span className="text-slate-500">Expected:</span> <strong>{fmt(test.icpExpectedPpm, 0)} ppm Ag</strong></p>
+                {test.icpMeasuredPpm ? (
+                  <>
+                    <p className="font-mono"><span className="text-slate-500">Measured:</span> <strong className="text-[#00b4c3]">{fmt(test.icpMeasuredPpm, 1)} ppm</strong></p>
+                    {test.affinityPct && <p className="font-mono"><span className="text-slate-500">Affinity:</span> <strong className={test.affinityPct >= 90 && test.affinityPct <= 110 ? "text-emerald-700" : "text-amber-700"}>{fmt(test.affinityPct, 1)}%</strong></p>}
+                  </>
+                ) : (
+                  <p className="text-amber-700 italic mt-0.5">Result pending</p>
+                )}
+                {test.icpLab && <p className="text-[10px] text-slate-500 mt-1">{test.icpLab}{test.icpSampleId ? ` · ${test.icpSampleId}` : ""}</p>}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* METHODOLOGY */}
         <section className="mb-6 p-4 bg-slate-50 border-l-4 border-[#00b4c3] text-xs">
           <h2 className="font-black text-slate-900 uppercase tracking-wide mb-2">Methodology</h2>
           <p className="text-slate-700">
-            Pickup rate measured per <strong>AATCC / ASTM</strong> pad application method. Samples cut at 100 cm² on a FUZE cutter, conditioned at 20–25 °C. Dry-to-wet run: dry sample submerged in clean DI water 10 s, drained 3 s, padded at {test.squeezePressure} bar / {test.vfdFrequencyHz} Hz (single pass), weighed within 10 s. Measurements performed in triplicate; reported pickup is the arithmetic mean. Dilution recipe derived from pickup mean using FUZE stock concentration {stock} mg/L and tier OWF targets (F1 1.0 mg/kg · F2 0.75 mg/kg · F3 0.5 mg/kg · F4 0.25 mg/kg).
+            Pickup rate measured per <strong>AATCC / ASTM</strong> pad application method on the FUZE lab <strong>vertical padder</strong> (HTAI P-B0, 41 cm roller circumference) — fabric passes upward through a bath held in the reservoir between two pads pressed at 4 bar. Samples cut at 100 cm² on a FUZE cutter, conditioned at 20–25 °C. Dry-to-wet run: dry sample submerged in clean DI water 10 s, drained 3 s, padded at {test.squeezePressure} bar / {test.vfdFrequencyHz} Hz (single pass), weighed within 10 s. Measurements performed in triplicate; reported pickup is the arithmetic mean. Bench test bath prepared at the target tier concentration from 30 mg/L FUZE stock and pad-applied through the same reservoir for ICP verification. Dilution recipe derived from pickup mean using FUZE stock concentration {stock} mg/L and tier OWF targets (F1 1.0 mg/kg · F2 0.75 mg/kg · F3 0.5 mg/kg · F4 0.25 mg/kg).
           </p>
         </section>
 
