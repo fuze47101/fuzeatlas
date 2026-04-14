@@ -122,6 +122,14 @@ export async function GET(req: Request) {
             outreachCount: true,
             decisionMaker: true,
             emailStatus: true,
+            outreachChecks: {
+              select: {
+                type: true,
+                userId: true,
+                sentAt: true,
+                user: { select: { name: true } },
+              },
+            },
           },
           orderBy: { decisionMaker: "desc" },
           take: 5,
@@ -231,6 +239,7 @@ export async function GET(req: Request) {
       ok: true,
       pipeline,
       stageSummary,
+      currentUserId: user.id,
       stats: {
         totalBrands,
         enriched,

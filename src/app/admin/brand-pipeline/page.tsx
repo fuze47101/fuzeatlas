@@ -4,6 +4,13 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 
 // ── Types ──
+interface OutreachCheck {
+  type: string;
+  userId: string;
+  sentAt: string;
+  user: { name: string };
+}
+
 interface Contact {
   id: string;
   name: string;
@@ -16,6 +23,7 @@ interface Contact {
   outreachCount: number | null;
   decisionMaker: boolean | null;
   emailStatus: string | null;
+  outreachChecks: OutreachCheck[];
 }
 
 interface BrandEntry {
@@ -81,13 +89,22 @@ const OUTREACH_BADGE: Record<string, string> = {
   not_interested: "bg-red-100 text-red-600",
 };
 
+// Helper: check if current user has a specific outreach type on a contact
+function myCheck(checks: OutreachCheck[], type: string, userId: string): OutreachCheck | undefined {
+  return checks?.find((c) => c.type === type && c.userId === userId);
+}
+function othersChecked(checks: OutreachCheck[], type: string, userId: string): OutreachCheck[] {
+  return checks?.filter((c) => c.type === type && c.userId !== userId) || [];
+}
+
 export default function BrandPipelinePage() {
   const [loading, setLoading] = useState(true);
   const [pipeline, setPipeline] = useState<BrandEntry[]>([]);
   const [stageSummary, setStageSummary] = useState<Record<string, number>>({});
   const [stats, setStats] = useState<any>(null);
+  const [currentUserId, setCurrentUserId] = useState<string>("");
   const [search, setSearch] = useState("");
-  const [stageFilter, setStageFilter] = useState("all");
+  const [stageFilter, setStageFilter] = useState("LEAD"); // Default to LEAD
   const [relevanceFilter, setRelevanceFilter] = useState("all");
   const [viewFilter, setViewFilter] = useState("actionable");
   const [sortBy, setSortBy] = useState<"relevance" | "stage" | "name" | "activity" | "contacts">("relevance");
@@ -112,6 +129,7 @@ export default function BrandPipelinePage() {
         setPipeline(data.pipeline || []);
         setStageSummary(data.stageSummary || {});
         setStats(data.stats || null);
+        if (data.currentUserId) setCurrentUserId(data.currentUserId);
       }
     } catch {
     } finally {
@@ -152,13 +170,13 @@ export default function BrandPipelinePage() {
     }
   };
 
-  // Outreach checkbox
-  const handleOutreachCheck = async (contactId: string, action: "linkedin_reached" | "email_sent") => {
+  // Per-user outreach toggle (LinkedIn or Email)
+  const handleOutreachToggle = async (contactId: string, type: "LINKEDIN" | "EMAIL") => {
     try {
-      await fetch(`/api/admin/outreach/contact/${contactId}`, {
-        method: "PATCH",
+      await fetch("/api/admin/contact-outreach", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ contactId, type }),
       });
       loadData();
     } catch {}
@@ -176,7 +194,6 @@ export default function BrandPipelinePage() {
   const RELEVANCE_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2, none: 3 };
   const sorted = [...pipeline].sort((a, b) => {
     if (sortBy === "relevance") {
-      // Relevance tier first, then enriched, then A-Z within tier
       const relA = RELEVANCE_ORDER[a.fuzeRelevance || "none"] ?? 3;
       const relB = RELEVANCE_ORDER[b.fuzeRelevance || "none"] ?? 3;
       if (relA !== relB) return relA - relB;
@@ -187,7 +204,7 @@ export default function BrandPipelinePage() {
     if (sortBy === "name") return a.name.localeCompare(b.name);
     if (sortBy === "activity") return (a.daysSinceActivity ?? 999) - (b.daysSinceActivity ?? 999);
     if (sortBy === "contacts") return b.contactCount - a.contactCount;
-    return 0; // stage sort from API
+    return 0;
   });
 
   if (loading) {
@@ -227,7 +244,7 @@ export default function BrandPipelinePage() {
               stageFilter === "all" ? "bg-slate-800 text-white" : "bg-slate-50 text-slate-600 hover:bg-slate-100"
             }`}
           >
-            All ({pipeline.length})
+            All Stages
           </button>
           {STAGES.map((s) => (
             <button
@@ -329,6 +346,12 @@ export default function BrandPipelinePage() {
             const isNoting = noteTarget === b.id;
             const activityColor = b.daysSinceActivity === null ? "text-red-500" : b.daysSinceActivity > 30 ? "text-amber-600" : b.daysSinceActivity > 7 ? "text-slate-500" : "text-emerald-600";
 
+            // Check if primary contact has been reached by me
+            const pcLI = b.primaryContact ? myCheck(b.primaryContact.outreachChecks || [], "LINKEDIN", currentUserId) : undefined;
+            const pcEM = b.primaryContact ? myCheck(b.primaryContact.outreachChecks || [], "EMAIL", currentUserId) : undefined;
+            const pcLIOthers = b.primaryContact ? othersChecked(b.primaryContact.outreachChecks || [], "LINKEDIN", currentUserId) : [];
+            const pcEMOthers = b.primaryContact ? othersChecked(b.primaryContact.outreachChecks || [], "EMAIL", currentUserId) : [];
+
             return (
               <div key={b.id} className="bg-white border rounded-xl overflow-hidden hover:shadow-sm transition">
                 {/* Main Row */}
@@ -361,40 +384,62 @@ export default function BrandPipelinePage() {
                     {b.salesRep && <span className="text-[10px] text-slate-400">Rep: {b.salesRep}</span>}
                   </div>
 
-                  {/* Primary Contact */}
-                  <div className="hidden md:flex items-center gap-3 w-[280px] shrink-0">
+                  {/* Primary Contact + Outreach Checkmarks */}
+                  <div className="hidden md:flex items-center gap-3 w-[340px] shrink-0">
                     {b.primaryContact ? (
                       <>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-bold text-slate-700 truncate">{b.primaryContact.name}</p>
                           <p className="text-[10px] text-slate-400 truncate">{b.primaryContact.jobTitle || "—"}</p>
                         </div>
-                        <div className="flex items-center gap-1 shrink-0">
+                        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                          {/* LinkedIn link + check */}
                           {b.primaryContact.linkedinUrl && (
                             <a
                               href={b.primaryContact.linkedinUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="px-1.5 py-0.5 text-[9px] font-bold bg-blue-600 text-white rounded hover:bg-blue-700"
-                              onClick={(e) => e.stopPropagation()}
                             >
                               in
                             </a>
                           )}
+                          <button
+                            onClick={() => handleOutreachToggle(b.primaryContact!.id, "LINKEDIN")}
+                            className={`w-6 h-6 flex items-center justify-center rounded border-2 text-[9px] font-black transition ${
+                              pcLI
+                                ? "bg-blue-600 border-blue-600 text-white"
+                                : pcLIOthers.length > 0
+                                ? "bg-blue-100 border-blue-300 text-blue-600"
+                                : "bg-white border-slate-300 text-slate-400 hover:border-blue-400"
+                            }`}
+                            title={pcLI ? `You sent LI ${new Date(pcLI.sentAt).toLocaleDateString()}` : pcLIOthers.length > 0 ? `${pcLIOthers[0].user.name} sent LI` : "Mark LinkedIn sent"}
+                          >
+                            {pcLI ? "✓" : pcLIOthers.length > 0 ? "·" : "LI"}
+                          </button>
+
+                          {/* Email link + check */}
                           {b.primaryContact.email && (
                             <a
                               href={`mailto:${b.primaryContact.email}`}
                               className="px-1.5 py-0.5 text-[9px] font-bold bg-violet-100 text-violet-700 rounded hover:bg-violet-200"
-                              onClick={(e) => e.stopPropagation()}
                             >
-                              Email
+                              @
                             </a>
                           )}
-                          {b.primaryContact.outreachStatus && (
-                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${OUTREACH_BADGE[b.primaryContact.outreachStatus] || OUTREACH_BADGE.not_contacted}`}>
-                              {b.primaryContact.outreachStatus.replace(/_/g, " ")}
-                            </span>
-                          )}
+                          <button
+                            onClick={() => handleOutreachToggle(b.primaryContact!.id, "EMAIL")}
+                            className={`w-6 h-6 flex items-center justify-center rounded border-2 text-[9px] font-black transition ${
+                              pcEM
+                                ? "bg-violet-600 border-violet-600 text-white"
+                                : pcEMOthers.length > 0
+                                ? "bg-violet-100 border-violet-300 text-violet-600"
+                                : "bg-white border-slate-300 text-slate-400 hover:border-violet-400"
+                            }`}
+                            title={pcEM ? `You emailed ${new Date(pcEM.sentAt).toLocaleDateString()}` : pcEMOthers.length > 0 ? `${pcEMOthers[0].user.name} emailed` : "Mark email sent"}
+                          >
+                            {pcEM ? "✓" : pcEMOthers.length > 0 ? "·" : "Em"}
+                          </button>
                         </div>
                       </>
                     ) : (
@@ -474,56 +519,92 @@ export default function BrandPipelinePage() {
                 {isExpanded && (
                   <div className="border-t bg-slate-50 px-4 py-3">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Contacts */}
+                      {/* Contacts with outreach checkmarks */}
                       <div>
                         <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">Contacts ({b.contactCount})</p>
                         {b.contacts.length === 0 ? (
                           <p className="text-xs text-slate-400 italic">No contacts — <Link href={`/brands/${b.id}`} className="text-blue-600 hover:underline">run research</Link></p>
                         ) : (
                           <div className="space-y-2">
-                            {b.contacts.map((c) => (
-                              <div key={c.id} className="flex items-center gap-2 p-2 bg-white rounded-lg">
-                                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-[10px] shrink-0">
-                                  {(c.name || "?")[0]}
+                            {b.contacts.map((c) => {
+                              const liMe = myCheck(c.outreachChecks || [], "LINKEDIN", currentUserId);
+                              const emMe = myCheck(c.outreachChecks || [], "EMAIL", currentUserId);
+                              const liOthers = othersChecked(c.outreachChecks || [], "LINKEDIN", currentUserId);
+                              const emOthers = othersChecked(c.outreachChecks || [], "EMAIL", currentUserId);
+
+                              return (
+                                <div key={c.id} className="p-2 bg-white rounded-lg">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-[10px] shrink-0">
+                                      {(c.name || "?")[0]}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-xs font-bold text-slate-700 truncate">
+                                        {c.name}
+                                        {c.decisionMaker && <span className="ml-1 text-[8px] bg-amber-100 text-amber-700 px-1 rounded">DM</span>}
+                                      </p>
+                                      <p className="text-[10px] text-slate-400 truncate">{c.jobTitle || ""}</p>
+                                    </div>
+                                    <div className="flex gap-1 shrink-0">
+                                      {c.linkedinUrl && (
+                                        <a href={c.linkedinUrl} target="_blank" rel="noopener noreferrer"
+                                          className="w-5 h-5 flex items-center justify-center bg-blue-600 text-white rounded text-[8px] font-bold hover:bg-blue-700">
+                                          in
+                                        </a>
+                                      )}
+                                      {c.email && (
+                                        <a href={`mailto:${c.email}`}
+                                          className="w-5 h-5 flex items-center justify-center bg-violet-100 text-violet-700 rounded text-[8px] hover:bg-violet-200"
+                                          title={c.email}>
+                                          @
+                                        </a>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Outreach checkmarks row */}
+                                  <div className="flex items-center gap-2 mt-2 ml-8">
+                                    <button
+                                      onClick={() => handleOutreachToggle(c.id, "LINKEDIN")}
+                                      className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold transition ${
+                                        liMe
+                                          ? "bg-blue-600 text-white"
+                                          : liOthers.length > 0
+                                          ? "bg-blue-50 text-blue-600 border border-blue-200"
+                                          : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-blue-300 hover:text-blue-500"
+                                      }`}
+                                    >
+                                      {liMe ? "✓ " : ""}LinkedIn sent
+                                      {liOthers.length > 0 && !liMe && (
+                                        <span className="text-[8px] ml-1">({liOthers[0].user.name})</span>
+                                      )}
+                                    </button>
+                                    <button
+                                      onClick={() => handleOutreachToggle(c.id, "EMAIL")}
+                                      className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold transition ${
+                                        emMe
+                                          ? "bg-violet-600 text-white"
+                                          : emOthers.length > 0
+                                          ? "bg-violet-50 text-violet-600 border border-violet-200"
+                                          : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-violet-300 hover:text-violet-500"
+                                      }`}
+                                    >
+                                      {emMe ? "✓ " : ""}Email sent
+                                      {emOthers.length > 0 && !emMe && (
+                                        <span className="text-[8px] ml-1">({emOthers[0].user.name})</span>
+                                      )}
+                                    </button>
+                                    {(liMe || emMe) && (
+                                      <span className="text-[9px] text-slate-400">
+                                        {liMe && `LI: ${new Date(liMe.sentAt).toLocaleDateString()}`}
+                                        {liMe && emMe && " · "}
+                                        {emMe && `Em: ${new Date(emMe.sentAt).toLocaleDateString()}`}
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-xs font-bold text-slate-700 truncate">
-                                    {c.name}
-                                    {c.decisionMaker && <span className="ml-1 text-[8px] bg-amber-100 text-amber-700 px-1 rounded">DM</span>}
-                                  </p>
-                                  <p className="text-[10px] text-slate-400 truncate">{c.jobTitle || ""}</p>
-                                </div>
-                                <div className="flex gap-1 shrink-0">
-                                  {c.linkedinUrl && (
-                                    <a href={c.linkedinUrl} target="_blank" rel="noopener noreferrer"
-                                      className="w-5 h-5 flex items-center justify-center bg-blue-600 text-white rounded text-[8px] font-bold hover:bg-blue-700">
-                                      in
-                                    </a>
-                                  )}
-                                  {c.email && (
-                                    <a href={`mailto:${c.email}`}
-                                      className="w-5 h-5 flex items-center justify-center bg-violet-100 text-violet-700 rounded text-[8px] hover:bg-violet-200"
-                                      title={c.email}>
-                                      @
-                                    </a>
-                                  )}
-                                  <button
-                                    onClick={() => handleOutreachCheck(c.id, "linkedin_reached")}
-                                    className={`w-5 h-5 flex items-center justify-center rounded text-[8px] font-bold ${c.outreachStatus === "contacted" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-400 hover:bg-slate-200"}`}
-                                    title="Mark LinkedIn reached"
-                                  >
-                                    LI
-                                  </button>
-                                  <button
-                                    onClick={() => handleOutreachCheck(c.id, "email_sent")}
-                                    className={`w-5 h-5 flex items-center justify-center rounded text-[8px] font-bold ${c.outreachCount && c.outreachCount > 0 ? "bg-violet-600 text-white" : "bg-slate-100 text-slate-400 hover:bg-slate-200"}`}
-                                    title="Mark email sent"
-                                  >
-                                    Em
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         )}
                       </div>

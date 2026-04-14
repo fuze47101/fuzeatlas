@@ -205,6 +205,7 @@ model User {
   sampleTrials     SampleTrialRequest[] @relation("TrialRequester")
   fuzeOrders       FuzeOrder[]          @relation("OrderUser")
   managedOrders    FuzeOrder[]          @relation("OrderAccountManager")
+  outreachChecks   ContactOutreach[]    @relation("UserOutreach")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -577,6 +578,7 @@ model Contact {
   distributor Distributor? @relation(fields: [distributorId], references: [id])
 
   outreachMessages OutreachMessage[]
+  outreachChecks   ContactOutreach[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -586,6 +588,31 @@ model Contact {
   @@index([outreachStatus])
   @@index([emailStatus])
   @@index([vertical])
+}
+
+// ─────────────────────────────────────────────
+// CONTACT OUTREACH TRACKING (per-user checkmarks)
+// ─────────────────────────────────────────────
+
+model ContactOutreach {
+  id String @id @default(cuid())
+
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User @relation("UserOutreach", fields: [userId], references: [id])
+
+  type String // LINKEDIN, EMAIL
+
+  sentAt    DateTime @default(now())
+  notes     String?  // optional note about the outreach
+
+  createdAt DateTime @default(now())
+
+  @@unique([contactId, userId, type]) // one checkmark per user per type per contact
+  @@index([contactId])
+  @@index([userId])
 }
 
 // ─────────────────────────────────────────────
