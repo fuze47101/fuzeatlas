@@ -18,7 +18,7 @@ export async function PUT(
 
     const { id } = await params;
     const body = await req.json();
-    const { action, reviewNote, deniedReason, brandId, sowId } = body;
+    const { action, reviewNote, deniedReason, brandId, sowId, overrideType } = body;
 
     const request = await prisma.accessRequest.findUnique({ where: { id } });
     if (!request) {
@@ -29,12 +29,88 @@ export async function PUT(
       return NextResponse.json({ ok: false, error: "This request has already been processed" }, { status: 400 });
     }
 
+    // Admin may override the entity type if the signer picked the wrong one
+    // on the public form (e.g. a brand accidentally submitted as a lab).
+    // Persist the correction back to the AccessRequest row for the audit trail.
+    const effectiveType = overrideType || request.requestType;
+    if (overrideType && overrideType !== request.requestType) {
+      try {
+        await prisma.accessRequest.update({
+          where: { id },
+          data: { requestType: overrideType },
+        });
+      } catch {}
+    }
+
     if (action === "approve") {
       // Generate a temporary password
       const tempPassword = generateTempPassword();
       const hashedPassword = await hashPassword(tempPassword);
 
-      if (request.requestType === "FACTORY") {
+      // Admin may override the user role — e.g. if a new sales rep submitted
+      // the brand signup form by mistake, admin can flag them as SALES_REP
+      // and we'll create them as internal without creating a bogus brand.
+      const assignedRole: string = body.role || (
+        effectiveType === "FACTORY" ? "FACTORY_USER"
+        : effectiveType === "LAB" ? "LAB_USER"
+        : effectiveType === "DISTRIBUTOR" ? "DISTRIBUTOR_USER"
+        : "BRAND_USER"
+      );
+      const INTERNAL_ROLES = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"];
+      const isInternal = INTERNAL_ROLES.includes(assignedRole);
+
+      // ──── INTERNAL ROLE APPROVAL (no company linking) ────
+      // If admin flagged them as internal, create a user with that role
+      // and no brand/factory/lab/distributor assignment. This prevents
+      // a new sales rep's brand-form mistake from creating a junk Brand row.
+      if (isInternal) {
+        const newUser = await prisma.user.create({
+          data: {
+            name: `${request.firstName} ${request.lastName}`,
+            email: request.email,
+            password: hashedPassword,
+            role: assignedRole as any,
+            status: "ACTIVE",
+            mustChangePassword: true,
+          },
+        });
+        await prisma.accessRequest.update({
+          where: { id },
+          data: {
+            status: "APPROVED",
+            reviewedBy: user.id,
+            reviewedAt: new Date(),
+            reviewNote: reviewNote || null,
+            userId: newUser.id,
+          },
+        });
+        await sendAccessApprovedEmail({
+          email: request.email,
+          name: `${request.firstName} ${request.lastName}`,
+          tempPassword,
+          companyName: request.company,
+          accountType: "internal",
+        });
+        return NextResponse.json({
+          ok: true,
+          action: "approved",
+          user: {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+            tempPassword,
+          },
+          message: `Internal account created for ${request.firstName} ${request.lastName} as ${assignedRole}. Temp password: ${tempPassword}`,
+        });
+      }
+
+      // Gate creating a new entity behind an explicit admin flag — prevents
+      // junk companies landing in the DB when a sales rep or anyone else
+      // signs up but doesn't match an existing brand/factory/lab/distributor.
+      const allowCreateNewEntity = body.createNewEntity === true;
+
+      if (effectiveType === "FACTORY") {
         // ──── FACTORY REQUEST APPROVAL ────
         let targetFactoryId = body.factoryId;
         if (!targetFactoryId) {
@@ -44,6 +120,11 @@ export async function PUT(
           });
           if (existingFactory) {
             targetFactoryId = existingFactory.id;
+          } else if (!allowCreateNewEntity) {
+            return NextResponse.json({
+              ok: false,
+              error: `No factory named "${request.company}" found. Either link an existing factory or explicitly confirm creating a new factory.`,
+            }, { status: 400 });
           } else {
             // Create new factory
             const newFactory = await prisma.factory.create({
@@ -125,9 +206,22 @@ export async function PUT(
           factory: { id: targetFactoryId, name: request.company },
           message: `Factory account created for ${request.firstName} ${request.lastName}. Temporary password: ${tempPassword}`,
         });
-      } else if (request.requestType === "LAB") {
+      } else if (effectiveType === "LAB") {
         // ──── LAB REQUEST APPROVAL ────
         let targetLabId = body.labId;
+        if (!targetLabId && !allowCreateNewEntity) {
+          const existingLab = await prisma.lab.findFirst({
+            where: { name: request.company },
+          });
+          if (existingLab) {
+            targetLabId = existingLab.id;
+          } else {
+            return NextResponse.json({
+              ok: false,
+              error: `No lab named "${request.company}" found. Either link an existing lab or explicitly confirm creating a new one.`,
+            }, { status: 400 });
+          }
+        }
         if (!targetLabId) {
           // Try to find existing lab by company name
           const existingLab = await prisma.lab.findFirst({
@@ -209,6 +303,57 @@ export async function PUT(
           lab: { id: targetLabId, name: request.company },
           message: `Lab account created for ${request.firstName} ${request.lastName}. Temporary password: ${tempPassword}`,
         });
+      } else if (effectiveType === "DISTRIBUTOR") {
+        // ──── DISTRIBUTOR REQUEST APPROVAL ────
+        let targetDistributorId = body.distributorId;
+        if (!targetDistributorId) {
+          const existingDistributor = await prisma.distributor.findFirst({
+            where: { name: request.company, active: true },
+          });
+          if (existingDistributor) {
+            targetDistributorId = existingDistributor.id;
+          } else {
+            return NextResponse.json({
+              ok: false,
+              error: `No distributor named "${request.company}" found. Distributors must be set up first in Admin → Distributor Network before approving a distributor user.`,
+            }, { status: 400 });
+          }
+        }
+        const newUser = await prisma.user.create({
+          data: {
+            name: `${request.firstName} ${request.lastName}`,
+            email: request.email,
+            password: hashedPassword,
+            role: "DISTRIBUTOR_USER",
+            status: "ACTIVE",
+            distributorId: targetDistributorId,
+            mustChangePassword: true,
+          },
+        });
+        await prisma.accessRequest.update({
+          where: { id },
+          data: {
+            status: "APPROVED",
+            reviewedBy: user.id,
+            reviewedAt: new Date(),
+            reviewNote: reviewNote || null,
+            userId: newUser.id,
+          },
+        });
+        await sendAccessApprovedEmail({
+          email: request.email,
+          name: `${request.firstName} ${request.lastName}`,
+          tempPassword,
+          companyName: request.company,
+          accountType: "distributor",
+        });
+        return NextResponse.json({
+          ok: true,
+          action: "approved",
+          user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role, tempPassword },
+          distributor: { id: targetDistributorId, name: request.company },
+          message: `Distributor account created for ${request.firstName} ${request.lastName}. Temp password: ${tempPassword}`,
+        });
       } else {
         // ──── BRAND REQUEST APPROVAL ────
         let targetBrandId = brandId;
@@ -219,6 +364,11 @@ export async function PUT(
           });
           if (existingBrand) {
             targetBrandId = existingBrand.id;
+          } else if (!allowCreateNewEntity) {
+            return NextResponse.json({
+              ok: false,
+              error: `No brand named "${request.company}" found. Either link an existing brand or explicitly confirm creating a new brand. (If this person is a sales rep or employee, change their role to SALES_REP/EMPLOYEE instead — that won't create a brand.)`,
+            }, { status: 400 });
           } else {
             // Create new brand
             const newBrand = await prisma.brand.create({

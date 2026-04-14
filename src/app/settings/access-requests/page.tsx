@@ -66,6 +66,10 @@ export default function AccessRequestsPage() {
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("");
   const [companySearch, setCompanySearch] = useState("");
   const [createNewCompany, setCreateNewCompany] = useState(false);
+  // Admin can override the request type if the signer picked the wrong one
+  const [overrideType, setOverrideType] = useState<string>("");
+  // Admin assigns the final user role (defaults derived from type)
+  const [overrideRole, setOverrideRole] = useState<string>("");
 
   const loadRequests = async (status?: string, type?: string) => {
     try {
@@ -92,14 +96,16 @@ export default function AccessRequestsPage() {
   useEffect(() => {
     const loadCompanies = async () => {
       try {
-        const [brandsRes, factoriesRes, labsRes] = await Promise.all([
+        const [brandsRes, factoriesRes, labsRes, distributorsRes] = await Promise.all([
           fetch("/api/brands"),
           fetch("/api/factories"),
           fetch("/api/labs"),
+          fetch("/api/distributors").catch(() => null),
         ]);
         const brandsData = await brandsRes.json();
         const factoriesData = await factoriesRes.json();
         const labsData = await labsRes.json();
+        const distributorsData = distributorsRes ? await distributorsRes.json().catch(() => ({})) : {};
         const opts: CompanyOption[] = [];
         if (brandsData.brands) {
           brandsData.brands.forEach((b: any) => opts.push({ id: b.id, name: b.name, country: b.country, type: "brand" }));
@@ -114,6 +120,10 @@ export default function AccessRequestsPage() {
         if (labsData.labs) {
           labsData.labs.forEach((l: any) => opts.push({ id: l.id, name: l.name, country: l.country, type: "lab" }));
         }
+        const dists = distributorsData?.distributors || distributorsData;
+        if (Array.isArray(dists)) {
+          dists.forEach((d: any) => opts.push({ id: d.id, name: d.name, country: d.country, type: "distributor" }));
+        }
         setCompanies(opts);
       } catch { }
     };
@@ -126,6 +136,8 @@ export default function AccessRequestsPage() {
     setSelectedCompanyId("");
     setCompanySearch(req?.company || "");
     setCreateNewCompany(false);
+    setOverrideType("");
+    setOverrideRole("");
   };
 
   const handleApproveWithCompany = async () => {
@@ -136,17 +148,35 @@ export default function AccessRequestsPage() {
     setProcessing(approveModal);
     setError("");
     try {
-      const payload: any = { action: "approve" };
-      if (selectedCompanyId && !createNewCompany) {
-        if (req.requestType === "FACTORY") {
+      const effectiveType = overrideType || req.requestType;
+      const defaultRole =
+        effectiveType === "FACTORY" ? "FACTORY_USER"
+        : effectiveType === "LAB" ? "LAB_USER"
+        : effectiveType === "DISTRIBUTOR" ? "DISTRIBUTOR_USER"
+        : "BRAND_USER";
+      const finalRole = overrideRole || defaultRole;
+      const INTERNAL_ROLES = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"];
+      const isInternal = INTERNAL_ROLES.includes(finalRole);
+
+      const payload: any = { action: "approve", role: finalRole };
+      if (overrideType && overrideType !== req.requestType) {
+        payload.overrideType = overrideType;
+      }
+      if (createNewCompany) {
+        payload.createNewEntity = true;
+      }
+      // Internal roles don't get linked to any entity — they're FUZE staff.
+      if (!isInternal && selectedCompanyId && !createNewCompany) {
+        if (effectiveType === "FACTORY") {
           payload.factoryId = selectedCompanyId;
-        } else if (req.requestType === "LAB") {
+        } else if (effectiveType === "LAB") {
           payload.labId = selectedCompanyId;
+        } else if (effectiveType === "DISTRIBUTOR") {
+          payload.distributorId = selectedCompanyId;
         } else {
           payload.brandId = selectedCompanyId;
         }
       }
-      // If createNewCompany is true, we send no ID — API creates a new entity
 
       const res = await fetch(`/api/access-requests/${approveModal}`, {
         method: "PUT",
@@ -353,9 +383,19 @@ export default function AccessRequestsPage() {
                         <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                           req.requestType === "FACTORY"
                             ? "bg-blue-100 text-blue-800"
+                            : req.requestType === "LAB"
+                            ? "bg-amber-100 text-amber-800"
+                            : req.requestType === "DISTRIBUTOR"
+                            ? "bg-emerald-100 text-emerald-800"
                             : "bg-purple-100 text-purple-800"
                         }`}>
-                          {req.requestType === "FACTORY" ? "🏭 Factory" : "🏢 Brand"}
+                          {req.requestType === "FACTORY"
+                            ? "🏭 Factory"
+                            : req.requestType === "LAB"
+                            ? "🔬 Lab"
+                            : req.requestType === "DISTRIBUTOR"
+                            ? "🌍 Distributor"
+                            : "🏢 Brand"}
                         </span>
                       )}
                     </div>
@@ -567,11 +607,14 @@ export default function AccessRequestsPage() {
       {approveModal && (() => {
         const req = requests.find(r => r.id === approveModal);
         if (!req) return null;
-        const isFactory = req.requestType === "FACTORY";
-        const isLab = req.requestType === "LAB";
-        const entityType = isFactory ? "factory" : isLab ? "lab" : "brand";
-        const entityLabel = isFactory ? "factory" : isLab ? "laboratory" : "brand";
-        const entityIcon = isFactory ? "🏭" : isLab ? "🔬" : "🏢";
+        const effectiveType = overrideType || req.requestType;
+        const isFactory = effectiveType === "FACTORY";
+        const isLab = effectiveType === "LAB";
+        const isDistributor = effectiveType === "DISTRIBUTOR";
+        const entityType = isFactory ? "factory" : isLab ? "lab" : isDistributor ? "distributor" : "brand";
+        const entityLabel = isFactory ? "factory" : isLab ? "laboratory" : isDistributor ? "distributor" : "brand";
+        const entityIcon = isFactory ? "🏭" : isLab ? "🔬" : isDistributor ? "🌍" : "🏢";
+        const typeChanged = overrideType && overrideType !== req.requestType;
         // Fuzzy match: matches initials (BV → Bureau Veritas), partial words,
         // and substrings. Scores results for best-match sorting.
         const fuzzyMatch = (name: string, query: string): number => {
@@ -625,10 +668,125 @@ export default function AccessRequestsPage() {
                   <p className="text-sm font-bold text-slate-800">{req.company}</p>
                   <p className="text-xs text-amber-600 mt-1">
                     {entityIcon} {entityLabel.charAt(0).toUpperCase() + entityLabel.slice(1)} request
+                    {typeChanged && (
+                      <span className="ml-2 text-red-600 font-semibold">
+                        (was {req.requestType} — you changed it)
+                      </span>
+                    )}
                   </p>
                 </div>
 
-                {/* Link to existing or create new */}
+                {/* Type picker — lets admin correct a misfiled signup */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Entity type <span className="text-xs font-normal text-slate-500">(override if signer picked wrong)</span>
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      { v: "BRAND", label: "Brand", icon: "🏢" },
+                      { v: "FACTORY", label: "Factory", icon: "🏭" },
+                      { v: "LAB", label: "Lab", icon: "🔬" },
+                      { v: "DISTRIBUTOR", label: "Distributor", icon: "🌍" },
+                    ].map((opt) => {
+                      const active = effectiveType === opt.v;
+                      return (
+                        <button
+                          key={opt.v}
+                          type="button"
+                          onClick={() => {
+                            setOverrideType(opt.v);
+                            setOverrideRole("");
+                            setSelectedCompanyId("");
+                            setCreateNewCompany(false);
+                            setCompanySearch("");
+                          }}
+                          className={`p-2 rounded-lg border text-xs font-semibold transition-all ${
+                            active
+                              ? "border-[#00b4c3] bg-[#00b4c3]/10 text-[#00b4c3]"
+                              : "border-slate-200 text-slate-600 hover:border-slate-300"
+                          }`}
+                        >
+                          <div className="text-lg">{opt.icon}</div>
+                          {opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Role picker — critical: lets admin flag internal hires as */}
+                {/* SALES_REP / EMPLOYEE and skip the brand linking entirely. */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    User role <span className="text-xs font-normal text-slate-500">(what they can do once logged in)</span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <p className="col-span-2 text-[11px] uppercase font-bold text-slate-400 tracking-wide">External</p>
+                    {[
+                      { v: "BRAND_USER", label: "Brand User", icon: "🏢", color: "purple" },
+                      { v: "FACTORY_USER", label: "Factory User", icon: "🏭", color: "blue" },
+                      { v: "FACTORY_MANAGER", label: "Factory Manager", icon: "🏭", color: "blue" },
+                      { v: "LAB_USER", label: "Lab User", icon: "🔬", color: "amber" },
+                      { v: "DISTRIBUTOR_USER", label: "Distributor User", icon: "🌍", color: "emerald" },
+                    ].map((opt) => {
+                      const active = (overrideRole || (
+                        effectiveType === "FACTORY" ? "FACTORY_USER"
+                        : effectiveType === "LAB" ? "LAB_USER"
+                        : effectiveType === "DISTRIBUTOR" ? "DISTRIBUTOR_USER"
+                        : "BRAND_USER"
+                      )) === opt.v;
+                      return (
+                        <button
+                          key={opt.v}
+                          type="button"
+                          onClick={() => setOverrideRole(opt.v)}
+                          className={`p-2 rounded-lg border text-xs text-left font-semibold transition-all ${
+                            active
+                              ? "border-[#00b4c3] bg-[#00b4c3]/10 text-[#00b4c3]"
+                              : "border-slate-200 text-slate-600 hover:border-slate-300"
+                          }`}
+                        >
+                          <span className="mr-1">{opt.icon}</span>{opt.label}
+                        </button>
+                      );
+                    })}
+                    <p className="col-span-2 mt-2 text-[11px] uppercase font-bold text-slate-400 tracking-wide">Internal (FUZE staff — no company link)</p>
+                    {[
+                      { v: "SALES_REP", label: "Sales Rep", icon: "💼" },
+                      { v: "SALES_MANAGER", label: "Sales Manager", icon: "💼" },
+                      { v: "EMPLOYEE", label: "Employee", icon: "👤" },
+                      { v: "ADMIN", label: "Admin", icon: "⚙️" },
+                    ].map((opt) => {
+                      const active = overrideRole === opt.v;
+                      return (
+                        <button
+                          key={opt.v}
+                          type="button"
+                          onClick={() => {
+                            setOverrideRole(opt.v);
+                            setSelectedCompanyId("");
+                            setCreateNewCompany(false);
+                          }}
+                          className={`p-2 rounded-lg border text-xs text-left font-semibold transition-all ${
+                            active
+                              ? "border-slate-900 bg-slate-900 text-white"
+                              : "border-slate-200 text-slate-700 hover:border-slate-400"
+                          }`}
+                        >
+                          <span className="mr-1">{opt.icon}</span>{opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {["ADMIN","EMPLOYEE","SALES_MANAGER","SALES_REP"].includes(overrideRole) && (
+                    <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-2">
+                      ✓ Internal user — won't create or link any brand/factory/lab/distributor.
+                    </p>
+                  )}
+                </div>
+
+                {/* Link to existing or create new (hidden for internal roles) */}
+                {!["ADMIN","EMPLOYEE","SALES_MANAGER","SALES_REP"].includes(overrideRole) && (
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Link to existing {entityLabel}:
@@ -687,6 +845,8 @@ export default function AccessRequestsPage() {
                     Please select an existing {entityLabel} or choose to create a new one
                   </p>
                 )}
+                </div>
+                )}
               </div>
 
               {/* Modal Footer */}
@@ -699,7 +859,12 @@ export default function AccessRequestsPage() {
                 </button>
                 <button
                   onClick={handleApproveWithCompany}
-                  disabled={(!selectedCompanyId && !createNewCompany) || processing === approveModal}
+                  disabled={
+                    (!["ADMIN","EMPLOYEE","SALES_MANAGER","SALES_REP"].includes(overrideRole)
+                      && !selectedCompanyId
+                      && !createNewCompany)
+                    || processing === approveModal
+                  }
                   className="px-5 py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-2"
                 >
                   {processing === approveModal ? (
@@ -709,7 +874,9 @@ export default function AccessRequestsPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   )}
-                  {selectedCompanyId && !createNewCompany
+                  {["ADMIN","EMPLOYEE","SALES_MANAGER","SALES_REP"].includes(overrideRole)
+                    ? `Approve as ${overrideRole}`
+                    : selectedCompanyId && !createNewCompany
                     ? `Approve & Link to ${companies.find(c => c.id === selectedCompanyId)?.name || "Company"}`
                     : `Approve & Create "${req.company}"`
                   }
