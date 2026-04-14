@@ -6,7 +6,13 @@ import { getCurrentUser } from "@/lib/auth";
 /**
  * GET /api/admin/brand-pipeline
  * Consolidated brand pipeline — brands + contacts + last activity + health score
- * Replaces separate Brands, Lead Management, and Brand Health queries
+ *
+ * Views:
+ *   actionable (default) — verified brands with contacts OR any brand past LEAD stage
+ *   enriched — brands that have at least 1 contact with email/linkedin
+ *   verified — all AI-verified brands (regardless of contacts)
+ *   all — everything except archived/dead/irrelevant
+ *   everything — truly all brands, no filter
  */
 export async function GET(req: Request) {
   try {
@@ -22,27 +28,51 @@ export async function GET(req: Request) {
     const stage = url.searchParams.get("stage");
     const relevance = url.searchParams.get("relevance");
     const search = url.searchParams.get("search");
-    const view = url.searchParams.get("view") || "pipeline"; // pipeline | validated | all
+    const view = url.searchParams.get("view") || "actionable";
 
     // Build where clause
-    const where: any = {};
     const conditions: any[] = [];
 
-    // View filter — pipeline excludes junk; validated = verified only
-    if (view === "pipeline") {
+    if (view === "actionable") {
+      // Brands you can actually work with: have contacts, or past LEAD, or verified with high relevance
+      conditions.push({ pipelineStage: { not: "ARCHIVE" } });
+      conditions.push({
+        validationStatus: { notIn: ["irrelevant", "dead"] },
+      });
+      conditions.push({
+        OR: [
+          { contacts: { some: {} } },                                    // has any contacts
+          { pipelineStage: { notIn: ["LEAD"] } },                        // past lead stage
+          { fuzeRelevance: { in: ["high", "medium"] } },                 // high/medium fit
+        ],
+      });
+    } else if (view === "enriched") {
+      // Only brands with enriched contacts (email or linkedin)
+      conditions.push({ pipelineStage: { not: "ARCHIVE" } });
+      conditions.push({
+        contacts: {
+          some: {
+            OR: [
+              { email: { not: null } },
+              { linkedinUrl: { not: null } },
+            ],
+          },
+        },
+      });
+    } else if (view === "verified") {
+      conditions.push({ validationStatus: "verified" });
+      conditions.push({ pipelineStage: { not: "ARCHIVE" } });
+    } else if (view === "all") {
+      // Everything except dead/irrelevant/archived
       conditions.push({ pipelineStage: { not: "ARCHIVE" } });
       conditions.push({
         OR: [
-          { validationStatus: "verified" },
-          { validationStatus: null },        // unvalidated = show
-          { validationStatus: "pending" },    // in-progress = show
+          { validationStatus: { notIn: ["irrelevant", "dead"] } },
+          { validationStatus: null },
         ],
       });
-    } else if (view === "validated") {
-      conditions.push({ validationStatus: "verified" });
-      conditions.push({ pipelineStage: { not: "ARCHIVE" } });
     }
-    // view === "all" has no conditions
+    // view === "everything" has no conditions
 
     if (stage && stage !== "all") {
       conditions.push({ pipelineStage: stage });
@@ -57,15 +87,14 @@ export async function GET(req: Request) {
         OR: [
           { name: { contains: search, mode: "insensitive" } },
           { contacts: { some: { name: { contains: search, mode: "insensitive" } } } },
+          { contacts: { some: { email: { contains: search, mode: "insensitive" } } } },
         ],
       });
     }
 
-    if (conditions.length > 0) {
-      where.AND = conditions;
-    }
+    const where: any = conditions.length > 0 ? { AND: conditions } : {};
 
-    // Fetch brands with contacts, last note, and counts
+    // Fetch brands — no arbitrary limit
     const brands = await prisma.brand.findMany({
       where,
       select: {
@@ -75,7 +104,6 @@ export async function GET(req: Request) {
         customerType: true,
         website: true,
         linkedInProfile: true,
-        backgroundInfo: true,
         validationStatus: true,
         fuzeRelevance: true,
         textileCategory: true,
@@ -114,7 +142,6 @@ export async function GET(req: Request) {
             fuzeOrders: true,
           },
         },
-        // Health/engagement data
         engagement: {
           select: { overallScore: true, engagementTrend: true },
         },
@@ -122,33 +149,37 @@ export async function GET(req: Request) {
         dateOfInitialContact: true,
       },
       orderBy: [
-        { pipelineStage: "asc" },
         { name: "asc" },
       ],
-      take: 500,
     });
 
-    // Build per-stage summary
+    // Build per-stage summary (across ALL returned results)
     const stageSummary: Record<string, number> = {};
     const STAGES = ["LEAD", "PRESENTATION", "BRAND_TESTING", "FACTORY_ONBOARDING", "FACTORY_TESTING", "PRODUCTION", "BRAND_EXPANSION", "CUSTOMER_WON", "ARCHIVE"];
     for (const s of STAGES) stageSummary[s] = 0;
 
-    for (const b of brands) {
-      stageSummary[b.pipelineStage] = (stageSummary[b.pipelineStage] || 0) + 1;
-    }
+    // Build enriched brand list and sort: brands with contacts first, then by stage priority
+    const STAGE_ORDER: Record<string, number> = {
+      PRODUCTION: 0, BRAND_EXPANSION: 1, CUSTOMER_WON: 2,
+      FACTORY_TESTING: 3, FACTORY_ONBOARDING: 4, BRAND_TESTING: 5,
+      PRESENTATION: 6, LEAD: 7, ARCHIVE: 8,
+    };
 
-    // Build enriched brand list
     const pipeline = brands.map((b) => {
       const primaryContact = b.contacts[0] || null;
       const lastNote = b.notes[0] || null;
       const daysSinceActivity = lastNote?.date
         ? Math.floor((Date.now() - new Date(lastNote.date).getTime()) / (1000 * 60 * 60 * 24))
         : null;
+      const hasEnrichedContacts = b.contacts.some((c: any) => c.email || c.linkedinUrl);
+
+      stageSummary[b.pipelineStage] = (stageSummary[b.pipelineStage] || 0) + 1;
 
       return {
         id: b.id,
         name: b.name,
         stage: b.pipelineStage,
+        stageOrder: STAGE_ORDER[b.pipelineStage] ?? 9,
         customerType: b.customerType,
         website: b.website,
         linkedIn: b.linkedInProfile,
@@ -162,6 +193,7 @@ export async function GET(req: Request) {
         primaryContact,
         contacts: b.contacts,
         contactCount: b._count.contacts,
+        hasEnrichedContacts,
         lastNote,
         daysSinceActivity,
         counts: b._count,
@@ -170,10 +202,23 @@ export async function GET(req: Request) {
       };
     });
 
+    // Sort: enriched contacts first, then by pipeline stage (production first), then name
+    pipeline.sort((a, b) => {
+      // Enriched first
+      if (a.hasEnrichedContacts && !b.hasEnrichedContacts) return -1;
+      if (!a.hasEnrichedContacts && b.hasEnrichedContacts) return 1;
+      // Then by stage priority (production > testing > lead)
+      if (a.stageOrder !== b.stageOrder) return a.stageOrder - b.stageOrder;
+      // Then alphabetical
+      return a.name.localeCompare(b.name);
+    });
+
     // Overall stats
     const totalBrands = pipeline.length;
+    const enriched = pipeline.filter((b) => b.hasEnrichedContacts).length;
     const withContacts = pipeline.filter((b) => b.contactCount > 0).length;
     const contacted = pipeline.filter((b) => b.contacts.some((c: any) => c.outreachStatus && c.outreachStatus !== "not_contacted")).length;
+    const verified = pipeline.filter((b) => b.validationStatus === "verified").length;
     const stale = pipeline.filter((b) => b.daysSinceActivity !== null && b.daysSinceActivity > 30).length;
     const noActivity = pipeline.filter((b) => b.daysSinceActivity === null).length;
 
@@ -183,8 +228,10 @@ export async function GET(req: Request) {
       stageSummary,
       stats: {
         totalBrands,
+        enriched,
         withContacts,
         contacted,
+        verified,
         stale,
         noActivity,
       },

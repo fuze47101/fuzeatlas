@@ -34,6 +34,7 @@ interface BrandEntry {
   primaryContact: Contact | null;
   contacts: Contact[];
   contactCount: number;
+  hasEnrichedContacts: boolean;
   lastNote: { content: string; noteType: string; date: string; contactName: string | null } | null;
   daysSinceActivity: number | null;
   counts: Record<string, number>;
@@ -88,7 +89,7 @@ export default function BrandPipelinePage() {
   const [search, setSearch] = useState("");
   const [stageFilter, setStageFilter] = useState("all");
   const [relevanceFilter, setRelevanceFilter] = useState("all");
-  const [viewFilter, setViewFilter] = useState("pipeline");
+  const [viewFilter, setViewFilter] = useState("actionable");
   const [sortBy, setSortBy] = useState<"stage" | "name" | "activity" | "contacts">("stage");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -235,24 +236,28 @@ export default function BrandPipelinePage() {
 
       {/* Stats Strip */}
       {stats && (
-        <div className="grid grid-cols-5 gap-3 mb-4">
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-4">
           <div className="bg-white border rounded-lg px-3 py-2 text-center">
             <p className="text-lg font-black text-slate-700">{stats.totalBrands}</p>
             <p className="text-[9px] font-semibold text-slate-500 uppercase">Total</p>
           </div>
-          <div className="bg-white border rounded-lg px-3 py-2 text-center">
-            <p className="text-lg font-black text-blue-700">{stats.withContacts}</p>
-            <p className="text-[9px] font-semibold text-blue-500 uppercase">With Contacts</p>
+          <div className="bg-cyan-50 border border-cyan-200 rounded-lg px-3 py-2 text-center cursor-pointer hover:shadow-md" onClick={() => setViewFilter("enriched")}>
+            <p className="text-lg font-black text-cyan-700">{stats.enriched}</p>
+            <p className="text-[9px] font-semibold text-cyan-600 uppercase">Enriched</p>
           </div>
-          <div className="bg-white border rounded-lg px-3 py-2 text-center">
-            <p className="text-lg font-black text-emerald-700">{stats.contacted}</p>
-            <p className="text-[9px] font-semibold text-emerald-500 uppercase">Contacted</p>
+          <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-center cursor-pointer hover:shadow-md" onClick={() => setViewFilter("verified")}>
+            <p className="text-lg font-black text-emerald-700">{stats.verified}</p>
+            <p className="text-[9px] font-semibold text-emerald-600 uppercase">Verified</p>
           </div>
-          <div className="bg-white border rounded-lg px-3 py-2 text-center">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-center">
+            <p className="text-lg font-black text-blue-700">{stats.contacted}</p>
+            <p className="text-[9px] font-semibold text-blue-500 uppercase">Contacted</p>
+          </div>
+          <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-center">
             <p className="text-lg font-black text-amber-600">{stats.stale}</p>
             <p className="text-[9px] font-semibold text-amber-500 uppercase">Stale (30d+)</p>
           </div>
-          <div className="bg-white border rounded-lg px-3 py-2 text-center">
+          <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-center">
             <p className="text-lg font-black text-red-600">{stats.noActivity}</p>
             <p className="text-[9px] font-semibold text-red-500 uppercase">No Activity</p>
           </div>
@@ -283,9 +288,11 @@ export default function BrandPipelinePage() {
           onChange={(e) => setViewFilter(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
         >
-          <option value="pipeline">Pipeline (Active)</option>
-          <option value="validated">Verified Only</option>
-          <option value="all">All Brands</option>
+          <option value="actionable">Actionable</option>
+          <option value="enriched">Enriched (with contacts)</option>
+          <option value="verified">Verified Only</option>
+          <option value="all">All Active</option>
+          <option value="everything">Everything</option>
         </select>
         <select
           value={sortBy}
