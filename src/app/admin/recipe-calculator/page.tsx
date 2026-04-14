@@ -141,6 +141,14 @@ export default function RecipeCalculatorPage() {
   const [recentTests, setRecentTests] = useState<any[]>([]);
   const [step, setStep] = useState(prefillFabricId ? 2 : 1);
 
+  // runs[0] is the canonical measurement (also mirrored to drySampleWeight/wetAfterBathWeight).
+  // runs[1]/[2] are optional for triplicate — mean is used for the final calc.
+  const [runs, setRuns] = useState<{ dry: string; wet: string }[]>([
+    { dry: "", wet: "" },
+    { dry: "", wet: "" },
+    { dry: "", wet: "" },
+  ]);
+
   const [form, setForm] = useState<any>({
     fabricId: prefillFabricId,
     fabricLabel: "",
@@ -165,6 +173,28 @@ export default function RecipeCalculatorPage() {
     qcPassed: true,
     notes: "",
   });
+
+  // Recompute mean across completed runs and mirror into form.drySampleWeight / wetAfterBathWeight
+  const runStats = useMemo(() => {
+    const complete = runs.filter((r) => Number(r.dry) > 0 && Number(r.wet) > Number(r.dry));
+    if (complete.length === 0) return { meanDry: 0, meanWet: 0, perRunPickup: [], meanPickup: 0, maxDevPct: 0 };
+    const meanDry = complete.reduce((s, r) => s + Number(r.dry), 0) / complete.length;
+    const meanWet = complete.reduce((s, r) => s + Number(r.wet), 0) / complete.length;
+    const perRunPickup = complete.map((r) => ((Number(r.wet) - Number(r.dry)) / Number(r.dry)) * 100);
+    const meanPickup = perRunPickup.reduce((s, p) => s + p, 0) / perRunPickup.length;
+    const maxDevPct = meanPickup > 0 ? Math.max(...perRunPickup.map((p) => Math.abs(p - meanPickup) / meanPickup * 100)) : 0;
+    return { meanDry, meanWet, perRunPickup, meanPickup, maxDevPct, runCount: complete.length };
+  }, [runs]);
+
+  useEffect(() => {
+    if (runStats.runCount > 0) {
+      setForm((f: any) => ({
+        ...f,
+        drySampleWeight: runStats.meanDry.toFixed(3),
+        wetAfterBathWeight: runStats.meanWet.toFixed(3),
+      }));
+    }
+  }, [runStats.meanDry, runStats.meanWet, runStats.runCount]);
 
   useEffect(() => {
     if (user && !["ADMIN", "EMPLOYEE", "LAB_USER", "LAB_MANAGER"].includes(user.role)) {
@@ -218,8 +248,8 @@ export default function RecipeCalculatorPage() {
   function canAdvance(): boolean {
     if (hasError) return false;
     if (step === 1) return !!form.fabricId || !!form.fabricLabel;
-    if (step === 2) return Number(form.drySampleWeight) > 0;
-    if (step === 4) return Number(form.wetAfterBathWeight) > 0 && Number(form.wetAfterBathWeight) > Number(form.drySampleWeight);
+    if (step === 2) return Number(form.drySampleWeight) > 0 || Number(runs[0].dry) > 0;
+    if (step === 4) return runStats.runCount > 0;
     return true;
   }
 
@@ -227,10 +257,18 @@ export default function RecipeCalculatorPage() {
     setSaving(true);
     setError("");
     try {
+      const sampleRunsPayload = runs
+        .filter((r) => Number(r.dry) > 0 && Number(r.wet) > Number(r.dry))
+        .map((r, i) => ({
+          run: i + 1,
+          dry: Number(r.dry),
+          wet: Number(r.wet),
+          pickup: ((Number(r.wet) - Number(r.dry)) / Number(r.dry)) * 100,
+        }));
       const res = await fetch("/api/admin/recipe-bench-tests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, sampleRuns: sampleRunsPayload }),
       });
       const d = await res.json();
       if (d.ok) {
@@ -453,42 +491,86 @@ export default function RecipeCalculatorPage() {
           </div>
         )}
 
-        {/* Step 4: Wet weight */}
+        {/* Step 4: Wet weight — triplicate */}
         {step === 4 && (
           <div className="space-y-4">
             <div className="p-4 bg-cyan-50 border border-cyan-200 rounded-lg text-sm text-slate-700">
-              <p className="font-bold mb-2">💧 Dry-to-wet pickup — protocol</p>
+              <p className="font-bold mb-2">💧 Dry-to-wet pickup — run in triplicate</p>
+              <p className="mb-2">Cut <strong>3 separate samples</strong> from the fabric. For each:</p>
               <ol className="space-y-1 pl-5 list-decimal">
-                <li>Submerge dry sample in clean DI water for <strong>10 sec</strong></li>
-                <li>Let drain <strong>3 sec</strong> from one corner</li>
+                <li>Weigh the dry sample</li>
+                <li>Submerge in clean DI water <strong>10 sec</strong>, drain <strong>3 sec</strong></li>
                 <li>Feed through pad at <strong>4 bar / 10 Hz — single pass</strong></li>
-                <li>Weigh <strong>immediately</strong> (within 10 sec of padding)</li>
+                <li>Weigh within 10 sec of padding</li>
+                <li>Enter both weights in one row below</li>
               </ol>
               <p className="mt-2 text-xs text-amber-800 bg-amber-100 rounded px-2 py-1">
-                ⚠ <strong>Do NOT re-pad to lower the weight.</strong> Single pass at 4 bar IS the pickup. Re-padding measures squeezer over-squeeze, not pickup. If a second pass drops mass >5% your squeezer has a consistency issue.
-              </p>
-              <p className="mt-2 text-xs text-slate-600">
-                📊 <strong>Best practice:</strong> run in triplicate and take the mean.
+                ⚠ <strong>Single pass only.</strong> Don't re-pad to lower the wet weight — that's over-squeezing, not pickup.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-semibold text-slate-600">Dry weight (from Step 2)</label>
-                <div className="px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 font-mono text-slate-600">{form.drySampleWeight || "—"} g</div>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-600">Wet weight after pad (g) *</label>
-                <input type="number" step="0.001" value={form.wetAfterBathWeight} onChange={(e) => set("wetAfterBathWeight", e.target.value)} placeholder="e.g. 3.30" className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-lg font-bold" autoFocus />
-                <p className="text-[10px] text-slate-500 mt-1">Single-pass weight. Don't re-pad.</p>
-              </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-xs text-slate-500 border-b border-slate-200">
+                    <th className="text-left px-2 py-2">Run</th>
+                    <th className="text-left px-2 py-2">Dry weight (g)</th>
+                    <th className="text-left px-2 py-2">Wet after pad (g)</th>
+                    <th className="text-right px-2 py-2">Pickup %</th>
+                    <th className="text-right px-2 py-2">Deviation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {runs.map((r, i) => {
+                    const d = Number(r.dry) || 0;
+                    const w = Number(r.wet) || 0;
+                    const p = d > 0 && w > d ? ((w - d) / d) * 100 : null;
+                    const dev = p !== null && runStats.meanPickup > 0
+                      ? ((p - runStats.meanPickup) / runStats.meanPickup) * 100
+                      : null;
+                    const flagged = dev !== null && Math.abs(dev) > 10;
+                    return (
+                      <tr key={i} className="border-b border-slate-100">
+                        <td className="px-2 py-2 font-bold text-slate-700">#{i + 1}{i === 0 ? " *" : ""}</td>
+                        <td className="px-2 py-2">
+                          <input type="number" step="0.001" value={r.dry} onChange={(e) => setRuns((rs) => rs.map((x, j) => j === i ? { ...x, dry: e.target.value } : x))} placeholder="1.85" className="w-full px-2 py-1.5 border border-slate-300 rounded font-mono" autoFocus={i === 0 && !r.dry} />
+                        </td>
+                        <td className="px-2 py-2">
+                          <input type="number" step="0.001" value={r.wet} onChange={(e) => setRuns((rs) => rs.map((x, j) => j === i ? { ...x, wet: e.target.value } : x))} placeholder="3.30" className="w-full px-2 py-1.5 border border-slate-300 rounded font-mono" />
+                        </td>
+                        <td className="px-2 py-2 text-right font-mono font-semibold">{p !== null ? p.toFixed(1) + "%" : "—"}</td>
+                        <td className={`px-2 py-2 text-right font-mono text-xs ${flagged ? "text-red-600 font-bold" : "text-slate-500"}`}>
+                          {dev !== null ? (dev > 0 ? "+" : "") + dev.toFixed(1) + "%" : "—"}
+                          {flagged && <span className="ml-1">⚠</span>}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
-            {calc.pickupDryToWetPct !== undefined && (
+
+            {runStats.runCount > 0 && (
               <div className="p-4 bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg text-white">
-                <p className="text-xs font-bold uppercase tracking-wide text-white/60">Pickup rate (dry → wet)</p>
-                <p className="text-5xl font-black text-[#00b4c3] mt-1">{calc.pickupDryToWetPct.toFixed(1)}<span className="text-2xl font-medium text-white/60">%</span></p>
-                <p className="text-xs text-white/50 mt-1">Every kg of dry fabric picks up {(calc.pickupDryToWetPct / 100).toFixed(2)} kg of bath liquor</p>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wide text-white/60">Mean pickup ({runStats.runCount} run{runStats.runCount > 1 ? "s" : ""})</p>
+                    <p className="text-5xl font-black text-[#00b4c3] mt-1">{runStats.meanPickup.toFixed(1)}<span className="text-2xl font-medium text-white/60">%</span></p>
+                    <p className="text-xs text-white/50 mt-1">Used for all bath recipe calculations</p>
+                  </div>
+                  {runStats.runCount >= 2 && (
+                    <div className="text-right">
+                      <p className="text-xs font-bold uppercase text-white/60">Max run deviation</p>
+                      <p className={`text-xl font-mono font-bold ${runStats.maxDevPct > 10 ? "text-red-400" : "text-emerald-400"}`}>
+                        {runStats.maxDevPct.toFixed(1)}%
+                      </p>
+                      <p className="text-[10px] text-white/50">{runStats.maxDevPct > 10 ? "⚠ flag batch" : "✓ within 10%"}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
+            <p className="text-xs text-slate-500">* Run 1 required. Runs 2 &amp; 3 strongly recommended — any run &gt;10% from the mean flags the sample.</p>
           </div>
         )}
 
@@ -637,7 +719,11 @@ export default function RecipeCalculatorPage() {
                     <div className="mt-2 space-y-1 text-xs">
                       <div><p className="text-slate-500">Bath conc</p><p className="font-mono font-bold">{fmt(calc[`${t}_bath`])} mg/L</p></div>
                       <div><p className="text-slate-500">Dilution</p><p className="font-mono font-bold">1 : {fmt(calc[`${t}_ratio`], 1)}</p></div>
-                      <div><p className="text-slate-500">mL FUZE / L bath</p><p className="font-mono font-bold">{fmt(calc[`${t}_ml`], 1)}</p></div>
+                      <div>
+                        <p className="text-slate-500">FUZE per L bath</p>
+                        <p className="font-mono font-bold">{fmt(calc[`${t}_ml`], 1)} mL</p>
+                        <p className="font-mono text-[10px] text-slate-500">≈ {fmt(calc[`${t}_ml`], 1)} g (water-based)</p>
+                      </div>
                       {calc[`${t}_liters`] && <div className="pt-1 border-t border-slate-200"><p className="text-slate-500 text-[10px]">for {form.targetProductionKg}kg</p><p className="font-mono font-bold text-[#00b4c3]">{fmt(calc[`${t}_liters`])} L</p></div>}
                     </div>
                   </div>
@@ -699,10 +785,13 @@ export default function RecipeCalculatorPage() {
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-sm">
                   ✓ Saved as <strong className="font-mono">{savedTestNumber}</strong>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <button onClick={graduate} className="px-4 py-2 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 text-sm">⭐ Graduate to Recipe</button>
-                  <a href={`/admin/recipe-calculator/${savedTestId}/print`} target="_blank" className="px-4 py-2 bg-slate-900 text-white font-semibold rounded-lg text-sm text-center hover:bg-slate-800">🖨 Print Test Card</a>
-                  <button onClick={() => { setSavedTestId(""); setSavedTestNumber(""); setStep(1); setForm((f: any) => ({ ...f, drySampleWeight: "", wetAfterBathWeight: "", preWetSampleWeight: "", wetAfterBathFromPreWet: "", targetProductionKg: "", notes: "" })); }} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg text-sm">+ New Test</button>
+                <div className="grid grid-cols-2 gap-2">
+                  <a href={`/admin/recipe-calculator/${savedTestId}/report`} target="_blank" className="px-4 py-2 bg-[#00b4c3] text-white font-black rounded-lg text-sm text-center hover:bg-[#009aa8]">📄 Full Recipe Report (PDF)</a>
+                  <a href={`/admin/recipe-calculator/${savedTestId}/print`} target="_blank" className="px-4 py-2 bg-slate-900 text-white font-semibold rounded-lg text-sm text-center hover:bg-slate-800">🖨 Quick Test Card</a>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button onClick={graduate} className="px-4 py-2 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 text-sm">⭐ Graduate to FabricRecipe</button>
+                  <button onClick={() => { setSavedTestId(""); setSavedTestNumber(""); setStep(1); setRuns([{dry:"",wet:""},{dry:"",wet:""},{dry:"",wet:""}]); setForm((f: any) => ({ ...f, drySampleWeight: "", wetAfterBathWeight: "", preWetSampleWeight: "", wetAfterBathFromPreWet: "", targetProductionKg: "", notes: "" })); }} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg text-sm">+ New Test</button>
                 </div>
               </div>
             )}
@@ -769,7 +858,8 @@ export default function RecipeCalculatorPage() {
                       <td className="px-3 py-2 text-right font-mono text-xs">1:{fmt(t.f3DilutionRatio, 1)}</td>
                       <td className="px-3 py-2 text-right font-mono text-xs">1:{fmt(t.f4DilutionRatio, 1)}</td>
                       <td className="px-3 py-2 text-right whitespace-nowrap">
-                        <a href={`/admin/recipe-calculator/${t.id}/print`} target="_blank" className="text-xs text-[#00b4c3] font-semibold hover:underline mr-2">🖨</a>
+                        <a href={`/admin/recipe-calculator/${t.id}/report`} target="_blank" className="text-xs text-[#00b4c3] font-semibold hover:underline mr-2">📄</a>
+                        <a href={`/admin/recipe-calculator/${t.id}/print`} target="_blank" className="text-xs text-slate-600 font-semibold hover:underline mr-2">🖨</a>
                         {t.graduatedRecipeId ? <span className="text-xs text-emerald-700">✓</span> : (
                           <button onClick={async () => {
                             if (!confirm(`Graduate ${t.testNumber} into 4 FabricRecipes?`)) return;

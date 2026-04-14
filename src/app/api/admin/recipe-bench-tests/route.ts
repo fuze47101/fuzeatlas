@@ -146,6 +146,7 @@ export async function POST(req: Request) {
         liquorRatio: body.liquorRatio || null,
 
         sampleAreaCm2: body.sampleAreaCm2 ? Number(body.sampleAreaCm2) : 100,
+        sampleRuns: body.sampleRuns || null,
         drySampleWeight: Number(body.drySampleWeight),
         wetAfterBathWeight: Number(body.wetAfterBathWeight),
         preWetSampleWeight: body.preWetSampleWeight ? Number(body.preWetSampleWeight) : null,
