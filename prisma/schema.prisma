@@ -2198,6 +2198,15 @@ model FuzeOrder {
   isReorder       Boolean  @default(false)
   previousOrderId String?
 
+  // Fabric spec & wastage (factory production orders)
+  fabricWeightGsm    Float?   // Fabric weight in g/m²
+  fabricLengthMeters Float?   // Total fabric length
+  fabricWidthMeters  Float?   // Fabric width
+  fabricMassKg       Float?   // Total fabric mass (kg) — either entered or computed
+  treatmentMethod    String?  // EXHAUST | PAD_DRY_CURE | SPRAY
+  baseFuzeLiters     Float?   // Calculated FUZE needed before wastage
+  wastageFactorPct   Float?   @default(10)  // Wastage / safety buffer %
+
   notes           String?
   adminNotes      String?
   factoryNotes    String?  // Factory's internal notes

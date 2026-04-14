@@ -6,10 +6,19 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 
 const FUZE_TIERS = [
-  { value: "F1", label: "F1 — 1.0 mg/kg", desc: "Maximum antimicrobial performance" },
-  { value: "F2", label: "F2 — 0.75 mg/kg", desc: "High performance" },
-  { value: "F3", label: "F3 — 0.5 mg/kg", desc: "Standard performance" },
-  { value: "F4", label: "F4 — 0.25 mg/kg", desc: "Light performance" },
+  { value: "F1", label: "F1 — 1.0 mg/kg", desc: "Maximum antimicrobial performance", mgPerKg: 1.0 },
+  { value: "F2", label: "F2 — 0.75 mg/kg", desc: "High performance", mgPerKg: 0.75 },
+  { value: "F3", label: "F3 — 0.5 mg/kg", desc: "Standard performance", mgPerKg: 0.5 },
+  { value: "F4", label: "F4 — 0.25 mg/kg", desc: "Light performance", mgPerKg: 0.25 },
+];
+
+// Stock concentration of delivered FUZE (mg active metamaterial / L)
+const FUZE_STOCK_MG_PER_L = 30;
+
+const TREATMENT_METHODS = [
+  { value: "EXHAUST", label: "Exhaust (dyebath)", desc: "Bath exhaustion method" },
+  { value: "PAD_DRY_CURE", label: "Pad-Dry-Cure", desc: "Foulard + dry + cure" },
+  { value: "SPRAY", label: "Spray", desc: "6\" head spacing, 15 m/min" },
 ];
 
 const ORDER_TYPES = [
@@ -46,6 +55,14 @@ interface OrderFormData {
   hangtagQty: string;
   hangtagDesign: string;
   purposeNote: string;
+  // Fabric spec / calculator
+  fabricWeightGsm: string;
+  fabricLengthMeters: string;
+  fabricWidthMeters: string;
+  fabricMassKg: string;
+  treatmentMethod: string;
+  wastageFactorPct: string;
+  baseFuzeLiters: string;
   shippingAddress: string;
   shippingCity: string;
   shippingCountry: string;
@@ -63,6 +80,13 @@ const INITIAL_FORM: OrderFormData = {
   hangtagQty: "",
   hangtagDesign: "",
   purposeNote: "",
+  fabricWeightGsm: "",
+  fabricLengthMeters: "",
+  fabricWidthMeters: "",
+  fabricMassKg: "",
+  treatmentMethod: "EXHAUST",
+  wastageFactorPct: "10",
+  baseFuzeLiters: "",
   shippingAddress: "",
   shippingCity: "",
   shippingCountry: "",
@@ -143,6 +167,39 @@ export default function FactoryOrdersPage() {
   const effectiveVolume = form.volumeLiters ? Number(form.volumeLiters) : calculatedVolume;
   const effectiveBottles = form.bottles ? Number(form.bottles) : calculatedBottles;
 
+  // ── FUZE Volume Calculator ──
+  // Fabric mass → silver needed (mg) → FUZE stock volume (L) at 30 mg/L
+  const [showCalc, setShowCalc] = useState(false);
+  const computeFabricMass = (): number => {
+    if (form.fabricMassKg) return Number(form.fabricMassKg);
+    const gsm = Number(form.fabricWeightGsm) || 0;
+    const length = Number(form.fabricLengthMeters) || 0;
+    const width = Number(form.fabricWidthMeters) || 0;
+    if (gsm && length && width) return (gsm * length * width) / 1000;
+    return 0;
+  };
+  const fabricMass = computeFabricMass();
+  const selectedTier = FUZE_TIERS.find((t) => t.value === form.fuzeTier);
+  const baseFuzeLiters = selectedTier && fabricMass
+    ? (fabricMass * selectedTier.mgPerKg) / FUZE_STOCK_MG_PER_L
+    : 0;
+  const wastagePct = Number(form.wastageFactorPct) || 0;
+  const wastageLiters = baseFuzeLiters * (wastagePct / 100);
+  const totalWithWastage = baseFuzeLiters + wastageLiters;
+  const recommendedBottles = Math.ceil(totalWithWastage / 19);
+  const recommendedVolume = recommendedBottles * 19;
+
+  function applyCalculation() {
+    if (totalWithWastage <= 0) return;
+    setForm((f) => ({
+      ...f,
+      volumeLiters: String(recommendedVolume),
+      bottles: "",
+      baseFuzeLiters: baseFuzeLiters.toFixed(2),
+    }));
+    setShowCalc(false);
+  }
+
   async function handleSubmitOrder(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -189,6 +246,14 @@ export default function FactoryOrdersPage() {
       } else {
         payload.volumeLiters = effectiveVolume || undefined;
         payload.bottles = effectiveBottles || undefined;
+        // Fabric spec + wastage
+        if (form.fabricWeightGsm) payload.fabricWeightGsm = Number(form.fabricWeightGsm);
+        if (form.fabricLengthMeters) payload.fabricLengthMeters = Number(form.fabricLengthMeters);
+        if (form.fabricWidthMeters) payload.fabricWidthMeters = Number(form.fabricWidthMeters);
+        if (form.fabricMassKg || fabricMass) payload.fabricMassKg = Number(form.fabricMassKg) || fabricMass;
+        if (form.treatmentMethod) payload.treatmentMethod = form.treatmentMethod;
+        if (form.baseFuzeLiters || baseFuzeLiters) payload.baseFuzeLiters = Number(form.baseFuzeLiters) || baseFuzeLiters;
+        payload.wastageFactorPct = wastagePct;
       }
 
       const res = await fetch("/api/orders", {
@@ -395,7 +460,14 @@ export default function FactoryOrdersPage() {
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500 mt-1">
-                        {order.volumeLiters && <span>{order.volumeLiters}L ({order.bottles || Math.ceil(order.volumeLiters / 19)} bottles)</span>}
+                        {order.volumeLiters && (
+                          <span>
+                            {order.volumeLiters}L ({order.bottles || Math.ceil(order.volumeLiters / 19)} bottles)
+                            {order.wastageFactorPct > 0 && order.baseFuzeLiters && (
+                              <span className="text-amber-600"> · +{order.wastageFactorPct}% buffer</span>
+                            )}
+                          </span>
+                        )}
                         {order.hangtagQty && <span>{order.hangtagQty.toLocaleString()} hangtags</span>}
                         {order.brandAllocations?.length > 0 ? (
                           <span>
@@ -483,6 +555,20 @@ export default function FactoryOrdersPage() {
                       <div>
                         <p className="text-blue-600 font-medium">Volume</p>
                         <p className="text-blue-900 font-semibold">{quote.volumeLiters}L ({quote.bottles} bottles)</p>
+                        {quote.baseFuzeLiters && quote.wastageFactorPct !== undefined && (
+                          <p className="text-xs text-blue-700 mt-0.5">
+                            base {Number(quote.baseFuzeLiters).toFixed(1)}L + {quote.wastageFactorPct}% wastage
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    {quote.fabricMassKg && (
+                      <div>
+                        <p className="text-blue-600 font-medium">Fabric</p>
+                        <p className="text-blue-900 font-semibold">
+                          {Number(quote.fabricMassKg).toLocaleString(undefined, { maximumFractionDigits: 1 })} kg
+                          {quote.treatmentMethod && <span className="text-xs text-blue-700"> · {quote.treatmentMethod.replace("_", "-")}</span>}
+                        </p>
                       </div>
                     )}
                     {quote.hangtagQty && (
@@ -575,6 +661,169 @@ export default function FactoryOrdersPage() {
                   </div>
                 </div>
 
+                {/* ── FUZE Volume Calculator (fabric spec → FUZE liters) ── */}
+                {form.orderType !== "HANGTAG" && (
+                  <div className="border-2 border-[#00b4c3]/30 bg-cyan-50/40 rounded-xl overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setShowCalc(!showCalc)}
+                      className="w-full px-4 py-3 flex items-center justify-between hover:bg-cyan-50 transition-colors"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-xl">🧮</span>
+                        <span className="font-semibold text-slate-900">Calculate from Fabric Spec</span>
+                        <span className="text-xs text-slate-500">(recommended)</span>
+                      </span>
+                      <span className="text-slate-400">{showCalc ? "▲" : "▼"}</span>
+                    </button>
+                    {showCalc && (
+                      <div className="p-4 border-t border-[#00b4c3]/20 space-y-3">
+                        <p className="text-xs text-slate-600">
+                          Enter your fabric specs and we'll calculate the exact FUZE volume needed — including your wastage buffer.
+                        </p>
+
+                        {/* Method */}
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-700 mb-1">Treatment Method</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {TREATMENT_METHODS.map((m) => (
+                              <button
+                                key={m.value}
+                                type="button"
+                                onClick={() => setForm({ ...form, treatmentMethod: m.value })}
+                                className={`p-2 rounded-lg border text-left transition-all ${
+                                  form.treatmentMethod === m.value
+                                    ? "border-[#00b4c3] bg-white"
+                                    : "border-slate-200 bg-white/50 hover:border-slate-300"
+                                }`}
+                              >
+                                <p className="text-xs font-bold text-slate-900">{m.label}</p>
+                                <p className="text-[10px] text-slate-500">{m.desc}</p>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Fabric mass direct entry */}
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-700 mb-1">Total Fabric Mass (kg)</label>
+                          <input
+                            type="number"
+                            value={form.fabricMassKg}
+                            onChange={(e) => setForm({ ...form, fabricMassKg: e.target.value })}
+                            placeholder="If you already know total mass, enter it here"
+                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-2 text-xs text-slate-400">
+                          <div className="flex-1 h-px bg-slate-200" />
+                          <span>OR compute from dimensions</span>
+                          <div className="flex-1 h-px bg-slate-200" />
+                        </div>
+
+                        {/* Fabric dimensions */}
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1">Weight (g/m²)</label>
+                            <input
+                              type="number"
+                              value={form.fabricWeightGsm}
+                              onChange={(e) => setForm({ ...form, fabricWeightGsm: e.target.value, fabricMassKg: "" })}
+                              placeholder="180"
+                              className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1">Length (m)</label>
+                            <input
+                              type="number"
+                              value={form.fabricLengthMeters}
+                              onChange={(e) => setForm({ ...form, fabricLengthMeters: e.target.value, fabricMassKg: "" })}
+                              placeholder="1000"
+                              className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1">Width (m)</label>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={form.fabricWidthMeters}
+                              onChange={(e) => setForm({ ...form, fabricWidthMeters: e.target.value, fabricMassKg: "" })}
+                              placeholder="1.5"
+                              className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Wastage */}
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-700 mb-1">
+                            Wastage / Safety Buffer (%) —{" "}
+                            <span className="text-slate-500 font-normal">process losses, retreatment margin, QC cushion</span>
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="range"
+                              min="0"
+                              max="30"
+                              step="1"
+                              value={form.wastageFactorPct}
+                              onChange={(e) => setForm({ ...form, wastageFactorPct: e.target.value })}
+                              className="flex-1"
+                            />
+                            <div className="flex items-center gap-1 bg-white border border-slate-300 rounded-lg px-2 py-1">
+                              <input
+                                type="number"
+                                min="0"
+                                max="50"
+                                value={form.wastageFactorPct}
+                                onChange={(e) => setForm({ ...form, wastageFactorPct: e.target.value })}
+                                className="w-12 text-sm text-center outline-none"
+                              />
+                              <span className="text-xs text-slate-500">%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Live Calculation */}
+                        {fabricMass > 0 && selectedTier && (
+                          <div className="bg-white rounded-lg border border-[#00b4c3]/40 p-3 space-y-1.5 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Fabric mass</span>
+                              <strong>{fabricMass.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg</strong>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Active ingredient needed ({selectedTier.value} @ {selectedTier.mgPerKg} mg/kg)</span>
+                              <strong>{(fabricMass * selectedTier.mgPerKg).toLocaleString(undefined, { maximumFractionDigits: 0 })} mg</strong>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Base FUZE volume (stock @ {FUZE_STOCK_MG_PER_L} mg/L)</span>
+                              <strong>{baseFuzeLiters.toLocaleString(undefined, { maximumFractionDigits: 1 })} L</strong>
+                            </div>
+                            <div className="flex justify-between text-amber-700">
+                              <span>+ Wastage buffer ({wastagePct}%)</span>
+                              <strong>+{wastageLiters.toLocaleString(undefined, { maximumFractionDigits: 1 })} L</strong>
+                            </div>
+                            <div className="pt-1.5 border-t border-slate-200 flex justify-between text-base">
+                              <span className="font-semibold">Recommended order</span>
+                              <strong className="text-[#00b4c3]">{recommendedBottles} bottles ({recommendedVolume} L)</strong>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={applyCalculation}
+                              className="w-full mt-2 px-3 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg hover:bg-[#009aa8]"
+                            >
+                              Apply to Order →
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* FUZE Treatment Volume (for PRODUCTION & SAMPLE) */}
                 {form.orderType !== "HANGTAG" && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -588,7 +837,12 @@ export default function FactoryOrdersPage() {
                         className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                       />
                       {form.volumeLiters && (
-                        <p className="text-xs text-slate-500 mt-1">= {calculatedBottles} bottles (19L each)</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          = {calculatedBottles} bottles (19L each)
+                          {form.baseFuzeLiters && Number(form.baseFuzeLiters) > 0 && (
+                            <> · base {Number(form.baseFuzeLiters).toFixed(1)}L + {wastagePct}% buffer</>
+                          )}
+                        </p>
                       )}
                     </div>
                     <div>
@@ -603,6 +857,37 @@ export default function FactoryOrdersPage() {
                       {form.bottles && (
                         <p className="text-xs text-slate-500 mt-1">= {calculatedVolume}L total</p>
                       )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Wastage factor when not using calculator */}
+                {form.orderType !== "HANGTAG" && !showCalc && (
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Wastage / Safety Buffer — <span className="text-slate-500 font-normal">stored on the order for QC and inventory planning</span>
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min="0"
+                        max="30"
+                        step="1"
+                        value={form.wastageFactorPct}
+                        onChange={(e) => setForm({ ...form, wastageFactorPct: e.target.value })}
+                        className="flex-1"
+                      />
+                      <div className="flex items-center gap-1 bg-white border border-slate-300 rounded-lg px-2 py-1">
+                        <input
+                          type="number"
+                          min="0"
+                          max="50"
+                          value={form.wastageFactorPct}
+                          onChange={(e) => setForm({ ...form, wastageFactorPct: e.target.value })}
+                          className="w-12 text-sm text-center outline-none"
+                        />
+                        <span className="text-xs text-slate-500">%</span>
+                      </div>
                     </div>
                   </div>
                 )}

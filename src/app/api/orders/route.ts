@@ -261,6 +261,9 @@ export async function POST(req: Request) {
       shippingAddress, shippingCity, shippingCountry,
       notes,
       brandAllocations, // Array of { brandId, allocatedPct, notes }
+      // Fabric spec / wastage (optional — captured by factory calculator)
+      fabricWeightGsm, fabricLengthMeters, fabricWidthMeters, fabricMassKg,
+      treatmentMethod, baseFuzeLiters, wastageFactorPct,
     } = body;
 
     // Factory users can only order for their own factory
@@ -361,6 +364,17 @@ export async function POST(req: Request) {
         shippingAddress: shippingAddress || null,
         shippingCity: shippingCity || null,
         shippingCountry: shippingCountry || null,
+
+        // Fabric spec + wastage
+        fabricWeightGsm: fabricWeightGsm ? Number(fabricWeightGsm) : null,
+        fabricLengthMeters: fabricLengthMeters ? Number(fabricLengthMeters) : null,
+        fabricWidthMeters: fabricWidthMeters ? Number(fabricWidthMeters) : null,
+        fabricMassKg: fabricMassKg ? Number(fabricMassKg) : null,
+        treatmentMethod: treatmentMethod || null,
+        baseFuzeLiters: baseFuzeLiters ? Number(baseFuzeLiters) : null,
+        wastageFactorPct: wastageFactorPct !== undefined && wastageFactorPct !== null
+          ? Number(wastageFactorPct)
+          : 10,
 
         notes: notes || null,
 
