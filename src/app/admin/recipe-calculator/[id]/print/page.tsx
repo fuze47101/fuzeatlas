@@ -80,6 +80,12 @@ export default function PrintTestCardPage() {
             <p className="font-bold text-slate-900">{test.applicationMethod.replace(/_/g, "-")}</p>
             <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-2 text-xs text-slate-700">
               <span>Squeeze pressure</span><span>{test.squeezePressure ? `${test.squeezePressure} bar` : "—"}</span>
+              {test.vfdFrequencyHz && (
+                <>
+                  <span>VFD frequency</span><span>{test.vfdFrequencyHz} Hz</span>
+                  <span>Line speed</span><span>{fmt(test.lineSpeedMPerMin ?? test.vfdFrequencyHz * 0.295, 2)} m/min</span>
+                </>
+              )}
               <span>Drying</span><span>{test.dryingTemp ? `${test.dryingTemp}°C × ${test.dryingTime || "—"} min` : "—"}</span>
               <span>Curing</span><span>{test.curingTemp ? `${test.curingTemp}°C × ${test.curingTime || "—"} min` : "—"}</span>
               {test.liquorRatio && <><span>Liquor ratio</span><span>{test.liquorRatio}</span></>}

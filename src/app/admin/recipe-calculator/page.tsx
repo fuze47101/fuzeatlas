@@ -19,6 +19,11 @@ import { useEffect, useMemo, useState } from "react";
 
 const STOCK_MG_PER_L = 30;
 const TIER_MG_PER_KG: Record<string, number> = { F1: 1.0, F2: 0.75, F3: 0.5, F4: 0.25 };
+// FUZE lab mini pad calibration (HTAI P-B0, 41 cm roller circumference)
+// 10 Hz → 7.2 RPM → ~3 m/min.  Linear: m/min ≈ Hz × 0.295
+const ROLLER_CIRCUMFERENCE_M = 0.41;
+const HZ_TO_M_PER_MIN = 0.295;
+const HZ_TO_RPM = HZ_TO_M_PER_MIN / ROLLER_CIRCUMFERENCE_M; // ≈ 0.72 RPM per Hz
 
 /**
  * Sanity checks on raw measurements. Returns an array of warnings
@@ -128,7 +133,8 @@ export default function RecipeCalculatorPage() {
     fiberContent: "",
     fabricWeightGsm: "",
     applicationMethod: "PAD_DRY_CURE",
-    squeezePressure: "4",  // FUZE lab mini pad bath runs at 4 bar
+    squeezePressure: "4",  // FUZE lab mini pad bath runs at 4 bar (0.4 MPa)
+    vfdFrequencyHz: "10",  // FUZE lab mini pad default feed (≈ 3.0 m/min)
     dryingTemp: "",
     dryingTime: "",
     curingTemp: "",
@@ -388,6 +394,46 @@ export default function RecipeCalculatorPage() {
                 </div>
               )}
             </div>
+
+            {/* VFD calibration — FUZE mini pad (HTAI P-B0, 41 cm circumference) */}
+            {form.applicationMethod === "PAD_DRY_CURE" && (() => {
+              const hz = Number(form.vfdFrequencyHz) || 0;
+              const mMin = hz * HZ_TO_M_PER_MIN;
+              const rpm = hz * HZ_TO_RPM;
+              return (
+                <div className="mt-3 bg-slate-900 text-white rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-bold uppercase tracking-wide">VFD Feed Speed</p>
+                    <p className="text-[10px] text-white/60">HTAI P-B0 · 41 cm roller · calibrated 10 Hz → 7.2 RPM</p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3 items-end">
+                    <div>
+                      <label className="text-[10px] font-semibold text-white/70 uppercase">VFD Frequency (Hz)</label>
+                      <input
+                        type="number"
+                        step="0.5"
+                        min="0"
+                        max="60"
+                        value={form.vfdFrequencyHz}
+                        onChange={(e) => set("vfdFrequencyHz", e.target.value)}
+                        className="w-full px-2 py-1.5 border border-white/20 bg-white/10 rounded text-sm font-mono font-bold text-white"
+                      />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] text-white/60 uppercase">Roller</p>
+                      <p className="text-sm font-mono font-bold">{rpm.toFixed(1)} <span className="text-white/50 text-xs">RPM</span></p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] text-[#00b4c3] uppercase">Fabric Speed</p>
+                      <p className="text-lg font-mono font-black text-[#00b4c3]">{mMin.toFixed(2)} <span className="text-white/60 text-xs">m/min</span></p>
+                    </div>
+                  </div>
+                  <p className="mt-2 text-[10px] text-white/50">
+                    Stored with the test so every record captures the exact feed speed that produced the measured pickup.
+                  </p>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Measurements */}

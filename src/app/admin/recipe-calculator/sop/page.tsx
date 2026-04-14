@@ -54,7 +54,8 @@ export default function RecipeSOPPage() {
           <div>
             <h2 className="font-black text-slate-900 mb-1 text-sm uppercase tracking-wide">Equipment</h2>
             <ul className="text-slate-700 leading-snug list-disc pl-4">
-              <li>FUZE mini pad bath — <strong>4 bar squeeze pressure</strong></li>
+              <li>FUZE mini pad bath (HTAI P-B0) — <strong>4 bar squeeze (0.4 MPa)</strong>, 41 cm roller circumference</li>
+              <li>VFD calibration: <strong>m/min ≈ Hz × 0.295</strong>, e.g. 10 Hz = ~3.0 m/min, 20 Hz = ~5.9 m/min</li>
               <li>Analytical balance (0.01 g precision or better)</li>
               <li>Clean deionized water</li>
               <li>Fabric sample (10 × 10 cm recommended)</li>

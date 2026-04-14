@@ -1767,6 +1767,8 @@ model RecipeBenchTest {
   // Method
   applicationMethod String  // "PAD_DRY_CURE" | "EXHAUST" | "SPRAY" | "FOAM"
   squeezePressure   Float?  // bar or psi (pad)
+  vfdFrequencyHz    Float?  // VFD output frequency — FUZE mini pad: m/min ≈ Hz × 0.295
+  lineSpeedMPerMin  Float?  // computed feed speed
   dryingTemp        Float?  // °C
   dryingTime        Float?  // minutes
   curingTemp        Float?  // °C

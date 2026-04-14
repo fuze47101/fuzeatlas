@@ -137,6 +137,8 @@ export async function POST(req: Request) {
 
         applicationMethod: body.applicationMethod || "PAD_DRY_CURE",
         squeezePressure: body.squeezePressure ? Number(body.squeezePressure) : null,
+        vfdFrequencyHz: body.vfdFrequencyHz ? Number(body.vfdFrequencyHz) : null,
+        lineSpeedMPerMin: body.vfdFrequencyHz ? Number(body.vfdFrequencyHz) * 0.295 : null,
         dryingTemp: body.dryingTemp ? Number(body.dryingTemp) : null,
         dryingTime: body.dryingTime ? Number(body.dryingTime) : null,
         curingTemp: body.curingTemp ? Number(body.curingTemp) : null,
