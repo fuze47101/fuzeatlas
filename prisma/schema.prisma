@@ -773,6 +773,18 @@ model Fabric {
   intakeFormId     String?    // Reference to uploaded intake form
   intakeParsedAt   DateTime?  // When the intake form was parsed
 
+  // Lab lifecycle
+  // UPLOADED → RECEIVED → TESTING → COMPLETE (→ ARCHIVED)
+  labStatus                   String?   @default("UPLOADED")
+  receivedAt                  DateTime?
+  receivedById                String?
+  testingStartedAt            DateTime?
+  testingStartedById          String?
+  testingEstimatedCompletion  DateTime?
+  testingCompletedAt          DateTime?
+  testingCompletedById        String?
+  labNotes                    String?
+
   contents    FabricContent[]
   submissions FabricSubmission[]
   testRequests TestRequest[]

@@ -47,6 +47,30 @@ export default function FabricDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showTestModal, setShowTestModal] = useState(false);
   const [testSuccess, setTestSuccess] = useState("");
+  const [labStatusAction, setLabStatusAction] = useState<string | null>(null);
+  const [labStatusForm, setLabStatusForm] = useState<any>({ estimatedCompletion: "", notes: "" });
+  const [labStatusSaving, setLabStatusSaving] = useState(false);
+
+  const canManageLab = user && ["ADMIN", "EMPLOYEE", "LAB_USER", "LAB_MANAGER"].includes(user.role);
+
+  async function postLabAction(action: string, extra: any = {}) {
+    setLabStatusSaving(true);
+    try {
+      const res = await fetch(`/api/fabrics/${fabric.id}/lab-status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, ...extra }),
+      });
+      const d = await res.json();
+      if (d.ok) {
+        setFabric({ ...fabric, ...d.fabric });
+        setLabStatusAction(null);
+        setLabStatusForm({ estimatedCompletion: "", notes: "" });
+      }
+    } finally {
+      setLabStatusSaving(false);
+    }
+  }
 
   const isFactory = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
   const isExternal = user?.role === "BRAND_USER" || user?.role === "LAB_USER";
@@ -114,6 +138,111 @@ export default function FabricDetailPage() {
       </div>
 
       {testSuccess && <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{testSuccess}</div>}
+
+      {/* ── LAB LIFECYCLE ── */}
+      {canManageLab && (() => {
+        const status = fabric.labStatus || "UPLOADED";
+        const STAGES = [
+          { key: "UPLOADED", label: "Uploaded", icon: "📤", done: true },
+          { key: "RECEIVED", label: "Received", icon: "📦", done: !!fabric.receivedAt },
+          { key: "TESTING", label: "Testing", icon: "🧪", done: !!fabric.testingStartedAt },
+          { key: "COMPLETE", label: "Complete", icon: "✅", done: !!fabric.testingCompletedAt },
+        ];
+        const fmtDate = (d: any) => d ? new Date(d).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "";
+        return (
+          <div className="mb-6 bg-white border border-slate-200 rounded-xl overflow-hidden">
+            <div className="px-5 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Lab Lifecycle</span>
+              {status !== "UPLOADED" && (
+                <button onClick={() => { if (confirm("Reset fabric lab lifecycle?")) postLabAction("reset"); }} className="text-xs text-slate-400 hover:text-red-600">Reset</button>
+              )}
+            </div>
+            <div className="p-5">
+              {/* Progress bar */}
+              <div className="flex items-center gap-1 mb-4">
+                {STAGES.map((s, i) => (
+                  <div key={s.key} className="flex-1 flex items-center gap-1">
+                    <div className={`flex-1 py-2 rounded text-center text-xs font-bold ${s.done ? "bg-[#00b4c3] text-white" : "bg-slate-100 text-slate-400"}`}>
+                      {s.icon} {s.label}
+                    </div>
+                    {i < STAGES.length - 1 && <span className={`text-lg ${STAGES[i + 1].done ? "text-[#00b4c3]" : "text-slate-300"}`}>→</span>}
+                  </div>
+                ))}
+              </div>
+
+              {/* Timestamps */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs mb-4">
+                <div><p className="text-slate-500">Uploaded</p><p className="font-semibold text-slate-700">{fmtDate(fabric.createdAt)}</p></div>
+                <div><p className="text-slate-500">Received</p><p className="font-semibold text-slate-700">{fmtDate(fabric.receivedAt) || "—"}</p></div>
+                <div>
+                  <p className="text-slate-500">Testing started</p>
+                  <p className="font-semibold text-slate-700">{fmtDate(fabric.testingStartedAt) || "—"}</p>
+                  {fabric.testingEstimatedCompletion && (
+                    <p className="text-[10px] text-amber-700 mt-0.5">ETA: {new Date(fabric.testingEstimatedCompletion).toLocaleDateString()}</p>
+                  )}
+                </div>
+                <div><p className="text-slate-500">Completed</p><p className="font-semibold text-emerald-700">{fmtDate(fabric.testingCompletedAt) || "—"}</p></div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-2 flex-wrap">
+                {!fabric.receivedAt && (
+                  <button onClick={() => setLabStatusAction("receive")} className="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700">📦 Mark Received</button>
+                )}
+                {fabric.receivedAt && !fabric.testingStartedAt && (
+                  <button onClick={() => setLabStatusAction("start")} className="px-4 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg hover:bg-[#009aa8]">🧪 Start Testing</button>
+                )}
+                {fabric.testingStartedAt && !fabric.testingCompletedAt && (
+                  <button onClick={() => setLabStatusAction("complete")} className="px-4 py-2 bg-violet-600 text-white text-sm font-semibold rounded-lg hover:bg-violet-700">✅ Mark Testing Complete</button>
+                )}
+                {fabric.testingCompletedAt && (
+                  <span className="px-4 py-2 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold rounded-lg">✓ Testing complete — recipes published via Build FUZE Recipe</span>
+                )}
+              </div>
+
+              {/* Inline forms */}
+              {labStatusAction === "receive" && (
+                <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg space-y-2">
+                  <p className="text-sm font-semibold text-emerald-900">Confirm fabric physically received at FUZE lab</p>
+                  <textarea placeholder="Intake notes (condition, quantity, packaging...)" value={labStatusForm.notes} onChange={(e) => setLabStatusForm({ ...labStatusForm, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
+                  <div className="flex gap-2">
+                    <button disabled={labStatusSaving} onClick={() => postLabAction("receive", { notes: labStatusForm.notes })} className="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg">Confirm Receipt</button>
+                    <button onClick={() => setLabStatusAction(null)} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">Cancel</button>
+                  </div>
+                </div>
+              )}
+              {labStatusAction === "start" && (
+                <div className="mt-3 p-3 bg-cyan-50 border border-cyan-200 rounded-lg space-y-2">
+                  <p className="text-sm font-semibold text-cyan-900">Start testing</p>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600">Estimated completion</label>
+                    <input type="date" value={labStatusForm.estimatedCompletion} onChange={(e) => setLabStatusForm({ ...labStatusForm, estimatedCompletion: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                  </div>
+                  <textarea placeholder="Test plan notes" value={labStatusForm.notes} onChange={(e) => setLabStatusForm({ ...labStatusForm, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
+                  <div className="flex gap-2">
+                    <button disabled={labStatusSaving} onClick={() => postLabAction("start-testing", labStatusForm)} className="px-4 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg">Start Testing</button>
+                    <button onClick={() => setLabStatusAction(null)} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">Cancel</button>
+                  </div>
+                </div>
+              )}
+              {labStatusAction === "complete" && (
+                <div className="mt-3 p-3 bg-violet-50 border border-violet-200 rounded-lg space-y-2">
+                  <p className="text-sm font-semibold text-violet-900">Mark testing complete</p>
+                  <textarea placeholder="Testing outcome notes" value={labStatusForm.notes} onChange={(e) => setLabStatusForm({ ...labStatusForm, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
+                  <div className="flex gap-2">
+                    <button disabled={labStatusSaving} onClick={() => postLabAction("complete-testing", { notes: labStatusForm.notes })} className="px-4 py-2 bg-violet-600 text-white text-sm font-semibold rounded-lg">Mark Complete</button>
+                    <button onClick={() => setLabStatusAction(null)} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">Cancel</button>
+                  </div>
+                </div>
+              )}
+
+              {fabric.labNotes && (
+                <p className="mt-3 text-xs text-slate-600 italic">Lab notes: {fabric.labNotes}</p>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ═══════════════════════════════════════════ */}
       {/* SECTION 1: Basic Properties */}
