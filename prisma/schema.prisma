@@ -206,6 +206,7 @@ model User {
   fuzeOrders       FuzeOrder[]          @relation("OrderUser")
   managedOrders    FuzeOrder[]          @relation("OrderAccountManager")
   outreachChecks   ContactOutreach[]    @relation("UserOutreach")
+  entityManagers   EntityManager[]      @relation("UserEntityManagers")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -1496,6 +1497,31 @@ model FuzeTestRequest {
   @@index([fabricId])
   @@index([factoryId])
   @@index([status])
+}
+
+// ─────────────────────────────────────────────
+// ENTITY MANAGERS (multi-manager assignments)
+// ─────────────────────────────────────────────
+
+model EntityManager {
+  id String @id @default(cuid())
+
+  entityType String   // BRAND, FACTORY, DISTRIBUTOR
+  entityId   String   // ID of the brand/factory/distributor
+
+  userId String
+  user   User @relation("UserEntityManagers", fields: [userId], references: [id])
+
+  role      String   // ACCOUNT_MANAGER, FACTORY_LEAD, DISTRIBUTOR_LEAD, SUPPORT
+  isPrimary Boolean  @default(false)
+  notes     String?  // e.g. "NY office contact", "India factory lead"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([entityType, entityId, userId, role])
+  @@index([entityType, entityId])
+  @@index([userId])
 }
 
 // ─────────────────────────────────────────────

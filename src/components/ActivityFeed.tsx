@@ -12,12 +12,9 @@ interface TimelineItem {
   contactName?: string;
   contactId?: string;
   user?: { id: string; name: string };
-  // note-specific
-  // outreach-specific
   subject?: string;
   toAddress?: string;
   status?: string;
-  // meeting-specific
   title?: string;
   location?: string;
   teamsLink?: string;
@@ -60,7 +57,14 @@ const TYPE_CONFIG: Record<string, { icon: string; color: string; bg: string; lab
   meeting_event: { icon: "📅", color: "text-emerald-700", bg: "bg-emerald-100", label: "Meeting" },
 };
 
-const NOTE_TYPES = ["NOTE", "CALL", "EMAIL", "MEETING", "TASK", "FOLLOW_UP"];
+const NOTE_TYPES = [
+  { value: "NOTE", label: "Note", icon: "📝" },
+  { value: "CALL", label: "Call", icon: "📞" },
+  { value: "EMAIL", label: "Email", icon: "✉️" },
+  { value: "MEETING", label: "Meeting", icon: "🤝" },
+  { value: "TASK", label: "Task", icon: "✅" },
+  { value: "FOLLOW_UP", label: "Follow-up", icon: "🔄" },
+];
 
 function getConfig(item: TimelineItem) {
   if (item.type === "outreach") return TYPE_CONFIG[`outreach_${item.subtype}`] || TYPE_CONFIG.EMAIL;
@@ -75,7 +79,6 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
   const [summary, setSummary] = useState<ActivitySummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
-  const [showAdd, setShowAdd] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ content: "", noteType: "NOTE", contactName: "" });
@@ -99,7 +102,6 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
 
   useEffect(() => { loadActivity(); }, [loadActivity]);
 
-  // Add note (uses existing /api/notes endpoint)
   const handleAddNote = async () => {
     if (!form.content.trim()) return;
     setSaving(true);
@@ -117,7 +119,6 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
       const data = await res.json();
       if (data.ok) {
         setForm({ content: "", noteType: "NOTE", contactName: "" });
-        setShowAdd(false);
         loadActivity();
       } else {
         setError(data.error || "Failed to save");
@@ -129,7 +130,6 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
     }
   };
 
-  // Delete note
   const handleDeleteNote = async (noteId: string) => {
     if (!confirm("Delete this note?")) return;
     try {
@@ -139,7 +139,6 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
     } catch {}
   };
 
-  // Filtered timeline
   const filtered = filter === "all" ? timeline : timeline.filter((item) => {
     if (filter === "notes") return item.type === "note";
     if (filter === "outreach") return item.type === "outreach";
@@ -157,62 +156,133 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
   }
 
   return (
-    <div className="space-y-4">
-      {/* Summary Strip */}
+    <div className="space-y-6">
+      {/* ══════════════════════════════════════════════════ */}
+      {/* LOG ACTIVITY — always visible, big and prominent  */}
+      {/* ══════════════════════════════════════════════════ */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 shadow-sm">
+        <h3 className="text-lg font-black text-blue-900 mb-4">Log Activity</h3>
+
+        {/* Type selector — big buttons */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {NOTE_TYPES.map((nt) => (
+            <button
+              key={nt.value}
+              onClick={() => setForm({ ...form, noteType: nt.value })}
+              className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition ${
+                form.noteType === nt.value
+                  ? "bg-blue-600 text-white shadow-md scale-105"
+                  : "bg-white text-slate-600 border border-slate-200 hover:border-blue-300 hover:text-blue-600"
+              }`}
+            >
+              <span>{nt.icon}</span>
+              {nt.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Contact + Content */}
+        <div className="space-y-3">
+          <input
+            type="text"
+            value={form.contactName}
+            onChange={(e) => setForm({ ...form, contactName: e.target.value })}
+            className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Who was this with? (contact name)"
+          />
+          <textarea
+            value={form.content}
+            onChange={(e) => setForm({ ...form, content: e.target.value })}
+            rows={4}
+            className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+            placeholder="What happened? Meeting notes, call summary, action items..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && form.content.trim()) {
+                handleAddNote();
+              }
+            }}
+          />
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-400">Cmd+Enter to save</span>
+            <button
+              onClick={handleAddNote}
+              disabled={saving || !form.content.trim()}
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 disabled:opacity-50 transition shadow-sm"
+            >
+              {saving ? "Saving..." : "Save Activity"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════ */}
+      {/* SUMMARY CARDS — big, colorful                     */}
+      {/* ══════════════════════════════════════════════════ */}
       {summary && (
-        <div className="grid grid-cols-4 gap-3">
-          <div className="bg-slate-50 border rounded-lg px-3 py-2 text-center">
-            <p className="text-lg font-black text-slate-700">{summary.totalContacts}</p>
-            <p className="text-[10px] font-semibold text-slate-500 uppercase">Contacts</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white border-2 border-slate-200 rounded-2xl px-5 py-4 text-center">
+            <p className="text-3xl font-black text-slate-800">{summary.totalContacts}</p>
+            <p className="text-xs font-bold text-slate-500 uppercase mt-1">Contacts</p>
           </div>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-center">
-            <p className="text-lg font-black text-blue-700">{summary.totalNotes}</p>
-            <p className="text-[10px] font-semibold text-blue-500 uppercase">Notes</p>
+          <div className="bg-white border-2 border-blue-200 rounded-2xl px-5 py-4 text-center">
+            <p className="text-3xl font-black text-blue-700">{summary.totalNotes}</p>
+            <p className="text-xs font-bold text-blue-500 uppercase mt-1">Notes & Calls</p>
           </div>
-          <div className="bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-2 text-center">
-            <p className="text-lg font-black text-indigo-700">{summary.totalOutreach}</p>
-            <p className="text-[10px] font-semibold text-indigo-500 uppercase">Outreach</p>
+          <div className="bg-white border-2 border-indigo-200 rounded-2xl px-5 py-4 text-center">
+            <p className="text-3xl font-black text-indigo-700">{summary.totalOutreach}</p>
+            <p className="text-xs font-bold text-indigo-500 uppercase mt-1">Outreach</p>
           </div>
-          <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-center">
-            <p className="text-lg font-black text-emerald-700">{summary.totalMeetings}</p>
-            <p className="text-[10px] font-semibold text-emerald-500 uppercase">Meetings</p>
+          <div className="bg-white border-2 border-emerald-200 rounded-2xl px-5 py-4 text-center">
+            <p className="text-3xl font-black text-emerald-700">{summary.totalMeetings}</p>
+            <p className="text-xs font-bold text-emerald-500 uppercase mt-1">Meetings</p>
           </div>
         </div>
       )}
 
-      {/* Contacts Panel */}
+      {/* ══════════════════════════════════════════════════ */}
+      {/* KEY CONTACTS — prominent cards                    */}
+      {/* ══════════════════════════════════════════════════ */}
       {contacts.length > 0 && (
-        <div className="bg-white border rounded-xl p-4">
-          <h4 className="text-xs font-bold text-slate-500 uppercase mb-3">Key Contacts</h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="bg-white border-2 border-slate-200 rounded-2xl p-5">
+          <h4 className="text-sm font-black text-slate-700 uppercase mb-4">Key Contacts</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {contacts.map((c) => (
-              <div key={c.id} className="flex items-center gap-3 p-2 rounded-lg bg-slate-50 hover:bg-slate-100 transition">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-xs shrink-0">
+              <div key={c.id} className="flex items-start gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:shadow-sm transition">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-black text-sm shrink-0">
                   {(c.name || "?")[0]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2 mb-1">
                     <span className="font-bold text-sm text-slate-800 truncate">{c.name}</span>
-                    {c.decisionMaker && <span className="px-1 py-0 rounded text-[9px] font-bold bg-amber-100 text-amber-700">DM</span>}
+                    {c.decisionMaker && (
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-700">DM</span>
+                    )}
                   </div>
-                  <p className="text-[11px] text-slate-500 truncate">{c.jobTitle || "No title"}</p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    {c.email && <a href={`mailto:${c.email}`} className="text-[10px] text-blue-600 hover:underline truncate">{c.email}</a>}
+                  <p className="text-xs text-slate-500 truncate mb-2">{c.jobTitle || "No title"}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {c.email && (
+                      <a href={`mailto:${c.email}`} className="text-[11px] text-blue-600 hover:underline truncate max-w-[180px]">{c.email}</a>
+                    )}
                     {c.linkedinUrl && (
-                      <a href={c.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded hover:bg-blue-100">
+                      <a href={c.linkedinUrl} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold text-white bg-blue-600 rounded hover:bg-blue-700">
                         LinkedIn
                       </a>
                     )}
+                    {c.phone && (
+                      <a href={`tel:${c.phone}`} className="text-[11px] text-slate-600 hover:text-blue-600">{c.phone}</a>
+                    )}
                   </div>
                 </div>
-                {c.outreachStatus && (
-                  <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 ${
+                {c.outreachStatus && c.outreachStatus !== "not_contacted" && (
+                  <span className={`px-2 py-1 rounded-lg text-[10px] font-bold shrink-0 ${
                     c.outreachStatus === "contacted" ? "bg-blue-100 text-blue-700" :
                     c.outreachStatus === "responded" ? "bg-green-100 text-green-700" :
-                    c.outreachStatus === "meeting_set" ? "bg-emerald-100 text-emerald-700" :
+                    c.outreachStatus === "meeting_booked" ? "bg-emerald-100 text-emerald-700" :
                     "bg-slate-100 text-slate-500"
                   }`}>
-                    {c.outreachStatus.replace("_", " ")}
+                    {c.outreachStatus.replace(/_/g, " ")}
                   </span>
                 )}
               </div>
@@ -221,172 +291,108 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
         </div>
       )}
 
-      {/* Add Note + Filters */}
-      <div className="bg-white border rounded-xl p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <h4 className="text-xs font-bold text-slate-500 uppercase">Activity Timeline</h4>
-            <span className="text-[10px] text-slate-400">({filtered.length} items)</span>
-          </div>
-          <button
-            onClick={() => { setShowAdd(!showAdd); setError(""); }}
-            className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition"
-          >
-            {showAdd ? "Cancel" : "+ Log Activity"}
-          </button>
+      {/* ══════════════════════════════════════════════════ */}
+      {/* ACTIVITY TIMELINE — filter + entries              */}
+      {/* ══════════════════════════════════════════════════ */}
+      <div className="bg-white border-2 border-slate-200 rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-sm font-black text-slate-700 uppercase">Activity Timeline</h4>
+          <span className="text-xs text-slate-400 font-semibold">{filtered.length} entries</span>
         </div>
 
-        {/* Add form */}
-        {showAdd && (
-          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="grid grid-cols-2 gap-3 mb-3">
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Type</label>
-                <select
-                  value={form.noteType}
-                  onChange={(e) => setForm({ ...form, noteType: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                >
-                  {NOTE_TYPES.map((nt) => (
-                    <option key={nt} value={nt}>{nt.replace("_", " ")}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Contact / Person</label>
-                <input
-                  type="text"
-                  value={form.contactName}
-                  onChange={(e) => setForm({ ...form, contactName: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                  placeholder="Who was this with?"
-                />
-              </div>
-            </div>
-            <textarea
-              value={form.content}
-              onChange={(e) => setForm({ ...form, content: e.target.value })}
-              rows={4}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="What happened? Meeting notes, call summary, discussion points..."
-              autoFocus
-            />
-            {error && <p className="text-xs text-red-600 mb-2">{error}</p>}
-            <div className="flex gap-2">
-              <button
-                onClick={handleAddNote}
-                disabled={saving || !form.content.trim()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 transition"
-              >
-                {saving ? "Saving..." : "Save"}
-              </button>
-              <button
-                onClick={() => setShowAdd(false)}
-                className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50 transition"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Filter tabs */}
-        <div className="flex gap-1 mb-3 border-b border-slate-100 pb-2">
+        <div className="flex gap-2 mb-5 pb-3 border-b border-slate-100">
           {[
-            { key: "all", label: "All" },
-            { key: "notes", label: "Notes" },
-            { key: "calls", label: "Calls" },
-            { key: "outreach", label: "Outreach" },
-            { key: "meetings", label: "Meetings" },
+            { key: "all", label: "All", count: timeline.length },
+            { key: "notes", label: "Notes", count: timeline.filter(i => i.type === "note" && i.subtype !== "CALL").length },
+            { key: "calls", label: "Calls", count: timeline.filter(i => i.type === "note" && i.subtype === "CALL").length },
+            { key: "outreach", label: "Outreach", count: timeline.filter(i => i.type === "outreach").length },
+            { key: "meetings", label: "Meetings", count: timeline.filter(i => i.type === "meeting").length },
           ].map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition ${
                 filter === f.key
-                  ? "bg-blue-100 text-blue-700"
-                  : "text-slate-500 hover:bg-slate-50"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
               }`}
             >
-              {f.label}
+              {f.label} ({f.count})
             </button>
           ))}
         </div>
 
         {/* Timeline */}
         {filtered.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-slate-400 text-sm">No activity yet</p>
-            <p className="text-slate-300 text-xs mt-1">Log a call, meeting, or note to get started</p>
+          <div className="text-center py-16">
+            <p className="text-2xl mb-2">📋</p>
+            <p className="text-slate-400 font-semibold">No activity yet</p>
+            <p className="text-slate-300 text-sm mt-1">Log a call, meeting, or note above to get started</p>
           </div>
         ) : (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {filtered.map((item) => {
               const cfg = getConfig(item);
               const dateStr = item.date ? new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
               const timeStr = item.date ? new Date(item.date).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "";
 
               return (
-                <div key={`${item.type}-${item.id}`} className="group flex gap-3 p-3 rounded-lg hover:bg-slate-50 transition">
+                <div key={`${item.type}-${item.id}`} className="group flex gap-4 p-4 rounded-xl border border-transparent hover:bg-slate-50 hover:border-slate-200 transition">
                   {/* Icon */}
-                  <div className="shrink-0 mt-0.5">
-                    <span className="text-base">{cfg.icon}</span>
+                  <div className={`w-10 h-10 ${cfg.bg} rounded-xl flex items-center justify-center shrink-0`}>
+                    <span className="text-lg">{cfg.icon}</span>
                   </div>
+
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${cfg.bg} ${cfg.color}`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${cfg.bg} ${cfg.color}`}>
                         {cfg.label}
                       </span>
                       {item.contactName && (
-                        <span className="text-xs text-slate-600 font-semibold">{item.contactName}</span>
+                        <span className="text-xs text-slate-700 font-bold">{item.contactName}</span>
                       )}
                       {item.user?.name && (
-                        <span className="text-[10px] text-slate-400">by {item.user.name}</span>
+                        <span className="text-[11px] text-slate-400">by {item.user.name}</span>
                       )}
                       {item.status && (
-                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                        <span className={`px-2 py-0.5 rounded-lg text-[9px] font-bold ${
                           item.status === "sent" ? "bg-green-100 text-green-700" :
-                          item.status === "draft" ? "bg-slate-100 text-slate-500" :
                           item.status === "COMPLETED" ? "bg-green-100 text-green-700" :
                           "bg-slate-100 text-slate-500"
                         }`}>
                           {item.status}
                         </span>
                       )}
-                      <span className="text-[10px] text-slate-400 ml-auto shrink-0">{dateStr} {timeStr}</span>
+                      <span className="text-[11px] text-slate-400 ml-auto shrink-0">{dateStr} · {timeStr}</span>
                     </div>
 
-                    {/* Meeting title */}
                     {item.type === "meeting" && item.title && (
-                      <p className="text-sm font-semibold text-slate-800 mb-0.5">{item.title}</p>
+                      <p className="text-sm font-bold text-slate-800 mb-1">{item.title}</p>
                     )}
 
-                    {/* Outreach subject */}
                     {item.type === "outreach" && item.subject && (
-                      <p className="text-sm font-semibold text-slate-800 mb-0.5">{item.subject}</p>
+                      <p className="text-sm font-bold text-slate-800 mb-1">{item.subject}</p>
                     )}
 
-                    {/* Content */}
                     {item.content && (
-                      <p className="text-sm text-slate-700 whitespace-pre-wrap">{item.content}</p>
+                      <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{item.content}</p>
                     )}
 
-                    {/* Meeting extras */}
                     {item.type === "meeting" && (
-                      <div className="flex gap-3 mt-1">
-                        {item.location && <span className="text-[10px] text-slate-500">📍 {item.location}</span>}
+                      <div className="flex gap-3 mt-2">
+                        {item.location && <span className="text-xs text-slate-500">📍 {item.location}</span>}
                         {item.teamsLink && (
-                          <a href={item.teamsLink} target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-600 hover:underline">
+                          <a href={item.teamsLink} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">
                             Join Teams
                           </a>
                         )}
                       </div>
                     )}
 
-                    {/* Outreach extras */}
                     {item.type === "outreach" && item.toAddress && (
-                      <p className="text-[10px] text-slate-400 mt-0.5">To: {item.toAddress}</p>
+                      <p className="text-xs text-slate-400 mt-1">To: {item.toAddress}</p>
                     )}
                   </div>
 
@@ -394,7 +400,7 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
                   {item.type === "note" && (
                     <button
                       onClick={() => handleDeleteNote(item.id)}
-                      className="text-xs text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                      className="text-xs text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 self-start mt-1"
                     >
                       Delete
                     </button>

@@ -371,6 +371,86 @@ export async function notifyLowInventory(params: {
   );
 }
 
+// ─── CRM Activity Notifications ───
+
+/**
+ * Notify all entity managers when CRM activity is logged (note, call, email, meeting, etc.)
+ * Uses EntityManager table for multi-manager support, falls back to salesRepId.
+ */
+export async function notifyCRMActivity(params: {
+  entityType: "BRAND" | "FACTORY";
+  entityId: string;
+  entityName: string;
+  activityType: string; // NOTE, CALL, EMAIL, MEETING, TASK, FOLLOW_UP
+  content: string;
+  contactName?: string;
+  loggedByUserId?: string;
+  loggedByName?: string;
+}) {
+  try {
+    const { entityType, entityId, activityType, content, contactName, loggedByUserId, loggedByName } = params;
+    const entityName = params.entityName || "Unknown";
+    const typeLower = entityType.toLowerCase();
+    const link = `/${typeLower === "brand" ? "brands" : "factories"}/${entityId}`;
+
+    // 1. Get all entity managers from EntityManager table
+    const managers = await prisma.entityManager.findMany({
+      where: { entityType, entityId },
+      select: { userId: true },
+    });
+    const managerIds = new Set(managers.map((m: any) => m.userId));
+
+    // 2. Fallback: get salesRepId from brand/factory if no EntityManagers exist
+    if (managerIds.size === 0) {
+      if (entityType === "BRAND") {
+        const brand = await prisma.brand.findUnique({
+          where: { id: entityId },
+          select: { salesRepId: true },
+        });
+        if (brand?.salesRepId) managerIds.add(brand.salesRepId);
+      } else if (entityType === "FACTORY") {
+        const factory = await prisma.factory.findUnique({
+          where: { id: entityId },
+          select: { salesRepId: true },
+        });
+        if (factory?.salesRepId) managerIds.add(factory.salesRepId);
+      }
+    }
+
+    // 3. Also notify admins
+    const adminIds = await getAdminIds();
+    for (const id of adminIds) managerIds.add(id);
+
+    // 4. Remove the person who logged the activity (they don't need a notification about their own action)
+    if (loggedByUserId) managerIds.delete(loggedByUserId);
+
+    if (managerIds.size === 0) return;
+
+    // 5. Build notification
+    const activityLabel = activityType.replace(/_/g, " ").toLowerCase();
+    const who = loggedByName || "Someone";
+    const contactNote = contactName ? ` with ${contactName}` : "";
+    const preview = content.length > 100 ? content.slice(0, 100) + "..." : content;
+
+    const title = `CRM ${activityLabel}: ${entityName}`;
+    const message = `${who} logged a ${activityLabel}${contactNote} on ${entityName}. "${preview}"`;
+
+    await Promise.all(
+      Array.from(managerIds).map((userId) =>
+        createNotification({
+          userId,
+          type: "BRAND_ACTIVITY",
+          title,
+          message,
+          link,
+        })
+      )
+    );
+  } catch (err) {
+    console.error("[CRM-NOTIFY] Error:", err);
+  }
+}
+
 /**
  * Notify account managers when a brand or factory user logs into Atlas.
  * - Brand users: notify brand's salesRep (account manager)

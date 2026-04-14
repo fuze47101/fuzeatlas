@@ -34,7 +34,7 @@ export default function BrandDetailPage() {
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState<any>({});
   const [users, setUsers] = useState<any[]>([]);
-  const [tab, setTab] = useState<"details"|"contacts"|"activity"|"products"|"fabrics"|"factories"|"submissions"|"sows"|"notes"|"tests"|"research">("details");
+  const [tab, setTab] = useState<"details"|"contacts"|"activity"|"products"|"fabrics"|"factories"|"submissions"|"sows"|"tests"|"research">("details");
   const [research, setResearch] = useState<any>(null);
   const [researchDate, setResearchDate] = useState<string | null>(null);
   const [researching, setResearching] = useState(false);
@@ -325,18 +325,17 @@ export default function BrandDetailPage() {
 
       {/* Tabs */}
       <div className="flex border-b border-slate-200 mb-4 overflow-x-auto">
-        {(["details","contacts","products","fabrics","factories","submissions","tests","sows","notes","research"] as const).map(tabKey => {
+        {(["details","activity","contacts","products","fabrics","factories","submissions","tests","sows","research"] as const).map(tabKey => {
           const tabLabels: Record<string, string> = {
             details: t.brandTabs.details,
+            activity: "CRM",
             contacts: t.brandTabs.contacts,
-            activity: "CRM Activity",
             products: t.brandTabs.products,
             fabrics: t.brandTabs.fabrics,
             factories: t.brands.factories || "Factories",
             submissions: t.brandTabs.submissions,
             tests: t.nav.testResults || "Tests",
             sows: t.brandTabs.sows,
-            notes: t.brandTabs.notes || "Notes",
             research: t.brandTabs.research,
           };
           return (
@@ -646,11 +645,6 @@ export default function BrandDetailPage() {
       {/* ── CRM Activity Tab ── */}
       {tab === "activity" && (
         <ActivityFeed entityType="brand" entityId={id as string} />
-      )}
-
-      {/* ── Notes Tab (Enhanced with CRUD) ── */}
-      {tab === "notes" && (
-        <NotesTab brandId={id as string} notes={brand.notes} onUpdate={(notes: any[]) => setBrand({ ...brand, notes, _count: { ...brand._count, notes: notes.length } })} t={t} />
       )}
 
       {/* ── Research Tab ── */}

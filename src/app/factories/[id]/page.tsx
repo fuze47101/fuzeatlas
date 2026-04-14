@@ -23,7 +23,7 @@ export default function FactoryDetailPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState<any>({});
-  const [tab, setTab] = useState<"details"|"discovery"|"brands"|"fabrics"|"submissions"|"tests"|"contacts"|"notes"|"activity">("details");
+  const [tab, setTab] = useState<"details"|"discovery"|"activity"|"brands"|"fabrics"|"submissions"|"tests"|"contacts">("details");
   const [users, setUsers] = useState<any[]>([]);
   // Tests state
   const [testRuns, setTestRuns] = useState<any[]>([]);
@@ -180,17 +180,16 @@ export default function FactoryDetailPage() {
 
       {/* Tabs */}
       <div className="flex border-b border-slate-200 mb-4 overflow-x-auto">
-        {(["details","discovery","brands","fabrics","submissions","tests","contacts","notes","activity"] as const).map(tabName => {
+        {(["details","activity","discovery","brands","fabrics","submissions","tests","contacts"] as const).map(tabName => {
           const tabLabels: Record<string, string> = {
             details: t.brandTabs.details,
+            activity: "CRM",
             discovery: "Discovery Profile",
             brands: t.factories.brands,
             fabrics: t.factories.fabrics,
             submissions: t.dashboard.submissions || "Submissions",
             tests: t.nav.testResults || "Tests",
             contacts: t.contacts.title,
-            notes: t.brandTabs.notes || "Notes",
-            activity: "CRM Activity",
           };
           return (
             <button key={tabName} onClick={() => setTab(tabName)}
@@ -393,11 +392,6 @@ export default function FactoryDetailPage() {
       {/* ── Contacts Tab ── */}
       {tab === "contacts" && (
         <FactoryContactsTab factoryId={id as string} contacts={factory.contacts} onUpdate={(contacts: any[]) => setFactory({ ...factory, contacts, _count: { ...factory._count, contacts: contacts.length } })} t={t} />
-      )}
-
-      {/* ── Notes Tab (NEW) ── */}
-      {tab === "notes" && (
-        <FactoryNotesTab factoryId={id as string} t={t} />
       )}
 
       {/* ── CRM Activity Tab ── */}
