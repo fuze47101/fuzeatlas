@@ -202,9 +202,14 @@ export async function GET(req: Request) {
       };
     });
 
-    // Sort: enriched contacts first, then by pipeline stage (production first), then name
+    // Sort: relevance first (high→medium→low→none), then enriched, then stage, then A-Z
+    const RELEVANCE_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2, none: 3 };
     pipeline.sort((a, b) => {
-      // Enriched first
+      // Relevance rating first — the brands you rated highest show up top
+      const relA = RELEVANCE_ORDER[a.fuzeRelevance || "none"] ?? 3;
+      const relB = RELEVANCE_ORDER[b.fuzeRelevance || "none"] ?? 3;
+      if (relA !== relB) return relA - relB;
+      // Then enriched contacts (has email/linkedin)
       if (a.hasEnrichedContacts && !b.hasEnrichedContacts) return -1;
       if (!a.hasEnrichedContacts && b.hasEnrichedContacts) return 1;
       // Then by stage priority (production > testing > lead)

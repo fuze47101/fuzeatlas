@@ -90,7 +90,7 @@ export default function BrandPipelinePage() {
   const [stageFilter, setStageFilter] = useState("all");
   const [relevanceFilter, setRelevanceFilter] = useState("all");
   const [viewFilter, setViewFilter] = useState("actionable");
-  const [sortBy, setSortBy] = useState<"stage" | "name" | "activity" | "contacts">("stage");
+  const [sortBy, setSortBy] = useState<"relevance" | "stage" | "name" | "activity" | "contacts">("relevance");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   // Quick note form
@@ -173,11 +173,21 @@ export default function BrandPipelinePage() {
   };
 
   // Sort
+  const RELEVANCE_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2, none: 3 };
   const sorted = [...pipeline].sort((a, b) => {
+    if (sortBy === "relevance") {
+      // Relevance tier first, then enriched, then A-Z within tier
+      const relA = RELEVANCE_ORDER[a.fuzeRelevance || "none"] ?? 3;
+      const relB = RELEVANCE_ORDER[b.fuzeRelevance || "none"] ?? 3;
+      if (relA !== relB) return relA - relB;
+      if (a.hasEnrichedContacts && !b.hasEnrichedContacts) return -1;
+      if (!a.hasEnrichedContacts && b.hasEnrichedContacts) return 1;
+      return a.name.localeCompare(b.name);
+    }
     if (sortBy === "name") return a.name.localeCompare(b.name);
     if (sortBy === "activity") return (a.daysSinceActivity ?? 999) - (b.daysSinceActivity ?? 999);
     if (sortBy === "contacts") return b.contactCount - a.contactCount;
-    return 0; // stage sort is default from API
+    return 0; // stage sort from API
   });
 
   if (loading) {
@@ -299,6 +309,7 @@ export default function BrandPipelinePage() {
           onChange={(e) => setSortBy(e.target.value as any)}
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
         >
+          <option value="relevance">Sort: Relevance</option>
           <option value="stage">Sort: Stage</option>
           <option value="name">Sort: A-Z</option>
           <option value="activity">Sort: Last Activity</option>
