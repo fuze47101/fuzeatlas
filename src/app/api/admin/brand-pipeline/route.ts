@@ -26,39 +26,43 @@ export async function GET(req: Request) {
 
     // Build where clause
     const where: any = {};
+    const conditions: any[] = [];
 
-    // Only show validated brands by default (exclude irrelevant/dead/unknown)
+    // View filter — pipeline excludes junk; validated = verified only
     if (view === "pipeline") {
-      where.OR = [
-        { validationStatus: "verified" },
-        { validationStatus: null }, // unvalidated brands still show
-        { pipelineStage: { notIn: ["ARCHIVE"] } },
-      ];
-      // Exclude archived
-      where.pipelineStage = { not: "ARCHIVE" };
+      conditions.push({ pipelineStage: { not: "ARCHIVE" } });
+      conditions.push({
+        OR: [
+          { validationStatus: "verified" },
+          { validationStatus: null },        // unvalidated = show
+          { validationStatus: "pending" },    // in-progress = show
+        ],
+      });
     } else if (view === "validated") {
-      where.validationStatus = "verified";
-      where.pipelineStage = { not: "ARCHIVE" };
+      conditions.push({ validationStatus: "verified" });
+      conditions.push({ pipelineStage: { not: "ARCHIVE" } });
     }
+    // view === "all" has no conditions
 
     if (stage && stage !== "all") {
-      where.pipelineStage = stage;
+      conditions.push({ pipelineStage: stage });
     }
 
     if (relevance && relevance !== "all") {
-      where.fuzeRelevance = relevance;
+      conditions.push({ fuzeRelevance: relevance });
     }
 
     if (search) {
-      where.AND = [
-        ...(where.AND || []),
-        {
-          OR: [
-            { name: { contains: search, mode: "insensitive" } },
-            { contacts: { some: { name: { contains: search, mode: "insensitive" } } } },
-          ],
-        },
-      ];
+      conditions.push({
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { contacts: { some: { name: { contains: search, mode: "insensitive" } } } },
+        ],
+      });
+    }
+
+    if (conditions.length > 0) {
+      where.AND = conditions;
     }
 
     // Fetch brands with contacts, last note, and counts
@@ -111,8 +115,9 @@ export async function GET(req: Request) {
           },
         },
         // Health/engagement data
-        engagementScore: true,
-        engagementTrend: true,
+        engagement: {
+          select: { overallScore: true, engagementTrend: true },
+        },
         createdAt: true,
         dateOfInitialContact: true,
       },
@@ -152,8 +157,8 @@ export async function GET(req: Request) {
         textileCategory: b.textileCategory,
         salesRep: b.salesRep?.name || null,
         salesRepId: b.salesRep?.id || null,
-        engagementScore: b.engagementScore,
-        engagementTrend: b.engagementTrend,
+        engagementScore: b.engagement?.overallScore || null,
+        engagementTrend: b.engagement?.engagementTrend || null,
         primaryContact,
         contacts: b.contacts,
         contactCount: b._count.contacts,
