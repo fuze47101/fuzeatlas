@@ -321,6 +321,7 @@ export default function Sidebar() {
           { href: "/fabrics", label: t.nav.fabrics, icon: "🧵" },
           { href: "/fabrics/intake", label: t.nav.fabricIntake, icon: "📥" },
           { href: "/recipes", label: t.nav.recipeLibrary, icon: "📖" },
+          { href: "/admin/recipe-calculator", label: "Recipe Calculator", icon: "🧪" },
           { href: "/test-requests", label: t.nav.testRequests, icon: "📝", badge: pendingCounts.testRequests },
           { href: "/tests", label: t.nav.testResults, icon: "🧪" },
           { href: "/admin/ongoing-tests", label: t.nav.ongoingTests, icon: "🔬" },

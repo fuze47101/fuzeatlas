@@ -780,6 +780,7 @@ model Fabric {
   sampleTrials     SampleTrialRequest[] @relation("FabricTrials")
   fuzeConsumptions FuzeConsumption[] @relation("ConsumptionFabric")
   fuzeOrders       FuzeOrder[]      @relation("OrderFabric")
+  recipeBenchTests RecipeBenchTest[] @relation("FabricRecipeBenchTests")
   shipments SampleShipment[] @relation("FabricShipments")
 
   createdAt DateTime @default(now())
@@ -1742,6 +1743,89 @@ model ShipmentEvent {
 // ─────────────────────────────────────────────
 // FABRIC RECIPE LIBRARY
 // ─────────────────────────────────────────────
+
+// ─────────────────────────────────────────────
+// RECIPE BENCH TEST
+// Lab entries from the FUZE internal lab — raw measurements from
+// bench tests + auto-calculated dilution recipes for each of the
+// four FUZE tiers. Once a bench test is validated it can graduate
+// into a published FabricRecipe.
+// ─────────────────────────────────────────────
+model RecipeBenchTest {
+  id              String   @id @default(cuid())
+  testNumber      String   @unique  // FUZE-BT-YYYYMMDD-XXXX
+  testDate        DateTime @default(now())
+
+  // What was tested
+  fabricId        String?
+  fabric          Fabric?  @relation("FabricRecipeBenchTests", fields: [fabricId], references: [id])
+  fabricLabel     String   // free-text label if no Fabric linked
+  fabricType      String?  // "Knit" | "Woven" | "Nonwoven"
+  fiberContent    String?  // "100% Cotton", "65/35 Poly-Cotton"
+  fabricWeightGsm Float?
+
+  // Method
+  applicationMethod String  // "PAD_DRY_CURE" | "EXHAUST" | "SPRAY" | "FOAM"
+  squeezePressure   Float?  // bar or psi (pad)
+  dryingTemp        Float?  // °C
+  dryingTime        Float?  // minutes
+  curingTemp        Float?  // °C
+  curingTime        Float?  // minutes
+  liquorRatio       String? // "1:10" for exhaust
+
+  // Raw measurements (grams)
+  drySampleWeight       Float   // dry fabric before any wetting
+  wetAfterBathWeight    Float   // dry-to-wet pad: dry → bath → pad → weigh
+  preWetSampleWeight    Float?  // wet-to-wet pad: pre-wet the fabric first
+  wetAfterBathFromPreWet Float? // then dip in bath & pad, weigh
+
+  // Calculated outputs (dry-to-wet)
+  pickupDryToWetPct     Float?  // %
+  // Calculated outputs (wet-to-wet, optional)
+  pickupWetToWetPct     Float?  // %
+  preWetMoisturePct     Float?  // % of dry
+
+  // For each tier, bath concentration needed (dry-to-wet basis):
+  // bath_mg_per_L = (tier_mg_per_kg) / (pickupDryToWetPct / 100 / 1000) → simpler: divide active goal by pickup fraction
+  // Then dilution ratio = 30 / bath_mg_per_L (since stock is 30 mg/L)
+  f1BathMgPerL          Float?
+  f2BathMgPerL          Float?
+  f3BathMgPerL          Float?
+  f4BathMgPerL          Float?
+  f1DilutionRatio       Float?  // parts water per 1 part FUZE stock
+  f2DilutionRatio       Float?
+  f3DilutionRatio       Float?
+  f4DilutionRatio       Float?
+  f1FuzeMlPerLBath      Float?  // mL FUZE per L of final bath
+  f2FuzeMlPerLBath      Float?
+  f3FuzeMlPerLBath      Float?
+  f4FuzeMlPerLBath      Float?
+
+  // Production scaling (optional)
+  targetProductionKg    Float?  // kg of fabric planned for a production run
+  f1FuzeLitersForTarget Float?
+  f2FuzeLitersForTarget Float?
+  f3FuzeLitersForTarget Float?
+  f4FuzeLitersForTarget Float?
+  targetBathVolumeL     Float?  // total bath volume needed for production (L)
+
+  // Stock concentration reference (should be 30 mg/L, but snapshot in case it changes)
+  stockMgPerL           Float   @default(30)
+
+  // Graduation into a published recipe
+  graduatedRecipeId     String?
+  qcPassed              Boolean @default(true)
+  notes                 String?
+
+  createdById           String?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([fabricId])
+  @@index([applicationMethod])
+  @@index([testDate])
+}
 
 model FabricRecipe {
   id String @id @default(cuid())
