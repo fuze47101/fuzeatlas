@@ -37,7 +37,7 @@ const EMAIL_TEMPLATES = {
     label: "Warm Intro",
     subject: (c: any) => `FUZE Antimicrobial for ${c.brand?.name || "Your Brand"}`,
     build: (c: any) =>
-      `Hi ${c.firstName || "there"},\n\nI'm Andrew Peterson, founder of FUZE Biotech. We've developed an antimicrobial textile treatment that's fundamentally different from what's on the market today.\n\nFUZE uses a metamaterial suspended in ultrapure water — no binders, no curing step, no wastewater chemicals. It integrates into existing dyebath, pad-dry-cure, or spray processes and delivers antimicrobial performance proven to 100+ wash cycles.\n\nI'd love to explore whether this could be a fit for ${c.brand?.name || "your product line"}.\n\nWould you be open to a quick call this week?\n\nBest,\nAndrew Peterson\nCEO, FUZE Biotech\n(877) 386-3608\nandrew@fuzebiotech.com`,
+      `Hi ${c.firstName || "there"},\n\nI'm Andrew Peterson, founder of FUZE Biotech. We've developed an antimicrobial textile treatment that's fundamentally different from what's on the market today.\n\nFUZE uses a metamaterial suspended in ultrapure water — no binders, no curing step, no wastewater chemicals. It integrates into existing dyebath, pad-dry-cure, or spray processes and delivers antimicrobial performance proven to 100+ wash cycles.\n\nI'd love to explore whether this could be a fit for ${c.brand?.name || "your product line"}.\n\nWould you be open to a quick call this week?\n\nBest,\nAndrew Peterson\nCEO, FUZE Biotech\n(877) 386-3608\nandrew@fuze47.com`,
   },
   sustainability: {
     label: "Sustainability Angle",

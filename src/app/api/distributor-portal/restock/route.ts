@@ -129,7 +129,7 @@ export async function POST(req: Request) {
     if (pricePerLiter === 0) {
       return NextResponse.json({
         ok: false,
-        error: "No FUZE pricing set for this distributor. Please contact FUZE HQ (andrew@fuzebiotech.com) to establish pricing.",
+        error: "No FUZE pricing set for this distributor. Please contact FUZE HQ (andrew@fuze47.com) to establish pricing.",
       }, { status: 400 });
     }
 

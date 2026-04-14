@@ -179,7 +179,7 @@ export default function Sidebar() {
     ? { href: "/distributor-portal", label: t.nav.dashboard, icon: "📊" }
     : isLabUser
     ? { href: "/lab-portal", label: t.nav.dashboard, icon: "📊" }
-    : { href: "/dashboard", label: t.nav.dashboard, icon: "📊" };
+    : { href: "/home", label: "Home", icon: "🏠" };
 
   // Build groups based on role
   let groups: NavGroup[] = [];
@@ -281,14 +281,19 @@ export default function Sidebar() {
       },
     ];
   } else {
+    // ═══════════════════════════════════════════════════════════════
+    // INTERNAL USERS (Admin / Employee / Sales) — 6 MODULES
+    // ═══════════════════════════════════════════════════════════════
     groups = [
       {
-        label: "Sales & Pipeline",
+        label: "🎯 Business Development",
         items: [
           ...(isInternal
             ? [
-                { href: "/admin/brand-pipeline", label: "Brand Pipeline", icon: "🔥" },
+                { href: "/admin/brand-pipeline", label: "Brand Pipeline (Leads)", icon: "🔥" },
+                { href: "/admin/accounts", label: "Accounts", icon: "⭐" },
                 { href: "/admin/brand-discovery", label: "Brand Intelligence", icon: "🌎" },
+                { href: "/admin/conversion-tracking", label: "Sample → Production", icon: "🔄" },
                 { href: "/pipeline", label: "Deals & Revenue", icon: "💰" },
                 { href: "/invoices", label: "Invoices", icon: "🧾" },
               ]
@@ -298,44 +303,53 @@ export default function Sidebar() {
         ],
       },
       {
-        label: "Products & Testing",
+        label: "📦 Operations",
+        items: [
+          { href: "/dashboard", label: "KPI Dashboard", icon: "📊" },
+          { href: "/admin/orders-dashboard", label: "Orders Dashboard", icon: "📦" },
+          { href: "/admin/orders", label: "Order Management", icon: "📦" },
+          { href: "/admin/distributor-restock", label: "Distributor Restocks", icon: "💧" },
+          { href: "/admin/worldwide-inventory", label: "Worldwide Inventory", icon: "🌍" },
+          { href: "/admin/consumption", label: "Consumption & Reorder", icon: "📈" },
+          { href: "/shipments", label: "Sample Tracking", icon: "📦" },
+          { href: "/shipping-docs", label: "Shipping Docs", icon: "🚢" },
+        ],
+      },
+      {
+        label: "🧪 Quality & Labs",
         items: [
           { href: "/fabrics", label: t.nav.fabrics, icon: "🧵" },
           { href: "/fabrics/intake", label: "Fabric Intake", icon: "📥" },
           { href: "/recipes", label: "Recipe Library", icon: "📖" },
-          { href: "/factories", label: t.nav.factories, icon: "🏭" },
           { href: "/test-requests", label: "Test Requests", icon: "📝", badge: pendingCounts.testRequests },
           { href: "/tests", label: t.nav.testResults, icon: "🧪" },
+          { href: "/admin/ongoing-tests", label: "Ongoing Tests Tracker", icon: "🔬" },
+          { href: "/admin/sample-trials", label: "Sample Trials", icon: "🧪" },
           { href: "/labs", label: t.nav.labDirectory || "Lab Directory", icon: "🔬" },
           ...(isAdmin ? [{ href: "/admin/test-catalog", label: "Test Catalog & Pricing", icon: "💲" }] : []),
         ],
       },
       {
-        label: "Operations",
+        label: "🤝 Partners",
         items: [
-          { href: "/admin/orders-dashboard", label: "Orders Dashboard", icon: "📊" },
-          { href: "/admin/orders", label: "Order Management", icon: "📦" },
-          { href: "/admin/worldwide-inventory", label: "Worldwide Inventory", icon: "🌍" },
-          { href: "/admin/consumption", label: "Consumption & Reorder", icon: "📊" },
-          { href: "/admin/ongoing-tests", label: "Ongoing Tests Tracker", icon: "🔬" },
-          { href: "/admin/esg-reports", label: "ESG Impact Reports", icon: "🌱" },
-          { href: "/admin/conversion-tracking", label: "Sample → Production", icon: "🔄" },
-          { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
-          { href: "/shipping-docs", label: "Shipping Docs", icon: "🚢" },
-          { href: "/meetings", label: "Meetings", icon: "📅" },
-          { href: "/shipments", label: "Sample Tracking", icon: "📦" },
-          { href: "/reports", label: t.nav.weeklySummary || "Weekly Summary", icon: "📈" },
+          { href: "/brands", label: "Brands", icon: "👕" },
+          { href: "/factories", label: t.nav.factories, icon: "🏭" },
+          { href: "/admin/distributors", label: "Distributor Network", icon: "🌍" },
+          { href: "/admin/distributor-docs", label: "Distributor Docs", icon: "📂" },
         ],
       },
       {
-        label: "Tools & Resources",
+        label: "📚 Resources & Docs",
         items: [
           { href: "/compliance-library", label: "Document Center", icon: "📋" },
-          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
+          { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
+          { href: "/meetings", label: "Meetings", icon: "📅" },
+          { href: "/reports", label: t.nav.weeklySummary || "Weekly Summary", icon: "📈" },
           { href: "/admin/competitor-pricing", label: "Market Landscape", icon: "📊" },
           { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
           { href: "/pricing/calculator", label: "Application Calculator", icon: "🧮" },
-          { href: "/sustainability", label: "Sustainability", icon: "🌍" },
+          { href: "/sustainability", label: "Sustainability", icon: "🌱" },
+          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
         ],
       },
     ];
@@ -343,7 +357,7 @@ export default function Sidebar() {
     // Admin group
     if (isAdmin) {
       groups.push({
-        label: "Admin",
+        label: "⚙️ Admin",
         items: [
           { href: "/notifications", label: "Notifications", icon: "🔔" },
           { href: "/settings/users", label: "User Management", icon: "👥" },
@@ -351,10 +365,6 @@ export default function Sidebar() {
           { href: "/settings/access-requests", label: "Access Requests", icon: "📩", badge: pendingCounts.accessRequests },
           { href: "/settings/exchange-rates", label: "Exchange Rates", icon: "💱" },
           { href: "/settings/audit-log", label: "Audit Log", icon: "📜" },
-          { href: "/admin/distributors", label: "Distributor Network", icon: "🌍" },
-          { href: "/admin/distributor-restock", label: "Restock Management", icon: "💧" },
-          { href: "/admin/distributor-docs", label: "Distributor Docs", icon: "📂" },
-          { href: "/admin/sample-trials", label: "Sample Trials", icon: "🧪" },
         ],
       });
     }

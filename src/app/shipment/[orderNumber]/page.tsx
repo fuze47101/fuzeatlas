@@ -61,7 +61,7 @@ export default async function PublicShipmentPage({
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-bold text-slate-900 mb-2">Shipment Not Found</h1>
           <p className="text-slate-600">We couldn't find order {orderNumber}.</p>
-          <p className="text-sm text-slate-500 mt-4">If you received this QR code on a FUZE shipment, contact andrew@fuzebiotech.com.</p>
+          <p className="text-sm text-slate-500 mt-4">If you received this QR code on a FUZE shipment, contact andrew@fuze47.com.</p>
         </div>
       </div>
     );
@@ -227,7 +227,7 @@ export default async function PublicShipmentPage({
         {/* Footer */}
         <div className="text-center text-xs text-slate-400 py-4">
           <p>FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA</p>
-          <p className="mt-1">Questions? <a href="mailto:andrew@fuzebiotech.com" className="text-[#00b4c3]">andrew@fuzebiotech.com</a></p>
+          <p className="mt-1">Questions? <a href="mailto:andrew@fuze47.com" className="text-[#00b4c3]">andrew@fuze47.com</a></p>
         </div>
       </div>
     </div>

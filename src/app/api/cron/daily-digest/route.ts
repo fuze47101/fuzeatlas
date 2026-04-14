@@ -14,7 +14,7 @@ import { sendEmail } from "@/lib/email";
  */
 
 const CRON_SECRET = process.env.CRON_SECRET;
-const DIGEST_RECIPIENTS = ["andrew@801inc.com", "andrew@fuzebiotech.com"];
+const DIGEST_RECIPIENTS = ["andrew@801inc.com", "andrew@fuze47.com"];
 
 export async function GET(req: Request) {
   // Auth: Vercel cron or manual trigger with secret

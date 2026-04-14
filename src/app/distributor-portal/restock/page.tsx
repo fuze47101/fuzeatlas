@@ -199,7 +199,7 @@ export default function DistributorRestockPage() {
             ) : (
               <>
                 <p className="text-2xl font-black">Pricing Not Set</p>
-                <p className="text-sm text-white/90 mt-1">Contact andrew@fuzebiotech.com to establish your pricing</p>
+                <p className="text-sm text-white/90 mt-1">Contact andrew@fuze47.com to establish your pricing</p>
               </>
             )}
           </div>
