@@ -46,8 +46,13 @@ function computeRecipe(input: any) {
   }
 
   // Pick which pickup to use for each tier's bath recipe.
-  // If wet-to-wet is provided, prefer it; otherwise use dry-to-wet.
-  const pickup = out.pickupWetToWetPct || out.pickupDryToWetPct;
+  // Prefer wet-to-wet ONLY if positive; otherwise fall back to dry-to-wet.
+  // A negative wet-to-wet means pre-wet was over-saturated and the pad squeezed
+  // more water out than the FUZE bath added — the number is real but unsafe for
+  // dilution math, so we use dry-to-wet instead.
+  const w2wValid = out.pickupWetToWetPct !== undefined && out.pickupWetToWetPct > 0;
+  const pickup = w2wValid ? out.pickupWetToWetPct : out.pickupDryToWetPct;
+  out.pickupUsedBasis = w2wValid ? "wet-to-wet" : "dry-to-wet";
 
   for (const [tier, mgPerKg] of Object.entries(TIER_MG_PER_KG)) {
     if (!pickup || pickup <= 0) continue;

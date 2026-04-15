@@ -59,7 +59,15 @@ function computeRecipe(input: any) {
     out.pickupWetToWetPct = ((wetFromPreWet - preWet) / dry) * 100;
   }
 
-  const pickup = out.pickupWetToWetPct || out.pickupDryToWetPct;
+  // Wet-to-wet can legitimately come out negative when pre-wet is over-saturated
+  // and the pad squeezes more water out than the FUZE bath adds. If that happens,
+  // fall back to dry-to-wet so the dilution recipe is never based on a bad number.
+  const w2wValid = out.pickupWetToWetPct !== undefined && out.pickupWetToWetPct > 0;
+  const pickup = w2wValid ? out.pickupWetToWetPct : out.pickupDryToWetPct;
+  out.pickupUsedBasis = w2wValid ? "wet-to-wet" : "dry-to-wet";
+  if (out.pickupWetToWetPct !== undefined && out.pickupWetToWetPct <= 0) {
+    out.wetToWetFallbackReason = "Wet-to-wet ≤ 0 (pre-wet over-saturated) — using dry-to-wet.";
+  }
   for (const [tier, mgPerKg] of Object.entries(TIER_MG_PER_KG)) {
     if (!pickup || pickup <= 0) continue;
     const bathMgPerL = mgPerKg / (pickup / 100);
@@ -368,7 +376,11 @@ export default function RecipeCalculatorPage() {
   }
 
   const fmt = (n: any, p = 2) => (n === null || n === undefined || isNaN(n)) ? "—" : Number(n).toFixed(p);
-  const pickupUsed = calc.pickupWetToWetPct ?? calc.pickupDryToWetPct;
+  // Prefer wet-to-wet, but only when positive. Negative wet-to-wet happens when
+  // pre-wet was over-saturated — fall back to dry-to-wet so downstream dilutions are safe.
+  const pickupUsed = (calc.pickupWetToWetPct !== undefined && calc.pickupWetToWetPct > 0)
+    ? calc.pickupWetToWetPct
+    : calc.pickupDryToWetPct;
   const lineSpeed = (Number(form.vfdFrequencyHz) || 0) * HZ_TO_M_PER_MIN;
   const rpm = (Number(form.vfdFrequencyHz) || 0) * HZ_TO_RPM;
 
@@ -757,10 +769,15 @@ export default function RecipeCalculatorPage() {
                   </div>
                   <div>
                     <p className="text-xs font-bold uppercase text-white/60">Net wet-to-wet pickup</p>
-                    <p className="text-3xl font-black text-[#00b4c3]">{calc.pickupWetToWetPct.toFixed(1)}%</p>
-                    <p className="text-[10px] text-white/50">used for dilution calc</p>
+                    <p className={`text-3xl font-black ${calc.pickupWetToWetPct > 0 ? "text-[#00b4c3]" : "text-red-400"}`}>{calc.pickupWetToWetPct.toFixed(1)}%</p>
+                    <p className="text-[10px] text-white/50">{calc.pickupWetToWetPct > 0 ? "used for dilution calc" : "negative — using dry-to-wet instead"}</p>
                   </div>
                 </div>
+                {calc.pickupWetToWetPct <= 0 && (
+                  <div className="mt-3 p-2 bg-red-900/40 border border-red-400/40 rounded text-xs text-red-200">
+                    ⚠ Negative wet-to-wet pickup means the pad squeezed out more water than the FUZE bath added — pre-wet was over-saturated. Re-run with a lighter pre-wet (drain longer, or pad once before the bath) to get a valid wet-to-wet number. Dilutions below will use dry-to-wet instead.
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -851,7 +868,7 @@ export default function RecipeCalculatorPage() {
                 <span className="text-slate-600">VFD / Speed</span><span className="font-semibold font-mono">{form.vfdFrequencyHz} Hz · {lineSpeed.toFixed(2)} m/min</span>
                 <span className="text-slate-600">Dry weight</span><span className="font-semibold font-mono">{form.drySampleWeight} g</span>
                 <span className="text-slate-600">Wet weight</span><span className="font-semibold font-mono">{form.wetAfterBathWeight} g</span>
-                <span className="text-slate-600">Pickup used</span><span className="font-semibold font-mono text-[#00b4c3]">{fmt(pickupUsed, 1)}% ({calc.pickupWetToWetPct ? "wet-to-wet" : "dry-to-wet"})</span>
+                <span className="text-slate-600">Pickup used</span><span className="font-semibold font-mono text-[#00b4c3]">{fmt(pickupUsed, 1)}% ({calc.pickupUsedBasis || (calc.pickupWetToWetPct && calc.pickupWetToWetPct > 0 ? "wet-to-wet" : "dry-to-wet")})</span>
               </div>
             </div>
 
