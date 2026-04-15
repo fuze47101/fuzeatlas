@@ -197,6 +197,63 @@ export default function RecipeReportPage() {
           </section>
         )}
 
+        {/* WET-ON-WET PRODUCTION ADJUSTMENT */}
+        {pickupUsed && pickupUsed > 0 && (
+          <section className="mb-6">
+            <h2 className="font-black text-xs uppercase tracking-widest text-slate-500 mb-3">Wet-on-Wet Production Adjustment</h2>
+            <p className="text-xs text-slate-600 mb-3">
+              If your fabric enters the FUZE padder <strong>already moist</strong> from a prior process (wash, dye, desize), the pad still brings it to the same equilibrium pickup — but part of that mass is pre-existing water, not new FUZE. To hit the tier target, use a <strong>more concentrated bath</strong> based on your incoming residual moisture.
+              Effective pickup = measured dry-to-wet pickup ({fmt(pickupUsed, 1)}%) − incoming moisture.
+            </p>
+            <div className="border-2 border-slate-300 rounded-lg overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-100">
+                  <tr>
+                    <th className="text-left px-3 py-2 text-xs uppercase text-slate-600">Incoming moisture</th>
+                    <th className="text-right px-3 py-2 text-xs uppercase text-slate-600">Effective pickup</th>
+                    <th className="text-right px-3 py-2 text-xs uppercase text-slate-600">F1 bath · mL/L · 1:N</th>
+                    <th className="text-right px-3 py-2 text-xs uppercase text-slate-600">F2 bath · mL/L · 1:N</th>
+                    <th className="text-right px-3 py-2 text-xs uppercase text-slate-600">F3 bath · mL/L · 1:N</th>
+                    <th className="text-right px-3 py-2 text-xs uppercase text-slate-600">F4 bath · mL/L · 1:N</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[0, 10, 15, 20].map((r) => {
+                    const pEff = pickupUsed - r;
+                    const row = [1.0, 0.75, 0.5, 0.25].map((mg) => {
+                      if (pEff <= 0) return null;
+                      const bathConc = mg / (pEff / 100);
+                      const mlPerL = (bathConc / stock) * 1000;
+                      const ratio = stock / bathConc - 1;
+                      return { bathConc, mlPerL, ratio };
+                    });
+                    return (
+                      <tr key={r} className={`border-t border-slate-200 ${r === 0 ? "bg-slate-50" : ""}`}>
+                        <td className="px-3 py-2 font-mono font-bold">{r === 0 ? "0% (dry)" : `${r}%`}</td>
+                        <td className="px-3 py-2 text-right font-mono font-bold">{pEff > 0 ? fmt(pEff, 1) + "%" : "—"}</td>
+                        {row.map((v, i) => (
+                          <td key={i} className="px-3 py-2 text-right font-mono text-[#00b4c3] font-bold">
+                            {v ? (
+                              <>
+                                {fmt(v.bathConc, 2)} mg/L <span className="text-slate-500 text-[10px]">· {fmt(v.mlPerL, 1)} mL · 1:{fmt(v.ratio, 1)}</span>
+                              </>
+                            ) : (
+                              <span className="text-red-600">too wet</span>
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-[10px] text-slate-500 mt-1.5">
+              "Too wet" means incoming moisture is at or above the padder's equilibrium pickup — the fabric can't accept additional FUZE bath at that tier target. Dry the fabric further before treatment, or use a more concentrated bath (lower tier → higher mg/kg basis recipe).
+            </p>
+          </section>
+        )}
+
         {/* PAGE BREAK */}
         <div className="page-break" />
 

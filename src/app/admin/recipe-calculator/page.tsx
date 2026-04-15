@@ -732,52 +732,49 @@ export default function RecipeCalculatorPage() {
           );
         })()}
 
-        {/* Step 6: Wet-to-wet */}
+        {/* Step 6: Wet-on-Wet Production Reference (no bench measurement) */}
         {step === 6 && (
           <div className="space-y-4">
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-slate-700">
-              <p className="font-bold mb-2">🌊 Wet-to-wet pickup — when & how</p>
-              <p className="mb-2"><strong>When to run it:</strong> if your production treats fabric that arrives wet (from scouring, bleaching, etc.). The existing water dilutes the treatment bath, so net active-ingredient pickup is lower than dry-to-wet.</p>
-              <p className="font-semibold mt-2">Protocol (on a fresh sample):</p>
-              <ol className="space-y-1 pl-5 list-decimal mt-1">
-                <li>Weigh dry (use the dry weight from Step 2)</li>
-                <li><strong>Pre-wet with WATER ONLY:</strong> submerge 10 sec, drain 3 sec, pad at 4 bar → weigh = <strong>W_prewet</strong></li>
-                <li><strong>Dip in TREATMENT BATH:</strong> submerge 10 sec, drain 3 sec, pad at 4 bar → weigh = <strong>W_final</strong></li>
-                <li>Net wet-to-wet pickup % = (W_final − W_prewet) / W_dry × 100</li>
-              </ol>
-              <p className="mt-2 text-[11px] text-slate-600">Skip this step if your production runs dry fabric into the bath.</p>
+            <div className="p-4 bg-sky-50 border border-sky-200 rounded-lg text-sm text-slate-700">
+              <p className="font-bold mb-2">🌊 Wet-on-wet production reference — no bench test needed</p>
+              <p className="mb-2">FUZE is 99.998% DI water, so a bench-scale pre-wet + pad is mass-indistinguishable from a water dip + pad — the padder brings the fabric to the same equilibrium either way. <strong>There's no wet-to-wet pickup to measure.</strong></p>
+              <p>Instead, we publish an adjustment table in the final recipe report: if the factory knows the residual moisture of their incoming fabric (typically 10%, 15%, or 20% off a prior process), they pick the matching row and run a <strong>more concentrated bath</strong> to compensate for the water already in the fabric.</p>
+              <p className="mt-2 text-[11px] text-slate-600">Math: <strong>effective pickup = dry-to-wet pickup − residual moisture %</strong>. Then bath_conc = tier mg/kg ÷ (effective pickup / 100).</p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-semibold text-slate-600">Pre-wet weight (g) — water only</label>
-                <input type="number" step="0.001" value={form.preWetSampleWeight} onChange={(e) => set("preWetSampleWeight", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
-                <p className="text-[10px] text-slate-500 mt-1">After water dip + pad, before bath</p>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-600">Wet after bath pad (g) — final</label>
-                <input type="number" step="0.001" value={form.wetAfterBathFromPreWet} onChange={(e) => set("wetAfterBathFromPreWet", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
-                <p className="text-[10px] text-slate-500 mt-1">After treatment dip + pad</p>
-              </div>
-            </div>
-            {calc.pickupWetToWetPct !== undefined && (
-              <div className="p-4 bg-slate-900 rounded-lg text-white">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs font-bold uppercase text-white/60">Pre-wet moisture</p>
-                    <p className="text-xl font-mono font-bold">{calc.preWetMoisturePct.toFixed(1)}%</p>
-                    <p className="text-[10px] text-white/50">water picked up before bath</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase text-white/60">Net wet-to-wet pickup</p>
-                    <p className={`text-3xl font-black ${calc.pickupWetToWetPct > 0 ? "text-[#00b4c3]" : "text-red-400"}`}>{calc.pickupWetToWetPct.toFixed(1)}%</p>
-                    <p className="text-[10px] text-white/50">{calc.pickupWetToWetPct > 0 ? "used for dilution calc" : "negative — using dry-to-wet instead"}</p>
-                  </div>
-                </div>
-                {calc.pickupWetToWetPct <= 0 && (
-                  <div className="mt-3 p-2 bg-red-900/40 border border-red-400/40 rounded text-xs text-red-200">
-                    ⚠ Negative wet-to-wet pickup means the pad squeezed out more water than the FUZE bath added — pre-wet was over-saturated. Re-run with a lighter pre-wet (drain longer, or pad once before the bath) to get a valid wet-to-wet number. Dilutions below will use dry-to-wet instead.
-                  </div>
-                )}
+            {calc.pickupDryToWetPct !== undefined && calc.pickupDryToWetPct > 0 && (
+              <div className="p-4 bg-white border-2 border-slate-300 rounded-lg">
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">
+                  Wet-on-wet reference (measured dry-to-wet pickup: {calc.pickupDryToWetPct.toFixed(1)}%)
+                </p>
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200">
+                      <th className="text-left px-2 py-1.5">Incoming moisture</th>
+                      <th className="text-right px-2 py-1.5">Effective pickup</th>
+                      <th className="text-right px-2 py-1.5">F1 bath</th>
+                      <th className="text-right px-2 py-1.5">F2 bath</th>
+                      <th className="text-right px-2 py-1.5">F3 bath</th>
+                      <th className="text-right px-2 py-1.5">F4 bath</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[0, 10, 15, 20].map((r) => {
+                      const pEff = (calc.pickupDryToWetPct || 0) - r;
+                      return (
+                        <tr key={r} className={`border-b border-slate-100 ${r === 0 ? "bg-slate-50" : ""}`}>
+                          <td className="px-2 py-1.5 font-mono font-bold">{r === 0 ? "0% (dry)" : `${r}%`}</td>
+                          <td className="px-2 py-1.5 text-right font-mono">{pEff > 0 ? pEff.toFixed(1) + "%" : "—"}</td>
+                          {[1.0, 0.75, 0.5, 0.25].map((mg, i) => (
+                            <td key={i} className="px-2 py-1.5 text-right font-mono text-[#00b4c3] font-bold">
+                              {pEff > 0 ? (mg / (pEff / 100)).toFixed(2) + " mg/L" : <span className="text-red-600">too wet</span>}
+                            </td>
+                          ))}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                <p className="text-[10px] text-slate-500 mt-2">Full adjusted recipe (mL FUZE per L bath + dilution ratio) appears on the printed Recipe Report.</p>
               </div>
             )}
           </div>
