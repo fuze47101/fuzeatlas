@@ -39,7 +39,7 @@ export async function GET(
         factory: { select: { name: true, country: true, city: true } },
         distributor: { select: { name: true } },
         brand: { select: { name: true } },
-        fabric: { select: { fuzeNumber: true, name: true } },
+        fabric: { select: { fuzeNumber: true } },
       },
     });
 

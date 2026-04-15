@@ -32,7 +32,7 @@ export async function POST(
 
     const test = await prisma.recipeBenchTest.findUnique({
       where: { id },
-      include: { fabric: { select: { id: true, fuzeNumber: true, name: true } } },
+      include: { fabric: { select: { id: true, fuzeNumber: true } } },
     });
     if (!test) return NextResponse.json({ ok: false, error: "Bench test not found" }, { status: 404 });
 

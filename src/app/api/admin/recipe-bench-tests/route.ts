@@ -105,7 +105,7 @@ export async function GET(req: Request) {
     }
     const tests = await prisma.recipeBenchTest.findMany({
       orderBy: { testDate: "desc" },
-      include: { fabric: { select: { id: true, fuzeNumber: true, name: true } } },
+      include: { fabric: { select: { id: true, fuzeNumber: true } } },
       take: 200,
     });
     return NextResponse.json({ ok: true, tests });

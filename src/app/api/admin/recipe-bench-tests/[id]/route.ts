@@ -20,7 +20,7 @@ export async function GET(
     }
     const test = await prisma.recipeBenchTest.findUnique({
       where: { id },
-      include: { fabric: { select: { id: true, fuzeNumber: true, name: true } } },
+      include: { fabric: { select: { id: true, fuzeNumber: true } } },
     });
     if (!test) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
     return NextResponse.json({ ok: true, test });
