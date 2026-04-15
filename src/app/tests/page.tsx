@@ -194,16 +194,21 @@ export default function TestsPage() {
 
   const filtered = data?.runs.filter((r) => {
     const q = search.toLowerCase();
-    const matchesSearch =
-      !q ||
-      r.testType.toLowerCase().includes(q) ||
-      (r.testReportNumber || "").toLowerCase().includes(q) ||
-      (r.lab || "").toLowerCase().includes(q) ||
-      (r.brand || "").toLowerCase().includes(q) ||
-      (r.factory || "").toLowerCase().includes(q) ||
-      (r.project || "").toLowerCase().includes(q) ||
-      (r.fuzeNumber || "").toLowerCase().includes(q);
-    return matchesSearch;
+    if (!q) return true;
+    try {
+      return (
+        (r.testType || "").toLowerCase().includes(q) ||
+        (r.testReportNumber || "").toLowerCase().includes(q) ||
+        (r.testMethodStd || "").toLowerCase().includes(q) ||
+        (r.lab || "").toLowerCase().includes(q) ||
+        (r.brand || "").toLowerCase().includes(q) ||
+        (r.factory || "").toLowerCase().includes(q) ||
+        (r.project || "").toLowerCase().includes(q) ||
+        (r.fuzeNumber || "").toLowerCase().includes(q)
+      );
+    } catch {
+      return false;
+    }
   });
 
   if (loading) {
