@@ -307,11 +307,17 @@ export default function RecipeCalculatorPage() {
 
   async function graduate() {
     if (!savedTestId) return;
-    const res = await fetch(`/api/admin/recipe-bench-tests/${savedTestId}/graduate`, { method: "POST" });
-    const d = await res.json();
-    if (d.ok) {
-      alert(d.message);
-      loadRecent();
+    try {
+      const res = await fetch(`/api/admin/recipe-bench-tests/${savedTestId}/graduate`, { method: "POST" });
+      const d = await res.json();
+      if (d.ok) {
+        alert(d.message || "Graduated to FabricRecipe");
+        loadRecent();
+      } else {
+        alert(`Graduate failed: ${d.error || "Unknown error"}`);
+      }
+    } catch (e: any) {
+      alert(`Graduate error: ${e.message}`);
     }
   }
 

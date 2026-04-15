@@ -24,8 +24,10 @@ export async function POST(
   try {
     const { id } = await params;
     const user = await getCurrentUser();
-    if (!user || !["ADMIN", "EMPLOYEE", "LAB_USER", "LAB_MANAGER"].includes(user.role)) {
-      return NextResponse.json({ ok: false, error: "Access denied" }, { status: 403 });
+    if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+    const allowed = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "LAB_USER", "LAB_MANAGER"];
+    if (!allowed.includes(user.role)) {
+      return NextResponse.json({ ok: false, error: `Role ${user.role} not permitted` }, { status: 403 });
     }
 
     const test = await prisma.recipeBenchTest.findUnique({

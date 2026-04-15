@@ -12,16 +12,28 @@ export default function PrintTestCardPage() {
   const { id } = useParams<{ id: string }>();
   const [test, setTest] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     fetch(`/api/admin/recipe-bench-tests/${id}`)
-      .then((r) => r.json())
-      .then((d) => setTest(d.test))
+      .then(async (r) => {
+        const d = await r.json();
+        if (d.ok) setTest(d.test);
+        else setError(d.error || `HTTP ${r.status}`);
+      })
+      .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <div className="p-10 text-slate-500">Loading...</div>;
-  if (!test) return <div className="p-10 text-slate-500">Not found</div>;
+  if (loading) return <div className="p-10 text-slate-500">Loading bench test {id}…</div>;
+  if (!test) return (
+    <div className="p-10 max-w-xl mx-auto">
+      <h1 className="text-xl font-bold text-slate-900 mb-2">Bench test not loaded</h1>
+      <p className="text-sm text-slate-600">ID: <code>{id}</code></p>
+      {error && <p className="text-sm text-red-700 mt-2">Error: {error}</p>}
+      <a href="/admin/recipe-calculator" className="inline-block mt-4 text-[#00b4c3] font-semibold">← Back to calculator</a>
+    </div>
+  );
 
   const pickupUsed = test.pickupWetToWetPct ?? test.pickupDryToWetPct;
   const fmt = (n: any, p = 2) => (n === null || n === undefined ? "—" : Number(n).toFixed(p));
