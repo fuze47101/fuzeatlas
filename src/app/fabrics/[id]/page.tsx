@@ -404,6 +404,92 @@ export default function FabricDetailPage() {
       )}
 
       {/* ═══════════════════════════════════════════ */}
+      {/* SECTION: FUZE Bench Tests (recipe calculator records) */}
+      {/* ═══════════════════════════════════════════ */}
+      {fabric.recipeBenchTests && fabric.recipeBenchTests.length > 0 && (
+        <div className="bg-white rounded-xl p-6 shadow-sm border mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-bold text-[#00b4c3] uppercase tracking-wider">
+              FUZE Recipe Bench Tests ({fabric.recipeBenchTests.length})
+            </h2>
+            <a
+              href={`/admin/recipe-calculator?fabricId=${fabric.id}`}
+              className="text-xs font-semibold text-amber-600 hover:underline"
+            >
+              + Build another recipe
+            </a>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs text-slate-500 border-b">
+                  <th className="pb-2 pr-3">Test #</th>
+                  <th className="pb-2 pr-3">Date</th>
+                  <th className="pb-2 pr-3 text-right">Pickup %</th>
+                  <th className="pb-2 pr-3 text-right">F1</th>
+                  <th className="pb-2 pr-3 text-right">F2</th>
+                  <th className="pb-2 pr-3 text-right">F3</th>
+                  <th className="pb-2 pr-3 text-right">F4</th>
+                  <th className="pb-2 pr-3">ICP</th>
+                  <th className="pb-2 pr-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fabric.recipeBenchTests.map((t: any) => {
+                  const pickup = t.pickupWetToWetPct ?? t.pickupDryToWetPct;
+                  const fmt = (n: any, p = 1) => (n === null || n === undefined) ? "—" : Number(n).toFixed(p);
+                  return (
+                    <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50">
+                      <td className="py-2 pr-3 font-mono text-xs">{t.testNumber}</td>
+                      <td className="py-2 pr-3 text-xs text-slate-600">{new Date(t.testDate).toLocaleDateString()}</td>
+                      <td className="py-2 pr-3 text-right font-mono font-semibold">{pickup ? pickup.toFixed(1) + "%" : "—"}</td>
+                      <td className="py-2 pr-3 text-right font-mono text-xs">1:{fmt(t.f1DilutionRatio)}</td>
+                      <td className="py-2 pr-3 text-right font-mono text-xs">1:{fmt(t.f2DilutionRatio)}</td>
+                      <td className="py-2 pr-3 text-right font-mono text-xs">1:{fmt(t.f3DilutionRatio)}</td>
+                      <td className="py-2 pr-3 text-right font-mono text-xs">1:{fmt(t.f4DilutionRatio)}</td>
+                      <td className="py-2 pr-3 text-xs">
+                        {t.icpMeasuredPpm ? (
+                          <span className={t.affinityPct >= 90 && t.affinityPct <= 110 ? "text-emerald-700 font-bold" : "text-amber-700 font-bold"}>
+                            {t.icpMeasuredPpm.toFixed(1)} ppm · {t.affinityPct?.toFixed(0)}%
+                          </span>
+                        ) : t.icpSubmittedAt ? (
+                          <span className="text-violet-600">Submitted</span>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
+                      </td>
+                      <td className="py-2 pr-3 text-right whitespace-nowrap">
+                        <a href={`/admin/recipe-calculator/${t.id}/report`} target="_blank" className="text-xs text-[#00b4c3] font-semibold hover:underline mr-2">📄 Report</a>
+                        <a href={`/admin/recipe-calculator/${t.id}/print`} target="_blank" className="text-xs text-slate-600 font-semibold hover:underline mr-2">🖨</a>
+                        {t.graduatedRecipeId ? (
+                          <span className="text-xs text-emerald-700 font-semibold">✓ Recipe</span>
+                        ) : (
+                          <button
+                            onClick={async () => {
+                              if (!confirm(`Graduate ${t.testNumber} into 4 published FabricRecipes (F1–F4)?`)) return;
+                              try {
+                                const r = await fetch(`/api/admin/recipe-bench-tests/${t.id}/graduate`, { method: "POST" });
+                                const d = await r.json();
+                                if (d.ok) { alert(d.message); location.reload(); }
+                                else alert(`Failed: ${d.error}`);
+                              } catch (e: any) { alert(`Error: ${e.message}`); }
+                            }}
+                            className="text-xs text-amber-600 font-semibold hover:underline"
+                          >
+                            ⭐ Graduate
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════ */}
       {/* SECTION 6: Submissions & Test History */}
       {/* ═══════════════════════════════════════════ */}
       {fabric.submissions && fabric.submissions.length > 0 && (

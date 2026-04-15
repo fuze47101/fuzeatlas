@@ -20,6 +20,11 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
           orderBy: { createdAt: "desc" },
           take: 20,
         },
+        // @ts-ignore — new relation from recipe bench tests
+        recipeBenchTests: {
+          orderBy: { testDate: "desc" },
+          take: 20,
+        },
       },
     });
 
