@@ -106,8 +106,8 @@ export default function RecipeReportPage() {
             </div>
             <div>
               <p className="text-xs text-white/60">Method</p>
-              <p className="font-bold text-lg">{test.applicationMethod.replace(/_/g, "-")}</p>
-              <p className="text-xs text-white/70">{test.squeezePressure ? `${test.squeezePressure} bar` : "—"}{test.vfdFrequencyHz ? ` · ${test.vfdFrequencyHz} Hz · ${(test.vfdFrequencyHz * 0.295).toFixed(2)} m/min` : ""}</p>
+              <p className="font-bold text-lg">{(test.applicationMethod || "—").replace(/_/g, "-")}</p>
+              <p className="text-xs text-white/70">{test.squeezePressure != null ? `${test.squeezePressure} bar` : "—"}{test.vfdFrequencyHz != null ? ` · ${test.vfdFrequencyHz} Hz · ${(test.vfdFrequencyHz * 0.295).toFixed(2)} m/min` : ""}</p>
             </div>
             <div>
               <p className="text-xs text-white/60">Measured pickup</p>
@@ -262,7 +262,7 @@ export default function RecipeReportPage() {
               <table className="w-full">
                 <tbody>
                   <tr className="border-b border-slate-200"><td className="py-1.5 text-slate-600">Sample area</td><td className="py-1.5 text-right font-mono">{test.sampleAreaCm2 || 100} cm²</td></tr>
-                  <tr className="border-b border-slate-200"><td className="py-1.5 text-slate-600">Squeeze pressure</td><td className="py-1.5 text-right font-mono">{test.squeezePressure} bar ({(test.squeezePressure * 0.1).toFixed(2)} MPa)</td></tr>
+                  <tr className="border-b border-slate-200"><td className="py-1.5 text-slate-600">Squeeze pressure</td><td className="py-1.5 text-right font-mono">{test.squeezePressure != null ? `${test.squeezePressure} bar (${(test.squeezePressure * 0.1).toFixed(2)} MPa)` : "—"}</td></tr>
                   <tr className="border-b border-slate-200"><td className="py-1.5 text-slate-600">VFD frequency</td><td className="py-1.5 text-right font-mono">{test.vfdFrequencyHz || "—"} Hz</td></tr>
                   <tr className="border-b border-slate-200"><td className="py-1.5 text-slate-600">Line speed</td><td className="py-1.5 text-right font-mono">{fmt(test.lineSpeedMPerMin, 2)} m/min</td></tr>
                 </tbody>
@@ -312,7 +312,7 @@ export default function RecipeReportPage() {
         <section className="mb-6 p-4 bg-slate-50 border-l-4 border-[#00b4c3] text-xs">
           <h2 className="font-black text-slate-900 uppercase tracking-wide mb-2">Methodology</h2>
           <p className="text-slate-700">
-            Pickup rate measured per <strong>AATCC / ASTM</strong> pad application method on the FUZE lab <strong>vertical padder</strong> (HTAI P-B0, 41 cm roller circumference) — fabric passes upward through a bath held in the reservoir between two pads pressed at 4 bar. Samples cut at 100 cm² on a FUZE cutter, conditioned at 20–25 °C. Dry-to-wet run: dry sample submerged in clean DI water 10 s, drained 3 s, padded at {test.squeezePressure} bar / {test.vfdFrequencyHz} Hz (single pass), weighed within 10 s. Measurements performed in triplicate; reported pickup is the arithmetic mean. Bench test bath prepared at the target tier concentration from 30 mg/L FUZE stock and pad-applied through the same reservoir for ICP verification. Dilution recipe derived from pickup mean using FUZE stock concentration {stock} mg/L and tier OWF targets (F1 1.0 mg/kg · F2 0.75 mg/kg · F3 0.5 mg/kg · F4 0.25 mg/kg).
+            Pickup rate measured per <strong>AATCC / ASTM</strong> pad application method on the FUZE lab <strong>vertical padder</strong> (HTAI P-B0, 41 cm roller circumference) — fabric passes upward through a bath held in the reservoir between two pads pressed at 4 bar. Samples cut at 100 cm² on a FUZE cutter, conditioned at 20–25 °C. Dry-to-wet run: dry sample submerged in clean DI water 10 s, drained 3 s, padded at {test.squeezePressure ?? "—"} bar / {test.vfdFrequencyHz ?? "—"} Hz (single pass), weighed within 10 s. Measurements performed in triplicate; reported pickup is the arithmetic mean. Bench test bath prepared at the target tier concentration from 30 mg/L FUZE stock and pad-applied through the same reservoir for ICP verification. Dilution recipe derived from pickup mean using FUZE stock concentration {stock} mg/L and tier OWF targets (F1 1.0 mg/kg · F2 0.75 mg/kg · F3 0.5 mg/kg · F4 0.25 mg/kg).
           </p>
         </section>
 

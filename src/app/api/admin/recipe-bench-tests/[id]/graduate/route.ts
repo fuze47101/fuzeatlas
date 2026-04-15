@@ -41,47 +41,65 @@ export async function POST(
       ? body.tiers.filter((t: string) => TIER_MG_PER_KG[t])
       : ["F1", "F2", "F3", "F4"];
 
-    const pickup = test.pickupWetToWetPct || test.pickupDryToWetPct || null;
+    const safeNum = (v: any): number | null => {
+      if (v === null || v === undefined) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const pickup = safeNum(test.pickupWetToWetPct) ?? safeNum(test.pickupDryToWetPct);
+    const gsm = safeNum(test.fabricWeightGsm);
     const baseName = test.fabric?.fuzeNumber
-      ? `${test.fabric.fuzeNumber} · ${test.fabricLabel}`
-      : test.fabricLabel;
+      ? `${test.fabric.fuzeNumber} · ${test.fabricLabel || "Fabric"}`
+      : (test.fabricLabel || `Bench ${test.testNumber}`);
+    const methodRaw: string = test.applicationMethod || "PAD_DRY_CURE";
+    const methodPretty = methodRaw === "PAD_DRY_CURE" ? "Pad"
+      : methodRaw === "EXHAUST" ? "Exhaust"
+      : methodRaw === "SPRAY" ? "Spray"
+      : methodRaw === "FOAM" ? "Foam"
+      : methodRaw;
 
     const created = [];
     for (const tier of tiers) {
       const bathKey = `${tier.toLowerCase()}BathMgPerL` as const;
-      const bathConc = (test as any)[bathKey] || null;
-      const recipeName = `${baseName} · ${test.applicationMethod.replace(/_/g, "-")} · ${tier}`;
+      const bathConc = safeNum((test as any)[bathKey]);
+      const recipeName = `${baseName} · ${methodPretty} · ${tier}`;
 
-      const recipe = await prisma.fabricRecipe.create({
-        data: {
-          name: recipeName,
-          fabricType: test.fabricType || null,
-          fiberContent: test.fiberContent || null,
-          gsmMin: test.fabricWeightGsm ? Math.max(0, test.fabricWeightGsm - 20) : null,
-          gsmMax: test.fabricWeightGsm ? test.fabricWeightGsm + 20 : null,
-          yarnType: null,
-          fuzeTier: tier,
-          applicationMethod: test.applicationMethod === "PAD_DRY_CURE" ? "Pad"
-            : test.applicationMethod === "EXHAUST" ? "Exhaust"
-            : test.applicationMethod === "SPRAY" ? "Spray"
-            : test.applicationMethod === "FOAM" ? "Foam"
-            : test.applicationMethod,
-          padPickupPercent: pickup,
-          bathConcentration: bathConc,
-          squeezePressure: test.squeezePressure,
-          dryingTemp: test.dryingTemp,
-          dryingTime: test.dryingTime,
-          curingTemp: test.curingTemp,
-          curingTime: test.curingTime,
-          notes: [
-            `Graduated from bench test ${test.testNumber}`,
-            test.notes,
-          ].filter(Boolean).join(" — "),
-          active: true,
-          createdById: user.id,
-        },
-      });
-      created.push(recipe);
+      try {
+        const recipe = await prisma.fabricRecipe.create({
+          data: {
+            name: recipeName,
+            fabricType: test.fabricType || null,
+            fiberContent: test.fiberContent || null,
+            gsmMin: gsm != null ? Math.max(0, gsm - 20) : null,
+            gsmMax: gsm != null ? gsm + 20 : null,
+            yarnType: null,
+            fuzeTier: tier,
+            applicationMethod: methodPretty,
+            padPickupPercent: pickup,
+            bathConcentration: bathConc,
+            squeezePressure: safeNum(test.squeezePressure),
+            dryingTemp: safeNum(test.dryingTemp),
+            dryingTime: safeNum(test.dryingTime),
+            curingTemp: safeNum(test.curingTemp),
+            curingTime: safeNum(test.curingTime),
+            notes: [
+              `Graduated from bench test ${test.testNumber}`,
+              test.notes,
+            ].filter(Boolean).join(" — "),
+            active: true,
+            createdById: user.id || null,
+          },
+        });
+        created.push(recipe);
+      } catch (innerErr: any) {
+        console.error(`Graduate failed at tier ${tier}:`, innerErr);
+        return NextResponse.json({
+          ok: false,
+          error: `Tier ${tier} failed: ${innerErr?.message || String(innerErr)}`,
+          createdSoFar: created.length,
+        }, { status: 500 });
+      }
     }
 
     // Record the first recipe as the primary graduated reference

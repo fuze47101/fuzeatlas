@@ -89,7 +89,7 @@ export default function PrintTestCardPage() {
           </div>
           <div className="border border-slate-200 rounded p-3">
             <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">Method</h2>
-            <p className="font-bold text-slate-900">{test.applicationMethod.replace(/_/g, "-")}</p>
+            <p className="font-bold text-slate-900">{(test.applicationMethod || "—").replace(/_/g, "-")}</p>
             <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-2 text-xs text-slate-700">
               <span>Squeeze pressure</span><span>{test.squeezePressure ? `${test.squeezePressure} bar` : "—"}</span>
               {test.vfdFrequencyHz && (
