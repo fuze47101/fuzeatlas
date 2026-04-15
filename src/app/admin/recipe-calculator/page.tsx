@@ -39,8 +39,6 @@ function fuzeLitersForBath(bathL: number, pickupPct: number, mgPerKg: number, st
 function computeRecipe(input: any) {
   const dry = Number(input.drySampleWeight) || 0;
   const wetDryToWet = Number(input.wetAfterBathWeight) || 0;
-  const preWet = Number(input.preWetSampleWeight) || 0;
-  const wetFromPreWet = Number(input.wetAfterBathFromPreWet) || 0;
   const stock = Number(input.stockMgPerL) || STOCK_MG_PER_L;
   const sampleArea = Number(input.sampleAreaCm2) || 100;
 
@@ -54,20 +52,11 @@ function computeRecipe(input: any) {
   if (dry > 0 && wetDryToWet > 0) {
     out.pickupDryToWetPct = ((wetDryToWet - dry) / dry) * 100;
   }
-  if (dry > 0 && preWet > 0 && wetFromPreWet > 0) {
-    out.preWetMoisturePct = ((preWet - dry) / dry) * 100;
-    out.pickupWetToWetPct = ((wetFromPreWet - preWet) / dry) * 100;
-  }
 
-  // Wet-to-wet can legitimately come out negative when pre-wet is over-saturated
-  // and the pad squeezes more water out than the FUZE bath adds. If that happens,
-  // fall back to dry-to-wet so the dilution recipe is never based on a bad number.
-  const w2wValid = out.pickupWetToWetPct !== undefined && out.pickupWetToWetPct > 0;
-  const pickup = w2wValid ? out.pickupWetToWetPct : out.pickupDryToWetPct;
-  out.pickupUsedBasis = w2wValid ? "wet-to-wet" : "dry-to-wet";
-  if (out.pickupWetToWetPct !== undefined && out.pickupWetToWetPct <= 0) {
-    out.wetToWetFallbackReason = "Wet-to-wet ≤ 0 (pre-wet over-saturated) — using dry-to-wet.";
-  }
+  // Dry-to-wet is the only bench measurement. Wet-to-wet mass pickup is
+  // meaningless for FUZE (99.998% water) — removed from the flow.
+  const pickup = out.pickupDryToWetPct;
+  out.pickupUsedBasis = "dry-to-wet";
   for (const [tier, mgPerKg] of Object.entries(TIER_MG_PER_KG)) {
     if (!pickup || pickup <= 0) continue;
     const bathMgPerL = mgPerKg / (pickup / 100);
@@ -93,8 +82,6 @@ function validateStep(step: number, input: any, calc: any) {
   const w: { severity: "error" | "warn" | "info"; msg: string }[] = [];
   const dry = Number(input.drySampleWeight) || 0;
   const wet = Number(input.wetAfterBathWeight) || 0;
-  const preWet = Number(input.preWetSampleWeight) || 0;
-  const wetFromPre = Number(input.wetAfterBathFromPreWet) || 0;
 
   if (step === 2) {
     if (dry > 0 && dry < 0.5) w.push({ severity: "info", msg: "Sample under 0.5g — scale precision matters a lot." });
@@ -119,8 +106,6 @@ function validateStep(step: number, input: any, calc: any) {
     }
   }
   if (step === 5) {
-    if (preWet > 0 && dry > 0 && preWet <= dry) w.push({ severity: "error", msg: "Pre-wet weight should be greater than dry weight." });
-    if (preWet > 0 && wetFromPre > 0 && wetFromPre <= preWet) w.push({ severity: "error", msg: "Wet-after-pad from pre-wet must be greater than pre-wet weight." });
   }
   return w;
 }
@@ -131,7 +116,7 @@ const STEPS = [
   { n: 3, title: "Set Method + VFD", desc: "Vertical pad, 4 bar, 10 Hz ≈ 3 m/min" },
   { n: 4, title: "Dip → Pad → Weigh Wet", desc: "Triplicate runs → mean pickup" },
   { n: 5, title: "Prepare Test Bath", desc: "Mix FUZE stock + water for the bench treatment" },
-  { n: 6, title: "Wet-to-Wet (optional)", desc: "For wet-on-wet production recipes" },
+  { n: 6, title: "Production Adjustment", desc: "Reference table for wet incoming fabric" },
   { n: 7, title: "Production Scale (optional)", desc: "Total FUZE liters for a real run" },
   { n: 8, title: "Review & Save → ICP", desc: "Confirm recipes, save, bag & tag for ICP" },
 ];
@@ -376,11 +361,7 @@ export default function RecipeCalculatorPage() {
   }
 
   const fmt = (n: any, p = 2) => (n === null || n === undefined || isNaN(n)) ? "—" : Number(n).toFixed(p);
-  // Prefer wet-to-wet, but only when positive. Negative wet-to-wet happens when
-  // pre-wet was over-saturated — fall back to dry-to-wet so downstream dilutions are safe.
-  const pickupUsed = (calc.pickupWetToWetPct !== undefined && calc.pickupWetToWetPct > 0)
-    ? calc.pickupWetToWetPct
-    : calc.pickupDryToWetPct;
+  const pickupUsed = calc.pickupDryToWetPct;
   const lineSpeed = (Number(form.vfdFrequencyHz) || 0) * HZ_TO_M_PER_MIN;
   const rpm = (Number(form.vfdFrequencyHz) || 0) * HZ_TO_RPM;
 
@@ -865,7 +846,7 @@ export default function RecipeCalculatorPage() {
                 <span className="text-slate-600">VFD / Speed</span><span className="font-semibold font-mono">{form.vfdFrequencyHz} Hz · {lineSpeed.toFixed(2)} m/min</span>
                 <span className="text-slate-600">Dry weight</span><span className="font-semibold font-mono">{form.drySampleWeight} g</span>
                 <span className="text-slate-600">Wet weight</span><span className="font-semibold font-mono">{form.wetAfterBathWeight} g</span>
-                <span className="text-slate-600">Pickup used</span><span className="font-semibold font-mono text-[#00b4c3]">{fmt(pickupUsed, 1)}% ({calc.pickupUsedBasis || (calc.pickupWetToWetPct && calc.pickupWetToWetPct > 0 ? "wet-to-wet" : "dry-to-wet")})</span>
+                <span className="text-slate-600">Pickup used</span><span className="font-semibold font-mono text-[#00b4c3]">{fmt(pickupUsed, 1)}% (dry-to-wet)</span>
               </div>
             </div>
 
@@ -1047,7 +1028,7 @@ export default function RecipeCalculatorPage() {
               </thead>
               <tbody>
                 {recentTests.slice(0, 20).map((t) => {
-                  const p = t.pickupWetToWetPct || t.pickupDryToWetPct;
+                  const p = (t.pickupWetToWetPct && t.pickupWetToWetPct > 0) ? t.pickupWetToWetPct : t.pickupDryToWetPct;
                   return (
                     <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50">
                       <td className="px-3 py-2 font-mono text-xs">{t.testNumber}</td>
