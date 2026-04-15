@@ -270,7 +270,8 @@ export default function RecipeCalculatorPage() {
       const pickup = runStats.meanPickup;
       const testBathFuzeMl = pickup ? ((TIER_MG_PER_KG[tier] / (pickup / 100)) * bathL * 1000) / stock : null;
       const testBathWaterMl = testBathFuzeMl !== null ? bathL * 1000 - testBathFuzeMl : null;
-      const icpExpectedPpm = TIER_MG_PER_KG[tier] * 1000;
+      // 1 mg/kg OWF = 1 ppm by mass on fabric weight basis. No × 1000.
+      const icpExpectedPpm = TIER_MG_PER_KG[tier];
 
       const res = await fetch("/api/admin/recipe-bench-tests", {
         method: "POST",

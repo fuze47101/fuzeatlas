@@ -322,6 +322,7 @@ export default function Sidebar() {
           { href: "/fabrics/intake", label: t.nav.fabricIntake, icon: "📥" },
           { href: "/recipes", label: t.nav.recipeLibrary, icon: "📖" },
           { href: "/admin/recipe-calculator", label: "Recipe Calculator", icon: "🧪" },
+          { href: "/admin/solaris-test", label: "Solaris IR Test (FZ-500)", icon: "☀️" },
           { href: "/test-requests", label: t.nav.testRequests, icon: "📝", badge: pendingCounts.testRequests },
           { href: "/tests", label: t.nav.testResults, icon: "🧪" },
           { href: "/admin/ongoing-tests", label: t.nav.ongoingTests, icon: "🔬" },

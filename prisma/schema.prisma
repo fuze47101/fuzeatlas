@@ -793,6 +793,7 @@ model Fabric {
   fuzeConsumptions FuzeConsumption[] @relation("ConsumptionFabric")
   fuzeOrders       FuzeOrder[]      @relation("OrderFabric")
   recipeBenchTests RecipeBenchTest[] @relation("FabricRecipeBenchTests")
+  solarisTests     SolarisTest[]     @relation("FabricSolarisTests")
   shipments SampleShipment[] @relation("FabricShipments")
 
   createdAt DateTime @default(now())
@@ -1859,6 +1860,90 @@ model RecipeBenchTest {
   @@index([fabricId])
   @@index([applicationMethod])
   @@index([testDate])
+}
+
+// ─────────────────────────────────────────────
+// FZ-500 · SOLARIS IR HEAT DEFLECTION PROTOCOL
+// Measures how much IR / radiant heat a FUZE-treated fabric
+// deflects vs a baseline (untreated) control. Test bench: IR
+// bulb ~200 mm above a 175x175 mm heat plate; fabric sits
+// ~45 mm above the plate on a 10 mm embroidery hoop over a
+// 150 mm hole. Heat plate + air-gap + fabric-face temps are
+// logged over time via a Raspberry Pi (Type K thermocouples
+// on plate, SHT31 in air gap).
+// ─────────────────────────────────────────────
+model SolarisTest {
+  id                String   @id @default(cuid())
+  testNumber        String   @unique   // FUZE-SOL-YYYYMMDD-XXXX
+  testDate          DateTime @default(now())
+
+  // What's being tested
+  fabricId          String?
+  fabric            Fabric?  @relation("FabricSolarisTests", fields: [fabricId], references: [id])
+  fabricLabel       String   // free-text if no Fabric linked
+  fabricType        String?
+  fiberContent      String?
+  fabricWeightGsm   Float?
+  fabricColor       String?  // color matters A LOT for IR absorption
+  treatedAtTier     String?  // F1/F2/F3/F4, null for untreated control
+  benchTestId       String?  // link to the bench test that produced this treatment
+
+  // Device setup (snapshot at test time)
+  deviceName        String?  // "Solaris Unit 1", etc.
+  bulbWattage       Float?   // W of the IR bulb (e.g. 175 W)
+  bulbType          String?  // "IR heat lamp · 175W · halogen", etc.
+  bulbToFabricMm    Float?   @default(200)
+  fabricToPlateMm   Float?   @default(45)
+  hoopDiameterMm    Float?   @default(150)
+  hoopThicknessMm   Float?   @default(10)
+  plateWidthMm      Float?   @default(175)
+  plateHeightMm     Float?   @default(175)
+  plateMaterial     String?  // "anodized aluminum", etc.
+  ambientTempC      Float?   // lab ambient at test start
+  ambientHumidityPct Float?
+
+  // Run durations
+  runDurationSec    Int?     @default(600)  // 10 min default
+  sampleIntervalMs  Int?     @default(1000) // 1 Hz default
+
+  // Baseline run (no fabric OR untreated control fabric)
+  baselineStartedAt     DateTime?
+  baselineCompletedAt   DateTime?
+  baselineMaxPlateTempC Float?
+  baselineMaxAirTempC   Float?
+  baselineTimeTo50C_sec Float?   // time (s) for plate to reach 50°C
+  baselineTimeTo60C_sec Float?
+  baselineRampRateCps   Float?   // °C/sec in first 60s (slope of heat rise)
+  baselineSeries        Json?    // [{t_sec, plateA, plateB, air, humidity}, ...]
+
+  // Treated run (fabric with FUZE applied)
+  treatedStartedAt      DateTime?
+  treatedCompletedAt    DateTime?
+  treatedMaxPlateTempC  Float?
+  treatedMaxAirTempC    Float?
+  treatedTimeTo50C_sec  Float?
+  treatedTimeTo60C_sec  Float?
+  treatedRampRateCps    Float?
+  treatedSeries         Json?
+
+  // Calculated outcomes (δ = treated − baseline, negative is good)
+  deltaMaxPlateC        Float?   // treated.max - baseline.max
+  deltaMaxAirC          Float?
+  deltaRampRateCps      Float?   // slower heat-up is better
+  irDeflectionPct       Float?   // % reduction in peak temp rise vs baseline
+  passFail              String?  // "PASS" | "FAIL" | "MARGINAL"
+  nikeSpecMaxDeltaC     Float?   // client target if any
+
+  notes                 String?
+  qcPassed              Boolean  @default(true)
+  createdById           String?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([fabricId])
+  @@index([testDate])
+  @@index([treatedAtTier])
 }
 
 model FabricRecipe {
