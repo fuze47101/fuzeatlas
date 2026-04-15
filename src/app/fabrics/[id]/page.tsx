@@ -436,17 +436,29 @@ export default function FabricDetailPage() {
               </thead>
               <tbody>
                 {fabric.recipeBenchTests.map((t: any) => {
-                  const pickup = t.pickupWetToWetPct ?? t.pickupDryToWetPct;
+                  // Use ONLY dry-to-wet (wet-to-wet retired); recompute tier values
+                  // on the fly so legacy tests with bad stored values don't show garbage.
+                  const pickup = t.pickupDryToWetPct;
+                  const valid = pickup != null && pickup > 0;
+                  const stock = t.stockMgPerL || 30;
                   const fmt = (n: any, p = 1) => (n === null || n === undefined) ? "—" : Number(n).toFixed(p);
+                  const ratioFor = (mgPerKg: number) => {
+                    if (!valid) return null;
+                    const bathConc = mgPerKg / (pickup / 100);
+                    return stock / bathConc - 1;
+                  };
+                  const f1r = ratioFor(1.0), f2r = ratioFor(0.75), f3r = ratioFor(0.5), f4r = ratioFor(0.25);
                   return (
                     <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50">
                       <td className="py-2 pr-3 font-mono text-xs">{t.testNumber}</td>
                       <td className="py-2 pr-3 text-xs text-slate-600">{new Date(t.testDate).toLocaleDateString()}</td>
-                      <td className="py-2 pr-3 text-right font-mono font-semibold">{pickup ? pickup.toFixed(1) + "%" : "—"}</td>
-                      <td className="py-2 pr-3 text-right font-mono text-xs">1:{fmt(t.f1DilutionRatio)}</td>
-                      <td className="py-2 pr-3 text-right font-mono text-xs">1:{fmt(t.f2DilutionRatio)}</td>
-                      <td className="py-2 pr-3 text-right font-mono text-xs">1:{fmt(t.f3DilutionRatio)}</td>
-                      <td className="py-2 pr-3 text-right font-mono text-xs">1:{fmt(t.f4DilutionRatio)}</td>
+                      <td className={`py-2 pr-3 text-right font-mono font-semibold ${valid ? "" : "text-red-600"}`}>
+                        {valid ? pickup.toFixed(1) + "%" : (pickup != null ? pickup.toFixed(1) + "% ⚠" : "—")}
+                      </td>
+                      <td className="py-2 pr-3 text-right font-mono text-xs">{f1r != null ? "1:" + fmt(f1r) : "—"}</td>
+                      <td className="py-2 pr-3 text-right font-mono text-xs">{f2r != null ? "1:" + fmt(f2r) : "—"}</td>
+                      <td className="py-2 pr-3 text-right font-mono text-xs">{f3r != null ? "1:" + fmt(f3r) : "—"}</td>
+                      <td className="py-2 pr-3 text-right font-mono text-xs">{f4r != null ? "1:" + fmt(f4r) : "—"}</td>
                       <td className="py-2 pr-3 text-xs">
                         {t.icpMeasuredPpm ? (
                           <span className={t.affinityPct >= 90 && t.affinityPct <= 110 ? "text-emerald-700 font-bold" : "text-amber-700 font-bold"}>
