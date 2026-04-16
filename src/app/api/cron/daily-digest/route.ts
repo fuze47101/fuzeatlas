@@ -70,6 +70,43 @@ export async function GET(req: Request) {
       orderBy: { updatedAt: "desc" },
     });
 
+    // 3b. Orders shipped in last 24h (separate from booked)
+    const shippedOrders = await prisma.fuzeOrder.findMany({
+      where: { shippedDate: { gte: since } },
+      include: {
+        factory: { select: { name: true } },
+        brand: { select: { name: true } },
+      },
+      orderBy: { shippedDate: "desc" },
+    });
+
+    // ── Sales totals ──
+    // Liquid FUZE is measured in liters; treated fabric is measured in kg.
+    // Exclude HANGTAG orders from liquid/kg sums.
+    const sumOrders = (rows: any[]) =>
+      rows.reduce(
+        (acc, o) => {
+          const isLiquid = o.orderType === "PRODUCTION" || o.orderType === "SAMPLE";
+          return {
+            liters: acc.liters + (isLiquid ? (o.volumeLiters || 0) : 0),
+            kg: acc.kg + (o.fabricMassKg || 0),
+            dollars: acc.dollars + (o.totalPrice || 0),
+            prodLiters: acc.prodLiters + (o.orderType === "PRODUCTION" ? (o.volumeLiters || 0) : 0),
+            sampleLiters: acc.sampleLiters + (o.orderType === "SAMPLE" ? (o.volumeLiters || 0) : 0),
+            hangtagQty: acc.hangtagQty + (o.orderType === "HANGTAG" ? (o.hangtagQty || 0) : 0),
+          };
+        },
+        { liters: 0, kg: 0, dollars: 0, prodLiters: 0, sampleLiters: 0, hangtagQty: 0 }
+      );
+
+    const bookedTotals = sumOrders(newOrders);
+    const shippedTotals = sumOrders(shippedOrders);
+
+    const fmtNum = (n: number) =>
+      n >= 1000 ? (n / 1000).toFixed(1) + "k" : n % 1 === 0 ? String(n) : n.toFixed(1);
+    const fmtUSD = (n: number) =>
+      n >= 1000 ? "$" + (n / 1000).toFixed(1) + "k" : "$" + n.toFixed(0);
+
     // 4. New contacts added
     const newContacts = await prisma.contact.findMany({
       where: { createdAt: { gte: since } },
@@ -149,6 +186,41 @@ export async function GET(req: Request) {
   <div style="flex:1;background:white;border-radius:12px;padding:16px;text-align:center;border:2px solid #e2e8f0;">
     <div style="font-size:28px;font-weight:900;color:#0f172a;">${newContacts.length}</div>
     <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;">New Contacts</div>
+  </div>
+</div>
+
+<!-- Daily Sales (booked + shipped) -->
+<div style="background:white;border-radius:12px;padding:20px;margin-bottom:24px;border:2px solid #00b4c3;">
+  <div style="font-size:11px;font-weight:700;color:#0891a2;text-transform:uppercase;margin-bottom:12px;">💰 Daily Sales · last 24h</div>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;">
+    <thead>
+      <tr style="text-align:left;color:#64748b;font-size:11px;text-transform:uppercase;">
+        <th style="padding:4px 0;"></th>
+        <th style="padding:4px 0;text-align:right;">FUZE Liquid</th>
+        <th style="padding:4px 0;text-align:right;">Fabric Treated</th>
+        <th style="padding:4px 0;text-align:right;">Revenue</th>
+        <th style="padding:4px 0;text-align:right;">Orders</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-top:1px solid #f1f5f9;">
+        <td style="padding:8px 0;font-weight:700;color:#0f172a;">Booked</td>
+        <td style="padding:8px 0;text-align:right;"><strong>${fmtNum(bookedTotals.liters)}</strong> L</td>
+        <td style="padding:8px 0;text-align:right;"><strong>${fmtNum(bookedTotals.kg)}</strong> kg</td>
+        <td style="padding:8px 0;text-align:right;"><strong>${fmtUSD(bookedTotals.dollars)}</strong></td>
+        <td style="padding:8px 0;text-align:right;color:#64748b;">${newOrders.length}</td>
+      </tr>
+      <tr style="border-top:1px solid #f1f5f9;">
+        <td style="padding:8px 0;font-weight:700;color:#0f172a;">Shipped</td>
+        <td style="padding:8px 0;text-align:right;"><strong>${fmtNum(shippedTotals.liters)}</strong> L</td>
+        <td style="padding:8px 0;text-align:right;"><strong>${fmtNum(shippedTotals.kg)}</strong> kg</td>
+        <td style="padding:8px 0;text-align:right;"><strong>${fmtUSD(shippedTotals.dollars)}</strong></td>
+        <td style="padding:8px 0;text-align:right;color:#64748b;">${shippedOrders.length}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:10px;padding-top:10px;border-top:1px dashed #e2e8f0;font-size:11px;color:#64748b;">
+    Booked breakdown: <strong>${fmtNum(bookedTotals.prodLiters)}L</strong> production · <strong>${fmtNum(bookedTotals.sampleLiters)}L</strong> sample${bookedTotals.hangtagQty > 0 ? ` · <strong>${bookedTotals.hangtagQty}</strong> hangtags` : ""}
   </div>
 </div>
 
@@ -279,9 +351,14 @@ export async function GET(req: Request) {
 </html>`;
 
     // ── Send ──
+    const subjectSales = shippedTotals.liters > 0
+      ? `${fmtNum(shippedTotals.liters)}L shipped`
+      : bookedTotals.liters > 0
+        ? `${fmtNum(bookedTotals.liters)}L booked`
+        : `${newOrders.length} orders`;
     const result = await sendEmail({
       to: DIGEST_RECIPIENTS,
-      subject: `FUZE Daily Digest — ${notes.length} activities, ${newOrders.length} orders, ${outreachChecks.length} outreach`,
+      subject: `FUZE Daily Digest — ${subjectSales}, ${notes.length} activities, ${outreachChecks.length} outreach`,
       html,
     });
 
@@ -292,8 +369,13 @@ export async function GET(req: Request) {
         notes: notes.length,
         newOrders: newOrders.length,
         updatedOrders: updatedOrders.length,
+        shippedOrders: shippedOrders.length,
         newContacts: newContacts.length,
         outreachChecks: outreachChecks.length,
+        bookedLiters: bookedTotals.liters,
+        bookedKg: bookedTotals.kg,
+        shippedLiters: shippedTotals.liters,
+        shippedKg: shippedTotals.kg,
       },
     });
   } catch (e: any) {
