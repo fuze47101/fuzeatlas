@@ -8,7 +8,10 @@ const JWT_SECRET = new TextEncoder().encode(
 const COOKIE_NAME = "fuze-session";
 
 // Routes that don't require authentication
-const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/forgot-password", "/reset-password", "/verify-email", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/verify-email", "/api/access-requests"];
+// NOTE: /api/cron is exempted so Vercel Cron invocations reach the route
+// handler (which has its own CRON_SECRET Bearer-token auth). Without this,
+// every scheduled cron returns 401 before ever running.
+const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/forgot-password", "/reset-password", "/verify-email", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/verify-email", "/api/access-requests", "/api/cron"];
 
 // Routes restricted to internal roles only (ADMIN, EMPLOYEE, SALES_*, TESTING_*, FABRIC_*)
 // Factory, Brand, and Distributor users CANNOT access these even with a valid session

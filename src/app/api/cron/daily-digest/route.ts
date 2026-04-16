@@ -29,14 +29,21 @@ export async function GET(req: Request) {
     // ── Gather all activity ──
 
     // 1. CRM Notes (all types: NOTE, CALL, EMAIL, MEETING, TASK, FOLLOW_UP)
+    //    Match on either date (user-picked) or createdAt (system) so notes
+    //    imported via API/bulk without an explicit date still show up.
     const notes = await prisma.note.findMany({
-      where: { date: { gte: since } },
+      where: {
+        OR: [
+          { date: { gte: since } },
+          { createdAt: { gte: since } },
+        ],
+      },
       include: {
         brand: { select: { id: true, name: true } },
         factory: { select: { id: true, name: true } },
         user: { select: { name: true } },
       },
-      orderBy: { date: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     // 2. New orders
@@ -169,17 +176,22 @@ export async function GET(req: Request) {
         const entity = note.brand?.name || note.factory?.name || "—";
         const entityType = note.brand ? "brand" : "factory";
         const entityId = note.brand?.id || note.factory?.id;
-        const icon = typeIcons[note.noteType] || "📝";
-        const time = new Date(note.date).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+        const noteType = note.noteType || "NOTE";
+        const icon = typeIcons[noteType] || "📝";
+        const noteDate = note.date || note.createdAt;
+        const time = noteDate
+          ? new Date(noteDate).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
+          : "—";
         const by = note.user?.name || "System";
-        const preview = note.content?.length > 150 ? note.content.slice(0, 150) + "..." : note.content;
+        const content = note.content || "";
+        const preview = content.length > 150 ? content.slice(0, 150) + "..." : content;
 
         html += `
   <div style="padding:12px 0;border-bottom:1px solid #f1f5f9;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
       <span>${icon}</span>
       <strong style="font-size:13px;color:#0f172a;">${entity}</strong>
-      <span style="font-size:11px;color:#94a3b8;background:#f1f5f9;padding:2px 6px;border-radius:4px;">${note.noteType.replace("_", " ")}</span>
+      <span style="font-size:11px;color:#94a3b8;background:#f1f5f9;padding:2px 6px;border-radius:4px;">${noteType.replace("_", " ")}</span>
       <span style="font-size:11px;color:#94a3b8;margin-left:auto;">${time} · ${by}</span>
     </div>
     ${note.contactName ? `<div style="font-size:12px;color:#64748b;margin-bottom:2px;">with ${note.contactName}</div>` : ""}
@@ -286,6 +298,27 @@ export async function GET(req: Request) {
     });
   } catch (e: any) {
     console.error("Daily digest error:", e);
-    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
+
+    // Fallback: at least tell Andrew the digest crashed so it isn't
+    // silently swallowed by Vercel logs. We deliberately keep this
+    // outside the main try so a second failure here won't mask the
+    // original error in the response.
+    try {
+      await sendEmail({
+        to: DIGEST_RECIPIENTS,
+        subject: `⚠️ FUZE Daily Digest FAILED — ${new Date().toISOString()}`,
+        html: `<p>The daily digest cron threw an error:</p>
+<pre style="background:#fef2f2;border:1px solid #fecaca;padding:12px;border-radius:6px;font-size:12px;white-space:pre-wrap;">${
+          String(e?.message || e)
+        }</pre>
+<pre style="background:#f1f5f9;padding:12px;border-radius:6px;font-size:11px;white-space:pre-wrap;">${
+          String(e?.stack || "").slice(0, 4000)
+        }</pre>`,
+      });
+    } catch (emailErr) {
+      console.error("Failed to send digest error notification:", emailErr);
+    }
+
+    return NextResponse.json({ ok: false, error: e?.message || String(e) }, { status: 500 });
   }
 }
