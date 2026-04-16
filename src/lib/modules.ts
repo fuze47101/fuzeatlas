@@ -1,0 +1,199 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * SHARED MODULE DEFINITION — single source of truth
+ *
+ * Both the Home page (/home) and the left Sidebar render from this
+ * structure. Keeping it in one place eliminates the "sidebar has one
+ * set of names, home page has another" drift that was confusing.
+ *
+ * Mental model:
+ *   • /home shows 6 big cards → one per MODULE
+ *   • Clicking a card takes you to its `landing` page
+ *   • The sidebar scopes itself to the ACTIVE module (the one whose
+ *     items include the current pathname). A "← All Modules / Home"
+ *     link is always at the top so you can bounce back out.
+ *
+ * If you need to add a new page, add it to `items` on the right
+ * module here — do NOT hand-edit Sidebar.tsx with a new entry.
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+export type ModuleItem = {
+  label: string;
+  href: string;
+  icon?: string;      // emoji rendered in sidebar
+  badgeKey?: "testRequests" | "accessRequests"; // dynamic counts
+  adminOnly?: boolean;
+  hideInCard?: boolean; // hide from home card grid but keep in sidebar
+};
+
+export type ModuleDef = {
+  key: string;
+  label: string;
+  icon: string;
+  accent: string;          // gradient classes for home card
+  sidebarAccent: string;   // single color class for sidebar badge
+  blurb: string;
+  landing: string;
+  adminOnly?: boolean;
+  items: ModuleItem[];
+};
+
+export const MODULES: ModuleDef[] = [
+  // ═══════════════════════════════════════════════════════════════
+  {
+    key: "business-development",
+    label: "Business Development",
+    icon: "🎯",
+    accent: "from-rose-500 to-rose-700",
+    sidebarAccent: "text-rose-400",
+    blurb: "Leads, accounts, outreach, revenue",
+    landing: "/admin/brand-pipeline",
+    items: [
+      { label: "Brand Pipeline (Leads)", href: "/admin/brand-pipeline", icon: "🔥" },
+      { label: "Accounts", href: "/admin/accounts", icon: "⭐" },
+      { label: "Brand Intelligence", href: "/admin/brand-discovery", icon: "🌎" },
+      { label: "Sample → Production", href: "/admin/conversion-tracking", icon: "🔄" },
+      { label: "Deals & Revenue", href: "/pipeline", icon: "💰" },
+      { label: "Invoices", href: "/invoices", icon: "🧾" },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  {
+    key: "operations",
+    label: "Operations",
+    icon: "📦",
+    accent: "from-[#00b4c3] to-[#009ba8]",
+    sidebarAccent: "text-[#00b4c3]",
+    blurb: "Orders, inventory, shipments, consumption",
+    landing: "/admin/orders-dashboard",
+    items: [
+      { label: "KPI Dashboard", href: "/dashboard", icon: "📊" },
+      { label: "Orders Dashboard", href: "/admin/orders-dashboard", icon: "📦" },
+      { label: "Order Management", href: "/admin/orders", icon: "🛒" },
+      { label: "Production Batches", href: "/admin/batches", icon: "🏭" },
+      { label: "Distributor Restocks", href: "/admin/distributor-restock", icon: "💧" },
+      { label: "Worldwide Inventory", href: "/admin/worldwide-inventory", icon: "🌍" },
+      { label: "Consumption & Reorder", href: "/admin/consumption", icon: "📈" },
+      { label: "Sample Tracking", href: "/shipments", icon: "📮" },
+      { label: "Shipping Docs", href: "/shipping-docs", icon: "🚢" },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  {
+    key: "quality-labs",
+    label: "Quality & Labs",
+    icon: "🧪",
+    accent: "from-violet-500 to-violet-700",
+    sidebarAccent: "text-violet-400",
+    blurb: "Fabrics, recipes, ICP sample prep, testing",
+    landing: "/tests",
+    items: [
+      // Fabric core
+      { label: "Fabrics", href: "/fabrics", icon: "🧵" },
+      { label: "Fabric Intake", href: "/fabrics/intake", icon: "📥" },
+      { label: "FUZE Fabric Library", href: "/fabric-library", icon: "📚" },
+      // Bench
+      { label: "Recipe Library", href: "/recipes", icon: "📖" },
+      { label: "Recipe Calculator", href: "/admin/recipe-calculator", icon: "🧪" },
+      { label: "Recipe Bench SOP", href: "/admin/recipe-calculator/sop", icon: "📋" },
+      // NEW — ICP sample prep
+      { label: "ICP Sample Prep", href: "/admin/icp-sample-prep", icon: "⚖️" },
+      { label: "ICP Prep SOP (How-To)", href: "/admin/icp-sample-prep/sop", icon: "📋" },
+      // Instrumentation
+      { label: "Solaris IR Test (FZ-500)", href: "/admin/solaris-test", icon: "☀️" },
+      // Test flow
+      { label: "Test Requests", href: "/test-requests", icon: "📝", badgeKey: "testRequests" },
+      { label: "Test Results", href: "/tests", icon: "🧫" },
+      { label: "Ongoing Tests", href: "/admin/ongoing-tests", icon: "🔬" },
+      { label: "Sample Trials", href: "/admin/sample-trials", icon: "🧪" },
+      { label: "Lab Directory", href: "/labs", icon: "🏢" },
+      { label: "Test Catalog & Pricing", href: "/admin/test-catalog", icon: "💲", adminOnly: true },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  {
+    key: "partners",
+    label: "Partners",
+    icon: "🤝",
+    accent: "from-amber-500 to-amber-700",
+    sidebarAccent: "text-amber-400",
+    blurb: "Brands, factories, distributors",
+    landing: "/brands",
+    items: [
+      { label: "Brands", href: "/brands", icon: "👕" },
+      { label: "Factories", href: "/factories", icon: "🏭" },
+      { label: "Distributor Network", href: "/admin/distributors", icon: "🌍" },
+      { label: "Distributor Documents", href: "/admin/distributor-docs", icon: "📂" },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  {
+    key: "resources",
+    label: "Resources & Docs",
+    icon: "📚",
+    accent: "from-emerald-500 to-emerald-700",
+    sidebarAccent: "text-emerald-400",
+    blurb: "Document library, SDS/TDS/COA, SOWs, pricing",
+    landing: "/compliance-library",
+    items: [
+      { label: "Product Documents (TDS/SDS/COA)", href: "/admin/product-documents", icon: "📘" },
+      { label: "Document Center", href: "/compliance-library", icon: "📋" },
+      { label: "SOWs", href: "/sow", icon: "📄" },
+      { label: "Meetings", href: "/meetings", icon: "📅" },
+      { label: "Weekly Summary", href: "/reports", icon: "📈" },
+      { label: "Market Landscape", href: "/admin/competitor-pricing", icon: "📊" },
+      { label: "Pricing & Environment", href: "/pricing", icon: "💰" },
+      { label: "Application Calculator", href: "/pricing/calculator", icon: "🧮" },
+      { label: "Sustainability", href: "/sustainability", icon: "🌱" },
+      { label: "FUZE FAQ", href: "/brand-portal/chat", icon: "💬" },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  {
+    key: "admin",
+    label: "Admin",
+    icon: "⚙️",
+    accent: "from-slate-700 to-slate-900",
+    sidebarAccent: "text-slate-300",
+    blurb: "Users, settings, audit log, access",
+    landing: "/settings/users",
+    adminOnly: true,
+    items: [
+      { label: "Notifications", href: "/notifications", icon: "🔔" },
+      { label: "User Management", href: "/settings/users", icon: "👥" },
+      { label: "Access Requests", href: "/settings/access-requests", icon: "📩", badgeKey: "accessRequests" },
+      { label: "Availability Settings", href: "/settings/availability", icon: "⏰" },
+      { label: "Exchange Rates", href: "/settings/exchange-rates", icon: "💱" },
+      { label: "Audit Log", href: "/settings/audit-log", icon: "📜" },
+    ],
+  },
+];
+
+/**
+ * Given the current pathname, find the module that owns it. Used by
+ * the sidebar to scope the nav. Returns undefined if the path doesn't
+ * belong to any module (e.g. /home, /login).
+ */
+export function findActiveModule(pathname: string): ModuleDef | undefined {
+  // Most specific match wins (longest prefix)
+  let best: { m: ModuleDef; score: number } | undefined;
+  for (const m of MODULES) {
+    for (const item of m.items) {
+      if (pathname === item.href || pathname.startsWith(item.href + "/")) {
+        const score = item.href.length;
+        if (!best || score > best.score) best = { m, score };
+      }
+    }
+    if (pathname === m.landing) {
+      const score = m.landing.length;
+      if (!best || score > best.score) best = { m, score };
+    }
+  }
+  return best?.m;
+}

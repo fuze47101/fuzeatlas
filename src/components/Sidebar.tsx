@@ -8,6 +8,24 @@ import { useI18n, LOCALES } from "@/i18n";
 import type { Locale } from "@/i18n";
 import { useAuth } from "@/lib/AuthContext";
 import ViewAsSwitcher from "./ViewAsSwitcher";
+import { MODULES, findActiveModule, type ModuleDef, type ModuleItem } from "@/lib/modules";
+
+/**
+ * ═══════════════════════════════════════════════════════════════
+ *  SIDEBAR — scoped to the active module
+ *
+ *  Internal users (admin / employee / sales):
+ *    • On /home → we show the compact module picker (6 buttons).
+ *      Sidebar is intentionally minimal so the 6 cards are the star.
+ *    • On any module page → sidebar is scoped to JUST that module's
+ *      items with a big "← All Modules" link back to /home.
+ *    • Data comes from `@/lib/modules` — the same source of truth
+ *      the home page cards use. No more drift.
+ *
+ *  External portal users (brand, factory, distributor, lab) keep
+ *  their dedicated portal navs — they never see the module picker.
+ * ═══════════════════════════════════════════════════════════════
+ */
 
 const ROLE_LABELS: Record<string, string> = {
   ADMIN: "Admin",
@@ -36,6 +54,32 @@ interface NavGroup {
   items: NavItem[];
 }
 
+function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
+  const active = pathname === item.href || pathname.startsWith(item.href + "/");
+  return (
+    <Link
+      href={item.href}
+      className={`
+        flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all
+        ${active
+          ? "bg-[#00b4c3] text-white shadow-lg shadow-[#00b4c3]/30"
+          : "text-slate-300 hover:bg-slate-800 hover:text-white"
+        }
+      `}
+    >
+      <span className="text-base">{item.icon}</span>
+      <span className="flex-1">{item.label}</span>
+      {item.badge && item.badge > 0 ? (
+        <span className={`min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ${
+          active ? "bg-white/25 text-white" : "bg-red-500 text-white animate-pulse"
+        }`}>
+          {item.badge}
+        </span>
+      ) : null}
+    </Link>
+  );
+}
+
 function NavSection({
   group,
   pathname,
@@ -57,9 +101,7 @@ function NavSection({
       <button
         onClick={onToggle}
         className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors ${
-          hasActive
-            ? "text-[#00b4c3]"
-            : "text-slate-500 hover:text-slate-300"
+          hasActive ? "text-[#00b4c3]" : "text-slate-500 hover:text-slate-300"
         }`}
       >
         <span className="flex items-center gap-2">
@@ -81,32 +123,9 @@ function NavSection({
       </button>
       {expanded && (
         <div className="mt-0.5 space-y-0.5">
-          {group.items.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(item.href + "/");
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`
-                  flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all
-                  ${active
-                    ? "bg-[#00b4c3] text-white shadow-lg shadow-[#00b4c3]/30"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                  }
-                `}
-              >
-                <span className="text-base">{item.icon}</span>
-                <span className="flex-1">{item.label}</span>
-                {item.badge && item.badge > 0 ? (
-                  <span className={`min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ${
-                    active ? "bg-white/25 text-white" : "bg-red-500 text-white animate-pulse"
-                  }`}>
-                    {item.badge}
-                  </span>
-                ) : null}
-              </Link>
-            );
-          })}
+          {group.items.map((item) => (
+            <NavLink key={item.href} item={item} pathname={pathname} />
+          ))}
         </div>
       )}
     </div>
@@ -126,9 +145,8 @@ export default function Sidebar() {
   const isLabUser = user?.role === "LAB_USER";
   const isInternal = !isBrandUser && !isFactoryUser && !isDistributorUser && !isLabUser && user?.role !== "PUBLIC";
   const isAdmin = (user?.role === "ADMIN" || user?.role === "EMPLOYEE") && !impersonation?.active;
-  const isRealAdmin = impersonation?.active || user?.role === "ADMIN"; // true admin identity regardless of impersonation
 
-  // ─── Pending counts for admin badges ─────────────────
+  // ─── Pending counts (for internal admin badges) ─────
   const [pendingCounts, setPendingCounts] = useState<{
     accessRequests: number;
     testRequests: number;
@@ -140,28 +158,22 @@ export default function Sidebar() {
     const fetchCounts = () => {
       fetch("/api/admin/pending-counts")
         .then((r) => r.json())
-        .then((d) => {
-          if (d.ok) setPendingCounts(d);
-        })
+        .then((d) => { if (d.ok) setPendingCounts(d); })
         .catch(() => {});
     };
     fetchCounts();
-    // Poll every 30 seconds for live updates
     const interval = setInterval(fetchCounts, 30000);
     return () => clearInterval(interval);
   }, [isAdmin]);
 
-  // ─── Lab pending request counts ─────────────────
+  // ─── Lab pending counts ─────────────────────────────
   const [labPendingCount, setLabPendingCount] = useState(0);
-
   useEffect(() => {
     if (!isLabUser) return;
     const fetchLabCounts = () => {
       fetch("/api/lab-portal")
         .then((r) => r.json())
-        .then((d) => {
-          if (d.ok) setLabPendingCount(d.stats?.pendingRequests || 0);
-        })
+        .then((d) => { if (d.ok) setLabPendingCount(d.stats?.pendingRequests || 0); })
         .catch(() => {});
     };
     fetchLabCounts();
@@ -169,8 +181,7 @@ export default function Sidebar() {
     return () => clearInterval(interval);
   }, [isLabUser]);
 
-  // ─── Grouped navigation ─────────────────────────
-  // Top-level item (always visible, not in a group) — route by role
+  // ─── Top link (per role) ────────────────────────────
   const topItem: NavItem = isFactoryUser
     ? { href: "/factory-portal", label: t.nav.dashboard, icon: "📊" }
     : isBrandUser
@@ -181,8 +192,12 @@ export default function Sidebar() {
     ? { href: "/lab-portal", label: t.nav.dashboard, icon: "📊" }
     : { href: "/home", label: t.nav.home || "Home", icon: "🏠" };
 
-  // Build groups based on role
+  // ═══════════════════════════════════════════════════════════════
+  //  Build the nav based on role + current pathname
+  // ═══════════════════════════════════════════════════════════════
   let groups: NavGroup[] = [];
+  let scopedModule: ModuleDef | undefined;
+  let onHome = pathname === "/home";
 
   if (isBrandUser) {
     groups = [
@@ -281,100 +296,58 @@ export default function Sidebar() {
       },
     ];
   } else {
-    // ═══════════════════════════════════════════════════════════════
-    // INTERNAL USERS (Admin / Employee / Sales) — 6 MODULES
-    // ═══════════════════════════════════════════════════════════════
-    groups = [
-      {
-        label: t.nav.groupBizDev,
-        items: [
-          ...(isInternal
-            ? [
-                { href: "/admin/brand-pipeline", label: t.nav.brandPipelineLeads, icon: "🔥" },
-                { href: "/admin/accounts", label: t.nav.accounts, icon: "⭐" },
-                { href: "/admin/brand-discovery", label: t.nav.brandIntelligence, icon: "🌎" },
-                { href: "/admin/conversion-tracking", label: t.nav.sampleToProduction, icon: "🔄" },
-                { href: "/pipeline", label: t.nav.dealsAndRevenue, icon: "💰" },
-                { href: "/invoices", label: t.nav.invoices, icon: "🧾" },
-              ]
-            : [
-                { href: "/brands", label: t.nav.brands, icon: "🔥" },
-              ]),
-        ],
-      },
-      {
-        label: t.nav.groupOps,
-        items: [
-          { href: "/dashboard", label: t.nav.kpiDashboard, icon: "📊" },
-          { href: "/admin/orders-dashboard", label: t.nav.ordersDashboard, icon: "📦" },
-          { href: "/admin/orders", label: t.nav.orderManagement, icon: "📦" },
-          { href: "/admin/distributor-restock", label: t.nav.distributorRestocks, icon: "💧" },
-          { href: "/admin/worldwide-inventory", label: t.nav.worldwideInventory, icon: "🌍" },
-          { href: "/admin/consumption", label: t.nav.consumptionReorder, icon: "📈" },
-          { href: "/shipments", label: t.nav.sampleTracking, icon: "📦" },
-          { href: "/shipping-docs", label: t.nav.shippingDocs, icon: "🚢" },
-        ],
-      },
-      {
-        label: t.nav.groupQualityLabs,
-        items: [
-          { href: "/fabrics", label: t.nav.fabrics, icon: "🧵" },
-          { href: "/fabrics/intake", label: t.nav.fabricIntake, icon: "📥" },
-          { href: "/recipes", label: t.nav.recipeLibrary, icon: "📖" },
-          { href: "/admin/recipe-calculator", label: "Recipe Calculator", icon: "🧪" },
-          { href: "/admin/solaris-test", label: "Solaris IR Test (FZ-500)", icon: "☀️" },
-          { href: "/test-requests", label: t.nav.testRequests, icon: "📝", badge: pendingCounts.testRequests },
-          { href: "/tests", label: t.nav.testResults, icon: "🧪" },
-          { href: "/admin/ongoing-tests", label: t.nav.ongoingTests, icon: "🔬" },
-          { href: "/admin/sample-trials", label: t.nav.sampleTrials, icon: "🧪" },
-          { href: "/labs", label: t.nav.labDirectory || "Lab Directory", icon: "🔬" },
-          ...(isAdmin ? [{ href: "/admin/test-catalog", label: t.nav.testCatalog, icon: "💲" }] : []),
-        ],
-      },
-      {
-        label: t.nav.groupPartners,
-        items: [
-          { href: "/brands", label: t.nav.brands, icon: "👕" },
-          { href: "/factories", label: t.nav.factories, icon: "🏭" },
-          { href: "/admin/distributors", label: t.nav.distributorNetwork, icon: "🌍" },
-          { href: "/admin/distributor-docs", label: t.nav.distributorDocs, icon: "📂" },
-        ],
-      },
-      {
-        label: t.nav.groupResourcesDocs,
-        items: [
-          { href: "/admin/product-documents", label: t.nav.productDocuments, icon: "📘" },
-          { href: "/admin/batches", label: t.nav.productionBatches, icon: "🏭" },
-          { href: "/compliance-library", label: t.nav.documentCenter, icon: "📋" },
-          { href: "/sow", label: t.nav.sowGovernance, icon: "📋" },
-          { href: "/meetings", label: t.nav.meetings, icon: "📅" },
-          { href: "/reports", label: t.nav.weeklySummary || "Weekly Summary", icon: "📈" },
-          { href: "/admin/competitor-pricing", label: t.nav.marketLandscape, icon: "📊" },
-          { href: "/pricing", label: t.nav.pricingAndEnvironment, icon: "💰" },
-          { href: "/pricing/calculator", label: t.nav.applicationCalculator, icon: "🧮" },
-          { href: "/sustainability", label: t.nav.sustainability, icon: "🌱" },
-          { href: "/brand-portal/chat", label: t.nav.fuzeFaq, icon: "💬" },
-        ],
-      },
-    ];
+    // ═══════════════════════════════════════════════════
+    //  INTERNAL USERS — scoped to the active module
+    // ═══════════════════════════════════════════════════
+    scopedModule = findActiveModule(pathname);
 
-    // Admin group
-    if (isAdmin) {
-      groups.push({
-        label: t.nav.groupAdminEmoji,
-        items: [
-          { href: "/notifications", label: t.nav.notifications, icon: "🔔" },
-          { href: "/settings/users", label: t.nav.userManagement, icon: "👥" },
-          { href: "/settings/availability", label: t.nav.availabilitySettings, icon: "⏰" },
-          { href: "/settings/access-requests", label: t.nav.accessRequests, icon: "📩", badge: pendingCounts.accessRequests },
-          { href: "/settings/exchange-rates", label: t.nav.exchangeRates, icon: "💱" },
-          { href: "/settings/audit-log", label: t.nav.auditLog, icon: "📜" },
-        ],
-      });
+    // Translate helper — keep using existing keys where available, fallback to module's English label
+    function translateModuleLabel(m: ModuleDef): string {
+      const tMap: Record<string, string | undefined> = {
+        "business-development": t.nav.groupBizDev,
+        "operations": t.nav.groupOps,
+        "quality-labs": t.nav.groupQualityLabs,
+        "partners": t.nav.groupPartners,
+        "resources": t.nav.groupResourcesDocs,
+        "admin": t.nav.groupAdminEmoji,
+      };
+      return tMap[m.key] || m.label;
+    }
+
+    // Badge lookup for dynamic counts
+    function badgeFor(item: ModuleItem): number | undefined {
+      if (item.badgeKey === "testRequests") return pendingCounts.testRequests;
+      if (item.badgeKey === "accessRequests") return pendingCounts.accessRequests;
+      return undefined;
+    }
+
+    // Turn a ModuleDef into a NavGroup, filtering admin-only pages for non-admins
+    function moduleToGroup(m: ModuleDef): NavGroup {
+      return {
+        label: translateModuleLabel(m),
+        items: m.items
+          .filter((it) => !it.adminOnly || isAdmin)
+          .map((it) => ({
+            href: it.href,
+            label: it.label,
+            icon: it.icon || "•",
+            badge: badgeFor(it),
+          })),
+      };
+    }
+
+    if (scopedModule && !onHome) {
+      // SCOPED VIEW — only this module's items
+      groups = [moduleToGroup(scopedModule)];
+    } else {
+      // HOME / UNSCOPED — show all 6 modules collapsed so the user can jump in
+      groups = MODULES
+        .filter((m) => !m.adminOnly || isAdmin)
+        .map(moduleToGroup);
     }
   }
 
-  // If admin/internal user is browsing factory portal pages, prepend factory portal nav
+  // If admin is browsing the factory portal, prepend factory-portal nav (unchanged behavior)
   if (pathname.startsWith("/factory-portal") && isAdmin && !isBrandUser && !isFactoryUser) {
     const factoryPortalGroup: NavGroup = {
       label: "Factory Portal",
@@ -391,24 +364,20 @@ export default function Sidebar() {
     groups.unshift(factoryPortalGroup);
   }
 
-  // ─── Expanded state: auto-expand group containing active page ─────
+  // ─── Expanded state — auto-expand group containing active route
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
-  // Initialize expanded state — expand group with active route, collapse others
   useEffect(() => {
     const newState: Record<string, boolean> = {};
     groups.forEach((g) => {
       const hasActive = g.items.some(
         (item) => pathname === item.href || pathname.startsWith(item.href + "/")
       );
-      // If group has active item, always expand. Otherwise keep current state or default collapsed.
-      if (hasActive) {
-        newState[g.label] = true;
-      } else if (expandedGroups[g.label] !== undefined) {
-        newState[g.label] = expandedGroups[g.label];
-      } else {
-        newState[g.label] = false;
-      }
+      // Scoped single-module view → always expanded
+      if (groups.length === 1) newState[g.label] = true;
+      else if (hasActive) newState[g.label] = true;
+      else if (expandedGroups[g.label] !== undefined) newState[g.label] = expandedGroups[g.label];
+      else newState[g.label] = false;
     });
     setExpandedGroups(newState);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -418,12 +387,8 @@ export default function Sidebar() {
     setExpandedGroups((prev) => ({ ...prev, [label]: !prev[label] }));
   };
 
-  // Close sidebar on route change (mobile)
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  useEffect(() => { setOpen(false); }, [pathname]);
 
-  // Close on escape key
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") { setOpen(false); setLangOpen(false); }
@@ -433,8 +398,10 @@ export default function Sidebar() {
   }, []);
 
   const currentLocale = LOCALES.find(l => l.code === locale) || LOCALES[0];
-
   const topActive = pathname === topItem.href;
+
+  // Is the sidebar in scoped-module mode for an internal user?
+  const inScopedModule = isInternal && !!scopedModule && !onHome;
 
   return (
     <>
@@ -507,36 +474,84 @@ export default function Sidebar() {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
-          {/* Dashboard — always visible at top */}
-          <Link
-            href={topItem.href}
-            className={`
-              flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-              ${topActive
-                ? "bg-[#00b4c3] text-white shadow-lg shadow-[#00b4c3]/30"
-                : "text-slate-300 hover:bg-slate-800 hover:text-white"
-              }
-            `}
-          >
-            <span className="text-base">{topItem.icon}</span>
-            {topItem.label}
-          </Link>
+          {inScopedModule ? (
+            // ─── SCOPED MODULE VIEW ─────────────────────
+            <>
+              {/* Prominent "All Modules" return */}
+              <Link
+                href="/home"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-300 bg-slate-800/60 hover:bg-slate-800 hover:text-white transition-colors border border-slate-700/60"
+              >
+                <span className="text-base">←</span>
+                <span className="flex-1">All Modules (Home)</span>
+              </Link>
 
-          {/* Divider */}
-          <div className="border-t border-slate-800 my-2" />
+              {/* Module header */}
+              {scopedModule && (
+                <div className="mt-3 px-3 py-2 rounded-lg bg-gradient-to-br from-slate-800/80 to-slate-800/40 border border-slate-700/50">
+                  <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Module</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-lg">{scopedModule.icon}</span>
+                    <span className={`text-sm font-black ${scopedModule.sidebarAccent}`}>
+                      {scopedModule.label}
+                    </span>
+                  </div>
+                </div>
+              )}
 
-          {/* Grouped nav sections */}
-          <div className="space-y-1">
-            {groups.map((group) => (
-              <NavSection
-                key={group.label}
-                group={group}
-                pathname={pathname}
-                expanded={expandedGroups[group.label] ?? false}
-                onToggle={() => toggleGroup(group.label)}
-              />
-            ))}
-          </div>
+              <div className="border-t border-slate-800 my-2" />
+
+              {/* Just this module's items — flat, no collapse */}
+              {groups[0] && (
+                <div className="space-y-0.5">
+                  {groups[0].items.map((item) => (
+                    <NavLink key={item.href} item={item} pathname={pathname} />
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            // ─── HOME / PORTAL VIEW ─────────────────────
+            <>
+              {/* Top link (Home or portal dashboard) */}
+              <Link
+                href={topItem.href}
+                className={`
+                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                  ${topActive
+                    ? "bg-[#00b4c3] text-white shadow-lg shadow-[#00b4c3]/30"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  }
+                `}
+              >
+                <span className="text-base">{topItem.icon}</span>
+                {topItem.label}
+              </Link>
+
+              <div className="border-t border-slate-800 my-2" />
+
+              {/* For internal home view: friendly hint */}
+              {isInternal && onHome && (
+                <div className="px-3 pb-2 text-[11px] text-slate-500 leading-snug">
+                  Pick a module from the cards on the right. The sidebar will scope itself to just
+                  that module&apos;s tools. Hit &ldquo;Home&rdquo; any time to switch modules.
+                </div>
+              )}
+
+              {/* Grouped nav */}
+              <div className="space-y-1">
+                {groups.map((group) => (
+                  <NavSection
+                    key={group.label}
+                    group={group}
+                    pathname={pathname}
+                    expanded={expandedGroups[group.label] ?? false}
+                    onToggle={() => toggleGroup(group.label)}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </nav>
 
         {/* Language Switcher */}
@@ -572,7 +587,7 @@ export default function Sidebar() {
           )}
         </div>
 
-        {/* View As switcher — Admin only (or when impersonating) */}
+        {/* View As switcher */}
         {(user?.role === "ADMIN" || impersonation?.active) && (
           <div className="px-3 pb-2">
             <ViewAsSwitcher />

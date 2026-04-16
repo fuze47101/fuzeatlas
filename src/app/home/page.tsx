@@ -6,118 +6,18 @@ import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { MODULES, type ModuleDef } from "@/lib/modules";
 
 /**
  * Module Home — the "where do I want to go today" landing page for
  * admin / employee / sales users. Six big cards, each representing a
  * functional area. Clicking a card drops you into the module's
- * landing page, and the left sidebar shows all the tools for that
- * module.
+ * landing page, and the left sidebar scopes itself to that module.
+ *
+ * Card data is imported from `@/lib/modules` (shared with Sidebar).
+ * Add a new page in ONE place (modules.ts) and it appears in both
+ * the card and the scoped sidebar — no drift.
  */
-
-const MODULES = [
-  {
-    key: "business-development",
-    label: "Business Development",
-    icon: "🎯",
-    accent: "from-rose-500 to-rose-700",
-    blurb: "Leads, accounts, outreach, revenue",
-    landing: "/admin/brand-pipeline",
-    items: [
-      { label: "Brand Pipeline (Leads)", href: "/admin/brand-pipeline" },
-      { label: "Accounts", href: "/admin/accounts" },
-      { label: "Brand Intelligence", href: "/admin/brand-discovery" },
-      { label: "Sample → Production", href: "/admin/conversion-tracking" },
-      { label: "Deals & Revenue", href: "/pipeline" },
-      { label: "Invoices", href: "/invoices" },
-    ],
-  },
-  {
-    key: "operations",
-    label: "Operations",
-    icon: "📦",
-    accent: "from-[#00b4c3] to-[#009ba8]",
-    blurb: "Orders, inventory, shipments, consumption",
-    landing: "/admin/orders-dashboard",
-    items: [
-      { label: "Orders Dashboard", href: "/admin/orders-dashboard" },
-      { label: "Order Management", href: "/admin/orders" },
-      { label: "Production Batches", href: "/admin/batches" },
-      { label: "Distributor Restocks", href: "/admin/distributor-restock" },
-      { label: "Worldwide Inventory", href: "/admin/worldwide-inventory" },
-      { label: "Consumption & Reorder", href: "/admin/consumption" },
-      { label: "Shipping Docs", href: "/shipping-docs" },
-    ],
-  },
-  {
-    key: "quality-labs",
-    label: "Quality & Labs",
-    icon: "🧪",
-    accent: "from-violet-500 to-violet-700",
-    blurb: "Fabrics, recipes, testing, certification",
-    landing: "/tests",
-    items: [
-      { label: "Fabrics", href: "/fabrics" },
-      { label: "Fabric Intake", href: "/fabrics/intake" },
-      { label: "Recipe Library", href: "/recipes" },
-      { label: "Test Requests", href: "/test-requests" },
-      { label: "Test Results", href: "/tests" },
-      { label: "Ongoing Tests", href: "/admin/ongoing-tests" },
-      { label: "Sample Trials", href: "/admin/sample-trials" },
-      { label: "Lab Directory", href: "/labs" },
-    ],
-  },
-  {
-    key: "partners",
-    label: "Partners",
-    icon: "🤝",
-    accent: "from-amber-500 to-amber-700",
-    blurb: "Brands, factories, distributors",
-    landing: "/brands",
-    items: [
-      { label: "Brands", href: "/brands" },
-      { label: "Factories", href: "/factories" },
-      { label: "Distributor Network", href: "/admin/distributors" },
-      { label: "Distributor Docs", href: "/admin/distributor-docs" },
-    ],
-  },
-  {
-    key: "resources",
-    label: "Resources & Docs",
-    icon: "📚",
-    accent: "from-emerald-500 to-emerald-700",
-    blurb: "Document library, SDS/TDS/COA, SOWs, pricing",
-    landing: "/compliance-library",
-    items: [
-      { label: "Product Documents (TDS/SDS)", href: "/admin/product-documents" },
-      { label: "Document Center", href: "/compliance-library" },
-      { label: "SOWs", href: "/sow" },
-      { label: "Meetings", href: "/meetings" },
-      { label: "Weekly Summary", href: "/reports" },
-      { label: "Market Landscape", href: "/admin/competitor-pricing" },
-      { label: "Pricing & Environment", href: "/pricing" },
-      { label: "Application Calculator", href: "/pricing/calculator" },
-      { label: "Sustainability", href: "/sustainability" },
-    ],
-  },
-  {
-    key: "admin",
-    label: "Admin",
-    icon: "⚙️",
-    accent: "from-slate-700 to-slate-900",
-    blurb: "Users, settings, audit log, access",
-    landing: "/settings/users",
-    adminOnly: true,
-    items: [
-      { label: "Notifications", href: "/notifications" },
-      { label: "User Management", href: "/settings/users" },
-      { label: "Access Requests", href: "/settings/access-requests" },
-      { label: "Availability Settings", href: "/settings/availability" },
-      { label: "Exchange Rates", href: "/settings/exchange-rates" },
-      { label: "Audit Log", href: "/settings/audit-log" },
-    ],
-  },
-];
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -126,8 +26,8 @@ export default function HomePage() {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
-    const t = setInterval(() => setTime(new Date()), 60_000);
-    return () => clearInterval(t);
+    const tick = setInterval(() => setTime(new Date()), 60_000);
+    return () => clearInterval(tick);
   }, []);
 
   const isInternal = user?.role && ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"].includes(user.role);
@@ -147,7 +47,8 @@ export default function HomePage() {
   const greeting = hour < 12 ? t.home.goodMorning : hour < 18 ? t.home.goodAfternoon : t.home.goodEvening;
   const firstName = user?.name?.split(" ")[0] || "";
 
-  // Translate module labels/blurbs
+  // Translate module labels/blurbs where we have strings; fall back to the
+  // English ones baked into modules.ts.
   const translatedModules = MODULES.map((m) => {
     const tMap: Record<string, { label: string; blurb: string }> = {
       "business-development": { label: t.home.bizDev, blurb: t.home.bizDevBlurb },
@@ -190,6 +91,7 @@ export default function HomePage() {
           <Link href="/dashboard" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">📊 KPI Dashboard</Link>
           <Link href="/admin/orders-dashboard" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">📦 Orders</Link>
           <Link href="/admin/brand-pipeline" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">🔥 Pipeline</Link>
+          <Link href="/admin/icp-sample-prep" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">⚖️ ICP Sample Prep</Link>
           <Link href="/notifications" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">🔔 Notifications</Link>
           <Link href="/compliance-library" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">📋 Documents</Link>
         </div>
@@ -198,7 +100,8 @@ export default function HomePage() {
   );
 }
 
-function ModuleCard({ module: m }: { module: typeof MODULES[number] }) {
+function ModuleCard({ module: m }: { module: ModuleDef }) {
+  const visibleItems = m.items.filter((it) => !it.hideInCard);
   return (
     <Link
       href={m.landing}
@@ -215,13 +118,13 @@ function ModuleCard({ module: m }: { module: typeof MODULES[number] }) {
       </div>
       {/* Items */}
       <div className="p-4 grid grid-cols-1 gap-1">
-        {m.items.slice(0, 6).map((item) => (
+        {visibleItems.slice(0, 7).map((item) => (
           <span key={item.href} className="text-xs text-slate-600 truncate">
-            · {item.label}
+            {item.icon ? `${item.icon} ` : "· "}{item.label}
           </span>
         ))}
-        {m.items.length > 6 && (
-          <span className="text-xs text-slate-400">+ {m.items.length - 6} more</span>
+        {visibleItems.length > 7 && (
+          <span className="text-xs text-slate-400">+ {visibleItems.length - 7} more</span>
         )}
       </div>
     </Link>
