@@ -115,7 +115,7 @@ export async function POST(req: Request) {
                 ${notes ? `<tr><td style="padding:8px 0;color:#888">Notes</td><td style="padding:8px 0">${notes.trim()}</td></tr>` : ""}
               </table>
               <div style="margin-top:20px;text-align:center">
-                <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://atlas.fuzebiotech.com"}/settings/access-requests"
+                <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com"}/settings/access-requests"
                    style="display:inline-block;background:#00b4c3;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600">
                   Review Request
                 </a>
