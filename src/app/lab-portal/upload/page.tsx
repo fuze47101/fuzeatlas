@@ -148,6 +148,10 @@ export default function LabUploadPage() {
         >
           ⏳ Pending Tests ({pendingTests.filter(t => t.status !== "COMPLETE").length})
         </button>
+        <Link href="/lab-portal/uploads"
+          className="px-4 py-2 rounded-lg text-sm font-semibold bg-white border text-slate-600 hover:bg-slate-50">
+          📋 Upload History
+        </Link>
       </div>
 
       {tab === "upload" && (
@@ -371,8 +375,13 @@ export default function LabUploadPage() {
                 </div>
               )}
 
-              <div className="mt-4 text-sm text-slate-500">
-                Document ID: {result.documentId} • {formatSize(result.sizeBytes)}
+              <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-between">
+                <div className="text-sm text-emerald-700">
+                  ✅ Report uploaded and stored successfully. Document ID: {result.documentId} ({formatSize(result.sizeBytes)})
+                </div>
+                <Link href="/lab-portal/uploads" className="text-sm font-bold text-emerald-700 hover:text-emerald-800 whitespace-nowrap ml-4">
+                  View in Upload History →
+                </Link>
               </div>
             </div>
           )}

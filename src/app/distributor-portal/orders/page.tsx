@@ -16,6 +16,13 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }>
   CANCELLED: { bg: "bg-red-100", text: "text-red-700", label: "Cancelled" },
 };
 
+const UNIT_META: Record<string, { label: string; liters: number; desc: string; icon: string }> = {
+  CARBOY: { label: "Carboy", liters: 19, desc: "19L — single bottle", icon: "🧴" },
+  GAYLORD: { label: "Gaylord", liters: 608, desc: "32 carboys · 608L", icon: "📦" },
+  CONTAINER_20: { label: "20' Container", liters: 6080, desc: "10 gaylords · 6,080L", icon: "🚛" },
+  CONTAINER_40: { label: "40' Container", liters: 12160, desc: "20 gaylords · 12,160L", icon: "🚢" },
+};
+
 export default function DistributorOrdersPage() {
   const { user } = useAuth();
   const router = useRouter();
@@ -29,6 +36,24 @@ export default function DistributorOrdersPage() {
   const [updating, setUpdating] = useState(false);
   const [success, setSuccess] = useState("");
 
+  // Create order state
+  const [showCreate, setShowCreate] = useState(false);
+  const [factories, setFactories] = useState<any[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
+  const [creating, setCreating] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    factoryId: "",
+    orderType: "PRODUCTION",
+    unitType: "GAYLORD",
+    unitQuantity: 1,
+    fuzeTier: "F1",
+    brandId: "",
+    notes: "",
+    shippingAddress: "",
+    shippingCity: "",
+    shippingCountry: "",
+  });
+
   useEffect(() => {
     if (user?.role !== "DISTRIBUTOR_USER" && !["ADMIN", "EMPLOYEE"].includes(user?.role || "")) {
       router.push("/home");
@@ -36,6 +61,7 @@ export default function DistributorOrdersPage() {
     }
     loadOrders();
     loadBatches();
+    loadFactoriesAndBrands();
   }, [user]);
 
   async function loadOrders() {
@@ -59,6 +85,71 @@ export default function DistributorOrdersPage() {
       const data = await res.json();
       if (data.ok) setBatches((data.batches || []).filter((b: any) => b.qcPassed));
     } catch {}
+  }
+
+  async function loadFactoriesAndBrands() {
+    try {
+      const [fRes, bRes] = await Promise.all([
+        fetch("/api/distributor-portal/pricing"),
+        fetch("/api/brands?limit=200"),
+      ]);
+      const fData = await fRes.json();
+      const bData = await bRes.json();
+      if (fData.ok) setFactories(fData.factories || []);
+      if (bData.ok || bData.brands) setBrands(bData.brands || []);
+    } catch {}
+  }
+
+  const createVolumeLiters = useMemo(() => {
+    const meta = UNIT_META[createForm.unitType];
+    if (!meta) return 0;
+    return meta.liters * createForm.unitQuantity;
+  }, [createForm.unitType, createForm.unitQuantity]);
+
+  const createBottles = useMemo(() => {
+    return Math.ceil(createVolumeLiters / 19);
+  }, [createVolumeLiters]);
+
+  async function handleCreateOrder() {
+    if (!createForm.factoryId) return;
+    setCreating(true);
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          factoryId: createForm.factoryId,
+          orderType: createForm.orderType,
+          volumeLiters: createVolumeLiters,
+          bottles: createBottles,
+          fuzeTier: createForm.fuzeTier,
+          brandId: createForm.brandId || undefined,
+          notes: createForm.notes || undefined,
+          shippingAddress: createForm.shippingAddress || undefined,
+          shippingCity: createForm.shippingCity || undefined,
+          shippingCountry: createForm.shippingCountry || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setSuccess(`Order ${data.order?.orderNumber || ""} created!`);
+        setShowCreate(false);
+        setCreateForm({
+          factoryId: "", orderType: "PRODUCTION", unitType: "GAYLORD",
+          unitQuantity: 1, fuzeTier: "F1", brandId: "", notes: "",
+          shippingAddress: "", shippingCity: "", shippingCountry: "",
+        });
+        loadOrders();
+        setTimeout(() => setSuccess(""), 4000);
+      } else {
+        alert(data.error || "Failed to create order");
+      }
+    } catch (e) {
+      console.error("Create order error:", e);
+      alert("Failed to create order");
+    } finally {
+      setCreating(false);
+    }
   }
 
   async function handleAction(orderId: string, action: string, extraData?: any) {
@@ -106,9 +197,17 @@ export default function DistributorOrdersPage() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Orders</h1>
-        <p className="text-slate-500 mt-1">Orders assigned to your distribution center for fulfillment</p>
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Orders</h1>
+          <p className="text-slate-500 mt-1">Orders assigned to your distribution center for fulfillment</p>
+        </div>
+        <button
+          onClick={() => setShowCreate(true)}
+          className="px-5 py-2.5 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009ba8] transition-colors shadow-sm flex items-center gap-2 self-start sm:self-auto"
+        >
+          <span className="text-lg">+</span> Create Factory Order
+        </button>
       </div>
 
       {success && (
@@ -200,6 +299,225 @@ export default function DistributorOrdersPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Create Factory Order Modal */}
+      {showCreate && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm overflow-y-auto p-4 pt-8 sm:pt-12">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative">
+            <div className="p-6 border-b border-slate-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-slate-900">Create Factory Order</h2>
+                <button onClick={() => setShowCreate(false)} className="p-2 hover:bg-slate-100 rounded-lg">✕</button>
+              </div>
+              <p className="text-sm text-slate-500 mt-1">Place an order on behalf of a factory</p>
+            </div>
+            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              {/* Factory Selection */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Factory *</label>
+                <select
+                  value={createForm.factoryId}
+                  onChange={(e) => setCreateForm({ ...createForm, factoryId: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none bg-white"
+                >
+                  <option value="">— Select factory —</option>
+                  {factories.filter((f: any) => f.assigned).length > 0 && (
+                    <optgroup label="Your Factories">
+                      {factories.filter((f: any) => f.assigned).map((f: any) => (
+                        <option key={f.id} value={f.id}>{f.name}{f.country ? ` (${f.country})` : ""}</option>
+                      ))}
+                    </optgroup>
+                  )}
+                  {factories.filter((f: any) => !f.assigned).length > 0 && (
+                    <optgroup label="Other Factories">
+                      {factories.filter((f: any) => !f.assigned).map((f: any) => (
+                        <option key={f.id} value={f.id}>{f.name}{f.country ? ` (${f.country})` : ""}</option>
+                      ))}
+                    </optgroup>
+                  )}
+                </select>
+              </div>
+
+              {/* Order Type */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Order Type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { value: "PRODUCTION", label: "Production", icon: "🏭" },
+                    { value: "SAMPLE", label: "Sample", icon: "🧪" },
+                  ].map((t) => (
+                    <button
+                      key={t.value}
+                      type="button"
+                      onClick={() => setCreateForm({ ...createForm, orderType: t.value })}
+                      className={`px-3 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
+                        createForm.orderType === t.value
+                          ? "border-[#00b4c3] bg-[#00b4c3]/10 text-[#00b4c3]"
+                          : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      {t.icon} {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Unit Type + Quantity */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Package Size</label>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  {Object.entries(UNIT_META).map(([key, meta]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setCreateForm({ ...createForm, unitType: key })}
+                      className={`px-3 py-2 rounded-lg border text-left transition-colors ${
+                        createForm.unitType === key
+                          ? "border-[#00b4c3] bg-[#00b4c3]/10"
+                          : "border-slate-200 hover:bg-slate-50"
+                      }`}
+                    >
+                      <span className="text-lg">{meta.icon}</span>
+                      <p className="text-sm font-semibold text-slate-900">{meta.label}</p>
+                      <p className="text-[10px] text-slate-500">{meta.desc}</p>
+                    </button>
+                  ))}
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-500 mb-1">Quantity</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={createForm.unitQuantity}
+                      onChange={(e) => setCreateForm({ ...createForm, unitQuantity: Math.max(1, parseInt(e.target.value) || 1) })}
+                      className="w-24 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-center"
+                    />
+                    <span className="text-sm text-slate-500">
+                      = <strong>{createVolumeLiters.toLocaleString()}L</strong> ({createBottles} bottles)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* FUZE Tier */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">FUZE Tier</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {["F1", "F2", "F3", "F4"].map((tier) => (
+                    <button
+                      key={tier}
+                      type="button"
+                      onClick={() => setCreateForm({ ...createForm, fuzeTier: tier })}
+                      className={`px-3 py-2 rounded-lg border text-sm font-bold transition-colors ${
+                        createForm.fuzeTier === tier
+                          ? "border-[#00b4c3] bg-[#00b4c3]/10 text-[#00b4c3]"
+                          : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      {tier}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">F1 = 1.0 mg/kg · F2 = 0.75 · F3 = 0.5 · F4 = 0.25</p>
+              </div>
+
+              {/* Brand (optional) */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Brand <span className="text-slate-400 font-normal">(optional)</span></label>
+                <select
+                  value={createForm.brandId}
+                  onChange={(e) => setCreateForm({ ...createForm, brandId: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none bg-white"
+                >
+                  <option value="">— No brand —</option>
+                  {brands.map((b: any) => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Shipping */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Shipping Details <span className="text-slate-400 font-normal">(optional)</span></label>
+                <div className="grid grid-cols-1 gap-2">
+                  <input
+                    type="text"
+                    value={createForm.shippingAddress}
+                    onChange={(e) => setCreateForm({ ...createForm, shippingAddress: e.target.value })}
+                    placeholder="Address"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-sm"
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      value={createForm.shippingCity}
+                      onChange={(e) => setCreateForm({ ...createForm, shippingCity: e.target.value })}
+                      placeholder="City"
+                      className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-sm"
+                    />
+                    <input
+                      type="text"
+                      value={createForm.shippingCountry}
+                      onChange={(e) => setCreateForm({ ...createForm, shippingCountry: e.target.value })}
+                      placeholder="Country"
+                      className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Notes <span className="text-slate-400 font-normal">(optional)</span></label>
+                <textarea
+                  value={createForm.notes}
+                  onChange={(e) => setCreateForm({ ...createForm, notes: e.target.value })}
+                  placeholder="PO number, special instructions, etc."
+                  rows={2}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-sm resize-none"
+                />
+              </div>
+
+              {/* Summary */}
+              {createForm.factoryId && (
+                <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Order Summary</p>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div><span className="text-slate-500">Factory:</span> <span className="font-semibold">{factories.find((f: any) => f.id === createForm.factoryId)?.name}</span></div>
+                    <div><span className="text-slate-500">Type:</span> <span className="font-semibold">{createForm.orderType}</span></div>
+                    <div><span className="text-slate-500">Package:</span> <span className="font-semibold">{createForm.unitQuantity}x {UNIT_META[createForm.unitType]?.label}</span></div>
+                    <div><span className="text-slate-500">Volume:</span> <span className="font-semibold">{createVolumeLiters.toLocaleString()}L</span></div>
+                    <div><span className="text-slate-500">Tier:</span> <span className="font-semibold">{createForm.fuzeTier}</span></div>
+                    {createForm.brandId && (
+                      <div><span className="text-slate-500">Brand:</span> <span className="font-semibold">{brands.find((b: any) => b.id === createForm.brandId)?.name}</span></div>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-2">Pricing will be auto-calculated from your distributor pricing tiers.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="p-6 border-t border-slate-200 flex gap-3">
+              <button
+                onClick={() => setShowCreate(false)}
+                className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg font-semibold hover:bg-slate-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateOrder}
+                disabled={creating || !createForm.factoryId}
+                className="flex-1 px-4 py-2.5 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009ba8] transition-colors disabled:opacity-50"
+              >
+                {creating ? "Creating..." : "Create Order"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

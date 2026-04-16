@@ -178,6 +178,68 @@ export default function FactoryFabricsPage() {
   const [success, setSuccess] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  // Tab view
+  const [activeTab, setActiveTab] = useState<"fabrics" | "submissions">("fabrics");
+  const [submissions, setSubmissions] = useState<any[]>([]);
+  const [loadingSubs, setLoadingSubs] = useState(false);
+
+  // Brand Fabric Lookup
+  const [showBrandLookup, setShowBrandLookup] = useState(false);
+  const [brandSearch, setBrandSearch] = useState("");
+  const [fuzeNumSearch, setFuzeNumSearch] = useState("");
+  const [brandResults, setBrandResults] = useState<any[]>([]);
+  const [brandSearching, setBrandSearching] = useState(false);
+  const [linkingId, setLinkingId] = useState<string | null>(null);
+
+  const handleBrandLookup = async () => {
+    if (!brandSearch && !fuzeNumSearch) return;
+    setBrandSearching(true);
+    try {
+      const params = new URLSearchParams();
+      if (brandSearch) params.set("brand", brandSearch);
+      if (fuzeNumSearch) params.set("fuzeNumber", fuzeNumSearch);
+      const res = await fetch(`/api/factory-portal/brand-fabric-lookup?${params}`);
+      const data = await res.json();
+      if (data.ok) {
+        setBrandResults(data.fabrics);
+      } else {
+        setError(data.error || "Lookup failed");
+      }
+    } catch {
+      setError("Brand lookup failed");
+    } finally {
+      setBrandSearching(false);
+    }
+  };
+
+  const handleLinkFabric = async (fabricId: string) => {
+    setLinkingId(fabricId);
+    try {
+      const res = await fetch("/api/factory-portal/brand-fabric-lookup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fabricId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setSuccess(data.message);
+        setBrandResults((prev) => prev.map((f) => f.id === fabricId ? { ...f, alreadyLinked: true } : f));
+        // Refresh factory fabrics list
+        const qs = search ? `?search=${encodeURIComponent(search)}` : "";
+        const fabRes = await fetch(`/api/factory-portal/fabrics${qs}`);
+        const fabData = await fabRes.json();
+        if (fabData.ok) setFabrics(fabData.fabrics);
+        setTimeout(() => setSuccess(""), 5000);
+      } else {
+        setError(data.error || "Failed to link fabric");
+      }
+    } catch {
+      setError("Failed to link fabric");
+    } finally {
+      setLinkingId(null);
+    }
+  };
+
   useEffect(() => {
     if (user?.role !== "FACTORY_USER" && user?.role !== "FACTORY_MANAGER") {
       router.push("/dashboard");
@@ -201,7 +263,18 @@ export default function FactoryFabricsPage() {
       }
     };
 
+    const loadSubmissions = async () => {
+      setLoadingSubs(true);
+      try {
+        const res = await fetch("/api/factory-portal/submissions");
+        const data = await res.json();
+        if (data.ok) setSubmissions(data.submissions || []);
+      } catch { /* quiet */ }
+      finally { setLoadingSubs(false); }
+    };
+
     loadFabrics();
+    loadSubmissions();
   }, [user, router, search]);
 
   // Debounced search
@@ -259,8 +332,20 @@ export default function FactoryFabricsPage() {
         </Link>
       </div>
 
-      {/* Search */}
-      {fabrics.length > 0 || search ? (
+      {/* Tabs */}
+      <div className="flex gap-2 mb-6">
+        <button onClick={() => setActiveTab("fabrics")}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${activeTab === "fabrics" ? "bg-slate-900 text-white" : "bg-white border border-slate-300 text-slate-600 hover:bg-slate-50"}`}>
+          All Fabrics ({fabrics.length})
+        </button>
+        <button onClick={() => setActiveTab("submissions")}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${activeTab === "submissions" ? "bg-slate-900 text-white" : "bg-white border border-slate-300 text-slate-600 hover:bg-slate-50"}`}>
+          Submissions ({submissions.length})
+        </button>
+      </div>
+
+      {/* Search — only show on fabrics tab */}
+      {activeTab === "fabrics" && (fabrics.length > 0 || search) ? (
         <div className="mb-6">
           <div className="relative max-w-md">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -276,6 +361,79 @@ export default function FactoryFabricsPage() {
           </div>
         </div>
       ) : null}
+
+      {activeTab === "fabrics" && (<>
+      {/* Brand Fabric Lookup */}
+      <div className="mb-6">
+        <button onClick={() => setShowBrandLookup(!showBrandLookup)}
+          className="text-sm font-semibold text-[#0b3d5c] hover:text-[#00b4c3] flex items-center gap-2 transition-colors">
+          <span>{showBrandLookup ? "▾" : "▸"}</span>
+          Look Up Brand Fabric
+        </button>
+        {showBrandLookup && (
+          <div className="mt-3 bg-white border border-slate-200 rounded-xl p-5">
+            <p className="text-xs text-slate-500 mb-3">Search for a fabric registered by a brand. If it matches, you can link it to your factory.</p>
+            <div className="flex gap-3 items-end">
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-slate-600 mb-1">Brand Name</label>
+                <input type="text" value={brandSearch} onChange={(e) => setBrandSearch(e.target.value)}
+                  placeholder="e.g., Notimid" onKeyDown={(e) => e.key === "Enter" && handleBrandLookup()}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none" />
+              </div>
+              <div className="w-40">
+                <label className="block text-xs font-medium text-slate-600 mb-1">FUZE #</label>
+                <input type="text" value={fuzeNumSearch} onChange={(e) => setFuzeNumSearch(e.target.value)}
+                  placeholder="e.g., 2510" onKeyDown={(e) => e.key === "Enter" && handleBrandLookup()}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none" />
+              </div>
+              <button onClick={handleBrandLookup} disabled={brandSearching || (!brandSearch && !fuzeNumSearch)}
+                className="px-5 py-2 bg-[#0b3d5c] text-white rounded-lg text-sm font-semibold hover:bg-[#0a3450] disabled:opacity-50 transition-colors whitespace-nowrap">
+                {brandSearching ? "Searching..." : "Search"}
+              </button>
+            </div>
+            {brandResults.length > 0 && (
+              <div className="mt-4 border border-slate-200 rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 border-b">
+                    <tr>
+                      <th className="text-left px-3 py-2 font-semibold text-slate-600 text-xs">FUZE #</th>
+                      <th className="text-left px-3 py-2 font-semibold text-slate-600 text-xs">Brand</th>
+                      <th className="text-left px-3 py-2 font-semibold text-slate-600 text-xs">Brand Code</th>
+                      <th className="text-left px-3 py-2 font-semibold text-slate-600 text-xs hidden sm:table-cell">Construction</th>
+                      <th className="text-left px-3 py-2 font-semibold text-slate-600 text-xs hidden md:table-cell">Weight</th>
+                      <th className="text-center px-3 py-2 font-semibold text-slate-600 text-xs">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {brandResults.map((f) => (
+                      <tr key={f.id} className="hover:bg-slate-50">
+                        <td className="px-3 py-2 font-mono font-bold text-[#00b4c3]">FUZE-{f.fuzeNumber}</td>
+                        <td className="px-3 py-2 text-slate-700">{f.brandName}</td>
+                        <td className="px-3 py-2 text-slate-600">{f.customerCode || "—"}</td>
+                        <td className="px-3 py-2 text-slate-600 hidden sm:table-cell truncate max-w-[150px]">{f.construction || "—"}</td>
+                        <td className="px-3 py-2 text-slate-600 hidden md:table-cell">{f.weightGsm ? `${f.weightGsm} GSM` : "—"}</td>
+                        <td className="px-3 py-2 text-center">
+                          {f.alreadyLinked ? (
+                            <span className="text-xs text-emerald-600 font-semibold">✓ Linked</span>
+                          ) : (
+                            <button onClick={() => handleLinkFabric(f.id)} disabled={linkingId === f.id}
+                              className="px-3 py-1 bg-[#00b4c3] text-white rounded text-xs font-bold hover:bg-[#009aa8] disabled:opacity-50">
+                              {linkingId === f.id ? "..." : "Link to Factory"}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {brandResults.length === 0 && (brandSearch || fuzeNumSearch) && !brandSearching && (
+              <p className="mt-3 text-xs text-slate-400">No brand fabrics found. Check the brand name or FUZE number and try again.</p>
+            )}
+          </div>
+        )}
+      </div>
 
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{error}</div>
@@ -364,6 +522,60 @@ export default function FactoryFabricsPage() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      </>)}
+
+      {/* Submissions Tab */}
+      {activeTab === "submissions" && (
+        <div>
+          {loadingSubs ? (
+            <div className="flex justify-center py-12"><div className="w-8 h-8 border-4 border-[#00b4c3] border-t-transparent rounded-full animate-spin" /></div>
+          ) : submissions.length === 0 ? (
+            <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
+              <p className="text-slate-500 mb-2">No submissions yet</p>
+              <Link href="/factory-portal/intake" className="text-[#00b4c3] hover:underline font-medium text-sm">Submit a fabric →</Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {submissions.map((sub: any) => (
+                <div key={sub.id} onClick={() => router.push(`/fabrics/${sub.fabric.id}`)}
+                  className="bg-white border border-slate-200 rounded-xl p-4 hover:border-[#00b4c3] hover:shadow-md transition-all cursor-pointer">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="font-mono font-bold text-[#00b4c3]">FUZE-{sub.fabric?.fuzeNumber}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${
+                          sub.status === "COMPLETE" || sub.status === "APPROVED" ? "bg-emerald-100 text-emerald-800" :
+                          sub.status === "TESTING" ? "bg-purple-100 text-purple-800" :
+                          sub.status === "IN_REVIEW" ? "bg-amber-100 text-amber-800" :
+                          sub.status === "REJECTED" ? "bg-red-100 text-red-800" :
+                          "bg-blue-100 text-blue-800"
+                        }`}>
+                          {sub.status}
+                        </span>
+                      </div>
+                      <div className="text-sm text-slate-600">
+                        {sub.fabric?.construction || sub.fabric?.note?.replace("Intake: ", "").split(" | ")[0] || "—"}
+                      </div>
+                      <div className="text-xs text-slate-400 mt-1">Submitted {new Date(sub.createdAt).toLocaleDateString()}</div>
+                      {sub.testResults && sub.testResults.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {sub.testResults.map((r: any, i: number) => (
+                            <span key={i} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">{r.testType}: {r.status}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <svg className="w-5 h-5 text-slate-300 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

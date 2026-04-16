@@ -336,10 +336,21 @@ export default function DistributorInventoryPage() {
                   onChange={(e) => setPricingForm({ ...pricingForm, factoryId: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none"
                 >
-                  <option value="">All factories</option>
-                  {factories.map((f) => (
-                    <option key={f.id} value={f.id}>{f.name} ({f.country})</option>
-                  ))}
+                  <option value="">All factories (default pricing)</option>
+                  {factories.filter((f: any) => f.assigned).length > 0 && (
+                    <optgroup label="Your Factories">
+                      {factories.filter((f: any) => f.assigned).map((f: any) => (
+                        <option key={f.id} value={f.id}>{f.name} ({f.country})</option>
+                      ))}
+                    </optgroup>
+                  )}
+                  {factories.filter((f: any) => !f.assigned).length > 0 && (
+                    <optgroup label="Other Factories">
+                      {factories.filter((f: any) => !f.assigned).map((f: any) => (
+                        <option key={f.id} value={f.id}>{f.name} ({f.country})</option>
+                      ))}
+                    </optgroup>
+                  )}
                 </select>
                 <p className="text-xs text-slate-400 mt-1">Leave blank for country/region/default pricing</p>
               </div>
@@ -382,8 +393,10 @@ export default function DistributorInventoryPage() {
                     <option value="USD">USD</option>
                     <option value="EUR">EUR</option>
                     <option value="GBP">GBP</option>
+                    <option value="TWD">TWD</option>
                     <option value="THB">THB</option>
                     <option value="CNY">CNY</option>
+                    <option value="TRY">TRY</option>
                     <option value="VND">VND</option>
                     <option value="BDT">BDT</option>
                     <option value="INR">INR</option>

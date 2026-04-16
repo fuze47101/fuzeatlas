@@ -34,12 +34,26 @@ export async function GET(req: Request) {
       orderBy: [{ isDefault: "desc" }, { createdAt: "desc" }],
     });
 
-    // Get factories assigned to this distributor for dropdown
-    const factories = await prisma.factory.findMany({
-      where: { distributorId },
-      select: { id: true, name: true, country: true },
+    // Get factories for dropdown — assigned factories first, then all others
+    const allFactories = await prisma.factory.findMany({
+      where: { active: true },
+      select: { id: true, name: true, country: true, distributorId: true },
       orderBy: { name: "asc" },
     });
+
+    // Sort: assigned to this distributor first, then others
+    const factories = allFactories
+      .map((f) => ({
+        id: f.id,
+        name: f.name,
+        country: f.country,
+        assigned: f.distributorId === distributorId,
+      }))
+      .sort((a, b) => {
+        if (a.assigned && !b.assigned) return -1;
+        if (!a.assigned && b.assigned) return 1;
+        return a.name.localeCompare(b.name);
+      });
 
     return NextResponse.json({ ok: true, pricing, factories });
   } catch (e: any) {

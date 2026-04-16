@@ -22,11 +22,12 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: "Not a lab user" }, { status: 403 });
     }
 
-    // Build query — labs see their own, admins see all
+    // Build query — labs see their own, admins see all (including unlinked)
     const where: any = { kind: "REPORT" };
     if (labId && !isAdmin) {
       where.labId = labId;
     }
+    // Admins see everything (no labId filter)
 
     // Parse query params for filtering
     const url = new URL(req.url);

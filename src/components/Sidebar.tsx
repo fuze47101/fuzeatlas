@@ -216,8 +216,7 @@ export default function Sidebar() {
         label: "Factory Portal",
         items: [
           { href: "/factory-portal/intake", label: "Submit Fabric", icon: "📥" },
-          { href: "/factory-portal/fabrics", label: "Fabrics", icon: "🧵" },
-          { href: "/factory-portal/submissions", label: "Submissions", icon: "📋" },
+          { href: "/factory-portal/fabrics", label: "Fabrics & Submissions", icon: "🧵" },
           { href: "/factory-portal/tests", label: "Test Results", icon: "🧪" },
           { href: "/factory-portal/sample-trial", label: "Sample Trials", icon: "🧪" },
           { href: "/factory-portal/request-test", label: "Request Test", icon: "📋" },
@@ -245,6 +244,7 @@ export default function Sidebar() {
           { href: "/distributor-portal/restock", label: "Restock from FUZE", icon: "💧" },
           { href: "/distributor-portal/orders", label: "Factory Orders", icon: "📦" },
           { href: "/distributor-portal/inventory", label: "Inventory & Pricing", icon: "📊" },
+          { href: "/distributor-portal/upload-report", label: "Upload Test Report", icon: "🧪" },
           { href: "/distributor-portal/documents", label: "Document Library", icon: "📂" },
           { href: "/distributor-portal/invoices", label: "Invoices", icon: "📄" },
         ],
@@ -381,8 +381,7 @@ export default function Sidebar() {
       items: [
         { href: "/factory-portal", label: "Dashboard", icon: "📊" },
         { href: "/factory-portal/intake", label: "Submit Fabric", icon: "📥" },
-        { href: "/factory-portal/fabrics", label: "My Fabrics", icon: "🧵" },
-        { href: "/factory-portal/submissions", label: "Submissions", icon: "📋" },
+        { href: "/factory-portal/fabrics", label: "Fabrics & Submissions", icon: "🧵" },
         { href: "/factory-portal/tests", label: "Test Results", icon: "🧪" },
         { href: "/factory-portal/sample-trial", label: "Sample Trials", icon: "🧪" },
         { href: "/factory-portal/request-test", label: "Request Test", icon: "📋" },
