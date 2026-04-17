@@ -4,36 +4,100 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    // Server-side filtering (?q=…) and paging (?pageSize=…). Both optional —
+    // legacy callers that hit /api/fabrics with no params still get the full
+    // library back (preserving the original contract).
+    const { searchParams } = new URL(req.url);
+    const q = (searchParams.get("q") || "").trim();
+    const pageSizeRaw = parseInt(searchParams.get("pageSize") || "0", 10);
+    const take = Number.isFinite(pageSizeRaw) && pageSizeRaw > 0 ? Math.min(pageSizeRaw, 1000) : undefined;
+
+    // Build a broad OR filter. Ashlee types "2504" → we want that to match
+    // fuzeNumber exactly AND customer/factory codes that contain "2504".
+    let where: any = undefined;
+    if (q) {
+      const asInt = /^\d+$/.test(q) ? parseInt(q, 10) : null;
+      where = {
+        OR: [
+          ...(asInt !== null ? [{ fuzeNumber: asInt }] : []),
+          { customerCode: { contains: q, mode: "insensitive" } },
+          { factoryCode: { contains: q, mode: "insensitive" } },
+          { construction: { contains: q, mode: "insensitive" } },
+          { color: { contains: q, mode: "insensitive" } },
+          { yarnType: { contains: q, mode: "insensitive" } },
+          { fabricCategory: { contains: q, mode: "insensitive" } },
+          { note: { contains: q, mode: "insensitive" } },
+          { brand: { is: { name: { contains: q, mode: "insensitive" } } } },
+          { factory: { is: { name: { contains: q, mode: "insensitive" } } } },
+          // FUZE number may also live on the related FabricSubmission if the
+          // fabric was registered via intake and not yet back-filled.
+          { submissions: { some: asInt !== null ? { fuzeFabricNumber: asInt } : { customerFabricCode: { contains: q, mode: "insensitive" } } } },
+        ],
+      };
+    }
+
     const fabrics = await prisma.fabric.findMany({
+      where,
       include: {
         brand: { select: { id: true, name: true } },
         factory: { select: { id: true, name: true } },
         contents: true,
         _count: { select: { submissions: true } },
+        submissions: {
+          select: {
+            id: true,
+            fuzeFabricNumber: true,
+            customerFabricCode: true,
+            factoryFabricCode: true,
+          },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
       },
       orderBy: { fuzeNumber: "desc" },
+      ...(take ? { take } : {}),
     });
 
-    const list = fabrics.map(f => ({
-      id: f.id,
-      fuzeNumber: f.fuzeNumber,
-      customerCode: f.customerCode || null,
-      factoryCode: f.factoryCode || null,
-      construction: f.construction,
-      color: f.color,
-      weightGsm: f.weightGsm,
-      yarnType: f.yarnType,
-      brand: f.brand?.name || null,
-      brandId: f.brandId,
-      factory: f.factory?.name || null,
-      factoryId: f.factoryId,
-      contents: f.contents.map(c => `${c.material} ${c.percent ? c.percent + "%" : ""}`).join(", "),
-      submissionCount: f._count.submissions,
-    }));
+    const list = fabrics.map((f: any) => {
+      const sub = f.submissions?.[0] || null;
+      return {
+        id: f.id,
+        fuzeNumber: f.fuzeNumber ?? sub?.fuzeFabricNumber ?? null,
+        customerCode: f.customerCode || sub?.customerFabricCode || null,
+        factoryCode: f.factoryCode || sub?.factoryFabricCode || null,
+        construction: f.construction,
+        color: f.color,
+        weightGsm: f.weightGsm,
+        widthInches: f.widthInches,
+        yarnType: f.yarnType,
+        brand: f.brand?.name || null,
+        brandId: f.brandId,
+        factory: f.factory?.name || null,
+        factoryId: f.factoryId,
+        contents: f.contents.map((c: any) => `${c.material} ${c.percent ? c.percent + "%" : ""}`).join(", "),
+        submissionCount: f._count.submissions,
+        // Kept for any caller that still reads the nested shape.
+        submission: sub
+          ? {
+              id: sub.id,
+              fuzeFabricNumber: sub.fuzeFabricNumber,
+              customerFabricCode: sub.customerFabricCode,
+              factoryFabricCode: sub.factoryFabricCode,
+            }
+          : null,
+      };
+    });
 
-    return NextResponse.json({ ok: true, fabrics: list, total: fabrics.length });
+    // Return BOTH keys so every existing caller keeps working: /fabrics and
+    // test-requests read `fabrics`, ICP Sample Prep reads `items`.
+    return NextResponse.json({
+      ok: true,
+      fabrics: list,
+      items: list,
+      total: list.length,
+    });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }

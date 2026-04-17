@@ -41,8 +41,16 @@ const DIGEST_TARGET_G = 0.5;   // what CTLA takes per digest run
 const WHEEL_CM2 = 100;         // 10 × 10 cm cutter
 
 // ── Types ─────────────────────────────────────────────────
+//
+// /api/fabrics returns flat fuzeNumber / customerCode / factoryCode
+// pulled from the Fabric row (source of truth) with a fallback to the
+// linked FabricSubmission if the fabric was registered via intake.
+// We keep `submission` as an optional nested shape for back-compat.
 type FabricRow = {
   id: string;
+  fuzeNumber: number | null;
+  customerCode: string | null;
+  factoryCode: string | null;
   construction: string | null;
   color: string | null;
   widthInches: number | null;
@@ -53,6 +61,15 @@ type FabricRow = {
     factoryFabricCode: string | null;
   } | null;
 };
+
+// Resolve the "canonical" FUZE number / customer code / factory code for
+// a fabric row — flat field on Fabric wins, submission is a fallback.
+const fuzeNumOf = (f: FabricRow): number | null =>
+  f.fuzeNumber ?? f.submission?.fuzeFabricNumber ?? null;
+const customerCodeOf = (f: FabricRow): string | null =>
+  f.customerCode ?? f.submission?.customerFabricCode ?? null;
+const factoryCodeOf = (f: FabricRow): string | null =>
+  f.factoryCode ?? f.submission?.factoryFabricCode ?? null;
 
 type Sample = {
   fabricId: string;
@@ -72,8 +89,9 @@ type Sample = {
 
 // ── Helpers ───────────────────────────────────────────────
 function fabricLabel(f: FabricRow): string {
-  const fn = f.submission?.fuzeFabricNumber ? `FUZE-${f.submission.fuzeFabricNumber}` : null;
-  const cc = f.submission?.customerFabricCode ? ` · ${f.submission.customerFabricCode}` : "";
+  const fuze = fuzeNumOf(f);
+  const fn = fuze ? `FUZE-${fuze}` : null;
+  const cc = customerCodeOf(f) ? ` · ${customerCodeOf(f)}` : "";
   const con = f.construction ? ` · ${f.construction}` : "";
   const col = f.color ? ` · ${f.color}` : "";
   return `${fn || f.id.slice(0, 8)}${cc}${con}${col}`;
@@ -82,9 +100,9 @@ function fabricLabel(f: FabricRow): string {
 function makeSampleFromFabric(f: FabricRow): Sample {
   return {
     fabricId: f.id,
-    fuzeNumber: f.submission?.fuzeFabricNumber ?? null,
-    customerCode: f.submission?.customerFabricCode ?? null,
-    factoryCode: f.submission?.factoryFabricCode ?? null,
+    fuzeNumber: fuzeNumOf(f),
+    customerCode: customerCodeOf(f),
+    factoryCode: factoryCodeOf(f),
     construction: f.construction ?? null,
     color: f.color ?? null,
     weightGsm: f.weightGsm ?? null,
@@ -130,7 +148,8 @@ export default function IcpSamplePrepWizardPage() {
         const res = await fetch(url.toString(), { cache: "no-store" });
         const json = await res.json();
         if (!json.ok) throw new Error(json.error || `HTTP ${res.status}`);
-        if (!cancelled) setFabrics(json.items || []);
+        // API returns `fabrics` (primary) and `items` (alias for back-compat)
+        if (!cancelled) setFabrics(json.fabrics || json.items || []);
       } catch (e: any) {
         if (!cancelled) setFabricsError(e?.message || String(e));
       } finally {
@@ -321,11 +340,11 @@ export default function IcpSamplePrepWizardPage() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="font-semibold text-slate-900 truncate">
-                          {f.submission?.fuzeFabricNumber
-                            ? `FUZE-${f.submission.fuzeFabricNumber}`
+                          {fuzeNumOf(f)
+                            ? `FUZE-${fuzeNumOf(f)}`
                             : f.id.slice(0, 8)}
-                          {f.submission?.customerFabricCode && (
-                            <span className="text-slate-500 font-normal"> · {f.submission.customerFabricCode}</span>
+                          {customerCodeOf(f) && (
+                            <span className="text-slate-500 font-normal"> · {customerCodeOf(f)}</span>
                           )}
                         </div>
                         <div className="text-xs text-slate-500 truncate">
