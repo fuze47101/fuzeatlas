@@ -21,7 +21,7 @@
 export type ModuleItem = {
   label: string;
   href: string;
-  icon?: string;      // emoji rendered in sidebar
+  icon?: string; // emoji rendered in sidebar
   badgeKey?: "testRequests" | "accessRequests"; // dynamic counts
   adminOnly?: boolean;
   hideInCard?: boolean; // hide from home card grid but keep in sidebar
@@ -31,8 +31,8 @@ export type ModuleDef = {
   key: string;
   label: string;
   icon: string;
-  accent: string;          // gradient classes for home card
-  sidebarAccent: string;   // single color class for sidebar badge
+  accent: string; // gradient classes for home card
+  sidebarAccent: string; // single color class for sidebar badge
   blurb: string;
   landing: string;
   adminOnly?: boolean;
@@ -167,7 +167,12 @@ export const MODULES: ModuleDef[] = [
     items: [
       { label: "Notifications", href: "/notifications", icon: "🔔" },
       { label: "User Management", href: "/settings/users", icon: "👥" },
-      { label: "Access Requests", href: "/settings/access-requests", icon: "📩", badgeKey: "accessRequests" },
+      {
+        label: "Access Requests",
+        href: "/settings/access-requests",
+        icon: "📩",
+        badgeKey: "accessRequests",
+      },
       { label: "Availability Settings", href: "/settings/availability", icon: "⏰" },
       { label: "Exchange Rates", href: "/settings/exchange-rates", icon: "💱" },
       { label: "Audit Log", href: "/settings/audit-log", icon: "📜" },
@@ -179,8 +184,23 @@ export const MODULES: ModuleDef[] = [
  * Given the current pathname, find the module that owns it. Used by
  * the sidebar to scope the nav. Returns undefined if the path doesn't
  * belong to any module (e.g. /home, /login).
+ *
+ * `hint` lets a calling page override the default prefix-match. Currently
+ * used by the sidebar on `/brands/[id]` routes: if the brand is a LEAD or
+ * PRESENTATION stage it's still a prospect, so the sidebar should stay in
+ * Business Development rather than flipping to Partners. Without a hint,
+ * behavior is pure longest-prefix-wins on MODULES.
  */
-export function findActiveModule(pathname: string): ModuleDef | undefined {
+export type ModuleHint = "business-development" | "partners" | null | undefined;
+
+export function findActiveModule(pathname: string, hint?: ModuleHint): ModuleDef | undefined {
+  // Explicit hint wins — lets pages declare "I belong to BD" even when the
+  // URL prefix (like /brands) is owned by a different module.
+  if (hint) {
+    const hinted = MODULES.find((m) => m.key === hint);
+    if (hinted) return hinted;
+  }
+
   // Most specific match wins (longest prefix)
   let best: { m: ModuleDef; score: number } | undefined;
   for (const m of MODULES) {

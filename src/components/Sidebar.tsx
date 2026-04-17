@@ -8,7 +8,13 @@ import { useI18n, LOCALES } from "@/i18n";
 import type { Locale } from "@/i18n";
 import { useAuth } from "@/lib/AuthContext";
 import ViewAsSwitcher from "./ViewAsSwitcher";
-import { MODULES, findActiveModule, type ModuleDef, type ModuleItem } from "@/lib/modules";
+import {
+  MODULES,
+  findActiveModule,
+  type ModuleDef,
+  type ModuleItem,
+  type ModuleHint,
+} from "@/lib/modules";
 
 /**
  * ═══════════════════════════════════════════════════════════════
@@ -61,18 +67,21 @@ function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
       href={item.href}
       className={`
         flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all
-        ${active
-          ? "bg-[#00b4c3] text-white shadow-lg shadow-[#00b4c3]/30"
-          : "text-slate-300 hover:bg-slate-800 hover:text-white"
+        ${
+          active
+            ? "bg-[#00b4c3] text-white shadow-lg shadow-[#00b4c3]/30"
+            : "text-slate-300 hover:bg-slate-800 hover:text-white"
         }
       `}
     >
       <span className="text-base">{item.icon}</span>
       <span className="flex-1">{item.label}</span>
       {item.badge && item.badge > 0 ? (
-        <span className={`min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ${
-          active ? "bg-white/25 text-white" : "bg-red-500 text-white animate-pulse"
-        }`}>
+        <span
+          className={`min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ${
+            active ? "bg-white/25 text-white" : "bg-red-500 text-white animate-pulse"
+          }`}
+        >
           {item.badge}
         </span>
       ) : null}
@@ -92,7 +101,7 @@ function NavSection({
   onToggle: () => void;
 }) {
   const hasActive = group.items.some(
-    (item) => pathname === item.href || pathname.startsWith(item.href + "/")
+    (item) => pathname === item.href || pathname.startsWith(item.href + "/"),
   );
   const groupBadgeTotal = group.items.reduce((sum, item) => sum + (item.badge || 0), 0);
 
@@ -143,7 +152,8 @@ export default function Sidebar() {
   const isFactoryUser = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
   const isDistributorUser = user?.role === "DISTRIBUTOR_USER";
   const isLabUser = user?.role === "LAB_USER";
-  const isInternal = !isBrandUser && !isFactoryUser && !isDistributorUser && !isLabUser && user?.role !== "PUBLIC";
+  const isInternal =
+    !isBrandUser && !isFactoryUser && !isDistributorUser && !isLabUser && user?.role !== "PUBLIC";
   const isAdmin = (user?.role === "ADMIN" || user?.role === "EMPLOYEE") && !impersonation?.active;
 
   // ─── Pending counts (for internal admin badges) ─────
@@ -158,13 +168,59 @@ export default function Sidebar() {
     const fetchCounts = () => {
       fetch("/api/admin/pending-counts")
         .then((r) => r.json())
-        .then((d) => { if (d.ok) setPendingCounts(d); })
+        .then((d) => {
+          if (d.ok) setPendingCounts(d);
+        })
         .catch(() => {});
     };
     fetchCounts();
     const interval = setInterval(fetchCounts, 30000);
     return () => clearInterval(interval);
   }, [isAdmin]);
+
+  // ─── Module hint for brand detail pages ───────────
+  //
+  // /brands/[id] is formally owned by the Partners module in modules.ts,
+  // but when a BD rep opens a LEAD / PRESENTATION they're still prospecting —
+  // the sidebar should stay in Business Development. We peek at the brand's
+  // pipelineStage via a tiny endpoint and use it as a hint for findActiveModule.
+  //
+  // Guard: only BD-relevant stages steer the hint; everything else falls through
+  // to the default prefix match (Partners).
+  const [brandModuleHint, setBrandModuleHint] = useState<ModuleHint>(null);
+  useEffect(() => {
+    const m = pathname.match(/^\/brands\/([^/]+)/);
+    if (!m) {
+      if (brandModuleHint !== null) setBrandModuleHint(null);
+      return;
+    }
+    const brandId = m[1];
+    if (brandId === "new") {
+      if (brandModuleHint !== null) setBrandModuleHint(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/brands/${brandId}/stage-mini`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (cancelled) return;
+        // Only LEAD stage brands belong to Business Development. Once a lead
+        // moves to PRESENTATION (or any downstream stage) they're a Partner and
+        // the sidebar should scope to the Partners module.
+        if (d.ok && d.pipelineStage === "LEAD") {
+          setBrandModuleHint("business-development");
+        } else {
+          setBrandModuleHint(null);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setBrandModuleHint(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   // ─── Lab pending counts ─────────────────────────────
   const [labPendingCount, setLabPendingCount] = useState(0);
@@ -173,7 +229,9 @@ export default function Sidebar() {
     const fetchLabCounts = () => {
       fetch("/api/lab-portal")
         .then((r) => r.json())
-        .then((d) => { if (d.ok) setLabPendingCount(d.stats?.pendingRequests || 0); })
+        .then((d) => {
+          if (d.ok) setLabPendingCount(d.stats?.pendingRequests || 0);
+        })
         .catch(() => {});
     };
     fetchLabCounts();
@@ -185,12 +243,12 @@ export default function Sidebar() {
   const topItem: NavItem = isFactoryUser
     ? { href: "/factory-portal", label: t.nav.dashboard, icon: "📊" }
     : isBrandUser
-    ? { href: "/brand-portal", label: t.nav.dashboard, icon: "📊" }
-    : isDistributorUser
-    ? { href: "/distributor-portal", label: t.nav.dashboard, icon: "📊" }
-    : isLabUser
-    ? { href: "/lab-portal", label: t.nav.dashboard, icon: "📊" }
-    : { href: "/home", label: t.nav.home || "Home", icon: "🏠" };
+      ? { href: "/brand-portal", label: t.nav.dashboard, icon: "📊" }
+      : isDistributorUser
+        ? { href: "/distributor-portal", label: t.nav.dashboard, icon: "📊" }
+        : isLabUser
+          ? { href: "/lab-portal", label: t.nav.dashboard, icon: "📊" }
+          : { href: "/home", label: t.nav.home || "Home", icon: "🏠" };
 
   // ═══════════════════════════════════════════════════════════════
   //  Build the nav based on role + current pathname
@@ -281,7 +339,12 @@ export default function Sidebar() {
         label: "Lab Portal",
         items: [
           { href: "/lab-portal/catalog", label: "Test Catalog", icon: "🧪" },
-          { href: "/lab-portal/requests", label: "Test Requests", icon: "📋", badge: labPendingCount },
+          {
+            href: "/lab-portal/requests",
+            label: "Test Requests",
+            icon: "📋",
+            badge: labPendingCount,
+          },
           { href: "/lab-portal/upload", label: "Upload Reports", icon: "📤" },
           { href: "/lab-portal/uploads", label: "Upload History", icon: "📊" },
           { href: "/lab-portal/forms", label: "Forms & Documents", icon: "📄" },
@@ -290,26 +353,27 @@ export default function Sidebar() {
       },
       {
         label: "Resources",
-        items: [
-          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
-        ],
+        items: [{ href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" }],
       },
     ];
   } else {
     // ═══════════════════════════════════════════════════
     //  INTERNAL USERS — scoped to the active module
     // ═══════════════════════════════════════════════════
-    scopedModule = findActiveModule(pathname);
+    // brandModuleHint lets us keep BD reps in Business Development when
+    // they drill into a LEAD / PRESENTATION brand, instead of getting
+    // kicked into Partners (which owns /brands by URL).
+    scopedModule = findActiveModule(pathname, brandModuleHint);
 
     // Translate helper — keep using existing keys where available, fallback to module's English label
     function translateModuleLabel(m: ModuleDef): string {
       const tMap: Record<string, string | undefined> = {
         "business-development": t.nav.groupBizDev,
-        "operations": t.nav.groupOps,
+        operations: t.nav.groupOps,
         "quality-labs": t.nav.groupQualityLabs,
-        "partners": t.nav.groupPartners,
-        "resources": t.nav.groupResourcesDocs,
-        "admin": t.nav.groupAdminEmoji,
+        partners: t.nav.groupPartners,
+        resources: t.nav.groupResourcesDocs,
+        admin: t.nav.groupAdminEmoji,
       };
       return tMap[m.key] || m.label;
     }
@@ -341,9 +405,7 @@ export default function Sidebar() {
       groups = [moduleToGroup(scopedModule)];
     } else {
       // HOME / UNSCOPED — show all 6 modules collapsed so the user can jump in
-      groups = MODULES
-        .filter((m) => !m.adminOnly || isAdmin)
-        .map(moduleToGroup);
+      groups = MODULES.filter((m) => !m.adminOnly || isAdmin).map(moduleToGroup);
     }
   }
 
@@ -371,7 +433,7 @@ export default function Sidebar() {
     const newState: Record<string, boolean> = {};
     groups.forEach((g) => {
       const hasActive = g.items.some(
-        (item) => pathname === item.href || pathname.startsWith(item.href + "/")
+        (item) => pathname === item.href || pathname.startsWith(item.href + "/"),
       );
       // Scoped single-module view → always expanded
       if (groups.length === 1) newState[g.label] = true;
@@ -387,17 +449,22 @@ export default function Sidebar() {
     setExpandedGroups((prev) => ({ ...prev, [label]: !prev[label] }));
   };
 
-  useEffect(() => { setOpen(false); }, [pathname]);
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { setOpen(false); setLangOpen(false); }
+      if (e.key === "Escape") {
+        setOpen(false);
+        setLangOpen(false);
+      }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  const currentLocale = LOCALES.find(l => l.code === locale) || LOCALES[0];
+  const currentLocale = LOCALES.find((l) => l.code === locale) || LOCALES[0];
   const topActive = pathname === topItem.href;
 
   // Is the sidebar in scoped-module mode for an internal user?
@@ -414,9 +481,19 @@ export default function Sidebar() {
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             {open ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             )}
           </svg>
         </button>
@@ -463,7 +540,12 @@ export default function Sidebar() {
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 bg-slate-800/50 hover:bg-slate-800 hover:text-white transition-colors border border-slate-700/50"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
             <span>Search...</span>
             <kbd className="ml-auto text-[10px] bg-slate-700 px-1.5 py-0.5 rounded font-mono text-slate-400">
@@ -489,7 +571,9 @@ export default function Sidebar() {
               {/* Module header */}
               {scopedModule && (
                 <div className="mt-3 px-3 py-2 rounded-lg bg-gradient-to-br from-slate-800/80 to-slate-800/40 border border-slate-700/50">
-                  <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Module</p>
+                  <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">
+                    Module
+                  </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-lg">{scopedModule.icon}</span>
                     <span className={`text-sm font-black ${scopedModule.sidebarAccent}`}>
@@ -518,9 +602,10 @@ export default function Sidebar() {
                 href={topItem.href}
                 className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                  ${topActive
-                    ? "bg-[#00b4c3] text-white shadow-lg shadow-[#00b4c3]/30"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  ${
+                    topActive
+                      ? "bg-[#00b4c3] text-white shadow-lg shadow-[#00b4c3]/30"
+                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
                   }
                 `}
               >
@@ -562,8 +647,18 @@ export default function Sidebar() {
           >
             <span className="text-base">{currentLocale.flag}</span>
             <span>{currentLocale.label}</span>
-            <svg className={`w-3 h-3 ml-auto transition-transform ${langOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            <svg
+              className={`w-3 h-3 ml-auto transition-transform ${langOpen ? "rotate-180" : ""}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 15l7-7 7 7"
+              />
             </svg>
           </button>
           {langOpen && (
@@ -571,7 +666,10 @@ export default function Sidebar() {
               {LOCALES.map((l) => (
                 <button
                   key={l.code}
-                  onClick={() => { setLocale(l.code as Locale); setLangOpen(false); }}
+                  onClick={() => {
+                    setLocale(l.code as Locale);
+                    setLangOpen(false);
+                  }}
                   className={`w-full flex items-center gap-2 px-3 py-2.5 text-sm transition-colors ${
                     l.code === locale
                       ? "bg-[#00b4c3] text-white"
@@ -611,7 +709,12 @@ export default function Sidebar() {
                 title="Sign out"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
                 </svg>
               </button>
             </div>

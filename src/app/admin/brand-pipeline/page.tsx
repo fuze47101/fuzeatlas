@@ -104,10 +104,16 @@ export default function BrandPipelinePage() {
   const [stats, setStats] = useState<any>(null);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [search, setSearch] = useState("");
-  const [stageFilter, setStageFilter] = useState("LEAD"); // Default to LEAD
+  // This page is hard-scoped to LEAD stage only. Once a brand moves to
+  // PRESENTATION it's a Partner and lives on /admin/accounts (or /brands).
+  // Keep as state so existing loadData references don't break, but we never
+  // let the user change it and we never render a stage-filter bar here.
+  const [stageFilter] = useState("LEAD");
   const [relevanceFilter, setRelevanceFilter] = useState("all");
   const [viewFilter, setViewFilter] = useState("actionable");
-  const [sortBy, setSortBy] = useState<"relevance" | "stage" | "name" | "activity" | "contacts">("relevance");
+  const [sortBy, setSortBy] = useState<"relevance" | "stage" | "name" | "activity" | "contacts">(
+    "relevance",
+  );
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   // Quick note form
@@ -139,7 +145,9 @@ export default function BrandPipelinePage() {
     }
   }, [search, stageFilter, relevanceFilter, viewFilter]);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   // Stage change
   const handleStageChange = async (brandId: string, newStage: string) => {
@@ -222,46 +230,41 @@ export default function BrandPipelinePage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-800">Brand Pipeline</h1>
+          <h1 className="text-2xl font-black text-slate-800">
+            Leads{" "}
+            <span className="text-slate-400 font-semibold text-lg">({stageSummary.LEAD || 0})</span>
+          </h1>
           <p className="text-sm text-slate-500">
-            Your brands, contacts, outreach, and activity — all in one place
+            Brands in the{" "}
+            <span className="inline-block px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 text-xs font-bold">
+              LEAD
+            </span>{" "}
+            stage. Once a lead is moved to{" "}
+            <span className="text-slate-700 font-semibold">Presentation</span> it becomes a Partner
+            — find those on the{" "}
+            <Link href="/admin/accounts" className="text-cyan-700 hover:underline font-semibold">
+              Accounts
+            </Link>{" "}
+            page.
           </p>
         </div>
         <div className="flex gap-2">
-          <Link href="/admin/brand-discovery" className="px-3 py-2 text-xs font-bold rounded-lg bg-cyan-100 text-cyan-700 hover:bg-cyan-200 transition">
+          <Link
+            href="/admin/brand-discovery"
+            className="px-3 py-2 text-xs font-bold rounded-lg bg-cyan-100 text-cyan-700 hover:bg-cyan-200 transition"
+          >
             + Discover Brands
           </Link>
-          <Link href="/admin/brand-audit" className="px-3 py-2 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+          <Link
+            href="/admin/brand-audit"
+            className="px-3 py-2 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition"
+          >
             Audit & Cleanup
           </Link>
         </div>
       </div>
 
-      {/* Pipeline Stage Bar */}
-      <div className="bg-white border rounded-xl p-3 mb-4">
-        <div className="flex gap-1 overflow-x-auto">
-          <button
-            onClick={() => setStageFilter("all")}
-            className={`px-3 py-2 text-xs font-bold rounded-lg whitespace-nowrap transition ${
-              stageFilter === "all" ? "bg-slate-800 text-white" : "bg-slate-50 text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            All Stages
-          </button>
-          {STAGES.map((s) => (
-            <button
-              key={s.key}
-              onClick={() => setStageFilter(stageFilter === s.key ? "all" : s.key)}
-              className={`px-3 py-2 text-xs font-bold rounded-lg whitespace-nowrap transition flex items-center gap-1.5 ${
-                stageFilter === s.key ? "bg-slate-800 text-white" : "bg-slate-50 text-slate-600 hover:bg-slate-100"
-              }`}
-            >
-              <span className={`w-2 h-2 rounded-full ${s.color}`} />
-              {s.label} ({stageSummary[s.key] || 0})
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Pipeline Stage Bar removed — this page is LEAD-only by design. */}
 
       {/* Stats Strip */}
       {stats && (
@@ -270,11 +273,17 @@ export default function BrandPipelinePage() {
             <p className="text-lg font-black text-slate-700">{stats.totalBrands}</p>
             <p className="text-[9px] font-semibold text-slate-500 uppercase">Total</p>
           </div>
-          <div className="bg-cyan-50 border border-cyan-200 rounded-lg px-3 py-2 text-center cursor-pointer hover:shadow-md" onClick={() => setViewFilter("enriched")}>
+          <div
+            className="bg-cyan-50 border border-cyan-200 rounded-lg px-3 py-2 text-center cursor-pointer hover:shadow-md"
+            onClick={() => setViewFilter("enriched")}
+          >
             <p className="text-lg font-black text-cyan-700">{stats.enriched}</p>
             <p className="text-[9px] font-semibold text-cyan-600 uppercase">Enriched</p>
           </div>
-          <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-center cursor-pointer hover:shadow-md" onClick={() => setViewFilter("verified")}>
+          <div
+            className="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-center cursor-pointer hover:shadow-md"
+            onClick={() => setViewFilter("verified")}
+          >
             <p className="text-lg font-black text-emerald-700">{stats.verified}</p>
             <p className="text-[9px] font-semibold text-emerald-600 uppercase">Verified</p>
           </div>
@@ -346,18 +355,39 @@ export default function BrandPipelinePage() {
           sorted.map((b) => {
             const isExpanded = expanded.has(b.id);
             const isNoting = noteTarget === b.id;
-            const activityColor = b.daysSinceActivity === null ? "text-red-500" : b.daysSinceActivity > 30 ? "text-amber-600" : b.daysSinceActivity > 7 ? "text-slate-500" : "text-emerald-600";
+            const activityColor =
+              b.daysSinceActivity === null
+                ? "text-red-500"
+                : b.daysSinceActivity > 30
+                  ? "text-amber-600"
+                  : b.daysSinceActivity > 7
+                    ? "text-slate-500"
+                    : "text-emerald-600";
 
             // Check if primary contact has been reached by me
-            const pcLI = b.primaryContact ? myCheck(b.primaryContact.outreachChecks || [], "LINKEDIN", currentUserId) : undefined;
-            const pcEM = b.primaryContact ? myCheck(b.primaryContact.outreachChecks || [], "EMAIL", currentUserId) : undefined;
-            const pcLIOthers = b.primaryContact ? othersChecked(b.primaryContact.outreachChecks || [], "LINKEDIN", currentUserId) : [];
-            const pcEMOthers = b.primaryContact ? othersChecked(b.primaryContact.outreachChecks || [], "EMAIL", currentUserId) : [];
+            const pcLI = b.primaryContact
+              ? myCheck(b.primaryContact.outreachChecks || [], "LINKEDIN", currentUserId)
+              : undefined;
+            const pcEM = b.primaryContact
+              ? myCheck(b.primaryContact.outreachChecks || [], "EMAIL", currentUserId)
+              : undefined;
+            const pcLIOthers = b.primaryContact
+              ? othersChecked(b.primaryContact.outreachChecks || [], "LINKEDIN", currentUserId)
+              : [];
+            const pcEMOthers = b.primaryContact
+              ? othersChecked(b.primaryContact.outreachChecks || [], "EMAIL", currentUserId)
+              : [];
 
             return (
-              <div key={b.id} className="bg-white border rounded-xl overflow-hidden hover:shadow-sm transition">
+              <div
+                key={b.id}
+                className="bg-white border rounded-xl overflow-hidden hover:shadow-sm transition"
+              >
                 {/* Main Row */}
-                <div className="flex items-center gap-3 px-4 py-3 cursor-pointer" onClick={() => toggle(b.id)}>
+                <div
+                  className="flex items-center gap-3 px-4 py-3 cursor-pointer"
+                  onClick={() => toggle(b.id)}
+                >
                   {/* Expand arrow */}
                   <span className="text-xs text-slate-400 w-4">{isExpanded ? "▼" : "▶"}</span>
 
@@ -371,19 +401,27 @@ export default function BrandPipelinePage() {
                       >
                         {b.name}
                       </Link>
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 ${STAGE_COLORS[b.stage] || STAGE_COLORS.LEAD}`}>
+                      <span
+                        className={`px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 ${STAGE_COLORS[b.stage] || STAGE_COLORS.LEAD}`}
+                      >
                         {STAGES.find((s) => s.key === b.stage)?.label || b.stage}
                       </span>
                       {b.fuzeRelevance && (
-                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 ${RELEVANCE_BADGE[b.fuzeRelevance] || ""}`}>
+                        <span
+                          className={`px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 ${RELEVANCE_BADGE[b.fuzeRelevance] || ""}`}
+                        >
                           {b.fuzeRelevance}
                         </span>
                       )}
                       {b.textileCategory && (
-                        <span className="text-[10px] text-slate-400 truncate hidden lg:inline">{b.textileCategory.replace(/_/g, " ")}</span>
+                        <span className="text-[10px] text-slate-400 truncate hidden lg:inline">
+                          {b.textileCategory.replace(/_/g, " ")}
+                        </span>
                       )}
                     </div>
-                    {b.salesRep && <span className="text-[10px] text-slate-400">Rep: {b.salesRep}</span>}
+                    {b.salesRep && (
+                      <span className="text-[10px] text-slate-400">Rep: {b.salesRep}</span>
+                    )}
                   </div>
 
                   {/* Primary Contact + Outreach Checkmarks */}
@@ -391,10 +429,17 @@ export default function BrandPipelinePage() {
                     {b.primaryContact ? (
                       <>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-slate-700 truncate">{b.primaryContact.name}</p>
-                          <p className="text-[10px] text-slate-400 truncate">{b.primaryContact.jobTitle || "—"}</p>
+                          <p className="text-xs font-bold text-slate-700 truncate">
+                            {b.primaryContact.name}
+                          </p>
+                          <p className="text-[10px] text-slate-400 truncate">
+                            {b.primaryContact.jobTitle || "—"}
+                          </p>
                         </div>
-                        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                        <div
+                          className="flex items-center gap-1 shrink-0"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           {/* LinkedIn link + check */}
                           {b.primaryContact.linkedinUrl && (
                             <a
@@ -412,10 +457,16 @@ export default function BrandPipelinePage() {
                               pcLI
                                 ? "bg-blue-600 border-blue-600 text-white"
                                 : pcLIOthers.length > 0
-                                ? "bg-blue-100 border-blue-300 text-blue-600"
-                                : "bg-white border-slate-300 text-slate-400 hover:border-blue-400"
+                                  ? "bg-blue-100 border-blue-300 text-blue-600"
+                                  : "bg-white border-slate-300 text-slate-400 hover:border-blue-400"
                             }`}
-                            title={pcLI ? `You sent LI ${new Date(pcLI.sentAt).toLocaleDateString()}` : pcLIOthers.length > 0 ? `${pcLIOthers[0].user.name} sent LI` : "Mark LinkedIn sent"}
+                            title={
+                              pcLI
+                                ? `You sent LI ${new Date(pcLI.sentAt).toLocaleDateString()}`
+                                : pcLIOthers.length > 0
+                                  ? `${pcLIOthers[0].user.name} sent LI`
+                                  : "Mark LinkedIn sent"
+                            }
                           >
                             {pcLI ? "✓" : pcLIOthers.length > 0 ? "·" : "LI"}
                           </button>
@@ -435,10 +486,16 @@ export default function BrandPipelinePage() {
                               pcEM
                                 ? "bg-violet-600 border-violet-600 text-white"
                                 : pcEMOthers.length > 0
-                                ? "bg-violet-100 border-violet-300 text-violet-600"
-                                : "bg-white border-slate-300 text-slate-400 hover:border-violet-400"
+                                  ? "bg-violet-100 border-violet-300 text-violet-600"
+                                  : "bg-white border-slate-300 text-slate-400 hover:border-violet-400"
                             }`}
-                            title={pcEM ? `You emailed ${new Date(pcEM.sentAt).toLocaleDateString()}` : pcEMOthers.length > 0 ? `${pcEMOthers[0].user.name} emailed` : "Mark email sent"}
+                            title={
+                              pcEM
+                                ? `You emailed ${new Date(pcEM.sentAt).toLocaleDateString()}`
+                                : pcEMOthers.length > 0
+                                  ? `${pcEMOthers[0].user.name} emailed`
+                                  : "Mark email sent"
+                            }
                           >
                             {pcEM ? "✓" : pcEMOthers.length > 0 ? "·" : "Em"}
                           </button>
@@ -452,7 +509,11 @@ export default function BrandPipelinePage() {
                   {/* Last Activity */}
                   <div className="w-[80px] text-right shrink-0 hidden sm:block">
                     <p className={`text-xs font-bold ${activityColor}`}>
-                      {b.daysSinceActivity === null ? "Never" : b.daysSinceActivity === 0 ? "Today" : `${b.daysSinceActivity}d ago`}
+                      {b.daysSinceActivity === null
+                        ? "Never"
+                        : b.daysSinceActivity === 0
+                          ? "Today"
+                          : `${b.daysSinceActivity}d ago`}
                     </p>
                     <p className="text-[9px] text-slate-400">
                       {b.contactCount} contact{b.contactCount !== 1 ? "s" : ""}
@@ -462,7 +523,10 @@ export default function BrandPipelinePage() {
                   {/* Quick Actions */}
                   <div className="flex gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                     <button
-                      onClick={() => { setNoteTarget(isNoting ? null : b.id); setNoteForm({ content: "", noteType: "NOTE" }); }}
+                      onClick={() => {
+                        setNoteTarget(isNoting ? null : b.id);
+                        setNoteForm({ content: "", noteType: "NOTE" });
+                      }}
                       className="px-2 py-1 text-[10px] font-bold rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
                       title="Log activity"
                     >
@@ -475,7 +539,9 @@ export default function BrandPipelinePage() {
                       title="Change stage"
                     >
                       {STAGES.map((s) => (
-                        <option key={s.key} value={s.key}>{s.label}</option>
+                        <option key={s.key} value={s.key}>
+                          {s.label}
+                        </option>
                       ))}
                       <option value="ARCHIVE">Archive</option>
                     </select>
@@ -501,7 +567,9 @@ export default function BrandPipelinePage() {
                         type="text"
                         value={noteForm.content}
                         onChange={(e) => setNoteForm({ ...noteForm, content: e.target.value })}
-                        onKeyDown={(e) => { if (e.key === "Enter" && noteForm.content.trim()) handleQuickNote(b.id); }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && noteForm.content.trim()) handleQuickNote(b.id);
+                        }}
                         placeholder="Quick note... (Enter to save)"
                         className="flex-1 px-3 py-1.5 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         autoFocus
@@ -523,16 +591,38 @@ export default function BrandPipelinePage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* Contacts with outreach checkmarks */}
                       <div>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">Contacts ({b.contactCount})</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">
+                          Contacts ({b.contactCount})
+                        </p>
                         {b.contacts.length === 0 ? (
-                          <p className="text-xs text-slate-400 italic">No contacts — <Link href={`/brands/${b.id}`} className="text-blue-600 hover:underline">run research</Link></p>
+                          <p className="text-xs text-slate-400 italic">
+                            No contacts —{" "}
+                            <Link
+                              href={`/brands/${b.id}`}
+                              className="text-blue-600 hover:underline"
+                            >
+                              run research
+                            </Link>
+                          </p>
                         ) : (
                           <div className="space-y-2">
                             {b.contacts.map((c) => {
-                              const liMe = myCheck(c.outreachChecks || [], "LINKEDIN", currentUserId);
+                              const liMe = myCheck(
+                                c.outreachChecks || [],
+                                "LINKEDIN",
+                                currentUserId,
+                              );
                               const emMe = myCheck(c.outreachChecks || [], "EMAIL", currentUserId);
-                              const liOthers = othersChecked(c.outreachChecks || [], "LINKEDIN", currentUserId);
-                              const emOthers = othersChecked(c.outreachChecks || [], "EMAIL", currentUserId);
+                              const liOthers = othersChecked(
+                                c.outreachChecks || [],
+                                "LINKEDIN",
+                                currentUserId,
+                              );
+                              const emOthers = othersChecked(
+                                c.outreachChecks || [],
+                                "EMAIL",
+                                currentUserId,
+                              );
 
                               return (
                                 <div key={c.id} className="p-2 bg-white rounded-lg">
@@ -543,21 +633,33 @@ export default function BrandPipelinePage() {
                                     <div className="flex-1 min-w-0">
                                       <p className="text-xs font-bold text-slate-700 truncate">
                                         {c.name}
-                                        {c.decisionMaker && <span className="ml-1 text-[8px] bg-amber-100 text-amber-700 px-1 rounded">DM</span>}
+                                        {c.decisionMaker && (
+                                          <span className="ml-1 text-[8px] bg-amber-100 text-amber-700 px-1 rounded">
+                                            DM
+                                          </span>
+                                        )}
                                       </p>
-                                      <p className="text-[10px] text-slate-400 truncate">{c.jobTitle || ""}</p>
+                                      <p className="text-[10px] text-slate-400 truncate">
+                                        {c.jobTitle || ""}
+                                      </p>
                                     </div>
                                     <div className="flex gap-1 shrink-0">
                                       {c.linkedinUrl && (
-                                        <a href={c.linkedinUrl} target="_blank" rel="noopener noreferrer"
-                                          className="w-5 h-5 flex items-center justify-center bg-blue-600 text-white rounded text-[8px] font-bold hover:bg-blue-700">
+                                        <a
+                                          href={c.linkedinUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="w-5 h-5 flex items-center justify-center bg-blue-600 text-white rounded text-[8px] font-bold hover:bg-blue-700"
+                                        >
                                           in
                                         </a>
                                       )}
                                       {c.email && (
-                                        <a href={`mailto:${c.email}`}
+                                        <a
+                                          href={`mailto:${c.email}`}
                                           className="w-5 h-5 flex items-center justify-center bg-violet-100 text-violet-700 rounded text-[8px] hover:bg-violet-200"
-                                          title={c.email}>
+                                          title={c.email}
+                                        >
                                           @
                                         </a>
                                       )}
@@ -572,13 +674,15 @@ export default function BrandPipelinePage() {
                                         liMe
                                           ? "bg-blue-600 text-white"
                                           : liOthers.length > 0
-                                          ? "bg-blue-50 text-blue-600 border border-blue-200"
-                                          : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-blue-300 hover:text-blue-500"
+                                            ? "bg-blue-50 text-blue-600 border border-blue-200"
+                                            : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-blue-300 hover:text-blue-500"
                                       }`}
                                     >
                                       {liMe ? "✓ " : ""}LinkedIn sent
                                       {liOthers.length > 0 && !liMe && (
-                                        <span className="text-[8px] ml-1">({liOthers[0].user.name})</span>
+                                        <span className="text-[8px] ml-1">
+                                          ({liOthers[0].user.name})
+                                        </span>
                                       )}
                                     </button>
                                     <button
@@ -587,20 +691,24 @@ export default function BrandPipelinePage() {
                                         emMe
                                           ? "bg-violet-600 text-white"
                                           : emOthers.length > 0
-                                          ? "bg-violet-50 text-violet-600 border border-violet-200"
-                                          : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-violet-300 hover:text-violet-500"
+                                            ? "bg-violet-50 text-violet-600 border border-violet-200"
+                                            : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-violet-300 hover:text-violet-500"
                                       }`}
                                     >
                                       {emMe ? "✓ " : ""}Email sent
                                       {emOthers.length > 0 && !emMe && (
-                                        <span className="text-[8px] ml-1">({emOthers[0].user.name})</span>
+                                        <span className="text-[8px] ml-1">
+                                          ({emOthers[0].user.name})
+                                        </span>
                                       )}
                                     </button>
                                     {(liMe || emMe) && (
                                       <span className="text-[9px] text-slate-400">
-                                        {liMe && `LI: ${new Date(liMe.sentAt).toLocaleDateString()}`}
+                                        {liMe &&
+                                          `LI: ${new Date(liMe.sentAt).toLocaleDateString()}`}
                                         {liMe && emMe && " · "}
-                                        {emMe && `Em: ${new Date(emMe.sentAt).toLocaleDateString()}`}
+                                        {emMe &&
+                                          `Em: ${new Date(emMe.sentAt).toLocaleDateString()}`}
                                       </span>
                                     )}
                                   </div>
@@ -613,52 +721,109 @@ export default function BrandPipelinePage() {
 
                       {/* Last Activity */}
                       <div>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">Last Activity</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">
+                          Last Activity
+                        </p>
                         {b.lastNote ? (
                           <div className="p-2 bg-white rounded-lg">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
-                                b.lastNote.noteType === "CALL" ? "bg-blue-100 text-blue-700" :
-                                b.lastNote.noteType === "EMAIL" ? "bg-violet-100 text-violet-700" :
-                                b.lastNote.noteType === "MEETING" ? "bg-green-100 text-green-700" :
-                                "bg-slate-100 text-slate-600"
-                              }`}>
+                              <span
+                                className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                                  b.lastNote.noteType === "CALL"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : b.lastNote.noteType === "EMAIL"
+                                      ? "bg-violet-100 text-violet-700"
+                                      : b.lastNote.noteType === "MEETING"
+                                        ? "bg-green-100 text-green-700"
+                                        : "bg-slate-100 text-slate-600"
+                                }`}
+                              >
                                 {(b.lastNote.noteType || "NOTE").replace("_", " ")}
                               </span>
-                              {b.lastNote.contactName && <span className="text-[10px] text-slate-500">{b.lastNote.contactName}</span>}
+                              {b.lastNote.contactName && (
+                                <span className="text-[10px] text-slate-500">
+                                  {b.lastNote.contactName}
+                                </span>
+                              )}
                               <span className="text-[10px] text-slate-400 ml-auto">
                                 {new Date(b.lastNote.date).toLocaleDateString()}
                               </span>
                             </div>
-                            <p className="text-xs text-slate-700 line-clamp-3">{b.lastNote.content}</p>
+                            <p className="text-xs text-slate-700 line-clamp-3">
+                              {b.lastNote.content}
+                            </p>
                           </div>
                         ) : (
-                          <p className="text-xs text-slate-400 italic p-2">No activity logged yet</p>
+                          <p className="text-xs text-slate-400 italic p-2">
+                            No activity logged yet
+                          </p>
                         )}
                       </div>
 
                       {/* Quick Stats & Links */}
                       <div>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">Details</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">
+                          Details
+                        </p>
                         <div className="space-y-1 text-xs">
                           {b.website && (
-                            <a href={b.website.startsWith("http") ? b.website : `https://${b.website}`} target="_blank" rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline block truncate">{b.website}</a>
+                            <a
+                              href={
+                                b.website.startsWith("http") ? b.website : `https://${b.website}`
+                              }
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline block truncate"
+                            >
+                              {b.website}
+                            </a>
                           )}
-                          {b.textileCategory && <p className="text-slate-600">Category: {b.textileCategory.replace(/_/g, " ")}</p>}
-                          {b.validationStatus && <p className="text-slate-600">Validation: {b.validationStatus}</p>}
+                          {b.textileCategory && (
+                            <p className="text-slate-600">
+                              Category: {b.textileCategory.replace(/_/g, " ")}
+                            </p>
+                          )}
+                          {b.validationStatus && (
+                            <p className="text-slate-600">Validation: {b.validationStatus}</p>
+                          )}
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {b.counts.fabrics > 0 && <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">{b.counts.fabrics} fabrics</span>}
-                            {b.counts.submissions > 0 && <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">{b.counts.submissions} submissions</span>}
-                            {b.counts.factories > 0 && <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">{b.counts.factories} factories</span>}
-                            {b.counts.sows > 0 && <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">{b.counts.sows} SOWs</span>}
-                            {b.counts.fuzeOrders > 0 && <span className="px-1.5 py-0.5 bg-emerald-100 rounded text-[9px] text-emerald-700">{b.counts.fuzeOrders} orders</span>}
+                            {b.counts.fabrics > 0 && (
+                              <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">
+                                {b.counts.fabrics} fabrics
+                              </span>
+                            )}
+                            {b.counts.submissions > 0 && (
+                              <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">
+                                {b.counts.submissions} submissions
+                              </span>
+                            )}
+                            {b.counts.factories > 0 && (
+                              <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">
+                                {b.counts.factories} factories
+                              </span>
+                            )}
+                            {b.counts.sows > 0 && (
+                              <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">
+                                {b.counts.sows} SOWs
+                              </span>
+                            )}
+                            {b.counts.fuzeOrders > 0 && (
+                              <span className="px-1.5 py-0.5 bg-emerald-100 rounded text-[9px] text-emerald-700">
+                                {b.counts.fuzeOrders} orders
+                              </span>
+                            )}
                           </div>
                           <div className="flex gap-2 mt-2">
-                            <Link href={`/brands/${b.id}`} className="px-2 py-1 bg-blue-600 text-white rounded text-[10px] font-bold hover:bg-blue-700">
+                            <Link
+                              href={`/brands/${b.id}`}
+                              className="px-2 py-1 bg-blue-600 text-white rounded text-[10px] font-bold hover:bg-blue-700"
+                            >
                               Open Brand
                             </Link>
-                            <Link href={`/brands/${b.id}#activity`} className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold hover:bg-slate-200">
+                            <Link
+                              href={`/brands/${b.id}#activity`}
+                              className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold hover:bg-slate-200"
+                            >
                               Full CRM
                             </Link>
                           </div>
