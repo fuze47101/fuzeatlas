@@ -79,9 +79,11 @@ All other distributors (Archroma, CHT, DyStar, Pulcra, etc.) are INACTIVE — th
 | **Brand Pipeline** | DONE — enriched-first, relevance sort, per-user outreach checkmarks |
 | **Distributor Portal Ordering** | NEXT — restock from FUZE, factory order flow |
 | **Supply Chain Transparency** | PLANNED — order→ship→receive→treat→test→certify pipeline |
-| **Daily CRM Digest Email** | BUILDING — morning email to Andrew with all activity highlights |
+| **Daily CRM Digest Email** | LIVE — 14:00 UTC cron, includes Daily Sales (L + kg booked vs shipped), CRM activity, new orders, outreach. Has error-fallback email on handler crash. |
+| **ICP Sample Prep Flow** | LIVE (wizard + SOP + print packet); awaiting first real CTLA submission |
+| **Scoped Module Sidebar** | LIVE — sidebar scopes to active module, "← All Modules (Home)" returns to 6-card picker |
 | **Mobile View Fix** | PLANNED — admin pages broken on iPhone |
-| **Email Deliverability** | CRITICAL — all system emails going to spam (Resend + SPF/DKIM/DMARC) |
+| **Email Deliverability** | RESOLVED — system emails fine (Resend + DMARC approved). Earlier "digest missing" was handler crashing + middleware blocking all crons (now fixed). |
 | **Helios Project** | UPCOMING — Raspberry Pi demo programming for Nike |
 
 ## CRITICAL: Next.js 15 Gotchas
@@ -137,6 +139,15 @@ where: { engagementScore: true }
 select: { engagement: { select: { overallScore: true, engagementTrend: true } } }
 // Access: b.engagement?.overallScore
 ```
+
+### 6. Cron Routes MUST Be Exempted from Auth Middleware
+`src/middleware.ts` guards every route with the `fuze-session` cookie. Vercel Cron invocations send `Authorization: Bearer $CRON_SECRET` and NO cookie. If `/api/cron/*` is not in `PUBLIC_PATHS`, every scheduled cron silently returns 401 before the handler's own CRON_SECRET check runs. Symptom: crons appear registered in Vercel dashboard but never fire emails/jobs. Fix is a one-line addition to `PUBLIC_PATHS`. Route handlers still do their own Bearer verification; middleware exemption just lets them run.
+
+### 7. NEXT_PUBLIC_APP_URL Must Be Set in Vercel Env
+Email templates fall back to hardcoded strings when this env var is missing. Historical stale fallback was `atlas.fuzebiotech.com` (DNS doesn't exist). Correct value is `https://fuzeatlas.com`. Set in Vercel → Settings → Environment Variables → Production. TODO: still needs to be set as of end-of-session 2026-04-16; access-request emails currently rely on the fallback which is now correct but fragile.
+
+### 8. Vercel Plan = Pro (Not Hobby)
+40 cron jobs allowed. Don't assume "Hobby 2-cron cap" is the cause of missing crons — it isn't. Check middleware exemption first, then handler error logs.
 
 ## Git Workflow
 - **ALWAYS use `--no-verify`** on commits — ESLint pre-commit hook is broken (no eslint.config.js)
@@ -197,6 +208,30 @@ Order placed → Product shipped → Received → Treatment applied → ICP subm
 
 ### QR Code on Shipment
 Each order gets QR → links to SDS, COA for the shipment. Factory scans on receive + on application.
+
+## Built Features (Session — April 16, 2026)
+
+### ICP Sample Prep Wizard + SOP
+- `/admin/icp-sample-prep` — 4-step wizard (pick fabrics → confirm details → weigh & tier → review & submit)
+- Ship target 5g, digest target 0.5g per run, 100 cm² wheel
+- Auto-generates PO (FUZE-PO-YYYYMMDD-NNNN), one PO per submission batch, billed per submission number
+- Printable packet at `/admin/icp-sample-prep/[po]/print` for CTLA shipping
+- SOP doc `/admin/icp-prep-sop` with process photos (SVG placeholders, awaiting real photos)
+- Constants in file: `SHIP_TARGET_G`, `DIGEST_TARGET_G`, `WHEEL_CM2`, `TIERS` (F1–F4)
+
+### Scoped Module Sidebar
+- `src/lib/modules.ts` is the single source of truth — MODULES array shared by home page cards and Sidebar
+- `findActiveModule(pathname)` uses longest-prefix match to scope sidebar to one module's items
+- On `/home` or unscoped routes: sidebar shows all 6 modules collapsed
+- On scoped module: flat item list + prominent "← All Modules (Home)" return link
+- Replaces the previous flat cascade of ~60 nav links
+
+### Daily Digest Cron — Fixed + Enriched
+- Bug: `/api/cron/*` was not exempted from auth middleware → all 3 crons (brand-discovery, brand-validation, daily-digest) silently 401'd since middleware was added. Fixed by adding to `PUBLIC_PATHS`.
+- Handler was also null-crashing on `note.noteType.replace(...)` when noteType was null. Made null-safe.
+- Widened note query to `OR: [{ date: { gte: since } }, { createdAt: { gte: since } }]` so API-imported notes without an explicit `date` still show up.
+- Added error-fallback `sendEmail` in catch block — if handler throws, Andrew gets a red-banner "Daily Digest FAILED" email with stack trace instead of silent failure.
+- **Daily Sales section**: new top-of-email block showing Booked vs Shipped totals in FUZE Liquid (L), Fabric Treated (kg), Revenue ($), Order count. Sums `volumeLiters` for PRODUCTION+SAMPLE orders and `fabricMassKg` across all types. Subject line now leads with sales: `"FUZE Daily Digest — 450L shipped, 12 activities, 3 outreach"`.
 
 ## Built Features (Sessions — April 7-13, 2026)
 
