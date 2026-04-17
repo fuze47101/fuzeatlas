@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
 import ActivityFeed from "@/components/ActivityFeed";
 import AddTaskButton from "@/components/AddTaskButton";
+import ClaimBrandButton from "@/components/ClaimBrandButton";
 
 const STAGES = [
   "LEAD",
@@ -398,6 +399,11 @@ export default function BrandDetailPage() {
         <div className="flex gap-2 items-center">
           {!editing ? (
             <>
+              <ClaimBrandButton
+                brandId={brand.id}
+                brandName={brand.name}
+                salesRep={brand.salesRep || null}
+              />
               <AddTaskButton brandId={brand.id} brandName={brand.name} />
               <button
                 onClick={() => setShowDeleteConfirm(true)}

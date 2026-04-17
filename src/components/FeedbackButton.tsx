@@ -95,7 +95,7 @@ async function fileToCompressedDataUrl(file: File): Promise<string> {
 
 export default function FeedbackButton() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<Mode | null>(null);
 
   const hidden =
     !pathname ||
@@ -110,21 +110,38 @@ export default function FeedbackButton() {
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        title="Get help or report a problem"
-        className="fixed bottom-5 right-5 z-[9998] px-4 py-2.5 bg-slate-900 hover:bg-black text-white rounded-full shadow-lg text-sm font-semibold flex items-center gap-2 transition-all hover:shadow-xl"
-      >
-        <span className="text-base">💬</span>
-        <span className="hidden sm:inline">Need help?</span>
-      </button>
-      {open && <HelpModal onClose={() => setOpen(false)} />}
+      {/* Two separate floating buttons — FAQ on the left, Support on the right */}
+      <div className="fixed bottom-5 right-5 z-[9998] flex items-center gap-2">
+        <button
+          onClick={() => setMode("HOWTO")}
+          title="Step-by-step how-tos for what you're trying to do"
+          className="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 rounded-full shadow-lg text-sm font-semibold flex items-center gap-2 transition-all hover:shadow-xl"
+        >
+          <span className="text-base">💡</span>
+          <span className="hidden sm:inline">How do I?</span>
+        </button>
+        <button
+          onClick={() => setMode("TICKET")}
+          title="Report a bug, confusion, or request a feature"
+          className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-full shadow-lg text-sm font-semibold flex items-center gap-2 transition-all hover:shadow-xl"
+        >
+          <span className="text-base">🐞</span>
+          <span className="hidden sm:inline">Support ticket</span>
+        </button>
+      </div>
+      {mode && <HelpModal initialMode={mode} onClose={() => setMode(null)} />}
     </>
   );
 }
 
-function HelpModal({ onClose }: { onClose: () => void }) {
-  const [mode, setMode] = useState<Mode>("LANDING");
+function HelpModal({
+  initialMode = "LANDING",
+  onClose,
+}: {
+  initialMode?: Mode;
+  onClose: () => void;
+}) {
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [handoff, setHandoff] = useState<{ question?: string } | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -137,16 +154,17 @@ function HelpModal({ onClose }: { onClose: () => void }) {
     };
   }, []);
 
-  // Esc to close (or back out of a sub-mode)
+  // Esc to close. If we opened straight into HOWTO/TICKET (no landing), Esc
+  // closes. Only back-out to LANDING if we actually came from LANDING.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      if (mode === "LANDING") onClose();
+      if (initialMode !== "LANDING" || mode === "LANDING") onClose();
       else setMode("LANDING");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, mode]);
+  }, [onClose, mode, initialMode]);
 
   return (
     <div
@@ -160,7 +178,7 @@ function HelpModal({ onClose }: { onClose: () => void }) {
       >
         <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
-            {mode !== "LANDING" && (
+            {mode !== "LANDING" && initialMode === "LANDING" && (
               <button
                 onClick={() => setMode("LANDING")}
                 className="w-8 h-8 flex items-center justify-center rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100"
