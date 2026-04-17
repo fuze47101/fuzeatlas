@@ -691,6 +691,8 @@ export default function BrandDetailPage() {
       {tab === "contacts" && (
         <ContactsTab
           brandId={id as string}
+          brand={brand}
+          research={research}
           contacts={brand.contacts}
           onUpdate={(contacts: any[]) =>
             setBrand({ ...brand, contacts, _count: { ...brand._count, contacts: contacts.length } })
@@ -1746,14 +1748,18 @@ function Field({ label, field, form, setForm, editing, type = "text", options, r
   );
 }
 
-/* ── ContactsTab — inline CRUD ──────────── */
+/* ── ContactsTab — inline CRUD + 📧/📞 quick outreach ──────────── */
 function ContactsTab({
   brandId,
+  brand,
+  research,
   contacts: initial,
   onUpdate,
   t,
 }: {
   brandId: string;
+  brand: any;
+  research?: any;
   contacts: any[];
   onUpdate: (c: any[]) => void;
   t: any;
@@ -1763,6 +1769,7 @@ function ContactsTab({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [composeFor, setComposeFor] = useState<any | null>(null);
   const empty = { firstName: "", lastName: "", title: "", email: "", phone: "" };
   const [form, setForm] = useState(empty);
 
@@ -1920,6 +1927,15 @@ function ContactsTab({
         </p>
       ) : (
         <div className="space-y-2">
+          {composeFor && (
+            <EmailComposeModal
+              contact={composeFor}
+              brand={brand}
+              research={research}
+              onClose={() => setComposeFor(null)}
+              onSent={() => setComposeFor(null)}
+            />
+          )}
           {contacts.map((ct: any) =>
             editingId === ct.id ? (
               <div key={ct.id} className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -1976,7 +1992,12 @@ function ContactsTab({
                 </div>
               </div>
             ) : (
-              <div key={ct.id} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg group">
+              <div
+                key={ct.id}
+                className="flex items-center gap-4 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg group cursor-pointer transition"
+                onClick={() => setComposeFor(ct)}
+                title="Click to email"
+              >
                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm flex-shrink-0">
                   {(ct.firstName || ct.name || "?")[0]}
                 </div>
@@ -1990,25 +2011,233 @@ function ContactsTab({
                     {ct.phone && ` · ${ct.phone}`}
                   </div>
                 </div>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                   <button
-                    onClick={() => startEdit(ct)}
-                    className="text-xs text-blue-600 hover:underline"
+                    onClick={() => setComposeFor(ct)}
+                    disabled={!ct.email}
+                    className="px-2.5 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed transition"
+                    title={ct.email ? `Email ${ct.email}` : "No email on file"}
                   >
-                    {t.common.edit}
+                    📧 Email
                   </button>
-                  <button
-                    onClick={() => handleDelete(ct.id)}
-                    className="text-xs text-red-500 hover:underline"
-                  >
-                    {t.common.delete}
-                  </button>
+                  {ct.phone ? (
+                    <a
+                      href={`tel:${ct.phone}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 transition"
+                      title={`Call ${ct.phone}`}
+                    >
+                      📞 Contact
+                    </a>
+                  ) : (
+                    <button
+                      disabled
+                      className="px-2.5 py-1.5 bg-slate-200 text-slate-400 rounded-lg text-xs font-semibold cursor-not-allowed"
+                      title="No phone on file"
+                    >
+                      📞 Contact
+                    </button>
+                  )}
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => startEdit(ct)}
+                      className="text-xs text-blue-600 hover:underline"
+                    >
+                      {t.common.edit}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(ct.id)}
+                      className="text-xs text-red-500 hover:underline"
+                    >
+                      {t.common.delete}
+                    </button>
+                  </div>
                 </div>
               </div>
             ),
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+/* ── EmailComposeModal — pre-fills from brand AI research, sends via Resend,
+ *    logs a NoteType=EMAIL entry on the brand timeline. ─────────────── */
+function EmailComposeModal({
+  contact,
+  brand,
+  research,
+  onClose,
+  onSent,
+}: {
+  contact: any;
+  brand: any;
+  research?: any;
+  onClose: () => void;
+  onSent: () => void;
+}) {
+  // Build hints from whatever AI research fields the brand has. This is a
+  // best-effort pre-fill; the rep can edit everything before sending.
+  const firstName = contact.firstName || contact.name?.split(" ")[0] || "";
+  const brandName = brand?.name || "your team";
+  const bg = (brand?.backgroundInfo || "").trim();
+  const project = (brand?.projectDescription || "").trim();
+  const fuzeRel = research?.fuzeRelevance || brand?.fuzeRelevance;
+  const textileCat = research?.textileCategory || brand?.textileCategory;
+
+  // One-line hook derived from AI research — falls back to a generic line.
+  const relevanceHook = (() => {
+    if (fuzeRel === "high") {
+      return `${brandName}'s focus on ${textileCat || "performance textiles"} lines up closely with what FUZE's silver-ion antimicrobial was built for.`;
+    }
+    if (project) {
+      const truncated = project.length > 160 ? project.slice(0, 160).trim() + "…" : project;
+      return `I was reading about what ${brandName} is working on — ${truncated}`;
+    }
+    if (bg) {
+      const truncated = bg.length > 160 ? bg.slice(0, 160).trim() + "…" : bg;
+      return `A bit of context I pulled on ${brandName}: ${truncated}`;
+    }
+    return `I've been following ${brandName} and think there's a fit with what we do at FUZE.`;
+  })();
+
+  const defaultSubject = `${brandName} × FUZE — odor + microbial control for ${textileCat || "your fabrics"}`;
+
+  const defaultBody =
+    `Hi ${firstName || "there"},\n\n` +
+    `${relevanceHook}\n\n` +
+    `FUZE is a water-based silver-ion antimicrobial finish that can be applied on-line at the mill. ` +
+    `We're seeing ~1 log reduction of S. aureus and bacteria-driven odor at 1.0–4.0 mg/kg OWF, ` +
+    `with Bluesign/Oeko-Tex status and drop-in padder compatibility.\n\n` +
+    `Would you be open to a 20-minute call next week to see if there's a small pilot we could run on ` +
+    `one of your current fabric programs?\n\n` +
+    `Thanks,\nFUZE Biotech`;
+
+  const [subject, setSubject] = useState(defaultSubject);
+  const [body, setBody] = useState(defaultBody);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSend = async () => {
+    if (!contact.email) {
+      setError("Contact has no email on file.");
+      return;
+    }
+    if (!subject.trim() || !body.trim()) {
+      setError("Subject and body are required.");
+      return;
+    }
+    setSending(true);
+    setError("");
+    try {
+      // 1. Send via the existing outreach endpoint (Resend under the hood).
+      const res = await fetch("/api/admin/outreach/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contactId: contact.id,
+          channel: "email",
+          subject,
+          body,
+        }),
+      });
+      const j = await res.json();
+      if (!j.ok || j.status === "failed") {
+        setError(j.error || j.failReason || "Send failed");
+        setSending(false);
+        return;
+      }
+
+      // 2. Log a note on the brand timeline so reps can see outreach history
+      //    alongside meetings + calls. Best-effort — don't block on failure.
+      try {
+        await fetch("/api/notes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            brandId: brand?.id,
+            content: `Email to ${firstName} ${contact.lastName || ""} — ${subject}\n\n${body}`,
+            noteType: "EMAIL",
+            contactName: `${firstName} ${contact.lastName || ""}`.trim(),
+          }),
+        });
+      } catch {}
+
+      onSent();
+    } catch (e: any) {
+      setError(e.message || "Send failed");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div
+        className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 py-3 border-b">
+          <div>
+            <h3 className="font-bold text-slate-900">
+              📧 Email {firstName} {contact.lastName || ""}
+            </h3>
+            <p className="text-xs text-slate-500">{contact.email || "—"}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-700 text-2xl leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <div className="p-5 space-y-3 overflow-y-auto flex-1">
+          {(bg || project || fuzeRel) && (
+            <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-800">
+              <span className="font-bold">AI-prefilled from brand research.</span> Edit anything before sending.
+            </div>
+          )}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Subject</label>
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Body</label>
+            <textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              rows={14}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          {error && (
+            <div className="p-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs">
+              {error}
+            </div>
+          )}
+        </div>
+        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t bg-slate-50 rounded-b-xl">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-white"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSend}
+            disabled={sending || !contact.email}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50"
+          >
+            {sending ? "Sending…" : "Send email"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
