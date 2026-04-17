@@ -7,10 +7,7 @@ import { getCurrentUser } from "@/lib/auth";
  * GET /api/factories/[id]/activity
  * Returns a unified CRM activity timeline for a factory — notes and contact interactions.
  */
-export async function GET(
-  _req: Request,
-  props: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
   try {
     const user = await getCurrentUser();
     if (!user) {
@@ -30,6 +27,13 @@ export async function GET(
           date: true,
           contactName: true,
           createdAt: true,
+          emailDirection: true,
+          emailSubject: true,
+          emailFrom: true,
+          emailTo: true,
+          emailCc: true,
+          emailMessageId: true,
+          contact: { select: { id: true, name: true, email: true } },
           user: { select: { id: true, name: true } },
         },
         orderBy: { date: "desc" },

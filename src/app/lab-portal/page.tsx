@@ -10,12 +10,24 @@ export default function LabPortalDashboard() {
   useEffect(() => {
     fetch("/api/lab-portal")
       .then((r) => r.json())
-      .then((j) => { if (j.ok) setData(j); })
+      .then((j) => {
+        if (j.ok) setData(j);
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">Loading lab portal...</div>;
-  if (!data) return <div className="flex items-center justify-center h-64 text-red-400">Unable to load lab portal</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-400">
+        Loading lab portal...
+      </div>
+    );
+  if (!data)
+    return (
+      <div className="flex items-center justify-center h-64 text-red-400">
+        Unable to load lab portal
+      </div>
+    );
 
   const { lab, stats, testRequests } = data;
 
@@ -23,7 +35,9 @@ export default function LabPortalDashboard() {
     <div className="max-w-[1400px] mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-black text-slate-900">Lab Portal</h1>
-        <p className="text-sm text-slate-500 mt-1">{lab.name} — Manage your test catalog and incoming requests</p>
+        <p className="text-sm text-slate-500 mt-1">
+          {lab.name} — Manage your test catalog and incoming requests
+        </p>
       </div>
 
       {/* Stats */}
@@ -51,12 +65,44 @@ export default function LabPortalDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         {[
-          { href: "/lab-portal/catalog", icon: "🧪", label: "Test Catalog", desc: "Manage your tests and pricing" },
-          { href: "/lab-portal/requests", icon: "📋", label: "Test Requests", desc: `${stats.pendingRequests} pending` },
-          { href: "/lab-portal/forms", icon: "📄", label: "Forms & Docs", desc: "Upload test forms" },
-          { href: "/lab-portal/profile", icon: "🏢", label: "Lab Profile", desc: "Update your information" },
+          {
+            href: "/lab-portal/upload",
+            icon: "📤",
+            label: "Upload Report",
+            desc: "Upload a completed test report",
+          },
+          {
+            href: "/lab-portal/uploads",
+            icon: "📋",
+            label: "Upload History",
+            desc: "View all reports you've uploaded",
+          },
+          {
+            href: "/lab-portal/catalog",
+            icon: "🧪",
+            label: "Test Catalog",
+            desc: "Manage your tests and pricing",
+          },
+          {
+            href: "/lab-portal/requests",
+            icon: "📬",
+            label: "Test Requests",
+            desc: `${stats.pendingRequests} pending`,
+          },
+          {
+            href: "/lab-portal/forms",
+            icon: "📄",
+            label: "Forms & Docs",
+            desc: "Upload test forms",
+          },
+          {
+            href: "/lab-portal/profile",
+            icon: "🏢",
+            label: "Lab Profile",
+            desc: "Update your information",
+          },
         ].map((card) => (
           <button
             key={card.href}
@@ -78,7 +124,9 @@ export default function LabPortalDashboard() {
         {testRequests.length === 0 ? (
           <div className="text-center py-12 text-slate-400">
             <div className="text-4xl mb-2">📋</div>
-            <p className="text-sm">No test requests yet. They will appear here when customers submit orders.</p>
+            <p className="text-sm">
+              No test requests yet. They will appear here when customers submit orders.
+            </p>
           </div>
         ) : (
           <table className="w-full text-sm">
@@ -94,25 +142,41 @@ export default function LabPortalDashboard() {
             </thead>
             <tbody>
               {testRequests.slice(0, 10).map((r: any) => (
-                <tr key={r.id} className="border-t border-slate-100 hover:bg-blue-50 transition-colors">
-                  <td className="px-5 py-3 font-mono font-bold text-[#00b4c3] text-xs">{r.poNumber}</td>
+                <tr
+                  key={r.id}
+                  className="border-t border-slate-100 hover:bg-blue-50 transition-colors"
+                >
+                  <td className="px-5 py-3 font-mono font-bold text-[#00b4c3] text-xs">
+                    {r.poNumber}
+                  </td>
                   <td className="px-5 py-3 text-slate-700">{r.brand?.name || "—"}</td>
                   <td className="px-5 py-3 text-slate-700">
                     {r.fabric ? `FUZE ${r.fabric.fuzeNumber}` : "—"}
-                    {r.fabric?.construction && <span className="text-slate-400 ml-1">({r.fabric.construction})</span>}
+                    {r.fabric?.construction && (
+                      <span className="text-slate-400 ml-1">({r.fabric.construction})</span>
+                    )}
                   </td>
-                  <td className="px-5 py-3">{r.lines?.length || 0} test{(r.lines?.length || 0) !== 1 ? "s" : ""}</td>
                   <td className="px-5 py-3">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      r.status === "COMPLETE" ? "bg-green-100 text-green-700"
-                        : r.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-700"
-                        : r.status === "APPROVED" ? "bg-emerald-100 text-emerald-700"
-                        : "bg-amber-100 text-amber-700"
-                    }`}>
+                    {r.lines?.length || 0} test{(r.lines?.length || 0) !== 1 ? "s" : ""}
+                  </td>
+                  <td className="px-5 py-3">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        r.status === "COMPLETE"
+                          ? "bg-green-100 text-green-700"
+                          : r.status === "IN_PROGRESS"
+                            ? "bg-blue-100 text-blue-700"
+                            : r.status === "APPROVED"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-amber-100 text-amber-700"
+                      }`}
+                    >
                       {r.status.replace(/_/g, " ")}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-right font-semibold">{r.estimatedCost ? `$${r.estimatedCost}` : "—"}</td>
+                  <td className="px-5 py-3 text-right font-semibold">
+                    {r.estimatedCost ? `$${r.estimatedCost}` : "—"}
+                  </td>
                 </tr>
               ))}
             </tbody>

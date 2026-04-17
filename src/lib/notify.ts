@@ -55,7 +55,9 @@ async function getAdminIds(): Promise<string[]> {
 
 async function notifyAdmins(type: NotificationType, title: string, message: string, link?: string) {
   const adminIds = await getAdminIds();
-  await Promise.all(adminIds.map((id) => createNotification({ userId: id, type, title, message, link })));
+  await Promise.all(
+    adminIds.map((id) => createNotification({ userId: id, type, title, message, link })),
+  );
 }
 
 // ─── Public trigger functions ───
@@ -75,7 +77,7 @@ export async function notifyTestResult(params: {
     "TEST_RESULTS",
     `Test ${result}: ${testName}`,
     `Test "${testName}" has been marked as ${result}.`,
-    `/tests/${testId}`
+    `/tests/${testId}`,
   );
 
   // Notify brand users if linked
@@ -92,8 +94,8 @@ export async function notifyTestResult(params: {
           title: `Test Results: ${testName}`,
           message: `Your test "${testName}" result: ${result}`,
           link: `/brand-portal/tests`,
-        })
-      )
+        }),
+      ),
     );
   }
 
@@ -111,8 +113,8 @@ export async function notifyTestResult(params: {
           title: `Test Results: ${testName}`,
           message: `Test "${testName}" result: ${result}`,
           link: `/factory-portal/submissions`,
-        })
-      )
+        }),
+      ),
     );
   }
 }
@@ -128,22 +130,28 @@ export async function notifySOWStatusChange(params: {
   const { sowId, sowTitle, newStatus, brandId, changedBy } = params;
 
   const statusLabels: Record<string, string> = {
-    DRAFT: "Draft", SENT: "Sent for Signature", SIGNED: "Signed",
-    ACTIVE: "Active", COMPLETE: "Complete", CANCELLED: "Cancelled",
+    DRAFT: "Draft",
+    SENT: "Sent for Signature",
+    SIGNED: "Signed",
+    ACTIVE: "Active",
+    COMPLETE: "Complete",
+    CANCELLED: "Cancelled",
   };
 
   // Notify admins (except the one who made the change)
   const adminIds = await getAdminIds();
   await Promise.all(
-    adminIds.filter((id) => id !== changedBy).map((id) =>
-      createNotification({
-        userId: id,
-        type: "SOW_UPDATE",
-        title: `SOW ${statusLabels[newStatus] || newStatus}`,
-        message: `"${sowTitle}" status changed to ${statusLabels[newStatus] || newStatus}.`,
-        link: `/sow/${sowId}`,
-      })
-    )
+    adminIds
+      .filter((id) => id !== changedBy)
+      .map((id) =>
+        createNotification({
+          userId: id,
+          type: "SOW_UPDATE",
+          title: `SOW ${statusLabels[newStatus] || newStatus}`,
+          message: `"${sowTitle}" status changed to ${statusLabels[newStatus] || newStatus}.`,
+          link: `/sow/${sowId}`,
+        }),
+      ),
   );
 
   // Notify brand users
@@ -160,8 +168,8 @@ export async function notifySOWStatusChange(params: {
           title: `SOW Updated: ${sowTitle}`,
           message: `Your Statement of Work status is now: ${statusLabels[newStatus] || newStatus}`,
           link: `/brand-portal/submissions`,
-        })
-      )
+        }),
+      ),
     );
   }
 }
@@ -177,7 +185,7 @@ export async function notifyNewAccessRequest(params: {
     "ACCESS_REQUEST",
     `New ${params.type.toLowerCase()} access request`,
     `${params.name} from ${params.company} has requested ${params.type.toLowerCase()} access.`,
-    `/settings/access-requests`
+    `/settings/access-requests`,
   );
 }
 
@@ -201,15 +209,17 @@ export async function notifyPipelineChange(params: {
   });
 
   await Promise.all(
-    teamUsers.filter((u: any) => u.id !== changedBy).map((u: any) =>
-      createNotification({
-        userId: u.id,
-        type: "BRAND_ACTIVITY",
-        title: `Pipeline: ${brandName}`,
-        message: `${brandName} moved from ${oldStage.replace(/_/g, " ")} to ${newStage.replace(/_/g, " ")}.`,
-        link: `/brands/${brandId}`,
-      })
-    )
+    teamUsers
+      .filter((u: any) => u.id !== changedBy)
+      .map((u: any) =>
+        createNotification({
+          userId: u.id,
+          type: "BRAND_ACTIVITY",
+          title: `Pipeline: ${brandName}`,
+          message: `${brandName} moved from ${oldStage.replace(/_/g, " ")} to ${newStage.replace(/_/g, " ")}.`,
+          link: `/brands/${brandId}`,
+        }),
+      ),
   );
 }
 
@@ -223,7 +233,7 @@ export async function notifyNewSubmission(params: {
     "BRAND_ACTIVITY",
     "New Fabric Submission",
     `${params.factoryName} submitted "${params.fabricName}" (by ${params.submittedBy}).`,
-    `/fabrics`
+    `/fabrics`,
   );
 }
 
@@ -232,24 +242,67 @@ export async function notifyTestRequestStatus(params: {
   testRequestId: string;
   status: string;
   createdByUserId?: string;
+  poNumber?: string;
+  factoryName?: string;
 }) {
-  const { testRequestId, status, createdByUserId } = params;
+  const { testRequestId, status, createdByUserId, poNumber, factoryName } = params;
 
   const statusLabels: Record<string, string> = {
-    APPROVED: "Approved", SUBMITTED: "Submitted to Lab", IN_PROGRESS: "In Progress",
-    RESULTS_RECEIVED: "Results Received", COMPLETE: "Complete", CANCELLED: "Cancelled",
+    PENDING_APPROVAL: "Awaiting Approval",
+    APPROVED: "Approved",
+    SUBMITTED: "Submitted to Lab",
+    IN_PROGRESS: "In Progress",
+    RESULTS_RECEIVED: "Results Received",
+    COMPLETE: "Complete",
+    CANCELLED: "Cancelled",
+    REJECTED: "Rejected",
   };
+
+  const label = statusLabels[status] || status;
+  const ref = poNumber || testRequestId;
 
   // Notify the person who created the test request
   if (createdByUserId) {
     await createNotification({
       userId: createdByUserId,
       type: "PO_STATUS",
-      title: `Test Request ${statusLabels[status] || status}`,
-      message: `Your test request has been ${(statusLabels[status] || status).toLowerCase()}.`,
+      title: `Test Request ${label}: ${ref}`,
+      message: `Your test request ${ref} has been ${label.toLowerCase()}.`,
       link: `/test-requests`,
     });
   }
+
+  // Notify admins for PENDING_APPROVAL (new submission needs triage) and RESULTS_RECEIVED
+  if (["PENDING_APPROVAL", "RESULTS_RECEIVED"].includes(status)) {
+    const fromWho = factoryName ? ` from ${factoryName}` : "";
+    const message =
+      status === "PENDING_APPROVAL"
+        ? `New test request ${ref}${fromWho} is awaiting your approval.`
+        : `Results received for test request ${ref}${fromWho}. Ready for review.`;
+    await notifyAdmins("PO_STATUS", `Test Request ${label}: ${ref}`, message, `/test-requests`);
+  }
+}
+
+/** When a factory submits a new test request — notify admins so they can approve */
+export async function notifyTestRequestCreated(params: {
+  testRequestId: string;
+  poNumber?: string;
+  factoryName?: string;
+  selectedTests?: string[];
+  requesterName?: string;
+}) {
+  const { poNumber, factoryName, selectedTests, requesterName, testRequestId } = params;
+  const ref = poNumber || testRequestId;
+  const tests = (selectedTests || []).map((t) => t.toUpperCase()).join(", ") || "various tests";
+  const who = requesterName ? ` (${requesterName})` : "";
+  const from = factoryName ? ` from ${factoryName}${who}` : who;
+
+  await notifyAdmins(
+    "PO_STATUS",
+    `New Test Request: ${ref}`,
+    `New test request${from} — ${tests}. Awaiting approval.`,
+    `/test-requests`,
+  );
 }
 
 // ─── Order Notifications ───
@@ -266,7 +319,17 @@ export async function notifyNewOrder(params: {
   accountManagerId?: string;
   brandName?: string;
 }) {
-  const { orderId, orderNumber, orderType, factoryName, volumeLiters, hangtagQty, totalPrice, accountManagerId, brandName } = params;
+  const {
+    orderId,
+    orderNumber,
+    orderType,
+    factoryName,
+    volumeLiters,
+    hangtagQty,
+    totalPrice,
+    accountManagerId,
+    brandName,
+  } = params;
 
   const detail = volumeLiters ? `${volumeLiters}L` : hangtagQty ? `${hangtagQty} hangtags` : "";
   const brandNote = brandName ? ` for ${brandName}` : "";
@@ -287,7 +350,7 @@ export async function notifyNewOrder(params: {
     "PO_STATUS",
     `New Order: ${orderNumber}`,
     `${factoryName} placed a ${orderType.toLowerCase()} order${brandNote} — ${detail}. Total: $${(totalPrice || 0).toFixed(2)}.`,
-    `/admin/orders`
+    `/admin/orders`,
   );
 }
 
@@ -302,7 +365,16 @@ export async function notifyOrderStatusChange(params: {
   carrier?: string;
   distributorId?: string;
 }) {
-  const { orderId, orderNumber, newStatus, factoryId, factoryName, trackingNumber, carrier, distributorId } = params;
+  const {
+    orderId,
+    orderNumber,
+    newStatus,
+    factoryId,
+    factoryName,
+    trackingNumber,
+    carrier,
+    distributorId,
+  } = params;
 
   const statusLabels: Record<string, string> = {
     APPROVED: "Approved",
@@ -332,8 +404,8 @@ export async function notifyOrderStatusChange(params: {
         title: `Order ${label}: ${orderNumber}`,
         message,
         link: `/factory-portal/orders`,
-      })
-    )
+      }),
+    ),
   );
 
   // If shipped/delivered, also notify distributor users
@@ -350,8 +422,8 @@ export async function notifyOrderStatusChange(params: {
           title: `Order ${label}: ${orderNumber}`,
           message: `Order ${orderNumber} for ${factoryName}: ${label.toLowerCase()}.`,
           link: `/distributor-portal/orders`,
-        })
-      )
+        }),
+      ),
     );
   }
 }
@@ -367,7 +439,7 @@ export async function notifyLowInventory(params: {
     "SYSTEM",
     `Low Inventory Alert: ${params.distributorName}`,
     `${params.distributorName} stock is at ${params.currentLiters}L (threshold: ${params.thresholdLiters}L). Reorder needed.`,
-    `/admin/consumption`
+    `/admin/consumption`,
   );
 }
 
@@ -388,7 +460,15 @@ export async function notifyCRMActivity(params: {
   loggedByName?: string;
 }) {
   try {
-    const { entityType, entityId, activityType, content, contactName, loggedByUserId, loggedByName } = params;
+    const {
+      entityType,
+      entityId,
+      activityType,
+      content,
+      contactName,
+      loggedByUserId,
+      loggedByName,
+    } = params;
     const entityName = params.entityName || "Unknown";
     const typeLower = entityType.toLowerCase();
     const link = `/${typeLower === "brand" ? "brands" : "factories"}/${entityId}`;
@@ -443,8 +523,8 @@ export async function notifyCRMActivity(params: {
           title,
           message,
           link,
-        })
-      )
+        }),
+      ),
     );
   } catch (err) {
     console.error("[CRM-NOTIFY] Error:", err);

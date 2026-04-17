@@ -2,27 +2,49 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
+import AddCompanyModal from "@/components/AddCompanyModal";
 
 export default function FactoriesPage() {
   const router = useRouter();
   const { t } = useI18n();
   const [factories, setFactories] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
-  const [byCountry, setByCountry] = useState<Record<string,number>>({});
+  const [byCountry, setByCountry] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [addCompanyOpen, setAddCompanyOpen] = useState(false);
 
   useEffect(() => {
-    fetch("/api/factories").then(r => r.json()).then(j => {
-      if (j.ok) { setFactories(j.factories); setTotal(j.total); setByCountry(j.byCountry || {}); }
-    }).finally(() => setLoading(false));
+    fetch("/api/factories")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok) {
+          setFactories(j.factories);
+          setTotal(j.total);
+          setByCountry(j.byCountry || {});
+        }
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">{t.factories.loadingFactories}</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-400">
+        {t.factories.loadingFactories}
+      </div>
+    );
 
   const q = search.toLowerCase();
-  const filtered = factories.filter(f => !q || f.name.toLowerCase().includes(q) || (f.country && f.country.toLowerCase().includes(q)) || (f.specialty && f.specialty.toLowerCase().includes(q)));
-  const topCountries = Object.entries(byCountry).sort((a,b) => b[1] - a[1]).slice(0, 8);
+  const filtered = factories.filter(
+    (f) =>
+      !q ||
+      f.name.toLowerCase().includes(q) ||
+      (f.country && f.country.toLowerCase().includes(q)) ||
+      (f.specialty && f.specialty.toLowerCase().includes(q)),
+  );
+  const topCountries = Object.entries(byCountry)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
 
   return (
     <div className="max-w-[1400px] mx-auto">
@@ -32,12 +54,40 @@ export default function FactoriesPage() {
           <p className="text-sm text-slate-500 mt-1">{`${total.toLocaleString()} ${t.factories.factoriesAcrossCountries.replace("{count}", String(Object.keys(byCountry).length))}`}</p>
         </div>
         <div className="flex items-center gap-3">
-          <input type="text" placeholder={t.factories.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <button onClick={() => router.push("/factory-search")} className="px-4 py-2 border border-[#00b4c3] text-[#00b4c3] rounded-lg text-sm font-bold hover:bg-[#00b4c3] hover:text-white whitespace-nowrap transition-colors">Discovery View</button>
-          <button onClick={() => router.push("/factories/new")} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap">{t.factories.addNew}</button>
+          <input
+            type="text"
+            placeholder={t.factories.searchPlaceholder}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={() => router.push("/factory-search")}
+            className="px-4 py-2 border border-[#00b4c3] text-[#00b4c3] rounded-lg text-sm font-bold hover:bg-[#00b4c3] hover:text-white whitespace-nowrap transition-colors"
+          >
+            Discovery View
+          </button>
+          <button
+            onClick={() => setAddCompanyOpen(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap"
+            title="Add brand, factory, lab, or distributor"
+          >
+            + Add Company
+          </button>
+          <button
+            onClick={() => router.push("/factories/new")}
+            className="px-3 py-2 border border-slate-300 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 whitespace-nowrap"
+          >
+            {t.factories.addNew}
+          </button>
         </div>
       </div>
+
+      <AddCompanyModal
+        open={addCompanyOpen}
+        onClose={() => setAddCompanyOpen(false)}
+        initialType="FACTORY"
+      />
 
       {/* Country distribution — click to filter */}
       <div className="flex gap-2 mb-6 flex-wrap">
@@ -53,8 +103,14 @@ export default function FactoriesPage() {
                   : "bg-white hover:border-[#00b4c3] hover:shadow-md"
               }`}
             >
-              <div className={`text-lg font-black ${isActive ? "text-white" : "text-slate-900"}`}>{count}</div>
-              <div className={`text-[11px] truncate ${isActive ? "text-white/80" : "text-slate-500"}`}>{country}</div>
+              <div className={`text-lg font-black ${isActive ? "text-white" : "text-slate-900"}`}>
+                {count}
+              </div>
+              <div
+                className={`text-[11px] truncate ${isActive ? "text-white/80" : "text-slate-500"}`}
+              >
+                {country}
+              </div>
             </button>
           );
         })}
@@ -75,8 +131,12 @@ export default function FactoriesPage() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map(f => (
-              <tr key={f.id} onClick={() => router.push(`/factories/${f.id}`)} className="border-t border-slate-100 hover:bg-blue-50 cursor-pointer transition-colors">
+            {filtered.map((f) => (
+              <tr
+                key={f.id}
+                onClick={() => router.push(`/factories/${f.id}`)}
+                className="border-t border-slate-100 hover:bg-blue-50 cursor-pointer transition-colors"
+              >
                 <td className="px-4 py-3">
                   <div className="font-bold text-slate-900">{f.name}</div>
                   {f.chineseName && <div className="text-xs text-slate-400">{f.chineseName}</div>}
@@ -91,7 +151,9 @@ export default function FactoriesPage() {
             ))}
           </tbody>
         </table>
-        {filtered.length === 0 && <div className="text-center py-12 text-slate-400">{t.factories.noFactories}</div>}
+        {filtered.length === 0 && (
+          <div className="text-center py-12 text-slate-400">{t.factories.noFactories}</div>
+        )}
       </div>
     </div>
   );

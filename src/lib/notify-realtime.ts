@@ -274,9 +274,11 @@ export async function pushTestRequestStatus(params: {
   testRequestId: string;
   status: string;
   createdByUserId?: string;
+  poNumber?: string;
+  factoryName?: string;
 }): Promise<void> {
   try {
-    // Create notifications in database
+    // Create notifications in database (requester + admins when relevant)
     await notifyTestRequestStatus(params);
 
     // Get affected user IDs
@@ -309,7 +311,7 @@ export async function pushSystemAlert(
   userIds: string | string[],
   title: string,
   message: string,
-  link?: string
+  link?: string,
 ): Promise<void> {
   try {
     const recipients = Array.isArray(userIds) ? userIds : [userIds];
@@ -331,9 +333,7 @@ export async function pushSystemAlert(
       await pushNotification(userId, notification as Notification);
     }
 
-    console.log(
-      `[NOTIFY-REALTIME] System alert sent to ${recipients.length} user(s): "${title}"`
-    );
+    console.log(`[NOTIFY-REALTIME] System alert sent to ${recipients.length} user(s): "${title}"`);
   } catch (error) {
     console.error("[NOTIFY-REALTIME] Error in pushSystemAlert:", error);
   }
@@ -348,7 +348,7 @@ export async function pushCustomNotification(
   title: string,
   message: string,
   link?: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, any>,
 ): Promise<void> {
   try {
     // Create notification in database

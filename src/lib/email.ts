@@ -10,36 +10,65 @@
 const FUZE_FROM = "FUZE Atlas <notifications@fuzeatlas.com>";
 const FUZE_COLOR = "#00b4c3";
 
+interface EmailAttachment {
+  /** Filename as it appears to the recipient (e.g. "invite.ics") */
+  filename: string;
+  /** Raw string content — will be base64-encoded automatically */
+  content: string;
+  /** MIME type. Defaults to application/octet-stream. For calendar invites use "text/calendar; method=REQUEST; charset=UTF-8". */
+  contentType?: string;
+}
+
 interface EmailOptions {
   to: string | string[];
   subject: string;
   html: string;
+  /** Optional attachments. For calendar invites, set filename: "invite.ics" and contentType: "text/calendar; method=REQUEST". */
+  attachments?: EmailAttachment[];
+  /** Optional reply-to header. Useful for calendar invites so RSVPs route to the organizer. */
+  replyTo?: string;
 }
 
-export async function sendEmail({ to, subject, html }: EmailOptions) {
+export async function sendEmail({ to, subject, html, attachments, replyTo }: EmailOptions) {
   const apiKey = process.env.RESEND_API_KEY;
 
   if (!apiKey) {
     console.log("[EMAIL-STUB] No RESEND_API_KEY set. Would send:");
     console.log(`  To: ${Array.isArray(to) ? to.join(", ") : to}`);
     console.log(`  Subject: ${subject}`);
+    if (attachments?.length) {
+      console.log(`  Attachments: ${attachments.map((a) => a.filename).join(", ")}`);
+    }
     console.log("  (Set RESEND_API_KEY to enable real email delivery)");
     return { ok: true, stub: true };
   }
 
   try {
+    const payload: any = {
+      from: process.env.RESEND_FROM || FUZE_FROM,
+      to: Array.isArray(to) ? to : [to],
+      subject,
+      html,
+    };
+
+    if (replyTo) payload.reply_to = replyTo;
+
+    if (attachments?.length) {
+      payload.attachments = attachments.map((a) => ({
+        filename: a.filename,
+        // Resend accepts base64-encoded content in the `content` field
+        content: Buffer.from(a.content, "utf-8").toString("base64"),
+        content_type: a.contentType || "application/octet-stream",
+      }));
+    }
+
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        from: process.env.RESEND_FROM || FUZE_FROM,
-        to: Array.isArray(to) ? to : [to],
-        subject,
-        html,
-      }),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
@@ -54,6 +83,131 @@ export async function sendEmail({ to, subject, html }: EmailOptions) {
     console.error("[EMAIL] Send failed:", e.message);
     return { ok: false, error: e.message };
   }
+}
+
+/* ────────────────────────────────────────────────────────────
+   Meeting-invite helper (sends .ics as text/calendar attachment)
+   ──────────────────────────────────────────────────────────── */
+
+/**
+ * Send a calendar invite / update / cancellation to attendees.
+ *
+ * The .ics payload is attached with Content-Type text/calendar so Outlook
+ * and Gmail render the native Accept / Tentative / Decline buttons.
+ *
+ * For the same meeting, always pass the same `uid` on every call and
+ * increment `sequence` on updates. Set `action: "cancel"` to send a
+ * cancellation (METHOD:CANCEL, STATUS:CANCELLED) — Outlook will pull the
+ * event off the recipient's calendar automatically.
+ */
+export async function sendMeetingInvite(params: {
+  action?: "invite" | "update" | "cancel";
+  to: string | string[];
+  subject?: string;
+  title: string;
+  description?: string;
+  startTime: Date;
+  endTime: Date;
+  timezone?: string;
+  location?: string;
+  teamsLink?: string;
+  uid: string;
+  sequence?: number;
+  organizer?: { name: string; email: string };
+  attendees?: { name: string; email: string }[];
+}) {
+  // Lazy import to avoid a cycle with meeting-templates (which doesn't import email,
+  // but keeps this helper standalone should anything shift).
+  const { generateIcsContent } = await import("@/lib/meeting-templates");
+
+  const {
+    action = "invite",
+    to,
+    subject,
+    title,
+    description = "",
+    startTime,
+    endTime,
+    timezone,
+    location,
+    teamsLink,
+    uid,
+    sequence = 0,
+    organizer,
+    attendees = [],
+  } = params;
+
+  const method = action === "cancel" ? "CANCEL" : "REQUEST";
+  const finalSubject =
+    subject ||
+    (action === "cancel"
+      ? `Cancelled: ${title}`
+      : action === "update"
+        ? `Updated: ${title}`
+        : title);
+
+  // Fold the Teams link into the description so it shows up in the .ics body too
+  const fullDescription = [description, teamsLink ? `\nJoin on Teams: ${teamsLink}` : ""]
+    .filter(Boolean)
+    .join("");
+
+  const ics = generateIcsContent({
+    uid,
+    sequence,
+    method,
+    title,
+    description: fullDescription,
+    startTime,
+    endTime,
+    location: location || (teamsLink ? "Microsoft Teams Meeting" : undefined),
+    organizer,
+    attendees,
+  });
+
+  const tz = timezone || "Asia/Taipei";
+  const fmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz,
+    dateStyle: "full",
+    timeStyle: "short",
+  });
+
+  const whenLine =
+    action === "cancel"
+      ? `This meeting has been <strong>cancelled</strong>.`
+      : `<strong>When:</strong> ${fmt.format(startTime)} – ${new Intl.DateTimeFormat("en-US", { timeZone: tz, timeStyle: "short" }).format(endTime)} (${tz})`;
+
+  const html = emailWrapper(`
+    <h2 style="color:#1a1a2e;margin:0 0 12px">${
+      action === "cancel"
+        ? "Meeting cancelled"
+        : action === "update"
+          ? "Meeting updated"
+          : "Meeting invitation"
+    }</h2>
+    <p style="color:#111;font-size:16px;margin:0 0 8px"><strong>${title}</strong></p>
+    <p style="color:#4b5563;line-height:1.6;margin:0 0 12px">${whenLine}</p>
+    ${location ? `<p style="color:#4b5563;margin:0 0 12px"><strong>Where:</strong> ${location}</p>` : ""}
+    ${teamsLink ? `<p style="margin:0 0 12px"><a href="${teamsLink}" style="color:${FUZE_COLOR};font-weight:600">Join on Microsoft Teams →</a></p>` : ""}
+    ${description ? `<div style="color:#4b5563;line-height:1.6;white-space:pre-wrap;border-top:1px solid #e5e7eb;padding-top:12px;margin-top:12px">${description}</div>` : ""}
+    <p style="color:#9ca3af;font-size:12px;margin-top:16px">
+      ${action === "cancel" ? "The event has been removed from your calendar automatically if your client supports iCalendar." : "Your calendar should show Accept / Tentative / Decline buttons for this event."}
+    </p>
+  `);
+
+  return sendEmail({
+    to,
+    subject: finalSubject,
+    html,
+    replyTo: organizer?.email,
+    attachments: [
+      {
+        filename: action === "cancel" ? "cancel.ics" : "invite.ics",
+        content: ics,
+        // method=... in the Content-Type is what makes Outlook treat this as an invite/cancel
+        contentType: `text/calendar; method=${method}; charset=UTF-8; name="${action === "cancel" ? "cancel.ics" : "invite.ics"}"`,
+      },
+    ],
+  });
 }
 
 // ─── Email Templates ───
@@ -261,11 +415,15 @@ export async function sendAccessDeniedEmail(params: {
     <p style="color: #4b5563; line-height: 1.6;">
       Unfortunately, we are unable to approve your request at this time.
     </p>
-    ${reason ? `
+    ${
+      reason
+        ? `
     <div style="background: #f9fafb; border-left: 4px solid #9ca3af; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0;">
       <p style="margin: 0; color: #4b5563; font-style: italic;">${reason}</p>
     </div>
-    ` : ""}
+    `
+        : ""
+    }
     <p style="color: #9ca3af; font-size: 13px;">
       If you believe this was in error or have questions, please contact your FUZE representative directly.
     </p>
@@ -539,8 +697,16 @@ export async function sendTrialStatusEmail(params: {
   icpLabName?: string;
 }) {
   const {
-    email, name, trialId, factoryName, fabricInfo,
-    newStatus, trackingNumber, rejectedReason, adminNotes, icpLabName,
+    email,
+    name,
+    trialId,
+    factoryName,
+    fabricInfo,
+    newStatus,
+    trackingNumber,
+    rejectedReason,
+    adminNotes,
+    icpLabName,
   } = params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
   const trialUrl = `${baseUrl}/factory-portal/sample-trial/${trialId}`;
@@ -554,7 +720,8 @@ export async function sendTrialStatusEmail(params: {
     APPROVED: {
       label: "Approved",
       color: "#059669",
-      message: "Your FUZE sample trial request has been approved. The FUZE sample will be prepared for shipment.",
+      message:
+        "Your FUZE sample trial request has been approved. The FUZE sample will be prepared for shipment.",
     },
     REJECTED: {
       label: "Not Approved",
@@ -585,7 +752,8 @@ export async function sendTrialStatusEmail(params: {
     COMPLETE: {
       label: "Complete",
       color: "#059669",
-      message: "Your FUZE sample trial has been completed successfully. Thank you for your partnership.",
+      message:
+        "Your FUZE sample trial has been completed successfully. Thank you for your partnership.",
     },
   };
 
@@ -712,9 +880,20 @@ export async function sendShippingInstructionsEmail(params: {
   samplePrepInstructions: string;
 }) {
   const {
-    email, name, testRequestId, poNumber,
-    labName, labAddress, labCity, labState, labCountry, labEmail, labPhone,
-    testTypes, fabricInfo, samplePrepInstructions,
+    email,
+    name,
+    testRequestId,
+    poNumber,
+    labName,
+    labAddress,
+    labCity,
+    labState,
+    labCountry,
+    labEmail,
+    labPhone,
+    testTypes,
+    fabricInfo,
+    samplePrepInstructions,
   } = params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
   const trUrl = `${baseUrl}/test-requests`;
@@ -834,7 +1013,8 @@ export async function sendSampleShippedNotification(params: {
   customerName: string;
   shipDate?: string;
 }) {
-  const { adminEmails, poNumber, fabricInfo, carrier, trackingNumber, customerName, shipDate } = params;
+  const { adminEmails, poNumber, fabricInfo, carrier, trackingNumber, customerName, shipDate } =
+    params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
 
   const html = emailWrapper(`
@@ -1002,9 +1182,12 @@ export async function sendTestingStartedEmail(params: {
   const { email, name, poNumber, fabricInfo, testLines, estimatedCompletionDate } = params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
 
-  const testListHtml = testLines.map(l =>
-    `<li style="margin: 4px 0; color: #4b5563;">${l.testType}${l.testMethod ? ` (${l.testMethod})` : ""}${l.estimatedDays ? ` — Est. ${l.estimatedDays} days` : ""}</li>`
-  ).join("");
+  const testListHtml = testLines
+    .map(
+      (l) =>
+        `<li style="margin: 4px 0; color: #4b5563;">${l.testType}${l.testMethod ? ` (${l.testMethod})` : ""}${l.estimatedDays ? ` — Est. ${l.estimatedDays} days` : ""}</li>`,
+    )
+    .join("");
 
   const html = emailWrapper(`
     <h2 style="color: #1a1a2e; margin: 0 0 16px;">Testing Started</h2>
@@ -1047,15 +1230,25 @@ export async function sendResultsReadyEmail(params: {
   poNumber: string;
   fabricInfo: string;
   overallResult: "PASSED" | "FAILED" | "MIXED";
-  results: { testType: string; testMethod?: string; result: string; passed: boolean; detail?: string }[];
+  results: {
+    testType: string;
+    testMethod?: string;
+    result: string;
+    passed: boolean;
+    detail?: string;
+  }[];
 }) {
   const { email, name, poNumber, fabricInfo, overallResult, results } = params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
 
-  const overallColor = overallResult === "PASSED" ? "#059669" : overallResult === "FAILED" ? "#dc2626" : "#d97706";
-  const overallBg = overallResult === "PASSED" ? "#f0fdf4" : overallResult === "FAILED" ? "#fef2f2" : "#fffbeb";
+  const overallColor =
+    overallResult === "PASSED" ? "#059669" : overallResult === "FAILED" ? "#dc2626" : "#d97706";
+  const overallBg =
+    overallResult === "PASSED" ? "#f0fdf4" : overallResult === "FAILED" ? "#fef2f2" : "#fffbeb";
 
-  const resultsRows = results.map(r => `
+  const resultsRows = results
+    .map(
+      (r) => `
     <tr>
       <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #1a1a2e;">${r.testType}${r.testMethod ? `<br><span style="color: #9ca3af; font-size: 12px;">${r.testMethod}</span>` : ""}</td>
       <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">${r.result}</td>
@@ -1063,7 +1256,9 @@ export async function sendResultsReadyEmail(params: {
         <span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; color: white; background: ${r.passed ? "#059669" : "#dc2626"};">${r.passed ? "PASS" : "FAIL"}</span>
       </td>
     </tr>
-  `).join("");
+  `,
+    )
+    .join("");
 
   const html = emailWrapper(`
     <h2 style="color: #1a1a2e; margin: 0 0 16px;">Test Results Ready</h2>
@@ -1088,12 +1283,22 @@ export async function sendResultsReadyEmail(params: {
       <tbody>${resultsRows}</tbody>
     </table>
 
-    ${results.some(r => r.detail) ? `
+    ${
+      results.some((r) => r.detail)
+        ? `
       <div style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 16px; margin: 20px 0; border-radius: 8px;">
         <p style="margin: 0 0 8px; color: #1a1a2e; font-weight: 600; font-size: 13px;">Details</p>
-        ${results.filter(r => r.detail).map(r => `<p style="margin: 0 0 4px; color: #4b5563; font-size: 13px;"><strong>${r.testType}:</strong> ${r.detail}</p>`).join("")}
+        ${results
+          .filter((r) => r.detail)
+          .map(
+            (r) =>
+              `<p style="margin: 0 0 4px; color: #4b5563; font-size: 13px;"><strong>${r.testType}:</strong> ${r.detail}</p>`,
+          )
+          .join("")}
       </div>
-    ` : ""}
+    `
+        : ""
+    }
 
     <div style="margin: 24px 0; text-align: center;">
       <a href="${baseUrl}/factory-portal" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500; margin: 0 8px;">
@@ -1128,9 +1333,24 @@ export async function sendNewOrderEmail(params: {
   currency: string;
   brandName?: string;
 }) {
-  const { email, managerName, orderNumber, orderType, factoryName, volumeLiters, hangtagQty, totalPrice, currency, brandName } = params;
+  const {
+    email,
+    managerName,
+    orderNumber,
+    orderType,
+    factoryName,
+    volumeLiters,
+    hangtagQty,
+    totalPrice,
+    currency,
+    brandName,
+  } = params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
-  const detail = volumeLiters ? `${volumeLiters}L (${Math.ceil(volumeLiters / 19)} bottles)` : hangtagQty ? `${hangtagQty.toLocaleString()} hangtags` : "";
+  const detail = volumeLiters
+    ? `${volumeLiters}L (${Math.ceil(volumeLiters / 19)} bottles)`
+    : hangtagQty
+      ? `${hangtagQty.toLocaleString()} hangtags`
+      : "";
 
   const html = emailWrapper(`
     <h2 style="color: #1a1a2e; margin: 0 0 16px;">New Order Awaiting Approval</h2>
@@ -1156,7 +1376,11 @@ export async function sendNewOrderEmail(params: {
     </div>
   `);
 
-  return sendEmail({ to: email, subject: `Action Required: ${orderType} Order ${orderNumber} — ${factoryName}`, html });
+  return sendEmail({
+    to: email,
+    subject: `Action Required: ${orderType} Order ${orderNumber} — ${factoryName}`,
+    html,
+  });
 }
 
 /** Notify factory when order status changes */
@@ -1169,18 +1393,53 @@ export async function sendOrderStatusEmail(params: {
   trackingNumber?: string;
   carrier?: string;
 }) {
-  const { email, contactName, orderNumber, newStatus, factoryName, trackingNumber, carrier } = params;
+  const { email, contactName, orderNumber, newStatus, factoryName, trackingNumber, carrier } =
+    params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
 
-  const statusInfo: Record<string, { color: string; bg: string; label: string; message: string }> = {
-    APPROVED: { color: "#059669", bg: "#f0fdf4", label: "Approved", message: "Your order has been approved and will be processed shortly." },
-    PROCESSING: { color: "#7c3aed", bg: "#f5f3ff", label: "Processing", message: "Your order is being prepared for shipment." },
-    SHIPPED: { color: "#4f46e5", bg: "#eef2ff", label: "Shipped", message: trackingNumber ? `Your order has shipped! Tracking: ${trackingNumber}${carrier ? ` (${carrier})` : ""}.` : "Your order has been shipped!" },
-    DELIVERED: { color: "#059669", bg: "#f0fdf4", label: "Delivered", message: "Your order has been delivered. Thank you for choosing FUZE." },
-    CANCELLED: { color: "#dc2626", bg: "#fef2f2", label: "Cancelled", message: "Your order has been cancelled. Please contact your account manager with any questions." },
-  };
+  const statusInfo: Record<string, { color: string; bg: string; label: string; message: string }> =
+    {
+      APPROVED: {
+        color: "#059669",
+        bg: "#f0fdf4",
+        label: "Approved",
+        message: "Your order has been approved and will be processed shortly.",
+      },
+      PROCESSING: {
+        color: "#7c3aed",
+        bg: "#f5f3ff",
+        label: "Processing",
+        message: "Your order is being prepared for shipment.",
+      },
+      SHIPPED: {
+        color: "#4f46e5",
+        bg: "#eef2ff",
+        label: "Shipped",
+        message: trackingNumber
+          ? `Your order has shipped! Tracking: ${trackingNumber}${carrier ? ` (${carrier})` : ""}.`
+          : "Your order has been shipped!",
+      },
+      DELIVERED: {
+        color: "#059669",
+        bg: "#f0fdf4",
+        label: "Delivered",
+        message: "Your order has been delivered. Thank you for choosing FUZE.",
+      },
+      CANCELLED: {
+        color: "#dc2626",
+        bg: "#fef2f2",
+        label: "Cancelled",
+        message:
+          "Your order has been cancelled. Please contact your account manager with any questions.",
+      },
+    };
 
-  const info = statusInfo[newStatus] || { color: "#6b7280", bg: "#f9fafb", label: newStatus, message: `Your order status has been updated to ${newStatus}.` };
+  const info = statusInfo[newStatus] || {
+    color: "#6b7280",
+    bg: "#f9fafb",
+    label: newStatus,
+    message: `Your order status has been updated to ${newStatus}.`,
+  };
 
   const html = emailWrapper(`
     <h2 style="color: #1a1a2e; margin: 0 0 16px;">Order Update</h2>
@@ -1193,7 +1452,9 @@ export async function sendOrderStatusEmail(params: {
 
     <p style="color: #4b5563; line-height: 1.6;">${info.message}</p>
 
-    ${trackingNumber && newStatus === "SHIPPED" ? `
+    ${
+      trackingNumber && newStatus === "SHIPPED"
+        ? `
     <div style="background: #f9fafb; padding: 16px; margin: 20px 0; border-radius: 8px; border: 1px solid #e5e7eb;">
       <p style="margin: 0 0 4px; color: #1a1a2e; font-weight: 600;">Tracking Information</p>
       <p style="margin: 0; color: #4b5563;">
@@ -1201,7 +1462,9 @@ export async function sendOrderStatusEmail(params: {
         <strong>Tracking:</strong> ${trackingNumber}
       </p>
     </div>
-    ` : ""}
+    `
+        : ""
+    }
 
     <div style="margin: 24px 0; text-align: center;">
       <a href="${baseUrl}/factory-portal/orders" style="display: inline-block; background: ${FUZE_COLOR}; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
@@ -1225,9 +1488,23 @@ export async function sendDistributorOrderEmail(params: {
   shippingCity?: string;
   shippingCountry?: string;
 }) {
-  const { email, distributorName, orderNumber, factoryName, volumeLiters, hangtagQty, shippingAddress, shippingCity, shippingCountry } = params;
+  const {
+    email,
+    distributorName,
+    orderNumber,
+    factoryName,
+    volumeLiters,
+    hangtagQty,
+    shippingAddress,
+    shippingCity,
+    shippingCountry,
+  } = params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
-  const detail = volumeLiters ? `${volumeLiters}L (${Math.ceil(volumeLiters / 19)} bottles)` : hangtagQty ? `${hangtagQty.toLocaleString()} hangtags` : "";
+  const detail = volumeLiters
+    ? `${volumeLiters}L (${Math.ceil(volumeLiters / 19)} bottles)`
+    : hangtagQty
+      ? `${hangtagQty.toLocaleString()} hangtags`
+      : "";
   const shipTo = [shippingAddress, shippingCity, shippingCountry].filter(Boolean).join(", ");
 
   const html = emailWrapper(`
@@ -1252,7 +1529,11 @@ export async function sendDistributorOrderEmail(params: {
     </div>
   `);
 
-  return sendEmail({ to: email, subject: `Fulfillment Required: ${orderNumber} — ${factoryName}`, html });
+  return sendEmail({
+    to: email,
+    subject: `Fulfillment Required: ${orderNumber} — ${factoryName}`,
+    html,
+  });
 }
 
 /**
@@ -1266,7 +1547,14 @@ export async function sendLowInventoryEmail(params: {
   bottles: number;
   adminEmails?: string[];
 }) {
-  const { distributorEmail, distributorName, currentLiters, thresholdLiters, bottles, adminEmails } = params;
+  const {
+    distributorEmail,
+    distributorName,
+    currentLiters,
+    thresholdLiters,
+    bottles,
+    adminEmails,
+  } = params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com";
 
   const html = emailWrapper(`
@@ -1333,5 +1621,9 @@ export async function sendLoginNotificationEmail(params: {
     </div>
   `);
 
-  return sendEmail({ to: email, subject: `${entityType} Login: ${userName} from ${entityName}`, html });
+  return sendEmail({
+    to: email,
+    subject: `${entityType} Login: ${userName} from ${entityName}`,
+    html,
+  });
 }

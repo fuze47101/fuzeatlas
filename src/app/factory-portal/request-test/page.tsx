@@ -29,6 +29,21 @@ interface Fabric {
   factoryCode?: string;
 }
 
+interface LabOption {
+  id: string;
+  name: string;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  region?: string | null;
+  accreditations?: string | null;
+  icpApproved: boolean;
+  abApproved: boolean;
+  fungalApproved: boolean;
+  odorApproved: boolean;
+  uvApproved: boolean;
+}
+
 export default function RequestFuzeTestPage() {
   const { user } = useAuth();
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
@@ -39,6 +54,8 @@ export default function RequestFuzeTestPage() {
 
   // Form state
   const [selectedFabric, setSelectedFabric] = useState("");
+  const [selectedLab, setSelectedLab] = useState(""); // empty = "FUZE decides"
+  const [labs, setLabs] = useState<LabOption[]>([]);
   const [selectedTests, setSelectedTests] = useState<Set<string>>(new Set());
   const [otherTestSelected, setOtherTestSelected] = useState(false);
   const [otherTestDescription, setOtherTestDescription] = useState("");
@@ -67,6 +84,22 @@ export default function RequestFuzeTestPage() {
       }
     };
     loadCatalog();
+  }, []);
+
+  // Load active labs (for dropdown)
+  useEffect(() => {
+    const loadLabs = async () => {
+      try {
+        const res = await fetch("/api/labs");
+        const d = await res.json();
+        if (d.ok && Array.isArray(d.labs)) {
+          setLabs(d.labs);
+        }
+      } catch (error) {
+        console.error("Error loading labs:", error);
+      }
+    };
+    loadLabs();
   }, []);
 
   // Load user's fabrics
@@ -104,20 +137,14 @@ export default function RequestFuzeTestPage() {
     setSelectedTests(next);
   };
 
-  const selectedTestObjects = testCatalog.filter((t) =>
-    selectedTests.has(t.id)
-  );
+  const selectedTestObjects = testCatalog.filter((t) => selectedTests.has(t.id));
 
   // Calculate total MOQ
   const totalMoq =
-    selectedTestObjects.length > 0
-      ? Math.max(...selectedTestObjects.map((t) => t.moqMeters))
-      : 0;
+    selectedTestObjects.length > 0 ? Math.max(...selectedTestObjects.map((t) => t.moqMeters)) : 0;
 
   // Check if control required
-  const controlRequiredForAny = selectedTestObjects.some(
-    (t) => t.controlRequired
-  );
+  const controlRequiredForAny = selectedTestObjects.some((t) => t.controlRequired);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,15 +176,14 @@ export default function RequestFuzeTestPage() {
         },
         body: JSON.stringify({
           fabricId: selectedFabric,
-          selectedTests: [
-            ...Array.from(selectedTests),
-            ...(otherTestSelected ? ["other"] : []),
-          ],
+          labId: selectedLab || null,
+          selectedTests: [...Array.from(selectedTests), ...(otherTestSelected ? ["other"] : [])],
           controlRequired: controlRequiredForAny,
           totalMoqMeters: totalMoq,
-          notes: otherTestSelected && otherTestDescription.trim()
-            ? `${notes ? notes + "\n\n" : ""}[Other Test Requested]: ${otherTestDescription.trim()}`
-            : notes,
+          notes:
+            otherTestSelected && otherTestDescription.trim()
+              ? `${notes ? notes + "\n\n" : ""}[Other Test Requested]: ${otherTestDescription.trim()}`
+              : notes,
           trackingNumber: trackingNumber || null,
         }),
       });
@@ -194,18 +220,16 @@ export default function RequestFuzeTestPage() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-emerald-900 mb-2">
-            Test Request Submitted
-          </h2>
+          <h2 className="text-xl font-bold text-emerald-900 mb-2">Test Request Submitted</h2>
           <p className="text-emerald-700 mb-4">
-            Your FUZE test request has been submitted successfully. Please
-            prepare your fabric samples according to the shipping instructions
-            and submit them to the address below.
+            Your FUZE test request has been submitted successfully. Please prepare your fabric
+            samples according to the shipping instructions and submit them to the address below.
           </p>
           <button
             onClick={() => {
               setSubmitted(false);
               setSelectedFabric("");
+              setSelectedLab("");
               setSelectedTests(new Set());
               setOtherTestSelected(false);
               setOtherTestDescription("");
@@ -233,12 +257,10 @@ export default function RequestFuzeTestPage() {
     <div className="p-4 sm:p-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
-          Request FUZE Test
-        </h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Request FUZE Test</h1>
         <p className="text-slate-600">
-          Select a fabric and the FUZE tests you need performed. Our lab will
-          handle sample preparation, testing, and reporting.
+          Select a fabric and the FUZE tests you need performed. Our lab will handle sample
+          preparation, testing, and reporting.
         </p>
       </div>
 
@@ -256,9 +278,7 @@ export default function RequestFuzeTestPage() {
             <div className="w-8 h-8 rounded-full bg-[#00b4c3] text-white text-sm font-bold flex items-center justify-center">
               1
             </div>
-            <h2 className="text-lg font-semibold text-slate-900">
-              Select Fabric
-            </h2>
+            <h2 className="text-lg font-semibold text-slate-900">Select Fabric</h2>
           </div>
 
           {fabrics.length === 0 ? (
@@ -282,15 +302,85 @@ export default function RequestFuzeTestPage() {
           )}
         </div>
 
-        {/* Section 2: Select Tests */}
+        {/* Section 2: Select Lab */}
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-8 rounded-full bg-[#00b4c3] text-white text-sm font-bold flex items-center justify-center">
               2
             </div>
-            <h2 className="text-lg font-semibold text-slate-900">
-              Select Tests
-            </h2>
+            <h2 className="text-lg font-semibold text-slate-900">Select Lab</h2>
+            <span className="text-xs text-slate-500">
+              (optional — FUZE will route if left blank)
+            </span>
+          </div>
+
+          {labs.length === 0 ? (
+            <p className="text-slate-500 text-sm">Loading labs…</p>
+          ) : (
+            <>
+              <select
+                value={selectedLab}
+                onChange={(e) => setSelectedLab(e.target.value)}
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg text-slate-900 focus:ring-2 focus:ring-[#00b4c3] focus:border-[#00b4c3] text-sm"
+              >
+                <option value="">Let FUZE decide (recommended)</option>
+                {labs.map((lab) => {
+                  const loc = [lab.city, lab.state, lab.country].filter(Boolean).join(", ");
+                  return (
+                    <option key={lab.id} value={lab.id}>
+                      {lab.name}
+                      {loc ? ` — ${loc}` : ""}
+                    </option>
+                  );
+                })}
+              </select>
+
+              {/* Capability chips for the picked lab */}
+              {selectedLab &&
+                (() => {
+                  const lab = labs.find((l) => l.id === selectedLab);
+                  if (!lab) return null;
+                  const caps: string[] = [];
+                  if (lab.icpApproved) caps.push("ICP");
+                  if (lab.abApproved) caps.push("Antibacterial");
+                  if (lab.fungalApproved) caps.push("Antifungal");
+                  if (lab.odorApproved) caps.push("Odor");
+                  if (lab.uvApproved) caps.push("UV");
+                  return (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {caps.length === 0 ? (
+                        <span className="text-xs text-slate-500 italic">
+                          No capability flags set on this lab.
+                        </span>
+                      ) : (
+                        caps.map((c) => (
+                          <span
+                            key={c}
+                            className="px-2 py-1 bg-emerald-50 text-emerald-700 text-xs font-medium rounded-full border border-emerald-200"
+                          >
+                            ✓ {c}
+                          </span>
+                        ))
+                      )}
+                      {lab.accreditations && (
+                        <span className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full border border-slate-200">
+                          {lab.accreditations}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
+            </>
+          )}
+        </div>
+
+        {/* Section 3: Select Tests */}
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 rounded-full bg-[#00b4c3] text-white text-sm font-bold flex items-center justify-center">
+              3
+            </div>
+            <h2 className="text-lg font-semibold text-slate-900">Select Tests</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -299,9 +389,7 @@ export default function RequestFuzeTestPage() {
                 key={test.id}
                 className="relative p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-[#00b4c3] hover:bg-[#00b4c3]/5"
                 style={{
-                  borderColor: selectedTests.has(test.id)
-                    ? "#00b4c3"
-                    : "#e2e8f0",
+                  borderColor: selectedTests.has(test.id) ? "#00b4c3" : "#e2e8f0",
                   backgroundColor: selectedTests.has(test.id)
                     ? "rgba(0, 180, 195, 0.05)"
                     : "transparent",
@@ -315,31 +403,23 @@ export default function RequestFuzeTestPage() {
                 />
 
                 <div className="pr-8">
-                  <h3 className="font-semibold text-slate-900 text-sm mb-1">
-                    {test.name}
-                  </h3>
-                  <p className="text-slate-600 text-xs mb-3">
-                    {test.description}
-                  </p>
+                  <h3 className="font-semibold text-slate-900 text-sm mb-1">{test.name}</h3>
+                  <p className="text-slate-600 text-xs mb-3">{test.description}</p>
 
                   <div className="space-y-2 text-xs text-slate-500">
                     <div>
                       <span className="font-medium">MOQ:</span> {test.moqMeters}m
                     </div>
                     <div>
-                      <span className="font-medium">Turnaround:</span>{" "}
-                      {test.turnaroundDays} days
+                      <span className="font-medium">Turnaround:</span> {test.turnaroundDays} days
                     </div>
                     {test.estimatedCostUsd && (
                       <div>
-                        <span className="font-medium">Est. Cost:</span> $
-                        {test.estimatedCostUsd}
+                        <span className="font-medium">Est. Cost:</span> ${test.estimatedCostUsd}
                       </div>
                     )}
                     {test.controlRequired && (
-                      <div className="text-orange-600 font-medium">
-                        Control fabric required
-                      </div>
+                      <div className="text-orange-600 font-medium">Control fabric required</div>
                     )}
                   </div>
                 </div>
@@ -363,7 +443,8 @@ export default function RequestFuzeTestPage() {
               <div className="pr-8">
                 <h3 className="font-semibold text-slate-900 text-sm mb-1">Other</h3>
                 <p className="text-slate-600 text-xs mb-3">
-                  Request a test method not listed above. Describe the test and we will provide a quote.
+                  Request a test method not listed above. Describe the test and we will provide a
+                  quote.
                 </p>
                 {otherTestSelected && (
                   <textarea
@@ -380,16 +461,11 @@ export default function RequestFuzeTestPage() {
           </div>
         </div>
 
-        {/* Section 3: MOQ & Control Requirements */}
+        {/* Section 4: MOQ & Control Requirements */}
         {selectedTests.size > 0 && (
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
             <h3 className="font-semibold text-blue-900 mb-4 flex items-center gap-2">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -416,16 +492,13 @@ export default function RequestFuzeTestPage() {
                   </p>
                   <p className="text-slate-700">
                     For accurate results, you must supply an equal amount of{" "}
-                    <strong>untreated control fabric</strong> from the same
-                    production lot/batch.
+                    <strong>untreated control fabric</strong> from the same production lot/batch.
                   </p>
                 </div>
               )}
 
               <div>
-                <p className="font-medium text-slate-900 mb-1">
-                  Tests Selected:
-                </p>
+                <p className="font-medium text-slate-900 mb-1">Tests Selected:</p>
                 <div className="flex flex-wrap gap-2">
                   {selectedTestObjects.map((t) => (
                     <span
@@ -443,15 +516,24 @@ export default function RequestFuzeTestPage() {
                 <div className="pt-3 mt-3 border-t border-blue-200">
                   <p className="font-medium text-slate-900 mb-1">Estimated Cost:</p>
                   <div className="space-y-1 text-sm text-slate-700">
-                    {selectedTestObjects.filter((t) => t.estimatedCostUsd).map((t) => (
-                      <div key={t.id} className="flex justify-between">
-                        <span>{t.name}</span>
-                        <span className="font-semibold">${t.estimatedCostUsd?.toLocaleString()}</span>
-                      </div>
-                    ))}
+                    {selectedTestObjects
+                      .filter((t) => t.estimatedCostUsd)
+                      .map((t) => (
+                        <div key={t.id} className="flex justify-between">
+                          <span>{t.name}</span>
+                          <span className="font-semibold">
+                            ${t.estimatedCostUsd?.toLocaleString()}
+                          </span>
+                        </div>
+                      ))}
                     <div className="flex justify-between pt-2 border-t border-blue-200 font-bold text-slate-900">
                       <span>Total Estimated</span>
-                      <span>${selectedTestObjects.reduce((sum, t) => sum + (t.estimatedCostUsd || 0), 0).toLocaleString()}</span>
+                      <span>
+                        $
+                        {selectedTestObjects
+                          .reduce((sum, t) => sum + (t.estimatedCostUsd || 0), 0)
+                          .toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -460,11 +542,11 @@ export default function RequestFuzeTestPage() {
           </div>
         )}
 
-        {/* Section 4: Shipping Information */}
+        {/* Section 5: Shipping Information */}
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-8 rounded-full bg-[#00b4c3] text-white text-sm font-bold flex items-center justify-center">
-              3
+              5
             </div>
             <h2 className="text-lg font-semibold text-slate-900">
               Shipping Address & Instructions
@@ -474,13 +556,8 @@ export default function RequestFuzeTestPage() {
           {/* Shipping Addresses */}
           <div className="space-y-4 mb-6">
             {FUZE_SHIPPING_ADDRESSES.map((addr) => (
-              <div
-                key={addr.label}
-                className="p-4 border border-slate-200 rounded-lg bg-slate-50"
-              >
-                <h4 className="font-semibold text-slate-900 mb-2">
-                  {addr.label}
-                </h4>
+              <div key={addr.label} className="p-4 border border-slate-200 rounded-lg bg-slate-50">
+                <h4 className="font-semibold text-slate-900 mb-2">{addr.label}</h4>
                 <div className="space-y-1 text-sm text-slate-700">
                   <p>
                     <span className="font-medium">{addr.company}</span>
@@ -497,26 +574,18 @@ export default function RequestFuzeTestPage() {
                   {addr.phone && <p>Phone: {addr.phone}</p>}
                   {addr.email && <p>Email: {addr.email}</p>}
                 </div>
-                {addr.notes && (
-                  <p className="mt-2 text-xs text-slate-600 italic">
-                    {addr.notes}
-                  </p>
-                )}
+                {addr.notes && <p className="mt-2 text-xs text-slate-600 italic">{addr.notes}</p>}
               </div>
             ))}
           </div>
 
           {/* Shipping Instructions */}
           <div className="mb-6">
-            <h4 className="font-semibold text-slate-900 mb-3 text-sm">
-              Shipping Instructions
-            </h4>
+            <h4 className="font-semibold text-slate-900 mb-3 text-sm">Shipping Instructions</h4>
             <ul className="space-y-2">
               {SHIPPING_INSTRUCTIONS.map((instruction, idx) => (
                 <li key={idx} className="flex gap-3 text-sm text-slate-700">
-                  <span className="text-[#00b4c3] font-bold flex-shrink-0">
-                    •
-                  </span>
+                  <span className="text-[#00b4c3] font-bold flex-shrink-0">•</span>
                   <span>{instruction}</span>
                 </li>
               ))}
@@ -545,15 +614,13 @@ export default function RequestFuzeTestPage() {
           </div>
         </div>
 
-        {/* Section 5: Additional Notes */}
+        {/* Section 6: Additional Notes */}
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-8 rounded-full bg-[#00b4c3] text-white text-sm font-bold flex items-center justify-center">
-              4
+              6
             </div>
-            <h2 className="text-lg font-semibold text-slate-900">
-              Additional Notes
-            </h2>
+            <h2 className="text-lg font-semibold text-slate-900">Additional Notes</h2>
           </div>
 
           <textarea

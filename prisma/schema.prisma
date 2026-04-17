@@ -198,6 +198,8 @@ model User {
   testRequestsCreated  TestRequest[] @relation("TestRequestRequester")
   testRequestsApproved TestRequest[] @relation("TestRequestApprover")
   notifications Notification[] @relation("UserNotifications")
+  crmTasksOwned   CrmTask[] @relation("OwnedCrmTasks")
+  crmTasksCreated CrmTask[] @relation("CreatedCrmTasks")
   auditLogs AuditLog[] @relation("UserAuditLogs")
   passwordResets PasswordResetToken[] @relation("PasswordResets")
   organizedMeetings Meeting[] @relation("MeetingOrganizer")
@@ -207,6 +209,7 @@ model User {
   managedOrders    FuzeOrder[]          @relation("OrderAccountManager")
   outreachChecks   ContactOutreach[]    @relation("UserOutreach")
   entityManagers   EntityManager[]      @relation("UserEntityManagers")
+  feedbackReports  FeedbackReport[]     @relation("FeedbackSubmitter")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -270,6 +273,7 @@ model Brand {
   fuzeOrders       FuzeOrder[]      @relation("OrderBrand")
   orderAllocations OrderBrandAllocation[] @relation("BrandOrderAllocations")
   meetings     Meeting[]      @relation("MeetingBrand")
+  crmTasks     CrmTask[]      @relation("BrandCrmTasks")
   sourceRecords SourceRecord[]
   engagement BrandEngagement? @relation("BrandEngagement")
 
@@ -534,6 +538,7 @@ model Lab {
   documents     Document[]
   shipments SampleShipment[] @relation("LabShipments")
   sampleTrials SampleTrialRequest[] @relation("TrialIcpLab")
+  fuzeTestRequests FuzeTestRequest[] @relation("FuzeTestLab")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -640,6 +645,7 @@ model Contact {
 
   outreachMessages OutreachMessage[]
   outreachChecks   ContactOutreach[]
+  notes            Note[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1228,14 +1234,25 @@ model Note {
   factory   Factory? @relation("FactoryNotes", fields: [factoryId], references: [id])
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id])
 
   contactName String?
   taskStatus  String?
+
+  // ─── Email log fields (populated when noteType = "EMAIL") ─────
+  emailDirection String?  // "INBOUND" | "OUTBOUND"
+  emailSubject   String?
+  emailFrom      String?
+  emailTo        String?
+  emailCc        String?
+  emailMessageId String?  @unique
 
   createdAt DateTime @default(now())
 
   @@index([brandId])
   @@index([factoryId])
+  @@index([contactId])
   @@index([date])
 }
 
@@ -1545,6 +1562,10 @@ model FuzeTestRequest {
   factoryId     String?
   factory       Factory? @relation("FuzeTestFactory", fields: [factoryId], references: [id])
 
+  // Preferred lab for this test (chosen by factory at submission time)
+  labId         String?
+  lab           Lab?     @relation("FuzeTestLab", fields: [labId], references: [id])
+
   requestedBy   String?  // User ID
 
   // Selected tests (JSON array of test IDs from catalog)
@@ -1570,6 +1591,7 @@ model FuzeTestRequest {
 
   @@index([fabricId])
   @@index([factoryId])
+  @@index([labId])
   @@index([status])
 }
 
@@ -1601,6 +1623,38 @@ model EntityManager {
 // ─────────────────────────────────────────────
 // NOTIFICATIONS
 // ─────────────────────────────────────────────
+
+model CrmTask {
+  id String @id @default(cuid())
+
+  title     String
+  notes     String?
+
+  dueAt     DateTime
+  status    String   @default("OPEN")       // OPEN | DONE | SNOOZED | CANCELLED
+  priority  String   @default("NORMAL")     // LOW | NORMAL | HIGH
+
+  ownerId     String
+  owner       User     @relation("OwnedCrmTasks", fields: [ownerId], references: [id])
+
+  createdById String?
+  createdBy   User?    @relation("CreatedCrmTasks", fields: [createdById], references: [id])
+
+  brandId   String?
+  brand     Brand?   @relation("BrandCrmTasks", fields: [brandId], references: [id])
+
+  completedAt         DateTime?
+  // Reminder tracking — set once we've fired the matching reminder so we don't double-send
+  weekReminderSentAt  DateTime?
+  dayReminderSentAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId, status, dueAt])
+  @@index([brandId])
+  @@index([status, dueAt])
+}
 
 model Notification {
   id String @id @default(cuid())
@@ -2628,4 +2682,70 @@ model FuzeConsumption {
   @@index([orderId])
   @@index([usageDate])
   @@index([brandId])
+}
+
+// ─────────────────────────────────────────────
+// FEEDBACK / REPORT-A-PROBLEM WIDGET
+// ─────────────────────────────────────────────
+
+model FeedbackReport {
+  id String @id @default(cuid())
+
+  // Who reported (may be null for unauthenticated pages, though we expect auth everywhere)
+  userId     String?
+  user       User?   @relation("FeedbackSubmitter", fields: [userId], references: [id])
+  userEmail  String? // cached so we can email even if user is later deleted
+  userName   String?
+  userRole   String? // cached role at time of submission
+
+  // Classification
+  category String // PROBLEM | CONFUSING | MISSING | SUGGESTION | BROKEN_LINK | ERROR | OTHER
+  title    String
+  description String @db.Text
+
+  // Auto-captured context (all optional so we gracefully degrade)
+  url       String?   // full URL the user was on
+  portal    String?   // e.g. "lab-portal", "brand-portal", "admin", "crm"
+  userAgent String?
+  viewport  String?   // "1440x900"
+  referer   String?
+
+  // Optional screenshot — S3 key + public URL (or base64 data-URL fallback)
+  screenshotUrl    String?
+  screenshotBucket String?
+  screenshotKey    String?
+
+  // Triage + resolution
+  status       FeedbackStatus @default(NEW)
+  triagedById  String?
+  triagedAt    DateTime?
+  triageNotes  String?  @db.Text
+
+  resolvedById   String?
+  resolvedAt     DateTime?
+  resolution     String? @db.Text   // what was fixed, shown to user on notification
+  resolutionUrl  String?            // optional link to the feature / page / PR
+
+  notifiedAt   DateTime?            // when we emailed the requester that it was fixed
+
+  priority Int? // 1 (critical) — 5 (nice-to-have)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+}
+
+enum FeedbackStatus {
+  NEW           // just submitted, needs triage
+  TRIAGED       // reviewed, awaiting decision
+  ACCEPTED      // agreed, going to fix
+  IN_PROGRESS   // actively being fixed
+  FIXED         // done, requester notified
+  REJECTED      // wont fix / not a bug
+  DUPLICATE     // merged into another report
+  CLOSED
 }

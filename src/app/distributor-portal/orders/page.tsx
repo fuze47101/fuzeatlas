@@ -20,7 +20,12 @@ const UNIT_META: Record<string, { label: string; liters: number; desc: string; i
   CARBOY: { label: "Carboy", liters: 19, desc: "19L — single bottle", icon: "🧴" },
   GAYLORD: { label: "Gaylord", liters: 608, desc: "32 carboys · 608L", icon: "📦" },
   CONTAINER_20: { label: "20' Container", liters: 6080, desc: "10 gaylords · 6,080L", icon: "🚛" },
-  CONTAINER_40: { label: "40' Container", liters: 12160, desc: "20 gaylords · 12,160L", icon: "🚢" },
+  CONTAINER_40: {
+    label: "40' Container",
+    liters: 12160,
+    desc: "20 gaylords · 12,160L",
+    icon: "🚢",
+  },
 };
 
 export default function DistributorOrdersPage() {
@@ -135,9 +140,16 @@ export default function DistributorOrdersPage() {
         setSuccess(`Order ${data.order?.orderNumber || ""} created!`);
         setShowCreate(false);
         setCreateForm({
-          factoryId: "", orderType: "PRODUCTION", unitType: "GAYLORD",
-          unitQuantity: 1, fuzeTier: "F1", brandId: "", notes: "",
-          shippingAddress: "", shippingCity: "", shippingCountry: "",
+          factoryId: "",
+          orderType: "PRODUCTION",
+          unitType: "GAYLORD",
+          unitQuantity: 1,
+          fuzeTier: "F1",
+          brandId: "",
+          notes: "",
+          shippingAddress: "",
+          shippingCity: "",
+          shippingCountry: "",
         });
         loadOrders();
         setTimeout(() => setSuccess(""), 4000);
@@ -162,7 +174,9 @@ export default function DistributorOrdersPage() {
       });
       const data = await res.json();
       if (data.ok) {
-        setSuccess(`Order ${action === "ship" ? "shipped" : action === "deliver" ? "delivered" : "updated"}!`);
+        setSuccess(
+          `Order ${action === "ship" ? "shipped" : action === "deliver" ? "delivered" : "updated"}!`,
+        );
         loadOrders();
         setSelectedOrder(null);
         setTimeout(() => setSuccess(""), 3000);
@@ -184,7 +198,11 @@ export default function DistributorOrdersPage() {
   }
 
   function formatDate(d: string) {
-    return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    return new Date(d).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   }
 
   if (loading) {
@@ -200,7 +218,9 @@ export default function DistributorOrdersPage() {
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Orders</h1>
-          <p className="text-slate-500 mt-1">Orders assigned to your distribution center for fulfillment</p>
+          <p className="text-slate-500 mt-1">
+            Orders assigned to your distribution center for fulfillment
+          </p>
         </div>
         <button
           onClick={() => setShowCreate(true)}
@@ -211,7 +231,9 @@ export default function DistributorOrdersPage() {
       </div>
 
       {success && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">{success}</div>
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+          {success}
+        </div>
       )}
 
       {/* Stats */}
@@ -233,7 +255,9 @@ export default function DistributorOrdersPage() {
           </div>
           <div className="bg-green-50 rounded-xl border border-green-200 p-4">
             <p className="text-xs text-green-600">Revenue</p>
-            <p className="text-2xl font-bold text-green-700">{formatCurrency(stats.totalRevenue || 0)}</p>
+            <p className="text-2xl font-bold text-green-700">
+              {formatCurrency(stats.totalRevenue || 0)}
+            </p>
           </div>
         </div>
       )}
@@ -245,7 +269,9 @@ export default function DistributorOrdersPage() {
             key={s}
             onClick={() => setFilterStatus(s)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              filterStatus === s ? "bg-[#00b4c3] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              filterStatus === s
+                ? "bg-[#00b4c3] text-white"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
           >
             {s === "all" ? "All" : STATUS_COLORS[s]?.label || s}
@@ -276,7 +302,9 @@ export default function DistributorOrdersPage() {
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-semibold text-slate-900">{order.orderNumber}</span>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.text}`}>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.text}`}
+                      >
                         {statusInfo.label}
                       </span>
                       {needsAction && (
@@ -292,7 +320,9 @@ export default function DistributorOrdersPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-slate-900">{formatCurrency(order.totalPrice || 0, order.currency)}</p>
+                    <p className="font-bold text-slate-900">
+                      {formatCurrency(order.totalPrice || 0, order.currency)}
+                    </p>
                     <p className="text-xs text-slate-400">{formatDate(order.createdAt)}</p>
                   </div>
                 </div>
@@ -309,7 +339,12 @@ export default function DistributorOrdersPage() {
             <div className="p-6 border-b border-slate-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-slate-900">Create Factory Order</h2>
-                <button onClick={() => setShowCreate(false)} className="p-2 hover:bg-slate-100 rounded-lg">✕</button>
+                <button
+                  onClick={() => setShowCreate(false)}
+                  className="p-2 hover:bg-slate-100 rounded-lg"
+                >
+                  ✕
+                </button>
               </div>
               <p className="text-sm text-slate-500 mt-1">Place an order on behalf of a factory</p>
             </div>
@@ -325,16 +360,38 @@ export default function DistributorOrdersPage() {
                   <option value="">— Select factory —</option>
                   {factories.filter((f: any) => f.assigned).length > 0 && (
                     <optgroup label="Your Factories">
-                      {factories.filter((f: any) => f.assigned).map((f: any) => (
-                        <option key={f.id} value={f.id}>{f.name}{f.country ? ` (${f.country})` : ""}</option>
-                      ))}
+                      {factories
+                        .filter((f: any) => f.assigned)
+                        .map((f: any) => (
+                          <option key={f.id} value={f.id}>
+                            {f.name}
+                            {f.country ? ` (${f.country})` : ""}
+                          </option>
+                        ))}
                     </optgroup>
                   )}
-                  {factories.filter((f: any) => !f.assigned).length > 0 && (
+                  {factories.filter((f: any) => f.inCoverage).length > 0 && (
+                    <optgroup label="In Your Territory">
+                      {factories
+                        .filter((f: any) => f.inCoverage)
+                        .map((f: any) => (
+                          <option key={f.id} value={f.id}>
+                            {f.name}
+                            {f.country ? ` (${f.country})` : ""}
+                          </option>
+                        ))}
+                    </optgroup>
+                  )}
+                  {factories.filter((f: any) => !f.assigned && !f.inCoverage).length > 0 && (
                     <optgroup label="Other Factories">
-                      {factories.filter((f: any) => !f.assigned).map((f: any) => (
-                        <option key={f.id} value={f.id}>{f.name}{f.country ? ` (${f.country})` : ""}</option>
-                      ))}
+                      {factories
+                        .filter((f: any) => !f.assigned && !f.inCoverage)
+                        .map((f: any) => (
+                          <option key={f.id} value={f.id}>
+                            {f.name}
+                            {f.country ? ` (${f.country})` : ""}
+                          </option>
+                        ))}
                     </optgroup>
                   )}
                 </select>
@@ -342,7 +399,9 @@ export default function DistributorOrdersPage() {
 
               {/* Order Type */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Order Type</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Order Type
+                </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { value: "PRODUCTION", label: "Production", icon: "🏭" },
@@ -366,7 +425,9 @@ export default function DistributorOrdersPage() {
 
               {/* Unit Type + Quantity */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Package Size</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Package Size
+                </label>
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   {Object.entries(UNIT_META).map(([key, meta]) => (
                     <button
@@ -393,11 +454,17 @@ export default function DistributorOrdersPage() {
                       min={1}
                       max={100}
                       value={createForm.unitQuantity}
-                      onChange={(e) => setCreateForm({ ...createForm, unitQuantity: Math.max(1, parseInt(e.target.value) || 1) })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          unitQuantity: Math.max(1, parseInt(e.target.value) || 1),
+                        })
+                      }
                       className="w-24 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-center"
                     />
                     <span className="text-sm text-slate-500">
-                      = <strong>{createVolumeLiters.toLocaleString()}L</strong> ({createBottles} bottles)
+                      = <strong>{createVolumeLiters.toLocaleString()}L</strong> ({createBottles}{" "}
+                      bottles)
                     </span>
                   </div>
                 </div>
@@ -422,12 +489,16 @@ export default function DistributorOrdersPage() {
                     </button>
                   ))}
                 </div>
-                <p className="text-[10px] text-slate-400 mt-1">F1 = 1.0 mg/kg · F2 = 0.75 · F3 = 0.5 · F4 = 0.25</p>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  F1 = 1.0 mg/kg · F2 = 0.75 · F3 = 0.5 · F4 = 0.25
+                </p>
               </div>
 
               {/* Brand (optional) */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Brand <span className="text-slate-400 font-normal">(optional)</span></label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Brand <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
                 <select
                   value={createForm.brandId}
                   onChange={(e) => setCreateForm({ ...createForm, brandId: e.target.value })}
@@ -435,19 +506,25 @@ export default function DistributorOrdersPage() {
                 >
                   <option value="">— No brand —</option>
                   {brands.map((b: any) => (
-                    <option key={b.id} value={b.id}>{b.name}</option>
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
                   ))}
                 </select>
               </div>
 
               {/* Shipping */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Shipping Details <span className="text-slate-400 font-normal">(optional)</span></label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Shipping Details <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
                 <div className="grid grid-cols-1 gap-2">
                   <input
                     type="text"
                     value={createForm.shippingAddress}
-                    onChange={(e) => setCreateForm({ ...createForm, shippingAddress: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, shippingAddress: e.target.value })
+                    }
                     placeholder="Address"
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-sm"
                   />
@@ -455,14 +532,18 @@ export default function DistributorOrdersPage() {
                     <input
                       type="text"
                       value={createForm.shippingCity}
-                      onChange={(e) => setCreateForm({ ...createForm, shippingCity: e.target.value })}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, shippingCity: e.target.value })
+                      }
                       placeholder="City"
                       className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-sm"
                     />
                     <input
                       type="text"
                       value={createForm.shippingCountry}
-                      onChange={(e) => setCreateForm({ ...createForm, shippingCountry: e.target.value })}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, shippingCountry: e.target.value })
+                      }
                       placeholder="Country"
                       className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-sm"
                     />
@@ -472,7 +553,9 @@ export default function DistributorOrdersPage() {
 
               {/* Notes */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Notes <span className="text-slate-400 font-normal">(optional)</span></label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Notes <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
                 <textarea
                   value={createForm.notes}
                   onChange={(e) => setCreateForm({ ...createForm, notes: e.target.value })}
@@ -485,18 +568,46 @@ export default function DistributorOrdersPage() {
               {/* Summary */}
               {createForm.factoryId && (
                 <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                  <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Order Summary</p>
+                  <p className="text-xs font-semibold text-slate-500 uppercase mb-2">
+                    Order Summary
+                  </p>
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div><span className="text-slate-500">Factory:</span> <span className="font-semibold">{factories.find((f: any) => f.id === createForm.factoryId)?.name}</span></div>
-                    <div><span className="text-slate-500">Type:</span> <span className="font-semibold">{createForm.orderType}</span></div>
-                    <div><span className="text-slate-500">Package:</span> <span className="font-semibold">{createForm.unitQuantity}x {UNIT_META[createForm.unitType]?.label}</span></div>
-                    <div><span className="text-slate-500">Volume:</span> <span className="font-semibold">{createVolumeLiters.toLocaleString()}L</span></div>
-                    <div><span className="text-slate-500">Tier:</span> <span className="font-semibold">{createForm.fuzeTier}</span></div>
+                    <div>
+                      <span className="text-slate-500">Factory:</span>{" "}
+                      <span className="font-semibold">
+                        {factories.find((f: any) => f.id === createForm.factoryId)?.name}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Type:</span>{" "}
+                      <span className="font-semibold">{createForm.orderType}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Package:</span>{" "}
+                      <span className="font-semibold">
+                        {createForm.unitQuantity}x {UNIT_META[createForm.unitType]?.label}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Volume:</span>{" "}
+                      <span className="font-semibold">{createVolumeLiters.toLocaleString()}L</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Tier:</span>{" "}
+                      <span className="font-semibold">{createForm.fuzeTier}</span>
+                    </div>
                     {createForm.brandId && (
-                      <div><span className="text-slate-500">Brand:</span> <span className="font-semibold">{brands.find((b: any) => b.id === createForm.brandId)?.name}</span></div>
+                      <div>
+                        <span className="text-slate-500">Brand:</span>{" "}
+                        <span className="font-semibold">
+                          {brands.find((b: any) => b.id === createForm.brandId)?.name}
+                        </span>
+                      </div>
                     )}
                   </div>
-                  <p className="text-[10px] text-slate-400 mt-2">Pricing will be auto-calculated from your distributor pricing tiers.</p>
+                  <p className="text-[10px] text-slate-400 mt-2">
+                    Pricing will be auto-calculated from your distributor pricing tiers.
+                  </p>
                 </div>
               )}
             </div>
@@ -528,19 +639,46 @@ export default function DistributorOrdersPage() {
             <div className="p-6 border-b border-slate-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-slate-900">{selectedOrder.orderNumber}</h2>
-                <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-slate-100 rounded-lg">✕</button>
+                <button
+                  onClick={() => setSelectedOrder(null)}
+                  className="p-2 hover:bg-slate-100 rounded-lg"
+                >
+                  ✕
+                </button>
               </div>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <div><p className="text-slate-500">Factory</p><p className="font-semibold">{selectedOrder.factory?.name}</p></div>
-                <div><p className="text-slate-500">Type</p><p className="font-semibold">{selectedOrder.orderType}</p></div>
+                <div>
+                  <p className="text-slate-500">Factory</p>
+                  <p className="font-semibold">{selectedOrder.factory?.name}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500">Type</p>
+                  <p className="font-semibold">{selectedOrder.orderType}</p>
+                </div>
                 {selectedOrder.volumeLiters && (
-                  <div><p className="text-slate-500">Volume</p><p className="font-semibold">{selectedOrder.volumeLiters}L ({selectedOrder.bottles} bottles)</p></div>
+                  <div>
+                    <p className="text-slate-500">Volume</p>
+                    <p className="font-semibold">
+                      {selectedOrder.volumeLiters}L ({selectedOrder.bottles} bottles)
+                    </p>
+                  </div>
                 )}
-                <div><p className="text-slate-500">Total</p><p className="font-bold text-lg">{formatCurrency(selectedOrder.totalPrice || 0)}</p></div>
+                <div>
+                  <p className="text-slate-500">Total</p>
+                  <p className="font-bold text-lg">
+                    {formatCurrency(selectedOrder.totalPrice || 0)}
+                  </p>
+                </div>
                 {selectedOrder.shippingAddress && (
-                  <div className="col-span-2"><p className="text-slate-500">Ship To</p><p className="font-semibold">{selectedOrder.shippingAddress}, {selectedOrder.shippingCity}, {selectedOrder.shippingCountry}</p></div>
+                  <div className="col-span-2">
+                    <p className="text-slate-500">Ship To</p>
+                    <p className="font-semibold">
+                      {selectedOrder.shippingAddress}, {selectedOrder.shippingCity},{" "}
+                      {selectedOrder.shippingCountry}
+                    </p>
+                  </div>
                 )}
               </div>
 
@@ -590,11 +728,14 @@ export default function DistributorOrdersPage() {
                         <option value="">— Select batch —</option>
                         {batches.map((b) => (
                           <option key={b.id} value={b.id}>
-                            {b.batchCode} · {b.volumeProducedLiters}L · {new Date(b.productionDate).toLocaleDateString()}
+                            {b.batchCode} · {b.volumeProducedLiters}L ·{" "}
+                            {new Date(b.productionDate).toLocaleDateString()}
                           </option>
                         ))}
                       </select>
-                      <p className="text-[10px] text-purple-700 mt-1">Ties the QR sticker to this order's lifecycle timeline.</p>
+                      <p className="text-[10px] text-purple-700 mt-1">
+                        Ties the QR sticker to this order's lifecycle timeline.
+                      </p>
                     </div>
                   )}
                   <button

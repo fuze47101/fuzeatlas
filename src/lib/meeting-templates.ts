@@ -51,12 +51,7 @@ export const PIPELINE_MEETING_TEMPLATES: Record<string, MeetingTemplate> = {
     description:
       "Kick off factory integration — process alignment, chemical handling, QC protocols, and production timeline.",
     durationMinutes: 60,
-    suggestedAttendees: [
-      "SALES_REP",
-      "FACTORY_MANAGER",
-      "TESTING_MANAGER",
-      "FABRIC_MANAGER",
-    ],
+    suggestedAttendees: ["SALES_REP", "FACTORY_MANAGER", "TESTING_MANAGER", "FABRIC_MANAGER"],
     agenda: [
       "Factory introduction & capabilities review",
       "FUZE application process overview",
@@ -87,12 +82,7 @@ export const PIPELINE_MEETING_TEMPLATES: Record<string, MeetingTemplate> = {
     description:
       "Final review before full production — confirm volumes, logistics, pricing, and ongoing QC schedule.",
     durationMinutes: 45,
-    suggestedAttendees: [
-      "SALES_REP",
-      "SALES_MANAGER",
-      "FACTORY_MANAGER",
-      "FABRIC_MANAGER",
-    ],
+    suggestedAttendees: ["SALES_REP", "SALES_MANAGER", "FACTORY_MANAGER", "FABRIC_MANAGER"],
     agenda: [
       "Confirm production volumes & schedule",
       "FUZE chemical supply logistics",
@@ -137,7 +127,26 @@ export function generateTeamsLink(params: {
 }
 
 /**
+ * Build a stable iCalendar UID for a meeting. Using the meeting's DB id keeps
+ * the UID consistent across create → update → cancel so Outlook/Gmail treat
+ * subsequent emails as modifications of the same event (not new events).
+ */
+export function meetingIcsUid(meetingId: string): string {
+  return `fuze-atlas-meeting-${meetingId}@fuzeatlas.com`;
+}
+
+/**
  * Generate an .ics calendar file content for universal calendar integration.
+ *
+ * Pass a stable `uid` (e.g. `meetingIcsUid(meeting.id)`) when you want updates
+ * and cancellations to map to the original event. If omitted, a random UID
+ * is generated — fine for one-off download links, NOT for update/cancel flows.
+ *
+ * `method` controls the semantic: REQUEST = new/updated invite, CANCEL =
+ * cancellation. Clients refuse to apply a CANCEL if the UID doesn't match.
+ *
+ * `sequence` should increment on every edit so the receiving client knows
+ * to apply the newer copy (0 on first send, 1 on first edit, etc.).
  */
 export function generateIcsContent(params: {
   title: string;
@@ -147,22 +156,44 @@ export function generateIcsContent(params: {
   location?: string;
   organizer?: { name: string; email: string };
   attendees?: { name: string; email: string }[];
+  uid?: string;
+  method?: "REQUEST" | "CANCEL";
+  sequence?: number;
+  status?: "CONFIRMED" | "CANCELLED";
 }): string {
-  const { title, description, startTime, endTime, location, organizer, attendees = [] } = params;
+  const {
+    title,
+    description,
+    startTime,
+    endTime,
+    location,
+    organizer,
+    attendees = [],
+    uid,
+    method = "REQUEST",
+    sequence = 0,
+    status,
+  } = params;
 
   const formatDate = (d: Date) =>
-    d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+    d
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .replace(/\.\d{3}/, "");
 
-  const uid = `fuze-atlas-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@fuzeatlas.com`;
+  const finalUid =
+    uid || `fuze-atlas-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@fuzeatlas.com`;
+  const finalStatus = status || (method === "CANCEL" ? "CANCELLED" : "CONFIRMED");
 
   let ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//FUZE Atlas//Meeting//EN",
     "CALSCALE:GREGORIAN",
-    "METHOD:REQUEST",
+    `METHOD:${method}`,
     "BEGIN:VEVENT",
-    `UID:${uid}`,
+    `UID:${finalUid}`,
+    `SEQUENCE:${sequence}`,
     `DTSTART:${formatDate(startTime)}`,
     `DTEND:${formatDate(endTime)}`,
     `SUMMARY:${title}`,
@@ -172,14 +203,16 @@ export function generateIcsContent(params: {
   if (location) ics.push(`LOCATION:${location}`);
   if (organizer) ics.push(`ORGANIZER;CN=${organizer.name}:mailto:${organizer.email}`);
   for (const a of attendees) {
-    ics.push(`ATTENDEE;CN=${a.name};RSVP=TRUE:mailto:${a.email}`);
+    ics.push(
+      `ATTENDEE;CN=${a.name};ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:${a.email}`,
+    );
   }
 
   ics.push(
     `DTSTAMP:${formatDate(new Date())}`,
-    "STATUS:CONFIRMED",
+    `STATUS:${finalStatus}`,
     "END:VEVENT",
-    "END:VCALENDAR"
+    "END:VCALENDAR",
   );
 
   return ics.join("\r\n");
@@ -231,7 +264,10 @@ export async function autoScheduleMeeting(params: {
   const meeting = await prisma.meeting.create({
     data: {
       title,
-      description: template.description + "\n\nAgenda:\n" + template.agenda.map((a: string, i: number) => `${i + 1}. ${a}`).join("\n"),
+      description:
+        template.description +
+        "\n\nAgenda:\n" +
+        template.agenda.map((a: string, i: number) => `${i + 1}. ${a}`).join("\n"),
       meetingType: template.meetingType,
       startTime,
       endTime,

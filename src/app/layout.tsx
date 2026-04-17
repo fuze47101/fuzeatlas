@@ -4,6 +4,7 @@ import { AuthProvider } from "@/lib/AuthContext";
 import I18nProvider from "@/i18n/I18nProvider";
 import AuthLayout from "@/components/AuthLayout";
 import { ToastProvider } from "@/components/Toast";
+import FeedbackButton from "@/components/FeedbackButton";
 
 export const metadata: Metadata = {
   title: {
@@ -36,11 +37,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -51,6 +48,7 @@ export default function RootLayout({
           <I18nProvider>
             <ToastProvider>
               <AuthLayout>{children}</AuthLayout>
+              <FeedbackButton />
             </ToastProvider>
           </I18nProvider>
         </AuthProvider>

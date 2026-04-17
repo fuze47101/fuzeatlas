@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { pushTestRequestStatus } from "@/lib/notify-realtime";
+import { notifyTestRequestCreated } from "@/lib/notify";
 import { sendEmail, sendTestRequestStatusEmail } from "@/lib/email";
 
 /* ── GET /api/factory-portal/request-test ── list factory's test requests ── */
@@ -10,10 +11,7 @@ export async function GET(req: Request) {
   try {
     const sessionUser = await getCurrentUser();
     if (!sessionUser) {
-      return NextResponse.json(
-        { ok: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
     }
 
     // Get user's factory (use DB lookup for full relations)
@@ -23,10 +21,7 @@ export async function GET(req: Request) {
     });
 
     if (!user?.factoryId) {
-      return NextResponse.json(
-        { ok: false, error: "Not a factory user" },
-        { status: 403 }
-      );
+      return NextResponse.json({ ok: false, error: "Not a factory user" }, { status: 403 });
     }
 
     // Fetch test requests for this factory
@@ -71,10 +66,7 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error("Error fetching test requests:", error);
-    return NextResponse.json(
-      { ok: false, error: "Server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, error: "Server error" }, { status: 500 });
   }
 }
 
@@ -83,10 +75,7 @@ export async function POST(req: Request) {
   try {
     const sessionUser = await getCurrentUser();
     if (!sessionUser) {
-      return NextResponse.json(
-        { ok: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
     }
     const userId = sessionUser.id;
 
@@ -97,21 +86,31 @@ export async function POST(req: Request) {
     });
 
     if (!user?.factoryId) {
-      return NextResponse.json(
-        { ok: false, error: "Not a factory user" },
-        { status: 403 }
-      );
+      return NextResponse.json({ ok: false, error: "Not a factory user" }, { status: 403 });
     }
 
     const body = await req.json();
-    const { fabricId, selectedTests, controlRequired, totalMoqMeters, notes } =
-      body;
+    const { fabricId, labId, selectedTests, controlRequired, totalMoqMeters, notes } = body;
 
     if (!fabricId || !selectedTests || selectedTests.length === 0) {
       return NextResponse.json(
         { ok: false, error: "Fabric and test selections required" },
-        { status: 400 }
+        { status: 400 },
       );
+    }
+
+    // Validate labId if supplied
+    if (labId) {
+      const labExists = await prisma.lab.findUnique({
+        where: { id: labId },
+        select: { id: true, active: true },
+      });
+      if (!labExists || !labExists.active) {
+        return NextResponse.json(
+          { ok: false, error: "Selected lab not found or inactive" },
+          { status: 400 },
+        );
+      }
     }
 
     // Verify fabric belongs to factory
@@ -122,7 +121,7 @@ export async function POST(req: Request) {
     if (fabric?.factoryId !== user.factoryId) {
       return NextResponse.json(
         { ok: false, error: "Fabric does not belong to your factory" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -131,6 +130,7 @@ export async function POST(req: Request) {
       data: {
         fabricId,
         factoryId: user.factoryId,
+        labId: labId || null,
         requestedBy: userId,
         selectedTests,
         controlRequired: controlRequired || false,
@@ -165,8 +165,12 @@ export async function POST(req: Request) {
 
       // Map selected tests to TestRequestLine items
       const TEST_TYPE_MAP: Record<string, string> = {
-        icp: "ICP", antibacterial: "ANTIBACTERIAL", fungal: "FUNGAL",
-        odor: "ODOR", uv: "UV", microfiber: "MICROFIBER",
+        icp: "ICP",
+        antibacterial: "ANTIBACTERIAL",
+        fungal: "FUNGAL",
+        odor: "ODOR",
+        uv: "UV",
+        microfiber: "MICROFIBER",
       };
 
       const lineData = (selectedTests || []).map((testKey: string) => ({
@@ -181,6 +185,7 @@ export async function POST(req: Request) {
           poNumber,
           brandId: fabricWithBrand?.brandId || null,
           fabricId,
+          labId: labId || null,
           status: "PENDING_APPROVAL",
           priority: "NORMAL",
           requestedById: userId,
@@ -247,11 +252,22 @@ export async function POST(req: Request) {
           }
         }
 
-        // Push real-time notification
+        // Push real-time notification to requester
         await pushTestRequestStatus({
           testRequestId: adminPO?.id || testRequest.id,
           status: "PENDING_APPROVAL",
           createdByUserId: userId,
+          poNumber: adminPO?.poNumber,
+          factoryName: user.factory?.name || undefined,
+        });
+
+        // Notify admins in-app about the new test submission
+        await notifyTestRequestCreated({
+          testRequestId: adminPO?.id || testRequest.id,
+          poNumber: adminPO?.poNumber,
+          factoryName: user.factory?.name || undefined,
+          selectedTests,
+          requesterName: user.name || user.email || undefined,
         });
       } catch (err) {
         console.error("[NOTIFY] Factory test request notification failed:", err);
@@ -266,9 +282,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Error creating test request:", error);
-    return NextResponse.json(
-      { ok: false, error: "Server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, error: "Server error" }, { status: 500 });
   }
 }

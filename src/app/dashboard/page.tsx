@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/i18n";
+import MyTasksPanel from "@/components/MyTasksPanel";
 
 type DashData = {
   ok: boolean;
@@ -9,7 +10,14 @@ type DashData = {
   counts: Record<string, number>;
   pipeline: { stage: string; count: number }[];
   testTypes: { type: string; count: number }[];
-  testRequests?: { pending: number; approved: number; inTesting: number; complete: number; total: number; estimatedCost: number };
+  testRequests?: {
+    pending: number;
+    approved: number;
+    inTesting: number;
+    complete: number;
+    total: number;
+    estimatedCost: number;
+  };
   revenue?: {
     totalPipeline: number;
     weightedForecast: number;
@@ -76,24 +84,53 @@ const getStageLabels = (t: any): Record<string, string> => ({
   CUSTOMER_WON: t.dashboard.stageCustomerWon || "Won",
 });
 
-function StatCard({ label, value, icon, color, href }: { label: string; value: number | string; icon: string; color: string; href?: string }) {
+function StatCard({
+  label,
+  value,
+  icon,
+  color,
+  href,
+}: {
+  label: string;
+  value: number | string;
+  icon: string;
+  color: string;
+  href?: string;
+}) {
   const inner = (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:shadow-md transition-shadow cursor-pointer">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{label}</p>
-          <p className="text-3xl font-black text-slate-900 mt-1">{typeof value === "number" ? value.toLocaleString() : value}</p>
+          <p className="text-3xl font-black text-slate-900 mt-1">
+            {typeof value === "number" ? value.toLocaleString() : value}
+          </p>
         </div>
-        <div className="text-3xl" style={{ opacity: 0.15 }}>{icon}</div>
+        <div className="text-3xl" style={{ opacity: 0.15 }}>
+          {icon}
+        </div>
       </div>
       <div className="mt-3 h-1 rounded-full" style={{ background: color, opacity: 0.6 }} />
     </div>
   );
-  if (href) return <a href={href} className="block">{inner}</a>;
+  if (href)
+    return (
+      <a href={href} className="block">
+        {inner}
+      </a>
+    );
   return inner;
 }
 
-function PipelineBar({ data, brandPipelineLabel, stageLabels }: { data: { stage: string; count: number }[]; brandPipelineLabel: string; stageLabels: Record<string, string> }) {
+function PipelineBar({
+  data,
+  brandPipelineLabel,
+  stageLabels,
+}: {
+  data: { stage: string; count: number }[];
+  brandPipelineLabel: string;
+  stageLabels: Record<string, string>;
+}) {
   const max = Math.max(...data.map((d) => d.count), 1);
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
@@ -122,7 +159,13 @@ function PipelineBar({ data, brandPipelineLabel, stageLabels }: { data: { stage:
   );
 }
 
-function TestTypeChart({ data, testsByTypeLabel }: { data: { type: string; count: number }[]; testsByTypeLabel: string }) {
+function TestTypeChart({
+  data,
+  testsByTypeLabel,
+}: {
+  data: { type: string; count: number }[];
+  testsByTypeLabel: string;
+}) {
   const total = data.reduce((s, d) => s + d.count, 0) || 1;
   const colors = ["#3b82f6", "#8b5cf6", "#f59e0b", "#ef4444", "#10b981", "#6366f1", "#ec4899"];
   return (
@@ -141,7 +184,10 @@ function TestTypeChart({ data, testsByTypeLabel }: { data: { type: string; count
       <div className="grid grid-cols-2 gap-2">
         {data.map((d, i) => (
           <div key={d.type} className="flex items-center gap-2 text-xs">
-            <div className="w-3 h-3 rounded-full" style={{ background: colors[i % colors.length] }} />
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ background: colors[i % colors.length] }}
+            />
             <span className="font-semibold text-slate-600">{d.type}</span>
             <span className="text-slate-400 ml-auto">{d.count}</span>
           </div>
@@ -155,19 +201,38 @@ function TestTypeChart({ data, testsByTypeLabel }: { data: { type: string; count
 // Role-specific dashboard components
 // ─────────────────────────────────────────
 
-function QuickActionCard({ label, value, icon, color, href }: { label: string; value: number; icon: string; color: string; href?: string }) {
+function QuickActionCard({
+  label,
+  value,
+  icon,
+  color,
+  href,
+}: {
+  label: string;
+  value: number;
+  icon: string;
+  color: string;
+  href?: string;
+}) {
   const inner = (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer">
       <div className="flex items-center gap-3">
         <div className="text-2xl">{icon}</div>
         <div className="flex-1">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{label}</p>
-          <p className="text-2xl font-black" style={{ color }}>{value}</p>
+          <p className="text-2xl font-black" style={{ color }}>
+            {value}
+          </p>
         </div>
       </div>
     </div>
   );
-  if (href) return <a href={href} className="block">{inner}</a>;
+  if (href)
+    return (
+      <a href={href} className="block">
+        {inner}
+      </a>
+    );
   return inner;
 }
 
@@ -185,8 +250,21 @@ function MeetingsList({ meetings, label }: { meetings: number; label: string }) 
   );
 }
 
-function BrandEngagementCard({ brand, score, trend }: { brand: any; score: number; trend: string }) {
-  const trendColor = trend === "RISING" ? "text-emerald-600" : trend === "DECLINING" ? "text-red-600" : "text-slate-600";
+function BrandEngagementCard({
+  brand,
+  score,
+  trend,
+}: {
+  brand: any;
+  score: number;
+  trend: string;
+}) {
+  const trendColor =
+    trend === "RISING"
+      ? "text-emerald-600"
+      : trend === "DECLINING"
+        ? "text-red-600"
+        : "text-slate-600";
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
       <div className="flex items-start justify-between mb-2">
@@ -200,10 +278,7 @@ function BrandEngagementCard({ brand, score, trend }: { brand: any; score: numbe
         </div>
       </div>
       <div className="mt-3 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-blue-500 rounded-full"
-          style={{ width: `${score}%` }}
-        />
+        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${score}%` }} />
       </div>
     </div>
   );
@@ -220,7 +295,9 @@ function AuditLogItem({ log }: { log: any }) {
           <span className="text-xs font-semibold text-slate-600">{log.entity}</span>
         </div>
         <p className="text-xs text-slate-600 mt-1">{log.description}</p>
-        <p className="text-[10px] text-slate-400 mt-0.5">by {log.user?.name || "System"} • {new Date(log.createdAt).toLocaleDateString()}</p>
+        <p className="text-[10px] text-slate-400 mt-0.5">
+          by {log.user?.name || "System"} • {new Date(log.createdAt).toLocaleDateString()}
+        </p>
       </div>
     </div>
   );
@@ -240,53 +317,125 @@ function AdminDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* Quick Actions Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <QuickActionCard label="Pending Approvals" value={data.pendingAccessRequests || 0} icon="⏳" color="#f59e0b" href="/settings/access-requests" />
-        <QuickActionCard label="Unread Notifications" value={data.unreadNotifications || 0} icon="🔔" color="#ef4444" href="/notifications" />
-        <QuickActionCard label="Upcoming Meetings" value={data.upcomingMeetings || 0} icon="📅" color="#3b82f6" href="/meetings" />
-        <QuickActionCard label="Access Requests" value={data.pendingAccessRequests || 0} icon="🔐" color="#8b5cf6" href="/settings/access-requests" />
+        <QuickActionCard
+          label="Pending Approvals"
+          value={data.pendingAccessRequests || 0}
+          icon="⏳"
+          color="#f59e0b"
+          href="/settings/access-requests"
+        />
+        <QuickActionCard
+          label="Unread Notifications"
+          value={data.unreadNotifications || 0}
+          icon="🔔"
+          color="#ef4444"
+          href="/notifications"
+        />
+        <QuickActionCard
+          label="Upcoming Meetings"
+          value={data.upcomingMeetings || 0}
+          icon="📅"
+          color="#3b82f6"
+          href="/meetings"
+        />
+        <QuickActionCard
+          label="Access Requests"
+          value={data.pendingAccessRequests || 0}
+          icon="🔐"
+          color="#8b5cf6"
+          href="/settings/access-requests"
+        />
+      </div>
+
+      {/* My Tasks */}
+      <div className="mb-6">
+        <MyTasksPanel limit={6} />
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label={t.dashboard.fabrics} value={c.fabrics} icon="🧵" color="#3b82f6" href="/fabrics" />
-        <StatCard label={t.dashboard.brands} value={c.brands} icon="🎯" color="#8b5cf6" href="/brands" />
-        <StatCard label={t.dashboard.factories} value={c.factories} icon="🏭" color="#f59e0b" href="/factories" />
-        <StatCard label={t.dashboard.testRuns} value={c.testRuns} icon="🧪" color="#10b981" href="/test-reports" />
+        <StatCard
+          label={t.dashboard.fabrics}
+          value={c.fabrics}
+          icon="🧵"
+          color="#3b82f6"
+          href="/fabrics"
+        />
+        <StatCard
+          label={t.dashboard.brands}
+          value={c.brands}
+          icon="🎯"
+          color="#8b5cf6"
+          href="/brands"
+        />
+        <StatCard
+          label={t.dashboard.factories}
+          value={c.factories}
+          icon="🏭"
+          color="#f59e0b"
+          href="/factories"
+        />
+        <StatCard
+          label={t.dashboard.testRuns}
+          value={c.testRuns}
+          icon="🧪"
+          color="#10b981"
+          href="/test-reports"
+        />
       </div>
 
       {/* Revenue Pipeline KPIs */}
       {data.revenue && data.revenue.dealCount > 0 && (
         <div className="mb-6">
-          <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wide mb-3">Revenue Pipeline</h2>
+          <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wide mb-3">
+            Revenue Pipeline
+          </h2>
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
             <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 text-white">
               <p className="text-[10px] font-medium text-slate-300 uppercase">Total Pipeline</p>
               <p className="text-xl font-black mt-0.5">
-                ${data.revenue.totalPipeline >= 1000 ? `${(data.revenue.totalPipeline / 1000).toFixed(0)}K` : data.revenue.totalPipeline.toFixed(0)}
+                $
+                {data.revenue.totalPipeline >= 1000
+                  ? `${(data.revenue.totalPipeline / 1000).toFixed(0)}K`
+                  : data.revenue.totalPipeline.toFixed(0)}
               </p>
               <p className="text-[10px] text-slate-400 mt-0.5">{data.revenue.dealCount} deals</p>
             </div>
             <div className="bg-white rounded-xl border border-emerald-200 p-4">
               <p className="text-[10px] font-medium text-slate-400 uppercase">Weighted Forecast</p>
               <p className="text-xl font-black text-emerald-600 mt-0.5">
-                ${data.revenue.weightedForecast >= 1000 ? `${(data.revenue.weightedForecast / 1000).toFixed(0)}K` : data.revenue.weightedForecast.toFixed(0)}
+                $
+                {data.revenue.weightedForecast >= 1000
+                  ? `${(data.revenue.weightedForecast / 1000).toFixed(0)}K`
+                  : data.revenue.weightedForecast.toFixed(0)}
               </p>
             </div>
             <div className="bg-white rounded-xl border border-blue-200 p-4">
               <p className="text-[10px] font-medium text-slate-400 uppercase">Invoiced & Paid</p>
               <p className="text-xl font-black text-blue-600 mt-0.5">
-                ${data.revenue.invoicePaid >= 1000 ? `${(data.revenue.invoicePaid / 1000).toFixed(0)}K` : data.revenue.invoicePaid.toFixed(0)}
+                $
+                {data.revenue.invoicePaid >= 1000
+                  ? `${(data.revenue.invoicePaid / 1000).toFixed(0)}K`
+                  : data.revenue.invoicePaid.toFixed(0)}
               </p>
             </div>
             <div className="bg-white rounded-xl border border-amber-200 p-4">
               <p className="text-[10px] font-medium text-slate-400 uppercase">Outstanding</p>
               <p className="text-xl font-black text-amber-600 mt-0.5">
-                ${data.revenue.invoiceOutstanding >= 1000 ? `${(data.revenue.invoiceOutstanding / 1000).toFixed(0)}K` : data.revenue.invoiceOutstanding.toFixed(0)}
+                $
+                {data.revenue.invoiceOutstanding >= 1000
+                  ? `${(data.revenue.invoiceOutstanding / 1000).toFixed(0)}K`
+                  : data.revenue.invoiceOutstanding.toFixed(0)}
               </p>
             </div>
-            <a href="/pipeline" className="bg-white rounded-xl border border-slate-200 p-4 hover:border-blue-300 transition-colors group">
+            <a
+              href="/pipeline"
+              className="bg-white rounded-xl border border-slate-200 p-4 hover:border-blue-300 transition-colors group"
+            >
               <p className="text-[10px] font-medium text-slate-400 uppercase">View Pipeline</p>
-              <p className="text-sm font-bold text-blue-600 mt-1 group-hover:text-blue-700">Open Pipeline Board &rarr;</p>
+              <p className="text-sm font-bold text-blue-600 mt-1 group-hover:text-blue-700">
+                Open Pipeline Board &rarr;
+              </p>
               <p className="text-[10px] text-slate-400 mt-0.5">Manage deals by stage</p>
             </a>
           </div>
@@ -295,36 +444,62 @@ function AdminDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* Second row - more stats */}
       <div className="grid grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-        <a href="/tests" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
+        <a
+          href="/tests"
+          className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer"
+        >
           <p className="text-2xl font-black text-blue-600">{c.icpResults}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.icpResults}</p>
         </a>
-        <a href="/tests" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
+        <a
+          href="/tests"
+          className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer"
+        >
           <p className="text-2xl font-black text-purple-600">{c.antibacterialResults}</p>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.antibacterial}</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">
+            {t.dashboard.antibacterial}
+          </p>
         </a>
-        <a href="/tests" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
+        <a
+          href="/tests"
+          className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer"
+        >
           <p className="text-2xl font-black text-amber-600">{c.fungalResults}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.fungal}</p>
         </a>
-        <a href="/fabrics" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
+        <a
+          href="/fabrics"
+          className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer"
+        >
           <p className="text-2xl font-black text-emerald-600">{c.submissions}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.submissions}</p>
         </a>
-        <a href="/labs" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
+        <a
+          href="/labs"
+          className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer"
+        >
           <p className="text-2xl font-black text-slate-600">{c.labs}</p>
           <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.labs}</p>
         </a>
-        <a href="/admin/distributors" className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer">
+        <a
+          href="/admin/distributors"
+          className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 text-center block hover:border-blue-300 hover:shadow-md transition cursor-pointer"
+        >
           <p className="text-2xl font-black text-slate-600">{c.distributors}</p>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">{t.dashboard.distributors}</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">
+            {t.dashboard.distributors}
+          </p>
         </a>
       </div>
 
       {/* Pipeline + Test Types */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         <div className="lg:col-span-2">
-          <PipelineBar data={data.pipeline} brandPipelineLabel={t.dashboard.brandPipeline} stageLabels={stageLabels} />
+          <PipelineBar
+            data={data.pipeline}
+            brandPipelineLabel={t.dashboard.brandPipeline}
+            stageLabels={stageLabels}
+          />
         </div>
         <TestTypeChart data={data.testTypes} testsByTypeLabel={t.dashboard.testsByType} />
       </div>
@@ -361,14 +536,22 @@ function AdminDashboard({ data, t }: { data: DashData; t: any }) {
           <h3 className="text-sm font-bold text-slate-700 mb-3">{t.dashboard.recentTests}</h3>
           <div className="space-y-2">
             {data.recentTests?.map((t: any) => (
-              <div key={t.id} className="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition-colors">
+              <div
+                key={t.id}
+                className="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <div>
-                  <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold mr-2 ${
-                    t.testType === "ICP" ? "bg-blue-100 text-blue-700" :
-                    t.testType === "ANTIBACTERIAL" ? "bg-purple-100 text-purple-700" :
-                    t.testType === "FUNGAL" ? "bg-amber-100 text-amber-700" :
-                    "bg-slate-100 text-slate-600"
-                  }`}>
+                  <span
+                    className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold mr-2 ${
+                      t.testType === "ICP"
+                        ? "bg-blue-100 text-blue-700"
+                        : t.testType === "ANTIBACTERIAL"
+                          ? "bg-purple-100 text-purple-700"
+                          : t.testType === "FUNGAL"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-slate-100 text-slate-600"
+                    }`}
+                  >
                     {t.testType}
                   </span>
                   <span className="text-xs text-slate-600">
@@ -376,9 +559,7 @@ function AdminDashboard({ data, t }: { data: DashData; t: any }) {
                     {t.submission?.fuzeFabricNumber ? ` #${t.submission.fuzeFabricNumber}` : ""}
                   </span>
                 </div>
-                <div className="text-xs text-slate-400">
-                  {t.lab?.name || ""}
-                </div>
+                <div className="text-xs text-slate-400">{t.lab?.name || ""}</div>
               </div>
             ))}
           </div>
@@ -406,21 +587,54 @@ function SalesDashboard({ data, t }: { data: DashData; t: any }) {
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-black text-slate-900">My Pipeline</h1>
-        <p className="text-sm text-slate-500 mt-1">Track your brands, engagement, and upcoming activities</p>
+        <p className="text-sm text-slate-500 mt-1">
+          Track your brands, engagement, and upcoming activities
+        </p>
       </div>
 
       {/* Pipeline Overview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Brands" value={data.brandCount || 0} icon="🎯" color="#8b5cf6" href="/brands" />
-        <StatCard label="Upcoming Meetings" value={data.upcomingMeetings || 0} icon="📅" color="#3b82f6" href="/meetings" />
-        <StatCard label="Pipeline Value" value={data.revenue?.totalPipeline || 0} icon="💰" color="#10b981" href="/pipeline" />
-        <StatCard label="Weighted Forecast" value={data.revenue?.weightedForecast || 0} icon="📊" color="#f59e0b" href="/revenue" />
+        <StatCard
+          label="Brands"
+          value={data.brandCount || 0}
+          icon="🎯"
+          color="#8b5cf6"
+          href="/brands"
+        />
+        <StatCard
+          label="Upcoming Meetings"
+          value={data.upcomingMeetings || 0}
+          icon="📅"
+          color="#3b82f6"
+          href="/meetings"
+        />
+        <StatCard
+          label="Pipeline Value"
+          value={data.revenue?.totalPipeline || 0}
+          icon="💰"
+          color="#10b981"
+          href="/pipeline"
+        />
+        <StatCard
+          label="Weighted Forecast"
+          value={data.revenue?.weightedForecast || 0}
+          icon="📊"
+          color="#f59e0b"
+          href="/revenue"
+        />
+      </div>
+
+      {/* My Tasks */}
+      <div className="mb-6">
+        <MyTasksPanel limit={6} />
       </div>
 
       {/* Brand Engagement Scores */}
       {data.brandEngagementScores && data.brandEngagementScores.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wide mb-4">Brand Health Scores</h2>
+          <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wide mb-4">
+            Brand Health Scores
+          </h2>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
             {data.brandEngagementScores.map((score: any) => (
               <BrandEngagementCard
@@ -437,7 +651,9 @@ function SalesDashboard({ data, t }: { data: DashData; t: any }) {
       {/* My Brands Pipeline */}
       {data.salesBrands && data.salesBrands.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wide mb-4">My Brands</h2>
+          <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wide mb-4">
+            My Brands
+          </h2>
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
             <div className="space-y-3">
               {data.salesBrands.map((brand: any) => (
@@ -464,11 +680,16 @@ function SalesDashboard({ data, t }: { data: DashData; t: any }) {
           <h3 className="text-sm font-bold text-slate-700 mb-3">Recent Activity</h3>
           <div className="space-y-3">
             {data.recentActivity.map((activity: any) => (
-              <div key={activity.id} className="flex items-start gap-3 p-3 hover:bg-slate-50 rounded-lg transition-colors">
+              <div
+                key={activity.id}
+                className="flex items-start gap-3 p-3 hover:bg-slate-50 rounded-lg transition-colors"
+              >
                 <div className="flex-1">
                   <h4 className="font-semibold text-sm text-slate-900">{activity.title}</h4>
                   <p className="text-xs text-slate-600 mt-1 line-clamp-2">{activity.content}</p>
-                  <p className="text-[10px] text-slate-400 mt-1">{new Date(activity.createdAt).toLocaleDateString()}</p>
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    {new Date(activity.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
             ))}
@@ -490,11 +711,36 @@ function TestingDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* Test Request Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-        <StatCard label="Pending Approval" value={data.testRequests?.pending || 0} icon="⏳" color="#f59e0b" />
-        <StatCard label="Approved" value={data.testRequests?.approved || 0} icon="✅" color="#10b981" />
-        <StatCard label="In Testing" value={data.testRequests?.inTesting || 0} icon="🧪" color="#3b82f6" />
-        <StatCard label="Complete" value={data.testRequests?.complete || 0} icon="✨" color="#8b5cf6" />
-        <StatCard label="Upcoming Meetings" value={data.upcomingMeetings || 0} icon="📅" color="#ef4444" />
+        <StatCard
+          label="Pending Approval"
+          value={data.testRequests?.pending || 0}
+          icon="⏳"
+          color="#f59e0b"
+        />
+        <StatCard
+          label="Approved"
+          value={data.testRequests?.approved || 0}
+          icon="✅"
+          color="#10b981"
+        />
+        <StatCard
+          label="In Testing"
+          value={data.testRequests?.inTesting || 0}
+          icon="🧪"
+          color="#3b82f6"
+        />
+        <StatCard
+          label="Complete"
+          value={data.testRequests?.complete || 0}
+          icon="✨"
+          color="#8b5cf6"
+        />
+        <StatCard
+          label="Upcoming Meetings"
+          value={data.upcomingMeetings || 0}
+          icon="📅"
+          color="#ef4444"
+        />
       </div>
 
       {/* Test Type Breakdown */}
@@ -510,23 +756,37 @@ function TestingDashboard({ data, t }: { data: DashData; t: any }) {
           <h3 className="text-sm font-bold text-slate-700 mb-3">Recent Test Results</h3>
           <div className="space-y-2">
             {data.recentTests.map((test: any) => (
-              <div key={test.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors">
+              <div
+                key={test.id}
+                className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <div>
-                  <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold mr-2 ${
-                    test.testType === "ICP" ? "bg-blue-100 text-blue-700" :
-                    test.testType === "ANTIBACTERIAL" ? "bg-purple-100 text-purple-700" :
-                    test.testType === "FUNGAL" ? "bg-amber-100 text-amber-700" :
-                    "bg-slate-100 text-slate-600"
-                  }`}>
+                  <span
+                    className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold mr-2 ${
+                      test.testType === "ICP"
+                        ? "bg-blue-100 text-blue-700"
+                        : test.testType === "ANTIBACTERIAL"
+                          ? "bg-purple-100 text-purple-700"
+                          : test.testType === "FUNGAL"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-slate-100 text-slate-600"
+                    }`}
+                  >
                     {test.testType}
                   </span>
-                  <span className="text-xs text-slate-600">{test.submission?.brand?.name || "Unknown"}</span>
+                  <span className="text-xs text-slate-600">
+                    {test.submission?.brand?.name || "Unknown"}
+                  </span>
                 </div>
-                <span className={`text-xs font-bold ${
-                  test.testStatus === "PASSED" || test.testStatus === "PASSED_COMPLETE" ? "text-emerald-600" :
-                  test.testStatus === "FAILED" ? "text-red-600" :
-                  "text-slate-600"
-                }`}>
+                <span
+                  className={`text-xs font-bold ${
+                    test.testStatus === "PASSED" || test.testStatus === "PASSED_COMPLETE"
+                      ? "text-emerald-600"
+                      : test.testStatus === "FAILED"
+                        ? "text-red-600"
+                        : "text-slate-600"
+                  }`}
+                >
                   {test.testStatus}
                 </span>
               </div>
@@ -544,15 +804,41 @@ function FabricDashboard({ data, t }: { data: DashData; t: any }) {
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-black text-slate-900">Fabric Management</h1>
-        <p className="text-sm text-slate-500 mt-1">Manage fabrics, submissions, and recipe library</p>
+        <p className="text-sm text-slate-500 mt-1">
+          Manage fabrics, submissions, and recipe library
+        </p>
       </div>
 
       {/* Fabric Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Total Fabrics" value={data.fabricCount || 0} icon="🧵" color="#3b82f6" href="/fabrics" />
-        <StatCard label="Awaiting Review" value={data.submissionsAwaitingReview || 0} icon="📋" color="#f59e0b" href="/fabrics" />
-        <StatCard label="Recipe Matches" value={data.recipeLibraryMatches || 0} icon="📚" color="#8b5cf6" href="/recipes" />
-        <StatCard label="Test Runs" value={data.counts?.testRuns || 0} icon="🧪" color="#10b981" href="/test-reports" />
+        <StatCard
+          label="Total Fabrics"
+          value={data.fabricCount || 0}
+          icon="🧵"
+          color="#3b82f6"
+          href="/fabrics"
+        />
+        <StatCard
+          label="Awaiting Review"
+          value={data.submissionsAwaitingReview || 0}
+          icon="📋"
+          color="#f59e0b"
+          href="/fabrics"
+        />
+        <StatCard
+          label="Recipe Matches"
+          value={data.recipeLibraryMatches || 0}
+          icon="📚"
+          color="#8b5cf6"
+          href="/recipes"
+        />
+        <StatCard
+          label="Test Runs"
+          value={data.counts?.testRuns || 0}
+          icon="🧪"
+          color="#10b981"
+          href="/test-reports"
+        />
       </div>
 
       {/* Recent Fabrics */}
@@ -590,16 +876,40 @@ function FactoryDashboard({ data, t }: { data: DashData; t: any }) {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900">My Factory: {data.factoryName || "Loading..."}</h1>
+        <h1 className="text-2xl font-black text-slate-900">
+          My Factory: {data.factoryName || "Loading..."}
+        </h1>
         <p className="text-sm text-slate-500 mt-1">Track fabrics, test results, and shipments</p>
       </div>
 
       {/* Factory Overview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Fabrics in Factory" value={data.factoryFabrics?.length || 0} icon="🧵" color="#3b82f6" href="/factory-portal/fabrics" />
-        <StatCard label="Test Results" value={data.factoryTestResults?.length || 0} icon="🧪" color="#10b981" href="/factory-portal/tests" />
-        <StatCard label="Upcoming Meetings" value={data.upcomingMeetings || 0} icon="📅" color="#f59e0b" />
-        <StatCard label="Factory ID" value={data.factoryId?.substring(0, 8).toUpperCase() || "—"} icon="🏭" color="#8b5cf6" />
+        <StatCard
+          label="Fabrics in Factory"
+          value={data.factoryFabrics?.length || 0}
+          icon="🧵"
+          color="#3b82f6"
+          href="/factory-portal/fabrics"
+        />
+        <StatCard
+          label="Test Results"
+          value={data.factoryTestResults?.length || 0}
+          icon="🧪"
+          color="#10b981"
+          href="/factory-portal/tests"
+        />
+        <StatCard
+          label="Upcoming Meetings"
+          value={data.upcomingMeetings || 0}
+          icon="📅"
+          color="#f59e0b"
+        />
+        <StatCard
+          label="Factory ID"
+          value={data.factoryId?.substring(0, 8).toUpperCase() || "—"}
+          icon="🏭"
+          color="#8b5cf6"
+        />
       </div>
 
       {/* Factory Fabrics */}
@@ -634,10 +944,15 @@ function FactoryDashboard({ data, t }: { data: DashData; t: any }) {
           <h3 className="text-sm font-bold text-slate-700 mb-3">Recent Test Results</h3>
           <div className="space-y-2">
             {data.factoryTestResults.map((test: any) => (
-              <div key={test.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors">
+              <div
+                key={test.id}
+                className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <div>
                   <span className="text-xs font-bold text-slate-700">{test.testType}</span>
-                  <span className="text-xs text-slate-600 ml-2">{test.submission?.fuzeFabricNumber}</span>
+                  <span className="text-xs text-slate-600 ml-2">
+                    {test.submission?.fuzeFabricNumber}
+                  </span>
                 </div>
                 <span className="text-xs text-slate-500">{test.testStatus}</span>
               </div>
@@ -660,10 +975,25 @@ function BrandDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* Brand Overview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Approved Tests" value={data.approvedTests?.length || 0} icon="✅" color="#10b981" />
-        <StatCard label="Upcoming Meetings" value={data.upcomingMeetings || 0} icon="📅" color="#3b82f6" />
+        <StatCard
+          label="Approved Tests"
+          value={data.approvedTests?.length || 0}
+          icon="✅"
+          color="#10b981"
+        />
+        <StatCard
+          label="Upcoming Meetings"
+          value={data.upcomingMeetings || 0}
+          icon="📅"
+          color="#3b82f6"
+        />
         <StatCard label="Brand Portal" value="Live" icon="🌐" color="#8b5cf6" />
-        <StatCard label="Notifications" value={data.unreadNotifications || 0} icon="🔔" color="#f59e0b" />
+        <StatCard
+          label="Notifications"
+          value={data.unreadNotifications || 0}
+          icon="🔔"
+          color="#f59e0b"
+        />
       </div>
 
       {/* Approved Test Results */}
@@ -672,20 +1002,33 @@ function BrandDashboard({ data, t }: { data: DashData; t: any }) {
           <h3 className="text-sm font-bold text-slate-700 mb-3">Your Approved Test Results</h3>
           <div className="space-y-2">
             {data.approvedTests.map((test: any) => (
-              <div key={test.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors">
+              <div
+                key={test.id}
+                className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <div>
-                  <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold mr-2 ${
-                    test.testType === "ICP" ? "bg-blue-100 text-blue-700" :
-                    test.testType === "ANTIBACTERIAL" ? "bg-purple-100 text-purple-700" :
-                    test.testType === "FUNGAL" ? "bg-amber-100 text-amber-700" :
-                    "bg-slate-100 text-slate-600"
-                  }`}>
+                  <span
+                    className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold mr-2 ${
+                      test.testType === "ICP"
+                        ? "bg-blue-100 text-blue-700"
+                        : test.testType === "ANTIBACTERIAL"
+                          ? "bg-purple-100 text-purple-700"
+                          : test.testType === "FUNGAL"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-slate-100 text-slate-600"
+                    }`}
+                  >
                     {test.testType}
                   </span>
-                  <span className="text-xs text-slate-600">{test.submission?.fuzeFabricNumber}</span>
+                  <span className="text-xs text-slate-600">
+                    {test.submission?.fuzeFabricNumber}
+                  </span>
                 </div>
                 {test.testReportNumber && (
-                  <a href={`/tests/${test.id}`} className="text-xs text-blue-600 hover:text-blue-700">
+                  <a
+                    href={`/tests/${test.id}`}
+                    className="text-xs text-blue-600 hover:text-blue-700"
+                  >
                     Report &rarr;
                   </a>
                 )}
@@ -709,9 +1052,27 @@ function DistributorDashboard({ data, t }: { data: DashData; t: any }) {
 
       {/* Overview Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Brands" value={data.distributorBrands?.length || 0} icon="🎯" color="#8b5cf6" href="/brands" />
-        <StatCard label="Factories" value={data.factoriesCount || 0} icon="🏭" color="#f59e0b" href="/factories" />
-        <StatCard label="Total Tests" value={data.counts?.testRuns || 0} icon="🧪" color="#10b981" href="/test-reports" />
+        <StatCard
+          label="Brands"
+          value={data.distributorBrands?.length || 0}
+          icon="🎯"
+          color="#8b5cf6"
+          href="/brands"
+        />
+        <StatCard
+          label="Factories"
+          value={data.factoriesCount || 0}
+          icon="🏭"
+          color="#f59e0b"
+          href="/factories"
+        />
+        <StatCard
+          label="Total Tests"
+          value={data.counts?.testRuns || 0}
+          icon="🧪"
+          color="#10b981"
+          href="/test-reports"
+        />
         <StatCard label="Contacts" value={data.counts?.contacts || 0} icon="👥" color="#3b82f6" />
       </div>
 
@@ -745,11 +1106,18 @@ export default function DashboardPage() {
   useEffect(() => {
     fetch("/api/dashboard")
       .then((r) => r.json())
-      .then((j) => { if (j.ok) setData(j); })
+      .then((j) => {
+        if (j.ok) setData(j);
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400 text-lg">{t.dashboard.loadingDashboard}</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-400 text-lg">
+        {t.dashboard.loadingDashboard}
+      </div>
+    );
   if (!data) return <div className="text-red-500 p-6">{t.dashboard.loadFailed}</div>;
 
   // Route to appropriate dashboard based on role
@@ -764,12 +1132,20 @@ export default function DashboardPage() {
   } else if (data.role === "FACTORY_MANAGER" || data.role === "FACTORY_USER") {
     // Redirect factory users to their dedicated portal
     if (typeof window !== "undefined") window.location.href = "/factory-portal";
-    return <div className="flex items-center justify-center h-64 text-slate-400 text-lg">Redirecting to Factory Portal...</div>;
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-400 text-lg">
+        Redirecting to Factory Portal...
+      </div>
+    );
   } else if (data.role === "BRAND_USER") {
     return <BrandDashboard data={data} t={t} />;
   } else if (data.role === "DISTRIBUTOR_USER") {
     if (typeof window !== "undefined") window.location.href = "/distributor-portal";
-    return <div className="flex items-center justify-center h-64 text-slate-400 text-lg">Redirecting to Distributor Portal...</div>;
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-400 text-lg">
+        Redirecting to Distributor Portal...
+      </div>
+    );
   }
 
   // Fallback to admin dashboard for unknown roles

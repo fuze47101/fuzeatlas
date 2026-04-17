@@ -1,5 +1,10 @@
 // @ts-nocheck
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 /* ─────────────────────────────────────────────
@@ -33,6 +38,7 @@ export const S3_PREFIXES = {
   COMPLIANCE_DOCS: "compliance-docs",
   DISTRIBUTOR_DOCS: "distributor-docs",
   SAMPLE_TRIAL: "sample-trial",
+  FEEDBACK: "feedback-screenshots",
 } as const;
 
 /* ─── UPLOAD FILE ─── */
@@ -110,11 +116,7 @@ export async function deleteFromS3(key: string): Promise<void> {
 }
 
 /* ─── HELPER: Generate unique S3 key ─── */
-export function generateS3Key(
-  prefix: string,
-  filename: string,
-  entityId?: string,
-): string {
+export function generateS3Key(prefix: string, filename: string, entityId?: string): string {
   const timestamp = Date.now();
   const sanitized = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
   const parts = [prefix];
@@ -125,8 +127,5 @@ export function generateS3Key(
 
 /* ─── HELPER: Check if S3 is configured ─── */
 export function isS3Configured(): boolean {
-  return !!(
-    process.env.AWS_ACCESS_KEY_ID &&
-    process.env.AWS_SECRET_ACCESS_KEY
-  );
+  return !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
 }
