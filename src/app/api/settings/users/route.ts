@@ -18,6 +18,7 @@ export async function GET() {
         role: true,
         status: true,
         createdAt: true,
+        canClaim: true,
         brandId: true,
         factoryId: true,
         distributorId: true,

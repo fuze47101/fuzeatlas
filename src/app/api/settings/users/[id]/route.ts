@@ -19,6 +19,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (body.status) update.status = body.status;
     if (body.name) update.name = body.name;
     if (body.email) update.email = body.email.toLowerCase().trim();
+    if (typeof body.canClaim === "boolean") update.canClaim = body.canClaim;
 
     if (body.password) {
       if (body.password.length < 6) {

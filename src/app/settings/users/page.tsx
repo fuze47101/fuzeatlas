@@ -10,6 +10,7 @@ interface UserRecord {
   role: string;
   status: string;
   createdAt: string;
+  canClaim?: boolean;
   brandId?: string | null;
   factoryId?: string | null;
   distributorId?: string | null;
@@ -178,6 +179,28 @@ export default function UserManagementPage() {
       }
     } catch {}
     setSaving(false);
+  };
+
+  // Flip Business Development "can claim" permission. BD reps need this to
+  // grab unclaimed LEAD brands from the BD Portal. Independent of role —
+  // EMPLOYEE, SALES_REP, ADMIN, and BD_REP can all carry the flag.
+  const handleToggleCanClaim = async (userId: string, next: boolean) => {
+    try {
+      const res = await fetch(`/api/settings/users/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ canClaim: next }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setActionDropdownOpen(null);
+        fetchUsers();
+      } else {
+        alert(data.error || "Failed to update BD claim permission");
+      }
+    } catch {
+      alert("Network error");
+    }
   };
 
   const handleOpenActionModal = (
@@ -386,6 +409,14 @@ export default function UserManagementPage() {
                     {u.id === currentUser?.id && (
                       <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded font-medium">You</span>
                     )}
+                    {u.canClaim && (
+                      <span
+                        title="Can claim BD leads"
+                        className="text-[10px] px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold"
+                      >
+                        BD
+                      </span>
+                    )}
                   </div>
                   <div className="text-xs text-slate-500 truncate">{u.email}</div>
                 </div>
@@ -438,6 +469,12 @@ export default function UserManagementPage() {
                         Suspend
                       </button>
                     )}
+                    <button
+                      onClick={() => handleToggleCanClaim(u.id, !u.canClaim)}
+                      className="block w-full text-left px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 border-b border-slate-100"
+                    >
+                      {u.canClaim ? "Revoke BD Claim" : "Grant BD Claim"}
+                    </button>
                     <button
                       onClick={() => handleOpenActionModal("remove", u.id, u)}
                       className="block w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 border-b border-slate-100"
@@ -527,6 +564,14 @@ export default function UserManagementPage() {
                         <span className="text-sm font-medium text-slate-900">{u.name}</span>
                         {u.id === currentUser?.id && (
                           <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded font-medium ml-1">You</span>
+                        )}
+                        {u.canClaim && (
+                          <span
+                            title="Can claim BD leads"
+                            className="text-[10px] px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold ml-1"
+                          >
+                            BD
+                          </span>
                         )}
                         <div className="text-xs text-slate-400 lg:hidden truncate">{u.email}</div>
                       </div>
@@ -636,6 +681,12 @@ export default function UserManagementPage() {
                                 Unsuspend (Activate)
                               </button>
                             )}
+                            <button
+                              onClick={() => handleToggleCanClaim(u.id, !u.canClaim)}
+                              className="block w-full text-left px-4 py-2 text-xs text-indigo-600 hover:bg-indigo-50 border-b border-slate-100"
+                            >
+                              {u.canClaim ? "Revoke BD Claim" : "Grant BD Claim"}
+                            </button>
                             <button
                               onClick={() => handleOpenActionModal("remove", u.id, u)}
                               className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 border-b border-slate-100"
