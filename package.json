@@ -19,7 +19,6 @@
     "db:import": "tsx scripts/import-atlas.ts"
   },
   "dependencies": {
-    "-": "^0.0.1",
     "@anthropic-ai/claude-code": "^2.1.112",
     "@aws-sdk/client-s3": "^3.1005.0",
     "@aws-sdk/s3-request-presigner": "^3.1005.0",
