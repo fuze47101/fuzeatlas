@@ -26,9 +26,24 @@ export async function POST(req: Request) {
       },
     });
 
+    // BD Portal #36: any note/call/email on a brand = activity. Keeps the rep
+    // "warm" so the 90-day inactivity cron doesn't auto-release them. Also
+    // clears inactivityWarnedAt so the warn-email flow resets.
+    if (brandId) {
+      await prisma.brand
+        .update({
+          where: { id: brandId },
+          data: { lastActivityAt: new Date(), inactivityWarnedAt: null },
+        })
+        .catch(() => {});
+    }
+
     // Fire CRM notification to all entity managers
     if (brandId) {
-      const brand = await prisma.brand.findUnique({ where: { id: brandId }, select: { name: true } });
+      const brand = await prisma.brand.findUnique({
+        where: { id: brandId },
+        select: { name: true },
+      });
       notifyCRMActivity({
         entityType: "BRAND",
         entityId: brandId,
@@ -42,7 +57,10 @@ export async function POST(req: Request) {
     }
 
     if (factoryId) {
-      const factory = await prisma.factory.findUnique({ where: { id: factoryId }, select: { name: true } });
+      const factory = await prisma.factory.findUnique({
+        where: { id: factoryId },
+        select: { name: true },
+      });
       notifyCRMActivity({
         entityType: "FACTORY",
         entityId: factoryId,

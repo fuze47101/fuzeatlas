@@ -182,6 +182,21 @@ export async function POST(req: Request) {
     }
   }
 
+  // BD Portal #36: bump lastActivityAt on every brand touched by this email.
+  // Sent/received email to a contact = BD activity, keeps the rep "warm" against
+  // the 90-day auto-release cron.
+  const brandIds = Array.from(
+    new Set(created.map((n: any) => n.brandId).filter(Boolean)),
+  ) as string[];
+  if (brandIds.length > 0) {
+    await prisma.brand
+      .updateMany({
+        where: { id: { in: brandIds } },
+        data: { lastActivityAt: new Date(), inactivityWarnedAt: null },
+      })
+      .catch(() => {});
+  }
+
   return NextResponse.json({
     ok: true,
     matched: contacts.length,

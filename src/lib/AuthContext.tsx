@@ -12,6 +12,8 @@ interface AuthUser {
   distributorId?: string | null;
   labId?: string | null;
   mustChangePassword?: boolean;
+  emailVerified?: boolean;
+  canClaim?: boolean;
 }
 
 interface ImpersonationInfo {
@@ -31,7 +33,10 @@ interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
   impersonation: ImpersonationInfo | null;
-  login: (email: string, password: string) => Promise<{ ok: boolean; error?: string; user?: AuthUser; mustChangePassword?: boolean }>;
+  login: (
+    email: string,
+    password: string,
+  ) => Promise<{ ok: boolean; error?: string; user?: AuthUser; mustChangePassword?: boolean }>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   startImpersonating: (userId: string) => Promise<{ ok: boolean; error?: string }>;
@@ -151,7 +156,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, impersonation, login, logout, refresh, startImpersonating, stopImpersonating }}
+      value={{
+        user,
+        loading,
+        impersonation,
+        login,
+        logout,
+        refresh,
+        startImpersonating,
+        stopImpersonating,
+      }}
     >
       {children}
     </AuthContext.Provider>

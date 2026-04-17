@@ -153,6 +153,18 @@ export async function POST(req: Request) {
       },
     });
 
+    // BD Portal #36: bump lastActivityAt so the 90-day inactivity cron
+    // counts this meeting as activity. Clears the warn stamp so re-warning
+    // starts from zero the next time the brand goes quiet.
+    if (brandId) {
+      await prisma.brand
+        .update({
+          where: { id: brandId },
+          data: { lastActivityAt: new Date(), inactivityWarnedAt: null },
+        })
+        .catch(() => {});
+    }
+
     /* ── Fire calendar invite emails to attendees (non-blocking) ── */
     (async () => {
       try {

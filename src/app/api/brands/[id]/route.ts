@@ -15,11 +15,49 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
         salesRep: { select: { id: true, name: true, email: true } },
         contacts: true,
         factories: { include: { factory: { select: { id: true, name: true, country: true } } } },
-        fabrics: { select: { id: true, fuzeNumber: true, customerCode: true, factoryCode: true, construction: true, color: true, weightGsm: true }, take: 20, orderBy: { createdAt: "desc" } },
-        submissions: { select: { id: true, fuzeFabricNumber: true, status: true, testStatus: true, createdAt: true }, take: 20, orderBy: { createdAt: "desc" } },
-        sows: { select: { id: true, title: true, status: true, createdAt: true }, orderBy: { createdAt: "desc" } },
-        notes: { select: { id: true, content: true, noteType: true, date: true, contactName: true }, orderBy: { date: "desc" }, take: 20 },
-        _count: { select: { fabrics: true, submissions: true, factories: true, contacts: true, sows: true, notes: true } },
+        fabrics: {
+          select: {
+            id: true,
+            fuzeNumber: true,
+            customerCode: true,
+            factoryCode: true,
+            construction: true,
+            color: true,
+            weightGsm: true,
+          },
+          take: 20,
+          orderBy: { createdAt: "desc" },
+        },
+        submissions: {
+          select: {
+            id: true,
+            fuzeFabricNumber: true,
+            status: true,
+            testStatus: true,
+            createdAt: true,
+          },
+          take: 20,
+          orderBy: { createdAt: "desc" },
+        },
+        sows: {
+          select: { id: true, title: true, status: true, createdAt: true },
+          orderBy: { createdAt: "desc" },
+        },
+        notes: {
+          select: { id: true, content: true, noteType: true, date: true, contactName: true },
+          orderBy: { date: "desc" },
+          take: 20,
+        },
+        _count: {
+          select: {
+            fabrics: true,
+            submissions: true,
+            factories: true,
+            contacts: true,
+            sows: true,
+            notes: true,
+          },
+        },
       },
     });
 
@@ -41,7 +79,10 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
       // Product table doesn't exist yet — gracefully degrade
     }
 
-    return NextResponse.json({ ok: true, brand: { ...brand, products, _count: { ...brand._count, products: productCount } } });
+    return NextResponse.json({
+      ok: true,
+      brand: { ...brand, products, _count: { ...brand._count, products: productCount } },
+    });
   } catch (e: any) {
     console.error("Brand detail error:", e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
@@ -53,13 +94,23 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
     const params = await props.params;
     const body = await req.json();
     const {
-      name, pipelineStage, customerType, leadReferralSource,
-      website, linkedInProfile, backgroundInfo, projectType,
-      projectDescription, forecast, deliverables, salesRepId,
-      dateOfInitialContact, presentationDate,
+      name,
+      pipelineStage,
+      customerType,
+      leadReferralSource,
+      website,
+      linkedInProfile,
+      backgroundInfo,
+      projectType,
+      projectDescription,
+      forecast,
+      deliverables,
+      salesRepId,
+      dateOfInitialContact,
+      presentationDate,
     } = body;
 
-    // Check if pipelineStage is changing (for auto-scheduling)
+    // Check if pipelineStage is changing (for auto-scheduling + BD handoff)
     let oldStage: string | null = null;
     if (pipelineStage !== undefined) {
       const current = await prisma.brand.findUnique({
@@ -67,6 +118,29 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
         select: { pipelineStage: true },
       });
       oldStage = current?.pipelineStage || null;
+    }
+
+    // BD Portal #36 Phase 6: if the brand moves past PRESENTATION, set the
+    // handoffPending flag so Andrew / Scott / Tina triage it on their dashboard.
+    // Stages past PRESENTATION = BRAND_TESTING, FACTORY_ONBOARDING,
+    // FACTORY_TESTING, PRODUCTION, BRAND_EXPANSION, CUSTOMER_WON.
+    // ARCHIVE doesn't count — that's a dead state.
+    const POST_PRESENTATION = new Set([
+      "BRAND_TESTING",
+      "FACTORY_ONBOARDING",
+      "FACTORY_TESTING",
+      "PRODUCTION",
+      "BRAND_EXPANSION",
+      "CUSTOMER_WON",
+    ]);
+    let handoffPendingUpdate: boolean | undefined;
+    if (
+      pipelineStage !== undefined &&
+      pipelineStage !== oldStage &&
+      POST_PRESENTATION.has(pipelineStage) &&
+      !POST_PRESENTATION.has(oldStage || "")
+    ) {
+      handoffPendingUpdate = true;
     }
 
     const brand = await prisma.brand.update({
@@ -84,10 +158,38 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
         ...(forecast !== undefined && { forecast: forecast || null }),
         ...(deliverables !== undefined && { deliverables: deliverables || null }),
         ...(salesRepId !== undefined && { salesRepId: salesRepId || null }),
-        ...(dateOfInitialContact !== undefined && { dateOfInitialContact: dateOfInitialContact ? new Date(dateOfInitialContact) : null }),
-        ...(presentationDate !== undefined && { presentationDate: presentationDate ? new Date(presentationDate) : null }),
+        ...(dateOfInitialContact !== undefined && {
+          dateOfInitialContact: dateOfInitialContact ? new Date(dateOfInitialContact) : null,
+        }),
+        ...(presentationDate !== undefined && {
+          presentationDate: presentationDate ? new Date(presentationDate) : null,
+        }),
+        ...(handoffPendingUpdate !== undefined && { handoffPending: handoffPendingUpdate }),
       },
     });
+
+    // BD Portal #36 Phase 6: alert admins in-app when a new handoff lands
+    if (handoffPendingUpdate === true) {
+      (async () => {
+        try {
+          const admins = await prisma.user.findMany({
+            where: { role: "ADMIN", status: "ACTIVE" },
+            select: { id: true, email: true, name: true },
+          });
+          for (const a of admins) {
+            await pushPipelineChange({
+              brandId: params.id,
+              brandName: brand.name,
+              oldStage: oldStage || "PRESENTATION",
+              newStage: pipelineStage,
+              changedBy: req.headers.get("x-user-id") || undefined,
+            }).catch(() => {});
+          }
+        } catch (e) {
+          console.warn("[bd-handoff] admin alert failed:", e);
+        }
+      })();
+    }
 
     // Auto-schedule meeting when pipeline stage changes
     let autoMeeting = null;
@@ -120,7 +222,10 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
   } catch (e: any) {
     console.error("Brand update error:", e);
     if (e.code === "P2002") {
-      return NextResponse.json({ ok: false, error: "A brand with this name already exists" }, { status: 409 });
+      return NextResponse.json(
+        { ok: false, error: "A brand with this name already exists" },
+        { status: 409 },
+      );
     }
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
@@ -135,10 +240,7 @@ export async function DELETE(req: Request, props: { params: Promise<{ id: string
     const url = new URL(req.url);
     const adminCode = url.searchParams.get("code");
     if (adminCode !== "FUZE2026") {
-      return NextResponse.json(
-        { ok: false, error: "Invalid admin code" },
-        { status: 403 }
-      );
+      return NextResponse.json({ ok: false, error: "Invalid admin code" }, { status: 403 });
     }
 
     // Check for linked records — block delete if brand is in active use
@@ -162,10 +264,12 @@ export async function DELETE(req: Request, props: { params: Promise<{ id: string
         c.submissions > 0 && `${c.submissions} submission(s)`,
         c.factories > 0 && `${c.factories} factory link(s)`,
         c.sows > 0 && `${c.sows} SOW(s)`,
-      ].filter(Boolean).join(", ");
+      ]
+        .filter(Boolean)
+        .join(", ");
       return NextResponse.json(
         { ok: false, error: `Cannot delete — brand has ${linked}. Remove linked records first.` },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -175,9 +279,14 @@ export async function DELETE(req: Request, props: { params: Promise<{ id: string
     await prisma.project.deleteMany({ where: { brandId: id } });
     // Clean up products (and their SOW links) — table may not exist yet
     try {
-      const brandProducts = await prisma.product.findMany({ where: { brandId: id }, select: { id: true } });
+      const brandProducts = await prisma.product.findMany({
+        where: { brandId: id },
+        select: { id: true },
+      });
       if (brandProducts.length > 0) {
-        await prisma.sOWProduct.deleteMany({ where: { productId: { in: brandProducts.map(p => p.id) } } });
+        await prisma.sOWProduct.deleteMany({
+          where: { productId: { in: brandProducts.map((p) => p.id) } },
+        });
         await prisma.product.deleteMany({ where: { brandId: id } });
       }
     } catch {

@@ -146,6 +146,16 @@ export async function POST(req: Request) {
       },
     });
 
+    // BD Portal #36: creating a follow-up task on a brand = activity
+    if (brandId) {
+      await prisma.brand
+        .update({
+          where: { id: brandId },
+          data: { lastActivityAt: new Date(), inactivityWarnedAt: null },
+        })
+        .catch(() => {});
+    }
+
     return NextResponse.json({ ok: true, taskId: task.id });
   } catch (err: any) {
     console.error("[crm/tasks] POST error:", err);

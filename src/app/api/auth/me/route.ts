@@ -29,6 +29,7 @@ export async function GET() {
           status: true,
           mustChangePassword: true,
           emailVerified: true,
+          canClaim: true,
           brandId: true,
           factoryId: true,
           distributorId: true,
@@ -58,6 +59,7 @@ export async function GET() {
             status: target.status,
             mustChangePassword: false, // never show this when impersonating
             emailVerified: target.emailVerified,
+            canClaim: target.canClaim,
             brandId: target.brandId,
             factoryId: target.factoryId,
             distributorId: target.distributorId,
@@ -93,9 +95,11 @@ export async function GET() {
         status: true,
         mustChangePassword: true,
         emailVerified: true,
+        canClaim: true,
         brandId: true,
         factoryId: true,
         distributorId: true,
+        labId: true,
       },
     });
 

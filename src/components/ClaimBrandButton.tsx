@@ -40,6 +40,9 @@ export default function ClaimBrandButton({
   const isMine = !!salesRep && salesRep.id === user.id;
   const isOwned = !!salesRep && !isMine;
   const isAdmin = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
+  // BD Portal #36: only admins + canClaim users can grab unclaimed brands.
+  // Everyone else sees read-only state.
+  const canClaim = isAdmin || !!(user as any).canClaim;
 
   const updateRep = async (salesRepId: string | null, confirmMsg?: string) => {
     if (confirmMsg && !confirm(confirmMsg)) return;
@@ -63,8 +66,18 @@ export default function ClaimBrandButton({
     }
   };
 
-  // Unclaimed → big green Claim CTA
+  // Unclaimed → big green Claim CTA (only for canClaim + admins)
   if (!salesRep) {
+    if (!canClaim) {
+      return (
+        <span
+          className="px-3 py-1.5 bg-slate-50 text-slate-500 border border-slate-200 rounded-lg text-xs font-medium"
+          title="Ask Andrew or Scott to enable BD claims for your account."
+        >
+          🙋 Unclaimed — ask an admin to enable BD claims
+        </span>
+      );
+    }
     return (
       <div className="flex items-center gap-2">
         <button

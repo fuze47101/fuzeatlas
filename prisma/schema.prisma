@@ -76,6 +76,7 @@ enum UserRole {
   EMPLOYEE
   SALES_MANAGER
   SALES_REP
+  BD_REP             // Independent BD reps / commission-only partners (Viktor, Barth, Hi-Goal, etc.)
   FABRIC_MANAGER
   TESTING_MANAGER
   FACTORY_MANAGER
@@ -177,6 +178,10 @@ model User {
   emailVerifyExpiry  DateTime?                 // Token expiry
   passwordChangedAt  DateTime?                 // Last password change timestamp
 
+  // BD Portal — can this user claim unclaimed brand accounts?
+  // Admins always can (enforced in code). Everyone else needs canClaim = true.
+  canClaim Boolean @default(false)
+
   salesManagerId String?
   salesManager   User?   @relation("SalesManagerReps", fields: [salesManagerId], references: [id])
   managedReps    User[]  @relation("SalesManagerReps")
@@ -257,6 +262,19 @@ model Brand {
   salesRepId String?
   salesRep   User?  @relation("BrandSalesRep", fields: [salesRepId], references: [id])
 
+  // BD Portal — last time ANY activity touched this brand (note/call/email/meeting).
+  // Drives the 90-day inactivity auto-release job. Stamped in application code
+  // whenever a Note, Meeting, or CRM email is written against this brand.
+  lastActivityAt DateTime?
+
+  // BD Portal — set to true when brand moves past PRESENTATION stage. Flags the
+  // handoff queue for Andrew / Scott / Tina without forcing the rep to release.
+  handoffPending Boolean @default(false)
+
+  // BD Portal — stamped by the 75-day inactivity warn. Prevents the nightly
+  // cron from re-warning the same rep; cleared on release or re-activity.
+  inactivityWarnedAt DateTime?
+
   contacts    Contact[]
   factories   BrandFactory[]
   submissions FabricSubmission[]
@@ -282,6 +300,8 @@ model Brand {
 
   @@index([pipelineStage])
   @@index([name])
+  @@index([salesRepId, lastActivityAt])
+  @@index([handoffPending])
 }
 
 // ─────────────────────────────────────────────
