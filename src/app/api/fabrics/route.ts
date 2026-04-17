@@ -55,6 +55,34 @@ export async function GET(req: Request) {
           orderBy: { createdAt: "desc" },
           take: 1,
         },
+        // Latest usable recipe bench test for this fabric — drives the
+        // application-recipe step of the ICP Sample Prep wizard without a
+        // second round-trip. We only include tests with a computed pickup;
+        // anything pre-measurement is useless for building a bath.
+        recipeBenchTests: {
+          where: { pickupDryToWetPct: { not: null } },
+          orderBy: { testDate: "desc" },
+          take: 1,
+          select: {
+            id: true,
+            testNumber: true,
+            testDate: true,
+            applicationMethod: true,
+            squeezePressure: true,
+            vfdFrequencyHz: true,
+            lineSpeedMPerMin: true,
+            stockMgPerL: true,
+            pickupDryToWetPct: true,
+            f1BathMgPerL: true,
+            f2BathMgPerL: true,
+            f3BathMgPerL: true,
+            f4BathMgPerL: true,
+            f1FuzeMlPerLBath: true,
+            f2FuzeMlPerLBath: true,
+            f3FuzeMlPerLBath: true,
+            f4FuzeMlPerLBath: true,
+          },
+        },
       },
       orderBy: { fuzeNumber: "desc" },
       ...(take ? { take } : {}),
@@ -62,6 +90,7 @@ export async function GET(req: Request) {
 
     const list = fabrics.map((f: any) => {
       const sub = f.submissions?.[0] || null;
+      const bench = f.recipeBenchTests?.[0] || null;
       return {
         id: f.id,
         fuzeNumber: f.fuzeNumber ?? sub?.fuzeFabricNumber ?? null,
@@ -87,6 +116,10 @@ export async function GET(req: Request) {
               factoryFabricCode: sub.factoryFabricCode,
             }
           : null,
+        // Recipe snapshot for the ICP Sample Prep wizard. Null if the fabric
+        // has never been bench-tested — wizard renders a "Run Recipe Calculator
+        // first" banner and blocks the step.
+        latestBenchTest: bench,
       };
     });
 

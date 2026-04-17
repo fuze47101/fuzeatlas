@@ -10,11 +10,15 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: "Admin access required" }, { status: 403 });
     }
 
+    // Test Requests badge counts PO-based TestRequest rows awaiting approval
+    // (the model the /test-requests page actually renders). The sidebar badge
+    // previously pointed at the legacy FuzeTestRequest table which produced a
+    // number that never matched the on-page "Awaiting Approval" stat card.
     const [accessRequests, brandRequests, factoryRequests, testRequests] = await Promise.all([
       prisma.accessRequest.count({ where: { status: "PENDING" } }),
       prisma.accessRequest.count({ where: { status: "PENDING", requestType: "BRAND" } }),
       prisma.accessRequest.count({ where: { status: "PENDING", requestType: "FACTORY" } }),
-      prisma.fuzeTestRequest.count({ where: { status: "PENDING" } }).catch(() => 0),
+      prisma.testRequest.count({ where: { status: "PENDING_APPROVAL" } }).catch(() => 0),
     ]);
 
     return NextResponse.json({

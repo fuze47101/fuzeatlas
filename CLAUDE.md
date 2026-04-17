@@ -227,6 +227,44 @@ Order placed → Product shipped → Received → Treatment applied → ICP subm
 ### QR Code on Shipment
 Each order gets QR → links to SDS, COA for the shipment. Factory scans on receive + on application.
 
+## Built Features (Session — April 17, 2026)
+
+### FUZE Brand Voice Fix — Email Templates (commit f3d926b)
+- **Bug**: `EmailComposeModal` on `/brands/[id]` and the new `EmailModal` on `/contacts/[id]` were writing default outreach copy that called FUZE "silver-ion antimicrobial" and "water-based silver-ion" — directly violating the brand voice locked in `src/lib/fuze-knowledge.ts` and the `Critical Brand Language` table at the top of this file.
+- **Fix**: Rewrote both default email templates using canonical FUZE voice — "proprietary metamaterial antimicrobial treatment", "bonds to fibers during standard textile finishing", AATCC 100 / ISO 20743, OEKO-TEX Standard 100 Class I, bluesign® approved, EPA registered, PFAS-free. Tier language locked to F1 (100 washes). Application methods listed as exhaust / pad-dry-cure / spray.
+- **Font**: Email body textareas now render in Times New Roman 12pt so drafts match the outbound Gmail style instead of the app's sans-serif UI.
+- **CLAUDE.md hardening**: Added `Canonical product voice = src/lib/fuze-knowledge.ts` section right under the Critical Brand Language table. Enumerates the only acceptable language patterns and explicitly forbids every variant of silver/nano/ion. Any email/outreach code must now pull language from fuze-knowledge.ts.
+
+### CRM Contact Detail Page + AI Enrichment (commit f3d926b)
+- New `/contacts/[id]` page with full activity feed, linked brand/factory, send-email modal wired to the same `/api/crm/sendEmail` endpoint as brand pipeline.
+- AI-powered contact enrichment on the detail page — uses the FUZE FAQ knowledge base and fuze-knowledge.ts so relevance hooks stay on-brand.
+
+### canClaim Admin Toggle (commit a5c2ac1)
+- Admin toggle on user records to flip `canClaim` — controls whether a user can self-claim brands into their pipeline. Unblocks distributor onboarding where we want read-only users who can't grab leads out from under reps.
+
+### ICP Sample Prep Fabric Search — Fixed for Ashlee (commit b53a0bb)
+- **Bug**: ICP Sample Prep wizard showed "No fabrics match" for every search Ashlee ran in the lab, including known FUZE numbers like `2504`. Three stacked issues:
+  1. `GET /api/fabrics` ignored the `?q=` parameter entirely — client sent the query, server returned the full unfiltered list.
+  2. Response-shape mismatch — API returned `{ fabrics: [...] }` but ICP wizard read `json.items`.
+  3. Field-path drift — fabrics registered via intake have their FUZE number on the related `FabricSubmission`, not the flat `fuzeNumber` column. Wizard was only reading the flat field.
+- **Fix**:
+  - `src/app/api/fabrics/route.ts` — added server-side OR filter on `fuzeNumber` (exact, when `q` is numeric), `customerCode`, `factoryCode`, `construction`, `color`, `yarnType`, `fabricCategory`, `note`, `brand.name`, `factory.name`, and a `submissions: { some: ... }` back-pointer so submission-only FUZE numbers also match. Added `?pageSize=` cap. Response now returns both `fabrics` and `items` so every existing caller keeps working.
+  - `src/app/admin/icp-sample-prep/page.tsx` — added flat fields + `submission` to `FabricRow`, added `fuzeNumOf / customerCodeOf / factoryCodeOf` resolver helpers that fall back to the submission, and updated render/label/sample-creation to use them. `setFabrics(json.fabrics || json.items || [])`.
+- Unblocks task #8 (first real ICP Sample Prep submission end-to-end).
+
+### Ops
+- Full backup: `/Users/corporate/Desktop/fuzeatlas-backup-2026-04-17_1907.tar.gz` (121 MB, excludes node_modules / .next / build artifacts).
+- 3 commits pushed to main: `a5c2ac1` → `f3d926b` → `b53a0bb`. Production Vercel project (`fuzeatlas`) deployed b53a0bb Ready. Duplicate Vercel project `fuzeatlas-z2d5` (prj_Wcbbir8cSU9Q1ADAq29f6oLAQEsU) is unrelated — it's been failing sporadically on various commits for weeks. Real prod is fine.
+
+### Sample Application Wizard — Pad + Dry Before ICP (commits #59, #60, #61, #62)
+- **Problem**: Ashlee was jumping from the Recipe Bench Test straight to ICP cutting/weighing. The actual lab workflow has a step in between: mix the diluted FUZE bath from the 30 ppm stock, pad the fabric through the vertical micro-padder at the saved squeeze/VFD/speed, dry in the chamber, **then** cut the 5 g ICP sample. That step was never recorded — no per-sample bath recipe, no padded/dried timestamps, no print card at the bench.
+- **Model** (`prisma/schema.prisma`): New `SampleApplication` model with `appNumber` (`FUZE-APP-YYYYMMDD-NNNN`), `fabricId`, `benchTestId`, `tier`, `bathVolumeL`, `stockMgPerL` (default 30), `bathConcentrationMgPerL`, `fuzeMl`, `waterMl`, padder snapshot fields (`squeezePressure`, `vfdFrequencyHz`, `lineSpeedMPerMin`, `pickupDryToWetPct`), and lifecycle `paddedAt` / `driedAt`. Relations on `Fabric` (`FabricSampleApplications`) and `RecipeBenchTest` (`BenchTestSampleApplications`). Schema pushed live via `npx prisma db push`.
+- **API** (`src/app/api/admin/sample-application/route.ts`): `POST` derives the bath from the bench test — `bathMgPerL = tier_mg_per_kg / (pickup%/100)`, `fuzeMl = bathVolumeL × (bathMgPerL / stock) × 1000`, `waterMl = bathVolumeL × 1000 − fuzeMl`. Tier → mg/kg: F1=1.0, F2=0.75, F3=0.5, F4=0.25. Stamps `paddedAt` + `driedAt` on create (`stampLifecycle: true`). `PATCH` allows individual lifecycle updates. `GET` supports `?id`, `?fabricId`, `?recent=1`.
+- **Fabrics include** (`src/app/api/fabrics/route.ts`): Added `recipeBenchTests` include filtered to `pickupDryToWetPct: { not: null }`, ordered `testDate desc`, `take: 1` — the ICP wizard reads `fabric.latestBenchTest` and drives the recipe step without a second round-trip. Anything pre-measurement is useless for building a bath and gets filtered out.
+- **Wizard** (`src/app/admin/icp-sample-prep/page.tsx`): Now 5 steps — (1) Pick fabrics → (2) Confirm details → (3) **Application recipe** → (4) Weigh & tier → (5) Review & submit. Step 3 renders a per-fabric card with bench test summary, tier buttons (F1-F4), bath volume input, live mL FUZE / mL DI preview that mirrors the server math exactly, operator + notes fields, padder settings snapshot (squeeze bar / VFD Hz / line speed m/min), and a "Pad + dry complete" button that POSTs to the API. No bench test → red banner + deep link to `/admin/recipe-calculator?fabricId=…` and the step blocks. Once recorded, the card locks (emerald ring), shows `FUZE-APP-…` number and dried timestamp, offers "Redo" and "🖨 Print recipe card" actions. Step-3 gate requires every sample has a `sampleApplicationId` before you can advance. Manual "Bench test ID" input on the weigh step was removed — the bench test now comes through the SampleApplication.
+- **Print card** (`src/app/admin/sample-application/[id]/print/page.tsx` + `PrintButton.tsx`): One-page Letter printout for the bench — fabric identity, big bath recipe block (mL FUZE stock + mL DI with the derived concentration + pickup %), padder settings grid, padded/dried timestamps, operator + notes, `FUZE-APP-…` number. `@media print` margin 0.4in. Client-only print button extracted so the page itself stays an async RSC.
+- **Sidebar badge bug** (`src/app/api/admin/pending-counts/route.ts`): Fixed badge showing 9 while the Test Requests page showed 6 pending. The badge was counting `FuzeTestRequest` (legacy table) while the page renders `TestRequest` (PO-based). Both now query `prisma.testRequest.count({ where: { status: "PENDING_APPROVAL" } })` so they agree.
+
 ## Built Features (Session — April 16, 2026)
 
 ### ICP Sample Prep Wizard + SOP
