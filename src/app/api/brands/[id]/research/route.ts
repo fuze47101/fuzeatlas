@@ -553,29 +553,143 @@ export async function POST(req: Request, props: { params: Promise<{ id: string }
       }, { status: 500 });
     }
 
-    // Auto-save contacts if requested
+    // Auto-save contacts if requested — preserves ALL enrichment the AI
+    // returned. Previously only name/title/email/phone were persisted,
+    // which meant LinkedIn, email-confidence, decision-maker signal, and
+    // the "why they matter to FUZE" relevance text all got dropped.
     if (body.autoSaveContacts && research.contacts?.length > 0) {
+      // Map AI emailConfidence → Contact.emailStatus vocabulary.
+      const mapEmailStatus = (c: string | undefined) => {
+        if (!c) return null;
+        const lc = c.toLowerCase();
+        if (lc === "verified") return "verified";
+        if (lc === "likely") return "extrapolated";
+        if (lc === "estimated") return "extrapolated";
+        return lc;
+      };
+
+      // Infer seniority from the AI-returned title so we can segment the
+      // contacts list later.
+      const inferSeniority = (title: string | null | undefined): string | null => {
+        if (!title) return null;
+        const t = title.toLowerCase();
+        if (/\b(ceo|cfo|coo|cto|cpo|cio|chief|president|founder|owner)\b/.test(t)) return "c_suite";
+        if (/\bvp|vice president\b/.test(t)) return "vp";
+        if (/\bdirector\b/.test(t)) return "director";
+        if (/\b(head of|lead)\b/.test(t)) return "lead";
+        if (/\bmanager\b/.test(t)) return "manager";
+        return null;
+      };
+
+      // Derive a rough vertical from the brand's own researched industry,
+      // so all contacts from this save share a consistent tag.
+      const inferVertical = (industry: string | null | undefined): string | null => {
+        if (!industry) return null;
+        const i = industry.toLowerCase();
+        if (/apparel|fashion|clothing|athletic|sport/.test(i)) return "apparel";
+        if (/hospital|hotel|linen|bedding|towel/.test(i)) return "hospitality";
+        if (/work ?wear|uniform|ppe/.test(i)) return "workwear";
+        if (/home textile|furniture|upholstery/.test(i)) return "home_textiles";
+        if (/medical|healthcare|patient/.test(i)) return "medical";
+        if (/outdoor|tent|gear/.test(i)) return "outdoor";
+        return null;
+      };
+
+      const vertical = inferVertical(research.company?.industry);
+
       for (const contact of research.contacts) {
         const nameParts = (contact.name || "").split(" ");
         const firstName = nameParts[0] || null;
         const lastName = nameParts.slice(1).join(" ") || null;
+        const seniority = inferSeniority(contact.title);
+        // AI prompt says "priority 1 = top target" — treat 1 and 2 as
+        // decision-makers for scoring purposes.
+        const decisionMaker =
+          typeof contact.priority === "number" ? contact.priority <= 2 : false;
 
         const existing = contact.email
-          ? await prisma.contact.findFirst({ where: { brandId: params.id, email: contact.email } })
-          : await prisma.contact.findFirst({ where: { brandId: params.id, firstName, lastName } });
+          ? await prisma.contact.findFirst({
+              where: { brandId: params.id, email: contact.email.toLowerCase() },
+            })
+          : await prisma.contact.findFirst({
+              where: { brandId: params.id, firstName, lastName },
+            });
 
+        let saved: { id: string };
         if (!existing) {
-          await prisma.contact.create({
+          saved = await prisma.contact.create({
             data: {
               brandId: params.id,
               firstName,
               lastName,
               name: contact.name,
               title: contact.title || null,
-              email: contact.email || null,
+              jobTitle: contact.title || null,
+              email: contact.email ? contact.email.toLowerCase() : null,
               phone: contact.phone || null,
+              linkedinUrl: contact.linkedin || null,
+              seniority,
+              emailStatus: mapEmailStatus(contact.emailConfidence),
+              enrichmentSource: "research",
+              enrichedAt: new Date(),
+              vertical,
+              decisionMaker,
+              companyRevenue: research.company?.revenue || null,
+              outreachStatus: "not_contacted",
             },
           });
+        } else {
+          // Upsert-style enrichment: fill in fields the AI found that we
+          // don't already have recorded. Never overwrite something the
+          // user has curated.
+          const patch: any = {};
+          if (!existing.title && contact.title) patch.title = contact.title;
+          if (!existing.jobTitle && contact.title) patch.jobTitle = contact.title;
+          if (!existing.phone && contact.phone) patch.phone = contact.phone;
+          if (!existing.linkedinUrl && contact.linkedin) patch.linkedinUrl = contact.linkedin;
+          if (!existing.seniority && seniority) patch.seniority = seniority;
+          if (!existing.emailStatus && contact.emailConfidence) {
+            patch.emailStatus = mapEmailStatus(contact.emailConfidence);
+          }
+          if (!existing.vertical && vertical) patch.vertical = vertical;
+          if (!existing.decisionMaker && decisionMaker) patch.decisionMaker = true;
+          if (!existing.companyRevenue && research.company?.revenue) {
+            patch.companyRevenue = research.company.revenue;
+          }
+          if (!existing.enrichmentSource) patch.enrichmentSource = "research";
+          if (!existing.enrichedAt) patch.enrichedAt = new Date();
+
+          if (Object.keys(patch).length) {
+            await prisma.contact.update({ where: { id: existing.id }, data: patch });
+          }
+          saved = existing;
+        }
+
+        // Pin the AI's "why they matter to FUZE" reasoning as a NOTE on
+        // the contact so it appears in the activity timeline — previously
+        // this reasoning was thrown away entirely.
+        if (contact.relevance && typeof contact.relevance === "string") {
+          const already = await prisma.note.findFirst({
+            where: {
+              contactId: saved.id,
+              noteType: "AI_INSIGHT",
+            },
+            select: { id: true },
+          });
+          if (!already) {
+            await prisma.note
+              .create({
+                data: {
+                  content: `🔍 Why they matter (AI research):\n${contact.relevance}`,
+                  noteType: "AI_INSIGHT",
+                  brandId: params.id,
+                  contactId: saved.id,
+                  contactName: contact.name || null,
+                  date: new Date(),
+                },
+              })
+              .catch(() => {});
+          }
         }
       }
     }

@@ -14,6 +14,24 @@ Andrew Peterson, CEO/Founder of FUZE Biotech. Building antimicrobial textile tre
 
 **Technical/compliance docs (CIL, ARSL, SDS) may use chemical names (Silver, CAS 7440-22-4) but ALL marketing, website, and customer-facing content uses FUZE and metamaterial.**
 
+### Canonical product voice = src/lib/fuze-knowledge.ts
+Any email body, outreach copy, meeting blurb, relevance hook, or AI-generated product
+description emitted by the code MUST pull its language from `src/lib/fuze-knowledge.ts`
+(the file powering the FUZE FAQ / /api/chat). That file is the single source of truth
+for how we talk about the tech.
+
+When writing email/outreach code defaults, the ONLY acceptable language pattern is:
+- "FUZE" / "FUZE F1" / "metamaterial" (one word, no hyphen)
+- "proprietary antimicrobial textile treatment" / "high density allotrope"
+- Certifications: OEKO-TEX Standard 100 Class I, bluesign® approved, EPA registered, PFAS-free
+- Standards: AATCC 100, AATCC 30, ISO 20743, ISO 18184
+- Application: exhaust / pad-dry-cure / spray — standard textile finishing equipment, cure 150–170°C
+- Tiers: F1 Full Spectrum (100 washes), F2 Advanced (75), F3 Core (50), F4 Foundation (25)
+
+NEVER write "silver-ion", "silver ion", "nano-silver", "nanoparticle", "silver nanoparticle",
+"water-based silver", or any variant — even as filler in a default template. If in doubt,
+read src/lib/fuze-knowledge.ts first.
+
 ## Products & Chemistry
 | Term | Meaning |
 |------|---------|

@@ -2089,7 +2089,7 @@ function EmailComposeModal({
   // One-line hook derived from AI research — falls back to a generic line.
   const relevanceHook = (() => {
     if (fuzeRel === "high") {
-      return `${brandName}'s focus on ${textileCat || "performance textiles"} lines up closely with what FUZE's silver-ion antimicrobial was built for.`;
+      return `${brandName}'s focus on ${textileCat || "performance textiles"} lines up closely with what FUZE F1 was built for.`;
     }
     if (project) {
       const truncated = project.length > 160 ? project.slice(0, 160).trim() + "…" : project;
@@ -2102,16 +2102,14 @@ function EmailComposeModal({
     return `I've been following ${brandName} and think there's a fit with what we do at FUZE.`;
   })();
 
-  const defaultSubject = `${brandName} × FUZE — odor + microbial control for ${textileCat || "your fabrics"}`;
+  const defaultSubject = `${brandName} × FUZE — durable antimicrobial protection for ${textileCat || "your fabrics"}`;
 
   const defaultBody =
     `Hi ${firstName || "there"},\n\n` +
     `${relevanceHook}\n\n` +
-    `FUZE is a water-based silver-ion antimicrobial finish that can be applied on-line at the mill. ` +
-    `We're seeing ~1 log reduction of S. aureus and bacteria-driven odor at 1.0–4.0 mg/kg OWF, ` +
-    `with Bluesign/Oeko-Tex status and drop-in padder compatibility.\n\n` +
-    `Would you be open to a 20-minute call next week to see if there's a small pilot we could run on ` +
-    `one of your current fabric programs?\n\n` +
+    `FUZE is a proprietary metamaterial antimicrobial treatment that bonds to fibers during standard textile finishing — no special machinery, compatible with exhaust, pad-dry-cure, and spray application. Our F1 tier is rated for 100 wash cycles and validated against bacteria, fungi, and odor-causing microorganisms per AATCC 100 and ISO 20743.\n\n` +
+    `FUZE is OEKO-TEX Standard 100 Class I (safe for baby products), bluesign® approved, EPA registered, and completely PFAS-free.\n\n` +
+    `Would you be open to a 20-minute call next week to see if there's a small pilot we could run on one of your current fabric programs?\n\n` +
     `Thanks,\nFUZE Biotech`;
 
   const [subject, setSubject] = useState(defaultSubject);
@@ -2213,7 +2211,8 @@ function EmailComposeModal({
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={14}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ fontFamily: '"Times New Roman", Times, serif', fontSize: "12pt" }}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           {error && (
