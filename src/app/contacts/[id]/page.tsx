@@ -610,19 +610,8 @@ function EmailModal({
       });
       const sendJson = await sendRes.json();
       if (!sendJson.ok) throw new Error(sendJson.error || "Email send failed");
-
-      // Log to contact timeline
-      await fetch("/api/notes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: body,
-          noteType: "EMAIL",
-          contactId: contact.id,
-          contactName: contact.name || null,
-        }),
-      }).catch(() => {});
-
+      // The send route now writes the Note (with email metadata) inside
+      // the same transaction — no follow-up /api/notes call needed (#20).
       onSent();
     } catch (e: any) {
       setErr(e.message);
