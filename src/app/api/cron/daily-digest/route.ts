@@ -139,6 +139,96 @@ export async function GET(req: Request) {
       take: 10,
     }).catch(() => []) || [];
 
+    // 6a. Overdue orders — rolling backlog, NOT a delta.
+    //     Same philosophy as tickets: Andrew sees these every morning until
+    //     they're shipped or cancelled. Five stall buckets, hottest first.
+    const now24 = new Date();
+    const dayAgo = (n: number) => new Date(now24.getTime() - n * 86400 * 1000);
+    const [
+      overdueSamples,
+      stuckQuoted,
+      stuckPendingApproval,
+      stuckApproved,
+      stuckProcessing,
+    ] = await Promise.all([
+      // SAMPLE orders created >=7 days ago, not shipped, not cancelled.
+      // This is the Andrew-flagged case: factory orders sample, nothing moves.
+      prisma.fuzeOrder.findMany({
+        where: {
+          orderType: "SAMPLE",
+          shippedDate: null,
+          status: { notIn: ["SHIPPED", "DELIVERED", "CANCELLED"] },
+          createdAt: { lte: dayAgo(7) },
+        },
+        include: {
+          factory: { select: { name: true } },
+          brand: { select: { name: true } },
+          orderedBy: { select: { name: true, email: true } },
+          accountManager: { select: { name: true } },
+        },
+        orderBy: { createdAt: "asc" },
+      }).catch(() => []),
+      // QUOTED > 3 days — factory placed it, quote sitting there, nobody accepted
+      prisma.fuzeOrder.findMany({
+        where: { status: "QUOTED", createdAt: { lte: dayAgo(3) } },
+        include: {
+          factory: { select: { name: true } },
+          brand: { select: { name: true } },
+          orderedBy: { select: { name: true } },
+          accountManager: { select: { name: true } },
+        },
+        orderBy: { createdAt: "asc" },
+      }).catch(() => []),
+      // PENDING_APPROVAL > 2 days — factory accepted quote, nobody approved it
+      prisma.fuzeOrder.findMany({
+        where: {
+          status: "PENDING_APPROVAL",
+          OR: [
+            { quoteAcceptedAt: { lte: dayAgo(2) } },
+            { quoteAcceptedAt: null, createdAt: { lte: dayAgo(2) } },
+          ],
+        },
+        include: {
+          factory: { select: { name: true } },
+          brand: { select: { name: true } },
+          accountManager: { select: { name: true } },
+        },
+        orderBy: { createdAt: "asc" },
+      }).catch(() => []),
+      // APPROVED > 10 days without shipment — fulfillment stalled
+      prisma.fuzeOrder.findMany({
+        where: {
+          status: "APPROVED",
+          shippedDate: null,
+          approvedAt: { lte: dayAgo(10) },
+        },
+        include: {
+          factory: { select: { name: true } },
+          brand: { select: { name: true } },
+          distributor: { select: { name: true } },
+          accountManager: { select: { name: true } },
+        },
+        orderBy: { approvedAt: "asc" },
+      }).catch(() => []),
+      // PROCESSING > 14 days without shipment — production stall
+      prisma.fuzeOrder.findMany({
+        where: {
+          status: "PROCESSING",
+          shippedDate: null,
+          updatedAt: { lte: dayAgo(14) },
+        },
+        include: {
+          factory: { select: { name: true } },
+          brand: { select: { name: true } },
+          distributor: { select: { name: true } },
+        },
+        orderBy: { updatedAt: "asc" },
+      }).catch(() => []),
+    ]);
+    const overdueTotal =
+      overdueSamples.length + stuckQuoted.length + stuckPendingApproval.length +
+      stuckApproved.length + stuckProcessing.length;
+
     // 6b. Support tickets — rolling 24h feed PLUS running backlog counts.
     //     Andrew wants to see this block EVERY morning, not "since I checked."
     //     Source of truth: FeedbackReport table, written by /api/feedback from
@@ -264,6 +354,96 @@ export async function GET(req: Request) {
     <span><strong>${activeOrders}</strong> active orders</span>
   </div>
 </div>`;
+
+    // ── Overdue Orders ──
+    // Always renders counts; only renders detail blocks for non-empty buckets.
+    // Hot-spot block — put it before Support Tickets since orders = $ and
+    // Andrew explicitly flagged sample orders rotting for 2 weeks.
+    {
+      const hasOverdue = overdueTotal > 0;
+      const accent = hasOverdue ? "#b91c1c" : "#94a3b8";
+      const accentSoft = hasOverdue ? "#fca5a5" : "#e2e8f0";
+      const ageDays = (d: Date | null) =>
+        d ? Math.floor((now24.getTime() - new Date(d).getTime()) / 86400000) : 0;
+      const orderRow = (o: any, ageFrom: Date | null, ageLabel: string) => {
+        const age = ageDays(ageFrom);
+        const ageBadge = age >= 21 ? "#991b1b" : age >= 14 ? "#b91c1c" : age >= 7 ? "#c2410c" : "#92400e";
+        const detail = o.volumeLiters ? `${o.volumeLiters}L`
+          : o.hangtagQty ? `${o.hangtagQty} hangtags`
+          : "—";
+        const am = o.accountManager?.name || "<span style='color:#b91c1c;'>no AM</span>";
+        return `
+    <div style="padding:10px 12px;border-bottom:1px solid #f1f5f9;font-size:13px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+        <strong style="color:#0f172a;">${o.orderNumber}</strong>
+        <span style="font-size:10px;font-weight:800;color:white;background:${ageBadge};padding:2px 6px;border-radius:4px;">${age}d ${ageLabel}</span>
+        <span style="font-size:10px;color:#64748b;margin-left:auto;">${o.orderType} · ${detail}</span>
+      </div>
+      <div style="font-size:12px;color:#64748b;">
+        ${o.factory?.name || "?"}${o.brand?.name ? ` · for ${o.brand.name}` : ""} · AM: ${am}
+        ${o.orderedBy?.name ? ` · placed by ${o.orderedBy.name}` : ""}
+      </div>
+      <a href="${baseUrl}/admin/orders?q=${encodeURIComponent(o.orderNumber)}" style="font-size:11px;color:#2563eb;text-decoration:none;">Open order →</a>
+    </div>`;
+      };
+
+      html += `
+<div style="background:white;border-radius:12px;padding:20px;margin-bottom:24px;border:2px solid ${accentSoft};">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <h2 style="margin:0;font-size:16px;font-weight:900;color:${accent};">⏰ Overdue Orders · ${overdueTotal}</h2>
+    <a href="${baseUrl}/admin/orders" style="font-size:12px;color:#2563eb;text-decoration:none;font-weight:700;">Orders board →</a>
+  </div>
+
+  <!-- Stall buckets -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+    <div style="flex:1;min-width:100px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:22px;font-weight:900;color:#991b1b;">${overdueSamples.length}</div>
+      <div style="font-size:10px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:0.5px;">Samples &gt;7d</div>
+    </div>
+    <div style="flex:1;min-width:100px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:22px;font-weight:900;color:#9a3412;">${stuckQuoted.length}</div>
+      <div style="font-size:10px;font-weight:700;color:#9a3412;text-transform:uppercase;letter-spacing:0.5px;">Quoted &gt;3d</div>
+    </div>
+    <div style="flex:1;min-width:100px;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:22px;font-weight:900;color:#92400e;">${stuckPendingApproval.length}</div>
+      <div style="font-size:10px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.5px;">Pending &gt;2d</div>
+    </div>
+    <div style="flex:1;min-width:100px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:22px;font-weight:900;color:#1e40af;">${stuckApproved.length}</div>
+      <div style="font-size:10px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.5px;">Approved &gt;10d</div>
+    </div>
+    <div style="flex:1;min-width:100px;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:22px;font-weight:900;color:#065f46;">${stuckProcessing.length}</div>
+      <div style="font-size:10px;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:0.5px;">Processing &gt;14d</div>
+    </div>
+  </div>`;
+
+      if (overdueSamples.length > 0) {
+        html += `<div style="font-size:11px;font-weight:800;color:#991b1b;text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 6px;">🚨 Sample orders not shipped (${overdueSamples.length})</div>`;
+        for (const o of overdueSamples) html += orderRow(o, o.createdAt, "since placed");
+      }
+      if (stuckQuoted.length > 0) {
+        html += `<div style="font-size:11px;font-weight:800;color:#9a3412;text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 6px;">Quotes not accepted (${stuckQuoted.length})</div>`;
+        for (const o of stuckQuoted) html += orderRow(o, o.createdAt, "since quoted");
+      }
+      if (stuckPendingApproval.length > 0) {
+        html += `<div style="font-size:11px;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 6px;">Awaiting your approval (${stuckPendingApproval.length})</div>`;
+        for (const o of stuckPendingApproval) html += orderRow(o, o.quoteAcceptedAt || o.createdAt, "awaiting");
+      }
+      if (stuckApproved.length > 0) {
+        html += `<div style="font-size:11px;font-weight:800;color:#1e40af;text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 6px;">Approved but not shipped (${stuckApproved.length})</div>`;
+        for (const o of stuckApproved) html += orderRow(o, o.approvedAt, "since approved");
+      }
+      if (stuckProcessing.length > 0) {
+        html += `<div style="font-size:11px;font-weight:800;color:#065f46;text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 6px;">Stuck in production (${stuckProcessing.length})</div>`;
+        for (const o of stuckProcessing) html += orderRow(o, o.updatedAt, "since last update");
+      }
+      if (overdueTotal === 0) {
+        html += `<div style="padding:14px;background:#f8fafc;border-radius:8px;font-size:13px;color:#64748b;text-align:center;">No overdue orders. Ship speed is healthy.</div>`;
+      }
+
+      html += `</div>`;
+    }
 
     // ── Support Tickets ──
     // ALWAYS renders — Andrew wants a daily read of backlog + new, not a delta.

@@ -448,6 +448,26 @@ export async function POST(req: Request) {
           });
         }
       }
+
+      // Always email founders on factory-placed orders. Previously the AM
+      // was the only recipient, so orders from factories without an assigned
+      // AM (or whose AM missed the mail) rotted silently in QUOTED status.
+      // This guarantees the order hits Andrew's inbox the moment it's placed.
+      if (isFactory) {
+        const FOUNDERS = ["andrew@801inc.com", "andrew@fuze47.com"];
+        sendNewOrderEmail({
+          email: FOUNDERS as any, // sendEmail accepts string | string[] at the transport layer
+          managerName: "Andrew",
+          orderNumber: order.orderNumber,
+          orderType: order.orderType,
+          factoryName: order.factory?.name || "Unknown",
+          volumeLiters: order.volumeLiters || undefined,
+          hangtagQty: order.hangtagQty || undefined,
+          totalPrice: order.totalPrice || 0,
+          currency: order.currency,
+          brandName: brandNames,
+        });
+      }
     } catch (notifyErr) {
       console.error("[ORDER] Notification error (non-blocking):", notifyErr);
     }
