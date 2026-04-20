@@ -261,8 +261,18 @@ export async function buildSnapshot(weekOf: Date, lookbackDays = 7): Promise<Wee
     .sort((a, b) => b.noteCount - a.noteCount)
     .slice(0, 10);
 
-  // Customers at risk — lastActivityAt older than 45 days and in live stage
-  const liveStages = ["LEAD", "QUALIFIED", "OPPORTUNITY", "NEGOTIATION", "PRESENTATION"];
+  // Customers at risk — lastActivityAt older than 45 days and in live stage.
+  // Must match the PipelineStage enum exactly or Prisma throws "Invalid `prisma…`".
+  // Live = we're still actively working them. Exclude ARCHIVE (dead), CUSTOMER_WON
+  // (closed), and BRAND_EXPANSION (already scaling, not at-risk).
+  const liveStages = [
+    "LEAD",
+    "PRESENTATION",
+    "BRAND_TESTING",
+    "FACTORY_ONBOARDING",
+    "FACTORY_TESTING",
+    "PRODUCTION",
+  ];
   const fortyFiveDaysAgo = addDays(new Date(), -45);
   const staleBrands = await prisma.brand.findMany({
     where: {
