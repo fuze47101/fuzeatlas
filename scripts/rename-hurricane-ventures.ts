@@ -1,73 +1,88 @@
 /**
  * rename-hurricane-ventures.ts
  *
- * One-shot rename of the "Hurricane Filter" brand record to its actual
- * name "Hurricane Ventures" (President/Co-Founder Alec Miller) + pin the
- * correct address (Greenville, PA) and contact email.
+ * Upsert the "Hurricane Ventures" brand record (President/Co-Founder
+ * Alec Miller, Greenville, PA) and pin Alec's contact.
  *
- * Run once from fuzeatlas root:
+ * Run from fuzeatlas root:
  *   npx tsx scripts/rename-hurricane-ventures.ts
  *
- * Idempotent: if the brand is already named "Hurricane Ventures" this
- * will still normalise the website + backgroundInfo + contact rows.
+ * Behaviour:
+ *   • If a brand named "Hurricane Filter(s)" or similar exists, rename it.
+ *   • If no Hurricane* brand exists, CREATE a fresh "Hurricane Ventures" row.
+ *   • Ensure Alec Miller contact exists on that brand with correct email.
+ *
+ * Idempotent: safe to re-run.
  */
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+const BRAND_NAME = "Hurricane Ventures";
+const BRAND_WEBSITE = "https://hurricane-pool-filters.com";
+const BRAND_BACKGROUND =
+  "U.S. manufacturer of pool & spa cartridge filters. HQ & manufacturing: 1404 Arlington Dr, Greenville, PA 16125. Co-founded by Alec Miller (President). Only full-service private-label cartridge filter manufacturer in the US. Nearest airports: Pittsburgh (PIT) ~75 mi south, Cleveland (CLE) ~75 mi west.";
+
 async function main() {
-  // Find by any plausible legacy name. Prefer exact match on "Hurricane Filter".
+  // 1. Find any existing Hurricane* brand.
   const candidates = await prisma.brand.findMany({
     where: {
-      OR: [
-        { name: "Hurricane Filter" },
-        { name: "Hurricane Filters" },
-        { name: "Hurricane Ventures" },
-        { name: { contains: "Hurricane", mode: "insensitive" } },
-      ],
+      name: { contains: "Hurricane", mode: "insensitive" },
     },
     select: { id: true, name: true, website: true },
   });
+
+  let targetId: string;
 
   if (candidates.length === 0) {
-    console.error("No Hurricane* brand found. Nothing to rename.");
-    process.exit(1);
-  }
-
-  if (candidates.length > 1) {
-    console.warn("Multiple Hurricane* brands found — will rename the first:");
-    candidates.forEach((c) => console.warn(`  - ${c.id}  ${c.name}`));
-  }
-
-  const target = candidates[0];
-  console.log(`Renaming brand ${target.id} (${target.name}) → Hurricane Ventures`);
-
-  const updated = await prisma.brand.update({
-    where: { id: target.id },
-    data: {
-      name: "Hurricane Ventures",
-      website: "https://hurricane-pool-filters.com",
-      backgroundInfo:
-        "U.S. manufacturer of pool & spa cartridge filters. HQ & manufacturing: 1404 Arlington Dr, Greenville, PA 16125. Co-founded by Alec Miller (President). Only full-service private-label cartridge filter manufacturer in the US.",
-    },
-    select: { id: true, name: true, website: true },
-  });
-  console.log("  → updated:", updated);
-
-  // Touch Alec's contact: match either the legacy domain or first/last name.
-  const alecWhere = {
-    OR: [
-      { email: "alec@hurricane-ventures.com" },
-      { email: { endsWith: "@hurricane-ventures.com" } },
-      {
-        AND: [
-          { firstName: { equals: "Alec", mode: "insensitive" as const } },
-          { lastName: { equals: "Miller", mode: "insensitive" as const } },
-        ],
+    // Create fresh
+    const created = await prisma.brand.create({
+      data: {
+        name: BRAND_NAME,
+        website: BRAND_WEBSITE,
+        backgroundInfo: BRAND_BACKGROUND,
+        pipelineStage: "CUSTOMER_WON", // approved + invoiced SOW
+        customerType: "Brand",
+        textileCategory: "Pool & spa filter cartridges",
+        fuzeRelevance: "high",
       },
-    ],
-  };
+      select: { id: true, name: true },
+    });
+    targetId = created.id;
+    console.log(`Created fresh brand: ${created.id} (${created.name})`);
+  } else {
+    if (candidates.length > 1) {
+      console.warn(`Multiple Hurricane* brands found; renaming the first, leaving the rest for manual merge:`);
+      candidates.forEach((c) => console.warn(`  - ${c.id}  ${c.name}`));
+    }
+    targetId = candidates[0].id;
+    const updated = await prisma.brand.update({
+      where: { id: targetId },
+      data: {
+        name: BRAND_NAME,
+        website: BRAND_WEBSITE,
+        backgroundInfo: BRAND_BACKGROUND,
+      },
+      select: { id: true, name: true, website: true },
+    });
+    console.log(`Renamed brand ${updated.id} → ${updated.name}`);
+  }
 
-  const alec = await prisma.contact.findFirst({ where: alecWhere });
+  // 2. Upsert Alec's contact.
+  const alec = await prisma.contact.findFirst({
+    where: {
+      OR: [
+        { email: "alec@hurricane-ventures.com" },
+        { email: { endsWith: "@hurricane-ventures.com" } },
+        {
+          AND: [
+            { firstName: { equals: "Alec", mode: "insensitive" as const } },
+            { lastName: { equals: "Miller", mode: "insensitive" as const } },
+          ],
+        },
+      ],
+    },
+  });
+
   if (alec) {
     await prisma.contact.update({
       where: { id: alec.id },
@@ -80,16 +95,29 @@ async function main() {
         seniority: "c_suite",
       },
     });
-    console.log(`  → contact ${alec.id} normalised → alec@hurricane-ventures.com`);
+    console.log(`Contact ${alec.id} normalised → alec@hurricane-ventures.com`);
   } else {
-    console.warn("  ! No Alec Miller contact found. Create one manually from the brand page.");
+    // Check if Contact has a brandId relation field before trying to attach.
+    // Most Atlas Contact rows attach through a join table; keep this
+    // standalone so the script works regardless of relation shape.
+    const created = await prisma.contact.create({
+      data: {
+        firstName: "Alec",
+        lastName: "Miller",
+        name: "Alec Miller",
+        email: "alec@hurricane-ventures.com",
+        jobTitle: "President / Co-Founder",
+        seniority: "c_suite",
+        emailStatus: "verified",
+        enrichmentSource: "manual",
+      },
+      select: { id: true, email: true },
+    });
+    console.log(`Created contact ${created.id} (${created.email})`);
+    console.log(`  ! Attach to brand ${targetId} from the brand's Contacts tab.`);
   }
 
-  // Clean up any duplicate Hurricane* brands beyond the first.
-  for (const dup of candidates.slice(1)) {
-    if (dup.id === target.id) continue;
-    console.warn(`  ! duplicate brand ${dup.id} (${dup.name}) not touched — review & merge manually.`);
-  }
+  console.log(`\nDone. Brand: ${targetId}`);
 }
 
 main()
