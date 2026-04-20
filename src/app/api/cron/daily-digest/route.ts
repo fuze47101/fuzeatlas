@@ -139,6 +139,33 @@ export async function GET(req: Request) {
       take: 10,
     }).catch(() => []) || [];
 
+    // 6b. Support tickets — rolling 24h feed PLUS running backlog counts.
+    //     Andrew wants to see this block EVERY morning, not "since I checked."
+    //     Source of truth: FeedbackReport table, written by /api/feedback from
+    //     the in-app widget (lab, brand, distributor, factory, admin portals).
+    const newFeedback = await prisma.feedbackReport.findMany({
+      where: { createdAt: { gte: since } },
+      include: { user: { select: { name: true, email: true, role: true } } },
+      orderBy: { createdAt: "desc" },
+    }).catch(() => []);
+
+    // Running backlog — "open" = anything still owed a response.
+    // Exclude FIXED / REJECTED / DUPLICATE / CLOSED.
+    const feedbackBacklog = await prisma.feedbackReport.groupBy({
+      by: ["status"],
+      where: { status: { in: ["NEW", "TRIAGED", "ACCEPTED", "IN_PROGRESS"] } },
+      _count: { _all: true },
+    }).catch(() => []);
+    const backlogByStatus: Record<string, number> = {};
+    for (const row of feedbackBacklog) {
+      backlogByStatus[row.status] = row._count._all;
+    }
+    const openFeedbackTotal =
+      (backlogByStatus.NEW || 0) +
+      (backlogByStatus.TRIAGED || 0) +
+      (backlogByStatus.ACCEPTED || 0) +
+      (backlogByStatus.IN_PROGRESS || 0);
+
     // 7. Key stats
     const totalBrands = await prisma.brand.count({ where: { pipelineStage: { not: "ARCHIVE" } } });
     const enrichedBrands = await prisma.brand.count({
@@ -187,6 +214,10 @@ export async function GET(req: Request) {
     <div style="font-size:28px;font-weight:900;color:#0f172a;">${newContacts.length}</div>
     <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;">New Contacts</div>
   </div>
+  <div style="flex:1;background:white;border-radius:12px;padding:16px;text-align:center;border:2px solid ${openFeedbackTotal > 0 ? "#fca5a5" : "#e2e8f0"};">
+    <div style="font-size:28px;font-weight:900;color:${openFeedbackTotal > 0 ? "#b91c1c" : "#0f172a"};">${openFeedbackTotal}</div>
+    <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;">Open Tickets${newFeedback.length > 0 ? ` · +${newFeedback.length}` : ""}</div>
+  </div>
 </div>
 
 <!-- Daily Sales (booked + shipped) -->
@@ -233,6 +264,90 @@ export async function GET(req: Request) {
     <span><strong>${activeOrders}</strong> active orders</span>
   </div>
 </div>`;
+
+    // ── Support Tickets ──
+    // ALWAYS renders — Andrew wants a daily read of backlog + new, not a delta.
+    // Red accent only when there's an open backlog or a new ticket overnight.
+    {
+      const hasActivity = newFeedback.length > 0 || openFeedbackTotal > 0;
+      const accent = hasActivity ? "#dc2626" : "#94a3b8";
+      const accentSoft = hasActivity ? "#fecaca" : "#e2e8f0";
+      const categoryIcons: Record<string, string> = {
+        PROBLEM: "⚠️", CONFUSING: "❓", MISSING: "➕", SUGGESTION: "💡",
+        BROKEN_LINK: "🔗", ERROR: "🛑", OTHER: "📝",
+      };
+
+      html += `
+<div style="background:white;border-radius:12px;padding:20px;margin-bottom:24px;border:2px solid ${accentSoft};">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <h2 style="margin:0;font-size:16px;font-weight:900;color:${accent};">🎫 Support Tickets</h2>
+    <a href="${baseUrl}/admin/feedback" style="font-size:12px;color:#2563eb;text-decoration:none;font-weight:700;">Triage queue →</a>
+  </div>
+
+  <!-- Backlog pills -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+    <div style="flex:1;min-width:110px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:22px;font-weight:900;color:#991b1b;">${backlogByStatus.NEW || 0}</div>
+      <div style="font-size:10px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:0.5px;">New</div>
+    </div>
+    <div style="flex:1;min-width:110px;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:22px;font-weight:900;color:#92400e;">${backlogByStatus.TRIAGED || 0}</div>
+      <div style="font-size:10px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.5px;">Triaged</div>
+    </div>
+    <div style="flex:1;min-width:110px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:22px;font-weight:900;color:#1e40af;">${backlogByStatus.ACCEPTED || 0}</div>
+      <div style="font-size:10px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.5px;">Accepted</div>
+    </div>
+    <div style="flex:1;min-width:110px;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:22px;font-weight:900;color:#065f46;">${backlogByStatus.IN_PROGRESS || 0}</div>
+      <div style="font-size:10px;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:0.5px;">In Progress</div>
+    </div>
+  </div>
+
+  <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+    Submitted last 24h · ${newFeedback.length}
+  </div>`;
+
+      if (newFeedback.length === 0) {
+        html += `
+  <div style="padding:14px;background:#f8fafc;border-radius:8px;font-size:13px;color:#64748b;text-align:center;">
+    No new tickets in the last 24 hours.
+  </div>`;
+      } else {
+        for (const fb of newFeedback) {
+          const icon = categoryIcons[fb.category] || "📝";
+          const submitter = fb.user?.name || fb.userName || fb.userEmail || "Anonymous";
+          const role = fb.user?.role || fb.userRole || "";
+          const portal = fb.portal || "—";
+          const createdStr = new Date(fb.createdAt).toLocaleString("en-US", {
+            month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+          });
+          const title = (fb.title || "").slice(0, 120);
+          const desc = fb.description || "";
+          const descPreview = desc.length > 220 ? desc.slice(0, 220) + "…" : desc;
+
+          html += `
+  <div style="padding:14px;margin-bottom:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
+      <span style="font-size:16px;">${icon}</span>
+      <strong style="font-size:13px;color:#0f172a;flex:1;">${title}</strong>
+      <span style="font-size:10px;font-weight:700;color:#92400e;background:#fde68a;padding:2px 8px;border-radius:4px;text-transform:uppercase;">${fb.category}</span>
+    </div>
+    <div style="font-size:12px;color:#64748b;margin-bottom:8px;">
+      <strong>${submitter}</strong>${role ? ` <span style="font-size:10px;color:#94a3b8;">(${role})</span>` : ""} · <span style="color:#0891a2;">${portal}</span> · ${createdStr}
+    </div>
+    <div style="font-size:13px;color:#334155;line-height:1.5;margin-bottom:8px;white-space:pre-wrap;">${descPreview}</div>
+    <div style="display:flex;gap:12px;font-size:11px;">
+      ${fb.url ? `<span style="color:#94a3b8;">📍 ${fb.url.replace(/^https?:\/\//, "").slice(0, 60)}</span>` : ""}
+      ${fb.screenshotUrl ? `<a href="${fb.screenshotUrl}" style="color:#2563eb;text-decoration:none;font-weight:700;">📷 Screenshot</a>` : ""}
+      <a href="${baseUrl}/admin/feedback?ticket=${fb.id}" style="color:#2563eb;text-decoration:none;font-weight:700;margin-left:auto;">Open ticket →</a>
+    </div>
+  </div>`;
+        }
+      }
+
+      html += `</div>`;
+    }
 
     // ── CRM Activity Section ──
     if (notes.length > 0) {
@@ -329,7 +444,16 @@ export async function GET(req: Request) {
     }
 
     // ── Zero Activity Alert ──
-    if (notes.length === 0 && newOrders.length === 0 && outreachChecks.length === 0) {
+    // Don't suppress the "quiet yesterday" banner just because a ticket came
+    // in — tickets get their own panel. But also don't show this banner if
+    // there's an open backlog worth Andrew's attention.
+    if (
+      notes.length === 0 &&
+      newOrders.length === 0 &&
+      outreachChecks.length === 0 &&
+      newFeedback.length === 0 &&
+      openFeedbackTotal === 0
+    ) {
       html += `
 <div style="background:#fef2f2;border-radius:12px;padding:24px;margin-bottom:24px;border:2px solid #fecaca;text-align:center;">
   <div style="font-size:32px;margin-bottom:8px;">🔇</div>
@@ -356,9 +480,14 @@ export async function GET(req: Request) {
       : bookedTotals.liters > 0
         ? `${fmtNum(bookedTotals.liters)}L booked`
         : `${newOrders.length} orders`;
+    const ticketTag = newFeedback.length > 0
+      ? `, ${newFeedback.length} new ticket${newFeedback.length === 1 ? "" : "s"}`
+      : openFeedbackTotal > 0
+        ? `, ${openFeedbackTotal} open ticket${openFeedbackTotal === 1 ? "" : "s"}`
+        : "";
     const result = await sendEmail({
       to: DIGEST_RECIPIENTS,
-      subject: `FUZE Daily Digest — ${subjectSales}, ${notes.length} activities, ${outreachChecks.length} outreach`,
+      subject: `FUZE Daily Digest — ${subjectSales}, ${notes.length} activities, ${outreachChecks.length} outreach${ticketTag}`,
       html,
     });
 
@@ -376,6 +505,9 @@ export async function GET(req: Request) {
         bookedKg: bookedTotals.kg,
         shippedLiters: shippedTotals.liters,
         shippedKg: shippedTotals.kg,
+        newFeedback: newFeedback.length,
+        openFeedback: openFeedbackTotal,
+        feedbackBacklog: backlogByStatus,
       },
     });
   } catch (e: any) {
