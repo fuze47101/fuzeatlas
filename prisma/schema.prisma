@@ -215,6 +215,12 @@ model User {
   outreachChecks   ContactOutreach[]    @relation("UserOutreach")
   entityManagers   EntityManager[]      @relation("UserEntityManagers")
   feedbackReports  FeedbackReport[]     @relation("FeedbackSubmitter")
+
+  // Weekly Exec Review (gated dashboard — see WeeklyExecReport)
+  ownedWeeklyReports   WeeklyExecReport[]      @relation("WeeklyReportOwner")
+  grantedReportShares  WeeklyExecReportShare[] @relation("WeeklyShareGrantor")
+  receivedReportShares WeeklyExecReportShare[] @relation("WeeklyShareRecipient")
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -1269,12 +1275,20 @@ model Note {
   emailCc        String?
   emailMessageId String?  @unique
 
+  // Optional link back to a Weekly Exec Review — when a note is captured
+  // inline from the /admin/weekly-review dashboard, we stamp this FK so
+  // the appendix can show exactly which notes were authored during review.
+  // The note still lives on its brand/factory/contact normally.
+  weeklyReportId String?
+  weeklyReport   WeeklyExecReport? @relation(fields: [weeklyReportId], references: [id])
+
   createdAt DateTime @default(now())
 
   @@index([brandId])
   @@index([factoryId])
   @@index([contactId])
   @@index([date])
+  @@index([weeklyReportId])
 }
 
 // ─────────────────────────────────────────────
@@ -2825,4 +2839,86 @@ enum FeedbackStatus {
   REJECTED      // wont fix / not a bug
   DUPLICATE     // merged into another report
   CLOSED
+}
+
+// ─────────────────────────────────────────────
+// WEEKLY EXEC REVIEW
+// ─────────────────────────────────────────────
+// A persisted weekly snapshot for the Monday exec meeting. One row per
+// week, keyed by the Monday of the week in UTC (weekOf). The snapshot
+// column holds the fully-computed report payload (KPIs, lists, stage
+// waterfall) so the dashboard renders instantly and historical weeks
+// stay frozen even as underlying records change.
+//
+// Access model:
+//   • ownedById — the user who owns the report (initially Andrew).
+//   • shares    — explicit per-user grants via WeeklyExecReportShare.
+//   • ADMINs    — always allowed (emergency override, audit-logged).
+//
+// Notes authored inline during review can optionally back-link via
+// Note.weeklyReportId so the appendix shows the review's paper trail.
+
+model WeeklyExecReport {
+  id String @id @default(cuid())
+
+  // Monday 00:00 UTC for the covered week. For the first "2-week backfill"
+  // run we still file the report under the most recent Monday and include
+  // the prior week inside the snapshot.
+  weekOf   DateTime @unique
+  // Optional lookback override — when > 7 days, the snapshot's period
+  // starts at (weekOf - lookbackDays) instead of the prior Monday.
+  lookbackDays Int @default(7)
+
+  // Fully computed report payload. Shape lives in
+  // src/lib/weekly-review/types.ts — never read fields directly from
+  // the DB, always go through the typed helpers.
+  snapshot Json
+
+  // When the snapshot was last regenerated. Regeneration is explicit
+  // (user hits "Refresh") to keep historical weeks pinned.
+  generatedAt DateTime @default(now())
+
+  // Optional exec summary authored by the owner at review time.
+  execNote String? @db.Text
+
+  // Lifecycle — DRAFT → IN_REVIEW → REVIEWED → ARCHIVED. Drives the
+  // "Present" affordance and which weeks show up in the left rail.
+  status String @default("DRAFT")
+
+  ownedById String
+  ownedBy   User   @relation("WeeklyReportOwner", fields: [ownedById], references: [id])
+
+  shares WeeklyExecReportShare[]
+  notes  Note[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownedById])
+  @@index([status])
+  @@index([weekOf])
+}
+
+// Per-user grant to view/comment on a specific weekly report.
+// scope = "FULL"   → can read everything on the page.
+// scope = "KPI"    → reserved for later; read KPI tiles only.
+model WeeklyExecReportShare {
+  id String @id @default(cuid())
+
+  reportId String
+  report   WeeklyExecReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation("WeeklyShareRecipient", fields: [userId], references: [id])
+
+  grantedById String
+  grantedBy   User   @relation("WeeklyShareGrantor", fields: [grantedById], references: [id])
+
+  scope     String   @default("FULL")
+  grantedAt DateTime @default(now())
+
+  @@unique([reportId, userId])
+  @@index([userId])
+  @@index([reportId])
+}
 }

@@ -146,6 +146,7 @@ export const MODULES: ModuleDef[] = [
       { label: "SOWs", href: "/sow", icon: "📄" },
       { label: "Meetings", href: "/meetings", icon: "📅" },
       { label: "Weekly Summary", href: "/reports", icon: "📈" },
+      { label: "Weekly Exec Review", href: "/admin/weekly-review", icon: "📊", adminOnly: true },
       { label: "Market Landscape", href: "/admin/competitor-pricing", icon: "📊" },
       { label: "Pricing & Environment", href: "/pricing", icon: "💰" },
       { label: "Application Calculator", href: "/pricing/calculator", icon: "🧮" },
