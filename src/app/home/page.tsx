@@ -88,12 +88,14 @@ export default function HomePage() {
       <div className="mt-10 pt-6 border-t border-slate-200">
         <p className="text-xs font-bold uppercase text-slate-400 tracking-wide mb-3">{t.home.quickJump}</p>
         <div className="flex flex-wrap gap-2">
+          <Link href="/admin/bd/wizard" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">🪄 BD Wizard</Link>
           <Link href="/dashboard" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">📊 KPI Dashboard</Link>
           <Link href="/admin/orders-dashboard" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">📦 Orders</Link>
           <Link href="/admin/brand-pipeline" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">🔥 Pipeline</Link>
           <Link href="/admin/icp-sample-prep" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">⚖️ ICP Sample Prep</Link>
           <Link href="/notifications" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">🔔 Notifications</Link>
           <Link href="/compliance-library" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">📋 Documents</Link>
+          <Link href="/settings/profile" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">👤 My Profile</Link>
         </div>
       </div>
     </div>

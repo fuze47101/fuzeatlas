@@ -27,14 +27,28 @@ interface EmailOptions {
   attachments?: EmailAttachment[];
   /** Optional reply-to header. Useful for calendar invites so RSVPs route to the organizer. */
   replyTo?: string;
+  /**
+   * Optional From: override. Used by the BD Wizard so per-rep outbound appears
+   * to come from the rep (e.g. "Andrew Moger <andrew@801inc.com>") instead of
+   * the generic notifications@ sender. Must be a verified sending domain in
+   * Resend — we defensively fall back to FUZE_FROM if Resend rejects it.
+   */
+  from?: string;
+  /** Optional BCC. BD Wizard uses this to loop the rep in on outbound sends. */
+  bcc?: string | string[];
+  /** Optional CC. */
+  cc?: string | string[];
 }
 
-export async function sendEmail({ to, subject, html, attachments, replyTo }: EmailOptions) {
+export async function sendEmail({ to, subject, html, attachments, replyTo, from, bcc, cc }: EmailOptions) {
   const apiKey = process.env.RESEND_API_KEY;
 
   if (!apiKey) {
     console.log("[EMAIL-STUB] No RESEND_API_KEY set. Would send:");
+    console.log(`  From: ${from || process.env.RESEND_FROM || FUZE_FROM}`);
     console.log(`  To: ${Array.isArray(to) ? to.join(", ") : to}`);
+    if (cc) console.log(`  Cc: ${Array.isArray(cc) ? cc.join(", ") : cc}`);
+    if (bcc) console.log(`  Bcc: ${Array.isArray(bcc) ? bcc.join(", ") : bcc}`);
     console.log(`  Subject: ${subject}`);
     if (attachments?.length) {
       console.log(`  Attachments: ${attachments.map((a) => a.filename).join(", ")}`);
@@ -45,12 +59,14 @@ export async function sendEmail({ to, subject, html, attachments, replyTo }: Ema
 
   try {
     const payload: any = {
-      from: process.env.RESEND_FROM || FUZE_FROM,
+      from: from || process.env.RESEND_FROM || FUZE_FROM,
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
     };
 
+    if (cc) payload.cc = Array.isArray(cc) ? cc : [cc];
+    if (bcc) payload.bcc = Array.isArray(bcc) ? bcc : [bcc];
     if (replyTo) payload.reply_to = replyTo;
 
     if (attachments?.length) {

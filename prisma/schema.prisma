@@ -182,6 +182,19 @@ model User {
   // Admins always can (enforced in code). Everyone else needs canClaim = true.
   canClaim Boolean @default(false)
 
+  // BD Wizard — the From: address we use when this rep sends outbound via
+  // the wizard. Null = fall back to the user's Atlas login email. Reps
+  // set this on /settings/profile so they can separate "my Atlas account"
+  // from "the inbox where replies should land." E.g. andrew@801inc.com
+  // is the login but andrew@fuze47.com is the outbound.
+  outboundFromEmail String?
+  // Name shown on outbound. Defaults to the user's `name` if null.
+  outboundFromName  String?
+  // Optional email signature block (HTML-safe text) appended to every
+  // wizard-sent outbound. Reps paste their own signature here once;
+  // it flows through to every cold email.
+  outboundSignature String?
+
   salesManagerId String?
   salesManager   User?   @relation("SalesManagerReps", fields: [salesManagerId], references: [id])
   managedReps    User[]  @relation("SalesManagerReps")

@@ -50,6 +50,9 @@ export const MODULES: ModuleDef[] = [
     blurb: "Leads, accounts, outreach, revenue",
     landing: "/admin/brand-pipeline",
     items: [
+      // Wizard is the guided default entry point now (2026-04-20 overhaul).
+      // Pipeline is still here for power users who want the bulk view.
+      { label: "BD Wizard", href: "/admin/bd/wizard", icon: "🪄" },
       { label: "Brand Pipeline (Leads)", href: "/admin/brand-pipeline", icon: "🔥" },
       { label: "Accounts", href: "/admin/accounts", icon: "⭐" },
       { label: "Brand Intelligence", href: "/admin/brand-discovery", icon: "🌎" },
@@ -189,6 +192,9 @@ export const MODULES: ModuleDef[] = [
     landing: "/settings/users",
     adminOnly: true,
     items: [
+      // My Profile is open to everyone (sidebar guards adminOnly per-item),
+      // but it lives here so admins discover it next to user management.
+      { label: "My Profile", href: "/settings/profile", icon: "👤" },
       { label: "Notifications", href: "/notifications", icon: "🔔" },
       { label: "User Management", href: "/settings/users", icon: "👥" },
       {
