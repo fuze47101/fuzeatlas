@@ -21,6 +21,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (body.email) update.email = body.email.toLowerCase().trim();
     if (typeof body.canClaim === "boolean") update.canClaim = body.canClaim;
 
+    // Entity assignment — partially addresses task #73 (role-change flow).
+    // Pass `null` to explicitly clear an assignment.
+    if ("factoryId" in body) update.factoryId = body.factoryId || null;
+    if ("brandId" in body) update.brandId = body.brandId || null;
+    if ("distributorId" in body) update.distributorId = body.distributorId || null;
+    if ("labId" in body) update.labId = body.labId || null;
+
     if (body.password) {
       if (body.password.length < 6) {
         return NextResponse.json({ ok: false, error: "Password must be at least 6 characters" }, { status: 400 });
