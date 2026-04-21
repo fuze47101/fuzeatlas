@@ -60,6 +60,29 @@ export const MODULES: ModuleDef[] = [
   },
 
   // ═══════════════════════════════════════════════════════════════
+  // ACM — Atlas Customer Management. This is the CRM rebrand, and it's
+  // the post-BD relationship surface: accounts we already sourced, tasks
+  // owed to them, contacts we've engaged, meetings on the books. Sits
+  // right after Business Development intentionally — BD sources, ACM
+  // holds. Bright blue-cyan gradient so it reads as a primary module,
+  // not an afterthought.
+  {
+    key: "acm",
+    label: "ACM",
+    icon: "🤝",
+    accent: "from-sky-500 to-cyan-600",
+    sidebarAccent: "text-sky-400",
+    blurb: "Atlas Customer Management — tasks, contacts, meetings",
+    landing: "/acm/tasks",
+    items: [
+      { label: "My Tasks", href: "/acm/tasks", icon: "🗓️" },
+      { label: "Accounts", href: "/admin/accounts", icon: "⭐" },
+      { label: "Meetings", href: "/meetings", icon: "📅" },
+      { label: "Brand Directory", href: "/brands", icon: "👕" },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════
   {
     key: "operations",
     label: "Operations",

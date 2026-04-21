@@ -2,9 +2,9 @@
 "use client";
 
 /**
- * Dashboard widget — shows the logged-in user's next 5-7 OPEN CRM tasks,
+ * Dashboard widget — shows the logged-in user's next 5-7 OPEN ACM tasks,
  * sorted by due-date ascending. Overdue items get a red stripe. One-click
- * complete without leaving the dashboard. "See all" links to /crm/tasks.
+ * complete without leaving the dashboard. "See all" links to /acm/tasks.
  *
  * Drop onto any dashboard like:
  *   <MyTasksPanel />
@@ -36,7 +36,7 @@ export default function MyTasksPanel({ limit = 6 }: { limit?: number }) {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/crm/tasks?status=OPEN&mine=true&take=${limit * 2}`);
+        const res = await fetch(`/api/acm/tasks?status=OPEN&mine=true&take=${limit * 2}`);
         const j = await res.json();
         if (!j.ok) throw new Error(j.error);
         if (!cancelled) {
@@ -61,7 +61,7 @@ export default function MyTasksPanel({ limit = 6 }: { limit?: number }) {
   const complete = async (id: string) => {
     setBusyId(id);
     try {
-      await fetch(`/api/crm/tasks/${id}`, {
+      await fetch(`/api/acm/tasks/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "complete" }),
@@ -77,7 +77,7 @@ export default function MyTasksPanel({ limit = 6 }: { limit?: number }) {
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide">🗓️ My Tasks</h3>
         <Link
-          href="/crm/tasks"
+          href="/acm/tasks"
           className="text-xs text-[#00b4c3] hover:text-[#009ba8] font-semibold"
         >
           See all →

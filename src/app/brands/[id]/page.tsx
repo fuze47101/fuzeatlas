@@ -489,26 +489,45 @@ export default function BrandDetailPage() {
         </div>
       </div>
 
-      {/* Stats row */}
+      {/* Stats row — every card is a click-to-tab shortcut. Previously
+          these were <div> elements with no onClick, which is what Andrew
+          flagged as "dead cards that don't link anywhere." */}
       <div className="grid grid-cols-4 sm:grid-cols-7 gap-3 mb-6">
-        {[
-          [t.brandTabs.products, c.products, "📦"],
-          [t.brandTabs.fabrics, c.fabrics, "🧵"],
-          [t.brandTabs.submissions, c.submissions, "📋"],
-          [t.brands.factories, c.factories, "🏭"],
-          [t.brandTabs.contacts, c.contacts, "👤"],
-          [t.brandTabs.sows, c.sows, "📄"],
-          [t.brandTabs.notes || "Notes", c.notes, "📝"],
-        ].map(([label, count, icon]) => (
-          <div
-            key={label as string}
-            className="bg-white rounded-xl p-3 shadow-sm border text-center"
-          >
-            <div className="text-lg">{icon}</div>
-            <div className="text-xl font-black text-slate-900">{(count as number) || 0}</div>
-            <div className="text-xs text-slate-500">{label}</div>
-          </div>
-        ))}
+        {(
+          [
+            [t.brandTabs.products, c.products, "📦", "products"],
+            [t.brandTabs.fabrics, c.fabrics, "🧵", "fabrics"],
+            [t.brandTabs.submissions, c.submissions, "📋", "submissions"],
+            [t.brands.factories, c.factories, "🏭", "factories"],
+            [t.brandTabs.contacts, c.contacts, "👤", "contacts"],
+            [t.brandTabs.sows, c.sows, "📄", "sows"],
+            [t.brandTabs.notes || "Notes", c.notes, "📝", "activity"],
+          ] as const
+        ).map(([label, count, icon, targetTab]) => {
+          const isActive = tab === targetTab;
+          return (
+            <button
+              key={label as string}
+              onClick={() => {
+                setTab(targetTab as typeof tab);
+                // gentle scroll so the tab's contents swim into view
+                if (typeof window !== "undefined") {
+                  requestAnimationFrame(() => {
+                    const el = document.getElementById("brand-tab-content");
+                    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  });
+                }
+              }}
+              className={`bg-white rounded-xl p-3 shadow-sm border text-center transition-all hover:border-blue-500 hover:shadow-md cursor-pointer ${
+                isActive ? "border-blue-600 ring-2 ring-blue-100" : ""
+              }`}
+            >
+              <div className="text-lg">{icon}</div>
+              <div className="text-xl font-black text-slate-900">{(count as number) || 0}</div>
+              <div className="text-xs text-slate-500">{label}</div>
+            </button>
+          );
+        })}
       </div>
 
       {/* Tabs */}
@@ -529,7 +548,7 @@ export default function BrandDetailPage() {
         ).map((tabKey) => {
           const tabLabels: Record<string, string> = {
             details: t.brandTabs.details,
-            activity: "CRM",
+            activity: "ACM",
             contacts: t.brandTabs.contacts,
             products: t.brandTabs.products,
             fabrics: t.brandTabs.fabrics,
@@ -551,6 +570,7 @@ export default function BrandDetailPage() {
         })}
       </div>
 
+      <div id="brand-tab-content" />
       {/* ── Details Tab ── */}
       {tab === "details" && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">

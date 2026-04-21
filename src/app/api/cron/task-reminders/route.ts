@@ -112,7 +112,7 @@ async function fireReminder(task: any, stage: "week" | "day") {
       : `Task due tomorrow: ${task.title}${brandLabel}`;
   const message = `${dueTxt}${task.notes ? `\n\n${task.notes.slice(0, 240)}` : ""}`;
 
-  const link = task.brandId ? `/brands/${task.brandId}` : `/crm/tasks`;
+  const link = task.brandId ? `/brands/${task.brandId}` : `/acm/tasks`;
 
   // In-app bell
   await pushCustomNotification(task.ownerId, "TASK_REMINDER", title, message, link, {
@@ -181,7 +181,7 @@ function buildTaskEmailHtml(params: {
     timeZoneName: "short",
   }).format(new Date(dueAt));
 
-  const link = brandId ? `${baseUrl}/brands/${brandId}` : `${baseUrl}/crm/tasks`;
+  const link = brandId ? `${baseUrl}/brands/${brandId}` : `${baseUrl}/acm/tasks`;
 
   return `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
