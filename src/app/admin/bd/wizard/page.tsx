@@ -172,16 +172,21 @@ export default function BDWizardPage() {
       setIsFollowUp(false);
 
       // If a specific contact was requested and exists on this brand, lock
-      // to it and skip the contact-pick step.
+      // to it so the wizard pre-selects them. But still route through the
+      // "pick" step when the brand hasn't been enriched yet — the enrichment
+      // CTA only lives on that step, and a deep-linked cold brand would
+      // otherwise go straight to draft generation with no research, yielding
+      // generic copy. If research is already cached, skip ahead as intended.
+      const hasResearch = Boolean(data.brand.researchData);
       if (contactId) {
         const match = (data.brand.contacts || []).find((c: any) => c.id === contactId);
         if (match) {
           setSelectedContactId(contactId);
-          setStep("customize");
+          setStep(hasResearch ? "customize" : "pick");
           return;
         }
       }
-      setStep("contact");
+      setStep(hasResearch ? "contact" : "pick");
     } catch (e: any) {
       setError(e?.message || "Failed to load brand");
     } finally {
@@ -286,10 +291,20 @@ export default function BDWizardPage() {
         setError(data.error || "Enrichment failed");
         return;
       }
-      // Reload the brand to pick up researchData
-      const refreshed = await fetch(`/api/admin/bd/wizard/next-brand?skip=__refresh__&preview=1`); // not ideal but cheap: re-fetch by skipping nothing special; fall back to the same brand
-      // Better: re-fetch the specific brand we have open.
-      // For now, just mark researchData present so the UI unblocks.
+      // Reload the brand from the wizard's own endpoint so we pick up the
+      // fresh researchData + researchDate the enrichment call persisted,
+      // plus any contact fields that may have been updated during discovery.
+      try {
+        const refreshed = await fetch(`/api/admin/bd/wizard/brand/${encodeURIComponent(brand.id)}`);
+        const refreshedData = await refreshed.json();
+        if (refreshed.ok && refreshedData.ok && refreshedData.brand) {
+          setBrand(refreshedData.brand);
+          return;
+        }
+      } catch {
+        // Fall through to the optimistic patch below if the refetch fails
+      }
+      // Fallback: optimistic merge so the UI at least unblocks.
       setBrand((b) => (b ? { ...b, researchData: data.research || b.researchData || {} } : b));
     } catch (e: any) {
       setError(e?.message || "Enrichment failed");
@@ -769,7 +784,30 @@ function ContactStep({
 
       <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
         {brand.contacts.length === 0 ? (
-          <div className="text-sm text-slate-500 py-4 text-center">No contacts.</div>
+          <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5 text-center">
+            <div className="text-3xl mb-2">👻</div>
+            <div className="text-sm font-semibold text-slate-700 mb-1">
+              No contacts on this brand yet
+            </div>
+            <div className="text-xs text-slate-500 max-w-sm mx-auto mb-3">
+              The wizard needs at least one contact to email. Add a contact on the brand page, or
+              skip to the next brand in the queue.
+            </div>
+            <div className="flex gap-2 justify-center">
+              <Link
+                href={`/brands/${brand.id}`}
+                className="px-3 py-1.5 rounded-lg bg-sky-600 text-white text-xs font-medium hover:bg-sky-700"
+              >
+                Open brand page
+              </Link>
+              <button
+                onClick={onBack}
+                className="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs hover:bg-white"
+              >
+                ← Back
+              </button>
+            </div>
+          </div>
         ) : (
           brand.contacts.map((c) => {
             const isSelected = c.id === selectedContactId;

@@ -70,7 +70,8 @@ export async function POST(req: Request) {
       sessionUser.role === "ADMIN" ||
       sessionUser.role === "EMPLOYEE" ||
       sessionUser.role === "SALES_MANAGER" ||
-      sessionUser.role === "SALES_REP";
+      sessionUser.role === "SALES_REP" ||
+      sessionUser.role === "BD_REP";
     if (!isBDEligible) {
       return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
     }
