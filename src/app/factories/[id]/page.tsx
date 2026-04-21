@@ -23,7 +23,16 @@ export default function FactoryDetailPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState<any>({});
-  const [tab, setTab] = useState<"details"|"discovery"|"activity"|"brands"|"fabrics"|"submissions"|"tests"|"contacts">("details");
+  const [tab, setTab] = useState<
+    | "details"
+    | "discovery"
+    | "activity"
+    | "brands"
+    | "fabrics"
+    | "submissions"
+    | "tests"
+    | "contacts"
+  >("details");
   const [users, setUsers] = useState<any[]>([]);
   // Tests state
   const [testRuns, setTestRuns] = useState<any[]>([]);
@@ -41,42 +50,85 @@ export default function FactoryDetailPage() {
   const [adminCode, setAdminCode] = useState("");
 
   useEffect(() => {
-    fetch(`/api/factories/${id}`).then(r => r.json()).then(j => {
-      if (j.ok) {
-        setFactory(j.factory);
-        const f = j.factory;
-        setForm({
-          name: f.name || "", chineseName: f.chineseName || "", millType: f.millType || "",
-          specialty: f.specialty || "", purchasing: f.purchasing || "", annualSales: f.annualSales || "",
-          address: f.address || "", city: f.city || "", state: f.state || "",
-          country: f.country || "", secondaryCountry: f.secondaryCountry || "",
-          development: f.development || "", customerType: f.customerType || "", brandNominated: f.brandNominated || "",
-          salesRepId: f.salesRepId || "",
-        });
-      }
-    }).finally(() => setLoading(false));
+    fetch(`/api/factories/${id}`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok) {
+          setFactory(j.factory);
+          const f = j.factory;
+          setForm({
+            name: f.name || "",
+            chineseName: f.chineseName || "",
+            millType: f.millType || "",
+            specialty: f.specialty || "",
+            purchasing: f.purchasing || "",
+            annualSales: f.annualSales || "",
+            address: f.address || "",
+            city: f.city || "",
+            state: f.state || "",
+            country: f.country || "",
+            secondaryCountry: f.secondaryCountry || "",
+            development: f.development || "",
+            customerType: f.customerType || "",
+            brandNominated: f.brandNominated || "",
+            salesRepId: f.salesRepId || "",
+          });
+        }
+      })
+      .finally(() => setLoading(false));
 
-    fetch("/api/users").then(r => r.json()).then(j => { if (j.ok) setUsers(j.users); }).catch(() => {});
+    fetch("/api/users")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok) setUsers(j.users);
+      })
+      .catch(() => {});
   }, [id]);
 
   const handleSave = async () => {
-    setSaving(true); setError(""); setSuccess("");
+    setSaving(true);
+    setError("");
+    setSuccess("");
     try {
-      const res = await fetch(`/api/factories/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      const res = await fetch(`/api/factories/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
       const j = await res.json();
-      if (j.ok) { setFactory({ ...factory, ...j.factory }); setEditing(false); setSuccess(t.factories.factoryUpdated); setTimeout(() => setSuccess(""), 3000); }
-      else setError(j.error);
-    } catch (e: any) { setError(e.message); } finally { setSaving(false); }
+      if (j.ok) {
+        setFactory({ ...factory, ...j.factory });
+        setEditing(false);
+        setSuccess(t.factories.factoryUpdated);
+        setTimeout(() => setSuccess(""), 3000);
+      } else setError(j.error);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async () => {
-    setDeleting(true); setError("");
+    setDeleting(true);
+    setError("");
     try {
-      const res = await fetch(`/api/factories/${id}?code=${encodeURIComponent(adminCode)}`, { method: "DELETE" });
+      const res = await fetch(`/api/factories/${id}?code=${encodeURIComponent(adminCode)}`, {
+        method: "DELETE",
+      });
       const j = await res.json();
-      if (j.ok) { router.push("/factories"); }
-      else { setError(j.error || "Failed to delete factory"); setShowDeleteConfirm(false); }
-    } catch (e: any) { setError(e.message); setShowDeleteConfirm(false); } finally { setDeleting(false); }
+      if (j.ok) {
+        router.push("/factories");
+      } else {
+        setError(j.error || "Failed to delete factory");
+        setShowDeleteConfirm(false);
+      }
+    } catch (e: any) {
+      setError(e.message);
+      setShowDeleteConfirm(false);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const loadTests = async () => {
@@ -85,7 +137,10 @@ export default function FactoryDetailPage() {
       const res = await fetch(`/api/tests/by-entity?factoryId=${id}`);
       const j = await res.json();
       if (j.ok) setTestRuns(j.testRuns);
-    } catch {} finally { setTestsLoading(false); }
+    } catch {
+    } finally {
+      setTestsLoading(false);
+    }
   };
 
   const loadBrands = async () => {
@@ -105,13 +160,24 @@ export default function FactoryDetailPage() {
   const handleLinkBrand = async () => {
     if (!linkBrandId) return;
     try {
-      const res = await fetch("/api/brand-factory", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ brandId: linkBrandId, factoryId: id }) });
+      const res = await fetch("/api/brand-factory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ brandId: linkBrandId, factoryId: id }),
+      });
       const j = await res.json();
       if (j.ok) {
-        setFactory({ ...factory, brands: [...factory.brands, j.link], _count: { ...factory._count, brands: factory._count.brands + 1 } });
-        setShowLinkBrand(false); setLinkBrandId("");
+        setFactory({
+          ...factory,
+          brands: [...factory.brands, j.link],
+          _count: { ...factory._count, brands: factory._count.brands + 1 },
+        });
+        setShowLinkBrand(false);
+        setLinkBrandId("");
       } else setError(j.error);
-    } catch (e: any) { setError(e.message); }
+    } catch (e: any) {
+      setError(e.message);
+    }
   };
 
   const handleUnlinkBrand = async (linkId: string) => {
@@ -120,13 +186,29 @@ export default function FactoryDetailPage() {
       const res = await fetch(`/api/brand-factory?id=${linkId}`, { method: "DELETE" });
       const j = await res.json();
       if (j.ok) {
-        setFactory({ ...factory, brands: factory.brands.filter((bf: any) => bf.id !== linkId), _count: { ...factory._count, brands: factory._count.brands - 1 } });
+        setFactory({
+          ...factory,
+          brands: factory.brands.filter((bf: any) => bf.id !== linkId),
+          _count: { ...factory._count, brands: factory._count.brands - 1 },
+        });
       }
-    } catch (e: any) { setError(e.message); }
+    } catch (e: any) {
+      setError(e.message);
+    }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">{t.factories.loadingFactory}</div>;
-  if (!factory) return <div className="flex items-center justify-center h-64 text-red-400">{t.factories.factoryNotFound}</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-400">
+        {t.factories.loadingFactory}
+      </div>
+    );
+  if (!factory)
+    return (
+      <div className="flex items-center justify-center h-64 text-red-400">
+        {t.factories.factoryNotFound}
+      </div>
+    );
 
   const c = factory._count;
 
@@ -134,11 +216,21 @@ export default function FactoryDetailPage() {
     <div className="max-w-[1200px] mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <button onClick={() => router.push("/factories")} className="text-sm text-blue-600 hover:underline mb-1 block">&larr; {t.factories.backToFactories}</button>
+          <button
+            onClick={() => router.push("/factories")}
+            className="text-sm text-blue-600 hover:underline mb-1 block"
+          >
+            &larr; {t.factories.backToFactories}
+          </button>
           <h1 className="text-2xl font-black text-slate-900">{factory.name}</h1>
           {factory.chineseName && <p className="text-sm text-slate-500">{factory.chineseName}</p>}
           <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
-            {factory.country && <span>📍 {factory.city ? `${factory.city}, ` : ""}{factory.country}</span>}
+            {factory.country && (
+              <span>
+                📍 {factory.city ? `${factory.city}, ` : ""}
+                {factory.country}
+              </span>
+            )}
             {factory.millType && <span>· {factory.millType}</span>}
             {factory.salesRep && <span>· Rep: {factory.salesRep.name}</span>}
           </div>
@@ -146,20 +238,49 @@ export default function FactoryDetailPage() {
         <div className="flex gap-2">
           {!editing ? (
             <>
-              <button onClick={() => setShowDeleteConfirm(true)} className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-semibold hover:bg-red-100">{t.common.delete}</button>
-              <button onClick={() => setEditing(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">{t.common.edit}</button>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-semibold hover:bg-red-100"
+              >
+                {t.common.delete}
+              </button>
+              <button
+                onClick={() => setEditing(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700"
+              >
+                {t.common.edit}
+              </button>
             </>
           ) : (
             <>
-              <button onClick={() => setEditing(false)} className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold">{t.common.cancel}</button>
-              <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold disabled:opacity-50">{saving ? t.common.saving : t.common.save}</button>
+              <button
+                onClick={() => setEditing(false)}
+                className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold"
+              >
+                {t.common.cancel}
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold disabled:opacity-50"
+              >
+                {saving ? t.common.saving : t.common.save}
+              </button>
             </>
           )}
         </div>
       </div>
 
-      {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
-      {success && <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{success}</div>}
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          {error}
+        </div>
+      )}
+      {success && (
+        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+          {success}
+        </div>
+      )}
 
       {/* Stats row */}
       <div className="grid grid-cols-5 gap-3 mb-6">
@@ -180,7 +301,18 @@ export default function FactoryDetailPage() {
 
       {/* Tabs */}
       <div className="flex border-b border-slate-200 mb-4 overflow-x-auto">
-        {(["details","activity","discovery","brands","fabrics","submissions","tests","contacts"] as const).map(tabName => {
+        {(
+          [
+            "details",
+            "activity",
+            "discovery",
+            "brands",
+            "fabrics",
+            "submissions",
+            "tests",
+            "contacts",
+          ] as const
+        ).map((tabName) => {
           const tabLabels: Record<string, string> = {
             details: t.brandTabs.details,
             activity: "CRM",
@@ -192,8 +324,11 @@ export default function FactoryDetailPage() {
             contacts: t.contacts.title,
           };
           return (
-            <button key={tabName} onClick={() => setTab(tabName)}
-              className={`px-3 py-2 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${tab === tabName ? "border-amber-600 text-amber-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}>
+            <button
+              key={tabName}
+              onClick={() => setTab(tabName)}
+              className={`px-3 py-2 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${tab === tabName ? "border-amber-600 text-amber-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+            >
               {tabLabels[tabName]}
             </button>
           );
@@ -205,17 +340,30 @@ export default function FactoryDetailPage() {
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="grid grid-cols-2 gap-4">
             {[
-              [t.factories.factoryName, "name"], [t.factories.chineseName, "chineseName"], [t.factories.millType, "millType"],
-              [t.factories.specialty, "specialty"], [t.factories.purchasing, "purchasing"], [t.factories.annualSales, "annualSales"],
-              [t.factories.address, "address"], [t.factories.city, "city"], [t.factories.state, "state"], [t.factories.country, "country"],
-              [t.factories.secondaryCountry, "secondaryCountry"], [t.factories.development, "development"],
-              [t.factories.customerType, "customerType"], [t.factories.brandNominated, "brandNominated"],
+              [t.factories.factoryName, "name"],
+              [t.factories.chineseName, "chineseName"],
+              [t.factories.millType, "millType"],
+              [t.factories.specialty, "specialty"],
+              [t.factories.purchasing, "purchasing"],
+              [t.factories.annualSales, "annualSales"],
+              [t.factories.address, "address"],
+              [t.factories.city, "city"],
+              [t.factories.state, "state"],
+              [t.factories.country, "country"],
+              [t.factories.secondaryCountry, "secondaryCountry"],
+              [t.factories.development, "development"],
+              [t.factories.customerType, "customerType"],
+              [t.factories.brandNominated, "brandNominated"],
             ].map(([label, field]) => (
               <div key={field}>
                 <label className="block text-xs font-semibold text-slate-500 mb-1">{label}</label>
                 {editing ? (
-                  <input type="text" value={form[field] || ""} onChange={e => setForm({ ...form, [field]: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input
+                    type="text"
+                    value={form[field] || ""}
+                    onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 ) : (
                   <div className="text-sm text-slate-900">{factory[field] || "—"}</div>
                 )}
@@ -223,12 +371,21 @@ export default function FactoryDetailPage() {
             ))}
             {/* Sales rep selector */}
             <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">{t.brands.salesRep || "Sales Rep"}</label>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">
+                {t.brands.salesRep || "Sales Rep"}
+              </label>
               {editing ? (
-                <select value={form.salesRepId || ""} onChange={e => setForm({ ...form, salesRepId: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select
+                  value={form.salesRepId || ""}
+                  onChange={(e) => setForm({ ...form, salesRepId: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">—</option>
-                  {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                  {users.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.name}
+                    </option>
+                  ))}
                 </select>
               ) : (
                 <div className="text-sm text-slate-900">{factory.salesRep?.name || "—"}</div>
@@ -243,13 +400,26 @@ export default function FactoryDetailPage() {
         <FactoryDiscoveryTab
           factory={factory}
           onSave={async (data: any) => {
-            setSaving(true); setError(""); setSuccess("");
+            setSaving(true);
+            setError("");
+            setSuccess("");
             try {
-              const res = await fetch(`/api/factories/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+              const res = await fetch(`/api/factories/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+              });
               const j = await res.json();
-              if (j.ok) { setFactory({ ...factory, ...j.factory }); setSuccess("Discovery profile updated"); setTimeout(() => setSuccess(""), 3000); }
-              else setError(j.error);
-            } catch (e: any) { setError(e.message); } finally { setSaving(false); }
+              if (j.ok) {
+                setFactory({ ...factory, ...j.factory });
+                setSuccess("Discovery profile updated");
+                setTimeout(() => setSuccess(""), 3000);
+              } else setError(j.error);
+            } catch (e: any) {
+              setError(e.message);
+            } finally {
+              setSaving(false);
+            }
           }}
           saving={saving}
         />
@@ -260,39 +430,77 @@ export default function FactoryDetailPage() {
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-slate-900">{t.factories.brands}</h3>
-            <button onClick={() => { setShowLinkBrand(!showLinkBrand); loadBrands(); }}
-              className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700">+ Link Brand</button>
+            <button
+              onClick={() => {
+                setShowLinkBrand(!showLinkBrand);
+                loadBrands();
+              }}
+              className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700"
+            >
+              + Link Brand
+            </button>
           </div>
           {showLinkBrand && (
             <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Select Brand</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">
+                Select Brand
+              </label>
               <div className="flex gap-2">
-                <select value={linkBrandId} onChange={e => setLinkBrandId(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                <select
+                  value={linkBrandId}
+                  onChange={(e) => setLinkBrandId(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                >
                   <option value="">Choose a brand...</option>
                   {allBrands
                     .filter((b: any) => !factory.brands.some((bf: any) => bf.brand.id === b.id))
-                    .map((b: any) => <option key={b.id} value={b.id}>{b.name}</option>)
-                  }
+                    .map((b: any) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
                 </select>
-                <button onClick={handleLinkBrand} disabled={!linkBrandId}
-                  className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 disabled:opacity-50">Link</button>
-                <button onClick={() => setShowLinkBrand(false)} className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg">{t.common.cancel}</button>
+                <button
+                  onClick={handleLinkBrand}
+                  disabled={!linkBrandId}
+                  className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 disabled:opacity-50"
+                >
+                  Link
+                </button>
+                <button
+                  onClick={() => setShowLinkBrand(false)}
+                  className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg"
+                >
+                  {t.common.cancel}
+                </button>
               </div>
             </div>
           )}
-          {factory.brands.length === 0 ? <p className="text-slate-400 text-sm text-center py-8">{t.factories.noBrandsLinked}</p> : (
+          {factory.brands.length === 0 ? (
+            <p className="text-slate-400 text-sm text-center py-8">{t.factories.noBrandsLinked}</p>
+          ) : (
             <div className="space-y-2">
               {factory.brands.map((bf: any) => (
-                <div key={bf.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-amber-50 group">
-                  <div className="flex items-center gap-3 cursor-pointer flex-1" onClick={() => router.push(`/brands/${bf.brand.id}`)}>
+                <div
+                  key={bf.id}
+                  className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-amber-50 group"
+                >
+                  <div
+                    className="flex items-center gap-3 cursor-pointer flex-1"
+                    onClick={() => router.push(`/brands/${bf.brand.id}`)}
+                  >
                     <span className="text-lg">🔥</span>
                     <div>
                       <div className="font-semibold text-sm">{bf.brand.name}</div>
                       <span className="text-xs text-slate-500">{bf.brand.pipelineStage}</span>
                     </div>
                   </div>
-                  <button onClick={() => handleUnlinkBrand(bf.id)} className="text-xs text-red-500 hover:underline opacity-0 group-hover:opacity-100 transition-opacity">Unlink</button>
+                  <button
+                    onClick={() => handleUnlinkBrand(bf.id)}
+                    className="text-xs text-red-500 hover:underline opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    Unlink
+                  </button>
                 </div>
               ))}
             </div>
@@ -305,15 +513,38 @@ export default function FactoryDetailPage() {
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-slate-900">{t.factories.fabrics}</h3>
-            <button onClick={() => router.push(`/fabrics/new?factoryId=${id}`)} className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700">+ New Fabric</button>
+            <button
+              onClick={() => router.push(`/fabrics/new?factoryId=${id}`)}
+              className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700"
+            >
+              + New Fabric
+            </button>
           </div>
-          {factory.fabrics.length === 0 ? <p className="text-slate-400 text-sm text-center py-8">{t.factories.noFabrics}</p> : (
+          {(factory.fabrics?.length ?? 0) === 0 ? (
+            <p className="text-slate-400 text-sm text-center py-8">{t.factories.noFabrics}</p>
+          ) : (
             <table className="w-full text-sm">
-              <thead><tr className="text-left text-xs text-slate-500 border-b"><th className="pb-2">{t.fabrics.fuzeNumber}</th><th className="pb-2">{t.fabrics.construction}</th><th className="pb-2">{t.fabrics.color}</th><th className="pb-2">{t.fabrics.gsm}</th></tr></thead>
+              <thead>
+                <tr className="text-left text-xs text-slate-500 border-b">
+                  <th className="pb-2">{t.fabrics.fuzeNumber}</th>
+                  <th className="pb-2">{t.fabrics.construction}</th>
+                  <th className="pb-2">{t.fabrics.color}</th>
+                  <th className="pb-2">{t.fabrics.gsm}</th>
+                </tr>
+              </thead>
               <tbody>
-                {factory.fabrics.map((f: any) => (
-                  <tr key={f.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onClick={() => router.push(`/fabrics/${f.id}`)}>
-                    <td className="py-2 font-bold text-blue-600">{t.fabrics.fuzeLabel} {f.fuzeNumber}</td><td className="py-2">{f.construction}</td><td className="py-2">{f.color}</td><td className="py-2">{f.weightGsm}</td>
+                {(factory.fabrics || []).map((f: any) => (
+                  <tr
+                    key={f.id}
+                    className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
+                    onClick={() => router.push(`/fabrics/${f.id}`)}
+                  >
+                    <td className="py-2 font-bold text-blue-600">
+                      {t.fabrics.fuzeLabel} {f.fuzeNumber}
+                    </td>
+                    <td className="py-2">{f.construction}</td>
+                    <td className="py-2">{f.color}</td>
+                    <td className="py-2">{f.weightGsm}</td>
                   </tr>
                 ))}
               </tbody>
@@ -325,21 +556,32 @@ export default function FactoryDetailPage() {
       {/* ── Submissions Tab (NEW) ── */}
       {tab === "submissions" && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">
-          <h3 className="font-bold text-slate-900 mb-4">{t.dashboard.submissions || "Submissions"}</h3>
+          <h3 className="font-bold text-slate-900 mb-4">
+            {t.dashboard.submissions || "Submissions"}
+          </h3>
           {factory.submissions.length === 0 ? (
-            <p className="text-slate-400 text-sm text-center py-8">No submissions linked to this factory yet.</p>
+            <p className="text-slate-400 text-sm text-center py-8">
+              No submissions linked to this factory yet.
+            </p>
           ) : (
             <table className="w-full text-sm">
-              <thead><tr className="text-left text-xs text-slate-500 border-b">
-                <th className="pb-2">Fabric #</th><th className="pb-2">Status</th><th className="pb-2">Test Status</th><th className="pb-2">Date</th>
-              </tr></thead>
+              <thead>
+                <tr className="text-left text-xs text-slate-500 border-b">
+                  <th className="pb-2">Fabric #</th>
+                  <th className="pb-2">Status</th>
+                  <th className="pb-2">Test Status</th>
+                  <th className="pb-2">Date</th>
+                </tr>
+              </thead>
               <tbody>
                 {factory.submissions.map((s: any) => (
                   <tr key={s.id} className="border-b border-slate-100 hover:bg-slate-50">
                     <td className="py-2 font-bold">FUZE {s.fuzeFabricNumber}</td>
                     <td className="py-2">{s.status || "—"}</td>
                     <td className="py-2">{s.testStatus || "—"}</td>
-                    <td className="py-2 text-slate-500">{s.createdAt ? new Date(s.createdAt).toLocaleDateString() : "—"}</td>
+                    <td className="py-2 text-slate-500">
+                      {s.createdAt ? new Date(s.createdAt).toLocaleDateString() : "—"}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -353,33 +595,87 @@ export default function FactoryDetailPage() {
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-slate-900">{t.nav.testResults || "Test Results"}</h3>
-            <button onClick={loadTests} className="text-xs text-amber-600 hover:underline">Refresh</button>
+            <button onClick={loadTests} className="text-xs text-amber-600 hover:underline">
+              Refresh
+            </button>
           </div>
           {testsLoading ? (
             <p className="text-slate-400 text-sm text-center py-8">{t.common.loading}</p>
           ) : testRuns.length === 0 ? (
-            <p className="text-slate-400 text-sm text-center py-8">No test results linked to this factory yet.</p>
+            <p className="text-slate-400 text-sm text-center py-8">
+              No test results linked to this factory yet.
+            </p>
           ) : (
             <table className="w-full text-sm">
-              <thead><tr className="text-left text-xs text-slate-500 border-b">
-                <th className="pb-2">Type</th><th className="pb-2">Fabric</th><th className="pb-2">Lab</th><th className="pb-2">Method</th><th className="pb-2">Result</th><th className="pb-2">Date</th>
-              </tr></thead>
+              <thead>
+                <tr className="text-left text-xs text-slate-500 border-b">
+                  <th className="pb-2">Type</th>
+                  <th className="pb-2">Fabric</th>
+                  <th className="pb-2">Lab</th>
+                  <th className="pb-2">Method</th>
+                  <th className="pb-2">Result</th>
+                  <th className="pb-2">Date</th>
+                </tr>
+              </thead>
               <tbody>
                 {testRuns.map((tr: any) => {
-                  const pass = tr.icpResult ? true : tr.abResult?.methodPass ?? tr.abResult?.pass ?? tr.fungalResult?.pass ?? tr.odorResult?.pass;
-                  const typeColors: Record<string,string> = { ICP: "bg-violet-100 text-violet-700", ANTIBACTERIAL: "bg-blue-100 text-blue-700", FUNGAL: "bg-emerald-100 text-emerald-700", ODOR: "bg-amber-100 text-amber-700", UV: "bg-pink-100 text-pink-700" };
+                  const pass = tr.icpResult
+                    ? true
+                    : (tr.abResult?.methodPass ??
+                      tr.abResult?.pass ??
+                      tr.fungalResult?.pass ??
+                      tr.odorResult?.pass);
+                  const typeColors: Record<string, string> = {
+                    ICP: "bg-violet-100 text-violet-700",
+                    ANTIBACTERIAL: "bg-blue-100 text-blue-700",
+                    FUNGAL: "bg-emerald-100 text-emerald-700",
+                    ODOR: "bg-amber-100 text-amber-700",
+                    UV: "bg-pink-100 text-pink-700",
+                  };
                   return (
-                    <tr key={tr.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onClick={() => router.push(`/tests/${tr.id}`)}>
-                      <td className="py-2"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${typeColors[tr.testType] || "bg-slate-100 text-slate-600"}`}>{tr.testType}</span></td>
-                      <td className="py-2 font-mono text-xs">{tr.submission?.fuzeFabricNumber ? `FUZE ${tr.submission.fuzeFabricNumber}` : "—"}</td>
-                      <td className="py-2 text-xs">{tr.lab?.name || "—"}</td>
-                      <td className="py-2 text-xs text-slate-600">{tr.testMethodStd || tr.testMethodRaw || "—"}</td>
+                    <tr
+                      key={tr.id}
+                      className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
+                      onClick={() => router.push(`/tests/${tr.id}`)}
+                    >
                       <td className="py-2">
-                        {pass === true && <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">PASS</span>}
-                        {pass === false && <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-[10px] font-bold">FAIL</span>}
-                        {(pass === null || pass === undefined) && <span className="text-xs text-slate-400">—</span>}
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${typeColors[tr.testType] || "bg-slate-100 text-slate-600"}`}
+                        >
+                          {tr.testType}
+                        </span>
                       </td>
-                      <td className="py-2 text-xs text-slate-500">{tr.testDate ? new Date(tr.testDate).toLocaleDateString() : tr.createdAt ? new Date(tr.createdAt).toLocaleDateString() : "—"}</td>
+                      <td className="py-2 font-mono text-xs">
+                        {tr.submission?.fuzeFabricNumber
+                          ? `FUZE ${tr.submission.fuzeFabricNumber}`
+                          : "—"}
+                      </td>
+                      <td className="py-2 text-xs">{tr.lab?.name || "—"}</td>
+                      <td className="py-2 text-xs text-slate-600">
+                        {tr.testMethodStd || tr.testMethodRaw || "—"}
+                      </td>
+                      <td className="py-2">
+                        {pass === true && (
+                          <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">
+                            PASS
+                          </span>
+                        )}
+                        {pass === false && (
+                          <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-[10px] font-bold">
+                            FAIL
+                          </span>
+                        )}
+                        {(pass === null || pass === undefined) && (
+                          <span className="text-xs text-slate-400">—</span>
+                        )}
+                      </td>
+                      <td className="py-2 text-xs text-slate-500">
+                        {tr.testDate
+                          ? new Date(tr.testDate).toLocaleDateString()
+                          : tr.createdAt
+                            ? new Date(tr.createdAt).toLocaleDateString()
+                            : "—"}
+                      </td>
                     </tr>
                   );
                 })}
@@ -391,30 +687,69 @@ export default function FactoryDetailPage() {
 
       {/* ── Contacts Tab ── */}
       {tab === "contacts" && (
-        <FactoryContactsTab factoryId={id as string} contacts={factory.contacts} onUpdate={(contacts: any[]) => setFactory({ ...factory, contacts, _count: { ...factory._count, contacts: contacts.length } })} t={t} />
+        <FactoryContactsTab
+          factoryId={id as string}
+          contacts={factory.contacts}
+          onUpdate={(contacts: any[]) =>
+            setFactory({
+              ...factory,
+              contacts,
+              _count: { ...factory._count, contacts: contacts.length },
+            })
+          }
+          t={t}
+        />
       )}
 
       {/* ── CRM Activity Tab ── */}
-      {tab === "activity" && (
-        <ActivityFeed entityType="factory" entityId={id as string} />
-      )}
+      {tab === "activity" && <ActivityFeed entityType="factory" entityId={id as string} />}
 
       {/* Delete confirmation modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowDeleteConfirm(false)} />
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowDeleteConfirm(false)}
+          />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
             <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Factory</h3>
-            <p className="text-sm text-slate-600 mb-1">Are you sure you want to delete <strong>{factory.name}</strong>?</p>
-            <p className="text-xs text-slate-500 mb-4">This action cannot be undone. All linked records must be removed first.</p>
+            <p className="text-sm text-slate-600 mb-1">
+              Are you sure you want to delete <strong>{factory.name}</strong>?
+            </p>
+            <p className="text-xs text-slate-500 mb-4">
+              This action cannot be undone. All linked records must be removed first.
+            </p>
             <div className="mb-4">
               <label className="block text-xs font-semibold text-slate-600 mb-1">Admin Code</label>
-              <input type="password" value={adminCode} onChange={(e) => setAdminCode(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && adminCode) handleDelete(); }}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Enter admin code" autoFocus />
+              <input
+                type="password"
+                value={adminCode}
+                onChange={(e) => setAdminCode(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && adminCode) handleDelete();
+                }}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="Enter admin code"
+                autoFocus
+              />
             </div>
             <div className="flex justify-end gap-3">
-              <button onClick={() => { setShowDeleteConfirm(false); setAdminCode(""); }} className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">{t.common.cancel}</button>
-              <button onClick={handleDelete} disabled={deleting || !adminCode} className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50">{deleting ? "Deleting..." : "Yes, Delete"}</button>
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setAdminCode("");
+                }}
+                className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
+              >
+                {t.common.cancel}
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting || !adminCode}
+                className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleting ? "Deleting..." : "Yes, Delete"}
+              </button>
             </div>
           </div>
         </div>
@@ -424,7 +759,17 @@ export default function FactoryDetailPage() {
 }
 
 /* ── FactoryContactsTab — inline CRUD ──────────── */
-function FactoryContactsTab({ factoryId, contacts: initial, onUpdate, t }: { factoryId: string; contacts: any[]; onUpdate: (c: any[]) => void; t: any }) {
+function FactoryContactsTab({
+  factoryId,
+  contacts: initial,
+  onUpdate,
+  t,
+}: {
+  factoryId: string;
+  contacts: any[];
+  onUpdate: (c: any[]) => void;
+  t: any;
+}) {
   const [contacts, setContacts] = useState(initial);
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -433,27 +778,53 @@ function FactoryContactsTab({ factoryId, contacts: initial, onUpdate, t }: { fac
   const empty = { firstName: "", lastName: "", title: "", email: "", phone: "" };
   const [form, setForm] = useState(empty);
 
-  const sync = (updated: any[]) => { setContacts(updated); onUpdate(updated); };
+  const sync = (updated: any[]) => {
+    setContacts(updated);
+    onUpdate(updated);
+  };
 
   const handleAdd = async () => {
     if (!form.firstName.trim() && !form.email.trim()) return;
-    setSaving(true); setError("");
+    setSaving(true);
+    setError("");
     try {
-      const res = await fetch("/api/contacts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, factoryId }) });
+      const res = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, factoryId }),
+      });
       const j = await res.json();
-      if (j.ok) { sync([...contacts, j.contact]); setForm(empty); setShowAdd(false); }
-      else setError(j.error);
-    } catch (e: any) { setError(e.message); } finally { setSaving(false); }
+      if (j.ok) {
+        sync([...contacts, j.contact]);
+        setForm(empty);
+        setShowAdd(false);
+      } else setError(j.error);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleUpdate = async (id: string) => {
-    setSaving(true); setError("");
+    setSaving(true);
+    setError("");
     try {
-      const res = await fetch(`/api/contacts/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      const res = await fetch(`/api/contacts/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
       const j = await res.json();
-      if (j.ok) { sync(contacts.map(c => c.id === id ? j.contact : c)); setEditingId(null); }
-      else setError(j.error);
-    } catch (e: any) { setError(e.message); } finally { setSaving(false); }
+      if (j.ok) {
+        sync(contacts.map((c) => (c.id === id ? j.contact : c)));
+        setEditingId(null);
+      } else setError(j.error);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -461,35 +832,97 @@ function FactoryContactsTab({ factoryId, contacts: initial, onUpdate, t }: { fac
     try {
       const res = await fetch(`/api/contacts/${id}`, { method: "DELETE" });
       const j = await res.json();
-      if (j.ok) sync(contacts.filter(c => c.id !== id));
-    } catch (e: any) { setError(e.message); }
+      if (j.ok) sync(contacts.filter((c) => c.id !== id));
+    } catch (e: any) {
+      setError(e.message);
+    }
   };
 
   const startEdit = (ct: any) => {
     setEditingId(ct.id);
-    setForm({ firstName: ct.firstName || "", lastName: ct.lastName || "", title: ct.title || "", email: ct.email || "", phone: ct.phone || "" });
+    setForm({
+      firstName: ct.firstName || "",
+      lastName: ct.lastName || "",
+      title: ct.title || "",
+      email: ct.email || "",
+      phone: ct.phone || "",
+    });
   };
 
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-bold text-slate-900">{t.contacts.title}</h3>
-        <button onClick={() => { setShowAdd(!showAdd); setForm(empty); setEditingId(null); }}
-          className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700">+ {t.contacts.addContact}</button>
+        <button
+          onClick={() => {
+            setShowAdd(!showAdd);
+            setForm(empty);
+            setEditingId(null);
+          }}
+          className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700"
+        >
+          + {t.contacts.addContact}
+        </button>
       </div>
-      {error && <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs">{error}</div>}
+      {error && (
+        <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs">
+          {error}
+        </div>
+      )}
       {showAdd && (
         <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
-            <input type="text" value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="First name" autoFocus />
-            <input type="text" value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Last name" />
-            <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Title/Role" />
-            <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Email" />
-            <input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Phone" />
+            <input
+              type="text"
+              value={form.firstName}
+              onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+              className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+              placeholder="First name"
+              autoFocus
+            />
+            <input
+              type="text"
+              value={form.lastName}
+              onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+              className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+              placeholder="Last name"
+            />
+            <input
+              type="text"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+              placeholder="Title/Role"
+            />
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+              placeholder="Email"
+            />
+            <input
+              type="text"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+              placeholder="Phone"
+            />
           </div>
           <div className="flex gap-2">
-            <button onClick={handleAdd} disabled={saving} className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 disabled:opacity-50">{saving ? t.common.saving : t.contacts.addContact}</button>
-            <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">{t.common.cancel}</button>
+            <button
+              onClick={handleAdd}
+              disabled={saving}
+              className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 disabled:opacity-50"
+            >
+              {saving ? t.common.saving : t.contacts.addContact}
+            </button>
+            <button
+              onClick={() => setShowAdd(false)}
+              className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
+            >
+              {t.common.cancel}
+            </button>
           </div>
         </div>
       )}
@@ -497,35 +930,93 @@ function FactoryContactsTab({ factoryId, contacts: initial, onUpdate, t }: { fac
         <p className="text-slate-400 text-sm text-center py-8">{t.factories.noContacts}</p>
       ) : (
         <div className="space-y-2">
-          {contacts.map((ct: any) => (
+          {contacts.map((ct: any) =>
             editingId === ct.id ? (
               <div key={ct.id} className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
-                  <input type="text" value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="First name" />
-                  <input type="text" value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Last name" />
-                  <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Title" />
-                  <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Email" />
-                  <input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Phone" />
+                  <input
+                    type="text"
+                    value={form.firstName}
+                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                    className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    placeholder="First name"
+                  />
+                  <input
+                    type="text"
+                    value={form.lastName}
+                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                    className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    placeholder="Last name"
+                  />
+                  <input
+                    type="text"
+                    value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    placeholder="Title"
+                  />
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    placeholder="Email"
+                  />
+                  <input
+                    type="text"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                    placeholder="Phone"
+                  />
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => handleUpdate(ct.id)} className="text-xs text-green-600 hover:underline font-semibold">{saving ? "..." : t.common.save}</button>
-                  <button onClick={() => setEditingId(null)} className="text-xs text-slate-500 hover:underline">{t.common.cancel}</button>
+                  <button
+                    onClick={() => handleUpdate(ct.id)}
+                    className="text-xs text-green-600 hover:underline font-semibold"
+                  >
+                    {saving ? "..." : t.common.save}
+                  </button>
+                  <button
+                    onClick={() => setEditingId(null)}
+                    className="text-xs text-slate-500 hover:underline"
+                  >
+                    {t.common.cancel}
+                  </button>
                 </div>
               </div>
             ) : (
               <div key={ct.id} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg group">
-                <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 font-bold text-sm flex-shrink-0">{(ct.firstName || ct.name || "?")[0]}</div>
+                <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 font-bold text-sm flex-shrink-0">
+                  {(ct.firstName || ct.name || "?")[0]}
+                </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-sm text-slate-900">{ct.firstName} {ct.lastName} {ct.title && <span className="text-slate-500 font-normal">({ct.title})</span>}</div>
-                  <div className="text-xs text-slate-500 truncate">{ct.email}{ct.phone && ` · ${ct.phone}`}</div>
+                  <div className="font-semibold text-sm text-slate-900">
+                    {ct.firstName} {ct.lastName}{" "}
+                    {ct.title && <span className="text-slate-500 font-normal">({ct.title})</span>}
+                  </div>
+                  <div className="text-xs text-slate-500 truncate">
+                    {ct.email}
+                    {ct.phone && ` · ${ct.phone}`}
+                  </div>
                 </div>
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => startEdit(ct)} className="text-xs text-blue-600 hover:underline">{t.common.edit}</button>
-                  <button onClick={() => handleDelete(ct.id)} className="text-xs text-red-500 hover:underline">{t.common.delete}</button>
+                  <button
+                    onClick={() => startEdit(ct)}
+                    className="text-xs text-blue-600 hover:underline"
+                  >
+                    {t.common.edit}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(ct.id)}
+                    className="text-xs text-red-500 hover:underline"
+                  >
+                    {t.common.delete}
+                  </button>
                 </div>
               </div>
-            )
-          ))}
+            ),
+          )}
         </div>
       )}
     </div>
@@ -533,7 +1024,15 @@ function FactoryContactsTab({ factoryId, contacts: initial, onUpdate, t }: { fac
 }
 
 /* ── FactoryDiscoveryTab — structured tags for search/discovery ── */
-function FactoryDiscoveryTab({ factory, onSave, saving }: { factory: any; onSave: (data: any) => Promise<void>; saving: boolean }) {
+function FactoryDiscoveryTab({
+  factory,
+  onSave,
+  saving,
+}: {
+  factory: any;
+  onSave: (data: any) => Promise<void>;
+  saving: boolean;
+}) {
   const [form, setForm] = useState(() => ({
     productTypes: parseTags(factory.productTypes),
     capabilities: parseTags(factory.capabilities),
@@ -553,7 +1052,9 @@ function FactoryDiscoveryTab({ factory, onSave, saving }: { factory: any; onSave
   const toggleTag = (category: string, value: string) => {
     setForm((prev: any) => {
       const current = prev[category] || [];
-      const next = current.includes(value) ? current.filter((v: string) => v !== value) : [...current, value];
+      const next = current.includes(value)
+        ? current.filter((v: string) => v !== value)
+        : [...current, value];
       return { ...prev, [category]: next };
     });
   };
@@ -573,7 +1074,15 @@ function FactoryDiscoveryTab({ factory, onSave, saving }: { factory: any; onSave
       employeeCount: form.employeeCount || null,
       website: form.website || null,
       description: form.description || null,
-      profileComplete: calcProfileCompleteness({ ...factory, ...form, productTypes: JSON.stringify(form.productTypes), capabilities: JSON.stringify(form.capabilities), certifications: JSON.stringify(form.certifications), fabricTypes: JSON.stringify(form.fabricTypes) }) >= 50,
+      profileComplete:
+        calcProfileCompleteness({
+          ...factory,
+          ...form,
+          productTypes: JSON.stringify(form.productTypes),
+          capabilities: JSON.stringify(form.capabilities),
+          certifications: JSON.stringify(form.certifications),
+          fabricTypes: JSON.stringify(form.fabricTypes),
+        }) >= 50,
     };
     onSave(data);
   };
@@ -597,14 +1106,23 @@ function FactoryDiscoveryTab({ factory, onSave, saving }: { factory: any; onSave
         <div className="flex items-center justify-between mb-3">
           <div>
             <h3 className="font-bold text-slate-900">Discovery Profile Completeness</h3>
-            <p className="text-xs text-slate-500 mt-0.5">Fill out this profile so brands can find this factory when searching</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Fill out this profile so brands can find this factory when searching
+            </p>
           </div>
           <div className="text-right">
-            <span className={`text-2xl font-black ${completeness >= 80 ? "text-emerald-600" : completeness >= 50 ? "text-amber-500" : "text-red-500"}`}>{completeness}%</span>
+            <span
+              className={`text-2xl font-black ${completeness >= 80 ? "text-emerald-600" : completeness >= 50 ? "text-amber-500" : "text-red-500"}`}
+            >
+              {completeness}%
+            </span>
           </div>
         </div>
         <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-          <div className={`h-full rounded-full transition-all ${completeness >= 80 ? "bg-emerald-500" : completeness >= 50 ? "bg-amber-500" : "bg-red-400"}`} style={{ width: `${completeness}%` }} />
+          <div
+            className={`h-full rounded-full transition-all ${completeness >= 80 ? "bg-emerald-500" : completeness >= 50 ? "bg-amber-500" : "bg-red-400"}`}
+            style={{ width: `${completeness}%` }}
+          />
         </div>
       </div>
 
@@ -621,42 +1139,84 @@ function FactoryDiscoveryTab({ factory, onSave, saving }: { factory: any; onSave
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-semibold text-slate-500 mb-1">MOQ (meters)</label>
-            <input type="number" value={form.moqMeters} onChange={(e) => setForm({ ...form, moqMeters: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="e.g. 3000" />
+            <input
+              type="number"
+              value={form.moqMeters}
+              onChange={(e) => setForm({ ...form, moqMeters: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+              placeholder="e.g. 3000"
+            />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">Lead Time (days)</label>
-            <input type="number" value={form.leadTimeDays} onChange={(e) => setForm({ ...form, leadTimeDays: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="e.g. 45" />
+            <label className="block text-xs font-semibold text-slate-500 mb-1">
+              Lead Time (days)
+            </label>
+            <input
+              type="number"
+              value={form.leadTimeDays}
+              onChange={(e) => setForm({ ...form, leadTimeDays: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+              placeholder="e.g. 45"
+            />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">Capacity (MT/month)</label>
-            <input type="number" value={form.capacityMtMonth} onChange={(e) => setForm({ ...form, capacityMtMonth: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="e.g. 500" />
+            <label className="block text-xs font-semibold text-slate-500 mb-1">
+              Capacity (MT/month)
+            </label>
+            <input
+              type="number"
+              value={form.capacityMtMonth}
+              onChange={(e) => setForm({ ...form, capacityMtMonth: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+              placeholder="e.g. 500"
+            />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">Year Established</label>
-            <input type="number" value={form.yearEstablished} onChange={(e) => setForm({ ...form, yearEstablished: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="e.g. 1998" />
+            <label className="block text-xs font-semibold text-slate-500 mb-1">
+              Year Established
+            </label>
+            <input
+              type="number"
+              value={form.yearEstablished}
+              onChange={(e) => setForm({ ...form, yearEstablished: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+              placeholder="e.g. 1998"
+            />
           </div>
           <div>
             <label className="block text-xs font-semibold text-slate-500 mb-1">Employees</label>
-            <input type="number" value={form.employeeCount} onChange={(e) => setForm({ ...form, employeeCount: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="e.g. 350" />
+            <input
+              type="number"
+              value={form.employeeCount}
+              onChange={(e) => setForm({ ...form, employeeCount: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+              placeholder="e.g. 350"
+            />
           </div>
           <div>
             <label className="block text-xs font-semibold text-slate-500 mb-1">Website</label>
-            <input type="url" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]" placeholder="https://..." />
+            <input
+              type="url"
+              value={form.website}
+              onChange={(e) => setForm({ ...form, website: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+              placeholder="https://..."
+            />
           </div>
         </div>
         <div className="mt-4">
           <label className="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" checked={form.fuzeEnabled} onChange={(e) => setForm({ ...form, fuzeEnabled: e.target.checked })}
-              className="rounded border-slate-300 text-[#00b4c3] focus:ring-[#00b4c3] w-5 h-5" />
+            <input
+              type="checkbox"
+              checked={form.fuzeEnabled}
+              onChange={(e) => setForm({ ...form, fuzeEnabled: e.target.checked })}
+              className="rounded border-slate-300 text-[#00b4c3] focus:ring-[#00b4c3] w-5 h-5"
+            />
             <div>
               <span className="text-sm font-semibold text-slate-700">FUZE Treatment Enabled</span>
-              <p className="text-xs text-slate-500">This factory has active FUZE antimicrobial treatment capability</p>
+              <p className="text-xs text-slate-500">
+                This factory has active FUZE antimicrobial treatment capability
+              </p>
             </div>
           </label>
         </div>
@@ -665,11 +1225,15 @@ function FactoryDiscoveryTab({ factory, onSave, saving }: { factory: any; onSave
       {/* Tag Sections */}
       {ALL_TAG_CATEGORIES.map((cat) => (
         <div key={cat.key} className="bg-white rounded-xl p-5 shadow-sm border">
-          <h3 className="font-bold text-slate-900 mb-1">{cat.icon} {cat.label}</h3>
+          <h3 className="font-bold text-slate-900 mb-1">
+            {cat.icon} {cat.label}
+          </h3>
           <p className="text-xs text-slate-500 mb-3">Select all that apply</p>
           <div className="flex flex-wrap gap-2">
             {cat.tags.map((tag) => {
-              const active = (form[cat.key as keyof typeof form] as string[] || []).includes(tag.value);
+              const active = ((form[cat.key as keyof typeof form] as string[]) || []).includes(
+                tag.value,
+              );
               return (
                 <button
                   key={tag.value}
@@ -680,7 +1244,8 @@ function FactoryDiscoveryTab({ factory, onSave, saving }: { factory: any; onSave
                       : "bg-white text-slate-600 border-slate-200 hover:border-[#00b4c3] hover:text-[#00b4c3]"
                   }`}
                 >
-                  {active && "✓ "}{tag.label}
+                  {active && "✓ "}
+                  {tag.label}
                 </button>
               );
             })}
@@ -721,13 +1286,25 @@ function FactoryNotesTab({ factoryId, t }: { factoryId: string; t: any }) {
 
   const handleAdd = async () => {
     if (!form.content.trim()) return;
-    setSaving(true); setError("");
+    setSaving(true);
+    setError("");
     try {
-      const res = await fetch("/api/notes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form }) });
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form }),
+      });
       const j = await res.json();
-      if (j.ok) { setNotes([j.note, ...notes]); setForm(empty); setShowAdd(false); }
-      else setError(j.error);
-    } catch (e: any) { setError(e.message); } finally { setSaving(false); }
+      if (j.ok) {
+        setNotes([j.note, ...notes]);
+        setForm(empty);
+        setShowAdd(false);
+      } else setError(j.error);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -735,64 +1312,128 @@ function FactoryNotesTab({ factoryId, t }: { factoryId: string; t: any }) {
     try {
       const res = await fetch(`/api/notes/${id}`, { method: "DELETE" });
       const j = await res.json();
-      if (j.ok) setNotes(notes.filter(n => n.id !== id));
-    } catch (e: any) { setError(e.message); }
+      if (j.ok) setNotes(notes.filter((n) => n.id !== id));
+    } catch (e: any) {
+      setError(e.message);
+    }
   };
 
-  const typeColors: Record<string,string> = {
-    NOTE: "bg-slate-100 text-slate-700", CALL: "bg-blue-100 text-blue-700", EMAIL: "bg-violet-100 text-violet-700",
-    MEETING: "bg-green-100 text-green-700", TASK: "bg-amber-100 text-amber-700", FOLLOW_UP: "bg-orange-100 text-orange-700",
+  const typeColors: Record<string, string> = {
+    NOTE: "bg-slate-100 text-slate-700",
+    CALL: "bg-blue-100 text-blue-700",
+    EMAIL: "bg-violet-100 text-violet-700",
+    MEETING: "bg-green-100 text-green-700",
+    TASK: "bg-amber-100 text-amber-700",
+    FOLLOW_UP: "bg-orange-100 text-orange-700",
   };
 
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-bold text-slate-900">{t.brandTabs.notes || "Notes"}</h3>
-        <button onClick={() => { setShowAdd(!showAdd); setForm(empty); }}
-          className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700">+ Add Note</button>
+        <button
+          onClick={() => {
+            setShowAdd(!showAdd);
+            setForm(empty);
+          }}
+          className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700"
+        >
+          + Add Note
+        </button>
       </div>
-      {error && <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs">{error}</div>}
+      {error && (
+        <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs">
+          {error}
+        </div>
+      )}
       {showAdd && (
         <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
           <div className="grid grid-cols-2 gap-3 mb-3">
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1">Type</label>
-              <select value={form.noteType} onChange={e => setForm({ ...form, noteType: e.target.value })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                {NOTE_TYPES.map(nt => <option key={nt} value={nt}>{nt.replace("_", " ")}</option>)}
+              <select
+                value={form.noteType}
+                onChange={(e) => setForm({ ...form, noteType: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+              >
+                {NOTE_TYPES.map((nt) => (
+                  <option key={nt} value={nt}>
+                    {nt.replace("_", " ")}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Contact Name</label>
-              <input type="text" value={form.contactName} onChange={e => setForm({ ...form, contactName: e.target.value })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Who was this with?" />
+              <label className="block text-xs font-semibold text-slate-600 mb-1">
+                Contact Name
+              </label>
+              <input
+                type="text"
+                value={form.contactName}
+                onChange={(e) => setForm({ ...form, contactName: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                placeholder="Who was this with?"
+              />
             </div>
           </div>
-          <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} rows={3}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm mb-3" placeholder="Write your note..." autoFocus />
+          <textarea
+            value={form.content}
+            onChange={(e) => setForm({ ...form, content: e.target.value })}
+            rows={3}
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm mb-3"
+            placeholder="Write your note..."
+            autoFocus
+          />
           <div className="flex gap-2">
-            <button onClick={handleAdd} disabled={saving || !form.content.trim()}
-              className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 disabled:opacity-50">{saving ? t.common.saving : "Save Note"}</button>
-            <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">{t.common.cancel}</button>
+            <button
+              onClick={handleAdd}
+              disabled={saving || !form.content.trim()}
+              className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 disabled:opacity-50"
+            >
+              {saving ? t.common.saving : "Save Note"}
+            </button>
+            <button
+              onClick={() => setShowAdd(false)}
+              className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
+            >
+              {t.common.cancel}
+            </button>
           </div>
         </div>
       )}
       {loading ? (
         <p className="text-slate-400 text-sm text-center py-8">{t.common.loading}</p>
       ) : notes.length === 0 && !showAdd ? (
-        <p className="text-slate-400 text-sm text-center py-8">No notes for this factory yet. Add one above.</p>
+        <p className="text-slate-400 text-sm text-center py-8">
+          No notes for this factory yet. Add one above.
+        </p>
       ) : (
         <div className="space-y-3">
           {notes.map((n: any) => (
             <div key={n.id} className="p-3 bg-slate-50 rounded-lg group">
               <div className="flex justify-between items-center mb-1">
                 <div className="flex items-center gap-2">
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${typeColors[n.noteType] || typeColors.NOTE}`}>{(n.noteType || "NOTE").replace("_", " ")}</span>
-                  {n.contactName && <span className="text-xs text-slate-600 font-semibold">{n.contactName}</span>}
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${typeColors[n.noteType] || typeColors.NOTE}`}
+                  >
+                    {(n.noteType || "NOTE").replace("_", " ")}
+                  </span>
+                  {n.contactName && (
+                    <span className="text-xs text-slate-600 font-semibold">{n.contactName}</span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">{n.date ? new Date(n.date).toLocaleDateString() : new Date(n.createdAt).toLocaleDateString()}</span>
-                  <button onClick={() => handleDelete(n.id)} className="text-xs text-red-500 hover:underline opacity-0 group-hover:opacity-100 transition-opacity">{t.common.delete}</button>
+                  <span className="text-xs text-slate-400">
+                    {n.date
+                      ? new Date(n.date).toLocaleDateString()
+                      : new Date(n.createdAt).toLocaleDateString()}
+                  </span>
+                  <button
+                    onClick={() => handleDelete(n.id)}
+                    className="text-xs text-red-500 hover:underline opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    {t.common.delete}
+                  </button>
                 </div>
               </div>
               <p className="text-sm text-slate-700">{n.content}</p>

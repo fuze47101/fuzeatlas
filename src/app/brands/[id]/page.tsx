@@ -938,7 +938,7 @@ export default function BrandDetailPage() {
               + New Fabric
             </button>
           </div>
-          {brand.fabrics.length === 0 ? (
+          {(brand.fabrics?.length ?? 0) === 0 ? (
             <p className="text-slate-400 text-sm text-center py-8">{t.common.noFabrics}</p>
           ) : (
             <table className="w-full text-sm">
@@ -953,7 +953,7 @@ export default function BrandDetailPage() {
                 </tr>
               </thead>
               <tbody>
-                {brand.fabrics.map((f: any) => (
+                {(brand.fabrics || []).map((f: any) => (
                   <tr key={f.id} className="border-b border-slate-100 hover:bg-slate-50">
                     <td
                       className="py-2 font-bold text-blue-600 cursor-pointer"
