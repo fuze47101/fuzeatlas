@@ -1784,14 +1784,26 @@ function ContactsTab({
   onUpdate: (c: any[]) => void;
   t: any;
 }) {
+  const router = useRouter();
   const [contacts, setContacts] = useState(initial);
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [composeFor, setComposeFor] = useState<any | null>(null);
   const empty = { firstName: "", lastName: "", title: "", email: "", phone: "" };
   const [form, setForm] = useState(empty);
+
+  /**
+   * Launch the BD Wizard pre-filled with this brand + contact. Replaces
+   * the retired EmailComposeModal — the wizard is the canonical email
+   * path (per-user from-email, anti-AI scrubber, auto-note, sequence
+   * orchestration). See /api/admin/bd/wizard/brand/[id].
+   */
+  const launchWizard = (contactId: string) => {
+    router.push(
+      `/admin/bd/wizard?brandId=${encodeURIComponent(brandId)}&contactId=${encodeURIComponent(contactId)}`,
+    );
+  };
 
   const sync = (updated: any[]) => {
     setContacts(updated);
@@ -1947,15 +1959,6 @@ function ContactsTab({
         </p>
       ) : (
         <div className="space-y-2">
-          {composeFor && (
-            <EmailComposeModal
-              contact={composeFor}
-              brand={brand}
-              research={research}
-              onClose={() => setComposeFor(null)}
-              onSent={() => setComposeFor(null)}
-            />
-          )}
           {contacts.map((ct: any) =>
             editingId === ct.id ? (
               <div key={ct.id} className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -2015,8 +2018,8 @@ function ContactsTab({
               <div
                 key={ct.id}
                 className="flex items-center gap-4 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg group cursor-pointer transition"
-                onClick={() => setComposeFor(ct)}
-                title="Click to email"
+                onClick={() => launchWizard(ct.id)}
+                title="Open in BD Wizard"
               >
                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm flex-shrink-0">
                   {(ct.firstName || ct.name || "?")[0]}
@@ -2033,10 +2036,10 @@ function ContactsTab({
                 </div>
                 <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                   <button
-                    onClick={() => setComposeFor(ct)}
+                    onClick={() => launchWizard(ct.id)}
                     disabled={!ct.email}
                     className="px-2.5 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed transition"
-                    title={ct.email ? `Email ${ct.email}` : "No email on file"}
+                    title={ct.email ? `Open BD Wizard for ${ct.email}` : "No email on file"}
                   >
                     📧 Email
                   </button>
@@ -2082,184 +2085,12 @@ function ContactsTab({
   );
 }
 
-/* ── EmailComposeModal — pre-fills from brand AI research, sends via Resend,
- *    logs a NoteType=EMAIL entry on the brand timeline. ─────────────── */
-function EmailComposeModal({
-  contact,
-  brand,
-  research,
-  onClose,
-  onSent,
-}: {
-  contact: any;
-  brand: any;
-  research?: any;
-  onClose: () => void;
-  onSent: () => void;
-}) {
-  // Build hints from whatever AI research fields the brand has. This is a
-  // best-effort pre-fill; the rep can edit everything before sending.
-  const firstName = contact.firstName || contact.name?.split(" ")[0] || "";
-  const brandName = brand?.name || "your team";
-  const bg = (brand?.backgroundInfo || "").trim();
-  const project = (brand?.projectDescription || "").trim();
-  const fuzeRel = research?.fuzeRelevance || brand?.fuzeRelevance;
-  const textileCat = research?.textileCategory || brand?.textileCategory;
-
-  // One-line hook derived from AI research — falls back to a generic line.
-  const relevanceHook = (() => {
-    if (fuzeRel === "high") {
-      return `${brandName}'s focus on ${textileCat || "performance textiles"} lines up closely with what FUZE F1 was built for.`;
-    }
-    if (project) {
-      const truncated = project.length > 160 ? project.slice(0, 160).trim() + "…" : project;
-      return `I was reading about what ${brandName} is working on — ${truncated}`;
-    }
-    if (bg) {
-      const truncated = bg.length > 160 ? bg.slice(0, 160).trim() + "…" : bg;
-      return `A bit of context I pulled on ${brandName}: ${truncated}`;
-    }
-    return `I've been following ${brandName} and think there's a fit with what we do at FUZE.`;
-  })();
-
-  const defaultSubject = `${brandName} × FUZE — durable antimicrobial protection for ${textileCat || "your fabrics"}`;
-
-  const defaultBody =
-    `Hi ${firstName || "there"},\n\n` +
-    `${relevanceHook}\n\n` +
-    `FUZE is a proprietary metamaterial antimicrobial treatment that bonds to fibers during standard textile finishing — no special machinery, compatible with exhaust, pad-dry-cure, and spray application. Our F1 tier is rated for 100 wash cycles and validated against bacteria, fungi, and odor-causing microorganisms per AATCC 100 and ISO 20743.\n\n` +
-    `FUZE is OEKO-TEX Standard 100 Class I (safe for baby products), bluesign® approved, EPA registered, and completely PFAS-free.\n\n` +
-    `Would you be open to a 20-minute call next week to see if there's a small pilot we could run on one of your current fabric programs?\n\n` +
-    `Thanks,\nFUZE Biotech`;
-
-  const [subject, setSubject] = useState(defaultSubject);
-  const [body, setBody] = useState(defaultBody);
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSend = async () => {
-    if (!contact.email) {
-      setError("Contact has no email on file.");
-      return;
-    }
-    if (!subject.trim() || !body.trim()) {
-      setError("Subject and body are required.");
-      return;
-    }
-    setSending(true);
-    setError("");
-    try {
-      // 1. Send via the existing outreach endpoint (Resend under the hood).
-      const res = await fetch("/api/admin/outreach/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contactId: contact.id,
-          channel: "email",
-          subject,
-          body,
-        }),
-      });
-      const j = await res.json();
-      if (!j.ok || j.status === "failed") {
-        setError(j.error || j.failReason || "Send failed");
-        setSending(false);
-        return;
-      }
-
-      // 2. Log a note on the brand timeline so reps can see outreach history
-      //    alongside meetings + calls. Best-effort — don't block on failure.
-      try {
-        await fetch("/api/notes", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            brandId: brand?.id,
-            content: `Email to ${firstName} ${contact.lastName || ""} — ${subject}\n\n${body}`,
-            noteType: "EMAIL",
-            contactName: `${firstName} ${contact.lastName || ""}`.trim(),
-          }),
-        });
-      } catch {}
-
-      onSent();
-    } catch (e: any) {
-      setError(e.message || "Send failed");
-    } finally {
-      setSending(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div
-        className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-5 py-3 border-b">
-          <div>
-            <h3 className="font-bold text-slate-900">
-              📧 Email {firstName} {contact.lastName || ""}
-            </h3>
-            <p className="text-xs text-slate-500">{contact.email || "—"}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 text-2xl leading-none"
-          >
-            ×
-          </button>
-        </div>
-        <div className="p-5 space-y-3 overflow-y-auto flex-1">
-          {(bg || project || fuzeRel) && (
-            <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-800">
-              <span className="font-bold">AI-prefilled from brand research.</span> Edit anything before sending.
-            </div>
-          )}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Subject</label>
-            <input
-              type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Body</label>
-            <textarea
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              rows={14}
-              style={{ fontFamily: '"Times New Roman", Times, serif', fontSize: "12pt" }}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          {error && (
-            <div className="p-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs">
-              {error}
-            </div>
-          )}
-        </div>
-        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t bg-slate-50 rounded-b-xl">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-white"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSend}
-            disabled={sending || !contact.email}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50"
-          >
-            {sending ? "Sending…" : "Send email"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+/* ── EmailComposeModal retired 2026-04-20 — replaced by deep-link to
+ *    /admin/bd/wizard?brandId=X&contactId=Y. The wizard is now the single
+ *    canonical email path (per-user from-email, anti-AI scrubber, auto-note,
+ *    sequence orchestration). See ContactsTab.launchWizard() above.
+ *    Original modal body preserved in git history (pre-2026-04-20).
+ *    ─────────────── */
 
 /* ── NotesTab — CRUD with types ──────────── */
 function NotesTab({

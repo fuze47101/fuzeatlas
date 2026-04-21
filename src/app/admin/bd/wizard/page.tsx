@@ -123,13 +123,71 @@ export default function BDWizardPage() {
     }
     checkProfile();
     const stepIdParam = searchParams.get("stepId");
+    const brandIdParam = searchParams.get("brandId");
+    const contactIdParam = searchParams.get("contactId");
     if (stepIdParam) {
       loadFromSequenceStep(stepIdParam);
+    } else if (brandIdParam) {
+      // Deep-link from /brands/[id] 📧 Email button — skip the next-brand
+      // queue and load this specific brand + contact directly.
+      loadBrandById(brandIdParam, contactIdParam);
     } else {
       loadNextBrand();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /**
+   * Jump straight into the wizard for a specific brand + optional contact.
+   * Entry point from /brands/[id]'s 📧 Email button — replaces the retired
+   * EmailComposeModal. Lands the rep on the "contact" step (or "customize"
+   * if a contactId was provided) instead of the pick-from-queue flow.
+   */
+  async function loadBrandById(brandId: string, contactId?: string | null) {
+    setLoading(true);
+    setError("");
+    setReason("");
+    try {
+      const res = await fetch(`/api/admin/bd/wizard/brand/${encodeURIComponent(brandId)}`);
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setError(data?.error || "Failed to load brand");
+        setBrand(null);
+        return;
+      }
+      setBrand(data.brand);
+      setQueueDepth(0);
+      setReason(`Launched from the brand page — not pulled from the next-brand queue.`);
+      // Reset wizard state for a clean run
+      setSelectedContactId(null);
+      setChannel("email");
+      setQA1("");
+      setQA2("");
+      setQA3("");
+      setSubject("");
+      setBodyText("");
+      setDiagnosed([]);
+      setSendResult(null);
+      setSequenceStepId(null);
+      setIsFollowUp(false);
+
+      // If a specific contact was requested and exists on this brand, lock
+      // to it and skip the contact-pick step.
+      if (contactId) {
+        const match = (data.brand.contacts || []).find((c: any) => c.id === contactId);
+        if (match) {
+          setSelectedContactId(contactId);
+          setStep("customize");
+          return;
+        }
+      }
+      setStep("contact");
+    } catch (e: any) {
+      setError(e?.message || "Failed to load brand");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   /**
    * Preload the wizard from a BDSequenceStep. Skips the normal "next-brand"
