@@ -1,20 +1,26 @@
 // @ts-nocheck
 import { NextResponse, NextRequest } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 
 // Helper function to calculate turnaround days
 function calculateTurnaroundDays(submission: any, testRun: any): number {
   if (!submission?.createdAt || !testRun?.createdAt) return 0;
   const submissionDate = new Date(submission.createdAt);
   const testDate = new Date(testRun.createdAt);
-  return Math.max(0, Math.round((testDate.getTime() - submissionDate.getTime()) / (1000 * 60 * 60 * 24)));
+  return Math.max(
+    0,
+    Math.round((testDate.getTime() - submissionDate.getTime()) / (1000 * 60 * 60 * 24)),
+  );
 }
 
 // Helper to determine if a test passed
 function didTestPass(testRun: any): boolean {
-  if (testRun.icpResult && testRun.icpResult.agValue !== null && testRun.icpResult.auValue !== null) {
+  if (
+    testRun.icpResult &&
+    testRun.icpResult.agValue !== null &&
+    testRun.icpResult.auValue !== null
+  ) {
     // ICP passes if Ag and Au values are present and > 0
     return testRun.icpResult.agValue > 0 && testRun.icpResult.auValue > 0;
   }
@@ -38,15 +44,23 @@ function getIcpTier(agValue: number | null, auValue: number | null): string {
 
 export async function GET(req: NextRequest) {
   try {
-    // Extract user info from headers
-    const userId = req.headers.get("x-user-id");
-    const userRole = req.headers.get("x-user-role") || "PUBLIC";
+    // Resolve the current user from the auth cookie directly. We used to read
+    // x-user-id / x-user-role from request headers, but the middleware writes
+    // those on the RESPONSE (wrong direction for downstream routes) so they
+    // were never actually set here — the client was sending bogus literal
+    // strings ("current-user" / "ADMIN") which this route was then blindly
+    // trusting. Fixing both sides: server uses getCurrentUser(), client stops
+    // sending fake headers.
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+    }
 
     // Admin/Employee only
-    if (!["ADMIN", "EMPLOYEE"].includes(userRole)) {
+    if (!["ADMIN", "EMPLOYEE"].includes(user.role)) {
       return NextResponse.json(
         { ok: false, error: "Unauthorized: Admin/Employee access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -89,17 +103,17 @@ export async function GET(req: NextRequest) {
     });
 
     const testsThisPeriod = allTests.filter(
-      (t) => t.createdAt >= startDate && t.createdAt <= endDate
+      (t) => t.createdAt >= startDate && t.createdAt <= endDate,
     );
     const testsLastPeriod = allTests.filter(
       (t) =>
-        t.createdAt >=
-          new Date(startDate.getTime() - (endDate.getTime() - startDate.getTime())) &&
-        t.createdAt < startDate
+        t.createdAt >= new Date(startDate.getTime() - (endDate.getTime() - startDate.getTime())) &&
+        t.createdAt < startDate,
     );
 
     const passedThisPeriod = testsThisPeriod.filter((t) => didTestPass(t)).length;
-    const passRate = testsThisPeriod.length > 0 ? (passedThisPeriod / testsThisPeriod.length) * 100 : 0;
+    const passRate =
+      testsThisPeriod.length > 0 ? (passedThisPeriod / testsThisPeriod.length) * 100 : 0;
 
     const turnaroundTimes = testsThisPeriod
       .map((t) => calculateTurnaroundDays(t.submission, t))
@@ -131,27 +145,15 @@ export async function GET(req: NextRequest) {
     // TESTS BY TYPE
     // ─────────────────────────────────────────────
 
-    const testsByType = [
-      "ICP",
-      "ANTIBACTERIAL",
-      "FUNGAL",
-      "ODOR",
-      "UV",
-      "MICROFIBER",
-      "OTHER",
-    ]
+    const testsByType = ["ICP", "ANTIBACTERIAL", "FUNGAL", "ODOR", "UV", "MICROFIBER", "OTHER"]
       .map((type) => {
-        const typeTests = testsThisPeriod.filter(
-          (t) => t.testType === type
-        );
+        const typeTests = testsThisPeriod.filter((t) => t.testType === type);
         const passed = typeTests.filter((t) => didTestPass(t)).length;
         return {
           type,
           count: typeTests.length,
           passRate:
-            typeTests.length > 0
-              ? Math.round((passed / typeTests.length) * 100 * 100) / 100
-              : 0,
+            typeTests.length > 0 ? Math.round((passed / typeTests.length) * 100 * 100) / 100 : 0,
         };
       })
       .filter((t) => t.count > 0);
@@ -160,10 +162,7 @@ export async function GET(req: NextRequest) {
     // TESTS BY METHOD (STANDARD)
     // ─────────────────────────────────────────────
 
-    const methodMap = new Map<
-      string,
-      { count: number; passed: number }
-    >();
+    const methodMap = new Map<string, { count: number; passed: number }>();
     testsThisPeriod.forEach((t) => {
       const method = t.testMethodStd || "Unknown";
       const entry = methodMap.get(method) || { count: 0, passed: 0 };
@@ -176,8 +175,7 @@ export async function GET(req: NextRequest) {
       .map(([method, data]) => ({
         method,
         count: data.count,
-        passRate:
-          data.count > 0 ? Math.round((data.passed / data.count) * 100 * 100) / 100 : 0,
+        passRate: data.count > 0 ? Math.round((data.passed / data.count) * 100 * 100) / 100 : 0,
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
@@ -241,9 +239,7 @@ export async function GET(req: NextRequest) {
     });
 
     const pipelineFlow = pipelineStages.map((stage) => {
-      const brandsInStage = allBrands.filter(
-        (b) => b.pipelineStage === stage
-      );
+      const brandsInStage = allBrands.filter((b) => b.pipelineStage === stage);
       return {
         stage,
         count: brandsInStage.length,
@@ -284,18 +280,13 @@ export async function GET(req: NextRequest) {
       select: { id: true, name: true },
     });
 
-    const brandNameMap = new Map(
-      brandsWithNames.map((b) => [b.id, b.name])
-    );
+    const brandNameMap = new Map(brandsWithNames.map((b) => [b.id, b.name]));
 
     const topBrands = Array.from(brandTestMap.values())
       .map((entry) => ({
         name: brandNameMap.get(entry.id) || "Unknown",
         tests: entry.tests,
-        passRate:
-          entry.tests > 0
-            ? Math.round((entry.passed / entry.tests) * 100 * 100) / 100
-            : 0,
+        passRate: entry.tests > 0 ? Math.round((entry.passed / entry.tests) * 100 * 100) / 100 : 0,
         stage: entry.stage,
       }))
       .sort((a, b) => b.tests - a.tests)
@@ -305,10 +296,7 @@ export async function GET(req: NextRequest) {
     // TOP FACTORIES
     // ─────────────────────────────────────────────
 
-    const factoryTestMap = new Map<
-      string,
-      { tests: number; passed: number; id: string }
-    >();
+    const factoryTestMap = new Map<string, { tests: number; passed: number; id: string }>();
 
     testsThisPeriod.forEach((t) => {
       if (!t.submission?.factoryId) return;
@@ -329,10 +317,7 @@ export async function GET(req: NextRequest) {
     });
 
     const factoryDetailsMap = new Map(
-      factoriesWithDetails.map((f) => [
-        f.id,
-        { name: f.name, country: f.country || "Unknown" },
-      ])
+      factoriesWithDetails.map((f) => [f.id, { name: f.name, country: f.country || "Unknown" }]),
     );
 
     const topFactories = Array.from(factoryTestMap.values())
@@ -345,9 +330,7 @@ export async function GET(req: NextRequest) {
           name: details.name,
           tests: entry.tests,
           passRate:
-            entry.tests > 0
-              ? Math.round((entry.passed / entry.tests) * 100 * 100) / 100
-              : 0,
+            entry.tests > 0 ? Math.round((entry.passed / entry.tests) * 100 * 100) / 100 : 0,
           country: details.country,
         };
       })
@@ -358,10 +341,7 @@ export async function GET(req: NextRequest) {
     // LAB PERFORMANCE
     // ─────────────────────────────────────────────
 
-    const labMap = new Map<
-      string,
-      { tests: number; totalTurnaround: number; labName: string }
-    >();
+    const labMap = new Map<string, { tests: number; totalTurnaround: number; labName: string }>();
 
     testsThisPeriod.forEach((t) => {
       if (!t.lab?.id) return;
@@ -381,10 +361,7 @@ export async function GET(req: NextRequest) {
       .map((entry) => ({
         name: entry.labName,
         tests: entry.tests,
-        avgTurnaround:
-          entry.tests > 0
-            ? Math.round(entry.totalTurnaround / entry.tests)
-            : 0,
+        avgTurnaround: entry.tests > 0 ? Math.round(entry.totalTurnaround / entry.tests) : 0,
       }))
       .sort((a, b) => b.tests - a.tests)
       .slice(0, 8);
@@ -424,10 +401,8 @@ export async function GET(req: NextRequest) {
           count: entry?.count || 0,
           avgValue:
             entry && entry.count > 0
-              ? Math.round(
-                  ((entry.totalAgValue + entry.totalAuValue) / 2 / entry.count) *
-                    100
-                ) / 100
+              ? Math.round(((entry.totalAgValue + entry.totalAuValue) / 2 / entry.count) * 100) /
+                100
               : 0,
         };
       })
@@ -437,10 +412,7 @@ export async function GET(req: NextRequest) {
     // WASH DURABILITY
     // ─────────────────────────────────────────────
 
-    const washMap = new Map<
-      number,
-      { testCount: number; totalRetention: number }
-    >();
+    const washMap = new Map<number, { testCount: number; totalRetention: number }>();
 
     testsThisPeriod.forEach((t) => {
       if (t.washCount && t.icpResult?.agValue) {
@@ -459,11 +431,7 @@ export async function GET(req: NextRequest) {
       .map(([washCount, data]) => ({
         washCount,
         avgRetention:
-          data.testCount > 0
-            ? Math.round(
-                (data.totalRetention / data.testCount) * 100
-              ) / 100
-            : 0,
+          data.testCount > 0 ? Math.round((data.totalRetention / data.testCount) * 100) / 100 : 0,
         testCount: data.testCount,
       }))
       .sort((a, b) => a.washCount - b.washCount);
@@ -472,10 +440,7 @@ export async function GET(req: NextRequest) {
     // COMPLIANCE OVERVIEW
     // ─────────────────────────────────────────────
 
-    const complianceStandards = new Map<
-      string,
-      { tested: number; passed: number }
-    >();
+    const complianceStandards = new Map<string, { tested: number; passed: number }>();
 
     testsThisPeriod.forEach((t) => {
       if (t.testMethodStd) {
@@ -489,17 +454,12 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    const complianceOverview = Array.from(
-      complianceStandards.entries()
-    )
+    const complianceOverview = Array.from(complianceStandards.entries())
       .map(([standard, data]) => ({
         standard,
         tested: data.tested,
         passed: data.passed,
-        rate:
-          data.tested > 0
-            ? Math.round((data.passed / data.tested) * 100 * 100) / 100
-            : 0,
+        rate: data.tested > 0 ? Math.round((data.passed / data.tested) * 100 * 100) / 100 : 0,
       }))
       .sort((a, b) => b.tested - a.tested)
       .slice(0, 8);
@@ -538,13 +498,10 @@ export async function GET(req: NextRequest) {
         complianceOverview,
         recentActivity,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (e: any) {
     console.error("Analytics API error:", e);
-    return NextResponse.json(
-      { ok: false, error: e.message || "Internal error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, error: e.message || "Internal error" }, { status: 500 });
   }
 }

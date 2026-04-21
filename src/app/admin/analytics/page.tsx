@@ -60,11 +60,12 @@ export default function AnalyticsDashboard() {
     try {
       setLoading(true);
       setError(null);
+      // Auth is resolved server-side from the auth cookie via getCurrentUser().
+      // We used to send hardcoded x-user-id/x-user-role headers here, but those
+      // were untrusted client values and the API now ignores them — the cookie
+      // is the source of truth. credentials: "include" makes sure it ships.
       const response = await fetch(`/api/admin/analytics-data?range=${range}`, {
-        headers: {
-          "x-user-id": "current-user",
-          "x-user-role": "ADMIN",
-        },
+        credentials: "include",
       });
       if (!response.ok) throw new Error("Failed to fetch analytics");
       const json = await response.json();
@@ -189,7 +190,7 @@ export default function AnalyticsDashboard() {
       ? Math.round(
           ((data.overview.testsThisPeriod - data.overview.testsLastPeriod) /
             data.overview.testsLastPeriod) *
-            100
+            100,
         )
       : 0
     : 0;
@@ -232,7 +233,13 @@ export default function AnalyticsDashboard() {
               style={rangeButtonStyle(range === r)}
               disabled={loading}
             >
-              {r === "all" ? "All Time" : r === "90d" ? "90 Days" : r === "30d" ? "30 Days" : "7 Days"}
+              {r === "all"
+                ? "All Time"
+                : r === "90d"
+                  ? "90 Days"
+                  : r === "30d"
+                    ? "30 Days"
+                    : "7 Days"}
             </button>
           ))}
         </div>
@@ -270,10 +277,8 @@ export default function AnalyticsDashboard() {
                   </span>
                 </div>
                 <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
-                  {(
-                    (data.overview.testsThisPeriod * data.overview.passRate) /
-                    100
-                  ).toFixed(0)} passed
+                  {((data.overview.testsThisPeriod * data.overview.passRate) / 100).toFixed(0)}{" "}
+                  passed
                 </div>
               </div>
 
@@ -281,18 +286,14 @@ export default function AnalyticsDashboard() {
               <div style={kpiCardStyle}>
                 <div style={kpiLabelStyle}>Active Brands</div>
                 <div style={kpiValueStyle}>{data.overview.activeBrands}</div>
-                <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
-                  this period
-                </div>
+                <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>this period</div>
               </div>
 
               {/* Avg Turnaround */}
               <div style={kpiCardStyle}>
                 <div style={kpiLabelStyle}>Avg Turnaround</div>
                 <div style={kpiValueStyle}>{data.overview.avgTurnaround} days</div>
-                <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
-                  submission to result
-                </div>
+                <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>submission to result</div>
               </div>
             </div>
 
@@ -301,15 +302,13 @@ export default function AnalyticsDashboard() {
               {/* Tests Over Time */}
               <div style={chartContainerStyle}>
                 <h3 style={chartTitleStyle}>Tests Over Time</h3>
-                <div style={{ height: "250px", display: "flex", alignItems: "flex-end", gap: "2px" }}>
+                <div
+                  style={{ height: "250px", display: "flex", alignItems: "flex-end", gap: "2px" }}
+                >
                   {data.testsTrend.slice(-20).map((point, i) => {
-                    const maxCount = Math.max(
-                      ...data.testsTrend.map((p) => p.count),
-                      1
-                    );
+                    const maxCount = Math.max(...data.testsTrend.map((p) => p.count), 1);
                     const height = (point.count / maxCount) * 200;
-                    const passPercent =
-                      point.count > 0 ? (point.passed / point.count) * 100 : 0;
+                    const passPercent = point.count > 0 ? (point.passed / point.count) * 100 : 0;
                     return (
                       <div
                         key={i}
@@ -317,7 +316,7 @@ export default function AnalyticsDashboard() {
                           flex: 1,
                           height: `${height}px`,
                           background: `linear-gradient(to top, ${getPassRateColor(
-                            passPercent
+                            passPercent,
                           )} 0%, #ccc ${100 - passPercent}%)`,
                           borderRadius: "2px 2px 0 0",
                           cursor: "help",
@@ -388,10 +387,7 @@ export default function AnalyticsDashboard() {
                     .filter((p) => p.count > 0)
                     .slice(0, 8)
                     .map((stage) => {
-                      const maxCount = Math.max(
-                        ...data.pipelineFlow.map((s) => s.count),
-                        1
-                      );
+                      const maxCount = Math.max(...data.pipelineFlow.map((s) => s.count), 1);
                       const width = (stage.count / maxCount) * 100;
                       return (
                         <div key={stage.stage}>
@@ -512,9 +508,7 @@ export default function AnalyticsDashboard() {
                         }}
                       >
                         <span style={{ fontWeight: "600" }}>{brand.name}</span>
-                        <span style={{ color: "#6b7280" }}>
-                          {brand.tests} tests
-                        </span>
+                        <span style={{ color: "#6b7280" }}>{brand.tests} tests</span>
                       </div>
                       <div
                         style={{
@@ -560,12 +554,8 @@ export default function AnalyticsDashboard() {
                           marginBottom: "0.25rem",
                         }}
                       >
-                        <span style={{ fontWeight: "600" }}>
-                          {factory.name} 🌍
-                        </span>
-                        <span style={{ color: "#6b7280" }}>
-                          {factory.tests} tests
-                        </span>
+                        <span style={{ fontWeight: "600" }}>{factory.name} 🌍</span>
+                        <span style={{ color: "#6b7280" }}>{factory.tests} tests</span>
                       </div>
                       <div
                         style={{
@@ -612,9 +602,7 @@ export default function AnalyticsDashboard() {
                         }}
                       >
                         <span style={{ fontWeight: "600" }}>{lab.name}</span>
-                        <span style={{ color: "#6b7280" }}>
-                          {lab.avgTurnaround}d
-                        </span>
+                        <span style={{ color: "#6b7280" }}>{lab.avgTurnaround}d</span>
                       </div>
                       <div
                         style={{
@@ -654,9 +642,7 @@ export default function AnalyticsDashboard() {
                           }}
                         >
                           <span style={{ fontWeight: "600" }}>{item.washCount} washes</span>
-                          <span style={{ color: "#6b7280" }}>
-                            {item.avgRetention}% retention
-                          </span>
+                          <span style={{ color: "#6b7280" }}>{item.avgRetention}% retention</span>
                         </div>
                         <div
                           style={{
@@ -736,7 +722,15 @@ export default function AnalyticsDashboard() {
             {/* Recent Activity */}
             <div style={chartContainerStyle}>
               <h3 style={chartTitleStyle}>Recent Activity</h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxHeight: "400px", overflowY: "auto" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                  maxHeight: "400px",
+                  overflowY: "auto",
+                }}
+              >
                 {data.recentActivity.slice(0, 15).map((activity, i) => (
                   <div
                     key={i}
@@ -752,9 +746,7 @@ export default function AnalyticsDashboard() {
                     }}
                   >
                     <div>
-                      <span style={{ fontWeight: "600", color: "#1A1A2E" }}>
-                        {activity.type}
-                      </span>
+                      <span style={{ fontWeight: "600", color: "#1A1A2E" }}>{activity.type}</span>
                       <div style={{ color: "#6b7280", fontSize: "0.75rem" }}>
                         {activity.description}
                       </div>
