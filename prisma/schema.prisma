@@ -234,6 +234,10 @@ model User {
   grantedReportShares  WeeklyExecReportShare[] @relation("WeeklyShareGrantor")
   receivedReportShares WeeklyExecReportShare[] @relation("WeeklyShareRecipient")
 
+  // BD Wizard Phase 3 — sequences this rep owns. A sequence is a multi-step
+  // outbound run against (brand, contact, rep). Inverse of BDSequence.rep.
+  bdSequences          BDSequence[]            @relation("UserBDSequences")
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -294,7 +298,17 @@ model Brand {
   // cron from re-warning the same rep; cleared on release or re-activity.
   inactivityWarnedAt DateTime?
 
+  // BD Wizard Phase 3 — flipped true by the sequence engine when the brand
+  // hits the "paid retargeting" step (Day 14 of the default cadence). We
+  // don't push to an ad platform yet; the flag is the integration seam for
+  // a future LinkedIn Matched Audiences / Meta Custom Audiences sync. For
+  // now it just shows up as a column in the sequences dashboard so the
+  // marketing operator knows which brands to bundle into the next ads run.
+  paidAudienceTagged   Boolean   @default(false)
+  paidAudienceTaggedAt DateTime?
+
   contacts    Contact[]
+  bdSequences BDSequence[]  @relation("BrandBDSequences")
   factories   BrandFactory[]
   submissions FabricSubmission[]
   fabrics     Fabric[]
@@ -684,6 +698,7 @@ model Contact {
 
   outreachMessages OutreachMessage[]
   outreachChecks   ContactOutreach[]
+  bdSequences      BDSequence[]      @relation("ContactBDSequences")
   notes            Note[]
 
   createdAt DateTime @default(now())
@@ -2933,4 +2948,115 @@ model WeeklyExecReportShare {
   @@unique([reportId, userId])
   @@index([userId])
   @@index([reportId])
+}
+
+// ─────────────────────────────────────────────
+// BD WIZARD PHASE 3 — LONG-FUNNEL ORCHESTRATION
+//
+// A BDSequence is one rep's multi-step outbound campaign against one
+// contact at one brand. The default cadence is 6 steps over ~30 days,
+// mixing channels (email, LinkedIn manual, paid retargeting, tradeshow).
+//
+// Lifecycle:
+//   created  → first step is "sent" (the wizard's initial email goes out
+//              and creates the sequence as a side effect)
+//   active   → subsequent steps tick into "ready" status as their
+//              scheduledFor passes; rep approves & sends each one
+//   completed→ all steps consumed (sent or skipped)
+//   exited   → manual stop, reply detected, or meeting booked
+//
+// One sequence per (brand, contact, rep) — uniqueness enforced. If the
+// rep wants to re-engage after exit, they exit the old one first then
+// create a new one (Phase 4 will add restart UX).
+//
+// Steps don't auto-send. Per Andrew's locked decision (2026-04-20):
+// "Always queue for review — no auto-send ever". The cron generates
+// the draft and parks the step in the rep's ACM task queue.
+// ─────────────────────────────────────────────
+model BDSequence {
+  id String @id @default(cuid())
+
+  brandId String
+  brand   Brand @relation("BrandBDSequences", fields: [brandId], references: [id], onDelete: Cascade)
+
+  contactId String
+  contact   Contact @relation("ContactBDSequences", fields: [contactId], references: [id], onDelete: Cascade)
+
+  repId String
+  rep   User @relation("UserBDSequences", fields: [repId], references: [id])
+
+  // Cadence template applied at creation. "default" = the 6-step long funnel.
+  // Future cadences (e.g. "premium_light_touch") will live in src/lib/bd-sequence.ts
+  // and reference this string.
+  cadenceKey String @default("default")
+
+  status      String   @default("active") // active | paused | completed | exited
+  exitReason  String?  // replied | meeting_booked | unqualified | manual_stop | replaced
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+
+  // Cached counters so the dashboard doesn't have to count steps each render.
+  // Updated whenever a step transitions. Approximate — recomputed authoritatively
+  // by /api/admin/bd/sequences when stale.
+  totalSteps   Int @default(0)
+  sentSteps    Int @default(0)
+  skippedSteps Int @default(0)
+
+  steps BDSequenceStep[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // One ACTIVE sequence per (brand, contact, rep). Exited/completed runs
+  // stay in the table for history but don't block creating a new one — the
+  // application code enforces "no overlapping active runs" at insert time
+  // since Postgres can't do conditional uniqueness without a partial index,
+  // and Prisma 6 doesn't model partial indexes natively yet.
+  @@unique([brandId, contactId, repId, status])
+  @@index([repId, status])
+  @@index([brandId])
+  @@index([status])
+}
+
+model BDSequenceStep {
+  id String @id @default(cuid())
+
+  sequenceId String
+  sequence   BDSequence @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
+
+  stepIndex Int      // 0-based position in the cadence
+  channel   String   // email | linkedin_connect | linkedin_dm | paid | tradeshow
+  status    String   @default("pending") // pending | ready | sent | skipped | failed
+
+  // When this step becomes eligible for the rep to review/send. Cron looks
+  // for status="pending" AND scheduledFor <= now() and flips to "ready".
+  scheduledFor DateTime
+  readyAt      DateTime?  // when cron generated the draft
+  sentAt       DateTime?
+  skippedAt    DateTime?
+  failedAt     DateTime?
+  failReason   String?
+
+  // Draft content — generated by cron for email/LinkedIn steps, then editable
+  // by the rep before they hit send. For paid/tradeshow steps these stay null.
+  draftSubject String?
+  draftBody    String?
+
+  // Link out to the OutreachMessage row that captures the actual send (only
+  // populated once status="sent" for email/LinkedIn). Loose FK — no Prisma
+  // relation — because OutreachMessage is owned by Contact and we don't want
+  // a cascade chain back through here.
+  outreachMessageId String?
+
+  // Optional CrmTask we created on /acm/tasks for the rep. Populated when
+  // status flips to "ready". Used by the UI to deep-link from the task list
+  // back to the wizard. Loose FK for the same reason as outreachMessageId.
+  crmTaskId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Cron query: find steps that are due to flip from pending → ready.
+  @@index([status, scheduledFor])
+  @@index([sequenceId, stepIndex])
 }

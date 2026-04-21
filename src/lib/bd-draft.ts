@@ -1,0 +1,265 @@
+// @ts-nocheck
+/**
+ * ═══════════════════════════════════════════════════════════════════════
+ * BD WIZARD — Shared draft generator
+ *
+ * Extracted from /api/admin/bd/wizard/draft so the sequence cron can
+ * call it directly without making an internal HTTP round-trip. Both
+ * the wizard's "draft this email" endpoint and the cron's step-prep
+ * pass use this function.
+ *
+ * Behavior:
+ *   - Builds the same prompt the route used in Phase 1 (10 non-negotiable
+ *     rules, brand intel, rep customization Q&A).
+ *   - Calls Anthropic primary, OpenAI fallback.
+ *   - Returns humanized subject + body + diagnostic flags.
+ *   - If no AI keys are configured, falls back to a templated draft so
+ *     the wizard / cron still produces something usable.
+ * ═══════════════════════════════════════════════════════════════════════
+ */
+import { aiFetch } from "@/lib/ai-fetch";
+import { humanize, diagnose } from "@/lib/humanize";
+
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
+const OPENAI_MODEL = "gpt-4o";
+
+export type DraftChannel = "email" | "linkedin";
+
+export interface DraftArgs {
+  brand: any; // Prisma Brand with researchData, textileCategory, name
+  contact: any; // Prisma Contact with firstName, name, jobTitle
+  channel: DraftChannel;
+  /** 2-3 freeform Q&A pairs the rep filled in on the wizard. */
+  answers?: Record<string, string>;
+  tone?: "direct" | "warm" | "curious";
+  repName: string;
+  userId: string; // for ai-fetch cost logging
+  /**
+   * Optional — if this is a follow-up step in a sequence, we let the
+   * prompt know so it doesn't greet them like a stranger and references
+   * the first touch.
+   */
+  isFollowUp?: boolean;
+  /** Optional — the subject of the first-touch email, for grounding the follow-up. */
+  previousSubject?: string;
+}
+
+export interface DraftResult {
+  subject: string;
+  body: string;
+  diagnosed: string[];
+  provider: "anthropic" | "openai" | "fallback";
+  usage?: any;
+}
+
+function buildPrompt(a: DraftArgs): string {
+  const {
+    brand,
+    contact,
+    channel,
+    answers,
+    tone = "direct",
+    repName,
+    isFollowUp,
+    previousSubject,
+  } = a;
+  const isEmail = channel === "email";
+  const contactFirstName =
+    contact.firstName || (contact.name ? contact.name.split(" ")[0] : "there");
+
+  const intel = brand.researchData
+    ? JSON.stringify(brand.researchData).slice(0, 6000)
+    : "(no research data yet — keep the pitch generic but grounded in their category)";
+
+  const qaLines = Object.entries(answers || {})
+    .filter(([, v]) => v && String(v).trim())
+    .map(([k, v]) => `- ${k}: ${v}`)
+    .join("\n");
+
+  const followUpNote = isFollowUp
+    ? `\nTHIS IS A FOLLOW-UP. The rep already sent a first-touch ${isEmail ? "email" : "LinkedIn DM"}${previousSubject ? ` (subject: "${previousSubject}")` : ""}. Do not re-introduce FUZE from scratch. Reference that they might not have seen the first message, bring one new angle (a different value prop, a recent industry data point, or a softer ask), and keep it even shorter than a cold open.\n`
+    : "";
+
+  return `You are writing a ${isEmail ? "cold email" : "LinkedIn DM"} on behalf of ${repName} at FUZE Technologies.
+
+FUZE sells F1 meta-material antimicrobial textile treatment, applied at the mill level. Permanent through 50+ industrial washes. Not silver, not nano. It's a finishing technology that brands license into their supply chain.
+
+TARGET BRAND: ${brand.name}
+TARGET CONTACT: ${contact.name || [contact.firstName, contact.lastName].filter(Boolean).join(" ")} — ${contact.jobTitle || "decision-maker"}
+CATEGORY: ${brand.textileCategory || "textile"}
+${followUpNote}
+INTEL:
+${intel}
+
+REP'S CUSTOMIZATION NOTES:
+${qaLines || "(none provided)"}
+
+TONE: ${tone}
+
+RULES (non-negotiable — violating any of these fails the draft):
+1. NO em-dashes. Use periods or commas.
+2. NO "I hope this email finds you well" or any "I hope..." opener.
+3. NO "circle back", "touch base", "leverage", "synergy", "unlock", "game-changer", "deep dive".
+4. NO three-item parallel lists ("fast, reliable, and scalable").
+5. NO generic hedging openers ("Essentially,", "Fundamentally,", "Moreover,", "Furthermore,").
+6. NO bullet lists in the body. Write prose.
+7. NO claim that FUZE is "silver" or "nano" — it's F1 meta-material.
+${
+  isEmail
+    ? `8. Keep to ${isFollowUp ? "2-4" : "4-6"} short sentences. Plain text only (no HTML tags).
+9. Include one specific reference to the target brand that proves you actually looked at them.
+10. End with one concrete ask — ${isFollowUp ? "just a yes or no on a 15-min call, or ask who the right person is" : "a 15-min call or a reply to a specific question"}. Not "let me know your thoughts".`
+    : `8. Keep under 600 characters total (LinkedIn cuts off).
+9. One specific reference to the contact's role OR a recent post from their brand.
+10. One concrete ask — 15-min call OR the right person to speak to. Not "would love to connect".`
+}
+
+${isEmail ? `Return JSON: {"subject": "...", "body": "..."} — subject must be under 8 words, no clickbait, no emojis, no "Re:" or "Fwd:".` : `Return JSON: {"subject": "", "body": "..."} — subject is always empty for LinkedIn.`}
+
+Start with "${contactFirstName}," as the opener. No "Dear" or "Hello".
+
+Respond with ONLY the JSON object, no preamble or postamble.`;
+}
+
+async function callAnthropic(prompt: string, userId: string) {
+  const { response } = await aiFetch(
+    "https://api.anthropic.com/v1/messages",
+    {
+      method: "POST",
+      headers: {
+        "x-api-key": ANTHROPIC_API_KEY!,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: ANTHROPIC_MODEL,
+        max_tokens: 1024,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    },
+    { provider: "anthropic", callerRoute: "bd/draft-helper", userId },
+  );
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Anthropic ${response.status}: ${text}`);
+  }
+  const data = await response.json();
+  const text = data.content?.[0]?.text || "";
+  return { text, usage: data.usage };
+}
+
+async function callOpenAI(prompt: string, userId: string) {
+  const { response } = await aiFetch(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: OPENAI_MODEL,
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+        max_tokens: 1024,
+        response_format: { type: "json_object" },
+      }),
+    },
+    { provider: "openai", callerRoute: "bd/draft-helper", userId },
+  );
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`OpenAI ${response.status}: ${text}`);
+  }
+  const data = await response.json();
+  const text = data.choices?.[0]?.message?.content || "";
+  return { text, usage: data.usage };
+}
+
+function safeParseJson(text: string): { subject: string; body: string } {
+  let cleaned = text.trim();
+  cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "");
+  const match = cleaned.match(/\{[\s\S]*\}/);
+  if (match) cleaned = match[0];
+  try {
+    const parsed = JSON.parse(cleaned);
+    return {
+      subject: String(parsed.subject || "").trim(),
+      body: String(parsed.body || "").trim(),
+    };
+  } catch {
+    return { subject: "", body: cleaned };
+  }
+}
+
+function fallbackDraft(a: DraftArgs): { subject: string; body: string } {
+  const first = a.contact.firstName || (a.contact.name ? a.contact.name.split(" ")[0] : "there");
+  if (a.channel === "email") {
+    if (a.isFollowUp) {
+      return {
+        subject: `Re: FUZE F1 for ${a.brand.name}`,
+        body: `${first},
+
+Following up on my note last week. FUZE F1 is the antimicrobial finish that survives 50+ washes, and it maps cleanly to ${a.brand.textileCategory || "your product"} line. Do you have 15 minutes this week, or is there a better person on your team to speak to?
+
+${a.repName}`,
+      };
+    }
+    return {
+      subject: `FUZE F1 for ${a.brand.name}`,
+      body: `${first},
+
+${a.brand.name} came across my desk this week. We license a textile finish called FUZE F1 that stays antimicrobial through 50+ industrial washes. Not silver, not nano. It's applied at the mill.
+
+Worth 15 minutes to see if it fits your ${a.brand.textileCategory || "product"} line?
+
+${a.repName}`,
+    };
+  }
+  return {
+    subject: "",
+    body: `${first}, FUZE F1 is an antimicrobial finish applied at the mill that lasts 50+ washes. Curious if it maps to ${a.brand.name}'s ${a.brand.textileCategory || "textile"} line. Worth a quick look?`,
+  };
+}
+
+export async function generateDraft(a: DraftArgs): Promise<DraftResult> {
+  const prompt = buildPrompt(a);
+
+  try {
+    if (ANTHROPIC_API_KEY) {
+      const r = await callAnthropic(prompt, a.userId);
+      const parsed = safeParseJson(r.text);
+      return {
+        subject: humanize(parsed.subject).replace(/\n/g, " ").trim(),
+        body: humanize(parsed.body),
+        diagnosed: diagnose(parsed.body),
+        provider: "anthropic",
+        usage: r.usage,
+      };
+    }
+    if (OPENAI_API_KEY) {
+      const r = await callOpenAI(prompt, a.userId);
+      const parsed = safeParseJson(r.text);
+      return {
+        subject: humanize(parsed.subject).replace(/\n/g, " ").trim(),
+        body: humanize(parsed.body),
+        diagnosed: diagnose(parsed.body),
+        provider: "openai",
+        usage: r.usage,
+      };
+    }
+  } catch (err) {
+    console.error("[bd-draft] AI call failed, falling back to template:", err);
+  }
+
+  const fallback = fallbackDraft(a);
+  return {
+    subject: humanize(fallback.subject).replace(/\n/g, " ").trim(),
+    body: humanize(fallback.body),
+    diagnosed: diagnose(fallback.body),
+    provider: "fallback",
+  };
+}

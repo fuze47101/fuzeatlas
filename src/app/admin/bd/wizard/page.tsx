@@ -23,6 +23,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // ────────────── types ──────────────
 interface WizardContact {
@@ -57,6 +58,15 @@ type Step = "pick" | "contact" | "customize" | "draft" | "sent";
 // ────────────── component ──────────────
 export default function BDWizardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Phase 3: wizard can be deep-linked from a sequence step. When
+  // ?stepId=<id> is present we preload the step's draft and jump
+  // straight to the "draft" step with follow-up framing. The send
+  // call will include stepId so the sequence marks this step sent.
+  const [sequenceStepId, setSequenceStepId] = useState<string | null>(null);
+  const [sequenceLoading, setSequenceLoading] = useState(false);
+  const [isFollowUp, setIsFollowUp] = useState(false);
 
   const [step, setStep] = useState<Step>("pick");
   const [brand, setBrand] = useState<WizardBrand | null>(null);
@@ -71,9 +81,9 @@ export default function BDWizardPage() {
   const [tone, setTone] = useState<"direct" | "warm" | "curious">("direct");
 
   // Customization Q&A
-  const [qA1, setQA1] = useState("");  // what caught your attention about this brand
-  const [qA2, setQA2] = useState("");  // what specific problem do you think FUZE solves for them
-  const [qA3, setQA3] = useState("");  // anything personal/recent you know about the contact
+  const [qA1, setQA1] = useState(""); // what caught your attention about this brand
+  const [qA2, setQA2] = useState(""); // what specific problem do you think FUZE solves for them
+  const [qA3, setQA3] = useState(""); // anything personal/recent you know about the contact
 
   // Draft
   const [drafting, setDrafting] = useState(false);
@@ -112,9 +122,61 @@ export default function BDWizardPage() {
       }
     }
     checkProfile();
-    loadNextBrand();
+    const stepIdParam = searchParams.get("stepId");
+    if (stepIdParam) {
+      loadFromSequenceStep(stepIdParam);
+    } else {
+      loadNextBrand();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /**
+   * Preload the wizard from a BDSequenceStep. Skips the normal "next-brand"
+   * queue pull and drops the rep directly on the Draft step with the stored
+   * draftSubject/draftBody as the starting point. Send will include the
+   * stepId so the sequence marks it sent instead of creating a new one.
+   */
+  async function loadFromSequenceStep(stepId: string) {
+    setLoading(true);
+    setSequenceLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/admin/bd/sequence/step/${encodeURIComponent(stepId)}`);
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setError(data?.error || "Failed to load sequence step");
+        setBrand(null);
+        return;
+      }
+      const s = data.step;
+      const ch = s.channel === "linkedin_dm" ? "linkedin" : s.channel === "email" ? "email" : null;
+      if (!ch) {
+        setError(
+          `Step channel is "${s.channel}" — not sendable from the wizard. Go to the sequences dashboard to mark it done.`,
+        );
+        return;
+      }
+      // Stash the brand + contact in our state, jump to the draft step.
+      setBrand(s.sequence.brand);
+      setSelectedContactId(s.sequence.contact.id);
+      setChannel(ch);
+      setSubject(s.draftSubject || "");
+      setBodyText(s.draftBody || "");
+      setDiagnosed([]);
+      setSequenceStepId(s.id);
+      setIsFollowUp(true);
+      setStep("draft");
+      setReason(
+        `Follow-up step ${s.stepIndex + 1} of the active sequence — review and send, or go back to regenerate.`,
+      );
+    } catch (e: any) {
+      setError(e?.message || "Failed to load sequence step");
+    } finally {
+      setLoading(false);
+      setSequenceLoading(false);
+    }
+  }
 
   // ────────────── actions ──────────────
   async function loadNextBrand(skipId?: string) {
@@ -146,6 +208,8 @@ export default function BDWizardPage() {
       setBodyText("");
       setDiagnosed([]);
       setSendResult(null);
+      setSequenceStepId(null);
+      setIsFollowUp(false);
     } catch (e: any) {
       setError(e?.message || "Failed to load next brand");
     } finally {
@@ -165,9 +229,7 @@ export default function BDWizardPage() {
         return;
       }
       // Reload the brand to pick up researchData
-      const refreshed = await fetch(
-        `/api/admin/bd/wizard/next-brand?skip=__refresh__&preview=1`,
-      ); // not ideal but cheap: re-fetch by skipping nothing special; fall back to the same brand
+      const refreshed = await fetch(`/api/admin/bd/wizard/next-brand?skip=__refresh__&preview=1`); // not ideal but cheap: re-fetch by skipping nothing special; fall back to the same brand
       // Better: re-fetch the specific brand we have open.
       // For now, just mark researchData present so the UI unblocks.
       setBrand((b) => (b ? { ...b, researchData: data.research || b.researchData || {} } : b));
@@ -191,6 +253,7 @@ export default function BDWizardPage() {
           contactId: selectedContact.id,
           channel,
           tone,
+          isFollowUp,
           answers: {
             "What caught your attention about this brand": qA1,
             "What specific problem do you think FUZE solves for them": qA2,
@@ -228,6 +291,7 @@ export default function BDWizardPage() {
           channel,
           subject,
           body: bodyText,
+          stepId: sequenceStepId || undefined,
         }),
       });
       const data = await res.json();
@@ -254,9 +318,7 @@ export default function BDWizardPage() {
           currentBrandId={brand?.id}
         />
 
-        {profileOk === false && (
-          <ProfileWarning current={profileFrom} />
-        )}
+        {profileOk === false && <ProfileWarning current={profileFrom} />}
 
         {loading ? (
           <div className="bg-white rounded-2xl shadow-sm border p-10 text-center text-slate-500">
@@ -269,9 +331,7 @@ export default function BDWizardPage() {
         ) : !brand ? (
           <div className="bg-white rounded-2xl shadow-sm border p-10 text-center">
             <div className="text-5xl mb-3">🎉</div>
-            <div className="text-xl font-semibold text-slate-800 mb-1">
-              Queue is empty.
-            </div>
+            <div className="text-xl font-semibold text-slate-800 mb-1">Queue is empty.</div>
             <div className="text-sm text-slate-500 max-w-md mx-auto">
               {reason ||
                 "No unassigned LEAD brands with contacts. Run a discovery batch or import a CSV to refill the queue."}
@@ -390,9 +450,7 @@ function Header({
         <h1 className="text-2xl font-bold text-slate-900 mt-1">BD Wizard</h1>
         <p className="text-sm text-slate-500 mt-1">
           Guided outbound. Next highest-confidence brand auto-picked for you.
-          {queueDepth > 0 && (
-            <span className="ml-2 text-slate-400">({queueDepth} in queue)</span>
-          )}
+          {queueDepth > 0 && <span className="ml-2 text-slate-400">({queueDepth} in queue)</span>}
         </p>
       </div>
       {currentBrandId && (
@@ -416,10 +474,13 @@ function ProfileWarning({ current }: { current: string | null }) {
           Set your outbound From: address before sending
         </div>
         <div className="text-xs text-amber-700 mt-1">
-          Without this, outbound ships from the generic FUZE Atlas notification
-          address and replies won't land in your inbox.
+          Without this, outbound ships from the generic FUZE Atlas notification address and replies
+          won't land in your inbox.
           {current ? (
-            <> Currently: <span className="font-mono">{current}</span></>
+            <>
+              {" "}
+              Currently: <span className="font-mono">{current}</span>
+            </>
           ) : null}
         </div>
       </div>
@@ -526,15 +587,11 @@ function Stepper({ currentStep }: { currentStep: Step }) {
             {i < idx ? "✓" : i + 1}
           </div>
           <div
-            className={`text-xs ${
-              i === idx ? "font-semibold text-slate-800" : "text-slate-500"
-            }`}
+            className={`text-xs ${i === idx ? "font-semibold text-slate-800" : "text-slate-500"}`}
           >
             {s.label}
           </div>
-          {i < steps.length - 1 && (
-            <div className="w-6 h-px bg-slate-300 mx-1" />
-          )}
+          {i < steps.length - 1 && <div className="w-6 h-px bg-slate-300 mx-1" />}
         </div>
       ))}
     </div>
@@ -561,10 +618,7 @@ function PickStep({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <StatTile label="Contacts" value={brand.contacts.length} />
-        <StatTile
-          label="With Email"
-          value={brand.contacts.filter((c) => c.email).length}
-        />
+        <StatTile label="With Email" value={brand.contacts.filter((c) => c.email).length} />
         <StatTile
           label="Research"
           value={hasResearch ? "Cached" : "Missing"}
@@ -574,8 +628,8 @@ function PickStep({
 
       {!hasResearch && (
         <div className="mt-4 bg-sky-50 border border-sky-200 rounded-lg p-4 text-sm text-sky-800">
-          This brand hasn't been enriched yet. Running multi-AI research now
-          gives the wizard real intel to personalize off of.
+          This brand hasn't been enriched yet. Running multi-AI research now gives the wizard real
+          intel to personalize off of.
           <div className="mt-3">
             <button
               onClick={onEnrich}
@@ -600,7 +654,15 @@ function PickStep({
   );
 }
 
-function StatTile({ label, value, muted }: { label: string; value: number | string; muted?: boolean }) {
+function StatTile({
+  label,
+  value,
+  muted,
+}: {
+  label: string;
+  value: number | string;
+  muted?: boolean;
+}) {
   return (
     <div
       className={`rounded-xl p-4 text-center border ${
@@ -638,7 +700,8 @@ function ContactStep({
 }) {
   const selected = brand.contacts.find((c) => c.id === selectedContactId);
   const canContinue =
-    selected && (channel === "email" ? !!selected.email : !!selected.linkedinUrl || !!selected.name);
+    selected &&
+    (channel === "email" ? !!selected.email : !!selected.linkedinUrl || !!selected.name);
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm p-6">
@@ -652,11 +715,7 @@ function ContactStep({
         ) : (
           brand.contacts.map((c) => {
             const isSelected = c.id === selectedContactId;
-            const displayName =
-              c.name ||
-              c.email ||
-              c.jobTitle ||
-              "(unnamed contact)";
+            const displayName = c.name || c.email || c.jobTitle || "(unnamed contact)";
             return (
               <button
                 key={c.id}
@@ -669,9 +728,7 @@ function ContactStep({
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-sm font-semibold text-slate-900">
-                      {displayName}
-                    </div>
+                    <div className="text-sm font-semibold text-slate-900">{displayName}</div>
                     <div className="text-xs text-slate-500 mt-0.5">
                       {c.jobTitle || "—"}
                       {c.seniority && <span className="ml-2">• {c.seniority}</span>}
@@ -790,9 +847,9 @@ function CustomizeStep({
         Step 3 — Personalize
       </div>
       <p className="text-xs text-slate-500 mb-5">
-        Three short questions. Whatever you type here goes into the draft
-        directly, so the outbound reads like you wrote it. Skip any that don't
-        apply, but the more you give the more personal it lands.
+        Three short questions. Whatever you type here goes into the draft directly, so the outbound
+        reads like you wrote it. Skip any that don't apply, but the more you give the more personal
+        it lands.
       </p>
 
       <div className="space-y-4">
@@ -899,8 +956,8 @@ function DraftStep({
 
       {diagnosed.length > 0 && (
         <div className="mb-4 bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-800">
-          <span className="font-semibold">We cleaned up:</span>{" "}
-          {diagnosed.join(", ")}. Review the result below — edit freely.
+          <span className="font-semibold">We cleaned up:</span> {diagnosed.join(", ")}. Review the
+          result below — edit freely.
         </div>
       )}
 

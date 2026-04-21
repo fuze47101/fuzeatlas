@@ -33,6 +33,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import { humanize } from "@/lib/humanize";
+import { createSequenceForFirstSend, markStepSent } from "@/lib/bd-sequence";
 
 function escapeHtml(s: string): string {
   return s
@@ -48,7 +49,12 @@ function textToHtml(text: string): string {
   return escapeHtml(text).replace(/\n/g, "<br/>");
 }
 
-function fromHeader(fromEmail: string | null, fromName: string | null, userName: string, userEmail: string): string | null {
+function fromHeader(
+  fromEmail: string | null,
+  fromName: string | null,
+  userName: string,
+  userEmail: string,
+): string | null {
   if (!fromEmail) return null;
   const display = (fromName || userName || userEmail.split("@")[0] || "").trim();
   return display ? `${display} <${fromEmail}>` : fromEmail;
@@ -76,7 +82,13 @@ export async function POST(req: Request) {
       channel = "email",
       subject: rawSubject,
       body: rawBody,
+      // Phase 3: when sending against an existing sequence step (e.g. Email D9
+      // follow-up) the wizard passes the stepId so we mark the step sent
+      // instead of creating a brand new sequence. Optional — omit for the
+      // first-touch send and we'll create the sequence ourselves.
+      stepId: rawStepId,
     } = body || {};
+    const stepId: string | null = rawStepId ? String(rawStepId) : null;
 
     if (!brandId || !contactId || !rawBody) {
       return NextResponse.json(
@@ -133,7 +145,9 @@ export async function POST(req: Request) {
 
     // Defensive: re-humanize both subject and body right before send.
     // The rep may have pasted something new into the textarea.
-    const subject = humanize(String(rawSubject || "")).replace(/\n/g, " ").trim();
+    const subject = humanize(String(rawSubject || ""))
+      .replace(/\n/g, " ")
+      .trim();
     let bodyOut = humanize(String(rawBody));
 
     // Append the rep's signature if they set one and it isn't already in the body.
@@ -171,6 +185,8 @@ export async function POST(req: Request) {
 
     // ─── Persist everything atomically ────────────────────────
     const sentAt = new Date();
+    let createdSequenceId: string | null = null;
+    let advancedStepId: string | null = null;
 
     await prisma.$transaction(async (tx) => {
       // 1. Log the OUTBOUND email Note (timeline entry)
@@ -185,7 +201,8 @@ export async function POST(req: Request) {
           brandId,
           contactId,
           userId: user.id,
-          contactName: contact.name || `${contact.firstName || ""} ${contact.lastName || ""}`.trim(),
+          contactName:
+            contact.name || `${contact.firstName || ""} ${contact.lastName || ""}`.trim(),
           emailDirection: channel === "email" ? "OUTBOUND" : null,
           emailSubject: channel === "email" ? subject : null,
           emailFrom: channel === "email" ? from || user.email : null,
@@ -202,7 +219,8 @@ export async function POST(req: Request) {
           template: "bd_wizard",
           subject: channel === "email" ? subject : null,
           body: bodyOut,
-          toAddress: channel === "email" ? contact.email! : (contact.linkedinUrl || contact.name || ""),
+          toAddress:
+            channel === "email" ? contact.email! : contact.linkedinUrl || contact.name || "",
           status: channel === "email" ? "sent" : "drafted",
           sentAt,
           externalId: externalId || null,
@@ -247,6 +265,50 @@ export async function POST(req: Request) {
         brandPatch.salesRepId = user.id;
       }
       await tx.brand.update({ where: { id: brandId }, data: brandPatch });
+
+      // 6. Phase 3 sequence orchestration. Two flows:
+      //
+      //   a) stepId passed → rep is sending a sequence step (email D9 follow-up,
+      //      LI DM, etc.). Mark that step sent and let the counters recompute.
+      //
+      //   b) no stepId    → first-touch send. If no active sequence exists yet
+      //      for (brand, contact, rep) we create one. Step 0 (LI connect) gets
+      //      skipped, step 1 (email) gets marked sent, and steps 2+ wait for
+      //      the cron to tick them ready.
+      //
+      // We fetch the OutreachMessage id we just wrote so we can link the step
+      // back to it for timeline joins.
+      const om = await tx.outreachMessage.findFirst({
+        where: { contactId, sentBy: user.id, sentAt },
+        orderBy: { createdAt: "desc" },
+        select: { id: true },
+      });
+      const outreachMessageId = om?.id || null;
+
+      if (stepId) {
+        // Explicit step send — fired from /acm/tasks or the sequence dashboard.
+        await markStepSent({
+          tx,
+          stepId,
+          outreachMessageId,
+          draftSubject: channel === "email" ? subject : null,
+          draftBody: bodyOut,
+        });
+        advancedStepId = stepId;
+      } else if (channel === "email") {
+        // First-touch email — spin up the long-funnel sequence if one isn't already active.
+        const seq = await createSequenceForFirstSend({
+          tx,
+          brandId,
+          contactId,
+          repId: user.id,
+          startedAt: sentAt,
+          outreachMessageId,
+          firstEmailSubject: subject,
+          firstEmailBody: bodyOut,
+        });
+        createdSequenceId = seq?.id || null;
+      }
     });
 
     // ─── Fire-and-forget: BCC summary to the rep ──────────────
@@ -290,6 +352,8 @@ export async function POST(req: Request) {
       autoAssignedToRep: !brand.salesRepId,
       externalId,
       stub: sendResult.stub || null,
+      sequenceId: createdSequenceId,
+      stepId: advancedStepId,
     });
   } catch (err: any) {
     console.error("[bd/wizard/send] error:", err);
