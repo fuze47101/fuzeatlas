@@ -130,6 +130,30 @@ export default function SequenceDetailPage() {
     }
   }
 
+  // Phase 4: manual "Reply received" trigger. Exits the sequence with
+  // reason=replied, creates the rep CrmTask + Notification, then routes
+  // into the reply wizard with the sequence context.
+  async function markRepliedManual() {
+    if (!seq) return;
+    const summary = prompt(
+      `What did ${contactDisplay(seq.contact)} say? (short summary — the reply wizard uses this to draft a response)`,
+      "",
+    );
+    if (summary === null) return; // cancelled
+    try {
+      const res = await fetch(`/api/admin/bd/sequence/${id}/mark-replied`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ source: "manual", replySummary: summary || undefined }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data?.error || `Failed: ${res.status}`);
+      router.push(`/admin/bd/wizard/reply?sequenceId=${id}`);
+    } catch (e: any) {
+      alert(e?.message || "Could not mark replied");
+    }
+  }
+
   async function stepAction(
     stepId: string,
     action: "send" | "skip" | "mark_sent",
@@ -207,6 +231,23 @@ export default function SequenceDetailPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          {(seq.status === "active" || seq.status === "paused") && (
+            <button
+              onClick={markRepliedManual}
+              className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-800 hover:bg-emerald-100"
+              title="Prospect replied — exit this sequence and draft a response"
+            >
+              Reply received
+            </button>
+          )}
+          {seq.status === "exited" && seq.exitReason === "replied" && (
+            <Link
+              href={`/admin/bd/wizard/reply?sequenceId=${seq.id}`}
+              className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-800 hover:bg-emerald-100"
+            >
+              Open reply wizard
+            </Link>
+          )}
           {seq.status === "active" && (
             <>
               <button

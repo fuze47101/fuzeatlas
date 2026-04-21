@@ -197,12 +197,102 @@ export async function POST(req: Request) {
       .catch(() => {});
   }
 
+  // ─── BD Wizard Phase 4: auto-detect replies ───────────
+  // When an INBOUND email lands on a contact with an active BDSequence,
+  // fire the same logic as /api/admin/bd/sequence/[id]/mark-replied —
+  // exit the sequence (reason=replied), drop a CrmTask + Notification on
+  // the rep linking to the reply wizard. Idempotent: if the sequence is
+  // already exited, no-op.
+  const autoRepliedSequences: any[] = [];
+  if (direction === "INBOUND") {
+    const contactIds = contacts.map((c: any) => c.id);
+    const activeSequences = await prisma.bDSequence.findMany({
+      where: {
+        status: "active",
+        contactId: { in: contactIds },
+      },
+      include: {
+        brand: { select: { id: true, name: true } },
+        contact: {
+          select: { id: true, name: true, firstName: true, lastName: true, email: true },
+        },
+      },
+    });
+
+    for (const seq of activeSequences) {
+      try {
+        const contactName =
+          seq.contact?.name ||
+          [seq.contact?.firstName, seq.contact?.lastName].filter(Boolean).join(" ") ||
+          seq.contact?.email ||
+          "contact";
+        const brandName = seq.brand?.name || "brand";
+        const replyWizardLink = `/admin/bd/wizard/reply?sequenceId=${seq.id}`;
+        const snippet = (env.text || stripHtml(env.html) || "").trim().slice(0, 500);
+
+        await prisma.bDSequence.update({
+          where: { id: seq.id },
+          data: {
+            status: "exited",
+            exitReason: "replied",
+            completedAt: new Date(),
+          },
+        });
+
+        await prisma.crmTask.create({
+          data: {
+            title: `Reply from ${contactName} at ${brandName}`,
+            notes: [
+              snippet ? `What they said: ${snippet}` : null,
+              `Respond via wizard: ${replyWizardLink}`,
+              "(auto-detected from BCC-to-Atlas)",
+            ]
+              .filter(Boolean)
+              .join("\n\n"),
+            dueAt: new Date(),
+            status: "OPEN",
+            priority: "HIGH",
+            ownerId: seq.repId,
+            createdById: seq.repId,
+            brandId: seq.brandId,
+          },
+        });
+
+        await prisma.notification.create({
+          data: {
+            userId: seq.repId,
+            type: "BRAND_ACTIVITY",
+            title: `Reply from ${contactName}`,
+            message: snippet
+              ? `${contactName} (${brandName}): "${snippet.slice(0, 140)}${snippet.length > 140 ? "…" : ""}"`
+              : `${contactName} at ${brandName} replied. Open the reply wizard to draft a response.`,
+            link: replyWizardLink,
+            metadata: {
+              sequenceId: seq.id,
+              brandId: seq.brandId,
+              contactId: seq.contactId,
+              source: "bcc",
+              replySnippet: snippet || null,
+              emailSubject: env.subject || null,
+              emailMessageId: env.messageId || null,
+            },
+          },
+        });
+
+        autoRepliedSequences.push({ sequenceId: seq.id, repId: seq.repId });
+      } catch (err: any) {
+        console.error("[inbound-email] auto-mark-replied failed:", err?.message || err);
+      }
+    }
+  }
+
   return NextResponse.json({
     ok: true,
     matched: contacts.length,
     created: created.length,
     direction,
     notes: created,
+    autoRepliedSequences,
   });
 }
 

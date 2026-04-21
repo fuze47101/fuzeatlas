@@ -45,6 +45,22 @@ export interface DraftArgs {
   isFollowUp?: boolean;
   /** Optional — the subject of the first-touch email, for grounding the follow-up. */
   previousSubject?: string;
+  /**
+   * Phase 4 — reply mode. When the prospect actually replied and the rep
+   * is drafting a response (not another cold follow-up). Completely
+   * different prompt rules: even shorter, conversational, lead with what
+   * they said.
+   */
+  isReply?: boolean;
+  /**
+   * Free-text summary of the prospect's reply, provided by the rep on
+   * the reply wizard. Example: "Asked if it works on nylon. Mentioned
+   * they source from Vietnam." Used to ground the draft in what was
+   * actually said without having to parse the full inbound email.
+   */
+  replySummary?: string;
+  /** Optional — the full text of our previous outbound, for grounding. */
+  previousBody?: string;
 }
 
 export interface DraftResult {
@@ -65,6 +81,9 @@ function buildPrompt(a: DraftArgs): string {
     repName,
     isFollowUp,
     previousSubject,
+    isReply,
+    replySummary,
+    previousBody,
   } = a;
   const isEmail = channel === "email";
   const contactFirstName =
@@ -78,6 +97,47 @@ function buildPrompt(a: DraftArgs): string {
     .filter(([, v]) => v && String(v).trim())
     .map(([k, v]) => `- ${k}: ${v}`)
     .join("\n");
+
+  // Phase 4: reply mode takes over completely — we're responding to a real
+  // human reply, so all the cold-opener rules flip. Still no em-dashes,
+  // still no silver/nano, but the draft should be short, responsive, and
+  // lead with what they said rather than with FUZE.
+  if (isReply) {
+    const prevSnippet = previousBody ? previousBody.slice(0, 600) : "";
+    return `You are drafting ${repName}'s reply to a prospect who just responded to a cold ${isEmail ? "email" : "LinkedIn DM"}.
+
+TARGET BRAND: ${brand.name}
+TARGET CONTACT: ${contact.name || [contact.firstName, contact.lastName].filter(Boolean).join(" ")} — ${contact.jobTitle || "decision-maker"}
+CATEGORY: ${brand.textileCategory || "textile"}
+
+WHAT THEY SAID (rep's summary of the reply):
+${replySummary || "(no summary provided — keep the reply generic but responsive)"}
+
+OUR PREVIOUS OUTBOUND${previousSubject ? ` (subject: "${previousSubject}")` : ""}:
+${prevSnippet || "(not available)"}
+
+FUZE CONTEXT (for fallback facts only — don't pitch):
+${intel.slice(0, 1500)}
+
+REP NOTES:
+${qaLines || "(none)"}
+
+RULES (non-negotiable):
+1. This is a REPLY, not a pitch. Lead with their reply, not with FUZE.
+2. 2-3 sentences. Hard max. If they asked a direct question, answer it in sentence one.
+3. NO em-dashes. NO "I hope", NO "circle back / touch base / deep dive / unlock / synergy".
+4. NO bullet lists. Plain prose.
+5. NO "silver" / "nano" / "ion" — it's F1 meta-material.
+6. End with ONE concrete next step: a 15-min call with two time suggestions, a specific tech question back to them, OR an offer to send a one-pager. Not "let me know".
+7. Tone: ${tone}. Treat the prospect as an equal — no thanking them effusively, no "great to hear from you!".
+8. ${isEmail ? 'Keep subject as "Re: <previous subject>" or a short 3-5 word variation.' : "Subject is always empty for LinkedIn."}
+
+${isEmail ? 'Return JSON: {"subject": "Re: ...", "body": "..."} — plain text body, no HTML.' : 'Return JSON: {"subject": "", "body": "..."}'}
+
+Start the body with "${contactFirstName}," — no "Hi" / "Hello" / "Thanks for the reply".
+
+Respond with ONLY the JSON object, no preamble or postamble.`;
+  }
 
   const followUpNote = isFollowUp
     ? `\nTHIS IS A FOLLOW-UP. The rep already sent a first-touch ${isEmail ? "email" : "LinkedIn DM"}${previousSubject ? ` (subject: "${previousSubject}")` : ""}. Do not re-introduce FUZE from scratch. Reference that they might not have seen the first message, bring one new angle (a different value prop, a recent industry data point, or a softer ask), and keep it even shorter than a cold open.\n`
@@ -198,6 +258,22 @@ function safeParseJson(text: string): { subject: string; body: string } {
 function fallbackDraft(a: DraftArgs): { subject: string; body: string } {
   const first = a.contact.firstName || (a.contact.name ? a.contact.name.split(" ")[0] : "there");
   if (a.channel === "email") {
+    if (a.isReply) {
+      const subjectBase = a.previousSubject
+        ? `Re: ${a.previousSubject}`
+        : `Re: FUZE F1 for ${a.brand.name}`;
+      const summaryLine = a.replySummary
+        ? `Appreciate the reply. ${a.replySummary.trim().endsWith(".") ? a.replySummary.trim() : a.replySummary.trim() + "."}`
+        : "Appreciate the reply.";
+      return {
+        subject: subjectBase,
+        body: `${first},
+
+${summaryLine} Happy to send a one-pager or jump on a 15-min call Tuesday or Thursday to walk through how FUZE F1 maps to ${a.brand.textileCategory || "your"} line. Which works?
+
+${a.repName}`,
+      };
+    }
     if (a.isFollowUp) {
       return {
         subject: `Re: FUZE F1 for ${a.brand.name}`,

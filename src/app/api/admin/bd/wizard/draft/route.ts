@@ -53,6 +53,12 @@ export async function POST(req: Request) {
       tone = "direct",
       isFollowUp = false,
       previousSubject = null,
+      // Phase 4 — reply mode. The rep received a reply and wants to draft
+      // a short response. replySummary is a free-text blurb from the rep
+      // summarizing what the prospect said.
+      isReply = false,
+      replySummary = null,
+      previousBody = null,
     } = body || {};
 
     if (!brandId || !contactId) {
@@ -92,6 +98,9 @@ export async function POST(req: Request) {
       userId: user.id,
       isFollowUp: Boolean(isFollowUp),
       previousSubject,
+      isReply: Boolean(isReply),
+      replySummary,
+      previousBody,
     });
 
     return NextResponse.json({
