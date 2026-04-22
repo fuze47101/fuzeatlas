@@ -17,9 +17,10 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
 async function callAIReview(parsed: ParsedITSReport): Promise<any> {
   try {
     // Build the base URL from environment or default
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000";
+    const baseUrl =
+      process.env.NEXTAUTH_URL || process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000";
 
     const response = await fetch(`${baseUrl}/api/tests/review`, {
       method: "POST",
@@ -67,15 +68,38 @@ function parseTestReport(text: string): ParsedTestData {
   const fullText = text.toLowerCase();
 
   let testType: string | null = null;
-  if (fullText.includes("antibacterial") || fullText.includes("aatcc 100") || fullText.includes("aatcc 147") || fullText.includes("iso 20743")) {
+  if (
+    fullText.includes("antibacterial") ||
+    fullText.includes("aatcc 100") ||
+    fullText.includes("aatcc 147") ||
+    fullText.includes("iso 20743")
+  ) {
     testType = "ANTIBACTERIAL";
-  } else if (fullText.includes("icp") || fullText.includes("inductively coupled") || fullText.includes("icp-ms") || fullText.includes("icp-oes")) {
+  } else if (
+    fullText.includes("icp") ||
+    fullText.includes("inductively coupled") ||
+    fullText.includes("icp-ms") ||
+    fullText.includes("icp-oes")
+  ) {
     testType = "ICP";
-  } else if (fullText.includes("antifungal") || fullText.includes("fungal") || fullText.includes("aatcc 30") || fullText.includes("iso 13629")) {
+  } else if (
+    fullText.includes("antifungal") ||
+    fullText.includes("fungal") ||
+    fullText.includes("aatcc 30") ||
+    fullText.includes("iso 13629")
+  ) {
     testType = "FUNGAL";
-  } else if (fullText.includes("odor") || fullText.includes("smell") || fullText.includes("aatcc 199")) {
+  } else if (
+    fullText.includes("odor") ||
+    fullText.includes("smell") ||
+    fullText.includes("aatcc 199")
+  ) {
     testType = "ODOR";
-  } else if (fullText.includes("uv ") || fullText.includes("ultraviolet") || fullText.includes("upf")) {
+  } else if (
+    fullText.includes("uv ") ||
+    fullText.includes("ultraviolet") ||
+    fullText.includes("upf")
+  ) {
     testType = "UV";
   }
 
@@ -94,37 +118,135 @@ function parseTestReport(text: string): ParsedTestData {
   ];
   for (const pat of reportPatterns) {
     const m = text.match(pat);
-    if (m) { testReportNumber = m[1]; break; }
-  }
-
-  let labName: string | null = null;
-  const knownLabs = [
-    "Antimicrobial Test Laboratories", "EMSL Analytical",
-    "Microchem Laboratory", "Nelson Labs", "Bureau Veritas",
-    "Contract Testing Laboratories", "CTLA",
-    "Intertek", "Eurofins", "Hohenstein", "OEKO-TEX", "Testex",
-    "Vartest", "Silliker",
-    "SGS", "TÜV", "TUV", "NSF", "AATCC",
-    "NOA", "ITS", "CTC", "ACTS", "ATL",
-  ];
-  for (const lab of knownLabs) {
-    if (lab.length <= 3) {
-      const re = new RegExp(`\\b${lab}\\b`, "i");
-      if (re.test(text)) { labName = lab; break; }
-    } else {
-      if (text.toLowerCase().includes(lab.toLowerCase())) { labName = lab; break; }
+    if (m) {
+      testReportNumber = m[1];
+      break;
     }
   }
 
+  let labName: string | null = null;
+  // Apr 2026 (Tina ticket): expanded to include the labs TexWell + Hi-Goal
+  // actually use (VL Shanghai, Bureau Veritas HK, ITS TW, US Lab) plus the
+  // common Asian/EU labs we keep seeing in uploads. Order matters — longest
+  // / most specific names first so "Intertek Taiwan" wins over "Intertek"
+  // and "Bureau Veritas Hong Kong" wins over "Bureau Veritas".
+  const knownLabs = [
+    // Long / specific names first (multi-word, region-qualified)
+    "Antimicrobial Test Laboratories",
+    "Bureau Veritas Hong Kong",
+    "Bureau Veritas Shanghai",
+    "Bureau Veritas Consumer Products",
+    "Centre Testing International",
+    "Contract Testing Laboratories",
+    "EMSL Analytical",
+    "Eurofins Product Testing",
+    "Hohenstein Institute",
+    "Intertek Taiwan",
+    "Intertek Shanghai",
+    "Intertek Hong Kong",
+    "Intertek Testing Services",
+    "Microchem Laboratory",
+    "Nelson Laboratories",
+    "Nelson Labs",
+    "QIMA Testing",
+    "QTEC Quality Testing",
+    "SGS Hong Kong",
+    "SGS Shanghai",
+    "SGS Taiwan",
+    "STR Testing Services",
+    "Taiwan Textile Research Institute",
+    "TTRI",
+    "TÜV Rheinland",
+    "TUV Rheinland",
+    "TÜV SÜD",
+    "TUV SUD",
+    "VL Shanghai",
+    "VL Testing", // TexWell uses VL Shanghai
+    // Single-name labs (>3 chars — substring match)
+    "Bureau Veritas",
+    "Intertek",
+    "Eurofins",
+    "Hohenstein",
+    "OEKO-TEX",
+    "Testex",
+    "Vartest",
+    "Silliker",
+    "AATCC",
+    "QIMA",
+    "MTL",
+    "GBT",
+    "CITF",
+    // Short codes (>=3 chars, word-boundary match to avoid false positives)
+    "CTLA",
+    "SGS",
+    "TÜV",
+    "TUV",
+    "NSF",
+    "NOA",
+    "ITS",
+    "CTC",
+    "CTI",
+    "ACTS",
+    "ATL",
+    "BSI",
+    "TWN",
+    "MTL",
+  ];
+  for (const lab of knownLabs) {
+    if (lab.length <= 4) {
+      // Word-boundary match for short acronyms — avoids matching inside other words
+      const re = new RegExp(`\\b${lab.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+      if (re.test(text)) {
+        labName = lab;
+        break;
+      }
+    } else {
+      if (text.toLowerCase().includes(lab.toLowerCase())) {
+        labName = lab;
+        break;
+      }
+    }
+  }
+
+  // Apr 2026 (Tina ticket): Many more date formats. Old parser only caught
+  // dates with an explicit "date of test/report" prefix, so most reports
+  // came through with empty testDate forcing manual entry. Patterns are
+  // ordered most-specific → least-specific so prefixed matches win over
+  // bare numeric matches.
   let testDate: string | null = null;
   const datePatterns = [
-    /(?:date\s*(?:of\s*)?(?:test|report|issue|analysis))[.:\s]*(\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4})/i,
-    /(?:date\s*(?:of\s*)?(?:test|report|issue|analysis))[.:\s]*(\w+\s+\d{1,2},?\s+\d{4})/i,
-    /(\d{1,2}[\/-]\d{1,2}[\/-]\d{4})/,
+    // "Date of Test/Report/Issue/Analysis/Sampling: 03/15/2026" or "March 15, 2026"
+    /(?:date\s*(?:of\s*)?(?:test|report|issue|issued?|analysis|sampling|testing|completion))[.:\s]+(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4})/i,
+    /(?:date\s*(?:of\s*)?(?:test|report|issue|issued?|analysis|sampling|testing|completion))[.:\s]+(\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2})/i,
+    /(?:date\s*(?:of\s*)?(?:test|report|issue|issued?|analysis|sampling|testing|completion))[.:\s]+(\d{1,2}\s+\w+\s+\d{2,4})/i,
+    /(?:date\s*(?:of\s*)?(?:test|report|issue|issued?|analysis|sampling|testing|completion))[.:\s]+(\w+\s+\d{1,2},?\s+\d{4})/i,
+    // "Test Date / Report Date / Issued / Issue Date / Sample Received / Date Received / Date Reported / Date Performed"
+    /(?:test\s+date|report\s+date|issue\s+date|date\s+received|date\s+reported|sample\s+received|date\s+performed|reporting\s+date)[.:\s]+(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4})/i,
+    /(?:test\s+date|report\s+date|issue\s+date|date\s+received|date\s+reported|sample\s+received|date\s+performed|reporting\s+date)[.:\s]+(\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2})/i,
+    /(?:test\s+date|report\s+date|issue\s+date|date\s+received|date\s+reported|sample\s+received|date\s+performed|reporting\s+date)[.:\s]+(\d{1,2}\s+\w+\s+\d{2,4})/i,
+    /(?:test\s+date|report\s+date|issue\s+date|date\s+received|date\s+reported|sample\s+received|date\s+performed|reporting\s+date)[.:\s]+(\w+\s+\d{1,2},?\s+\d{4})/i,
+    // Bare "Issued: 15 March 2026" / "Issued on 2026-03-15"
+    /\bissued?\s*(?:on)?[.:\s]+(\d{1,2}\s+\w+\s+\d{2,4})/i,
+    /\bissued?\s*(?:on)?[.:\s]+(\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2})/i,
+    /\bissued?\s*(?:on)?[.:\s]+(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4})/i,
+    // CJK format: 2026年3月15日 (Chinese / Japanese)
+    /(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/,
+    // Generic ISO 2026-03-15 (4-digit year first)
+    /(\d{4}-\d{1,2}-\d{1,2})/,
+    // Generic mm/dd/yyyy or dd/mm/yyyy with 4-digit year (last-resort)
+    /(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{4})/,
   ];
   for (const pat of datePatterns) {
     const m = text.match(pat);
-    if (m) { testDate = m[1]; break; }
+    if (m) {
+      // Special-case CJK: rebuild as ISO so downstream new Date(...) works
+      if (m.length >= 4 && pat.source.includes("年")) {
+        testDate = `${m[1]}-${String(m[2]).padStart(2, "0")}-${String(m[3]).padStart(2, "0")}`;
+      } else {
+        testDate = m[1];
+      }
+      break;
+    }
   }
 
   let testMethodStd: string | null = null;
@@ -150,12 +272,21 @@ function parseTestReport(text: string): ParsedTestData {
     ];
     for (const op of orgPatterns) {
       const m = text.match(op.regex);
-      if (m) organisms.push({ name: op.name, result: `${m[1]}% reduction`, reduction: parseFloat(m[1]) });
+      if (m)
+        organisms.push({
+          name: op.name,
+          result: `${m[1]}% reduction`,
+          reduction: parseFloat(m[1]),
+        });
     }
     if (organisms.length === 0) {
       const reductionMatch = text.match(/([\d.]+)\s*%\s*(?:reduction|kill)/i);
       if (reductionMatch) {
-        organisms.push({ name: "Unknown organism", result: `${reductionMatch[1]}% reduction`, reduction: parseFloat(reductionMatch[1]) });
+        organisms.push({
+          name: "Unknown organism",
+          result: `${reductionMatch[1]}% reduction`,
+          reduction: parseFloat(reductionMatch[1]),
+        });
         warnings.push("Could not identify specific organism names. Please verify.");
       }
     }
@@ -171,10 +302,15 @@ function parseTestReport(text: string): ParsedTestData {
 
   let fungalResult = null;
   if (testType === "FUNGAL") {
-    const fungalPassMatch = text.match(/(?:result|assessment|grade)[.:\s]*(pass|fail|no\s*growth|growth|zone\s*of\s*inhibition)/i);
+    const fungalPassMatch = text.match(
+      /(?:result|assessment|grade)[.:\s]*(pass|fail|no\s*growth|growth|zone\s*of\s*inhibition)/i,
+    );
     if (fungalPassMatch) {
       const val = fungalPassMatch[1].toLowerCase();
-      fungalResult = { result: fungalPassMatch[1], pass: val.includes("pass") || val.includes("no growth") || val.includes("zone") };
+      fungalResult = {
+        result: fungalPassMatch[1],
+        pass: val.includes("pass") || val.includes("no growth") || val.includes("zone"),
+      };
     }
   }
 
@@ -183,12 +319,17 @@ function parseTestReport(text: string): ParsedTestData {
     const odorMatch = text.match(/(?:result|rating|grade|score)[.:\s]*([^\n]{3,60})/i);
     if (odorMatch) {
       const val = odorMatch[1].toLowerCase();
-      odorResult = { result: odorMatch[1].trim(), pass: val.includes("pass") || val.includes("acceptable") || val.includes("good") };
+      odorResult = {
+        result: odorMatch[1].trim(),
+        pass: val.includes("pass") || val.includes("acceptable") || val.includes("good"),
+      };
     }
   }
 
   let overallPass: boolean | null = null;
-  const passMatch = text.match(/(?:overall|final|conclusion|result)[.:\s]*(pass|fail|compliant|non-compliant|meets|does not meet)/i);
+  const passMatch = text.match(
+    /(?:overall|final|conclusion|result)[.:\s]*(pass|fail|compliant|non-compliant|meets|does not meet)/i,
+  );
   if (passMatch) {
     const val = passMatch[1].toLowerCase();
     overallPass = val.includes("pass") || val.includes("compliant") || val.includes("meets");
@@ -204,9 +345,21 @@ function parseTestReport(text: string): ParsedTestData {
   if (confidence < 50) warnings.push("Low confidence parse. Please review all fields carefully.");
 
   return {
-    testType, testReportNumber, labName, testDate, testMethodStd,
-    fabricInfo, washCount, organisms, icpResults, fungalResult,
-    odorResult, overallPass, confidence, rawText: text.substring(0, 5000), warnings,
+    testType,
+    testReportNumber,
+    labName,
+    testDate,
+    testMethodStd,
+    fabricInfo,
+    washCount,
+    organisms,
+    icpResults,
+    fungalResult,
+    odorResult,
+    overallPass,
+    confidence,
+    rawText: text.substring(0, 5000),
+    warnings,
   };
 }
 
@@ -215,7 +368,9 @@ function isITSReport(text: string): boolean {
   const lower = text.toLowerCase();
   return (
     (lower.includes("intertek") || lower.includes("its taiwan") || lower.includes("twnc")) &&
-    (lower.includes("antibacterial") || lower.includes("anti-bacterial") || lower.includes("antimicrobial"))
+    (lower.includes("antibacterial") ||
+      lower.includes("anti-bacterial") ||
+      lower.includes("antimicrobial"))
   );
 }
 
@@ -234,7 +389,10 @@ export async function POST(req: Request) {
     }
 
     if (file.type !== "application/pdf") {
-      return NextResponse.json({ ok: false, error: "Only PDF files are accepted" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "Only PDF files are accepted" },
+        { status: 400 },
+      );
     }
 
     if (file.size > 25 * 1024 * 1024) {
@@ -325,7 +483,7 @@ export async function POST(req: Request) {
         select: { id: true, testType: true, testDate: true, createdAt: true },
       });
       if (existingTests.length > 0) {
-        existingTestIds = existingTests.map(t => t.id);
+        existingTestIds = existingTests.map((t) => t.id);
         duplicateWarning = `A test report with number "${reportNum}" already exists (${existingTests.length} record${existingTests.length > 1 ? "s" : ""}). Confirming will create a duplicate.`;
       }
     }
@@ -341,7 +499,7 @@ export async function POST(req: Request) {
     });
     if (existingDocs.length > 0 && !duplicateWarning) {
       duplicateWarning = `A file named "${file.name}" has already been uploaded and linked to ${existingDocs.length} test(s). This may be a duplicate.`;
-      existingTestIds = existingDocs.map(d => d.testRunId).filter(Boolean) as string[];
+      existingTestIds = existingDocs.map((d) => d.testRunId).filter(Boolean) as string[];
     }
 
     return NextResponse.json({
@@ -352,13 +510,15 @@ export async function POST(req: Request) {
       // Legacy flat result (for non-ITS reports)
       parsed: itsReport ? null : parsed,
       // Rich ITS result (header + tests array)
-      itsReport: itsReport ? {
-        header: itsReport.header,
-        tests: itsReport.tests.map(t => ({
-          ...t,
-          rawSection: undefined, // Don't send raw section text to client
-        })),
-      } : null,
+      itsReport: itsReport
+        ? {
+            header: itsReport.header,
+            tests: itsReport.tests.map((t) => ({
+              ...t,
+              rawSection: undefined, // Don't send raw section text to client
+            })),
+          }
+        : null,
       // AI review results
       aiReview,
       parseError,

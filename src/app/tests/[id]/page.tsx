@@ -71,6 +71,7 @@ interface TestRun {
   aiReviewDate?: string;
   aiReviewNotes?: string;
   lab?: { id: string; name: string };
+  project?: { id: string; name: string };
   submission?: {
     id: string;
     fuzeFabricNumber?: number;
@@ -126,6 +127,63 @@ export default function TestDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [expandedAILocal, setExpandedAILocal] = useState(false);
 
+  // Edit-linked-entities panel (Tina ticket Apr 2026 — admin needed to retag
+  // factory + project after upload). Lazily fetches dropdown options the
+  // first time the panel is opened.
+  const [editingLinks, setEditingLinks] = useState(false);
+  const [savingLinks, setSavingLinks] = useState(false);
+  const [linkFactoryId, setLinkFactoryId] = useState("");
+  const [linkProjectId, setLinkProjectId] = useState("");
+  const [factoryOpts, setFactoryOpts] = useState<Array<{ id: string; name: string }>>([]);
+  const [projectOpts, setProjectOpts] = useState<Array<{ id: string; name: string }>>([]);
+
+  async function openLinksEditor() {
+    if (!test) return;
+    setLinkFactoryId(test.submission?.factory?.id || "");
+    setLinkProjectId(test.project?.id || "");
+    setEditingLinks(true);
+    if (factoryOpts.length === 0 || projectOpts.length === 0) {
+      try {
+        const [fr, pr] = await Promise.all([
+          fetch("/api/factories").then((r) => r.json()),
+          fetch("/api/projects").then((r) => r.json()),
+        ]);
+        if (fr?.factories)
+          setFactoryOpts(fr.factories.map((f: any) => ({ id: f.id, name: f.name })));
+        if (pr?.projects) setProjectOpts(pr.projects.map((p: any) => ({ id: p.id, name: p.name })));
+      } catch {}
+    }
+  }
+
+  async function saveLinks() {
+    if (!test) return;
+    setSavingLinks(true);
+    try {
+      const body: any = { projectId: linkProjectId || null };
+      // Only send factoryId when there's a submission to write it onto —
+      // matches the API guard so we don't no-op silently.
+      if (test.submission?.id) body.factoryId = linkFactoryId || null;
+      const res = await fetch(`/api/tests/${test.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        // Refetch so the badge + linked-entity tiles reflect the change.
+        const fresh = await fetch(`/api/tests/${test.id}`).then((r) => r.json());
+        if (fresh.ok && fresh.testRun) setTest(fresh.testRun);
+        setEditingLinks(false);
+      } else {
+        alert(data.error || "Failed to update");
+      }
+    } catch (e: any) {
+      alert(e?.message || "Network error");
+    } finally {
+      setSavingLinks(false);
+    }
+  }
+
   useEffect(() => {
     if (!id) return;
     fetch(`/api/tests/${id}`)
@@ -157,7 +215,12 @@ export default function TestDetailPage() {
           className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium text-sm mb-6"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           {t.common.back}
         </Link>
@@ -171,9 +234,7 @@ export default function TestDetailPage() {
   const colors = TYPE_COLORS[test.testType] || TYPE_COLORS.OTHER;
   const hasRichAB =
     test.abResult &&
-    (test.abResult.organism ||
-      test.abResult.inoculumCFU !== undefined ||
-      test.abResult.brothMedia);
+    (test.abResult.organism || test.abResult.inoculumCFU !== undefined || test.abResult.brothMedia);
 
   return (
     <div className="p-4 sm:p-8 max-w-6xl mx-auto space-y-6">
@@ -183,12 +244,7 @@ export default function TestDetailPage() {
           href="/tests"
           className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium text-sm"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -208,15 +264,31 @@ export default function TestDetailPage() {
           {/* Certificate Download Button */}
           {(() => {
             let hasPassed = false;
-            if (test.testType === "ICP" && test.icpResult) hasPassed = typeof test.icpResult.agValue === "number" && test.icpResult.agValue >= 0.10;
-            else if (test.testType === "ANTIBACTERIAL" && test.abResult) hasPassed = test.abResult.methodPass !== false;
-            else if (test.testType === "FUNGAL" && test.fungalResult) hasPassed = test.fungalResult.pass === true;
-            else if (test.testType === "ODOR" && test.odorResult) hasPassed = test.odorResult.pass === true;
+            if (test.testType === "ICP" && test.icpResult)
+              hasPassed =
+                typeof test.icpResult.agValue === "number" && test.icpResult.agValue >= 0.1;
+            else if (test.testType === "ANTIBACTERIAL" && test.abResult)
+              hasPassed = test.abResult.methodPass !== false;
+            else if (test.testType === "FUNGAL" && test.fungalResult)
+              hasPassed = test.fungalResult.pass === true;
+            else if (test.testType === "ODOR" && test.odorResult)
+              hasPassed = test.odorResult.pass === true;
 
             return hasPassed ? (
-              <a href={`/api/tests/${test.id}/certificate`} target="_blank" rel="noopener noreferrer"
-                className="px-4 py-1.5 bg-slate-600 text-white rounded-full text-xs font-semibold hover:bg-slate-700 transition-colors flex items-center gap-1.5">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7-4a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <a
+                href={`/api/tests/${test.id}/certificate`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-1.5 bg-slate-600 text-white rounded-full text-xs font-semibold hover:bg-slate-700 transition-colors flex items-center gap-1.5"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m7-4a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
                 Download Certificate
               </a>
             ) : null;
@@ -226,29 +298,76 @@ export default function TestDetailPage() {
             {test.brandVisible ? (
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold flex items-center gap-1.5">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
                   Approved for Brand Portal
                 </span>
                 <button
                   onClick={() => {
-                    fetch(`/api/tests/${test.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ brandVisible: false }) })
-                      .then(r => r.json()).then(d => { if (d.ok) setTest({ ...test, brandVisible: false, brandApprovedAt: undefined }); });
+                    fetch(`/api/tests/${test.id}`, {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ brandVisible: false }),
+                    })
+                      .then((r) => r.json())
+                      .then((d) => {
+                        if (d.ok)
+                          setTest({ ...test, brandVisible: false, brandApprovedAt: undefined });
+                      });
                   }}
                   className="text-xs text-slate-400 hover:text-red-500 transition-colors"
                   title="Remove from brand portal"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
                 </button>
               </div>
             ) : (
               <button
                 onClick={() => {
-                  fetch(`/api/tests/${test.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ brandVisible: true }) })
-                    .then(r => r.json()).then(d => { if (d.ok) setTest({ ...test, brandVisible: true, brandApprovedAt: new Date().toISOString() }); });
+                  fetch(`/api/tests/${test.id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ brandVisible: true }),
+                  })
+                    .then((r) => r.json())
+                    .then((d) => {
+                      if (d.ok)
+                        setTest({
+                          ...test,
+                          brandVisible: true,
+                          brandApprovedAt: new Date().toISOString(),
+                        });
+                    });
                 }}
                 className="px-4 py-1.5 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold hover:bg-emerald-100 hover:text-emerald-700 transition-colors flex items-center gap-1.5"
               >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
                 Stamp for Brand Portal
               </button>
             )}
@@ -263,16 +382,12 @@ export default function TestDetailPage() {
             <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
               {t.tests.testReport}
             </p>
-            <p className="text-lg font-semibold text-slate-900">
-              {test.testReportNumber}
-            </p>
+            <p className="text-lg font-semibold text-slate-900">{test.testReportNumber}</p>
           </div>
         )}
         {test.testDate && (
           <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-              {t.common.date}
-            </p>
+            <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">{t.common.date}</p>
             <p className="text-lg font-semibold text-slate-900">
               {new Date(test.testDate).toLocaleDateString()}
             </p>
@@ -280,12 +395,8 @@ export default function TestDetailPage() {
         )}
         {test.lab && (
           <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-              {t.tests.lab}
-            </p>
-            <p className="text-lg font-semibold text-slate-900">
-              {test.lab.name}
-            </p>
+            <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">{t.tests.lab}</p>
+            <p className="text-lg font-semibold text-slate-900">{test.lab.name}</p>
           </div>
         )}
       </div>
@@ -326,9 +437,7 @@ export default function TestDetailPage() {
                 <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
                   {t.tests.testReport}
                 </p>
-                <p className="text-slate-900 font-medium">
-                  {test.testReportNumber}
-                </p>
+                <p className="text-slate-900 font-medium">{test.testReportNumber}</p>
               </div>
             )}
             {test.washCount !== undefined && (
@@ -344,69 +453,145 @@ export default function TestDetailPage() {
                 <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
                   {t.tests.testNumber} in {t.tests.result}
                 </p>
-                <p className="text-slate-900 font-medium">
-                  {test.testNumberInReport}
-                </p>
+                <p className="text-slate-900 font-medium">{test.testNumberInReport}</p>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Linked Entities Card */}
-      {test.submission && (
+      {/* Linked Entities Card — render whenever there's anything to link to
+          OR when the user is editing (so the panel stays open even after
+          clearing all values). */}
+      {(test.submission || test.project || editingLinks) && (
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <h3 className="font-semibold text-slate-900 mb-4">
-            Linked Entities
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {test.submission.brand && (
-              <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                  {t.tests.brand}
-                </p>
-                <Link
-                  href={`/brands/${test.submission.brand.id}`}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-slate-900">Linked Entities</h3>
+            {!editingLinks ? (
+              <button
+                onClick={openLinksEditor}
+                className="text-xs px-2.5 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50"
+              >
+                Edit
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setEditingLinks(false)}
+                  className="text-xs px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-700"
                 >
-                  {test.submission.brand.name}
-                </Link>
-              </div>
-            )}
-            {test.submission.factory && (
-              <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                  {t.tests.factory}
-                </p>
-                <Link
-                  href={`/factories/${test.submission.factory.id}`}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  Cancel
+                </button>
+                <button
+                  onClick={saveLinks}
+                  disabled={savingLinks}
+                  className="text-xs px-3 py-1 rounded-md bg-[#00b4c3] text-white font-semibold hover:bg-[#009ba8] disabled:opacity-50"
                 >
-                  {test.submission.factory.name}
-                </Link>
-              </div>
-            )}
-            {test.submission.fabric && (
-              <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                  {t.tests.fabric}
-                </p>
-                <div className="space-y-1">
-                  <Link
-                    href={`/fabrics/${test.submission.fabric.id}`}
-                    className="block text-blue-600 hover:text-blue-700 font-medium"
-                  >
-                    FUZE #{test.submission.fabric.fuzeNumber}
-                  </Link>
-                  {test.submission.fabric.customerCode && (
-                    <p className="text-xs text-slate-500">
-                      {test.submission.fabric.customerCode}
-                    </p>
-                  )}
-                </div>
+                  {savingLinks ? "Saving…" : "Save"}
+                </button>
               </div>
             )}
           </div>
+
+          {editingLinks ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs text-slate-500 uppercase tracking-wide mb-1">
+                  Factory
+                </label>
+                {test.submission?.id ? (
+                  <select
+                    value={linkFactoryId}
+                    onChange={(e) => setLinkFactoryId(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+                  >
+                    <option value="">— None —</option>
+                    {factoryOpts.map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="text-xs text-slate-400 italic py-2">
+                    No fabric submission linked — factory can't be set on this test directly.
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 uppercase tracking-wide mb-1">
+                  Project
+                </label>
+                <select
+                  value={linkProjectId}
+                  onChange={(e) => setLinkProjectId(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+                >
+                  <option value="">— None —</option>
+                  {projectOpts.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {test.submission?.brand && (
+                <div>
+                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
+                    {t.tests.brand}
+                  </p>
+                  <Link
+                    href={`/brands/${test.submission.brand.id}`}
+                    className="text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    {test.submission.brand.name}
+                  </Link>
+                </div>
+              )}
+              {test.submission?.factory && (
+                <div>
+                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
+                    {t.tests.factory}
+                  </p>
+                  <Link
+                    href={`/factories/${test.submission.factory.id}`}
+                    className="text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    {test.submission.factory.name}
+                  </Link>
+                </div>
+              )}
+              {test.project && (
+                <div>
+                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Project</p>
+                  <span className="text-slate-900 font-medium">{test.project.name}</span>
+                </div>
+              )}
+              {test.submission?.fabric && (
+                <div>
+                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
+                    {t.tests.fabric}
+                  </p>
+                  <div className="space-y-1">
+                    <Link
+                      href={`/fabrics/${test.submission.fabric.id}`}
+                      className="block text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      FUZE #{test.submission.fabric.fuzeNumber}
+                    </Link>
+                    {test.submission.fabric.customerCode && (
+                      <p className="text-xs text-slate-500">
+                        {test.submission.fabric.customerCode}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -417,37 +602,25 @@ export default function TestDetailPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {test.icpResult.agValue !== undefined && (
               <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">
-                  Ag Content
-                </p>
+                <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Ag Content</p>
                 <div className="flex items-baseline gap-2">
                   <p
                     className={`text-2xl font-bold ${
-                      test.icpResult.agValue > 50
-                        ? "text-green-600"
-                        : "text-red-600"
+                      test.icpResult.agValue > 50 ? "text-green-600" : "text-red-600"
                     }`}
                   >
                     {test.icpResult.agValue}
                   </p>
-                  <p className="text-slate-500 text-sm">
-                    {test.icpResult.unit || "ppm"}
-                  </p>
+                  <p className="text-slate-500 text-sm">{test.icpResult.unit || "ppm"}</p>
                 </div>
               </div>
             )}
             {test.icpResult.auValue !== undefined && (
               <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">
-                  Gold (Au)
-                </p>
+                <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Gold (Au)</p>
                 <div className="flex items-baseline gap-2">
-                  <p className="text-2xl font-bold text-blue-600">
-                    {test.icpResult.auValue}
-                  </p>
-                  <p className="text-slate-500 text-sm">
-                    {test.icpResult.unit || "ppm"}
-                  </p>
+                  <p className="text-2xl font-bold text-blue-600">{test.icpResult.auValue}</p>
+                  <p className="text-slate-500 text-sm">{test.icpResult.unit || "ppm"}</p>
                 </div>
               </div>
             )}
@@ -464,9 +637,7 @@ export default function TestDetailPage() {
               {test.abResult.organism || "Organism"}
             </h3>
             {test.abResult.strainNumber && (
-              <p className="text-sm text-slate-600">
-                Strain: {test.abResult.strainNumber}
-              </p>
+              <p className="text-sm text-slate-600">Strain: {test.abResult.strainNumber}</p>
             )}
           </div>
 
@@ -478,9 +649,7 @@ export default function TestDetailPage() {
             test.abResult.incubationTemp ||
             test.abResult.agarMedium) && (
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-              <h4 className="font-medium text-slate-900 mb-4">
-                Test Conditions
-              </h4>
+              <h4 className="font-medium text-slate-900 mb-4">Test Conditions</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {test.abResult.brothMedia && (
                   <div>
@@ -503,9 +672,7 @@ export default function TestDetailPage() {
                     <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
                       {t.tests.sterilization}
                     </p>
-                    <p className="text-slate-900">
-                      {test.abResult.sterilization}
-                    </p>
+                    <p className="text-slate-900">{test.abResult.sterilization}</p>
                   </div>
                 )}
                 {test.abResult.contactTime && (
@@ -513,9 +680,7 @@ export default function TestDetailPage() {
                     <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
                       {t.tests.contactTime}
                     </p>
-                    <p className="text-slate-900">
-                      {test.abResult.contactTime}
-                    </p>
+                    <p className="text-slate-900">{test.abResult.contactTime}</p>
                   </div>
                 )}
                 {test.abResult.incubationTemp && (
@@ -523,9 +688,7 @@ export default function TestDetailPage() {
                     <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
                       {t.tests.incubationTemp}
                     </p>
-                    <p className="text-slate-900">
-                      {test.abResult.incubationTemp}
-                    </p>
+                    <p className="text-slate-900">{test.abResult.incubationTemp}</p>
                   </div>
                 )}
                 {test.abResult.agarMedium && (
@@ -533,9 +696,7 @@ export default function TestDetailPage() {
                     <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
                       {t.tests.agarMedium}
                     </p>
-                    <p className="text-slate-900">
-                      {test.abResult.agarMedium}
-                    </p>
+                    <p className="text-slate-900">{test.abResult.agarMedium}</p>
                   </div>
                 )}
               </div>
@@ -640,9 +801,7 @@ export default function TestDetailPage() {
                   {test.abResult.methodPass ? t.tests.methodPass : t.tests.methodFail}
                 </span>
                 {test.abResult.methodPassReason && (
-                  <p className="text-sm text-slate-600">
-                    {test.abResult.methodPassReason}
-                  </p>
+                  <p className="text-sm text-slate-600">{test.abResult.methodPassReason}</p>
                 )}
               </div>
             </div>
@@ -653,18 +812,14 @@ export default function TestDetailPage() {
       {/* Antibacterial Results — Legacy View */}
       {test.abResult && !hasRichAB && (
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <h3 className="font-semibold text-slate-900 mb-4">
-            {t.tests.antibacterial}
-          </h3>
+          <h3 className="font-semibold text-slate-900 mb-4">{t.tests.antibacterial}</h3>
           <div className="space-y-3">
             {test.abResult.organism1 && (
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
                   {t.tests.organism}
                 </p>
-                <p className="text-slate-900 font-medium">
-                  {test.abResult.organism1}
-                </p>
+                <p className="text-slate-900 font-medium">{test.abResult.organism1}</p>
               </div>
             )}
             {test.abResult.result1 !== undefined && (
@@ -681,9 +836,7 @@ export default function TestDetailPage() {
               <div>
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    test.abResult.pass
-                      ? "bg-green-50 text-green-700"
-                      : "bg-red-50 text-red-700"
+                    test.abResult.pass ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
                   }`}
                 >
                   {test.abResult.pass ? t.tests.methodPass : t.tests.methodFail}
@@ -704,17 +857,13 @@ export default function TestDetailPage() {
                 <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
                   {t.tests.result}
                 </p>
-                <p className="text-slate-900 font-medium">
-                  {test.fungalResult.writtenResult}
-                </p>
+                <p className="text-slate-900 font-medium">{test.fungalResult.writtenResult}</p>
               </div>
             )}
             {test.fungalResult.pass !== undefined && (
               <span
                 className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                  test.fungalResult.pass
-                    ? "bg-green-50 text-green-700"
-                    : "bg-red-50 text-red-700"
+                  test.fungalResult.pass ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
                 }`}
               >
                 {test.fungalResult.pass ? "Pass" : "Fail"}
@@ -731,12 +880,8 @@ export default function TestDetailPage() {
           <div className="space-y-3">
             {test.odorResult.testedOdor && (
               <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                  Tested Odor
-                </p>
-                <p className="text-slate-900 font-medium">
-                  {test.odorResult.testedOdor}
-                </p>
+                <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Tested Odor</p>
+                <p className="text-slate-900 font-medium">{test.odorResult.testedOdor}</p>
               </div>
             )}
             {test.odorResult.result && (
@@ -744,17 +889,13 @@ export default function TestDetailPage() {
                 <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
                   {t.tests.result}
                 </p>
-                <p className="text-lg font-semibold text-slate-900">
-                  {test.odorResult.result}
-                </p>
+                <p className="text-lg font-semibold text-slate-900">{test.odorResult.result}</p>
               </div>
             )}
             {test.odorResult.pass !== undefined && (
               <span
                 className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                  test.odorResult.pass
-                    ? "bg-green-50 text-green-700"
-                    : "bg-red-50 text-red-700"
+                  test.odorResult.pass ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
                 }`}
               >
                 {test.odorResult.pass ? "Pass" : "Fail"}
@@ -773,12 +914,11 @@ export default function TestDetailPage() {
           >
             <div className="flex items-center gap-3">
               <h3 className="font-semibold text-slate-900">{t.tests.aiReview}</h3>
-              {test.aiReviewData.anomalies &&
-                test.aiReviewData.anomalies.length > 0 && (
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">
-                    {test.aiReviewData.anomalies.length}
-                  </span>
-                )}
+              {test.aiReviewData.anomalies && test.aiReviewData.anomalies.length > 0 && (
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">
+                  {test.aiReviewData.anomalies.length}
+                </span>
+              )}
             </div>
             <svg
               className={`w-5 h-5 text-slate-400 transition-transform ${
@@ -800,108 +940,87 @@ export default function TestDetailPage() {
           {expandedAILocal && (
             <div className="border-t border-slate-200 px-5 py-4 space-y-6">
               {/* Anomalies */}
-              {test.aiReviewData.anomalies &&
-                test.aiReviewData.anomalies.length > 0 && (
-                  <div>
-                    <h4 className="font-medium text-slate-900 mb-3">
-                      {t.tests.anomalies}
-                    </h4>
-                    <div className="space-y-2">
-                      {test.aiReviewData.anomalies.map((anom, idx) => (
-                        <div key={idx} className="flex gap-3 p-3 bg-slate-50 rounded-lg">
-                          <span
-                            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium whitespace-nowrap flex-shrink-0 ${
-                              anom.severity === "high"
-                                ? "bg-red-100 text-red-700"
-                                : anom.severity === "medium"
-                                  ? "bg-amber-100 text-amber-700"
-                                  : "bg-blue-100 text-blue-700"
-                            }`}
-                          >
-                            {anom.severity}
-                          </span>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-slate-900 text-sm">
-                              {anom.type}
-                            </p>
-                            <p className="text-sm text-slate-600 mt-1">
-                              {anom.message}
-                            </p>
-                            {anom.testIndex !== undefined && (
-                              <p className="text-xs text-slate-500 mt-1">
-                                Test #{anom.testIndex}
-                              </p>
-                            )}
-                          </div>
+              {test.aiReviewData.anomalies && test.aiReviewData.anomalies.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-slate-900 mb-3">{t.tests.anomalies}</h4>
+                  <div className="space-y-2">
+                    {test.aiReviewData.anomalies.map((anom, idx) => (
+                      <div key={idx} className="flex gap-3 p-3 bg-slate-50 rounded-lg">
+                        <span
+                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium whitespace-nowrap flex-shrink-0 ${
+                            anom.severity === "high"
+                              ? "bg-red-100 text-red-700"
+                              : anom.severity === "medium"
+                                ? "bg-amber-100 text-amber-700"
+                                : "bg-blue-100 text-blue-700"
+                          }`}
+                        >
+                          {anom.severity}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-slate-900 text-sm">{anom.type}</p>
+                          <p className="text-sm text-slate-600 mt-1">{anom.message}</p>
+                          {anom.testIndex !== undefined && (
+                            <p className="text-xs text-slate-500 mt-1">Test #{anom.testIndex}</p>
+                          )}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
 
               {/* Pass Assessment */}
               {test.aiReviewData.passAssessment && (
                 <div>
-                  <h4 className="font-medium text-slate-900 mb-2">
-                    Pass Assessment
-                  </h4>
-                  <p className="text-slate-600 text-sm">
-                    {test.aiReviewData.passAssessment}
-                  </p>
+                  <h4 className="font-medium text-slate-900 mb-2">Pass Assessment</h4>
+                  <p className="text-slate-600 text-sm">{test.aiReviewData.passAssessment}</p>
                 </div>
               )}
 
               {/* Math Checks */}
-              {test.aiReviewData.mathChecks &&
-                test.aiReviewData.mathChecks.length > 0 && (
-                  <div>
-                    <h4 className="font-medium text-slate-900 mb-3">
-                      Math Checks
-                    </h4>
-                    <div className="space-y-2">
-                      {test.aiReviewData.mathChecks.map((check, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center gap-2 text-sm text-slate-700"
-                        >
-                          {check.passed ? (
-                            <svg
-                              className="w-4 h-4 text-green-600"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          ) : (
-                            <svg
-                              className="w-4 h-4 text-red-600"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          )}
-                          <span>{check.name}</span>
-                        </div>
-                      ))}
-                    </div>
+              {test.aiReviewData.mathChecks && test.aiReviewData.mathChecks.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-slate-900 mb-3">Math Checks</h4>
+                  <div className="space-y-2">
+                    {test.aiReviewData.mathChecks.map((check, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-sm text-slate-700">
+                        {check.passed ? (
+                          <svg
+                            className="w-4 h-4 text-green-600"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="w-4 h-4 text-red-600"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
+                        <span>{check.name}</span>
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
 
               {/* Confidence */}
               {test.aiReviewData.confidence !== undefined && (
                 <div>
-                  <h4 className="font-medium text-slate-900 mb-2">
-                    {t.tests.confidence}
-                  </h4>
+                  <h4 className="font-medium text-slate-900 mb-2">{t.tests.confidence}</h4>
                   <div className="flex items-center gap-3">
                     <div className="flex-1 bg-slate-200 rounded-full h-2 overflow-hidden">
                       <div
@@ -921,9 +1040,7 @@ export default function TestDetailPage() {
               {/* AI Notes */}
               {test.aiReviewNotes && (
                 <div>
-                  <h4 className="font-medium text-slate-900 mb-2">
-                    {t.tests.aiNotes}
-                  </h4>
+                  <h4 className="font-medium text-slate-900 mb-2">{t.tests.aiNotes}</h4>
                   <p className="text-slate-600 text-sm">{test.aiReviewNotes}</p>
                 </div>
               )}
@@ -943,20 +1060,12 @@ export default function TestDetailPage() {
                 className="flex items-center justify-between p-3 bg-slate-50 rounded-lg group"
               >
                 <div className="flex items-center gap-3">
-                  <svg
-                    className="w-5 h-5 text-red-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
+                  <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M4 3a2 2 0 012-2h5.293A1 1 0 0112 2.414l3.293 3.293A1 1 0 0115 7.121V16a2 2 0 01-2 2H6a2 2 0 01-2-2V3z" />
                   </svg>
                   <div>
-                    <p className="text-sm font-medium text-slate-900">
-                      {doc.filename}
-                    </p>
-                    {doc.kind && (
-                      <p className="text-xs text-slate-500">{doc.kind}</p>
-                    )}
+                    <p className="text-sm font-medium text-slate-900">{doc.filename}</p>
+                    {doc.kind && <p className="text-xs text-slate-500">{doc.kind}</p>}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

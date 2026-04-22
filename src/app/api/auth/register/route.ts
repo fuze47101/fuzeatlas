@@ -1,7 +1,13 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { hashPassword, createToken, setSessionCookie, getCurrentUser, hasMinRole } from "@/lib/auth";
+import {
+  hashPassword,
+  createToken,
+  setSessionCookie,
+  getCurrentUser,
+  hasMinRole,
+} from "@/lib/auth";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
@@ -12,24 +18,24 @@ export async function POST(req: Request) {
     if (!rl.allowed) {
       return NextResponse.json(
         { ok: false, error: "Too many requests. Please try again later." },
-        { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } }
+        { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } },
       );
     }
 
     const body = await req.json();
-    const { name, email, password, role, brandId, factoryId, distributorId } = body;
+    const { name, email, password, role, brandId, factoryId, distributorId, labId } = body;
 
     if (!name || !email || !password) {
       return NextResponse.json(
         { ok: false, error: "Name, email, and password are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (password.length < 6) {
       return NextResponse.json(
         { ok: false, error: "Password must be at least 6 characters" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -50,7 +56,7 @@ export async function POST(req: Request) {
       if (!currentUser || !hasMinRole(currentUser.role, "ADMIN")) {
         return NextResponse.json(
           { ok: false, error: "Only administrators can create new accounts" },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -81,23 +87,33 @@ export async function POST(req: Request) {
         // Not first admin, and email already exists — can't create duplicate
         return NextResponse.json(
           { ok: false, error: "An account with this email already exists" },
-          { status: 409 }
+          { status: 409 },
         );
       }
     } else {
-      // Create new user — non-admin users must change password on first login
-      const isExternalRole = ["FACTORY_USER", "FACTORY_MANAGER", "BRAND_USER", "DISTRIBUTOR_USER"].includes(role);
+      // Create new user — non-admin users must change password on first login.
+      // LAB_USER added to external-role list as part of Tina's admin tooling
+      // gap fix (Apr 2026) so newly invited lab users get the change-password
+      // prompt on first sign-in, same as factory/brand/distributor.
+      const isExternalRole = [
+        "FACTORY_USER",
+        "FACTORY_MANAGER",
+        "BRAND_USER",
+        "DISTRIBUTOR_USER",
+        "LAB_USER",
+      ].includes(role);
       user = await prisma.user.create({
         data: {
           name,
           email: email.toLowerCase().trim(),
           password: hashedPassword,
-          role: isFirstAdmin ? "ADMIN" : (role || "EMPLOYEE"),
+          role: isFirstAdmin ? "ADMIN" : role || "EMPLOYEE",
           status: "ACTIVE",
           mustChangePassword: !isFirstAdmin && isExternalRole,
           ...(brandId && { brandId }),
           ...(factoryId && { factoryId }),
           ...(distributorId && { distributorId }),
+          ...(labId && { labId }),
         },
       });
     }
@@ -131,9 +147,6 @@ export async function POST(req: Request) {
     });
   } catch (err: any) {
     console.error("Register error:", err);
-    return NextResponse.json(
-      { ok: false, error: err.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
   }
 }

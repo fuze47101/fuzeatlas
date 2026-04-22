@@ -22,9 +22,17 @@ interface LookupItem {
 }
 
 const ROLES = [
-  "ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP",
-  "FABRIC_MANAGER", "TESTING_MANAGER", "FACTORY_MANAGER",
-  "FACTORY_USER", "BRAND_USER", "DISTRIBUTOR_USER",
+  "ADMIN",
+  "EMPLOYEE",
+  "SALES_MANAGER",
+  "SALES_REP",
+  "FABRIC_MANAGER",
+  "TESTING_MANAGER",
+  "FACTORY_MANAGER",
+  "FACTORY_USER",
+  "BRAND_USER",
+  "DISTRIBUTOR_USER",
+  "LAB_USER",
 ];
 
 const ROLE_LABELS: Record<string, string> = {
@@ -38,6 +46,7 @@ const ROLE_LABELS: Record<string, string> = {
   FACTORY_USER: "Factory User",
   BRAND_USER: "Brand User",
   DISTRIBUTOR_USER: "Distributor",
+  LAB_USER: "Lab User",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -51,6 +60,7 @@ const STATUS_COLORS: Record<string, string> = {
 const NEEDS_BRAND = ["BRAND_USER"];
 const NEEDS_FACTORY = ["FACTORY_USER", "FACTORY_MANAGER"];
 const NEEDS_DISTRIBUTOR = ["DISTRIBUTOR_USER"];
+const NEEDS_LAB = ["LAB_USER"];
 
 export default function UserManagementPage() {
   const { user: currentUser } = useAuth();
@@ -69,6 +79,7 @@ export default function UserManagementPage() {
   const [newBrandId, setNewBrandId] = useState("");
   const [newFactoryId, setNewFactoryId] = useState("");
   const [newDistributorId, setNewDistributorId] = useState("");
+  const [newLabId, setNewLabId] = useState("");
   const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -76,6 +87,7 @@ export default function UserManagementPage() {
   const [brands, setBrands] = useState<LookupItem[]>([]);
   const [factories, setFactories] = useState<LookupItem[]>([]);
   const [distributors, setDistributors] = useState<LookupItem[]>([]);
+  const [labs, setLabs] = useState<LookupItem[]>([]);
 
   // Edit form
   const [editRole, setEditRole] = useState("");
@@ -86,7 +98,9 @@ export default function UserManagementPage() {
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"reset-password" | "change-role" | "suspend" | "remove" | "delete" | null>(null);
+  const [modalType, setModalType] = useState<
+    "reset-password" | "change-role" | "suspend" | "remove" | "delete" | null
+  >(null);
   const [modalUserId, setModalUserId] = useState<string | null>(null);
   const [modalUser, setModalUser] = useState<UserRecord | null>(null);
   const [generatedPassword, setGeneratedPassword] = useState("");
@@ -101,17 +115,23 @@ export default function UserManagementPage() {
     setLoading(false);
   }, []);
 
-  // Fetch lookup data for entity assignment
+  // Fetch lookup data for entity assignment.
+  // Labs added Apr 2026 (Tina ticket — admin couldn't link a new user to a lab).
   const fetchLookups = useCallback(async () => {
     try {
-      const [brandsRes, factoriesRes, distRes] = await Promise.all([
-        fetch("/api/brands").then(r => r.json()),
-        fetch("/api/factories").then(r => r.json()),
-        fetch("/api/distributors").then(r => r.json()),
+      const [brandsRes, factoriesRes, distRes, labsRes] = await Promise.all([
+        fetch("/api/brands").then((r) => r.json()),
+        fetch("/api/factories").then((r) => r.json()),
+        fetch("/api/distributors").then((r) => r.json()),
+        fetch("/api/labs").then((r) => r.json()),
       ]);
-      if (brandsRes.brands) setBrands(brandsRes.brands.map((b: any) => ({ id: b.id, name: b.name })));
-      if (factoriesRes.factories) setFactories(factoriesRes.factories.map((f: any) => ({ id: f.id, name: f.name })));
-      if (distRes.distributors) setDistributors(distRes.distributors.map((d: any) => ({ id: d.id, name: d.name })));
+      if (brandsRes.brands)
+        setBrands(brandsRes.brands.map((b: any) => ({ id: b.id, name: b.name })));
+      if (factoriesRes.factories)
+        setFactories(factoriesRes.factories.map((f: any) => ({ id: f.id, name: f.name })));
+      if (distRes.distributors)
+        setDistributors(distRes.distributors.map((d: any) => ({ id: d.id, name: d.name })));
+      if (labsRes.labs) setLabs(labsRes.labs.map((l: any) => ({ id: l.id, name: l.name })));
     } catch {}
   }, []);
 
@@ -141,7 +161,9 @@ export default function UserManagementPage() {
           role: newRole,
           ...(NEEDS_BRAND.includes(newRole) && newBrandId && { brandId: newBrandId }),
           ...(NEEDS_FACTORY.includes(newRole) && newFactoryId && { factoryId: newFactoryId }),
-          ...(NEEDS_DISTRIBUTOR.includes(newRole) && newDistributorId && { distributorId: newDistributorId }),
+          ...(NEEDS_DISTRIBUTOR.includes(newRole) &&
+            newDistributorId && { distributorId: newDistributorId }),
+          ...(NEEDS_LAB.includes(newRole) && newLabId && { labId: newLabId }),
         }),
       });
       const data = await res.json();
@@ -154,6 +176,7 @@ export default function UserManagementPage() {
         setNewBrandId("");
         setNewFactoryId("");
         setNewDistributorId("");
+        setNewLabId("");
         fetchUsers();
       } else {
         setFormError(data.error || "Failed to create user");
@@ -206,7 +229,7 @@ export default function UserManagementPage() {
   const handleOpenActionModal = (
     type: "reset-password" | "change-role" | "suspend" | "remove" | "delete",
     userId: string,
-    userData: UserRecord
+    userData: UserRecord,
   ) => {
     setModalType(type);
     setModalUserId(userId);
@@ -266,7 +289,9 @@ export default function UserManagementPage() {
       <div className="flex items-center justify-between mb-6 gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900">User Management</h1>
-          <p className="text-sm text-slate-500 mt-1">{users.length} user{users.length !== 1 ? "s" : ""} registered</p>
+          <p className="text-sm text-slate-500 mt-1">
+            {users.length} user{users.length !== 1 ? "s" : ""} registered
+          </p>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
@@ -326,14 +351,18 @@ export default function UserManagementPage() {
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
               >
                 {ROLES.map((r) => (
-                  <option key={r} value={r}>{ROLE_LABELS[r] || r}</option>
+                  <option key={r} value={r}>
+                    {ROLE_LABELS[r] || r}
+                  </option>
                 ))}
               </select>
             </div>
             {/* Entity assignment — shown based on role */}
             {NEEDS_BRAND.includes(newRole) && (
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-1">Assign to Brand</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Assign to Brand
+                </label>
                 <select
                   value={newBrandId}
                   onChange={(e) => setNewBrandId(e.target.value)}
@@ -342,15 +371,21 @@ export default function UserManagementPage() {
                 >
                   <option value="">— Select Brand —</option>
                   {brands.map((b) => (
-                    <option key={b.id} value={b.id}>{b.name}</option>
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
                   ))}
                 </select>
-                <p className="text-xs text-slate-400 mt-1">Brand users can only see data for their assigned brand</p>
+                <p className="text-xs text-slate-400 mt-1">
+                  Brand users can only see data for their assigned brand
+                </p>
               </div>
             )}
             {NEEDS_FACTORY.includes(newRole) && (
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-1">Assign to Factory</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Assign to Factory
+                </label>
                 <select
                   value={newFactoryId}
                   onChange={(e) => setNewFactoryId(e.target.value)}
@@ -359,14 +394,18 @@ export default function UserManagementPage() {
                 >
                   <option value="">— Select Factory —</option>
                   {factories.map((f) => (
-                    <option key={f.id} value={f.id}>{f.name}</option>
+                    <option key={f.id} value={f.id}>
+                      {f.name}
+                    </option>
                   ))}
                 </select>
               </div>
             )}
             {NEEDS_DISTRIBUTOR.includes(newRole) && (
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-1">Assign to Distributor</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Assign to Distributor
+                </label>
                 <select
                   value={newDistributorId}
                   onChange={(e) => setNewDistributorId(e.target.value)}
@@ -375,9 +414,34 @@ export default function UserManagementPage() {
                 >
                   <option value="">— Select Distributor —</option>
                   {distributors.map((d) => (
-                    <option key={d.id} value={d.id}>{d.name}</option>
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
                   ))}
                 </select>
+              </div>
+            )}
+            {NEEDS_LAB.includes(newRole) && (
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Assign to Lab
+                </label>
+                <select
+                  value={newLabId}
+                  onChange={(e) => setNewLabId(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                  required
+                >
+                  <option value="">— Select Lab —</option>
+                  {labs.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-slate-400 mt-1">
+                  Lab users can upload test reports and view tests assigned to their lab
+                </p>
               </div>
             )}
             <div className="md:col-span-2">
@@ -407,7 +471,9 @@ export default function UserManagementPage() {
                   <div className="text-sm font-medium text-slate-900 truncate flex items-center gap-1">
                     {u.name}
                     {u.id === currentUser?.id && (
-                      <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded font-medium">You</span>
+                      <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded font-medium">
+                        You
+                      </span>
                     )}
                     {u.canClaim && (
                       <span
@@ -421,7 +487,9 @@ export default function UserManagementPage() {
                   <div className="text-xs text-slate-500 truncate">{u.email}</div>
                 </div>
               </div>
-              <span className={`text-[10px] px-2 py-1 rounded-full font-medium flex-shrink-0 ${STATUS_COLORS[u.status] || "bg-slate-100 text-slate-500"}`}>
+              <span
+                className={`text-[10px] px-2 py-1 rounded-full font-medium flex-shrink-0 ${STATUS_COLORS[u.status] || "bg-slate-100 text-slate-500"}`}
+              >
                 {u.status}
               </span>
             </div>
@@ -502,7 +570,9 @@ export default function UserManagementPage() {
                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
                   >
                     {ROLES.map((r) => (
-                      <option key={r} value={r}>{ROLE_LABELS[r] || r}</option>
+                      <option key={r} value={r}>
+                        {ROLE_LABELS[r] || r}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -545,11 +615,21 @@ export default function UserManagementPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
-                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Name</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase hidden lg:table-cell">Email</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Role</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Status</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Actions</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">
+                  Name
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase hidden lg:table-cell">
+                  Email
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">
+                  Role
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">
+                  Status
+                </th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-slate-500 uppercase">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -563,7 +643,9 @@ export default function UserManagementPage() {
                       <div className="min-w-0">
                         <span className="text-sm font-medium text-slate-900">{u.name}</span>
                         {u.id === currentUser?.id && (
-                          <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded font-medium ml-1">You</span>
+                          <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded font-medium ml-1">
+                            You
+                          </span>
                         )}
                         {u.canClaim && (
                           <span
@@ -577,7 +659,9 @@ export default function UserManagementPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-600 hidden lg:table-cell">{u.email}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600 hidden lg:table-cell">
+                    {u.email}
+                  </td>
                   <td className="px-4 py-3">
                     {editingId === u.id ? (
                       <select
@@ -586,7 +670,9 @@ export default function UserManagementPage() {
                         className="border border-slate-300 rounded px-2 py-1 text-xs"
                       >
                         {ROLES.map((r) => (
-                          <option key={r} value={r}>{ROLE_LABELS[r] || r}</option>
+                          <option key={r} value={r}>
+                            {ROLE_LABELS[r] || r}
+                          </option>
                         ))}
                       </select>
                     ) : (
@@ -607,7 +693,9 @@ export default function UserManagementPage() {
                         <option value="PENDING">Pending</option>
                       </select>
                     ) : (
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_COLORS[u.status] || "bg-slate-100 text-slate-500"}`}>
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_COLORS[u.status] || "bg-slate-100 text-slate-500"}`}
+                      >
                         {u.status}
                       </span>
                     )}
@@ -632,7 +720,9 @@ export default function UserManagementPage() {
                     ) : (
                       <div className="relative">
                         <button
-                          onClick={() => setActionDropdownOpen(actionDropdownOpen === u.id ? null : u.id)}
+                          onClick={() =>
+                            setActionDropdownOpen(actionDropdownOpen === u.id ? null : u.id)
+                          }
                           className="text-xs px-3 py-1 bg-slate-100 text-slate-600 rounded hover:bg-slate-200"
                         >
                           Actions ▼
@@ -718,9 +808,7 @@ export default function UserManagementPage() {
             {/* Reset Password - Show Generated Password */}
             {modalType === "reset-password" && generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-slate-900 mb-4">
-                  Password Reset
-                </h2>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">Password Reset</h2>
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
                   <p className="text-xs text-amber-700 uppercase font-semibold mb-2">
                     New Password Generated
@@ -757,11 +845,10 @@ export default function UserManagementPage() {
             {/* Reset Password - Confirmation */}
             {modalType === "reset-password" && !generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-slate-900 mb-4">
-                  Reset Password
-                </h2>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">Reset Password</h2>
                 <p className="text-sm text-slate-600 mb-6">
-                  Generate a new password for <span className="font-semibold">{modalUser.name}</span>?
+                  Generate a new password for{" "}
+                  <span className="font-semibold">{modalUser.name}</span>?
                 </p>
                 <div className="flex gap-2">
                   <button
@@ -783,11 +870,12 @@ export default function UserManagementPage() {
             {/* Change Role */}
             {modalType === "change-role" && !generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-slate-900 mb-4">
-                  Change Role
-                </h2>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">Change Role</h2>
                 <p className="text-sm text-slate-600 mb-4">
-                  Current role: <span className="font-semibold">{ROLE_LABELS[modalUser.role] || modalUser.role}</span>
+                  Current role:{" "}
+                  <span className="font-semibold">
+                    {ROLE_LABELS[modalUser.role] || modalUser.role}
+                  </span>
                 </p>
                 <select
                   value={selectedNewRole}
@@ -820,11 +908,10 @@ export default function UserManagementPage() {
             {/* Suspend */}
             {modalType === "suspend" && !generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-slate-900 mb-4">
-                  Suspend User
-                </h2>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">Suspend User</h2>
                 <p className="text-sm text-slate-600 mb-6">
-                  Suspend <span className="font-semibold">{modalUser.name}</span>? They will be unable to access the system.
+                  Suspend <span className="font-semibold">{modalUser.name}</span>? They will be
+                  unable to access the system.
                 </p>
                 <div className="flex gap-2">
                   <button
@@ -846,11 +933,10 @@ export default function UserManagementPage() {
             {/* Remove/Deactivate */}
             {modalType === "remove" && !generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-slate-900 mb-4">
-                  Deactivate User
-                </h2>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">Deactivate User</h2>
                 <p className="text-sm text-slate-600 mb-6">
-                  Deactivate <span className="font-semibold">{modalUser.name}</span>? They will be unable to access the system.
+                  Deactivate <span className="font-semibold">{modalUser.name}</span>? They will be
+                  unable to access the system.
                 </p>
                 <div className="flex gap-2">
                   <button
@@ -871,14 +957,15 @@ export default function UserManagementPage() {
 
             {modalType === "delete" && !generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-red-600 mb-4">
-                  Permanently Delete User
-                </h2>
+                <h2 className="text-lg font-bold text-red-600 mb-4">Permanently Delete User</h2>
                 <p className="text-sm text-slate-600 mb-2">
-                  This will <span className="font-semibold text-red-600">permanently delete</span> <span className="font-semibold">{modalUser.name}</span> ({modalUser.email}) from the system.
+                  This will <span className="font-semibold text-red-600">permanently delete</span>{" "}
+                  <span className="font-semibold">{modalUser.name}</span> ({modalUser.email}) from
+                  the system.
                 </p>
                 <p className="text-sm text-red-500 mb-6">
-                  This action cannot be undone. All associated data (notifications, audit logs, notes) will also be removed.
+                  This action cannot be undone. All associated data (notifications, audit logs,
+                  notes) will also be removed.
                 </p>
                 <div className="flex gap-2">
                   <button

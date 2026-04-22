@@ -4,10 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { sendResultsReadyEmail } from "@/lib/email";
 
 /* ── GET /api/tests/[id] ── fetch single test run with all details */
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
 
@@ -15,6 +12,9 @@ export async function GET(
       where: { id },
       include: {
         lab: { select: { id: true, name: true } },
+        // Project is editable from the test detail page (Tina ticket Apr 2026 —
+        // admin needs to retag tests to a project after upload).
+        project: { select: { id: true, name: true } },
         submission: {
           select: {
             id: true,
@@ -44,10 +44,7 @@ export async function GET(
 }
 
 /* ── PATCH /api/tests/[id] ── edit test run core fields ────────── */
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const body = await req.json();
@@ -59,15 +56,29 @@ export async function PATCH(
       testMethodStd,
       washCount,
       // ICP fields
-      agValue, auValue, agUnit,
+      agValue,
+      auValue,
+      agUnit,
       // AB fields
-      organism1, organism2, result1, result2, abPass,
+      organism1,
+      organism2,
+      result1,
+      result2,
+      abPass,
       // Fungal fields
-      fungalWrittenResult, fungalPass,
+      fungalWrittenResult,
+      fungalPass,
       // Odor fields
-      testedOdor, odorResult, odorPass,
+      testedOdor,
+      odorResult,
+      odorPass,
       // Brand visibility
       brandVisible,
+      // Linked-entity edits (Tina ticket Apr 2026):
+      //   • projectId — direct on TestRun
+      //   • factoryId — proxied onto the linked submission (factory lives there)
+      projectId,
+      factoryId,
     } = body;
 
     // Verify test exists
@@ -125,12 +136,25 @@ export async function PATCH(
         ...(testType !== undefined && { testType }),
         ...(testReportNumber !== undefined && { testReportNumber: testReportNumber || null }),
         ...(testMethodStd !== undefined && { testMethodStd: testMethodStd || null }),
-        ...(washCount !== undefined && { washCount: washCount ? parseInt(String(washCount), 10) : null }),
+        ...(washCount !== undefined && {
+          washCount: washCount ? parseInt(String(washCount), 10) : null,
+        }),
+        ...(projectId !== undefined && { projectId: projectId || null }),
         labId,
         testDate: parsedDate,
         ...brandVisData,
       },
     });
+
+    // Factory lives on the linked FabricSubmission, not on TestRun. If the
+    // caller passed factoryId, proxy it onto the submission. Skip if there's
+    // no submission (legacy test runs without one).
+    if (factoryId !== undefined && existing.submissionId) {
+      await prisma.fabricSubmission.update({
+        where: { id: existing.submissionId },
+        data: { factoryId: factoryId || null },
+      });
+    }
 
     // Update ICP result if fields provided
     if (updated.testType === "ICP" && (agValue !== undefined || auValue !== undefined)) {
@@ -138,8 +162,14 @@ export async function PATCH(
         await prisma.icpResult.update({
           where: { id: existing.icpResult.id },
           data: {
-            ...(agValue !== undefined && { agValue: agValue ? parseFloat(String(agValue)) : null, agRaw: agValue ? String(agValue) : null }),
-            ...(auValue !== undefined && { auValue: auValue ? parseFloat(String(auValue)) : null, auRaw: auValue ? String(auValue) : null }),
+            ...(agValue !== undefined && {
+              agValue: agValue ? parseFloat(String(agValue)) : null,
+              agRaw: agValue ? String(agValue) : null,
+            }),
+            ...(auValue !== undefined && {
+              auValue: auValue ? parseFloat(String(auValue)) : null,
+              auRaw: auValue ? String(auValue) : null,
+            }),
             ...(agUnit !== undefined && { unit: agUnit || "ppm" }),
           },
         });
@@ -158,7 +188,10 @@ export async function PATCH(
     }
 
     // Update AB result
-    if (updated.testType === "ANTIBACTERIAL" && (organism1 !== undefined || result1 !== undefined)) {
+    if (
+      updated.testType === "ANTIBACTERIAL" &&
+      (organism1 !== undefined || result1 !== undefined)
+    ) {
       if (existing.abResult) {
         await prisma.antibacterialResult.update({
           where: { id: existing.abResult.id },
@@ -250,10 +283,15 @@ export async function PATCH(
 
           if (!customerEmail) return; // No customer to notify
 
-          const fabricInfo = [
-            fullTest.submission?.fuzeFabricNumber ? `FUZE-${fullTest.submission.fuzeFabricNumber}` : null,
-            fullTest.submission?.fabric?.customerCode,
-          ].filter(Boolean).join(" | ") || "See test report";
+          const fabricInfo =
+            [
+              fullTest.submission?.fuzeFabricNumber
+                ? `FUZE-${fullTest.submission.fuzeFabricNumber}`
+                : null,
+              fullTest.submission?.fabric?.customerCode,
+            ]
+              .filter(Boolean)
+              .join(" | ") || "See test report";
 
           // Build result entry
           const results: any[] = [];
