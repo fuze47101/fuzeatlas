@@ -37,6 +37,13 @@ export default function ProfileSettingsPage() {
   const [fromName, setFromName] = useState("");
   const [signature, setSignature] = useState("");
 
+  // Calendar subscription URL (loaded async — see effect below)
+  const [calendarFeed, setCalendarFeed] = useState<{
+    httpsUrl: string;
+    webcalUrl: string;
+  } | null>(null);
+  const [copiedUrl, setCopiedUrl] = useState(false);
+
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -65,6 +72,32 @@ export default function ProfileSettingsPage() {
       cancelled = true;
     };
   }, []);
+
+  // Calendar feed URL — loaded once, separately from profile (different endpoint).
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/me/calendar-feed")
+      .then((r) => r.json())
+      .then((j) => {
+        if (cancelled || !j.ok) return;
+        setCalendarFeed({ httpsUrl: j.httpsUrl, webcalUrl: j.webcalUrl });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function copyCalendarUrl() {
+    if (!calendarFeed) return;
+    try {
+      await navigator.clipboard.writeText(calendarFeed.httpsUrl);
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 2000);
+    } catch (e) {
+      console.error("Copy failed:", e);
+    }
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -265,6 +298,71 @@ export default function ProfileSettingsPage() {
           <div className="text-[11px] text-slate-400 mt-1">
             {signature.length} / 4000 characters
           </div>
+        </section>
+
+        {/* Calendar Subscription */}
+        <section className="bg-white border rounded-xl p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
+              Calendar Subscription
+            </h2>
+            <span className="text-[11px] text-violet-600 bg-violet-50 border border-violet-100 rounded-full px-2 py-0.5">
+              Outlook · Google · Apple
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mb-3">
+            Subscribe your calendar app to a read-only overlay of your Atlas
+            meetings and open CRM tasks. Updates flow automatically — no IT
+            permission required. The URL contains a private token, so don't
+            share it.
+          </p>
+          {calendarFeed ? (
+            <>
+              <div className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  readOnly
+                  value={calendarFeed.httpsUrl}
+                  onFocus={(e) => e.currentTarget.select()}
+                  className="flex-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-700"
+                />
+                <button
+                  type="button"
+                  onClick={copyCalendarUrl}
+                  className="px-3 py-2 rounded-lg bg-slate-900 text-white text-xs font-medium hover:bg-slate-800 whitespace-nowrap"
+                >
+                  {copiedUrl ? "Copied ✓" : "Copy URL"}
+                </button>
+                <a
+                  href={calendarFeed.webcalUrl}
+                  className="px-3 py-2 rounded-lg bg-violet-600 text-white text-xs font-medium hover:bg-violet-700 whitespace-nowrap"
+                >
+                  Subscribe →
+                </a>
+              </div>
+              <details className="mt-3 text-xs text-slate-600">
+                <summary className="cursor-pointer hover:text-slate-900">
+                  How to add this to Outlook / Google / Apple
+                </summary>
+                <ul className="mt-2 ml-4 list-disc space-y-1 text-slate-500">
+                  <li>
+                    <b>Outlook (web):</b> Calendar → Add calendar → Subscribe
+                    from web → paste URL.
+                  </li>
+                  <li>
+                    <b>Google Calendar:</b> Other calendars + → From URL →
+                    paste URL.
+                  </li>
+                  <li>
+                    <b>Apple Calendar:</b> File → New Calendar Subscription →
+                    paste URL → set auto-refresh to 1 hour.
+                  </li>
+                </ul>
+              </details>
+            </>
+          ) : (
+            <div className="text-xs text-slate-400">Loading subscription URL…</div>
+          )}
         </section>
 
         {/* Actions */}

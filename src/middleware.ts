@@ -11,7 +11,12 @@ const COOKIE_NAME = "fuze-session";
 // NOTE: /api/cron is exempted so Vercel Cron invocations reach the route
 // handler (which has its own CRON_SECRET Bearer-token auth). Without this,
 // every scheduled cron returns 401 before ever running.
-const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/forgot-password", "/reset-password", "/verify-email", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/verify-email", "/api/access-requests", "/api/cron"];
+// /calendar/ is exempted so per-rep ICS subscription feeds (ticket #23) can be
+// fetched by Outlook/Google/Apple Calendar without a session — the URL itself
+// carries an HMAC-signed token. /api/inbound/ is exempted so email + iMIP
+// reply webhooks (ticket #23 + #27/#32) reach the handler with their own
+// X-Webhook-Secret auth.
+const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/forgot-password", "/reset-password", "/verify-email", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/verify-email", "/api/access-requests", "/api/cron", "/calendar/", "/api/inbound/"];
 
 // Routes restricted to internal roles only (ADMIN, EMPLOYEE, SALES_*, TESTING_*, FABRIC_*)
 // Factory, Brand, and Distributor users CANNOT access these even with a valid session
@@ -123,11 +128,22 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // Add user info to headers for downstream use
-    const response = NextResponse.next();
-    response.headers.set("x-user-id", user.id);
-    response.headers.set("x-user-role", user.role);
-    return response;
+    // Forward user identity to downstream API routes via REQUEST headers.
+    // BUG FIX (Apr 2026): the previous version set these on `response.headers`
+    // — that's the headers the BROWSER receives, not what the route handler
+    // sees on `req.headers`. As a result every API route reading
+    // req.headers.get("x-user-id") got either an empty string or whatever the
+    // client supplied (trust-the-client = security hole). The correct Next.js
+    // App Router pattern is to clone the request headers, mutate them, and
+    // pass them via NextResponse.next({ request: { headers } }).
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-user-id", user.id);
+    requestHeaders.set("x-user-role", user.role);
+    if (user.brandId) requestHeaders.set("x-user-brand-id", user.brandId);
+    if (user.factoryId) requestHeaders.set("x-user-factory-id", user.factoryId);
+    if (user.distributorId) requestHeaders.set("x-user-distributor-id", user.distributorId);
+    if (user.labId) requestHeaders.set("x-user-lab-id", user.labId);
+    return NextResponse.next({ request: { headers: requestHeaders } });
   } catch {
     // Invalid token — clear cookie and redirect
     if (pathname.startsWith("/api/")) {
