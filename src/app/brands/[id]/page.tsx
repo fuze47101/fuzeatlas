@@ -349,7 +349,7 @@ export default function BrandDetailPage() {
       if (j.ok) {
         setBrand({
           ...brand,
-          factories: brand.factories.filter((f: any) => f.id !== linkId),
+          factories: (brand.factories || []).filter((f: any) => f.id !== linkId),
           _count: { ...brand._count, factories: brand._count.factories - 1 },
         });
       }
@@ -1012,7 +1012,10 @@ export default function BrandDetailPage() {
                 >
                   <option value="">Choose a factory...</option>
                   {allFactories
-                    .filter((f: any) => !brand.factories.some((bf: any) => bf.factory.id === f.id))
+                    .filter(
+                      (f: any) =>
+                        !(brand.factories || []).some((bf: any) => bf.factory?.id === f.id),
+                    )
                     .map((f: any) => (
                       <option key={f.id} value={f.id}>
                         {f.name} {f.country ? `(${f.country})` : ""}
@@ -1035,13 +1038,13 @@ export default function BrandDetailPage() {
               </div>
             </div>
           )}
-          {brand.factories.length === 0 ? (
+          {(brand.factories?.length ?? 0) === 0 ? (
             <p className="text-slate-400 text-sm text-center py-8">
               No factories linked to this brand yet.
             </p>
           ) : (
             <div className="space-y-2">
-              {brand.factories.map((bf: any) => (
+              {(brand.factories || []).map((bf: any) => (
                 <div
                   key={bf.id}
                   className="flex items-center justify-between p-3 bg-slate-50 rounded-lg group hover:bg-blue-50"
@@ -1079,7 +1082,7 @@ export default function BrandDetailPage() {
       {/* ── Submissions Tab ── */}
       {tab === "submissions" && (
         <div className="bg-white rounded-xl p-6 shadow-sm border">
-          {brand.submissions.length === 0 ? (
+          {(brand.submissions?.length ?? 0) === 0 ? (
             <p className="text-slate-400 text-sm text-center py-8">{t.common.noSubmissions}</p>
           ) : (
             <table className="w-full text-sm">
@@ -1092,7 +1095,7 @@ export default function BrandDetailPage() {
                 </tr>
               </thead>
               <tbody>
-                {brand.submissions.map((s: any) => (
+                {(brand.submissions || []).map((s: any) => (
                   <tr key={s.id} className="border-b border-slate-100">
                     <td className="py-2 font-bold">FUZE {s.fuzeFabricNumber}</td>
                     <td className="py-2">{s.status || "—"}</td>
@@ -1216,11 +1219,11 @@ export default function BrandDetailPage() {
               + {t.common.newSow}
             </button>
           </div>
-          {brand.sows.length === 0 ? (
+          {(brand.sows?.length ?? 0) === 0 ? (
             <p className="text-slate-400 text-sm text-center py-8">{t.common.noSows}</p>
           ) : (
             <div className="space-y-2">
-              {brand.sows.map((s: any) => (
+              {(brand.sows || []).map((s: any) => (
                 <div
                   key={s.id}
                   onClick={() => router.push(`/sow/${s.id}`)}
@@ -1876,6 +1879,50 @@ function ContactsTab({
     });
   };
 
+  /**
+   * Provision an Atlas BRAND_USER from this contact (ticket #39).
+   * Mirrors the Factory ContactsTab implementation — server picks role from
+   * the contact's brandId. Surfaces temp password locally so admins have a
+   * fallback if welcome email delivery fails.
+   */
+  const [creatingUserFor, setCreatingUserFor] = useState<string | null>(null);
+  const handleCreateAtlasUser = async (ct: any) => {
+    if (!ct.email) {
+      alert("Contact needs an email before you can create an Atlas user.");
+      return;
+    }
+    if (
+      !confirm(
+        `Create an Atlas BRAND_USER account for ${ct.firstName || ""} ${ct.lastName || ""} (${ct.email})?\n\nThis will email them a temporary password and require them to change it on first login.`,
+      )
+    ) {
+      return;
+    }
+    setCreatingUserFor(ct.id);
+    setError("");
+    try {
+      const res = await fetch(`/api/contacts/${ct.id}/create-user`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const j = await res.json();
+      if (!j.ok) {
+        setError(j.error || "Failed to create user");
+        return;
+      }
+      alert(
+        j.emailSent
+          ? `Atlas user created. Welcome email sent.\n\nTemp password (in case they ask): ${j.tempPassword}`
+          : `Atlas user created BUT welcome email failed (${j.emailError}).\n\nShare this temp password manually:\n\n${j.tempPassword}`,
+      );
+    } catch (e: any) {
+      setError(e.message || "Network error creating Atlas user");
+    } finally {
+      setCreatingUserFor(null);
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border">
       <div className="flex justify-between items-center mb-4">
@@ -2018,22 +2065,31 @@ function ContactsTab({
               <div
                 key={ct.id}
                 className="flex items-center gap-4 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg group cursor-pointer transition"
-                onClick={() => launchWizard(ct.id)}
-                title="Open in BD Wizard"
+                onClick={() => router.push(`/contacts/${ct.id}`)}
+                title="View contact details"
               >
                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm flex-shrink-0">
                   {(ct.firstName || ct.name || "?")[0]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-sm text-slate-900">
-                    {ct.firstName} {ct.lastName}{" "}
-                    {ct.title && <span className="text-slate-500 font-normal">({ct.title})</span>}
+                  <div className="font-semibold text-sm text-slate-900 flex items-center gap-1.5">
+                    <span>
+                      {ct.firstName} {ct.lastName}{" "}
+                      {ct.title && <span className="text-slate-500 font-normal">({ct.title})</span>}
+                    </span>
+                    {/* Subtle "view contact" affordance — only visible on hover so it
+                       doesn't add visual noise to the row at rest. */}
+                    <span className="text-[10px] text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity font-normal">
+                      View →
+                    </span>
                   </div>
                   <div className="text-xs text-slate-500 truncate">
                     {ct.email}
                     {ct.phone && ` · ${ct.phone}`}
                   </div>
                 </div>
+                {/* stopPropagation keeps the action buttons (Email/Call/Edit/Delete)
+                   working without triggering the card's navigate-to-detail handler. */}
                 <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={() => launchWizard(ct.id)}
@@ -2061,7 +2117,19 @@ function ContactsTab({
                       📞 Contact
                     </button>
                   )}
-                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity items-center">
+                    {/* "Create Atlas user" — provisions a BRAND_USER tied to
+                       this brand and emails a temp password (ticket #39). */}
+                    {ct.email && (
+                      <button
+                        onClick={() => handleCreateAtlasUser(ct)}
+                        disabled={creatingUserFor === ct.id}
+                        className="text-xs text-emerald-700 hover:underline disabled:opacity-50"
+                        title={`Create Atlas brand account for ${ct.email}`}
+                      >
+                        {creatingUserFor === ct.id ? "Creating…" : "+ Atlas user"}
+                      </button>
+                    )}
                     <button
                       onClick={() => startEdit(ct)}
                       className="text-xs text-blue-600 hover:underline"
