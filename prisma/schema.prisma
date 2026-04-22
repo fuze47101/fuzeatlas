@@ -238,6 +238,11 @@ model User {
   // outbound run against (brand, contact, rep). Inverse of BDSequence.rep.
   bdSequences          BDSequence[]            @relation("UserBDSequences")
 
+  // Saved email templates owned by this user (ticket #24). Includes PRIVATE
+  // and SHARED ones they authored. GLOBAL templates have ownerId=null and
+  // therefore don't appear in this collection.
+  emailTemplates       EmailTemplate[]         @relation("EmailTemplateOwner")
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -3059,4 +3064,63 @@ model BDSequenceStep {
   // Cron query: find steps that are due to flip from pending → ready.
   @@index([status, scheduledFor])
   @@index([sequenceId, stepIndex])
+}
+
+// ─────────────────────────────────────────────
+// EMAIL TEMPLATES (ticket #24 — Viktor 4/17)
+// ─────────────────────────────────────────────
+//
+// Reusable email scaffolds for common outreach (first intro, re-engagement,
+// ICP request, etc.). Loaded by the Atlas compose dialog and BD wizard.
+//
+// Scope:
+//   - PRIVATE: only the owner sees/uses it.
+//   - SHARED:  any internal user (EMPLOYEE+) sees it. ADMIN can edit.
+//   - GLOBAL:  reserved for ADMIN-curated org-wide defaults.
+//
+// Variable substitution happens client-side at compose time. Supported tokens
+// today (kept loose on purpose — the renderer just does string-replace):
+//   {firstName}  {lastName}  {fullName}  {company}  {title}
+//   {senderName} {senderEmail}
+// New tokens can be added without a schema change.
+model EmailTemplate {
+  id      String @id @default(cuid())
+
+  title   String   // human-readable label shown in the picker
+  subject String   // may contain {variables}
+  body    String   @db.Text // HTML or plain — renderer is forgiving
+  // Optional category tag for grouping in the picker. Free-form string today —
+  // we may promote to enum once usage settles.
+  category String?
+
+  scope   EmailTemplateScope @default(PRIVATE)
+
+  // Owner — null only for GLOBAL templates seeded via migration. PRIVATE
+  // templates are filtered by ownerId === currentUser.id; SHARED ignore owner
+  // for read but require it match (or admin) for edit/delete.
+  ownerId String?
+  owner   User?   @relation("EmailTemplateOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  // Soft-delete so we don't break historical references in OutreachMessage if
+  // we ever back-link templateId there.
+  archivedAt DateTime?
+
+  // Lightweight usage stats — incremented on /api/email-templates/[id]/use
+  // when the picker actually injects this template into a compose draft.
+  // Useful for "show most-used first" UX without a separate analytics table.
+  useCount Int @default(0)
+  lastUsedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId, scope])
+  @@index([scope, archivedAt])
+  @@index([category])
+}
+
+enum EmailTemplateScope {
+  PRIVATE
+  SHARED
+  GLOBAL
 }

@@ -24,6 +24,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { EmailTemplatePicker } from "@/components/EmailTemplatePicker";
 
 // ────────────── types ──────────────
 interface WizardContact {
@@ -474,6 +475,7 @@ export default function BDWizardPage() {
                 bodyText={bodyText}
                 diagnosed={diagnosed}
                 contact={selectedContact}
+                brand={brand}
                 sending={sending}
                 onSubjectChange={setSubject}
                 onBodyChange={setBodyText}
@@ -1019,6 +1021,7 @@ function DraftStep({
   bodyText,
   diagnosed,
   contact,
+  brand,
   sending,
   onSubjectChange,
   onBodyChange,
@@ -1031,6 +1034,7 @@ function DraftStep({
   bodyText: string;
   diagnosed: string[];
   contact: WizardContact;
+  brand: WizardBrand | null;
   sending: boolean;
   onSubjectChange: (s: string) => void;
   onBodyChange: (s: string) => void;
@@ -1038,15 +1042,41 @@ function DraftStep({
   onRegenerate: () => void;
   onSend: () => void;
 }) {
+  // Build the substitution context once per render — split contact.name into
+  // first/last so {firstName} works for older Contact rows that only have the
+  // single `name` field populated.
+  const contactName = contact.name || "";
+  const firstName = (contact as any).firstName || contactName.split(" ")[0] || "";
+  const lastName = (contact as any).lastName || contactName.split(" ").slice(1).join(" ") || "";
+  const tplVars = {
+    firstName,
+    lastName,
+    fullName: contactName,
+    title: contact.jobTitle,
+    email: contact.email,
+    company: brand?.name || null,
+  };
+
   return (
     <div className="bg-white rounded-2xl border shadow-sm p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
           Step 4 — Review & send
         </div>
-        <div className="text-[11px] text-slate-500">
-          → {contact.name || contact.email}
-          {channel === "email" && contact.email ? ` <${contact.email}>` : ""}
+        <div className="flex items-center gap-3">
+          {/* Template picker — Viktor 4/17 (#24). Inserts a saved template
+             into subject+body with {firstName}/{company} substitution. */}
+          <EmailTemplatePicker
+            contextVars={tplVars}
+            onApply={({ subject: s, body: b }) => {
+              if (channel === "email" && s) onSubjectChange(s);
+              if (b) onBodyChange(b);
+            }}
+          />
+          <div className="text-[11px] text-slate-500">
+            → {contact.name || contact.email}
+            {channel === "email" && contact.email ? ` <${contact.email}>` : ""}
+          </div>
         </div>
       </div>
 
