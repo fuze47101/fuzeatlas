@@ -56,7 +56,15 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const seq = await prisma.bDSequence.findUnique({
       where: { id },
       include: {
-        brand: { select: { id: true, name: true } },
+        brand: {
+          select: {
+            id: true,
+            name: true,
+            salesRepId: true,
+            pipelineStage: true,
+            handoffPending: true,
+          },
+        },
         contact: { select: { id: true, name: true, firstName: true, lastName: true, email: true } },
         rep: { select: { id: true, name: true, email: true } },
       },
@@ -96,6 +104,43 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         status: "exited",
         exitReason: "replied",
         completedAt: new Date(),
+      },
+    });
+
+    // 1a. ACM hand-off — phase 5 rule: sourcing rep stays as account manager.
+    //   - If brand has no salesRepId yet, bind it to the sourcing rep so
+    //     commission attribution is preserved (the rep who originated the
+    //     conversation owns the brand from here on out).
+    //   - If brand already has a salesRepId, leave it alone — it may have
+    //     been explicitly reassigned by an SDR manager.
+    //   - Stamp lastActivityAt so the 75/90-day inactivity job doesn't
+    //     immediately threaten this brand.
+    //   - Clear inactivityWarnedAt for the same reason — fresh activity.
+    //   - Flip handoffPending=true so the brand shows up on Andrew/Scott/
+    //     Tina's "review for hand-off to ACM team" queue, without forcing
+    //     the rep to formally release.
+    //   - If the brand is still LEAD, bump it to PRESENTATION — they
+    //     replied, they're warm.
+    const brandUpdate: any = {
+      lastActivityAt: new Date(),
+      inactivityWarnedAt: null,
+      handoffPending: true,
+    };
+    if (!seq.brand?.salesRepId && seq.repId) {
+      brandUpdate.salesRepId = seq.repId;
+    }
+    if (seq.brand?.pipelineStage === "LEAD") {
+      brandUpdate.pipelineStage = "PRESENTATION";
+    }
+    const updatedBrand = await prisma.brand.update({
+      where: { id: seq.brandId },
+      data: brandUpdate,
+      select: {
+        id: true,
+        name: true,
+        salesRepId: true,
+        pipelineStage: true,
+        handoffPending: true,
       },
     });
 
@@ -145,6 +190,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({
       ok: true,
       sequence: updatedSeq,
+      brand: updatedBrand,
       task,
       notification,
       replyWizardLink,

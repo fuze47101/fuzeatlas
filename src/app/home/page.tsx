@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MODULES, type ModuleDef } from "@/lib/modules";
+import BDScoreboardCard from "@/components/BDScoreboardCard";
 
 /**
  * Module Home — the "where do I want to go today" landing page for
@@ -75,6 +76,11 @@ export default function HomePage() {
           {greeting}{firstName ? `, ${firstName}` : ""}
         </h1>
         <p className="text-slate-600 mt-1">{t.home.subtitle}</p>
+      </div>
+
+      {/* BD Scoreboard (visible only to BD-eligible roles) */}
+      <div className="mb-6">
+        <BDScoreboardCard />
       </div>
 
       {/* Module Cards */}

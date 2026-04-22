@@ -54,6 +54,7 @@ export const MODULES: ModuleDef[] = [
       // Pipeline is still here for power users who want the bulk view.
       { label: "BD Wizard", href: "/admin/bd/wizard", icon: "🪄" },
       { label: "BD Sequences", href: "/admin/bd/sequences", icon: "🔁" },
+      { label: "BD Scoreboard", href: "/admin/bd/scoreboard", icon: "📊" },
       { label: "Brand Pipeline (Leads)", href: "/admin/brand-pipeline", icon: "🔥" },
       { label: "Accounts", href: "/admin/accounts", icon: "⭐" },
       { label: "Brand Intelligence", href: "/admin/brand-discovery", icon: "🌎" },
