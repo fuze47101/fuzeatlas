@@ -46,6 +46,10 @@ export default function DistributorOrdersPage() {
   const [factories, setFactories] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
   const [creating, setCreating] = useState(false);
+  // Surface backend signals so the modal can guide the user instead of
+  // silently showing an empty dropdown (KJ Tang demo bug — Apr 2026).
+  const [unlinkedUser, setUnlinkedUser] = useState(false);
+  const [factoryLoadError, setFactoryLoadError] = useState<string | null>(null);
   const [createForm, setCreateForm] = useState({
     factoryId: "",
     orderType: "PRODUCTION",
@@ -93,6 +97,7 @@ export default function DistributorOrdersPage() {
   }
 
   async function loadFactoriesAndBrands() {
+    setFactoryLoadError(null);
     try {
       const [fRes, bRes] = await Promise.all([
         fetch("/api/distributor-portal/pricing"),
@@ -100,9 +105,21 @@ export default function DistributorOrdersPage() {
       ]);
       const fData = await fRes.json();
       const bData = await bRes.json();
-      if (fData.ok) setFactories(fData.factories || []);
+      if (fData.ok) {
+        setFactories(fData.factories || []);
+        // Surface graceful-degradation signal from API: distributor user
+        // exists but has no distributorId on their record — show admin
+        // a heads-up rather than a mystery empty dropdown.
+        setUnlinkedUser(Boolean(fData.unlinkedUser));
+      } else {
+        setFactoryLoadError(fData.error || "Could not load factory list");
+        console.error("Factory load failed:", fData);
+      }
       if (bData.ok || bData.brands) setBrands(bData.brands || []);
-    } catch {}
+    } catch (e: any) {
+      setFactoryLoadError(e?.message || "Network error loading factories");
+      console.error("loadFactoriesAndBrands error:", e);
+    }
   }
 
   const createVolumeLiters = useMemo(() => {
@@ -352,49 +369,85 @@ export default function DistributorOrdersPage() {
               {/* Factory Selection */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1">Factory *</label>
-                <select
-                  value={createForm.factoryId}
-                  onChange={(e) => setCreateForm({ ...createForm, factoryId: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none bg-white"
-                >
-                  <option value="">— Select factory —</option>
-                  {factories.filter((f: any) => f.assigned).length > 0 && (
-                    <optgroup label="Your Factories">
-                      {factories
-                        .filter((f: any) => f.assigned)
-                        .map((f: any) => (
-                          <option key={f.id} value={f.id}>
-                            {f.name}
-                            {f.country ? ` (${f.country})` : ""}
-                          </option>
-                        ))}
-                    </optgroup>
-                  )}
-                  {factories.filter((f: any) => f.inCoverage).length > 0 && (
-                    <optgroup label="In Your Territory">
-                      {factories
-                        .filter((f: any) => f.inCoverage)
-                        .map((f: any) => (
-                          <option key={f.id} value={f.id}>
-                            {f.name}
-                            {f.country ? ` (${f.country})` : ""}
-                          </option>
-                        ))}
-                    </optgroup>
-                  )}
-                  {factories.filter((f: any) => !f.assigned && !f.inCoverage).length > 0 && (
-                    <optgroup label="Other Factories">
-                      {factories
-                        .filter((f: any) => !f.assigned && !f.inCoverage)
-                        .map((f: any) => (
-                          <option key={f.id} value={f.id}>
-                            {f.name}
-                            {f.country ? ` (${f.country})` : ""}
-                          </option>
-                        ))}
-                    </optgroup>
-                  )}
-                </select>
+
+                {/* Soft warning when this user isn't linked to a distributor —
+                    they can still place an order against any active factory,
+                    but pricing tiers won't apply until admin links the account. */}
+                {unlinkedUser && (
+                  <div className="mb-2 rounded-lg border border-yellow-300 bg-yellow-50 px-3 py-2 text-xs text-yellow-800">
+                    <span className="font-semibold">Heads up:</span> your user isn't linked to a
+                    distributor record yet, so distributor pricing tiers won't auto-apply. You can
+                    still place an order — ask an admin to link your account for full pricing.
+                  </div>
+                )}
+
+                {/* Hard error fallback — only fires if the API itself failed. */}
+                {factoryLoadError && (
+                  <div className="mb-2 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-800">
+                    <span className="font-semibold">Couldn't load factories:</span>{" "}
+                    {factoryLoadError}.{" "}
+                    <button
+                      type="button"
+                      onClick={() => loadFactoriesAndBrands()}
+                      className="underline font-semibold"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
+
+                {/* Empty-state guard — show helpful message instead of an
+                    empty dropdown the user can't act on. */}
+                {!factoryLoadError && factories.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm text-slate-600">
+                    No factories available to order from. This usually means your account hasn't
+                    been linked to a distributor yet — please contact your Atlas admin.
+                  </div>
+                ) : (
+                  <select
+                    value={createForm.factoryId}
+                    onChange={(e) => setCreateForm({ ...createForm, factoryId: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none bg-white"
+                  >
+                    <option value="">— Select factory —</option>
+                    {factories.filter((f: any) => f.assigned).length > 0 && (
+                      <optgroup label="Your Factories">
+                        {factories
+                          .filter((f: any) => f.assigned)
+                          .map((f: any) => (
+                            <option key={f.id} value={f.id}>
+                              {f.name}
+                              {f.country ? ` (${f.country})` : ""}
+                            </option>
+                          ))}
+                      </optgroup>
+                    )}
+                    {factories.filter((f: any) => f.inCoverage).length > 0 && (
+                      <optgroup label="In Your Territory">
+                        {factories
+                          .filter((f: any) => f.inCoverage)
+                          .map((f: any) => (
+                            <option key={f.id} value={f.id}>
+                              {f.name}
+                              {f.country ? ` (${f.country})` : ""}
+                            </option>
+                          ))}
+                      </optgroup>
+                    )}
+                    {factories.filter((f: any) => !f.assigned && !f.inCoverage).length > 0 && (
+                      <optgroup label="Other Factories">
+                        {factories
+                          .filter((f: any) => !f.assigned && !f.inCoverage)
+                          .map((f: any) => (
+                            <option key={f.id} value={f.id}>
+                              {f.name}
+                              {f.country ? ` (${f.country})` : ""}
+                            </option>
+                          ))}
+                      </optgroup>
+                    )}
+                  </select>
+                )}
               </div>
 
               {/* Order Type */}

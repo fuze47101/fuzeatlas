@@ -24,29 +24,38 @@ export async function GET(req: Request) {
       ? user.distributorId
       : url.searchParams.get("distributorId");
 
-    if (!distributorId) {
-      return NextResponse.json({ ok: false, error: "Distributor ID required" }, { status: 400 });
-    }
+    // GRACEFUL DEGRADATION:
+    // A DISTRIBUTOR_USER with no distributorId on their user row used to
+    // 400 here, which silently emptied the Create Factory Order dropdown
+    // (frontend has } catch {}). For demos and freshly-created accounts
+    // we now keep going — pricing + distributor are empty, but the full
+    // active factory list is still returned so the rep can place an order.
+    // Surface a soft `unlinkedUser` flag so the UI can warn the admin.
+    const unlinkedUser = isDistributor && !distributorId;
 
     const [pricing, distributor] = await Promise.all([
-      prisma.distributorPricing.findMany({
-        where: { distributorId },
-        include: {
-          factory: { select: { id: true, name: true, country: true } },
-        },
-        orderBy: [{ isDefault: "desc" }, { createdAt: "desc" }],
-      }),
-      prisma.distributor.findUnique({
-        where: { id: distributorId },
-        select: {
-          id: true,
-          name: true,
-          country: true,
-          region: true,
-          coverageCountries: true,
-          localCurrency: true,
-        },
-      }),
+      distributorId
+        ? prisma.distributorPricing.findMany({
+            where: { distributorId },
+            include: {
+              factory: { select: { id: true, name: true, country: true } },
+            },
+            orderBy: [{ isDefault: "desc" }, { createdAt: "desc" }],
+          })
+        : Promise.resolve([]),
+      distributorId
+        ? prisma.distributor.findUnique({
+            where: { id: distributorId },
+            select: {
+              id: true,
+              name: true,
+              country: true,
+              region: true,
+              coverageCountries: true,
+              localCurrency: true,
+            },
+          })
+        : Promise.resolve(null),
     ]);
 
     // Parse coverageCountries ("India, Bangladesh" | JSON array | null)
@@ -67,7 +76,7 @@ export async function GET(req: Request) {
           id: f.id,
           name: f.name,
           country: f.country,
-          assigned: f.distributorId === distributorId,
+          assigned: distributorId ? f.distributorId === distributorId : false,
           inCoverage: Boolean(inCoverage && f.distributorId !== distributorId),
         };
       })
@@ -83,6 +92,7 @@ export async function GET(req: Request) {
       factories,
       distributor,
       coverage,
+      unlinkedUser,
     });
   } catch (e: any) {
     console.error("Distributor pricing GET error:", e);
