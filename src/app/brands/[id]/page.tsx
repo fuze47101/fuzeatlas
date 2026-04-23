@@ -70,6 +70,13 @@ export default function BrandDetailPage() {
   const [researchDate, setResearchDate] = useState<string | null>(null);
   const [researching, setResearching] = useState(false);
   const [researchError, setResearchError] = useState("");
+  // ── Multi-source Enrich (ticket 3) ──
+  // Fires Apollo + 4 AIs in parallel and cross-validates email/LinkedIn.
+  // State is orthogonal to `research` so you can see the research brief
+  // alongside the enrichment report without one clobbering the other.
+  const [enriching, setEnriching] = useState(false);
+  const [enrichError, setEnrichError] = useState("");
+  const [enrichReport, setEnrichReport] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
@@ -316,6 +323,48 @@ export default function BrandDetailPage() {
       setResearchError(e.message);
     } finally {
       setResearching(false);
+    }
+  };
+
+  /**
+   * Multi-source enrich — fires Apollo People Match (per existing contact)
+   * plus Anthropic + OpenAI + Grok + Perplexity in parallel. Endpoint scores
+   * agreement per field and only overwrites curated values when ≥2 sources
+   * (or Apollo's verified signal) agree. Fill-empty thresholds are softer:
+   * cross_agreed on email is enough to populate an empty field.
+   */
+  const handleEnrich = async () => {
+    if (enriching) return;
+    setEnriching(true);
+    setEnrichError("");
+    setEnrichReport(null);
+    try {
+      const res = await fetch(`/api/admin/bd/enrich-brand/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ autoCreateContacts: true }),
+      });
+      const j = await res.json();
+      if (!res.ok || !j.ok) {
+        setEnrichError(j.error || `Enrich failed (HTTP ${res.status})`);
+      } else {
+        setEnrichReport(j);
+        setSuccess(
+          `Enrich complete — ${j.summary.contactsUpdated} updated, ${j.summary.contactsCreated} new, ${j.summary.emailsVerified} emails verified, ${j.summary.linkedinsVerified} LinkedIn verified`,
+        );
+        setTimeout(() => setSuccess(""), 6000);
+        // Refresh the contacts block so the new enrichment shows up.
+        fetch(`/api/brands/${id}`)
+          .then((r) => r.json())
+          .then((jr) => {
+            if (jr.ok) setBrand(jr.brand);
+          })
+          .catch(() => {});
+      }
+    } catch (e: any) {
+      setEnrichError(e.message || "Enrich failed");
+    } finally {
+      setEnriching(false);
     }
   };
 
@@ -1287,8 +1336,162 @@ export default function BrandDetailPage() {
                     {t.research.saveContacts}
                   </button>
                 )}
+                {/* Ticket 3 — Multi-source Enrich with cross-validation.
+                    Distinct purpose from Research above: Research produces a sales
+                    brief, Enrich validates that contacts on this brand are real
+                    and fills in missing emails/LinkedIn URLs with multi-source
+                    agreement. Button is intentionally styled differently (purple
+                    gradient + shield icon) so reps don't confuse the two. */}
+                <button
+                  onClick={handleEnrich}
+                  disabled={enriching || researching}
+                  title="Apollo + 4 AIs in parallel. Only writes verified emails + LinkedIn URLs."
+                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white rounded-lg text-sm font-semibold hover:from-purple-700 hover:to-fuchsia-700 disabled:opacity-50"
+                >
+                  {enriching ? "🔀 Enriching…" : "🔀 Enrich (5-source)"}
+                </button>
               </div>
             </div>
+            {enrichError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mb-4">
+                {enrichError}
+              </div>
+            )}
+            {enriching && (
+              <div className="text-center py-6 border border-purple-200 bg-purple-50/50 rounded-lg mb-4">
+                <div className="inline-block animate-spin rounded-full h-6 w-6 border-4 border-purple-600 border-t-transparent mb-2" />
+                <p className="text-sm text-purple-900 font-semibold">
+                  Cross-validating with Apollo + Anthropic + OpenAI + Grok + Perplexity…
+                </p>
+                <p className="text-xs text-purple-700 mt-1">Emails and LinkedIn URLs only persist when ≥2 sources agree.</p>
+              </div>
+            )}
+            {enrichReport && !enriching && (
+              <div className="mb-6 border border-purple-200 bg-purple-50/40 rounded-lg overflow-hidden">
+                <div className="px-4 py-3 bg-purple-100/70 border-b border-purple-200">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="font-semibold text-purple-900 text-sm">
+                      🔀 Enrich report · {Math.round((enrichReport.durationMs || 0) / 100) / 10}s
+                    </div>
+                    <div className="flex gap-1 flex-wrap">
+                      {enrichReport.sources?.apollo > 0 && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-100 text-cyan-800">
+                          Apollo ({enrichReport.sources.apollo}/{enrichReport.sources.apolloAttempted})
+                        </span>
+                      )}
+                      {enrichReport.sources?.anthropic && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-700">
+                          Anthropic
+                        </span>
+                      )}
+                      {enrichReport.sources?.openai && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700">
+                          OpenAI
+                        </span>
+                      )}
+                      {enrichReport.sources?.grok && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-800">
+                          Grok
+                        </span>
+                      )}
+                      {enrichReport.sources?.perplexity && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700">
+                          Perplexity
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-4 text-xs text-purple-900/80 mt-2">
+                    <span><strong>{enrichReport.summary?.candidatesDiscovered || 0}</strong> people found</span>
+                    <span><strong>{enrichReport.summary?.contactsUpdated || 0}</strong> updated</span>
+                    <span><strong>{enrichReport.summary?.contactsCreated || 0}</strong> created</span>
+                    <span><strong>{enrichReport.summary?.emailsVerified || 0}</strong> 📧 verified</span>
+                    <span><strong>{enrichReport.summary?.linkedinsVerified || 0}</strong> 🔗 verified</span>
+                  </div>
+                </div>
+                <div className="divide-y divide-purple-100">
+                  {(enrichReport.contacts || []).map((c: any, i: number) => {
+                    const verdictColor = (v: string) =>
+                      v === "verified"
+                        ? "bg-emerald-100 text-emerald-800"
+                        : v === "cross_agreed"
+                        ? "bg-sky-100 text-sky-800"
+                        : v === "single"
+                        ? "bg-amber-100 text-amber-800"
+                        : v === "disputed"
+                        ? "bg-rose-100 text-rose-800"
+                        : "bg-slate-100 text-slate-500";
+                    return (
+                      <div key={i} className="px-4 py-3 bg-white">
+                        <div className="flex items-start justify-between gap-3 flex-wrap">
+                          <div>
+                            <div className="font-semibold text-slate-900 text-sm">
+                              {c.name}
+                              {c.newContactId && (
+                                <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                                  NEW
+                                </span>
+                              )}
+                            </div>
+                            {c.title?.value && (
+                              <div className="text-xs text-slate-600">{c.title.value}</div>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {c.mentionedBy?.map((s: string) => (
+                              <span
+                                key={s}
+                                className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700"
+                              >
+                                {s}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="mt-2 space-y-1 text-xs">
+                          {c.email?.value && (
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-slate-500">📧</span>
+                              <span className="font-mono text-slate-800">{c.email.value}</span>
+                              <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${verdictColor(c.email.verdict)}`}>
+                                {c.email.verdict}
+                              </span>
+                              <span className="text-slate-500">
+                                {c.email.sources?.join(", ")}
+                              </span>
+                              {c.email.alternatives?.length > 1 && (
+                                <span className="text-[10px] text-rose-700 font-semibold">
+                                  ⚠ {c.email.alternatives.length} variants
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          {c.linkedin?.value && (
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-slate-500">🔗</span>
+                              <span className="font-mono text-slate-800 truncate max-w-[280px]">
+                                {c.linkedin.value}
+                              </span>
+                              <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${verdictColor(c.linkedin.verdict)}`}>
+                                {c.linkedin.verdict}
+                              </span>
+                              <span className="text-slate-500">
+                                {c.linkedin.sources?.join(", ")}
+                              </span>
+                            </div>
+                          )}
+                          {c.decisions?.map((d: string, j: number) => (
+                            <div key={j} className="text-[11px] text-slate-500 italic">
+                              · {d}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             {researchError && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mb-4">
                 {researchError}
