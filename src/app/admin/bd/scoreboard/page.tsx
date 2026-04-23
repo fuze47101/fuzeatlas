@@ -14,6 +14,9 @@ import Link from "next/link";
 
 interface RepRow {
   rep: { id: string; name: string | null; email: string; role: string };
+  emailsSent: number;
+  linkedinSent: number;
+  contactsWorked: number;
   sequencesStarted: number;
   stepsSent: number;
   stepsReady: number;
@@ -29,6 +32,9 @@ interface Scoreboard {
   since: string;
   rows: RepRow[];
   totals: {
+    emailsSent: number;
+    linkedinSent: number;
+    contactsWorked: number;
     sequencesStarted: number;
     stepsSent: number;
     stepsReady: number;
@@ -141,28 +147,39 @@ export default function BDScoreboardPage() {
         </div>
       ) : (
         <>
-          {/* Totals */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-            <TotalCard label="Sequences" value={data.totals.sequencesStarted} icon="📨" />
-            <TotalCard label="Steps Sent" value={data.totals.stepsSent} icon="📤" />
+          {/* Totals — top row is the broad outreach activity picture
+              (every email/LI/contact the team touched, regardless of
+              whether it ran through the sequence engine). Second row
+              is the funnel outcome + the sequence-specific counters so
+              managers can still see cadence health. */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-3">
+            <TotalCard label="Emails Sent" value={data.totals.emailsSent} icon="✉️" />
+            <TotalCard label="LinkedIn" value={data.totals.linkedinSent} icon="🔗" />
+            <TotalCard label="Contacts Worked" value={data.totals.contactsWorked} icon="👥" />
             <TotalCard label="Replies" value={data.totals.replies} icon="💬" />
             <TotalCard
               label="Reply Rate"
               value={`${(data.totals.replyRate * 100).toFixed(1)}%`}
               icon="📈"
             />
-            <TotalCard label="Meetings" value={data.totals.meetingsBooked} icon="🤝" />
             <TotalCard label="Converted" value={data.totals.brandsConverted} icon="🏆" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+            <TotalCard label="Sequences Started" value={data.totals.sequencesStarted} icon="📨" />
+            <TotalCard label="Sequence Steps Sent" value={data.totals.stepsSent} icon="📤" />
+            <TotalCard label="Meetings Booked" value={data.totals.meetingsBooked} icon="🤝" />
           </div>
 
           {/* Leaderboard */}
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
+            <table className="w-full text-sm min-w-[900px]">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase tracking-wide">
                 <tr>
                   <th className="text-left px-4 py-3">Rep</th>
+                  <th className="text-right px-3 py-3">Emails</th>
+                  <th className="text-right px-3 py-3">LinkedIn</th>
+                  <th className="text-right px-3 py-3">Contacts</th>
                   <th className="text-right px-3 py-3">Sequences</th>
-                  <th className="text-right px-3 py-3">Steps Sent</th>
                   <th className="text-right px-3 py-3">Ready</th>
                   <th className="text-right px-3 py-3">Replies</th>
                   <th className="text-right px-3 py-3">Reply %</th>
@@ -188,8 +205,12 @@ export default function BDScoreboardPage() {
                         {row.rep.role.replace("_", " ")}
                       </div>
                     </td>
+                    <td className="px-3 py-3 text-right tabular-nums font-semibold">
+                      {row.emailsSent}
+                    </td>
+                    <td className="px-3 py-3 text-right tabular-nums">{row.linkedinSent}</td>
+                    <td className="px-3 py-3 text-right tabular-nums">{row.contactsWorked}</td>
                     <td className="px-3 py-3 text-right tabular-nums">{row.sequencesStarted}</td>
-                    <td className="px-3 py-3 text-right tabular-nums">{row.stepsSent}</td>
                     <td className="px-3 py-3 text-right tabular-nums">
                       {row.stepsReady > 0 ? (
                         <span className="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-semibold">
@@ -217,7 +238,10 @@ export default function BDScoreboardPage() {
 
           <p className="text-xs text-slate-500 mt-3">
             Window starts {new Date(data.since).toLocaleDateString()}. Refreshes every 5 minutes.
-            "Converted" = brands moved past PRESENTATION stage in window. ACM hand-off keeps
+            &quot;Emails&quot; = every outbound email the rep sent (wizard + brand page + contact page).
+            &quot;Sequences&quot; is the subset that ran through a multi-step cadence. &quot;Contacts&quot; is
+            the distinct number of humans the rep touched via email or LinkedIn.
+            &quot;Converted&quot; = brands moved past PRESENTATION stage in window. ACM hand-off keeps
             sourcing rep as account manager — commission attribution is preserved.
           </p>
         </>

@@ -18,6 +18,9 @@ import { useAuth } from "@/lib/AuthContext";
 
 interface RepRow {
   rep: { id: string; name: string | null; email: string; role: string };
+  emailsSent: number;
+  linkedinSent: number;
+  contactsWorked: number;
   sequencesStarted: number;
   stepsSent: number;
   stepsReady: number;
@@ -33,6 +36,9 @@ interface Scoreboard {
   since: string;
   rows: RepRow[];
   totals: {
+    emailsSent: number;
+    linkedinSent: number;
+    contactsWorked: number;
     sequencesStarted: number;
     stepsSent: number;
     stepsReady: number;
@@ -128,8 +134,9 @@ function ManagerView({
 }) {
   return (
     <>
-      <div className="grid grid-cols-3 gap-2 mb-4 pb-3 border-b border-slate-100">
-        <Stat label="Sent" value={totals.stepsSent} />
+      <div className="grid grid-cols-4 gap-2 mb-4 pb-3 border-b border-slate-100">
+        <Stat label="Emails" value={totals.emailsSent} />
+        <Stat label="Contacts" value={totals.contactsWorked} />
         <Stat label="Replies" value={totals.replies} />
         <Stat label="Converted" value={totals.brandsConverted} />
       </div>
@@ -137,7 +144,8 @@ function ManagerView({
         <thead className="text-xs uppercase text-slate-500">
           <tr>
             <th className="text-left pb-2">Rep</th>
-            <th className="text-right pb-2">Sent</th>
+            <th className="text-right pb-2">Emails</th>
+            <th className="text-right pb-2">Contacts</th>
             <th className="text-right pb-2">Replies</th>
             <th className="text-right pb-2">Won</th>
           </tr>
@@ -151,7 +159,8 @@ function ManagerView({
                   {r.rep.name || r.rep.email}
                 </span>
               </td>
-              <td className="text-right tabular-nums py-2">{r.stepsSent}</td>
+              <td className="text-right tabular-nums py-2">{r.emailsSent}</td>
+              <td className="text-right tabular-nums py-2">{r.contactsWorked}</td>
               <td className="text-right tabular-nums py-2 font-semibold">{r.replies}</td>
               <td className="text-right tabular-nums py-2 font-semibold text-emerald-700">
                 {r.brandsConverted}
@@ -169,13 +178,17 @@ function RepView({ row }: { row: RepRow }) {
   return (
     <>
       <div className="grid grid-cols-3 gap-2 mb-4">
-        <Stat label="Sequences" value={row.sequencesStarted} />
-        <Stat label="Steps Sent" value={row.stepsSent} />
+        <Stat label="Emails Sent" value={row.emailsSent} />
+        <Stat label="Contacts" value={row.contactsWorked} />
         <Stat label="Replies" value={row.replies} highlight />
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        <Stat label="LinkedIn" value={row.linkedinSent} />
         <Stat label="Reply %" value={`${replyPct}%`} />
         <Stat label="Meetings" value={row.meetingsBooked} />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <Stat label="Sequences" value={row.sequencesStarted} />
         <Stat label="Won" value={row.brandsConverted} highlight />
       </div>
       {row.stepsReady > 0 && (

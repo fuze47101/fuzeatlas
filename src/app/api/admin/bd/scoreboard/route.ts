@@ -15,9 +15,22 @@
  *            Without this, returns just the caller's row.
  *
  * Per-rep metrics:
+ *   - emailsSent:       OutreachMessage.channel="email" && sentBy=rep &&
+ *                       sentAt in window. This is the SUPERSET of all email
+ *                       outreach — wizard sends + /brands/[id] send modal +
+ *                       /contacts/[id] send modal all post to send routes
+ *                       that atomically write an OutreachMessage row. Any
+ *                       scoreboard number a BD manager would actually use
+ *                       should come from here, not from the sequence table.
+ *   - linkedinSent:     OutreachMessage.channel="linkedin" && sentBy=rep &&
+ *                       sentAt in window.
+ *   - contactsWorked:   distinct contactId across OutreachMessage for the
+ *                       rep in window — "how many humans did this rep
+ *                       actually touch".
  *   - sequencesStarted: BDSequence.startedAt in window, repId=rep
  *   - stepsSent:        BDSequenceStep.status=sent && sentAt in window,
- *                       joined to seq.repId=rep
+ *                       joined to seq.repId=rep. SUBSET of emailsSent —
+ *                       specifically the cadence-driven wizard sends.
  *   - stepsReady:       BDSequenceStep.status=ready, joined to seq.repId
  *                       (point-in-time — what's waiting for this rep right
  *                       now, regardless of window)
@@ -27,7 +40,9 @@
  *                       startTime in window
  *   - brandsConverted:  Brand.salesRepId=rep, pipelineStage past
  *                       PRESENTATION, updatedAt in window
- *   - replyRate:        replies / max(sequencesStarted, 1) — capped 0..1
+ *   - replyRate:        replies / max(emailsSent, 1) — capped 0..1. Uses the
+ *                       broader emailsSent denominator so reply rate tracks
+ *                       all outbound, not just sequence-wrapped throughput.
  *
  * Response:
  *   { ok: true, windowDays, since, rows: [...], totals: {...} }
@@ -111,6 +126,7 @@ export async function GET(req: Request) {
       stepsReadyAgg,
       meetingsAgg,
       brandsConvertedAgg,
+      outreachMessagesAgg,
     ] = await Promise.all([
       // sequencesStarted
       prisma.bDSequence.groupBy({
@@ -174,6 +190,20 @@ export async function GET(req: Request) {
         },
         _count: { _all: true },
       }),
+
+      // All OutreachMessage rows authored by any of these reps in window.
+      // We pull the individual rows (not a groupBy) because we need to
+      // count BY channel AND count distinct contactIds per rep — two
+      // things that don't fit into a single groupBy call. Reads are fast
+      // — (sentBy, sentAt) index + a ~30-day window keeps result sets
+      // small even for a busy team.
+      prisma.outreachMessage.findMany({
+        where: {
+          sentBy: { in: repIds },
+          sentAt: { gte: since },
+        },
+        select: { sentBy: true, contactId: true, channel: true },
+      }),
     ]);
 
     // Materialize into a per-rep map.
@@ -195,6 +225,25 @@ export async function GET(req: Request) {
       stepsReadyByRep[rid] = (stepsReadyByRep[rid] || 0) + 1;
     }
 
+    // Roll up OutreachMessage rows by (rep, channel) and track distinct
+    // contactIds for contactsWorked. Using Set-of-strings as the dedupe
+    // primitive so we don't need another DB round-trip.
+    const emailsSentByRep: Record<string, number> = {};
+    const linkedinSentByRep: Record<string, number> = {};
+    const contactsWorkedByRep: Record<string, Set<string>> = {};
+    for (const m of outreachMessagesAgg) {
+      const rid = m?.sentBy;
+      if (!rid) continue;
+      if (m.channel === "email") {
+        emailsSentByRep[rid] = (emailsSentByRep[rid] || 0) + 1;
+      } else if (m.channel === "linkedin") {
+        linkedinSentByRep[rid] = (linkedinSentByRep[rid] || 0) + 1;
+      }
+      if (m.contactId) {
+        (contactsWorkedByRep[rid] ||= new Set()).add(m.contactId);
+      }
+    }
+
     const rows = reps.map((rep) => {
       const sequencesStarted = seqStartedByRep[rep.id] || 0;
       const replies = seqRepliedByRep[rep.id] || 0;
@@ -202,12 +251,20 @@ export async function GET(req: Request) {
       const stepsReady = stepsReadyByRep[rep.id] || 0;
       const meetingsBooked = meetingsByRep[rep.id] || 0;
       const brandsConverted = brandsConvertedByRep[rep.id] || 0;
+      const emailsSent = emailsSentByRep[rep.id] || 0;
+      const linkedinSent = linkedinSentByRep[rep.id] || 0;
+      const contactsWorked = contactsWorkedByRep[rep.id]?.size || 0;
+      // Reply rate now measured against ALL email outreach, not just
+      // sequence-wrapped. If a rep only sends one-off emails and never
+      // runs sequences, they still get a meaningful reply rate.
+      const replyDenom = emailsSent > 0 ? emailsSent : sequencesStarted;
       const replyRate =
-        sequencesStarted > 0
-          ? Math.min(1, replies / sequencesStarted)
-          : 0;
+        replyDenom > 0 ? Math.min(1, replies / replyDenom) : 0;
       return {
         rep,
+        emailsSent,
+        linkedinSent,
+        contactsWorked,
         sequencesStarted,
         stepsSent,
         stepsReady,
@@ -218,14 +275,25 @@ export async function GET(req: Request) {
       };
     });
 
-    // Sort the leaderboard by replies desc, then stepsSent desc.
+    // Sort the leaderboard by replies desc, then emailsSent desc (so a rep
+    // with lots of outbound but zero replies still ranks above the idle
+    // ones).
     rows.sort((a, b) => {
       if (b.replies !== a.replies) return b.replies - a.replies;
-      return b.stepsSent - a.stepsSent;
+      return b.emailsSent - a.emailsSent;
     });
+
+    // Distinct-contacts total across all reps (dedupe again at the team
+    // level — two reps touching the same contact only count once).
+    const teamContactSet = new Set<string>();
+    for (const m of outreachMessagesAgg) {
+      if (m?.contactId) teamContactSet.add(m.contactId);
+    }
 
     const totals = rows.reduce(
       (acc, r) => {
+        acc.emailsSent += r.emailsSent;
+        acc.linkedinSent += r.linkedinSent;
         acc.sequencesStarted += r.sequencesStarted;
         acc.stepsSent += r.stepsSent;
         acc.stepsReady += r.stepsReady;
@@ -236,10 +304,13 @@ export async function GET(req: Request) {
       },
       emptyTotals(),
     );
+    totals.contactsWorked = teamContactSet.size;
     totals.replyRate =
-      totals.sequencesStarted > 0
-        ? Math.min(1, totals.replies / totals.sequencesStarted)
-        : 0;
+      totals.emailsSent > 0
+        ? Math.min(1, totals.replies / totals.emailsSent)
+        : totals.sequencesStarted > 0
+          ? Math.min(1, totals.replies / totals.sequencesStarted)
+          : 0;
 
     return NextResponse.json({
       ok: true,
@@ -269,6 +340,9 @@ function mapAgg(rows: any[], key: string): Record<string, number> {
 
 function emptyTotals() {
   return {
+    emailsSent: 0,
+    linkedinSent: 0,
+    contactsWorked: 0,
     sequencesStarted: 0,
     stepsSent: 0,
     stepsReady: 0,
