@@ -454,10 +454,17 @@ export default function BDWizardPage() {
 
   async function sendDraft(force: boolean = false) {
     if (!brand || !selectedContact) return;
+    // Defensive: coerce `force` to a real boolean. If a button binds
+    // `onClick={sendDraft}` (instead of `onClick={() => sendDraft()}`)
+    // React hands us a synthetic event here, which is truthy but carries
+    // circular refs. That then gets stringified into the POST body below
+    // and Safari throws "JSON.stringify cannot serialize cyclic
+    // structures". Clamping here keeps the payload clean no matter what.
+    const forceBool = force === true;
     setSending(true);
     setError("");
     setSendError(null);
-    if (!force) setDuplicateWarn(null);
+    if (!forceBool) setDuplicateWarn(null);
     try {
       const res = await fetch("/api/admin/bd/wizard/send", {
         method: "POST",
@@ -469,7 +476,7 @@ export default function BDWizardPage() {
           subject,
           body: bodyText,
           stepId: sequenceStepId || undefined,
-          force: force || undefined,
+          force: forceBool || undefined,
         }),
       });
       const data = await res.json();
@@ -1882,7 +1889,7 @@ function DraftStep({
             ↻ Regenerate
           </button>
           <button
-            onClick={onSend}
+            onClick={() => onSend()}
             disabled={
               sending ||
               !bodyText.trim() ||
