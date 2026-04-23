@@ -666,14 +666,15 @@ function BrandHeader({ brand }: { brand: WizardBrand }) {
   const [probing, setProbing] = useState(false);
   useEffect(() => {
     let cancelled = false;
-    if (!brand.website) {
+    const website = brand.website;
+    if (!website) {
       setDomainProbe(null);
       return;
     }
     (async () => {
       setProbing(true);
       try {
-        const res = await fetch(`/api/util/domain-check?url=${encodeURIComponent(brand.website)}`);
+        const res = await fetch(`/api/util/domain-check?url=${encodeURIComponent(website)}`);
         const data = await res.json();
         if (!cancelled && data?.ok) setDomainProbe(data.result);
       } catch {
