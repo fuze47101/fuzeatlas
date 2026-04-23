@@ -131,9 +131,7 @@ export default function ProfileSettingsPage() {
   }
 
   if (loading) {
-    return (
-      <div className="p-8 max-w-3xl mx-auto text-slate-500">Loading profile…</div>
-    );
+    return <div className="p-8 max-w-3xl mx-auto text-slate-500">Loading profile…</div>;
   }
 
   if (!me) {
@@ -160,6 +158,20 @@ export default function ProfileSettingsPage() {
         <p className="text-sm text-slate-500 mt-1">
           Configure your account and how your outbound emails appear to prospects.
         </p>
+        <div className="mt-3 flex flex-wrap gap-2 text-xs">
+          <Link
+            href="/settings/email-templates"
+            className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-slate-700 hover:border-sky-300 hover:text-sky-700"
+          >
+            ✉️ Email Templates
+          </Link>
+          <Link
+            href="/settings/availability"
+            className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-slate-700 hover:border-sky-300 hover:text-sky-700"
+          >
+            📅 Availability
+          </Link>
+        </div>
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
@@ -171,9 +183,7 @@ export default function ProfileSettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Name
-              </label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Name</label>
               <input
                 type="text"
                 value={name}
@@ -184,9 +194,7 @@ export default function ProfileSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Email (login)
-              </label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Email (login)</label>
               <input
                 type="email"
                 value={me.email}
@@ -232,17 +240,14 @@ export default function ProfileSettingsPage() {
           </div>
 
           <p className="text-xs text-slate-500 mb-4">
-            When you send outbound through the BD Wizard, the email will appear to
-            come from this address. Replies route back to your inbox normally. You'll
-            also receive a BCC summary of every send so you know exactly what went
-            out.
+            When you send outbound through the BD Wizard, the email will appear to come from this
+            address. Replies route back to your inbox normally. You'll also receive a BCC summary of
+            every send so you know exactly what went out.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                From: Email
-              </label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">From: Email</label>
               <input
                 type="email"
                 value={fromEmail}
@@ -272,9 +277,7 @@ export default function ProfileSettingsPage() {
           </div>
 
           <div className="mt-4 p-3 rounded-lg bg-slate-50 border border-slate-200">
-            <div className="text-[11px] uppercase tracking-wide text-slate-500 mb-1">
-              Preview
-            </div>
+            <div className="text-[11px] uppercase tracking-wide text-slate-500 mb-1">Preview</div>
             <div className="text-sm font-mono text-slate-700">{previewFrom}</div>
           </div>
         </section>
@@ -285,8 +288,8 @@ export default function ProfileSettingsPage() {
             Email Signature
           </h2>
           <p className="text-xs text-slate-500 mb-3">
-            Appended to outbound emails sent through the BD Wizard. Plain text is
-            fine — keep it short. If you leave this blank, no signature is added.
+            Appended to outbound emails sent through the BD Wizard. Plain text is fine — keep it
+            short. If you leave this blank, no signature is added.
           </p>
           <textarea
             value={signature}
@@ -311,10 +314,9 @@ export default function ProfileSettingsPage() {
             </span>
           </div>
           <p className="text-xs text-slate-500 mb-3">
-            Subscribe your calendar app to a read-only overlay of your Atlas
-            meetings and open CRM tasks. Updates flow automatically — no IT
-            permission required. The URL contains a private token, so don't
-            share it.
+            Subscribe your calendar app to a read-only overlay of your Atlas meetings and open CRM
+            tasks. Updates flow automatically — no IT permission required. The URL contains a
+            private token, so don't share it.
           </p>
           {calendarFeed ? (
             <>
@@ -346,16 +348,14 @@ export default function ProfileSettingsPage() {
                 </summary>
                 <ul className="mt-2 ml-4 list-disc space-y-1 text-slate-500">
                   <li>
-                    <b>Outlook (web):</b> Calendar → Add calendar → Subscribe
-                    from web → paste URL.
+                    <b>Outlook (web):</b> Calendar → Add calendar → Subscribe from web → paste URL.
                   </li>
                   <li>
-                    <b>Google Calendar:</b> Other calendars + → From URL →
-                    paste URL.
+                    <b>Google Calendar:</b> Other calendars + → From URL → paste URL.
                   </li>
                   <li>
-                    <b>Apple Calendar:</b> File → New Calendar Subscription →
-                    paste URL → set auto-refresh to 1 hour.
+                    <b>Apple Calendar:</b> File → New Calendar Subscription → paste URL → set
+                    auto-refresh to 1 hour.
                   </li>
                 </ul>
               </details>

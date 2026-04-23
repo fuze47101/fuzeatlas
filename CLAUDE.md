@@ -267,7 +267,62 @@ Order placed → Product shipped → Received → Treatment applied → ICP subm
 
 Each order gets QR → links to SDS, COA for the shipment. Factory scans on receive + on application.
 
-## Built Features (Session — April 20, 2026)
+## Built Features (Session — April 23, 2026)
+
+### #101 BD Wizard concurrency hardening + dead-domain bounce
+
+**Problem (Andrew's phrasing)**: "If Ryan starts BD wizard and Barth starts BD wizard, and I start BD wizard and they all begin with Active Line Corp and we start working it same time, that will be an issue." Race condition. Before this fix, three reps hitting `/admin/bd/wizard` in the same ~30-second window would all be auto-assigned the same top-ranked LEAD brand. The permanent claim (`Brand.salesRepId`) only flipped on send, so whoever sent last "won" — but by then two other reps had already drafted and potentially sent their own emails to the same contact. Net: duplicate outreach, rep confusion, domain reputation risk.
+
+**Fix shipped as three layers (belt + suspenders + parachute):**
+
+1. **Atomic pick-time reservation** (`src/app/api/admin/bd/wizard/next-brand/route.ts`)
+   - New `Brand.reservedBy` + `Brand.reservedUntil` columns (30-min TTL).
+   - Candidates ranked in memory, then walked in sorted order. For each candidate, `prisma.brand.updateMany({ where: { id, salesRepId: null, OR: [{ reservedUntil: null }, { reservedUntil: { lt: now } }, { reservedBy: user.id }] }, data: { reservedBy, reservedUntil } })`. First writer's `count === 1` wins; losers' count is 0 and the loop advances to the next candidate.
+   - `findMany` up-front excludes brands reserved by _other_ reps.
+   - Response includes `reservation: { reservedBy, reservedUntil, ttlMinutes, contested }` so the client can surface queue contention if we ever want to.
+
+2. **Soft-lock lifecycle** (`src/app/api/admin/bd/wizard/release/route.ts` — new)
+   - `POST /api/admin/bd/wizard/release` clears reservation _only if caller holds it_ (`updateMany where: { id, reservedBy: user.id }`). Returns `{ released: 0 | 1 }`.
+   - Client calls it from (a) "Next Brand" click (`loadNextBrand(skipId)` awaits release before re-picking), (b) tab close via `navigator.sendBeacon("/api/admin/bd/wizard/release", blob)` in a `beforeunload` handler, (c) bounce flow.
+   - Client keeps a `brandRef` (`useRef`) synced with the current brand so the `beforeunload` closure reads the latest id without re-subscribing.
+   - Send endpoint also clears the reservation in the same transaction that stamps `salesRepId` (soft lock → permanent claim).
+
+3. **Duplicate-send guard** (`src/app/api/admin/bd/wizard/send/route.ts`)
+   - Before dispatch, query `OutreachMessage` for any email to this `contactId` in the last 24h by a different `sentBy`. If found, return HTTP **409** with `{ ok: false, code: "already_contacted", otherRep, previousSubject, hoursAgo, allowForce: true }` instead of sending.
+   - Client shows a confirm modal ("Ryan emailed Viktor 3h ago — send anyway?"). Rep's "Send anyway" click retries with `force: true` in the body, which bypasses the 24h check.
+
+4. **Dead-domain bounce** (`src/app/api/admin/bd/wizard/bounce-brand/route.ts` — new)
+   - Triggered from `BrandHeader`'s "deadOrParked" panel when the domain probe (#98) returns down. Andrew's observation: "the domain check is working for activelinecorp.com → it's dead. The problem is every contact was enriched off that same domain, so all of those emails are probably bad too. We should just bounce the whole brand."
+   - One `prisma.$transaction`: (a) flip `validationStatus: "dead"` (already in next-brand's exclusion list), (b) `updateMany` every contact whose email hostname matches the brand's dead hostname → `emailStatus: "invalid"`, `outreachStatus: "skipped"`. Matches bare host, `www.`, and subdomains (`.${deadHostBare}`). Personal gmail/outlook addresses on the same contact are untouched. (c) Clear `salesRepId` + reservation, drop a `Note` with probe reason + rep's free-text reason, bump `lastActivityAt`.
+   - Wizard auto-advances to the next brand via `loadNextBrand(brand.id)`.
+   - Authorization: only admins, or the rep who holds the brand (`salesRepId === user.id || reservedBy === user.id || salesRepId === null`), can bounce. Prevents a random rep from killing someone else's deal by landing on the detail page.
+
+**Prisma migration**: `prisma/migrations/20260424000000_brand_wizard_reservation/migration.sql`
+
+```sql
+ALTER TABLE "Brand" ADD COLUMN "reservedBy" TEXT;
+ALTER TABLE "Brand" ADD COLUMN "reservedUntil" TIMESTAMP(3);
+CREATE INDEX "Brand_reservedUntil_idx" ON "Brand"("reservedUntil");
+```
+
+Schema synced via `npx prisma db push` (see Debugging Lessons note — this repo uses `db push` for prod schema sync, not `prisma migrate deploy`).
+
+### #100 Per-user BD email templates discoverability fix
+
+- The BD Wizard quick-pick slot system (1–10) was already built at `/settings/email-templates`, including the sky-blue "BD Wizard quick-pick slots" panel and the inline slot dropdown on every PRIVATE template row. Each user has their own 10 slots — Ryan's slot 3 is independent of Barth's.
+- **Discoverability gap Andrew caught**: the page was only reachable via a deep link inside the BD Wizard draft step — no sidebar, no home-page card, no link from `/settings/profile`. Ryan/Barth would never find it without being told.
+- **Fix**: added `✉️ Email Templates` chip to the quick-jump row on `/home` (sits next to `👤 My Profile`), plus a small "Email Templates / Availability" sub-link row under the header on `/settings/profile` so reps land on both when they click "My Profile".
+
+### Vercel build gotcha — TypeScript IIFE closure narrowing
+
+- Build failed on `src/app/admin/bd/wizard/page.tsx:676:82` with `Type error: Argument of type 'string | null' is not assignable to parameter of type 'string | number | boolean'`.
+- **Root cause**: the outer `if (!brand.website) return;` narrowed `brand.website` to `string` in the useEffect scope, but the nested `(async () => { ... })()` IIFE closure doesn't inherit TypeScript's control-flow narrowing across closure boundaries.
+- **Fix**: capture to a local before the IIFE — `const website = brand.website; (async () => { ... website ... })()`. The regular `async function retestDomain` on line ~696 didn't need the fix because it's a named async function (narrowing _does_ flow in) — only the IIFE pattern drops the narrow.
+
+### Pending — Pick up next session
+
+- **#101**: commit + push from Andrew's Mac terminal (sandbox `.git` mount can't clear `index.lock`; see Debugging Lessons). Commands at the end of the April 23 session chat. After push, verify Vercel green. Prisma `db push` is already captured in the migration file, but confirm the prod DB picked it up with `npx prisma db push` locally against `caboose.proxy.rlwy.net:28355`.
+- **FUZE Atlas 4 → FUZE Atlas 5**: context in this cowork session is getting compacted frequently. Start a fresh cowork (FUZE Atlas 5) after #101 is committed. This CLAUDE.md update is the handoff.
 
 ### Outreach/Send Atomic Rewrite (#20, commit 3fc055b)
 

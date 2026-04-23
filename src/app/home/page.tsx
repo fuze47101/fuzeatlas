@@ -31,13 +31,15 @@ export default function HomePage() {
     return () => clearInterval(tick);
   }, []);
 
-  const isInternal = user?.role && ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"].includes(user.role);
+  const isInternal =
+    user?.role && ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"].includes(user.role);
   const isAdmin = ["ADMIN", "EMPLOYEE"].includes(user?.role || "");
 
   useEffect(() => {
     // Non-internal users get bounced to their role-specific dashboard
     if (user && !isInternal) {
-      if (user.role === "FACTORY_USER" || user.role === "FACTORY_MANAGER") router.push("/factory-portal");
+      if (user.role === "FACTORY_USER" || user.role === "FACTORY_MANAGER")
+        router.push("/factory-portal");
       else if (user.role === "BRAND_USER") router.push("/brand-portal");
       else if (user.role === "DISTRIBUTOR_USER") router.push("/distributor-portal");
       else if (user.role === "LAB_USER") router.push("/lab-portal");
@@ -45,7 +47,8 @@ export default function HomePage() {
   }, [user]);
 
   const hour = time.getHours();
-  const greeting = hour < 12 ? t.home.goodMorning : hour < 18 ? t.home.goodAfternoon : t.home.goodEvening;
+  const greeting =
+    hour < 12 ? t.home.goodMorning : hour < 18 ? t.home.goodAfternoon : t.home.goodEvening;
   const firstName = user?.name?.split(" ")[0] || "";
 
   // Translate module labels/blurbs where we have strings; fall back to the
@@ -53,11 +56,11 @@ export default function HomePage() {
   const translatedModules = MODULES.map((m) => {
     const tMap: Record<string, { label: string; blurb: string }> = {
       "business-development": { label: t.home.bizDev, blurb: t.home.bizDevBlurb },
-      "operations": { label: t.home.operations, blurb: t.home.operationsBlurb },
+      operations: { label: t.home.operations, blurb: t.home.operationsBlurb },
       "quality-labs": { label: t.home.qualityLabs, blurb: t.home.qualityLabsBlurb },
-      "partners": { label: t.home.partners, blurb: t.home.partnersBlurb },
-      "resources": { label: t.home.resources, blurb: t.home.resourcesBlurb },
-      "admin": { label: t.home.admin, blurb: t.home.adminBlurb },
+      partners: { label: t.home.partners, blurb: t.home.partnersBlurb },
+      resources: { label: t.home.resources, blurb: t.home.resourcesBlurb },
+      admin: { label: t.home.admin, blurb: t.home.adminBlurb },
     };
     const translated = tMap[m.key];
     return translated ? { ...m, label: translated.label, blurb: translated.blurb } : m;
@@ -73,7 +76,8 @@ export default function HomePage() {
           {time.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
         </p>
         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">
-          {greeting}{firstName ? `, ${firstName}` : ""}
+          {greeting}
+          {firstName ? `, ${firstName}` : ""}
         </h1>
         <p className="text-slate-600 mt-1">{t.home.subtitle}</p>
       </div>
@@ -92,16 +96,64 @@ export default function HomePage() {
 
       {/* Shortcut bar */}
       <div className="mt-10 pt-6 border-t border-slate-200">
-        <p className="text-xs font-bold uppercase text-slate-400 tracking-wide mb-3">{t.home.quickJump}</p>
+        <p className="text-xs font-bold uppercase text-slate-400 tracking-wide mb-3">
+          {t.home.quickJump}
+        </p>
         <div className="flex flex-wrap gap-2">
-          <Link href="/admin/bd/wizard" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">🪄 BD Wizard</Link>
-          <Link href="/dashboard" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">📊 KPI Dashboard</Link>
-          <Link href="/admin/orders-dashboard" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">📦 Orders</Link>
-          <Link href="/admin/brand-pipeline" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">🔥 Pipeline</Link>
-          <Link href="/admin/icp-sample-prep" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">⚖️ ICP Sample Prep</Link>
-          <Link href="/notifications" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">🔔 Notifications</Link>
-          <Link href="/compliance-library" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">📋 Documents</Link>
-          <Link href="/settings/profile" className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]">👤 My Profile</Link>
+          <Link
+            href="/admin/bd/wizard"
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+          >
+            🪄 BD Wizard
+          </Link>
+          <Link
+            href="/dashboard"
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+          >
+            📊 KPI Dashboard
+          </Link>
+          <Link
+            href="/admin/orders-dashboard"
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+          >
+            📦 Orders
+          </Link>
+          <Link
+            href="/admin/brand-pipeline"
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+          >
+            🔥 Pipeline
+          </Link>
+          <Link
+            href="/admin/icp-sample-prep"
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+          >
+            ⚖️ ICP Sample Prep
+          </Link>
+          <Link
+            href="/notifications"
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+          >
+            🔔 Notifications
+          </Link>
+          <Link
+            href="/compliance-library"
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+          >
+            📋 Documents
+          </Link>
+          <Link
+            href="/settings/profile"
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+          >
+            👤 My Profile
+          </Link>
+          <Link
+            href="/settings/email-templates"
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+          >
+            ✉️ Email Templates
+          </Link>
         </div>
       </div>
     </div>
@@ -128,7 +180,8 @@ function ModuleCard({ module: m }: { module: ModuleDef }) {
       <div className="p-4 grid grid-cols-1 gap-1">
         {visibleItems.slice(0, 7).map((item) => (
           <span key={item.href} className="text-xs text-slate-600 truncate">
-            {item.icon ? `${item.icon} ` : "· "}{item.label}
+            {item.icon ? `${item.icon} ` : "· "}
+            {item.label}
           </span>
         ))}
         {visibleItems.length > 7 && (
