@@ -91,6 +91,61 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       update.archivedAt = body.archivedAt ? new Date(body.archivedAt) : null;
     }
 
+    // bdSlot assignment — BD Wizard 1-10 quick-pick pins (#100). Only the
+    // owner of a PRIVATE template may pin it to their own numbered slot; we
+    // reject any attempt to pin a SHARED/GLOBAL template so reps can't hijack
+    // a shared asset into their personal slot map.
+    // null = unpin, 1-10 = pin. Re-assigning slot N transparently unpins
+    // whatever template currently holds that slot for this user (the DB
+    // unique constraint would otherwise blow up).
+    if ("bdSlot" in body) {
+      const raw = body.bdSlot;
+      const n = raw === null || raw === undefined || raw === "" ? null : Number(raw);
+      if (n !== null && (!Number.isInteger(n) || n < 1 || n > 10)) {
+        return NextResponse.json(
+          { ok: false, error: "bdSlot must be an integer 1-10 or null" },
+          { status: 400 },
+        );
+      }
+      if (n !== null && r.tpl.scope !== "PRIVATE") {
+        return NextResponse.json(
+          { ok: false, error: "Only PRIVATE templates can be pinned to a BD slot" },
+          { status: 400 },
+        );
+      }
+      if (n !== null && r.tpl.ownerId !== me.id) {
+        return NextResponse.json(
+          { ok: false, error: "You can only pin templates you own" },
+          { status: 403 },
+        );
+      }
+      update.bdSlot = n;
+      if (n !== null) {
+        // Evict whatever currently holds this slot for this user so the
+        // unique constraint doesn't blow up on the update. We run both writes
+        // in a transaction so the re-pin is atomic from the client's
+        // perspective — no racing state where slot 3 is temporarily empty.
+        const displaced = await prisma.emailTemplate.findFirst({
+          where: { ownerId: me.id, bdSlot: n, NOT: { id } },
+          select: { id: true },
+        });
+        const updated = await prisma.$transaction(async (tx) => {
+          if (displaced) {
+            await tx.emailTemplate.update({
+              where: { id: displaced.id },
+              data: { bdSlot: null },
+            });
+          }
+          return tx.emailTemplate.update({ where: { id }, data: update });
+        });
+        return NextResponse.json({
+          ok: true,
+          template: updated,
+          displaced: displaced?.id || null,
+        });
+      }
+    }
+
     const updated = await prisma.emailTemplate.update({
       where: { id },
       data: update,

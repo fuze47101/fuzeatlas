@@ -162,6 +162,37 @@ export async function POST(req: Request) {
     let externalId: string | undefined;
 
     if (channel === "email") {
+      // ── Hard preflight: refuse to pretend-send. ──
+      // Historically, missing RESEND_API_KEY made sendEmail return
+      // { ok: true, stub: true }, which looked like a success to the rep
+      // but never actually delivered anything. We now reject at the send
+      // route so the UI can surface a setup modal instead of a phantom
+      // "Sent" state.
+      if (!process.env.RESEND_API_KEY) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error:
+              "Email delivery is not configured on this server (RESEND_API_KEY missing). Nothing was sent.",
+            code: "no_resend_key",
+            setupPath: "/settings/email",
+          },
+          { status: 503 },
+        );
+      }
+      if (!user.outboundFromEmail) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error:
+              "Your outbound 'From' address isn't set. Open Settings → Profile and configure your sending identity before sending.",
+            code: "no_outbound_from",
+            setupPath: "/settings/profile",
+          },
+          { status: 400 },
+        );
+      }
+
       const html = textToHtml(bodyOut);
       sendResult = await sendEmail({
         to: contact.email!,
@@ -171,8 +202,32 @@ export async function POST(req: Request) {
         replyTo: user.outboundFromEmail || user.email,
       });
       if (!sendResult.ok) {
+        // Resend's error messages are developer-flavored. We preserve the
+        // raw text in `details` but lead with a plain-language summary
+        // that maps known failure modes to actionable fixes.
+        const raw = String(sendResult.error || "unknown error");
+        const lc = raw.toLowerCase();
+        let friendly = `Email send failed: ${raw}`;
+        let code = "resend_error";
+        let setupPath: string | null = null;
+        if (lc.includes("domain") && (lc.includes("verify") || lc.includes("not verified"))) {
+          friendly = `The sending domain for ${from || user.outboundFromEmail} isn't verified in Resend yet. An admin needs to add and verify the DNS records before you can send from this address.`;
+          code = "domain_unverified";
+          setupPath = "/settings/email";
+        } else if (lc.includes("api key") || lc.includes("unauthorized") || lc.includes("401")) {
+          friendly =
+            "Resend rejected our API key. Ask an admin to rotate RESEND_API_KEY — the current key is invalid or revoked.";
+          code = "bad_api_key";
+          setupPath = "/settings/email";
+        } else if (lc.includes("invalid") && lc.includes("email")) {
+          friendly = `Resend says the recipient address "${contact.email}" is invalid. Double-check the email on the contact record.`;
+          code = "invalid_recipient";
+        } else if (lc.includes("bounce") || lc.includes("suppressed")) {
+          friendly = `That recipient address is on Resend's suppression list (bounced or complained previously). Find a different email before retrying.`;
+          code = "suppressed";
+        }
         return NextResponse.json(
-          { ok: false, error: `Email send failed: ${sendResult.error || "unknown"}` },
+          { ok: false, error: friendly, code, setupPath, details: raw },
           { status: 502 },
         );
       }

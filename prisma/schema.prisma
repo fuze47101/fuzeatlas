@@ -3111,12 +3111,23 @@ model EmailTemplate {
   useCount Int @default(0)
   lastUsedAt DateTime?
 
+  // Per-user BD Wizard quick-pick slot (1-10). When set, this template shows
+  // up on the wizard Draft step as a numbered button the rep can one-click to
+  // populate subject + body — the "BD rep keeps their favourite 10 openers
+  // one keystroke away" pattern (Andrew 2026-04-22). Unique per owner so slot
+  // N can only hold one template at a time; re-assigning a new template to a
+  // slot clears the previous one in the same transaction (server-side).
+  // PRIVATE scope only — we don't want a BD rep's personal slot map polluted
+  // by SHARED/GLOBAL templates.
+  bdSlot Int?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([ownerId, scope])
   @@index([scope, archivedAt])
   @@index([category])
+  @@unique([ownerId, bdSlot], name: "owner_bdSlot_unique")
 }
 
 enum EmailTemplateScope {

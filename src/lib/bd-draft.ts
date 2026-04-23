@@ -93,10 +93,26 @@ function buildPrompt(a: DraftArgs): string {
     ? JSON.stringify(brand.researchData).slice(0, 6000)
     : "(no research data yet — keep the pitch generic but grounded in their category)";
 
-  const qaLines = Object.entries(answers || {})
+  // Collect the rep's answers as { question, answer } pairs. These are the
+  // Step-3 prompts the rep filled in ("What caught your attention about this
+  // brand?", "What specific problem does FUZE solve for them?", etc.) and
+  // were previously listed but not ENFORCED — the AI would often ignore them
+  // and produce a generic pitch. We now elevate them to seed material and
+  // add a hard rule that each non-empty answer must be referenced.
+  const answerPairs = Object.entries(answers || {})
     .filter(([, v]) => v && String(v).trim())
-    .map(([k, v]) => `- ${k}: ${v}`)
-    .join("\n");
+    .map(([k, v]) => ({ q: k, a: String(v).trim() }));
+
+  const qaLines = answerPairs.map(({ q, a }) => `- ${q}: ${a}`).join("\n");
+
+  const seedBlock = answerPairs.length
+    ? `
+SEED MATERIAL — THE REP'S OWN NOTES (you MUST use this, it is the whole point of this draft):
+${answerPairs.map(({ q, a: v }, i) => `[${i + 1}] Q: ${q}\n    A: ${v}`).join("\n\n")}
+
+THE DRAFT MUST DEMONSTRABLY INCORPORATE EACH OF THE ${answerPairs.length} ANSWER(S) ABOVE — verbatim phrases, paraphrases, or direct references. If you ignore any of them, the draft fails and will be rejected.
+`
+    : "";
 
   // Phase 4: reply mode takes over completely — we're responding to a real
   // human reply, so all the cold-opener rules flip. Still no em-dashes,
@@ -105,7 +121,7 @@ function buildPrompt(a: DraftArgs): string {
   if (isReply) {
     const prevSnippet = previousBody ? previousBody.slice(0, 600) : "";
     return `You are drafting ${repName}'s reply to a prospect who just responded to a cold ${isEmail ? "email" : "LinkedIn DM"}.
-
+${seedBlock}
 TARGET BRAND: ${brand.name}
 TARGET CONTACT: ${contact.name || [contact.firstName, contact.lastName].filter(Boolean).join(" ")} — ${contact.jobTitle || "decision-maker"}
 CATEGORY: ${brand.textileCategory || "textile"}
@@ -146,7 +162,7 @@ Respond with ONLY the JSON object, no preamble or postamble.`;
   return `You are writing a ${isEmail ? "cold email" : "LinkedIn DM"} on behalf of ${repName} at FUZE Technologies.
 
 FUZE sells F1 meta-material antimicrobial textile treatment, applied at the mill level. Permanent through 50+ industrial washes. Not silver, not nano. It's a finishing technology that brands license into their supply chain.
-
+${seedBlock}
 TARGET BRAND: ${brand.name}
 TARGET CONTACT: ${contact.name || [contact.firstName, contact.lastName].filter(Boolean).join(" ")} — ${contact.jobTitle || "decision-maker"}
 CATEGORY: ${brand.textileCategory || "textile"}
@@ -154,7 +170,7 @@ ${followUpNote}
 INTEL:
 ${intel}
 
-REP'S CUSTOMIZATION NOTES:
+REP'S CUSTOMIZATION NOTES (same as SEED MATERIAL above, listed again for reference — you MUST incorporate these):
 ${qaLines || "(none provided)"}
 
 TONE: ${tone}
@@ -176,6 +192,11 @@ ${
 9. One specific reference to the contact's role OR a recent post from their brand.
 10. One concrete ask — 15-min call OR the right person to speak to. Not "would love to connect".`
 }
+11. SEED MATERIAL ENFORCEMENT. ${
+    answerPairs.length
+      ? `You were given ${answerPairs.length} specific answer(s) from the rep in the SEED MATERIAL block above. Every single one of them MUST surface in the body — either quoted, paraphrased, or directly addressed. Draft will be auto-rejected if any answer is absent. If an answer names a problem, your draft must name that problem. If an answer names what caught the rep's eye, the opening sentence should hook on that specific thing.`
+      : `No rep seed answers were provided for this draft; work from the INTEL block alone.`
+  }
 
 ${isEmail ? `Return JSON: {"subject": "...", "body": "..."} — subject must be under 8 words, no clickbait, no emojis, no "Re:" or "Fwd:".` : `Return JSON: {"subject": "", "body": "..."} — subject is always empty for LinkedIn.`}
 
@@ -255,8 +276,58 @@ function safeParseJson(text: string): { subject: string; body: string } {
   }
 }
 
+/**
+ * Pull normalized text out of the rep's Q&A by best-guess question match.
+ * Keys on the wizard come through either as the question verbatim or as a
+ * short slug — we handle both by matching lowercase substrings.
+ */
+function pickAnswer(answers: Record<string, string> | undefined, needles: string[]): string | null {
+  if (!answers) return null;
+  for (const [k, v] of Object.entries(answers)) {
+    if (!v || !String(v).trim()) continue;
+    const key = k.toLowerCase();
+    if (needles.some((n) => key.includes(n))) return String(v).trim();
+  }
+  return null;
+}
+
+/** Lowercase first letter so an interpolated answer flows mid-sentence. */
+function lc1(s: string): string {
+  if (!s) return s;
+  return s.charAt(0).toLowerCase() + s.slice(1);
+}
+
+/**
+ * Fallback draft — used only when NO AI keys are configured (or every AI
+ * call failed). Historically this was purely templated and ignored the
+ * rep's Step-3 answers, which is exactly the bug we're fixing for #95. Now
+ * it interpolates the rep's "what caught your attention" + "what problem
+ * does FUZE solve" answers so even the offline path honors their input.
+ */
 function fallbackDraft(a: DraftArgs): { subject: string; body: string } {
   const first = a.contact.firstName || (a.contact.name ? a.contact.name.split(" ")[0] : "there");
+
+  // Rep's Step-3 answers — try a couple of likely key shapes.
+  const hookAnswer = pickAnswer(a.answers, ["caught", "attention", "why", "noticed", "eye"]);
+  const problemAnswer = pickAnswer(a.answers, ["problem", "pain", "solve", "gap", "challenge"]);
+  const angleAnswer = pickAnswer(a.answers, ["angle", "hook", "specific", "pitch"]);
+  const extraAnswers = Object.values(a.answers || {})
+    .map((v) => String(v || "").trim())
+    .filter(Boolean);
+
+  const hookLine = hookAnswer ? `${hookAnswer.replace(/\.$/, "")}.` : "";
+  const problemLine = problemAnswer
+    ? `FUZE F1 speaks directly to ${lc1(problemAnswer.replace(/\.$/, ""))}. `
+    : "";
+  const angleTail = angleAnswer ? ` Specifically ${lc1(angleAnswer.replace(/\.$/, ""))}.` : "";
+  // If none of the targeted slots matched but the rep DID write something,
+  // fall back to just appending the first non-empty answer so their input
+  // is never silently dropped.
+  const rawTail =
+    !hookLine && !problemLine && !angleTail && extraAnswers.length
+      ? ` ${extraAnswers[0].replace(/\.$/, "")}.`
+      : "";
+
   if (a.channel === "email") {
     if (a.isReply) {
       const subjectBase = a.previousSubject
@@ -269,7 +340,7 @@ function fallbackDraft(a: DraftArgs): { subject: string; body: string } {
         subject: subjectBase,
         body: `${first},
 
-${summaryLine} Happy to send a one-pager or jump on a 15-min call Tuesday or Thursday to walk through how FUZE F1 maps to ${a.brand.textileCategory || "your"} line. Which works?
+${summaryLine}${rawTail} ${problemLine}Happy to send a one-pager or jump on a 15-min call Tuesday or Thursday to walk through how FUZE F1 maps to ${a.brand.textileCategory || "your"} line.${angleTail} Which works?
 
 ${a.repName}`,
       };
@@ -279,25 +350,28 @@ ${a.repName}`,
         subject: `Re: FUZE F1 for ${a.brand.name}`,
         body: `${first},
 
-Following up on my note last week. FUZE F1 is the antimicrobial finish that survives 50+ washes, and it maps cleanly to ${a.brand.textileCategory || "your product"} line. Do you have 15 minutes this week, or is there a better person on your team to speak to?
+Following up on my note last week.${hookLine ? ` ${hookLine}` : ""} ${problemLine}FUZE F1 is the antimicrobial finish that survives 50+ washes, and it maps cleanly to ${a.brand.textileCategory || "your product"} line.${angleTail} Do you have 15 minutes this week, or is there a better person on your team to speak to?${rawTail}
 
 ${a.repName}`,
       };
     }
+    const opener = hookLine ? hookLine : `${a.brand.name} came across my desk this week.`;
     return {
       subject: `FUZE F1 for ${a.brand.name}`,
       body: `${first},
 
-${a.brand.name} came across my desk this week. We license a textile finish called FUZE F1 that stays antimicrobial through 50+ industrial washes. Not silver, not nano. It's applied at the mill.
+${opener} ${problemLine}We license a textile finish called FUZE F1 that stays antimicrobial through 50+ industrial washes. Not silver, not nano. It's applied at the mill.${angleTail}${rawTail}
 
 Worth 15 minutes to see if it fits your ${a.brand.textileCategory || "product"} line?
 
 ${a.repName}`,
     };
   }
+  const liHook =
+    hookLine || `Curious about ${a.brand.name}'s ${a.brand.textileCategory || "textile"} line.`;
   return {
     subject: "",
-    body: `${first}, FUZE F1 is an antimicrobial finish applied at the mill that lasts 50+ washes. Curious if it maps to ${a.brand.name}'s ${a.brand.textileCategory || "textile"} line. Worth a quick look?`,
+    body: `${first}, ${liHook} ${problemLine}FUZE F1 is an antimicrobial finish applied at the mill that lasts 50+ washes.${angleTail} Worth a quick look?`,
   };
 }
 

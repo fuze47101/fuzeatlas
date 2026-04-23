@@ -9,7 +9,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const currentUser = await getCurrentUser();
 
     if (!currentUser || !hasMinRole(currentUser.role, "ADMIN")) {
-      return NextResponse.json({ ok: false, error: "Only admins can modify users" }, { status: 403 });
+      return NextResponse.json(
+        { ok: false, error: "Only admins can modify users" },
+        { status: 403 },
+      );
     }
 
     const body = await req.json();
@@ -30,9 +33,58 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
     if (body.password) {
       if (body.password.length < 6) {
-        return NextResponse.json({ ok: false, error: "Password must be at least 6 characters" }, { status: 400 });
+        return NextResponse.json(
+          { ok: false, error: "Password must be at least 6 characters" },
+          { status: 400 },
+        );
       }
       update.password = await hashPassword(body.password);
+    }
+
+    // ── Role/entity coherence guard (task #73) ─────────────────
+    // Stop "Shauna situation": user gets switched to FACTORY_MANAGER but
+    // never linked to a factory, then can't place orders / sees nothing.
+    // We compute the POST-UPDATE state by overlaying the patch on the
+    // existing record, then enforce that role-required FK is present.
+    const REQUIRED_FK: Record<string, "factoryId" | "brandId" | "distributorId" | "labId"> = {
+      FACTORY_USER: "factoryId",
+      FACTORY_MANAGER: "factoryId",
+      BRAND_USER: "brandId",
+      BRAND_MANAGER: "brandId",
+      DISTRIBUTOR_USER: "distributorId",
+      DISTRIBUTOR_MANAGER: "distributorId",
+      LAB_USER: "labId",
+      LAB_ADMIN: "labId",
+    };
+    const requiredFk = update.role ? REQUIRED_FK[update.role] : undefined;
+    if (requiredFk) {
+      // Read existing only if we need to (avoids extra round-trip when not changing role)
+      const existing = await prisma.user.findUnique({
+        where: { id },
+        select: { factoryId: true, brandId: true, distributorId: true, labId: true, role: true },
+      });
+      if (!existing) {
+        return NextResponse.json({ ok: false, error: "User not found" }, { status: 404 });
+      }
+      const finalFkValue =
+        requiredFk in update ? update[requiredFk] : (existing as any)[requiredFk];
+      if (!finalFkValue) {
+        const friendly = {
+          factoryId: "factory",
+          brandId: "brand",
+          distributorId: "distributor",
+          labId: "lab",
+        }[requiredFk];
+        return NextResponse.json(
+          {
+            ok: false,
+            error: `Role ${update.role} requires a ${friendly} assignment. Pick a ${friendly} before saving.`,
+            code: "MISSING_ENTITY_ASSIGNMENT",
+            requiredField: requiredFk,
+          },
+          { status: 400 },
+        );
+      }
     }
 
     const user = await prisma.user.update({

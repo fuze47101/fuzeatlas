@@ -30,6 +30,8 @@ interface Template {
   archivedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** BD Wizard quick-pick slot 1-10 — PRIVATE templates only. */
+  bdSlot?: number | null;
 }
 
 interface Me {
@@ -150,6 +152,28 @@ export default function EmailTemplatesSettings() {
     }
   };
 
+  /**
+   * Pin/unpin a template to a BD Wizard quick-pick slot (1-10). Passing
+   * slot=null clears the pin. Server-side we displace whatever other
+   * template is currently in that slot so we never hit the unique constraint
+   * from the client (see PATCH handler in /api/email-templates/[id]).
+   */
+  const handleSlotChange = async (tpl: Template, slot: number | null) => {
+    setError("");
+    try {
+      const res = await fetch(`/api/email-templates/${tpl.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bdSlot: slot }),
+      });
+      const j = await res.json();
+      if (!j.ok) throw new Error(j.error);
+      await load();
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
   const canEdit = (tpl: Template) => {
     if (isAdmin) return true;
     if (tpl.scope === "GLOBAL") return false;
@@ -165,6 +189,17 @@ export default function EmailTemplatesSettings() {
     SHARED: templates.filter((t) => t.scope === "SHARED"),
     GLOBAL: templates.filter((t) => t.scope === "GLOBAL"),
   };
+
+  // BD Wizard quick-pick map (#100). Build a slot-1 → slot-10 array out of
+  // the user's PRIVATE templates so the "Your quick-pick slots" panel can
+  // render all 10 buckets — including the empty ones so it's obvious where
+  // the rep has headroom left.
+  const mySlotMap: Array<Template | null> = Array.from({ length: 10 }, () => null);
+  for (const t of grouped.PRIVATE) {
+    if (t.ownerId === me?.id && t.bdSlot && t.bdSlot >= 1 && t.bdSlot <= 10) {
+      mySlotMap[t.bdSlot - 1] = t;
+    }
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -313,6 +348,54 @@ export default function EmailTemplatesSettings() {
         </div>
       )}
 
+      {/* BD Wizard quick-pick slot map (#100).
+         Renders 10 numbered slots — each showing the pinned template's title
+         or "empty". Reps assign templates to slots from the per-row dropdown
+         below; the Wizard's Draft step then shows a 1-10 button strip so the
+         rep can one-click-inject their favourite opener. Only rendered when
+         the user owns at least one PRIVATE template, to keep brand-new
+         accounts uncluttered. */}
+      {!loading && grouped.PRIVATE.length > 0 && (
+        <div className="mb-6 bg-sky-50 border border-sky-200 rounded-xl p-5">
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <h2 className="font-semibold text-slate-900">BD Wizard quick-pick slots</h2>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Pin up to 10 of your templates to numbered slots. On the wizard Draft step,
+                you&apos;ll see a 1–10 button strip that one-click-fills the subject and body.
+              </p>
+            </div>
+            <Link
+              href="/admin/bd/wizard"
+              className="text-xs text-sky-700 hover:underline whitespace-nowrap"
+            >
+              Open BD Wizard →
+            </Link>
+          </div>
+          <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
+            {mySlotMap.map((tpl, i) => {
+              const slot = i + 1;
+              return (
+                <div
+                  key={slot}
+                  className={`rounded-lg border p-2 text-center ${
+                    tpl
+                      ? "bg-white border-sky-300 shadow-sm"
+                      : "bg-white/50 border-dashed border-slate-300"
+                  }`}
+                  title={tpl ? `${tpl.title}\n${tpl.subject}` : "Empty slot — assign below."}
+                >
+                  <div className="text-[10px] font-bold text-sky-700">{slot}</div>
+                  <div className="text-[11px] text-slate-800 leading-tight truncate mt-0.5">
+                    {tpl ? tpl.title : <span className="text-slate-400">empty</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div className="text-slate-500 text-sm">Loading templates…</div>
       ) : (
@@ -349,22 +432,51 @@ export default function EmailTemplatesSettings() {
                         <div className="text-[10px] text-slate-400 mt-1">by {tpl.owner.name}</div>
                       )}
                     </div>
-                    {canEdit(tpl) && (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => startEdit(tpl)}
-                          className="text-xs text-sky-600 hover:underline"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleArchive(tpl)}
-                          className="text-xs text-red-500 hover:underline"
-                        >
-                          Archive
-                        </button>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {/* BD slot selector — PRIVATE + owned-by-me only.
+                         Choose "—" to unpin, 1-10 to pin. Slot reassignment
+                         (e.g. slot 3 already has another template) is
+                         handled server-side via an atomic displace-then-
+                         re-pin transaction. */}
+                      {tpl.scope === "PRIVATE" && tpl.ownerId === me?.id && (
+                        <label className="flex items-center gap-1 text-[11px] text-slate-600">
+                          BD slot
+                          <select
+                            value={tpl.bdSlot || ""}
+                            onChange={(e) =>
+                              handleSlotChange(
+                                tpl,
+                                e.target.value === "" ? null : Number(e.target.value),
+                              )
+                            }
+                            className="rounded border border-slate-300 px-1 py-0.5 text-xs bg-white"
+                          >
+                            <option value="">—</option>
+                            {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                              <option key={n} value={n}>
+                                {n}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+                      {canEdit(tpl) && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => startEdit(tpl)}
+                            className="text-xs text-sky-600 hover:underline"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleArchive(tpl)}
+                            className="text-xs text-red-500 hover:underline"
+                          >
+                            Archive
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

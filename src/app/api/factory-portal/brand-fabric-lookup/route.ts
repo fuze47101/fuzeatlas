@@ -26,7 +26,10 @@ export async function GET(req: Request) {
     const fuzeNumberStr = url.searchParams.get("fuzeNumber")?.trim() || "";
 
     if (!brandSearch && !fuzeNumberStr) {
-      return NextResponse.json({ ok: false, error: "Please provide a brand name or FUZE number" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "Please provide a brand name or FUZE number" },
+        { status: 400 },
+      );
     }
 
     const where: any = {};
@@ -36,7 +39,7 @@ export async function GET(req: Request) {
     if (brandSearch) {
       conditions.push({
         brand: {
-          companyName: { contains: brandSearch, mode: "insensitive" },
+          name: { contains: brandSearch, mode: "insensitive" },
         },
       });
     }
@@ -65,17 +68,18 @@ export async function GET(req: Request) {
         id: true,
         fuzeNumber: true,
         customerCode: true,
+        factoryCode: true,
         construction: true,
         weightGsm: true,
         widthInches: true,
         yarnType: true,
-        fiberContent: true,
-        factoryId: true,
+        fabricCategory: true,
+        color: true,
         createdAt: true,
         brand: {
           select: {
             id: true,
-            companyName: true,
+            name: true,
           },
         },
       },
@@ -83,20 +87,41 @@ export async function GET(req: Request) {
       take: 25,
     });
 
+    // Compute "already linked to my factory" via FabricSubmission, not the
+    // Fabric.factoryId column. The Fabric.factoryId column represents the
+    // ORIGINAL registering factory (often null when the brand registered
+    // the fabric directly). A factory "claims" a brand fabric by getting
+    // a row in FabricSubmission, and the same fabric can be linked to
+    // multiple factories over time.
+    const myFactoryId = user.factoryId || null;
+    const linkedSet = new Set<string>();
+    if (myFactoryId && fabrics.length > 0) {
+      const subs = await prisma.fabricSubmission.findMany({
+        where: {
+          factoryId: myFactoryId,
+          fabricId: { in: fabrics.map((f) => f.id) },
+        },
+        select: { fabricId: true },
+      });
+      for (const s of subs) if (s.fabricId) linkedSet.add(s.fabricId);
+    }
+
     return NextResponse.json({
       ok: true,
       fabrics: fabrics.map((f) => ({
         id: f.id,
         fuzeNumber: f.fuzeNumber,
-        brandName: f.brand?.companyName || "Unknown",
+        brandName: f.brand?.name || "Unknown",
         brandId: f.brand?.id,
         customerCode: f.customerCode,
+        factoryCode: f.factoryCode,
         construction: f.construction,
         weightGsm: f.weightGsm,
         widthInches: f.widthInches,
         yarnType: f.yarnType,
-        fiberContent: f.fiberContent,
-        alreadyLinked: f.factoryId === user.factoryId,
+        fabricCategory: f.fabricCategory,
+        color: f.color,
+        alreadyLinked: linkedSet.has(f.id),
         createdAt: f.createdAt,
       })),
     });
@@ -110,8 +135,16 @@ export async function GET(req: Request) {
  * POST /api/factory-portal/brand-fabric-lookup
  * Body: { fabricId: string }
  *
- * Links a brand fabric to the factory (sets factoryId on the fabric).
- * This allows the factory to see and manage the fabric going forward.
+ * Claims a brand-registered fabric for the calling user's factory.
+ *
+ * Earlier versions of this route overwrote `Fabric.factoryId` directly,
+ * which yanked ownership away from any other factory that had the same
+ * fabric registered. The data model already has `FabricSubmission` —
+ * the join table representing one (brand, factory, fabric) submission —
+ * so we now create/upsert a FabricSubmission row instead of mutating
+ * the Fabric. The mill can see and manage the fabric going forward
+ * via /factory-portal/submissions, and other factories that registered
+ * the same brand fabric are not affected.
  */
 export async function POST(req: Request) {
   try {
@@ -126,7 +159,10 @@ export async function POST(req: Request) {
 
     const factoryId = user.factoryId;
     if (!factoryId) {
-      return NextResponse.json({ ok: false, error: "No factory assigned to your account" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "No factory assigned to your account" },
+        { status: 400 },
+      );
     }
 
     const body = await req.json();
@@ -139,24 +175,59 @@ export async function POST(req: Request) {
     // Verify the fabric exists and belongs to a brand
     const fabric = await prisma.fabric.findUnique({
       where: { id: fabricId },
-      select: { id: true, fuzeNumber: true, brandId: true, factoryId: true },
+      select: {
+        id: true,
+        fuzeNumber: true,
+        brandId: true,
+        customerCode: true,
+        factoryCode: true,
+      },
     });
 
     if (!fabric) {
       return NextResponse.json({ ok: false, error: "Fabric not found" }, { status: 404 });
     }
 
-    if (fabric.factoryId === factoryId) {
-      return NextResponse.json({ ok: true, message: "Already linked to your factory" });
+    if (!fabric.brandId) {
+      return NextResponse.json(
+        { ok: false, error: "Fabric is not registered to a brand" },
+        { status: 400 },
+      );
     }
 
-    // Link the fabric to this factory
-    await prisma.fabric.update({
-      where: { id: fabricId },
-      data: { factoryId },
+    // Idempotent: if a FabricSubmission already pairs this fabric with
+    // this factory (regardless of brand), just report it as linked.
+    const existing = await prisma.fabricSubmission.findFirst({
+      where: { fabricId, factoryId },
+      select: { id: true },
+    });
+    if (existing) {
+      return NextResponse.json({
+        ok: true,
+        message: `FUZE-${fabric.fuzeNumber} is already linked to your factory`,
+        submissionId: existing.id,
+      });
+    }
+
+    const submission = await prisma.fabricSubmission.create({
+      data: {
+        fabricId,
+        factoryId,
+        brandId: fabric.brandId,
+        fuzeFabricNumber: fabric.fuzeNumber ?? undefined,
+        customerFabricCode: fabric.customerCode ?? undefined,
+        factoryFabricCode: fabric.factoryCode ?? undefined,
+        status: "FACTORY_CLAIMED",
+        category: "BRAND_REGISTERED_FABRIC",
+      },
+      select: { id: true },
     });
 
-    return NextResponse.json({ ok: true, message: `FUZE-${fabric.fuzeNumber} linked to your factory` });
+    return NextResponse.json({
+      ok: true,
+      message: `FUZE-${fabric.fuzeNumber} linked to your factory`,
+      submissionId: submission.id,
+    });
   } catch (e: any) {
     console.error("Brand fabric link error:", e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });

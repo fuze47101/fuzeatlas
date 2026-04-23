@@ -22,9 +22,11 @@ export async function GET() {
         brandId: true,
         factoryId: true,
         distributorId: true,
+        labId: true,
         brand: { select: { name: true } },
         factory: { select: { name: true } },
         distributor: { select: { name: true } },
+        lab: { select: { name: true } },
       },
       orderBy: { name: "asc" },
     });

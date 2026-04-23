@@ -26,14 +26,22 @@ export default function PrintTestCardPage() {
   }, [id]);
 
   if (loading) return <div className="p-10 text-slate-500">Loading bench test {id}…</div>;
-  if (!test) return (
-    <div className="p-10 max-w-xl mx-auto">
-      <h1 className="text-xl font-bold text-slate-900 mb-2">Bench test not loaded</h1>
-      <p className="text-sm text-slate-600">ID: <code>{id}</code></p>
-      {error && <p className="text-sm text-red-700 mt-2">Error: {error}</p>}
-      <a href="/admin/recipe-calculator" className="inline-block mt-4 text-[#00b4c3] font-semibold">← Back to calculator</a>
-    </div>
-  );
+  if (!test)
+    return (
+      <div className="p-10 max-w-xl mx-auto">
+        <h1 className="text-xl font-bold text-slate-900 mb-2">Bench test not loaded</h1>
+        <p className="text-sm text-slate-600">
+          ID: <code>{id}</code>
+        </p>
+        {error && <p className="text-sm text-red-700 mt-2">Error: {error}</p>}
+        <a
+          href="/admin/recipe-calculator"
+          className="inline-block mt-4 text-[#00b4c3] font-semibold"
+        >
+          ← Back to calculator
+        </a>
+      </div>
+    );
 
   const pickupUsed = test.pickupWetToWetPct ?? test.pickupDryToWetPct;
   const fmt = (n: any, p = 2) => (n === null || n === undefined ? "—" : Number(n).toFixed(p));
@@ -49,8 +57,13 @@ export default function PrintTestCardPage() {
       `}</style>
 
       <div className="no-print max-w-4xl mx-auto mb-4 flex items-center justify-between">
-        <a href="/admin/recipe-calculator" className="text-sm text-[#00b4c3] font-semibold">← Back</a>
-        <button onClick={() => window.print()} className="px-5 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800">
+        <a href="/admin/recipe-calculator" className="text-sm text-[#00b4c3] font-semibold">
+          ← Back
+        </a>
+        <button
+          onClick={() => window.print()}
+          className="px-5 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800"
+        >
           🖨 Print / Save as PDF
         </button>
       </div>
@@ -59,15 +72,21 @@ export default function PrintTestCardPage() {
         {/* Header */}
         <header className="border-b-4 border-[#00b4c3] pb-3 mb-4 flex items-start justify-between">
           <div>
-            <p className="text-xs font-bold text-[#00b4c3] tracking-widest uppercase">FUZE Bench Test</p>
+            <p className="text-xs font-bold text-[#00b4c3] tracking-widest uppercase">
+              FUZE Bench Test
+            </p>
             <h1 className="text-3xl font-black font-mono text-slate-900 mt-1">{test.testNumber}</h1>
             <p className="text-sm text-slate-600">{new Date(test.testDate).toLocaleString()}</p>
           </div>
           <div className="text-right">
             {test.qcPassed ? (
-              <span className="inline-block px-3 py-1 text-sm font-bold bg-emerald-100 text-emerald-800 rounded-full">✓ QC Passed</span>
+              <span className="inline-block px-3 py-1 text-sm font-bold bg-emerald-100 text-emerald-800 rounded-full">
+                ✓ QC Passed
+              </span>
             ) : (
-              <span className="inline-block px-3 py-1 text-sm font-bold bg-red-100 text-red-800 rounded-full">⚠ QC Failed</span>
+              <span className="inline-block px-3 py-1 text-sm font-bold bg-red-100 text-red-800 rounded-full">
+                ⚠ QC Failed
+              </span>
             )}
             {test.graduatedRecipeId && (
               <p className="text-xs text-slate-500 mt-1">⭐ Graduated to FabricRecipe</p>
@@ -78,36 +97,107 @@ export default function PrintTestCardPage() {
         {/* Fabric + Method */}
         <section className="grid grid-cols-2 gap-4 mb-4 text-sm">
           <div className="border border-slate-200 rounded p-3">
-            <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">Fabric</h2>
-            <p className="font-bold text-slate-900">{test.fabric?.fuzeNumber || test.fabricLabel}</p>
-            {test.fabric?.name && <p className="text-xs text-slate-600">{test.fabric.name}</p>}
+            <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">
+              Fabric
+            </h2>
+            <p className="font-bold text-slate-900">
+              {test.fabric?.fuzeNumber ? `FUZE #${test.fabric.fuzeNumber}` : test.fabricLabel}
+            </p>
+            {/* Brand / factory ownership — required when this card gets emailed
+                out so the recipient can see at a glance whose fabric it is. */}
+            {(test.fabric?.brand?.name || test.fabric?.factory?.name) && (
+              <p className="text-xs text-slate-600 mt-0.5">
+                {test.fabric?.brand?.name && (
+                  <>
+                    Brand: <b className="text-slate-800">{test.fabric.brand.name}</b>
+                  </>
+                )}
+                {test.fabric?.brand?.name && test.fabric?.factory?.name && " · "}
+                {test.fabric?.factory?.name && (
+                  <>
+                    Factory: <b className="text-slate-800">{test.fabric.factory.name}</b>
+                  </>
+                )}
+              </p>
+            )}
             <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-2 text-xs text-slate-700">
-              <span>Type</span><span>{test.fabricType || "—"}</span>
-              <span>Fiber</span><span>{test.fiberContent || "—"}</span>
-              <span>Weight</span><span>{test.fabricWeightGsm ? `${test.fabricWeightGsm} g/m²` : "—"}</span>
+              {test.fabric?.customerCode && (
+                <>
+                  <span>Brand item #</span>
+                  <span className="font-mono font-semibold text-slate-900">
+                    {test.fabric.customerCode}
+                  </span>
+                </>
+              )}
+              {test.fabric?.factoryCode && (
+                <>
+                  <span>Factory item #</span>
+                  <span className="font-mono font-semibold text-slate-900">
+                    {test.fabric.factoryCode}
+                  </span>
+                </>
+              )}
+              <span>Type</span>
+              <span>{test.fabricType || test.fabric?.fabricCategory || "—"}</span>
+              <span>Fiber</span>
+              <span>{test.fiberContent || "—"}</span>
+              <span>Weight</span>
+              <span>
+                {test.fabricWeightGsm
+                  ? `${test.fabricWeightGsm} g/m²`
+                  : test.fabric?.weightGsm
+                    ? `${test.fabric.weightGsm} g/m²`
+                    : "—"}
+              </span>
+              {test.fabric?.color && (
+                <>
+                  <span>Color</span>
+                  <span>{test.fabric.color}</span>
+                </>
+              )}
             </div>
           </div>
           <div className="border border-slate-200 rounded p-3">
-            <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">Method</h2>
-            <p className="font-bold text-slate-900">{(test.applicationMethod || "—").replace(/_/g, "-")}</p>
+            <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">
+              Method
+            </h2>
+            <p className="font-bold text-slate-900">
+              {(test.applicationMethod || "—").replace(/_/g, "-")}
+            </p>
             <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-2 text-xs text-slate-700">
-              <span>Squeeze pressure</span><span>{test.squeezePressure ? `${test.squeezePressure} bar` : "—"}</span>
+              <span>Squeeze pressure</span>
+              <span>{test.squeezePressure ? `${test.squeezePressure} bar` : "—"}</span>
               {test.vfdFrequencyHz && (
                 <>
-                  <span>VFD frequency</span><span>{test.vfdFrequencyHz} Hz</span>
-                  <span>Line speed</span><span>{fmt(test.lineSpeedMPerMin ?? test.vfdFrequencyHz * 0.295, 2)} m/min</span>
+                  <span>VFD frequency</span>
+                  <span>{test.vfdFrequencyHz} Hz</span>
+                  <span>Line speed</span>
+                  <span>{fmt(test.lineSpeedMPerMin ?? test.vfdFrequencyHz * 0.295, 2)} m/min</span>
                 </>
               )}
-              <span>Drying</span><span>{test.dryingTemp ? `${test.dryingTemp}°C × ${test.dryingTime || "—"} min` : "—"}</span>
-              <span>Curing</span><span>{test.curingTemp ? `${test.curingTemp}°C × ${test.curingTime || "—"} min` : "—"}</span>
-              {test.liquorRatio && <><span>Liquor ratio</span><span>{test.liquorRatio}</span></>}
+              <span>Drying</span>
+              <span>
+                {test.dryingTemp ? `${test.dryingTemp}°C × ${test.dryingTime || "—"} min` : "—"}
+              </span>
+              <span>Curing</span>
+              <span>
+                {test.curingTemp ? `${test.curingTemp}°C × ${test.curingTime || "—"} min` : "—"}
+              </span>
+              {test.liquorRatio && (
+                <>
+                  <span>Liquor ratio</span>
+                  <span>{test.liquorRatio}</span>
+                </>
+              )}
             </div>
           </div>
         </section>
 
         {/* Measurements */}
         <section className="mb-4 border border-slate-300 rounded bg-slate-50 p-3 text-sm">
-          <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">Measurements</h2>
+          <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">
+            Measurements
+          </h2>
           <div className="grid grid-cols-3 gap-3 text-xs">
             <div>
               <p className="text-slate-500">Dry sample</p>
@@ -119,7 +209,9 @@ export default function PrintTestCardPage() {
             </div>
             <div>
               <p className="text-slate-500">Pickup (dry → wet)</p>
-              <p className="font-bold font-mono text-lg text-[#00b4c3]">{fmt(test.pickupDryToWetPct, 1)} %</p>
+              <p className="font-bold font-mono text-lg text-[#00b4c3]">
+                {fmt(test.pickupDryToWetPct, 1)} %
+              </p>
             </div>
             {test.preWetSampleWeight && (
               <>
@@ -133,20 +225,25 @@ export default function PrintTestCardPage() {
                 </div>
                 <div>
                   <p className="text-slate-500">Pickup (wet → wet)</p>
-                  <p className="font-bold font-mono text-[#00b4c3]">{fmt(test.pickupWetToWetPct, 1)} %</p>
+                  <p className="font-bold font-mono text-[#00b4c3]">
+                    {fmt(test.pickupWetToWetPct, 1)} %
+                  </p>
                 </div>
               </>
             )}
           </div>
           <p className="mt-2 text-[10px] text-slate-500">
-            Pickup used for dilution calc: <strong>{test.pickupWetToWetPct ? "Wet-to-wet" : "Dry-to-wet"}</strong> ({fmt(pickupUsed, 1)} %) ·
-            Stock FUZE: {test.stockMgPerL} mg/L
+            Pickup used for dilution calc:{" "}
+            <strong>{test.pickupWetToWetPct ? "Wet-to-wet" : "Dry-to-wet"}</strong> (
+            {fmt(pickupUsed, 1)} %) · Stock FUZE: {test.stockMgPerL} mg/L
           </p>
         </section>
 
         {/* Tier recipe cards */}
         <section className="mb-4">
-          <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">Bath Recipe — All Tiers</h2>
+          <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">
+            Bath Recipe — All Tiers
+          </h2>
           <div className="grid grid-cols-4 gap-2">
             {[
               { tier: "F1", mg: 1.0 },
@@ -179,7 +276,9 @@ export default function PrintTestCardPage() {
                     </div>
                     {prodL && (
                       <div className="pt-1 border-t border-slate-200">
-                        <p className="text-slate-500 text-[10px] uppercase">For {test.targetProductionKg} kg</p>
+                        <p className="text-slate-500 text-[10px] uppercase">
+                          For {test.targetProductionKg} kg
+                        </p>
                         <p className="font-mono font-bold text-[#00b4c3]">{fmt(prodL, 2)} L</p>
                       </div>
                     )}
@@ -190,7 +289,8 @@ export default function PrintTestCardPage() {
           </div>
           {test.targetBathVolumeL && (
             <p className="mt-2 text-xs text-slate-600">
-              Target production: <strong>{test.targetProductionKg} kg</strong> fabric · Total bath volume: <strong>{fmt(test.targetBathVolumeL, 1)} L</strong>
+              Target production: <strong>{test.targetProductionKg} kg</strong> fabric · Total bath
+              volume: <strong>{fmt(test.targetBathVolumeL, 1)} L</strong>
             </p>
           )}
         </section>
@@ -198,7 +298,9 @@ export default function PrintTestCardPage() {
         {/* Quick bath reference */}
         {pickupUsed && (
           <section className="mb-4">
-            <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">Quick bath reference — FUZE stock per bath</h2>
+            <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-2">
+              Quick bath reference — FUZE stock per bath
+            </h2>
             <div className="border border-slate-300 rounded">
               <table className="w-full text-xs">
                 <thead className="bg-slate-100">
@@ -217,23 +319,44 @@ export default function PrintTestCardPage() {
                     return (
                       <tr key={bathL} className="border-t border-slate-200">
                         <td className="px-2 py-1 font-mono">{bathL} L</td>
-                        <td className="px-2 py-1 text-right font-mono">{lFuze(1.0) >= 1 ? lFuze(1.0).toFixed(2) + " L" : (lFuze(1.0) * 1000).toFixed(0) + " mL"}</td>
-                        <td className="px-2 py-1 text-right font-mono">{lFuze(0.75) >= 1 ? lFuze(0.75).toFixed(2) + " L" : (lFuze(0.75) * 1000).toFixed(0) + " mL"}</td>
-                        <td className="px-2 py-1 text-right font-mono">{lFuze(0.5) >= 1 ? lFuze(0.5).toFixed(2) + " L" : (lFuze(0.5) * 1000).toFixed(0) + " mL"}</td>
-                        <td className="px-2 py-1 text-right font-mono">{lFuze(0.25) >= 1 ? lFuze(0.25).toFixed(2) + " L" : (lFuze(0.25) * 1000).toFixed(0) + " mL"}</td>
+                        <td className="px-2 py-1 text-right font-mono">
+                          {lFuze(1.0) >= 1
+                            ? lFuze(1.0).toFixed(2) + " L"
+                            : (lFuze(1.0) * 1000).toFixed(0) + " mL"}
+                        </td>
+                        <td className="px-2 py-1 text-right font-mono">
+                          {lFuze(0.75) >= 1
+                            ? lFuze(0.75).toFixed(2) + " L"
+                            : (lFuze(0.75) * 1000).toFixed(0) + " mL"}
+                        </td>
+                        <td className="px-2 py-1 text-right font-mono">
+                          {lFuze(0.5) >= 1
+                            ? lFuze(0.5).toFixed(2) + " L"
+                            : (lFuze(0.5) * 1000).toFixed(0) + " mL"}
+                        </td>
+                        <td className="px-2 py-1 text-right font-mono">
+                          {lFuze(0.25) >= 1
+                            ? lFuze(0.25).toFixed(2) + " L"
+                            : (lFuze(0.25) * 1000).toFixed(0) + " mL"}
+                        </td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
             </div>
-            <p className="text-[9px] text-slate-500 mt-1">Pickup {pickupUsed.toFixed(1)}% · Stock {test.stockMgPerL} mg/L · Top up with water to reach bath volume.</p>
+            <p className="text-[9px] text-slate-500 mt-1">
+              Pickup {pickupUsed.toFixed(1)}% · Stock {test.stockMgPerL} mg/L · Top up with water to
+              reach bath volume.
+            </p>
           </section>
         )}
 
         {test.notes && (
           <section className="mb-4 text-sm">
-            <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-1">Notes</h2>
+            <h2 className="font-black text-xs uppercase tracking-wide text-slate-500 mb-1">
+              Notes
+            </h2>
             <p className="text-slate-700 italic">{test.notes}</p>
           </section>
         )}

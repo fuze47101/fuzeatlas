@@ -14,6 +14,7 @@ interface UserRecord {
   brandId?: string | null;
   factoryId?: string | null;
   distributorId?: string | null;
+  labId?: string | null;
 }
 
 interface LookupItem {
@@ -300,6 +301,70 @@ export default function UserManagementPage() {
           {showAdd ? "Cancel" : "+ Add User"}
         </button>
       </div>
+
+      {/* ── Unassigned-Users Alert (task #73) ────────────────────
+           Active external users whose role requires an entity FK but
+           don't have one set. These users sign in successfully but
+           portals can't scope data for them, so they see nothing.    */}
+      {(() => {
+        const unassigned = users.filter((u) => {
+          if (u.status !== "ACTIVE") return false;
+          if (NEEDS_FACTORY.includes(u.role) && !u.factoryId) return true;
+          if (NEEDS_BRAND.includes(u.role) && !u.brandId) return true;
+          if (NEEDS_DISTRIBUTOR.includes(u.role) && !u.distributorId) return true;
+          if (NEEDS_LAB.includes(u.role) && !u.labId) return true;
+          return false;
+        });
+        if (unassigned.length === 0) return null;
+        return (
+          <div className="mb-6 p-4 bg-amber-50 border border-amber-300 rounded-xl">
+            <div className="flex items-start gap-3">
+              <span className="text-xl shrink-0">⚠️</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-amber-900 text-sm">
+                  {unassigned.length} active user{unassigned.length !== 1 ? "s" : ""} missing entity
+                  assignment
+                </h3>
+                <p className="text-xs text-amber-800 mt-0.5">
+                  These users have a role that requires a brand/factory/distributor/lab link, but
+                  none is set. They can sign in but their portal will be empty until you assign
+                  them.
+                </p>
+                <ul className="mt-2 space-y-1 text-xs text-amber-900">
+                  {unassigned.map((u) => {
+                    const needs = NEEDS_FACTORY.includes(u.role)
+                      ? "factory"
+                      : NEEDS_BRAND.includes(u.role)
+                        ? "brand"
+                        : NEEDS_DISTRIBUTOR.includes(u.role)
+                          ? "distributor"
+                          : NEEDS_LAB.includes(u.role)
+                            ? "lab"
+                            : "—";
+                    return (
+                      <li key={u.id} className="flex items-center gap-2">
+                        <span className="font-mono">•</span>
+                        <span className="font-semibold">{u.name}</span>
+                        <span className="text-amber-700">&lt;{u.email}&gt;</span>
+                        <span className="px-1.5 py-0.5 bg-amber-200 rounded font-mono text-[10px]">
+                          {ROLE_LABELS[u.role] || u.role}
+                        </span>
+                        <span className="text-amber-700">— missing {needs}</span>
+                        <button
+                          onClick={() => setEditingId(u.id)}
+                          className="ml-auto text-blue-700 hover:underline text-xs font-semibold"
+                        >
+                          Fix →
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Add User Form */}
       {showAdd && (

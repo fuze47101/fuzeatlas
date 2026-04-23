@@ -25,6 +25,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { EmailTemplatePicker } from "@/components/EmailTemplatePicker";
+import { renderTemplate } from "@/lib/email-template-vars";
+import { assessContact, partitionContacts } from "@/lib/contact-quality";
 
 // ────────────── types ──────────────
 interface WizardContact {
@@ -91,6 +93,15 @@ export default function BDWizardPage() {
   const [subject, setSubject] = useState("");
   const [bodyText, setBodyText] = useState("");
   const [diagnosed, setDiagnosed] = useState<string[]>([]);
+  // Metadata from the draft API: which AI ran, whether we auto-researched
+  // the brand for this draft, and whether the generated body actually
+  // referenced every seed answer the rep provided. Lets the draft step
+  // show the rep when the AI ignored their input so they can regenerate.
+  const [draftMeta, setDraftMeta] = useState<null | {
+    provider?: string;
+    research?: { hadPriorResearch?: boolean; autoResearched?: boolean; hasIntel?: boolean };
+    answerCoverage?: { total?: number; referenced?: number; ratio?: number; underused?: boolean };
+  }>(null);
 
   // Send
   const [sending, setSending] = useState(false);
@@ -168,7 +179,9 @@ export default function BDWizardPage() {
       setSubject("");
       setBodyText("");
       setDiagnosed([]);
+      setDraftMeta(null);
       setSendResult(null);
+      setSendError(null);
       setSequenceStepId(null);
       setIsFollowUp(false);
 
@@ -271,7 +284,9 @@ export default function BDWizardPage() {
       setSubject("");
       setBodyText("");
       setDiagnosed([]);
+      setDraftMeta(null);
       setSendResult(null);
+      setSendError(null);
       setSequenceStepId(null);
       setIsFollowUp(false);
     } catch (e: any) {
@@ -343,6 +358,11 @@ export default function BDWizardPage() {
       setSubject(data.subject || "");
       setBodyText(data.body || "");
       setDiagnosed(data.diagnosed || []);
+      setDraftMeta({
+        provider: data.provider,
+        research: data.research,
+        answerCoverage: data.answerCoverage,
+      });
       setStep("draft");
     } catch (e: any) {
       setError(e?.message || "Draft failed");
@@ -351,10 +371,24 @@ export default function BDWizardPage() {
     }
   }
 
+  // Structured send-failure surface. When the send route rejects for a
+  // setup reason (no API key, no outbound From, unverified domain, bad
+  // recipient) it returns { ok:false, error, code, setupPath, details }.
+  // We store the whole thing so the UI can render a "Fix setup" CTA that
+  // jumps the rep straight to the page that resolves the problem —
+  // instead of the old bare "email send failed" string.
+  const [sendError, setSendError] = useState<null | {
+    message: string;
+    code?: string;
+    setupPath?: string;
+    details?: string;
+  }>(null);
+
   async function sendDraft() {
     if (!brand || !selectedContact) return;
     setSending(true);
     setError("");
+    setSendError(null);
     try {
       const res = await fetch("/api/admin/bd/wizard/send", {
         method: "POST",
@@ -370,13 +404,22 @@ export default function BDWizardPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.ok) {
-        setError(data.error || "Send failed");
+        const msg = data?.error || "Send failed";
+        setError(msg);
+        setSendError({
+          message: msg,
+          code: data?.code,
+          setupPath: data?.setupPath,
+          details: data?.details,
+        });
         return;
       }
       setSendResult(data);
       setStep("sent");
     } catch (e: any) {
-      setError(e?.message || "Send failed");
+      const msg = e?.message || "Send failed";
+      setError(msg);
+      setSendError({ message: msg });
     } finally {
       setSending(false);
     }
@@ -474,9 +517,11 @@ export default function BDWizardPage() {
                 subject={subject}
                 bodyText={bodyText}
                 diagnosed={diagnosed}
+                draftMeta={draftMeta}
                 contact={selectedContact}
                 brand={brand}
                 sending={sending}
+                drafting={drafting}
                 onSubjectChange={setSubject}
                 onBodyChange={setBodyText}
                 onBack={() => setStep("customize")}
@@ -494,7 +539,39 @@ export default function BDWizardPage() {
               />
             )}
 
-            {error && brand && (
+            {/* Structured send-failure (#96). When the send route rejects
+               with a setup code we show an actionable CTA (fix the key,
+               set your outbound From, verify your sending domain) instead
+               of the old generic "email send failed" line. Falls back to
+               the plain error string for non-setup failures. */}
+            {sendError && brand && (
+              <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+                <div className="flex items-start gap-2">
+                  <span className="text-lg leading-none mt-0.5">⛔</span>
+                  <div className="flex-1">
+                    <div className="font-semibold">{sendError.message}</div>
+                    {sendError.details && (
+                      <div className="mt-1 text-xs opacity-80">{sendError.details}</div>
+                    )}
+                    {sendError.setupPath && (
+                      <Link
+                        href={sendError.setupPath}
+                        className="inline-block mt-2 rounded-md bg-rose-600 text-white text-xs font-medium px-3 py-1 hover:bg-rose-700"
+                      >
+                        {sendError.code === "no_resend_key"
+                          ? "Open email settings →"
+                          : sendError.code === "no_outbound_from"
+                            ? "Open your profile →"
+                            : sendError.code === "domain_unverified"
+                              ? "Verify your sending domain →"
+                              : "Fix setup →"}
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            {error && !sendError && brand && (
               <div className="mt-4 bg-red-50 border border-red-200 rounded-lg px-4 py-2 text-sm text-red-700">
                 {error}
               </div>
@@ -579,6 +656,70 @@ function BrandHeader({ brand }: { brand: WizardBrand }) {
         : rel === "low"
           ? "bg-slate-100 text-slate-600"
           : "bg-slate-50 text-slate-400";
+
+  // Auto-probe the brand website on mount so dead / parked domains are
+  // flagged inline. Active Line Corp regression: activelinecorp.com
+  // rendered like a normal link on the header but was dead, and every
+  // downstream action (enrichment, research, email-domain inference)
+  // silently failed on it.
+  const [domainProbe, setDomainProbe] = useState<any>(null);
+  const [probing, setProbing] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    if (!brand.website) {
+      setDomainProbe(null);
+      return;
+    }
+    (async () => {
+      setProbing(true);
+      try {
+        const res = await fetch(`/api/util/domain-check?url=${encodeURIComponent(brand.website)}`);
+        const data = await res.json();
+        if (!cancelled && data?.ok) setDomainProbe(data.result);
+      } catch {
+        // silent — the badge just won't render
+      } finally {
+        if (!cancelled) setProbing(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [brand.id, brand.website]);
+
+  async function retestDomain() {
+    if (!brand.website) return;
+    setProbing(true);
+    try {
+      const res = await fetch(
+        `/api/util/domain-check?url=${encodeURIComponent(brand.website)}&fresh=1`,
+      );
+      const data = await res.json();
+      if (data?.ok) setDomainProbe(data.result);
+    } finally {
+      setProbing(false);
+    }
+  }
+
+  const statusBadge = (() => {
+    if (!domainProbe) return null;
+    switch (domainProbe.status) {
+      case "reachable":
+        return { cls: "bg-emerald-50 text-emerald-700 border-emerald-200", label: "live" };
+      case "parked":
+        return { cls: "bg-amber-50 text-amber-700 border-amber-200", label: "parked" };
+      case "unreachable":
+        return { cls: "bg-red-50 text-red-700 border-red-200", label: "dead link" };
+      case "blocked":
+        return { cls: "bg-amber-50 text-amber-700 border-amber-200", label: "blocked / 4xx" };
+      default:
+        return { cls: "bg-slate-50 text-slate-600 border-slate-200", label: domainProbe.status };
+    }
+  })();
+
+  const deadOrParked =
+    domainProbe && (domainProbe.status === "unreachable" || domainProbe.status === "parked");
+
   return (
     <div className="bg-white rounded-2xl border shadow-sm p-5 mb-5">
       <div className="flex items-start justify-between">
@@ -598,14 +739,36 @@ function BrandHeader({ brand }: { brand: WizardBrand }) {
           </div>
           <div className="text-xs text-slate-500 mt-1 flex items-center gap-3 flex-wrap">
             {brand.website && (
-              <a
-                href={brand.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-sky-600"
-              >
-                {brand.website.replace(/^https?:\/\//, "")}
-              </a>
+              <span className="inline-flex items-center gap-1.5">
+                <a
+                  href={brand.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`hover:text-sky-600 ${deadOrParked ? "line-through text-red-600" : ""}`}
+                >
+                  {brand.website.replace(/^https?:\/\//, "")}
+                </a>
+                {probing && !statusBadge && (
+                  <span className="text-[10px] text-slate-400">checking…</span>
+                )}
+                {statusBadge && (
+                  <span
+                    className={`text-[10px] rounded-full px-1.5 py-0.5 border ${statusBadge.cls}`}
+                    title={domainProbe?.message || ""}
+                  >
+                    {statusBadge.label}
+                    {domainProbe?.httpStatus ? ` · ${domainProbe.httpStatus}` : ""}
+                  </span>
+                )}
+                <button
+                  onClick={retestDomain}
+                  disabled={probing}
+                  className="text-[10px] text-slate-400 hover:text-slate-600 disabled:opacity-50"
+                  title="Re-check this domain now"
+                >
+                  ↻
+                </button>
+              </span>
             )}
             {brand.linkedInProfile && (
               <a
@@ -627,6 +790,24 @@ function BrandHeader({ brand }: { brand: WizardBrand }) {
           Open full brand page →
         </Link>
       </div>
+
+      {deadOrParked && (
+        <div className="mt-3 bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-xs text-red-800 flex items-start gap-2">
+          <div className="text-base leading-none">⚠️</div>
+          <div className="flex-1">
+            <div className="font-semibold">
+              {domainProbe.status === "parked"
+                ? "This domain looks parked / for-sale."
+                : "This domain is dead."}
+            </div>
+            <div className="mt-0.5 text-red-700">
+              {domainProbe.message} Email addresses inferred from this domain will bounce — run
+              enrichment again or re-check the brand website before sending outbound.
+            </div>
+          </div>
+        </div>
+      )}
+
       {brand.backgroundInfo && (
         <p className="text-sm text-slate-600 mt-3 leading-relaxed">
           {brand.backgroundInfo.slice(0, 400)}
@@ -778,10 +959,96 @@ function ContactStep({
     selected &&
     (channel === "email" ? !!selected.email : !!selected.linkedinUrl || !!selected.name);
 
+  // Split the contact list into real vs. hidden-placeholder. Active Line
+  // Corp had 19 contacts where half were John/Jane/Sarah Doe templates —
+  // we bucket those below the fold so the rep isn't scrolling through fake
+  // people trying to find a real decision-maker.
+  const { visible, hidden } = useMemo(() => partitionContacts(brand.contacts), [brand.contacts]);
+  const [showHidden, setShowHidden] = useState(false);
+
+  const renderContactRow = (
+    c: WizardContact & { _quality?: ReturnType<typeof assessContact> },
+    isHidden = false,
+  ) => {
+    const q = c._quality || assessContact(c as any);
+    const isSelected = c.id === selectedContactId;
+    const displayName = c.name || c.email || c.jobTitle || "(unnamed contact)";
+    const badgeCls =
+      q.verdict === "placeholder"
+        ? "bg-red-100 text-red-700"
+        : q.verdict === "suspicious"
+          ? "bg-amber-100 text-amber-800"
+          : q.verdict === "role_account"
+            ? "bg-slate-100 text-slate-600"
+            : null;
+    const badgeLabel =
+      q.verdict === "placeholder"
+        ? "placeholder"
+        : q.verdict === "suspicious"
+          ? "suspicious"
+          : q.verdict === "role_account"
+            ? "role mailbox"
+            : null;
+    return (
+      <button
+        key={c.id}
+        onClick={() => onSelect(c.id)}
+        className={`w-full text-left rounded-xl border p-3 transition-all ${
+          isSelected
+            ? "border-sky-500 bg-sky-50 ring-2 ring-sky-100"
+            : isHidden
+              ? "border-red-200 bg-red-50/40 hover:border-red-300"
+              : "border-slate-200 hover:border-slate-400 hover:bg-slate-50"
+        }`}
+        title={q.reasons.length ? q.reasons.join(" · ") : undefined}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <span className={isHidden ? "line-through text-slate-400" : ""}>{displayName}</span>
+              {badgeLabel && (
+                <span className={`text-[10px] rounded-full px-1.5 py-0.5 ${badgeCls}`}>
+                  {badgeLabel}
+                </span>
+              )}
+            </div>
+            <div className="text-xs text-slate-500 mt-0.5">
+              {c.jobTitle || "—"}
+              {c.seniority && <span className="ml-2">• {c.seniority}</span>}
+            </div>
+            <div className="text-[11px] text-slate-400 mt-1 flex items-center gap-3">
+              {c.email && <span>✉ {c.email}</span>}
+              {c.linkedinUrl && <span>in LinkedIn</span>}
+              {c.outreachStatus && c.outreachStatus !== "not_contacted" && (
+                <span className="text-amber-600">↻ {c.outreachStatus}</span>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            {c.emailStatus === "verified" && q.verdict !== "placeholder" && (
+              <span className="text-[10px] bg-emerald-100 text-emerald-700 rounded-full px-2 py-0.5">
+                verified
+              </span>
+            )}
+            <span className="text-[10px] text-slate-400">quality {q.score}</span>
+          </div>
+        </div>
+        {isHidden && q.reasons.length > 0 && (
+          <div className="mt-1 text-[10px] text-red-700">Flagged: {q.reasons[0]}</div>
+        )}
+      </button>
+    );
+  };
+
   return (
     <div className="bg-white rounded-2xl border shadow-sm p-6">
-      <div className="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-4">
-        Step 2 — Pick contact + channel
+      <div className="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-4 flex items-center justify-between">
+        <span>Step 2 — Pick contact + channel</span>
+        {hidden.length > 0 && (
+          <span className="text-[11px] font-normal text-slate-500 normal-case tracking-normal">
+            {hidden.length} hidden as placeholders
+          </span>
+        )}
       </div>
 
       <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
@@ -810,44 +1077,43 @@ function ContactStep({
               </button>
             </div>
           </div>
+        ) : visible.length === 0 && hidden.length > 0 && !showHidden ? (
+          <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50 p-5 text-center">
+            <div className="text-3xl mb-2">🚩</div>
+            <div className="text-sm font-semibold text-amber-800 mb-1">
+              Every contact here looks like a placeholder
+            </div>
+            <div className="text-xs text-amber-700 max-w-sm mx-auto mb-3">
+              {hidden.length} contacts — all flagged (John/Jane Doe, example emails, etc.). Run
+              enrichment to pull real people, or view the hidden list anyway.
+            </div>
+            <button
+              onClick={() => setShowHidden(true)}
+              className="px-3 py-1.5 rounded-lg border border-amber-400 text-amber-800 text-xs hover:bg-amber-100"
+            >
+              Show hidden contacts
+            </button>
+          </div>
         ) : (
-          brand.contacts.map((c) => {
-            const isSelected = c.id === selectedContactId;
-            const displayName = c.name || c.email || c.jobTitle || "(unnamed contact)";
-            return (
-              <button
-                key={c.id}
-                onClick={() => onSelect(c.id)}
-                className={`w-full text-left rounded-xl border p-3 transition-all ${
-                  isSelected
-                    ? "border-sky-500 bg-sky-50 ring-2 ring-sky-100"
-                    : "border-slate-200 hover:border-slate-400 hover:bg-slate-50"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-sm font-semibold text-slate-900">{displayName}</div>
-                    <div className="text-xs text-slate-500 mt-0.5">
-                      {c.jobTitle || "—"}
-                      {c.seniority && <span className="ml-2">• {c.seniority}</span>}
-                    </div>
-                    <div className="text-[11px] text-slate-400 mt-1 flex items-center gap-3">
-                      {c.email && <span>✉ {c.email}</span>}
-                      {c.linkedinUrl && <span>in LinkedIn</span>}
-                      {c.outreachStatus && c.outreachStatus !== "not_contacted" && (
-                        <span className="text-amber-600">↻ {c.outreachStatus}</span>
-                      )}
-                    </div>
+          <>
+            {visible.map((c) => renderContactRow(c, false))}
+            {hidden.length > 0 && (
+              <div className="pt-2">
+                <button
+                  onClick={() => setShowHidden((v) => !v)}
+                  className="text-[11px] text-slate-500 hover:text-slate-700 underline"
+                >
+                  {showHidden ? "Hide" : "Show"} {hidden.length} flagged placeholder
+                  {hidden.length > 1 ? "s" : ""}
+                </button>
+                {showHidden && (
+                  <div className="mt-2 space-y-2">
+                    {hidden.map((c) => renderContactRow(c, true))}
                   </div>
-                  {c.emailStatus === "verified" && (
-                    <span className="text-[10px] bg-emerald-100 text-emerald-700 rounded-full px-2 py-0.5">
-                      verified
-                    </span>
-                  )}
-                </div>
-              </button>
-            );
-          })
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -1020,9 +1286,11 @@ function DraftStep({
   subject,
   bodyText,
   diagnosed,
+  draftMeta,
   contact,
   brand,
   sending,
+  drafting,
   onSubjectChange,
   onBodyChange,
   onBack,
@@ -1033,9 +1301,15 @@ function DraftStep({
   subject: string;
   bodyText: string;
   diagnosed: string[];
+  draftMeta: null | {
+    provider?: string;
+    research?: { hadPriorResearch?: boolean; autoResearched?: boolean; hasIntel?: boolean };
+    answerCoverage?: { total?: number; referenced?: number; ratio?: number; underused?: boolean };
+  };
   contact: WizardContact;
   brand: WizardBrand | null;
   sending: boolean;
+  drafting: boolean;
   onSubjectChange: (s: string) => void;
   onBodyChange: (s: string) => void;
   onBack: () => void;
@@ -1056,6 +1330,75 @@ function DraftStep({
     email: contact.email,
     company: brand?.name || null,
   };
+
+  // ── Compliance preflight (#96) ──
+  // Fetch a send-readiness report whenever the contact or channel changes.
+  // If anything is BLOCK severity (no RESEND key, no outbound From, bad
+  // recipient, placeholder contact) the Send button is disabled and the
+  // issues render at the top with an actionable "Fix" callout.
+  const [preflight, setPreflight] = useState<null | {
+    ready: boolean;
+    issues: Array<{
+      severity: "block" | "warn" | "info";
+      code: string;
+      title: string;
+      fix: string;
+      docsPath?: string;
+    }>;
+    config: any;
+  }>(null);
+  const [preflightLoading, setPreflightLoading] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    async function run() {
+      setPreflightLoading(true);
+      try {
+        const r = await fetch(
+          `/api/admin/bd/wizard/preflight?contactId=${encodeURIComponent(contact.id)}&channel=${channel}`,
+          { cache: "no-store" },
+        );
+        const data = await r.json();
+        if (!cancelled && data?.ok) setPreflight(data);
+      } catch {
+        // Swallow — preflight is advisory. The send route will still block.
+      } finally {
+        if (!cancelled) setPreflightLoading(false);
+      }
+    }
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [contact.id, channel]);
+  const hasBlockingIssue = Boolean(preflight && !preflight.ready);
+
+  // ── BD Wizard quick-pick slots (#100) ──
+  // Load the current user's numbered 1-10 template slots once per mount
+  // so the rep can one-click-inject a favourite opener into this draft.
+  // Fire-and-forget — if the endpoint errors, the strip just doesn't
+  // render and the rep can keep using the regular Templates dropdown.
+  const [bdSlots, setBdSlots] = useState<
+    Array<{
+      slot: number;
+      template: { id: string; title: string; subject: string; body: string } | null;
+    }>
+  >([]);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch("/api/email-templates/bd-slots", { cache: "no-store" });
+        const data = await r.json();
+        if (!cancelled && data?.ok) setBdSlots(data.slots || []);
+      } catch {
+        // Non-blocking — silent.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const hasAnySlot = bdSlots.some((s) => s.template);
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm p-6">
@@ -1080,10 +1423,198 @@ function DraftStep({
         </div>
       </div>
 
+      {/* BD Wizard quick-pick 1-10 strip (#100). Only renders when the rep
+         has assigned at least one template to a numbered slot (manage in
+         Settings → Email Templates). Clicking a button runs the template
+         through the same {firstName}/{company} substitution the EmailTemplatePicker
+         uses, and overwrites the subject + body inputs. Empty slots render
+         as faded disabled buttons so the keyboard-muscle-memory layout is
+         stable even when a slot isn't filled. */}
+      {hasAnySlot && channel === "email" && (
+        <div className="mb-4 rounded-lg border border-sky-200 bg-sky-50 p-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-[11px] font-semibold uppercase tracking-wide text-sky-800">
+              Your quick-pick templates
+            </div>
+            <Link
+              href="/settings/email-templates"
+              className="text-[11px] text-sky-700 hover:underline"
+            >
+              Manage slots →
+            </Link>
+          </div>
+          <div className="grid grid-cols-5 md:grid-cols-10 gap-1.5">
+            {bdSlots.map(({ slot, template }) => {
+              const disabled = !template;
+              return (
+                <button
+                  key={slot}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => {
+                    if (!template) return;
+                    const rendered = renderTemplate(
+                      { subject: template.subject, body: template.body },
+                      tplVars as any,
+                    );
+                    if (rendered.subject) onSubjectChange(rendered.subject);
+                    if (rendered.body) onBodyChange(rendered.body);
+                    // Fire-and-forget usage tracking — mirror the
+                    // EmailTemplatePicker behaviour so "most-used first"
+                    // stays accurate.
+                    fetch(`/api/email-templates/${template.id}/use`, {
+                      method: "POST",
+                    }).catch(() => undefined);
+                  }}
+                  title={
+                    template
+                      ? `${template.title}\n${template.subject}`
+                      : "Empty slot — assign one in Settings → Email Templates"
+                  }
+                  className={`rounded-md border px-2 py-1.5 text-[11px] font-medium leading-tight transition ${
+                    disabled
+                      ? "bg-white/60 border-dashed border-slate-300 text-slate-400 cursor-not-allowed"
+                      : "bg-white border-sky-300 text-slate-800 hover:bg-sky-100 hover:border-sky-400"
+                  }`}
+                >
+                  <span className="block text-[10px] font-bold text-sky-700">{slot}</span>
+                  <span className="block truncate">{template ? template.title : "empty"}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Draft provenance banner — tells the rep which engine produced this
+         draft, whether we auto-researched the brand, and whether the AI
+         actually incorporated all the Step-3 seed answers. If coverage is
+         underused, nudge them to regenerate. */}
+      {draftMeta && (
+        <div className="mb-4 space-y-2 text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            {draftMeta.provider === "fallback" ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-900 px-2 py-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                template fallback (no AI keys)
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full bg-sky-100 text-sky-900 px-2 py-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-sky-500" />
+                drafted by {draftMeta.provider || "ai"}
+              </span>
+            )}
+            {draftMeta.research?.autoResearched && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 text-violet-900 px-2 py-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+                auto-researched just now
+              </span>
+            )}
+            {!draftMeta.research?.hasIntel && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700 px-2 py-0.5">
+                no brand intel (draft is generic)
+              </span>
+            )}
+            {draftMeta.answerCoverage && draftMeta.answerCoverage.total! > 0 && (
+              <span
+                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 ${
+                  draftMeta.answerCoverage.underused
+                    ? "bg-rose-100 text-rose-900"
+                    : "bg-emerald-100 text-emerald-900"
+                }`}
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    draftMeta.answerCoverage.underused ? "bg-rose-500" : "bg-emerald-500"
+                  }`}
+                />
+                used {draftMeta.answerCoverage.referenced} of {draftMeta.answerCoverage.total}{" "}
+                prompt answers
+              </span>
+            )}
+          </div>
+          {draftMeta.answerCoverage?.underused && (
+            <div className="bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 text-rose-900">
+              <span className="font-semibold">Heads up:</span> the draft didn&apos;t visibly
+              incorporate every prompt answer you filled in. Click{" "}
+              <button
+                type="button"
+                onClick={onRegenerate}
+                disabled={drafting}
+                className="underline font-medium disabled:opacity-60"
+              >
+                Regenerate
+              </button>{" "}
+              to try again, or edit the body directly to add the missing angle.
+            </div>
+          )}
+        </div>
+      )}
+
       {diagnosed.length > 0 && (
         <div className="mb-4 bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-800">
           <span className="font-semibold">We cleaned up:</span> {diagnosed.join(", ")}. Review the
           result below — edit freely.
+        </div>
+      )}
+
+      {/* ── Preflight / compliance panel (#96) ──
+         Renders the backend's send-readiness report. "block" issues
+         stop the Send button; "warn" issues show as yellow advisories.
+         Each issue carries a plain-language `fix` and, when relevant,
+         a docsPath link so the rep can go resolve it in one click. */}
+      {preflightLoading && !preflight && (
+        <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
+          Checking send readiness…
+        </div>
+      )}
+      {preflight && preflight.issues.length > 0 && (
+        <div className="mb-4 space-y-2">
+          {preflight.issues.map((iss) => {
+            const isBlock = iss.severity === "block";
+            return (
+              <div
+                key={iss.code}
+                className={`rounded-lg border px-3 py-2 text-xs ${
+                  isBlock
+                    ? "bg-rose-50 border-rose-200 text-rose-900"
+                    : "bg-amber-50 border-amber-200 text-amber-900"
+                }`}
+              >
+                <div className="flex items-start gap-2">
+                  <span className="text-base leading-none mt-0.5">{isBlock ? "⛔" : "⚠️"}</span>
+                  <div className="flex-1">
+                    <div className="font-semibold">{iss.title}</div>
+                    <div className="mt-0.5 opacity-90">{iss.fix}</div>
+                    {iss.docsPath && (
+                      <Link
+                        href={iss.docsPath}
+                        className={`inline-block mt-1.5 underline font-medium ${
+                          isBlock ? "text-rose-900" : "text-amber-900"
+                        }`}
+                      >
+                        Open {iss.docsPath} →
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {preflight && preflight.ready && preflight.issues.length === 0 && channel === "email" && (
+        <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
+          <span className="font-semibold">✓ Ready to send.</span>
+          {preflight.config?.outboundFromEmail ? (
+            <>
+              {" "}
+              From <span className="font-mono">{preflight.config.outboundFromEmail}</span>
+              {preflight.config?.dmarc === true && preflight.config?.spf === true
+                ? " · SPF + DMARC verified"
+                : ""}
+            </>
+          ) : null}
         </div>
       )}
 
@@ -1102,11 +1633,22 @@ function DraftStep({
       <label className="block text-xs font-medium text-slate-600 mb-1">
         {channel === "email" ? "Message body" : "LinkedIn DM text"}
       </label>
+      {/*
+        Typewriter/monospace font was rendering the draft looking nothing
+        like what the recipient would actually see. Use the native email
+        stack (same one major clients pick when you set no font) so the
+        rep is previewing the real thing. Line-height + leading-relaxed
+        matches Gmail/Outlook default rendering.
+      */}
       <textarea
         value={bodyText}
         onChange={(e) => onBodyChange(e.target.value)}
         rows={14}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-sky-400"
+        style={{
+          fontFamily:
+            '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        }}
+        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-sky-400"
       />
       <div className="text-[11px] text-slate-400 mt-1 flex justify-between">
         <span>{bodyText.length} chars</span>
@@ -1131,10 +1673,22 @@ function DraftStep({
           </button>
           <button
             onClick={onSend}
-            disabled={sending || !bodyText.trim() || (channel === "email" && !subject.trim())}
-            className="px-5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:opacity-50"
+            disabled={
+              sending ||
+              !bodyText.trim() ||
+              (channel === "email" && !subject.trim()) ||
+              hasBlockingIssue
+            }
+            title={hasBlockingIssue ? "Resolve the setup issues above before sending." : undefined}
+            className="px-5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {sending ? "Sending…" : channel === "email" ? "Send email" : "Log LinkedIn DM"}
+            {sending
+              ? "Sending…"
+              : hasBlockingIssue
+                ? "Fix setup to send"
+                : channel === "email"
+                  ? "Send email"
+                  : "Log LinkedIn DM"}
           </button>
         </div>
       </div>

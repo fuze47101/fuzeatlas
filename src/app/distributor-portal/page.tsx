@@ -17,7 +17,11 @@ export default function DistributorPortalPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [stats, setStats] = useState<Stats>({
-    totalInvoices: 0, unpaidInvoices: 0, outstandingAmount: 0, totalDocuments: 0, activeFactories: 0,
+    totalInvoices: 0,
+    unpaidInvoices: 0,
+    outstandingAmount: 0,
+    totalDocuments: 0,
+    activeFactories: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -61,7 +65,9 @@ export default function DistributorPortalPage() {
           <span>Distributor Portal</span>
         </div>
         <h1 className="text-3xl font-black text-slate-900 mb-1">Welcome Back</h1>
-        <p className="text-slate-600">Manage your FUZE distribution documents, invoices, and logistics</p>
+        <p className="text-slate-600">
+          Manage your FUZE distribution documents, invoices, and logistics
+        </p>
       </div>
 
       {/* Quick Stats */}
@@ -84,11 +90,15 @@ export default function DistributorPortalPage() {
             <span className="text-2xl">📄</span>
           </div>
         </div>
-        <div className={`bg-white border rounded-xl p-6 ${stats.unpaidInvoices > 0 ? "border-amber-300 bg-amber-50/50" : "border-slate-200"}`}>
+        <div
+          className={`bg-white border rounded-xl p-6 ${stats.unpaidInvoices > 0 ? "border-amber-300 bg-amber-50/50" : "border-slate-200"}`}
+        >
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-slate-600 mb-1">Outstanding</p>
-              <p className={`text-2xl font-black ${stats.unpaidInvoices > 0 ? "text-amber-700" : "text-slate-900"}`}>
+              <p
+                className={`text-2xl font-black ${stats.unpaidInvoices > 0 ? "text-amber-700" : "text-slate-900"}`}
+              >
                 {formatCurrency(stats.outstandingAmount)}
               </p>
               {stats.unpaidInvoices > 0 && (
@@ -111,19 +121,25 @@ export default function DistributorPortalPage() {
 
       {/* Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Link href="/distributor-portal/restock"
-          className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all">
+        <Link
+          href="/distributor-portal/restock"
+          className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all"
+        >
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="font-bold text-lg mb-1">Restock from FUZE</h3>
-              <p className="text-sm text-white/80">Order carboys, gaylords, or containers direct from FUZE HQ</p>
+              <p className="text-sm text-white/80">
+                Order carboys, gaylords, or containers direct from FUZE HQ
+              </p>
             </div>
             <span className="text-3xl">💧</span>
           </div>
           <div className="text-sm text-white/90 font-semibold">Place new order &rarr;</div>
         </Link>
-        <Link href="/distributor-portal/inventory"
-          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all">
+        <Link
+          href="/distributor-portal/inventory"
+          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all"
+        >
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="font-bold text-slate-900 text-lg mb-1">Inventory & Pricing</h3>
@@ -133,8 +149,10 @@ export default function DistributorPortalPage() {
           </div>
           <div className="text-sm text-[#00b4c3] font-medium">Manage inventory &rarr;</div>
         </Link>
-        <Link href="/distributor-portal/documents"
-          className="bg-gradient-to-br from-[#00b4c3] to-[#009ba8] rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all">
+        <Link
+          href="/distributor-portal/documents"
+          className="bg-gradient-to-br from-[#00b4c3] to-[#009ba8] rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all"
+        >
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="font-bold text-lg mb-1">Document Library</h3>
@@ -144,8 +162,10 @@ export default function DistributorPortalPage() {
           </div>
           <div className="text-sm text-white/80">Browse all documents &rarr;</div>
         </Link>
-        <Link href="/distributor-portal/invoices"
-          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all">
+        <Link
+          href="/distributor-portal/invoices"
+          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all"
+        >
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="font-bold text-slate-900 text-lg mb-1">Invoices</h3>
@@ -155,8 +175,40 @@ export default function DistributorPortalPage() {
           </div>
           <div className="text-sm text-[#00b4c3] font-medium">View invoices &rarr;</div>
         </Link>
-        <Link href="/fabric-library"
-          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all">
+        <Link
+          href="/distributor-portal/test-request"
+          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">Apply for Test</h3>
+              <p className="text-sm text-slate-600">
+                Submit ICP / AM / other tests for your customers
+              </p>
+            </div>
+            <span className="text-3xl">🧪</span>
+          </div>
+          <div className="text-sm text-[#00b4c3] font-medium">Start a request &rarr;</div>
+        </Link>
+        <Link
+          href="/distributor-portal/test-reports"
+          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">Test Reports</h3>
+              <p className="text-sm text-slate-600">
+                Lab reports for the brands &amp; factories you serve
+              </p>
+            </div>
+            <span className="text-3xl">🔬</span>
+          </div>
+          <div className="text-sm text-[#00b4c3] font-medium">View reports &rarr;</div>
+        </Link>
+        <Link
+          href="/fabric-library"
+          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all"
+        >
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="font-bold text-slate-900 text-lg mb-1">FUZE Fabric Library</h3>
