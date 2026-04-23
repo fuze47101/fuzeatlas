@@ -44,9 +44,33 @@ function escapeHtml(s: string): string {
     .replace(/'/g, "&#39;");
 }
 
-/** Plain-text body → HTML, preserving line breaks but nothing else. */
+/**
+ * Plain-text body → HTML. Preserves line breaks AND auto-hyperlinks any
+ * bare http(s) URL the rep typed into the draft so "watch this video:
+ * https://youtu.be/abc" renders as a blue clickable link in Gmail/Outlook
+ * instead of dead text.
+ *
+ * Order matters here — we HTML-escape first, then match URLs against the
+ * escaped string. URLs can't contain `<`, `>`, `"`, or `'` so the escape
+ * step won't corrupt them. We also strip common trailing punctuation
+ * (period, comma, semicolon, close paren/bracket, etc.) off the matched
+ * URL so "see https://example.com." doesn't link the period. The stripped
+ * char is emitted after the closing </a> so the sentence still reads right.
+ */
 function textToHtml(text: string): string {
-  return escapeHtml(text).replace(/\n/g, "<br/>");
+  const escaped = escapeHtml(text);
+  const linked = escaped.replace(
+    /(https?:\/\/[^\s<]+)/g,
+    (match) => {
+      // Strip trailing punctuation that's almost certainly sentence grammar,
+      // not part of the URL. Leave it OUTSIDE the anchor.
+      const trailingMatch = match.match(/^(.*?)([.,;:!?)\]}>'"]+)$/);
+      const url = trailingMatch ? trailingMatch[1] : match;
+      const tail = trailingMatch ? trailingMatch[2] : "";
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#0369a1;text-decoration:underline;">${url}</a>${tail}`;
+    },
+  );
+  return linked.replace(/\n/g, "<br/>");
 }
 
 function fromHeader(
