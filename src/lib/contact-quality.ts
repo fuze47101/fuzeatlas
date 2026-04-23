@@ -271,8 +271,14 @@ export function assessContact(c: AssessContactInput): ContactQualityResult {
  * Partition a list of contacts into (visible, hidden) buckets. `visible`
  * includes real + suspicious + role_account; `hidden` is only the hard
  * placeholders. The UI can offer a "show X hidden" toggle to bring them back.
+ *
+ * Respects persisted `hiddenFromWizard`: if an admin has explicitly hidden
+ * a contact (or un-hidden one that would otherwise be auto-flagged), that
+ * takes precedence over the computed verdict.
  */
-export function partitionContacts<T extends AssessContactInput & { id?: string }>(
+export function partitionContacts<
+  T extends AssessContactInput & { id?: string; hiddenFromWizard?: boolean | null },
+>(
   contacts: T[],
 ): {
   visible: Array<T & { _quality: ContactQualityResult }>;
@@ -283,8 +289,172 @@ export function partitionContacts<T extends AssessContactInput & { id?: string }
   for (const c of contacts) {
     const _quality = assessContact(c);
     const out = { ...c, _quality };
-    if (_quality.shouldHideByDefault) hidden.push(out);
+    // Admin override wins in both directions: explicitly hidden goes to
+    // `hidden` even if score is fine; explicitly not-hidden (false) stays
+    // visible even if the quality check would normally bury it. Null /
+    // undefined falls back to the computed verdict.
+    const isHidden =
+      c.hiddenFromWizard === true
+        ? true
+        : c.hiddenFromWizard === false
+          ? false
+          : _quality.shouldHideByDefault;
+    if (isHidden) hidden.push(out);
     else visible.push(out);
   }
   return { visible, hidden };
+}
+
+// ───────────────────────────────────────────────────────────────────────
+// Format-level validators — shape/regex checks only. These DON'T probe
+// live deliverability (no SMTP handshakes, no LinkedIn requests). They
+// catch the overwhelmingly common failure modes (malformed strings, wrong
+// domain, non-profile LinkedIn URLs) without introducing network calls
+// or rate-limit concerns. Live verification is a future upgrade.
+// ───────────────────────────────────────────────────────────────────────
+
+export type EmailValidity = "valid" | "invalid" | "risky" | "unknown";
+
+/**
+ * Cheap format-level email validation.
+ *  - valid   → passes shape + has a real-looking TLD, not a known placeholder
+ *  - risky   → looks fine but is a role mailbox, has a suspect local-part, or
+ *              the domain has a single-label TLD (`.local`, `.test`, etc.)
+ *  - invalid → doesn't parse, known placeholder domain, or has forbidden
+ *              characters
+ *  - unknown → empty string / null
+ */
+export function validateEmailFormat(email: string | null | undefined): {
+  validity: EmailValidity;
+  reason?: string;
+} {
+  if (!email || !email.trim()) return { validity: "unknown", reason: "no email on file" };
+  const trimmed = email.trim().toLowerCase();
+
+  // RFC-ish regex. Intentionally permissive — we're not a mail server, we
+  // just want to reject obvious trash. Must have one @, at least one dot
+  // in the domain, no whitespace, no angle brackets.
+  const shape = /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/i;
+  if (!shape.test(trimmed)) {
+    return { validity: "invalid", reason: "does not match email shape" };
+  }
+
+  const split = splitEmail(trimmed);
+  if (!split) return { validity: "invalid", reason: "cannot split local/domain" };
+
+  if (PLACEHOLDER_EMAIL_DOMAINS.has(split.domain)) {
+    return { validity: "invalid", reason: `placeholder domain (@${split.domain})` };
+  }
+  if (PLACEHOLDER_EMAIL_LOCAL_PARTS.has(split.local)) {
+    return { validity: "invalid", reason: `placeholder local-part (${split.local}@)` };
+  }
+
+  // Single-label TLDs — `.local`, `.test`, `.localhost`, `.internal` are
+  // reserved / test-only.
+  const tld = split.domain.split(".").pop() || "";
+  if (["local", "test", "localhost", "internal", "invalid"].includes(tld)) {
+    return { validity: "invalid", reason: `reserved TLD (.${tld})` };
+  }
+
+  // Risky — role mailbox or obvious test-y signal but not outright junk.
+  if (ROLE_EMAIL_PREFIXES.has(split.local)) {
+    return { validity: "risky", reason: `role mailbox (${split.local}@)` };
+  }
+  if (/^(firstlast|firstnamelastname|first\.last|firstname\.lastname)$/.test(split.local)) {
+    return { validity: "risky", reason: "template-style local-part" };
+  }
+
+  return { validity: "valid" };
+}
+
+export type LinkedInValidity = "valid" | "invalid" | "unknown";
+
+/**
+ * Shape-level LinkedIn profile URL validation. Accepts `/in/<slug>` and
+ * localized variants (e.g. `/pub/<slug>`, `/mwlite/in/<slug>`, country
+ * subdomains like `uk.linkedin.com`). Rejects company pages (`/company/`)
+ * because reps mis-paste those as "contact" URLs surprisingly often.
+ */
+export function validateLinkedInUrl(url: string | null | undefined): {
+  validity: LinkedInValidity;
+  reason?: string;
+} {
+  if (!url || !url.trim()) return { validity: "unknown", reason: "no URL on file" };
+  const trimmed = url.trim();
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    return { validity: "invalid", reason: "not a parseable URL" };
+  }
+  const host = parsed.hostname.toLowerCase();
+  if (!host.endsWith("linkedin.com")) {
+    return { validity: "invalid", reason: `not a linkedin.com host (${host})` };
+  }
+  const path = parsed.pathname.toLowerCase();
+  // Accept `/in/<slug>`, `/pub/<slug>`, `/mwlite/in/<slug>`. Reject
+  // company/school pages that reps paste by accident.
+  if (/^\/(in|pub)\/[a-z0-9\-_%]+/i.test(path)) return { validity: "valid" };
+  if (/^\/mwlite\/in\/[a-z0-9\-_%]+/i.test(path)) return { validity: "valid" };
+  if (path.startsWith("/company/") || path.startsWith("/school/") || path.startsWith("/showcase/")) {
+    return { validity: "invalid", reason: "company/school URL, not a person profile" };
+  }
+  return { validity: "invalid", reason: "LinkedIn URL is not a person profile path" };
+}
+
+// ───────────────────────────────────────────────────────────────────────
+// Persistence-ready assessment — lifts assessContact() + both format
+// validators into one call. The API routes snapshot this shape onto the
+// Contact row so the UI doesn't recompute and admins can sweep the DB.
+// ───────────────────────────────────────────────────────────────────────
+
+export interface PersistableHygiene {
+  hygieneScore: number;
+  hygieneVerdict: ContactVerdict;
+  hygieneFlags: string; // JSON-stringified reasons
+  hygieneCheckedAt: Date;
+  emailValidity: EmailValidity;
+  linkedinValidity: LinkedInValidity;
+  /** Derived: suggested `hiddenFromWizard` value. Caller chooses whether to
+   *  honor it (scan command does; brand-page lazy refresh does not, so it
+   *  doesn't auto-hide contacts reps are actively looking at). */
+  suggestedHidden: boolean;
+}
+
+export function computeHygieneSnapshot(c: AssessContactInput & {
+  linkedinUrl?: string | null;
+}): PersistableHygiene {
+  const q = assessContact(c);
+  const email = validateEmailFormat(c.email);
+  const link = validateLinkedInUrl(c.linkedinUrl);
+  // Roll format-level findings into the reasons list so a scan report can
+  // explain why something got flagged purely on format.
+  const reasons = [...q.reasons];
+  if (email.validity === "invalid" && email.reason) {
+    reasons.push(`email: ${email.reason}`);
+  } else if (email.validity === "risky" && email.reason) {
+    reasons.push(`email risky: ${email.reason}`);
+  }
+  if (link.validity === "invalid" && link.reason && c.linkedinUrl) {
+    // Only surface LinkedIn shape errors if the contact actually has a URL
+    // on file — "no URL" isn't a defect, it's just unknown.
+    reasons.push(`linkedin: ${link.reason}`);
+  }
+  // If email is definitively invalid, bump the verdict up to suspicious.
+  // Don't auto-promote to placeholder though — that's reserved for clear
+  // patterns, not malformed strings.
+  let verdict = q.verdict;
+  if (verdict === "real" && email.validity === "invalid") verdict = "suspicious";
+
+  const suggestedHidden = q.shouldHideByDefault || email.validity === "invalid";
+
+  return {
+    hygieneScore: q.score,
+    hygieneVerdict: verdict,
+    hygieneFlags: JSON.stringify(reasons),
+    hygieneCheckedAt: new Date(),
+    emailValidity: email.validity,
+    linkedinValidity: link.validity,
+    suggestedHidden,
+  };
 }

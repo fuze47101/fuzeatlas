@@ -701,6 +701,20 @@ model Contact {
   decisionMaker    Boolean   @default(false)
   companyRevenue   String?
 
+  // ─ Hygiene / placeholder-detection ──────────────────────────────
+  // Populated by /api/admin/contact-hygiene/scan (admin sweep) or
+  // whenever a rep opens a brand in the BD Wizard. Snapshots the
+  // result of assessContact() from src/lib/contact-quality.ts so the
+  // UI doesn't have to recompute on every render and the flag
+  // survives across refreshes.
+  hygieneScore     Int?       // 0-100, higher = more likely real
+  hygieneVerdict   String?    // real | suspicious | placeholder | role_account
+  hygieneFlags     String?    // JSON array of reasons (stringified)
+  hygieneCheckedAt DateTime?  // when the hygiene pass last ran
+  emailValidity    String?    // valid | invalid | risky | unknown (format-only)
+  linkedinValidity String?    // valid | invalid | unknown (shape-only)
+  hiddenFromWizard Boolean    @default(false) // reversible — admin can unflag
+
   brandId       String?
   factoryId     String?
   distributorId String?
@@ -722,6 +736,8 @@ model Contact {
   @@index([outreachStatus])
   @@index([emailStatus])
   @@index([vertical])
+  @@index([hiddenFromWizard])
+  @@index([hygieneVerdict])
 }
 
 // ─────────────────────────────────────────────

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { useI18n } from "@/i18n";
 import ActivityFeed from "@/components/ActivityFeed";
 import AddTaskButton from "@/components/AddTaskButton";
@@ -2121,11 +2122,50 @@ function ContactsTab({
                   {(ct.firstName || ct.name || "?")[0]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-sm text-slate-900 flex items-center gap-1.5">
+                  <div className="font-semibold text-sm text-slate-900 flex items-center gap-1.5 flex-wrap">
                     <span>
                       {ct.firstName} {ct.lastName}{" "}
                       {ct.title && <span className="text-slate-500 font-normal">({ct.title})</span>}
                     </span>
+                    {/* Hygiene flag — rendered inline next to the name when
+                       the contact-hygiene sweep has flagged this row as
+                       placeholder/suspicious/role_account, or when an admin
+                       has hidden it explicitly. Keeps reps from spending
+                       outreach budget on Jane Doe. Clicking deep-links to
+                       /admin/contact-hygiene?q=<email> for context. */}
+                    {(ct.hiddenFromWizard ||
+                      ct.hygieneVerdict === "placeholder" ||
+                      ct.hygieneVerdict === "suspicious" ||
+                      ct.hygieneVerdict === "role_account") && (
+                      <Link
+                        href={`/admin/contact-hygiene?q=${encodeURIComponent(
+                          ct.email || ct.name || "",
+                        )}`}
+                        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                        className={`text-[10px] px-1.5 py-0.5 rounded font-semibold whitespace-nowrap ${
+                          ct.hiddenFromWizard
+                            ? "bg-violet-100 text-violet-700"
+                            : ct.hygieneVerdict === "placeholder"
+                              ? "bg-red-100 text-red-700"
+                              : ct.hygieneVerdict === "role_account"
+                                ? "bg-slate-200 text-slate-700"
+                                : "bg-amber-100 text-amber-700"
+                        }`}
+                        title={
+                          ct.hiddenFromWizard
+                            ? "Hidden from BD Wizard by admin"
+                            : `Hygiene flag: ${ct.hygieneVerdict}`
+                        }
+                      >
+                        {ct.hiddenFromWizard
+                          ? "🙈 hidden"
+                          : ct.hygieneVerdict === "placeholder"
+                            ? "⚠ placeholder"
+                            : ct.hygieneVerdict === "role_account"
+                              ? "role mbx"
+                              : "suspect"}
+                      </Link>
+                    )}
                     {/* Subtle "view contact" affordance — only visible on hover so it
                        doesn't add visual noise to the row at rest. */}
                     <span className="text-[10px] text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity font-normal">
