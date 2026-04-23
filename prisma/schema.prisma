@@ -290,6 +290,14 @@ model Brand {
   salesRepId String?
   salesRep   User?  @relation("BrandSalesRep", fields: [salesRepId], references: [id])
 
+  // BD Wizard concurrency lock — soft reservation with 30-min TTL so two
+  // reps can't start the wizard on the same brand at the same second. The
+  // permanent claim still lives on salesRepId (stamped on first send); this
+  // is just a pick-time hold. See migration
+  // 20260424000000_brand_wizard_reservation — Andrew 2026-04-23 (#101).
+  reservedBy    String?
+  reservedUntil DateTime?
+
   // BD Portal — last time ANY activity touched this brand (note/call/email/meeting).
   // Drives the 90-day inactivity auto-release job. Stamped in application code
   // whenever a Note, Meeting, or CRM email is written against this brand.

@@ -21,7 +21,7 @@
  *
  * Doc: docs/BD_WIZARD_OVERHAUL.md
  */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { EmailTemplatePicker } from "@/components/EmailTemplatePicker";
@@ -106,9 +106,24 @@ export default function BDWizardPage() {
   // Send
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<any>(null);
+  // #101 — when the send endpoint returns 409 already_contacted, we
+  // surface a confirm dialog ("Ryan emailed Viktor 3h ago — send anyway?")
+  // and let the rep override with force:true on the retry.
+  const [duplicateWarn, setDuplicateWarn] = useState<null | {
+    otherRepName: string | null;
+    previousSubject: string | null;
+    hoursAgo: number;
+    previousSentAt: string;
+  }>(null);
 
   // Enrichment
   const [enriching, setEnriching] = useState(false);
+
+  // #101 — Bounce (dead-domain kill). Bouncing the brand flips
+  // validationStatus=dead, invalidates all contacts on the dead hostname,
+  // and releases the reservation so nobody gets auto-assigned to a dead
+  // brand. The wizard then auto-advances to the next brand.
+  const [bouncing, setBouncing] = useState(false);
 
   // ─── Profile preflight ───
   const [profileOk, setProfileOk] = useState<boolean | null>(null);
@@ -146,8 +161,36 @@ export default function BDWizardPage() {
     } else {
       loadNextBrand();
     }
+
+    // #101 — Release the reservation when the rep closes the tab or
+    // navigates away without sending. sendBeacon is the only reliable way
+    // to hit an endpoint during unload; regular fetch gets cancelled.
+    const onBeforeUnload = () => {
+      const id = brandRef.current?.id;
+      if (!id) return;
+      try {
+        const blob = new Blob([JSON.stringify({ brandId: id })], {
+          type: "application/json",
+        });
+        navigator.sendBeacon("/api/admin/bd/wizard/release", blob);
+      } catch {
+        // best-effort — reservation TTL will catch stragglers
+      }
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", onBeforeUnload);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // #101 — Keep a ref to the current brand so the beforeunload handler
+  // (which only runs through the useEffect closure once) can read the
+  // latest value without needing to re-subscribe on every brand change.
+  const brandRef = useRef<WizardBrand | null>(null);
+  useEffect(() => {
+    brandRef.current = brand;
+  }, [brand]);
 
   /**
    * Jump straight into the wizard for a specific brand + optional contact.
@@ -256,10 +299,35 @@ export default function BDWizardPage() {
   }
 
   // ────────────── actions ──────────────
+  /**
+   * #101 — Drop the soft reservation the current rep holds on `brandId`.
+   * Fire-and-forget: we don't block UI on this, but we await it inside
+   * loadNextBrand + bounceBrand so the next server read sees a clean slate.
+   * Safe to call with a brandId we don't actually hold — the server no-ops.
+   */
+  async function releaseReservation(brandId: string): Promise<void> {
+    if (!brandId) return;
+    try {
+      await fetch("/api/admin/bd/wizard/release", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ brandId }),
+      });
+    } catch {
+      // best-effort — the TTL will clean up anyway
+    }
+  }
+
   async function loadNextBrand(skipId?: string) {
     setLoading(true);
     setError("");
     setReason("");
+    // If we already have a brand loaded, drop our reservation on it
+    // before picking the next one. Otherwise the brand stays locked to
+    // us for the full 30-min TTL and nobody else can pick it up.
+    if (skipId) {
+      await releaseReservation(skipId);
+    }
     try {
       const url = skipId
         ? `/api/admin/bd/wizard/next-brand?skip=${encodeURIComponent(skipId)}`
@@ -384,11 +452,12 @@ export default function BDWizardPage() {
     details?: string;
   }>(null);
 
-  async function sendDraft() {
+  async function sendDraft(force: boolean = false) {
     if (!brand || !selectedContact) return;
     setSending(true);
     setError("");
     setSendError(null);
+    if (!force) setDuplicateWarn(null);
     try {
       const res = await fetch("/api/admin/bd/wizard/send", {
         method: "POST",
@@ -400,9 +469,23 @@ export default function BDWizardPage() {
           subject,
           body: bodyText,
           stepId: sequenceStepId || undefined,
+          force: force || undefined,
         }),
       });
       const data = await res.json();
+      if (res.status === 409 && data?.code === "already_contacted") {
+        // Another rep beat us to this contact in the last 24h. Don't
+        // flip sendError (that's the setup/fix banner) — show a
+        // dedicated confirm dialog instead so the rep can consciously
+        // say "yes, send anyway" without thinking this is a setup bug.
+        setDuplicateWarn({
+          otherRepName: data?.otherRep?.name || null,
+          previousSubject: data?.previousSubject || null,
+          hoursAgo: Number(data?.hoursAgo) || 1,
+          previousSentAt: data?.previousSentAt || new Date().toISOString(),
+        });
+        return;
+      }
       if (!res.ok || !data.ok) {
         const msg = data?.error || "Send failed";
         setError(msg);
@@ -416,12 +499,51 @@ export default function BDWizardPage() {
       }
       setSendResult(data);
       setStep("sent");
+      setDuplicateWarn(null);
     } catch (e: any) {
       const msg = e?.message || "Send failed";
       setError(msg);
       setSendError({ message: msg });
     } finally {
       setSending(false);
+    }
+  }
+
+  /**
+   * #101 — Bounce the brand (dead-domain kill switch). Calls bounce-brand
+   * which flips validationStatus=dead, invalidates every contact email on
+   * the dead hostname, drops a timeline note, and releases ownership.
+   * We then auto-advance to the next brand in the queue so the rep keeps
+   * working instead of staring at the dead one.
+   */
+  async function bounceBrand(reason: string = "") {
+    if (!brand) return;
+    setBouncing(true);
+    setError("");
+    try {
+      const res = await fetch("/api/admin/bd/wizard/bounce-brand", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brandId: brand.id,
+          reason,
+          domainProbe: null, // BrandHeader owns the probe; server re-reads brand.website anyway
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setError(data?.error || "Failed to bounce brand");
+        return;
+      }
+      // Skip forward to the next candidate. Pass the current brand's id
+      // as skipId so next-brand can exclude it explicitly (and because
+      // the validationStatus=dead filter would already exclude it, but
+      // belt-and-suspenders).
+      await loadNextBrand(brand.id);
+    } catch (e: any) {
+      setError(e?.message || "Failed to bounce brand");
+    } finally {
+      setBouncing(false);
     }
   }
 
@@ -470,7 +592,7 @@ export default function BDWizardPage() {
           </div>
         ) : (
           <>
-            <BrandHeader brand={brand} />
+            <BrandHeader brand={brand} onBounce={bounceBrand} bouncing={bouncing} />
 
             <Stepper currentStep={step} />
 
@@ -576,6 +698,62 @@ export default function BDWizardPage() {
                 {error}
               </div>
             )}
+
+            {/* #101 — Duplicate-send confirm dialog. The send route returns
+               409 already_contacted when another rep emailed the same
+               contact in the last 24h. Instead of silently blocking or
+               auto-sending a dupe, we pop a modal with the context so the
+               rep can say "yes, send anyway" (force:true) or bail out. */}
+            {duplicateWarn && selectedContact && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                <div className="bg-white rounded-2xl shadow-xl border border-amber-200 max-w-md w-full p-6">
+                  <div className="flex items-start gap-3">
+                    <div className="text-3xl leading-none">⚠️</div>
+                    <div className="flex-1">
+                      <div className="text-base font-semibold text-slate-900">
+                        Already contacted recently
+                      </div>
+                      <div className="mt-2 text-sm text-slate-700">
+                        <span className="font-medium">
+                          {duplicateWarn.otherRepName || "Another rep"}
+                        </span>{" "}
+                        emailed{" "}
+                        <span className="font-medium">
+                          {selectedContact.name || selectedContact.email}
+                        </span>{" "}
+                        about <span className="font-medium">{duplicateWarn.hoursAgo}h ago</span>.
+                      </div>
+                      {duplicateWarn.previousSubject && (
+                        <div className="mt-2 text-xs text-slate-500">
+                          Previous subject:{" "}
+                          <span className="italic">"{duplicateWarn.previousSubject}"</span>
+                        </div>
+                      )}
+                      <div className="mt-3 text-xs text-slate-600 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                        Sending again this soon can look spammy and hurt your domain reputation.
+                        Only override if you know this is a deliberate second touch.
+                      </div>
+                      <div className="mt-4 flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => setDuplicateWarn(null)}
+                          className="px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 text-sm hover:bg-slate-50"
+                          disabled={sending}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => void sendDraft(true)}
+                          disabled={sending}
+                          className="px-3 py-1.5 rounded-md bg-amber-600 text-white text-sm font-medium hover:bg-amber-700 disabled:opacity-50"
+                        >
+                          {sending ? "Sending…" : "Send anyway"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
@@ -646,7 +824,15 @@ function ProfileWarning({ current }: { current: string | null }) {
   );
 }
 
-function BrandHeader({ brand }: { brand: WizardBrand }) {
+function BrandHeader({
+  brand,
+  onBounce,
+  bouncing,
+}: {
+  brand: WizardBrand;
+  onBounce?: (reason?: string) => Promise<void> | void;
+  bouncing?: boolean;
+}) {
   const rel = (brand.fuzeRelevance || "").toLowerCase();
   const relColor =
     rel === "high"
@@ -802,9 +988,32 @@ function BrandHeader({ brand }: { brand: WizardBrand }) {
                 : "This domain is dead."}
             </div>
             <div className="mt-0.5 text-red-700">
-              {domainProbe.message} Email addresses inferred from this domain will bounce — run
-              enrichment again or re-check the brand website before sending outbound.
+              {domainProbe.message} Every contact email enriched from this domain is almost
+              certainly going to bounce. Best move: bounce the whole brand — we'll mark those emails
+              invalid, release the brand from your queue, and pull up the next one.
             </div>
+            {onBounce && (
+              <div className="mt-2 flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const ok = window.confirm(
+                      `Bounce "${brand.name}"?\n\n` +
+                        `This will mark the brand dead, invalidate every contact email on ${domainProbe.hostname || "this domain"}, and skip to the next brand.\n\n` +
+                        `(You can always reopen it from /admin/brand-pipeline if this was wrong.)`,
+                    );
+                    if (ok) void onBounce(domainProbe.message || "");
+                  }}
+                  disabled={bouncing}
+                  className="px-3 py-1.5 rounded-md bg-red-600 text-white text-[11px] font-semibold hover:bg-red-700 disabled:opacity-50"
+                >
+                  {bouncing ? "Bouncing…" : "Bounce this brand →"}
+                </button>
+                <span className="text-[10px] text-red-600/80">
+                  Invalidates contact emails on {domainProbe.hostname || "dead domain"} · skips to
+                  next
+                </span>
+              </div>
+            )}
           </div>
         </div>
       )}

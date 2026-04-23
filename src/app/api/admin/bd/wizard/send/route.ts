@@ -88,8 +88,15 @@ export async function POST(req: Request) {
       // instead of creating a brand new sequence. Optional — omit for the
       // first-touch send and we'll create the sequence ourselves.
       stepId: rawStepId,
+      // Concurrency guard override (#101). When the duplicate-contact
+      // check fires, the wizard shows a confirm dialog and re-posts with
+      // force: true. We do NOT default this to true — the rep has to
+      // consciously acknowledge "yes, Ryan emailed Viktor 12 min ago
+      // and I still want to send".
+      force: forceFlag,
     } = body || {};
     const stepId: string | null = rawStepId ? String(rawStepId) : null;
+    const force = forceFlag === true;
 
     if (!brandId || !contactId || !rawBody) {
       return NextResponse.json(
@@ -142,6 +149,59 @@ export async function POST(req: Request) {
         { ok: false, error: "Contact has no email — can't send email channel" },
         { status: 400 },
       );
+    }
+
+    // ── Duplicate-contact guard (#101) ────────────────────────────
+    // Even with the pick-time reservation, a narrow race still exists:
+    // the reservation holds the *brand* but two reps could independently
+    // send to the same *contact* via different entry points (wizard +
+    // /brands/[id] 📧 button, or a stale tab that bypassed the
+    // reservation lookup). Belt-and-suspenders: before we dispatch,
+    // check whether a different rep already emailed this contact in
+    // the last 24 hours. If so, bail with a 409 and let the rep
+    // consciously override via `force: true`.
+    //
+    // We scope to sentBy != me so a rep can still re-send to a contact
+    // they themselves already contacted (e.g. sequence follow-up).
+    if (channel === "email" && !force) {
+      const recent = await prisma.outreachMessage.findFirst({
+        where: {
+          contactId,
+          channel: "email",
+          status: { in: ["sent", "delivered"] },
+          sentAt: { gt: new Date(Date.now() - 24 * 60 * 60_000) },
+          sentBy: { not: sessionUser.id },
+        },
+        orderBy: { sentAt: "desc" },
+        select: { id: true, sentAt: true, sentBy: true, subject: true },
+      });
+      if (recent) {
+        const otherRep = recent.sentBy
+          ? await prisma.user.findUnique({
+              where: { id: recent.sentBy },
+              select: { id: true, name: true, email: true },
+            })
+          : null;
+        const hoursAgo = Math.max(
+          1,
+          Math.round((Date.now() - new Date(recent.sentAt).getTime()) / (60 * 60_000)),
+        );
+        return NextResponse.json(
+          {
+            ok: false,
+            code: "already_contacted",
+            error: `${otherRep?.name || "Another rep"} emailed ${contact.name || contact.email} about ${hoursAgo}h ago. Sending again this soon risks flagging ${contact.email} and our sending domain.`,
+            otherRep: otherRep
+              ? { id: otherRep.id, name: otherRep.name, email: otherRep.email }
+              : null,
+            previousSubject: recent.subject || null,
+            previousSentAt: recent.sentAt.toISOString(),
+            hoursAgo,
+            allowForce: true,
+          },
+          { status: 409 },
+        );
+      }
     }
 
     // Defensive: re-humanize both subject and body right before send.
@@ -312,10 +372,16 @@ export async function POST(req: Request) {
         },
       });
 
-      // 5. Brand auto-assign + activity bump
+      // 5. Brand auto-assign + activity bump + clear reservation.
+      // The permanent claim (salesRepId) supersedes the soft
+      // reservation — once this rep has actually emailed someone on
+      // the brand, they own it. We clear reservedBy/reservedUntil so
+      // the index doesn't carry a stale hold forever.
       const brandPatch: any = {
         lastActivityAt: sentAt,
         inactivityWarnedAt: null,
+        reservedBy: null,
+        reservedUntil: null,
       };
       if (!brand.salesRepId) {
         brandPatch.salesRepId = user.id;
