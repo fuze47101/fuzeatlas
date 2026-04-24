@@ -43,7 +43,7 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
 
     // String fields
     const strFields = [
-      "customerCode","factoryCode","construction","color","yarnType","finishNote","note",
+      "customerCode","factoryCode","customerReference","construction","color","yarnType","finishNote","note",
       "endUse","targetFuzeTier","annualVolume","quantityType","quantityUnit","batchLotNumber",
       "fabricCategory","knitStitchType","weavePattern","gauge","dyeStage","dyeClass",
       "intakeFormId",

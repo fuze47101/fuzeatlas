@@ -24,6 +24,7 @@ export async function GET(req: Request) {
           ...(asInt !== null ? [{ fuzeNumber: asInt }] : []),
           { customerCode: { contains: q, mode: "insensitive" } },
           { factoryCode: { contains: q, mode: "insensitive" } },
+          { customerReference: { contains: q, mode: "insensitive" } },
           { construction: { contains: q, mode: "insensitive" } },
           { color: { contains: q, mode: "insensitive" } },
           { yarnType: { contains: q, mode: "insensitive" } },
@@ -96,6 +97,7 @@ export async function GET(req: Request) {
         fuzeNumber: f.fuzeNumber ?? sub?.fuzeFabricNumber ?? null,
         customerCode: f.customerCode || sub?.customerFabricCode || null,
         factoryCode: f.factoryCode || sub?.factoryFabricCode || null,
+        customerReference: f.customerReference || null,
         construction: f.construction,
         color: f.color,
         weightGsm: f.weightGsm,
@@ -139,7 +141,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { fuzeNumber, customerCode, factoryCode, construction, color,
+    const { fuzeNumber, customerCode, factoryCode, customerReference, construction, color,
       weightGsm, widthInches, yarnType, finishNote, note, brandId, factoryId, contents,
       // v2 intake fields
       fabricName, endUse, targetFuzeTier, annualVolume, quantityType, quantityUnit,
@@ -165,6 +167,7 @@ export async function POST(req: Request) {
         fuzeNumber: assignedFuzeNumber,
         customerCode: customerCode || null,
         factoryCode: factoryCode || null,
+        customerReference: customerReference || null,
         construction: construction || fabricCategory || null,
         color: color || null,
         weightGsm: weightGsm ? parseFloat(weightGsm) : null,

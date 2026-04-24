@@ -24,6 +24,7 @@ export default function FabricEditPage() {
   const [fabricName, setFabricName] = useState("");
   const [customerCode, setCustomerCode] = useState("");
   const [factoryCode, setFactoryCode] = useState("");
+  const [customerReference, setCustomerReference] = useState("");
   const [batchLotNumber, setBatchLotNumber] = useState("");
   const [color, setColor] = useState("");
   const [endUse, setEndUse] = useState("");
@@ -96,6 +97,7 @@ export default function FabricEditPage() {
       setFabricName(f.note?.replace("Intake: ", "").split(" | ")[0] || "");
       setCustomerCode(f.customerCode || "");
       setFactoryCode(f.factoryCode || "");
+      setCustomerReference(f.customerReference || "");
       setBatchLotNumber(f.batchLotNumber || "");
       setColor(f.color || "");
       setEndUse(f.endUse || "");
@@ -180,6 +182,7 @@ export default function FabricEditPage() {
       const payload: any = {
         customerCode: customerCode || null,
         factoryCode: factoryCode || null,
+        customerReference: customerReference || null,
         construction: fabricCategory || construction || null,
         color: color || null,
         batchLotNumber: batchLotNumber || null,
@@ -296,6 +299,21 @@ export default function FabricEditPage() {
               <div>
                 <label className={labelClass}>Factory Code</label>
                 <input type="text" value={factoryCode} onChange={(e) => setFactoryCode(e.target.value)} className={inputClass} />
+              </div>
+              <div className="md:col-span-2 lg:col-span-3">
+                <label className={labelClass}>
+                  Customer Reference
+                  <span className="ml-2 text-xs font-normal text-slate-500">
+                    — free-text label the customer uses for this fabric (e.g. &ldquo;Penfabric Test #2503&rdquo;, &ldquo;Rhone ATGG400&rdquo;). Shown at the top of every report emailed back to them so they can tie it to their own records.
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={customerReference}
+                  onChange={(e) => setCustomerReference(e.target.value)}
+                  placeholder="e.g. Penfabric Test #2503"
+                  className={inputClass}
+                />
               </div>
               <div>
                 <label className={labelClass}>Batch / Lot Number</label>

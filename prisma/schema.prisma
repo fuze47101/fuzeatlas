@@ -809,6 +809,15 @@ model Fabric {
   customerCode String?
   factoryCode  String?
 
+  // Customer-facing reference — whatever the customer calls this sample on
+  // THEIR side (e.g. "Penfabric Test #2503", "Rhone style ATGG400",
+  // "H&M dev code W-2487"). Free-text, displayed prominently on any
+  // externally-shared report so the recipient immediately recognizes the
+  // submission. Distinct from customerCode (brand SKU) and factoryCode
+  // (factory SKU) — this is specifically the identifier the customer used
+  // when they sent us the fabric / asked for the test.
+  customerReference String?
+
   construction String?
   color        String?
   weightGsm    Float?

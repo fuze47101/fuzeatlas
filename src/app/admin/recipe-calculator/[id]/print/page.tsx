@@ -46,6 +46,41 @@ export default function PrintTestCardPage() {
   const pickupUsed = test.pickupWetToWetPct ?? test.pickupDryToWetPct;
   const fmt = (n: any, p = 2) => (n === null || n === undefined ? "—" : Number(n).toFixed(p));
 
+  // Externally-safe gate. Before we email this PDF to a brand/factory it
+  // needs enough customer context to actually identify what it's about.
+  // Missing any of these → render a loud red banner so Ashlee doesn't
+  // accidentally ship a context-less report (the Penfabric complaint).
+  const missingForExternal: string[] = [];
+  if (!test.fabric?.brand?.name) missingForExternal.push("Brand");
+  if (!test.fabric?.customerReference && !test.fabric?.customerCode)
+    missingForExternal.push("Customer reference (or customer item #)");
+  if (!test.fabric?.factoryCode) missingForExternal.push("Factory item #");
+  if (!test.fabric?.fabricCategory && !test.fabric?.construction && !test.fabricType)
+    missingForExternal.push("Construction (knit / woven / nonwoven)");
+  if (!test.fiberContent && !test.fabric?.yarnType)
+    missingForExternal.push("Fiber content / yarn");
+  const safeForExternal = missingForExternal.length === 0;
+
+  // Plain-English recipe paragraph derived from the bench test. Production
+  // techs read this once and know exactly what to do — no tier matrix
+  // decoding required. Defaults to F1 (1.0 mg/kg) because that's what we
+  // ship as the recommended tier on full-spectrum reports.
+  const recommendedTier = test.targetTier || "F1";
+  const tierMg: Record<string, number> = { F1: 1.0, F2: 0.75, F3: 0.5, F4: 0.25 };
+  const recTierMg = tierMg[recommendedTier] ?? 1.0;
+  const recBathMgPerL = pickupUsed
+    ? recTierMg / (pickupUsed / 100)
+    : null;
+  const recFuzeMlPer100L =
+    recBathMgPerL && test.stockMgPerL
+      ? (recBathMgPerL * 100) / test.stockMgPerL
+      : null;
+  const prettyMl = (ml: number | null) => {
+    if (ml == null || !Number.isFinite(ml)) return "—";
+    if (ml >= 1000) return `${(ml / 1000).toFixed(2)} L`;
+    return `${ml.toFixed(1)} mL`;
+  };
+
   return (
     <div className="min-h-screen bg-white p-6 print:p-0">
       <style>{`
@@ -69,6 +104,92 @@ export default function PrintTestCardPage() {
       </div>
 
       <div className="max-w-4xl mx-auto bg-white">
+        {/* External-sharing safety gate — red banner when customer
+            context is missing. Visible on screen AND on print so Ashlee
+            cannot accidentally send a context-less PDF to a customer. */}
+        {!safeForExternal && (
+          <div className="mb-4 border-2 border-red-600 bg-red-50 rounded p-3">
+            <p className="text-xs font-black text-red-800 uppercase tracking-widest">
+              ⚠ Not safe to share externally
+            </p>
+            <p className="text-sm text-red-900 mt-1 leading-snug">
+              This report is missing customer context that the recipient needs to
+              identify it. Fill in the following on the fabric record before sending:
+            </p>
+            <ul className="mt-1 text-sm text-red-900 list-disc list-inside">
+              {missingForExternal.map((m) => (
+                <li key={m}>{m}</li>
+              ))}
+            </ul>
+            <p className="text-xs text-red-700 mt-2">
+              Edit the fabric →{" "}
+              {test.fabric?.id ? (
+                <a href={`/fabrics/${test.fabric.id}`} className="underline font-semibold">
+                  /fabrics/{test.fabric.id}
+                </a>
+              ) : (
+                "open the fabric page"
+              )}
+            </p>
+          </div>
+        )}
+
+        {/* Customer identification block — the first thing a recipient
+            should see. Only shown when we have something to show; falls
+            back silently otherwise (the banner above already warns). */}
+        {(test.fabric?.customerReference ||
+          test.fabric?.customerCode ||
+          test.fabric?.factoryCode ||
+          test.fabric?.brand?.name) && (
+          <div className="mb-4 border border-slate-300 rounded bg-slate-50 p-3 flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                Prepared for
+              </p>
+              <p className="text-lg font-black text-slate-900 leading-tight mt-0.5">
+                {test.fabric?.brand?.name || "—"}
+                {test.fabric?.factory?.name && (
+                  <span className="text-sm font-semibold text-slate-600 ml-2">
+                    · {test.fabric.factory.name}
+                  </span>
+                )}
+              </p>
+              {test.fabric?.customerReference && (
+                <p className="text-sm text-slate-800 mt-1">
+                  <span className="text-slate-500 uppercase text-[10px] tracking-widest mr-1">
+                    Customer ref
+                  </span>
+                  <span className="font-mono font-bold text-base">
+                    {test.fabric.customerReference}
+                  </span>
+                </p>
+              )}
+              <div className="flex gap-4 mt-1 text-xs text-slate-700">
+                {test.fabric?.customerCode && (
+                  <span>
+                    <span className="text-slate-500">Brand item #</span>{" "}
+                    <span className="font-mono font-bold">{test.fabric.customerCode}</span>
+                  </span>
+                )}
+                {test.fabric?.factoryCode && (
+                  <span>
+                    <span className="text-slate-500">Factory item #</span>{" "}
+                    <span className="font-mono font-bold">{test.fabric.factoryCode}</span>
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="text-right flex-shrink-0">
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                FUZE ref
+              </p>
+              <p className="text-lg font-mono font-bold text-[#00b4c3]">
+                {test.fabric?.fuzeNumber ? `#${test.fabric.fuzeNumber}` : "—"}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <header className="border-b-4 border-[#00b4c3] pb-3 mb-4 flex items-start justify-between">
           <div>
@@ -93,6 +214,58 @@ export default function PrintTestCardPage() {
             )}
           </div>
         </header>
+
+        {/* Recommended Recipe — plain English paragraph a production
+            tech can read once and execute. Sits above the detailed
+            matrix so it's the headline takeaway of the PDF. */}
+        {pickupUsed && recFuzeMlPer100L != null && (
+          <section className="mb-4 border-2 border-[#00b4c3] rounded bg-cyan-50/40 p-4">
+            <div className="flex items-baseline justify-between mb-2">
+              <h2 className="font-black text-xs uppercase tracking-widest text-[#00b4c3]">
+                Recommended Recipe
+              </h2>
+              <span className="text-[10px] text-slate-500 uppercase tracking-widest">
+                Tier {recommendedTier} · target {recTierMg.toFixed(2)} mg/kg on fabric
+              </span>
+            </div>
+            <p className="text-sm text-slate-800 leading-relaxed">
+              For every <b>100 L</b> of bath, mix{" "}
+              <b className="text-[#00b4c3]">{prettyMl(recFuzeMlPer100L)}</b> of{" "}
+              FUZE stock ({test.stockMgPerL || 30} mg/L) with DI water to reach
+              a total bath volume of 100 L. This yields a bath concentration of{" "}
+              <b>{fmt(recBathMgPerL, 3)} mg/L</b>, which — at this fabric's
+              measured pickup of <b>{fmt(pickupUsed, 1)}%</b> — deposits{" "}
+              <b>{recTierMg.toFixed(2)} mg of FUZE metamaterial per kg</b> of
+              fabric (Tier {recommendedTier}).
+            </p>
+            <p className="text-sm text-slate-800 leading-relaxed mt-2">
+              Apply by{" "}
+              <b>
+                {(test.applicationMethod || "pad-dry-cure")
+                  .toString()
+                  .replace(/_/g, "-")
+                  .toLowerCase()}
+              </b>
+              {test.squeezePressure
+                ? ` at ${test.squeezePressure} bar squeeze pressure`
+                : ""}
+              {test.vfdFrequencyHz
+                ? `, ${test.vfdFrequencyHz} Hz VFD (≈${fmt(test.lineSpeedMPerMin ?? test.vfdFrequencyHz * 0.295, 1)} m/min line speed)`
+                : ""}
+              . Dry at{" "}
+              <b>
+                {test.dryingTemp ? `${test.dryingTemp}°C` : "150°C"} for{" "}
+                {test.dryingTime || 2} min
+              </b>
+              , cure at{" "}
+              <b>
+                {test.curingTemp ? `${test.curingTemp}°C` : "170°C"} for{" "}
+                {test.curingTime || 2} min
+              </b>
+              . No binder, no auxiliary, no rinse.
+            </p>
+          </section>
+        )}
 
         {/* Fabric + Method */}
         <section className="grid grid-cols-2 gap-4 mb-4 text-sm">
