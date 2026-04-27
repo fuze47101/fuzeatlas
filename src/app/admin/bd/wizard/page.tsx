@@ -75,6 +75,12 @@ export default function BDWizardPage() {
   const [brand, setBrand] = useState<WizardBrand | null>(null);
   const [queueDepth, setQueueDepth] = useState<number>(0);
   const [reason, setReason] = useState<string>("");
+  // When the queue is empty, the next-brand API returns a diagnostic
+  // breakdown (totalLead, leadAssigned, leadNoContacts, etc.) so we
+  // can show Ryan exactly why the queue is dry instead of just
+  // "queue is empty." dominantReason drives the recommended-action
+  // button.
+  const [emptySummary, setEmptySummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -342,6 +348,7 @@ export default function BDWizardPage() {
       setBrand(data.brand);
       setQueueDepth(data.queueDepth || 0);
       setReason(data.reason || "");
+      setEmptySummary(data.summary || null);
       // reset step state
       setStep("pick");
       setSelectedContactId(null);
@@ -576,26 +583,103 @@ export default function BDWizardPage() {
           </div>
         ) : !brand ? (
           <div className="bg-white rounded-2xl shadow-sm border p-10 text-center">
-            <div className="text-5xl mb-3">🎉</div>
-            <div className="text-xl font-semibold text-slate-800 mb-1">Queue is empty.</div>
-            <div className="text-sm text-slate-500 max-w-md mx-auto">
+            <div className="text-5xl mb-3">
+              {emptySummary?.dominantReason === "no_contacts" ? "📇"
+                : emptySummary?.dominantReason === "all_assigned" ? "🤝"
+                : emptySummary?.dominantReason === "all_dead" ? "💀"
+                : emptySummary?.dominantReason === "all_reserved" ? "⏳"
+                : "🎉"}
+            </div>
+            <div className="text-xl font-semibold text-slate-800 mb-1">
+              {emptySummary?.dominantReason === "no_contacts"
+                ? "Pipeline needs enrichment."
+                : emptySummary?.dominantReason === "all_assigned"
+                ? "All brands already claimed."
+                : emptySummary?.dominantReason === "all_dead"
+                ? "Most LEAD brands are flagged dead."
+                : emptySummary?.dominantReason === "all_reserved"
+                ? "All brands reserved by other reps."
+                : "Queue is empty."}
+            </div>
+            <div className="text-sm text-slate-500 max-w-xl mx-auto">
               {reason ||
                 "No unassigned LEAD brands with contacts. Run a discovery batch or import a CSV to refill the queue."}
             </div>
-            <div className="mt-6 flex justify-center gap-3">
-              <Link
-                href="/brands/discover"
-                className="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm font-medium hover:bg-sky-700"
-              >
-                Run Discovery
-              </Link>
-              <Link
-                href="/admin/brand-pipeline"
-                className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm hover:bg-slate-50"
-              >
-                Open Pipeline
-              </Link>
+
+            {/* Diagnostic breakdown — shows the rep exactly where
+                LEAD brands are bleeding off so they don't think the
+                pipeline is genuinely empty when it's just blocked. */}
+            {emptySummary && emptySummary.totalLead > 0 && (
+              <div className="mt-6 max-w-xl mx-auto">
+                <div className="grid grid-cols-2 gap-2 text-xs text-left bg-slate-50 border border-slate-200 rounded-lg p-3">
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Total LEAD brands</span>
+                    <span className="font-semibold text-slate-900">{emptySummary.totalLead}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Missing contacts</span>
+                    <span className={`font-semibold ${emptySummary.leadNoContacts > 0 ? "text-amber-600" : "text-slate-900"}`}>{emptySummary.leadNoContacts}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Already claimed</span>
+                    <span className="font-semibold text-slate-900">{emptySummary.leadAssigned}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Reserved (other rep)</span>
+                    <span className="font-semibold text-slate-900">{emptySummary.leadReserved}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Dead / dup / irrelevant</span>
+                    <span className="font-semibold text-slate-900">{emptySummary.leadDead + emptySummary.leadDuplicate + emptySummary.leadIrrelevant}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Action buttons — order is recommendation-driven. The
+                primary action depends on the dominant exclusion reason. */}
+            <div className="mt-6 flex justify-center gap-3 flex-wrap">
+              {emptySummary?.dominantReason === "no_contacts" ? (
+                <>
+                  <a
+                    href="/admin/brand-pipeline?filter=no-contacts"
+                    className="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700"
+                    title="See the brands that need enrichment"
+                  >
+                    📇 Brands Needing Enrichment ({emptySummary.leadNoContacts})
+                  </a>
+                  <Link
+                    href="/brands/discover"
+                    className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm hover:bg-slate-50"
+                  >
+                    Run Discovery
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/brands/discover"
+                    className="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm font-medium hover:bg-sky-700"
+                  >
+                    Run Discovery
+                  </Link>
+                  <Link
+                    href="/admin/brand-pipeline"
+                    className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm hover:bg-slate-50"
+                  >
+                    Open Pipeline
+                  </Link>
+                </>
+              )}
             </div>
+
+            {/* Power-user hint — admin terminal command for the bulk
+                enrichment when the queue is blocked on missing contacts. */}
+            {emptySummary?.dominantReason === "no_contacts" && (
+              <p className="mt-4 text-[11px] text-slate-400">
+                Admin: <code className="bg-slate-100 px-1 py-0.5 rounded text-slate-600">npx tsx scripts/bulk-enrich-empty-brands.ts --apply</code> attaches contacts via Apollo for all {emptySummary.leadNoContacts} brand{emptySummary.leadNoContacts === 1 ? "" : "s"} in one shot.
+              </p>
+            )}
           </div>
         ) : (
           <>

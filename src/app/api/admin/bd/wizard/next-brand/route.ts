@@ -138,11 +138,85 @@ export async function GET(req: Request) {
     });
 
     if (candidates.length === 0) {
+      // Diagnostic — explain WHY the queue is empty so the rep gets
+      // an actionable next step instead of just "Queue is empty."
+      // This surfaces the same data the bd-pipeline-status.ts script
+      // prints, so Ryan looking at the empty state knows whether to
+      // run bulk enrichment (most brands lack contacts), run discovery
+      // (no brands at all), or release reservations (everything is
+      // contested by other reps).
+      const [
+        totalLead,
+        leadAssigned,
+        leadDead,
+        leadDuplicate,
+        leadIrrelevant,
+        leadNoContacts,
+        leadReserved,
+      ] = await Promise.all([
+        prisma.brand.count({ where: { pipelineStage: "LEAD" } }),
+        prisma.brand.count({
+          where: { pipelineStage: "LEAD", salesRepId: { not: null } },
+        }),
+        prisma.brand.count({
+          where: { pipelineStage: "LEAD", validationStatus: "dead" },
+        }),
+        prisma.brand.count({
+          where: { pipelineStage: "LEAD", validationStatus: "duplicate" },
+        }),
+        prisma.brand.count({
+          where: { pipelineStage: "LEAD", validationStatus: "irrelevant" },
+        }),
+        prisma.brand.count({
+          where: { pipelineStage: "LEAD", contacts: { none: {} } },
+        }),
+        prisma.brand.count({
+          where: {
+            pipelineStage: "LEAD",
+            reservedUntil: { gte: now },
+            salesRepId: null,
+          },
+        }),
+      ]);
+
+      // Pick the dominant reason — it determines the recommended action
+      // shown in the UI button cluster.
+      let dominantReason: "no_contacts" | "all_assigned" | "all_dead" | "all_reserved" | "no_brands" = "no_brands";
+      if (totalLead === 0) dominantReason = "no_brands";
+      else if (leadNoContacts >= totalLead * 0.5) dominantReason = "no_contacts";
+      else if (leadAssigned >= totalLead * 0.5) dominantReason = "all_assigned";
+      else if (leadDead + leadDuplicate + leadIrrelevant >= totalLead * 0.5) dominantReason = "all_dead";
+      else if (leadReserved >= totalLead * 0.5) dominantReason = "all_reserved";
+
+      const summary = {
+        totalLead,
+        leadAssigned,
+        leadDead,
+        leadDuplicate,
+        leadIrrelevant,
+        leadNoContacts,
+        leadReserved,
+        dominantReason,
+      };
+
+      // Human-readable reason for the UI's main message.
+      let reason: string;
+      if (totalLead === 0) {
+        reason =
+          "No brands in the LEAD pipeline yet. Run discovery to add some.";
+      } else if (leadNoContacts >= totalLead * 0.5) {
+        reason = `${totalLead} LEAD brand${totalLead === 1 ? "" : "s"} in the pipeline but ${leadNoContacts} are missing contacts — the wizard needs people to email. Run bulk enrichment to attach contacts via Apollo.`;
+      } else if (leadAssigned >= totalLead * 0.5) {
+        reason = `${leadAssigned} LEAD brand${leadAssigned === 1 ? " is" : "s are"} already claimed by other reps. Run discovery to add fresh ones.`;
+      } else {
+        reason = `${totalLead} LEAD brands but none currently eligible (${leadNoContacts} missing contacts, ${leadAssigned} claimed, ${leadDead + leadDuplicate + leadIrrelevant} dead/dup/irrelevant, ${leadReserved} reserved by another rep). Run bulk enrichment first.`;
+      }
+
       return NextResponse.json({
         ok: true,
         brand: null,
-        reason:
-          "No unassigned LEAD brands with contacts found. Add brands via /brands/discover or import a CSV.",
+        reason,
+        summary,
       });
     }
 
