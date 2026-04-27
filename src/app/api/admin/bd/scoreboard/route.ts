@@ -137,10 +137,27 @@ export async function GET(req: Request) {
       // via the activity-based branch below the moment they actually
       // send a wizard email or start a sequence. "High tide raises
       // all boats" = activity-driven, not role-driven.
+      //
+      // ALSO: a user can have a SALES_REP role tag but be a BRAND
+      // contact who got mis-tagged at signup (Josie Ross-MacLeod at
+      // Spanx is a real example). If a user has brandId / factoryId /
+      // distributorId / labId set, they're an external entity contact,
+      // not a FUZE BD rep. Exclude them from the role-based branch.
+      // The activity branch is unaffected — if a brand contact ever
+      // somehow sent a wizard email, they'd still show up there.
       reps = await prisma.user.findMany({
         where: {
           OR: [
-            { role: { in: ["SALES_REP", "SALES_MANAGER", "BD_REP"] } },
+            {
+              AND: [
+                { role: { in: ["SALES_REP", "SALES_MANAGER", "BD_REP"] } },
+                { brandId: null },
+                { factoryId: null },
+                { distributorId: null },
+                { labId: null },
+                { status: "ACTIVE" },
+              ],
+            },
             ...(activityIds.size > 0
               ? [{ id: { in: Array.from(activityIds) } }]
               : []),
