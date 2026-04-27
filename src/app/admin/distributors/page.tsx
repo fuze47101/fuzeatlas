@@ -20,6 +20,12 @@ interface Distributor {
   coverageCountries: string[];
   localCurrency?: string;
   notes?: string;
+  // FUZE wholesale pricing for restock-from-FUZE flow. Without this set,
+  // Distributor.fuzeRestockPricePerLiter is null and the restock POST
+  // returns "No FUZE pricing set" — Tina's #3 blocker.
+  fuzeRestockPricePerLiter?: number | null;
+  fuzeRestockCurrency?: string | null;
+  fuzeRestockNotes?: string | null;
   stockLiters: number;
   stockKg: number;
   stockBottles: number;
@@ -106,12 +112,20 @@ export default function DistributorManagementPage() {
             Manage your global distribution partners, inventory, and coverage
           </p>
         </div>
-        <Link
-          href="/admin/worldwide-inventory"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition"
-        >
-          🌍 Worldwide Inventory
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/distributors/inventory"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition"
+          >
+            📊 Inventory & Burn Rate
+          </Link>
+          <Link
+            href="/admin/worldwide-inventory"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition"
+          >
+            🌍 Worldwide Inventory
+          </Link>
+        </div>
       </div>
 
       {error && (
@@ -219,6 +233,14 @@ function DistributorCard({
     coverageCountries: d.coverageCountries.join(", "),
     status: d.status,
     notes: d.notes || "",
+    // FUZE wholesale (restock-from-FUZE) — Tina's #3 blocker. Stored as
+    // string in form state so empty input clears the price cleanly.
+    fuzeRestockPricePerLiter:
+      d.fuzeRestockPricePerLiter != null
+        ? String(d.fuzeRestockPricePerLiter)
+        : "",
+    fuzeRestockCurrency: d.fuzeRestockCurrency || "USD",
+    fuzeRestockNotes: d.fuzeRestockNotes || "",
   });
 
   const handleSave = async () => {
@@ -247,6 +269,12 @@ function DistributorCard({
           status: form.status,
           active: form.status !== "INACTIVE",
           notes: form.notes || null,
+          fuzeRestockPricePerLiter:
+            form.fuzeRestockPricePerLiter === ""
+              ? null
+              : form.fuzeRestockPricePerLiter,
+          fuzeRestockCurrency: form.fuzeRestockCurrency || null,
+          fuzeRestockNotes: form.fuzeRestockNotes || null,
         }),
       });
       const j = await res.json();
@@ -376,6 +404,80 @@ function DistributorCard({
                   onChange={(v) => setForm({ ...form, coverageCountries: v })}
                   placeholder="India, Bangladesh, Sri Lanka..."
                 />
+              </div>
+
+              {/* FUZE Restock Pricing — wholesale rate this distributor pays
+                  FUZE. Without this set, restock-from-FUZE returns 400. */}
+              <div className="border-t border-slate-200 pt-3 mt-1">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  FUZE Wholesale Pricing
+                  <span className="ml-2 text-[10px] font-normal text-slate-400 normal-case">
+                    Required for distributor to place restock orders from
+                    Salt Lake.
+                  </span>
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                      Price per liter
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={form.fuzeRestockPricePerLiter}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          fuzeRestockPricePerLiter: e.target.value,
+                        })
+                      }
+                      placeholder="e.g. 38.50"
+                      className="w-full px-2 py-1.5 border border-slate-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                      Currency
+                    </label>
+                    <select
+                      value={form.fuzeRestockCurrency}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          fuzeRestockCurrency: e.target.value,
+                        })
+                      }
+                      className="w-full px-2 py-1.5 border border-slate-300 rounded text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="CNY">CNY</option>
+                      <option value="INR">INR</option>
+                      <option value="AED">AED</option>
+                      <option value="TRY">TRY</option>
+                      <option value="NTD">NTD</option>
+                      <option value="MXN">MXN</option>
+                      <option value="GBP">GBP</option>
+                    </select>
+                  </div>
+                  <div className="sm:col-span-1">
+                    <EditField
+                      label="Pricing notes"
+                      value={form.fuzeRestockNotes}
+                      onChange={(v) =>
+                        setForm({ ...form, fuzeRestockNotes: v })
+                      }
+                      placeholder="FOB SLC, MOQ 1 gaylord..."
+                    />
+                  </div>
+                </div>
+                {form.fuzeRestockPricePerLiter === "" && (
+                  <p className="text-[10px] text-amber-600 mt-1.5">
+                    ⚠ Empty: this distributor cannot place restock orders
+                    from FUZE until a price is set.
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Notes</label>

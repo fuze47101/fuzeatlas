@@ -79,6 +79,10 @@ export async function GET() {
         coverageCountries,
         localCurrency: d.localCurrency,
         notes: d.notes,
+        // FUZE wholesale pricing — used by the restock-from-FUZE flow.
+        fuzeRestockPricePerLiter: d.fuzeRestockPricePerLiter,
+        fuzeRestockCurrency: d.fuzeRestockCurrency,
+        fuzeRestockNotes: d.fuzeRestockNotes,
         // Inventory
         stockLiters: d.inventory?.fuzeStockLiters || 0,
         stockKg: (d.inventory?.fuzeStockLiters || 0) * 0.03,

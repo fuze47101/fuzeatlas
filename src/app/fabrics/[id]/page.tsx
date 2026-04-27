@@ -132,6 +132,15 @@ export default function FabricDetailPage() {
             🧪 Request Testing
           </button>
           {canEdit && (
+            <a
+              href={`/admin/fabric-report/${id}/print`}
+              className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-700"
+              title="Open the customer-facing Full Application Report — recipe, in-house validation, and lab ICP all in one PDF-ready view. Send to customer from the report header."
+            >
+              📄 Application Report
+            </a>
+          )}
+          {canEdit && (
             <button onClick={() => router.push(`/fabrics/${id}/edit`)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">Edit</button>
           )}
         </div>

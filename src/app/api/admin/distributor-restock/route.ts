@@ -129,6 +129,48 @@ export async function PATCH(req: Request) {
         where: { id: orderId },
         data: updateData,
       });
+
+      // ─── Notify the distributor's users on status change ───────
+      // Tina's #P1 review: distributors weren't pinged when their
+      // restock from FUZE shipped. Fires only on meaningful status
+      // transitions (APPROVED, SHIPPED, DELIVERED) — silent on
+      // intermediate edits like adminNotes-only changes.
+      if (["APPROVED", "SHIPPED", "DELIVERED"].includes(status)) {
+        try {
+          const distUsers = await prisma.user.findMany({
+            where: {
+              role: "DISTRIBUTOR_USER",
+              distributorId: order.distributorId,
+              status: "ACTIVE",
+            },
+            select: { id: true },
+          });
+          if (distUsers.length > 0) {
+            const titleByStatus: Record<string, string> = {
+              APPROVED: `Restock approved — ${order.orderNumber}`,
+              SHIPPED: `Restock shipped — ${order.orderNumber}`,
+              DELIVERED: `Restock delivered — ${order.orderNumber}`,
+            };
+            const messageByStatus: Record<string, string> = {
+              APPROVED: `${order.totalLiters}L approved by FUZE HQ. Tracking will follow when it ships.`,
+              SHIPPED: `${order.totalLiters}L on the way${trackingNumber ? ` · tracking ${trackingNumber}${carrier ? ` (${carrier})` : ""}` : ""}.`,
+              DELIVERED: `${order.totalLiters}L marked delivered. Confirm receipt to update your inventory.`,
+            };
+            await prisma.notification.createMany({
+              data: distUsers.map((u: any) => ({
+                userId: u.id,
+                type: "PO_STATUS",
+                title: titleByStatus[status] || `Restock ${status.toLowerCase()}`,
+                message: messageByStatus[status] || "",
+                link: "/distributor-portal/restock",
+              })),
+            });
+          }
+        } catch (e) {
+          console.error("[restock] notify failed (non-blocking):", e);
+        }
+      }
+
       return NextResponse.json({ ok: true, order });
     }
 

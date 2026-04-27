@@ -6,22 +6,47 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Stats {
+  // Inventory (the operations view Tina #P1 asked for — what's
+  // actually in the warehouse and when it ran out last).
+  stockLiters: number;
+  stockBottles: number;
+  reorderPointLiters: number;
+  lowStock: boolean;
+  lastShipmentDate: string | null;
+  lastShipmentLiters: number | null;
+  lastShipmentOrderNumber: string | null;
+  last90DaysOutbound: number;
+  dailyBurn: number;
+  daysOfStockLeft: number | null;
+  inventoryUpdatedAt: string | null;
+  activeFactories: number;
+  // Legacy CFO view kept for the bottom tile row.
   totalInvoices: number;
   unpaidInvoices: number;
   outstandingAmount: number;
   totalDocuments: number;
-  activeFactories: number;
 }
 
 export default function DistributorPortalPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [stats, setStats] = useState<Stats>({
+    stockLiters: 0,
+    stockBottles: 0,
+    reorderPointLiters: 0,
+    lowStock: false,
+    lastShipmentDate: null,
+    lastShipmentLiters: null,
+    lastShipmentOrderNumber: null,
+    last90DaysOutbound: 0,
+    dailyBurn: 0,
+    daysOfStockLeft: null,
+    inventoryUpdatedAt: null,
+    activeFactories: 0,
     totalInvoices: 0,
     unpaidInvoices: 0,
     outstandingAmount: 0,
     totalDocuments: 0,
-    activeFactories: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -70,52 +95,176 @@ export default function DistributorPortalPage() {
         </p>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm text-slate-600 mb-1">Active Factories</p>
-              <p className="text-3xl font-black text-slate-900">{stats.activeFactories}</p>
-            </div>
-            <span className="text-2xl">🏭</span>
-          </div>
-        </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm text-slate-600 mb-1">Total Invoices</p>
-              <p className="text-3xl font-black text-slate-900">{stats.totalInvoices}</p>
-            </div>
-            <span className="text-2xl">📄</span>
-          </div>
-        </div>
+      {/* ─── Inventory at a glance ────────────────────────────────────
+          Tina's #P1 review: what a distributor actually opens the
+          portal to see is "what's in the warehouse and when do I run
+          out". The old CFO/invoices tile row dropped below into a
+          secondary section. */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div
-          className={`bg-white border rounded-xl p-6 ${stats.unpaidInvoices > 0 ? "border-amber-300 bg-amber-50/50" : "border-slate-200"}`}
+          className={`rounded-xl p-6 ${
+            stats.lowStock
+              ? "bg-red-50 border-2 border-red-300"
+              : "bg-gradient-to-br from-[#00b4c3] to-[#009ba8] text-white"
+          }`}
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-slate-600 mb-1">Outstanding</p>
               <p
-                className={`text-2xl font-black ${stats.unpaidInvoices > 0 ? "text-amber-700" : "text-slate-900"}`}
+                className={`text-xs font-semibold mb-1 ${
+                  stats.lowStock ? "text-red-700" : "text-white/80"
+                }`}
               >
-                {formatCurrency(stats.outstandingAmount)}
+                FUZE Stock On Hand
               </p>
-              {stats.unpaidInvoices > 0 && (
-                <p className="text-xs text-amber-600 mt-1">{stats.unpaidInvoices} unpaid</p>
+              <p
+                className={`text-3xl font-black ${
+                  stats.lowStock ? "text-red-700" : "text-white"
+                }`}
+              >
+                {stats.stockLiters.toLocaleString()}L
+              </p>
+              <p
+                className={`text-xs mt-1 ${
+                  stats.lowStock ? "text-red-600" : "text-white/80"
+                }`}
+              >
+                {stats.stockBottles.toLocaleString()} carboys
+                {stats.reorderPointLiters > 0 && (
+                  <> · reorder at {stats.reorderPointLiters.toLocaleString()}L</>
+                )}
+              </p>
+              {stats.lowStock && (
+                <p className="text-xs text-red-700 font-semibold mt-1">
+                  ⚠ Below reorder point
+                </p>
               )}
             </div>
-            <span className="text-2xl">💰</span>
+            <span className="text-2xl">🧴</span>
           </div>
         </div>
+
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-slate-600 mb-1">Documents</p>
-              <p className="text-3xl font-black text-slate-900">{stats.totalDocuments}</p>
+              <p className="text-xs font-semibold text-slate-600 mb-1">
+                Days of Stock Left
+              </p>
+              <p className="text-3xl font-black text-slate-900">
+                {stats.daysOfStockLeft != null
+                  ? `${stats.daysOfStockLeft}`
+                  : "—"}
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                {stats.dailyBurn > 0
+                  ? `${stats.dailyBurn} L/day × 90-day avg`
+                  : "no recent shipments"}
+              </p>
             </div>
-            <span className="text-2xl">📋</span>
+            <span className="text-2xl">⏳</span>
           </div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-semibold text-slate-600 mb-1">
+                Last Shipment In
+              </p>
+              {stats.lastShipmentDate ? (
+                <>
+                  <p className="text-2xl font-black text-slate-900">
+                    {stats.lastShipmentLiters?.toLocaleString()}L
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {new Date(stats.lastShipmentDate).toLocaleDateString()}
+                    {stats.lastShipmentOrderNumber && (
+                      <> · {stats.lastShipmentOrderNumber}</>
+                    )}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-lg font-semibold text-slate-400">none yet</p>
+                  <Link
+                    href="/distributor-portal/restock"
+                    className="text-xs text-[#00b4c3] font-semibold hover:underline mt-1 inline-block"
+                  >
+                    Place a restock order →
+                  </Link>
+                </>
+              )}
+            </div>
+            <span className="text-2xl">📦</span>
+          </div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-semibold text-slate-600 mb-1">
+                Out the Door (90d)
+              </p>
+              <p className="text-3xl font-black text-slate-900">
+                {stats.last90DaysOutbound.toLocaleString()}L
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                shipped to factories
+              </p>
+            </div>
+            <span className="text-2xl">🚚</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Secondary: factories + invoices + docs (CFO view) ───── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <div className="bg-white border border-slate-200 rounded-lg p-3">
+          <p className="text-[10px] uppercase font-bold text-slate-500">
+            Active Factories
+          </p>
+          <p className="text-xl font-black text-slate-900">
+            {stats.activeFactories}
+          </p>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-lg p-3">
+          <p className="text-[10px] uppercase font-bold text-slate-500">
+            Invoices
+          </p>
+          <p className="text-xl font-black text-slate-900">
+            {stats.totalInvoices}
+          </p>
+        </div>
+        <div
+          className={`rounded-lg p-3 border ${
+            stats.unpaidInvoices > 0
+              ? "border-amber-300 bg-amber-50/50"
+              : "border-slate-200 bg-white"
+          }`}
+        >
+          <p className="text-[10px] uppercase font-bold text-slate-500">
+            Outstanding
+          </p>
+          <p
+            className={`text-base font-black ${
+              stats.unpaidInvoices > 0 ? "text-amber-700" : "text-slate-900"
+            }`}
+          >
+            {formatCurrency(stats.outstandingAmount)}
+          </p>
+          {stats.unpaidInvoices > 0 && (
+            <p className="text-[10px] text-amber-600">
+              {stats.unpaidInvoices} unpaid
+            </p>
+          )}
+        </div>
+        <div className="bg-white border border-slate-200 rounded-lg p-3">
+          <p className="text-[10px] uppercase font-bold text-slate-500">
+            Documents
+          </p>
+          <p className="text-xl font-black text-slate-900">
+            {stats.totalDocuments}
+          </p>
         </div>
       </div>
 

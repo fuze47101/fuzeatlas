@@ -87,9 +87,45 @@ export async function GET(req: Request) {
     let reps: { id: string; name: string | null; email: string; role: string }[];
 
     if (allReps && isManager) {
+      // Two-source rep discovery — fixes the "Ryan and Barth are missing"
+      // bug (#8). The earlier role-only filter excluded reps whose User
+      // record was stamped EMPLOYEE / ADMIN even though they were running
+      // outreach through the wizard. Now we OR in:
+      //   (a) anyone with a BD-eligible role (the canonical list), AND
+      //   (b) anyone who has actually authored an OutreachMessage or
+      //       BDSequence in the window — caught by activity, not by
+      //       role-tag drift.
+      // This is self-healing: if Andrew adds a new "Account Manager" as
+      // EMPLOYEE and they start sending wizard emails, they show up on
+      // the scoreboard immediately without needing a role migration.
+      const [activeMessageAuthors, activeSeqOwners] = await Promise.all([
+        prisma.outreachMessage.findMany({
+          where: { sentAt: { gte: since }, sentBy: { not: null } },
+          select: { sentBy: true },
+          distinct: ["sentBy"],
+        }),
+        prisma.bDSequence.findMany({
+          where: { startedAt: { gte: since } },
+          select: { repId: true },
+          distinct: ["repId"],
+        }),
+      ]);
+      const activityIds = new Set<string>();
+      for (const m of activeMessageAuthors) {
+        if (m.sentBy) activityIds.add(m.sentBy);
+      }
+      for (const s of activeSeqOwners) {
+        if (s.repId) activityIds.add(s.repId);
+      }
+
       reps = await prisma.user.findMany({
         where: {
-          role: { in: ["SALES_REP", "SALES_MANAGER", "BD_REP"] },
+          OR: [
+            { role: { in: ["SALES_REP", "SALES_MANAGER", "BD_REP"] } },
+            ...(activityIds.size > 0
+              ? [{ id: { in: Array.from(activityIds) } }]
+              : []),
+          ],
         },
         select: { id: true, name: true, email: true, role: true },
         orderBy: { name: "asc" },

@@ -355,7 +355,7 @@ export default function DistributorOrdersPage() {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative">
             <div className="p-6 border-b border-slate-200">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-slate-900">Create Factory Order</h2>
+                <h2 className="text-xl font-bold text-slate-900">Record Factory Order</h2>
                 <button
                   onClick={() => setShowCreate(false)}
                   className="p-2 hover:bg-slate-100 rounded-lg"
@@ -363,7 +363,17 @@ export default function DistributorOrdersPage() {
                   ✕
                 </button>
               </div>
-              <p className="text-sm text-slate-500 mt-1">Place an order on behalf of a factory</p>
+              <p className="text-sm text-slate-500 mt-1">
+                Record an order a factory has placed with you. The factory
+                is the buyer; you fulfill from your warehouse stock. Use{" "}
+                <a
+                  href="/distributor-portal/restock"
+                  className="text-[#00b4c3] underline font-semibold"
+                >
+                  Restock from FUZE
+                </a>{" "}
+                to order replacement product from Salt Lake.
+              </p>
             </div>
             <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
               {/* Factory Selection */}

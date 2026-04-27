@@ -894,6 +894,7 @@ model Fabric {
   solarisTests     SolarisTest[]     @relation("FabricSolarisTests")
   sampleApplications SampleApplication[] @relation("FabricSampleApplications")
   shipments SampleShipment[] @relation("FabricShipments")
+  reportShares     FabricReportShare[] @relation("FabricReportShares")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2071,6 +2072,65 @@ model SampleApplication {
   @@index([benchTestId])
   @@index([tier])
   @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────
+// FABRIC REPORT SHARE
+// One row per "Full Application Report" we send to a customer.
+// Carries a one-time-ish download token (90-day TTL by default)
+// so the customer can pull the live report without an Atlas login,
+// plus a paired portal link if they DO have an account. Every view
+// is counted so we can answer "did Raihana actually open it?"
+// without paging through Resend logs.
+// Andrew (#102): "they need the email notification that it was
+// done. they need a link to download it from the email directly
+// and back to the site to get it." This model is what lets that
+// email link keep working a week later.
+// ─────────────────────────────────────────────
+model FabricReportShare {
+  id        String  @id @default(cuid())
+  fabricId  String
+  fabric    Fabric  @relation("FabricReportShares", fields: [fabricId], references: [id])
+
+  // Public download token (random, URL-safe). Anyone with this token
+  // can fetch the report at /api/fabric-report/[token] until expiresAt.
+  // Rotated by issuing a new FabricReportShare row, never re-using.
+  token     String  @unique
+
+  // Who we sent it to
+  recipientEmail String
+  recipientName  String?
+  // Optional brand/contact links so the portal can scope "My Reports"
+  // to a logged-in user without us needing to match by email string.
+  brandId        String?
+  contactId      String?
+
+  // Optional note shown to the recipient ("here's the validation report
+  // for Penfabric Test #2503, ICP came back at 0.94 ppm against 1.0 target")
+  subjectLine String?
+  emailBody   String?  // snapshot of the HTML we sent — so we can re-show it
+
+  // Lifecycle
+  sentByUserId String?
+  sentAt       DateTime  @default(now())
+  expiresAt    DateTime  // 90-day TTL by default — set in the create handler
+  revokedAt    DateTime? // admin can revoke a stale link without deleting the row
+
+  // Engagement
+  viewedCount  Int       @default(0)
+  lastViewedAt DateTime?
+  // Tier the report was framed around (F1 default). Snapshot, not a join —
+  // if Andrew re-tests at F2 later, the old report stays anchored to F1.
+  tier         String    @default("F1")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([fabricId])
+  @@index([recipientEmail])
+  @@index([brandId])
+  @@index([contactId])
+  @@index([sentAt])
 }
 
 // ─────────────────────────────────────────────

@@ -468,6 +468,40 @@ export async function POST(req: Request) {
           brandName: brandNames,
         });
       }
+
+      // ─── Notify the assigned distributor's users ────────────────
+      // Tina's #P1 review surfaced that distributors weren't being
+      // pinged when orders landed in their territory — only admins
+      // and AMs got the notification. The distributor is the one
+      // who actually has to fulfill the order; they need to know
+      // immediately. Falls through silently if the order has no
+      // distributorId (USA-direct orders, for example).
+      if (order.distributorId) {
+        const distUsers = await prisma.user.findMany({
+          where: {
+            role: "DISTRIBUTOR_USER",
+            distributorId: order.distributorId,
+            status: "ACTIVE",
+          },
+          select: { id: true, email: true, name: true },
+        });
+        if (distUsers.length > 0) {
+          const volStr = order.volumeLiters
+            ? `${order.volumeLiters}L`
+            : order.hangtagQty
+              ? `${order.hangtagQty} hangtags`
+              : `${order.bottles || "?"} bottles`;
+          await prisma.notification.createMany({
+            data: distUsers.map((u: any) => ({
+              userId: u.id,
+              type: "PO_STATUS",
+              title: `New factory order — ${order.factory?.name || "factory"}`,
+              message: `${order.orderType} · ${volStr}${order.fuzeTier ? ` · ${order.fuzeTier}` : ""} · ${order.currency} ${(order.totalPrice || 0).toLocaleString()}${brandNames ? ` · ${brandNames}` : ""}`,
+              link: `/distributor-portal/orders`,
+            })),
+          });
+        }
+      }
     } catch (notifyErr) {
       console.error("[ORDER] Notification error (non-blocking):", notifyErr);
     }

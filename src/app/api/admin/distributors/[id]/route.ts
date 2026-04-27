@@ -47,10 +47,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
     const body = await req.json();
 
-    // Whitelist updatable fields
+    // Whitelist updatable fields. Added the FUZE restock pricing fields
+    // (#P1 distributor portal pass) so admins can set the wholesale rate
+    // through the UI instead of running SQL — this was Tina's #3 blocker
+    // (GS / Texwell can't restock until pricing is set).
     const allowed = [
       "name", "chineseName", "specialty", "country", "region", "city", "address",
       "email", "phone", "website", "status", "active", "coverageCountries", "localCurrency", "notes",
+      "fuzeRestockPricePerLiter", "fuzeRestockCurrency", "fuzeRestockNotes",
     ];
 
     const data: Record<string, any> = {};
@@ -59,6 +63,21 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         // coverageCountries comes as array, store as JSON string
         if (key === "coverageCountries" && Array.isArray(body[key])) {
           data[key] = JSON.stringify(body[key]);
+        } else if (key === "fuzeRestockPricePerLiter") {
+          // Coerce empty string to null (clears the price) and parse
+          // numeric input as a Float. Refuse to write a NaN or negative.
+          if (body[key] === "" || body[key] === null) {
+            data[key] = null;
+          } else {
+            const n = Number(body[key]);
+            if (!Number.isFinite(n) || n < 0) {
+              return NextResponse.json(
+                { ok: false, error: "fuzeRestockPricePerLiter must be a non-negative number" },
+                { status: 400 },
+              );
+            }
+            data[key] = n;
+          }
         } else {
           data[key] = body[key];
         }
@@ -76,6 +95,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         id: true, name: true, chineseName: true, country: true, region: true,
         city: true, address: true, email: true, phone: true, website: true,
         status: true, active: true, coverageCountries: true, localCurrency: true, notes: true,
+        fuzeRestockPricePerLiter: true, fuzeRestockCurrency: true, fuzeRestockNotes: true,
       },
     });
 
