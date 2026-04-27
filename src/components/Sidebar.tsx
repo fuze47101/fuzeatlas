@@ -316,12 +316,26 @@ export default function Sidebar() {
         items: [
           { href: "/distributor-portal/restock", label: "Restock from FUZE", icon: "💧" },
           { href: "/distributor-portal/orders", label: "Factory Orders", icon: "📦" },
+          { href: "/distributor-portal/incoming-orders", label: "Sub-Distributor Orders", icon: "📥" },
           { href: "/distributor-portal/inventory", label: "Inventory & Pricing", icon: "📊" },
           { href: "/distributor-portal/test-request", label: "Apply for Test", icon: "🧪" },
           { href: "/distributor-portal/upload-report", label: "Upload Test Report", icon: "📤" },
           { href: "/distributor-portal/test-reports", label: "Test Reports", icon: "🔬" },
           { href: "/distributor-portal/documents", label: "Document Library", icon: "📂" },
           { href: "/distributor-portal/invoices", label: "Invoices", icon: "📄" },
+        ],
+      },
+      // "High tide raises all boats" — distributor-side BD reps
+      // (Jeremy, Kathir, Tandy, Scott Smith) need the wizard + the
+      // scoreboard in their sidebar so they can run outreach for FUZE
+      // alongside their distributor day-jobs.
+      {
+        label: "Business Development",
+        items: [
+          { href: "/admin/bd/wizard", label: "BD Wizard", icon: "🪄" },
+          { href: "/admin/bd/scoreboard", label: "BD Scoreboard", icon: "📊" },
+          { href: "/admin/brand-pipeline", label: "Brand Pipeline (Leads)", icon: "🔥" },
+          { href: "/recipe-search", label: "Recipe Search", icon: "🔎" },
         ],
       },
       {

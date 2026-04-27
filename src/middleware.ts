@@ -16,7 +16,11 @@ const COOKIE_NAME = "fuze-session";
 // carries an HMAC-signed token. /api/inbound/ is exempted so email + iMIP
 // reply webhooks (ticket #23 + #27/#32) reach the handler with their own
 // X-Webhook-Secret auth.
-const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/forgot-password", "/reset-password", "/verify-email", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/verify-email", "/api/access-requests", "/api/cron", "/calendar/", "/api/inbound/"];
+// /report/ and /api/fabric-report/ are exempted so customers can open
+// the token-protected Full Application Report from the email link
+// without needing an Atlas login (the token in the URL is the
+// credential). Phase 2 Penfabric work.
+const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/forgot-password", "/reset-password", "/verify-email", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/verify-email", "/api/access-requests", "/api/cron", "/calendar/", "/api/inbound/", "/report/", "/api/fabric-report/"];
 
 // Routes restricted to internal roles only (ADMIN, EMPLOYEE, SALES_*, TESTING_*, FABRIC_*)
 // Factory, Brand, and Distributor users CANNOT access these even with a valid session

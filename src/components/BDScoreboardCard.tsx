@@ -49,7 +49,17 @@ interface Scoreboard {
   };
 }
 
-const BD_ROLES = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP"];
+// Match BD_ROLES on /api/admin/bd/scoreboard — DISTRIBUTOR_USER is now
+// included so distributor-side BD reps (Jeremy, Kathir, Tandy, Scott
+// Smith) see their own home-page card alongside FUZE-direct reps.
+const BD_ROLES = [
+  "ADMIN",
+  "EMPLOYEE",
+  "SALES_MANAGER",
+  "SALES_REP",
+  "BD_REP",
+  "DISTRIBUTOR_USER",
+];
 
 export default function BDScoreboardCard() {
   const { user } = useAuth();
