@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
+import HubSpotCSVImport from "@/components/HubSpotCSVImport";
 
 interface BatchResult {
   ok: boolean;
@@ -372,6 +373,28 @@ export default function HubSpotImportPage() {
           </p>
         </div>
       )}
+
+      {/* CSV import — works without HubSpot API auth. Use this when
+          the API token has expired or the HubSpot account doesn't
+          support Private Apps (developer accounts). Drops in CSV
+          exports from HubSpot UI, classifies industry-by-industry to
+          filter out medical/pharma/finance/etc., and chunks the
+          import. Lives ABOVE the API path so it's the obvious entry
+          point. */}
+      <div className="mb-6">
+        <HubSpotCSVImport />
+      </div>
+
+      <div className="mb-3 mt-8 pt-6 border-t border-slate-200">
+        <p className="text-xs uppercase tracking-wide font-bold text-slate-500">
+          API path (legacy — needs working HubSpot token)
+        </p>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Use this if you have a Private App access token in
+          HUBSPOT_API_KEY. Falls through to CSV path above if auth
+          fails.
+        </p>
+      </div>
 
       {/* Step 1: Companies */}
       <PhaseCard
