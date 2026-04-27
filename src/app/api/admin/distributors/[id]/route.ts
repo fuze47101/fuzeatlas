@@ -55,6 +55,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       "name", "chineseName", "specialty", "country", "region", "city", "address",
       "email", "phone", "website", "status", "active", "coverageCountries", "localCurrency", "notes",
       "fuzeRestockPricePerLiter", "fuzeRestockCurrency", "fuzeRestockNotes",
+      // Master/sub hierarchy + master→sub wholesale pricing.
+      "parentDistributorId", "subDistributorPricePerLiter", "subDistributorCurrency", "subDistributorNotes",
     ];
 
     const data: Record<string, any> = {};
@@ -63,7 +65,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         // coverageCountries comes as array, store as JSON string
         if (key === "coverageCountries" && Array.isArray(body[key])) {
           data[key] = JSON.stringify(body[key]);
-        } else if (key === "fuzeRestockPricePerLiter") {
+        } else if (
+          key === "fuzeRestockPricePerLiter" ||
+          key === "subDistributorPricePerLiter"
+        ) {
           // Coerce empty string to null (clears the price) and parse
           // numeric input as a Float. Refuse to write a NaN or negative.
           if (body[key] === "" || body[key] === null) {
@@ -72,11 +77,43 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             const n = Number(body[key]);
             if (!Number.isFinite(n) || n < 0) {
               return NextResponse.json(
-                { ok: false, error: "fuzeRestockPricePerLiter must be a non-negative number" },
+                { ok: false, error: `${key} must be a non-negative number` },
                 { status: 400 },
               );
             }
             data[key] = n;
+          }
+        } else if (key === "parentDistributorId") {
+          // Empty string clears the parent; non-empty must reference
+          // a real distributor. Cycle protection: parent can't be
+          // self, and parent itself must not be a sub of this dist.
+          if (body[key] === "" || body[key] === null) {
+            data[key] = null;
+          } else {
+            const candidateId = String(body[key]);
+            if (candidateId === id) {
+              return NextResponse.json(
+                { ok: false, error: "A distributor cannot be its own parent" },
+                { status: 400 },
+              );
+            }
+            const candidate = await prisma.distributor.findUnique({
+              where: { id: candidateId },
+              select: { id: true, parentDistributorId: true },
+            });
+            if (!candidate) {
+              return NextResponse.json(
+                { ok: false, error: "Parent distributor not found" },
+                { status: 400 },
+              );
+            }
+            if (candidate.parentDistributorId === id) {
+              return NextResponse.json(
+                { ok: false, error: "Cycle detected — that distributor is already a sub of this one" },
+                { status: 400 },
+              );
+            }
+            data[key] = candidateId;
           }
         } else {
           data[key] = body[key];
@@ -96,6 +133,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         city: true, address: true, email: true, phone: true, website: true,
         status: true, active: true, coverageCountries: true, localCurrency: true, notes: true,
         fuzeRestockPricePerLiter: true, fuzeRestockCurrency: true, fuzeRestockNotes: true,
+        parentDistributorId: true, subDistributorPricePerLiter: true,
+        subDistributorCurrency: true, subDistributorNotes: true,
       },
     });
 

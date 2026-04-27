@@ -26,6 +26,11 @@ interface Distributor {
   fuzeRestockPricePerLiter?: number | null;
   fuzeRestockCurrency?: string | null;
   fuzeRestockNotes?: string | null;
+  // Master / sub hierarchy
+  parentDistributorId?: string | null;
+  subDistributorPricePerLiter?: number | null;
+  subDistributorCurrency?: string | null;
+  subDistributorNotes?: string | null;
   stockLiters: number;
   stockKg: number;
   stockBottles: number;
@@ -177,6 +182,7 @@ export default function DistributorManagementPage() {
           <DistributorCard
             key={d.id}
             d={d}
+            allDistributors={distributors}
             expanded={expanded === d.id}
             onToggle={() => setExpanded(expanded === d.id ? null : d.id)}
             onUpdate={() => {
@@ -207,11 +213,13 @@ function SummaryCard({ label, value, color }: { label: string; value: string | n
 
 function DistributorCard({
   d,
+  allDistributors,
   expanded,
   onToggle,
   onUpdate,
 }: {
   d: Distributor;
+  allDistributors: Distributor[];
   expanded: boolean;
   onToggle: () => void;
   onUpdate: () => void;
@@ -241,6 +249,14 @@ function DistributorCard({
         : "",
     fuzeRestockCurrency: d.fuzeRestockCurrency || "USD",
     fuzeRestockNotes: d.fuzeRestockNotes || "",
+    // Master/sub hierarchy
+    parentDistributorId: d.parentDistributorId || "",
+    subDistributorPricePerLiter:
+      d.subDistributorPricePerLiter != null
+        ? String(d.subDistributorPricePerLiter)
+        : "",
+    subDistributorCurrency: d.subDistributorCurrency || "",
+    subDistributorNotes: d.subDistributorNotes || "",
   });
 
   const handleSave = async () => {
@@ -275,6 +291,13 @@ function DistributorCard({
               : form.fuzeRestockPricePerLiter,
           fuzeRestockCurrency: form.fuzeRestockCurrency || null,
           fuzeRestockNotes: form.fuzeRestockNotes || null,
+          parentDistributorId: form.parentDistributorId || null,
+          subDistributorPricePerLiter:
+            form.subDistributorPricePerLiter === ""
+              ? null
+              : form.subDistributorPricePerLiter,
+          subDistributorCurrency: form.subDistributorCurrency || null,
+          subDistributorNotes: form.subDistributorNotes || null,
         }),
       });
       const j = await res.json();
@@ -472,12 +495,118 @@ function DistributorCard({
                     />
                   </div>
                 </div>
-                {form.fuzeRestockPricePerLiter === "" && (
+                {form.fuzeRestockPricePerLiter === "" && !form.parentDistributorId && (
                   <p className="text-[10px] text-amber-600 mt-1.5">
                     ⚠ Empty: this distributor cannot place restock orders
                     from FUZE until a price is set.
                   </p>
                 )}
+              </div>
+
+              {/* ─── Master / Sub hierarchy ──────────────────────
+                  If this distributor is a SUB, it orders from a master,
+                  not from FUZE. If it's a MASTER, the wholesale field
+                  below is what the sub sees as their cost. */}
+              <div className="border-t border-slate-200 pt-3 mt-1">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Master / Sub Hierarchy
+                  <span className="ml-2 text-[10px] font-normal text-slate-400 normal-case">
+                    Set a parent distributor to make this dist a SUB
+                    (restocks order from the master, not from FUZE).
+                  </span>
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                      Parent distributor (master)
+                    </label>
+                    <select
+                      value={form.parentDistributorId}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          parentDistributorId: e.target.value,
+                        })
+                      }
+                      className="w-full px-2 py-1.5 border border-slate-300 rounded text-xs bg-white"
+                    >
+                      <option value="">— Standalone / Master (no parent) —</option>
+                      {allDistributors
+                        .filter((opt) => opt.id !== d.id)
+                        .map((opt) => (
+                          <option key={opt.id} value={opt.id}>
+                            {opt.name}
+                            {opt.country ? ` (${opt.country})` : ""}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                      Master → Sub price/L
+                      <span className="ml-1 text-slate-400 normal-case font-normal">
+                        (only if you have subs)
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={form.subDistributorPricePerLiter}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          subDistributorPricePerLiter: e.target.value,
+                        })
+                      }
+                      placeholder="e.g. 42.00"
+                      className="w-full px-2 py-1.5 border border-slate-300 rounded text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                      Sub currency
+                    </label>
+                    <select
+                      value={form.subDistributorCurrency}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          subDistributorCurrency: e.target.value,
+                        })
+                      }
+                      className="w-full px-2 py-1.5 border border-slate-300 rounded text-xs bg-white"
+                    >
+                      <option value="">—</option>
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="CNY">CNY</option>
+                      <option value="INR">INR</option>
+                      <option value="AED">AED</option>
+                      <option value="TRY">TRY</option>
+                      <option value="NTD">NTD</option>
+                      <option value="MXN">MXN</option>
+                      <option value="GBP">GBP</option>
+                    </select>
+                  </div>
+                </div>
+                {form.parentDistributorId && (
+                  <p className="text-[10px] text-slate-500 mt-1.5">
+                    This distributor is a <strong>SUB</strong>. Their
+                    restocks will route to the master above. The FUZE
+                    wholesale price section is ignored for sub-distributors.
+                  </p>
+                )}
+              </div>
+
+              {/* Quick link to the 5-tier pricing editor */}
+              <div className="border-t border-slate-200 pt-3 mt-1">
+                <a
+                  href={`/admin/distributors/${d.id}/tiers`}
+                  className="inline-flex items-center gap-1 text-xs text-[#00b4c3] font-semibold hover:underline"
+                >
+                  → Open 5-Tier Pricing & Factory Assignment for {d.name}
+                </a>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Notes</label>

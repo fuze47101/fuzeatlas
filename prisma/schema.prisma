@@ -398,6 +398,14 @@ model Factory {
   distributorId String?
   distributor   Distributor? @relation("FactoryDistributor", fields: [distributorId], references: [id])
 
+  // Which of the distributor's pricing tiers (1..5) this factory sits in.
+  // Null = use the distributor's default pricing row. Set when the
+  // distributor configures their tier table and assigns the factory.
+  // Tier semantics are intentionally generic ("Tier 1..5") so each
+  // distributor can name them per their own commercial logic
+  // (geography / shipping cost / tariffs / end-use margin).
+  distributorTierIndex Int?
+
   salesRepId String?
   salesRep   User?  @relation("FactorySalesRep", fields: [salesRepId], references: [id])
 
@@ -493,6 +501,34 @@ model Distributor {
   pricing       DistributorPricing[] @relation("DistributorPricing")
   inventory     DistributorInventory? @relation("DistributorInventory")
   restockOrders DistributorRestockOrder[] @relation("DistributorRestockOrders")
+  // Restock orders this distributor receives from sub-distributors —
+  // i.e. the inverse of `restockOrders`, fired when a sub-distributor
+  // places an order against this (master) distributor instead of FUZE.
+  incomingSubOrders DistributorRestockOrder[] @relation("MasterIncomingRestocks")
+
+  // ─── Master / Sub Distributor hierarchy ─────────────────────
+  // Tandy's planned China import entity is a "master" — imports from
+  // FUZE in bulk, holds central inventory, sells onward to local
+  // sub-distributors (Texwell, Hi-Goal). The relationship is a simple
+  // self-relation: parentDistributorId NULL = master or standalone;
+  // parentDistributorId SET = sub of that distributor.
+  //
+  // Pricing chain becomes:
+  //   FUZE → Master  (uses Distributor.fuzeRestockPricePerLiter)
+  //   Master → Sub   (uses Distributor.subDistributorPricePerLiter on master)
+  //   Sub   → Factory (uses Master/Sub's DistributorPricing tier table)
+  //
+  // Sub-distributor restocks target the master, not FUZE — see
+  // DistributorRestockOrder.targetDistributorId.
+  parentDistributorId String?
+  parentDistributor   Distributor?  @relation("DistributorHierarchy", fields: [parentDistributorId], references: [id])
+  subDistributors     Distributor[] @relation("DistributorHierarchy")
+
+  // Master → Sub wholesale pricing (only meaningful when this dist
+  // acts as a master and has children).
+  subDistributorPricePerLiter Float?
+  subDistributorCurrency      String?  // Master's currency to sub (often local — e.g. RMB for Tandy's China master)
+  subDistributorNotes         String?
 
   // FUZE → Distributor pricing (what FUZE charges this distributor for restock)
   fuzeRestockPricePerLiter Float?   // USD/L that FUZE charges this distributor
@@ -501,6 +537,8 @@ model Distributor {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([parentDistributorId])
 }
 
 // ─────────────────────────────────────────────
@@ -515,6 +553,15 @@ model DistributorRestockOrder {
 
   distributorId   String
   distributor     Distributor @relation("DistributorRestockOrders", fields: [distributorId], references: [id])
+
+  // Where the restock order is sourced FROM. Null = ordered direct
+  // from FUZE HQ (the original behavior, still the default for master
+  // and standalone distributors). Set = ordered from a parent master
+  // distributor (sub-distributor restock flow). The parent then
+  // fulfills from their own warehouse and burns down their inventory.
+  // FUZE never sees the master→sub transaction directly.
+  targetDistributorId String?
+  targetDistributor   Distributor? @relation("MasterIncomingRestocks", fields: [targetDistributorId], references: [id])
 
   orderedById     String?  // User who placed the order
   // What was ordered
@@ -555,6 +602,7 @@ model DistributorRestockOrder {
   @@index([distributorId])
   @@index([status])
   @@index([createdAt])
+  @@index([targetDistributorId])
 }
 
 // ─────────────────────────────────────────────
@@ -2533,6 +2581,21 @@ model DistributorPricing {
   distributorId   String
   distributor     Distributor @relation("DistributorPricing", fields: [distributorId], references: [id])
 
+  // ─── Tier (1..5) ──────────────────────────────────
+  // Each distributor maintains up to 5 pricing tiers driven by
+  // geography, shipping cost, tariff/duty, and end-use margin
+  // (surface disinfectant for pro teams vs cotton sheet finishing
+  // is a 2-tier example). Tiers are referenced by index 1..5.
+  // tierName is free-text — distributors can rename per their own
+  // commercial logic ("US/CA Premium", "EU Hospitality", etc.) but
+  // we ship with a generic "Tier 1..5" so the labels don't bake in
+  // any opaque assumptions.
+  // tierIndex null = legacy default row (the single-tier shape we had
+  // before the multi-tier rollout). Order pricing falls back to the
+  // isDefault row when a factory's assigned tier doesn't match.
+  tierIndex       Int?     // 1..5
+  tierName        String?  // free-text label
+
   // Scope: can be per-factory, per-region, or default
   factoryId       String?  // If set, price applies to this factory only
   factory         Factory? @relation("FactoryDistributorPricing", fields: [factoryId], references: [id])
@@ -2564,6 +2627,7 @@ model DistributorPricing {
   @@index([distributorId])
   @@index([factoryId])
   @@index([region])
+  @@index([tierIndex])
 }
 
 model DistributorInventory {

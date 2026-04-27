@@ -71,13 +71,23 @@ async function findDistributorByCountry(country: string) {
 }
 
 /**
- * Resolve the best distributor + pricing for a factory order
+ * Resolve the best distributor + pricing for a factory order.
+ *
+ * Lookup priority for the price-per-liter (most specific wins):
+ *   1. Factory-specific pricing row (DistributorPricing.factoryId)
+ *   2. Tier-specific pricing row (DistributorPricing.tierIndex matches
+ *      Factory.distributorTierIndex). The 5-tier structure encodes the
+ *      distributor's geography / tariff / end-use margin logic.
+ *   3. Country-specific pricing row
+ *   4. Region-specific pricing row
+ *   5. Default pricing row (isDefault=true)
+ *   6. DEFAULT_PRICE_PER_LITER fallback
  */
 async function resolveDistributorPricing(factoryId: string, volumeLiters?: number) {
-  // 1. Get factory's assigned distributor
+  // 1. Get factory's assigned distributor + tier
   const factory = await prisma.factory.findUnique({
     where: { id: factoryId },
-    select: { distributorId: true, country: true },
+    select: { distributorId: true, country: true, distributorTierIndex: true },
   });
 
   // 2. If no assigned distributor, try geo-routing by country
@@ -119,12 +129,27 @@ async function resolveDistributorPricing(factoryId: string, volumeLiters?: numbe
     orderBy: { createdAt: "desc" },
   });
 
-  // Priority: factory-specific → country → region → default
+  // Priority: factory-specific → tier match → country → region → default
   const factoryPrice = pricing.find((p) => p.factoryId === factoryId);
-  const countryPrice = pricing.find((p) => p.country === factory.country && !p.factoryId);
+  // Tier match — only kicks in if the factory has been placed in a
+  // tier (1..5) AND the distributor has a row for that tier.
+  const tierPrice =
+    factory.distributorTierIndex != null
+      ? pricing.find(
+          (p) =>
+            p.tierIndex === factory.distributorTierIndex && !p.factoryId,
+        )
+      : undefined;
+  const countryPrice = pricing.find(
+    (p) => p.country === factory.country && !p.factoryId && p.tierIndex == null,
+  );
+  const regionPrice = pricing.find(
+    (p) => p.region && !p.country && !p.factoryId && p.tierIndex == null,
+  );
   const defaultPrice = pricing.find((p) => p.isDefault);
 
-  const bestPrice = factoryPrice || countryPrice || defaultPrice;
+  const bestPrice =
+    factoryPrice || tierPrice || countryPrice || regionPrice || defaultPrice;
 
   if (!bestPrice) {
     return { source: "DISTRIBUTOR", distributorId: factory.distributorId, pricePerLiter: DEFAULT_PRICE_PER_LITER, discount: 0 };

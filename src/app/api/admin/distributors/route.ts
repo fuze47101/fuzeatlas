@@ -83,6 +83,11 @@ export async function GET() {
         fuzeRestockPricePerLiter: d.fuzeRestockPricePerLiter,
         fuzeRestockCurrency: d.fuzeRestockCurrency,
         fuzeRestockNotes: d.fuzeRestockNotes,
+        // Master / sub hierarchy.
+        parentDistributorId: d.parentDistributorId,
+        subDistributorPricePerLiter: d.subDistributorPricePerLiter,
+        subDistributorCurrency: d.subDistributorCurrency,
+        subDistributorNotes: d.subDistributorNotes,
         // Inventory
         stockLiters: d.inventory?.fuzeStockLiters || 0,
         stockKg: (d.inventory?.fuzeStockLiters || 0) * 0.03,

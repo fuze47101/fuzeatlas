@@ -48,6 +48,27 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
     if (body.profileComplete !== undefined) data.profileComplete = body.profileComplete;
     if (data.name) data.name = data.name.trim();
 
+    // Supply-chain links — distributor assignment + tier index 1..5.
+    // Tier index null = use distributor's default pricing row.
+    if (body.distributorId !== undefined) {
+      data.distributorId = body.distributorId || null;
+    }
+    if (body.distributorTierIndex !== undefined) {
+      const v = body.distributorTierIndex;
+      if (v === null || v === "" || v === undefined) {
+        data.distributorTierIndex = null;
+      } else {
+        const n = parseInt(v);
+        if (!Number.isInteger(n) || n < 1 || n > 5) {
+          return NextResponse.json(
+            { ok: false, error: "distributorTierIndex must be 1–5 or null" },
+            { status: 400 },
+          );
+        }
+        data.distributorTierIndex = n;
+      }
+    }
+
     const factory = await prisma.factory.update({ where: { id: params.id }, data });
     return NextResponse.json({ ok: true, factory });
   } catch (e: any) {

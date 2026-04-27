@@ -107,7 +107,19 @@ export async function POST(req: Request) {
     }
 
     // Enforce international minimum: at least 1 Gaylord for non-USA
-    const distributor = await prisma.distributor.findUnique({ where: { id: distributorId } });
+    const distributor = await prisma.distributor.findUnique({
+      where: { id: distributorId },
+      include: {
+        parentDistributor: {
+          select: {
+            id: true,
+            name: true,
+            subDistributorPricePerLiter: true,
+            subDistributorCurrency: true,
+          },
+        },
+      },
+    });
     if (!distributor) {
       return NextResponse.json({ ok: false, error: "Distributor not found" }, { status: 404 });
     }
@@ -122,21 +134,45 @@ export async function POST(req: Request) {
     }
 
     const totalLiters = UNIT_LITERS[unitType] * qty;
-    const pricePerLiter = distributor.fuzeRestockPricePerLiter || 0;
-    const currency = distributor.fuzeRestockCurrency || "USD";
-    const totalPrice = pricePerLiter * totalLiters;
 
-    if (pricePerLiter === 0) {
-      return NextResponse.json({
-        ok: false,
-        error: "No FUZE pricing set for this distributor. Please contact FUZE HQ (andrew@fuze47.com) to establish pricing.",
-      }, { status: 400 });
+    // ─── Routing: master/standalone → FUZE; sub → parent distributor.
+    // Sub-distributors place restocks against their parent master, not
+    // FUZE HQ. Pricing comes from the parent's `subDistributorPricePerLiter`.
+    const parent = distributor.parentDistributor || null;
+    const ordersFromParent = !!parent;
+
+    let targetDistributorId: string | null = null;
+    let pricePerLiter: number;
+    let currency: string;
+
+    if (ordersFromParent) {
+      pricePerLiter = parent!.subDistributorPricePerLiter || 0;
+      currency = parent!.subDistributorCurrency || distributor.localCurrency || "USD";
+      targetDistributorId = parent!.id;
+      if (pricePerLiter === 0) {
+        return NextResponse.json({
+          ok: false,
+          error: `No master→sub pricing set on parent distributor (${parent!.name}). Ask the master to configure their sub-distributor wholesale rate before placing this order.`,
+        }, { status: 400 });
+      }
+    } else {
+      pricePerLiter = distributor.fuzeRestockPricePerLiter || 0;
+      currency = distributor.fuzeRestockCurrency || "USD";
+      if (pricePerLiter === 0) {
+        return NextResponse.json({
+          ok: false,
+          error: "No FUZE pricing set for this distributor. Please contact FUZE HQ (andrew@fuze47.com) to establish pricing.",
+        }, { status: 400 });
+      }
     }
+
+    const totalPrice = pricePerLiter * totalLiters;
 
     const order = await prisma.distributorRestockOrder.create({
       data: {
         orderNumber: generateOrderNumber(),
         distributorId,
+        targetDistributorId,
         orderedById: user.id,
         unitType,
         unitQuantity: qty,
@@ -152,26 +188,50 @@ export async function POST(req: Request) {
       },
     });
 
-    // Notify admins
+    // ─── Notify whoever fulfills this restock.
+    //   - Sub→Master: notify all DISTRIBUTOR_USERs at the master.
+    //   - Master/standalone→FUZE: notify FUZE admins (legacy behavior).
     try {
-      const admins = await prisma.user.findMany({
-        where: { role: { in: ["ADMIN", "EMPLOYEE"] }, status: "ACTIVE" },
-        select: { id: true },
-      });
-      await prisma.notification.createMany({
-        data: admins.map((a) => ({
-          userId: a.id,
-          type: "PO_STATUS",
-          title: "New Distributor Restock Order",
-          message: `${distributor.name} ordered ${qty} × ${unitType.replace("_", " ")} (${totalLiters}L) — ${currency} ${totalPrice.toFixed(2)}`,
-          link: `/admin/distributor-restock/${order.id}`,
-        })),
-      });
+      if (ordersFromParent) {
+        const masterUsers = await prisma.user.findMany({
+          where: {
+            role: "DISTRIBUTOR_USER",
+            distributorId: parent!.id,
+            status: "ACTIVE",
+          },
+          select: { id: true },
+        });
+        if (masterUsers.length > 0) {
+          await prisma.notification.createMany({
+            data: masterUsers.map((u: any) => ({
+              userId: u.id,
+              type: "PO_STATUS",
+              title: `New sub-restock — ${distributor.name}`,
+              message: `${qty} × ${unitType.replace("_", " ")} (${totalLiters}L) · ${currency} ${totalPrice.toFixed(2)}`,
+              link: `/distributor-portal/incoming-orders`,
+            })),
+          });
+        }
+      } else {
+        const admins = await prisma.user.findMany({
+          where: { role: { in: ["ADMIN", "EMPLOYEE"] }, status: "ACTIVE" },
+          select: { id: true },
+        });
+        await prisma.notification.createMany({
+          data: admins.map((a: any) => ({
+            userId: a.id,
+            type: "PO_STATUS",
+            title: "New Distributor Restock Order",
+            message: `${distributor.name} ordered ${qty} × ${unitType.replace("_", " ")} (${totalLiters}L) — ${currency} ${totalPrice.toFixed(2)}`,
+            link: `/admin/distributor-restock/${order.id}`,
+          })),
+        });
+      }
     } catch (e) {
-      console.error("Notify admins failed:", e);
+      console.error("Notify failed (non-blocking):", e);
     }
 
-    return NextResponse.json({ ok: true, order });
+    return NextResponse.json({ ok: true, order, ordersFromParent });
   } catch (e: any) {
     console.error("Restock POST error:", e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
