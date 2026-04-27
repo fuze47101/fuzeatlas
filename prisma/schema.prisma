@@ -258,6 +258,12 @@ model Brand {
   id     String @id @default(cuid())
   name   String @unique
   knackId String? @unique
+  // HubSpot migration — stamped on import so re-runs of the importer
+  // update existing rows instead of creating duplicates. Distinct from
+  // knackId (legacy Knack-app import). Both can coexist on the same
+  // brand if the same company existed in both systems.
+  hubspotId String? @unique
+  hubspotImportedAt DateTime?
 
   pipelineStage      PipelineStage @default(LEAD)
   customerType       String?
@@ -745,8 +751,14 @@ model Contact {
   seniority        String?   // vp, director, c_suite, manager
   emailStatus      String?   // verified, unavailable, extrapolated
   enrichedAt       DateTime?
-  enrichmentSource String?   // apollo, manual, research
+  enrichmentSource String?   // apollo, manual, research, hubspot_migration
   apolloId         String?   // Apollo person ID for re-enrichment
+  // HubSpot migration — stamped on import so re-runs of the importer
+  // update existing rows instead of creating duplicates. Falls through
+  // to email match for contacts that existed in Atlas before the
+  // HubSpot pull.
+  hubspotId        String?  @unique
+  hubspotImportedAt DateTime?
 
   // Outreach tracking
   outreachStatus   String?   @default("not_contacted") // not_contacted, contacted, responded, meeting_booked, not_interested
