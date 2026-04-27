@@ -25,7 +25,7 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import PrintButton from "./PrintButton";
+import PrintButton from "@/components/PrintButton";
 
 const FUZE_CYAN = "#00b4c3";
 

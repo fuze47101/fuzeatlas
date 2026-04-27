@@ -833,16 +833,25 @@ export default function AccessRequestsPage() {
             distributor: { icon: "🌍", label: "Distributor", v: "DISTRIBUTOR" },
           };
           return (
+            // Outer overlay: scrollable on small screens (items-start +
+            // py-4 + overflow-y-auto) so the modal never gets stuck
+            // taller-than-viewport with the Approve button unreachable.
+            // Andrew's mobile #P1 — couldn't scroll past the company
+            // picker on iPhone to hit Approve.
             <div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto py-4 px-4"
               onClick={() => setApproveModal(null)}
             >
               <div
-                className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden"
+                // Inner card is a flex column with a max height so the
+                // body section can scroll while the header + footer
+                // stay pinned. Keeps the Approve button reachable at
+                // every viewport size.
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden my-auto"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Modal Header */}
-                <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
                   <h3 className="text-lg font-bold text-slate-900">Approve Access Request</h3>
                   <p className="text-sm text-slate-500 mt-0.5">
                     <span className="font-medium">
@@ -852,7 +861,10 @@ export default function AccessRequestsPage() {
                   </p>
                 </div>
 
-                <div className="px-6 py-5 space-y-4">
+                {/* Modal Body — this is the scrollable region. Header
+                    above and footer below stay pinned in place so the
+                    Approve button is always tap-able. */}
+                <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0">
                   {/* What they typed — and what we'll save it as */}
                   <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg space-y-2">
                     <div>
@@ -1145,8 +1157,10 @@ export default function AccessRequestsPage() {
                   )}
                 </div>
 
-                {/* Modal Footer */}
-                <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-3">
+                {/* Modal Footer — pinned at the bottom of the modal,
+                    NOT the viewport. flex-shrink-0 keeps it from
+                    being squeezed by the scroll body above. */}
+                <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-3 flex-shrink-0">
                   <button
                     onClick={() => setApproveModal(null)}
                     className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900"

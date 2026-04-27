@@ -15,7 +15,7 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import PrintButton from "@/app/admin/fabric-report/[fabricId]/print/PrintButton";
+import PrintButton from "@/components/PrintButton";
 
 const FUZE_CYAN = "#00b4c3";
 
