@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
+import BulkEnrichButton from "@/components/BulkEnrichButton";
 
 const CATEGORIES = [
   "Activewear & Athleisure",
@@ -183,6 +184,13 @@ export default function BrandDiscoveryPage() {
             Every new brand created here gets up to 8 senior contacts (founder / C-suite / VP / head / director) attached via Apollo people-search by domain. The BD Wizard's <code className="bg-white px-1 rounded">contacts:&#123;some:&#123;&#125;&#125;</code> filter lets these brands through immediately — no separate enrichment pass needed.
           </p>
         </div>
+      </div>
+
+      {/* Bulk-enrich for the existing backlog of empty brands. Auto-fetch
+          shows the current "still empty" count; if zero, the button is
+          disabled and labelled "All enriched". */}
+      <div className="mb-6">
+        <BulkEnrichButton variant="banner" />
       </div>
 
       {/* Controls */}

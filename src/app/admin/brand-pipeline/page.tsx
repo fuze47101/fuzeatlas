@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import BulkEnrichButton from "@/components/BulkEnrichButton";
 
 // ── Types ──
 interface OutreachCheck {
@@ -248,7 +249,8 @@ export default function BrandPipelinePage() {
             page.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
+          <BulkEnrichButton variant="compact" />
           <Link
             href="/admin/brand-discovery"
             className="px-3 py-2 text-xs font-bold rounded-lg bg-cyan-100 text-cyan-700 hover:bg-cyan-200 transition"

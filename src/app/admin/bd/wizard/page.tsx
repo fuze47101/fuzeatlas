@@ -25,6 +25,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { EmailTemplatePicker } from "@/components/EmailTemplatePicker";
+import BulkEnrichButton from "@/components/BulkEnrichButton";
 import { renderTemplate } from "@/lib/email-template-vars";
 import { assessContact, partitionContacts } from "@/lib/contact-quality";
 
@@ -81,19 +82,10 @@ export default function BDWizardPage() {
   // "queue is empty." dominantReason drives the recommended-action
   // button.
   const [emptySummary, setEmptySummary] = useState<any>(null);
-  // Bulk-enrichment progress state — for the "Run Bulk Enrichment Now"
-  // button on the empty wizard. Each click calls the HTTP endpoint
-  // which processes up to 50 brands per call (Vercel function timeout
-  // safe). Results accumulate so the user can chew through 1000+
-  // brands by clicking "Run Again" without leaving the page.
-  const [bulkRunning, setBulkRunning] = useState(false);
-  const [bulkProgress, setBulkProgress] = useState<{
-    totalEnriched: number;
-    totalContactsCreated: number;
-    remaining: number;
-    lastBatchSize: number;
-    error?: string;
-  } | null>(null);
+  // Bulk-enrichment is now owned by the shared <BulkEnrichButton />
+  // component (src/components/BulkEnrichButton.tsx). Pages that surface
+  // it pass an onPipelineReady callback to react when the queue is
+  // healthy.
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -334,61 +326,6 @@ export default function BDWizardPage() {
       });
     } catch {
       // best-effort — the TTL will clean up anyway
-    }
-  }
-
-  // Run a single bulk-enrichment batch via the platform endpoint. The
-  // endpoint is bounded (50 brands per call) so each click stays under
-  // Vercel's function timeout. After it returns, if there are still
-  // empty brands, the UI shows a "Run Again" button. Once the queue
-  // is healthy, we auto-reload the wizard to pick up the now-available
-  // brands.
-  async function runBulkEnrich() {
-    setBulkRunning(true);
-    try {
-      const res = await fetch(
-        "/api/admin/bulk-enrich-empty-brands",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ limit: 50 }),
-        },
-      );
-      const data = await res.json();
-      if (!res.ok || !data.ok) {
-        setBulkProgress((p) => ({
-          totalEnriched: p?.totalEnriched || 0,
-          totalContactsCreated: p?.totalContactsCreated || 0,
-          remaining: p?.remaining || 0,
-          lastBatchSize: 0,
-          error: data.error || `HTTP ${res.status}`,
-        }));
-        return;
-      }
-      setBulkProgress((p) => ({
-        totalEnriched: (p?.totalEnriched || 0) + (data.brandsEnriched || 0),
-        totalContactsCreated:
-          (p?.totalContactsCreated || 0) + (data.contactsCreated || 0),
-        remaining: data.brandsRemainingNoContacts ?? 0,
-        lastBatchSize: data.brandsEnriched || 0,
-      }));
-      // If there's nothing left to enrich, refresh the wizard — there
-      // should be brands eligible to pick now.
-      if ((data.brandsRemainingNoContacts ?? 0) === 0) {
-        setTimeout(() => {
-          loadNextBrand();
-        }, 500);
-      }
-    } catch (e: any) {
-      setBulkProgress((p) => ({
-        totalEnriched: p?.totalEnriched || 0,
-        totalContactsCreated: p?.totalContactsCreated || 0,
-        remaining: p?.remaining || 0,
-        lastBatchSize: 0,
-        error: e?.message || "Network error",
-      }));
-    } finally {
-      setBulkRunning(false);
     }
   }
 
@@ -781,90 +718,15 @@ export default function BDWizardPage() {
               )}
             </div>
 
-            {/* In-UI bulk-enrichment trigger — runs the platform
-                endpoint, no CLI required. Each click processes up to
-                50 brands (Vercel function timeout safe). For 1000+
-                brands the user clicks "Run Again" repeatedly OR we
-                could eventually auto-loop; current model is one-click,
-                see-progress, decide-next. */}
+            {/* In-UI bulk-enrichment trigger — uses the shared
+                BulkEnrichButton component so the same logic runs from
+                the wizard, brand-discovery, and brand-pipeline pages. */}
             {emptySummary?.dominantReason === "no_contacts" && (
-              <div className="mt-6 max-w-3xl mx-auto p-4 bg-cyan-50 border-2 border-cyan-300 rounded-xl">
-                <div className="flex items-start gap-3">
-                  <div className="text-2xl">⚡</div>
-                  <div className="flex-1 text-left">
-                    <p className="font-bold text-cyan-900">
-                      Bulk-Enrich Now (one click, no terminal)
-                    </p>
-                    <p className="text-xs text-cyan-800 mt-0.5">
-                      Calls Apollo people-search by domain on the next
-                      50 empty brands and attaches up to 8 senior
-                      contacts per brand. Each batch takes ~30–60
-                      seconds. Click again to chew through the rest.
-                    </p>
-
-                    {bulkProgress && (
-                      <div className="mt-2 grid grid-cols-3 gap-2 text-xs bg-white rounded border border-cyan-200 p-2">
-                        <div>
-                          <p className="text-slate-500 font-bold uppercase text-[10px]">
-                            Brands enriched
-                          </p>
-                          <p className="text-base font-black text-cyan-900">
-                            {bulkProgress.totalEnriched}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-slate-500 font-bold uppercase text-[10px]">
-                            Contacts attached
-                          </p>
-                          <p className="text-base font-black text-cyan-900">
-                            {bulkProgress.totalContactsCreated}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-slate-500 font-bold uppercase text-[10px]">
-                            Still empty
-                          </p>
-                          <p
-                            className={`text-base font-black ${bulkProgress.remaining === 0 ? "text-emerald-700" : "text-amber-700"}`}
-                          >
-                            {bulkProgress.remaining}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                    {bulkProgress?.error && (
-                      <p className="text-xs text-red-700 mt-2 font-semibold">
-                        {bulkProgress.error}
-                      </p>
-                    )}
-
-                    <div className="mt-3 flex items-center gap-2 flex-wrap">
-                      <button
-                        onClick={runBulkEnrich}
-                        disabled={bulkRunning}
-                        className="px-4 py-2 bg-cyan-600 text-white rounded-lg text-sm font-bold hover:bg-cyan-700 disabled:opacity-50"
-                      >
-                        {bulkRunning
-                          ? "⏳ Enriching… (30-60s)"
-                          : bulkProgress
-                            ? bulkProgress.remaining > 0
-                              ? `Run Again (${bulkProgress.remaining} left)`
-                              : "✓ Pipeline ready — refreshing wizard"
-                            : "⚡ Bulk-Enrich Now"}
-                      </button>
-                      {bulkProgress &&
-                        bulkProgress.remaining === 0 &&
-                        !bulkRunning && (
-                          <button
-                            onClick={() => loadNextBrand()}
-                            className="px-3 py-2 text-sm text-cyan-700 hover:underline"
-                          >
-                            Open the wizard now →
-                          </button>
-                        )}
-                    </div>
-                  </div>
-                </div>
+              <div className="mt-6 max-w-3xl mx-auto">
+                <BulkEnrichButton
+                  variant="banner"
+                  onPipelineReady={() => loadNextBrand()}
+                />
               </div>
             )}
           </div>
