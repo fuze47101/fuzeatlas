@@ -29,11 +29,8 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import Papa from "papaparse";
 import { classifyHubSpotCompanyRow } from "@/lib/hubspot-classifier";
-
-declare const Papa: any;
-
-const PAPA_CDN = "https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js";
 
 const COMPANY_BATCH = 100;
 const CONTACT_BATCH = 100;
@@ -87,38 +84,20 @@ const initialProgress: ImportProgress = {
   createSamples: [],
 };
 
-function loadPapa(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (typeof Papa !== "undefined") return resolve();
-    const existing = document.querySelector(`script[src="${PAPA_CDN}"]`);
-    if (existing) {
-      existing.addEventListener("load", () => resolve());
-      existing.addEventListener("error", () => reject(new Error("Papa Parse load failed")));
-      return;
-    }
-    const s = document.createElement("script");
-    s.src = PAPA_CDN;
-    s.async = true;
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error("Papa Parse load failed"));
-    document.head.appendChild(s);
-  });
-}
-
 function parseCsvFile(file: File): Promise<CompanyRow[]> {
   return new Promise((resolve, reject) => {
-    Papa.parse(file, {
+    Papa.parse<CompanyRow>(file, {
       header: true,
       skipEmptyLines: true,
       worker: false,
-      complete: (res: any) => {
+      complete: (res) => {
         if (res.errors?.length) {
           // Non-fatal — Papa still returns parsed rows; just log.
           console.warn("[hubspot-csv] parse warnings:", res.errors.slice(0, 3));
         }
-        resolve(res.data || []);
+        resolve((res.data as CompanyRow[]) || []);
       },
-      error: (err: any) => reject(err),
+      error: (err) => reject(err),
     });
   });
 }
@@ -249,9 +228,6 @@ async function importInBatches<T>(
 }
 
 export default function HubSpotCSVImport() {
-  const [papaReady, setPapaReady] = useState(false);
-  const [papaError, setPapaError] = useState<string | null>(null);
-
   const [companyRows, setCompanyRows] = useState<CompanyRow[]>([]);
   const [companyPreview, setCompanyPreview] = useState<PreviewStats | null>(null);
   const [companyProgress, setCompanyProgress] = useState<ImportProgress>({
@@ -266,12 +242,6 @@ export default function HubSpotCSVImport() {
 
   const companyFileRef = useRef<HTMLInputElement | null>(null);
   const contactFileRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    loadPapa()
-      .then(() => setPapaReady(true))
-      .catch((e) => setPapaError(e.message || "Failed to load CSV parser"));
-  }, []);
 
   async function onCompanyFile(file: File) {
     setCompanyProgress({ ...initialProgress });
@@ -339,17 +309,6 @@ export default function HubSpotCSVImport() {
             filtered out automatically.
           </p>
         </div>
-        {!papaReady && !papaError && (
-          <span className="text-xs text-slate-500">Loading CSV parser…</span>
-        )}
-        {papaError && (
-          <span className="text-xs text-red-700">{papaError}</span>
-        )}
-        {papaReady && (
-          <span className="text-xs text-emerald-700 font-semibold">
-            ✓ CSV parser ready
-          </span>
-        )}
       </div>
 
       {/* Step 1 — Companies */}
@@ -373,7 +332,6 @@ export default function HubSpotCSVImport() {
             ref={companyFileRef}
             type="file"
             accept=".csv,text/csv"
-            disabled={!papaReady}
             onChange={(e) => {
               const f = e.target.files?.[0];
               if (f) onCompanyFile(f);
@@ -508,7 +466,6 @@ export default function HubSpotCSVImport() {
             ref={contactFileRef}
             type="file"
             accept=".csv,text/csv"
-            disabled={!papaReady}
             onChange={(e) => {
               const f = e.target.files?.[0];
               if (f) onContactFile(f);
