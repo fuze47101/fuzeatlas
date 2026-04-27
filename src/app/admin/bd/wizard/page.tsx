@@ -649,7 +649,7 @@ export default function BDWizardPage() {
                     📇 Brands Needing Enrichment ({emptySummary.leadNoContacts})
                   </a>
                   <Link
-                    href="/brands/discover"
+                    href="/admin/brand-discovery"
                     className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm hover:bg-slate-50"
                   >
                     Run Discovery
@@ -658,7 +658,7 @@ export default function BDWizardPage() {
               ) : (
                 <>
                   <Link
-                    href="/brands/discover"
+                    href="/admin/brand-discovery"
                     className="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm font-medium hover:bg-sky-700"
                   >
                     Run Discovery

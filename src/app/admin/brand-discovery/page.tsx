@@ -139,22 +139,50 @@ export default function BrandDiscoveryPage() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
-            <Link href="/dashboard" className="hover:text-[#00b4c3]">Dashboard</Link>
+            <Link href="/home" className="hover:text-[#00b4c3]">Home</Link>
+            <span>/</span>
+            <Link href="/admin/bd/wizard" className="hover:text-[#00b4c3]">BD Wizard</Link>
             <span>/</span>
             <span>Brand Discovery</span>
           </div>
           <h1 className="text-2xl font-black text-slate-900">🌎 Worldwide Brand Discovery</h1>
-          <p className="text-slate-500 mt-1">Multi-AI discovery engine — finds, validates, and imports textile brands automatically</p>
+          <p className="text-slate-500 mt-1 max-w-2xl">
+            Multi-AI engine — finds + validates textile brands across Anthropic, OpenAI, and Grok, then auto-attaches Apollo contacts to every new brand so the BD Wizard can use them immediately.
+          </p>
         </div>
-        {stats && (
-          <div className="text-right">
-            <div className="text-3xl font-black text-[#00b4c3]">{stats.stats?.total || 0}</div>
-            <div className="text-xs text-slate-500">Total Brands in DB</div>
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+          {stats && (
+            <div className="text-right">
+              <div className="text-3xl font-black text-[#00b4c3]">{stats.stats?.total || 0}</div>
+              <div className="text-xs text-slate-500">Total Brands in DB</div>
+            </div>
+          )}
+          <Link
+            href="/admin/bd/wizard"
+            className="px-3 py-2 border border-slate-300 rounded-lg text-sm hover:bg-slate-50 whitespace-nowrap"
+            title="Round-trip back to the wizard once new brands land"
+          >
+            ← Back to Wizard
+          </Link>
+        </div>
+      </div>
+
+      {/* Auto-enrich callout — this is new behavior since we wired Apollo
+          people-search into /api/brands/discover. Worth telling reps so
+          they know contacts will land alongside the brand records. */}
+      <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-3">
+        <span className="text-2xl">📇</span>
+        <div className="flex-1 text-sm">
+          <p className="font-bold text-emerald-900">
+            Auto-enrichment is on
+          </p>
+          <p className="text-emerald-800 mt-0.5">
+            Every new brand created here gets up to 8 senior contacts (founder / C-suite / VP / head / director) attached via Apollo people-search by domain. The BD Wizard's <code className="bg-white px-1 rounded">contacts:&#123;some:&#123;&#125;&#125;</code> filter lets these brands through immediately — no separate enrichment pass needed.
+          </p>
+        </div>
       </div>
 
       {/* Controls */}
@@ -230,11 +258,19 @@ export default function BrandDiscoveryPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-slate-900">Discovery Results — {result.summary.category}</h2>
-            <div className="flex gap-3 text-sm">
+            <div className="flex gap-3 text-sm flex-wrap">
               <span className="px-2 py-1 bg-slate-100 rounded">AI Sources: {result.summary.aiSourcesUsed.join(", ")}</span>
               <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">Found: {result.summary.totalDiscovered}</span>
               <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded">After Dedup: {result.summary.afterDedup}</span>
               <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded">Created: {result.summary.created}</span>
+              {/* Total auto-enriched contacts across all created brands */}
+              <span className="px-2 py-1 bg-cyan-100 text-cyan-700 rounded">
+                📇 Contacts attached:{" "}
+                {(result.brands || []).reduce(
+                  (s: number, b: any) => s + (b.enrichedContactCount || 0),
+                  0,
+                )}
+              </span>
             </div>
           </div>
 
@@ -246,6 +282,7 @@ export default function BrandDiscoveryPage() {
                   <th className="pb-2 font-semibold text-slate-600">Segment</th>
                   <th className="pb-2 font-semibold text-slate-600">Priority</th>
                   <th className="pb-2 font-semibold text-slate-600">Validation</th>
+                  <th className="pb-2 font-semibold text-slate-600">Contacts</th>
                   <th className="pb-2 font-semibold text-slate-600">AI Sources</th>
                   <th className="pb-2 font-semibold text-slate-600">Actions</th>
                 </tr>
@@ -271,6 +308,15 @@ export default function BrandDiscoveryPage() {
                       <span className={`text-xs font-bold ${brand.validationCount >= 3 ? "text-emerald-600" : brand.validationCount >= 2 ? "text-blue-600" : "text-amber-600"}`}>
                         {brand.validationCount} AI{brand.validationCount > 1 ? "s" : ""} confirmed
                       </span>
+                    </td>
+                    <td className="py-3 text-xs">
+                      {(brand.enrichedContactCount ?? 0) > 0 ? (
+                        <span className="px-2 py-0.5 rounded bg-cyan-100 text-cyan-700 font-bold">
+                          📇 {brand.enrichedContactCount}
+                        </span>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
                     </td>
                     <td className="py-3 text-xs text-slate-500">{brand.sources?.join(", ")}</td>
                     <td className="py-3">
