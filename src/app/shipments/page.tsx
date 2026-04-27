@@ -437,9 +437,9 @@ export default function ShipmentsPage() {
 
       {/* Edit Shipment Modal (F-004) */}
       {editingShipment && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 overflow-y-auto">
           <div className="absolute inset-0 bg-black/50" onClick={() => setEditingShipment(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto my-auto">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
               <h2 className="text-lg font-bold text-slate-900">Edit Shipment</h2>
               <button onClick={() => setEditingShipment(null)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>

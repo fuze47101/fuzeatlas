@@ -512,9 +512,9 @@ export default function TestsPage() {
 
       {/* Edit modal */}
       {editingTest && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 overflow-y-auto">
           <div className="absolute inset-0 bg-black/50" onClick={() => setEditingTest(null)} />
-          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto my-auto">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-900">{t.tests.editTest}</h2>
               <button onClick={() => setEditingTest(null)} className="text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>

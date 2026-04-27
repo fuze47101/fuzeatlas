@@ -712,8 +712,8 @@ export default function BDWizardPage() {
                auto-sending a dupe, we pop a modal with the context so the
                rep can say "yes, send anyway" (force:true) or bail out. */}
             {duplicateWarn && selectedContact && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-                <div className="bg-white rounded-2xl shadow-xl border border-amber-200 max-w-md w-full p-6">
+              <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/40 p-4 overflow-y-auto">
+                <div className="bg-white rounded-2xl shadow-xl border border-amber-200 max-w-md w-full max-h-[calc(100vh-2rem)] overflow-y-auto p-6 my-auto">
                   <div className="flex items-start gap-3">
                     <div className="text-3xl leading-none">⚠️</div>
                     <div className="flex-1">

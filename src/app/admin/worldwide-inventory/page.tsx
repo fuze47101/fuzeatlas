@@ -120,7 +120,16 @@ export default function WorldwideInventoryDashboard() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Worldwide Inventory</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Global FUZE stock levels, consumption trends, and shipment tracking
+            Global FUZE stock levels, consumption trends, hangtag inventory, and shipment tracking — the CFO/dashboard view.
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            Looking to spot-check who's about to run out instead?{" "}
+            <a
+              href="/admin/distributors/inventory"
+              className="text-blue-600 hover:underline font-semibold"
+            >
+              Open the burn-rate / days-of-stock view →
+            </a>
           </p>
         </div>
         <div className="flex items-center gap-2">

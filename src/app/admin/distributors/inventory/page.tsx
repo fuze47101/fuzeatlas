@@ -113,11 +113,21 @@ export default function AdminDistributorsInventoryPage() {
             <span>Inventory</span>
           </div>
           <h1 className="text-3xl font-black text-slate-900">
-            Distributor Inventory
+            Distributor Inventory & Burn Rate
           </h1>
           <p className="text-slate-600 mt-1">
-            Stock on hand, 90-day burn rate, projected runout — across every
-            active distributor.
+            Stock on hand, 90-day burn rate, projected runout — sortable
+            spot-check view across every active distributor.
+          </p>
+          <p className="text-xs text-slate-400 mt-1">
+            Looking for hangtag inventory, weekly consumption charts, or
+            in-transit shipment tracking?{" "}
+            <Link
+              href="/admin/worldwide-inventory"
+              className="text-blue-600 hover:underline font-semibold"
+            >
+              Open the worldwide dashboard view →
+            </Link>
           </p>
         </div>
       </div>
