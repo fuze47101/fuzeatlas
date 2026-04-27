@@ -2,6 +2,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { aiFetch, getUserIdFromHeaders } from "@/lib/ai-fetch";
+import {
+  extractDomain,
+  searchApolloByDomain,
+  apolloPersonToContactData,
+} from "@/lib/apollo-people-search";
 
 /**
  * POST /api/brands/discover
@@ -289,6 +294,49 @@ export async function POST(req: Request) {
           },
         });
 
+        // ─── AUTO-ENRICH — Apollo people-search by domain ───────────
+        // Without this, discovery creates empty Brand rows that the
+        // BD Wizard skips (its filter is `contacts: { some: {} }`).
+        // That's how Ryan ended up "out of contacts" with 1083 LEAD
+        // brands and zero attached people. Now we hit Apollo as soon
+        // as the brand is created and write up to 8 senior contacts
+        // (founder / c_suite / vp / head / director) ranked toward
+        // FUZE buyer-persona keywords.
+        //
+        // Fire-and-forget on the contact write — if Apollo is rate-
+        // limited, the API key is missing, or the domain is junk, the
+        // brand still lands in the pipeline; the next run of
+        // bulk-enrich-empty-brands.ts will pick it up. Discovery must
+        // never be blocked on enrichment.
+        let enrichedContactCount = 0;
+        try {
+          const domain = extractDomain(brand.website);
+          if (domain) {
+            const people = await searchApolloByDomain(domain);
+            for (const p of people) {
+              try {
+                await prisma.contact.create({
+                  data: {
+                    brandId: newBrand.id,
+                    ...apolloPersonToContactData(p, "apollo_discover"),
+                  },
+                });
+                enrichedContactCount++;
+              } catch (contactErr: any) {
+                // Duplicate apolloId / unique constraint / etc — skip.
+                console.warn(
+                  `  Contact create failed for ${brand.name}: ${contactErr.message}`,
+                );
+              }
+            }
+          }
+        } catch (enrichErr: any) {
+          // Apollo failure shouldn't block the whole batch.
+          console.warn(
+            `  Auto-enrich failed for ${brand.name}: ${enrichErr.message}`,
+          );
+        }
+
         createdBrands.push({
           id: newBrand.id,
           name: newBrand.name,
@@ -297,6 +345,7 @@ export async function POST(req: Request) {
           priorityTier: brand.priorityTier,
           validationCount: brand._validationCount,
           sources: brand._sources,
+          enrichedContactCount,
         });
         created++;
       } catch (createErr: any) {

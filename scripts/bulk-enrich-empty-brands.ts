@@ -2,28 +2,23 @@
 /**
  * Bulk-enrich LEAD brands that have zero contacts.
  *
- * Why this exists: bd-pipeline-status.ts surfaced 1083 LEAD brands with
- * no contacts attached — that's why Ryan's wizard returned "out of
- * contacts." The discovery cron creates Brand records, but it doesn't
- * follow up with people-search to populate them, so brands land empty.
+ * Companion to the auto-enrich-on-discovery flow in
+ * /api/brands/discover. That flow handles new brands going forward;
+ * this script catches up the existing 1000+ empty brands that landed
+ * before auto-enrich was wired in.
  *
- * For each empty LEAD brand with a parseable domain, this script calls
- * Apollo's mixed_people/search with the brand's domain + a target set
- * of senior titles (c_suite, vp, director, founder, head). It writes
- * up to N contacts per brand and stamps each Contact with email,
- * linkedin, title, seniority, and apolloId — same shape the wizard
- * already reads.
+ * Both paths share src/lib/apollo-people-search.ts so the enrichment
+ * shape stays identical.
  *
- * Apollo cost per call: ~1 credit. 1083 brands ≈ 1083 credits. Use
- * --limit to cap the batch and sanity-check on a small slice first.
+ * Apollo cost: ~1 credit per brand (single mixed_people/search call).
  *
- *   npx tsx scripts/bulk-enrich-empty-brands.ts                  # dry run, all
- *   npx tsx scripts/bulk-enrich-empty-brands.ts --limit 25       # dry, first 25
- *   npx tsx scripts/bulk-enrich-empty-brands.ts --limit 25 --apply  # write 25
- *   npx tsx scripts/bulk-enrich-empty-brands.ts --apply          # write all
+ *   npx tsx scripts/bulk-enrich-empty-brands.ts                   # dry, all
+ *   npx tsx scripts/bulk-enrich-empty-brands.ts --limit=25        # dry, first 25
+ *   npx tsx scripts/bulk-enrich-empty-brands.ts --limit=25 --apply
+ *   npx tsx scripts/bulk-enrich-empty-brands.ts --apply           # write all
  *
  * Skips brands that:
- *   - already have at least one contact (defensive)
+ *   - already have at least one contact
  *   - have no website / unparseable website
  *   - have validationStatus in dead/duplicate/irrelevant
  *
@@ -33,90 +28,21 @@
  */
 
 import { PrismaClient } from "@prisma/client";
+import {
+  extractDomain,
+  searchApolloByDomain,
+  apolloPersonToContactData,
+} from "../src/lib/apollo-people-search";
 
 const prisma = new PrismaClient();
 
 const APPLY = process.argv.includes("--apply");
 const LIMIT_ARG = process.argv.find((a) => a.startsWith("--limit="));
 const LIMIT = LIMIT_ARG ? parseInt(LIMIT_ARG.split("=")[1], 10) : 0;
-const PER_BRAND_LIMIT = 8; // up to 8 contacts per brand
-const APOLLO_API_KEY = process.env.APOLLO_API_KEY;
 
-if (!APOLLO_API_KEY) {
+if (!process.env.APOLLO_API_KEY) {
   console.error("APOLLO_API_KEY not set in environment.");
   process.exit(1);
-}
-
-// Senior titles we care about for FUZE BD outreach. Apollo's
-// person_seniorities is the cleanest filter; we layer person_titles
-// to bias toward sustainability / sourcing / product / R&D roles
-// since those are the FUZE buyer personas.
-const SENIORITIES = ["founder", "c_suite", "owner", "partner", "vp", "head", "director"];
-const TITLE_KEYWORDS = [
-  "sustainability",
-  "sourcing",
-  "product",
-  "innovation",
-  "supply chain",
-  "operations",
-  "merchandising",
-  "design",
-  "research",
-  "development",
-  "ceo",
-  "founder",
-  "president",
-  "coo",
-  "cpo",
-];
-
-function extractDomain(website: string | null): string | null {
-  if (!website) return null;
-  try {
-    const url = website.startsWith("http") ? website : `https://${website}`;
-    const host = new URL(url).hostname.replace(/^www\./, "").toLowerCase();
-    if (!host || host === "undefined" || host.length < 4) return null;
-    return host;
-  } catch {
-    return null;
-  }
-}
-
-async function searchApollo(domain: string): Promise<any[]> {
-  const body: any = {
-    q_organization_domains_list: [domain],
-    person_seniorities: SENIORITIES,
-    page: 1,
-    per_page: 25,
-  };
-  try {
-    const res = await fetch("https://api.apollo.io/api/v1/mixed_people/search", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Api-Key": APOLLO_API_KEY,
-      },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-      const txt = await res.text().catch(() => "");
-      console.warn(`  ⚠ Apollo HTTP ${res.status} for ${domain}: ${txt.slice(0, 120)}`);
-      return [];
-    }
-    const json = await res.json();
-    const people = Array.isArray(json.people) ? json.people : [];
-    // Re-rank: titles matching our keywords first, then by seniority order.
-    const rank = (p: any) => {
-      const title = (p.title || "").toLowerCase();
-      const titleHit = TITLE_KEYWORDS.findIndex((k) => title.includes(k));
-      const seniorityRank = SENIORITIES.indexOf(p.seniority || "zzz");
-      return (titleHit === -1 ? 99 : titleHit) * 100 + (seniorityRank === -1 ? 99 : seniorityRank);
-    };
-    return people.sort((a: any, b: any) => rank(a) - rank(b)).slice(0, PER_BRAND_LIMIT);
-  } catch (e: any) {
-    console.warn(`  ⚠ Apollo fetch failed for ${domain}: ${e.message}`);
-    return [];
-  }
 }
 
 async function main() {
@@ -143,7 +69,7 @@ async function main() {
     console.log("DRY RUN — no writes will be made. Pass --apply to enrich.\n");
   }
 
-  let stats = {
+  const stats = {
     processed: 0,
     skippedNoDomain: 0,
     foundContacts: 0,
@@ -161,7 +87,7 @@ async function main() {
       continue;
     }
 
-    const people = await searchApollo(domain);
+    const people = await searchApolloByDomain(domain);
     if (people.length === 0) {
       stats.apolloEmpty++;
       console.log(`  ✗ ${b.name} (${domain}) — Apollo returned 0 senior people`);
@@ -176,41 +102,21 @@ async function main() {
       console.log(
         `      · ${fullName} — ${p.title || "(no title)"} ${p.seniority ? `[${p.seniority}]` : ""}${p.email ? ` · ${p.email}` : ""}`,
       );
-
       if (!APPLY) continue;
 
       const apolloId = p.id || null;
-      // Idempotency: if a contact with this apolloId already exists on
-      // this brand, update it instead of creating a duplicate.
       const existing = apolloId
         ? await prisma.contact.findFirst({
             where: { brandId: b.id, apolloId },
             select: { id: true },
           })
         : null;
-
-      const data: any = {
+      const data = {
         brandId: b.id,
-        firstName: p.first_name || null,
-        lastName: p.last_name || null,
-        name: fullName || null,
-        title: p.title || null,
-        jobTitle: p.title || null,
-        email:
-          p.email && p.email_status !== "unavailable" ? p.email : null,
-        emailStatus: p.email_status || null,
-        linkedinUrl: p.linkedin_url || null,
-        seniority: p.seniority || null,
-        apolloId,
-        enrichmentSource: "apollo_bulk",
-        enrichedAt: new Date(),
+        ...apolloPersonToContactData(p, "apollo_bulk"),
       };
-
       if (existing) {
-        await prisma.contact.update({
-          where: { id: existing.id },
-          data,
-        });
+        await prisma.contact.update({ where: { id: existing.id }, data });
         stats.contactsUpdated++;
       } else {
         await prisma.contact.create({ data });
@@ -218,8 +124,7 @@ async function main() {
       }
     }
 
-    // Light rate-limit pause: Apollo's standard plan allows ~600 req/min,
-    // but a 50ms delay between requests is friendly + keeps logs readable.
+    // Light rate-limit pause: friendly to Apollo + keeps logs readable.
     await new Promise((r) => setTimeout(r, 50));
   }
 
