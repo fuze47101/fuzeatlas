@@ -60,7 +60,19 @@ const ADVANCED_STAGES = [
   "CUSTOMER_WON",
 ];
 
-const BD_ROLES = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP"];
+// "High tide raises all boats" — distributor-side BD reps (Jeremy at SRS,
+// Kathir at Harris & Menuk, Tandy at Texwell, Scott Smith at SRS) all
+// run BD outreach for FUZE alongside their distributor day-jobs. Letting
+// DISTRIBUTOR_USER read the scoreboard means they see the team-wide BD
+// picture and their own row, exactly like an internal rep.
+const BD_ROLES = [
+  "ADMIN",
+  "EMPLOYEE",
+  "SALES_MANAGER",
+  "SALES_REP",
+  "BD_REP",
+  "DISTRIBUTOR_USER",
+];
 
 export async function GET(req: Request) {
   try {
@@ -118,10 +130,24 @@ export async function GET(req: Request) {
         if (s.repId) activityIds.add(s.repId);
       }
 
+      // Include DISTRIBUTOR_USER in the canonical role list so distributor-
+      // side BD reps (Jeremy, Kathir, Tandy, Scott Smith — anyone who can
+      // legitimately run wizard outreach for FUZE while also serving a
+      // specific distributor) appear on the scoreboard alongside the
+      // FUZE-direct reps.
       reps = await prisma.user.findMany({
         where: {
           OR: [
-            { role: { in: ["SALES_REP", "SALES_MANAGER", "BD_REP"] } },
+            {
+              role: {
+                in: [
+                  "SALES_REP",
+                  "SALES_MANAGER",
+                  "BD_REP",
+                  "DISTRIBUTOR_USER",
+                ],
+              },
+            },
             ...(activityIds.size > 0
               ? [{ id: { in: Array.from(activityIds) } }]
               : []),

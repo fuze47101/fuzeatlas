@@ -76,7 +76,8 @@ export async function POST(req: Request) {
       user.role === "EMPLOYEE" ||
       user.role === "SALES_MANAGER" ||
       user.role === "SALES_REP" ||
-      user.role === "BD_REP";
+      user.role === "BD_REP" ||
+      user.role === "DISTRIBUTOR_USER";
     if (!isBDEligible) {
       return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
     }

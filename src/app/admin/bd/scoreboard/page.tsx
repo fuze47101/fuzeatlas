@@ -71,7 +71,8 @@ export default function BDScoreboardPage() {
       user.role === "EMPLOYEE" ||
       user.role === "SALES_MANAGER" ||
       user.role === "SALES_REP" ||
-      user.role === "BD_REP";
+      user.role === "BD_REP" ||
+      user.role === "DISTRIBUTOR_USER";
     if (!allowed) {
       router.push("/dashboard");
       return;

@@ -15,6 +15,22 @@ interface Distributor {
   fuzeRestockPricePerLiter: number | null;
   fuzeRestockCurrency: string | null;
   fuzeRestockNotes: string | null;
+  parentDistributorId: string | null;
+  parentDistributor: {
+    id: string;
+    name: string;
+    country: string | null;
+    subDistributorPricePerLiter: number | null;
+    subDistributorCurrency: string | null;
+    subDistributorNotes: string | null;
+  } | null;
+}
+
+interface EffectivePricing {
+  pricePerLiter: number | null;
+  currency: string;
+  sourceName: string;
+  ordersFromParent: boolean;
 }
 
 interface Order {
@@ -59,6 +75,7 @@ export default function DistributorRestockPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [distributor, setDistributor] = useState<Distributor | null>(null);
+  const [effective, setEffective] = useState<EffectivePricing | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -88,6 +105,7 @@ export default function DistributorRestockPage() {
       const data = await res.json();
       if (data.ok) {
         setDistributor(data.distributor);
+        setEffective(data.effective || null);
         setOrders(data.orders);
       } else {
         setError(data.error || "Failed to load");
@@ -148,8 +166,15 @@ export default function DistributorRestockPage() {
     );
   }
 
-  const price = distributor?.fuzeRestockPricePerLiter || 0;
-  const currency = distributor?.fuzeRestockCurrency || "USD";
+  // Use the effective pricing the API computed (handles sub-of-master
+  // case automatically). Fall back to local fields for safety.
+  const price =
+    effective?.pricePerLiter ?? distributor?.fuzeRestockPricePerLiter ?? 0;
+  const currency =
+    effective?.currency || distributor?.fuzeRestockCurrency || "USD";
+  const sourceName = effective?.sourceName || "FUZE HQ";
+  const ordersFromParent = !!effective?.ordersFromParent;
+  const parent = distributor?.parentDistributor || null;
   const isUSA = (distributor?.country || "").toUpperCase().includes("USA") ||
                 (distributor?.country || "").toUpperCase().includes("UNITED STATES");
 
@@ -167,10 +192,16 @@ export default function DistributorRestockPage() {
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/distributor-portal" className="hover:text-[#00b4c3]">Distributor Portal</Link>
           <span>›</span>
-          <span>Restock from FUZE</span>
+          <span>Restock from {sourceName}</span>
         </div>
-        <h1 className="text-3xl font-black text-slate-900 mb-1">Restock from FUZE</h1>
-        <p className="text-slate-600">Order FUZE product directly from FUZE HQ in Salt Lake City</p>
+        <h1 className="text-3xl font-black text-slate-900 mb-1">
+          Restock from {sourceName}
+        </h1>
+        <p className="text-slate-600">
+          {ordersFromParent && parent
+            ? `Order FUZE product from your master distributor — ${parent.name}${parent.country ? `, ${parent.country}` : ""}.`
+            : "Order FUZE product directly from FUZE HQ in Salt Lake City"}
+        </p>
       </div>
 
       {/* Alerts */}
@@ -190,24 +221,39 @@ export default function DistributorRestockPage() {
       <div className="mb-6 bg-gradient-to-br from-[#00b4c3] to-[#009ba8] rounded-xl p-6 text-white shadow-lg">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm text-white/80 mb-1">Your FUZE Price</p>
+            <p className="text-sm text-white/80 mb-1">
+              Your price from {sourceName}
+            </p>
             {price > 0 ? (
               <>
                 <p className="text-4xl font-black">{formatCurrency(price, currency)}<span className="text-lg font-medium">/liter</span></p>
-                <p className="text-sm text-white/80 mt-1">All orders priced in {currency} · FOB Salt Lake City</p>
+                <p className="text-sm text-white/80 mt-1">
+                  All orders priced in {currency}
+                  {ordersFromParent
+                    ? ""
+                    : " · FOB Salt Lake City"}
+                </p>
               </>
             ) : (
               <>
                 <p className="text-2xl font-black">Pricing Not Set</p>
-                <p className="text-sm text-white/90 mt-1">Contact andrew@fuze47.com to establish your pricing</p>
+                <p className="text-sm text-white/90 mt-1">
+                  {ordersFromParent
+                    ? `Ask ${sourceName} to set their master→sub wholesale price.`
+                    : "Contact andrew@fuze47.com to establish your pricing"}
+                </p>
               </>
             )}
           </div>
           <span className="text-4xl">💧</span>
         </div>
-        {distributor?.fuzeRestockNotes && (
+        {(ordersFromParent
+          ? parent?.subDistributorNotes
+          : distributor?.fuzeRestockNotes) && (
           <div className="mt-3 pt-3 border-t border-white/20 text-sm text-white/90">
-            {distributor.fuzeRestockNotes}
+            {ordersFromParent
+              ? parent?.subDistributorNotes
+              : distributor?.fuzeRestockNotes}
           </div>
         )}
       </div>

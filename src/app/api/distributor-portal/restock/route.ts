@@ -55,6 +55,21 @@ export async function GET(req: Request) {
         fuzeRestockPricePerLiter: true,
         fuzeRestockCurrency: true,
         fuzeRestockNotes: true,
+        parentDistributorId: true,
+        // For SUB distributors: the parent's master→sub wholesale rate
+        // is what they actually pay, NOT fuzeRestockPricePerLiter (FUZE
+        // never ships to a sub directly). Surfacing both so the page
+        // can show "you order from {parent}" UI when applicable.
+        parentDistributor: {
+          select: {
+            id: true,
+            name: true,
+            country: true,
+            subDistributorPricePerLiter: true,
+            subDistributorCurrency: true,
+            subDistributorNotes: true,
+          },
+        },
       },
     });
 
@@ -68,11 +83,32 @@ export async function GET(req: Request) {
       take: 50,
     });
 
+    // Effective pricing for the order form — sub distributors order
+    // from their parent at the master→sub price; everyone else orders
+    // from FUZE at fuzeRestockPricePerLiter. UI reads `effective*`
+    // fields so it doesn't need to know which case it's in.
+    const ordersFromParent = !!distributor.parentDistributor;
+    const effectivePricePerLiter = ordersFromParent
+      ? distributor.parentDistributor!.subDistributorPricePerLiter
+      : distributor.fuzeRestockPricePerLiter;
+    const effectiveCurrency = ordersFromParent
+      ? distributor.parentDistributor!.subDistributorCurrency || "USD"
+      : distributor.fuzeRestockCurrency || "USD";
+    const effectiveSourceName = ordersFromParent
+      ? distributor.parentDistributor!.name
+      : "FUZE HQ";
+
     return NextResponse.json({
       ok: true,
       distributor,
       orders,
       unitLiters: UNIT_LITERS,
+      effective: {
+        pricePerLiter: effectivePricePerLiter,
+        currency: effectiveCurrency,
+        sourceName: effectiveSourceName,
+        ordersFromParent,
+      },
     });
   } catch (e: any) {
     console.error("Restock GET error:", e);
