@@ -64,6 +64,7 @@ export default function BrandDetailPage() {
     | "submissions"
     | "sows"
     | "tests"
+    | "reports"
     | "research"
   >("details");
   const [research, setResearch] = useState<any>(null);
@@ -593,6 +594,7 @@ export default function BrandDetailPage() {
             "submissions",
             "tests",
             "sows",
+            "reports",
             "research",
           ] as const
         ).map((tabKey) => {
@@ -606,6 +608,7 @@ export default function BrandDetailPage() {
             submissions: t.brandTabs.submissions,
             tests: t.nav.testResults || "Tests",
             sows: t.brandTabs.sows,
+            reports: "Reports",
             research: t.brandTabs.research,
           };
           return (
@@ -1299,6 +1302,9 @@ export default function BrandDetailPage() {
 
       {/* ── CRM Activity Tab ── */}
       {tab === "activity" && <ActivityFeed entityType="brand" entityId={id as string} />}
+
+      {/* ── Reports Tab — Phase 2 Application Reports sent for this brand ── */}
+      {tab === "reports" && <BrandReportsPanel brandId={id as string} />}
 
       {/* ── Research Tab ── */}
       {tab === "research" && (
@@ -2751,4 +2757,275 @@ function sowStatusColor(status: string) {
     default:
       return "bg-slate-100 text-slate-600";
   }
+}
+
+// ─── BrandReportsPanel ──────────────────────────────────────────
+// Phase 2 Application Reports emailed for this brand's fabrics. Pulls
+// from /api/admin/brands/[id]/report-shares, shows engagement stats
+// (sent / opened / open-rate) at the top + a sortable list of every
+// share with view-count tracking.
+//
+// Each row links to /report/[token] (the customer-facing public URL,
+// useful for "what did they actually see?") and to the underlying
+// fabric. Reps can re-send by jumping into the per-fabric send flow
+// at /admin/fabric-report/[fabricId]/send.
+
+interface BrandReportShare {
+  id: string;
+  token: string;
+  recipientEmail: string;
+  recipientName: string | null;
+  subjectLine: string | null;
+  tier: string;
+  sentAt: string;
+  expiresAt: string;
+  revokedAt: string | null;
+  viewedCount: number;
+  lastViewedAt: string | null;
+  fabric: {
+    id: string;
+    fuzeNumber: number | null;
+    customerCode: string | null;
+    customerReference: string | null;
+    fabricCategory: string | null;
+    color: string | null;
+    weightGsm: number | null;
+  };
+}
+
+function BrandReportsPanel({ brandId }: { brandId: string }) {
+  const [shares, setShares] = useState<BrandReportShare[]>([]);
+  const [summary, setSummary] = useState<{
+    totalSent: number;
+    totalOpened: number;
+    totalActive: number;
+    openedRate: number;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setErr(null);
+    fetch(`/api/admin/brands/${brandId}/report-shares`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (!j.ok) throw new Error(j.error || "load failed");
+        setShares(j.shares || []);
+        setSummary(j.summary || null);
+      })
+      .catch((e: any) => setErr(e.message))
+      .finally(() => setLoading(false));
+  }, [brandId]);
+
+  const fmtDate = (d: string | null) =>
+    d ? new Date(d).toLocaleDateString() : "—";
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-xl p-8 shadow-sm border text-center text-sm text-slate-500">
+        Loading reports…
+      </div>
+    );
+  }
+  if (err) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+        {err}
+      </div>
+    );
+  }
+  if (shares.length === 0) {
+    return (
+      <div className="bg-white rounded-xl p-10 shadow-sm border text-center">
+        <div className="text-4xl mb-2">📨</div>
+        <p className="font-bold text-slate-900">No reports sent yet.</p>
+        <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
+          Reports are emailed from individual fabric pages — open any
+          fabric on the Fabrics tab and click <strong>📄 Application
+          Report</strong> to compose one. Every send shows up here with
+          view tracking.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Engagement summary */}
+      {summary && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-white rounded-xl border p-3 text-center">
+            <p className="text-[10px] uppercase tracking-wide text-slate-500 font-bold">
+              Reports Sent
+            </p>
+            <p className="text-2xl font-black text-slate-900">
+              {summary.totalSent}
+            </p>
+          </div>
+          <div className="bg-white rounded-xl border p-3 text-center">
+            <p className="text-[10px] uppercase tracking-wide text-slate-500 font-bold">
+              Opened
+            </p>
+            <p className="text-2xl font-black text-emerald-700">
+              {summary.totalOpened}
+            </p>
+          </div>
+          <div className="bg-white rounded-xl border p-3 text-center">
+            <p className="text-[10px] uppercase tracking-wide text-slate-500 font-bold">
+              Open Rate
+            </p>
+            <p className="text-2xl font-black text-slate-900">
+              {(summary.openedRate * 100).toFixed(0)}%
+            </p>
+          </div>
+          <div className="bg-white rounded-xl border p-3 text-center">
+            <p className="text-[10px] uppercase tracking-wide text-slate-500 font-bold">
+              Active Links
+            </p>
+            <p className="text-2xl font-black text-slate-900">
+              {summary.totalActive}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Report list */}
+      <div className="bg-white rounded-xl border overflow-x-auto">
+        <table className="w-full text-sm min-w-[860px]">
+          <thead className="bg-slate-50 border-b text-slate-600 text-xs uppercase tracking-wide">
+            <tr>
+              <th className="text-left px-4 py-3">Recipient</th>
+              <th className="text-left px-3 py-3">Fabric</th>
+              <th className="text-left px-3 py-3">Tier</th>
+              <th className="text-left px-3 py-3">Sent</th>
+              <th className="text-left px-3 py-3">Engagement</th>
+              <th className="text-right px-4 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {shares.map((s) => {
+              const expired =
+                s.revokedAt != null ||
+                (s.expiresAt && new Date(s.expiresAt).getTime() < Date.now());
+              return (
+                <tr
+                  key={s.id}
+                  className={expired ? "opacity-60" : ""}
+                >
+                  <td className="px-4 py-3">
+                    <p className="font-semibold text-slate-900">
+                      {s.recipientName || s.recipientEmail}
+                    </p>
+                    {s.recipientName && (
+                      <p className="text-xs text-slate-500">
+                        {s.recipientEmail}
+                      </p>
+                    )}
+                    {s.subjectLine && (
+                      <p className="text-[10px] text-slate-400 italic mt-1 max-w-[260px] truncate">
+                        {s.subjectLine}
+                      </p>
+                    )}
+                  </td>
+                  <td className="px-3 py-3 text-xs">
+                    {s.fabric ? (
+                      <>
+                        <Link
+                          href={`/fabrics/${s.fabric.id}`}
+                          className="font-mono font-semibold text-blue-600 hover:underline"
+                        >
+                          FUZE-{s.fabric.fuzeNumber || "?"}
+                        </Link>
+                        {s.fabric.customerReference && (
+                          <p className="text-slate-600 mt-0.5">
+                            {s.fabric.customerReference}
+                          </p>
+                        )}
+                        <p className="text-slate-400">
+                          {[
+                            s.fabric.fabricCategory,
+                            s.fabric.weightGsm
+                              ? `${s.fabric.weightGsm} g/m²`
+                              : null,
+                            s.fabric.color,
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </p>
+                      </>
+                    ) : (
+                      <span className="text-slate-400">—</span>
+                    )}
+                  </td>
+                  <td className="px-3 py-3 text-xs">
+                    <span className="px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-700 font-bold">
+                      {s.tier}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-xs text-slate-600">
+                    <p>{fmtDate(s.sentAt)}</p>
+                    {expired ? (
+                      <p className="text-amber-600 font-semibold">
+                        {s.revokedAt ? "revoked" : "link expired"}
+                      </p>
+                    ) : (
+                      <p className="text-slate-400">
+                        expires {fmtDate(s.expiresAt)}
+                      </p>
+                    )}
+                  </td>
+                  <td className="px-3 py-3 text-xs">
+                    {s.viewedCount > 0 ? (
+                      <>
+                        <span className="text-emerald-700 font-bold">
+                          ✓ Viewed {s.viewedCount}×
+                        </span>
+                        <p className="text-slate-500 mt-0.5">
+                          last: {fmtDate(s.lastViewedAt)}
+                        </p>
+                      </>
+                    ) : (
+                      <span className="text-amber-600 font-semibold">
+                        Not yet opened
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-right text-xs whitespace-nowrap">
+                    {!expired && (
+                      <a
+                        href={`/report/${s.token}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-600 hover:underline font-semibold mr-3"
+                      >
+                        Open ↗
+                      </a>
+                    )}
+                    {s.fabric && (
+                      <Link
+                        href={`/admin/fabric-report/${s.fabric.id}/send`}
+                        className="text-slate-600 hover:underline"
+                        title="Re-send the same fabric's report (issues a fresh token)"
+                      >
+                        Re-send
+                      </Link>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <p className="text-[11px] text-slate-500">
+        Reports are emailed per-fabric. Each row tracks whether the
+        recipient actually opened it (the customer-facing /report/[token]
+        URL stamps viewedCount on every view). Direct download links stay
+        live for 90 days; recipients can also sign in to /portal/my-reports
+        for ongoing access.
+      </p>
+    </div>
+  );
 }
