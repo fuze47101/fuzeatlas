@@ -40,14 +40,63 @@ export async function GET(req: Request) {
       where.construction = { contains: construction, mode: "insensitive" };
     }
 
-    // Only fabrics that have at least one test run with results
-    where.submissions = {
-      some: {
-        testRuns: {
-          some: {},
+    // Only fabrics that have at least one test run with results.
+    // When the user filters by a specific test type, narrow this to
+    // fabrics that actually have that type of test on file — fixes
+    // Brian Hyman's #cmo9jnuhp bug where filtering by Antifungal still
+    // returned cotton fabrics with only ICP results (and an empty test
+    // list rendering the row useless). Result-driven for fungal/AB/odor:
+    // include rows whose typed result is present even if the legacy
+    // testType label is something different (older CSV imports
+    // misclassified some fungal tests as ANTIBACTERIAL).
+    if (testType === "FUNGAL") {
+      where.submissions = {
+        some: {
+          testRuns: {
+            some: {
+              OR: [{ testType: "FUNGAL" }, { fungalResult: { isNot: null } }],
+            },
+          },
         },
-      },
-    };
+      };
+    } else if (testType === "ANTIBACTERIAL") {
+      where.submissions = {
+        some: {
+          testRuns: {
+            some: {
+              OR: [
+                { testType: "ANTIBACTERIAL" },
+                { abResult: { isNot: null } },
+              ],
+            },
+          },
+        },
+      };
+    } else if (testType === "ICP") {
+      where.submissions = {
+        some: {
+          testRuns: {
+            some: {
+              OR: [{ testType: "ICP" }, { icpResult: { isNot: null } }],
+            },
+          },
+        },
+      };
+    } else if (testType === "ODOR") {
+      where.submissions = {
+        some: {
+          testRuns: {
+            some: {
+              OR: [{ testType: "ODOR" }, { odorResult: { isNot: null } }],
+            },
+          },
+        },
+      };
+    } else {
+      where.submissions = {
+        some: { testRuns: { some: {} } },
+      };
+    }
 
     // Get total count for pagination
     const totalCount = await prisma.fabric.count({ where });
@@ -149,9 +198,24 @@ export async function GET(req: Request) {
         return result;
       });
 
-      // Filter by test type if requested
+      // Filter by test type if requested. Result-driven so legacy rows
+      // whose `testType` label drifted from the actual result they
+      // carry still match — e.g. a TestRun stored as ANTIBACTERIAL
+      // with a fungalResult attached will surface under the FUNGAL
+      // filter too. Brian's #cmo9jnuhp bug.
       const filteredTests = testType
-        ? tests.filter((t) => t.testType === testType)
+        ? tests.filter((t) => {
+            if (t.testType === testType) return true;
+            if (testType === "FUNGAL" && t.fungalPass != null) return true;
+            if (
+              testType === "ANTIBACTERIAL" &&
+              (t.abPass != null || t.percentReduction != null)
+            )
+              return true;
+            if (testType === "ICP" && t.icpAgPpm != null) return true;
+            if (testType === "ODOR" && t.odorPass != null) return true;
+            return false;
+          })
         : tests;
 
       // Filter by pass only if requested

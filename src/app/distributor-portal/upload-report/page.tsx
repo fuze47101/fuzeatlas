@@ -180,7 +180,9 @@ export default function DistributorUploadReportPage() {
         )}
       </div>
 
-      {/* Upload History */}
+      {/* Upload History — KJ Tang #cmo9f469v: surfaces uploaded reports
+          with brand + customer + FUZE# columns so the distributor can
+          see attribution, plus a download link per row. */}
       <div>
         <h2 className="text-lg font-bold text-slate-900 mb-4">Your Uploads</h2>
         {loadingUploads ? (
@@ -192,39 +194,111 @@ export default function DistributorUploadReportPage() {
             <p className="text-sm text-slate-400">No reports uploaded yet</p>
           </div>
         ) : (
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
+            <table className="w-full text-sm min-w-[900px]">
               <thead className="bg-slate-50 border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">File</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Report #</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Test Type</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Lab</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Uploaded</th>
-                  <th className="text-center px-4 py-3 font-semibold text-slate-600 text-xs">Status</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">File · Report #</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Test</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Brand</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Factory</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">FUZE / Customer ref</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Lab · Date</th>
+                  <th className="text-center px-4 py-3 font-semibold text-slate-600 text-xs">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {uploads.map((u: any) => (
-                  <tr key={u.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 text-slate-700 truncate max-w-[200px]">{u.filename || "—"}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-slate-600">{u.reportNumber || "—"}</td>
-                    <td className="px-4 py-3 text-slate-600">{u.testType || "—"}</td>
-                    <td className="px-4 py-3 text-slate-600">{u.labName || "—"}</td>
-                    <td className="px-4 py-3 text-xs text-slate-400">{new Date(u.createdAt).toLocaleDateString()}</td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        u.linked ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
-                      }`}>
-                        {u.linked ? "Linked" : "Pending Review"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                {uploads.map((u: any) => {
+                  const linked = !!(u.brand || u.factory || u.fuzeNumber);
+                  return (
+                    <tr key={u.testRunId || u.id} className="hover:bg-slate-50">
+                      <td className="px-4 py-3 text-slate-700 max-w-[260px]">
+                        <p className="truncate font-medium">
+                          {u.filename || "—"}
+                        </p>
+                        {u.reportNumber && (
+                          <p className="text-xs font-mono text-slate-500">
+                            #{u.reportNumber}
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 text-xs">
+                        <p className="font-semibold">{u.testType || "—"}</p>
+                        {u.washCount != null && (
+                          <p className="text-slate-400">
+                            {u.washCount} washes
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 text-xs">
+                        {u.brand?.name ? (
+                          <Link
+                            href={`/brands/${u.brand.id}`}
+                            className="font-semibold text-blue-600 hover:underline"
+                          >
+                            {u.brand.name}
+                          </Link>
+                        ) : (
+                          <span className="text-amber-600">unlinked</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 text-xs">
+                        {u.factory?.name || "—"}
+                      </td>
+                      <td className="px-4 py-3 text-xs">
+                        {u.fuzeNumber && (
+                          <Link
+                            href={`/fabrics/${u.fuzeNumber}`}
+                            className="font-mono font-semibold text-blue-600 hover:underline"
+                          >
+                            FUZE-{u.fuzeNumber}
+                          </Link>
+                        )}
+                        {u.customerFabricCode && (
+                          <p className="text-slate-500">
+                            {u.customerFabricCode}
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 text-xs">
+                        <p>{u.labName || "—"}</p>
+                        <p className="text-slate-400">
+                          {u.testDate
+                            ? new Date(u.testDate).toLocaleDateString()
+                            : new Date(u.createdAt).toLocaleDateString()}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3 text-center text-xs">
+                        {u.downloadUrl ? (
+                          <a
+                            href={u.downloadUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-blue-600 hover:underline font-semibold"
+                          >
+                            ↓ Download
+                          </a>
+                        ) : !linked ? (
+                          <span className="text-amber-600">
+                            Awaiting admin review
+                          </span>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
+        <p className="text-xs text-slate-400 mt-2">
+          Reports show as &quot;unlinked&quot; until our parser auto-links
+          them to a brand or fabric. If a report has been pending review
+          for more than 24h, message <a href="mailto:andrew@fuze47.com" className="text-blue-600 underline">andrew@fuze47.com</a>{" "}
+          and we&apos;ll attach it manually.
+        </p>
       </div>
     </div>
   );

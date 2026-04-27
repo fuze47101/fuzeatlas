@@ -247,11 +247,20 @@ export default function ContactDetailPage() {
                 <h1 className="text-2xl font-bold text-slate-900">{displayName}</h1>
                 {displayTitle && <div className="text-slate-600 mt-0.5">{displayTitle}</div>}
                 {parent && (
-                  <div className="text-sm text-slate-500 mt-0.5">
-                    at{" "}
-                    <Link href={parent.href} className="text-blue-600 hover:underline font-medium">
-                      {parent.name}
-                    </Link>
+                  <div className="text-sm text-slate-500 mt-0.5 flex items-center gap-2">
+                    <span>
+                      at{" "}
+                      <Link href={parent.href} className="text-blue-600 hover:underline font-medium">
+                        {parent.name}
+                      </Link>
+                    </span>
+                    {parent.kind === "brand" && (
+                      <ReassignBrandButton
+                        contactId={contact.id}
+                        currentBrandId={contact.brandId || null}
+                        onMoved={() => location.reload()}
+                      />
+                    )}
                   </div>
                 )}
               </div>
@@ -482,6 +491,156 @@ export default function ContactDetailPage() {
         />
       )}
     </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Reassign-brand affordance — Ryan #cmo8uuuj3.
+// Tiny inline button that opens a brand picker modal, posts to
+// PATCH /api/contacts/[id] with { brandId }, and lets the page
+// reload to show the new parent + the auto-logged Notes on both
+// the old and new brand timelines.
+
+function ReassignBrandButton({
+  contactId,
+  currentBrandId,
+  onMoved,
+}: {
+  contactId: string;
+  currentBrandId: string | null;
+  onMoved: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [brands, setBrands] = useState<any[]>([]);
+  const [filter, setFilter] = useState("");
+  const [moving, setMoving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    fetch("/api/brands?limit=500")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.brands) setBrands(j.brands);
+        else if (j.grouped) {
+          const all: any[] = [];
+          Object.values(j.grouped).forEach((arr: any) =>
+            arr.forEach((b: any) => all.push(b)),
+          );
+          setBrands(all);
+        }
+      })
+      .catch(() => {});
+  }, [open]);
+
+  async function move(targetId: string) {
+    if (targetId === currentBrandId) {
+      setOpen(false);
+      return;
+    }
+    setMoving(true);
+    setErr(null);
+    try {
+      const res = await fetch(`/api/contacts/${contactId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ brandId: targetId }),
+      });
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error || "Move failed");
+      onMoved();
+    } catch (e: any) {
+      setErr(e.message);
+      setMoving(false);
+    }
+  }
+
+  const filtered = filter
+    ? brands.filter((b) =>
+        (b.name || "").toLowerCase().includes(filter.toLowerCase()),
+      )
+    : brands;
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs text-slate-500 hover:text-blue-600 underline decoration-dotted"
+        title="Move this contact to a different brand"
+      >
+        (move)
+      </button>
+      {open && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-slate-200">
+              <h2 className="text-lg font-bold text-slate-900">
+                Move contact to another brand
+              </h2>
+              <p className="text-xs text-slate-500 mt-1">
+                A note is logged on both the old and new brand
+                timelines so the audit trail stays clean.
+              </p>
+            </div>
+            <div className="p-4 border-b border-slate-100">
+              <input
+                autoFocus
+                type="text"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                placeholder="Search brands..."
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+              />
+            </div>
+            {err && (
+              <div className="p-3 bg-red-50 text-sm text-red-700">{err}</div>
+            )}
+            <div className="flex-1 overflow-y-auto p-2">
+              {filtered.length === 0 ? (
+                <p className="p-3 text-sm text-slate-500">
+                  No matches.
+                </p>
+              ) : (
+                filtered.slice(0, 100).map((b: any) => (
+                  <button
+                    key={b.id}
+                    onClick={() => move(b.id)}
+                    disabled={moving || b.id === currentBrandId}
+                    className={`w-full text-left px-3 py-2 rounded text-sm hover:bg-blue-50 disabled:opacity-40 ${
+                      b.id === currentBrandId ? "bg-slate-50" : ""
+                    }`}
+                  >
+                    <span className="font-semibold text-slate-900">
+                      {b.name}
+                    </span>
+                    {b.id === currentBrandId && (
+                      <span className="ml-2 text-xs text-slate-400">
+                        (current)
+                      </span>
+                    )}
+                  </button>
+                ))
+              )}
+            </div>
+            <div className="p-3 border-t border-slate-100 flex justify-end">
+              <button
+                onClick={() => setOpen(false)}
+                className="px-4 py-1.5 text-sm text-slate-600 hover:bg-slate-100 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

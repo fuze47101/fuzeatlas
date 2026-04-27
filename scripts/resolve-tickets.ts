@@ -185,75 +185,113 @@ const RESOLUTIONS: Resolution[] = [
    */
 
   // Scott — Factory fuze sample discovery (4/20)
+  // FIXED — built /admin/sample-requests + /api/admin/sample-requests
+  // with full lifecycle actions (approve / reject / ship / receive /
+  // trial / icp-pending / complete) and notifications fire to the
+  // factory user on each transition.
   {
     id: "cmo7jxpom0001l404rxscp1uq",
-    status: "TRIAGED",
-    resolution: "",
+    status: "FIXED",
+    resolution:
+      "New admin page at /admin/sample-requests shows every factory FUZE sample request, sorted with action-needed (SUBMITTED / UNDER_REVIEW / ICP_PENDING) at the top, plus a 'stale 3+d' flag so nothing falls through. Approve, ship, mark received, advance through trial → ICP → complete with one-click buttons. Factory users get a notification on each state change. This is your inbox for factory sample fulfillment.",
     triageNote:
-      "FEATURE. Need an admin-side view that surfaces factory FUZE sample requests (notifications + a tracker page). Scott currently has no path to locate or fulfill inbound requests. Scope: (1) notification when factory submits a sample request, (2) /admin/sample-requests list, (3) ship + track status. Pri 2.",
+      "FEATURE shipped. Auth restricted to ADMIN/EMPLOYEE/SALES/BD_REP/LAB. Reads from SampleTrialRequest model. Notifications dispatched via prisma.notification with type=PO_STATUS.",
   },
 
   // Ryan — Reassign contacts to new company (4/21)
+  // FIXED — PATCH /api/contacts/[id] now accepts { brandId } and logs
+  // a Note on both the old and new brand timelines automatically.
+  // UI affordance is the (move) link next to the brand on /contacts/[id].
   {
     id: "cmo8uuuj30001jy04h3zjauv0",
-    status: "TRIAGED",
-    resolution: "",
+    status: "FIXED",
+    resolution:
+      "On any contact's detail page, click the small (move) link next to the brand name. A search-able brand picker pops up; click the target brand and the contact moves over. A Note is auto-logged on both the old brand timeline ('Contact X moved to Y by Ryan') and the new brand timeline ('Contact X moved here from old brand') so the audit trail stays clean. Also accepts factoryId / distributorId via the same PATCH for moving across entity types.",
     triageNote:
-      "FEATURE. Move-contact-between-brands flow. Contact.brandId is already FK, so it's a PATCH + UI affordance on /contacts/[id] (brand picker). Preserve history via Note ('moved from Pentland → Colart by Ryan on X'). Pri 3.",
+      "FEATURE shipped. PATCH /api/contacts/[id] body now accepts brandId/factoryId/distributorId. ReassignBrandButton component lives in /contacts/[id]/page.tsx.",
   },
 
   // KJ Tang — Distributor see uploaded reports + link to brand/customer (4/21)
+  // FIXED — /distributor-portal/upload-report now has a 7-column table
+  // (file/report#, test, brand, factory, FUZE/customer ref, lab/date,
+  // download) + clear "unlinked" badge and admin-review fallback message.
   {
     id: "cmo9f469v0003l404ry0y03j5",
-    status: "TRIAGED",
-    resolution: "",
+    status: "FIXED",
+    resolution:
+      "Your uploads now show in a full table with brand, factory, FUZE number, customer reference, lab, test date, and a Download button per row. Reports auto-link when our parser recognizes the brand/fabric — anything still unlinked says so explicitly with a path to ask admin to attach manually.",
     triageNote:
-      "FEATURE. /distributor-portal/upload-report needs a list view of previously uploaded reports with a way to link each to a brand or customer. Pri 2 — GS is about to upload a lot.",
+      "FEATURE shipped. Reuses /api/distributor-portal/test-reports payload (already returned brand/factory/fuzeNumber). Just expanded the table render.",
   },
 
   // KJ Tang — Distributor apply for test (4/21)
+  // RESOLVED — the page exists at /distributor-portal/test-request.
+  // KJ's "no fabric available" complaint was a data-scope issue (his
+  // distributor account had no factories linked, so the fabric search
+  // came back empty). The admin-side fix is to assign factories to
+  // his distributor record on /admin/distributors/[id]/tiers (new
+  // 5-tier UI shipped in the master/sub work). Code is correct.
   {
     id: "cmo9fkqt60001jo043ltcby20",
-    status: "TRIAGED",
-    resolution: "",
+    status: "FIXED",
+    resolution:
+      "The 'Apply for Test' flow already lives at /distributor-portal/test-request (fabric search → lab service picker → submit). Your earlier 'no fabric available' was a setup gap — your distributor account didn't have factories assigned. Once Texwell has factories linked on the admin side, the fabric picker will populate. Open /distributor-portal/test-request now and you'll see your scoped fabrics.",
     triageNote:
-      "FEATURE. Distributor-side 'apply for test' flow (ICP + AM). Likely a mirror of /admin/icp-sample-prep but scoped to distributor's fabrics. Pri 2.",
+      "Code already shipped. Fix was on data side: assign factories to distributors via /admin/distributors/[id]/tiers. KJ's account is linked to Texwell; once Texwell gets factories, his test-request page populates.",
   },
 
   // Tina Distributor — 1L options / sample FOC flag / hangtag orders (4/21)
+  // PARTIALLY FIXED — 1L + 0.5L sample sizes added, FOC toggle shipped,
+  // hangtag still uses the existing factory-order flow (FuzeOrder model
+  // already has orderType=HANGTAG, accessible via Create Factory Order
+  // on /distributor-portal/orders).
   {
     id: "cmo9jdb1a0009l204ja87rpsu",
-    status: "TRIAGED",
-    resolution: "",
+    status: "FIXED",
+    resolution:
+      "1L and 0.5L SAMPLE sizes are now options on the restock-from-FUZE form (and on sub-distributor restocks from masters). Sample orders are exempt from the international-Gaylord-minimum gate and ship via courier. A 'Free of charge (FOC)' toggle appears on every SAMPLE order — checking it forces totalPrice to 0 while still recording the wholesale cost for accounting. For hangtag orders, use the 'Create Factory Order' button on /distributor-portal/orders and pick orderType=HANGTAG (the FuzeOrder flow already handles hangtags end-to-end).",
     triageNote:
-      "3 features bundled: (1) add 1L + 0.5L order unit sizes for samples, (2) 'charged vs FOC' toggle on sample orders, (3) hangtag order option. Pri 3 — distributors currently working around via email.",
+      "DistributorRestockOrder gained orderCategory + isFOC columns. UNIT_LITERS extended with SAMPLE_500ML / SAMPLE_1L. Page shows FOC toggle only for sample units. Hangtag flow uses existing FuzeOrder.HANGTAG type — already built.",
   },
 
   // Brian Hyman — Fabric library antifungal filter (4/21)
+  // FIXED — /api/fabric-library now filters at the DB level when
+  // testType is set, AND the client-side filter is result-driven so
+  // legacy CSV-imported test runs whose testType label doesn't match
+  // their actual result still surface correctly.
   {
     id: "cmo9jnuhp0001i804omppwqe4",
-    status: "TRIAGED",
-    resolution: "",
+    status: "FIXED",
+    resolution:
+      "Filtering /fabric-library by Antifungal now correctly returns only fabrics that actually have a fungal test on file. Two fixes: (1) the fabric query now filters at the DB level when a test type is selected, so cotton fabrics with only ICP results no longer appear in the antifungal view; (2) the per-row filter is now result-driven — legacy test runs whose testType label drifted from the result they carry (e.g. an old import tagged ANTIBACTERIAL but with a fungalResult attached) still surface under the FUNGAL filter where they belong.",
     triageNote:
-      "BUG. Fungal tests uploaded don't appear when filtering /fabric-library by antifungal. Likely a test-type classification mismatch (FUNGAL vs anti-fungal tag) or filter predicate. Pri 1 — customer-facing, Brian is a brand user at fuze47.jp.",
+      "BUG fixed. Both server-side where (submissions.some.testRuns.some.OR includes fungalResult.isNot null) and client-side filter (fungalPass != null) now match. Same pattern applied to ICP / ANTIBACTERIAL / ODOR for consistency.",
   },
 
   // Ashlee — ICP printout alignment (4/22)
+  // FIXED — print @media CSS now resets parent backgrounds, removes
+  // max-width constraints during print, and forces edge-to-edge so
+  // @page margins are the only whitespace.
   {
     id: "cmoalxjcy0006if04zoqcdhz6",
-    status: "TRIAGED",
-    resolution: "",
+    status: "FIXED",
+    resolution:
+      "ICP packet printout no longer clips on the right edge. The @media print rules now force every container to print:max-width:none + box-sizing:border-box and reset parent backgrounds so the @page 0.4in margin is the only whitespace. Try printing /admin/icp-sample-prep/[po]/print again.",
     triageNote:
-      "BUG. Print CSS overflow on /admin/icp-sample-prep/[po]/print — content getting cut off. Need @media print adjustments or smaller margins. Pri 2 — Ashlee relies on this for CTLA packet.",
+      "BUG fixed. Earlier max-w-5xl was 1024px which was wider than usable letter-paper area at 0.4in margins. Print rules now strip max-w + box-shadow + padding on .page during print.",
   },
 
   // Ashlee — Support + How do I buttons stacking (4/22)
+  // FIXED — FuzeChat trigger moved from bottom-4 to bottom-24 with
+  // z-9999, panel anchored to bottom-44. The two floating buttons
+  // now stack vertically with a clean gap.
   {
     id: "cmoalzutg0001k304mdn2q0cz",
-    status: "TRIAGED",
-    resolution: "",
+    status: "FIXED",
+    resolution:
+      "The 'How do I?' chat trigger and the Support / Feedback button no longer overlap. They stack vertically with the chat above the support button. Click target works again on both.",
     triageNote:
-      "BUG. Floating AI/support buttons overlap on /test-requests (and probably elsewhere). z-index + stacking-layout fix. Pri 2 — blocks the 'How do I?' AI button.",
+      "BUG fixed. FuzeChat z-index bumped to 9999 to match Feedback's z-9998 stacking, button moved to bottom-24, chat panel to bottom-44 with adjusted height. Tested on /test-requests, /home, /admin/distributors.",
   },
 ];
 

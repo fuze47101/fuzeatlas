@@ -127,10 +127,14 @@ export default function FuzeChat() {
 
   return (
     <>
-      {/* Chat Panel */}
+      {/* Chat Panel — anchored above the trigger which sits stacked
+          ABOVE the floating "Support" button (Ashlee #cmoalzutg fix).
+          bottom-44 (176px) clears the support button (bottom-5 + ~56px
+          tall) plus the trigger button (bottom-24 + 56px tall) plus a
+          gap. */}
       {isOpen && (
-        <div className="fixed bottom-20 right-4 sm:right-6 z-[100] w-[380px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden"
-          style={{ height: "min(580px, calc(100vh - 140px))" }}>
+        <div className="fixed bottom-44 right-4 sm:right-6 z-[100] w-[380px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden"
+          style={{ height: "min(580px, calc(100vh - 240px))" }}>
           {/* Header */}
           <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-5 py-4 flex items-center gap-3 flex-shrink-0">
             <div className="w-9 h-9 rounded-full bg-[#00b4c3] flex items-center justify-center text-lg font-bold shadow-lg">
@@ -251,10 +255,14 @@ export default function FuzeChat() {
         </div>
       )}
 
-      {/* Floating Button */}
+      {/* Floating Button — sits ABOVE the Support / Feedback button
+          (which is at bottom-5 right-5 z-[9998]). Stacking the two
+          vertically with a gap fixes Ashlee's #cmoalzutg "support and
+          how-do-I buttons stacking" complaint where the support button
+          was eating clicks meant for the chat trigger. */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-4 right-4 sm:right-6 z-[100] w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 ${
+        className={`fixed bottom-24 right-4 sm:right-6 z-[9999] w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 ${
           isOpen
             ? "bg-slate-800 text-white rotate-0"
             : "bg-gradient-to-br from-[#00b4c3] to-[#0090a0] text-white"

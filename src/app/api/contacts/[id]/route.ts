@@ -1,16 +1,22 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 
 /* ── PATCH /api/contacts/[id] ── update a contact ──────────
  *
  * Mirrors POST /api/contacts: accepts core + enrichment + categorization
  * fields. Only updates fields that are explicitly present in the body.
+ *
+ * Also supports REASSIGN-TO-NEW-BRAND (Ryan Prince #cmo8uuuj3): pass
+ * `brandId` in the body and the contact moves over. Logs a Note on
+ * the OLD brand recording the move so history isn't lost.
  */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const body = await req.json();
+    const user = await getCurrentUser();
 
     const data: any = {};
     // Core
@@ -43,7 +49,73 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (body.lastContactedAt !== undefined)
       data.lastContactedAt = body.lastContactedAt ? new Date(body.lastContactedAt) : null;
 
+    // ─── Reassign to a different brand (Ryan #cmo8uuuj3) ──────
+    // Distinct from a regular field update — we want to log a Note
+    // on the OLD brand recording the move so history isn't lost.
+    let reassignNote: { fromBrandId: string; toBrandId: string } | null = null;
+    if (body.brandId !== undefined) {
+      const existing = await prisma.contact.findUnique({
+        where: { id },
+        select: { brandId: true },
+      });
+      const oldBrandId = existing?.brandId || null;
+      const newBrandId = body.brandId || null;
+      data.brandId = newBrandId;
+      if (oldBrandId && newBrandId && oldBrandId !== newBrandId) {
+        reassignNote = { fromBrandId: oldBrandId, toBrandId: newBrandId };
+      }
+    }
+    // Allow factory reassignment too while we're here.
+    if (body.factoryId !== undefined) {
+      data.factoryId = body.factoryId || null;
+    }
+    if (body.distributorId !== undefined) {
+      data.distributorId = body.distributorId || null;
+    }
+
     const contact = await prisma.contact.update({ where: { id }, data });
+
+    // Log the reassignment as a Note on the OLD brand so the audit
+    // trail stays intact when the contact disappears from their
+    // pipeline.
+    if (reassignNote) {
+      try {
+        const [oldBrand, newBrand] = await Promise.all([
+          prisma.brand.findUnique({
+            where: { id: reassignNote.fromBrandId },
+            select: { name: true },
+          }),
+          prisma.brand.findUnique({
+            where: { id: reassignNote.toBrandId },
+            select: { name: true },
+          }),
+        ]);
+        const fromName = oldBrand?.name || "(unknown)";
+        const toName = newBrand?.name || "(unknown)";
+        const movedBy = user?.name || user?.email || "an admin";
+        await prisma.note.create({
+          data: {
+            brandId: reassignNote.fromBrandId,
+            authorId: user?.id || null,
+            noteType: "ACTIVITY",
+            content: `Contact ${contact.name || contact.email || id} moved to ${toName} by ${movedBy}.`,
+          },
+        });
+        // Also drop a forward-looking note on the new brand so the
+        // recipient pipeline shows where this contact came from.
+        await prisma.note.create({
+          data: {
+            brandId: reassignNote.toBrandId,
+            authorId: user?.id || null,
+            noteType: "ACTIVITY",
+            content: `Contact ${contact.name || contact.email || id} moved here from ${fromName} by ${movedBy}.`,
+          },
+        });
+      } catch (e) {
+        console.error("[contact.reassign] note log failed:", e);
+      }
+    }
+
     return NextResponse.json({ ok: true, contact });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });

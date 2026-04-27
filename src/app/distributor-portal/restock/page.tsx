@@ -53,8 +53,13 @@ interface Order {
   createdAt: string;
 }
 
-const UNIT_META: Record<string, { label: string; liters: number; desc: string; icon: string }> = {
-  CARBOY: { label: "Carboy", liters: 19, desc: "19L — single bottle (USA only)", icon: "🧴" },
+const UNIT_META: Record<string, { label: string; liters: number; desc: string; icon: string; sample?: boolean }> = {
+  // Sample sizes — Tina Distributor request. Ships via courier for
+  // R&D / customer qualification, exempt from international Gaylord
+  // minimum, eligible for FOC.
+  SAMPLE_500ML: { label: "500 mL Sample", liters: 0.5, desc: "Half-liter R&D bottle · courier ship", icon: "🧪", sample: true },
+  SAMPLE_1L: { label: "1 L Sample", liters: 1, desc: "1-liter R&D bottle · courier ship", icon: "🧫", sample: true },
+  CARBOY: { label: "Carboy", liters: 19, desc: "19L — single bottle (USA only for production)", icon: "🧴" },
   GAYLORD: { label: "Gaylord", liters: 608, desc: "32 carboys · 608L — international minimum", icon: "📦" },
   CONTAINER_20: { label: "20' Container", liters: 6080, desc: "10 gaylords · 6,080L", icon: "🚛" },
   CONTAINER_40: { label: "40' Container", liters: 12160, desc: "20 gaylords · 12,160L", icon: "🚢" },
@@ -90,6 +95,8 @@ export default function DistributorRestockPage() {
   const [shippingCity, setShippingCity] = useState("");
   const [shippingCountry, setShippingCountry] = useState("");
   const [notes, setNotes] = useState("");
+  // FOC = "free of charge" — sample-only flag (Tina Dist request).
+  const [isFOC, setIsFOC] = useState(false);
 
   useEffect(() => {
     if (user && user.role !== "DISTRIBUTOR_USER" && !["ADMIN", "EMPLOYEE"].includes(user.role)) {
@@ -128,6 +135,12 @@ export default function DistributorRestockPage() {
         unitType: selectedUnit,
         unitQuantity: quantity,
         notes,
+        // Auto-derive: sample units → SAMPLE category, else PRODUCTION.
+        // FOC only valid on samples.
+        orderCategory: UNIT_META[selectedUnit]?.sample
+          ? "SAMPLE"
+          : "PRODUCTION",
+        isFOC: UNIT_META[selectedUnit]?.sample ? isFOC : false,
       };
       if (!useDefaultShipping) {
         payload.shippingAddress = shippingAddress;
@@ -386,6 +399,28 @@ export default function DistributorRestockPage() {
               )}
             </div>
 
+            {/* FOC toggle — only meaningful for SAMPLE units. Tina
+                Distributor #cmo9jdb1a request. */}
+            {UNIT_META[selectedUnit]?.sample && (
+              <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isFOC}
+                    onChange={(e) => setIsFOC(e.target.checked)}
+                    className="rounded text-[#00b4c3] focus:ring-[#00b4c3]"
+                  />
+                  <span className="text-sm font-semibold text-amber-900">
+                    Free of charge (FOC) sample
+                  </span>
+                  <span className="text-xs text-amber-700 ml-2">
+                    Sample shipped at zero cost — used for customer
+                    qualification / R&D. Total invoiced will be 0.
+                  </span>
+                </label>
+              </div>
+            )}
+
             {/* Notes */}
             <div className="mb-6">
               <label className="block text-sm font-semibold text-slate-700 mb-2">Notes (optional)</label>
@@ -400,10 +435,16 @@ export default function DistributorRestockPage() {
 
             <button
               type="submit"
-              disabled={submitting || price === 0}
+              disabled={submitting || (price === 0 && !isFOC)}
               className="w-full py-3 bg-[#00b4c3] text-white rounded-lg font-bold hover:bg-[#009aa8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? "Submitting..." : price === 0 ? "Pricing Not Set — Contact FUZE HQ" : "Submit Order for Approval"}
+              {submitting
+                ? "Submitting..."
+                : price === 0 && !isFOC
+                  ? "Pricing Not Set — Contact FUZE HQ"
+                  : isFOC
+                    ? "Submit FOC Sample for Approval"
+                    : "Submit Order for Approval"}
             </button>
           </form>
         </div>

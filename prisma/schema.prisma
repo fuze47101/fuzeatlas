@@ -596,6 +596,16 @@ model DistributorRestockOrder {
   notes           String?
   adminNotes      String?
 
+  // Sample / FOC handling — Tina Distributor #cmo9jdb1a request.
+  // orderCategory: PRODUCTION | SAMPLE | HANGTAG. Defaults to
+  // PRODUCTION (existing behavior) so legacy orders stay correctly
+  // categorized. SAMPLE category unlocks the 1L / 0.5L bottle sizes
+  // (which would otherwise fail the international-Gaylord-minimum
+  // gate). isFOC = "free of charge" — distributor + admin both see
+  // the line item but the totalPrice on FOC orders is forced to 0.
+  orderCategory   String?  @default("PRODUCTION")
+  isFOC           Boolean  @default(false)
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

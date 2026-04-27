@@ -75,11 +75,31 @@ export default function IcpBatchPrintPage() {
     <div className="min-h-screen bg-slate-100 print:bg-white">
       <style>{`
         @media print {
-          body { background: white; }
+          /* Reset every parent to white + edge-to-edge so the
+             @page margins are the ONLY whitespace. Earlier the
+             min-h-screen + bg-slate-100 chrome was bleeding into
+             the print viewport and nudging content off the right
+             edge. Ashlee's #cmoalxjcy CTLA-packet alignment bug. */
+          html, body { background: white !important; margin: 0 !important; padding: 0 !important; }
           .no-print { display: none !important; }
           @page { margin: 0.4in; size: letter; }
-          .page { break-before: page; page-break-before: always; }
+          /* Pages: no shadow, no rounded corners, no extra max-width
+             constraint, no top margin (the @page handles it). The
+             bench card and tag pages each occupy their own sheet. */
+          .page {
+            break-before: page;
+            page-break-before: always;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            max-width: none !important;
+            width: 100% !important;
+            padding: 0 !important;
+          }
           .page:first-child { break-before: auto; page-break-before: auto; }
+          /* Force every flex/grid child to honor the page width — fixes
+             the "right column getting clipped" symptom. */
+          .page * { box-sizing: border-box; }
         }
       `}</style>
 

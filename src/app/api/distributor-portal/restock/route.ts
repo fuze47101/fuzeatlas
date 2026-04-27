@@ -14,11 +14,20 @@ import { getCurrentUser } from "@/lib/auth";
  */
 
 const UNIT_LITERS: Record<string, number> = {
+  // Sample / R&D sizes — Tina Distributor #cmo9jdb1a request. These
+  // are SAMPLE-only and exempt from the international Gaylord minimum.
+  SAMPLE_500ML: 0.5,
+  SAMPLE_1L: 1,
+  // Production sizes
   CARBOY: 19,
   GAYLORD: 608,         // 32 × 19L
   CONTAINER_20: 6080,   // 10 × 608L
   CONTAINER_40: 12160,  // 20 × 608L
 };
+
+// Unit types that count as "sample" (small-volume, exempt from
+// international-Gaylord-min gate, eligible for FOC).
+const SAMPLE_UNITS = new Set(["SAMPLE_500ML", "SAMPLE_1L"]);
 
 function generateOrderNumber() {
   const d = new Date();
@@ -128,7 +137,21 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { unitType, unitQuantity, shippingAddress, shippingCity, shippingCountry, notes } = body;
+    const {
+      unitType,
+      unitQuantity,
+      shippingAddress,
+      shippingCity,
+      shippingCountry,
+      notes,
+      orderCategory,   // PRODUCTION | SAMPLE | HANGTAG (default PRODUCTION)
+      isFOC,           // boolean — sample only
+    } = body;
+    const effectiveCategory =
+      orderCategory ||
+      (SAMPLE_UNITS.has(unitType) ? "SAMPLE" : "PRODUCTION");
+    const effectiveFOC =
+      effectiveCategory === "SAMPLE" && Boolean(isFOC);
     const distributorId = isDistributor ? user.distributorId : body.distributorId;
 
     if (!distributorId) {
@@ -162,10 +185,17 @@ export async function POST(req: Request) {
 
     const isUSA = (distributor.country || "").toUpperCase().includes("USA") ||
                   (distributor.country || "").toUpperCase().includes("UNITED STATES");
-    if (!isUSA && unitType === "CARBOY") {
+    // SAMPLE-size orders (1L, 0.5L) are exempt from the international
+    // Gaylord minimum — they ship via courier for R&D / customer
+    // qualification, not bulk freight. Tina Distributor #cmo9jdb1a.
+    if (
+      !isUSA &&
+      unitType === "CARBOY" &&
+      effectiveCategory !== "SAMPLE"
+    ) {
       return NextResponse.json({
         ok: false,
-        error: "International shipments require a minimum of 1 Gaylord (32 carboys). Please select Gaylord or larger.",
+        error: "International shipments require a minimum of 1 Gaylord (32 carboys). Please select Gaylord or larger — or place a SAMPLE order with 1L / 0.5L units for R&D quantities.",
       }, { status: 400 });
     }
 
@@ -202,7 +232,10 @@ export async function POST(req: Request) {
       }
     }
 
-    const totalPrice = pricePerLiter * totalLiters;
+    // FOC samples are zero-priced regardless of pricePerLiter. We still
+    // record the wholesale rate for cost accounting, but totalPrice is
+    // forced to 0 so distributor invoicing reflects the freebie.
+    const totalPrice = effectiveFOC ? 0 : pricePerLiter * totalLiters;
 
     const order = await prisma.distributorRestockOrder.create({
       data: {
@@ -216,6 +249,8 @@ export async function POST(req: Request) {
         pricePerLiter,
         currency,
         totalPrice,
+        orderCategory: effectiveCategory,
+        isFOC: effectiveFOC,
         shippingAddress: shippingAddress || distributor.address,
         shippingCity: shippingCity || distributor.city,
         shippingCountry: shippingCountry || distributor.country,
