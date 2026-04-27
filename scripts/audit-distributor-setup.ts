@@ -60,9 +60,11 @@ async function main() {
     orderBy: { name: "asc" },
   });
 
+  // NOTE: Factory model has no `active` boolean (per CLAUDE.md — only
+  // Distributor does). Just count every factory assigned to a distributor.
   const factoriesByDist = await prisma.factory.groupBy({
     by: ["distributorId"],
-    where: { distributorId: { not: null }, active: true },
+    where: { distributorId: { not: null } },
     _count: { _all: true },
   });
   const factoryCount: Record<string, number> = {};

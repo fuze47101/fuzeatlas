@@ -55,9 +55,11 @@ async function main() {
     if (r.sentBy) byUserOut[r.sentBy] = r._count?._all ?? 0;
   }
 
+  // BDSequence.repId is non-nullable, so the `not: null` filter we
+  // had here was invalid. Just window by startedAt and group.
   const seqs = await prisma.bDSequence.groupBy({
     by: ["repId"],
-    where: { startedAt: { gte: since }, repId: { not: null } },
+    where: { startedAt: { gte: since } },
     _count: { _all: true },
   });
   const byUserSeq: Record<string, number> = {};
