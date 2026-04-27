@@ -28,11 +28,42 @@
  */
 
 import { PrismaClient } from "@prisma/client";
+import { existsSync, readFileSync } from "fs";
+import { join } from "path";
 import {
   extractDomain,
   searchApolloByDomain,
   apolloPersonToContactData,
 } from "../src/lib/apollo-people-search";
+
+// Auto-load .env / .env.local so the script works without the user
+// having to `source .env` first. tsx doesn't load .env by default
+// the way Next.js does. Reads only — doesn't override anything
+// already set in process.env (so an explicit `export` still wins).
+function loadDotenv(path: string) {
+  if (!existsSync(path)) return;
+  const text = readFileSync(path, "utf-8");
+  for (const line of text.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq < 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let val = trimmed.slice(eq + 1).trim();
+    // Strip surrounding quotes
+    if (
+      (val.startsWith('"') && val.endsWith('"')) ||
+      (val.startsWith("'") && val.endsWith("'"))
+    ) {
+      val = val.slice(1, -1);
+    }
+    if (!(key in process.env)) {
+      process.env[key] = val;
+    }
+  }
+}
+loadDotenv(join(process.cwd(), ".env.local"));
+loadDotenv(join(process.cwd(), ".env"));
 
 const prisma = new PrismaClient();
 
@@ -41,7 +72,12 @@ const LIMIT_ARG = process.argv.find((a) => a.startsWith("--limit="));
 const LIMIT = LIMIT_ARG ? parseInt(LIMIT_ARG.split("=")[1], 10) : 0;
 
 if (!process.env.APOLLO_API_KEY) {
-  console.error("APOLLO_API_KEY not set in environment.");
+  console.error(
+    "APOLLO_API_KEY not set in environment.\n" +
+      "  This script auto-loads .env and .env.local from the repo root\n" +
+      "  but neither contains APOLLO_API_KEY. Add it to .env, or export\n" +
+      "  it in your shell:  export APOLLO_API_KEY=...",
+  );
   process.exit(1);
 }
 

@@ -81,6 +81,19 @@ export default function BDWizardPage() {
   // "queue is empty." dominantReason drives the recommended-action
   // button.
   const [emptySummary, setEmptySummary] = useState<any>(null);
+  // Bulk-enrichment progress state — for the "Run Bulk Enrichment Now"
+  // button on the empty wizard. Each click calls the HTTP endpoint
+  // which processes up to 50 brands per call (Vercel function timeout
+  // safe). Results accumulate so the user can chew through 1000+
+  // brands by clicking "Run Again" without leaving the page.
+  const [bulkRunning, setBulkRunning] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState<{
+    totalEnriched: number;
+    totalContactsCreated: number;
+    remaining: number;
+    lastBatchSize: number;
+    error?: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -321,6 +334,61 @@ export default function BDWizardPage() {
       });
     } catch {
       // best-effort — the TTL will clean up anyway
+    }
+  }
+
+  // Run a single bulk-enrichment batch via the platform endpoint. The
+  // endpoint is bounded (50 brands per call) so each click stays under
+  // Vercel's function timeout. After it returns, if there are still
+  // empty brands, the UI shows a "Run Again" button. Once the queue
+  // is healthy, we auto-reload the wizard to pick up the now-available
+  // brands.
+  async function runBulkEnrich() {
+    setBulkRunning(true);
+    try {
+      const res = await fetch(
+        "/api/admin/bulk-enrich-empty-brands",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ limit: 50 }),
+        },
+      );
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setBulkProgress((p) => ({
+          totalEnriched: p?.totalEnriched || 0,
+          totalContactsCreated: p?.totalContactsCreated || 0,
+          remaining: p?.remaining || 0,
+          lastBatchSize: 0,
+          error: data.error || `HTTP ${res.status}`,
+        }));
+        return;
+      }
+      setBulkProgress((p) => ({
+        totalEnriched: (p?.totalEnriched || 0) + (data.brandsEnriched || 0),
+        totalContactsCreated:
+          (p?.totalContactsCreated || 0) + (data.contactsCreated || 0),
+        remaining: data.brandsRemainingNoContacts ?? 0,
+        lastBatchSize: data.brandsEnriched || 0,
+      }));
+      // If there's nothing left to enrich, refresh the wizard — there
+      // should be brands eligible to pick now.
+      if ((data.brandsRemainingNoContacts ?? 0) === 0) {
+        setTimeout(() => {
+          loadNextBrand();
+        }, 500);
+      }
+    } catch (e: any) {
+      setBulkProgress((p) => ({
+        totalEnriched: p?.totalEnriched || 0,
+        totalContactsCreated: p?.totalContactsCreated || 0,
+        remaining: p?.remaining || 0,
+        lastBatchSize: 0,
+        error: e?.message || "Network error",
+      }));
+    } finally {
+      setBulkRunning(false);
     }
   }
 
@@ -636,49 +704,168 @@ export default function BDWizardPage() {
               </div>
             )}
 
-            {/* Action buttons — order is recommendation-driven. The
-                primary action depends on the dominant exclusion reason. */}
-            <div className="mt-6 flex justify-center gap-3 flex-wrap">
+            {/* Action cards — each card explains what the action does
+                so the rep doesn't have to guess. The primary card
+                (recommended action) depends on the dominant exclusion
+                reason; secondary cards are still available as
+                alternatives. */}
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mx-auto text-left">
               {emptySummary?.dominantReason === "no_contacts" ? (
                 <>
+                  {/* PRIMARY — brands needing enrichment */}
                   <a
                     href="/admin/brand-pipeline?filter=no-contacts"
-                    className="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700"
-                    title="See the brands that need enrichment"
+                    className="group block p-4 rounded-xl border-2 border-emerald-300 bg-emerald-50 hover:bg-emerald-100 transition"
                   >
-                    📇 Brands Needing Enrichment ({emptySummary.leadNoContacts})
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">📇</span>
+                      <span className="font-bold text-emerald-900">
+                        Brands Needing Enrichment ({emptySummary.leadNoContacts})
+                      </span>
+                      <span className="ml-auto text-[10px] uppercase font-bold text-emerald-700 bg-white px-1.5 py-0.5 rounded">
+                        Recommended
+                      </span>
+                    </div>
+                    <p className="text-xs text-emerald-800 leading-relaxed">
+                      Opens the list of brands already in your pipeline that are missing contacts. Use this to see what needs enrichment. Bulk-enrich with the admin command below — that's the cheapest fix since these brands are already in the pipeline.
+                    </p>
                   </a>
+
+                  {/* SECONDARY — run discovery */}
                   <Link
                     href="/admin/brand-discovery"
-                    className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm hover:bg-slate-50"
+                    className="group block p-4 rounded-xl border border-slate-200 bg-white hover:border-sky-300 hover:bg-sky-50 transition"
                   >
-                    Run Discovery
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">🌎</span>
+                      <span className="font-bold text-slate-900">Run Discovery</span>
+                    </div>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      Adds new brands to the pipeline via multi-AI search (Anthropic + OpenAI + Grok). Each new brand auto-attaches up to 8 senior contacts via Apollo. Use this to top up with fresh prospects — it doesn't fix the existing 1083 empty brands.
+                    </p>
                   </Link>
                 </>
               ) : (
                 <>
+                  {/* PRIMARY — run discovery */}
                   <Link
                     href="/admin/brand-discovery"
-                    className="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm font-medium hover:bg-sky-700"
+                    className="group block p-4 rounded-xl border-2 border-sky-300 bg-sky-50 hover:bg-sky-100 transition"
                   >
-                    Run Discovery
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">🌎</span>
+                      <span className="font-bold text-sky-900">Run Discovery</span>
+                      <span className="ml-auto text-[10px] uppercase font-bold text-sky-700 bg-white px-1.5 py-0.5 rounded">
+                        Recommended
+                      </span>
+                    </div>
+                    <p className="text-xs text-sky-800 leading-relaxed">
+                      Adds new brands to the pipeline via multi-AI search (Anthropic + OpenAI + Grok). Each new brand auto-attaches up to 8 senior contacts via Apollo. Pick a category + region, takes ~30-60 seconds.
+                    </p>
                   </Link>
+
+                  {/* SECONDARY — open pipeline */}
                   <Link
                     href="/admin/brand-pipeline"
-                    className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm hover:bg-slate-50"
+                    className="group block p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:bg-slate-50 transition"
                   >
-                    Open Pipeline
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">🔥</span>
+                      <span className="font-bold text-slate-900">Open Pipeline</span>
+                    </div>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      See every brand across all stages (LEAD, PRESENTATION, BRAND_TESTING, etc.) with filters. Use this to manually claim a specific brand, change a stage, or check on a deal that's not in your active wizard queue.
+                    </p>
                   </Link>
                 </>
               )}
             </div>
 
-            {/* Power-user hint — admin terminal command for the bulk
-                enrichment when the queue is blocked on missing contacts. */}
+            {/* In-UI bulk-enrichment trigger — runs the platform
+                endpoint, no CLI required. Each click processes up to
+                50 brands (Vercel function timeout safe). For 1000+
+                brands the user clicks "Run Again" repeatedly OR we
+                could eventually auto-loop; current model is one-click,
+                see-progress, decide-next. */}
             {emptySummary?.dominantReason === "no_contacts" && (
-              <p className="mt-4 text-[11px] text-slate-400">
-                Admin: <code className="bg-slate-100 px-1 py-0.5 rounded text-slate-600">npx tsx scripts/bulk-enrich-empty-brands.ts --apply</code> attaches contacts via Apollo for all {emptySummary.leadNoContacts} brand{emptySummary.leadNoContacts === 1 ? "" : "s"} in one shot.
-              </p>
+              <div className="mt-6 max-w-3xl mx-auto p-4 bg-cyan-50 border-2 border-cyan-300 rounded-xl">
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">⚡</div>
+                  <div className="flex-1 text-left">
+                    <p className="font-bold text-cyan-900">
+                      Bulk-Enrich Now (one click, no terminal)
+                    </p>
+                    <p className="text-xs text-cyan-800 mt-0.5">
+                      Calls Apollo people-search by domain on the next
+                      50 empty brands and attaches up to 8 senior
+                      contacts per brand. Each batch takes ~30–60
+                      seconds. Click again to chew through the rest.
+                    </p>
+
+                    {bulkProgress && (
+                      <div className="mt-2 grid grid-cols-3 gap-2 text-xs bg-white rounded border border-cyan-200 p-2">
+                        <div>
+                          <p className="text-slate-500 font-bold uppercase text-[10px]">
+                            Brands enriched
+                          </p>
+                          <p className="text-base font-black text-cyan-900">
+                            {bulkProgress.totalEnriched}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-slate-500 font-bold uppercase text-[10px]">
+                            Contacts attached
+                          </p>
+                          <p className="text-base font-black text-cyan-900">
+                            {bulkProgress.totalContactsCreated}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-slate-500 font-bold uppercase text-[10px]">
+                            Still empty
+                          </p>
+                          <p
+                            className={`text-base font-black ${bulkProgress.remaining === 0 ? "text-emerald-700" : "text-amber-700"}`}
+                          >
+                            {bulkProgress.remaining}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {bulkProgress?.error && (
+                      <p className="text-xs text-red-700 mt-2 font-semibold">
+                        {bulkProgress.error}
+                      </p>
+                    )}
+
+                    <div className="mt-3 flex items-center gap-2 flex-wrap">
+                      <button
+                        onClick={runBulkEnrich}
+                        disabled={bulkRunning}
+                        className="px-4 py-2 bg-cyan-600 text-white rounded-lg text-sm font-bold hover:bg-cyan-700 disabled:opacity-50"
+                      >
+                        {bulkRunning
+                          ? "⏳ Enriching… (30-60s)"
+                          : bulkProgress
+                            ? bulkProgress.remaining > 0
+                              ? `Run Again (${bulkProgress.remaining} left)`
+                              : "✓ Pipeline ready — refreshing wizard"
+                            : "⚡ Bulk-Enrich Now"}
+                      </button>
+                      {bulkProgress &&
+                        bulkProgress.remaining === 0 &&
+                        !bulkRunning && (
+                          <button
+                            onClick={() => loadNextBrand()}
+                            className="px-3 py-2 text-sm text-cyan-700 hover:underline"
+                          >
+                            Open the wizard now →
+                          </button>
+                        )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         ) : (
