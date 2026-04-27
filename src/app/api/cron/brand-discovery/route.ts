@@ -55,12 +55,23 @@ export async function GET(req: Request) {
 
   const results: any[] = [];
 
+  // Resolve the base URL ONCE per cron invocation. The previous expression
+  //   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL
+  //     ? `https://${process.env.VERCEL_URL}` : ...
+  // was operator-precedence broken: `||` binds before `?:`, so when
+  // NEXT_PUBLIC_APP_URL was set (typical in prod) it forced the truthy
+  // branch which then tried to template the *undefined* VERCEL_URL,
+  // producing `https://undefined/api/brands/discover` and silently
+  // failing every fetch. THAT'S why Ryan's pipeline drained — the
+  // discovery cron has been running but writing zero brands. Using a
+  // proper precedence-explicit fallback chain instead.
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+    "http://localhost:3000";
+
   for (const category of categories) {
     try {
-      // Call the discover endpoint internally using absolute URL
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
 
       const res = await fetch(`${baseUrl}/api/brands/discover`, {
         method: "POST",

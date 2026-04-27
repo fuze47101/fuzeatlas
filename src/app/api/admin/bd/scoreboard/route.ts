@@ -130,24 +130,17 @@ export async function GET(req: Request) {
         if (s.repId) activityIds.add(s.repId);
       }
 
-      // Include DISTRIBUTOR_USER in the canonical role list so distributor-
-      // side BD reps (Jeremy, Kathir, Tandy, Scott Smith — anyone who can
-      // legitimately run wizard outreach for FUZE while also serving a
-      // specific distributor) appear on the scoreboard alongside the
-      // FUZE-direct reps.
+      // Canonical BD-role list does NOT include DISTRIBUTOR_USER —
+      // we don't want every dist user (Angela, Danny, Jessica, KJ,
+      // Tina-Distributor) cluttering the scoreboard. Distributor-side
+      // BD reps (Jeremy, Kathir, Tandy, Scott Smith) still surface
+      // via the activity-based branch below the moment they actually
+      // send a wizard email or start a sequence. "High tide raises
+      // all boats" = activity-driven, not role-driven.
       reps = await prisma.user.findMany({
         where: {
           OR: [
-            {
-              role: {
-                in: [
-                  "SALES_REP",
-                  "SALES_MANAGER",
-                  "BD_REP",
-                  "DISTRIBUTOR_USER",
-                ],
-              },
-            },
+            { role: { in: ["SALES_REP", "SALES_MANAGER", "BD_REP"] } },
             ...(activityIds.size > 0
               ? [{ id: { in: Array.from(activityIds) } }]
               : []),
