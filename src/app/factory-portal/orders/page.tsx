@@ -826,39 +826,106 @@ export default function FactoryOrdersPage() {
 
                 {/* FUZE Treatment Volume (for PRODUCTION & SAMPLE) */}
                 {form.orderType !== "HANGTAG" && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Volume (liters)</label>
-                      <input
-                        type="number"
-                        value={form.volumeLiters}
-                        onChange={(e) => setForm({ ...form, volumeLiters: e.target.value, bottles: "" })}
-                        placeholder="e.g. 190"
-                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                      />
-                      {form.volumeLiters && (
-                        <p className="text-xs text-slate-500 mt-1">
-                          = {calculatedBottles} bottles (19L each)
-                          {form.baseFuzeLiters && Number(form.baseFuzeLiters) > 0 && (
-                            <> · base {Number(form.baseFuzeLiters).toFixed(1)}L + {wastagePct}% buffer</>
-                          )}
+                  <>
+                    {/* Sample-size quick picks — only show for SAMPLE
+                        order type. For sample/lab orders, factories
+                        often only need 500ml / 1L / 2L. The volume
+                        field already accepts decimals natively (FuzeOrder.
+                        volumeLiters is Float), so these just prefill the
+                        input. The 19L carboy is the smallest packaging
+                        unit but for samples we ship in lab-size
+                        containers from the carboy supply. */}
+                    {form.orderType === "SAMPLE" && (
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                          Sample size (quick-pick)
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            { value: "0.5", label: "500 mL", desc: "smallest bench sample" },
+                            { value: "1", label: "1 L", desc: "standard lab sample" },
+                            { value: "2", label: "2 L", desc: "extended trial" },
+                            { value: "5", label: "5 L", desc: "small pilot" },
+                            { value: "19", label: "19 L (1 carboy)", desc: "full carboy" },
+                          ].map((opt) => (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() =>
+                                setForm({
+                                  ...form,
+                                  volumeLiters: opt.value,
+                                  bottles: "",
+                                })
+                              }
+                              className={`px-3 py-1.5 rounded-lg text-sm font-semibold border transition ${
+                                form.volumeLiters === opt.value
+                                  ? "bg-[#00b4c3] text-white border-[#00b4c3]"
+                                  : "bg-white text-slate-700 border-slate-300 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+                              }`}
+                              title={opt.desc}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-1">
+                          Or enter a custom volume below.
                         </p>
-                      )}
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Volume (liters)</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          value={form.volumeLiters}
+                          onChange={(e) => setForm({ ...form, volumeLiters: e.target.value, bottles: "" })}
+                          placeholder={form.orderType === "SAMPLE" ? "e.g. 0.5, 1, 2" : "e.g. 190"}
+                          className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+                        />
+                        {form.volumeLiters && (
+                          <p className="text-xs text-slate-500 mt-1">
+                            {Number(form.volumeLiters) < 19 ? (
+                              <>
+                                = {(Number(form.volumeLiters) * 1000).toLocaleString()} mL · ships from carboy supply
+                              </>
+                            ) : (
+                              <>
+                                = {calculatedBottles} bottles (19L each)
+                              </>
+                            )}
+                            {form.baseFuzeLiters && Number(form.baseFuzeLiters) > 0 && (
+                              <> · base {Number(form.baseFuzeLiters).toFixed(1)}L + {wastagePct}% buffer</>
+                            )}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Or enter bottles (19L)</label>
+                        <input
+                          type="number"
+                          value={form.bottles}
+                          onChange={(e) => setForm({ ...form, bottles: e.target.value, volumeLiters: "" })}
+                          placeholder="e.g. 10"
+                          className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+                          disabled={form.orderType === "SAMPLE"}
+                          title={form.orderType === "SAMPLE" ? "Sample orders use the volume field above for sub-19L sizes." : undefined}
+                        />
+                        {form.bottles && (
+                          <p className="text-xs text-slate-500 mt-1">= {calculatedVolume}L total</p>
+                        )}
+                        {form.orderType === "SAMPLE" && (
+                          <p className="text-[11px] text-amber-600 mt-1">
+                            Disabled for samples — use volume field above.
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Or enter bottles (19L)</label>
-                      <input
-                        type="number"
-                        value={form.bottles}
-                        onChange={(e) => setForm({ ...form, bottles: e.target.value, volumeLiters: "" })}
-                        placeholder="e.g. 10"
-                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                      />
-                      {form.bottles && (
-                        <p className="text-xs text-slate-500 mt-1">= {calculatedVolume}L total</p>
-                      )}
-                    </div>
-                  </div>
+                  </>
                 )}
 
                 {/* Wastage factor when not using calculator */}
