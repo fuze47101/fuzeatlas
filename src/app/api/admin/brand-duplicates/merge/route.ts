@@ -151,6 +151,63 @@ export async function POST(req: Request) {
           }
         }
 
+        /**
+         * Safer repoint for tables with a unique constraint that
+         * includes brandId — Project @@unique([name, brandId]),
+         * Product @@unique([brandId, name]), BDSequence
+         * @@unique([brandId, contactId, repId, status]). A naive
+         * updateMany would fail the whole transaction the moment
+         * both keep + merge brands have a row that would collapse
+         * into the same composite key. Walk per-row, detect the
+         * collision via findFirst, and delete the duplicate from
+         * the merge side rather than moving it.
+         */
+        async function repointWithUniqueConflicts(
+          model: keyof typeof tx,
+          label: string,
+          uniqueFields: string[],
+        ) {
+          lastModel = label;
+          let conflicts = 0;
+          let moved = 0;
+          try {
+            const select: any = { id: true };
+            for (const f of uniqueFields) select[f] = true;
+            // @ts-expect-error — dynamic model access
+            const mergeRows = await tx[model].findMany({
+              where: { brandId: mergeBrandId },
+              select,
+            });
+            for (const row of mergeRows) {
+              const where: any = { brandId: keepBrandId };
+              for (const f of uniqueFields) where[f] = (row as any)[f];
+              // @ts-expect-error
+              const existing = await tx[model].findFirst({
+                where,
+                select: { id: true },
+              });
+              if (existing) {
+                // @ts-expect-error
+                await tx[model].delete({ where: { id: row.id } });
+                conflicts++;
+              } else {
+                // @ts-expect-error
+                await tx[model].update({
+                  where: { id: row.id },
+                  data: { brandId: keepBrandId },
+                });
+                moved++;
+              }
+            }
+            counts[label] = moved;
+            if (conflicts > 0) counts[`${label}Conflicts`] = conflicts;
+          } catch (e: any) {
+            throw new Error(
+              `Failed to repoint ${label} (${String(model)}): ${e?.message || e}`,
+            );
+          }
+        }
+
         await repoint("contact", "contacts");
         // OutreachMessage + ContactOutreach DO NOT have a direct brandId
         // column — they're linked to Brand transitively through
@@ -162,15 +219,25 @@ export async function POST(req: Request) {
         await repoint("note", "notes");
         await repoint("fabric", "fabrics");
         await repoint("fabricSubmission", "submissions");
-        await repoint("project", "projects");
-        await repoint("product", "products");
+        // Project @@unique([name, brandId]) — collisions when both
+        // brands have a project with the same name
+        await repointWithUniqueConflicts("project", "projects", ["name"]);
+        // Product @@unique([brandId, name]) — same collision risk
+        await repointWithUniqueConflicts("product", "products", ["name"]);
         await repoint("sOW", "sows");
         await repoint("invoice", "invoices");
         await repoint("testRequest", "testRequests");
         await repoint("sampleTrialRequest", "sampleTrials");
         await repoint("fuzeOrder", "fuzeOrders");
         await repoint("fuzeConsumption", "fuzeConsumptions");
-        await repoint("bDSequence", "bdSequences");
+        // BDSequence @@unique([brandId, contactId, repId, status]) —
+        // collisions when both brands have a sequence to the same
+        // contact / rep / status combination
+        await repointWithUniqueConflicts("bDSequence", "bdSequences", [
+          "contactId",
+          "repId",
+          "status",
+        ]);
         await repoint("meeting", "meetings");
         await repoint("user", "users");
         // FabricReportShare has brandId without a Prisma `brand`
