@@ -77,6 +77,17 @@ const UNIT_META: Record<string, { label: string; liters: number; desc: string; i
     icon: "🚢",
     orderTypes: ["PRODUCTION"],
   },
+  // Free-form liters — factories often need a specific quantity
+  // (47L, 285L, 1,300L) that doesn't line up with carboy/gaylord
+  // multiples. The `liters` value is overridden by createForm.customLiters
+  // when this option is active.
+  CUSTOM: {
+    label: "Custom (specify liters)",
+    liters: 0,
+    desc: "any volume — not bound to carboy multiples",
+    icon: "📏",
+    orderTypes: ["SAMPLE", "PRODUCTION"],
+  },
 };
 
 export default function DistributorOrdersPage() {
@@ -106,6 +117,7 @@ export default function DistributorOrdersPage() {
     orderType: "PRODUCTION",
     unitType: "GAYLORD",
     unitQuantity: 1,
+    customLiters: "", // used when unitType === "CUSTOM"
     fuzeTier: "F1",
     brandId: "",
     notes: "",
@@ -174,10 +186,14 @@ export default function DistributorOrdersPage() {
   }
 
   const createVolumeLiters = useMemo(() => {
+    if (createForm.unitType === "CUSTOM") {
+      const n = parseFloat(createForm.customLiters);
+      return isNaN(n) || n < 0 ? 0 : n;
+    }
     const meta = UNIT_META[createForm.unitType];
     if (!meta) return 0;
     return meta.liters * createForm.unitQuantity;
-  }, [createForm.unitType, createForm.unitQuantity]);
+  }, [createForm.unitType, createForm.unitQuantity, createForm.customLiters]);
 
   const createBottles = useMemo(() => {
     return Math.ceil(createVolumeLiters / 19);
@@ -212,6 +228,7 @@ export default function DistributorOrdersPage() {
           orderType: "PRODUCTION",
           unitType: "GAYLORD",
           unitQuantity: 1,
+          customLiters: "",
           fuzeTier: "F1",
           brandId: "",
           notes: "",
@@ -582,38 +599,80 @@ export default function DistributorOrdersPage() {
                       </button>
                     ))}
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1">Quantity</label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="number"
-                      min={1}
-                      max={100}
-                      value={createForm.unitQuantity}
-                      onChange={(e) =>
-                        setCreateForm({
-                          ...createForm,
-                          unitQuantity: Math.max(1, parseInt(e.target.value) || 1),
-                        })
-                      }
-                      className="w-24 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-center"
-                    />
-                    <span className="text-sm text-slate-500">
-                      ={" "}
-                      {createVolumeLiters < 19 ? (
-                        <>
-                          <strong>{(createVolumeLiters * 1000).toLocaleString()} mL</strong>{" "}
-                          <span className="text-slate-400">· decanted from carboy</span>
-                        </>
-                      ) : (
-                        <>
-                          <strong>{createVolumeLiters.toLocaleString()}L</strong> ({createBottles}{" "}
-                          bottles)
-                        </>
+                {createForm.unitType === "CUSTOM" ? (
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 mb-1">
+                      Specify volume (liters)
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="number"
+                        step="0.1"
+                        min={0}
+                        value={createForm.customLiters}
+                        onChange={(e) =>
+                          setCreateForm({ ...createForm, customLiters: e.target.value })
+                        }
+                        placeholder="e.g. 47"
+                        className="w-32 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-center"
+                      />
+                      <span className="text-sm text-slate-500">liters</span>
+                      {createVolumeLiters > 0 && (
+                        <span className="text-sm text-slate-500">
+                          ·{" "}
+                          {createVolumeLiters < 19 ? (
+                            <strong>
+                              {(createVolumeLiters * 1000).toLocaleString()} mL
+                            </strong>
+                          ) : (
+                            <>
+                              <strong>{createVolumeLiters.toLocaleString()}L</strong>{" "}
+                              ({createBottles} bottles)
+                            </>
+                          )}
+                        </span>
                       )}
-                    </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      Order any specific volume — not bound to carboy
+                      multiples. Decanted to suit when not a 19L round
+                      number.
+                    </p>
                   </div>
-                </div>
+                ) : (
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 mb-1">Quantity</label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="number"
+                        min={1}
+                        max={100}
+                        value={createForm.unitQuantity}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            unitQuantity: Math.max(1, parseInt(e.target.value) || 1),
+                          })
+                        }
+                        className="w-24 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-center"
+                      />
+                      <span className="text-sm text-slate-500">
+                        ={" "}
+                        {createVolumeLiters < 19 ? (
+                          <>
+                            <strong>{(createVolumeLiters * 1000).toLocaleString()} mL</strong>{" "}
+                            <span className="text-slate-400">· decanted from carboy</span>
+                          </>
+                        ) : (
+                          <>
+                            <strong>{createVolumeLiters.toLocaleString()}L</strong> ({createBottles}{" "}
+                            bottles)
+                          </>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* FUZE Tier */}
