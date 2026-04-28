@@ -46,6 +46,74 @@ function extractDomain(s: string | null | undefined): string | null {
   }
 }
 
+/**
+ * HubSpot makes no distinction between brands, factories, and
+ * distributors — they're all "Companies" in HubSpot. But Atlas keeps
+ * them in separate tables. So before creating a new Brand from a
+ * HubSpot row, scan Factory + Distributor by name (case-insensitive)
+ * and website domain. If we find a match, skip the row — don't
+ * create a duplicate Brand alongside the existing Factory or
+ * Distributor record.
+ *
+ * Returns the matched entity + which table, or null if no match.
+ */
+async function findFactoryOrDistributorMatch(
+  name: string,
+  domain: string | null,
+): Promise<
+  | { kind: "factory"; id: string; name: string; via: "name" | "domain" }
+  | { kind: "distributor"; id: string; name: string; via: "name" | "domain" }
+  | null
+> {
+  // Factory — name first (case-insensitive), then website domain
+  const factoryByName = await prisma.factory.findFirst({
+    where: { name: { equals: name, mode: "insensitive" } },
+    select: { id: true, name: true },
+  });
+  if (factoryByName) {
+    return { kind: "factory", id: factoryByName.id, name: factoryByName.name, via: "name" };
+  }
+  if (domain) {
+    const factoryByDomain = await prisma.factory.findFirst({
+      where: { website: { contains: domain, mode: "insensitive" } },
+      select: { id: true, name: true },
+    });
+    if (factoryByDomain) {
+      return {
+        kind: "factory",
+        id: factoryByDomain.id,
+        name: factoryByDomain.name,
+        via: "domain",
+      };
+    }
+  }
+
+  // Distributor — same flow
+  const distByName = await prisma.distributor.findFirst({
+    where: { name: { equals: name, mode: "insensitive" } },
+    select: { id: true, name: true },
+  });
+  if (distByName) {
+    return { kind: "distributor", id: distByName.id, name: distByName.name, via: "name" };
+  }
+  if (domain) {
+    const distByDomain = await prisma.distributor.findFirst({
+      where: { website: { contains: domain, mode: "insensitive" } },
+      select: { id: true, name: true },
+    });
+    if (distByDomain) {
+      return {
+        kind: "distributor",
+        id: distByDomain.id,
+        name: distByDomain.name,
+        via: "domain",
+      };
+    }
+  }
+
+  return null;
+}
+
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
@@ -96,6 +164,13 @@ export async function POST(req: Request) {
       wouldUpdateById: 0,
       wouldUpdateByDomain: 0,
       wouldUpdateByName: 0,
+      // Cross-table dedupe — HubSpot rows that match an existing
+      // Factory or Distributor get skipped (we don't create a
+      // duplicate Brand). Tracked in both dry-run and live paths.
+      wouldSkipFactoryMatch: 0,
+      wouldSkipDistributorMatch: 0,
+      skippedFactoryMatch: 0,
+      skippedDistributorMatch: 0,
     };
     const log: any[] = [];
 
@@ -171,14 +246,38 @@ export async function POST(req: Request) {
               matchedAtlasBrandId: existing.id,
             });
           } else {
-            stats.wouldCreate++;
-            log.push({
-              hubspotId,
-              name,
-              status: "dry_run_would_create",
-              bucket: classification.bucket,
-              reason: classification.reason,
-            });
+            // No Brand match — before declaring "would create", scan
+            // Factory + Distributor tables. HubSpot doesn't separate
+            // these; Atlas does. If Hone-Strong is in Factory, we
+            // shouldn't create a duplicate Brand row for it.
+            const otherTableMatch = await findFactoryOrDistributorMatch(name, domain);
+            if (otherTableMatch) {
+              if (otherTableMatch.kind === "factory") {
+                stats.wouldSkipFactoryMatch++;
+              } else {
+                stats.wouldSkipDistributorMatch++;
+              }
+              log.push({
+                hubspotId,
+                name,
+                status: `dry_run_would_skip_${otherTableMatch.kind}_match`,
+                bucket: classification.bucket,
+                reason: classification.reason,
+                matchedAtlasName: otherTableMatch.name,
+                matchedAtlasBrandId: otherTableMatch.id,
+                matchedKind: otherTableMatch.kind,
+                matchedVia: otherTableMatch.via,
+              });
+            } else {
+              stats.wouldCreate++;
+              log.push({
+                hubspotId,
+                name,
+                status: "dry_run_would_create",
+                bucket: classification.bucket,
+                reason: classification.reason,
+              });
+            }
           }
           continue;
         }
@@ -264,6 +363,32 @@ export async function POST(req: Request) {
             where: { name: { equals: name, mode: "insensitive" } },
           });
           if (existing) matchPath = "name";
+        }
+
+        // Cross-table dedupe — same as dry-run. If a Factory or
+        // Distributor already owns this name/domain, skip creating
+        // a Brand. Only runs when no Brand match was found above.
+        if (!existing) {
+          const otherTableMatch = await findFactoryOrDistributorMatch(name, domain);
+          if (otherTableMatch) {
+            if (otherTableMatch.kind === "factory") {
+              stats.skippedFactoryMatch++;
+            } else {
+              stats.skippedDistributorMatch++;
+            }
+            log.push({
+              hubspotId,
+              name,
+              status: `skipped_${otherTableMatch.kind}_match`,
+              bucket: classification.bucket,
+              reason: classification.reason,
+              matchedAtlasName: otherTableMatch.name,
+              matchedAtlasId: otherTableMatch.id,
+              matchedKind: otherTableMatch.kind,
+              matchedVia: otherTableMatch.via,
+            });
+            continue;
+          }
         }
 
         if (existing) {

@@ -55,6 +55,8 @@ type DedupeSample = {
   matchedAtlasName?: string;
   matchedAtlasId?: string;
   matchedAtlasEmail?: string;
+  matchedKind?: string;
+  matchedVia?: string;
   status: string;
 };
 
@@ -70,6 +72,10 @@ type ImportProgress = {
   // sanity-check the dedupe match before committing.
   updateSamples: DedupeSample[];
   createSamples: DedupeSample[];
+  // Cross-table matches — CSV row name/domain matches an existing
+  // Factory or Distributor (not a Brand). Importer skips these so
+  // we don't create duplicate Brand records.
+  crossTableSamples: DedupeSample[];
 };
 
 const initialProgress: ImportProgress = {
@@ -82,6 +88,7 @@ const initialProgress: ImportProgress = {
   error: null,
   updateSamples: [],
   createSamples: [],
+  crossTableSamples: [],
 };
 
 function parseCsvFile(file: File): Promise<CompanyRow[]> {
@@ -178,10 +185,12 @@ async function importInBatches<T>(
         merged[k] = (merged[k] || 0) + v;
       }
     }
-    // Pull update/create samples out of the per-row log so the UI
-    // can show "Spanx matches Atlas brand 'Spanx Inc.'", etc.
+    // Pull update/create/cross-table samples out of the per-row log
+    // so the UI can show "Spanx matches Atlas brand 'Spanx Inc.'",
+    // "Hone-Strong matches Atlas factory 'Hone-Strong Industrial'", etc.
     const updateSamples = [...s.updateSamples];
     const createSamples = [...s.createSamples];
+    const crossTableSamples = [...s.crossTableSamples];
     if (Array.isArray(data.log)) {
       for (const entry of data.log) {
         const status = String(entry?.status || "");
@@ -195,6 +204,19 @@ async function importInBatches<T>(
             matchedAtlasName: entry.matchedAtlasName,
             matchedAtlasId: entry.matchedAtlasBrandId || entry.matchedAtlasContactId,
             matchedAtlasEmail: entry.matchedAtlasContactEmail,
+            status,
+          });
+        } else if (
+          crossTableSamples.length < SAMPLE_CAP &&
+          (status === "dry_run_would_skip_factory_match" ||
+            status === "dry_run_would_skip_distributor_match")
+        ) {
+          crossTableSamples.push({
+            csvName: entry.name || "(no name)",
+            matchedAtlasName: entry.matchedAtlasName,
+            matchedAtlasId: entry.matchedAtlasBrandId,
+            matchedKind: entry.matchedKind,
+            matchedVia: entry.matchedVia,
             status,
           });
         } else if (
@@ -219,6 +241,7 @@ async function importInBatches<T>(
       error: null,
       updateSamples,
       createSamples,
+      crossTableSamples,
     };
     onTick(s);
   }
@@ -425,7 +448,21 @@ export default function HubSpotCSVImport() {
                   ? "⏳ Importing…"
                   : companyProgress.done && !companyProgress.dryRun
                     ? "✓ Companies imported"
-                    : `Import ${companyPreview.byBucket.KEEP + companyPreview.byBucket.REVIEW} rows (${companyPreview.byBucket.EXCLUDE} skipped)`}
+                    : (() => {
+                        // After a dry-run, the "real" import row count
+                        // accounts for cross-table skips. Before any
+                        // dry-run, fall back to the bucket math.
+                        const crossSkip =
+                          (companyProgress.stats.wouldSkipFactoryMatch || 0) +
+                          (companyProgress.stats.wouldSkipDistributorMatch || 0);
+                        const importable =
+                          companyPreview.byBucket.KEEP +
+                          companyPreview.byBucket.REVIEW -
+                          crossSkip;
+                        const skipped =
+                          companyPreview.byBucket.EXCLUDE + crossSkip;
+                        return `Import ${importable.toLocaleString()} rows (${skipped.toLocaleString()} skipped)`;
+                      })()}
               </button>
             </div>
 
@@ -632,8 +669,11 @@ function DedupePanel({
   const updateByDomain = state.stats.wouldUpdateByDomain || 0;
   const updateByName = state.stats.wouldUpdateByName || 0;
   const updateByEmail = state.stats.wouldUpdateByEmail || 0;
+  const skipFactory = state.stats.wouldSkipFactoryMatch || 0;
+  const skipDistributor = state.stats.wouldSkipDistributorMatch || 0;
   const totalUpdates = updateById + updateByDomain + updateByName + updateByEmail;
-  const total = create + totalUpdates;
+  const totalCrossTable = skipFactory + skipDistributor;
+  const total = create + totalUpdates + totalCrossTable;
 
   return (
     <div className="mt-3 bg-amber-50 border border-amber-300 rounded-lg p-4">
@@ -642,18 +682,13 @@ function DedupePanel({
           🔍 Pre-flight dedupe results
         </p>
         <p className="text-xs text-amber-800">
-          {totalUpdates.toLocaleString()} of {total.toLocaleString()} rows already
-          in Atlas (will UPDATE, not duplicate)
+          {totalUpdates.toLocaleString()} update + {totalCrossTable.toLocaleString()} cross-table-skip of {total.toLocaleString()} rows
         </p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
         <DedupeTile label="Net new (CREATE)" value={create} tone="cyan" />
         <DedupeTile
-          label={
-            entity === "brand"
-              ? "Update by hubspotId"
-              : "Update by hubspotId"
-          }
+          label="Update by hubspotId"
           value={updateById}
           tone="emerald"
         />
@@ -678,6 +713,52 @@ function DedupePanel({
           />
         )}
       </div>
+
+      {entity === "brand" && totalCrossTable > 0 && (
+        <div className="mb-3">
+          <p className="text-xs font-bold text-amber-900 mb-1">
+            ⚠ Cross-table matches — these CSV rows already exist as
+            Factory or Distributor records (will SKIP, not duplicate
+            as Brand):
+          </p>
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            <DedupeTile
+              label="Skip — exists as Factory"
+              value={skipFactory}
+              tone="rose"
+            />
+            <DedupeTile
+              label="Skip — exists as Distributor"
+              value={skipDistributor}
+              tone="rose"
+            />
+          </div>
+          {state.crossTableSamples.length > 0 && (
+            <ul className="text-xs space-y-1 bg-white border border-rose-200 rounded p-2 max-h-48 overflow-auto">
+              {state.crossTableSamples.map((s, i) => (
+                <li key={i} className="flex items-baseline gap-2">
+                  <span
+                    className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${
+                      s.matchedKind === "factory"
+                        ? "bg-purple-100 text-purple-800"
+                        : "bg-orange-100 text-orange-800"
+                    }`}
+                  >
+                    {s.matchedKind} via {s.matchedVia}
+                  </span>
+                  <span className="font-semibold text-slate-800">
+                    {s.csvName}
+                  </span>
+                  <span className="text-slate-500">→</span>
+                  <span className="text-slate-700 truncate">
+                    {s.matchedAtlasName}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       {state.updateSamples.length > 0 && (
         <div>
@@ -746,12 +827,14 @@ function DedupeTile({
 }: {
   label: string;
   value: number;
-  tone: "cyan" | "emerald";
+  tone: "cyan" | "emerald" | "rose";
 }) {
   const cls =
     tone === "cyan"
       ? "bg-cyan-50 border-cyan-200 text-cyan-800"
-      : "bg-emerald-50 border-emerald-200 text-emerald-800";
+      : tone === "rose"
+        ? "bg-rose-50 border-rose-200 text-rose-800"
+        : "bg-emerald-50 border-emerald-200 text-emerald-800";
   return (
     <div className={`rounded border p-2 ${cls}`}>
       <p className="text-[10px] uppercase font-bold tracking-wide opacity-80 truncate">
@@ -782,6 +865,8 @@ function ProgressPanel({
           "wouldUpdateById",
           "wouldUpdateByDomain",
           "wouldUpdateByName",
+          "wouldSkipFactoryMatch",
+          "wouldSkipDistributorMatch",
           "excludedSkipped",
           "skippedNoName",
         ]
@@ -792,6 +877,8 @@ function ProgressPanel({
           "keepUpdatedByName",
           "reviewCreated",
           "reviewUpdated",
+          "skippedFactoryMatch",
+          "skippedDistributorMatch",
           "excludedSkipped",
           "skippedNoName",
           "errors",
