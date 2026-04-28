@@ -165,12 +165,14 @@ export async function POST(req: Request) {
       wouldUpdateByDomain: 0,
       wouldUpdateByName: 0,
       // Cross-table dedupe — HubSpot rows that match an existing
-      // Factory or Distributor get skipped (we don't create a
-      // duplicate Brand). Tracked in both dry-run and live paths.
-      wouldSkipFactoryMatch: 0,
-      wouldSkipDistributorMatch: 0,
-      skippedFactoryMatch: 0,
-      skippedDistributorMatch: 0,
+      // Factory or Distributor get their hubspotId stamped on the
+      // matching Factory/Distributor row (NOT a new Brand). This
+      // way the contact import can resolve "Associated Company IDs"
+      // back to the right entity across all three tables.
+      wouldUpdateFactory: 0,
+      wouldUpdateDistributor: 0,
+      updatedFactory: 0,
+      updatedDistributor: 0,
     };
     const log: any[] = [];
 
@@ -249,18 +251,19 @@ export async function POST(req: Request) {
             // No Brand match — before declaring "would create", scan
             // Factory + Distributor tables. HubSpot doesn't separate
             // these; Atlas does. If Hone-Strong is in Factory, we
-            // shouldn't create a duplicate Brand row for it.
+            // stamp the hubspotId on the Factory row so contacts can
+            // link to it (instead of orphaning them).
             const otherTableMatch = await findFactoryOrDistributorMatch(name, domain);
             if (otherTableMatch) {
               if (otherTableMatch.kind === "factory") {
-                stats.wouldSkipFactoryMatch++;
+                stats.wouldUpdateFactory++;
               } else {
-                stats.wouldSkipDistributorMatch++;
+                stats.wouldUpdateDistributor++;
               }
               log.push({
                 hubspotId,
                 name,
-                status: `dry_run_would_skip_${otherTableMatch.kind}_match`,
+                status: `dry_run_would_update_${otherTableMatch.kind}`,
                 bucket: classification.bucket,
                 reason: classification.reason,
                 matchedAtlasName: otherTableMatch.name,
@@ -365,21 +368,56 @@ export async function POST(req: Request) {
           if (existing) matchPath = "name";
         }
 
-        // Cross-table dedupe — same as dry-run. If a Factory or
-        // Distributor already owns this name/domain, skip creating
-        // a Brand. Only runs when no Brand match was found above.
+        // Cross-table dedupe — if a Factory or Distributor already
+        // owns this name/domain, stamp hubspotId on it so contacts
+        // can resolve the link, then skip the Brand path. Only runs
+        // when no Brand match was found above.
         if (!existing) {
           const otherTableMatch = await findFactoryOrDistributorMatch(name, domain);
           if (otherTableMatch) {
+            if (hubspotId) {
+              // Stamp hubspotId so the contact importer can resolve
+              // "Associated Company IDs (Primary)" back to this
+              // entity. We do NOT touch any other field — preserve
+              // whatever's already on the factory/distributor.
+              try {
+                if (otherTableMatch.kind === "factory") {
+                  await prisma.factory.update({
+                    where: { id: otherTableMatch.id },
+                    data: {
+                      hubspotId,
+                      hubspotImportedAt: new Date(),
+                    },
+                  });
+                } else {
+                  await prisma.distributor.update({
+                    where: { id: otherTableMatch.id },
+                    data: {
+                      hubspotId,
+                      hubspotImportedAt: new Date(),
+                    },
+                  });
+                }
+              } catch (stampErr: any) {
+                // Most likely a uniqueness collision — a previous
+                // run already stamped a different HubSpot id. Log
+                // and move on; the existing stamp is the source of
+                // truth.
+                console.warn(
+                  `[hubspot-import.csv-companies] failed to stamp hubspotId on ${otherTableMatch.kind} ${otherTableMatch.id}:`,
+                  stampErr?.message || stampErr,
+                );
+              }
+            }
             if (otherTableMatch.kind === "factory") {
-              stats.skippedFactoryMatch++;
+              stats.updatedFactory++;
             } else {
-              stats.skippedDistributorMatch++;
+              stats.updatedDistributor++;
             }
             log.push({
               hubspotId,
               name,
-              status: `skipped_${otherTableMatch.kind}_match`,
+              status: `updated_${otherTableMatch.kind}`,
               bucket: classification.bucket,
               reason: classification.reason,
               matchedAtlasName: otherTableMatch.name,

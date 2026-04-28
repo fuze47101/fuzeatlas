@@ -364,6 +364,12 @@ model Factory {
   id      String @id @default(cuid())
   name    String
   knackId String? @unique
+  // HubSpot migration — stamped on import so contacts whose
+  // "Associated Company IDs (Primary)" maps to a HubSpot company
+  // that's a Factory in Atlas can resolve via this id rather than
+  // landing as orphans. Same pattern as Brand.hubspotId.
+  hubspotId String? @unique
+  hubspotImportedAt DateTime?
 
   chineseName  String?
   millType     String?
@@ -466,6 +472,12 @@ model Distributor {
   id      String @id @default(cuid())
   name    String
   knackId String? @unique
+  // HubSpot migration — same pattern as Brand.hubspotId and
+  // Factory.hubspotId. Lets contacts whose company maps to an
+  // Atlas distributor resolve to the right entity instead of
+  // becoming an orphan or creating a duplicate Brand.
+  hubspotId String? @unique
+  hubspotImportedAt DateTime?
 
   chineseName  String?
   specialty    String?

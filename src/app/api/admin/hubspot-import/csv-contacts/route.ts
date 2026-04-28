@@ -99,6 +99,8 @@ export async function POST(req: Request) {
       updatedById: 0,
       updatedByEmail: 0,
       linkedToBrand: 0,
+      linkedToFactory: 0,
+      linkedToDistributor: 0,
       skippedNoIdentity: 0,
       skippedOrphan: 0,
       skippedReviewBrand: 0,
@@ -130,22 +132,51 @@ export async function POST(req: Request) {
           continue;
         }
 
-        // Resolve associated brand via HubSpot company id
+        // Resolve associated company across all three entity types.
+        // HubSpot's "Associated Company IDs (Primary)" points to a
+        // single HubSpot company id. That company may have been
+        // imported into Atlas as a Brand, a Factory, or a
+        // Distributor (the company importer stamps hubspotId on
+        // whichever table it landed in). We check in order:
+        // Brand → Factory → Distributor.
         const associatedCompanyId = extractPrimaryCompanyId(row);
-        let brand: { id: string; name: string; validationStatus: string | null } | null = null;
+        let entity:
+          | { kind: "brand"; id: string; name: string; validationStatus: string | null }
+          | { kind: "factory"; id: string; name: string }
+          | { kind: "distributor"; id: string; name: string }
+          | null = null;
         if (associatedCompanyId) {
-          brand = await prisma.brand.findUnique({
+          const brandMatch = await prisma.brand.findUnique({
             where: { hubspotId: associatedCompanyId },
             select: { id: true, name: true, validationStatus: true },
           });
+          if (brandMatch) {
+            entity = { kind: "brand", ...brandMatch };
+          } else {
+            const factoryMatch = await prisma.factory.findUnique({
+              where: { hubspotId: associatedCompanyId },
+              select: { id: true, name: true },
+            });
+            if (factoryMatch) {
+              entity = { kind: "factory", ...factoryMatch };
+            } else {
+              const distMatch = await prisma.distributor.findUnique({
+                where: { hubspotId: associatedCompanyId },
+                select: { id: true, name: true },
+              });
+              if (distMatch) {
+                entity = { kind: "distributor", ...distMatch };
+              }
+            }
+          }
         }
 
-        // If no brand was matched and orphans aren't allowed, skip.
+        // If no entity was matched and orphans aren't allowed, skip.
         // Most "orphan" contacts in the CSV are either: (a) form-submission
         // ghosts, (b) contacts whose company we EXCLUDED at company-import
         // time, or (c) contacts with personal gmail/yahoo addresses and
-        // no company association. None are worth importing.
-        if (!brand && !allowOrphans) {
+        // no company association.
+        if (!entity && !allowOrphans) {
           stats.skippedOrphan++;
           log.push({
             hubspotId,
@@ -161,14 +192,21 @@ export async function POST(req: Request) {
 
         // Skip contacts whose brand is in pending review — admin should
         // approve the brand first, then re-run contact import.
-        if (brand && brand.validationStatus === "pending_review" && !allowOrphans) {
+        // (Factory/Distributor matches don't have a review state,
+        // so they always proceed.)
+        if (
+          entity &&
+          entity.kind === "brand" &&
+          entity.validationStatus === "pending_review" &&
+          !allowOrphans
+        ) {
           stats.skippedReviewBrand++;
           log.push({
             hubspotId,
             email,
             status: "skipped_review_brand",
-            brandName: brand.name,
-            atlasBrandId: brand.id,
+            brandName: entity.name,
+            atlasBrandId: entity.id,
           });
           continue;
         }
@@ -205,8 +243,9 @@ export async function POST(req: Request) {
               email,
               name: fullName,
               status: `dry_run_would_update_by_${matchPath}`,
-              brandName: brand?.name,
-              atlasBrandId: brand?.id,
+              entityKind: entity?.kind,
+              entityName: entity?.name,
+              entityId: entity?.id,
               matchedAtlasContactId: existing.id,
               matchedAtlasContactEmail: existing.email,
             });
@@ -217,11 +256,14 @@ export async function POST(req: Request) {
               email,
               name: fullName,
               status: "dry_run_would_create",
-              brandName: brand?.name,
-              atlasBrandId: brand?.id,
+              entityKind: entity?.kind,
+              entityName: entity?.name,
+              entityId: entity?.id,
             });
           }
-          if (brand) stats.linkedToBrand++;
+          if (entity?.kind === "brand") stats.linkedToBrand++;
+          else if (entity?.kind === "factory") stats.linkedToFactory++;
+          else if (entity?.kind === "distributor") stats.linkedToDistributor++;
           continue;
         }
 
@@ -248,9 +290,20 @@ export async function POST(req: Request) {
         ).trim();
         if (linkedin) data.linkedinUrl = linkedin;
 
-        if (brand) {
-          data.brandId = brand.id;
+        // Set whichever of brandId / factoryId / distributorId
+        // applies. Contact has all three FKs so we just write the
+        // one that matched. Leaves the other two undefined so we
+        // don't stomp existing manual links if the matcher returned
+        // a different kind on a re-run.
+        if (entity?.kind === "brand") {
+          data.brandId = entity.id;
           stats.linkedToBrand++;
+        } else if (entity?.kind === "factory") {
+          data.factoryId = entity.id;
+          stats.linkedToFactory++;
+        } else if (entity?.kind === "distributor") {
+          data.distributorId = entity.id;
+          stats.linkedToDistributor++;
         }
 
         // 1. Match on hubspotId
@@ -268,11 +321,17 @@ export async function POST(req: Request) {
         }
 
         if (existing) {
+          // Preserve whichever FK is already set if we couldn't
+          // resolve a new one — never null out a manual link.
+          const updateData: any = { ...data };
+          if (!entity) {
+            delete updateData.brandId;
+            delete updateData.factoryId;
+            delete updateData.distributorId;
+          }
           await prisma.contact.update({
             where: { id: existing.id },
-            // Preserve existing brandId if we couldn't resolve one for
-            // this row — better than nulling out a manual link.
-            data: brand ? data : { ...data, brandId: undefined },
+            data: updateData,
           });
           if (matchPath === "id") stats.updatedById++;
           if (matchPath === "email") stats.updatedByEmail++;
@@ -281,7 +340,8 @@ export async function POST(req: Request) {
             email,
             status: `updated_by_${matchPath}`,
             atlasContactId: existing.id,
-            brandId: brand?.id,
+            entityKind: entity?.kind,
+            entityId: entity?.id,
           });
         } else {
           const created = await prisma.contact.create({ data });
@@ -291,7 +351,8 @@ export async function POST(req: Request) {
             email,
             status: "created",
             atlasContactId: created.id,
-            brandId: brand?.id,
+            entityKind: entity?.kind,
+            entityId: entity?.id,
           });
         }
       } catch (rowErr: any) {

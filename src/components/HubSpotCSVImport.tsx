@@ -208,8 +208,8 @@ async function importInBatches<T>(
           });
         } else if (
           crossTableSamples.length < SAMPLE_CAP &&
-          (status === "dry_run_would_skip_factory_match" ||
-            status === "dry_run_would_skip_distributor_match")
+          (status === "dry_run_would_update_factory" ||
+            status === "dry_run_would_update_distributor")
         ) {
           crossTableSamples.push({
             csvName: entry.name || "(no name)",
@@ -449,18 +449,15 @@ export default function HubSpotCSVImport() {
                   : companyProgress.done && !companyProgress.dryRun
                     ? "✓ Companies imported"
                     : (() => {
-                        // After a dry-run, the "real" import row count
-                        // accounts for cross-table skips. Before any
-                        // dry-run, fall back to the bucket math.
-                        const crossSkip =
-                          (companyProgress.stats.wouldSkipFactoryMatch || 0) +
-                          (companyProgress.stats.wouldSkipDistributorMatch || 0);
+                        // Cross-table matches (factory/distributor)
+                        // are still "imported" — we stamp hubspotId
+                        // on those existing rows. So the count
+                        // includes them; only EXCLUDE rows are
+                        // truly skipped.
                         const importable =
                           companyPreview.byBucket.KEEP +
-                          companyPreview.byBucket.REVIEW -
-                          crossSkip;
-                        const skipped =
-                          companyPreview.byBucket.EXCLUDE + crossSkip;
+                          companyPreview.byBucket.REVIEW;
+                        const skipped = companyPreview.byBucket.EXCLUDE;
                         return `Import ${importable.toLocaleString()} rows (${skipped.toLocaleString()} skipped)`;
                       })()}
               </button>
@@ -564,6 +561,8 @@ export default function HubSpotCSVImport() {
                       "wouldUpdateById",
                       "wouldUpdateByEmail",
                       "linkedToBrand",
+                      "linkedToFactory",
+                      "linkedToDistributor",
                       "skippedOrphan",
                       "skippedReviewBrand",
                       "skippedNoIdentity",
@@ -574,6 +573,8 @@ export default function HubSpotCSVImport() {
                       "updatedById",
                       "updatedByEmail",
                       "linkedToBrand",
+                      "linkedToFactory",
+                      "linkedToDistributor",
                       "skippedOrphan",
                       "skippedReviewBrand",
                       "skippedNoIdentity",
@@ -669,10 +670,10 @@ function DedupePanel({
   const updateByDomain = state.stats.wouldUpdateByDomain || 0;
   const updateByName = state.stats.wouldUpdateByName || 0;
   const updateByEmail = state.stats.wouldUpdateByEmail || 0;
-  const skipFactory = state.stats.wouldSkipFactoryMatch || 0;
-  const skipDistributor = state.stats.wouldSkipDistributorMatch || 0;
+  const updateFactory = state.stats.wouldUpdateFactory || 0;
+  const updateDistributor = state.stats.wouldUpdateDistributor || 0;
   const totalUpdates = updateById + updateByDomain + updateByName + updateByEmail;
-  const totalCrossTable = skipFactory + skipDistributor;
+  const totalCrossTable = updateFactory + updateDistributor;
   const total = create + totalUpdates + totalCrossTable;
 
   return (
@@ -682,7 +683,7 @@ function DedupePanel({
           🔍 Pre-flight dedupe results
         </p>
         <p className="text-xs text-amber-800">
-          {totalUpdates.toLocaleString()} update + {totalCrossTable.toLocaleString()} cross-table-skip of {total.toLocaleString()} rows
+          {totalUpdates.toLocaleString()} brand update + {totalCrossTable.toLocaleString()} factory/distributor stamp of {total.toLocaleString()} rows
         </p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
@@ -717,24 +718,25 @@ function DedupePanel({
       {entity === "brand" && totalCrossTable > 0 && (
         <div className="mb-3">
           <p className="text-xs font-bold text-amber-900 mb-1">
-            ⚠ Cross-table matches — these CSV rows already exist as
-            Factory or Distributor records (will SKIP, not duplicate
-            as Brand):
+            ✓ Cross-table matches — these CSV rows already exist as
+            Factory or Distributor records. We'll stamp hubspotId on
+            the existing row (no duplicate Brand) so contacts can
+            still link to the right entity:
           </p>
           <div className="grid grid-cols-2 gap-2 mb-2">
             <DedupeTile
-              label="Skip — exists as Factory"
-              value={skipFactory}
-              tone="rose"
+              label="Update Factory (stamp hubspotId)"
+              value={updateFactory}
+              tone="purple"
             />
             <DedupeTile
-              label="Skip — exists as Distributor"
-              value={skipDistributor}
-              tone="rose"
+              label="Update Distributor (stamp hubspotId)"
+              value={updateDistributor}
+              tone="purple"
             />
           </div>
           {state.crossTableSamples.length > 0 && (
-            <ul className="text-xs space-y-1 bg-white border border-rose-200 rounded p-2 max-h-48 overflow-auto">
+            <ul className="text-xs space-y-1 bg-white border border-purple-200 rounded p-2 max-h-48 overflow-auto">
               {state.crossTableSamples.map((s, i) => (
                 <li key={i} className="flex items-baseline gap-2">
                   <span
@@ -827,14 +829,16 @@ function DedupeTile({
 }: {
   label: string;
   value: number;
-  tone: "cyan" | "emerald" | "rose";
+  tone: "cyan" | "emerald" | "rose" | "purple";
 }) {
   const cls =
     tone === "cyan"
       ? "bg-cyan-50 border-cyan-200 text-cyan-800"
       : tone === "rose"
         ? "bg-rose-50 border-rose-200 text-rose-800"
-        : "bg-emerald-50 border-emerald-200 text-emerald-800";
+        : tone === "purple"
+          ? "bg-purple-50 border-purple-200 text-purple-800"
+          : "bg-emerald-50 border-emerald-200 text-emerald-800";
   return (
     <div className={`rounded border p-2 ${cls}`}>
       <p className="text-[10px] uppercase font-bold tracking-wide opacity-80 truncate">
@@ -865,8 +869,8 @@ function ProgressPanel({
           "wouldUpdateById",
           "wouldUpdateByDomain",
           "wouldUpdateByName",
-          "wouldSkipFactoryMatch",
-          "wouldSkipDistributorMatch",
+          "wouldUpdateFactory",
+          "wouldUpdateDistributor",
           "excludedSkipped",
           "skippedNoName",
         ]
@@ -877,8 +881,8 @@ function ProgressPanel({
           "keepUpdatedByName",
           "reviewCreated",
           "reviewUpdated",
-          "skippedFactoryMatch",
-          "skippedDistributorMatch",
+          "updatedFactory",
+          "updatedDistributor",
           "excludedSkipped",
           "skippedNoName",
           "errors",
