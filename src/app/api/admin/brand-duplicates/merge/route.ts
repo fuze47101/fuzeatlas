@@ -371,7 +371,30 @@ export async function POST(req: Request) {
 
         // Apply scalar overlay (must NOT include name — name is unique
         // and we're keeping the canonical name).
+        //
+        // CRITICAL: Brand has @unique on knackId and hubspotId. If the
+        // overlay copies one of those values from merge → keep, then
+        // at the moment of update both keep AND merge would carry the
+        // same value, which violates the unique constraint. We have
+        // to NULL out the unique fields on merge BEFORE applying the
+        // overlay to keep. Merge is being deleted anyway in the next
+        // step so wiping these is safe.
         if (Object.keys(overlay).length > 0) {
+          const UNIQUE_FIELDS = ["knackId", "hubspotId"];
+          const clearOnMerge: any = {};
+          for (const f of UNIQUE_FIELDS) {
+            if (Object.prototype.hasOwnProperty.call(overlay, f)) {
+              clearOnMerge[f] = null;
+            }
+          }
+          if (Object.keys(clearOnMerge).length > 0) {
+            lastModel = "brand (clear unique fields on merge)";
+            await tx.brand.update({
+              where: { id: mergeBrandId },
+              data: clearOnMerge,
+            });
+          }
+          lastModel = "brand (apply overlay to keep)";
           await tx.brand.update({
             where: { id: keepBrandId },
             data: overlay,
@@ -383,6 +406,7 @@ export async function POST(req: Request) {
         // If something is still pointing at it (table we forgot to
         // re-point), Prisma throws and the whole transaction rolls
         // back.
+        lastModel = "brand (delete merge)";
         await tx.brand.delete({ where: { id: mergeBrandId } });
 
         return { counts, conflicts, lastModel };
