@@ -26,6 +26,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import HubSpotCSVImport from "@/components/HubSpotCSVImport";
+import HubSpotDuplicateAudit from "@/components/HubSpotDuplicateAudit";
 
 interface BatchResult {
   ok: boolean;
@@ -383,6 +384,14 @@ export default function HubSpotImportPage() {
           point. */}
       <div className="mb-6">
         <HubSpotCSVImport />
+      </div>
+
+      {/* Cross-table duplicate audit — for cleaning up after an
+          import that ran without (or before) the cross-table check.
+          Andrew can scan, click "Merge → factory: Hone-Strong"
+          per duplicate, contacts ride along. */}
+      <div className="mb-6">
+        <HubSpotDuplicateAudit />
       </div>
 
       <div className="mb-3 mt-8 pt-6 border-t border-slate-200">
