@@ -120,6 +120,15 @@ export default function FabricDetailPage() {
         </div>
         <div className="flex gap-2 flex-wrap">
           <a
+            href={`/fabrics/${fabric.id}/labels/print`}
+            target="_blank"
+            rel="noreferrer"
+            className="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm font-bold hover:bg-slate-900"
+            title="Print 4×6 sticker sheet (10 labels) + Letter packing list for the lab bag"
+          >
+            🖨 Print sample labels
+          </a>
+          <a
             href={`/admin/recipe-calculator?fabricId=${fabric.id}`}
             className="px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-bold hover:bg-amber-600 shadow-lg shadow-amber-500/30"
           >
