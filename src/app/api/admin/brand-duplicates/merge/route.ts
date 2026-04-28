@@ -152,8 +152,13 @@ export async function POST(req: Request) {
         }
 
         await repoint("contact", "contacts");
-        await repoint("outreachMessage", "outreachMessages");
-        await repoint("contactOutreach", "contactOutreach");
+        // OutreachMessage + ContactOutreach DO NOT have a direct brandId
+        // column — they're linked to Brand transitively through
+        // contactId → Contact.brandId. When contacts move (above),
+        // every outreach row attached to those contacts implicitly
+        // moves with them. Listing them in the repoint pass would
+        // throw "Unknown argument brandId" because those columns don't
+        // exist on those tables.
         await repoint("note", "notes");
         await repoint("fabric", "fabrics");
         await repoint("fabricSubmission", "submissions");
