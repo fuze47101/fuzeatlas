@@ -68,25 +68,42 @@ export async function GET() {
       orderBy: { hubspotImportedAt: "desc" },
     });
 
-    // Pull every Factory + Distributor (small data sets, ~9 distributors,
-    // <300 factories) into memory so we can do case-insensitive matching
-    // in JS instead of N+1 Prisma queries.
+    // Pull every Factory + active Distributor (small data sets, ~9
+    // active distributors, <300 factories) into memory so we can do
+    // case-insensitive matching in JS instead of N+1 Prisma queries.
     //
     // We deliberately DO NOT select hubspotId here — that column only
     // exists if `npx prisma db push` has been run against the prod DB.
-    // The audit needs to work regardless of migration state so Andrew
-    // can see the duplicates BEFORE running the migration. The merge
-    // endpoint catches the "column doesn't exist" error if the user
-    // tries to merge without migrating, and surfaces a friendlier
-    // error.
+    // The audit needs to work regardless of migration state.
+    //
+    // Distributor filter: `active: true` AND name not in the legacy
+    // chemical-supplier list (per CLAUDE.md: "Archroma, CHT, DyStar,
+    // Pulcra etc. are INACTIVE — they were chemical suppliers, not
+    // distributors"). We don't want HubSpot rows for those companies
+    // to merge into legacy Distributor rows that shouldn't really be
+    // distributors at all.
+    const LEGACY_DISTRIBUTOR_NAMES = [
+      "archroma",
+      "cht",
+      "dystar",
+      "pulcra",
+      "pulcra chemicals",
+      "pulcra chemicals group",
+      "honghao-chemical",
+      "honghao chemical",
+    ];
     const [factories, distributors] = await Promise.all([
       prisma.factory.findMany({
         select: { id: true, name: true, website: true },
       }),
       prisma.distributor.findMany({
+        where: { active: true },
         select: { id: true, name: true, website: true },
       }),
     ]);
+    const filteredDistributors = distributors.filter(
+      (d) => !LEGACY_DISTRIBUTOR_NAMES.includes((d.name || "").toLowerCase().trim()),
+    );
 
     const factoryByName = new Map<string, { id: string; name: string }>();
     const factoryByDomain = new Map<string, { id: string; name: string }>();
@@ -97,7 +114,7 @@ export async function GET() {
     }
     const distByName = new Map<string, { id: string; name: string }>();
     const distByDomain = new Map<string, { id: string; name: string }>();
-    for (const d of distributors) {
+    for (const d of filteredDistributors) {
       if (d.name) distByName.set(d.name.toLowerCase().trim(), d);
       const dom = extractDomain(d.website);
       if (dom) distByDomain.set(dom, d);

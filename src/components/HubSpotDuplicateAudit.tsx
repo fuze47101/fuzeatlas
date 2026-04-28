@@ -44,6 +44,14 @@ export default function HubSpotDuplicateAudit() {
   const [error, setError] = useState<string | null>(null);
   const [mergingId, setMergingId] = useState<string | null>(null);
   const [mergedIds, setMergedIds] = useState<Set<string>>(new Set());
+  const [bulkRunning, setBulkRunning] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState<{
+    processed: number;
+    total: number;
+    succeeded: number;
+    failed: number;
+    failures: Array<{ name: string; error: string }>;
+  } | null>(null);
 
   async function runAudit() {
     setLoading(true);
@@ -62,6 +70,81 @@ export default function HubSpotDuplicateAudit() {
     } finally {
       setLoading(false);
     }
+  }
+
+  /**
+   * Bulk-merge every duplicate whose only/best match is a Factory.
+   * Distributor matches are skipped — we already filter known-bad
+   * legacy distributor names server-side, but bulk-merging into
+   * distributors should still be a per-row decision since
+   * distributors are a smaller, more strategic set than factories.
+   *
+   * Walks duplicates serially to keep DB load low and so a single
+   * failure doesn't tank the whole batch.
+   */
+  async function bulkMergeFactoryMatches() {
+    if (!data) return;
+    const eligible = data.duplicates.filter(
+      (d) => !mergedIds.has(d.brandId) && d.matches.some((m) => m.kind === "factory"),
+    );
+    if (eligible.length === 0) {
+      alert("No unmerged duplicates with a factory match.");
+      return;
+    }
+    if (
+      !confirm(
+        `Merge ${eligible.length} duplicate brand(s) into their matching factories?\n\n` +
+          `For each duplicate, we'll pick the first factory match (preferring 'name' match over 'domain'),\n` +
+          `move any contacts onto the factory, stamp hubspotId on the factory, and delete the duplicate brand.\n\n` +
+          `This walks one row at a time. You'll see progress as it goes.\n\n` +
+          `Cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+    setBulkRunning(true);
+    setBulkProgress({ processed: 0, total: eligible.length, succeeded: 0, failed: 0, failures: [] });
+    const newMerged = new Set(mergedIds);
+    const failures: Array<{ name: string; error: string }> = [];
+    let succeeded = 0;
+    let failed = 0;
+    for (const dup of eligible) {
+      // Prefer name match over domain match
+      const factoryMatches = dup.matches.filter((m) => m.kind === "factory");
+      const target =
+        factoryMatches.find((m) => m.via === "name") || factoryMatches[0];
+      try {
+        const res = await fetch("/api/admin/hubspot-import/merge-duplicate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            brandId: dup.brandId,
+            targetKind: target.kind,
+            targetId: target.id,
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.ok) {
+          failed++;
+          failures.push({ name: dup.brandName, error: json.error || `HTTP ${res.status}` });
+        } else {
+          succeeded++;
+          newMerged.add(dup.brandId);
+        }
+      } catch (e: any) {
+        failed++;
+        failures.push({ name: dup.brandName, error: e?.message || "network error" });
+      }
+      setMergedIds(new Set(newMerged));
+      setBulkProgress({
+        processed: succeeded + failed,
+        total: eligible.length,
+        succeeded,
+        failed,
+        failures: [...failures],
+      });
+    }
+    setBulkRunning(false);
   }
 
   async function mergeDuplicate(
@@ -178,6 +261,72 @@ export default function HubSpotDuplicateAudit() {
             </div>
           ) : (
             <div>
+              {(() => {
+                const remainingFactoryMatches = data.duplicates.filter(
+                  (d) =>
+                    !mergedIds.has(d.brandId) &&
+                    d.matches.some((m) => m.kind === "factory"),
+                ).length;
+                return remainingFactoryMatches > 0 ? (
+                  <div className="mb-3 p-3 bg-purple-50 border border-purple-300 rounded">
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <p className="text-sm text-purple-900">
+                        <strong>{remainingFactoryMatches}</strong> duplicate(s) match a Factory.
+                        Bulk-merge them all in one click.
+                      </p>
+                      <button
+                        onClick={bulkMergeFactoryMatches}
+                        disabled={bulkRunning}
+                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm font-bold disabled:opacity-50 whitespace-nowrap"
+                      >
+                        {bulkRunning
+                          ? `⏳ Merging ${bulkProgress?.processed || 0}/${bulkProgress?.total || 0}…`
+                          : `Merge all ${remainingFactoryMatches} factory matches`}
+                      </button>
+                    </div>
+                    {bulkProgress && (bulkRunning || bulkProgress.processed > 0) && (
+                      <div className="mt-2 text-xs text-purple-800 space-y-1">
+                        <div className="flex justify-between">
+                          <span>
+                            ✓ {bulkProgress.succeeded} merged
+                            {bulkProgress.failed > 0 ? ` · ✗ ${bulkProgress.failed} failed` : ""}
+                          </span>
+                          <span>
+                            {bulkProgress.processed} / {bulkProgress.total}
+                          </span>
+                        </div>
+                        <div className="w-full bg-white rounded h-1.5 overflow-hidden border border-purple-200">
+                          <div
+                            className="bg-purple-500 h-full transition-all"
+                            style={{
+                              width: `${
+                                bulkProgress.total > 0
+                                  ? (bulkProgress.processed / bulkProgress.total) * 100
+                                  : 0
+                              }%`,
+                            }}
+                          />
+                        </div>
+                        {bulkProgress.failures.length > 0 && (
+                          <details className="mt-1">
+                            <summary className="cursor-pointer font-semibold">
+                              {bulkProgress.failures.length} failures (click to expand)
+                            </summary>
+                            <ul className="mt-1 max-h-32 overflow-auto bg-white rounded p-1.5 border border-purple-200">
+                              {bulkProgress.failures.map((f, i) => (
+                                <li key={i} className="truncate">
+                                  <strong>{f.name}:</strong> {f.error}
+                                </li>
+                              ))}
+                            </ul>
+                          </details>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ) : null;
+              })()}
+
               <p className="text-xs text-slate-600 mb-2">
                 Click the matching Factory or Distributor to merge the
                 duplicate brand into it. Contacts move with the merge,

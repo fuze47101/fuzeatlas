@@ -149,6 +149,33 @@ export default function DistributorInventoryPage() {
     }
   }
 
+  async function deletePricingTier(tierId: string, label: string) {
+    if (
+      !confirm(
+        `Delete pricing tier "${label}"?\n\nThis permanently removes the tier. Cannot be undone. ` +
+          `If you just want to stop using it temporarily, click Deactivate instead.`,
+      )
+    ) {
+      return;
+    }
+    try {
+      const res = await fetch(
+        `/api/distributor-portal/pricing?tierId=${encodeURIComponent(tierId)}`,
+        { method: "DELETE" },
+      );
+      const data = await res.json();
+      if (data.ok) {
+        setPricing(pricing.filter((p) => p.id !== tierId));
+        setSuccess("Pricing tier deleted");
+        setTimeout(() => setSuccess(""), 3000);
+      } else {
+        setError(data.error || "Failed to delete tier");
+      }
+    } catch (e: any) {
+      setError(e?.message || "Error deleting tier");
+    }
+  }
+
   function formatCurrency(amount: number, currency = "USD") {
     return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
   }
@@ -512,11 +539,25 @@ export default function DistributorInventoryPage() {
                       onClick={() => togglePricingActive(tier.id, !tier.active)}
                       className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                         tier.active
-                          ? "bg-red-50 text-red-700 hover:bg-red-100"
+                          ? "bg-amber-50 text-amber-700 hover:bg-amber-100"
                           : "bg-green-50 text-green-700 hover:bg-green-100"
                       }`}
                     >
                       {tier.active ? "Deactivate" : "Activate"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        const label =
+                          tier.factory?.name ||
+                          tier.country ||
+                          tier.region ||
+                          (tier.isDefault ? "Default tier" : "this tier");
+                        deletePricingTier(tier.id, label);
+                      }}
+                      className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition-colors"
+                      title="Permanently delete this tier"
+                    >
+                      🗑 Delete
                     </button>
                   </div>
                 </div>
