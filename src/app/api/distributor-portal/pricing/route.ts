@@ -225,13 +225,22 @@ export async function PATCH(req: Request) {
 
 /**
  * DELETE /api/distributor-portal/pricing?tierId=...
- * Soft-delete a pricing tier (sets active=false). Admin/Employee only.
+ *
+ * Hard-delete a pricing tier. Distributors can delete their own
+ * tiers; admins can delete any. Despite the comment on the older
+ * version saying "Admin/Employee only", that locked Tina out of
+ * the Delete button I just shipped on the Inventory & Pricing page.
+ * PATCH (toggle active) and POST (create) both allow DISTRIBUTOR_USER,
+ * so DELETE should match for consistency.
  */
 export async function DELETE(req: Request) {
   try {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
-    if (!["ADMIN", "EMPLOYEE"].includes(user.role)) {
+
+    const isDistributor = user.role === "DISTRIBUTOR_USER";
+    const isInternal = ["ADMIN", "EMPLOYEE"].includes(user.role);
+    if (!isDistributor && !isInternal) {
       return NextResponse.json({ ok: false, error: "Access denied" }, { status: 403 });
     }
 
@@ -241,8 +250,34 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ ok: false, error: "Tier ID required" }, { status: 400 });
     }
 
-    // Hard delete — the data is fully owned by the distributor record and
-    // carries no downstream foreign-key dependencies.
+    // Distributor scope guard — fetch the tier first and verify it
+    // belongs to the calling distributor before deleting. Admins can
+    // delete any tier.
+    if (isDistributor) {
+      const distributorId = user.distributorId;
+      if (!distributorId) {
+        return NextResponse.json(
+          { ok: false, error: "No distributor assigned to your account" },
+          { status: 400 },
+        );
+      }
+      const tier = await prisma.distributorPricing.findUnique({
+        where: { id: tierId },
+        select: { id: true, distributorId: true },
+      });
+      if (!tier) {
+        return NextResponse.json({ ok: false, error: "Tier not found" }, { status: 404 });
+      }
+      if (tier.distributorId !== distributorId) {
+        return NextResponse.json(
+          { ok: false, error: "Cannot delete a tier owned by another distributor" },
+          { status: 403 },
+        );
+      }
+    }
+
+    // Hard delete — the data is fully owned by the distributor record
+    // and carries no downstream foreign-key dependencies.
     await prisma.distributorPricing.delete({ where: { id: tierId } });
 
     return NextResponse.json({ ok: true });
