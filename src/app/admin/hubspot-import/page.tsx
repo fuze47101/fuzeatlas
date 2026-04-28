@@ -27,6 +27,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import HubSpotCSVImport from "@/components/HubSpotCSVImport";
 import HubSpotDuplicateAudit from "@/components/HubSpotDuplicateAudit";
+import BrandDuplicateAudit from "@/components/BrandDuplicateAudit";
 
 interface BatchResult {
   ok: boolean;
@@ -392,6 +393,14 @@ export default function HubSpotImportPage() {
           per duplicate, contacts ride along. */}
       <div className="mb-6">
         <HubSpotDuplicateAudit />
+      </div>
+
+      {/* Brand-to-brand duplicate audit — finds Atlas brand rows
+          that collide with OTHER atlas brand rows (HubSpot variant
+          name vs original Atlas name, etc.). Bulk-merge for safe
+          pairs, manual review for fuzzy / cluster-of-3+ cases. */}
+      <div className="mb-6">
+        <BrandDuplicateAudit />
       </div>
 
       <div className="mb-3 mt-8 pt-6 border-t border-slate-200">
