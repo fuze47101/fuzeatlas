@@ -171,7 +171,108 @@ export async function GET(req: Request) {
       };
     });
 
-    return NextResponse.json({ ok: true, reports, scope: isAdmin ? "ADMIN_ALL" : "DISTRIBUTOR" });
+    // ─── Pending uploads ─────────────────────────────────────────
+    // Tina's complaint: she uploaded a VL Lab report, parser returned
+    // 0 confidence, and her upload didn't appear in "Your uploads" so
+    // she couldn't tell if it saved. Reason: this endpoint only
+    // returned TestRuns with REPORT documents — but uploads with low
+    // parser confidence don't auto-create a TestRun (admin reviews +
+    // confirms first). The Document row exists, but it's not linked
+    // to a TestRun, so it was invisible.
+    //
+    // Fix: also return REPORT-kind Documents that aren't linked to a
+    // TestRun yet, so the user gets immediate "yes, your upload saved"
+    // feedback. Marked status="pending_review" in the response. Same
+    // distributor scope (filter by submission.factoryId).
+    const pendingDocs = await prisma.document.findMany({
+      where: {
+        kind: "REPORT",
+        testRunId: null,
+        ...(isAdmin
+          ? {}
+          : factoryIds.length > 0
+            ? {
+                OR: [
+                  { submission: { factoryId: { in: factoryIds } } },
+                  // No submission yet → ambiguous orphan. We still
+                  // want Tina to see her own upload, so for distributors
+                  // we ALSO include orphan docs uploaded by their lab.
+                  ...(user.labId ? [{ labId: user.labId, submission: null }] : []),
+                ],
+              }
+            : user.labId
+              ? { labId: user.labId, submission: null }
+              : { id: "_no_match_" }),
+      },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      select: {
+        id: true,
+        filename: true,
+        sizeBytes: true,
+        contentType: true,
+        createdAt: true,
+        labId: true,
+        lab: { select: { id: true, name: true } },
+        submission: {
+          select: {
+            id: true,
+            fuzeFabricNumber: true,
+            customerFabricCode: true,
+            factoryFabricCode: true,
+            brand: { select: { id: true, name: true } },
+            factory: { select: { id: true, name: true, country: true } },
+            fabric: { select: { id: true, fuzeNumber: true, fabricCategory: true, color: true } },
+          },
+        },
+      },
+    });
+
+    const pending = pendingDocs.map((d) => ({
+      testRunId: null,
+      documentId: d.id,
+      filename: d.filename,
+      sizeBytes: d.sizeBytes,
+      downloadUrl: `/api/documents/${d.id}/download`,
+      testType: null,
+      testMethodStd: null,
+      reportNumber: null,
+      washCount: null,
+      testDate: null,
+      labName: d.lab?.name || null,
+      brand: d.submission?.brand
+        ? { id: d.submission.brand.id, name: d.submission.brand.name }
+        : null,
+      factory: d.submission?.factory
+        ? {
+            id: d.submission.factory.id,
+            name: d.submission.factory.name,
+            country: d.submission.factory.country,
+          }
+        : null,
+      fuzeNumber:
+        d.submission?.fuzeFabricNumber ??
+        d.submission?.fabric?.fuzeNumber ??
+        null,
+      customerFabricCode: d.submission?.customerFabricCode || null,
+      factoryFabricCode: d.submission?.factoryFabricCode || null,
+      fabricCategory: d.submission?.fabric?.fabricCategory || null,
+      color: d.submission?.fabric?.color || null,
+      projectName: null,
+      createdAt: d.createdAt,
+      status: "pending_review" as const,
+    }));
+
+    // Mark every test-run-backed report as confirmed
+    const confirmedReports = reports.map((r) => ({ ...r, status: "confirmed" as const }));
+
+    return NextResponse.json({
+      ok: true,
+      reports: [...pending, ...confirmedReports],
+      scope: isAdmin ? "ADMIN_ALL" : "DISTRIBUTOR",
+      pendingCount: pending.length,
+      confirmedCount: confirmedReports.length,
+    });
   } catch (e: any) {
     console.error("Distributor test-reports error:", e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });

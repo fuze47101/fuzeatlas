@@ -135,6 +135,26 @@ export default function DistributorUploadReportPage() {
         {/* Parse Result */}
         {result && (
           <div className="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-5">
+            {/* Always-on confirmation that the file was saved, regardless
+                of parser confidence. Tina was getting 0% confidence on
+                VL Lab reports and assumed nothing saved — this banner
+                makes it impossible to miss that the upload itself
+                succeeded. */}
+            <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded text-sm text-emerald-800">
+              <strong>✓ File uploaded and saved</strong> · {result.filename || "—"}
+              {result.documentId && (
+                <span className="ml-2 font-mono text-[11px] text-emerald-700">
+                  doc:{result.documentId.slice(0, 12)}…
+                </span>
+              )}
+              <p className="text-xs text-emerald-700 mt-1">
+                Your file is in the system. The parser confidence below is
+                only about how much test data we could auto-extract — even
+                at 0%, the PDF is stored and an admin will review it.
+                You'll see it in the table at the bottom of this page tagged
+                ⏳ "Pending review".
+              </p>
+            </div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-slate-900">Parsed Report</h3>
               <span className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -198,6 +218,7 @@ export default function DistributorUploadReportPage() {
             <table className="w-full text-sm min-w-[900px]">
               <thead className="bg-slate-50 border-b">
                 <tr>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Status</th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">File · Report #</th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Test</th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Brand</th>
@@ -210,8 +231,26 @@ export default function DistributorUploadReportPage() {
               <tbody className="divide-y divide-slate-100">
                 {uploads.map((u: any) => {
                   const linked = !!(u.brand || u.factory || u.fuzeNumber);
+                  const isPending = u.status === "pending_review";
                   return (
-                    <tr key={u.testRunId || u.id} className="hover:bg-slate-50">
+                    <tr
+                      key={u.testRunId || u.documentId || u.id}
+                      className={`hover:bg-slate-50 ${isPending ? "bg-amber-50/40" : ""}`}
+                    >
+                      <td className="px-4 py-3 text-xs">
+                        {isPending ? (
+                          <span
+                            className="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] uppercase tracking-wide"
+                            title="Saved successfully but parser couldn't auto-extract test data. An admin will review and link it."
+                          >
+                            ⏳ Pending review
+                          </span>
+                        ) : (
+                          <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase tracking-wide">
+                            ✓ Confirmed
+                          </span>
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-slate-700 max-w-[260px]">
                         <p className="truncate font-medium">
                           {u.filename || "—"}
