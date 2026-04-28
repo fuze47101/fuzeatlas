@@ -575,6 +575,8 @@ export default function HubSpotCSVImport() {
                       "linkedToBrand",
                       "linkedToFactory",
                       "linkedToDistributor",
+                      "notesCreated",
+                      "lastContactedStamped",
                       "skippedOrphan",
                       "skippedReviewBrand",
                       "skippedNoIdentity",

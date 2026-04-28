@@ -106,6 +106,9 @@ export async function POST(req: Request) {
       skippedReviewBrand: 0,
       personalEmail: 0,
       errors: 0,
+      // Day 2 — notes/engagements pulled from inline contact fields
+      notesCreated: 0,
+      lastContactedStamped: 0,
       // Dry-run dedupe counters
       wouldCreate: 0,
       wouldUpdateById: 0,
@@ -290,6 +293,25 @@ export async function POST(req: Request) {
         ).trim();
         if (linkedin) data.linkedinUrl = linkedin;
 
+        // Day 2 — pull HubSpot's engagement metadata into Atlas's
+        // outreach state. "Last Contacted" maps to lastContactedAt
+        // so reps see fresh-ness in the BD wizard. "Sends Since
+        // Last Engagement" maps to outreachCount so we don't
+        // re-prospect contacts who've already been hit hard.
+        const lastContactedStr = (row["Last Contacted"] || "").trim();
+        if (lastContactedStr) {
+          const ts = Date.parse(lastContactedStr);
+          if (!isNaN(ts)) {
+            data.lastContactedAt = new Date(ts);
+            data.outreachStatus = "contacted";
+          }
+        }
+        const sendsCountStr = (row["Sends Since Last Engagement"] || "").trim();
+        if (sendsCountStr) {
+          const n = parseInt(sendsCountStr, 10);
+          if (!isNaN(n) && n > 0) data.outreachCount = n;
+        }
+
         // Set whichever of brandId / factoryId / distributorId
         // applies. Contact has all three FKs so we just write the
         // one that matched. Leaves the other two undefined so we
@@ -320,6 +342,7 @@ export async function POST(req: Request) {
           if (existing) matchPath = "email";
         }
 
+        let atlasContactId: string;
         if (existing) {
           // Preserve whichever FK is already set if we couldn't
           // resolve a new one — never null out a manual link.
@@ -333,8 +356,10 @@ export async function POST(req: Request) {
             where: { id: existing.id },
             data: updateData,
           });
+          atlasContactId = existing.id;
           if (matchPath === "id") stats.updatedById++;
           if (matchPath === "email") stats.updatedByEmail++;
+          if (data.lastContactedAt) stats.lastContactedStamped++;
           log.push({
             hubspotId,
             email,
@@ -345,7 +370,9 @@ export async function POST(req: Request) {
           });
         } else {
           const created = await prisma.contact.create({ data });
+          atlasContactId = created.id;
           stats.created++;
+          if (data.lastContactedAt) stats.lastContactedStamped++;
           log.push({
             hubspotId,
             email,
@@ -354,6 +381,68 @@ export async function POST(req: Request) {
             entityKind: entity?.kind,
             entityId: entity?.id,
           });
+        }
+
+        // ─── Day 2: extract inline notes from the contact row ──
+        // HubSpot contact rows carry several free-text "note" columns
+        // that don't show up as separate Engagement objects in the CSV
+        // export. We pull them into Atlas Note rows so reps see them
+        // in the brand/contact CRM timeline.
+        //
+        // Note created with: brandId (if entity is brand), contactId,
+        // noteType="HUBSPOT_IMPORT", date set from "Last Engagement
+        // Date" or fall through to import time. Skip if text is just
+        // whitespace.
+        if (!dryRun && atlasContactId) {
+          const NOTE_FIELDS: Array<{
+            label: string;
+            field: string;
+          }> = [
+            { label: "HubSpot — Other Notes", field: "Other Notes" },
+            { label: "HubSpot — Membership Notes", field: "Membership Notes" },
+            {
+              label: "HubSpot — First engagement",
+              field: "Description of first engagement",
+            },
+          ];
+          const noteDateStr = (
+            row["Last Engagement Date"] ||
+            row["Last Activity Date"] ||
+            row["Date of first engagement"] ||
+            ""
+          ).trim();
+          let noteDate: Date | undefined = undefined;
+          if (noteDateStr) {
+            const ts = Date.parse(noteDateStr);
+            if (!isNaN(ts)) noteDate = new Date(ts);
+          }
+          for (const nf of NOTE_FIELDS) {
+            const text = (row[nf.field] || "").trim();
+            if (!text) continue;
+            try {
+              await prisma.note.create({
+                data: {
+                  body: `**${nf.label}**\n\n${text}`,
+                  noteType: "HUBSPOT_IMPORT",
+                  date: noteDate,
+                  contactId: atlasContactId,
+                  brandId: entity?.kind === "brand" ? entity.id : undefined,
+                },
+              });
+              stats.notesCreated++;
+            } catch (noteErr: any) {
+              // Don't fail the whole row if a note fails — log and
+              // continue. Most likely cause: missing Note model fields
+              // we don't know about.
+              log.push({
+                hubspotId,
+                email,
+                status: "note_create_failed",
+                field: nf.field,
+                error: noteErr?.message || String(noteErr),
+              });
+            }
+          }
         }
       } catch (rowErr: any) {
         stats.errors++;
