@@ -275,11 +275,18 @@ export default function DistributorTestRequestPage() {
                     onClick={() => setSelectedFabric(f)}
                     className="w-full text-left p-3 border border-slate-200 rounded-lg hover:border-[#00b4c3] hover:bg-[#00b4c3]/5 transition-all"
                   >
-                    <div className="font-semibold text-slate-900 text-sm">
-                      {f.brand?.name || "Unbranded"}
-                      {f.factory?.name && (
-                        <span className="text-slate-500 font-normal"> · {f.factory.name}</span>
+                    <div className="font-semibold text-slate-900 text-sm flex items-center gap-2 flex-wrap">
+                      {(f as any).ownership === "distributor" && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded font-bold bg-purple-100 text-purple-800">
+                          📒 PORTFOLIO
+                        </span>
                       )}
+                      <span>
+                        {f.brand?.name || (f as any).customerReference || "Unbranded"}
+                        {f.factory?.name && (
+                          <span className="text-slate-500 font-normal"> · {f.factory.name}</span>
+                        )}
+                      </span>
                     </div>
                     <div className="text-xs text-slate-500 mt-1 flex flex-wrap gap-x-3">
                       {f.fuzeNumber !== null && (

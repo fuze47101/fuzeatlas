@@ -516,6 +516,9 @@ model Distributor {
   sourceRecords SourceRecord[]
   fuzeOrders    FuzeOrder[]    @relation("OrderDistributor")
   testRequests  TestRequest[]  @relation("TestRequestDistributor")
+  // Distributor-owned fabric portfolio — fabrics they're testing
+  // independently or in co-op programs.
+  fabrics       Fabric[]       @relation("FabricDistributor")
   pricing       DistributorPricing[] @relation("DistributorPricing")
   inventory     DistributorInventory? @relation("DistributorInventory")
   restockOrders DistributorRestockOrder[] @relation("DistributorRestockOrders")
@@ -910,8 +913,17 @@ model Fabric {
 
   brandId   String?
   factoryId String?
-  brand     Brand?   @relation(fields: [brandId], references: [id])
-  factory   Factory? @relation(fields: [factoryId], references: [id])
+  // Distributor-owned fabrics — for fabrics a distributor is testing
+  // independently or as part of a co-op program (multi-brand /
+  // multi-factory pilots they sponsor). Distinct from factoryId
+  // (the manufacturer the fabric came from) and brandId (the brand
+  // marketing it). A distributor-owned fabric in their portfolio
+  // can have NO factoryId / brandId yet — they're developing it
+  // before assigning to anyone.
+  distributorId String?
+  brand     Brand?       @relation(fields: [brandId], references: [id])
+  factory   Factory?     @relation(fields: [factoryId], references: [id])
+  distributor Distributor? @relation("FabricDistributor", fields: [distributorId], references: [id])
 
   raw Json?
 
@@ -986,6 +998,7 @@ model Fabric {
   @@index([factoryCode])
   @@index([brandId])
   @@index([factoryId])
+  @@index([distributorId])
 }
 
 model FabricContent {

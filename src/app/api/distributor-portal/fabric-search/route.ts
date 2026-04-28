@@ -54,6 +54,14 @@ export async function GET(req: Request) {
       const scopeOr: any[] = [];
       if (factoryIds.length > 0) scopeOr.push({ factoryId: { in: factoryIds } });
       if (brandIds.length > 0) scopeOr.push({ brandId: { in: brandIds } });
+      // Also include the distributor's own portfolio fabrics — the
+      // ones they're testing independently or in co-op programs.
+      // Tagged with ownership: "distributor" in the response so the
+      // test-request UI can surface the distinction.
+      if (isDistributor) {
+        const distributorId = (user as any).distributorId;
+        if (distributorId) scopeOr.push({ distributorId });
+      }
       if (scopeOr.length === 0) return NextResponse.json({ ok: true, fabrics: [] });
       ands.push({ OR: scopeOr });
     }
@@ -74,23 +82,54 @@ export async function GET(req: Request) {
 
     if (ands.length > 0) where.AND = ands;
 
-    const fabrics = await prisma.fabric.findMany({
+    const rawFabrics = await prisma.fabric.findMany({
       where,
       select: {
         id: true,
         fuzeNumber: true,
         customerCode: true,
         factoryCode: true,
+        customerReference: true,
         fabricCategory: true,
         color: true,
         construction: true,
         weightGsm: true,
+        brandId: true,
+        factoryId: true,
+        distributorId: true,
         brand: { select: { id: true, name: true } },
         factory: { select: { id: true, name: true } },
       },
       orderBy: { fuzeNumber: "desc" },
-      take: 25,
+      take: 50,
     });
+
+    // Tag each row with an ownership label so the test-request UI
+    // can render a "📒 Portfolio" badge next to distributor-owned
+    // fabrics. Order: factory ownership first, then portfolio.
+    const callerDistributorId = isDistributor ? (user as any).distributorId : null;
+    const fabrics = rawFabrics
+      .map((f) => ({
+        ...f,
+        ownership:
+          f.factoryId
+            ? ("factory" as const)
+            : callerDistributorId && f.distributorId === callerDistributorId
+              ? ("distributor" as const)
+              : f.brandId
+                ? ("brand" as const)
+                : ("unknown" as const),
+      }))
+      // Distributor-owned fabrics float to the top — these are the
+      // ones Tina is most likely to be testing right now.
+      .sort((a, b) => {
+        const score = (x: any) =>
+          x.ownership === "distributor" ? 0 : x.ownership === "factory" ? 1 : 2;
+        const sa = score(a);
+        const sb = score(b);
+        if (sa !== sb) return sa - sb;
+        return (b.fuzeNumber || 0) - (a.fuzeNumber || 0);
+      });
 
     return NextResponse.json({ ok: true, fabrics });
   } catch (e: any) {
