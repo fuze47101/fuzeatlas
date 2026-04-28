@@ -107,14 +107,22 @@ function parseTestReport(text: string): ParsedTestData {
 
   let testReportNumber: string | null = null;
   const reportPatterns = [
+    // Specific lab prefixes
     /CTLA\s*ID[.:\s]*([A-Z0-9][\w\-\/]*)/i,
-    /(?:TWN|SGS|ITS|NOA)\s*(?:report|ref|id|no)[.:\s]*([A-Z0-9][\w\-\/]+)/i,
-    /report\s*(?:no|number|#|num)[.:\s]*([A-Z0-9][\w\-\/]+)/i,
-    /test\s*report[.:\s]*([A-Z0-9][\w\-\/]+)/i,
-    /report\s*id[.:\s]*([A-Z0-9][\w\-\/]+)/i,
-    /certificate\s*(?:no|number|#)[.:\s]*([A-Z0-9][\w\-\/]+)/i,
+    /(?:TWN|SGS|ITS|NOA|VLS|VL)\s*(?:report|ref|id|no|number|cert)?[.:\s]*([A-Z0-9][\w\-\/]+)/i,
+    // VL Shanghai pattern: VLS-2026-001234 / VL/2026/CN/0001
+    /\b(VLS?[\-\/][\w\-\/]+)/i,
+    // Chinese-lab-friendly: "Sample No.", "Lab No.", "Cert No.", "Test No.", "Project No."
+    /(?:sample|lab|cert(?:ificate)?|test|project|analysis|file)\s*(?:no|number|#|num|id)[.:\s]+([A-Z0-9][\w\-\/]+)/i,
+    // Generic "report no" variants
+    /report\s*(?:no|number|#|num)[.:\s]+([A-Z0-9][\w\-\/]+)/i,
+    /test\s*report[.:\s]+([A-Z0-9][\w\-\/]+)/i,
+    /report\s*id[.:\s]+([A-Z0-9][\w\-\/]+)/i,
+    /certificate\s*(?:no|number|#)[.:\s]+([A-Z0-9][\w\-\/]+)/i,
     /(?:COA|coa)[_\-\s]*(\d{4,})/i,
-    /ref(?:erence)?[.:\s]*([A-Z0-9][\w\-\/]+)/i,
+    /ref(?:erence)?[.:\s]+([A-Z0-9][\w\-\/]+)/i,
+    // Chinese: 报告编号 / 检测编号
+    /(?:报告编号|检测编号|检验编号|样品编号)[.:\s]*([A-Z0-9][\w\-\/]+)/,
   ];
   for (const pat of reportPatterns) {
     const m = text.match(pat);
@@ -250,8 +258,26 @@ function parseTestReport(text: string): ParsedTestData {
   }
 
   let testMethodStd: string | null = null;
-  const methodMatch = text.match(/(?:AATCC|ISO|ASTM|EN|JIS)\s*(?:TM\s*)?\d+[\w.-]*/i);
-  if (methodMatch) testMethodStd = methodMatch[0].toUpperCase();
+  // Order matters — try the most-specific method patterns first.
+  const methodPatterns = [
+    // EPA ICP methods (very common on US/VL/Chinese ICP reports)
+    /\b(EPA\s*(?:method\s*)?(?:6020[A-D]?|200\.[78]|3050[B]?|3051[A]?|3052))/i,
+    // GB/T (Chinese national standard) — e.g. GB/T 26371-2010
+    /\b(GB[\/\s]?T\s*\d+(?:[\-\.]\d+)?)/i,
+    // ICP technique callouts that act as a method when no formal std cited
+    /\b(ICP[\-\s]?(?:OES|MS|AES))/i,
+    // AATCC / ISO / ASTM / EN / JIS — original pattern
+    /(AATCC|ISO|ASTM|EN|JIS)\s*(?:TM\s*)?\d+[\w.-]*/i,
+    // OEKO-TEX (sometimes embedded in compliance notes)
+    /\b(OEKO[\-\s]?TEX\s*(?:Standard\s*)?100)/i,
+  ];
+  for (const pat of methodPatterns) {
+    const m = text.match(pat);
+    if (m) {
+      testMethodStd = (m[1] || m[0]).toUpperCase().replace(/\s+/g, " ").trim();
+      break;
+    }
+  }
 
   let washCount: number | null = null;
   const washMatch = text.match(/(\d+)\s*(?:wash(?:es)?|washes|launder(?:ing)?|cycle)/i);
@@ -292,12 +318,76 @@ function parseTestReport(text: string): ParsedTestData {
     }
   }
 
+  // ICP element extraction.
+  // Apr 2026 (Tina + VL Lab ticket): expanded from just Ag + Au to
+  // the full set of metals labs typically run on textile finishes.
+  // VL Shanghai's typical ICP panel returns 8-12 elements per sample;
+  // the old parser only caught silver, scoring 0% on every other
+  // result line. The unit list now also accepts μg/L, μg/kg, μg/m²
+  // and the bare unit "<0.X" range markers labs sometimes print.
   const icpResults: { metal: string; value: number | null; unit: string }[] = [];
   if (testType === "ICP") {
-    const agMatch = text.match(/(?:silver|Ag)\s*[:\-]?\s*([\d.]+)\s*(ppm|mg\/kg|mg\/l|ppb|μg\/g)/i);
-    if (agMatch) icpResults.push({ metal: "Ag", value: parseFloat(agMatch[1]), unit: agMatch[2] });
-    const auMatch = text.match(/(?:gold|Au)\s*[:\-]?\s*([\d.]+)\s*(ppm|mg\/kg|mg\/l|ppb|μg\/g)/i);
-    if (auMatch) icpResults.push({ metal: "Au", value: parseFloat(auMatch[1]), unit: auMatch[2] });
+    const ICP_ELEMENTS: Array<{ name: string; symbol: string; aliases: string[] }> = [
+      { name: "silver", symbol: "Ag", aliases: ["silver", "Ag"] },
+      { name: "gold", symbol: "Au", aliases: ["gold", "Au"] },
+      { name: "lead", symbol: "Pb", aliases: ["lead", "Pb"] },
+      { name: "cadmium", symbol: "Cd", aliases: ["cadmium", "Cd"] },
+      { name: "arsenic", symbol: "As", aliases: ["arsenic", "As"] },
+      { name: "mercury", symbol: "Hg", aliases: ["mercury", "Hg"] },
+      { name: "copper", symbol: "Cu", aliases: ["copper", "Cu"] },
+      { name: "zinc", symbol: "Zn", aliases: ["zinc", "Zn"] },
+      { name: "nickel", symbol: "Ni", aliases: ["nickel", "Ni"] },
+      { name: "antimony", symbol: "Sb", aliases: ["antimony", "Sb"] },
+      { name: "barium", symbol: "Ba", aliases: ["barium", "Ba"] },
+      { name: "chromium", symbol: "Cr", aliases: ["chromium", "Cr"] },
+      { name: "cobalt", symbol: "Co", aliases: ["cobalt", "Co"] },
+      { name: "tin", symbol: "Sn", aliases: ["tin", "Sn"] },
+      { name: "iron", symbol: "Fe", aliases: ["iron", "Fe"] },
+      { name: "manganese", symbol: "Mn", aliases: ["manganese", "Mn"] },
+      { name: "aluminum", symbol: "Al", aliases: ["aluminum", "aluminium", "Al"] },
+      { name: "selenium", symbol: "Se", aliases: ["selenium", "Se"] },
+      { name: "platinum", symbol: "Pt", aliases: ["platinum", "Pt"] },
+      { name: "palladium", symbol: "Pd", aliases: ["palladium", "Pd"] },
+    ];
+    const unitGroup = "(ppm|ppb|mg\\/kg|mg\\/l|mg\\/L|μg\\/g|μg\\/kg|μg\\/L|ug\\/g|ug\\/kg|ug\\/L|wt%|%|mg\\/m2|mg\\/m²)";
+    for (const el of ICP_ELEMENTS) {
+      // Try each alias separately so we match either "silver" or "Ag"
+      // (case-insensitive for the word, exact-case for the symbol so
+      // "AS" in a sentence doesn't match arsenic).
+      let matched = false;
+      for (const alias of el.aliases) {
+        // For a 1-2 char symbol (Ag, Pb, etc.) require word boundaries
+        // to avoid false positives like "Pb" inside an unrelated word.
+        const pattern =
+          alias.length <= 2
+            ? new RegExp(`\\b${alias}\\b\\s*[:\\-]?\\s*(<?\\s*[\\d.]+)\\s*${unitGroup}`)
+            : new RegExp(`\\b${alias}\\b\\s*[:\\-]?\\s*(<?\\s*[\\d.]+)\\s*${unitGroup}`, "i");
+        const m = text.match(pattern);
+        if (m) {
+          const rawValue = m[1].replace(/[<\s]/g, "");
+          const numeric = parseFloat(rawValue);
+          if (!isNaN(numeric)) {
+            icpResults.push({
+              metal: el.symbol,
+              value: numeric,
+              unit: m[2].toLowerCase(),
+            });
+            matched = true;
+            break;
+          }
+        }
+      }
+      // Don't double-count if matched
+      if (matched) continue;
+    }
+    if (icpResults.length === 0) {
+      // Heuristic: lab clearly says ICP but we extracted nothing —
+      // probably an image-based PDF or a format we don't recognise yet.
+      warnings.push(
+        "Detected ICP report but could not extract any element values. " +
+          "PDF may be image-based (try OCR re-export from the lab) or use a format the parser hasn't seen yet.",
+      );
+    }
   }
 
   let fungalResult = null;
@@ -342,7 +432,29 @@ function parseTestReport(text: string): ParsedTestData {
   if (testDate) confidence += 10;
   if (testMethodStd) confidence += 10;
   if (organisms.length > 0 || icpResults.length > 0 || fungalResult || odorResult) confidence += 25;
-  if (confidence < 50) warnings.push("Low confidence parse. Please review all fields carefully.");
+
+  // Image-based PDF detection — when pdf-parse extracts < 200 chars
+  // of meaningful text from a multi-page report, the source PDF was
+  // almost certainly a scan or image-only export. Tina hits this on
+  // VL Shanghai reports the lab emails as scanned PDFs. Tell the
+  // user explicitly so they don't blame the parser, and floor the
+  // confidence at a small non-zero so the upload still surfaces in
+  // "Pending review" with context.
+  const meaningfulText = text.replace(/\s+/g, " ").trim();
+  if (meaningfulText.length < 200) {
+    warnings.unshift(
+      `Only ${meaningfulText.length} characters of text extracted from this PDF — ` +
+        "it's likely an image-based scan, not a true text PDF. Ask the lab to " +
+        "re-export with text layer enabled, or run an OCR pass before upload.",
+    );
+    // Cap confidence — even if a couple regex patterns happened to
+    // match scanner noise, we don't trust the parse.
+    confidence = Math.min(confidence, 5);
+  }
+
+  if (confidence < 50) {
+    warnings.push("Low confidence parse. Please review all fields carefully.");
+  }
 
   return {
     testType,

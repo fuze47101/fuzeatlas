@@ -16,15 +16,66 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }>
   CANCELLED: { bg: "bg-red-100", text: "text-red-700", label: "Cancelled" },
 };
 
-const UNIT_META: Record<string, { label: string; liters: number; desc: string; icon: string }> = {
-  CARBOY: { label: "Carboy", liters: 19, desc: "19L — single bottle", icon: "🧴" },
-  GAYLORD: { label: "Gaylord", liters: 608, desc: "32 carboys · 608L", icon: "📦" },
-  CONTAINER_20: { label: "20' Container", liters: 6080, desc: "10 gaylords · 6,080L", icon: "🚛" },
+const UNIT_META: Record<string, { label: string; liters: number; desc: string; icon: string; orderTypes: string[] }> = {
+  // Sample sizes — for SAMPLE orders only. Decanted from carboy supply
+  // at SLC HQ. Andrew added these so factories testing FUZE for new
+  // accounts don't have to commit to a full 19L carboy.
+  SAMPLE_500ML: {
+    label: "500 mL",
+    liters: 0.5,
+    desc: "smallest bench sample",
+    icon: "🧪",
+    orderTypes: ["SAMPLE"],
+  },
+  SAMPLE_1L: {
+    label: "1 L",
+    liters: 1,
+    desc: "standard lab sample",
+    icon: "🧪",
+    orderTypes: ["SAMPLE"],
+  },
+  SAMPLE_2L: {
+    label: "2 L",
+    liters: 2,
+    desc: "extended trial",
+    icon: "🧪",
+    orderTypes: ["SAMPLE"],
+  },
+  SAMPLE_5L: {
+    label: "5 L",
+    liters: 5,
+    desc: "small pilot",
+    icon: "🧪",
+    orderTypes: ["SAMPLE"],
+  },
+  // Carboy doubles as both — full bottle for SAMPLE, smallest for PRODUCTION
+  CARBOY: {
+    label: "Carboy",
+    liters: 19,
+    desc: "19L — single bottle",
+    icon: "🧴",
+    orderTypes: ["SAMPLE", "PRODUCTION"],
+  },
+  GAYLORD: {
+    label: "Gaylord",
+    liters: 608,
+    desc: "32 carboys · 608L",
+    icon: "📦",
+    orderTypes: ["PRODUCTION"],
+  },
+  CONTAINER_20: {
+    label: "20' Container",
+    liters: 6080,
+    desc: "10 gaylords · 6,080L",
+    icon: "🚛",
+    orderTypes: ["PRODUCTION"],
+  },
   CONTAINER_40: {
     label: "40' Container",
     liters: 12160,
     desc: "20 gaylords · 12,160L",
     icon: "🚢",
+    orderTypes: ["PRODUCTION"],
   },
 };
 
@@ -473,7 +524,20 @@ export default function DistributorOrdersPage() {
                     <button
                       key={t.value}
                       type="button"
-                      onClick={() => setCreateForm({ ...createForm, orderType: t.value })}
+                      onClick={() => {
+                        // When switching order type, reset unitType to a
+                        // sensible default for that type so the user
+                        // doesn't get stuck with GAYLORD selected on a
+                        // SAMPLE order (or 500mL on a PRODUCTION order).
+                        const nextDefault =
+                          t.value === "SAMPLE" ? "SAMPLE_1L" : "GAYLORD";
+                        setCreateForm({
+                          ...createForm,
+                          orderType: t.value,
+                          unitType: nextDefault,
+                          unitQuantity: 1,
+                        });
+                      }}
                       className={`px-3 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
                         createForm.orderType === t.value
                           ? "border-[#00b4c3] bg-[#00b4c3]/10 text-[#00b4c3]"
@@ -491,23 +555,32 @@ export default function DistributorOrdersPage() {
                 <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Package Size
                 </label>
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  {Object.entries(UNIT_META).map(([key, meta]) => (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => setCreateForm({ ...createForm, unitType: key })}
-                      className={`px-3 py-2 rounded-lg border text-left transition-colors ${
-                        createForm.unitType === key
-                          ? "border-[#00b4c3] bg-[#00b4c3]/10"
-                          : "border-slate-200 hover:bg-slate-50"
-                      }`}
-                    >
-                      <span className="text-lg">{meta.icon}</span>
-                      <p className="text-sm font-semibold text-slate-900">{meta.label}</p>
-                      <p className="text-[10px] text-slate-500">{meta.desc}</p>
-                    </button>
-                  ))}
+                {createForm.orderType === "SAMPLE" && (
+                  <p className="text-xs text-slate-500 mb-2">
+                    Sample sizes ship from carboy supply at SLC HQ. Pick
+                    a small volume for bench/lab trials, or a full
+                    carboy if you need standard packaging.
+                  </p>
+                )}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
+                  {Object.entries(UNIT_META)
+                    .filter(([_, meta]) => meta.orderTypes.includes(createForm.orderType))
+                    .map(([key, meta]) => (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => setCreateForm({ ...createForm, unitType: key })}
+                        className={`px-3 py-2 rounded-lg border text-left transition-colors ${
+                          createForm.unitType === key
+                            ? "border-[#00b4c3] bg-[#00b4c3]/10"
+                            : "border-slate-200 hover:bg-slate-50"
+                        }`}
+                      >
+                        <span className="text-lg">{meta.icon}</span>
+                        <p className="text-sm font-semibold text-slate-900">{meta.label}</p>
+                        <p className="text-[10px] text-slate-500">{meta.desc}</p>
+                      </button>
+                    ))}
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-500 mb-1">Quantity</label>
@@ -526,8 +599,18 @@ export default function DistributorOrdersPage() {
                       className="w-24 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-center"
                     />
                     <span className="text-sm text-slate-500">
-                      = <strong>{createVolumeLiters.toLocaleString()}L</strong> ({createBottles}{" "}
-                      bottles)
+                      ={" "}
+                      {createVolumeLiters < 19 ? (
+                        <>
+                          <strong>{(createVolumeLiters * 1000).toLocaleString()} mL</strong>{" "}
+                          <span className="text-slate-400">· decanted from carboy</span>
+                        </>
+                      ) : (
+                        <>
+                          <strong>{createVolumeLiters.toLocaleString()}L</strong> ({createBottles}{" "}
+                          bottles)
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>
