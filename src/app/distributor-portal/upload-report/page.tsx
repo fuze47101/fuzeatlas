@@ -155,16 +155,31 @@ export default function DistributorUploadReportPage() {
                 ⏳ "Pending review".
               </p>
             </div>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <h3 className="font-bold text-slate-900">Parsed Report</h3>
-              <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                (result.confidence || 0) >= 70 ? "bg-emerald-100 text-emerald-700" :
-                (result.confidence || 0) >= 50 ? "bg-amber-100 text-amber-700" :
-                "bg-red-100 text-red-700"
-              }`}>
-                {result.confidence || 0}% confidence
-              </span>
+              <div className="flex items-center gap-2">
+                {result.aiVision?.usedAsPrimary && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-purple-100 text-purple-800">
+                    🧠 AI vision
+                  </span>
+                )}
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                  (result.confidence || 0) >= 70 ? "bg-emerald-100 text-emerald-700" :
+                  (result.confidence || 0) >= 50 ? "bg-amber-100 text-amber-700" :
+                  "bg-red-100 text-red-700"
+                }`}>
+                  {result.confidence || 0}% confidence
+                </span>
+              </div>
             </div>
+            {result.aiVision?.usedAsPrimary && (
+              <div className="mb-3 p-2 bg-purple-50 border border-purple-200 rounded text-xs text-purple-900">
+                The PDF had little or no text layer (image-based scan).
+                Claude AI vision read the document directly and extracted
+                the fields below. Review carefully — AI extraction can miss
+                or misread numbers in poor scans.
+              </div>
+            )}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
               <div>
                 <span className="text-xs text-slate-500">Test Type</span>

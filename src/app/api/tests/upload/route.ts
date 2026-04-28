@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { parseITSReport } from "@/lib/parsers/testReportParser";
 import type { ParsedITSReport } from "@/lib/parsers/testReportParser";
+import { extractTestDataWithAIVision } from "@/lib/parsers/aiVisionExtractor";
+import type { AIExtractedTestData } from "@/lib/parsers/aiVisionExtractor";
 import { uploadToS3, generateS3Key, isS3Configured, S3_PREFIXES } from "@/lib/s3";
 
 /* ── PDF text extraction (lightweight, no native deps) ────────── */
@@ -561,6 +563,13 @@ export async function POST(req: Request) {
     let parsed: ParsedTestData | null = null;
     let itsReport: ParsedITSReport | null = null;
     let aiReview: any = null;
+    let aiVision: AIExtractedTestData | null = null;
+
+    // Threshold below which we suspect the PDF is image-based and
+    // worth sending to Claude vision. ~200 chars is roughly 1 page
+    // of pure metadata (headers/footers extracted but no body text).
+    const meaningfulText = (pdfText || "").replace(/\s+/g, " ").trim();
+    const isLikelyImagePdf = meaningfulText.length < 200;
 
     if (pdfText && !parseError) {
       try {
@@ -580,6 +589,57 @@ export async function POST(req: Request) {
         }
       } catch (err: any) {
         parseError = `Report parsing failed: ${err.message}`;
+      }
+    }
+
+    // ── AI vision fallback for image-based PDFs ──────────────────
+    // Tina's Chinese-lab scans (VL Shanghai etc.) lose all text in
+    // pdf-parse and score 0% on the regex parser. Send the PDF
+    // straight to Claude — it natively reads scanned PDFs without a
+    // separate OCR step.
+    //
+    // Trigger when:
+    //   - pdf-parse extracted essentially nothing (<200 chars), OR
+    //   - the regex parser scored very low (<25), AND we're not on
+    //     an ITS report (those have their own dedicated parser)
+    const lowConfidenceFlat =
+      parsed && parsed.confidence < 25 && !itsReport;
+    if ((isLikelyImagePdf || lowConfidenceFlat) && !itsReport) {
+      try {
+        aiVision = await extractTestDataWithAIVision(buffer, file.name);
+        // If the AI extraction beats the flat parser, swap the flat
+        // parsed result for the AI's. We keep the AI output in a
+        // separate field too so the UI can show "extracted via AI
+        // vision" provenance.
+        if (
+          aiVision &&
+          (!parsed || aiVision.confidence > (parsed.confidence || 0))
+        ) {
+          parsed = {
+            testType: aiVision.testType,
+            testReportNumber: aiVision.testReportNumber,
+            labName: aiVision.labName,
+            testDate: aiVision.testDate,
+            testMethodStd: aiVision.testMethodStd,
+            fabricInfo: aiVision.fabricInfo,
+            washCount: aiVision.washCount,
+            organisms: aiVision.organisms || [],
+            icpResults: aiVision.icpResults || [],
+            fungalResult: aiVision.fungalResult,
+            odorResult: aiVision.odorResult,
+            overallPass: aiVision.overallPass,
+            confidence: aiVision.confidence,
+            rawText: "",
+            warnings: [
+              `Extracted via AI vision (image-based PDF, ${meaningfulText.length} chars text).`,
+              ...(aiVision.warnings || []),
+            ],
+          };
+        }
+      } catch (err: any) {
+        console.error("AI vision fallback failed:", err);
+        // Don't fail the upload — the document is already saved and
+        // an admin can review manually.
       }
     }
 
@@ -633,6 +693,17 @@ export async function POST(req: Request) {
         : null,
       // AI review results
       aiReview,
+      // AI vision fallback (when text extraction was insufficient)
+      aiVision: aiVision
+        ? {
+            confidence: aiVision.confidence,
+            testType: aiVision.testType,
+            warnings: aiVision.warnings,
+            usedAsPrimary:
+              parsed?.warnings?.[0]?.startsWith("Extracted via AI vision") ||
+              false,
+          }
+        : null,
       parseError,
       // Duplicate detection
       duplicateWarning,
