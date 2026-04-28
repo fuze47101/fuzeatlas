@@ -11,7 +11,12 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
       where: { id: params.id },
       include: {
         brand: { select: { id: true, name: true } },
-        factory: { select: { id: true, name: true } },
+        factory: { select: { id: true, name: true, country: true } },
+        // Distributor-owned fabric portfolio support — added Apr 2026.
+        // Safe to include even if the relation isn't on every existing
+        // query path; Prisma returns null when the FK is empty.
+        // @ts-ignore — new relation from distributor portfolio
+        distributor: { select: { id: true, name: true } },
         contents: true,
         submissions: {
           include: {
@@ -24,6 +29,44 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
         recipeBenchTests: {
           orderBy: { testDate: "desc" },
           take: 20,
+        },
+        // Latest test request — used by the label printer (and any
+        // other "what's the most recent ICP request for this fabric"
+        // caller) so we can include PO# / tier / lab assignment on the
+        // baggie sticker without a second round-trip.
+        // @ts-ignore — new include
+        testRequests: {
+          orderBy: { createdAt: "desc" },
+          take: 5,
+          select: {
+            id: true,
+            poNumber: true,
+            poDate: true,
+            pricingTier: true,
+            status: true,
+            requestedAt: true,
+            fuzeFabricNumber: true,
+            customerFabricCode: true,
+            factoryFabricCode: true,
+            lab: { select: { id: true, name: true, city: true, country: true } },
+          },
+        },
+        // Latest sample application — tier + recipe stamp the lab needs
+        // to know what was applied before they ICP-test it.
+        // @ts-ignore — new relation from sample applications
+        sampleApplications: {
+          orderBy: { createdAt: "desc" },
+          take: 5,
+          select: {
+            id: true,
+            appNumber: true,
+            tier: true,
+            bathConcentrationMgPerL: true,
+            bathVolumeL: true,
+            paddedAt: true,
+            driedAt: true,
+            operator: true,
+          },
         },
       },
     });

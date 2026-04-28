@@ -103,10 +103,40 @@ export default function IcpBatchPrintPage() {
         }
       `}</style>
 
-      <div className="no-print max-w-5xl mx-auto px-6 pt-6 flex items-center justify-between">
+      <div className="no-print max-w-5xl mx-auto px-6 pt-6 flex items-center justify-between flex-wrap gap-3">
         <a href="/admin/icp-sample-prep" className="text-sm text-[#00b4c3] font-semibold">← Back to wizard</a>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs text-slate-500">PO {poNumber} · {lines.length} sample{lines.length === 1 ? "" : "s"}</span>
+          {/* Per-fabric carrier label sheets — one click per fabric in
+              this PO. Surfaces the new /fabrics/[id]/labels/print page
+              so Tina can run carrier stickers + the 4×6 baggie sticker
+              for each sample without going through the wizard again. */}
+          {lines.length > 0 && (
+            <details className="relative">
+              <summary className="cursor-pointer list-none px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-bold rounded-lg">
+                🏷 Print carrier labels ▾
+              </summary>
+              <div className="absolute right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg p-2 z-10 max-h-72 overflow-auto min-w-[280px]">
+                <p className="text-[10px] uppercase font-bold text-slate-500 px-2 pb-1">
+                  4×6 carrier sheet + baggie sticker per fabric
+                </p>
+                {lines.map((l: any) => (
+                  <a
+                    key={l.fabricId}
+                    href={`/fabrics/${l.fabricId}/labels/print`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block px-2 py-1.5 hover:bg-slate-50 rounded text-xs"
+                  >
+                    <strong className="font-mono">FUZE-{l.fuzeNumber || "—"}</strong>
+                    {l.customerCode && (
+                      <span className="text-slate-500"> · {l.customerCode}</span>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </details>
+          )}
           <button onClick={() => window.print()} className="px-5 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800">
             🖨 Print packet + tags
           </button>

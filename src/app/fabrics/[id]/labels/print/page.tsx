@@ -4,30 +4,53 @@
 /**
  * /fabrics/[id]/labels/print
  *
- * Printable label sheet for fabric samples that travel to a lab.
+ * Printable label sheets for fabric samples that travel to a lab.
+ * Two distinct 4×6 outputs in one print job — both designed for a
+ * 4×6 label printer.
  *
- * Two pages in one print job:
- *   1. 4×6 inch label sheet with 10 distinct stickers (2 cols × 5 rows)
- *      — peel-and-stick on each cut sample so the fabric ID travels
- *      with the swatch even after the bag is opened.
- *   2. Letter-size packing list — full fabric specs in a single
- *      header sheet that drops into the bag with the cut samples.
+ *   PAGE 1 — Carrier sticker sheet (4×6, 1 col × 5 rows)
+ *     5 distinct labels, ~4"w × 1.2"h each. Cut along dashed lines
+ *     and apply one to each cut sample so the fabric ID travels with
+ *     the swatch.
  *
- * Tina prints both at once and ships:
- *   - 10 × labeled cuts → for the lab tech to keep with each test
- *   - 1 × packing list → for the lab to file
+ *   PAGE 2 — Baggie sticker (single full 4×6)
+ *     Sticks on the outside of the plastic baggie that holds all the
+ *     cut samples. Combines fabric identity + the latest ICP test
+ *     request (PO#, tier, lab) so the receiving tech can match the
+ *     bag to a specific request without opening it.
  *
- * Print sizing:
- *   The 4×6 page is configured via @page CSS so a label printer set
- *   to "actual size" produces a real 4"×6" sticker sheet. The Letter
- *   page uses normal margins.
- *
- * Hide-on-print: header bar with "🖨 Print" button + back link.
- * Everything else is print-clean.
+ * The page also surfaces a list of historical TestRequests for this
+ * fabric so Tina can re-print labels for an older ICP request without
+ * having to re-run the wizard. URL param `?requestId=xxx` lets her
+ * pick a specific past request to label against.
  */
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+
+interface TestRequestRef {
+  id: string;
+  poNumber: string;
+  poDate: string;
+  pricingTier: string | null;
+  status: string;
+  requestedAt: string | null;
+  fuzeFabricNumber: string | null;
+  customerFabricCode: string | null;
+  factoryFabricCode: string | null;
+  lab: { id: string; name: string; city: string | null; country: string | null } | null;
+}
+
+interface SampleAppRef {
+  id: string;
+  appNumber: string;
+  tier: string | null;
+  bathConcentrationMgPerL: number | null;
+  bathVolumeL: number | null;
+  paddedAt: string | null;
+  driedAt: string | null;
+  operator: string | null;
+}
 
 interface Fabric {
   id: string;
@@ -48,14 +71,16 @@ interface Fabric {
   knitStitchType: string | null;
   weavePattern: string | null;
   thickness: number | null;
-  shrinkageLength: number | null;
-  shrinkageWidth: number | null;
   fabricPh: number | null;
   brand: { id: string; name: string } | null;
   factory: { id: string; name: string; country: string | null } | null;
   distributor: { id: string; name: string } | null;
+  testRequests: TestRequestRef[];
+  sampleApplications: SampleAppRef[];
   createdAt: string;
 }
+
+const LABELS_PER_SHEET = 5;
 
 export default function FabricLabelsPrintPage({
   params,
@@ -66,6 +91,16 @@ export default function FabricLabelsPrintPage({
   const [fabric, setFabric] = useState<Fabric | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Caller can pin a specific past request via ?requestId=…
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const u = new URL(window.location.href);
+    const r = u.searchParams.get("requestId");
+    if (r) setSelectedRequestId(r);
+  }, []);
 
   useEffect(() => {
     fetch(`/api/fabrics/${id}`)
@@ -104,20 +139,41 @@ export default function FabricLabelsPrintPage({
     minute: "2-digit",
   });
 
-  const labels = Array.from({ length: 10 }, (_, i) => i + 1);
+  // Pick the test request for the baggie sticker:
+  //   - If URL pinned a specific one, use it
+  //   - Otherwise default to the most-recent
+  const requests = fabric.testRequests || [];
+  const selectedRequest =
+    (selectedRequestId && requests.find((r) => r.id === selectedRequestId)) ||
+    requests[0] ||
+    null;
+
+  // Latest sample application — gives us the actual tier applied
+  // and the lab-relevant recipe details (concentration, bath
+  // volume, padded/dried timestamps).
+  const latestApp = (fabric.sampleApplications || [])[0] || null;
+
+  const labels = Array.from({ length: LABELS_PER_SHEET }, (_, i) => i + 1);
+
+  // What FUZE tier is going on the bag? Prefer the test request's
+  // pricing tier (what was paid for) → fall back to applied tier on
+  // the SampleApplication → fall back to fabric.targetFuzeTier.
+  const tier =
+    selectedRequest?.pricingTier ||
+    latestApp?.tier ||
+    fabric.targetFuzeTier ||
+    null;
 
   return (
     <>
-      {/* Print-only CSS — sets up two distinct page sizes for the
-          two parts of this print job. */}
       <style jsx global>{`
         @page label-page {
           size: 4in 6in;
           margin: 0.1in;
         }
-        @page packing-page {
-          size: letter;
-          margin: 0.4in;
+        @page baggie-page {
+          size: 4in 6in;
+          margin: 0.15in;
         }
         @media print {
           body {
@@ -131,37 +187,44 @@ export default function FabricLabelsPrintPage({
             page: label-page;
             page-break-after: always;
           }
-          .packing-page {
-            page: packing-page;
+          .baggie-page {
+            page: baggie-page;
             page-break-before: always;
           }
         }
         .label-cell {
-          border: 1px dashed #cbd5e1; /* dashed cut lines */
-          padding: 0.06in;
+          border: 1px dashed #94a3b8;
+          padding: 0.1in 0.12in;
           font-family: "Helvetica Neue", Arial, sans-serif;
-          font-size: 7pt;
-          line-height: 1.15;
           color: #0f172a;
           page-break-inside: avoid;
           break-inside: avoid;
           overflow: hidden;
+          display: flex;
+          flex-direction: column;
         }
         .label-cell .fuze {
           font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas;
-          font-size: 11pt;
+          font-size: 16pt;
           font-weight: 900;
           letter-spacing: -0.02em;
+          line-height: 1;
         }
         .label-cell .pri {
           font-weight: 700;
-          font-size: 8pt;
+          font-size: 10pt;
           line-height: 1.2;
+          margin-top: 2pt;
         }
         .label-cell .sec {
           color: #475569;
-          font-size: 6.5pt;
-          line-height: 1.25;
+          font-size: 8pt;
+          line-height: 1.3;
+        }
+        .baggie-h1 {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas;
+          font-weight: 900;
+          letter-spacing: -0.02em;
         }
       `}</style>
 
@@ -189,383 +252,485 @@ export default function FabricLabelsPrintPage({
         </div>
       </div>
 
-      {/* Hide-on-print instructions */}
-      <div className="no-print max-w-3xl mx-auto p-5 text-sm text-slate-700 space-y-2">
-        <p className="font-semibold">Two pages will print:</p>
-        <ol className="list-decimal pl-5 space-y-1 text-xs">
-          <li>
-            <strong>Page 1 — 4×6 sticker sheet:</strong> 10 distinct labels in a
-            2×5 grid. Cut along the dashed lines and apply one to each
-            sample swatch headed to the lab. In your printer dialog set
-            paper size to <strong>4 × 6 inches</strong> and print scale to{" "}
-            <strong>actual size</strong>.
-          </li>
-          <li>
-            <strong>Page 2 — packing list:</strong> letter-size full spec
-            sheet that drops into the sample bag for the lab to file. Set
-            paper to <strong>Letter</strong> and scale to{" "}
-            <strong>fit to page</strong> if your printer dialog merges the
-            pages.
-          </li>
-        </ol>
-        <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
-          Tip — most label printers expect their own paper size selected
-          BEFORE clicking print. If pages 1 and 2 land on the wrong
-          paper, print just page 1 to the label printer, then just page
-          2 to a regular printer.
-        </p>
+      {/* Hide-on-print instructions + request picker */}
+      <div className="no-print max-w-3xl mx-auto p-5 text-sm text-slate-700 space-y-3">
+        <div>
+          <p className="font-semibold">Two 4×6 sheets will print:</p>
+          <ol className="list-decimal pl-5 space-y-1 text-xs mt-1">
+            <li>
+              <strong>Page 1 — carrier sticker sheet:</strong> 5 distinct
+              labels stacked vertically. Cut along the dashed lines and
+              apply one to each cut sample.
+            </li>
+            <li>
+              <strong>Page 2 — baggie sticker:</strong> single full 4×6
+              with fabric info + the ICP request data (PO#, tier, lab).
+              Stick on the outside of the plastic baggie holding the
+              cut samples.
+            </li>
+          </ol>
+          <p className="text-xs text-slate-600 mt-2">
+            Both pages use the same 4×6 paper size — set your label
+            printer to <strong>4 × 6 inches</strong> + scale{" "}
+            <strong>actual size</strong> and run them as a single job.
+          </p>
+        </div>
+
+        {requests.length > 1 && (
+          <div className="bg-amber-50 border border-amber-200 rounded p-3">
+            <p className="font-semibold text-amber-900 mb-1">
+              This fabric has {requests.length} test requests on file
+            </p>
+            <p className="text-xs text-amber-800 mb-2">
+              The baggie sticker pulls from the selected request. Default
+              is the most recent. Pick a different one to re-print
+              labels for a past ICP run:
+            </p>
+            <select
+              value={selectedRequest?.id || ""}
+              onChange={(e) => setSelectedRequestId(e.target.value || null)}
+              className="w-full text-sm px-3 py-2 border border-amber-300 rounded bg-white"
+            >
+              {requests.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.poNumber}
+                  {r.pricingTier ? ` · ${r.pricingTier}` : ""}
+                  {r.lab?.name ? ` · ${r.lab.name}` : ""}
+                  {" · "}
+                  {new Date(r.poDate).toLocaleDateString()}
+                  {" · "}
+                  {r.status}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {!selectedRequest && (
+          <div className="bg-rose-50 border border-rose-200 rounded p-3 text-xs text-rose-800">
+            <strong>⚠ No ICP request linked to this fabric yet.</strong>
+            {" "}
+            The baggie sticker will print fabric identity but won't have
+            a PO#, tier, or lab. Run the ICP Sample Prep wizard at{" "}
+            <Link
+              href="/admin/icp-sample-prep"
+              className="text-rose-900 underline font-semibold"
+            >
+              /admin/icp-sample-prep
+            </Link>{" "}
+            first if this is going to a lab.
+          </div>
+        )}
       </div>
 
-      {/* Page 1 — 4×6 sticker sheet, 2 cols × 5 rows = 10 stickers */}
+      {/* Page 1 — Carrier sticker sheet (5 labels, 1 col × 5 rows) */}
       <div
         className="label-page"
         style={{
           width: "4in",
           height: "6in",
-          margin: "0 auto",
+          margin: "0.5in auto",
           background: "white",
           boxShadow: "0 0 4px rgba(0,0,0,0.15)",
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: "1fr",
           gridTemplateRows: "repeat(5, 1fr)",
-          gap: "0.04in",
+          gap: "0.05in",
         }}
       >
         {labels.map((n) => (
           <div key={n} className="label-cell">
-            <div className="fuze">{fuzeRef}</div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "baseline",
+                gap: "6pt",
+              }}
+            >
+              <div className="fuze">{fuzeRef}</div>
+              {tier && (
+                <div
+                  style={{
+                    background: "#0f172a",
+                    color: "white",
+                    fontWeight: 800,
+                    fontSize: "9pt",
+                    padding: "2pt 6pt",
+                    borderRadius: "3pt",
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  {tier}
+                </div>
+              )}
+            </div>
             {(fabric.customerReference || fabric.customerCode) && (
               <div className="pri">
                 {fabric.customerReference || fabric.customerCode}
               </div>
             )}
-            <div className="sec" style={{ marginTop: "1pt" }}>
+            <div className="sec" style={{ marginTop: "2pt" }}>
               {fabric.brand?.name && <>🏷 {fabric.brand.name}</>}
               {fabric.brand?.name && fabric.factory?.name && " · "}
               {fabric.factory?.name && <>🏭 {fabric.factory.name}</>}
             </div>
-            <div className="sec">
-              {fabric.factoryCode && <>fac:{fabric.factoryCode} </>}
-              {fabric.color && <>{fabric.color} </>}
-              {fabric.weightGsm && <>{fabric.weightGsm}gsm </>}
+            <div className="sec" style={{ marginTop: "1pt" }}>
+              {fabric.factoryCode && <>fac:{fabric.factoryCode} · </>}
+              {fabric.color && <>{fabric.color} · </>}
+              {fabric.weightGsm && <>{fabric.weightGsm}gsm · </>}
               {fabric.widthInches && <>{fabric.widthInches}"</>}
             </div>
-            <div className="sec" style={{ marginTop: "1pt" }}>
-              {fabric.construction || fabric.fabricCategory || ""}
-              {fabric.targetFuzeTier && (
-                <span style={{ float: "right", fontWeight: 700 }}>
-                  {fabric.targetFuzeTier}
-                </span>
-              )}
-            </div>
+            {(fabric.construction || fabric.fabricCategory) && (
+              <div className="sec" style={{ marginTop: "1pt" }}>
+                {fabric.construction || fabric.fabricCategory}
+                {fabric.knitStitchType ? ` · ${fabric.knitStitchType}` : ""}
+                {fabric.weavePattern && !fabric.knitStitchType
+                  ? ` · ${fabric.weavePattern}`
+                  : ""}
+              </div>
+            )}
+            {selectedRequest?.poNumber && (
+              <div
+                className="sec"
+                style={{
+                  marginTop: "1pt",
+                  fontFamily: "ui-monospace, SFMono-Regular, Menlo",
+                  fontWeight: 700,
+                  color: "#0e7490",
+                }}
+              >
+                {selectedRequest.poNumber}
+                {selectedRequest.lab?.name ? ` → ${selectedRequest.lab.name}` : ""}
+              </div>
+            )}
             <div
-              className="sec"
-              style={{ marginTop: "auto", fontSize: "5.5pt", color: "#94a3b8" }}
+              style={{
+                marginTop: "auto",
+                fontSize: "6.5pt",
+                color: "#94a3b8",
+                paddingTop: "2pt",
+              }}
             >
-              #{n} of 10 · {printedAt}
+              #{n} of {LABELS_PER_SHEET} · {printedAt}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Page 2 — Packing list (Letter size). Goes in the bag with
-          the cut samples for the lab to file. */}
+      {/* Page 2 — Full 4×6 baggie sticker (fabric info + ICP request) */}
       <div
-        className="packing-page"
+        className="baggie-page"
         style={{
-          maxWidth: "7.5in",
-          margin: "0.4in auto",
-          padding: "0",
+          width: "4in",
+          height: "6in",
+          margin: "0.5in auto",
+          background: "white",
+          boxShadow: "0 0 4px rgba(0,0,0,0.15)",
+          padding: "0.18in",
           fontFamily: "Helvetica Neue, Arial, sans-serif",
           color: "#0f172a",
-          background: "white",
+          display: "flex",
+          flexDirection: "column",
+          fontSize: "8.5pt",
+          lineHeight: 1.3,
+          boxSizing: "border-box",
         }}
       >
+        {/* Top brand bar */}
         <div
           style={{
-            borderBottom: "3px solid #00b4c3",
-            paddingBottom: "0.15in",
-            marginBottom: "0.2in",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            borderBottom: "2px solid #00b4c3",
+            paddingBottom: "4pt",
+            marginBottom: "6pt",
           }}
         >
           <div
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "baseline",
+              fontWeight: 900,
+              fontSize: "11pt",
+              letterSpacing: "0.04em",
             }}
           >
-            <div>
-              <p
-                style={{
-                  fontSize: "9pt",
-                  color: "#64748b",
-                  letterSpacing: "0.05em",
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  margin: 0,
-                }}
-              >
-                Sample Packing List
-              </p>
-              <h1
-                style={{
-                  fontSize: "28pt",
-                  fontWeight: 900,
-                  margin: "2pt 0 0",
-                  letterSpacing: "-0.02em",
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco",
-                }}
-              >
-                {fuzeRef}
-              </h1>
-              {fabric.customerReference && (
-                <p
-                  style={{
-                    fontSize: "13pt",
-                    fontWeight: 600,
-                    margin: "1pt 0 0",
-                    color: "#334155",
-                  }}
-                >
-                  {fabric.customerReference}
-                </p>
-              )}
-            </div>
-            <div style={{ textAlign: "right", fontSize: "9pt", color: "#475569" }}>
-              <p style={{ margin: 0 }}>
-                Printed <strong>{printedAt}</strong>
-              </p>
-              <p style={{ margin: "1pt 0 0" }}>FUZE Biotech, Inc.</p>
-              <p style={{ margin: "1pt 0 0" }}>
-                1895 W 2100 S, Salt Lake City, UT 84119
-              </p>
-            </div>
+            FUZE BIOTECH
+          </div>
+          <div
+            style={{
+              fontSize: "7pt",
+              color: "#475569",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+            }}
+          >
+            ICP Sample Submission
           </div>
         </div>
 
-        {/* Identity grid */}
+        {/* Big FUZE# header */}
         <div
           style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            gap: "8pt",
+          }}
+        >
+          <div>
+            <div
+              className="baggie-h1"
+              style={{ fontSize: "26pt", lineHeight: 0.95 }}
+            >
+              {fuzeRef}
+            </div>
+            {fabric.customerReference && (
+              <div
+                style={{
+                  fontSize: "11pt",
+                  fontWeight: 700,
+                  color: "#334155",
+                  marginTop: "1pt",
+                }}
+              >
+                {fabric.customerReference}
+              </div>
+            )}
+          </div>
+          {tier && (
+            <div
+              style={{
+                background: "#0f172a",
+                color: "white",
+                fontWeight: 900,
+                fontSize: "20pt",
+                padding: "4pt 10pt",
+                borderRadius: "4pt",
+                letterSpacing: "-0.02em",
+                fontFamily: "ui-monospace, SFMono-Regular, Menlo",
+              }}
+            >
+              {tier}
+            </div>
+          )}
+        </div>
+
+        {/* Identity row */}
+        <div
+          style={{
+            marginTop: "6pt",
+            paddingTop: "4pt",
+            borderTop: "1px solid #e2e8f0",
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
-            gap: "0.15in 0.3in",
-            fontSize: "10pt",
+            gap: "3pt 8pt",
           }}
         >
           {fabric.brand?.name && (
-            <Field label="Brand" value={fabric.brand.name} />
+            <BaggieField label="Brand" value={fabric.brand.name} />
           )}
           {fabric.factory?.name && (
-            <Field
+            <BaggieField
               label="Factory"
-              value={`${fabric.factory.name}${
-                fabric.factory.country ? ` · ${fabric.factory.country}` : ""
-              }`}
+              value={
+                fabric.factory.country
+                  ? `${fabric.factory.name} (${fabric.factory.country})`
+                  : fabric.factory.name
+              }
             />
           )}
           {fabric.distributor?.name && (
-            <Field label="Distributor" value={fabric.distributor.name} />
+            <BaggieField label="Distributor" value={fabric.distributor.name} />
           )}
           {fabric.customerCode && (
-            <Field label="Customer Code" value={fabric.customerCode} />
+            <BaggieField label="Customer Code" value={fabric.customerCode} />
           )}
           {fabric.factoryCode && (
-            <Field label="Factory Code" value={fabric.factoryCode} />
-          )}
-          {fabric.targetFuzeTier && (
-            <Field label="Target Tier" value={fabric.targetFuzeTier} />
+            <BaggieField label="Factory Code" value={fabric.factoryCode} />
           )}
         </div>
 
-        {/* Construction block */}
+        {/* Construction snapshot */}
         <div
           style={{
-            marginTop: "0.25in",
-            paddingTop: "0.15in",
+            marginTop: "6pt",
+            paddingTop: "4pt",
             borderTop: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              fontSize: "9pt",
-              color: "#64748b",
-              letterSpacing: "0.05em",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              margin: "0 0 0.1in 0",
-            }}
-          >
-            Construction
-          </p>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: "0.1in 0.3in",
-              fontSize: "10pt",
-            }}
-          >
-            {fabric.fabricCategory && (
-              <Field label="Category" value={fabric.fabricCategory} />
-            )}
-            {fabric.construction && (
-              <Field label="Construction" value={fabric.construction} />
-            )}
-            {(fabric.knitStitchType || fabric.weavePattern) && (
-              <Field
-                label={fabric.knitStitchType ? "Stitch" : "Weave"}
-                value={fabric.knitStitchType || fabric.weavePattern || "—"}
-              />
-            )}
-            {fabric.color && <Field label="Color" value={fabric.color} />}
-            {fabric.yarnType && (
-              <Field label="Yarn / Fiber" value={fabric.yarnType} />
-            )}
-            {fabric.weightGsm && (
-              <Field label="Weight" value={`${fabric.weightGsm} gsm`} />
-            )}
-            {fabric.widthInches && (
-              <Field label="Width" value={`${fabric.widthInches}"`} />
-            )}
-            {fabric.thickness && (
-              <Field label="Thickness" value={`${fabric.thickness} mm`} />
-            )}
-            {fabric.fabricPh != null && (
-              <Field label="pH" value={String(fabric.fabricPh)} />
-            )}
-            {fabric.endUse && (
-              <Field label="End Use" value={fabric.endUse} />
-            )}
-            {fabric.shrinkageLength != null && (
-              <Field
-                label="Shrinkage L"
-                value={`${fabric.shrinkageLength}%`}
-              />
-            )}
-            {fabric.shrinkageWidth != null && (
-              <Field
-                label="Shrinkage W"
-                value={`${fabric.shrinkageWidth}%`}
-              />
-            )}
-          </div>
-        </div>
-
-        {/* Finish + notes */}
-        {(fabric.finishNote || fabric.note) && (
-          <div
-            style={{
-              marginTop: "0.25in",
-              paddingTop: "0.15in",
-              borderTop: "1px solid #e2e8f0",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "9pt",
-                color: "#64748b",
-                letterSpacing: "0.05em",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                margin: "0 0 0.1in 0",
-              }}
-            >
-              Notes
-            </p>
-            {fabric.finishNote && (
-              <p style={{ fontSize: "10pt", margin: "0 0 0.05in 0" }}>
-                <strong>Finish:</strong> {fabric.finishNote}
-              </p>
-            )}
-            {fabric.note && (
-              <p style={{ fontSize: "10pt", margin: 0, whiteSpace: "pre-wrap" }}>
-                {fabric.note}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Sample tally */}
-        <div
-          style={{
-            marginTop: "0.3in",
-            padding: "0.15in",
-            border: "2px dashed #00b4c3",
-            borderRadius: "8px",
-            background: "#ecfeff",
-            fontSize: "10pt",
-          }}
-        >
-          <p style={{ fontWeight: 700, margin: "0 0 0.05in 0" }}>
-            📦 Bag contents
-          </p>
-          <p style={{ margin: 0 }}>
-            <strong>10 cut samples</strong>, each labeled{" "}
-            <span
-              style={{
-                fontFamily: "ui-monospace, SFMono-Regular, Menlo",
-                fontWeight: 700,
-              }}
-            >
-              {fuzeRef}
-            </span>{" "}
-            via the 4×6 sticker sheet (also printed). Each sticker
-            carries the same identity — peel and apply to each
-            individual swatch as it's bagged.
-          </p>
-          <p style={{ margin: "0.05in 0 0 0", fontSize: "9pt", color: "#475569" }}>
-            Lab — please retain this sheet with the test record. Reference
-            it back to FUZE Biotech using the FUZE# above on any report
-            you issue.
-          </p>
-        </div>
-
-        {/* Signature line for chain-of-custody */}
-        <div
-          style={{
-            marginTop: "0.4in",
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "0.3in",
-            fontSize: "9pt",
-            color: "#475569",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            gap: "3pt 8pt",
           }}
         >
-          <div>
-            <p style={{ borderBottom: "1px solid #94a3b8", height: "0.3in", margin: 0 }} />
-            <p style={{ marginTop: "0.05in" }}>
-              <strong>Shipped by</strong> · date / signature
-            </p>
+          {fabric.fabricCategory && (
+            <BaggieField label="Type" value={fabric.fabricCategory} />
+          )}
+          {fabric.construction && (
+            <BaggieField label="Construction" value={fabric.construction} />
+          )}
+          {fabric.color && (
+            <BaggieField label="Color" value={fabric.color} />
+          )}
+          {fabric.weightGsm && (
+            <BaggieField label="Weight" value={`${fabric.weightGsm} gsm`} />
+          )}
+          {fabric.widthInches && (
+            <BaggieField label="Width" value={`${fabric.widthInches}"`} />
+          )}
+          {fabric.yarnType && (
+            <BaggieField label="Yarn" value={fabric.yarnType} />
+          )}
+          {fabric.fabricPh != null && (
+            <BaggieField label="pH" value={String(fabric.fabricPh)} />
+          )}
+          {fabric.thickness && (
+            <BaggieField label="Thick" value={`${fabric.thickness} mm`} />
+          )}
+          {fabric.endUse && (
+            <BaggieField label="End use" value={fabric.endUse} />
+          )}
+        </div>
+
+        {/* ICP REQUEST block — the part the lab cares about most */}
+        <div
+          style={{
+            marginTop: "auto",
+            border: "2px solid #0f172a",
+            borderRadius: "4pt",
+            padding: "5pt 7pt",
+            background: "#f8fafc",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "7pt",
+              fontWeight: 800,
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              color: "#0f172a",
+              marginBottom: "2pt",
+            }}
+          >
+            🧪 ICP Test Request
           </div>
-          <div>
-            <p style={{ borderBottom: "1px solid #94a3b8", height: "0.3in", margin: 0 }} />
-            <p style={{ marginTop: "0.05in" }}>
-              <strong>Received by</strong> · date / signature
-            </p>
-          </div>
+          {selectedRequest ? (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "baseline",
+                  gap: "8pt",
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: "ui-monospace, SFMono-Regular, Menlo",
+                    fontWeight: 800,
+                    fontSize: "11pt",
+                  }}
+                >
+                  {selectedRequest.poNumber}
+                </div>
+                <div
+                  style={{
+                    fontSize: "8pt",
+                    color: "#475569",
+                    fontWeight: 600,
+                  }}
+                >
+                  {selectedRequest.poDate
+                    ? new Date(selectedRequest.poDate).toLocaleDateString()
+                    : "—"}
+                  {" · "}
+                  {selectedRequest.status}
+                </div>
+              </div>
+              {selectedRequest.lab && (
+                <div style={{ marginTop: "1pt" }}>
+                  <strong>Lab:</strong> {selectedRequest.lab.name}
+                  {selectedRequest.lab.city ? ` · ${selectedRequest.lab.city}` : ""}
+                  {selectedRequest.lab.country
+                    ? `, ${selectedRequest.lab.country}`
+                    : ""}
+                </div>
+              )}
+              {latestApp && (
+                <div style={{ marginTop: "1pt", color: "#475569" }}>
+                  <strong>Applied recipe:</strong> {latestApp.appNumber}
+                  {latestApp.bathConcentrationMgPerL != null && (
+                    <> · {latestApp.bathConcentrationMgPerL.toFixed(2)} mg/L</>
+                  )}
+                  {latestApp.bathVolumeL != null && (
+                    <> · {latestApp.bathVolumeL}L bath</>
+                  )}
+                  {latestApp.driedAt && (
+                    <>
+                      {" · dried "}
+                      {new Date(latestApp.driedAt).toLocaleDateString()}
+                    </>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ color: "#9f1239", fontWeight: 600 }}>
+              No ICP request linked. Run the Sample Prep wizard before
+              shipping or write the PO# on this label by hand.
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div
+          style={{
+            marginTop: "5pt",
+            paddingTop: "3pt",
+            borderTop: "1px solid #e2e8f0",
+            display: "flex",
+            justifyContent: "space-between",
+            fontSize: "6.5pt",
+            color: "#94a3b8",
+          }}
+        >
+          <span>
+            FUZE Biotech · 1895 W 2100 S, SLC UT 84119 · andrew@fuze47.com
+          </span>
+          <span>{printedAt}</span>
         </div>
       </div>
     </>
   );
 }
 
-function Field({ label, value }: { label: string; value: string }) {
+function BaggieField({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <p
+    <div style={{ overflow: "hidden" }}>
+      <div
         style={{
-          fontSize: "8pt",
+          fontSize: "6pt",
           color: "#64748b",
-          fontWeight: 600,
+          fontWeight: 700,
           textTransform: "uppercase",
-          letterSpacing: "0.04em",
-          margin: "0 0 1pt 0",
+          letterSpacing: "0.05em",
+          lineHeight: 1.1,
         }}
       >
         {label}
-      </p>
-      <p style={{ margin: 0, fontWeight: 600 }}>{value}</p>
+      </div>
+      <div
+        style={{
+          fontWeight: 600,
+          fontSize: "8.5pt",
+          lineHeight: 1.2,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+      >
+        {value}
+      </div>
     </div>
   );
 }
