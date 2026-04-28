@@ -102,7 +102,7 @@ export const MODULES: ModuleDef[] = [
       { label: "Orders Dashboard", href: "/admin/orders-dashboard", icon: "📦" },
       { label: "Order Management", href: "/admin/orders", icon: "🛒" },
       { label: "Production Batches", href: "/admin/batches", icon: "🏭" },
-      { label: "Distributor Restocks", href: "/admin/distributor-restock", icon: "💧" },
+      { label: "Distributor Pricing & Restocks", href: "/admin/distributor-restock", icon: "💧" },
       { label: "Worldwide Inventory", href: "/admin/worldwide-inventory", icon: "🌍" },
       { label: "Consumption & Reorder", href: "/admin/consumption", icon: "📈" },
       { label: "Sample Tracking", href: "/shipments", icon: "📮" },

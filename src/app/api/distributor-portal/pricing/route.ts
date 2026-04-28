@@ -61,9 +61,13 @@ export async function GET(req: Request) {
     // Parse coverageCountries ("India, Bangladesh" | JSON array | null)
     const coverage = parseCoverage(distributor?.coverageCountries);
 
-    // Get factories for dropdown — bucket by assignment, then by coverage, then rest
+    // Get factories for dropdown — bucket by assignment, then by coverage, then rest.
+    // NOTE: Factory has no `active` field (that's only on Distributor). An earlier
+    // version filtered `where: { active: true }` which threw a Prisma error,
+    // returned a 500 from this endpoint, and silently emptied Tina's factory
+    // dropdown so every pricing tier she added defaulted to "All factories".
+    // Same bug surfaced previously in scripts/audit-distributor-setup.ts.
     const allFactories = await prisma.factory.findMany({
-      where: { active: true },
       select: { id: true, name: true, country: true, distributorId: true },
       orderBy: { name: "asc" },
     });
