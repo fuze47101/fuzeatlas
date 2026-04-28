@@ -89,16 +89,45 @@ export async function POST(req: Request) {
       );
     }
 
-    const target =
-      targetKind === "factory"
-        ? await prisma.factory.findUnique({
-            where: { id: targetId },
-            select: { id: true, name: true, hubspotId: true },
-          })
-        : await prisma.distributor.findUnique({
-            where: { id: targetId },
-            select: { id: true, name: true, hubspotId: true },
-          });
+    // We try to read hubspotId so we can detect collisions, but if
+    // the schema migration hasn't run yet (Factory.hubspotId column
+    // doesn't exist) we fall back to a select without it. The merge
+    // still works — we just skip the stamp step at the bottom and
+    // tell the admin to run `npx prisma db push` to enable stamping.
+    let target: any = null;
+    let schemaMigrated = true;
+    try {
+      target =
+        targetKind === "factory"
+          ? await prisma.factory.findUnique({
+              where: { id: targetId },
+              select: { id: true, name: true, hubspotId: true },
+            })
+          : await prisma.distributor.findUnique({
+              where: { id: targetId },
+              select: { id: true, name: true, hubspotId: true },
+            });
+    } catch (selErr: any) {
+      if (
+        /does not exist/i.test(selErr?.message || "") &&
+        /hubspotId/i.test(selErr?.message || "")
+      ) {
+        schemaMigrated = false;
+        target =
+          targetKind === "factory"
+            ? await prisma.factory.findUnique({
+                where: { id: targetId },
+                select: { id: true, name: true },
+              })
+            : await prisma.distributor.findUnique({
+                where: { id: targetId },
+                select: { id: true, name: true },
+              });
+        if (target) target.hubspotId = null;
+      } else {
+        throw selErr;
+      }
+    }
     if (!target) {
       return NextResponse.json(
         { ok: false, error: `Target ${targetKind} not found` },
@@ -126,9 +155,12 @@ export async function POST(req: Request) {
     // Run the cleanup as one transaction so partial-failures don't
     // leave the DB in a half-merged state.
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Stamp hubspotId on the target — only if we have one to stamp
-      //    and the target doesn't already have it.
-      if (brand.hubspotId && !target.hubspotId) {
+      // 1. Stamp hubspotId on the target — only if we have one to stamp,
+      //    the target doesn't already have it, and the schema actually
+      //    has the column. If the migration hasn't run we skip this
+      //    step but still proceed with contact reassignment + brand
+      //    delete (the merge is still useful, the stamp is just nice).
+      if (schemaMigrated && brand.hubspotId && !target.hubspotId) {
         if (targetKind === "factory") {
           await tx.factory.update({
             where: { id: targetId },
@@ -178,6 +210,14 @@ export async function POST(req: Request) {
       brandId,
       brandName: brand.name,
       ...result,
+      schemaMigrated,
+      warning: schemaMigrated
+        ? null
+        : "Merge succeeded — contacts moved + duplicate brand deleted. " +
+          "BUT hubspotId could not be stamped on the target because " +
+          "the Factory.hubspotId / Distributor.hubspotId columns don't " +
+          "exist in this database yet. Run `npx prisma db push` from " +
+          "your local machine and re-run the audit to stamp them.",
       target: {
         kind: targetKind,
         id: target.id,

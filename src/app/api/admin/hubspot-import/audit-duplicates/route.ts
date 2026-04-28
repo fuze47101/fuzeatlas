@@ -71,24 +71,32 @@ export async function GET() {
     // Pull every Factory + Distributor (small data sets, ~9 distributors,
     // <300 factories) into memory so we can do case-insensitive matching
     // in JS instead of N+1 Prisma queries.
+    //
+    // We deliberately DO NOT select hubspotId here — that column only
+    // exists if `npx prisma db push` has been run against the prod DB.
+    // The audit needs to work regardless of migration state so Andrew
+    // can see the duplicates BEFORE running the migration. The merge
+    // endpoint catches the "column doesn't exist" error if the user
+    // tries to merge without migrating, and surfaces a friendlier
+    // error.
     const [factories, distributors] = await Promise.all([
       prisma.factory.findMany({
-        select: { id: true, name: true, website: true, hubspotId: true },
+        select: { id: true, name: true, website: true },
       }),
       prisma.distributor.findMany({
-        select: { id: true, name: true, website: true, hubspotId: true },
+        select: { id: true, name: true, website: true },
       }),
     ]);
 
-    const factoryByName = new Map<string, { id: string; name: string; hubspotId: string | null }>();
-    const factoryByDomain = new Map<string, { id: string; name: string; hubspotId: string | null }>();
+    const factoryByName = new Map<string, { id: string; name: string }>();
+    const factoryByDomain = new Map<string, { id: string; name: string }>();
     for (const f of factories) {
       if (f.name) factoryByName.set(f.name.toLowerCase().trim(), f);
       const d = extractDomain(f.website);
       if (d) factoryByDomain.set(d, f);
     }
-    const distByName = new Map<string, { id: string; name: string; hubspotId: string | null }>();
-    const distByDomain = new Map<string, { id: string; name: string; hubspotId: string | null }>();
+    const distByName = new Map<string, { id: string; name: string }>();
+    const distByDomain = new Map<string, { id: string; name: string }>();
     for (const d of distributors) {
       if (d.name) distByName.set(d.name.toLowerCase().trim(), d);
       const dom = extractDomain(d.website);
@@ -108,7 +116,7 @@ export async function GET() {
           id: fByName.id,
           name: fByName.name,
           via: "name",
-          hubspotIdAlreadyStamped: fByName.hubspotId,
+          hubspotIdAlreadyStamped: null,
         });
       }
       if (domainKey) {
@@ -119,7 +127,7 @@ export async function GET() {
             id: fByDomain.id,
             name: fByDomain.name,
             via: "domain",
-            hubspotIdAlreadyStamped: fByDomain.hubspotId,
+            hubspotIdAlreadyStamped: null,
           });
         }
       }
@@ -130,7 +138,7 @@ export async function GET() {
           id: dByName.id,
           name: dByName.name,
           via: "name",
-          hubspotIdAlreadyStamped: dByName.hubspotId,
+          hubspotIdAlreadyStamped: null,
         });
       }
       if (domainKey) {
@@ -141,7 +149,7 @@ export async function GET() {
             id: dByDomain.id,
             name: dByDomain.name,
             via: "domain",
-            hubspotIdAlreadyStamped: dByDomain.hubspotId,
+            hubspotIdAlreadyStamped: null,
           });
         }
       }
