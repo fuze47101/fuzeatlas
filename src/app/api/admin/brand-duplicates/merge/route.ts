@@ -125,21 +125,30 @@ export async function POST(req: Request) {
     }
 
     // Some FKs have unique-constraints that could collide if both
-    // brands are in the same junction. We handle BrandFactory
-    // explicitly. Other tables we just updateMany.
+    // brands are in the same junction. We handle BrandFactory and
+    // OrderBrandAllocation explicitly. Other tables we just
+    // updateMany.
     const result = await prisma.$transaction(
       async (tx) => {
         const counts: Record<string, number> = {};
+        let lastModel: string = "<init>";
 
-        // Helper to safely re-point any brandId FK. For tables with
-        // a uniqueness constraint involving brandId we'll override.
+        // Helper: re-point any brandId FK. Wrapped to surface which
+        // model was being processed when something throws.
         async function repoint(model: keyof typeof tx, label: string) {
-          // @ts-expect-error — dynamic model access
-          const r = await tx[model].updateMany({
-            where: { brandId: mergeBrandId },
-            data: { brandId: keepBrandId },
-          });
-          counts[label] = r.count;
+          lastModel = label;
+          try {
+            // @ts-expect-error — dynamic model access
+            const r = await tx[model].updateMany({
+              where: { brandId: mergeBrandId },
+              data: { brandId: keepBrandId },
+            });
+            counts[label] = r.count;
+          } catch (e: any) {
+            throw new Error(
+              `Failed to repoint ${label} (${String(model)}): ${e?.message || e}`,
+            );
+          }
         }
 
         await repoint("contact", "contacts");
@@ -159,6 +168,19 @@ export async function POST(req: Request) {
         await repoint("bDSequence", "bdSequences");
         await repoint("meeting", "meetings");
         await repoint("user", "users");
+        // FabricReportShare has brandId without a Prisma `brand`
+        // relation, so no FK enforced — but we still re-point so
+        // the dangling reference doesn't survive the merge.
+        try {
+          // @ts-expect-error — model may not exist depending on schema
+          const r = await tx.fabricReportShare.updateMany({
+            where: { brandId: mergeBrandId },
+            data: { brandId: keepBrandId },
+          });
+          counts["fabricReportShares"] = r.count;
+        } catch {
+          // Skip silently if the model isn't in the client
+        }
         // CrmTask uses relation name "BrandCrmTasks" but field is brandId
         try {
           // @ts-expect-error — model may not exist depending on schema variant
@@ -169,6 +191,49 @@ export async function POST(req: Request) {
           counts["crmTasks"] = r.count;
         } catch {
           // Schema may not have CrmTask — skip silently
+        }
+
+        // OrderBrandAllocation — junction table with @@unique([orderId, brandId]).
+        // If both keep and merge brands are allocated to the same order,
+        // the move would collide. Walk per-row, delete the merge-side
+        // duplicate when a keep-side allocation already exists, else
+        // re-point. brandId here is REQUIRED so we can't null it.
+        lastModel = "orderBrandAllocations";
+        try {
+          const mergeAllocs = await tx.orderBrandAllocation.findMany({
+            where: { brandId: mergeBrandId },
+            select: { id: true, orderId: true },
+          });
+          let allocConflicts = 0;
+          let allocMoved = 0;
+          for (const alloc of mergeAllocs) {
+            const existing = await tx.orderBrandAllocation.findFirst({
+              where: { brandId: keepBrandId, orderId: alloc.orderId },
+              select: { id: true },
+            });
+            if (existing) {
+              await tx.orderBrandAllocation.delete({ where: { id: alloc.id } });
+              allocConflicts++;
+            } else {
+              await tx.orderBrandAllocation.update({
+                where: { id: alloc.id },
+                data: { brandId: keepBrandId },
+              });
+              allocMoved++;
+            }
+          }
+          counts["orderBrandAllocations"] = allocMoved;
+          if (allocConflicts > 0) {
+            counts["orderBrandAllocationConflicts"] = allocConflicts;
+          }
+        } catch (e: any) {
+          // If the model doesn't exist in the schema we silently skip.
+          // If something else went wrong, surface it with context.
+          if (!/Cannot read|Unknown arg|does not exist/i.test(e?.message || "")) {
+            throw new Error(
+              `Failed to repoint orderBrandAllocations: ${e?.message || e}`,
+            );
+          }
         }
 
         // BrandFactory has @@unique([brandId, factoryId]) — if both
@@ -248,7 +313,7 @@ export async function POST(req: Request) {
         // back.
         await tx.brand.delete({ where: { id: mergeBrandId } });
 
-        return { counts, conflicts };
+        return { counts, conflicts, lastModel };
       },
       { timeout: 60_000 }, // 60s — brand with hundreds of contacts is fine
     );

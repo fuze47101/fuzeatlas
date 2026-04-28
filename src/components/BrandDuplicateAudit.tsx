@@ -328,16 +328,27 @@ export default function BrandDuplicateAudit() {
                           />
                         </div>
                         {bulkProgress.failures.length > 0 && (
-                          <details className="mt-1">
+                          <details className="mt-1" open>
                             <summary className="cursor-pointer font-semibold">
-                              {bulkProgress.failures.length} failures
+                              {bulkProgress.failures.length} failures (click to collapse)
                             </summary>
-                            <ul className="mt-1 max-h-32 overflow-auto bg-white rounded p-1.5 border border-purple-200">
-                              {bulkProgress.failures.map((f, i) => (
-                                <li key={i} className="truncate">
-                                  <strong>{f.name}:</strong> {f.error}
+                            <ul className="mt-1 max-h-48 overflow-auto bg-white rounded p-1.5 border border-purple-200 space-y-1">
+                              {bulkProgress.failures.slice(0, 12).map((f, i) => (
+                                <li key={i} className="break-words">
+                                  <strong>{f.name}:</strong>{" "}
+                                  <span className="font-mono text-[10px] text-rose-700">
+                                    {f.error}
+                                  </span>
                                 </li>
                               ))}
+                              {bulkProgress.failures.length > 12 && (
+                                <li className="text-slate-500 italic">
+                                  …+{bulkProgress.failures.length - 12} more
+                                  failures (same error pattern usually
+                                  means a missing model or schema drift —
+                                  send the first error to Andrew/Claude)
+                                </li>
+                              )}
                             </ul>
                           </details>
                         )}
