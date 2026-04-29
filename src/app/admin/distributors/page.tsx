@@ -79,6 +79,9 @@ export default function DistributorManagementPage() {
     localCurrency: "",
     specialty: "",
     notes: "",
+    createTestUser: true, // default ON — most useful for QA flow
+    testUserEmail: "",
+    testUserName: "",
   });
   const [createError, setCreateError] = useState<string | null>(null);
   const [createSuccess, setCreateSuccess] = useState<string | null>(null);
@@ -256,7 +259,39 @@ export default function DistributorManagementPage() {
                     setCreateError(j.error || `HTTP ${res.status}`);
                     return;
                   }
-                  setCreateSuccess(`Created "${j.distributor.name}"`);
+                  // Surface the test user info so admin knows what
+                  // to "View As" — and offer a one-click impersonate.
+                  const tu = j.testUser;
+                  if (tu) {
+                    if (
+                      confirm(
+                        `Created "${j.distributor.name}" + test user "${tu.name}" (${tu.email}).\n\n` +
+                          `Click OK to "View As" this user now and test the distributor portal flow.\n` +
+                          `Cancel to stay on this page — you can View As later from /admin/users.`,
+                      )
+                    ) {
+                      // Start impersonation
+                      const ir = await fetch("/api/admin/impersonate", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ action: "start", userId: tu.id }),
+                      });
+                      const ij = await ir.json();
+                      if (ir.ok && ij.ok) {
+                        window.location.href = "/distributor-portal";
+                        return;
+                      } else {
+                        alert(
+                          `Impersonate failed: ${ij.error || ir.status}.\nUser was created though — find them at /admin/users.`,
+                        );
+                      }
+                    }
+                    setCreateSuccess(
+                      `Created "${j.distributor.name}" + test user "${tu.name}" (${tu.email}). Use the user menu → View As to impersonate them.`,
+                    );
+                  } else {
+                    setCreateSuccess(`Created "${j.distributor.name}"`);
+                  }
                   setCreateForm({
                     name: "",
                     country: "",
@@ -266,6 +301,9 @@ export default function DistributorManagementPage() {
                     localCurrency: "",
                     specialty: "",
                     notes: "",
+                    createTestUser: true,
+                    testUserEmail: "",
+                    testUserName: "",
                   });
                   setShowCreate(false);
                   // Force reload of the list
@@ -384,6 +422,63 @@ export default function DistributorManagementPage() {
                   placeholder="Test distributor for QA, etc."
                 />
               </div>
+
+              {/* Optional test user — required for View As */}
+              <div className="border-t border-slate-200 pt-3 mt-2">
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={createForm.createTestUser}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, createTestUser: e.target.checked })
+                    }
+                    className="mt-0.5 w-4 h-4 cursor-pointer"
+                  />
+                  <span>
+                    <span className="text-sm font-bold text-slate-900 block">
+                      Also create a test user for "View As"
+                    </span>
+                    <span className="text-[11px] text-slate-500 leading-snug">
+                      Without a user account, "View As" has nothing to impersonate.
+                      We'll spin up a DISTRIBUTOR_USER linked to this distributor so
+                      you (or Tina) can immediately View As it from the user menu.
+                    </span>
+                  </span>
+                </label>
+                {createForm.createTestUser && (
+                  <div className="mt-2 grid grid-cols-2 gap-2 pl-6">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-0.5">
+                        Test user email <span className="text-slate-400 font-normal">(auto if blank)</span>
+                      </label>
+                      <input
+                        type="email"
+                        value={createForm.testUserEmail}
+                        onChange={(e) =>
+                          setCreateForm({ ...createForm, testUserEmail: e.target.value })
+                        }
+                        className="w-full px-2 py-1.5 border border-slate-300 rounded text-xs"
+                        placeholder="qa+tinatest@fuze47.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-0.5">
+                        Test user display name
+                      </label>
+                      <input
+                        type="text"
+                        value={createForm.testUserName}
+                        onChange={(e) =>
+                          setCreateForm({ ...createForm, testUserName: e.target.value })
+                        }
+                        className="w-full px-2 py-1.5 border border-slate-300 rounded text-xs"
+                        placeholder='auto: "Tina Test Distributor (test user)"'
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-2 pt-2">
                 <button
                   type="submit"
@@ -400,11 +495,6 @@ export default function DistributorManagementPage() {
                   Cancel
                 </button>
               </div>
-              <p className="text-[11px] text-slate-500">
-                After creation, head to /admin/users to assign this distributor to a
-                user account (sets DISTRIBUTOR_USER role + distributorId), or use
-                "View As" to test the distributor portal flow.
-              </p>
             </form>
           </div>
         </div>
@@ -537,18 +627,67 @@ export default function DistributorManagementPage() {
       <div className="space-y-3">
         {filtered.map((d) => (
           <div key={d.id} className="flex items-start gap-2">
-            <input
-              type="checkbox"
-              checked={selectedIds.has(d.id)}
-              onChange={(e) => {
-                const next = new Set(selectedIds);
-                if (e.target.checked) next.add(d.id);
-                else next.delete(d.id);
-                setSelectedIds(next);
-              }}
-              className="mt-5 w-5 h-5 cursor-pointer accent-rose-600"
-              title="Select for bulk action"
-            />
+            <div className="flex flex-col items-center gap-2 mt-5">
+              <input
+                type="checkbox"
+                checked={selectedIds.has(d.id)}
+                onChange={(e) => {
+                  const next = new Set(selectedIds);
+                  if (e.target.checked) next.add(d.id);
+                  else next.delete(d.id);
+                  setSelectedIds(next);
+                }}
+                className="w-5 h-5 cursor-pointer accent-rose-600"
+                title="Select for bulk action"
+              />
+              <button
+                onClick={async () => {
+                  // Find or create a test user for this distributor,
+                  // then impersonate them. Single click for the
+                  // common QA flow.
+                  if (
+                    !confirm(
+                      `View As "${d.name}"?\n\n` +
+                        `If this distributor has no test user yet, we'll create one\n` +
+                        `automatically (DISTRIBUTOR_USER role, qa+ email).\n` +
+                        `Then start impersonation and jump to the distributor portal.\n\n` +
+                        `You can stop impersonating anytime via the user menu.`,
+                    )
+                  )
+                    return;
+                  try {
+                    // Step 1 — find or create test user
+                    const tuRes = await fetch(
+                      `/api/admin/distributors/${d.id}/test-user`,
+                      { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" },
+                    );
+                    const tuJ = await tuRes.json();
+                    if (!tuRes.ok || !tuJ.ok) {
+                      alert(`Test user step failed: ${tuJ.error || tuRes.status}`);
+                      return;
+                    }
+                    // Step 2 — impersonate that user
+                    const ir = await fetch("/api/admin/impersonate", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ action: "start", userId: tuJ.user.id }),
+                    });
+                    const ij = await ir.json();
+                    if (!ir.ok || !ij.ok) {
+                      alert(`Impersonate failed: ${ij.error || ir.status}`);
+                      return;
+                    }
+                    window.location.href = "/distributor-portal";
+                  } catch (e: any) {
+                    alert(`Failed: ${e?.message || "network error"}`);
+                  }
+                }}
+                className="w-12 px-1 py-1 bg-cyan-50 hover:bg-cyan-100 border border-cyan-300 text-cyan-800 rounded text-[9px] font-bold leading-tight"
+                title={`View As — impersonate this distributor's portal flow. Creates a test user if none exists.`}
+              >
+                👁 View<br />As
+              </button>
+            </div>
             <div className="flex-1 min-w-0">
               <DistributorCard
                 d={d}

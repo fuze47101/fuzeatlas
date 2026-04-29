@@ -215,7 +215,60 @@ export async function POST(req: Request) {
     if (coverageCountries) data.coverageCountries = coverageCountries;
 
     const distributor = await prisma.distributor.create({ data });
-    return NextResponse.json({ ok: true, distributor });
+
+    // Optional: create a starter DISTRIBUTOR_USER linked to this
+    // distributor so the admin can immediately "View As" them and
+    // test the distributor portal flow without manually wiring up
+    // a user account afterwards. Set body.createTestUser=true and
+    // (optionally) body.testUserEmail. Falls back to a generated
+    // email if not provided.
+    let testUser = null;
+    if (body.createTestUser) {
+      const safeName = name
+        .replace(/[^a-z0-9]/gi, "")
+        .toLowerCase()
+        .slice(0, 20);
+      const generatedEmail =
+        body.testUserEmail?.trim() ||
+        `qa+${safeName}-${Date.now().toString().slice(-6)}@fuze47.com`;
+      const userName = body.testUserName?.trim() || `${name} (test user)`;
+      try {
+        // Check if email already exists — re-link instead of error
+        const existingUser = await prisma.user.findUnique({
+          where: { email: generatedEmail },
+        });
+        if (existingUser) {
+          testUser = await prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              role: "DISTRIBUTOR_USER",
+              distributorId: distributor.id,
+              status: "ACTIVE",
+            },
+          });
+        } else {
+          testUser = await prisma.user.create({
+            data: {
+              email: generatedEmail,
+              name: userName,
+              role: "DISTRIBUTOR_USER",
+              distributorId: distributor.id,
+              status: "ACTIVE",
+              // No password — test user is for impersonation only.
+              // If you ever want them to log in directly, set a
+              // password via /admin/users.
+            },
+          });
+        }
+      } catch (uErr: any) {
+        console.warn(
+          "Distributor created but test user creation failed:",
+          uErr?.message,
+        );
+      }
+    }
+
+    return NextResponse.json({ ok: true, distributor, testUser });
   } catch (e: any) {
     console.error("Admin distributors POST error:", e);
     return NextResponse.json(
