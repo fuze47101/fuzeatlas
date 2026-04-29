@@ -131,3 +131,96 @@ export async function GET() {
     return NextResponse.json({ ok: false, error: "Failed to load distributors" }, { status: 500 });
   }
 }
+
+/**
+ * POST /api/admin/distributors
+ * Create a new distributor record. Admin/Employee only.
+ *
+ * Body: {
+ *   name (required), country, region, city, address,
+ *   email, phone, website, status, active, specialty,
+ *   coverageCountries (string or array), localCurrency, notes
+ * }
+ *
+ * Created distributors land with status="ACTIVE" + active=true unless
+ * overridden. They show up immediately in the network list and become
+ * available as the assignment target on /admin/users when wiring up
+ * a DISTRIBUTOR_USER (or as a "View As" target for admins like Tina
+ * who use the impersonation feature for QA).
+ */
+export async function POST(req: Request) {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+    if (!["ADMIN", "EMPLOYEE"].includes(user.role)) {
+      return NextResponse.json({ ok: false, error: "Admin only" }, { status: 403 });
+    }
+
+    const body = await req.json().catch(() => ({}));
+    const name = (body.name || "").trim();
+    if (!name) {
+      return NextResponse.json(
+        { ok: false, error: "Distributor name is required" },
+        { status: 400 },
+      );
+    }
+
+    // Refuse on duplicate name (case-insensitive) so Tina doesn't
+    // accidentally create a second "Texwell" while testing.
+    const existing = await prisma.distributor.findFirst({
+      where: { name: { equals: name, mode: "insensitive" } },
+      select: { id: true, name: true },
+    });
+    if (existing) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: `A distributor named "${existing.name}" already exists.`,
+          existingId: existing.id,
+        },
+        { status: 409 },
+      );
+    }
+
+    // Coerce coverage to a JSON-encoded array (the schema expects
+    // a string but the rest of the codebase parses JSON).
+    let coverageCountries: string | null = null;
+    if (Array.isArray(body.coverageCountries)) {
+      coverageCountries = JSON.stringify(
+        body.coverageCountries.map((s: any) => String(s).trim()).filter(Boolean),
+      );
+    } else if (typeof body.coverageCountries === "string" && body.coverageCountries.trim()) {
+      const arr = body.coverageCountries
+        .split(",")
+        .map((s: string) => s.trim())
+        .filter(Boolean);
+      coverageCountries = JSON.stringify(arr);
+    }
+
+    const data: any = {
+      name,
+      status: body.status || "ACTIVE",
+      active: body.active === undefined ? true : !!body.active,
+    };
+    if (body.country) data.country = String(body.country).trim();
+    if (body.region) data.region = String(body.region).trim();
+    if (body.city) data.city = String(body.city).trim();
+    if (body.address) data.address = String(body.address).trim();
+    if (body.email) data.email = String(body.email).trim();
+    if (body.phone) data.phone = String(body.phone).trim();
+    if (body.website) data.website = String(body.website).trim();
+    if (body.specialty) data.specialty = String(body.specialty).trim();
+    if (body.localCurrency) data.localCurrency = String(body.localCurrency).trim();
+    if (body.notes) data.notes = String(body.notes).trim();
+    if (coverageCountries) data.coverageCountries = coverageCountries;
+
+    const distributor = await prisma.distributor.create({ data });
+    return NextResponse.json({ ok: true, distributor });
+  } catch (e: any) {
+    console.error("Admin distributors POST error:", e);
+    return NextResponse.json(
+      { ok: false, error: e.message || "Failed to create distributor" },
+      { status: 500 },
+    );
+  }
+}

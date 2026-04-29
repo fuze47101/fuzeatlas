@@ -66,6 +66,22 @@ const STATUS_BADGE: Record<string, string> = {
 
 export default function DistributorManagementPage() {
   const [distributors, setDistributors] = useState<Distributor[]>([]);
+  // Inline create modal state — Tina's request to add distributors
+  // without leaving the network page.
+  const [showCreate, setShowCreate] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    name: "",
+    country: "",
+    region: "",
+    city: "",
+    coverageCountries: "",
+    localCurrency: "",
+    specialty: "",
+    notes: "",
+  });
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [createSuccess, setCreateSuccess] = useState<string | null>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -130,8 +146,216 @@ export default function DistributorManagementPage() {
           >
             🌍 Worldwide Inventory
           </Link>
+          <button
+            onClick={() => {
+              setShowCreate(true);
+              setCreateError(null);
+              setCreateSuccess(null);
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition"
+          >
+            + New Distributor
+          </button>
         </div>
       </div>
+
+      {/* Create distributor modal */}
+      {showCreate && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-start justify-center p-6 overflow-y-auto">
+          <div className="bg-white rounded-xl max-w-xl w-full p-6 shadow-2xl mt-12">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-black text-slate-900">New distributor</h2>
+              <button
+                onClick={() => setShowCreate(false)}
+                className="text-slate-400 hover:text-slate-700 text-2xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+            {createError && (
+              <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+                {createError}
+              </div>
+            )}
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!createForm.name.trim()) {
+                  setCreateError("Name is required");
+                  return;
+                }
+                setCreating(true);
+                setCreateError(null);
+                try {
+                  const res = await fetch("/api/admin/distributors", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(createForm),
+                  });
+                  const j = await res.json();
+                  if (!res.ok || !j.ok) {
+                    setCreateError(j.error || `HTTP ${res.status}`);
+                    return;
+                  }
+                  setCreateSuccess(`Created "${j.distributor.name}"`);
+                  setCreateForm({
+                    name: "",
+                    country: "",
+                    region: "",
+                    city: "",
+                    coverageCountries: "",
+                    localCurrency: "",
+                    specialty: "",
+                    notes: "",
+                  });
+                  setShowCreate(false);
+                  // Force reload of the list
+                  window.location.reload();
+                } catch (e: any) {
+                  setCreateError(e?.message || "Network error");
+                } finally {
+                  setCreating(false);
+                }
+              }}
+              className="space-y-3"
+            >
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={createForm.name}
+                  onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-sm"
+                  placeholder='e.g. "Tina Test Distributor"'
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Country</label>
+                  <input
+                    type="text"
+                    value={createForm.country}
+                    onChange={(e) => setCreateForm({ ...createForm, country: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded text-sm"
+                    placeholder="USA"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Region</label>
+                  <select
+                    value={createForm.region}
+                    onChange={(e) => setCreateForm({ ...createForm, region: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white"
+                  >
+                    <option value="">— pick —</option>
+                    <option value="North America">North America</option>
+                    <option value="Latin America">Latin America</option>
+                    <option value="Europe">Europe</option>
+                    <option value="Middle East">Middle East</option>
+                    <option value="South Asia">South Asia</option>
+                    <option value="East Asia">East Asia</option>
+                    <option value="Southeast Asia">Southeast Asia</option>
+                    <option value="Africa">Africa</option>
+                    <option value="Oceania">Oceania</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">City</label>
+                  <input
+                    type="text"
+                    value={createForm.city}
+                    onChange={(e) => setCreateForm({ ...createForm, city: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded text-sm"
+                    placeholder="Salt Lake City"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Local currency</label>
+                  <input
+                    type="text"
+                    value={createForm.localCurrency}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, localCurrency: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-slate-300 rounded text-sm"
+                    placeholder="USD"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Coverage countries <span className="text-slate-400 font-normal">(comma-separated)</span>
+                </label>
+                <input
+                  type="text"
+                  value={createForm.coverageCountries}
+                  onChange={(e) =>
+                    setCreateForm({ ...createForm, coverageCountries: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-sm"
+                  placeholder="USA, Canada, Mexico"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Specialty <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={createForm.specialty}
+                  onChange={(e) => setCreateForm({ ...createForm, specialty: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-sm"
+                  placeholder="Activewear / Home textiles / etc."
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Notes <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={createForm.notes}
+                  onChange={(e) => setCreateForm({ ...createForm, notes: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-sm"
+                  placeholder="Test distributor for QA, etc."
+                />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="submit"
+                  disabled={creating || !createForm.name.trim()}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-sm disabled:opacity-50"
+                >
+                  {creating ? "Creating…" : "Create distributor"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCreate(false)}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-medium text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-500">
+                After creation, head to /admin/users to assign this distributor to a
+                user account (sets DISTRIBUTOR_USER role + distributorId), or use
+                "View As" to test the distributor portal flow.
+              </p>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {createSuccess && (
+        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded text-sm text-emerald-800">
+          ✓ {createSuccess}
+        </div>
+      )}
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
