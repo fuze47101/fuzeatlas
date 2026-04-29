@@ -82,6 +82,65 @@ export default function DistributorManagementPage() {
   });
   const [createError, setCreateError] = useState<string | null>(null);
   const [createSuccess, setCreateSuccess] = useState<string | null>(null);
+
+  // Multi-select + bulk delete state — for clearing out
+  // legacy/invalid distributors the HubSpot import or earlier
+  // Knack data brought in.
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkRunning, setBulkRunning] = useState(false);
+  const [bulkMode, setBulkMode] = useState<"deactivate" | "delete" | null>(null);
+  const [bulkResult, setBulkResult] = useState<{
+    succeeded: number;
+    errors: Array<{ name: string; error: string }>;
+  } | null>(null);
+
+  async function bulkAction(mode: "deactivate" | "delete") {
+    if (selectedIds.size === 0) return;
+    const ids = Array.from(selectedIds);
+    const names = distributors
+      .filter((d) => ids.includes(d.id))
+      .map((d) => d.name);
+    const confirmMsg =
+      mode === "deactivate"
+        ? `Deactivate ${ids.length} distributor(s)?\n\n${names.slice(0, 8).join(", ")}${names.length > 8 ? `, +${names.length - 8} more` : ""}\n\nThey'll be flipped to status=INACTIVE but remain in the database. Reversible — just edit them back to ACTIVE.`
+        : `🗑 PERMANENTLY DELETE ${ids.length} distributor(s)?\n\n${names.slice(0, 8).join(", ")}${names.length > 8 ? `, +${names.length - 8} more` : ""}\n\nDistributors with attached orders / invoices / users will be REFUSED.\nDistributors with only contacts / factories / pricing will be detached and deleted.\n\nCannot be undone.`;
+    if (!confirm(confirmMsg)) return;
+    setBulkRunning(true);
+    setBulkMode(mode);
+    setBulkResult(null);
+    let succeeded = 0;
+    const errors: Array<{ name: string; error: string }> = [];
+    for (const id of ids) {
+      const dist = distributors.find((d) => d.id === id);
+      const name = dist?.name || id.slice(0, 8);
+      try {
+        const url =
+          mode === "deactivate"
+            ? `/api/admin/distributors/${id}`
+            : `/api/admin/distributors/${id}?hard=true&force=true`;
+        const res = await fetch(url, { method: "DELETE" });
+        const j = await res.json();
+        if (!res.ok || !j.ok) {
+          errors.push({ name, error: j.error || `HTTP ${res.status}` });
+        } else {
+          succeeded++;
+        }
+      } catch (e: any) {
+        errors.push({ name, error: e?.message || "network error" });
+      }
+    }
+    setBulkResult({ succeeded, errors });
+    setSelectedIds(new Set());
+    setBulkRunning(false);
+    setBulkMode(null);
+    // Refresh
+    const r = await fetch("/api/admin/distributors");
+    const j = await r.json();
+    if (j.ok) {
+      setDistributors(j.distributors || []);
+      setSummary(j.summary || null);
+    }
+  }
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -396,25 +455,114 @@ export default function DistributorManagementPage() {
         </select>
       </div>
 
-      <p className="text-xs text-slate-400 mb-3">
-        Showing {filtered.length} of {distributors.length} distributors
-      </p>
+      <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+        <p className="text-xs text-slate-400">
+          Showing {filtered.length} of {distributors.length} distributors
+          {selectedIds.size > 0 && (
+            <span className="ml-2 font-semibold text-slate-700">
+              · {selectedIds.size} selected
+            </span>
+          )}
+        </p>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              if (selectedIds.size === filtered.length && filtered.length > 0) {
+                setSelectedIds(new Set());
+              } else {
+                setSelectedIds(new Set(filtered.map((d) => d.id)));
+              }
+            }}
+            className="text-xs px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded font-semibold text-slate-700"
+          >
+            {selectedIds.size === filtered.length && filtered.length > 0
+              ? "Clear selection"
+              : "Select all visible"}
+          </button>
+          {selectedIds.size > 0 && (
+            <>
+              <button
+                onClick={() => bulkAction("deactivate")}
+                disabled={bulkRunning}
+                className="text-xs px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded font-bold border border-amber-300 disabled:opacity-50"
+              >
+                {bulkRunning && bulkMode === "deactivate"
+                  ? "⏳…"
+                  : `Deactivate ${selectedIds.size}`}
+              </button>
+              <button
+                onClick={() => bulkAction("delete")}
+                disabled={bulkRunning}
+                className="text-xs px-3 py-1 bg-red-100 hover:bg-red-200 text-red-900 rounded font-bold border border-red-300 disabled:opacity-50"
+              >
+                {bulkRunning && bulkMode === "delete"
+                  ? "⏳…"
+                  : `🗑 Delete ${selectedIds.size}`}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {bulkResult && (
+        <div
+          className={`mb-3 p-3 rounded text-xs ${
+            bulkResult.errors.length > 0
+              ? "bg-amber-50 border border-amber-200 text-amber-900"
+              : "bg-emerald-50 border border-emerald-200 text-emerald-900"
+          }`}
+        >
+          <p className="font-bold">
+            ✓ {bulkResult.succeeded} succeeded
+            {bulkResult.errors.length > 0 && ` · ✗ ${bulkResult.errors.length} blocked`}
+          </p>
+          {bulkResult.errors.length > 0 && (
+            <details className="mt-1" open>
+              <summary className="cursor-pointer">
+                {bulkResult.errors.length} couldn't delete
+              </summary>
+              <ul className="mt-1 max-h-40 overflow-auto bg-white rounded p-2 space-y-1">
+                {bulkResult.errors.map((e: any, i: number) => (
+                  <li key={i}>
+                    <strong>{e.name}:</strong> {e.error}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </div>
+      )}
 
       {/* Distributor List */}
       <div className="space-y-3">
         {filtered.map((d) => (
-          <DistributorCard
-            key={d.id}
-            d={d}
-            allDistributors={distributors}
-            expanded={expanded === d.id}
-            onToggle={() => setExpanded(expanded === d.id ? null : d.id)}
-            onUpdate={() => {
-              fetch("/api/admin/distributors")
-                .then((r) => r.json())
-                .then((j) => { if (j.ok) { setDistributors(j.distributors || []); setSummary(j.summary || null); } });
-            }}
-          />
+          <div key={d.id} className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              checked={selectedIds.has(d.id)}
+              onChange={(e) => {
+                const next = new Set(selectedIds);
+                if (e.target.checked) next.add(d.id);
+                else next.delete(d.id);
+                setSelectedIds(next);
+              }}
+              className="mt-5 w-5 h-5 cursor-pointer accent-rose-600"
+              title="Select for bulk action"
+            />
+            <div className="flex-1 min-w-0">
+              <DistributorCard
+                d={d}
+                allDistributors={distributors}
+                expanded={expanded === d.id}
+                onToggle={() => setExpanded(expanded === d.id ? null : d.id)}
+                onUpdate={() => {
+                  fetch("/api/admin/distributors")
+                    .then((r) => r.json())
+                    .then((j) => { if (j.ok) { setDistributors(j.distributors || []); setSummary(j.summary || null); } });
+                }}
+              />
+            </div>
+          </div>
         ))}
         {filtered.length === 0 && (
           <div className="text-center py-12 text-slate-400">
