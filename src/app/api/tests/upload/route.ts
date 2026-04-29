@@ -545,7 +545,14 @@ export async function POST(req: Request) {
       parseError = `PDF text extraction failed: ${err.message}`;
     }
 
-    // Store document record
+    // Store document record. Stash uploader provenance in `raw` so
+    // distributor-uploaded files (where labId is null because the
+    // session user is DISTRIBUTOR_USER, not LAB) can still surface
+    // in the distributor portal's "Your uploads" view via a
+    // raw.uploaderDistributorId filter. Without this, Tina's
+    // distributor-portal uploads were invisible to her own portal.
+    const uploaderUserId = sessionUser?.id || null;
+    const uploaderDistributorId = (sessionUser as any)?.distributorId || null;
     const document = await prisma.document.create({
       data: {
         kind: "REPORT",
@@ -556,6 +563,12 @@ export async function POST(req: Request) {
         bucket: s3Bucket,
         key: s3Key,
         labId: uploaderLabId,
+        raw: {
+          uploaderUserId,
+          uploaderDistributorId,
+          uploaderRole: sessionUser?.role || null,
+          uploadedAt: new Date().toISOString(),
+        },
       },
     });
 

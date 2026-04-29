@@ -184,25 +184,40 @@ export async function GET(req: Request) {
     // TestRun yet, so the user gets immediate "yes, your upload saved"
     // feedback. Marked status="pending_review" in the response. Same
     // distributor scope (filter by submission.factoryId).
+    // Build the OR scope. We include pending docs that match the
+    // distributor in any of three ways:
+    //   1. submission.factoryId is one of the distributor's factories
+    //   2. uploaded BY the distributor's user (raw.uploaderDistributorId
+    //      matches this distributor) — covers the case where Tina
+    //      uploads in distributor mode and the file has no submission
+    //      yet
+    //   3. uploaded by the user's lab (legacy lab-mode fallback)
+    const pendingScopeOr: any[] = [];
+    if (factoryIds.length > 0) {
+      pendingScopeOr.push({ submission: { factoryId: { in: factoryIds } } });
+    }
+    if (distributorId) {
+      // JSON path query — matches Document.raw->>'uploaderDistributorId'
+      pendingScopeOr.push({
+        raw: { path: ["uploaderDistributorId"], equals: distributorId },
+        submission: null,
+      });
+    }
+    if ((user as any).labId) {
+      pendingScopeOr.push({
+        labId: (user as any).labId,
+        submission: null,
+      });
+    }
     const pendingDocs = await prisma.document.findMany({
       where: {
         kind: "REPORT",
         testRunId: null,
         ...(isAdmin
           ? {}
-          : factoryIds.length > 0
-            ? {
-                OR: [
-                  { submission: { factoryId: { in: factoryIds } } },
-                  // No submission yet → ambiguous orphan. We still
-                  // want Tina to see her own upload, so for distributors
-                  // we ALSO include orphan docs uploaded by their lab.
-                  ...(user.labId ? [{ labId: user.labId, submission: null }] : []),
-                ],
-              }
-            : user.labId
-              ? { labId: user.labId, submission: null }
-              : { id: "_no_match_" }),
+          : pendingScopeOr.length > 0
+            ? { OR: pendingScopeOr }
+            : { id: "_no_match_" }),
       },
       orderBy: { createdAt: "desc" },
       take: 50,

@@ -208,6 +208,9 @@ export default function LabUploadsPage() {
                 <th className="text-left px-4 py-3 text-xs font-bold text-slate-500 uppercase">
                   Status
                 </th>
+                <th className="text-right px-4 py-3 text-xs font-bold text-slate-500 uppercase">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -296,6 +299,44 @@ export default function LabUploadsPage() {
                           Pending Review
                         </span>
                       )}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={async () => {
+                          if (
+                            !confirm(
+                              `Delete "${doc.filename}"?\n\n` +
+                                (linked
+                                  ? "This is linked to a test run — server will refuse and explain why.\n\n"
+                                  : "Cannot be undone. ") +
+                                "Use this for duplicate uploads of the same report.",
+                            )
+                          )
+                            return;
+                          try {
+                            const res = await fetch(`/api/documents/${doc.id}`, {
+                              method: "DELETE",
+                            });
+                            const j = await res.json();
+                            if (!res.ok || !j.ok) {
+                              alert(`Delete failed: ${j.error || res.status}`);
+                              return;
+                            }
+                            // Optimistic remove
+                            setDocuments((prev) => prev.filter((d) => d.id !== doc.id));
+                          } catch (e: any) {
+                            alert(`Delete failed: ${e?.message || "network error"}`);
+                          }
+                        }}
+                        className="text-xs px-2 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded font-bold border border-red-200"
+                        title={
+                          linked
+                            ? "Linked to test run — admin must delete the test first"
+                            : "Delete this duplicate upload"
+                        }
+                      >
+                        🗑
+                      </button>
                     </td>
                   </tr>
                 );
