@@ -674,6 +674,47 @@ export async function POST(req: Request) {
       existingTestIds = existingDocs.map((d) => d.testRunId).filter(Boolean) as string[];
     }
 
+    // Fire-and-forget admin notification for low-confidence uploads.
+    // Triggers if confidence is < 50, AI vision was used, or text
+    // extraction errored. Doesn't block the response — wrapped in
+    // void so the user gets their answer immediately.
+    const notifyConfidence =
+      parsed?.confidence ?? itsReport?.tests?.[0]?.confidence ?? 0;
+    const shouldNotify =
+      !!parseError ||
+      !!aiVision ||
+      (notifyConfidence < 50 && (parsed || itsReport));
+    if (shouldNotify) {
+      const reason = parseError
+        ? "PDF text extraction failed"
+        : aiVision
+          ? "AI vision used (image-based PDF)"
+          : `Parser confidence ${notifyConfidence}% — manual review needed`;
+      const appUrl =
+        process.env.NEXT_PUBLIC_APP_URL ||
+        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://fuzeatlas.com");
+      const uploaderEmail = sessionUser?.email || null;
+      const uploaderLabName = uploaderLabId
+        ? await prisma.lab
+            .findUnique({ where: { id: uploaderLabId }, select: { name: true } })
+            .then((l) => l?.name || null)
+            .catch(() => null)
+        : null;
+      void notifyAdminOfPendingUpload({
+        documentId: document.id,
+        filename: file.name,
+        uploaderEmail,
+        uploaderLabName,
+        confidence: Math.round(notifyConfidence),
+        reason,
+        testType:
+          parsed?.testType || itsReport?.tests?.[0]?.testMethod || null,
+        reportNumber:
+          parsed?.testReportNumber || itsReport?.header?.reportNumber || null,
+        appUrl,
+      });
+    }
+
     return NextResponse.json({
       ok: true,
       documentId: document.id,
@@ -712,5 +753,63 @@ export async function POST(req: Request) {
   } catch (err: any) {
     console.error("Upload error:", err);
     return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
+  }
+}
+
+/**
+ * Async fire-and-forget admin notification for pending-review
+ * uploads. Called after the upload returns OK (so the user
+ * isn't waiting on Resend). Triggers when:
+ *   - parser confidence is below 50, OR
+ *   - AI vision was used as primary (image PDF), OR
+ *   - parseError was non-null (text extraction failed entirely)
+ *
+ * Wrapped in a top-level try/catch so a failed email never breaks
+ * the upload path. The handler that calls this should `void` it
+ * — don't await.
+ */
+async function notifyAdminOfPendingUpload(payload: {
+  documentId: string;
+  filename: string;
+  uploaderEmail: string | null;
+  uploaderLabName: string | null;
+  confidence: number;
+  reason: string;
+  testType: string | null;
+  reportNumber: string | null;
+  appUrl: string;
+}) {
+  try {
+    const { sendEmail } = await import("@/lib/email");
+    const adminEmails = (process.env.ADMIN_EMAILS || "andrew@fuze47.com")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (adminEmails.length === 0) return;
+
+    const subject = `🔬 Pending review — ${payload.filename}`;
+    const reviewUrl = `${payload.appUrl}/tests/review`;
+    const html = `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 560px;">
+        <h2 style="margin: 0 0 8px; color: #0f172a;">Test report needs review</h2>
+        <p style="margin: 0 0 16px; color: #475569;">
+          Confidence too low for auto-confirmation. Please review and link to a brand/fabric.
+        </p>
+        <table style="border-collapse: collapse; width: 100%; font-size: 14px;">
+          <tr><td style="padding: 4px 8px; color: #64748b;">File</td><td style="padding: 4px 8px;"><strong>${payload.filename}</strong></td></tr>
+          <tr><td style="padding: 4px 8px; color: #64748b;">Uploaded by</td><td style="padding: 4px 8px;">${payload.uploaderEmail || "(unknown)"}${payload.uploaderLabName ? ` · ${payload.uploaderLabName}` : ""}</td></tr>
+          <tr><td style="padding: 4px 8px; color: #64748b;">Confidence</td><td style="padding: 4px 8px;"><strong>${payload.confidence}%</strong> — ${payload.reason}</td></tr>
+          ${payload.testType ? `<tr><td style="padding: 4px 8px; color: #64748b;">Test type</td><td style="padding: 4px 8px;">${payload.testType}</td></tr>` : ""}
+          ${payload.reportNumber ? `<tr><td style="padding: 4px 8px; color: #64748b;">Report #</td><td style="padding: 4px 8px;">${payload.reportNumber}</td></tr>` : ""}
+        </table>
+        <a href="${reviewUrl}" style="display: inline-block; margin-top: 16px; padding: 10px 18px; background: #00b4c3; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Open review queue →</a>
+        <p style="margin-top: 16px; font-size: 12px; color: #94a3b8;">
+          Auto-sent from Atlas. Adjust recipients in <code>ADMIN_EMAILS</code> env var.
+        </p>
+      </div>
+    `;
+    await sendEmail({ to: adminEmails, subject, html });
+  } catch (e) {
+    console.error("notifyAdminOfPendingUpload failed:", e);
   }
 }

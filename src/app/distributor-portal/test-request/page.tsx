@@ -55,6 +55,14 @@ export default function DistributorTestRequestPage() {
   const [selectedLab, setSelectedLab] = useState("");
   const [selectedTests, setSelectedTests] = useState<Record<string, boolean>>({});
   const [rushTests, setRushTests] = useState<Record<string, boolean>>({});
+
+  // Tina's original ask: select factory THEN fabric. The fabric
+  // picker now has an explicit factory dropdown above the text
+  // search. Empty = show all (legacy behavior).
+  const [factoryFilter, setFactoryFilter] = useState<string>("");
+  const [factoryOptions, setFactoryOptions] = useState<
+    Array<{ id: string; name: string; country: string | null; assigned: boolean }>
+  >([]);
   const [instructions, setInstructions] = useState("");
   const [priority, setPriority] = useState("NORMAL");
 
@@ -97,6 +105,7 @@ export default function DistributorTestRequestPage() {
     setLoadingFabrics(true);
     const params = new URLSearchParams();
     if (search) params.set("q", search);
+    if (factoryFilter) params.set("factoryId", factoryFilter);
     fetch(`/api/distributor-portal/fabric-search?${params.toString()}`)
       .then((r) => r.json())
       .then((j) => {
@@ -104,7 +113,22 @@ export default function DistributorTestRequestPage() {
         else setError(j.error || "Failed to search fabrics");
       })
       .finally(() => setLoadingFabrics(false));
-  }, [user, search]);
+  }, [user, search, factoryFilter]);
+
+  // Load factory options for the dropdown — reuse the pricing
+  // endpoint which already returns the distributor's factory list
+  // with assigned/coverage scoring.
+  useEffect(() => {
+    if (!user) return;
+    fetch("/api/distributor-portal/pricing")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok && Array.isArray(j.factories)) {
+          setFactoryOptions(j.factories);
+        }
+      })
+      .catch(() => {});
+  }, [user]);
 
   const currentLab = labs.find((l) => l.id === selectedLab);
   const services = currentLab?.services || [];
@@ -252,11 +276,68 @@ export default function DistributorTestRequestPage() {
           </div>
         ) : (
           <>
+            {/* Factory-first picker (Tina's original ask): select
+                factory THEN fabric from that factory. The text search
+                still works on top — leave the factory dropdown empty
+                to fall back to global search across all factories. */}
+            {factoryOptions.length > 0 && (
+              <div className="mb-3">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Step 1 — Pick a factory <span className="text-slate-400 font-normal">(optional, narrows the fabric list)</span>
+                </label>
+                <select
+                  value={factoryFilter}
+                  onChange={(e) => setFactoryFilter(e.target.value)}
+                  className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none bg-white"
+                >
+                  <option value="">All factories</option>
+                  {factoryOptions.filter((f) => f.assigned).length > 0 && (
+                    <optgroup label="Your factories">
+                      {factoryOptions
+                        .filter((f) => f.assigned)
+                        .map((f) => (
+                          <option key={f.id} value={f.id}>
+                            {f.name}
+                            {f.country ? ` · ${f.country}` : ""}
+                          </option>
+                        ))}
+                    </optgroup>
+                  )}
+                  {factoryOptions.filter((f) => !f.assigned).length > 0 && (
+                    <optgroup label="Other factories">
+                      {factoryOptions
+                        .filter((f) => !f.assigned)
+                        .map((f) => (
+                          <option key={f.id} value={f.id}>
+                            {f.name}
+                            {f.country ? ` · ${f.country}` : ""}
+                          </option>
+                        ))}
+                    </optgroup>
+                  )}
+                </select>
+              </div>
+            )}
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Step 2 — Pick the fabric
+              {factoryFilter && (
+                <span className="text-[#00b4c3] font-normal">
+                  {" "}
+                  · filtered to{" "}
+                  {factoryOptions.find((f) => f.id === factoryFilter)?.name ||
+                    "factory"}
+                </span>
+              )}
+            </label>
             <input
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search by FUZE#, brand, factory, or item code…"
+              placeholder={
+                factoryFilter
+                  ? "Search this factory's fabrics by FUZE#, code, color…"
+                  : "Search by FUZE#, brand, factory, or item code…"
+              }
               className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none mb-3"
             />
             {loadingFabrics ? (

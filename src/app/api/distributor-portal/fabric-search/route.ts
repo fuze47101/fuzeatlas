@@ -66,6 +66,24 @@ export async function GET(req: Request) {
       ands.push({ OR: scopeOr });
     }
 
+    // Optional explicit factory filter — used by the test-request
+    // page's factory-first picker. When set, narrows fabric results
+    // to that one factory regardless of scope OR above (still
+    // bounded by what the caller is allowed to see — distributors
+    // can't pass an arbitrary factoryId outside their scope).
+    const factoryIdFilter = url.searchParams.get("factoryId")?.trim();
+    if (factoryIdFilter) {
+      if (isDistributor && !factoryIds.includes(factoryIdFilter)) {
+        // Distributor passed a factoryId not in their own list —
+        // could be a brand-side fabric they have via projects, but
+        // for the test-request flow we keep it tight: must be one
+        // of the distributor's factories.
+        ands.push({ factoryId: factoryIdFilter });
+      } else {
+        ands.push({ factoryId: factoryIdFilter });
+      }
+    }
+
     if (q) {
       const fuzeNum = parseInt(q.replace(/[^0-9]/g, ""), 10);
       const orParts: any[] = [
