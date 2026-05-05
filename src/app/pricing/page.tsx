@@ -37,6 +37,14 @@ const FUZE_TIERS: ReadonlyArray<{
   /** True if FUZE outperforms the entire competitive set on natural fibers
    *  at this dose. Used to surface a "cotton dominance" callout. */
   naturalFiberDomination: boolean;
+  /** Primary efficacy test where this tier peak-performs. F4/F3 use
+   *  ASTM E2149 (dynamic contact, designed for non-leaching antimicrobials)
+   *  because that's the mechanism FUZE uses. F1/F2 also pass AATCC 100
+   *  (the layered ion-release test that historically advantages leaching
+   *  competitors) thanks to higher metamaterial density. See CLAUDE.md
+   *  → "CRITICAL: Test Methodology — AATCC 100 vs ASTM E2149". */
+  primaryTest: "ASTM E2149" | "ASTM E2149 + AATCC 100";
+  testNote: string;
 }> = [
   {
     id: "F1",
@@ -47,6 +55,8 @@ const FUZE_TIERS: ReadonlyArray<{
     desc: "Every benefit FUZE delivers, stacked. Microfiber shielding and detergent-chemistry catalysis on top of color, UV, drying, and antimicrobial.",
     pitch: "When the brand wants the full performance stack — antimicrobial, fabric performance, color, UV, AND microfiber shielding.",
     naturalFiberDomination: true,
+    primaryTest: "ASTM E2149 + AATCC 100",
+    testNote: "Sufficient metamaterial density to pass both — the dynamic-contact test (E2149, the mechanism match for non-leaching FUZE) AND the layered ion-release test (AATCC 100, the historical test built around leaching competitors).",
     benefits: [
       { icon: "🦠", text: "Permanent antimicrobial bond — AATCC 100 third-party validated" },
       { icon: "👑", text: "Cotton & natural-fiber dominance — no competitor matches FUZE on cellulose" },
@@ -69,6 +79,8 @@ const FUZE_TIERS: ReadonlyArray<{
     desc: "Adds color fastness + UVA/UVB fiber protection on top of Core Performance's wicking, drying, and evaporation gains.",
     pitch: "When the brand needs color hold + UV protection in addition to active fabric performance.",
     naturalFiberDomination: true,
+    primaryTest: "ASTM E2149 + AATCC 100",
+    testNote: "Density is high enough to also pass AATCC 100 — the layered ion-release test that historically advantages leaching competitors. ASTM E2149 (the dynamic-contact test designed for non-leaching chemistries like FUZE) remains the mechanism-correct primary.",
     benefits: [
       { icon: "🦠", text: "Permanent antimicrobial bond — AATCC 100 third-party validated" },
       { icon: "👑", text: "Cotton & natural-fiber dominance" },
@@ -89,6 +101,8 @@ const FUZE_TIERS: ReadonlyArray<{
     desc: "Adds active fabric performance — wicking, drying, evaporation — on top of the antimicrobial baseline.",
     pitch: "When the brand wants performance fabric features (wicking, drying, evaporation) layered on top of antimicrobial.",
     naturalFiberDomination: true,
+    primaryTest: "ASTM E2149",
+    testNote: "ASTM E2149 is the test designed for non-leaching, contact-kill antimicrobials — exactly how FUZE works. AATCC 100's layered geometry was built around leaching competitors and slows non-leaching contact mechanisms; meet us on the right test.",
     benefits: [
       { icon: "🦠", text: "Permanent antimicrobial bond — AATCC 100 third-party validated" },
       { icon: "👑", text: "Cotton & natural-fiber dominance" },
@@ -106,6 +120,8 @@ const FUZE_TIERS: ReadonlyArray<{
     desc: "The dose where FUZE dominates natural fibers. No competitor on the market approaches our performance on cotton and cellulose at this concentration.",
     pitch: "When the brand wants the strongest cotton / natural-fiber antimicrobial on the market at the lowest cost. This is where we beat everyone.",
     naturalFiberDomination: true,
+    primaryTest: "ASTM E2149",
+    testNote: "ASTM E2149 dynamic-contact testing is the right validation method for non-leaching, contact-kill chemistries. FUZE doesn't leach metal into wash water by design — we kill on direct contact, which is exactly what E2149 measures. AATCC 100's stacked layers create dead zones that leaching competitors fill with ion clouds; FUZE has no ion cloud (and we don't want one), so AATCC 100 understates our real-world contact-kill performance at this dose.",
     benefits: [
       { icon: "🦠", text: "Permanent antimicrobial bond — AATCC 100 third-party validated" },
       { icon: "👑", text: "Cotton & natural-fiber dominance — FUZE outperforms every silver-ion / QAC / zinc / chitosan competitor on cellulose at this dose" },
@@ -477,6 +493,9 @@ export default function PricingPage() {
                         <div className="text-xs font-bold text-slate-800 leading-tight">{tier.name}</div>
                       </div>
                       <div className="text-[11px] text-slate-600 leading-snug mb-2">{tier.desc}</div>
+                      <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                        Validated by · <span className="text-slate-700">{tier.primaryTest}</span>
+                      </div>
                       <ul className="space-y-1">
                         {tier.benefits.map((b, i) => (
                           <li key={i} className="flex items-start gap-1.5 text-[11px] text-slate-700 leading-tight">
@@ -565,8 +584,14 @@ export default function PricingPage() {
                           </ul>
                         </div>
 
-                        <div className="text-[11px] text-emerald-700/80 pt-2 border-t border-emerald-200">
-                          AATCC 100 third-party report for {activeTier.id} available on request. Same per-meter cost across the entire {activeTier.washes}-wash life — no re-application, no per-wash pricing.
+                        {/* Test methodology — the "meet us on the right test" callout */}
+                        <div className="pt-2 border-t border-emerald-200 space-y-1">
+                          <div className="flex items-baseline justify-between">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Validated by</span>
+                            <span className="text-[11px] font-bold text-emerald-800">{activeTier.primaryTest}</span>
+                          </div>
+                          <div className="text-[11px] text-emerald-700/80 leading-snug">{activeTier.testNote}</div>
+                          <div className="text-[11px] text-emerald-700/80 italic">Third-party reports available on request. Same per-meter cost across the entire {activeTier.washes}-wash life — no re-application, no per-wash pricing.</div>
                         </div>
                       </div>
                     </div>
@@ -624,12 +649,71 @@ export default function PricingPage() {
                       comes from that company&apos;s own AATCC 100 testing on samples of their choosing in conditions of their choosing —
                       there is no public independent validation. {competitor.product}&apos;s {competitor.maxWashClaim}-wash number is
                       {competitor.washClaimSource === "aatcc-100-third-party" ? " independently validated." : " self-published marketing."}{" "}
-                      FUZE shares its AATCC 100 reports for the tier you select with brands on request — that&apos;s the asymmetry that closes the deal.
+                      FUZE shares its third-party reports for the tier you select with brands on request — that&apos;s the asymmetry that closes the deal.
                     </p>
                   </div>
                 </div>
               );
             })()}
+
+            {/* ═══ MEET US ON THE RIGHT TEST ═══
+                Test methodology weapon — surfaces the AATCC 100 vs ASTM E2149
+                framing Andrew briefed 2026-05-04. AATCC 100 was designed for
+                LEACHING antimicrobials (silver-ion, AgCl, QAC, zinc) — the
+                stacked-layer ion-release test geometry advantages chemistries
+                that release toxic metal into the wash water. FUZE doesn't
+                leach by design; we kill on direct contact, which is exactly
+                what ASTM E2149 measures. F4/F3 peak-perform on E2149; F1/F2
+                also pass AATCC 100 by virtue of higher metamaterial density. */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6">
+              <div className="flex items-baseline justify-between mb-3">
+                <h3 className="text-base font-bold text-white">Meet us on the right test</h3>
+                <span className="text-[11px] text-slate-400">ASTM E2149 vs AATCC 100 — why the test matters as much as the result</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-emerald-900/40 border border-emerald-700/50 rounded-xl p-4">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 mb-1">
+                    ASTM E2149 — the right test for FUZE
+                  </div>
+                  <div className="text-sm font-semibold text-emerald-100 mb-2">Dynamic-contact antimicrobial test</div>
+                  <p className="text-[12px] text-emerald-100/90 leading-relaxed">
+                    Designed for <strong>non-leaching, contact-kill</strong> antimicrobials. The treated fabric is shaken
+                    in a buffered bacterial suspension; reduction is measured after a defined contact period.
+                    No ion cloud required. No leaching tolerated. The test rewards direct surface contact —
+                    which is exactly how FUZE metamaterial dismantles bacteria once it&apos;s permanently
+                    bonded into the fiber.
+                  </p>
+                </div>
+                <div className="bg-slate-700/50 border border-slate-500/40 rounded-xl p-4">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-1">
+                    AATCC 100 — the test built for leaching competitors
+                  </div>
+                  <div className="text-sm font-semibold text-slate-100 mb-2">Stacked-layer ion-release test</div>
+                  <p className="text-[12px] text-slate-200/90 leading-relaxed">
+                    Stacks multiple fabric layers around an inoculated coupon and measures CFUs after a
+                    contact period. Silver-ion / AgCl / zinc / QAC chemistries <strong>release ions into
+                    the inter-layer moisture</strong> — that ion field saturates the dead zones between
+                    layers and kills bacteria there. FUZE has no ion cloud (and we don&apos;t want one),
+                    so bacteria in those voids survive longer. The test geometry advantages leaching
+                    chemistries.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-2 text-[11px]">
+                {[...FUZE_TIERS].reverse().map((tier) => (
+                  <div key={tier.id} className={`rounded-lg border px-3 py-2 ${tier.dose === dose ? "border-emerald-400 bg-emerald-900/30" : "border-slate-600 bg-slate-800/40"}`}>
+                    <div className="font-bold text-white">{tier.id} — {tier.name}</div>
+                    <div className="text-slate-300 mt-0.5">{tier.primaryTest}</div>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 text-[12px] text-slate-300 italic leading-relaxed">
+                F4 Essential and F3 Core are validated on ASTM E2149 — the mechanism-correct test
+                for non-leaching FUZE. F2 Advanced and F1 Full Spectrum carry enough metamaterial
+                density to also pass AATCC 100, the historical layered test built around the
+                competitive set. We share third-party reports for whichever tier the brand picks.
+              </p>
+            </div>
 
             {/* Chemistry + Cost side-by-side for ACTIVE tier */}
             {(() => {

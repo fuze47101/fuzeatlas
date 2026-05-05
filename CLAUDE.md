@@ -36,6 +36,97 @@ NEVER write "silver-ion", "silver ion", "nano-silver", "nanoparticle", "silver n
 "water-based silver", or any variant — even as filler in a default template. If in doubt,
 read src/lib/fuze-knowledge.ts first.
 
+## CRITICAL: Test Methodology — AATCC 100 vs ASTM E2149
+
+This is the deepest piece of competitive positioning we have, and it's been
+under-told. Andrew briefed it 2026-05-04: any code, copy, PDF, slide, or
+chatbot answer that talks about FUZE wash/efficacy testing MUST get this right.
+
+### How the two tests work mechanically
+
+**AATCC 100** is the historical antibacterial test for textiles. Mechanically
+it stacks multiple fabric layers around an inoculated coupon and measures
+surviving colony-forming units after a contact period. It was DESIGNED for
+**leaching antimicrobials** — chemistries (silver-ion, silver chloride,
+zinc pyrithione, QAC) that release ions into the surrounding moisture and
+kill bacteria via that ion field. The stacked layers actually help leaching
+chemistries because the released ions saturate the inter-layer space.
+
+**ASTM E2149** is the dynamic-contact antimicrobial test. The treated
+fabric is shaken in a buffered bacterial suspension; reduction is
+measured after a defined contact period. It was DESIGNED for
+**non-leaching, contact-kill antimicrobials** — chemistries that have to
+physically touch the bacterial cell wall to disrupt it. No ion cloud
+required. No leaching tolerated. The test rewards direct surface contact.
+
+### Why this matters for FUZE
+
+FUZE metamaterial is **non-leaching by design**. We don't want metal in
+the wash water. Our kill mechanism is contact-based — the metamaterial
+particles that have permanently bonded into the fiber surface dismantle
+bacteria when the cell physically touches them. That is exactly the
+mechanism ASTM E2149 was written to evaluate.
+
+When FUZE is forced through AATCC 100, two things slow us down:
+1. **Multiple stacked layers** create dead zones between coupons where
+   bacterial growth is unimpeded by direct contact with treated fibers
+   — bacteria can grow in inter-layer voids before they encounter a
+   FUZE-treated surface.
+2. **No ion field** — competitors' silver leaches into the inter-layer
+   moisture and kills bacteria *between* the layers; FUZE has nothing
+   leaching, so bacteria in those voids survive longer.
+
+So AATCC 100 advantages leaching chemistries by its very geometry. It is
+not a level playing field for non-leaching antimicrobials. FUZE still
+passes AATCC 100 — but only at higher concentrations (F2 Advanced
+Performance / F1 Full Spectrum), where there's enough metamaterial
+density to overcome the test's inter-layer geometry.
+
+### The right test per tier
+
+| Tier | Primary test | Notes |
+| ---- | ------------ | ----- |
+| **F4 Essential Protection** (0.25) | **ASTM E2149** | Dynamic contact test. This is where FUZE peak-performs. Direct mechanism match. Cotton & natural fiber dominance. |
+| **F3 Core Performance** (0.5) | **ASTM E2149** | Same — non-leaching contact-kill, validated by the right test. |
+| **F2 Advanced Performance** (0.75) | **ASTM E2149 + AATCC 100** | Sufficient metamaterial density to pass both tests including the layered AATCC 100. |
+| **F1 Full Spectrum** (1.0) | **ASTM E2149 + AATCC 100** | Full pass on both, plus the extra benefit stack (UV, color, microfiber). |
+
+### What to say (and not say) about wash counts
+
+- **Wash counts are NOT EPA-validated.** EPA registers chemistry as a
+  pesticide; it does not certify any wash count. When we say "F1 = 100
+  washes" we mean our internal AATCC 100 / ISO 20743 testing through
+  100 washes documents continued efficacy. We share those reports with
+  brands on request. That's the asymmetry vs competitors — they don't
+  share test reports, because their wash claims are self-published.
+- **Don't say "EPA-defensible wash count."** EPA doesn't validate wash
+  counts. Use "third-party validated" (we have AATCC 100 / E2149 reports
+  from independent labs) vs "self-published marketing" (competitors).
+- **Use ASTM E2149 as the lead test for F3/F4.** It's the right test for
+  non-leaching chemistry. AATCC 100 is appropriate for F1/F2 where the
+  density overcomes the leaching-test bias.
+
+### The competitive jab
+
+> "We test on ASTM E2149 because it's the test designed for non-leaching
+> antimicrobials. Silvadur and Polygiene rely on AATCC 100 because it
+> was designed around their leaching chemistry — the test geometry helps
+> their ions saturate the layers. FUZE doesn't leach, by design. Meet
+> us on the right test."
+
+Anyone authoring outreach copy, presentation slides, PDFs, or chatbot
+answers should be able to deploy that paragraph verbatim.
+
+### Standards we care about
+
+- **Antimicrobial efficacy:** ASTM E2149 (primary for non-leaching),
+  AATCC 100 (historical, still required at higher tiers), ISO 20743.
+- **Antifungal:** AATCC 30.
+- **Antiviral:** ISO 18184.
+- **Color & substrate:** OEKO-TEX Standard 100 Class I, bluesign® approved.
+- **Regulatory:** EPA federal registration, California EPA approval (Q1 2026),
+  PFAS-free.
+
 ## Products & Chemistry
 
 | Term                         | Meaning                                                                                                            |

@@ -41,6 +41,8 @@ const EXTERNAL_ALLOWED_PATHS = [
   "/fabrics/",        // Allow fabric detail pages for all users (read-only)
   "/api/fabrics/",    // Allow fabric API for all users
   "/api/brand-portal/test-request",
+  "/education",       // Education hub — accessible to every signed-in role
+  "/education/",      // Education sub-pages (story, application, compliance, claims)
 ];
 
 // Roles that are considered "external" (cannot access internal pages)

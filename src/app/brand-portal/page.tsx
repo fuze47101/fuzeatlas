@@ -85,6 +85,22 @@ export default function BrandPortalDashboard() {
         </button>
       </div>
 
+      {/* Learn FUZE — links to the education page so brand users can ramp
+          up on the technology basics, mechanism, dosage scale, and tests. */}
+      <a
+        href="/education"
+        className="block mb-8 rounded-xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-white to-blue-50 p-5 hover:border-indigo-400 hover:shadow-md transition-all"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">Learn FUZE</div>
+            <h3 className="text-base font-bold text-slate-900">FUZE Basics — dosage, mechanism, testing</h3>
+            <p className="text-xs text-slate-600 mt-1">How FUZE compares to silver-ion, AgCl, zinc, and QAC chemistries. The five tests, and which one matches the FUZE mechanism.</p>
+          </div>
+          <span className="shrink-0 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-bold">Read →</span>
+        </div>
+      </a>
+
       {/* Getting Started Guide */}
       {stats.totalFabrics === 0 && (
         <div className="bg-gradient-to-r from-[#00b4c3]/5 to-emerald-50 rounded-xl border border-[#00b4c3]/20 p-6 mb-8">

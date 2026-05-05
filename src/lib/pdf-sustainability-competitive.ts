@@ -676,7 +676,7 @@ function renderLifecycleStage3(results: CompetitorResult[], params: ReportParams
               <div style="font-size:8px;font-weight:700;color:#047857;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">FUZE True Cost/Meter</div>
               <div style="font-size:22px;font-weight:900;color:#047857;">$${num(s.fuzeTrueCostPerMeter, 4)}<span style="font-size:10px;font-weight:400;color:#059669;">/m</span></div>
               <div style="font-size:8px;color:#059669;margin-top:4px;line-height:1.5;">
-                FUZE F1 treatment: $${num(s.fuzeTrueCostPerMeter, 4)}/m<br/>
+                FUZE treatment (one mill application): $${num(s.fuzeTrueCostPerMeter, 4)}/m<br/>
                 + Wastewater remediation: $0.0000/m<br/>
                 + Curing energy: $0.0000/m<br/>
                 <strong style="border-top:1px solid #a7f3d0;display:inline-block;padding-top:2px;margin-top:2px;">Hidden costs: $0.0000/m</strong>
@@ -944,8 +944,9 @@ function renderCompetitorTeardown(result: CompetitorResult, params: ReportParams
             : '<span style="color:#28a745">Not required</span>'}</div>
         </div>
         <div class="comp-stat">
-          <div class="comp-stat-label">Wash Durability</div>
-          <div class="comp-stat-value">${c.maxWashClaim} washes claimed</div>
+          <div class="comp-stat-label">Wash Durability (marketing claim)</div>
+          <div class="comp-stat-value">${c.maxWashClaim} washes</div>
+          <div style="font-size:10px; color:#dc3545; margin-top:4px; font-weight:600;">Self-published marketing — no public third-party validation</div>
           <div style="font-size:10px; color:#666; margin-top:4px;">${c.washClaimNote}</div>
         </div>
         <div class="comp-stat">
@@ -1009,6 +1010,42 @@ function renderCompetitorTeardown(result: CompetitorResult, params: ReportParams
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- ASTM E2149 vs AATCC 100 — the test methodology weapon -->
+      <div style="margin-top:16px; background:#0f172a; color:#fff; border-radius:10px; padding:14px;">
+        <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:6px;">Meet us on the right test — ASTM E2149 vs AATCC 100</div>
+        <div style="font-size:10px; color:#94a3b8; margin-bottom:10px;">Why the test methodology matters as much as the result</div>
+        <table style="width:100%; border-collapse:separate; border-spacing:6px;">
+          <tr>
+            <td style="width:50%; vertical-align:top; padding:10px; background:rgba(16,185,129,0.18); border:1px solid rgba(16,185,129,0.4); border-radius:8px;">
+              <div style="font-size:9px; font-weight:700; color:#6ee7b7; text-transform:uppercase; letter-spacing:0.5px;">ASTM E2149 — the right test for FUZE</div>
+              <div style="font-size:11px; font-weight:700; color:#d1fae5; margin-top:3px;">Dynamic-contact antimicrobial test</div>
+              <p style="font-size:10px; color:#d1fae5; line-height:1.5; margin-top:6px;">
+                Designed for <strong>non-leaching, contact-kill</strong> antimicrobials. The treated fabric is
+                shaken in a buffered bacterial suspension; reduction is measured after a defined contact period.
+                No ion cloud required. The test rewards direct surface contact &mdash; exactly how FUZE
+                metamaterial dismantles bacteria.
+              </p>
+            </td>
+            <td style="width:50%; vertical-align:top; padding:10px; background:rgba(100,116,139,0.25); border:1px solid rgba(148,163,184,0.4); border-radius:8px;">
+              <div style="font-size:9px; font-weight:700; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.5px;">AATCC 100 — built for leaching competitors</div>
+              <div style="font-size:11px; font-weight:700; color:#e2e8f0; margin-top:3px;">Stacked-layer ion-release test</div>
+              <p style="font-size:10px; color:#e2e8f0; line-height:1.5; margin-top:6px;">
+                Stacks fabric layers around an inoculated coupon and measures CFUs after a contact period.
+                Silver-ion / AgCl / zinc / QAC chemistries <strong>release ions into the inter-layer
+                moisture</strong>; that ion field saturates the dead zones between layers and kills there.
+                FUZE has no ion cloud (and we don&apos;t want one), so the test geometry advantages
+                leaching chemistries.
+              </p>
+            </td>
+          </tr>
+        </table>
+        <div style="margin-top:10px; font-size:10px; color:#cbd5e1; line-height:1.6; font-style:italic;">
+          F4 Essential and F3 Core are validated on ASTM E2149 &mdash; the mechanism-correct test for
+          non-leaching FUZE. F2 Advanced and F1 Full Spectrum carry enough metamaterial density to also
+          pass AATCC 100. Third-party reports for the selected tier available on request.
         </div>
       </div>
 

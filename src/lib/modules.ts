@@ -161,6 +161,45 @@ export const MODULES: ModuleDef[] = [
   },
 
   // ═══════════════════════════════════════════════════════════════
+  // Education — the technology-basics page. Anyone in the org or in a
+  // partner portal can land here to learn the FUZE story end-to-end:
+  // dosage scale, ion-release vs contact-kill mechanism, the five tests
+  // and which one matches the chemistry, and what that means for a brand
+  // decision. Built 2026-05-04 specifically as the page Andrew can send
+  // to a prospect before a meeting and walk in with everyone aligned.
+  {
+    key: "education",
+    label: "Education",
+    icon: "🎓",
+    accent: "from-indigo-500 to-blue-700",
+    sidebarAccent: "text-indigo-400",
+    blurb: "FUZE basics — chemistry footprint, mechanism, testing, story, compliance",
+    landing: "/education",
+    items: [
+      // Top-level overview page (everything in one scroll)
+      { label: "FUZE Basics", href: "/education", icon: "🎓" },
+      // Deep-anchors into the basics page sections.
+      // We deliberately do NOT call FUZE "chemistry" (Andrew, 2026-05-04 —
+      // "love calling the others chemistry, has a natural negative
+      // connotation"). FUZE = metamaterial. Competitors = chemistry.
+      // Footprint is the umbrella term for both, since both leave one.
+      { label: "Footprint", href: "/education#dosage", icon: "⚖️" },
+      { label: "How FUZE Works", href: "/education#mechanism", icon: "⚛️" },
+      { label: "Testing & Validation", href: "/education#testing", icon: "🧪" },
+      { label: "Performance Stack (F1-F4)", href: "/education#performance-stack", icon: "🪜" },
+      // Stand-alone education pages
+      { label: "The FUZE Story", href: "/education/story", icon: "🌍" },
+      { label: "Application Methods", href: "/education/application", icon: "🏭" },
+      { label: "Compliance & Certifications", href: "/education/compliance", icon: "✅" },
+      { label: "What You Can Claim", href: "/education/claims", icon: "📋" },
+      // Living tools moved from Resources — these are educational, not paperwork
+      { label: "Sustainability Report", href: "/sustainability", icon: "🌱" },
+      { label: "Pricing & Comparison", href: "/pricing", icon: "💰" },
+      { label: "FUZE AI FAQ", href: "/brand-portal/chat", icon: "💬" },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════
   {
     key: "resources",
     label: "Resources & Docs",
@@ -170,6 +209,9 @@ export const MODULES: ModuleDef[] = [
     blurb: "Document library, SDS/TDS/COA, SOWs, pricing",
     landing: "/compliance-library",
     items: [
+      // Resources is now the PAPERWORK / OPS surface. The narrative
+      // (sustainability story, FUZE FAQ chat, pricing comparison) moved
+      // to the Education module — those are learning surfaces, not docs.
       { label: "Product Documents (TDS/SDS/COA)", href: "/admin/product-documents", icon: "📘" },
       { label: "Document Center", href: "/compliance-library", icon: "📋" },
       { label: "SOWs", href: "/sow", icon: "📄" },
@@ -177,10 +219,7 @@ export const MODULES: ModuleDef[] = [
       { label: "Weekly Summary", href: "/reports", icon: "📈" },
       { label: "Weekly Exec Review", href: "/admin/weekly-review", icon: "📊", adminOnly: true },
       { label: "Market Landscape", href: "/admin/competitor-pricing", icon: "📊" },
-      { label: "Pricing & Environment", href: "/pricing", icon: "💰" },
       { label: "Application Calculator", href: "/pricing/calculator", icon: "🧮" },
-      { label: "Sustainability", href: "/sustainability", icon: "🌱" },
-      { label: "FUZE FAQ", href: "/brand-portal/chat", icon: "💬" },
     ],
   },
 

@@ -217,6 +217,21 @@ export default function DistributorPortalPage() {
         </div>
       </div>
 
+      {/* Learn FUZE — quick link to the technology basics page */}
+      <a
+        href="/education"
+        className="block mb-6 rounded-xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-white to-blue-50 p-5 hover:border-indigo-400 hover:shadow-md transition-all"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">Learn FUZE</div>
+            <h3 className="text-base font-bold text-slate-900">FUZE Basics — for your sales conversations</h3>
+            <p className="text-xs text-slate-600 mt-1">Dosage scale, ion-release vs contact-kill mechanism, the five tests, and how to position FUZE against silver-ion / zinc / QAC competitors in any factory or brand meeting.</p>
+          </div>
+          <span className="shrink-0 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-bold">Read →</span>
+        </div>
+      </a>
+
       {/* ─── Secondary: factories + invoices + docs (CFO view) ───── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         <div className="bg-white border border-slate-200 rounded-lg p-3">
