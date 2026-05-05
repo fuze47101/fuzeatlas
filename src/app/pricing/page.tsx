@@ -12,13 +12,105 @@ function num(n: number, digits = 4) {
   return n.toLocaleString(undefined, { maximumFractionDigits: digits });
 }
 
-// FUZE application tiers — permanent integration at different concentration levels
+// FUZE application tiers — permanent integration at different concentration levels.
 // Internal: dose drives pricing math. Customer-facing: tier name only, no mg references.
-const FUZE_TIERS = [
-  { id: "F1", name: "Full Spectrum", dose: 1.0, washes: 100, color: "from-emerald-500 to-emerald-600", desc: "Maximum particle density · Passes all test standards · Full ancillary benefits (UV, wicking, cooling)" },
-  { id: "F2", name: "Advanced Performance", dose: 0.75, washes: 75, color: "from-teal-500 to-teal-600", desc: "High particle density · AATCC 100 & ASTM E2149 compatible · Enhanced fabric performance" },
-  { id: "F3", name: "Core Performance", dose: 0.5, washes: 50, color: "from-cyan-500 to-cyan-600", desc: "Balanced particle density · Optimized for ASTM E2149 contact testing · Cost-efficient integration" },
-  { id: "F4", name: "Essential Protection", dose: 0.25, washes: 25, color: "from-sky-500 to-sky-600", desc: "Permanent antimicrobial · Ideal for cotton-rich blends · ASTM E2149 contact testing" },
+//
+// Andrew (2026-05-04): every tier is permanent. The dose ladder is NOT a wash-count
+// ladder — it's a BENEFIT-STACKING ladder. F4 is where FUZE dominates natural fibers
+// (no competitor approaches us on cellulose at this dose). Each step up adds another
+// fabric-performance benefit on top of the antimicrobial baseline:
+//   F4  → antimicrobial + cotton/natural-fiber dominance
+//   F3  → + moisture wicking + faster drying + improved evaporation
+//   F2  → + color fastness + UVA/UVB fiber protection
+//   F1  → + microfiber shielding (reduces wash shedding) + detergent-chemistry catalysis
+type TierBenefit = { icon: string; text: string };
+
+const FUZE_TIERS: ReadonlyArray<{
+  id: string;
+  name: string;
+  dose: number;
+  washes: number;
+  color: string;
+  desc: string;
+  pitch: string;
+  benefits: ReadonlyArray<TierBenefit>;
+  /** True if FUZE outperforms the entire competitive set on natural fibers
+   *  at this dose. Used to surface a "cotton dominance" callout. */
+  naturalFiberDomination: boolean;
+}> = [
+  {
+    id: "F1",
+    name: "Full Spectrum",
+    dose: 1.0,
+    washes: 100,
+    color: "from-emerald-500 to-emerald-600",
+    desc: "Every benefit FUZE delivers, stacked. Microfiber shielding and detergent-chemistry catalysis on top of color, UV, drying, and antimicrobial.",
+    pitch: "When the brand wants the full performance stack — antimicrobial, fabric performance, color, UV, AND microfiber shielding.",
+    naturalFiberDomination: true,
+    benefits: [
+      { icon: "🦠", text: "Permanent antimicrobial bond — AATCC 100 third-party validated" },
+      { icon: "👑", text: "Cotton & natural-fiber dominance — no competitor matches FUZE on cellulose" },
+      { icon: "💧", text: "Enhanced moisture wicking" },
+      { icon: "🌬️", text: "Faster drying time" },
+      { icon: "♨️", text: "Improved evaporation rate" },
+      { icon: "🎨", text: "Color fastness improvement" },
+      { icon: "☀️", text: "UVA fiber protection" },
+      { icon: "🛡️", text: "UVB fiber protection" },
+      { icon: "🧵", text: "Microfiber shielding — reduces shedding into wash water" },
+      { icon: "✨", text: "Catalyzes home laundry detergent chemistry" },
+    ],
+  },
+  {
+    id: "F2",
+    name: "Advanced Performance",
+    dose: 0.75,
+    washes: 75,
+    color: "from-teal-500 to-teal-600",
+    desc: "Adds color fastness + UVA/UVB fiber protection on top of Core Performance's wicking, drying, and evaporation gains.",
+    pitch: "When the brand needs color hold + UV protection in addition to active fabric performance.",
+    naturalFiberDomination: true,
+    benefits: [
+      { icon: "🦠", text: "Permanent antimicrobial bond — AATCC 100 third-party validated" },
+      { icon: "👑", text: "Cotton & natural-fiber dominance" },
+      { icon: "💧", text: "Enhanced moisture wicking" },
+      { icon: "🌬️", text: "Faster drying time" },
+      { icon: "♨️", text: "Improved evaporation rate" },
+      { icon: "🎨", text: "Color fastness improvement" },
+      { icon: "☀️", text: "UVA fiber protection" },
+      { icon: "🛡️", text: "UVB fiber protection" },
+    ],
+  },
+  {
+    id: "F3",
+    name: "Core Performance",
+    dose: 0.5,
+    washes: 50,
+    color: "from-cyan-500 to-cyan-600",
+    desc: "Adds active fabric performance — wicking, drying, evaporation — on top of the antimicrobial baseline.",
+    pitch: "When the brand wants performance fabric features (wicking, drying, evaporation) layered on top of antimicrobial.",
+    naturalFiberDomination: true,
+    benefits: [
+      { icon: "🦠", text: "Permanent antimicrobial bond — AATCC 100 third-party validated" },
+      { icon: "👑", text: "Cotton & natural-fiber dominance" },
+      { icon: "💧", text: "Enhanced moisture wicking" },
+      { icon: "🌬️", text: "Faster drying time" },
+      { icon: "♨️", text: "Improved evaporation rate" },
+    ],
+  },
+  {
+    id: "F4",
+    name: "Essential Protection",
+    dose: 0.25,
+    washes: 25,
+    color: "from-sky-500 to-sky-600",
+    desc: "The dose where FUZE dominates natural fibers. No competitor on the market approaches our performance on cotton and cellulose at this concentration.",
+    pitch: "When the brand wants the strongest cotton / natural-fiber antimicrobial on the market at the lowest cost. This is where we beat everyone.",
+    naturalFiberDomination: true,
+    benefits: [
+      { icon: "🦠", text: "Permanent antimicrobial bond — AATCC 100 third-party validated" },
+      { icon: "👑", text: "Cotton & natural-fiber dominance — FUZE outperforms every silver-ion / QAC / zinc / chitosan competitor on cellulose at this dose" },
+    ],
+  },
 ] as const;
 
 function Gradebadge({ grade, score }: { grade: string; score: number }) {
@@ -350,6 +442,63 @@ export default function PricingPage() {
         {competitor && envScore && costComparisons && (
           <div className="space-y-6">
 
+            {/* ═══ TIER LADDER — what each level unlocks ═══
+                Andrew (2026-05-04): "Each tier is permanent. As we add to
+                Core / Advanced / Full Spectrum, we layer additional benefits
+                of FUZE — drying, wicking, evaporation, color fastness, UVA/UVB
+                fiber protection, microfiber shielding, detergent catalysis."
+                This block tells that story before we get into the head-to-head. */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
+              <div className="flex items-baseline justify-between mb-3">
+                <h3 className="text-base font-bold text-slate-800">FUZE tier ladder — every tier is permanent</h3>
+                <span className="text-[11px] text-slate-400">Each step adds another layer of FUZE performance on top of the antimicrobial baseline</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                {/* Show in lowest-to-highest order so the benefit stack reads as
+                    a cumulative climb. FUZE_TIERS is F1→F4 in source; reverse
+                    the slice for display. */}
+                {[...FUZE_TIERS].reverse().map((tier) => {
+                  const isActive = tier.dose === dose;
+                  return (
+                    <button
+                      key={tier.id}
+                      onClick={() => setDose(tier.dose)}
+                      type="button"
+                      className={`text-left rounded-xl border p-4 transition-all ${
+                        isActive
+                          ? "border-emerald-400 bg-emerald-50/60 shadow-sm ring-2 ring-emerald-200"
+                          : "border-slate-200 bg-white hover:border-slate-300"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`inline-flex w-8 h-8 rounded-lg bg-gradient-to-br ${tier.color} text-white text-[10px] font-black items-center justify-center shrink-0`}>
+                          {tier.id}
+                        </span>
+                        <div className="text-xs font-bold text-slate-800 leading-tight">{tier.name}</div>
+                      </div>
+                      <div className="text-[11px] text-slate-600 leading-snug mb-2">{tier.desc}</div>
+                      <ul className="space-y-1">
+                        {tier.benefits.map((b, i) => (
+                          <li key={i} className="flex items-start gap-1.5 text-[11px] text-slate-700 leading-tight">
+                            <span className="shrink-0 w-3.5 text-center text-[11px]">{b.icon}</span>
+                            <span>{b.text}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      {isActive && (
+                        <div className="mt-2 inline-block text-[10px] font-bold text-emerald-700 bg-emerald-100 rounded px-1.5 py-0.5">
+                          Selected
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-3 italic">
+                Click any tier to make it the active comparison below. Per-meter cost stays flat across the entire wash life of whichever tier you pick — there is no per-wash or per-cycle pricing on FUZE.
+              </p>
+            </div>
+
             {/* ═══ ACTIVE-TIER COST COMPARISON ═══
                 Andrew (2026-05-04): "The left FUZE side should match the
                 selection they are using for the price comparison at the top.
@@ -372,7 +521,8 @@ export default function PricingPage() {
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* FUZE side — ACTIVE TIER ONLY */}
+                    {/* FUZE side — ACTIVE TIER ONLY, with full benefit stack
+                        and cotton-dominance hero on F4 (Andrew, 2026-05-04). */}
                     <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-5">
                       <div className="flex items-center gap-2 mb-3">
                         <span className={`inline-flex w-9 h-9 rounded-lg bg-gradient-to-br ${activeTier.color} text-white text-xs font-black items-center justify-center shrink-0`}>
@@ -392,8 +542,31 @@ export default function PricingPage() {
                           <span className="text-emerald-700">Wash claim</span>
                           <span className="font-bold text-emerald-700">{activeTier.washes} washes</span>
                         </div>
+
+                        {/* F4-only: cotton-dominance hero. This is the angle
+                            that closes natural-fiber brands at the lowest dose. */}
+                        {activeTier.id === "F4" && (
+                          <div className="mt-3 -mx-1 px-3 py-2.5 rounded-lg bg-gradient-to-br from-emerald-600 to-teal-600 text-white">
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-100">Where FUZE dominates</div>
+                            <div className="text-sm font-black mt-0.5">Cotton & natural fibers — at this dose, FUZE outperforms every silver-ion / QAC / zinc / chitosan competitor on cellulose</div>
+                          </div>
+                        )}
+
+                        {/* What this tier delivers — benefit stack */}
+                        <div className="pt-2 border-t border-emerald-200">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 mb-1.5">What this tier delivers</div>
+                          <ul className="space-y-1.5">
+                            {activeTier.benefits.map((b, i) => (
+                              <li key={i} className="flex items-start gap-2 text-[12px] text-emerald-800 leading-snug">
+                                <span className="shrink-0 w-4 text-center">{b.icon}</span>
+                                <span>{b.text}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
                         <div className="text-[11px] text-emerald-700/80 pt-2 border-t border-emerald-200">
-                          AATCC 100 third-party report available on request. Same per-meter cost across the entire {activeTier.washes}-wash life — no re-application, no per-wash pricing.
+                          AATCC 100 third-party report for {activeTier.id} available on request. Same per-meter cost across the entire {activeTier.washes}-wash life — no re-application, no per-wash pricing.
                         </div>
                       </div>
                     </div>
