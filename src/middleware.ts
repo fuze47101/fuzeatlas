@@ -92,8 +92,12 @@ export async function middleware(req: NextRequest) {
       throw new Error("Invalid session");
     }
 
-    // Redirect external users from root "/" to their portal
-    if (EXTERNAL_ROLES.includes(user.role) && pathname === "/") {
+    // Redirect external users from "/", "/home", and "/dashboard" to their portal.
+    // Ticket cmoi1kz7x — Tina Distributor was hitting /dashboard and seeing a
+    // BRAND-style welcome page flash before the client-side redirect fired.
+    // Doing this in middleware means the page never renders, no flash.
+    const PORTAL_BOUNCE_PATHS = new Set(["/", "/home", "/dashboard"]);
+    if (EXTERNAL_ROLES.includes(user.role) && PORTAL_BOUNCE_PATHS.has(pathname)) {
       const role = user.role;
       if (role === "FACTORY_USER" || role === "FACTORY_MANAGER") {
         return NextResponse.redirect(new URL("/factory-portal", req.url));

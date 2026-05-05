@@ -159,10 +159,12 @@ export default function TestDetailPage() {
     if (!test) return;
     setSavingLinks(true);
     try {
-      const body: any = { projectId: linkProjectId || null };
-      // Only send factoryId when there's a submission to write it onto —
-      // matches the API guard so we don't no-op silently.
-      if (test.submission?.id) body.factoryId = linkFactoryId || null;
+      // Always send factoryId — the API creates a FabricSubmission on the fly
+      // if one doesn't exist yet. Ticket cmo8d1yuy.
+      const body: any = {
+        projectId: linkProjectId || null,
+        factoryId: linkFactoryId || null,
+      };
       const res = await fetch(`/api/tests/${test.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -460,10 +462,11 @@ export default function TestDetailPage() {
         </div>
       </div>
 
-      {/* Linked Entities Card — render whenever there's anything to link to
-          OR when the user is editing (so the panel stays open even after
-          clearing all values). */}
-      {(test.submission || test.project || editingLinks) && (
+      {/* Linked Entities Card — always render so admins can attach a factory
+          or project to standalone test reports. Ticket cmo8d1yuy — Tina was
+          stuck because the panel was gated on (submission || project) and a
+          freshly uploaded test had neither. */}
+      {true && (
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-slate-900">Linked Entities</h3>
@@ -499,22 +502,21 @@ export default function TestDetailPage() {
                 <label className="block text-xs text-slate-500 uppercase tracking-wide mb-1">
                   Factory
                 </label>
-                {test.submission?.id ? (
-                  <select
-                    value={linkFactoryId}
-                    onChange={(e) => setLinkFactoryId(e.target.value)}
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
-                  >
-                    <option value="">— None —</option>
-                    {factoryOpts.map((f) => (
-                      <option key={f.id} value={f.id}>
-                        {f.name}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <p className="text-xs text-slate-400 italic py-2">
-                    No fabric submission linked — factory can't be set on this test directly.
+                <select
+                  value={linkFactoryId}
+                  onChange={(e) => setLinkFactoryId(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+                >
+                  <option value="">— None —</option>
+                  {factoryOpts.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.name}
+                    </option>
+                  ))}
+                </select>
+                {!test.submission?.id && (
+                  <p className="text-[11px] text-slate-400 italic mt-1">
+                    No submission yet — picking a factory will create one.
                   </p>
                 )}
               </div>

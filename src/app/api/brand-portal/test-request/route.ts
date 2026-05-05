@@ -84,16 +84,28 @@ export async function GET() {
   }
 }
 
-/* ── POST /api/brand-portal/test-request ── Brand or factory user submits a test request */
+/* ── POST /api/brand-portal/test-request ── Brand/factory user OR admin/employee submits a test request */
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 
-    const brandId = user.brandId || null;
-    const factoryId = user.factoryId || null;
-    if (!brandId && !factoryId) {
-      return NextResponse.json({ ok: false, error: "No brand or factory associated" }, { status: 403 });
+    // Admin-class users can submit on behalf of any fabric's brand/factory.
+    // Brand/factory users can only submit for fabrics they own.
+    // Ticket cmokd13mn — Kaylee (EMPLOYEE) was getting blocked because the
+    // old gate required user.brandId OR user.factoryId on the submitter,
+    // but employees and admins have neither. Fall back to the fabric's
+    // own assignments for these roles.
+    const ADMIN_CLASS = ["ADMIN", "EMPLOYEE", "BD_REP", "LAB_USER", "LAB_ADMIN"];
+    const isAdminClass = ADMIN_CLASS.includes(user.role);
+
+    const userBrandId = user.brandId || null;
+    const userFactoryId = user.factoryId || null;
+    if (!isAdminClass && !userBrandId && !userFactoryId) {
+      return NextResponse.json(
+        { ok: false, error: "Your account isn't linked to a brand or factory. Ask an admin to link it before requesting a test." },
+        { status: 403 },
+      );
     }
 
     const body = await req.json();
@@ -105,19 +117,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Select at least one test" }, { status: 400 });
     }
 
-    // Verify fabric belongs to this user's brand or factory
+    // Look up the fabric. For brand/factory users we also enforce ownership;
+    // for admin-class users we pull the fabric and use its own assignments.
     const fabricWhere: any = { id: fabricId };
-    if (brandId) fabricWhere.brandId = brandId;
-    else if (factoryId) fabricWhere.factoryId = factoryId;
+    if (!isAdminClass) {
+      if (userBrandId) fabricWhere.brandId = userBrandId;
+      else if (userFactoryId) fabricWhere.factoryId = userFactoryId;
+    }
     const fabric = await prisma.fabric.findFirst({
       where: fabricWhere,
-      select: { id: true, fuzeNumber: true, customerCode: true, factoryCode: true, brandId: true },
+      select: {
+        id: true,
+        fuzeNumber: true,
+        customerCode: true,
+        factoryCode: true,
+        brandId: true,
+        factoryId: true,
+      },
     });
     if (!fabric) {
-      return NextResponse.json({ ok: false, error: "Fabric not found" }, { status: 404 });
+      return NextResponse.json(
+        { ok: false, error: "Fabric not found, or your account doesn't have access to it." },
+        { status: 404 },
+      );
     }
-    // Use the fabric's brandId if available (factory may submit for a brand)
-    const effectiveBrandId = brandId || fabric.brandId || null;
+    // The brand we actually attach to the request: prefer the requester's brand
+    // (for brand users), otherwise the fabric's brand. Same for factory.
+    const effectiveBrandId = userBrandId || fabric.brandId || null;
+    const effectiveFactoryId = userFactoryId || fabric.factoryId || null;
 
     // Generate PO number
     const today = new Date();
@@ -176,7 +203,7 @@ export async function POST(req: Request) {
       submission = await prisma.fabricSubmission.create({
         data: {
           brandId: effectiveBrandId,
-          factoryId: factoryId,
+          factoryId: effectiveFactoryId,
           fabricId: fabric.id,
           fuzeFabricNumber: fabric.fuzeNumber ?? null,
           customerFabricCode: fabric.customerCode || null,

@@ -105,12 +105,18 @@ function buildPrompt(a: DraftArgs): string {
 
   const qaLines = answerPairs.map(({ q, a }) => `- ${q}: ${a}`).join("\n");
 
+  // Tickets cmom20xdz + cmon7n0me — Ryan and Scott reported the AI was
+  // either ignoring their seed answers or shoehorning them in awkwardly,
+  // leading to "incomplete sentences" and "confusing intros". The old
+  // prompt listed this twice and demanded "verbatim phrases", which made
+  // the model paste raw answer text mid-sentence. We now list ONCE and
+  // ask for natural integration — facts, not quotes.
   const seedBlock = answerPairs.length
     ? `
-SEED MATERIAL — THE REP'S OWN NOTES (you MUST use this, it is the whole point of this draft):
-${answerPairs.map(({ q, a: v }, i) => `[${i + 1}] Q: ${q}\n    A: ${v}`).join("\n\n")}
+WHAT THE REP TOLD ME (treat as facts to weave in, NOT quotes to paste):
+${answerPairs.map(({ q, a: v }, i) => `${i + 1}. ${q}? — ${v}`).join("\n")}
 
-THE DRAFT MUST DEMONSTRABLY INCORPORATE EACH OF THE ${answerPairs.length} ANSWER(S) ABOVE — verbatim phrases, paraphrases, or direct references. If you ignore any of them, the draft fails and will be rejected.
+Each of these ${answerPairs.length} note(s) must inform the draft naturally. If the rep flagged something specific (a brand move, a pain point, a personal angle), the FIRST sentence after the greeting must hook on that. Do not paste the rep's note verbatim — rephrase it as your own observation.
 `
     : "";
 
@@ -167,11 +173,8 @@ TARGET BRAND: ${brand.name}
 TARGET CONTACT: ${contact.name || [contact.firstName, contact.lastName].filter(Boolean).join(" ")} — ${contact.jobTitle || "decision-maker"}
 CATEGORY: ${brand.textileCategory || "textile"}
 ${followUpNote}
-INTEL:
+BRAND INTEL (background facts — only use what's directly relevant):
 ${intel}
-
-REP'S CUSTOMIZATION NOTES (same as SEED MATERIAL above, listed again for reference — you MUST incorporate these):
-${qaLines || "(none provided)"}
 
 TONE: ${tone}
 
@@ -192,13 +195,14 @@ ${
 9. One specific reference to the contact's role OR a recent post from their brand.
 10. One concrete ask — 15-min call OR the right person to speak to. Not "would love to connect".`
 }
-11. SEED MATERIAL ENFORCEMENT. ${
+11. ${
     answerPairs.length
-      ? `You were given ${answerPairs.length} specific answer(s) from the rep in the SEED MATERIAL block above. Every single one of them MUST surface in the body — either quoted, paraphrased, or directly addressed. Draft will be auto-rejected if any answer is absent. If an answer names a problem, your draft must name that problem. If an answer names what caught the rep's eye, the opening sentence should hook on that specific thing.`
-      : `No rep seed answers were provided for this draft; work from the INTEL block alone.`
+      ? `INTEGRATE THE REP'S NOTES NATURALLY. Each note in WHAT THE REP TOLD ME must inform the draft as a fact you've observed — not as a pasted quote. If a note names a brand move, your opening sentence references that move in your own words. If a note names a problem, name that problem in plain language. If a note is personal context about the contact, weave it into the rationale, not as a callout. The draft fails if any note is silently dropped, AND it fails if any note is shoehorned awkwardly into a sentence that doesn't read like a human wrote it.`
+      : `No rep notes were provided; work from the BRAND INTEL block alone.`
   }
+12. NO FILLER INTRO LINE. The first sentence after "${contactFirstName}," must be substantive — a specific observation about the brand or contact, NOT a generic opener like "I came across your work", "I've been following [Brand]", "Hope you're well", or "I lead BD at FUZE". The greeting line is the only filler allowed.
 
-${isEmail ? `Return JSON: {"subject": "...", "body": "..."} — subject must be under 8 words, no clickbait, no emojis, no "Re:" or "Fwd:".` : `Return JSON: {"subject": "", "body": "..."} — subject is always empty for LinkedIn.`}
+${isEmail ? `Return JSON: {"subject": "...", "body": "..."} — subject must be under 8 words, no clickbait, no emojis, no "Re:" or "Fwd:". Subject must reference the specific angle from the rep's notes when provided, not a generic "FUZE F1 for [Brand]".` : `Return JSON: {"subject": "", "body": "..."} — subject is always empty for LinkedIn.`}
 
 Start with "${contactFirstName}," as the opener. No "Dear" or "Hello".
 

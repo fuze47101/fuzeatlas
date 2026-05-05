@@ -216,11 +216,20 @@ export default function TestUploadPage() {
         setFactories(fData.factories.map((f: any) => ({ id: f.id, name: f.name, detail: f.country || undefined })));
       }
       if (faData.ok && faData.fabrics) {
-        setFabrics(faData.fabrics.map((f: any) => ({
-          id: f.id,
-          name: String(f.customerCode || f.fuzeNumber || f.factoryCode || f.id),
-          detail: f.construction || undefined,
-        })));
+        // Ticket cmokg48ha — Kaylee couldn't search by FUZE# 2502 because the
+        // option label fell back to customerCode first, so the FUZE number was
+        // never in any field SearchableSelect filters. Pack every code into the
+        // visible label so any of fuzeNumber / customerCode / factoryCode hits.
+        setFabrics(faData.fabrics.map((f: any) => {
+          const fuzeStr = f.fuzeNumber ? `FUZE ${f.fuzeNumber}` : null;
+          const labelParts = [fuzeStr, f.customerCode, f.factoryCode].filter(Boolean);
+          const detailParts = [f.brand, f.factory, f.construction, f.color].filter(Boolean);
+          return {
+            id: f.id,
+            name: labelParts.length ? labelParts.join(" · ") : f.id,
+            detail: detailParts.length ? detailParts.join(" · ") : undefined,
+          };
+        }));
       }
       if (pData.ok && pData.projects) {
         setProjects(pData.projects.map((p: any) => ({ id: p.id, name: p.name, detail: p.brandName ? `Brand: ${p.brandName}` : undefined })));

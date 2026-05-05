@@ -147,13 +147,30 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     });
 
     // Factory lives on the linked FabricSubmission, not on TestRun. If the
-    // caller passed factoryId, proxy it onto the submission. Skip if there's
-    // no submission (legacy test runs without one).
-    if (factoryId !== undefined && existing.submissionId) {
-      await prisma.fabricSubmission.update({
-        where: { id: existing.submissionId },
-        data: { factoryId: factoryId || null },
-      });
+    // caller passed factoryId, proxy it onto the submission. If there's no
+    // submission yet (standalone upload), create one on the fly so Tina can
+    // attach a factory to a freshly uploaded report. Ticket cmo8d1yuy.
+    if (factoryId !== undefined) {
+      if (existing.submissionId) {
+        await prisma.fabricSubmission.update({
+          where: { id: existing.submissionId },
+          data: { factoryId: factoryId || null },
+        });
+      } else if (factoryId) {
+        // No submission yet — create a minimal one and link it to the test.
+        const newSub = await prisma.fabricSubmission.create({
+          data: {
+            factoryId,
+            status: "Submitted",
+            testStatus: "PENDING",
+            progressPercent: 0,
+          },
+        });
+        await prisma.testRun.update({
+          where: { id },
+          data: { submissionId: newSub.id },
+        });
+      }
     }
 
     // Update ICP result if fields provided

@@ -49,9 +49,17 @@ const BANNED_PHRASES: Array<[RegExp, string]> = [
   [/\bI hope this message finds you well\b\.?\s*/gi, ""],
   [/\bI hope all is well\b\.?\s*/gi, ""],
   [/\bI wanted to reach out\b\.?\s*/gi, "Reaching out "],
-  [/\bI['']m reaching out to\s+/gi, "Wanted to "],
-  [/\bI['']d love to chat\b\.?/gi, "Worth a quick call?"],
-  [/\bquick chat\b/gi, "15 minutes"],
+  // Only swap "I'm reaching out to" at the start of a sentence — mid-sentence
+  // it leaves "...so Wanted to ask..." which is grammatical garbage. Tickets
+  // cmom20xdz + cmon7n0me — Ryan/Scott reported broken sentences that traced
+  // back to this regex chewing through clauses.
+  [/(^|[.!?]\s+)I['']m reaching out to\s+/g, "$1Wanted to "],
+  // "I'd love to chat" → "Worth a quick call?" only when it ends a clause.
+  // The old version injected the "?" mid-sentence and broke grammar.
+  [/\bI['']d love to chat\b\.?(\s|$)/gi, "Worth a quick call?$1"],
+  // "quick chat" → "quick call" (same noun shape — the original "15 minutes"
+  // turned "Have a quick chat" into "Have a 15 minutes" which is broken).
+  [/\bquick chat\b/gi, "quick call"],
   [/\bcircle back\b/gi, "follow up"],
   [/\btouch base\b/gi, "check in"],
   [/\bsynerg(y|ies|istic)\b/gi, "fit"],

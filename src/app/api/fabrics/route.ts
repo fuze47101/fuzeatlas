@@ -15,13 +15,25 @@ export async function GET(req: Request) {
     const take = Number.isFinite(pageSizeRaw) && pageSizeRaw > 0 ? Math.min(pageSizeRaw, 1000) : undefined;
 
     // Build a broad OR filter. Ashlee types "2504" → we want that to match
-    // fuzeNumber exactly AND customer/factory codes that contain "2504".
+    // fuzeNumber exactly AND customer/factory codes that contain "2504"
+    // AND the same fields on the related FabricSubmission. Tickets
+    // cmo4u8xjm + cmoam7lr4 — Ashlee was getting blank-state results for
+    // some fabrics because the submission branch ONLY checked fuzeFabricNumber
+    // for numeric queries (so "2504" missed any fabric whose number lived on
+    // a customer/factory code instead).
     let where: any = undefined;
     if (q) {
       const asInt = /^\d+$/.test(q) ? parseInt(q, 10) : null;
+      // Strip "FUZE-" / "FUZE " / "F-" prefixes the user might type.
+      const stripped = q.replace(/^(?:FUZE[-\s]*|F[-\s]+)/i, "").trim();
+      const strippedAsInt = stripped !== q && /^\d+$/.test(stripped)
+        ? parseInt(stripped, 10)
+        : null;
+      const numericMatch = asInt ?? strippedAsInt;
+
       where = {
         OR: [
-          ...(asInt !== null ? [{ fuzeNumber: asInt }] : []),
+          ...(numericMatch !== null ? [{ fuzeNumber: numericMatch }] : []),
           { customerCode: { contains: q, mode: "insensitive" } },
           { factoryCode: { contains: q, mode: "insensitive" } },
           { customerReference: { contains: q, mode: "insensitive" } },
@@ -32,12 +44,31 @@ export async function GET(req: Request) {
           { note: { contains: q, mode: "insensitive" } },
           { brand: { is: { name: { contains: q, mode: "insensitive" } } } },
           { factory: { is: { name: { contains: q, mode: "insensitive" } } } },
-          // FUZE number may also live on the related FabricSubmission if the
-          // fabric was registered via intake and not yet back-filled.
-          { submissions: { some: asInt !== null ? { fuzeFabricNumber: asInt } : { customerFabricCode: { contains: q, mode: "insensitive" } } } },
+          // FUZE number / customer code / factory code may also live on the
+          // related FabricSubmission if the fabric was registered via intake
+          // and not yet back-filled.
+          {
+            submissions: {
+              some: {
+                OR: [
+                  ...(numericMatch !== null
+                    ? [{ fuzeFabricNumber: numericMatch }]
+                    : []),
+                  { customerFabricCode: { contains: q, mode: "insensitive" } },
+                  { factoryFabricCode: { contains: q, mode: "insensitive" } },
+                ],
+              },
+            },
+          },
         ],
       };
     }
+
+    // When the caller provided a query string we want to return every match,
+    // not just the top 200 by fuzeNumber desc. Otherwise a fabric outside the
+    // top-200 window silently disappears from the picker. Same root cause as
+    // ticket cmoam7lr4. Ignore the pageSize cap when q is set.
+    const effectiveTake = q ? undefined : take;
 
     const fabrics = await prisma.fabric.findMany({
       where,
@@ -86,7 +117,7 @@ export async function GET(req: Request) {
         },
       },
       orderBy: { fuzeNumber: "desc" },
-      ...(take ? { take } : {}),
+      ...(effectiveTake ? { take: effectiveTake } : {}),
     });
 
     const list = fabrics.map((f: any) => {
