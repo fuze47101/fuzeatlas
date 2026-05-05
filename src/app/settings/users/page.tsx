@@ -93,6 +93,16 @@ export default function UserManagementPage() {
   // Edit form
   const [editRole, setEditRole] = useState("");
   const [editStatus, setEditStatus] = useState("");
+  // Entity-pickers shown in edit mode based on role. Tina's bug:
+  // editing FACTORY_USER → DISTRIBUTOR_USER previously sent only
+  // {role, status}, which left factoryId stale + distributorId null.
+  // Now the form exposes the matching picker AND auto-clears stale
+  // entity FKs when switching role categories.
+  const [editBrandId, setEditBrandId] = useState("");
+  const [editFactoryId, setEditFactoryId] = useState("");
+  const [editDistributorId, setEditDistributorId] = useState("");
+  const [editLabId, setEditLabId] = useState("");
+  const [editError, setEditError] = useState<string | null>(null);
 
   // Action dropdown
   const [actionDropdownOpen, setActionDropdownOpen] = useState<string | null>(null);
@@ -188,20 +198,62 @@ export default function UserManagementPage() {
     setSaving(false);
   };
 
+  /**
+   * Open the edit row for a user, seeding all FK pickers from the
+   * user's current record. Without this seed, switching role
+   * categories (e.g. FACTORY_USER → DISTRIBUTOR_USER) would
+   * silently strand the old factoryId because the form had no
+   * picker for it.
+   */
+  const startEdit = (u: UserRecord) => {
+    setEditingId(u.id);
+    setEditRole(u.role);
+    setEditStatus(u.status);
+    setEditBrandId(u.brandId || "");
+    setEditFactoryId(u.factoryId || "");
+    setEditDistributorId(u.distributorId || "");
+    setEditLabId(u.labId || "");
+    setEditError(null);
+  };
+
   const handleUpdateUser = async (userId: string) => {
     setSaving(true);
+    setEditError(null);
     try {
+      // Build the patch body. Always send role + status. For entity
+      // FKs: send the PICKER VALUE for the role's required entity
+      // (so the API's role-coherence guard at /api/settings/users/[id]
+      // sees a valid finalFkValue), AND null out the OTHER three
+      // entity FKs so a role-category switch doesn't leave stale
+      // assignments. Tina's bug: she switched Shauna FACTORY_USER →
+      // DISTRIBUTOR_USER without a way to clear factoryId or set
+      // distributorId.
+      const body: any = { role: editRole, status: editStatus };
+      const isBrand = NEEDS_BRAND.includes(editRole);
+      const isFactory = NEEDS_FACTORY.includes(editRole);
+      const isDistributor = NEEDS_DISTRIBUTOR.includes(editRole);
+      const isLab = NEEDS_LAB.includes(editRole);
+      body.brandId = isBrand ? editBrandId || null : null;
+      body.factoryId = isFactory ? editFactoryId || null : null;
+      body.distributorId = isDistributor ? editDistributorId || null : null;
+      body.labId = isLab ? editLabId || null : null;
+
       const res = await fetch(`/api/settings/users/${userId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: editRole, status: editStatus }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (data.ok) {
         setEditingId(null);
+        setEditError(null);
         fetchUsers();
+      } else {
+        setEditError(data.error || "Failed to update user");
       }
-    } catch {}
+    } catch (e: any) {
+      setEditError(e?.message || "Network error");
+    }
     setSaving(false);
   };
 
@@ -351,7 +403,7 @@ export default function UserManagementPage() {
                         </span>
                         <span className="text-amber-700">— missing {needs}</span>
                         <button
-                          onClick={() => setEditingId(u.id)}
+                          onClick={() => startEdit(u)}
                           className="ml-auto text-blue-700 hover:underline text-xs font-semibold"
                         >
                           Fix →
@@ -573,9 +625,7 @@ export default function UserManagementPage() {
                   <div className="absolute right-0 bottom-full mb-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg z-50">
                     <button
                       onClick={() => {
-                        setEditingId(u.id);
-                        setEditRole(u.role);
-                        setEditStatus(u.status);
+                        startEdit(u);
                         setActionDropdownOpen(null);
                       }}
                       className="block w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 border-b border-slate-100"
@@ -653,6 +703,76 @@ export default function UserManagementPage() {
                     <option value="PENDING">Pending</option>
                   </select>
                 </div>
+
+                {/* Role-aware entity picker — appears when the picked
+                    role requires a brand/factory/distributor/lab. */}
+                {NEEDS_BRAND.includes(editRole) && (
+                  <div>
+                    <label className="text-xs text-slate-500">Brand</label>
+                    <select
+                      value={editBrandId}
+                      onChange={(e) => setEditBrandId(e.target.value)}
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
+                    >
+                      <option value="">— pick a brand —</option>
+                      {brands.map((b) => (
+                        <option key={b.id} value={b.id}>{b.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {NEEDS_FACTORY.includes(editRole) && (
+                  <div>
+                    <label className="text-xs text-slate-500">Factory</label>
+                    <select
+                      value={editFactoryId}
+                      onChange={(e) => setEditFactoryId(e.target.value)}
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
+                    >
+                      <option value="">— pick a factory —</option>
+                      {factories.map((f) => (
+                        <option key={f.id} value={f.id}>{f.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {NEEDS_DISTRIBUTOR.includes(editRole) && (
+                  <div>
+                    <label className="text-xs text-slate-500">Distributor</label>
+                    <select
+                      value={editDistributorId}
+                      onChange={(e) => setEditDistributorId(e.target.value)}
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
+                    >
+                      <option value="">— pick a distributor —</option>
+                      {distributors.map((d) => (
+                        <option key={d.id} value={d.id}>{d.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {NEEDS_LAB.includes(editRole) && (
+                  <div>
+                    <label className="text-xs text-slate-500">Lab</label>
+                    <select
+                      value={editLabId}
+                      onChange={(e) => setEditLabId(e.target.value)}
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
+                    >
+                      <option value="">— pick a lab —</option>
+                      {labs.map((l) => (
+                        <option key={l.id} value={l.id}>{l.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {editError && (
+                  <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded px-2 py-1">
+                    {editError}
+                  </p>
+                )}
+
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleUpdateUser(u.id)}
@@ -796,9 +916,7 @@ export default function UserManagementPage() {
                           <div className="absolute right-0 mt-1 w-44 bg-white border border-slate-200 rounded-lg shadow-lg z-50">
                             <button
                               onClick={() => {
-                                setEditingId(u.id);
-                                setEditRole(u.role);
-                                setEditStatus(u.status);
+                                startEdit(u);
                                 setActionDropdownOpen(null);
                               }}
                               className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 border-b border-slate-100"
