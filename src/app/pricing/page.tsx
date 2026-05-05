@@ -350,92 +350,113 @@ export default function PricingPage() {
         {competitor && envScore && costComparisons && (
           <div className="space-y-6">
 
-            {/* ═══ APPLES-TO-APPLES COST COMPARISON TABLE ═══ */}
-            <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl border border-slate-200 p-6">
-              <h3 className="text-base font-bold text-slate-800 mb-1">FUZE vs {competitor.product} — apples-to-apples</h3>
-              <p className="text-xs text-slate-500 mb-4">
-                Both products are mill-applied. Neither can be reapplied to a garment that has shipped to a customer.
-                What separates them is <span className="font-semibold">what wash claims you can actually defend</span>.
-                FUZE has third-party AATCC 100 wash data we&apos;ll send to a brand on request.
-                {competitor.product}&apos;s wash claim is self-published marketing — no public independent validation.
-              </p>
+            {/* ═══ ACTIVE-TIER COST COMPARISON ═══
+                Andrew (2026-05-04): "The left FUZE side should match the
+                selection they are using for the price comparison at the top.
+                It should never mention the other application levels at all."
+                We show ONLY the tier the user picked — single row, head-to-
+                head against the chosen competitor. Cleaner. No multi-tier
+                table; no "you'd pay more for F1" sub-narrative. */}
+            {(() => {
+              const cc = costComparisons.find(c => c.fuzeDose === dose) || costComparisons[0];
+              const fuzeMore = cc.fuzeCostPerMeter > cc.competitorTotalCostPerMeter;
+              const fuzeLess = cc.fuzeCostPerMeter < cc.competitorTotalCostPerMeter;
+              return (
+                <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl border border-slate-200 p-6">
+                  <h3 className="text-base font-bold text-slate-800 mb-1">
+                    FUZE {activeTier.id} {activeTier.name} vs {competitor.product}
+                  </h3>
+                  <p className="text-xs text-slate-500 mb-5">
+                    Both products are mill-applied. Neither can be reapplied to a garment that has shipped to a customer.
+                    What separates them is <span className="font-semibold">whether the wash claim is third-party validated</span>.
+                  </p>
 
-              {/* Table header */}
-              <div className="grid grid-cols-12 gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider pb-2 border-b border-slate-200 mb-1">
-                <div className="col-span-2">FUZE tier</div>
-                <div className="col-span-2 text-right">FUZE wash claim</div>
-                <div className="col-span-2 text-right">FUZE cost / m</div>
-                <div className="col-span-3 text-right">{competitor.product} wash claim</div>
-                <div className="col-span-2 text-right">{competitor.product.split(" ")[0]} cost / m</div>
-                <div className="col-span-1 text-right">Δ / m</div>
-              </div>
-
-              {/* Table rows */}
-              {costComparisons.map((cc, idx) => {
-                const tier = FUZE_TIERS[idx];
-                const isActive = tier.dose === dose;
-                const fuzeMore = cc.fuzeCostPerMeter > cc.competitorTotalCostPerMeter;
-                const fuzeLess = cc.fuzeCostPerMeter < cc.competitorTotalCostPerMeter;
-                return (
-                  <div key={tier.id}
-                    className={`grid grid-cols-12 gap-2 py-3 text-sm items-center rounded-lg transition-colors ${
-                      isActive ? "bg-[#00b4c3]/5 border border-[#00b4c3]/20 -mx-2 px-2" : "border-b border-slate-100"
-                    }`}>
-                    <div className="col-span-2">
-                      <div className="flex items-center gap-2">
-                        <span className={`inline-flex w-7 h-7 rounded-lg bg-gradient-to-br ${tier.color} text-white text-[10px] font-black items-center justify-center shrink-0`}>
-                          {tier.id}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* FUZE side — ACTIVE TIER ONLY */}
+                    <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className={`inline-flex w-9 h-9 rounded-lg bg-gradient-to-br ${activeTier.color} text-white text-xs font-black items-center justify-center shrink-0`}>
+                          {activeTier.id}
                         </span>
-                        <div className="hidden md:block">
-                          <div className="text-xs font-semibold text-slate-700 leading-tight">{tier.name}</div>
+                        <div>
+                          <div className="text-sm font-bold text-emerald-800">FUZE {activeTier.id} — {activeTier.name}</div>
+                          <div className="text-[10px] text-emerald-700">Permanent · one mill application</div>
+                        </div>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between items-baseline">
+                          <span className="text-emerald-700">Cost per meter</span>
+                          <span className="font-black text-2xl text-emerald-700">{money(cc.fuzeCostPerMeter, currency, fx)}</span>
+                        </div>
+                        <div className="flex justify-between items-baseline">
+                          <span className="text-emerald-700">Wash claim</span>
+                          <span className="font-bold text-emerald-700">{activeTier.washes} washes</span>
+                        </div>
+                        <div className="text-[11px] text-emerald-700/80 pt-2 border-t border-emerald-200">
+                          AATCC 100 third-party report available on request. Same per-meter cost across the entire {activeTier.washes}-wash life — no re-application, no per-wash pricing.
                         </div>
                       </div>
                     </div>
-                    <div className="col-span-2 text-right">
-                      <div className="font-bold text-emerald-700">{tier.washes} washes</div>
-                      <div className="text-[10px] text-emerald-600">AATCC 100 — third-party data on request</div>
-                    </div>
-                    <div className="col-span-2 text-right">
-                      <div className="font-bold text-emerald-600">{money(cc.fuzeCostPerMeter, currency, fx)}</div>
-                      <div className="text-[10px] text-slate-400">one mill application</div>
-                    </div>
-                    <div className="col-span-3 text-right">
-                      <div className="font-bold text-red-600">{competitor.maxWashClaim} washes</div>
-                      <div className="text-[10px] text-red-500">marketing claim — no public third-party validation</div>
-                    </div>
-                    <div className="col-span-2 text-right">
-                      <div className="font-bold text-slate-700">{money(cc.competitorTotalCostPerMeter, currency, fx)}</div>
-                      <div className="text-[10px] text-slate-400">one mill application</div>
-                    </div>
-                    <div className="col-span-1 text-right">
-                      {fuzeLess && (
-                        <div className="font-bold text-emerald-600">−{money(cc.competitorTotalCostPerMeter - cc.fuzeCostPerMeter, currency, fx)}</div>
-                      )}
-                      {fuzeMore && (
-                        <div className="font-bold text-amber-600">+{money(cc.fuzeCostPerMeter - cc.competitorTotalCostPerMeter, currency, fx)}</div>
-                      )}
-                      {!fuzeMore && !fuzeLess && (
-                        <div className="font-bold text-slate-500">match</div>
-                      )}
+
+                    {/* Competitor side */}
+                    <div className="bg-red-50/60 border border-red-200 rounded-xl p-5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="inline-flex w-9 h-9 rounded-lg bg-gradient-to-br from-red-500 to-red-600 text-white text-[10px] font-black items-center justify-center shrink-0">
+                          ⚠
+                        </span>
+                        <div>
+                          <div className="text-sm font-bold text-red-800">{competitor.product}</div>
+                          <div className="text-[10px] text-red-600">{competitor.company}</div>
+                        </div>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between items-baseline">
+                          <span className="text-red-700">Cost per meter</span>
+                          <span className="font-black text-2xl text-red-700">{money(cc.competitorTotalCostPerMeter, currency, fx)}</span>
+                        </div>
+                        <div className="flex justify-between items-baseline">
+                          <span className="text-red-700">Wash claim</span>
+                          <span className="font-bold text-red-700">{competitor.maxWashClaim} washes</span>
+                        </div>
+                        <div className="text-[11px] text-red-700/80 pt-2 border-t border-red-200">
+                          {competitor.washClaimSource === "aatcc-100-third-party"
+                            ? "Independently validated AATCC 100 data available."
+                            : "Self-published marketing claim. No public third-party AATCC 100 validation."}
+                          {" "}One mill application — re-application is impossible after the garment ships.
+                        </div>
+                      </div>
                     </div>
                   </div>
-                );
-              })}
 
-              {/* Explainer */}
-              <div className="mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-                <div className="text-xs font-semibold text-emerald-800 mb-1.5">What you can actually defend in a brand conversation</div>
-                <p className="text-xs text-emerald-700 leading-relaxed">
-                  <strong>EPA registers an active ingredient as a pesticide. EPA does NOT validate any wash count claim.</strong>
-                  &nbsp;Every &ldquo;25 washes&rdquo; / &ldquo;50 washes&rdquo; / &ldquo;lifetime of garment&rdquo; number on a competitor data sheet
-                  comes from that company&apos;s own AATCC 100 testing on samples of their choosing in conditions of their choosing —
-                  there is no public independent validation. {competitor.product}&apos;s {competitor.maxWashClaim}-wash number is
-                  {competitor.washClaimSource === "aatcc-100-third-party" ? " independently validated." : " self-published marketing."}{" "}
-                  FUZE has documented AATCC 100 wash reports across all four tiers and shares them with brands on request.
-                  That&apos;s the gap that matters in a presentation — not application count.
-                </p>
-              </div>
-            </div>
+                  {/* Cost delta strip */}
+                  <div className="mt-4 flex items-center justify-center text-sm font-semibold gap-2">
+                    <span className="text-slate-500">Cost difference at FUZE {activeTier.id}:</span>
+                    {fuzeLess && (
+                      <span className="text-emerald-600 font-black">{money(cc.competitorTotalCostPerMeter - cc.fuzeCostPerMeter, currency, fx)}/m cheaper than {competitor.product.split(" ")[0]}</span>
+                    )}
+                    {fuzeMore && (
+                      <span className="text-amber-600 font-black">+{money(cc.fuzeCostPerMeter - cc.competitorTotalCostPerMeter, currency, fx)}/m premium for {activeTier.washes}-wash third-party validation</span>
+                    )}
+                    {!fuzeMore && !fuzeLess && (
+                      <span className="text-slate-700 font-black">price match — pivot the conversation to chemistry, leaching, and validated wash data</span>
+                    )}
+                  </div>
+
+                  {/* Explainer */}
+                  <div className="mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+                    <div className="text-xs font-semibold text-emerald-800 mb-1.5">What you can actually defend in a brand conversation</div>
+                    <p className="text-xs text-emerald-700 leading-relaxed">
+                      <strong>EPA registers an active ingredient as a pesticide. EPA does NOT validate any wash count claim.</strong>
+                      &nbsp;Every &ldquo;25 washes&rdquo; / &ldquo;50 washes&rdquo; / &ldquo;lifetime of garment&rdquo; number on a competitor data sheet
+                      comes from that company&apos;s own AATCC 100 testing on samples of their choosing in conditions of their choosing —
+                      there is no public independent validation. {competitor.product}&apos;s {competitor.maxWashClaim}-wash number is
+                      {competitor.washClaimSource === "aatcc-100-third-party" ? " independently validated." : " self-published marketing."}{" "}
+                      FUZE shares its AATCC 100 reports for the tier you select with brands on request — that&apos;s the asymmetry that closes the deal.
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Chemistry + Cost side-by-side for ACTIVE tier */}
             {(() => {
