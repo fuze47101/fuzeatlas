@@ -126,7 +126,10 @@ export default function FuzeChat() {
   }
 
   return (
-    <>
+    // id + data-print="hide" so the @media print rule in globals.css
+    // strips the chat bubble + open panel off any PDF export. Kaylee's ICP
+    // recipe print was capturing the chat onto the page.
+    <div id="fuze-chat-root" data-print="hide" className="contents print:hidden">
       {/* Chat Panel — anchored above the trigger which sits stacked
           ABOVE the floating "Support" button (Ashlee #cmoalzutg fix).
           bottom-44 (176px) clears the support button (bottom-5 + ~56px
@@ -283,6 +286,6 @@ export default function FuzeChat() {
           </>
         )}
       </button>
-    </>
+    </div>
   );
 }

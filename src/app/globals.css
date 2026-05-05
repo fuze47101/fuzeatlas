@@ -8,3 +8,49 @@ body { @apply bg-slate-50 text-slate-900; }
 html[dir="rtl"] .sidebar-nav { direction: rtl; text-align: right; }
 html[dir="rtl"] input, html[dir="rtl"] textarea { direction: ltr; text-align: left; }
 html[dir="rtl"] [dir="ltr"] { direction: ltr; }
+
+/* ── Print rules ──────────────────────────────────────────────────
+ * Kaylee reported the ICP recipe print/PDF was capturing app chrome:
+ * the FuzeChat bubble, the Feedback / "How do I" button, the sidebar
+ * top bar, and toast popovers — all overlaying the actual recipe.
+ * Anything tagged `data-print="hide"` OR matching the structural
+ * selectors below is removed from print output. Pages that opt into
+ * `<body class="print-clean">` (or any ancestor) also strip every
+ * fixed/absolute overlay so PDFs export clean.
+ */
+@media print {
+  /* 1. Anything explicitly marked print-hidden. */
+  [data-print="hide"],
+  .print\:hidden,
+  /* 2. App-wide chrome that shouldn't render in any PDF. */
+  #fuze-chat-root,
+  #fuze-feedback-root,
+  /* Toast portal + any modal backdrop that survived the print trigger. */
+  [data-toast-root],
+  [data-modal-backdrop],
+  /* Mobile top bar (Sidebar.tsx line 493). */
+  .lg\:hidden.fixed.top-0,
+  /* Any fixed-position widget at the bottom-right corner — that's where
+     the chat bubble and feedback button live. Caught by attribute-style
+     classes ("fixed bottom-* right-*" combos). */
+  .fixed.bottom-4.right-4,
+  .fixed.bottom-6.right-6,
+  .fixed.bottom-24.right-4,
+  .fixed.bottom-24.right-6,
+  .fixed.bottom-44.right-4,
+  .fixed.bottom-44.right-6 {
+    display: none !important;
+  }
+
+  /* Make sure print pages don't inherit the slate background or shadows. */
+  body {
+    background: #fff !important;
+  }
+
+  /* Tailwind's `print:hidden` utility sometimes loses to specificity from
+     other utility classes — force it to take precedence. */
+  .print-hidden,
+  .no-print {
+    display: none !important;
+  }
+}

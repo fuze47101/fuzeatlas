@@ -110,8 +110,15 @@ export default function FeedbackButton() {
 
   return (
     <>
-      {/* Two separate floating buttons — FAQ on the left, Support on the right */}
-      <div className="fixed bottom-5 right-5 z-[9998] flex items-center gap-2">
+      {/* Two separate floating buttons — FAQ on the left, Support on the right.
+          id + data-print="hide" so the print stylesheet (globals.css @media print)
+          can strip both buttons + the modal off any PDF export — Kaylee's ICP
+          recipe print was capturing them. */}
+      <div
+        id="fuze-feedback-root"
+        data-print="hide"
+        className="fixed bottom-5 right-5 z-[9998] flex items-center gap-2 print:hidden"
+      >
         <button
           onClick={() => setMode("HOWTO")}
           title="Step-by-step how-tos for what you're trying to do"

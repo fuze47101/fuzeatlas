@@ -16,13 +16,28 @@ export default function FabricsPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; label: string } | null>(null);
 
-  const loadFabrics = () => {
-    fetch("/api/fabrics").then(r => r.json()).then(j => {
-      if (j.ok) { setFabrics(j.fabrics); setTotal(j.total); }
+  // Server-side search keeps /fabrics behavior aligned with the global search
+  // header (which hits /api/fabrics?q=… directly). Kaylee reported that
+  // searching "Toray" in /fabrics returned fewer fabrics than the global
+  // search — root cause was the page loading all rows once and then filtering
+  // client-side on a narrow set of fields, so any match on customerCode,
+  // factoryCode, color, yarnType, or the linked submission's codes got dropped.
+  const loadFabrics = (q: string = "") => {
+    setLoading(true);
+    const url = new URL("/api/fabrics", window.location.origin);
+    if (q.trim()) url.searchParams.set("q", q.trim());
+    fetch(url.toString()).then(r => r.json()).then(j => {
+      if (j.ok) { setFabrics(j.fabrics); setTotal(j.total ?? j.fabrics.length); }
     }).finally(() => setLoading(false));
   };
 
-  useEffect(loadFabrics, []);
+  useEffect(() => { loadFabrics(""); }, []);
+
+  // Debounced server-side search as the user types.
+  useEffect(() => {
+    const id = setTimeout(() => loadFabrics(search), 250);
+    return () => clearTimeout(id);
+  }, [search]);
 
   const handleDelete = (e: React.MouseEvent, id: string, fuzeNum: number | null) => {
     e.stopPropagation();
@@ -50,16 +65,10 @@ export default function FabricsPage() {
     }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">{t.fabrics.loadingFabrics}</div>;
+  if (loading && fabrics.length === 0) return <div className="flex items-center justify-center h-64 text-slate-400">{t.fabrics.loadingFabrics}</div>;
 
-  const q = search.toLowerCase();
-  const filtered = fabrics.filter(f =>
-    !q || (f.fuzeNumber && String(f.fuzeNumber).includes(q)) ||
-    (f.construction && f.construction.toLowerCase().includes(q)) ||
-    (f.brand && f.brand.toLowerCase().includes(q)) ||
-    (f.factory && f.factory.toLowerCase().includes(q)) ||
-    (f.contents && f.contents.toLowerCase().includes(q))
-  );
+  // Server now does the filtering — render whatever the API returned.
+  const filtered = fabrics;
 
   return (
     <div className="max-w-[1400px] mx-auto">
