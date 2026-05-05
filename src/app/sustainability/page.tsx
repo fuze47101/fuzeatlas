@@ -3,8 +3,9 @@
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { calcQuote, money, type WidthUnit } from "@/lib/fuze-calc";
-import { COMPETITORS, applyOverrides, type Competitor, type PriceOverride } from "@/lib/competitors";
+import { COMPETITORS, applyOverrides, calcCostComparison, type Competitor, type PriceOverride } from "@/lib/competitors";
 import { calcSustainabilityScore, generateESGClaims, FUZE_SUSTAINABILITY, UPSTREAM_MANUFACTURING } from "@/lib/sustainability";
+import WashProtectionChart from "@/components/WashProtectionChart";
 
 function num(n: number, digits = 2) {
   if (!Number.isFinite(n)) return "0";
@@ -54,6 +55,33 @@ export default function SustainabilityPage() {
   const esgClaims = useMemo(
     () => generateESGClaims(score, competitor, annualMeters),
     [score, competitor, annualMeters],
+  );
+
+  // ── Wash-protection cost comparison ──
+  // The single most-asked-for sales artifact: per-meter cost vs wash count,
+  // showing FUZE flat across the tier's lifetime and competitor cliff at
+  // their EPA-stated wash limit (with reapplication impossible because the
+  // garment is in market). Built 2026-05-04.
+  const fuzeCostPerMeter = useMemo(() => {
+    // Match the calculator: F4 (0.25 mg/kg dose), 30 ppm stock, $36/L.
+    // Per-meter delivered cost = (volume needed × $/L). We pull from the
+    // existing calcQuote engine for consistency with the /pricing page.
+    const q = calcQuote({
+      gsm,
+      width,
+      widthUnit,
+      doseMgPerKg: 0.25,
+      stockMgPerL: 30,
+      pricePerLiter: 36,
+      discountPercent: 0,
+      adders: [],
+    });
+    return q.fuzeCostPerLinearMeter || 0.07;
+  }, [gsm, width, widthUnit]);
+
+  const costComparison = useMemo(
+    () => calcCostComparison(competitor, fuzeCostPerMeter, 0.25, targetWashes, fabricWeightKg),
+    [competitor, fuzeCostPerMeter, targetWashes, fabricWeightKg],
   );
 
   // Resolve upstream data for CO2 breakdown display
@@ -523,6 +551,36 @@ export default function SustainabilityPage() {
         {/* Remediation scope explanation */}
         <div className="bg-white border border-orange-100 rounded-xl p-3 mb-4">
           <div className="text-[10px] text-orange-700"><strong>What this covers:</strong> {score.remediationScope}</div>
+        </div>
+
+        {/* Wash-protection cost chart — the sales weapon. Built 2026-05-04
+            after Andrew flagged the old chart was implying FUZE got more
+            expensive at higher wash counts (it doesn't) and competitors
+            could be reapplied to scale (they can't — garment is in market). */}
+        <div className="mb-5">
+          <WashProtectionChart
+            comparison={costComparison}
+            competitor={competitor}
+            fuzeLabel="FUZE"
+          />
+          {competitor.washClaimSource !== "aatcc-100-third-party" && (
+            <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800">
+              <strong>About that {competitor.maxWashClaim}-wash number:</strong>{" "}
+              EPA registers the active ingredient as a pesticide. EPA does NOT validate or certify any wash count.
+              The {competitor.maxWashClaim}-wash claim for {competitor.product} is self-published by {competitor.company.split(" ")[0]} —
+              {" "}{competitor.washClaimNote}
+            </div>
+          )}
+          {competitor.epaRegNumber.startsWith("N/A") && (
+            <div className="mt-3 bg-red-50 border border-red-300 rounded-xl p-4 text-xs text-red-800">
+              <strong>No EPA registration.</strong> {competitor.product} is not federally
+              registered as an antimicrobial. Brands citing this product as
+              &ldquo;antimicrobial&rdquo; in marketing are exposed to FIFRA risk.
+              {competitor.id.startsWith("heiq-") && (competitor.id.includes("mint") || competitor.id.includes("fresh"))
+                ? " HeiQ Fresh / HeiQ Mint are scent systems (peppermint microcapsules), not antimicrobials — they are routinely confused with HeiQ Viroblock."
+                : ""}
+            </div>
+          )}
         </div>
 
         {/* True total cost comparison */}

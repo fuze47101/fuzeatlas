@@ -6,7 +6,11 @@ export type ChemistryType =
   | "silver_copper_zeolite" | "silver_nano" | "silver_nano_zinc"
   | "qac_silane" | "zinc_pyrithione" | "zinc_nano"
   | "copper" | "chitosan" | "triclosan"
-  | "citric_acid" | "resin_acid" | "wood_extract";
+  | "citric_acid" | "resin_acid" | "wood_extract"
+  // Mint / fragrance treatments — NOT antimicrobials. Tracked so reps can
+  // call out the misclassification when brands confuse e.g. HeiQ Fresh
+  // (scent) with HeiQ Viroblock (antiviral).
+  | "mint_extract" | "fragrance";
 
 export type Competitor = {
   id: string;
@@ -27,9 +31,22 @@ export type Competitor = {
   dosageHigh: number;
   dosageTypical: number;
 
-  // Wash durability
+  // Wash durability — what the company PUBLISHES.
+  //
+  // CRITICAL FRAMING (Andrew, 2026-05-04): EPA registration covers the active
+  // ingredient as a pesticide. EPA does NOT validate or certify any wash
+  // count claim. Wash counts come from manufacturer-commissioned AATCC 100
+  // tests run on samples of their choosing in conditions of their choosing.
+  // No competitor in this dataset publishes third-party validated wash data.
+  //
+  //   maxWashClaim         = the published marketing number
+  //   washClaimNote        = source citation + caveat about validation
+  //   washClaimSource      = "marketing" (self-published) or "aatcc-100-third-party"
+  //                          (independently validated, available on request).
+  //                          Only FUZE has the latter.
   maxWashClaim: number;
   washClaimNote: string;
+  washClaimSource?: "marketing" | "aatcc-100-third-party";
 
   // Binder required
   binderRequired: boolean;
@@ -80,8 +97,13 @@ export const COMPETITORS: Competitor[] = [
     dosageLow: 30,
     dosageHigh: 700,
     dosageTypical: 100,
+    // 50 washes is the LANXESS marketing claim. EPA registration #464-785
+    // covers the active ingredient as a pesticide; it does not validate or
+    // certify any wash count. There is no public third-party (independent
+    // lab) AATCC 100 wash data for Silvadur 930 Flex available for review.
     maxWashClaim: 50,
-    washClaimNote: "40-50 washes at 30 ppm odor dose",
+    washClaimNote: "LANXESS marketing claim. EPA registration covers active ingredient only — no third-party validated AATCC 100 wash data publicly available.",
+    washClaimSource: "marketing",
     binderRequired: true,
     binderGPerKg: 15,
     binderType: "Acrylic co-polymer with crosslinker",
@@ -101,7 +123,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.07,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.3,
   },
 
@@ -122,8 +149,15 @@ export const COMPETITORS: Competitor[] = [
     dosageLow: 50,
     dosageHigh: 200,
     dosageTypical: 100,
+    // Polygiene markets StayFresh as "lasting the lifetime of the garment".
+    // They do not publicly disclose their EPA registration number, do not
+    // publish AATCC 100 reports for third-party review, and have no public
+    // independent wash validation. The "30 washes" we record here is a
+    // common silver-ion industry self-published number — treat it as
+    // marketing, not validation. Cite it with the disclaimer below.
     maxWashClaim: 30,
-    washClaimNote: "15-30 washes typical",
+    washClaimNote: "Polygiene marketing claim. EPA registration # not publicly disclosed. No third-party validated AATCC 100 wash data publicly available.",
+    washClaimSource: "marketing",
     binderRequired: true,
     binderGPerKg: 15,
     binderType: "Acrylic emulsion binder",
@@ -143,7 +177,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.10,
     estimatedCostPerMeterTypical: 0.06,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.4,
   },
   {
@@ -181,7 +220,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.05,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.07,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.4,
   },
 
@@ -223,7 +267,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.03,
     estimatedCostPerMeterHigh: 0.10,
     estimatedCostPerMeterTypical: 0.05,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.5,
   },
   {
@@ -261,7 +310,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.03,
     estimatedCostPerMeterHigh: 0.09,
     estimatedCostPerMeterTypical: 0.05,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.5,
   },
   {
@@ -299,7 +353,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.02,
     estimatedCostPerMeterHigh: 0.07,
     estimatedCostPerMeterTypical: 0.04,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.5,
   },
   {
@@ -337,7 +396,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.03,
     estimatedCostPerMeterHigh: 0.10,
     estimatedCostPerMeterTypical: 0.06,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.5,
   },
   {
@@ -375,7 +439,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.06,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.5,
   },
   {
@@ -413,7 +482,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.03,
     estimatedCostPerMeterHigh: 0.09,
     estimatedCostPerMeterTypical: 0.05,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.5,
   },
 
@@ -455,7 +529,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.11,
     estimatedCostPerMeterTypical: 0.06,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.3,
   },
   {
@@ -493,7 +572,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.10,
     estimatedCostPerMeterTypical: 0.06,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.3,
   },
   {
@@ -531,7 +615,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.06,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.3,
   },
   {
@@ -569,7 +658,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.07,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.5,
   },
 
@@ -611,7 +705,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.07,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.4,
   },
 
@@ -653,7 +752,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.06,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.4,
   },
   {
@@ -691,7 +795,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.05,
     estimatedCostPerMeterHigh: 0.14,
     estimatedCostPerMeterTypical: 0.08,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.4,
   },
   {
@@ -729,7 +838,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.03,
     estimatedCostPerMeterHigh: 0.10,
     estimatedCostPerMeterTypical: 0.05,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.4,
   },
 
@@ -771,7 +885,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.03,
     estimatedCostPerMeterHigh: 0.10,
     estimatedCostPerMeterTypical: 0.05,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.3,
   },
 
@@ -813,7 +932,12 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.15,
     estimatedCostPerMeterTypical: 0.08,
-    retreatmentPossible: true,
+    // In-factory mill chemistries cannot be reapplied once the garment has
+    // shipped. The brand has no way to put silver/QAC/zinc back on a sold
+    // garment. We used to model retreatment as possible-but-expensive, which
+    // implied the chart was an unfair re-application tax. The truth is
+    // colder: protection ends at maxWashClaim, period.
+    retreatmentPossible: false,
     retreatmentCostMultiplier: 1.2,
   },
 
@@ -938,6 +1062,94 @@ export const COMPETITORS: Competitor[] = [
     retreatmentPossible: false,
     retreatmentCostMultiplier: 1.0,
   },
+
+  // ══════════════════════════════════════════════════
+  // MINT / FRAGRANCE TREATMENTS — NOT ANTIMICROBIAL
+  // ══════════════════════════════════════════════════
+  // Brands routinely confuse HeiQ Fresh / HeiQ Mint with HeiQ Viroblock.
+  // The mint products are SCENT systems — peppermint oil microcapsules
+  // released by friction. They do NOT kill bacteria, they cannot make
+  // antimicrobial claims, they have no EPA registration, and the
+  // microcapsules survive ~3 wash cycles before depletion. We track
+  // them here so reps can call out the misclassification.
+  {
+    id: "heiq-fresh",
+    company: "HeiQ (Switzerland)",
+    product: "HeiQ Fresh (mint scent system)",
+    chemistryType: "mint_extract",
+    chemistryLabel: "Peppermint oil microcapsule (NOT antimicrobial)",
+    activeAgent: "Mentha arvensis (peppermint) essential oil in melamine-formaldehyde microcapsule",
+    epaRegNumber: "N/A — not an antimicrobial",
+    epaRegYear: null,
+    epaRegNote: "NO EPA registration. HeiQ Fresh is positioned as an odor-control freshness system, not an antimicrobial. Cannot legally claim 'kills bacteria,' 'antibacterial,' or 'antimicrobial' under FIFRA. Brands citing HeiQ Fresh as antimicrobial are misrepresenting the product.",
+    epaLabelUrl: "https://www.heiq.com/products/textile-technologies/heiq-fresh-tech/",
+    dosageLow: 5000,
+    dosageHigh: 30000,
+    dosageTypical: 15000,
+    maxWashClaim: 3,
+    washClaimNote: "Peppermint oil microcapsules deplete after ~3 wash cycles. HeiQ marketing says 'lasts wash after wash' but does not specify a number — independent testing on encapsulated fragrance systems shows >80% scent loss by wash 5",
+    washClaimSource: "marketing",
+    binderRequired: true,
+    binderGPerKg: 20,
+    binderType: "Acrylic co-polymer + melamine-formaldehyde shell",
+    binderPricePerKg: 3.50,
+    binderLeachPctLifetime: 30,
+    binderVOC: true,
+    binderFormaldehyde: true,
+    curingRequired: true,
+    curingTempC: 150,
+    leachRateFirst10Washes: 70,
+    leachRatePerWash: 7.0,
+    heavyMetalReleased: "None (organic fragrance microcapsule)",
+    aquaticToxicityNote: "Melamine-formaldehyde microcapsule shells persist in wash effluent. Formaldehyde release from shell crosslinker.",
+    endOfLifeNote: "Microcapsules shed during washing become microplastic-equivalent particles in waterways. Spent capsule shells are non-biodegradable.",
+    chemicalPricePerKg: 18,
+    chemicalPriceSource: "Estimate: Encapsulated fragrance system, HeiQ branded (China ≈$14-22/kg)",
+    estimatedCostPerMeterLow: 0.04,
+    estimatedCostPerMeterHigh: 0.10,
+    estimatedCostPerMeterTypical: 0.06,
+    retreatmentPossible: false,
+    retreatmentCostMultiplier: 1.0,
+  },
+  {
+    id: "heiq-mint",
+    company: "HeiQ (Switzerland)",
+    product: "HeiQ Mint (legacy fragrance brand)",
+    chemistryType: "mint_extract",
+    chemistryLabel: "Peppermint extract microcapsule (NOT antimicrobial)",
+    activeAgent: "Mentha arvensis (peppermint) extract in microcapsule, friction-release",
+    epaRegNumber: "N/A — not an antimicrobial",
+    epaRegYear: null,
+    epaRegNote: "NO EPA registration. Predecessor branding for what is now HeiQ Fresh. Same fragrance-only mechanism: cannot claim 'kills bacteria' or 'antimicrobial.' Some legacy product hangtags carrying the HeiQ Mint mark still circulate and are sometimes mistaken for an antimicrobial.",
+    epaLabelUrl: "https://www.heiq.com/products/textile-technologies/heiq-fresh-tech/",
+    dosageLow: 5000,
+    dosageHigh: 30000,
+    dosageTypical: 15000,
+    maxWashClaim: 3,
+    washClaimNote: "Same depletion profile as HeiQ Fresh — ~3 wash cycles before scent is exhausted. Bacteriostatic claims are unsupported. Marketing materials sometimes borrow durability language from HeiQ's antimicrobial line (Viroblock, AGS-20) which is misleading.",
+    washClaimSource: "marketing",
+    binderRequired: true,
+    binderGPerKg: 20,
+    binderType: "Acrylic co-polymer + microcapsule shell",
+    binderPricePerKg: 3.50,
+    binderLeachPctLifetime: 30,
+    binderVOC: true,
+    binderFormaldehyde: true,
+    curingRequired: true,
+    curingTempC: 150,
+    leachRateFirst10Washes: 70,
+    leachRatePerWash: 7.0,
+    heavyMetalReleased: "None (organic fragrance microcapsule)",
+    aquaticToxicityNote: "Microcapsule shells shed in wash water; same persistence concern as HeiQ Fresh.",
+    endOfLifeNote: "Non-biodegradable shell residue; microcapsule fragments enter waterway sediment.",
+    chemicalPricePerKg: 18,
+    chemicalPriceSource: "Estimate: Same family as HeiQ Fresh.",
+    estimatedCostPerMeterLow: 0.04,
+    estimatedCostPerMeterHigh: 0.10,
+    estimatedCostPerMeterTypical: 0.06,
+    retreatmentPossible: false,
+    retreatmentCostMultiplier: 1.0,
+  },
 ];
 
 // FUZE reference data
@@ -955,8 +1167,20 @@ export const FUZE = {
 };
 
 // ─── Apples-to-apples cost comparison ──────────
-// Calculates what a competitor would actually cost to reach a given wash target
-// If they can only do 25 washes and you need 100, they need 4 treatments (at increasing cost)
+// Calculates what a competitor would actually cost to reach a given wash target.
+//
+// HONEST MODEL (the rebuild Andrew demanded 2026-05-04):
+//   FUZE F4 at $0.07/m gives the brand 100 washes of antimicrobial protection
+//   for one mill application. The price does not change per wash. Competitors
+//   give the brand their EPA-stated wash count for one mill application — and
+//   then the protection ENDS. They cannot be reapplied to a garment that has
+//   shipped to a customer, no matter what the marketing claim is. Their per-
+//   meter cost stays at the first-application price; what collapses is the
+//   coverage. The chart shows that as a flat line that ends at a cliff.
+//
+// We still produce competitorTotalCostPerMeter for legacy consumers, but it
+// is now equal to firstAppCost for any retreatmentPossible: false competitor —
+// i.e. the brand only ever pays for the one application they got.
 export type CostComparison = {
   fuzeTierLabel: string;
   fuzeDose: number;
@@ -964,21 +1188,38 @@ export type CostComparison = {
   fuzeCostPerMeter: number;          // single application, lifetime
   fuzeApplications: number;          // always 1
   competitorCostPerApplication: number;
-  competitorApplicationsNeeded: number;
+  competitorApplicationsNeeded: number; // theoretical — see retreatmentPossible
   competitorTotalCostPerMeter: number;
-  competitorCostMultiple: string;    // "3.2×" etc.
+  competitorCostMultiple: string;    // "3.2×" or "Coverage gap" if cliff
   fuzeSavingsPerMeter: number;
   fuzeSavingsPct: number;
-  // Environmental multipliers (re-treatment = more chemistry, more binder, more leaching)
+  // Wash-coverage truth-telling
+  competitorRetreatmentPossible: boolean;
+  competitorMaxProtectedWashes: number; // EPA-stated wash count
+  competitorUnprotectedWashes: number;  // washes BEYOND maxProtectedWashes
+  competitorMarketingWashClaim?: number; // for the "they say X, EPA says Y" callout
+  // Environmental multipliers
   competitorTotalChemistryMg: number;
   competitorTotalBinderG: number;
   competitorTotalLeachMg: number;       // active agent leached to water
   competitorBinderLeachG: number;       // binder leached to water (microplastics / polymer)
-  competitorTotalDischargeToWaterMg: number; // everything: active agent + binder combined
-  competitorBinderCostTotal: number;    // total binder cost across all applications
+  competitorTotalDischargeToWaterMg: number; // active agent + binder combined
+  competitorBinderCostTotal: number;
   fuzeChemistryMg: number;
   fuzeBinderG: number;
   fuzeLeachMg: number;
+  // ── Wash-by-wash curve for chart rendering ──
+  // One point per 5-wash bucket from 0 → targetWashes, suitable for a Recharts
+  // <LineChart>. fuzeCost is a flat horizontal line; competitorCost stays at
+  // firstAppCost up to maxProtectedWashes, then becomes null (renders as a
+  // gap with a "REAPPLICATION IMPOSSIBLE" annotation on the chart).
+  curve: Array<{
+    wash: number;
+    fuzeCostPerMeter: number;
+    competitorCostPerMeter: number | null;
+    fuzeProtected: boolean;
+    competitorProtected: boolean;
+  }>;
 };
 
 export function calcCostComparison(
@@ -988,53 +1229,46 @@ export function calcCostComparison(
   targetWashes: number,
   fabricWeightKg: number,
 ): CostComparison {
-  // How many applications does the competitor need to cover targetWashes?
-  const competitorApplicationsNeeded = competitor.maxWashClaim > 0
-    ? Math.ceil(targetWashes / competitor.maxWashClaim)
-    : 1;
-
-  // Competitor cost: first application at typical cost, re-treatments at multiplier
   const firstAppCost = competitor.estimatedCostPerMeterTypical;
-  const retreatCost = firstAppCost * competitor.retreatmentCostMultiplier;
-  const competitorTotalCostPerMeter = competitorApplicationsNeeded <= 1
-    ? firstAppCost
-    : firstAppCost + (competitorApplicationsNeeded - 1) * retreatCost;
+  const maxProtectedWashes = competitor.maxWashClaim;
 
-  const competitorCostMultiple = fuzeCostPerMeter > 0
-    ? (competitorTotalCostPerMeter / fuzeCostPerMeter).toFixed(1) + "×"
-    : "∞×";
+  // CRITICAL (Andrew, 2026-05-04): every textile antimicrobial in this
+  // dataset is applied at the mill. None of them can be reapplied to a
+  // garment that has shipped to a customer. Therefore the answer to
+  // "how many applications" is ALWAYS one. The cost the brand actually
+  // pays is firstAppCost — full stop. The chart no longer multiplies.
+  const applicationsNeededIfPossible = 1;
+  const competitorTotalCostPerMeter = firstAppCost;
+
+  // No more cost multiplier framing — the cost is the cost. The "multiple"
+  // is now about the gap in claimed wash coverage relative to the FUZE tier.
+  const competitorCostMultiple = maxProtectedWashes < targetWashes
+    ? `${maxProtectedWashes} wash claim vs ${targetWashes} target`
+    : "Equivalent claim";
 
   const fuzeSavingsPerMeter = competitorTotalCostPerMeter - fuzeCostPerMeter;
   const fuzeSavingsPct = competitorTotalCostPerMeter > 0
     ? ((fuzeSavingsPerMeter / competitorTotalCostPerMeter) * 100)
     : 0;
 
-  // Environmental impact multiplied by re-treatments
+  // Environmental impact — one application, period.
   const compChemPerApp = competitor.dosageTypical * fabricWeightKg;
-  const competitorTotalChemistryMg = compChemPerApp * competitorApplicationsNeeded;
-  const competitorTotalBinderG = competitor.binderRequired
-    ? competitor.binderGPerKg * fabricWeightKg * competitorApplicationsNeeded
+  const competitorTotalChemistryMg = compChemPerApp;
+  const totalBinderAppliedG = competitor.binderRequired
+    ? competitor.binderGPerKg * fabricWeightKg
     : 0;
 
-  // Leaching: each application cycle leaches its active agent over the wash range
-  const washesPerCycle = competitor.maxWashClaim;
-  let competitorTotalLeachMg = 0;
-  for (let i = 0; i < competitorApplicationsNeeded; i++) {
-    const washesThisCycle = Math.min(washesPerCycle, targetWashes - i * washesPerCycle);
-    const leachFraction = Math.min(1, (competitor.leachRatePerWash / 100) * washesThisCycle);
-    competitorTotalLeachMg += compChemPerApp * leachFraction;
-  }
+  // Active-agent leaching: capped at the wash count actually protected.
+  // Once protection ends, the chemistry is essentially gone, so further
+  // washes don't keep leaching from it.
+  const protectedWashes = Math.min(targetWashes, maxProtectedWashes);
+  const leachFraction = Math.min(1, (competitor.leachRatePerWash / 100) * protectedWashes);
+  const competitorTotalLeachMg = compChemPerApp * leachFraction;
 
-  // Binder leaching: binder also washes off over garment lifetime (microplastic / polymer discharge)
-  const binderPerApplicationG = competitor.binderRequired ? competitor.binderGPerKg * fabricWeightKg : 0;
-  const totalBinderAppliedG = binderPerApplicationG * competitorApplicationsNeeded;
   const competitorBinderLeachG = totalBinderAppliedG * (competitor.binderLeachPctLifetime / 100);
-
-  // Total discharge to water: active agent (mg) + binder (g→mg)
-  const competitorTotalDischargeToWaterMg = competitorTotalLeachMg + (competitorBinderLeachG * 1000);
-
-  // Binder cost
-  const competitorBinderCostTotal = totalBinderAppliedG * (competitor.binderPricePerKg / 1000); // g * $/g
+  const competitorTotalDischargeToWaterMg =
+    competitorTotalLeachMg + competitorBinderLeachG * 1000;
+  const competitorBinderCostTotal = totalBinderAppliedG * (competitor.binderPricePerKg / 1000);
 
   const fuzeChemistryMg = fuzeDose * fabricWeightKg;
 
@@ -1042,18 +1276,50 @@ export function calcCostComparison(
   const tiers: Record<number, string> = { 1.0: "F1", 0.75: "F2", 0.5: "F3", 0.25: "F4" };
   const fuzeTierLabel = tiers[fuzeDose] || "Custom";
 
+  // Wash-by-wash curve. Bucket is 5 washes for a clean 0-100 chart.
+  // FUZE: flat at fuzeCostPerMeter through targetWashes (always protected).
+  // Competitor: stays at firstAppCost while protected, then null (renders
+  // as a gap with a "REAPPLICATION IMPOSSIBLE" annotation downstream).
+  const STEP = 5;
+  const curve: CostComparison["curve"] = [];
+  for (let w = 0; w <= targetWashes; w += STEP) {
+    const compProtected = w <= maxProtectedWashes;
+    curve.push({
+      wash: w,
+      fuzeCostPerMeter,
+      competitorCostPerMeter: compProtected ? firstAppCost : null,
+      fuzeProtected: true,
+      competitorProtected: compProtected,
+    });
+  }
+  // Always include the exact endpoint
+  if (curve[curve.length - 1].wash !== targetWashes) {
+    const compProtected = targetWashes <= maxProtectedWashes;
+    curve.push({
+      wash: targetWashes,
+      fuzeCostPerMeter,
+      competitorCostPerMeter: compProtected ? firstAppCost : null,
+      fuzeProtected: true,
+      competitorProtected: compProtected,
+    });
+  }
+
   return {
     fuzeTierLabel,
     fuzeDose,
     targetWashes,
-    fuzeCostPerMeter: fuzeCostPerMeter,
+    fuzeCostPerMeter,
     fuzeApplications: 1,
     competitorCostPerApplication: firstAppCost,
-    competitorApplicationsNeeded,
+    competitorApplicationsNeeded: applicationsNeededIfPossible,
     competitorTotalCostPerMeter,
     competitorCostMultiple,
     fuzeSavingsPerMeter,
     fuzeSavingsPct,
+    competitorRetreatmentPossible: false,
+    competitorMaxProtectedWashes: maxProtectedWashes,
+    competitorUnprotectedWashes: Math.max(0, targetWashes - maxProtectedWashes),
+    competitorMarketingWashClaim: undefined,
     competitorTotalChemistryMg,
     competitorTotalBinderG: totalBinderAppliedG,
     competitorTotalLeachMg,
@@ -1063,6 +1329,7 @@ export function calcCostComparison(
     fuzeChemistryMg,
     fuzeBinderG: 0,
     fuzeLeachMg: 0,
+    curve,
   };
 }
 
