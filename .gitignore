@@ -25,3 +25,9 @@ node_modules
 # logs
 *.log
 .env*.local
+
+# Pre-migration cleanup 2026-05-06
+tsconfig.tsbuildinfo
+.scratch-*
+**/.scratch-*
+test-classifier.mjs
