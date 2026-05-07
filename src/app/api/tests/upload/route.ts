@@ -351,7 +351,8 @@ function parseTestReport(text: string): ParsedTestData {
       { name: "platinum", symbol: "Pt", aliases: ["platinum", "Pt"] },
       { name: "palladium", symbol: "Pd", aliases: ["palladium", "Pd"] },
     ];
-    const unitGroup = "(ppm|ppb|mg\\/kg|mg\\/l|mg\\/L|μg\\/g|μg\\/kg|μg\\/L|ug\\/g|ug\\/kg|ug\\/L|wt%|%|mg\\/m2|mg\\/m²)";
+    const unitGroup =
+      "(ppm|ppb|mg\\/kg|mg\\/l|mg\\/L|μg\\/g|μg\\/kg|μg\\/L|ug\\/g|ug\\/kg|ug\\/L|wt%|%|mg\\/m2|mg\\/m²)";
     for (const el of ICP_ELEMENTS) {
       // Try each alias separately so we match either "silver" or "Ag"
       // (case-insensitive for the word, exact-case for the symbol so
@@ -553,6 +554,14 @@ export async function POST(req: Request) {
     // distributor-portal uploads were invisible to her own portal.
     const uploaderUserId = sessionUser?.id || null;
     const uploaderDistributorId = (sessionUser as any)?.distributorId || null;
+    // Tina ticket (May 2026): factories had no path to upload at all,
+    // and the underlying /api/tests/upload didn't persist factoryId,
+    // so once we add the factory portal upload page admins still
+    // wouldn't be able to tell which factory dropped the file. Mirror
+    // the distributorId pattern so the factory portal listing
+    // endpoint can surface the user's own pending uploads.
+    const uploaderFactoryId = (sessionUser as any)?.factoryId || null;
+    const uploaderBrandId = (sessionUser as any)?.brandId || null;
     const document = await prisma.document.create({
       data: {
         kind: "REPORT",
@@ -566,6 +575,8 @@ export async function POST(req: Request) {
         raw: {
           uploaderUserId,
           uploaderDistributorId,
+          uploaderFactoryId,
+          uploaderBrandId,
           uploaderRole: sessionUser?.role || null,
           uploadedAt: new Date().toISOString(),
         },
@@ -615,8 +626,7 @@ export async function POST(req: Request) {
     //   - pdf-parse extracted essentially nothing (<200 chars), OR
     //   - the regex parser scored very low (<25), AND we're not on
     //     an ITS report (those have their own dedicated parser)
-    const lowConfidenceFlat =
-      parsed && parsed.confidence < 25 && !itsReport;
+    const lowConfidenceFlat = parsed && parsed.confidence < 25 && !itsReport;
     if ((isLikelyImagePdf || lowConfidenceFlat) && !itsReport) {
       try {
         aiVision = await extractTestDataWithAIVision(buffer, file.name);
@@ -624,10 +634,7 @@ export async function POST(req: Request) {
         // parsed result for the AI's. We keep the AI output in a
         // separate field too so the UI can show "extracted via AI
         // vision" provenance.
-        if (
-          aiVision &&
-          (!parsed || aiVision.confidence > (parsed.confidence || 0))
-        ) {
+        if (aiVision && (!parsed || aiVision.confidence > (parsed.confidence || 0))) {
           parsed = {
             testType: aiVision.testType,
             testReportNumber: aiVision.testReportNumber,
@@ -691,12 +698,9 @@ export async function POST(req: Request) {
     // Triggers if confidence is < 50, AI vision was used, or text
     // extraction errored. Doesn't block the response — wrapped in
     // void so the user gets their answer immediately.
-    const notifyConfidence =
-      parsed?.confidence ?? itsReport?.tests?.[0]?.confidence ?? 0;
+    const notifyConfidence = parsed?.confidence ?? itsReport?.tests?.[0]?.confidence ?? 0;
     const shouldNotify =
-      !!parseError ||
-      !!aiVision ||
-      (notifyConfidence < 50 && (parsed || itsReport));
+      !!parseError || !!aiVision || (notifyConfidence < 50 && (parsed || itsReport));
     if (shouldNotify) {
       const reason = parseError
         ? "PDF text extraction failed"
@@ -720,10 +724,8 @@ export async function POST(req: Request) {
         uploaderLabName,
         confidence: Math.round(notifyConfidence),
         reason,
-        testType:
-          parsed?.testType || itsReport?.tests?.[0]?.testMethod || null,
-        reportNumber:
-          parsed?.testReportNumber || itsReport?.header?.reportNumber || null,
+        testType: parsed?.testType || itsReport?.tests?.[0]?.testMethod || null,
+        reportNumber: parsed?.testReportNumber || itsReport?.header?.reportNumber || null,
         appUrl,
       });
     }
@@ -753,9 +755,7 @@ export async function POST(req: Request) {
             confidence: aiVision.confidence,
             testType: aiVision.testType,
             warnings: aiVision.warnings,
-            usedAsPrimary:
-              parsed?.warnings?.[0]?.startsWith("Extracted via AI vision") ||
-              false,
+            usedAsPrimary: parsed?.warnings?.[0]?.startsWith("Extracted via AI vision") || false,
           }
         : null,
       parseError,

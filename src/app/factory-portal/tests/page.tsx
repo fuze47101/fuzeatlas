@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 
 interface TestRun {
@@ -101,10 +102,9 @@ export default function FactoryTestResultsPage() {
     new Map(
       (data?.runs || []).map((r) => [
         r.testType,
-        ((data?.runs || []).filter((x) => x.testType === r.testType) || [])
-          .length,
-      ])
-    )
+        ((data?.runs || []).filter((x) => x.testType === r.testType) || []).length,
+      ]),
+    ),
   ).map(([type, count]) => ({ type, count }));
 
   if (loading) {
@@ -120,13 +120,20 @@ export default function FactoryTestResultsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
-            Test Results
-          </h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Test Results</h1>
           <p className="text-slate-500 text-sm mt-0.5">
             {data?.total || 0} test results for your fabrics
           </p>
         </div>
+        {/* Tina ticket May 2026 — exposing the upload entry from the
+            read-only results page so factories don't dead-end here. */}
+        <Link
+          href="/factory-portal/upload-report"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#00b4c3] text-white text-sm font-bold hover:bg-[#009aa8] shadow-sm"
+        >
+          <span>📤</span>
+          Upload Test Report
+        </Link>
       </div>
 
       {/* Stats cards */}
@@ -136,9 +143,7 @@ export default function FactoryTestResultsPage() {
           return (
             <button
               key={t.type}
-              onClick={() =>
-                setFilterType(filterType === t.type ? "" : t.type)
-              }
+              onClick={() => setFilterType(filterType === t.type ? "" : t.type)}
               className={`flex-shrink-0 p-3 rounded-xl border text-left transition-all min-w-[120px] sm:min-w-0 ${
                 filterType === t.type
                   ? `${colors.bg} border-current ${colors.text} ring-2 ring-current/20`
@@ -147,9 +152,7 @@ export default function FactoryTestResultsPage() {
             >
               <div className="flex items-center gap-2 mb-1">
                 <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
-                <span className="text-xs font-medium uppercase tracking-wide">
-                  {t.type}
-                </span>
+                <span className="text-xs font-medium uppercase tracking-wide">{t.type}</span>
               </div>
               <span className="text-lg font-bold">{t.count}</span>
             </button>
@@ -172,9 +175,7 @@ export default function FactoryTestResultsPage() {
       <div className="space-y-3">
         {filtered.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-xl p-12 text-center text-slate-400">
-            {search || filterType
-              ? "No test results match your filters"
-              : "No test results yet"}
+            {search || filterType ? "No test results match your filters" : "No test results yet"}
           </div>
         ) : (
           filtered.map((run) => {
@@ -188,9 +189,7 @@ export default function FactoryTestResultsPage() {
               >
                 {/* Header - clickable to expand */}
                 <button
-                  onClick={() =>
-                    setExpandedId(isExpanded ? null : run.id)
-                  }
+                  onClick={() => setExpandedId(isExpanded ? null : run.id)}
                   className="w-full px-4 sm:px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-left"
                 >
                   <div className="flex-1 min-w-0">
@@ -215,18 +214,14 @@ export default function FactoryTestResultsPage() {
 
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm">
                       {run.testReportNumber && (
-                        <span className="font-medium text-slate-900">
-                          {run.testReportNumber}
-                        </span>
+                        <span className="font-medium text-slate-900">{run.testReportNumber}</span>
                       )}
                       {run.lab && (
                         <span className="text-slate-600">
                           Lab: <span className="font-medium">{run.lab}</span>
                         </span>
                       )}
-                      {run.testDate && (
-                        <span className="text-slate-500">{run.testDate}</span>
-                      )}
+                      {run.testDate && <span className="text-slate-500">{run.testDate}</span>}
                     </div>
 
                     {(run.fuzeNumber || run.customerCode) && (
@@ -238,8 +233,7 @@ export default function FactoryTestResultsPage() {
                         )}
                         {run.customerCode && (
                           <span>
-                            Code:{" "}
-                            <span className="font-medium">{run.customerCode}</span>
+                            Code: <span className="font-medium">{run.customerCode}</span>
                           </span>
                         )}
                       </div>
@@ -270,47 +264,34 @@ export default function FactoryTestResultsPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                       {run.testMethodStd && (
                         <div>
-                          <p className="text-slate-500 font-medium">
-                            Test Method
-                          </p>
+                          <p className="text-slate-500 font-medium">Test Method</p>
                           <p className="text-slate-900">{run.testMethodStd}</p>
                         </div>
                       )}
                       {run.washCount !== undefined && run.washCount !== null && (
                         <div>
-                          <p className="text-slate-500 font-medium">
-                            Wash Count
-                          </p>
+                          <p className="text-slate-500 font-medium">Wash Count</p>
                           <p className="text-slate-900">{run.washCount}</p>
                         </div>
                       )}
                       {run.submissionDate && (
                         <div>
-                          <p className="text-slate-500 font-medium">
-                            Submitted
-                          </p>
+                          <p className="text-slate-500 font-medium">Submitted</p>
                           <p className="text-slate-900">{run.submissionDate}</p>
                         </div>
                       )}
                       {run.factoryCode && (
                         <div>
-                          <p className="text-slate-500 font-medium">
-                            Factory Code
-                          </p>
+                          <p className="text-slate-500 font-medium">Factory Code</p>
                           <p className="text-slate-900">{run.factoryCode}</p>
                         </div>
                       )}
                     </div>
 
                     {/* Test components */}
-                    {(run.hasIcp ||
-                      run.hasAb ||
-                      run.hasFungal ||
-                      run.hasOdor) && (
+                    {(run.hasIcp || run.hasAb || run.hasFungal || run.hasOdor) && (
                       <div className="pt-2">
-                        <p className="text-slate-500 font-medium text-sm mb-2">
-                          Test Components
-                        </p>
+                        <p className="text-slate-500 font-medium text-sm mb-2">Test Components</p>
                         <div className="flex flex-wrap gap-2">
                           {run.hasIcp && (
                             <span className="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">

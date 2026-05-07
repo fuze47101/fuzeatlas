@@ -15,7 +15,12 @@ interface Stats {
 export default function FactoryPortalPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [stats, setStats] = useState<Stats>({ activeFabrics: 0, pendingSubmissions: 0, completedTests: 0, sampleTrials: 0 });
+  const [stats, setStats] = useState<Stats>({
+    activeFabrics: 0,
+    pendingSubmissions: 0,
+    completedTests: 0,
+    sampleTrials: 0,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -58,7 +63,9 @@ export default function FactoryPortalPage() {
           <span>Factory Portal</span>
         </div>
         <h1 className="text-3xl font-black text-slate-900 mb-1">Welcome Back</h1>
-        <p className="text-slate-600">Manage your FUZE fabric submissions and track treatment progress</p>
+        <p className="text-slate-600">
+          Manage your FUZE fabric submissions and track treatment progress
+        </p>
       </div>
 
       {/* Quick Stats */}
@@ -108,18 +115,29 @@ export default function FactoryPortalPage() {
       >
         <div className="flex items-center justify-between gap-4">
           <div>
-            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">Learn FUZE</div>
-            <h3 className="text-base font-bold text-slate-900">FUZE Basics — dosage, mechanism, testing</h3>
-            <p className="text-xs text-slate-600 mt-1">Why FUZE applies at lower dose, requires no binder or curing oven, and tests on ASTM E2149.</p>
+            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">
+              Learn FUZE
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              FUZE Basics — dosage, mechanism, testing
+            </h3>
+            <p className="text-xs text-slate-600 mt-1">
+              Why FUZE applies at lower dose, requires no binder or curing oven, and tests on ASTM
+              E2149.
+            </p>
           </div>
-          <span className="shrink-0 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-bold">Read →</span>
+          <span className="shrink-0 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-bold">
+            Read →
+          </span>
         </div>
       </Link>
 
       {/* Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Link href="/factory-portal/intake"
-          className="bg-gradient-to-br from-[#00b4c3] to-[#009ba8] rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all">
+        <Link
+          href="/factory-portal/intake"
+          className="bg-gradient-to-br from-[#00b4c3] to-[#009ba8] rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all"
+        >
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="font-bold text-lg mb-1">Submit Fabric</h3>
@@ -129,8 +147,10 @@ export default function FactoryPortalPage() {
           </div>
           <div className="text-sm text-white/80">Click to start a new submission →</div>
         </Link>
-        <Link href="/factory-portal/fabrics"
-          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all">
+        <Link
+          href="/factory-portal/fabrics"
+          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all"
+        >
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="font-bold text-slate-900 text-lg mb-1">My Fabrics</h3>
@@ -140,8 +160,10 @@ export default function FactoryPortalPage() {
           </div>
           <div className="text-sm text-[#00b4c3] font-medium">View library →</div>
         </Link>
-        <Link href="/factory-portal/submissions"
-          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all">
+        <Link
+          href="/factory-portal/submissions"
+          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all"
+        >
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="font-bold text-slate-900 text-lg mb-1">Submissions</h3>
@@ -151,19 +173,42 @@ export default function FactoryPortalPage() {
           </div>
           <div className="text-sm text-[#00b4c3] font-medium">View submissions →</div>
         </Link>
-        <Link href="/factory-portal/sample-trial"
-          className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all">
+        {/* Tina ticket May 2026 — factories had no upload UI; this is the
+            entry point so they stop emailing PDFs to admin@. */}
+        <Link
+          href="/factory-portal/upload-report"
+          className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="font-bold text-lg mb-1">Upload Test Report</h3>
+              <p className="text-sm text-amber-100">
+                Drop in a lab PDF — we&apos;ll parse and link it
+              </p>
+            </div>
+            <span className="text-3xl">📤</span>
+          </div>
+          <div className="text-sm text-white/80">Upload PDF →</div>
+        </Link>
+        <Link
+          href="/factory-portal/sample-trial"
+          className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all"
+        >
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="font-bold text-lg mb-1">Request FUZE Sample</h3>
-              <p className="text-sm text-purple-200">Request product samples for fabric treatment trials</p>
+              <p className="text-sm text-purple-200">
+                Request product samples for fabric treatment trials
+              </p>
             </div>
             <span className="text-3xl">🧪</span>
           </div>
           <div className="text-sm text-white/80">Start a trial request →</div>
         </Link>
-        <Link href="/pricing"
-          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all">
+        <Link
+          href="/pricing"
+          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all"
+        >
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="font-bold text-slate-900 text-lg mb-1">Pricing & Details</h3>

@@ -291,6 +291,7 @@ export default function Sidebar() {
           { href: "/factory-portal/intake", label: "Submit Fabric", icon: "📥" },
           { href: "/factory-portal/fabrics", label: "Fabrics & Submissions", icon: "🧵" },
           { href: "/factory-portal/tests", label: "Test Results", icon: "🧪" },
+          { href: "/factory-portal/upload-report", label: "Upload Test Report", icon: "📤" },
           { href: "/factory-portal/sample-trial", label: "Sample Trials", icon: "🧪" },
           { href: "/factory-portal/request-test", label: "Request Test", icon: "📋" },
           { href: "/factory-portal/my-requests", label: "My Requests", icon: "📦" },
@@ -316,7 +317,11 @@ export default function Sidebar() {
         items: [
           { href: "/distributor-portal/restock", label: "Restock from FUZE", icon: "💧" },
           { href: "/distributor-portal/orders", label: "Factory Orders", icon: "📦" },
-          { href: "/distributor-portal/incoming-orders", label: "Sub-Distributor Orders", icon: "📥" },
+          {
+            href: "/distributor-portal/incoming-orders",
+            label: "Sub-Distributor Orders",
+            icon: "📥",
+          },
           { href: "/distributor-portal/inventory", label: "Inventory & Pricing", icon: "📊" },
           { href: "/distributor-portal/fabrics", label: "Fabric Portfolio", icon: "📒" },
           { href: "/distributor-portal/test-request", label: "Apply for Test", icon: "🧪" },
@@ -435,6 +440,7 @@ export default function Sidebar() {
         { href: "/factory-portal/intake", label: "Submit Fabric", icon: "📥" },
         { href: "/factory-portal/fabrics", label: "Fabrics & Submissions", icon: "🧵" },
         { href: "/factory-portal/tests", label: "Test Results", icon: "🧪" },
+        { href: "/factory-portal/upload-report", label: "Upload Test Report", icon: "📤" },
         { href: "/factory-portal/sample-trial", label: "Sample Trials", icon: "🧪" },
         { href: "/factory-portal/request-test", label: "Request Test", icon: "📋" },
         { href: "/factory-portal/orders", label: "Order FUZE", icon: "🛒" },
