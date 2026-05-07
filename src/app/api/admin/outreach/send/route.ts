@@ -44,7 +44,64 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, error: "Not authorised" }, { status: 403 });
     }
 
-    const payload = await req.json();
+    // ── Accept either application/json (legacy) OR multipart/form-data
+    // (when the EmailModal includes attachments). Multipart is the only
+    // way to ship binary file content to a Next route handler without
+    // re-encoding to base64 in the browser.
+    //
+    // Barth ticket May 2026: attachments were never wired through the
+    // EmailModal → outreach/send path. Both shapes now work.
+    const contentType = req.headers.get("content-type") || "";
+    let payload: any;
+    let attachments: { filename: string; contentType?: string; base64: string }[] = [];
+
+    if (contentType.includes("multipart/form-data")) {
+      const form = await req.formData();
+      const jsonStr = form.get("payload");
+      if (typeof jsonStr !== "string") {
+        return NextResponse.json(
+          { ok: false, error: "multipart upload must include a 'payload' JSON field" },
+          { status: 400 }
+        );
+      }
+      try {
+        payload = JSON.parse(jsonStr);
+      } catch {
+        return NextResponse.json(
+          { ok: false, error: "Invalid JSON in 'payload' field" },
+          { status: 400 }
+        );
+      }
+      // Collect every File entry under the form key "attachments"
+      const fileEntries = form.getAll("attachments");
+      const MAX_TOTAL_BYTES = 25 * 1024 * 1024; // Resend's hard cap
+      let runningBytes = 0;
+      for (const entry of fileEntries) {
+        if (typeof entry === "string") continue;
+        const file = entry as File;
+        if (!file || !file.name) continue;
+        runningBytes += file.size;
+        if (runningBytes > MAX_TOTAL_BYTES) {
+          return NextResponse.json(
+            {
+              ok: false,
+              error:
+                "Attachments exceed 25 MB total — Resend won't accept them. Drop one or compress.",
+            },
+            { status: 400 }
+          );
+        }
+        const buf = Buffer.from(await file.arrayBuffer());
+        attachments.push({
+          filename: file.name,
+          contentType: file.type || "application/octet-stream",
+          base64: buf.toString("base64"),
+        });
+      }
+    } else {
+      payload = await req.json();
+    }
+
     const { contactId, channel, template, subject, body, toAddress } = payload;
     const cc = normaliseAddrs(payload.cc);
     const bcc = normaliseAddrs(payload.bcc);
@@ -53,6 +110,12 @@ export async function POST(req: NextRequest) {
     if (!contactId || !channel || !body) {
       return NextResponse.json(
         { ok: false, error: "contactId, channel, and body are required" },
+        { status: 400 }
+      );
+    }
+    if (channel === "sms" && attachments.length > 0) {
+      return NextResponse.json(
+        { ok: false, error: "Attachments not supported on SMS channel" },
         { status: 400 }
       );
     }
@@ -133,6 +196,15 @@ export async function POST(req: NextRequest) {
       };
       if (cc.length) resendPayload.cc = cc;
       if (bcc.length) resendPayload.bcc = bcc;
+      // Attach files Barth (or any rep) dropped into the EmailModal.
+      // Resend expects { filename, content (base64), content_type }.
+      if (attachments.length) {
+        resendPayload.attachments = attachments.map((a) => ({
+          filename: a.filename,
+          content: a.base64,
+          content_type: a.contentType || "application/octet-stream",
+        }));
+      }
 
       const resendRes = await fetch("https://api.resend.com/emails", {
         method: "POST",

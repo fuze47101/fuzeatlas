@@ -103,6 +103,10 @@ export default function BDWizardPage() {
   const [drafting, setDrafting] = useState(false);
   const [subject, setSubject] = useState("");
   const [bodyText, setBodyText] = useState("");
+  // Barth ticket May 2026 — attachments are now supported on the
+  // wizard's email channel. LI is excluded (LinkedIn DMs don't carry
+  // file attachments through their API surface).
+  const [attachments, setAttachments] = useState<File[]>([]);
   const [diagnosed, setDiagnosed] = useState<string[]>([]);
   // Metadata from the draft API: which AI ran, whether we auto-researched
   // the brand for this draft, and whether the generated body actually
@@ -478,19 +482,31 @@ export default function BDWizardPage() {
     setSendError(null);
     if (!forceBool) setDuplicateWarn(null);
     try {
-      const res = await fetch("/api/admin/bd/wizard/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          brandId: brand.id,
-          contactId: selectedContact.id,
-          channel,
-          subject,
-          body: bodyText,
-          stepId: sequenceStepId || undefined,
-          force: forceBool || undefined,
-        }),
-      });
+      const draftPayload = {
+        brandId: brand.id,
+        contactId: selectedContact.id,
+        channel,
+        subject,
+        body: bodyText,
+        stepId: sequenceStepId || undefined,
+        force: forceBool || undefined,
+      };
+      // If the rep attached files (email channel only), upgrade the
+      // request to multipart so we can stream binary bytes through
+      // Resend without base64-double-encoding in the browser.
+      let res: Response;
+      if (channel === "email" && attachments.length > 0) {
+        const form = new FormData();
+        form.append("payload", JSON.stringify(draftPayload));
+        for (const file of attachments) form.append("attachments", file, file.name);
+        res = await fetch("/api/admin/bd/wizard/send", { method: "POST", body: form });
+      } else {
+        res = await fetch("/api/admin/bd/wizard/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(draftPayload),
+        });
+      }
       const data = await res.json();
       if (res.status === 409 && data?.code === "already_contacted") {
         // Another rep beat us to this contact in the last 24h. Don't
@@ -786,6 +802,8 @@ export default function BDWizardPage() {
                 drafting={drafting}
                 onSubjectChange={setSubject}
                 onBodyChange={setBodyText}
+                attachments={attachments}
+                onAttachmentsChange={setAttachments}
                 onBack={() => setStep("customize")}
                 onRegenerate={generateDraft}
                 onSend={sendDraft}
@@ -1643,6 +1661,8 @@ function DraftStep({
   drafting,
   onSubjectChange,
   onBodyChange,
+  attachments,
+  onAttachmentsChange,
   onBack,
   onRegenerate,
   onSend,
@@ -1662,10 +1682,26 @@ function DraftStep({
   drafting: boolean;
   onSubjectChange: (s: string) => void;
   onBodyChange: (s: string) => void;
+  attachments: File[];
+  onAttachmentsChange: (next: File[]) => void;
   onBack: () => void;
   onRegenerate: () => void;
   onSend: () => void;
 }) {
+  // Helper for the attachment picker — enforces the same 25 MB total
+  // cap that the server enforces, so the rep gets immediate feedback.
+  const [attachErr, setAttachErr] = useState<string>("");
+  function addAttachments(files: FileList | File[]) {
+    const incoming = Array.from(files).filter((f) => f && f.size > 0);
+    const next = [...attachments, ...incoming];
+    const total = next.reduce((s, f) => s + f.size, 0);
+    if (total > 25 * 1024 * 1024) {
+      setAttachErr("Attachments exceed 25 MB total — Resend won't accept them.");
+      return;
+    }
+    setAttachErr("");
+    onAttachmentsChange(next);
+  }
   // Build the substitution context once per render — split contact.name into
   // first/last so {firstName} works for older Contact rows that only have the
   // single `name` field populated.
@@ -2006,6 +2042,77 @@ function DraftStep({
           <span className="text-amber-600">LinkedIn may truncate past 600 chars.</span>
         )}
       </div>
+
+      {/* Attachments — email channel only. LinkedIn DM API doesn't
+          support file attachments. Drag/drop or click to add files;
+          25 MB total cap. */}
+      {channel === "email" && (
+        <div className="mt-4">
+          <label className="block text-xs font-medium text-slate-600 mb-1">
+            Attachments
+          </label>
+          <div
+            className="border-2 border-dashed border-slate-300 rounded-lg px-3 py-3 text-center cursor-pointer hover:border-emerald-400 transition-colors"
+            onClick={() => document.getElementById("bd-wizard-attach-input")?.click()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.add("border-emerald-400", "bg-emerald-50/40");
+            }}
+            onDragLeave={(e) => {
+              e.currentTarget.classList.remove("border-emerald-400", "bg-emerald-50/40");
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove("border-emerald-400", "bg-emerald-50/40");
+              if (e.dataTransfer.files?.length) addAttachments(e.dataTransfer.files);
+            }}
+          >
+            <span className="text-xs text-slate-500">
+              Drop files or click to attach (PDF, DOCX, images — 25 MB total)
+            </span>
+          </div>
+          <input
+            id="bd-wizard-attach-input"
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files?.length) addAttachments(e.target.files);
+              e.target.value = "";
+            }}
+          />
+          {attachErr && (
+            <div className="mt-1 text-xs text-red-600">{attachErr}</div>
+          )}
+          {attachments.length > 0 && (
+            <ul className="mt-2 space-y-1">
+              {attachments.map((file, i) => (
+                <li
+                  key={`${file.name}-${i}`}
+                  className="flex items-center justify-between text-xs bg-slate-50 border border-slate-200 rounded px-2 py-1"
+                >
+                  <span className="truncate text-slate-700">
+                    📎 {file.name}{" "}
+                    <span className="text-slate-400">
+                      ({(file.size / 1024).toFixed(0)} KB)
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onAttachmentsChange(attachments.filter((_, j) => j !== i))
+                    }
+                    className="ml-2 text-slate-400 hover:text-red-600"
+                    aria-label={`Remove ${file.name}`}
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       <div className="mt-6 flex justify-between">
         <button

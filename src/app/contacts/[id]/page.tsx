@@ -750,23 +750,53 @@ function EmailModal({
   const [body, setBody] = useState(defaultBody);
   const [sending, setSending] = useState(false);
   const [err, setErr] = useState("");
+  // Barth ticket May 2026 — attachments are now wired through. Hard
+  // cap at Resend's 25 MB total so the rep gets a clean error before
+  // they wait on the upload.
+  const [attachments, setAttachments] = useState<File[]>([]);
+
+  function addFiles(files: FileList | File[]) {
+    const incoming = Array.from(files).filter((f) => f && f.size > 0);
+    setAttachments((prev) => {
+      const next = [...prev, ...incoming];
+      const total = next.reduce((s, f) => s + f.size, 0);
+      if (total > 25 * 1024 * 1024) {
+        setErr("Attachments exceed 25 MB total — Resend won't accept them.");
+        return prev;
+      }
+      setErr("");
+      return next;
+    });
+  }
 
   const handleSend = async () => {
     if (!toAddress) return;
     setSending(true);
     setErr("");
     try {
-      const sendRes = await fetch("/api/admin/outreach/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contactId: contact.id,
-          channel: "email",
-          subject,
-          body,
-          toAddress,
-        }),
-      });
+      const payload = {
+        contactId: contact.id,
+        channel: "email",
+        subject,
+        body,
+        toAddress,
+      };
+      // If the rep added attachments, ship as multipart so we can
+      // stream the binary bytes through. Otherwise stay on JSON for
+      // back-compat with the old send path.
+      let sendRes: Response;
+      if (attachments.length > 0) {
+        const form = new FormData();
+        form.append("payload", JSON.stringify(payload));
+        for (const file of attachments) form.append("attachments", file, file.name);
+        sendRes = await fetch("/api/admin/outreach/send", { method: "POST", body: form });
+      } else {
+        sendRes = await fetch("/api/admin/outreach/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
       const sendJson = await sendRes.json();
       if (!sendJson.ok) throw new Error(sendJson.error || "Email send failed");
       // The send route now writes the Note (with email metadata) inside
@@ -803,6 +833,67 @@ function EmailModal({
             className="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1"
           />
         </div>
+
+        {/* Attachments — drag & drop or click to pick. 25 MB total cap
+            enforced both client-side here and server-side in the send
+            route. */}
+        <div>
+          <label className="text-xs font-semibold text-slate-500 uppercase">Attachments</label>
+          <div
+            className="mt-1 border-2 border-dashed border-slate-300 rounded-lg px-3 py-3 text-center cursor-pointer hover:border-blue-400 transition-colors"
+            onClick={() => document.getElementById("contact-email-files")?.click()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.add("border-blue-400", "bg-blue-50/40");
+            }}
+            onDragLeave={(e) => {
+              e.currentTarget.classList.remove("border-blue-400", "bg-blue-50/40");
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove("border-blue-400", "bg-blue-50/40");
+              if (e.dataTransfer.files?.length) addFiles(e.dataTransfer.files);
+            }}
+          >
+            <span className="text-xs text-slate-500">
+              Drop files here or click to attach (PDF, DOCX, images, etc. — 25 MB total)
+            </span>
+          </div>
+          <input
+            id="contact-email-files"
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files?.length) addFiles(e.target.files);
+              e.target.value = ""; // allow re-picking the same file later
+            }}
+          />
+          {attachments.length > 0 && (
+            <ul className="mt-2 space-y-1">
+              {attachments.map((file, i) => (
+                <li
+                  key={`${file.name}-${i}`}
+                  className="flex items-center justify-between text-xs bg-slate-50 border border-slate-200 rounded px-2 py-1"
+                >
+                  <span className="truncate text-slate-700">
+                    📎 {file.name}{" "}
+                    <span className="text-slate-400">({(file.size / 1024).toFixed(0)} KB)</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
+                    className="ml-2 text-slate-400 hover:text-red-600"
+                    aria-label={`Remove ${file.name}`}
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         {err && <div className="text-red-600 text-sm">{err}</div>}
         <div className="flex gap-2 justify-end pt-2">
           <button

@@ -21,6 +21,12 @@ interface TestRun {
   hasOdor: boolean;
   result?: string;
   submissionDate?: string;
+  brandName?: string | null;
+  // Tina ticket May 2026 — report PDF surfaced directly on the card
+  // so factories don't have to email us asking for the file.
+  reportDocumentId?: string | null;
+  reportDownloadUrl?: string | null;
+  reportFilename?: string | null;
 }
 
 interface TestData {
@@ -61,11 +67,11 @@ export default function FactoryTestResultsPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/factory-portal/tests", {
-        headers: {
-          "x-user-id": user?.id || "",
-        },
-      });
+      // Auth is handled via the fuze-session cookie on the API side
+      // (getCurrentUser). The old x-user-id header was both spoof-able
+      // and unnecessary — dropped May 2026 along with the broader
+      // Tina visibility fix.
+      const res = await fetch("/api/factory-portal/tests");
       const d = await res.json();
       if (d.ok) {
         setData(d);
@@ -261,6 +267,24 @@ export default function FactoryTestResultsPage() {
                 {/* Details - expandable */}
                 {isExpanded && (
                   <div className="border-t border-slate-100 bg-slate-50 px-4 sm:px-6 py-4 space-y-3">
+                    {/* Tina ticket May 2026 — Download Report PDF surfaces
+                        the report doc directly on the card so factories
+                        don't have to email us asking for the file. */}
+                    {run.reportDownloadUrl && (
+                      <a
+                        href={run.reportDownloadUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#00b4c3] text-white text-xs font-bold hover:bg-[#009aa8] transition-colors"
+                      >
+                        ↓ Download Report PDF
+                        {run.reportFilename && (
+                          <span className="font-normal opacity-80 ml-1">
+                            ({run.reportFilename})
+                          </span>
+                        )}
+                      </a>
+                    )}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                       {run.testMethodStd && (
                         <div>

@@ -101,7 +101,61 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
     }
 
-    const body = await req.json();
+    // Accept either application/json (legacy — no attachments) or
+    // multipart/form-data (when the wizard's email channel includes
+    // file attachments). Multipart body has a "payload" field with the
+    // JSON envelope plus zero-or-more "attachments" file parts.
+    // Barth ticket May 2026.
+    const requestContentType = req.headers.get("content-type") || "";
+    let body: any;
+    let wizardAttachments: { filename: string; contentType: string; base64: string }[] = [];
+
+    if (requestContentType.includes("multipart/form-data")) {
+      const form = await req.formData();
+      const jsonStr = form.get("payload");
+      if (typeof jsonStr !== "string") {
+        return NextResponse.json(
+          { ok: false, error: "multipart upload must include a 'payload' JSON field" },
+          { status: 400 },
+        );
+      }
+      try {
+        body = JSON.parse(jsonStr);
+      } catch {
+        return NextResponse.json(
+          { ok: false, error: "Invalid JSON in 'payload' field" },
+          { status: 400 },
+        );
+      }
+      const fileEntries = form.getAll("attachments");
+      const MAX_TOTAL_BYTES = 25 * 1024 * 1024;
+      let runningBytes = 0;
+      for (const entry of fileEntries) {
+        if (typeof entry === "string") continue;
+        const file = entry as File;
+        if (!file || !file.name) continue;
+        runningBytes += file.size;
+        if (runningBytes > MAX_TOTAL_BYTES) {
+          return NextResponse.json(
+            {
+              ok: false,
+              error:
+                "Attachments exceed 25 MB total — Resend won't accept them. Drop one or compress.",
+            },
+            { status: 400 },
+          );
+        }
+        const buf = Buffer.from(await file.arrayBuffer());
+        wizardAttachments.push({
+          filename: file.name,
+          contentType: file.type || "application/octet-stream",
+          base64: buf.toString("base64"),
+        });
+      }
+    } else {
+      body = await req.json();
+    }
+
     const {
       brandId,
       contactId,
@@ -285,6 +339,16 @@ export async function POST(req: Request) {
         html,
         from: from || undefined,
         replyTo: user.outboundFromEmail || user.email,
+        // Pass any files Barth dragged into the wizard. The lib
+        // accepts {base64} envelopes directly so we don't need to
+        // re-encode here.
+        attachments: wizardAttachments.length
+          ? wizardAttachments.map((a) => ({
+              filename: a.filename,
+              contentType: a.contentType,
+              content: { base64: a.base64 },
+            }))
+          : undefined,
       });
       if (!sendResult.ok) {
         // Resend's error messages are developer-flavored. We preserve the

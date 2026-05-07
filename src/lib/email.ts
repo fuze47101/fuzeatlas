@@ -11,12 +11,45 @@ const FUZE_FROM = "FUZE Atlas <notifications@fuzeatlas.com>";
 const FUZE_COLOR = "#00b4c3";
 
 interface EmailAttachment {
-  /** Filename as it appears to the recipient (e.g. "invite.ics") */
+  /** Filename as it appears to the recipient (e.g. "invite.ics" or "FUZE-spec-sheet.pdf"). */
   filename: string;
-  /** Raw string content — will be base64-encoded automatically */
-  content: string;
+  /**
+   * Attachment content. Three accepted shapes:
+   *   - string (text)        — UTF-8 text like an .ics calendar body
+   *   - Buffer / Uint8Array  — raw bytes for binary files (PDF, PNG, etc.)
+   *   - { base64: string }   — already-base64-encoded payload (e.g. from a
+   *                            browser DataTransfer / FileReader chain)
+   *
+   * Whichever shape is passed, the lib normalises to base64 before posting
+   * to Resend. The old Buffer.from(content, "utf-8").toString("base64")
+   * pattern silently corrupted binary attachments — Barth's PDFs were
+   * being mojibake'd into garbage bytes. Tina ticket May 2026.
+   */
+  content: string | Buffer | Uint8Array | { base64: string };
   /** MIME type. Defaults to application/octet-stream. For calendar invites use "text/calendar; method=REQUEST; charset=UTF-8". */
   contentType?: string;
+}
+
+/**
+ * Normalize an EmailAttachment.content into a base64 string suitable for
+ * Resend's `content` field. Handles text strings, Buffer / Uint8Array
+ * (binary), and pre-encoded `{ base64 }` envelopes.
+ */
+function attachmentToBase64(content: EmailAttachment["content"]): string {
+  if (typeof content === "string") {
+    // Plain text — UTF-8 encode then base64. Safe for .ics, .txt, .csv, etc.
+    return Buffer.from(content, "utf-8").toString("base64");
+  }
+  if (content && typeof content === "object" && "base64" in content) {
+    return content.base64;
+  }
+  if (Buffer.isBuffer(content)) {
+    return content.toString("base64");
+  }
+  if (content instanceof Uint8Array) {
+    return Buffer.from(content).toString("base64");
+  }
+  throw new Error("Unsupported attachment content type");
 }
 
 interface EmailOptions {
@@ -72,8 +105,10 @@ export async function sendEmail({ to, subject, html, attachments, replyTo, from,
     if (attachments?.length) {
       payload.attachments = attachments.map((a) => ({
         filename: a.filename,
-        // Resend accepts base64-encoded content in the `content` field
-        content: Buffer.from(a.content, "utf-8").toString("base64"),
+        // Normalised — handles strings, Buffers, Uint8Arrays, and
+        // {base64} envelopes correctly. Previous code did
+        // Buffer.from(content, "utf-8") which mangled binary attachments.
+        content: attachmentToBase64(a.content),
         content_type: a.contentType || "application/octet-stream",
       }));
     }
