@@ -462,6 +462,12 @@ export default function BrandDetailPage() {
               >
                 {t.common.delete}
               </button>
+              <a
+                href={`/admin/brands/${brand.id}/pricing-tiers`}
+                className="px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-sm font-semibold hover:bg-emerald-100"
+              >
+                💲 Pricing Tiers
+              </a>
               <button
                 onClick={() => setEditing(true)}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700"
