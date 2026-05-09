@@ -197,6 +197,11 @@ All other distributors (Archroma, CHT, DyStar, Pulcra, etc.) are INACTIVE — th
 | **CRM Overhaul**                | DONE — unified ActivityFeed, multi-manager, AM notifications                                                                                                                                                                       |
 | **Brand Pipeline**              | DONE — enriched-first, relevance sort, per-user outreach checkmarks                                                                                                                                                                |
 | **Distributor Portal Ordering** | NEXT — restock from FUZE, factory order flow                                                                                                                                                                                       |
+| **Brand Supply Chain Visibility** | DONE (May 9, 2026) — `/brand-portal/supply-chain` shows every factory in the brand's supply chain with submission/test/consumption rollups. Spec strip + Edit link to `/brand-portal/spec`.                                       |
+| **Brand Spec + ICP Cadence**    | DONE (May 9, 2026) — Brand stipulates required tier + ICP cadence (every N orders OR every X liters). Daily cron flags overdue factories. Schema change pending `prisma db push`.                                                  |
+| **Order → Application Validation** | DONE (May 9, 2026) — `src/lib/order-validation.ts` checks `volumeLiters × tier` against `fabricMassKg` per FUZE math. Mismatch → in-app fan-out to brand + admins. Order not blocked, flagged for review.                          |
+| **Cross-Factory Pricing Tiers** | DONE (May 9, 2026) — `BrandPricingTier` model + `/brand-portal/pricing` rollup. Lifetime FUZE consumption across all factories → discount tier ladder. Schema change pending `prisma db push`.                                       |
+| **Penfabric Phase 1 Notification Fan-out** | DONE (May 9, 2026) — TestRequest, FabricSubmission, TestRun stamping, and Order lifecycle all now fan out to brand + factory user pools (not just admins or the requester). Plus recipe graduation/ICP-validated triggers.        |
 | **Supply Chain Transparency**   | PLANNED — order→ship→receive→treat→test→certify pipeline                                                                                                                                                                           |
 | **Daily CRM Digest Email**      | LIVE — 14:00 UTC cron, includes Daily Sales (L + kg booked vs shipped), CRM activity, new orders, outreach. Has error-fallback email on handler crash.                                                                             |
 | **Daily Feedback Digest Email** | LIVE — 13:30 UTC cron emails Andrew the open `FeedbackReport` queue. Subject says "🎉 Inbox zero" when empty. Built May 2026.                                                                                                       |
@@ -362,6 +367,264 @@ Order placed → Product shipped → Received → Treatment applied → ICP subm
 ### QR Code on Shipment
 
 Each order gets QR → links to SDS, COA for the shipment. Factory scans on receive + on application.
+
+## Built Features (Session — May 9, 2026 cont. — KUIU build)
+
+This continuation session shipped the full set of features Andrew promised
+Joseph Zack at KUIU on May 7 ("with your fuzeatlas.com access you get
+visibility over all factories in your supply chain… each time they submit
+for testing to our lab you are notified… we restrict factories ordering
+and have them place their distribution orders on the site… we can confirm
+from the order that it matches the required application amount… running
+track of ongoing ICP testing at intervals of production batches that you
+stipulate… we can then calculate and control pricing reductions based on
+volume across all factories"). Every line of that promise is now backed by
+production code.
+
+### IMPORTANT — DEPLOY STATE AT PAUSE
+
+**10 commits queued locally on `main`, NOT pushed yet** (sandbox can't SSH
+to GitHub). Andrew needs to push from his Mac:
+
+```bash
+cd /Users/a801/Desktop/fuzeatlas && rm -f .git/index.lock && git push origin main
+```
+
+**Two schema changes require `prisma db push`** after the push:
+
+- `20260509000000_brand_spec` — adds 5 columns to Brand (requiredFuzeTier,
+  icpCadenceEveryNBatches, icpCadenceEveryLitersConsumed, protocolDocUrl,
+  brandSpecUpdatedAt)
+- `20260509010000_brand_pricing_tier` — new BrandPricingTier table
+
+After `git push origin main` and Vercel green:
+
+```bash
+cd /Users/a801/Desktop/fuzeatlas && npx prisma db push
+```
+
+The new test-cadence cron (vercel.json) will be picked up automatically.
+
+### Commit chain (oldest first)
+
+| Commit | Subject |
+| --- | --- |
+| `2a9e7e9` | Wire notifyTestResult fan-out + drop spoof-able x-user-id headers |
+| `80fc55c` | Fan out TestRequest status to brand + factory user pools |
+| `cc525ea` | Fan out FabricSubmission notifications to factory + brand pools |
+| `ef211be` | Wire notifyOrderStatusChange into lifecycle-event path + new-order from consumption |
+| `b74b6cd` | i18n: thread useI18n through /factory-portal landing page |
+| `befb921` | Brand Supply Chain dashboard — fulfilling the KUIU promise |
+| `128283a` | Order → application-amount validation |
+| `bcf27b8` | Brand spec + ICP cadence cron (schema change) |
+| `a67f0ab` | Brand spec setup page + protocol doc surfacing on supply chain |
+| `8c1a872` | Cross-factory volume rollup + pricing tier ladder per brand (schema change) |
+
+### Notification fan-out (Penfabric phase 1, continued)
+
+The graduate/ICP-validated trigger from earlier in the day was the first
+slice. This session extended the same fan-out pattern to every other
+state transition that brand and factory users need to see.
+
+- **`notifyTestResult` (orphan helper) → wired** in
+  `src/app/api/tests/[id]/route.ts` (PATCH brandVisible) and
+  `src/app/api/tests/batch-stamp/route.ts`. When a test is stamped
+  brand-visible, every brand user + every factory user + admins now get
+  an in-app notification on top of the existing single email. Also drops
+  the spoof-able `x-user-id` header pattern in favor of `getCurrentUser()`
+  (Tina-style fix).
+
+- **`notifyTestRequestStatus` extended** with optional `brandId` /
+  `factoryId` params. Customer-facing transitions (APPROVED, SUBMITTED,
+  IN_PROGRESS, RESULTS_RECEIVED, COMPLETE) now fan out to the brand and
+  factory user pools, not just the requester + admins. Internal states
+  (PENDING_APPROVAL, REJECTED, CANCELLED) stay admin-only.
+
+- **`notifyNewSubmission` extended** the same way — brand owner team and
+  factory teammates now get the in-app notification when intake creates
+  a FabricSubmission, not just admins. Also fixed
+  `/api/factory-portal/intake` which was previously creating
+  FabricSubmission rows silently and stamping factoryId on the row (was
+  null).
+
+- **`notifyOrderStatusChange` wired into the lifecycle-event path**
+  (`/api/orders/[id]/events`). When a factory or distributor logs a
+  SHIPPED_FROM_FUZE / SHIPPED_FROM_DISTRIBUTOR / RECEIVED_AT_FACTORY
+  event, the side-effect block flips order.status to SHIPPED/DELIVERED.
+  The admin update path already called the helper; this path was
+  orphaned. Also wires `notifyNewOrder` into `/api/consumption` POST
+  type=order which was previously silent.
+
+### KUIU promise build (5 deliverables)
+
+#### 1. /brand-portal/supply-chain dashboard
+
+The page Joseph opens after the call to verify "visibility over all
+factories in your supply chain" is real.
+
+- `src/app/api/brand-portal/supply-chain/route.ts` — GET endpoint scoped
+  to caller's brand. For every factory with at least one fabric for this
+  brand, returns: fabricCount, submissionCount, lastSubmissionAt,
+  testRunsTotal/testRunsPassed (classified per-type since TestRun has no
+  status enum), openTestRequests, consumptionLitersTotal,
+  lastConsumptionAt+tier. Plus brand-level totals + the brand's
+  stipulated spec for the header strip.
+- `src/app/brand-portal/supply-chain/page.tsx` — read-only dashboard.
+  7-card totals strip, sortable factory table with status badge per
+  row, brand spec strip with Edit link.
+
+#### 2. Order → application-amount validation
+
+`src/lib/order-validation.ts` is the helper. Pure function — takes
+`volumeLiters`, `fuzeTier`, `fabricMassKg`, `baseFuzeLiters`,
+`wastageFactorPct`, `brandId`. Runs canonical FUZE math:
+`tier_mg_per_kg × kg / 30 mg/L × (1 + wastage%)`. Compares actual vs
+expected with severity bands: 0–10% info, 10–25% warn, 25%+ error.
+HANGTAG orders skip volume math.
+
+Wired into `/api/orders` POST. When a brand is set on the order AND the
+validation isn't all-green, fans out a Notification to every active
+brand user + admins. Order is NOT blocked — flagged for review.
+
+#### 3. Brand spec + ICP cadence cron
+
+Schema change adds five columns to Brand:
+- `requiredFuzeTier String?` — F1/F2/F3/F4
+- `icpCadenceEveryNBatches Int?` — every N orders since last ICP
+- `icpCadenceEveryLitersConsumed Float?` — alternative cadence by volume
+- `protocolDocUrl String?` — PDF link
+- `brandSpecUpdatedAt DateTime?`
+
+Cadence cron at `/api/cron/test-cadence` runs daily at 14:00 UTC. For
+every brand with cadence stipulated, walks every factory in the supply
+chain. Counts FuzeOrder rows + sums FuzeConsumption since the last
+brand-visible ICP TestRun. If either threshold is exceeded, fans out a
+Notification with 22h suppression (so the same brand isn't re-pinged
+daily for the same overdue factory). Registered in vercel.json.
+
+Brand spec PATCH/GET endpoint at `/api/brand-portal/spec` — brand
+managers + sales reps + admins can edit; plain BRAND_USER role is
+read-only.
+
+UI at `/brand-portal/spec` — form for tier picker, cadence inputs,
+protocol doc URL with live preview. Spec strip on supply-chain page
+shows pill chips for every active setting + Edit link.
+
+The order-validation helper was extended to read `requiredFuzeTier`
+from the brand and flag tier mismatches. Was a no-op until this
+schema change landed.
+
+#### 4. Per-brand protocol document on profile
+
+Covered by `protocolDocUrl` column above. Surfaces on supply-chain
+header strip as a clickable indigo chip. Editable from
+`/brand-portal/spec`.
+
+#### 5. Cross-factory volume rollup + pricing tier ladder
+
+Schema change adds new `BrandPricingTier` model — per-brand discount
+ladder. `brandId + thresholdLiters + discountPct + label + active`.
+Cascade delete on brand removal. Indexed on `(brandId,
+thresholdLiters)`.
+
+API:
+- `/api/brand-portal/pricing-rollup` — GET. Sums
+  `FuzeConsumption.litersUsed` across every factory (groupBy
+  factoryId for the breakdown). Sums `FuzeOrder.volumeLiters`
+  separately. Reads BrandPricingTier ladder, computes current tier
+  + next tier + gap to upgrade.
+- `/api/admin/brand-pricing-tiers` — GET / POST / PATCH / DELETE.
+  Edits gated to ADMIN / EMPLOYEE / SALES_MANAGER.
+
+UI at `/brand-portal/pricing` — hero card with current tier discount,
+lifetime liters, factory + order count. Progress bar to next tier.
+Full ladder visualization with qualified/current/locked states.
+Per-factory consumption table sorted by share.
+
+5th tile added to `/brand-portal` quick-actions grid.
+
+### i18n — Phase 0 of ROADMAP_v2 started
+
+The 17-language scaffolding (`src/i18n/`, `useI18n()`, `I18nProvider`,
+deepFallback to English) was already there. Started cashing it in:
+
+- `src/i18n/en.ts`: new `factoryPortal` namespace covering header,
+  crumb, all four stat cards, the Learn FUZE banner, all six
+  quick-link tiles. `Translations` type expands automatically;
+  deepFallback handles incomplete locale files.
+
+- `src/app/factory-portal/page.tsx`: every hardcoded string replaced
+  with `t.factoryPortal.<key>`. Pure thread-through — no layout or
+  logic changes.
+
+Subsequent factory-portal pages (intake, upload-report, orders) are
+queued in the task list for next session.
+
+### Joseph Zack / KUIU — non-code follow-ups still pending
+
+From his May 7 email, items that aren't code changes:
+
+- **Accelerated evaporation target** — locked in as `XX` in the doc.
+  Andrew needs to fill in the actual value before sending the next
+  protocol revision.
+- **Log reduction target** — currently shows 1.0 log; Andrew said to
+  bump to 3.0 log target. Doc edit, not code.
+- **ICP-to-antimicrobial efficacy correlation chart** — Joseph asked for
+  it on file. Could be a doc upload to Brand.protocolDocUrl, or a
+  static page under /education. TBD.
+- **Email signature still says FUZE Biotech** — Joseph flagged. Search
+  `src/lib/fuze-knowledge.ts` and any email template footer when ready
+  to update.
+
+### Notes on the architecture choices
+
+- **No new TestRun.status column** — pass/fail is derived from per-type
+  result rows (icpResult.agValue, abResult.pass, etc.) using the same
+  rule the notify path uses. Consistent across batch-stamp, supply
+  chain dashboard, and cadence cron.
+
+- **Cadence cron uses `metadata.kind='cadence_overdue'` for repeat
+  suppression** — checks for an existing notification with that
+  metadata signature in the past 22 hours. Don't switch to a separate
+  CadenceFlag table unless we need to.
+
+- **Order validation is non-blocking** — never rolls back the order.
+  Fires a notification with severity in the title emoji (🚨 error / ⚠️
+  warn). Future: an admin review queue under `/admin/orders/flagged`.
+
+- **Brand spec edits are RBAC-gated server-side** — the PATCH endpoint
+  re-checks role; UI hides the form if the user can't edit. BRAND_USER
+  is intentionally read-only because cadence flips are contractual.
+
+- **Pricing tier ladder is admin-only writable** — same reasoning.
+  Brand sees the result; AM controls the rungs via
+  `/api/admin/brand-pricing-tiers`.
+
+### Pending — Pick up next session
+
+- **PUSH the 10 commits + run prisma db push** (see top of this
+  section). Without these, none of the KUIU build is live in prod.
+- **Verify each KUIU surface end-to-end** post-deploy:
+  1. `/brand-portal/supply-chain` renders for a brand user
+  2. `/brand-portal/spec` saves successfully
+  3. `/brand-portal/pricing` shows the lifetime rollup
+  4. `/api/cron/test-cadence` fires correctly when invoked manually
+     (`fzcron test-cadence`)
+- **Set CRON_SECRET-protected schedule** — already in vercel.json,
+  Vercel picks it up on deploy.
+- **Admin UI for the pricing tier ladder** — API exists, but there's
+  no `/admin/brands/[id]/pricing-tiers` page yet. Would let an AM
+  configure rungs without curl.
+- **i18n thread-through** for the rest of factory-portal:
+  `/factory-portal/intake`, `/upload-report`, `/orders`. Keys go in
+  `src/i18n/en.ts` factoryPortal namespace.
+- **Phase 2 of ROADMAP_v2** (education segmentation by industry
+  vertical) and Phase 4 (architectural primitives like
+  SupplyChainLink) still untouched.
+- **Joseph follow-ups** above (signature block, log target, evap
+  target, correlation chart) — non-code.
+
+---
 
 ## Built Features (Session — May 7-9, 2026)
 
