@@ -52,22 +52,34 @@ export async function POST(req: Request) {
 
     const submission = await prisma.fabricSubmission.create({ data });
 
-    // ── Notify admins of new submission (non-blocking) ──
+    // ── Notify admins + factory + brand of new submission (non-blocking) ──
     (async () => {
       try {
-        // Look up factory and fabric names for the notification
+        // Look up factory and fabric names + ids for the notification
         const fabric = await prisma.fabric.findUnique({
           where: { id: fabricId },
-          select: { fuzeNumber: true, customerCode: true, factory: { select: { name: true } } },
+          select: {
+            id: true,
+            fuzeNumber: true,
+            customerCode: true,
+            brandId: true,
+            factoryId: true,
+            factory: { select: { name: true } },
+          },
         });
         const factoryName = fabric?.factory?.name || "Unknown Factory";
         const fabricInfo = fabric?.fuzeNumber ? `FUZE-${fabric.fuzeNumber}` : fabric?.customerCode || fabricId;
 
-        // Push real-time notification
+        // Push real-time notification — pass through brand/factory IDs so
+        // the helper fans out to those user pools, not just admins.
         await pushNewSubmission({
           factoryName,
           fabricName: fabricInfo,
           submittedBy: factoryName,
+          brandId: data.brandId || fabric?.brandId || null,
+          factoryId: data.factoryId || fabric?.factoryId || null,
+          submissionId: submission.id,
+          fabricId: fabric?.id || fabricId,
         });
 
         // Send email to admins

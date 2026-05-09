@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { pushNewSubmission } from "@/lib/notify-realtime";
 
 export async function POST(req: Request) {
   try {
@@ -72,14 +73,47 @@ export async function POST(req: Request) {
       });
     }
 
-    // Create initial submission
+    // Create initial submission. Stamp factoryId + submitter on the row
+    // so downstream surfaces (factory-portal/tests, brand-portal) can
+    // scope by ownership without walking back to the fabric record.
     const submission = await prisma.fabricSubmission.create({
       data: {
         fabricId: fabric.id,
+        factoryId,
         status: "SUBMITTED",
         raw: notes?.trim() ? { intakeNotes: notes.trim() } : undefined,
       },
     });
+
+    // Penfabric phase 1 May 2026 — this path used to silently create the
+    // submission and tell nobody. Now fans out to admins (always),
+    // factory teammates of the submitter (so the rest of the floor sees
+    // it), and the brand owner's team if the fabric is linked to a
+    // brand. Failure is non-fatal — intake never rolls back on notify.
+    (async () => {
+      try {
+        const factoryRow = await prisma.factory.findUnique({
+          where: { id: factoryId },
+          select: { name: true },
+        });
+        const fabricLabel = fabric.fuzeNumber
+          ? `FUZE-${fabric.fuzeNumber}${fabricName.trim() ? ` · ${fabricName.trim()}` : ""}`
+          : fabricName.trim() || `Fabric ${fabric.id}`;
+        const submitterLabel = user.name || user.email || "factory user";
+        await pushNewSubmission({
+          factoryName: factoryRow?.name || "Factory",
+          fabricName: fabricLabel,
+          submittedBy: submitterLabel,
+          brandId: null, // intake doesn't claim a brand yet
+          factoryId,
+          submitterUserId: user.id || null,
+          submissionId: submission.id,
+          fabricId: fabric.id,
+        });
+      } catch (notifyErr) {
+        console.error("[factory-portal/intake] notify failed:", notifyErr);
+      }
+    })();
 
     return NextResponse.json({
       ok: true,

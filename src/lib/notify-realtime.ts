@@ -251,17 +251,40 @@ export async function pushNewSubmission(params: {
   factoryName: string;
   fabricName: string;
   submittedBy: string;
+  brandId?: string | null;
+  factoryId?: string | null;
+  submitterUserId?: string | null;
+  submissionId?: string | null;
+  fabricId?: string | null;
 }): Promise<void> {
   try {
-    // Create notifications in database
+    // Create notifications in database (admins + factory + brand fan-out
+    // when ids are passed)
     await notifyNewSubmission(params);
 
-    // Get admin IDs
-    const adminIds = await getAdminIds();
+    // SSE push — admins always, plus the brand and factory user pools
+    // when applicable. Existing admin-only push stays in place; we just
+    // add the additional recipients.
+    const recipientIds = new Set<string>(await getAdminIds());
+    if (params.factoryId) {
+      const factoryUsers = await prisma.user.findMany({
+        where: { factoryId: params.factoryId, status: "ACTIVE" },
+        select: { id: true },
+      });
+      for (const u of factoryUsers) {
+        if (u.id !== params.submitterUserId) recipientIds.add(u.id);
+      }
+    }
+    if (params.brandId) {
+      const brandUsers = await prisma.user.findMany({
+        where: { brandId: params.brandId, status: "ACTIVE" },
+        select: { id: true },
+      });
+      for (const u of brandUsers) recipientIds.add(u.id);
+    }
 
-    // Push to all admins
     const title = "New Fabric Submission";
-    await pushCreatedNotifications(adminIds, title);
+    await pushCreatedNotifications(Array.from(recipientIds), title);
   } catch (error) {
     console.error("[NOTIFY-REALTIME] Error in pushNewSubmission:", error);
   }

@@ -228,13 +228,87 @@ export async function notifyNewSubmission(params: {
   factoryName: string;
   fabricName: string;
   submittedBy: string;
+  // Penfabric phase 1 May 2026 — when these are passed, also fan out to
+  // factory teammates (so the rest of the factory sees what was just
+  // logged) and to the brand owner's whole team (so they have early
+  // visibility into incoming work for them). The original submitter is
+  // excluded — they already know they just clicked the button.
+  brandId?: string | null;
+  factoryId?: string | null;
+  submitterUserId?: string | null;
+  submissionId?: string | null;
+  fabricId?: string | null;
 }) {
+  const {
+    factoryName,
+    fabricName,
+    submittedBy,
+    brandId,
+    factoryId,
+    submitterUserId,
+    submissionId,
+    fabricId,
+  } = params;
+
+  // 1. Admins always get notified — preserves the historical behaviour.
   await notifyAdmins(
     "BRAND_ACTIVITY",
     "New Fabric Submission",
-    `${params.factoryName} submitted "${params.fabricName}" (by ${params.submittedBy}).`,
+    `${factoryName} submitted "${fabricName}" (by ${submittedBy}).`,
     `/fabrics`,
   );
+
+  // 2. Factory teammates — confirmation that intake landed in the system.
+  if (factoryId) {
+    try {
+      const factoryUsers = await prisma.user.findMany({
+        where: { factoryId, status: "ACTIVE" },
+        select: { id: true },
+      });
+      const link = fabricId ? `/fabrics/${fabricId}` : "/factory-portal/submissions";
+      await Promise.all(
+        factoryUsers
+          .filter((u: any) => u.id !== submitterUserId)
+          .map((u: any) =>
+            createNotification({
+              userId: u.id,
+              type: "BRAND_ACTIVITY",
+              title: `Fabric submitted: ${fabricName}`,
+              message: `${submittedBy} submitted ${fabricName} from ${factoryName}. Track progress in the factory portal.`,
+              link,
+              metadata: { submissionId, fabricId },
+            }),
+          ),
+      );
+    } catch (err) {
+      console.error("[notify] new-submission factory fan-out failed:", err);
+    }
+  }
+
+  // 3. Brand owners — visibility into incoming work for their account.
+  if (brandId) {
+    try {
+      const brandUsers = await prisma.user.findMany({
+        where: { brandId, status: "ACTIVE" },
+        select: { id: true },
+      });
+      const link = fabricId ? `/fabrics/${fabricId}` : "/brand-portal/submissions";
+      await Promise.all(
+        brandUsers.map((u: any) =>
+          createNotification({
+            userId: u.id,
+            type: "BRAND_ACTIVITY",
+            title: `New fabric submission: ${fabricName}`,
+            message: `${factoryName} submitted ${fabricName} for your account. Track in the brand portal.`,
+            link,
+            metadata: { submissionId, fabricId },
+          }),
+        ),
+      );
+    } catch (err) {
+      console.error("[notify] new-submission brand fan-out failed:", err);
+    }
+  }
 }
 
 /** When a test request status changes */
