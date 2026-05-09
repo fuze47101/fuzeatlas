@@ -48,7 +48,17 @@ export async function GET() {
 
     const brand = await prisma.brand.findUnique({
       where: { id: brandId },
-      select: { id: true, name: true },
+      select: {
+        id: true,
+        name: true,
+        // Brand-stipulated spec — surfaces in the supply-chain header
+        // so brand users can see what they're holding factories to.
+        requiredFuzeTier: true,
+        icpCadenceEveryNBatches: true,
+        icpCadenceEveryLitersConsumed: true,
+        protocolDocUrl: true,
+        brandSpecUpdatedAt: true,
+      },
     });
     if (!brand) {
       return NextResponse.json({ ok: false, error: "Brand not found" }, { status: 404 });

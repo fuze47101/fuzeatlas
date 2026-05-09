@@ -105,7 +105,17 @@ function StatusBadge({ row }: { row: FactoryRow }) {
 export default function BrandSupplyChainPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [brand, setBrand] = useState<{ id: string; name: string } | null>(null);
+  const [brand, setBrand] = useState<
+    | {
+        id: string;
+        name: string;
+        requiredFuzeTier?: string | null;
+        icpCadenceEveryNBatches?: number | null;
+        icpCadenceEveryLitersConsumed?: number | null;
+        protocolDocUrl?: string | null;
+      }
+    | null
+  >(null);
   const [totals, setTotals] = useState<Totals | null>(null);
   const [factories, setFactories] = useState<FactoryRow[]>([]);
 
@@ -163,6 +173,56 @@ export default function BrandSupplyChainPage() {
           Every factory currently producing FUZE-treated fabrics for your account. Each row links
           to the full factory detail with submissions, test results, and consumption history.
         </p>
+
+        {/* Brand-stipulated spec strip — what every factory in this
+            supply chain is being held to. Click "Edit spec" to update. */}
+        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg bg-slate-50 border border-slate-200 px-4 py-3 text-xs">
+          <span className="font-bold uppercase tracking-wider text-slate-500">Brand spec:</span>
+          {brand?.requiredFuzeTier ? (
+            <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200">
+              <span className="font-semibold text-slate-700">Tier:</span>{" "}
+              <span className="text-[#00b4c3] font-bold">{brand.requiredFuzeTier}</span>
+            </span>
+          ) : (
+            <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200 text-slate-400">
+              No tier requirement
+            </span>
+          )}
+          {brand?.icpCadenceEveryNBatches ? (
+            <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200">
+              <span className="font-semibold text-slate-700">ICP every:</span>{" "}
+              {brand.icpCadenceEveryNBatches} order
+              {brand.icpCadenceEveryNBatches === 1 ? "" : "s"}
+            </span>
+          ) : null}
+          {brand?.icpCadenceEveryLitersConsumed ? (
+            <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200">
+              <span className="font-semibold text-slate-700">ICP every:</span>{" "}
+              {brand.icpCadenceEveryLitersConsumed} L
+            </span>
+          ) : null}
+          {!brand?.icpCadenceEveryNBatches && !brand?.icpCadenceEveryLitersConsumed ? (
+            <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200 text-slate-400">
+              No ICP cadence set
+            </span>
+          ) : null}
+          {brand?.protocolDocUrl ? (
+            <a
+              href={brand.protocolDocUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-md bg-indigo-50 px-2 py-1 ring-1 ring-indigo-200 text-indigo-700 hover:bg-indigo-100"
+            >
+              📄 Protocol document
+            </a>
+          ) : null}
+          <Link
+            href="/brand-portal/spec"
+            className="ml-auto text-[#00b4c3] hover:underline font-semibold"
+          >
+            Edit spec →
+          </Link>
+        </div>
       </div>
 
       {/* Totals strip */}
