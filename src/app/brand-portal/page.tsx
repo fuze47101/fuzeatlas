@@ -52,7 +52,7 @@ export default function BrandPortalDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <button
           onClick={() => router.push("/brand-portal/fabrics")}
           className="bg-white rounded-xl border border-slate-200 hover:border-[#00b4c3] hover:shadow-md transition-all p-6 text-left"
@@ -71,6 +71,19 @@ export default function BrandPortalDashboard() {
           <div className="font-bold text-slate-900">Submissions & Workflow</div>
           <div className="text-xs text-slate-500 mt-1">
             Track your fabrics through the FUZE treatment pipeline
+          </div>
+        </button>
+        {/* KUIU promise May 2026 — brand-side oversight of every factory
+            in their supply chain. Aggregate fabrics, submissions, tests,
+            and FUZE consumption per factory. */}
+        <button
+          onClick={() => router.push("/brand-portal/supply-chain")}
+          className="bg-gradient-to-br from-[#00b4c3] to-[#009ba8] rounded-xl border border-[#00b4c3] hover:shadow-lg transition-all p-6 text-left text-white"
+        >
+          <div className="text-2xl mb-2">🏭</div>
+          <div className="font-bold">Supply Chain</div>
+          <div className="text-xs text-white/85 mt-1">
+            Every factory producing FUZE-treated fabrics for your account — submissions, tests, and consumption.
           </div>
         </button>
         <button
