@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { notifyRecipeMilestone } from "@/lib/notify-recipe";
 
 /**
  * ICP validation for a bench test.
@@ -72,7 +73,26 @@ export async function POST(
     }
 
     const test = await prisma.recipeBenchTest.update({ where: { id }, data });
-    return NextResponse.json({ ok: true, test });
+
+    // Penfabric/Raihana fix May 2026 — auto-notify the factory when
+    // ICP comes back with affinity in the validated band (90–110%).
+    // Other actions (submit, reset) don't fan out. Failure is
+    // non-fatal: ICP entry must succeed even if email/notify errors.
+    let notify = null;
+    if (
+      action === "enter-result" &&
+      typeof test.affinityPct === "number" &&
+      test.affinityPct >= 90 &&
+      test.affinityPct <= 110
+    ) {
+      try {
+        notify = await notifyRecipeMilestone(id, "ICP_VALIDATED", user.id || null);
+      } catch (notifyErr) {
+        console.error("[icp] notifyRecipeMilestone threw:", notifyErr);
+      }
+    }
+
+    return NextResponse.json({ ok: true, test, notify });
   } catch (e: any) {
     console.error("ICP error:", e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });

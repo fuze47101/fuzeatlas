@@ -199,6 +199,10 @@ All other distributors (Archroma, CHT, DyStar, Pulcra, etc.) are INACTIVE — th
 | **Distributor Portal Ordering** | NEXT — restock from FUZE, factory order flow                                                                                                                                                                                       |
 | **Supply Chain Transparency**   | PLANNED — order→ship→receive→treat→test→certify pipeline                                                                                                                                                                           |
 | **Daily CRM Digest Email**      | LIVE — 14:00 UTC cron, includes Daily Sales (L + kg booked vs shipped), CRM activity, new orders, outreach. Has error-fallback email on handler crash.                                                                             |
+| **Daily Feedback Digest Email** | LIVE — 13:30 UTC cron emails Andrew the open `FeedbackReport` queue. Subject says "🎉 Inbox zero" when empty. Built May 2026.                                                                                                       |
+| **Weekly Exec Review Email**    | LIVE — Mondays 14:00 UTC cron generates the snapshot, upserts the `WeeklyExecReport` row, emails the headline KPIs + at-risk customers + agenda + report link. Closes the gap from #70 (manual-only flow). Built May 2026.        |
+| **GitHub Actions Auto-Triage**  | LIVE — `.github/workflows/auto-triage.yml`, fires daily 14:30 UTC. Pulls open tickets via `/api/cron/feedback-list`, hands them to `claude-code-action@v1` with strict triage rules, opens one PR per `auto/<ticketId>` branch.   |
+| **Bearer-Authed Cron Endpoints**| LIVE — `/api/cron/feedback-list` (read-only ticket queue), `/api/cron/admin-resolve` (one-off ticket + brand + email actions). Bypasses local Prisma issues; pattern for future "trigger admin action via curl" needs.            |
 | **ICP Sample Prep Flow**        | LIVE (wizard + SOP + print packet); awaiting first real CTLA submission                                                                                                                                                            |
 | **Scoped Module Sidebar**       | LIVE — sidebar scopes to active module, "← All Modules (Home)" returns to 6-card picker                                                                                                                                            |
 | **Mobile View Fix**             | PLANNED — admin pages broken on iPhone                                                                                                                                                                                             |
@@ -358,6 +362,104 @@ Order placed → Product shipped → Received → Treatment applied → ICP subm
 ### QR Code on Shipment
 
 Each order gets QR → links to SDS, COA for the shipment. Factory scans on receive + on application.
+
+## Built Features (Session — May 7-9, 2026)
+
+This session was a sprint — three reported bugs (Tina, Barth, Scott) shipped, plus the full automation loop you'd been wanting (daily ticket digest + GitHub Actions auto-triage). End state: production inbox zero on `/admin/feedback`, the unattended fix loop runs daily.
+
+### Tina — Factory test report upload + visibility (commits fc37daa, c0f67e6)
+
+Two distinct gaps under one umbrella complaint ("factories can't upload, can't see test reports"):
+
+**A. Factory portal had no upload UI at all.** Distributors had `/distributor-portal/upload-report`; factories had nothing. Built the mirror: `src/app/factory-portal/upload-report/page.tsx` (drag/drop PDF, "✓ saved even at 0% confidence" banner, redirects on role mismatch) and `src/app/api/factory-portal/test-reports/route.ts` (read endpoint scoped to caller's `factoryId`, returns confirmed TestRuns + pending Documents). Dashboard tile + sidebar entry + "Upload Test Report" button on the read-only `/factory-portal/tests` page.
+
+**B. `/api/factory-portal/tests` was filtering by `fabric.factoryId` only.** When a factory submits a fabric through Intake, the relationship lands on `FabricSubmission.factoryId` — `Fabric.factoryId` is often null. Net effect: factories saw an empty Test Results page even when TestRuns existed. Fix: scope is now `OR: [{ fabric: { factoryId } }, { submission: { factoryId } }]`. Also surfaces `reportDownloadUrl` from the most-recent `Document(kind=REPORT)`. And dropped the spoof-able `x-user-id` header pattern in favour of `getCurrentUser()`.
+
+Also patched `/api/tests/upload` to stamp `Document.raw.uploaderFactoryId` (it already stamped `uploaderDistributorId`) so factory-uploaded files surface in the factory portal listing.
+
+### Barth — Email attachments wired through (commit c0f67e6)
+
+Barth couldn't attach files to outbound emails. Investigation found four real gaps:
+
+1. **`EmailModal` on `/contacts/[id]` had no attachment UI.** No file input, no drag/drop. Added a paste/click drag-zone with per-file remove, 25 MB total cap (matches Resend's hard limit).
+2. **BD Wizard had no attachment UI either.** Added the same picker to the email-channel `DraftStep`. LinkedIn channel intentionally excluded — LI DM API doesn't carry files.
+3. **`/api/admin/outreach/send` only accepted JSON.** When attachments are present the client now sends `multipart/form-data`; the route detects content-type and parses both shapes. Same for `/api/admin/bd/wizard/send`.
+4. **`src/lib/email.ts` had a latent encoding bug.** `Buffer.from(content, "utf-8").toString("base64")` corrupted binary attachments — text .ics calendar invites were fine, PDFs were mojibake. Now `EmailAttachment.content` accepts `string | Buffer | Uint8Array | { base64 }` and routes each to the right encoder via `attachmentToBase64()`.
+
+### Scott — Brand auto-claim + LinkedIn fallback (commit f1ea5c0)
+
+Ticket `cmot3i3pk` ("account I added was not claimed"). Scott added Skunk Skin to the pipeline, system left it unclaimed, AND it had only a LinkedIn URL contact so he couldn't even use the wizard's email channel. Two fixes:
+
+1. **`/api/brands` POST now auto-sets `salesRepId = sessionUser.id`** when the caller is BD-eligible (ADMIN / EMPLOYEE / SALES_MANAGER / SALES_REP / BD_REP) and no explicit `salesRepId` was provided. Stamps `lastActivityAt` so the inactivity cron leaves it alone. Bulk-import paths (e.g. `/api/brands/discover`) intentionally bypass this — discovery deliberately creates unclaimed leads.
+2. **BD Wizard now auto-flips channel to LinkedIn** when the picked contact has no email but has a LinkedIn URL. Amber banner explains what happened and links back to the contact page to add an email if the rep wants to switch back.
+
+Resolved Scott's actual ticket via a one-shot script + bearer-authed endpoint (see Automation Loop below). Skunk Skin is now owned by Scott.
+
+### Automation Loop — the fix-it pipeline (commits 9b8faf9, 6ae574e)
+
+Andrew's request: "support tickets → daily email → Claude tries to fix them → I get PRs to review." Shipped the full thing.
+
+**Stage 1 (in Atlas, daily cron):**
+- `src/app/api/cron/feedback-digest/route.ts` — runs 13:30 UTC daily. Pulls open `FeedbackReport` rows (NEW + TRIAGED + ACCEPTED + IN_PROGRESS), groups by status, emails Andrew with deep-links to each ticket. Subject says "🎉 Inbox zero" when queue is empty.
+- `src/app/api/cron/feedback-list/route.ts` — bearer-authed read-only JSON endpoint. Sibling to `feedback-digest`. Lives under `/api/cron` so middleware exempts it. Used by the GitHub Action.
+- `src/app/api/cron/admin-resolve/route.ts` — bearer-authed POST endpoint that resolves a `FeedbackReport`, optionally backfills a `Brand.salesRepId`, optionally emails the reporter. Reusable pattern for any future "trigger admin action via curl" need. Bypasses local-Prisma issues entirely.
+- `src/app/api/cron/weekly-review/route.ts` — runs Mondays 14:00 UTC. Generates `buildSnapshot()`, upserts the `WeeklyExecReport` row, emails the headline KPIs + at-risk customers + on-Andrew's-plate items.
+
+**Stage 2 (outside Atlas, daily GitHub Action):**
+- `.github/workflows/auto-triage.yml` — runs 14:30 UTC daily. Curls `feedback-list`, hands the ticket payload to `anthropics/claude-code-action@v1` with strict triage rules: (a) only attempt fixes on BROKEN_LINK / ERROR / PROBLEM, (b) skip tickets without a concrete file/page target, (c) cap at 5 PRs per run, (d) lint + tsc must pass before each commit, (e) one branch per ticket: `auto/<ticketId>`. Then `gh pr create` opens one PR per branch with the original ticket description in the body.
+- Required GitHub repo secrets: `ANTHROPIC_API_KEY`, `CRON_SECRET`. Both set May 2026.
+- See `docs/AUTOMATION.md` for the full architecture rationale (why GitHub Actions and not Cowork or Atlas server-side).
+
+### Env file conventions (cleaned up May 2026)
+
+Local `.env.local` is now 20 canonical keys. Naming convention for DBs:
+
+```
+DATABASE_URL          ← active default; what Prisma reads
+DATABASE_URL_DEV      ← opt-in escape hatch for scripts
+DATABASE_URL_PROD     ← opt-in escape hatch for scripts (paste from Vercel "Production" → DATABASE_URL value)
+```
+
+Removed from `.env.local` because they don't belong in local dev:
+- `VERCEL`, `VERCEL_ENV`, `VERCEL_TARGET_ENV`, `VERCEL_URL`, `VERCEL_OIDC_TOKEN`, `VERCEL_GIT_*` — these make Next think it's running on Vercel locally and break local-dev branches
+- `NX_DAEMON`, `TURBO_*` — Turborepo / Nx CI flags, not used here
+
+Vercel Sensitive flag means `DATABASE_URL` value never reveals in the dashboard once saved — only overwritable. The Railway public proxy URL (e.g. `interchange.proxy.rlwy.net:31700`) for `atlas-prod-db` we tested actually pointed at an **empty** database; the real prod DB resolves via Railway's `postgres.railway.internal` only from inside Vercel. Worth chasing down which Railway service holds the real prod data when convenient — for now, the bearer-authed `admin-resolve` pattern bypasses the issue.
+
+### Resolved tickets (production)
+
+- `cmot3i3pk00iijo04hgcjcvyf` (Scott Smith — "account I added was not claimed") → FIXED 2026-05-09. Skunk Skin now owned by Scott. Auto-claim + LI-fallback fixes shipped under f1ea5c0.
+
+### Pending — Pick up next session
+
+- **Distributor Portal Ordering** — flagged NEXT in Active Projects. Distributors order from FUZE (carboys / gaylords / containers); factories order through their distributor at the right pricing tier; multi-currency. Auto-assigns brands to orders.
+- **Mobile View Fix** — admin pages broken on iPhone, still PLANNED.
+- **Verify which Railway service holds prod data** — `interchange.proxy.rlwy.net:31700/railway` returned P2021 (empty). Real prod DSN lives somewhere; figure it out so local Prisma scripts work for one-offs again.
+- **Set DATABASE_URL_PROD properly** in `.env.local` once that's verified.
+- **#69 Seed SRS Dubai shipments for Q2 exec report** — still blocked on Andrew for $/L and orderType.
+- **Hurricane Ventures rename script** — still committed but unrun.
+- **#70 Weekly Exec Review verification** — auto-cron now runs every Monday, so this auto-resolves the next time the cron fires (test by triggering manually: `fzcron weekly-review` on Andrew's Mac).
+
+### Lessons / patterns from this session
+
+- **Smart-quote substitution** in macOS Terminal is a real productivity drain when pasting multi-line shell from chat. Andrew disabled with `defaults write com.apple.Terminal "Use Smart Quotes" -bool false` + `defaults write -g NSAutomaticQuoteSubstitutionEnabled -bool false`. Restart Terminal after toggling.
+- **Comment-line zsh trap**: `#` only works as a comment in interactive shells if `setopt interactive_comments` is on. Otherwise pasted comments error out. Add to `~/.zshrc`.
+- **FUSE-mount `.git/index.lock`** still bites every commit — `rm -f .git/index.lock` between every git command is the workaround.
+- **Vercel edge cache eats first responses to new routes** — append `&_=$(date +%s)` to URLs to force `BYPASS`.
+- **Bearer-authed admin-action endpoints under `/api/cron/*`** are the right pattern for "trigger from CLI" tasks. Skip local Prisma scripts; let Vercel runtime do the DB work since the connection is already healthy there.
+- **`fzcron` shell helper** in `~/.zshrc` makes ad-hoc cron pings trivial:
+  ```bash
+  fzcron() {
+    source /Users/a801/Desktop/fuzeatlas/.env.local 2>/dev/null
+    setopt local_options no_nomatch
+    local route="$1"
+    local sep="?"
+    [[ "$route" == *"?"* ]] && sep="&"
+    curl -sS -i -H "Authorization: Bearer $CRON_SECRET" "https://fuzeatlas.com/api/cron/${route}${sep}_=$(date +%s)"
+  }
+  ```
+
+---
 
 ## Built Features (Session — April 23, 2026)
 
