@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { notifyOrderStatusChange } from "@/lib/notify";
 
 /**
  * Order Lifecycle Events
@@ -103,6 +104,7 @@ export async function POST(
     });
 
     // ── Side-effects based on event type ──
+    let triggeredStatusChange: "SHIPPED" | "DELIVERED" | null = null;
     try {
       if (eventType === "SHIPPED_FROM_FUZE" || eventType === "SHIPPED_FROM_DISTRIBUTOR") {
         await prisma.fuzeOrder.update({
@@ -114,6 +116,7 @@ export async function POST(
             carrier: data?.carrier || undefined,
           },
         });
+        triggeredStatusChange = "SHIPPED";
       } else if (eventType === "RECEIVED_AT_FACTORY") {
         await prisma.fuzeOrder.update({
           where: { id },
@@ -122,6 +125,7 @@ export async function POST(
             deliveredDate: new Date(),
           },
         });
+        triggeredStatusChange = "DELIVERED";
       } else if (eventType === "TREATMENT_APPLIED" && data) {
         // Record consumption
         await prisma.fuzeConsumption.create({
@@ -144,10 +148,34 @@ export async function POST(
       console.error("Lifecycle side-effect error (non-blocking):", sideErr);
     }
 
-    // Notify admins + account manager for significant events
+    // ── Status-change fan-out ──
+    // Penfabric phase 1 May 2026: when a lifecycle event flips the
+    // order's actual status, the factory + distributor user pools (and
+    // admins) need an in-app notification — not just admins. The admin
+    // SHIPPED/DELIVERED path in /api/orders/route.ts uses
+    // notifyOrderStatusChange already; this path was orphaned.
+    if (triggeredStatusChange) {
+      try {
+        await notifyOrderStatusChange({
+          orderId: order.id,
+          orderNumber: order.orderNumber || order.id,
+          newStatus: triggeredStatusChange,
+          factoryId: order.factoryId || "",
+          factoryName: order.factory?.name || "Factory",
+          trackingNumber: data?.trackingNumber || undefined,
+          carrier: data?.carrier || undefined,
+          distributorId: order.distributorId || undefined,
+        });
+      } catch (notifyErr) {
+        console.error("[orders/events] notifyOrderStatusChange failed:", notifyErr);
+      }
+    }
+
+    // Other significant events that DON'T flip the order status still
+    // deserve an admin ping so ops can watch the production timeline.
     try {
-      const significant = ["RECEIVED_AT_FACTORY", "TREATMENT_APPLIED", "ICP_SAMPLE_SUBMITTED", "ICP_CERTIFIED"];
-      if (significant.includes(eventType)) {
+      const adminOnly = ["TREATMENT_APPLIED", "ICP_SAMPLE_SUBMITTED", "ICP_CERTIFIED"];
+      if (adminOnly.includes(eventType)) {
         const admins = await prisma.user.findMany({
           where: { role: { in: ["ADMIN", "EMPLOYEE"] }, status: "ACTIVE" },
           select: { id: true },

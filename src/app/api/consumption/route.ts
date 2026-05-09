@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { notifyNewOrder } from "@/lib/notify";
 
 /**
  * GET /api/consumption
@@ -256,6 +257,31 @@ export async function POST(req: Request) {
           status: "CONFIRMED",
         },
       });
+
+      // Penfabric phase 1 May 2026 — admin/AM creating an order on
+      // behalf of a factory used to be silent. Now wire notifyNewOrder
+      // so the assigned account manager (and admins) see it the moment
+      // it's logged. Non-fatal: order create still returns 200 if
+      // notify throws.
+      (async () => {
+        try {
+          const factory = await prisma.factory.findUnique({
+            where: { id: factoryId },
+            select: { name: true, salesRepId: true },
+          });
+          await notifyNewOrder({
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            orderType: "PRODUCTION",
+            factoryName: factory?.name || "Factory",
+            volumeLiters: Number(volumeLiters),
+            totalPrice: order.totalPrice,
+            accountManagerId: factory?.salesRepId || undefined,
+          });
+        } catch (notifyErr) {
+          console.error("[consumption] notifyNewOrder failed:", notifyErr);
+        }
+      })();
 
       return NextResponse.json({ ok: true, order });
     }
