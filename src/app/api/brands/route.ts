@@ -1,8 +1,21 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { getCurrentUser } from "@/lib/auth";
 
 const prisma = new PrismaClient();
+
+// BD-eligible roles that should auto-claim a brand on manual creation.
+// Mirrors the role gate in /api/admin/bd/wizard/send (#101).
+// Discovery / bulk-import paths (e.g. /api/brands/discover) intentionally
+// create unclaimed leads and don't go through this filter.
+const AUTO_CLAIM_ROLES = new Set([
+  "ADMIN",
+  "EMPLOYEE",
+  "SALES_MANAGER",
+  "SALES_REP",
+  "BD_REP",
+]);
 
 export async function GET() {
   try {
@@ -67,6 +80,8 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const sessionUser = await getCurrentUser().catch(() => null);
+
     const body = await req.json();
     const {
       name, pipelineStage, customerType, leadReferralSource,
@@ -79,6 +94,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Brand name is required" }, { status: 400 });
     }
 
+    // Bug A fix (Scott ticket cmot3i3pk, May 2026): when a BD-eligible
+    // user manually adds a brand, default salesRepId to that user so
+    // they own it from the moment of creation. The wizard's send step
+    // already auto-claims (see #101), but until they hit Send the brand
+    // sat unclaimed and other reps could grab it. Caller can still pass
+    // an explicit salesRepId (e.g. an admin assigning a rep) — that
+    // wins. Bulk-import / discovery flows skip this path entirely.
+    let resolvedSalesRepId: string | null = salesRepId || null;
+    if (!resolvedSalesRepId && sessionUser && AUTO_CLAIM_ROLES.has(sessionUser.role)) {
+      resolvedSalesRepId = sessionUser.id;
+    }
+
+    const now = new Date();
     const brand = await prisma.brand.create({
       data: {
         name: name.trim(),
@@ -92,13 +120,21 @@ export async function POST(req: Request) {
         projectDescription: projectDescription || null,
         forecast: forecast || null,
         deliverables: deliverables || null,
-        salesRepId: salesRepId || null,
+        salesRepId: resolvedSalesRepId,
+        // Stamp lastActivityAt so the 90-day inactivity cron doesn't
+        // immediately bounce a freshly-claimed brand. Aligns with the
+        // wizard's send step which sets this on first outbound.
+        lastActivityAt: resolvedSalesRepId ? now : null,
         dateOfInitialContact: dateOfInitialContact ? new Date(dateOfInitialContact) : null,
         presentationDate: presentationDate ? new Date(presentationDate) : null,
       },
     });
 
-    return NextResponse.json({ ok: true, brand });
+    return NextResponse.json({
+      ok: true,
+      brand,
+      autoClaimed: !!(resolvedSalesRepId && resolvedSalesRepId !== salesRepId),
+    });
   } catch (e: any) {
     console.error("Brand create error:", e);
     if (e.code === "P2002") {

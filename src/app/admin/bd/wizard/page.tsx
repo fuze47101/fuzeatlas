@@ -149,6 +149,26 @@ export default function BDWizardPage() {
     [brand, selectedContactId],
   );
 
+  // Bug B fix (Scott ticket cmot3i3pk, May 2026): when the rep picks a
+  // contact that has no email but does have a LinkedIn URL, auto-flip
+  // the channel to LinkedIn so they aren't stuck on a draft step that
+  // can't ever send. Also surface a banner explaining what happened so
+  // they don't think the channel was set arbitrarily.
+  const [channelAutoSwitched, setChannelAutoSwitched] = useState(false);
+  function handleContactSelect(contactId: string) {
+    setSelectedContactId(contactId);
+    const c = brand?.contacts.find((x) => x.id === contactId);
+    if (!c) {
+      setChannelAutoSwitched(false);
+      return;
+    }
+    if (!c.email && c.linkedinUrl && channel === "email") {
+      setChannel("linkedin");
+      setChannelAutoSwitched(true);
+    } else {
+      setChannelAutoSwitched(false);
+    }
+  }
   // ────────────── effects ──────────────
   useEffect(() => {
     async function checkProfile() {
@@ -765,9 +785,15 @@ export default function BDWizardPage() {
               <ContactStep
                 brand={brand}
                 selectedContactId={selectedContactId}
-                onSelect={setSelectedContactId}
+                onSelect={handleContactSelect}
                 channel={channel}
-                onChannelChange={setChannel}
+                onChannelChange={(c) => {
+                  setChannel(c);
+                  // Manually changing the channel implies the user has
+                  // seen / dismissed the auto-switch banner.
+                  setChannelAutoSwitched(false);
+                }}
+                channelAutoSwitched={channelAutoSwitched}
                 tone={tone}
                 onToneChange={setTone}
                 onBack={() => setStep("pick")}
@@ -1307,6 +1333,7 @@ function ContactStep({
   onSelect,
   channel,
   onChannelChange,
+  channelAutoSwitched,
   tone,
   onToneChange,
   onBack,
@@ -1317,6 +1344,7 @@ function ContactStep({
   onSelect: (id: string) => void;
   channel: "email" | "linkedin";
   onChannelChange: (c: "email" | "linkedin") => void;
+  channelAutoSwitched: boolean;
   tone: "direct" | "warm" | "curious";
   onToneChange: (t: "direct" | "warm" | "curious") => void;
   onBack: () => void;
@@ -1508,6 +1536,23 @@ function ContactStep({
             {channel === "email" && !selected.email && (
               <div className="text-[11px] text-red-600 mt-1">
                 This contact has no email. Choose LinkedIn or pick another contact.
+              </div>
+            )}
+            {/* Bug B fix (Scott ticket cmot3i3pk, May 2026): auto-switch
+                banner — explains why the channel flipped to LinkedIn
+                when the picked contact had no email. */}
+            {channelAutoSwitched && channel === "linkedin" && selected && !selected.email && selected.linkedinUrl && (
+              <div className="mt-2 p-2 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900">
+                <strong>Switched to LinkedIn channel.</strong>{" "}
+                {(selected.name || "This contact")} has no email on file —
+                only a LinkedIn URL. Reach out via LI DM, or click{" "}
+                <a
+                  href={`/contacts/${selected.id}`}
+                  className="underline hover:text-amber-950"
+                >
+                  open the contact
+                </a>{" "}
+                to add an email address and switch back to email.
               </div>
             )}
           </div>
