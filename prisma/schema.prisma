@@ -347,6 +347,32 @@ model Brand {
   sourceRecords SourceRecord[]
   engagement BrandEngagement? @relation("BrandEngagement")
 
+  // Brand-stipulated FUZE specification (KUIU promise May 2026 — Andrew
+  // → Joseph: "you stipulate in the setup ... ongoing ICP testing at
+  // intervals of production batches"). All optional; brands are added
+  // to the pipeline long before they have a stipulated spec.
+  //
+  // requiredFuzeTier — F1/F2/F3/F4. The order-application validator
+  //   in src/lib/order-validation.ts uses this to flag tier mismatches
+  //   when factories under this brand order off-spec.
+  //
+  // icpCadenceEveryNBatches — "test ICP every N production batches".
+  //   The cadence cron walks ProductionBatch rows for each factory in
+  //   this brand's supply chain and flags overdue ICP submissions.
+  //
+  // icpCadenceEveryLitersConsumed — alternative cadence: every X
+  //   liters of cumulative FuzeConsumption per factory. Used when the
+  //   brand cares more about volume throughput than batch count.
+  //
+  // protocolDocUrl — link to the brand's stipulated protocol PDF
+  //   (the document Andrew references in the email: "we will have this
+  //   document included with your profile so they can reference it").
+  requiredFuzeTier              String?
+  icpCadenceEveryNBatches       Int?
+  icpCadenceEveryLitersConsumed Float?
+  protocolDocUrl                String?
+  brandSpecUpdatedAt            DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

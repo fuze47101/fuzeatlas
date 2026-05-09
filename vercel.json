@@ -35,6 +35,10 @@
     {
       "path": "/api/cron/weekly-review",
       "schedule": "0 14 * * 1"
+    },
+    {
+      "path": "/api/cron/test-cadence",
+      "schedule": "0 14 * * *"
     }
   ]
 }

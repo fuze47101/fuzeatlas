@@ -446,7 +446,15 @@ export async function POST(req: Request) {
     // for the stamped fabric mass and tier. Fires a notification fan-
     // out to the brand's user pool (and admins) when the order is off
     // by more than 10%. Order is NOT blocked — flagged for review.
-    const validation = validateOrderApplication(order, null);
+    // Pull requiredFuzeTier off the brand if available so the
+    // validator can flag tier-vs-spec mismatches too.
+    const brandSpec = order.brandId
+      ? await prisma.brand.findUnique({
+          where: { id: order.brandId },
+          select: { requiredFuzeTier: true },
+        })
+      : null;
+    const validation = validateOrderApplication(order, brandSpec);
     const validationSummary = summariseValidation(validation);
     if (
       order.brandId &&
