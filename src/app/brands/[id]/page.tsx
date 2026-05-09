@@ -466,7 +466,7 @@ export default function BrandDetailPage() {
                 href={`/admin/brands/${brand.id}/pricing-tiers`}
                 className="px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-sm font-semibold hover:bg-emerald-100"
               >
-                💲 Pricing Tiers
+                💲 Pricing
               </a>
               <button
                 onClick={() => setEditing(true)}

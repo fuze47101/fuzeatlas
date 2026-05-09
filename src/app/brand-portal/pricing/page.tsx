@@ -105,12 +105,12 @@ export default function BrandPricingPage() {
         </p>
       </div>
 
-      {/* Hero — current tier + progress to next */}
+      {/* Hero — current pricing + progress to next */}
       <div className="rounded-2xl bg-gradient-to-br from-[#00b4c3] to-[#0a7a85] text-white p-6 mb-6 shadow-lg">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4">
           <div>
             <div className="text-xs uppercase tracking-widest opacity-80 mb-1">
-              Current Tier
+              Your Pricing
             </div>
             <div className="text-4xl font-black">
               {data.currentTier
@@ -122,7 +122,7 @@ export default function BrandPricingPage() {
                 ? data.currentTier.label
                 : data.currentTier
                 ? `Qualified at ${fmtLiters(data.currentTier.thresholdLiters)} consumed`
-                : "No discount tier qualified yet."}
+                : "Standard pricing — additional discounts unlock as cumulative volume grows."}
             </div>
           </div>
           <div className="text-right">
@@ -160,15 +160,15 @@ export default function BrandPricingPage() {
           </>
         ) : data.currentTier ? (
           <div className="text-xs opacity-90 mt-2">
-            You&apos;re at the top tier. No further discount tiers configured.
+            You&apos;ve qualified for the highest available discount.
           </div>
         ) : null}
       </div>
 
-      {/* Ladder visualization */}
+      {/* Pricing levels visualization */}
       {data.tiers.length > 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-          <h2 className="text-base font-bold text-slate-900 mb-4">Discount ladder</h2>
+          <h2 className="text-base font-bold text-slate-900 mb-4">Volume pricing</h2>
           <div className="space-y-2">
             {data.tiers.map((t) => {
               const qualified = consumed >= t.thresholdLiters;
@@ -216,11 +216,11 @@ export default function BrandPricingPage() {
         <div className="bg-white rounded-xl border border-dashed border-slate-300 p-6 mb-6 text-center">
           <div className="text-4xl mb-2">📊</div>
           <div className="text-sm font-bold text-slate-900 mb-1">
-            No discount ladder configured yet
+            Standard pricing
           </div>
           <p className="text-xs text-slate-500 max-w-md mx-auto">
-            Reach out to your account manager — once your contract has volume tiers stipulated,
-            they&apos;ll appear here automatically.
+            Volume discounts will appear here once your contract terms are configured. Reach out
+            to your account manager to discuss pricing.
           </p>
         </div>
       )}

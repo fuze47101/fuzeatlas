@@ -169,7 +169,7 @@ export default function AdminBrandPricingTiersPage() {
   }
 
   async function remove(t: Tier) {
-    if (!confirm(`Delete tier ${t.discountPct}% off at ${fmtLiters(t.thresholdLiters)}? This can't be undone.`)) {
+    if (!confirm(`Delete pricing level ${t.discountPct}% off at ${fmtLiters(t.thresholdLiters)}? This can't be undone.`)) {
       return;
     }
     setFlash(null);
@@ -177,7 +177,7 @@ export default function AdminBrandPricingTiersPage() {
       const res = await fetch(`/api/admin/brand-pricing-tiers?id=${t.id}`, { method: "DELETE" });
       const j = await res.json();
       if (!j.ok) throw new Error(j.error || "Delete failed");
-      setFlash({ kind: "ok", msg: "Tier deleted." });
+      setFlash({ kind: "ok", msg: "Pricing level deleted." });
       await loadAll();
     } catch (e: any) {
       setFlash({ kind: "error", msg: e?.message || "Delete failed" });
@@ -228,15 +228,15 @@ export default function AdminBrandPricingTiersPage() {
             </Link>
           ) : null}
           <span>›</span>
-          <span>Pricing Tiers</span>
+          <span>Pricing</span>
         </div>
         <h1 className="text-2xl font-black text-slate-900">
-          Pricing Tier Ladder
+          Volume Pricing
           {brand?.name ? <span className="text-slate-400 font-normal"> — {brand.name}</span> : null}
         </h1>
         <p className="text-sm text-slate-500 mt-1">
           Cumulative consumption thresholds and the discount the brand qualifies for once they
-          cross each rung. Surfaces on the brand&apos;s{" "}
+          cross each level. Surfaces on the brand&apos;s{" "}
           <Link href={`/brand-portal/pricing`} className="text-[#00b4c3] hover:underline">
             /brand-portal/pricing
           </Link>{" "}
@@ -251,7 +251,7 @@ export default function AdminBrandPricingTiersPage() {
         className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-6"
       >
         <h2 className="text-base font-bold text-slate-900 mb-4">
-          {editingId ? "Edit tier" : "Add a new tier"}
+          {editingId ? "Edit pricing level" : "Add a new pricing level"}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -346,10 +346,10 @@ export default function AdminBrandPricingTiersPage() {
         </div>
       </form>
 
-      {/* Existing rungs */}
+      {/* Existing pricing levels */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100 bg-slate-50">
-          <h2 className="font-bold text-slate-900">Configured rungs</h2>
+          <h2 className="font-bold text-slate-900">Configured pricing</h2>
           <p className="text-xs text-slate-500 mt-0.5">
             Sorted by threshold ascending. Click <strong>Edit</strong> to load a row into the form
             above.
@@ -359,10 +359,12 @@ export default function AdminBrandPricingTiersPage() {
         {sortedTiers.length === 0 ? (
           <div className="p-10 text-center">
             <div className="text-4xl mb-2">📊</div>
-            <div className="text-sm font-bold text-slate-900 mb-1">No tiers configured yet</div>
+            <div className="text-sm font-bold text-slate-900 mb-1">
+              No volume pricing configured yet
+            </div>
             <p className="text-xs text-slate-500 max-w-md mx-auto">
-              Add the first rung above. Brands without any active tiers see a friendly empty
-              state on their pricing page.
+              Add the first level above. Brands without any active pricing see a friendly
+              standard-pricing message on their pricing page.
             </p>
           </div>
         ) : (
