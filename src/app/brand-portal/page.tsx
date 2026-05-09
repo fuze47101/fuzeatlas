@@ -87,6 +87,16 @@ export default function BrandPortalDashboard() {
           </div>
         </button>
         <button
+          onClick={() => router.push("/brand-portal/pricing")}
+          className="bg-white rounded-xl border border-slate-200 hover:border-emerald-400 hover:shadow-md transition-all p-6 text-left"
+        >
+          <div className="text-2xl mb-2">📊</div>
+          <div className="font-bold text-slate-900">Pricing & Volume</div>
+          <div className="text-xs text-slate-500 mt-1">
+            Cumulative FUZE consumption across your supply chain — and your current discount tier.
+          </div>
+        </button>
+        <button
           onClick={() => router.push("/brand-portal/chat")}
           className="bg-white rounded-xl border border-slate-200 hover:border-[#00b4c3] hover:shadow-md transition-all p-6 text-left"
         >

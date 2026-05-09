@@ -342,6 +342,7 @@ model Brand {
   fuzeConsumptions FuzeConsumption[] @relation("ConsumptionBrand")
   fuzeOrders       FuzeOrder[]      @relation("OrderBrand")
   orderAllocations OrderBrandAllocation[] @relation("BrandOrderAllocations")
+  pricingTiers     BrandPricingTier[]      @relation("BrandPricingTiers")
   meetings     Meeting[]      @relation("MeetingBrand")
   crmTasks     CrmTask[]      @relation("BrandCrmTasks")
   sourceRecords SourceRecord[]
@@ -2871,6 +2872,32 @@ model OrderBrandAllocation {
   @@unique([orderId, brandId])
   @@index([brandId])
   @@index([orderId])
+}
+
+// ─────────────────────────────────────────────
+// BRAND PRICING TIER LADDER
+// Per-brand discount ladder used for the cross-factory volume rollup
+// (KUIU promise May 2026: "we can then calculate and control pricing
+// reductions based on volume across all factories"). Each row is one
+// rung of the ladder — once cumulative consumption across the whole
+// supply chain crosses thresholdLiters, the brand qualifies for that
+// row's discountPct on subsequent orders.
+// ─────────────────────────────────────────────
+
+model BrandPricingTier {
+  id      String @id @default(cuid())
+  brandId String
+  brand   Brand  @relation("BrandPricingTiers", fields: [brandId], references: [id], onDelete: Cascade)
+
+  thresholdLiters Float    // cumulative consumption needed to qualify
+  discountPct     Float    // % off list price (0–100)
+  label           String?  // optional label e.g. "Bronze", "Silver"
+  active          Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([brandId, thresholdLiters])
 }
 
 // ─────────────────────────────────────────────
