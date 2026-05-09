@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { notifyNewOrder, notifyOrderStatusChange, notifyLowInventory } from "@/lib/notify";
 import { sendNewOrderEmail, sendOrderStatusEmail, sendDistributorOrderEmail } from "@/lib/email";
+import { validateOrderApplication, summariseValidation } from "@/lib/order-validation";
 
 const BOTTLE_LITERS = 19;
 const DEFAULT_PRICE_PER_LITER = 36; // USD fallback
@@ -439,6 +440,58 @@ export async function POST(req: Request) {
     const brandNames = allocationRecords.length > 0
       ? allocationRecords.map((a) => a.brand?.name).filter(Boolean).join(", ")
       : order.brand?.name || undefined;
+
+    // ─── Application-amount validation (KUIU promise May 2026) ───
+    // Confirm the order's volumeLiters matches what the brand expects
+    // for the stamped fabric mass and tier. Fires a notification fan-
+    // out to the brand's user pool (and admins) when the order is off
+    // by more than 10%. Order is NOT blocked — flagged for review.
+    const validation = validateOrderApplication(order, null);
+    const validationSummary = summariseValidation(validation);
+    if (
+      order.brandId &&
+      validationSummary &&
+      validation.findings.some((f) => f.severity !== "info")
+    ) {
+      try {
+        const brandUsers = await prisma.user.findMany({
+          where: { brandId: order.brandId, status: "ACTIVE" },
+          select: { id: true },
+        });
+        const adminUsers = await prisma.user.findMany({
+          where: { role: "ADMIN", status: "ACTIVE" },
+          select: { id: true },
+        });
+        const recipientIds = new Set<string>([
+          ...brandUsers.map((u: any) => u.id),
+          ...adminUsers.map((u: any) => u.id),
+        ]);
+        const severity = validation.findings.find((f) => f.severity === "error")
+          ? "error"
+          : "warn";
+        const titleEmoji = severity === "error" ? "🚨" : "⚠️";
+        await prisma.notification.createMany({
+          data: Array.from(recipientIds).map((userId) => ({
+            userId,
+            type: "PO_STATUS",
+            title: `${titleEmoji} Order ${order.orderNumber} flagged for application review`,
+            message: validationSummary,
+            link: `/admin/orders`,
+            metadata: {
+              orderId: order.id,
+              brandId: order.brandId,
+              factoryId: order.factoryId,
+              expectedLiters: validation.expectedLiters,
+              actualLiters: validation.actualLiters,
+              findings: validation.findings,
+              severity,
+            },
+          })),
+        });
+      } catch (validationErr) {
+        console.error("[ORDER] Validation notification error (non-blocking):", validationErr);
+      }
+    }
 
     // ─── Trigger notifications (fire-and-forget) ───
     try {
