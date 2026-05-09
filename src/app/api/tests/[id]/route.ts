@@ -2,6 +2,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendResultsReadyEmail } from "@/lib/email";
+import { getCurrentUser } from "@/lib/auth";
+import { notifyTestResult } from "@/lib/notify";
 
 /* ── GET /api/tests/[id] ── fetch single test run with all details */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -115,8 +117,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       }
     }
 
-    // Brand visibility stamp
-    const userId = req.headers.get("x-user-id") || null;
+    // Brand visibility stamp — derive userId from the session, not a spoof-able header.
+    const sessionUser = await getCurrentUser();
+    const userId = sessionUser?.id || null;
     const brandVisData: any = {};
     if (brandVisible !== undefined) {
       brandVisData.brandVisible = Boolean(brandVisible);
@@ -262,8 +265,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
                 select: {
                   fuzeFabricNumber: true,
                   fabric: { select: { fuzeNumber: true, customerCode: true } },
-                  factory: { select: { name: true } },
-                  brand: { select: { name: true } },
+                  factory: { select: { id: true, name: true } },
+                  brand: { select: { id: true, name: true } },
                 },
               },
               icpResult: true,
@@ -369,6 +372,33 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
           });
         } catch (emailErr) {
           console.error("[EMAIL] Results ready email failed:", emailErr);
+        }
+
+        // Penfabric/Raihana follow-on May 2026 — single email to the test
+        // requestor is not enough. The brand and the factory should both
+        // see this in their in-app notification feed the moment a test is
+        // stamped brand-visible. Fan out via notifyTestResult; failure is
+        // non-fatal so the stamp action never rolls back.
+        try {
+          const testName =
+            fullTest.testType === "ICP"
+              ? `ICP Analysis${fabricInfo ? ` · ${fabricInfo}` : ""}`
+              : fullTest.testType === "ANTIBACTERIAL"
+              ? `Antibacterial${fabricInfo ? ` · ${fabricInfo}` : ""}`
+              : fullTest.testType === "FUNGAL"
+              ? `Antifungal${fabricInfo ? ` · ${fabricInfo}` : ""}`
+              : fullTest.testType === "ODOR"
+              ? `Odor${fabricInfo ? ` · ${fabricInfo}` : ""}`
+              : `${fullTest.testType || "Test"}${fabricInfo ? ` · ${fabricInfo}` : ""}`;
+          await notifyTestResult({
+            testId: id,
+            testName,
+            result: passed ? "PASSED" : "FAILED",
+            brandId: fullTest.submission?.brand?.id,
+            factoryId: fullTest.submission?.factory?.id,
+          });
+        } catch (notifyErr) {
+          console.error("[NOTIFY] notifyTestResult failed:", notifyErr);
         }
       })();
     }
