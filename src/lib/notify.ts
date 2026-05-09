@@ -244,8 +244,16 @@ export async function notifyTestRequestStatus(params: {
   createdByUserId?: string;
   poNumber?: string;
   factoryName?: string;
+  // Penfabric phase 1 May 2026 — when these are passed, fan out to the
+  // org's whole user base (not just the one person who clicked submit)
+  // for customer-facing transitions: APPROVED, SUBMITTED, IN_PROGRESS,
+  // RESULTS_RECEIVED, COMPLETE. Skip for PENDING_APPROVAL/REJECTED/
+  // CANCELLED — those are internal admin states.
+  brandId?: string | null;
+  factoryId?: string | null;
 }) {
-  const { testRequestId, status, createdByUserId, poNumber, factoryName } = params;
+  const { testRequestId, status, createdByUserId, poNumber, factoryName, brandId, factoryId } =
+    params;
 
   const statusLabels: Record<string, string> = {
     PENDING_APPROVAL: "Awaiting Approval",
@@ -280,6 +288,72 @@ export async function notifyTestRequestStatus(params: {
         ? `New test request ${ref}${fromWho} is awaiting your approval.`
         : `Results received for test request ${ref}${fromWho}. Ready for review.`;
     await notifyAdmins("PO_STATUS", `Test Request ${label}: ${ref}`, message, `/test-requests`);
+  }
+
+  // Customer-facing fan-out — brand users + factory users at the org
+  // level. Penfabric/Raihana fix: the factory submitter knew about it,
+  // but the rest of the factory (and the brand owner) had no idea their
+  // PO had moved. Skip internal-only states.
+  const customerFacingStates = ["APPROVED", "SUBMITTED", "IN_PROGRESS", "RESULTS_RECEIVED", "COMPLETE"];
+  if (customerFacingStates.includes(status)) {
+    const orgMessage =
+      status === "RESULTS_RECEIVED"
+        ? `Results are in for test request ${ref}. Open the request to review.`
+        : status === "COMPLETE"
+        ? `Test request ${ref} is complete and closed out.`
+        : status === "APPROVED"
+        ? `Test request ${ref} has been approved and queued for the lab.`
+        : status === "SUBMITTED"
+        ? `Test request ${ref} has been submitted to the lab.`
+        : `Test request ${ref} is now in progress at the lab.`;
+
+    if (brandId) {
+      try {
+        const brandUsers = await prisma.user.findMany({
+          where: { brandId, status: "ACTIVE" },
+          select: { id: true },
+        });
+        await Promise.all(
+          brandUsers
+            .filter((u: any) => u.id !== createdByUserId)
+            .map((u: any) =>
+              createNotification({
+                userId: u.id,
+                type: "PO_STATUS",
+                title: `Test Request ${label}: ${ref}`,
+                message: orgMessage,
+                link: `/brand-portal/tests`,
+              }),
+            ),
+        );
+      } catch (err) {
+        console.error("[notify] brand fan-out failed:", err);
+      }
+    }
+
+    if (factoryId) {
+      try {
+        const factoryUsers = await prisma.user.findMany({
+          where: { factoryId, status: "ACTIVE" },
+          select: { id: true },
+        });
+        await Promise.all(
+          factoryUsers
+            .filter((u: any) => u.id !== createdByUserId)
+            .map((u: any) =>
+              createNotification({
+                userId: u.id,
+                type: "PO_STATUS",
+                title: `Test Request ${label}: ${ref}`,
+                message: orgMessage,
+                link: `/factory-portal/tests`,
+              }),
+            ),
+        );
+      } catch (err) {
+        console.error("[notify] factory fan-out failed:", err);
+      }
+    }
   }
 }
 

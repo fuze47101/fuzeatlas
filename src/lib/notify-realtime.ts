@@ -276,6 +276,8 @@ export async function pushTestRequestStatus(params: {
   createdByUserId?: string;
   poNumber?: string;
   factoryName?: string;
+  brandId?: string | null;
+  factoryId?: string | null;
 }): Promise<void> {
   try {
     // Create notifications in database (requester + admins when relevant)

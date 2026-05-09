@@ -19,11 +19,38 @@ const prisma = new PrismaClient();
 /** Fire notification + email for test request status changes (non-blocking) */
 async function notifyTestRequestChange(testRequestId: string, newStatus: string, existing: any) {
   try {
-    // Push real-time notification
+    // Resolve brand + factory IDs so we can fan out to their whole user
+    // base, not just the requester. Penfabric phase 1 May 2026 — factory
+    // PO moved states but only the submitter heard about it.
+    let brandId: string | null = existing.brandId || null;
+    let factoryId: string | null = null;
+    try {
+      if (existing.submissionId || existing.fabricId) {
+        const meta = await prisma.testRequest.findUnique({
+          where: { id: testRequestId },
+          select: {
+            brandId: true,
+            submission: { select: { factoryId: true, brandId: true } },
+            fabric: { select: { factoryId: true, brandId: true } },
+          },
+        });
+        brandId =
+          brandId || meta?.submission?.brandId || meta?.fabric?.brandId || null;
+        factoryId =
+          meta?.submission?.factoryId || meta?.fabric?.factoryId || null;
+      }
+    } catch (lookupErr) {
+      console.error("[NOTIFY] Test request brand/factory lookup failed:", lookupErr);
+    }
+
+    // Push real-time notification (DB row + SSE)
     await pushTestRequestStatus({
       testRequestId,
       status: newStatus,
       createdByUserId: existing.requestedById || undefined,
+      poNumber: existing.poNumber,
+      brandId,
+      factoryId,
     });
 
     // Send email to the requester
