@@ -878,6 +878,42 @@ const en = {
     noDocs: "TDS / SDS not yet uploaded. Admin can add them in Product Documents.",
   },
 
+  // ─── FACTORY PORTAL ───────────────────────────
+  // Surfaces non-English factory ops touch every day. Phase 0 of
+  // ROADMAP_v2 — translate the highest-traffic factory flows.
+  factoryPortal: {
+    crumb: "Factory Portal",
+    welcomeBack: "Welcome Back",
+    welcomeSubtitle: "Manage your FUZE fabric submissions and track treatment progress",
+    statActiveFabrics: "Active Fabrics",
+    statPendingSubmissions: "Pending Submissions",
+    statCompletedTests: "Completed Tests",
+    statSampleTrials: "Sample Trials",
+    learnLabel: "Learn FUZE",
+    learnTitle: "FUZE Basics — dosage, mechanism, testing",
+    learnSubtitle:
+      "Why FUZE applies at lower dose, requires no binder or curing oven, and tests on ASTM E2149.",
+    learnAction: "Read",
+    submitFabricTitle: "Submit Fabric",
+    submitFabricSubtitle: "Add new fabric for FUZE treatment",
+    submitFabricAction: "Click to start a new submission",
+    myFabricsTitle: "My Fabrics",
+    myFabricsSubtitle: "View all your fabrics",
+    myFabricsAction: "View library",
+    submissionsTitle: "Submissions",
+    submissionsSubtitle: "Track treatment progress",
+    submissionsAction: "View submissions",
+    uploadReportTitle: "Upload Test Report",
+    uploadReportSubtitle: "Drop in a lab PDF — we'll parse and link it",
+    uploadReportAction: "Upload PDF",
+    requestSampleTitle: "Request FUZE Sample",
+    requestSampleSubtitle: "Request product samples for fabric treatment trials",
+    requestSampleAction: "Start a trial request",
+    pricingTitle: "Pricing & Details",
+    pricingSubtitle: "FUZE pricing and specifications",
+    pricingAction: "Learn more",
+  },
+
   // ─── PRODUCT DOCUMENTS ────────────────────────
   productDocs: {
     title: "Product Documents",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -14,6 +15,7 @@ interface Stats {
 
 export default function FactoryPortalPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const router = useRouter();
   const [stats, setStats] = useState<Stats>({
     activeFabrics: 0,
@@ -60,12 +62,10 @@ export default function FactoryPortalPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-          <span>Factory Portal</span>
+          <span>{t.factoryPortal.crumb}</span>
         </div>
-        <h1 className="text-3xl font-black text-slate-900 mb-1">Welcome Back</h1>
-        <p className="text-slate-600">
-          Manage your FUZE fabric submissions and track treatment progress
-        </p>
+        <h1 className="text-3xl font-black text-slate-900 mb-1">{t.factoryPortal.welcomeBack}</h1>
+        <p className="text-slate-600">{t.factoryPortal.welcomeSubtitle}</p>
       </div>
 
       {/* Quick Stats */}
@@ -73,7 +73,7 @@ export default function FactoryPortalPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-slate-600 mb-1">Active Fabrics</p>
+              <p className="text-sm text-slate-600 mb-1">{t.factoryPortal.statActiveFabrics}</p>
               <p className="text-3xl font-black text-slate-900">{stats.activeFabrics}</p>
             </div>
             <span className="text-3xl">🧵</span>
@@ -82,7 +82,7 @@ export default function FactoryPortalPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-slate-600 mb-1">Pending Submissions</p>
+              <p className="text-sm text-slate-600 mb-1">{t.factoryPortal.statPendingSubmissions}</p>
               <p className="text-3xl font-black text-slate-900">{stats.pendingSubmissions}</p>
             </div>
             <span className="text-3xl">⏳</span>
@@ -91,7 +91,7 @@ export default function FactoryPortalPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-slate-600 mb-1">Completed Tests</p>
+              <p className="text-sm text-slate-600 mb-1">{t.factoryPortal.statCompletedTests}</p>
               <p className="text-3xl font-black text-slate-900">{stats.completedTests}</p>
             </div>
             <span className="text-3xl">✅</span>
@@ -100,7 +100,7 @@ export default function FactoryPortalPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-slate-600 mb-1">Sample Trials</p>
+              <p className="text-sm text-slate-600 mb-1">{t.factoryPortal.statSampleTrials}</p>
               <p className="text-3xl font-black text-slate-900">{stats.sampleTrials}</p>
             </div>
             <span className="text-3xl">🧪</span>
@@ -116,18 +116,13 @@ export default function FactoryPortalPage() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">
-              Learn FUZE
+              {t.factoryPortal.learnLabel}
             </div>
-            <h3 className="text-base font-bold text-slate-900">
-              FUZE Basics — dosage, mechanism, testing
-            </h3>
-            <p className="text-xs text-slate-600 mt-1">
-              Why FUZE applies at lower dose, requires no binder or curing oven, and tests on ASTM
-              E2149.
-            </p>
+            <h3 className="text-base font-bold text-slate-900">{t.factoryPortal.learnTitle}</h3>
+            <p className="text-xs text-slate-600 mt-1">{t.factoryPortal.learnSubtitle}</p>
           </div>
           <span className="shrink-0 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-            Read →
+            {t.factoryPortal.learnAction} →
           </span>
         </div>
       </Link>
@@ -140,12 +135,12 @@ export default function FactoryPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-lg mb-1">Submit Fabric</h3>
-              <p className="text-sm text-[#00b4c3]/90">Add new fabric for FUZE treatment</p>
+              <h3 className="font-bold text-lg mb-1">{t.factoryPortal.submitFabricTitle}</h3>
+              <p className="text-sm text-[#00b4c3]/90">{t.factoryPortal.submitFabricSubtitle}</p>
             </div>
             <span className="text-3xl">📥</span>
           </div>
-          <div className="text-sm text-white/80">Click to start a new submission →</div>
+          <div className="text-sm text-white/80">{t.factoryPortal.submitFabricAction} →</div>
         </Link>
         <Link
           href="/factory-portal/fabrics"
@@ -153,12 +148,12 @@ export default function FactoryPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-slate-900 text-lg mb-1">My Fabrics</h3>
-              <p className="text-sm text-slate-600">View all your fabrics</p>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">{t.factoryPortal.myFabricsTitle}</h3>
+              <p className="text-sm text-slate-600">{t.factoryPortal.myFabricsSubtitle}</p>
             </div>
             <span className="text-3xl">🧵</span>
           </div>
-          <div className="text-sm text-[#00b4c3] font-medium">View library →</div>
+          <div className="text-sm text-[#00b4c3] font-medium">{t.factoryPortal.myFabricsAction} →</div>
         </Link>
         <Link
           href="/factory-portal/submissions"
@@ -166,12 +161,12 @@ export default function FactoryPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-slate-900 text-lg mb-1">Submissions</h3>
-              <p className="text-sm text-slate-600">Track treatment progress</p>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">{t.factoryPortal.submissionsTitle}</h3>
+              <p className="text-sm text-slate-600">{t.factoryPortal.submissionsSubtitle}</p>
             </div>
             <span className="text-3xl">📋</span>
           </div>
-          <div className="text-sm text-[#00b4c3] font-medium">View submissions →</div>
+          <div className="text-sm text-[#00b4c3] font-medium">{t.factoryPortal.submissionsAction} →</div>
         </Link>
         {/* Tina ticket May 2026 — factories had no upload UI; this is the
             entry point so they stop emailing PDFs to admin@. */}
@@ -181,14 +176,12 @@ export default function FactoryPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-lg mb-1">Upload Test Report</h3>
-              <p className="text-sm text-amber-100">
-                Drop in a lab PDF — we&apos;ll parse and link it
-              </p>
+              <h3 className="font-bold text-lg mb-1">{t.factoryPortal.uploadReportTitle}</h3>
+              <p className="text-sm text-amber-100">{t.factoryPortal.uploadReportSubtitle}</p>
             </div>
             <span className="text-3xl">📤</span>
           </div>
-          <div className="text-sm text-white/80">Upload PDF →</div>
+          <div className="text-sm text-white/80">{t.factoryPortal.uploadReportAction} →</div>
         </Link>
         <Link
           href="/factory-portal/sample-trial"
@@ -196,14 +189,12 @@ export default function FactoryPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-lg mb-1">Request FUZE Sample</h3>
-              <p className="text-sm text-purple-200">
-                Request product samples for fabric treatment trials
-              </p>
+              <h3 className="font-bold text-lg mb-1">{t.factoryPortal.requestSampleTitle}</h3>
+              <p className="text-sm text-purple-200">{t.factoryPortal.requestSampleSubtitle}</p>
             </div>
             <span className="text-3xl">🧪</span>
           </div>
-          <div className="text-sm text-white/80">Start a trial request →</div>
+          <div className="text-sm text-white/80">{t.factoryPortal.requestSampleAction} →</div>
         </Link>
         <Link
           href="/pricing"
@@ -211,12 +202,12 @@ export default function FactoryPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-slate-900 text-lg mb-1">Pricing & Details</h3>
-              <p className="text-sm text-slate-600">FUZE pricing and specifications</p>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">{t.factoryPortal.pricingTitle}</h3>
+              <p className="text-sm text-slate-600">{t.factoryPortal.pricingSubtitle}</p>
             </div>
             <span className="text-3xl">💰</span>
           </div>
-          <div className="text-sm text-[#00b4c3] font-medium">Learn more →</div>
+          <div className="text-sm text-[#00b4c3] font-medium">{t.factoryPortal.pricingAction} →</div>
         </Link>
       </div>
     </div>
