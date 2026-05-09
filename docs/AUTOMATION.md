@@ -57,12 +57,11 @@ jobs:
           prompt: |
             You are running daily ticket triage for FUZE Atlas.
 
-            1. Curl the open tickets:
+            1. Curl the open tickets — bearer-authed JSON endpoint:
                curl -H "Authorization: Bearer $CRON_SECRET" \
-                 https://fuzeatlas.com/api/cron/feedback-digest > /tmp/tickets.json
-               (the cron route happens to return the structured data alongside
-               the email; alternatively call /api/admin/feedback with an admin
-               session cookie — preferred)
+                 https://fuzeatlas.com/api/cron/feedback-list?status=NEW > /tmp/tickets.json
+               (sibling to /api/cron/feedback-digest; the admin UI keeps
+               using /api/admin/feedback with a session cookie)
 
             2. For each open ticket whose category is BROKEN_LINK, ERROR, or
                PROBLEM and whose description points at a specific file path or
