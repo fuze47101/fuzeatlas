@@ -20,7 +20,7 @@ const COOKIE_NAME = "fuze-session";
 // the token-protected Full Application Report from the email link
 // without needing an Atlas login (the token in the URL is the
 // credential). Phase 2 Penfabric work.
-const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/forgot-password", "/reset-password", "/verify-email", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/verify-email", "/api/access-requests", "/api/cron", "/calendar/", "/api/inbound/", "/report/", "/api/fabric-report/", "/factory-invitation/", "/api/factory-invitations/"];
+const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/forgot-password", "/reset-password", "/verify-email", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/verify-email", "/api/access-requests", "/api/cron", "/calendar/", "/api/inbound/", "/report/", "/api/fabric-report/", "/factory-invitation/", "/api/factory-invitations/", "/docs/", "/api/docs/public"];
 
 // Routes restricted to internal roles only (ADMIN, EMPLOYEE, SALES_*, TESTING_*, FABRIC_*)
 // Factory, Brand, and Distributor users CANNOT access these even with a valid session
