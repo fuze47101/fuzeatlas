@@ -1556,6 +1556,35 @@ const en = {
 
   // ─── ADMIN ─────────────────────────────────────
   admin: {
+    commandCenter: {
+      pageTitle: "Command Center",
+      pageSubtitle:
+        "Everything in motion across the FUZE network. Auto-refreshes every 30 seconds.",
+      loading: "Loading…",
+      mActiveBrands: "Active brands (30d)",
+      mShippingFactories: "Shipping factories (30d)",
+      mTestingLabs: "Testing labs (30d)",
+      mLowStock: "Low-stock distributors",
+      mPendingApprovals: "Pending approvals",
+      mOverdueCadences: "Overdue ICP cadences",
+      matrixHeader: "Brand × Factory health",
+      matrixHint: "Each cell shows last submission + last ICP test + cadence flag.",
+      matrixOverdue: "Overdue",
+      matrixOk: "OK",
+      activityHeader: "Recent activity",
+      distributorsHeader: "Distributor low-stock alerts",
+      approvalsHeader: "Brands with pending approvals",
+      noOverdue: "No overdue cadences right now.",
+      noLowStock: "No low-stock distributors.",
+      noPendingApprovals: "No brand has pending approvals.",
+      noActivity: "No recent activity.",
+      colBrand: "Brand",
+      colFactory: "Factory",
+      colLastSubmission: "Last submission",
+      colLastIcp: "Last ICP",
+      colStatus: "Status",
+      colPending: "Pending",
+    },
     labFormTemplates: {
       crumbCurrent: "Form Templates",
       pageTitleWithLab: "Form Templates — {lab}",
