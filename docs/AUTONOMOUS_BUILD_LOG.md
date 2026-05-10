@@ -9,3 +9,4 @@ One line per commit (timestamp UTC, hash, what shipped).
 - 2026-05-09 — `e12c031` — i18n /factory-portal/orders + brand-voice comment fix (A2).
 - 2026-05-09 — `7bd8492` — i18n /brand-portal/supply-chain (B1).
 - 2026-05-09 — `516313d` — i18n /brand-portal/spec (B2).
+- 2026-05-09 — `14097be` — i18n /brand-portal/pricing (B3).

@@ -230,6 +230,14 @@ export default function AdminBrandPricingTiersPage() {
           <span>›</span>
           <span>Pricing</span>
         </div>
+        {brand ? (
+          <Link
+            href={`/brands/${brand.id}`}
+            className="inline-flex items-center gap-1 text-sm text-[#00b4c3] hover:underline mb-3"
+          >
+            ← Back to {brand.name}
+          </Link>
+        ) : null}
         <h1 className="text-2xl font-black text-slate-900">
           Volume Pricing
           {brand?.name ? <span className="text-slate-400 font-normal"> — {brand.name}</span> : null}

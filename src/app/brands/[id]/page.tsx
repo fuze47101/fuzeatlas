@@ -627,6 +627,24 @@ export default function BrandDetailPage() {
             </button>
           );
         })}
+        {/* Cross-page tabs — navigate to the dedicated admin/brand-portal
+            screens. Pricing opens the per-brand discount ladder editor;
+            Supply Chain opens the brand-portal view of the supply chain
+            (admin can view it as if logged in as the brand). */}
+        <Link
+          href={`/admin/brands/${id}/pricing-tiers`}
+          className="px-3 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap inline-flex items-center gap-1"
+        >
+          {t.nav.pricing || "Pricing"}
+          <span className="text-[10px] opacity-60">↗</span>
+        </Link>
+        <Link
+          href="/brand-portal/supply-chain"
+          className="px-3 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap inline-flex items-center gap-1"
+        >
+          {t.brandPortal.supplyChain.crumbCurrent}
+          <span className="text-[10px] opacity-60">↗</span>
+        </Link>
       </div>
 
       <div id="brand-tab-content" />
