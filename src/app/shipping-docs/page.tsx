@@ -46,7 +46,7 @@ export default function ShippingDocsPage() {
   const [currency, setCurrency] = useState("USD");
   const [billTo, setBillTo] = useState({ ...EMPTY_ADDRESS });
   const [shipTo, setShipTo] = useState({ ...EMPTY_ADDRESS });
-  const [lineItems, setLineItems] = useState([{ activity: "Nanoparticles:FUZE F1 Silver Particle Solution by Liter (DS)", qty: 0, rate: 19.50, unit: "lt" }]);
+  const [lineItems, setLineItems] = useState([{ activity: "FUZE F1 Metamaterial Solution by Liter (DS)", qty: 0, rate: 19.50, unit: "lt" }]);
   const [notes, setNotes] = useState("");
 
   // ── Packing List fields ──
@@ -57,7 +57,7 @@ export default function ShippingDocsPage() {
 
   // ── CofA fields ──
   const [product, setProduct] = useState("Fuze F1");
-  const [productDescription, setProductDescription] = useState("Silver Nanoparticles in Distilled Water");
+  const [productDescription, setProductDescription] = useState("FUZE Metamaterial in Distilled Water");
   const [lotNumber, setLotNumber] = useState("");
   const [deliveryDate, setDeliveryDate] = useState(new Date().toISOString().slice(0, 10));
   const [concentration, setConcentration] = useState("30 ppm");

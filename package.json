@@ -16,7 +16,9 @@
     "prisma:generate": "prisma generate",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "db:import": "tsx scripts/import-atlas.ts"
+    "db:import": "tsx scripts/import-atlas.ts",
+    "check:brand-voice": "tsx scripts/check-brand-voice.ts",
+    "check:brand-voice:staged": "tsx scripts/check-brand-voice.ts --staged"
   },
   "dependencies": {
     "@anthropic-ai/claude-code": "^2.1.112",
