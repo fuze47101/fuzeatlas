@@ -1495,6 +1495,35 @@ const en = {
     },
   },
 
+  // ─── LIBRARY (shared, used by all 4 portal /library pages) ──
+  library: {
+    crumbCurrent: "Library",
+    pageTitle: "Document Library",
+    pageSubtitle:
+      "Reference documents from FUZE — TDS, SDS, application guides, sustainability data, and more. Filtered to what's relevant for your role.",
+    loading: "Loading library…",
+    // Tabs by category
+    catAll: "All",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "Toxicology",
+    catPricing: "Pricing",
+    catSustainability: "Sustainability",
+    catEducation: "Education",
+    catClaimsCompliance: "Claims & Compliance",
+    catApplicationGuide: "Application Guide",
+    catCaseStudy: "Case Study",
+    // Table
+    colTitle: "Title",
+    colDescription: "Description",
+    colCategory: "Category",
+    colVersion: "Version",
+    colEffective: "Effective",
+    colDownload: "Download",
+    // Empty
+    noDocs: "No documents available for your role yet.",
+    download: "↓ Download",
+  },
+
   // ─── ADMIN ─────────────────────────────────────
   admin: {
     labFormTemplates: {
