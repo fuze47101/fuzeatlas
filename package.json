@@ -18,7 +18,9 @@
     "db:studio": "prisma studio",
     "db:import": "tsx scripts/import-atlas.ts",
     "check:brand-voice": "tsx scripts/check-brand-voice.ts",
-    "check:brand-voice:staged": "tsx scripts/check-brand-voice.ts --staged"
+    "check:brand-voice:staged": "tsx scripts/check-brand-voice.ts --staged",
+    "check:mobile": "tsx scripts/check-mobile.ts",
+    "check:mobile:staged": "tsx scripts/check-mobile.ts --staged"
   },
   "dependencies": {
     "@anthropic-ai/claude-code": "^2.1.112",

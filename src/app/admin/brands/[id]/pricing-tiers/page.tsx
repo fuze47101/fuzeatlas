@@ -376,7 +376,8 @@ export default function AdminBrandPricingTiersPage() {
             </p>
           </div>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
             <thead className="text-xs text-slate-500 uppercase tracking-wider">
               <tr className="border-b border-slate-100">
                 <th className="text-left px-5 py-2 font-bold">Threshold</th>
@@ -432,6 +433,7 @@ export default function AdminBrandPricingTiersPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>
