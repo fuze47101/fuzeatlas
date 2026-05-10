@@ -1232,6 +1232,144 @@ const en = {
     },
   },
 
+  // ─── BRAND PORTAL ─────────────────────────────
+  // Customer-facing brand portal surfaces. Phase 0 of ROADMAP_v2.
+  brandPortal: {
+    crumb: "Brand Portal",
+
+    supplyChain: {
+      crumbCurrent: "Supply Chain",
+      pageTitle: "Supply Chain",
+      pageTitleWithBrand: "Supply Chain — {brand}",
+      pageSubtitle:
+        "Every factory currently producing FUZE-treated fabrics for your account. Each row links to the full factory detail with submissions, test results, and consumption history.",
+      loading: "Loading supply chain…",
+      errorFallback: "Failed to load supply chain",
+      networkError: "Network error",
+      // Brand spec strip
+      specHeader: "Brand spec:",
+      specTierLabel: "Tier:",
+      specNoTier: "No tier requirement",
+      specIcpEvery: "ICP every:",
+      specIcpOrders: "{n} order",
+      specIcpOrdersPlural: "{n} orders",
+      specIcpLiters: "{n} L",
+      specNoCadence: "No ICP cadence set",
+      protocolDoc: "📄 Protocol document",
+      editSpec: "Edit spec →",
+      // Totals strip
+      totalFactories: "Factories",
+      totalFabrics: "Fabrics",
+      totalSubmissions: "Submissions",
+      totalTestsPassed: "Tests passed",
+      totalOpenRequests: "Open requests",
+      totalFuzeConsumed: "Total FUZE consumed",
+      // Empty state
+      noFactoriesTitle: "No factories yet",
+      noFactoriesBlurb:
+        "Once one of your suppliers submits a fabric for FUZE treatment under your brand, they'll appear here with their full submission and test history.",
+      // Table
+      colFactory: "Factory",
+      colFabrics: "Fabrics",
+      colSubmissions: "Submissions",
+      colLastSubmission: "Last submission",
+      colLastTest: "Last test",
+      colStatus: "Status",
+      colFuzeConsumed: "FUZE consumed",
+      colLastRun: "Last run",
+      testFallback: "Test",
+      // Status badges
+      statusOpen: "🟡 {n} open",
+      statusNoTests: "No tests yet",
+      statusPassRateOk: "✓ {pct}% pass",
+      statusPassRate: "{pct}% pass",
+      // Footer note
+      footerNote:
+        "Need to set test cadence per factory or approve new submissions? Those controls are coming next — for now you can drill into any factory above to see the underlying data.",
+    },
+
+    spec: {
+      crumbCurrent: "Brand Spec",
+      pageTitle: "Brand Spec & ICP Cadence",
+      pageTitleWithBrand: "Brand Spec — {brand}",
+      pageSubtitle:
+        "Stipulate the FUZE tier and ICP testing cadence every factory in your supply chain must meet. Atlas auto-flags any factory that falls behind.",
+      readOnlyTitle: "Read-only view",
+      readOnlyBlurb:
+        "Your role can view but not edit this spec. Ask your account manager to update tier or cadence requirements.",
+      loading: "Loading spec…",
+      errorFallback: "Failed to load spec",
+      saveError: "Save failed",
+      networkError: "Network error",
+      saved: "Spec saved.",
+      // Required tier
+      requiredTierLabel: "Required FUZE tier",
+      tierNone: "No requirement",
+      tierF1Hint: "F1 — 1.0 mg/kg · maximum performance",
+      tierF2Hint: "F2 — 0.75 mg/kg · advanced",
+      tierF3Hint: "F3 — 0.5 mg/kg · core",
+      tierF4Hint: "F4 — 0.25 mg/kg · foundation",
+      // ICP cadence
+      cadenceHeader: "ICP cadence",
+      cadenceBlurb:
+        "Set one or both. Atlas flags a factory the day either threshold is crossed without a brand-visible ICP test on file.",
+      cadenceNBatchesLabel: "Every N orders",
+      cadenceNBatchesHint: "e.g. 5 — every 5th order needs an ICP",
+      cadenceLitersLabel: "Every X liters",
+      cadenceLitersHint: "e.g. 1000 — every 1000L consumed needs an ICP",
+      // Protocol doc
+      protocolUrlLabel: "Protocol document URL",
+      protocolUrlPlaceholder: "https://docs.brand.com/fuze-protocol-v2.pdf",
+      protocolUrlHint:
+        "Link to your written brand protocol — testing methodology, packaging requirements, anything factories must follow. Surfaces on the supply-chain dashboard as a clickable chip.",
+      protocolUrlPreview: "Open document →",
+      // Buttons
+      save: "Save spec",
+      saving: "Saving…",
+      backToSupplyChain: "← Back to Supply Chain",
+    },
+
+    pricing: {
+      crumbCurrent: "Volume Pricing",
+      pageTitle: "Volume Pricing",
+      pageTitleWithBrand: "Volume Pricing — {brand}",
+      pageSubtitle:
+        "Your lifetime FUZE consumption across every factory, and the volume discount tier you've earned.",
+      loading: "Loading pricing…",
+      errorFallback: "Failed to load pricing",
+      networkError: "Network error",
+      // Hero card
+      currentDiscountLabel: "Current Discount",
+      noTierLabel: "No volume discount yet",
+      lifetimeLitersLabel: "Lifetime liters",
+      factoriesLabel: "Factories",
+      ordersLabel: "Orders",
+      tierBadge: "{label}",
+      // Progress bar
+      nextTierAt: "Next: {label} at {liters} L",
+      gapLabel: "{liters} L to go",
+      atTopTier: "You're at the top tier — congrats.",
+      noLadderConfigured: "No discount ladder configured for this brand yet.",
+      // Ladder section
+      ladderHeader: "Discount ladder",
+      ladderHint:
+        "Each rung is hit by lifetime FUZE consumption summed across every factory. Once unlocked, the discount applies to all future orders.",
+      ladderQualified: "Qualified",
+      ladderCurrent: "Current",
+      ladderLocked: "Locked",
+      ladderThreshold: "{liters} L",
+      ladderDiscount: "{pct}% off",
+      // Per-factory breakdown
+      factoryHeader: "Per-factory consumption",
+      factoryHint:
+        "How your lifetime liters break out by factory. Click a row for the full factory detail.",
+      colFactory: "Factory",
+      colLiters: "Liters",
+      colShare: "Share",
+      noFactories: "No FUZE consumption logged yet.",
+    },
+  },
+
   // ─── PRODUCT DOCUMENTS ────────────────────────
   productDocs: {
     title: "Product Documents",

@@ -17,6 +17,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface FactoryRow {
   factoryId: string;
@@ -72,37 +73,40 @@ function formatLiters(n: number): string {
   return `${n.toFixed(1)} L`;
 }
 
-function StatusBadge({ row }: { row: FactoryRow }) {
+function StatusBadge({ row, tx }: { row: FactoryRow; tx: ReturnType<typeof useI18n>["t"]["brandPortal"]["supplyChain"] }) {
   if (row.openTestRequests > 0) {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 ring-1 ring-amber-200">
-        🟡 {row.openTestRequests} open
+        {tx.statusOpen.replace("{n}", String(row.openTestRequests))}
       </span>
     );
   }
   if (row.testRunsTotal === 0) {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-500 ring-1 ring-slate-200">
-        No tests yet
+        {tx.statusNoTests}
       </span>
     );
   }
   const passRate = row.testRunsTotal > 0 ? row.testRunsPassed / row.testRunsTotal : 0;
+  const pct = String(Math.round(passRate * 100));
   if (passRate >= 0.9) {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
-        ✓ {Math.round(passRate * 100)}% pass
+        {tx.statusPassRateOk.replace("{pct}", pct)}
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 ring-1 ring-slate-300">
-      {Math.round(passRate * 100)}% pass
+      {tx.statusPassRate.replace("{pct}", pct)}
     </span>
   );
 }
 
 export default function BrandSupplyChainPage() {
+  const { t } = useI18n();
+  const tx = t.brandPortal.supplyChain;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [brand, setBrand] = useState<
@@ -126,7 +130,7 @@ export default function BrandSupplyChainPage() {
       .then((j) => {
         if (cancelled) return;
         if (!j.ok) {
-          setError(j.error || "Failed to load supply chain");
+          setError(j.error || tx.errorFallback);
           return;
         }
         setBrand(j.brand);
@@ -134,7 +138,7 @@ export default function BrandSupplyChainPage() {
         setFactories(j.factories || []);
       })
       .catch((e) => {
-        if (!cancelled) setError(e?.message || "Network error");
+        if (!cancelled) setError(e?.message || tx.networkError);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -147,7 +151,7 @@ export default function BrandSupplyChainPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64 text-slate-400">
-        Loading supply chain…
+        {tx.loading}
       </div>
     );
   }
@@ -161,49 +165,49 @@ export default function BrandSupplyChainPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/brand-portal" className="hover:text-[#00b4c3]">
-            Brand Portal
+            {t.brandPortal.crumb}
           </Link>
           <span>›</span>
-          <span>Supply Chain</span>
+          <span>{tx.crumbCurrent}</span>
         </div>
         <h1 className="text-2xl font-black text-slate-900">
-          Supply Chain {brand?.name ? <span className="text-slate-400 font-normal">— {brand.name}</span> : null}
+          {tx.pageTitle}
+          {brand?.name ? <span className="text-slate-400 font-normal"> — {brand.name}</span> : null}
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Every factory currently producing FUZE-treated fabrics for your account. Each row links
-          to the full factory detail with submissions, test results, and consumption history.
-        </p>
+        <p className="text-sm text-slate-500 mt-1">{tx.pageSubtitle}</p>
 
         {/* Brand-stipulated spec strip — what every factory in this
             supply chain is being held to. Click "Edit spec" to update. */}
         <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg bg-slate-50 border border-slate-200 px-4 py-3 text-xs">
-          <span className="font-bold uppercase tracking-wider text-slate-500">Brand spec:</span>
+          <span className="font-bold uppercase tracking-wider text-slate-500">{tx.specHeader}</span>
           {brand?.requiredFuzeTier ? (
             <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200">
-              <span className="font-semibold text-slate-700">Tier:</span>{" "}
+              <span className="font-semibold text-slate-700">{tx.specTierLabel}</span>{" "}
               <span className="text-[#00b4c3] font-bold">{brand.requiredFuzeTier}</span>
             </span>
           ) : (
             <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200 text-slate-400">
-              No tier requirement
+              {tx.specNoTier}
             </span>
           )}
           {brand?.icpCadenceEveryNBatches ? (
             <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200">
-              <span className="font-semibold text-slate-700">ICP every:</span>{" "}
-              {brand.icpCadenceEveryNBatches} order
-              {brand.icpCadenceEveryNBatches === 1 ? "" : "s"}
+              <span className="font-semibold text-slate-700">{tx.specIcpEvery}</span>{" "}
+              {(brand.icpCadenceEveryNBatches === 1 ? tx.specIcpOrders : tx.specIcpOrdersPlural).replace(
+                "{n}",
+                String(brand.icpCadenceEveryNBatches),
+              )}
             </span>
           ) : null}
           {brand?.icpCadenceEveryLitersConsumed ? (
             <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200">
-              <span className="font-semibold text-slate-700">ICP every:</span>{" "}
-              {brand.icpCadenceEveryLitersConsumed} L
+              <span className="font-semibold text-slate-700">{tx.specIcpEvery}</span>{" "}
+              {tx.specIcpLiters.replace("{n}", String(brand.icpCadenceEveryLitersConsumed))}
             </span>
           ) : null}
           {!brand?.icpCadenceEveryNBatches && !brand?.icpCadenceEveryLitersConsumed ? (
             <span className="rounded-md bg-white px-2 py-1 ring-1 ring-slate-200 text-slate-400">
-              No ICP cadence set
+              {tx.specNoCadence}
             </span>
           ) : null}
           {brand?.protocolDocUrl ? (
@@ -213,14 +217,14 @@ export default function BrandSupplyChainPage() {
               rel="noopener noreferrer"
               className="rounded-md bg-indigo-50 px-2 py-1 ring-1 ring-indigo-200 text-indigo-700 hover:bg-indigo-100"
             >
-              📄 Protocol document
+              {tx.protocolDoc}
             </a>
           ) : null}
           <Link
             href="/brand-portal/spec"
             className="ml-auto text-[#00b4c3] hover:underline font-semibold"
           >
-            Edit spec →
+            {tx.editSpec}
           </Link>
         </div>
       </div>
@@ -230,29 +234,29 @@ export default function BrandSupplyChainPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
           <div className="bg-white rounded-xl p-4 shadow-sm border">
             <div className="text-2xl font-black text-[#00b4c3]">{totals.factories}</div>
-            <div className="text-xs text-slate-500 mt-1">Factories</div>
+            <div className="text-xs text-slate-500 mt-1">{tx.totalFactories}</div>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border">
             <div className="text-2xl font-black text-slate-700">{totals.fabrics}</div>
-            <div className="text-xs text-slate-500 mt-1">Fabrics</div>
+            <div className="text-xs text-slate-500 mt-1">{tx.totalFabrics}</div>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border">
             <div className="text-2xl font-black text-slate-700">{totals.submissions}</div>
-            <div className="text-xs text-slate-500 mt-1">Submissions</div>
+            <div className="text-xs text-slate-500 mt-1">{tx.totalSubmissions}</div>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border">
             <div className="text-2xl font-black text-emerald-600">{totals.testsPassed}</div>
-            <div className="text-xs text-slate-500 mt-1">Tests passed</div>
+            <div className="text-xs text-slate-500 mt-1">{tx.totalTestsPassed}</div>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border">
             <div className="text-2xl font-black text-amber-500">{totals.openTestRequests}</div>
-            <div className="text-xs text-slate-500 mt-1">Open requests</div>
+            <div className="text-xs text-slate-500 mt-1">{tx.totalOpenRequests}</div>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border col-span-2">
             <div className="text-2xl font-black text-slate-900">
               {formatLiters(totals.consumptionLitersTotal)}
             </div>
-            <div className="text-xs text-slate-500 mt-1">Total FUZE consumed</div>
+            <div className="text-xs text-slate-500 mt-1">{tx.totalFuzeConsumed}</div>
           </div>
         </div>
       ) : null}
@@ -261,11 +265,8 @@ export default function BrandSupplyChainPage() {
       {factories.length === 0 ? (
         <div className="bg-white rounded-xl p-10 border border-dashed border-slate-300 text-center">
           <div className="text-5xl mb-3">🏭</div>
-          <div className="text-base font-bold text-slate-900 mb-1">No factories yet</div>
-          <p className="text-sm text-slate-500 max-w-md mx-auto">
-            Once one of your suppliers submits a fabric for FUZE treatment under your brand,
-            they&apos;ll appear here with their full submission and test history.
-          </p>
+          <div className="text-base font-bold text-slate-900 mb-1">{tx.noFactoriesTitle}</div>
+          <p className="text-sm text-slate-500 max-w-md mx-auto">{tx.noFactoriesBlurb}</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -273,14 +274,14 @@ export default function BrandSupplyChainPage() {
             <table className="min-w-full text-sm">
               <thead className="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider">
                 <tr>
-                  <th className="text-left px-4 py-3 font-bold">Factory</th>
-                  <th className="text-right px-4 py-3 font-bold">Fabrics</th>
-                  <th className="text-right px-4 py-3 font-bold">Submissions</th>
-                  <th className="text-left px-4 py-3 font-bold">Last submission</th>
-                  <th className="text-left px-4 py-3 font-bold">Last test</th>
-                  <th className="text-left px-4 py-3 font-bold">Status</th>
-                  <th className="text-right px-4 py-3 font-bold">FUZE consumed</th>
-                  <th className="text-left px-4 py-3 font-bold">Last run</th>
+                  <th className="text-left px-4 py-3 font-bold">{tx.colFactory}</th>
+                  <th className="text-right px-4 py-3 font-bold">{tx.colFabrics}</th>
+                  <th className="text-right px-4 py-3 font-bold">{tx.colSubmissions}</th>
+                  <th className="text-left px-4 py-3 font-bold">{tx.colLastSubmission}</th>
+                  <th className="text-left px-4 py-3 font-bold">{tx.colLastTest}</th>
+                  <th className="text-left px-4 py-3 font-bold">{tx.colStatus}</th>
+                  <th className="text-right px-4 py-3 font-bold">{tx.colFuzeConsumed}</th>
+                  <th className="text-left px-4 py-3 font-bold">{tx.colLastRun}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -306,7 +307,7 @@ export default function BrandSupplyChainPage() {
                       {row.lastTestRun ? (
                         <div className="flex flex-col">
                           <span className="text-xs font-bold text-slate-700">
-                            {row.lastTestRun.testType || "Test"}
+                            {row.lastTestRun.testType || tx.testFallback}
                           </span>
                           <span className="text-xs text-slate-500">
                             {formatDate(row.lastTestRun.testDate)}
@@ -317,7 +318,7 @@ export default function BrandSupplyChainPage() {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <StatusBadge row={row} />
+                      <StatusBadge row={row} tx={tx} />
                     </td>
                     <td className="px-4 py-3 text-right font-mono">
                       {formatLiters(row.consumptionLitersTotal)}
@@ -340,10 +341,7 @@ export default function BrandSupplyChainPage() {
         </div>
       )}
 
-      <p className="text-xs text-slate-400 mt-6">
-        Need to set test cadence per factory or approve new submissions? Those controls are
-        coming next — for now you can drill into any factory above to see the underlying data.
-      </p>
+      <p className="text-xs text-slate-400 mt-6">{tx.footerNote}</p>
     </div>
   );
 }
