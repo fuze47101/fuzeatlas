@@ -32,14 +32,47 @@ export async function POST(req: Request) {
 
     const stamp = visible !== false; // default to stamping (true)
 
+    // Phase 8G — mirror /api/tests/[id] PATCH approval-pending hook on
+    // the batch path. When stamping, split the input into two cohorts:
+    // tests whose brand has requiresApproval=true (→ PENDING) and the
+    // rest (→ visible only). When unstamping, also clear
+    // brandApprovalStatus to keep state consistent with the PATCH.
+    let pendingIds: string[] = [];
+    let pendingCtx: any[] = [];
+    if (stamp) {
+      pendingCtx = await prisma.testRun.findMany({
+        where: {
+          id: { in: testRunIds },
+          submission: { brand: { requiresApproval: true } },
+        },
+        select: {
+          id: true,
+          testType: true,
+          testReportNumber: true,
+          submission: {
+            select: { brandId: true, brand: { select: { name: true } } },
+          },
+        },
+      });
+      pendingIds = pendingCtx.map((r: any) => r.id);
+    }
+
     const result = await prisma.testRun.updateMany({
       where: { id: { in: testRunIds } },
       data: {
         brandVisible: stamp,
         brandApprovedById: stamp ? user.id : null,
         brandApprovedAt: stamp ? new Date() : null,
+        ...(stamp ? {} : { brandApprovalStatus: null }),
       },
     });
+
+    if (stamp && pendingIds.length > 0) {
+      await prisma.testRun.updateMany({
+        where: { id: { in: pendingIds } },
+        data: { brandApprovalStatus: "PENDING" },
+      });
+    }
 
     // Penfabric/Raihana follow-on May 2026 — when stamping a batch, fan out
     // an in-app notification per test to brand + factory + admins via the
@@ -120,10 +153,43 @@ export async function POST(req: Request) {
       }
     }
 
+    // Phase 8G — approval-pending fan-out (mirrors PATCH /api/tests/[id])
+    let approvalNotified = 0;
+    if (stamp && pendingCtx.length > 0) {
+      try {
+        const { notifyApprovalPending } = await import("@/lib/notify");
+        await Promise.all(
+          pendingCtx.map(async (r: any) => {
+            const brandId = r.submission?.brandId;
+            const brandName = r.submission?.brand?.name;
+            if (!brandId || !brandName) return;
+            try {
+              await notifyApprovalPending({
+                brandId,
+                brandName,
+                kind: "test",
+                ref: `${r.testType}${r.testReportNumber ? ` #${r.testReportNumber}` : ""}`,
+              });
+              approvalNotified++;
+            } catch (err) {
+              console.error(
+                `[batch-stamp] notifyApprovalPending ${r.id} failed:`,
+                err,
+              );
+            }
+          }),
+        );
+      } catch (err) {
+        console.error("[batch-stamp] approval-pending fan-out failed:", err);
+      }
+    }
+
     return NextResponse.json({
       ok: true,
       updated: result.count,
       notified: notifiedCount,
+      pending: pendingIds.length,
+      approvalNotified,
       action: stamp ? "stamped" : "unstamped",
     });
   } catch (err: any) {
