@@ -248,6 +248,12 @@ export default function SequenceDetailPage() {
               Open reply wizard
             </Link>
           )}
+          <Link
+            href={`/admin/bd/sequences/${seq.id}/analytics`}
+            className="rounded-md border border-indigo-300 bg-white px-3 py-1.5 text-sm font-medium text-indigo-800 hover:bg-indigo-50"
+          >
+            📊 Analytics
+          </Link>
           {seq.status === "active" && (
             <>
               <button
