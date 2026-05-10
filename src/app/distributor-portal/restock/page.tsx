@@ -217,6 +217,14 @@ export default function DistributorRestockPage() {
         </p>
       </div>
 
+      {/* Stock vs reorder banner — Phase 4F refresh.
+          Pulls fuzeStockLiters + reorderPointLiters from
+          /api/distributor-portal/inventory and surfaces a quick
+          glance at where the distributor sits relative to their
+          reorder threshold. Below threshold = red banner with
+          inline "this is below your reorder point" copy. */}
+      <StockStatusBanner />
+
       {/* Alerts */}
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 flex items-start justify-between">
@@ -543,6 +551,59 @@ export default function DistributorRestockPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * StockStatusBanner — Phase 4F refresh affordance for restock page.
+ * Reads /api/distributor-portal/inventory and surfaces fuzeStockLiters
+ * vs reorderPointLiters. Below threshold renders red; ample stock
+ * renders a green confirmation strip; missing reorder point falls
+ * through silent (no banner — distributor hasn't configured one).
+ */
+function StockStatusBanner() {
+  const [stock, setStock] = useState<{
+    fuzeStockLiters: number | null;
+    reorderPointLiters: number | null;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/distributor-portal/inventory")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok && j.inventory) {
+          setStock({
+            fuzeStockLiters: j.inventory.fuzeStockLiters ?? null,
+            reorderPointLiters: j.inventory.reorderPointLiters ?? null,
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  if (!stock) return null;
+  if (stock.reorderPointLiters == null || stock.fuzeStockLiters == null) return null;
+
+  const below = stock.fuzeStockLiters < stock.reorderPointLiters;
+  if (below) {
+    return (
+      <div className="mb-6 rounded-xl border border-red-300 bg-red-50 px-5 py-4 flex items-start justify-between gap-3">
+        <div>
+          <p className="font-bold text-red-800">
+            Below reorder point — {stock.fuzeStockLiters} L on hand vs {stock.reorderPointLiters} L threshold
+          </p>
+          <p className="text-sm text-red-700 mt-1">
+            Consider placing a restock order below.
+          </p>
+        </div>
+        <span className="text-2xl">⚠️</span>
+      </div>
+    );
+  }
+  return (
+    <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm text-emerald-800">
+      ✓ {stock.fuzeStockLiters} L on hand · {stock.reorderPointLiters} L reorder threshold
     </div>
   );
 }

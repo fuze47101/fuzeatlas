@@ -42,6 +42,10 @@ One line per commit (timestamp UTC, hash, what shipped).
 - 2026-05-10 — `1c445c7` — phase 4D: admin API + dashboard + order auto-decrement + cleanup.
 - 2026-05-10 — `6039a80` — phase 4E: LabFormTemplate schema + bearer-authed migration.
 - 2026-05-10 — `fec02d2` — phase 4E: admin CRUD + lab read + editor + cleanup.
+- 2026-05-10 — `fb51a23` — phase 4F: brand-portal inventory + lab-pipeline.
+- 2026-05-10 — `366cbb1` — phase 4F: factory-portal specs + inventory.
+- 2026-05-10 — `9885bc2` — phase 4F: distributor-portal incoming with validation flags.
+- 2026-05-10 — `4293f84` — phase 4F: lab-portal queue + specs.
 
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 
