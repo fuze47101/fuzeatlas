@@ -1611,6 +1611,42 @@ const en = {
         "Need to set test cadence per factory or approve new submissions? Those controls are coming next — for now you can drill into any factory above to see the underlying data.",
     },
 
+    team: {
+      crumbCurrent: "Team",
+      pageTitle: "Team",
+      pageSubtitle:
+        "Your teammates on this brand and any pending invitations. Brand managers can invite; brand users can view.",
+      loading: "Loading team…",
+      // Stats
+      statTeammates: "Teammates",
+      statPending: "Pending invites",
+      // Invite form
+      inviteHeader: "Invite a teammate",
+      inviteHint:
+        "Sends a request to FUZE to provision the new teammate's account. Admin reviews and approves.",
+      firstNamePlaceholder: "First name",
+      lastNamePlaceholder: "Last name",
+      emailPlaceholder: "work@email.com",
+      jobTitlePlaceholder: "Title (optional)",
+      notesPlaceholder: "Anything else FUZE should know (optional)",
+      sendInvite: "Send invite",
+      sending: "Sending…",
+      sentFlash: "Invite queued. FUZE will review and provision shortly.",
+      sendFailed: "Failed to send invite",
+      // Sections
+      teammatesHeader: "Teammates",
+      pendingHeader: "Pending invitations",
+      // Cards
+      roleLabel: "Role: {role}",
+      statusActive: "Active",
+      statusInactive: "Inactive",
+      lastLogin: "Last login {date}",
+      neverLoggedIn: "Never logged in",
+      sentAt: "Sent {date}",
+      noTeammates: "No teammates yet — invite your first.",
+      noPending: "No pending invitations.",
+    },
+
     inventoryView: {
       crumbCurrent: "FUZE Inventory",
       pageTitle: "FUZE Inventory",

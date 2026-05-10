@@ -46,6 +46,30 @@ One line per commit (timestamp UTC, hash, what shipped).
 - 2026-05-10 — `366cbb1` — phase 4F: factory-portal specs + inventory.
 - 2026-05-10 — `9885bc2` — phase 4F: distributor-portal incoming with validation flags.
 - 2026-05-10 — `4293f84` — phase 4F: lab-portal queue + specs.
+- 2026-05-10 — `551af74` — phase 4F: distributor-restock stock-status banner refresh.
+- 2026-05-10 — `cf6d70c` — phase 4G: build-lifecycle notify infra (email + SMS) — Phase 4 complete.
+
+### Phase 4 milestone delivered
+
+Email id `ae3ec308-418b-4de0-bbcf-98185a3257cd`, SMS sid
+`SM18dcc41086c027e6a54cdae7702b203b`. 22 commits since the start of
+the session (preflight + 4A apply + 4A consumers + 4B + 4C + 4D + 4E
++ 4F brand/factory/distributor/lab + restock refresh + 4G notify).
+
+Phase 4 deliverables shipped:
+- SupplyChainLink keystone + admin CRUD + backfill (44 links).
+- BrandProfile schema + API + landing augment + admin editor.
+- RecipeRequest schema + brand POST + factory ack + admin fulfill.
+- FuzeHQInventory schema + /admin/inventory dashboard + order
+  POST auto-decrement on DIRECT_USA shipments.
+- LabFormTemplate schema + admin per-lab editor + lab read API.
+- 8 cross-portal DO+OVERSEE surfaces (brand inventory, brand
+  lab-pipeline, factory specs, factory inventory, distributor
+  incoming, distributor restock refresh, lab queue, lab specs).
+- Build-lifecycle notify (email + SMS) so phase boundaries reach
+  Andrew automatically.
+
+Phase 5A (brand team management) starts next.
 
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 
