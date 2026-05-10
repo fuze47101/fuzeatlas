@@ -59,6 +59,10 @@
     {
       "path": "/api/cron/predict-churn",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/competitor-watch",
+      "schedule": "0 4 * * *"
     }
   ]
 }
