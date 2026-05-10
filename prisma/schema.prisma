@@ -714,6 +714,7 @@ model Lab {
   shipments SampleShipment[] @relation("LabShipments")
   sampleTrials SampleTrialRequest[] @relation("TrialIcpLab")
   fuzeTestRequests FuzeTestRequest[] @relation("FuzeTestLab")
+  formTemplates LabFormTemplate[] @relation("LabFormTemplates")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -3519,4 +3520,30 @@ model FuzeHQInventory {
   notes             String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────
+// LAB FORM TEMPLATE (Phase 4E — ROADMAP_v2)
+// ─────────────────────────────────────────────
+// Lab intake forms are currently hardcoded per lab — every new lab
+// onboarding requires a code change. LabFormTemplate makes them
+// configurable. fields is a JSON array of
+// { key, label, type, required, options? } that the ICP sample-prep
+// wizard reads to render the right form per lab.
+//
+// Multiple templates per lab keyed by `name` so a lab can publish
+// distinct templates for ICP intake, result upload, hazmat shipping
+// label, etc. active=false hides templates without deleting them.
+
+model LabFormTemplate {
+  id        String   @id @default(cuid())
+  labId     String
+  lab       Lab      @relation("LabFormTemplates", fields: [labId], references: [id], onDelete: Cascade)
+  name      String                            // e.g. "ICP Intake", "Antibacterial Result Upload"
+  fields    Json                              // [{key,label,type,required,options?}]
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([labId, active])
 }

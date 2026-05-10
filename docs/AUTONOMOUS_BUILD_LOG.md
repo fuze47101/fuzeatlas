@@ -38,6 +38,8 @@ One line per commit (timestamp UTC, hash, what shipped).
 - 2026-05-10 — `8b817e3` — phase 4B: API + landing augment + admin editor + cleanup.
 - 2026-05-10 — `b9a587f` — phase 4C: RecipeRequest schema + bearer-authed migration.
 - 2026-05-10 — `9cae8b9` — phase 4C: API + factory page + brand affordance + cleanup.
+- 2026-05-10 — `63da661` — phase 4D: FuzeHQInventory schema + bearer-authed migration.
+- 2026-05-10 — `1c445c7` — phase 4D: admin API + dashboard + order auto-decrement + cleanup.
 
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 
