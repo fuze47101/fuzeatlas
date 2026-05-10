@@ -1458,6 +1458,49 @@ const en = {
       saving: "Saving…",
     },
 
+    contacts: {
+      pageTitle: "Contacts & Approvers",
+      pageSubtitle: "{brand} — Manage contacts who interact with FUZE",
+      pageSubtitleFallback: "Your brand — Manage contacts who interact with FUZE",
+      loading: "Loading contacts...",
+      addButton: "+ Add Contact",
+      newContact: "New Contact",
+      saving: "Saving...",
+      add: "Add Contact",
+      cancel: "Cancel",
+      addedFlash: "Contact added",
+      updatedFlash: "Contact updated",
+      // Form
+      firstNamePlaceholder: "First Name",
+      lastNamePlaceholder: "Last Name",
+      titlePlaceholder: "Role/Title",
+      emailPlaceholder: "Email",
+      phonePlaceholder: "Phone",
+      selectRole: "Select Role...",
+      // Roles
+      roleApprover: "Approver",
+      rolePrimary: "Primary Contact",
+      roleTechnical: "Technical Contact",
+      roleBuyer: "Buyer",
+      roleQuality: "Quality Manager",
+      roleSustainability: "Sustainability Lead",
+      roleDesign: "Design",
+      roleOther: "Other",
+      // Sections
+      sectionApprovers: "Approvers",
+      sectionOtherContacts: "Other Contacts",
+      sectionAllContacts: "All Contacts",
+      noContacts: "No contacts yet. Add your team members who work with FUZE.",
+      // Card actions
+      cardEdit: "Edit",
+      cardRemove: "Remove",
+      cardSave: "Save",
+      cardSaving: "...",
+      cardCancel: "Cancel",
+      // Confirms
+      removeConfirm: "Remove this contact?",
+    },
+
     submissions: {
       pageTitle: "Submissions & Workflow",
       pageSubtitle: "{brand} — Track your fabric submissions through the FUZE treatment pipeline",
