@@ -1726,6 +1726,55 @@ const en = {
         "Need to set test cadence per factory or approve new submissions? Those controls are coming next — for now you can drill into any factory above to see the underlying data.",
     },
 
+    approvals: {
+      crumbCurrent: "Approvals",
+      pageTitle: "Approvals",
+      pageSubtitle:
+        "Items awaiting your decision: fabric submissions, test results, and production orders. Approve to release; reject to send back with a reason.",
+      loading: "Loading queue…",
+      // Stats
+      statSubmissions: "Submissions",
+      statTests: "Test results",
+      statOrders: "Orders",
+      // Sections
+      submissionsHeader: "Pending fabric submissions",
+      testsHeader: "Pending test results",
+      ordersHeader: "Pending production orders",
+      // Empty
+      noSubmissions: "No pending submissions.",
+      noTests: "No pending test results.",
+      noOrders: "No pending production orders.",
+      // Row context
+      factoryLabel: "Factory: {name}",
+      fabricLabel: "Fabric: FUZE {n}",
+      labLabel: "Lab: {name}",
+      tierLabel: "Tier: {tier}",
+      volumeLabel: "Volume: {liters} L",
+      reportLabel: "Report #{ref}",
+      daysPending: "{n} day pending",
+      daysPendingPlural: "{n} days pending",
+      // Severity badges
+      severityFresh: "Fresh",
+      severityWatch: "Watch",
+      severityOverdue: "Overdue",
+      // Buttons
+      approve: "Approve",
+      approving: "Approving…",
+      reject: "Reject",
+      rejecting: "Rejecting…",
+      approveFailed: "Approval failed",
+      rejectFailed: "Rejection failed",
+      // Reject modal
+      rejectTitle: "Reject — reason required",
+      rejectHint:
+        "Tell the factory (and FUZE Ops) why you're rejecting. They'll see this verbatim.",
+      reasonPlaceholder: "Briefly explain — what's wrong, what's needed, etc.",
+      submitReject: "Reject",
+      cancel: "Cancel",
+      flashApproved: "Approved.",
+      flashRejected: "Rejected.",
+    },
+
     network: {
       crumbCurrent: "Factory Network",
       pageTitle: "Factory Network",
