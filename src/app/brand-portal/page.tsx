@@ -11,19 +11,29 @@ export default function BrandPortalDashboard() {
   const tx = t.brandPortal.landing;
   const [data, setData] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [approvals, setApprovals] = useState<{
+    pendingTotal: number;
+    overdueTotal: number;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch portal data + brand profile in parallel. Profile is optional —
-    // if there's no row yet the landing falls back to the bare Brand.name
-    // greeting and an empty header.
+    // Fetch portal data + brand profile + approvals queue in parallel.
+    // Profile is optional — fallback to the bare brand.name greeting.
+    // Approvals counts power the pulsing pill (Phase 7G).
     Promise.all([
       fetch("/api/brand-portal").then((r) => r.json()).catch(() => null),
       fetch("/api/brand-portal/profile").then((r) => r.json()).catch(() => null),
+      fetch("/api/brand-portal/approvals").then((r) => r.json()).catch(() => null),
     ])
-      .then(([d, p]) => {
+      .then(([d, p, a]) => {
         if (d?.ok) setData(d);
         if (p?.ok) setProfile(p.profile || null);
+        if (a?.ok) {
+          const all = [...(a.pendingSubmissions || []), ...(a.pendingTestResults || []), ...(a.pendingOrders || [])];
+          const overdue = all.filter((r: any) => r.severity === "overdue").length;
+          setApprovals({ pendingTotal: all.length, overdueTotal: overdue });
+        }
       })
       .finally(() => setLoading(false));
   }, []);
@@ -82,8 +92,8 @@ export default function BrandPortalDashboard() {
         ) : null}
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      {/* Stats Cards — Phase 7G adds the Approvals pill (pulsing red when overdue) */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         <div className="bg-white rounded-xl p-5 shadow-sm border text-center">
           <div className="text-3xl font-black text-[#00b4c3]">{stats.totalFabrics}</div>
           <div className="text-xs text-slate-500 mt-1">{tx.statFabrics}</div>
@@ -100,6 +110,37 @@ export default function BrandPortalDashboard() {
           <div className="text-3xl font-black text-amber-500">{stats.testsPending}</div>
           <div className="text-xs text-slate-500 mt-1">{tx.statTestsPending}</div>
         </div>
+        {/* Approvals pill — clicks through to /brand-portal/approvals.
+            Pulses red if any item is overdue (>5d). */}
+        <button
+          onClick={() => router.push("/brand-portal/approvals")}
+          className={`relative rounded-xl p-5 shadow-sm border text-center hover:shadow-md transition-all ${
+            (approvals?.overdueTotal ?? 0) > 0
+              ? "bg-red-50 border-red-300"
+              : (approvals?.pendingTotal ?? 0) > 0
+                ? "bg-amber-50 border-amber-300"
+                : "bg-white border-slate-200"
+          }`}
+        >
+          {(approvals?.overdueTotal ?? 0) > 0 ? (
+            <span className="absolute top-2 right-2 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600" />
+            </span>
+          ) : null}
+          <div
+            className={`text-3xl font-black ${
+              (approvals?.overdueTotal ?? 0) > 0
+                ? "text-red-700"
+                : (approvals?.pendingTotal ?? 0) > 0
+                  ? "text-amber-700"
+                  : "text-slate-400"
+            }`}
+          >
+            {approvals?.pendingTotal ?? 0}
+          </div>
+          <div className="text-xs text-slate-500 mt-1">Approvals waiting</div>
+        </button>
       </div>
 
       {/* Quick Actions */}
