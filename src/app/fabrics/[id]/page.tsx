@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
+import ProtocolDesignerButton from "@/components/ProtocolDesignerButton";
 import { useAuth } from "@/lib/AuthContext";
 import FuzePickupCalculator from "@/components/FuzePickupCalculator";
 
@@ -119,6 +120,7 @@ export default function FabricDetailPage() {
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
+          <ProtocolDesignerButton fabricId={fabric.id} />
           <a
             href={`/fabrics/${fabric.id}/labels/print`}
             target="_blank"
