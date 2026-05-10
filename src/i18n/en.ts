@@ -1336,6 +1336,55 @@ const en = {
     },
   },
 
+  // ─── ADMIN ─────────────────────────────────────
+  admin: {
+    inventory: {
+      pageTitle: "FUZE HQ Inventory",
+      pageSubtitle:
+        "Central stock at FUZE HQ in Salt Lake City. Reserved liters move with outbound shipments; on-hand updates with manual count cycles.",
+      loading: "Loading inventory…",
+      addSku: "+ Add SKU",
+      // Table columns
+      colSku: "SKU",
+      colDescription: "Description",
+      colOnHand: "On hand (L)",
+      colReserved: "Reserved (L)",
+      colAvailable: "Available (L)",
+      colReorder: "Reorder at",
+      colLastCount: "Last count",
+      colActions: "Actions",
+      // Empty state
+      emptyTitle: "No SKUs yet",
+      emptyBlurb:
+        "Add an inventory SKU to start tracking on-hand vs reserved. SKU example: FUZE-30MGL-19L-CARBOY.",
+      // Add modal
+      addModalTitle: "New inventory SKU",
+      skuPlaceholder: "e.g. FUZE-30MGL-19L-CARBOY",
+      descriptionPlaceholder: "e.g. FUZE Metamaterial · 19 L Carboy · 30 mg/L",
+      onHandPlaceholder: "0",
+      reservedPlaceholder: "0",
+      reorderPlaceholder: "Reorder threshold (L)",
+      notesPlaceholder: "Notes (optional)",
+      add: "Create SKU",
+      adding: "Creating…",
+      cancel: "Cancel",
+      // Adjust modal
+      adjustTitle: "Adjust {sku}",
+      onHandLabel: "On hand (L)",
+      reservedLabel: "Reserved (L)",
+      reorderLabel: "Reorder threshold (L)",
+      reorderHint: "Leave blank to disable low-stock alarm.",
+      notesLabel: "Notes",
+      save: "Save",
+      saving: "Saving…",
+      // Errors / flashes
+      saveFailed: "Save failed",
+      lowStockBadge: "Low",
+      // Row actions
+      adjust: "Adjust",
+    },
+  },
+
   // ─── BRAND PORTAL ─────────────────────────────
   // Customer-facing brand portal surfaces. Phase 0 of ROADMAP_v2.
   brandPortal: {

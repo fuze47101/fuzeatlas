@@ -501,6 +501,42 @@ export async function POST(req: Request) {
       }
     }
 
+    // ─── FUZE HQ inventory reservation hook (Phase 4D) ───
+    // When an order ships direct from FUZE (not via distributor) and
+    // it actually moves liquid (PRODUCTION / SAMPLE — HANGTAG doesn't),
+    // commit liters to FuzeHQInventory.reservedLiters so the admin
+    // dashboard reflects what's already on order. SKU lookup is
+    // best-effort; missing SKU just logs and continues — never blocks
+    // an order create.
+    if (
+      order.fulfillmentSource === "DIRECT_USA" &&
+      (order.orderType === "PRODUCTION" || order.orderType === "SAMPLE") &&
+      typeof order.volumeLiters === "number" &&
+      order.volumeLiters > 0
+    ) {
+      try {
+        // Default SKU for the standard 19L carboy. If this brand uses a
+        // different SKU per tier later, swap to a tier-aware lookup.
+        const defaultSku = "FUZE-30MGL-19L-CARBOY";
+        const row = await prisma.fuzeHQInventory.findUnique({
+          where: { sku: defaultSku },
+          select: { id: true },
+        });
+        if (row) {
+          await prisma.fuzeHQInventory.update({
+            where: { id: row.id },
+            data: { reservedLiters: { increment: order.volumeLiters } },
+          });
+        } else {
+          console.warn(
+            `[ORDER] FuzeHQInventory SKU '${defaultSku}' not found — skipping auto-decrement for order ${order.orderNumber}`,
+          );
+        }
+      } catch (invErr) {
+        console.error("[ORDER] FuzeHQInventory reservation hook (non-blocking):", invErr);
+      }
+    }
+
     // ─── Trigger notifications (fire-and-forget) ───
     try {
       // In-app notification to AM + admins
