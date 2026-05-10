@@ -26,6 +26,44 @@ One line per commit (timestamp UTC, hash, what shipped).
 ## 2026-05-10
 
 - 2026-05-10 — `40d8482` — preflight: bearer-authed inspector for TestRun.testType drift.
+- 2026-05-10 — `4287f1f` — docs: log testType inspect finding (STOP branch).
+- 2026-05-10 — `f049600` — phase 4A: SupplyChainLink schema + bearer-authed migration (NOT yet applied).
+- 2026-05-10 — `62a483b` — preflight: idempotent PATH A endpoint for testType drift.
+- 2026-05-10 — `c3c9d4a` — preflight: cleanup — drop the one-off testtype endpoints.
+
+### DB-DSN MISMATCH — local vs runtime (blocker for normal `prisma db push`)
+
+`fzcron apply-testtype-fix` ran cleanly against the Vercel runtime DB
+(verify.isResolved:true; column USER-DEFINED, udt_name=TestType, all
+7 enum members present). Then we ran a no-op `prisma db push
+--skip-generate` against `.env.local`'s DSN
+(`interchange.proxy.rlwy.net:31700`) — it FAILED with "Changed the
+type of testType on TestRun. No cast exists." `prisma db pull
+--print` against the same DSN reports `testType String` and an enum
+`TestType { ICP ANTIBACTERIAL FUNGAL ODOR OTHER }` (only 5 values).
+
+Two separate databases are in play:
+- **Vercel runtime DB** (queried by /api/cron/* endpoints) — clean,
+  has the new TestType enum with all 7 values, column is USER-DEFINED.
+- **`.env.local` DB** (`interchange.proxy.rlwy.net:31700/railway`) —
+  stale, testType is still String, enum has 5 values, missing
+  several recent migrations.
+
+This matches the historical note in CLAUDE.md:
+> "The Railway public proxy URL ... actually pointed at an empty
+>  database; the real prod DB resolves via Railway's
+>  postgres.railway.internal only from inside Vercel."
+
+Andrew's instruction said "the DSN at interchange.proxy.rlwy.net:31700
+IS the real prod DB" — but the introspection disagrees. Until this
+is reconciled, `prisma db push` from local cannot be used. **All
+Phase 4 schema work routes through the bearer-authed runtime
+endpoint pattern** (commit `6930886`'s template) — same approach
+that succeeded for May 9 KUIU work (brand spec + brand pricing tier).
+
+Logging and continuing per "don't sit waiting" directive. Andrew
+should reconcile DSNs at his convenience; the runtime endpoint
+pattern works fine for the queue in the meantime.
 
 ### Pre-flight TestRun.testType — INSPECT RESULT (logged per Step 2 "STOP" branch)
 
