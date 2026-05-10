@@ -1416,6 +1416,44 @@ const en = {
         "Need to set test cadence per factory or approve new submissions? Those controls are coming next — for now you can drill into any factory above to see the underlying data.",
     },
 
+    profile: {
+      crumbCurrent: "Brand Profile",
+      pageTitleWithBrand: "Brand Profile — {brand}",
+      pageSubtitle:
+        "Customer-facing identity for {brand}'s portal. Logo, hero copy, support contacts, and primary brand colour. All optional — anything you leave blank falls back to the bare brand name.",
+      lastUpdated: "Last updated {date}",
+      loading: "Loading profile…",
+      loadFailed: "Failed to load profile",
+      saveFailed: "Save failed",
+      unableToLoad: "Unable to load brand profile",
+      savedAt: "Saved at {time}.",
+      // Fields
+      logoUrlLabel: "Logo URL",
+      logoUrlPlaceholder: "https://…/brand-logo.png",
+      logoUrlHint:
+        "Square or near-square image. Surfaces top-left of the brand portal landing.",
+      logoPreview: "Preview logo →",
+      primaryColorLabel: "Primary brand colour",
+      primaryColorPlaceholder: "#0c8ea8",
+      primaryColorHint: "Hex, e.g. #0c8ea8. Renders as an accent strip on the landing.",
+      heroHeadlineLabel: "Hero headline",
+      heroHeadlinePlaceholder: "e.g. Welcome to KUIU's FUZE program",
+      heroHeadlineHint: "Replaces the default 'Welcome' greeting at the top of the portal.",
+      heroSubheadLabel: "Hero subhead",
+      heroSubheadPlaceholder: "e.g. Your supply chain at a glance",
+      heroSubheadHint: "Optional second line under the hero headline.",
+      supportEmailLabel: "Support email",
+      supportEmailPlaceholder: "support@brand.com",
+      supportPhoneLabel: "Support phone",
+      supportPhonePlaceholder: "+1-555-0100",
+      publicSlugLabel: "Public slug",
+      publicSlugPlaceholder: "kuiu",
+      publicSlugHint: "Lowercase, no spaces. Reserved for a future /b/<slug> public page.",
+      // Buttons
+      save: "Save profile",
+      saving: "Saving…",
+    },
+
     spec: {
       crumbCurrent: "Brand Spec",
       pageTitle: "Brand Spec",

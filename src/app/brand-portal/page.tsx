@@ -10,12 +10,21 @@ export default function BrandPortalDashboard() {
   const { t } = useI18n();
   const tx = t.brandPortal.landing;
   const [data, setData] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/brand-portal")
-      .then((r) => r.json())
-      .then((j) => { if (j.ok) setData(j); })
+    // Fetch portal data + brand profile in parallel. Profile is optional —
+    // if there's no row yet the landing falls back to the bare Brand.name
+    // greeting and an empty header.
+    Promise.all([
+      fetch("/api/brand-portal").then((r) => r.json()).catch(() => null),
+      fetch("/api/brand-portal/profile").then((r) => r.json()).catch(() => null),
+    ])
+      .then(([d, p]) => {
+        if (d?.ok) setData(d);
+        if (p?.ok) setProfile(p.profile || null);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -24,17 +33,53 @@ export default function BrandPortalDashboard() {
 
   const { brand, fabrics, stats } = data;
   const firstName = user?.name?.split(" ")[0];
+  const accentStyle = profile?.primaryColor
+    ? { backgroundColor: profile.primaryColor }
+    : undefined;
 
   return (
     <div className="max-w-[1400px] mx-auto">
-      {/* Welcome Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-black text-slate-900">
-          {firstName ? tx.welcomeNamed.replace("{firstName}", firstName) : tx.welcome}
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          {tx.brandSubtitle.replace("{brand}", brand.name)}
-        </p>
+      {/* Welcome Header — augmented with BrandProfile when present.
+          When no profile row exists the bare brand.name greeting from
+          the prior version still renders, no layout shift. */}
+      <div className="mb-8 flex items-start gap-4">
+        {profile?.logoUrl ? (
+          <img
+            src={profile.logoUrl}
+            alt={`${brand.name} logo`}
+            className="h-14 w-14 rounded-xl object-contain bg-white border border-slate-200 p-1 shrink-0"
+          />
+        ) : null}
+        <div className="flex-1 min-w-0">
+          {profile?.heroHeadline ? (
+            <>
+              <h1 className="text-2xl font-black text-slate-900">{profile.heroHeadline}</h1>
+              {profile.heroSubhead ? (
+                <p className="text-sm text-slate-500 mt-1">{profile.heroSubhead}</p>
+              ) : (
+                <p className="text-sm text-slate-500 mt-1">
+                  {firstName ? tx.welcomeNamed.replace("{firstName}", firstName) : tx.welcome}
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <h1 className="text-2xl font-black text-slate-900">
+                {firstName ? tx.welcomeNamed.replace("{firstName}", firstName) : tx.welcome}
+              </h1>
+              <p className="text-sm text-slate-500 mt-1">
+                {tx.brandSubtitle.replace("{brand}", brand.name)}
+              </p>
+            </>
+          )}
+        </div>
+        {accentStyle ? (
+          <div
+            className="h-14 w-1.5 rounded-full shrink-0"
+            style={accentStyle}
+            aria-hidden="true"
+          />
+        ) : null}
       </div>
 
       {/* Stats Cards */}

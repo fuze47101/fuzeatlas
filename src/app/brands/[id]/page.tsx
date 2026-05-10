@@ -632,6 +632,13 @@ export default function BrandDetailPage() {
             Supply Chain opens the brand-portal view of the supply chain
             (admin can view it as if logged in as the brand). */}
         <Link
+          href={`/admin/brands/${id}/profile`}
+          className="px-3 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap inline-flex items-center gap-1"
+        >
+          {t.brandPortal.profile.crumbCurrent}
+          <span className="text-[10px] opacity-60">↗</span>
+        </Link>
+        <Link
           href={`/admin/brands/${id}/spec`}
           className="px-3 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap inline-flex items-center gap-1"
         >
