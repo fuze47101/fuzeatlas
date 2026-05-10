@@ -295,6 +295,23 @@ Email templates fall back to hardcoded strings when this env var is missing. His
 
 40 cron jobs allowed. Don't assume "Hobby 2-cron cap" is the cause of missing crons — it isn't. Check middleware exemption first, then handler error logs.
 
+## Resend Inbound Webhook (Phase 9B)
+
+For reply detection on outbound BD emails to work end-to-end:
+
+1. Resend dashboard → Webhooks → add a webhook pointing at
+   `https://fuzeatlas.com/api/webhooks/resend-inbound`. Enable the
+   `email.received` event (and optionally `email.bounced`).
+2. Copy the signing secret Resend generates.
+3. Vercel → Settings → Environment Variables → add
+   `RESEND_WEBHOOK_SECRET` = the signing secret. Set on Production.
+4. Redeploy (or wait for the next push) so the env var is in scope.
+
+Until step 3 lands, the webhook endpoint will still accept payloads
+but log a warning. Setup-test the path by sending a real reply
+through Gmail/Outlook to one of the test addresses; check Vercel
+runtime logs for `[resend-inbound]`.
+
 ## Git Workflow
 
 - **ALWAYS use `--no-verify`** on commits — ESLint pre-commit hook is broken (no eslint.config.js)
