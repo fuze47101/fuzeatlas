@@ -1611,6 +1611,58 @@ const en = {
         "Need to set test cadence per factory or approve new submissions? Those controls are coming next — for now you can drill into any factory above to see the underlying data.",
     },
 
+    network: {
+      crumbCurrent: "Factory Network",
+      pageTitle: "Factory Network",
+      pageSubtitle:
+        "Every factory currently supplying you on Atlas, plus pending invitations. Add an existing factory by name, or invite one that isn't yet on Atlas.",
+      loading: "Loading network…",
+      // Stats
+      statFactories: "Factories",
+      statPending: "Pending invites",
+      // Buttons
+      addFactoryButton: "+ Add Factory",
+      // Search modal
+      searchTitle: "Add a factory to your network",
+      searchPlaceholder: "Search by name, country, or specialty",
+      searchHint: "Type at least 2 characters.",
+      searchEmpty: "No matches in Atlas.",
+      searchInvite: "Invite a factory not in Atlas →",
+      addNow: "Add",
+      adding: "Adding…",
+      alreadyLinked: "Already in your network",
+      // Invite form
+      inviteTitle: "Invite a factory not in Atlas",
+      inviteHint:
+        "Send an invitation. The factory gets a link with two options — sign up fresh, or link an existing Atlas account.",
+      inviteFactoryName: "Factory name",
+      inviteContactName: "Contact name (optional)",
+      inviteContactEmail: "Contact email",
+      inviteContactPhone: "Phone (optional)",
+      inviteCountry: "Country (optional)",
+      inviteNotes: "Note to the factory (optional)",
+      sendInvite: "Send invitation",
+      sending: "Sending…",
+      sentFlash: "Invitation sent.",
+      sendFailed: "Failed to send invitation",
+      cancel: "Cancel",
+      // Lists
+      networkHeader: "Your supplying factories",
+      pendingHeader: "Pending invitations",
+      colFactory: "Factory",
+      colCountry: "Country",
+      colSpecialty: "Specialty",
+      colActions: "Actions",
+      removeButton: "Remove",
+      removing: "Removing…",
+      removeConfirm: "Remove {factory} from your network?",
+      noFactories: "No factories linked yet — add one above.",
+      noPending: "No pending invitations.",
+      // Pending row
+      sentTo: "Sent to {email}",
+      sentDate: "Sent {date}",
+    },
+
     team: {
       crumbCurrent: "Team",
       pageTitle: "Team",
