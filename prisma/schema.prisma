@@ -364,6 +364,8 @@ model Brand {
   orderAllocations OrderBrandAllocation[] @relation("BrandOrderAllocations")
   pricingTiers     BrandPricingTier[]      @relation("BrandPricingTiers")
   profile          BrandProfile?           @relation("BrandHasProfile")
+  hangtagQRs       HangtagQR[]             @relation("BrandHangtagQR")
+  esgSnapshots     BrandEsgSnapshot[]      @relation("BrandEsgSnapshots")
   recipeRequests   RecipeRequest[]         @relation("BrandRecipeRequests")
   factoryInvitations FactoryInvitation[]   @relation("BrandFactoryInvitations")
   meetings     Meeting[]      @relation("MeetingBrand")
@@ -1245,6 +1247,7 @@ model Fabric {
   fuzeConsumptions FuzeConsumption[] @relation("ConsumptionFabric")
   fuzeOrders       FuzeOrder[]      @relation("OrderFabric")
   recipeBenchTests RecipeBenchTest[] @relation("FabricRecipeBenchTests")
+  hangtagQRs       HangtagQR[]       @relation("FabricHangtagQR")
   solarisTests     SolarisTest[]     @relation("FabricSolarisTests")
   sampleApplications SampleApplication[] @relation("FabricSampleApplications")
   shipments SampleShipment[] @relation("FabricShipments")
@@ -3721,8 +3724,82 @@ model BrandProfile {
   supportPhone String?
   departments  Json?    // [{name, lead, email}]
   publicSlug   String?  @unique
+  // Phase 12A — gate the /verified/[publicSlug] storefront on this
+  // boolean. Defaults false so a publicSlug never accidentally goes
+  // live; brand owner opts in via /brand-portal/storefront settings.
+  publicEnabled Boolean @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// ─── Phase 12B — QR hangtag verification ──────────────────────
+model HangtagQR {
+  id             String   @id @default(cuid())
+  token          String   @unique  // short base32, 12 chars
+  brandId        String
+  brand          Brand    @relation("BrandHangtagQR", fields: [brandId], references: [id], onDelete: Cascade)
+  fabricId       String?
+  fabric         Fabric?  @relation("FabricHangtagQR", fields: [fabricId], references: [id])
+  productSku     String?
+  batchCode      String?
+  printedAt      DateTime?
+  scannedCount   Int      @default(0)
+  firstScannedAt DateTime?
+  lastScannedAt  DateTime?
+  createdAt      DateTime @default(now())
+
+  @@index([brandId])
+  @@index([fabricId])
+}
+
+// ─── Phase 12C — Public ESG snapshots ────────────────────────
+model BrandEsgSnapshot {
+  id                  String   @id @default(cuid())
+  brandId             String
+  brand               Brand    @relation("BrandEsgSnapshots", fields: [brandId], references: [id], onDelete: Cascade)
+  period              String   // "2026-Q2"
+  periodStart         DateTime
+  periodEnd           DateTime
+  fabricsCertified    Int
+  testsRunCount       Int
+  testsPassedCount    Int
+  fuzeConsumedLiters  Float
+  factoryCountActive  Int
+  zeroPfasFabricCount Int
+  publicPdfUrl        String?
+  generatedAt         DateTime @default(now())
+  publishedAt         DateTime?
+
+  @@unique([brandId, period])
+  @@index([brandId, periodStart])
+}
+
+// ─── Phase 12E — Press kit items ─────────────────────────────
+model PressKitItem {
+  id          String   @id @default(cuid())
+  type        String   // LOGO | IMAGE | RELEASE | NEWS_LINK
+  url         String
+  caption     String?
+  releaseDate DateTime?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type, active])
+}
+
+// ─── Phase 12G — Public page-view analytics ──────────────────
+model PublicPageView {
+  id        String   @id @default(cuid())
+  path      String
+  brandId   String?
+  ipHash    String   // SHA-256 first 8 chars — not PII
+  userAgent String?
+  referer   String?
+  createdAt DateTime @default(now())
+
+  @@index([brandId, createdAt])
+  @@index([path, createdAt])
 }
 
 // ─────────────────────────────────────────────
