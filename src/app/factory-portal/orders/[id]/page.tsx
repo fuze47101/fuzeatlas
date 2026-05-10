@@ -2,9 +2,11 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { validateOrderApplication } from "@/lib/order-validation";
 
 const EVENT_ICONS: Record<string, string> = {
   ORDER_PLACED: "📝",
@@ -26,6 +28,8 @@ const EVENT_ICONS: Record<string, string> = {
 export default function FactoryOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.factoryPortal.orderDetail;
   const router = useRouter();
   const [order, setOrder] = useState<any>(null);
   const [events, setEvents] = useState<any[]>([]);
@@ -41,6 +45,7 @@ export default function FactoryOrderDetailPage() {
   useEffect(() => {
     if (!user) return;
     loadAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, id]);
 
   async function loadAll() {
@@ -80,7 +85,7 @@ export default function FactoryOrderDetailPage() {
         setForm({});
         loadAll();
       } else {
-        setError(d.error || "Failed to log event");
+        setError(d.error || tx.logEventFailed);
       }
     } catch (e: any) {
       setError(e.message);
@@ -88,6 +93,20 @@ export default function FactoryOrderDetailPage() {
       setSubmitting(false);
     }
   }
+
+  // Derive validation banner from order data + brand spec embedded on
+  // the order. The order POST path persists the same notification body
+  // when the order has a brand attached, but the brand-side notification
+  // is the persisted record — for the read view we just recompute from
+  // the order shape so factory + brand users always see why an order
+  // is marked off-spec.
+  const validation = useMemo(() => {
+    if (!order || order.orderType === "HANGTAG") return null;
+    const brandSpec = order.brand?.requiredFuzeTier
+      ? { requiredFuzeTier: order.brand.requiredFuzeTier }
+      : null;
+    return validateOrderApplication(order, brandSpec);
+  }, [order]);
 
   if (loading) {
     return (
@@ -100,8 +119,10 @@ export default function FactoryOrderDetailPage() {
   if (!order) {
     return (
       <div className="p-8 max-w-4xl mx-auto">
-        <p className="text-slate-600">Order not found.</p>
-        <Link href="/factory-portal/orders" className="text-[#00b4c3] font-semibold">← Back to orders</Link>
+        <p className="text-slate-600">{tx.orderNotFound}</p>
+        <Link href="/factory-portal/orders" className="text-[#00b4c3] font-semibold">
+          {tx.backToOrders}
+        </Link>
       </div>
     );
   }
@@ -115,13 +136,22 @@ export default function FactoryOrderDetailPage() {
   const canSubmitIcp = events.some((e: any) => e.eventType === "TREATMENT_APPLIED");
   const canShip = isInternal && ["APPROVED", "PROCESSING"].includes(order.status) && !events.some((e: any) => e.eventType.startsWith("SHIPPED"));
 
+  // Highest-severity finding drives banner color + copy.
+  const severity = validation?.findings?.find((f: any) => f.severity === "error")
+    ? "error"
+    : validation?.findings?.find((f: any) => f.severity === "warn")
+      ? "warn"
+      : validation?.findings?.find((f: any) => f.severity === "info")
+        ? "info"
+        : null;
+
   return (
     <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
         <div>
           <Link href="/factory-portal/orders" className="text-sm text-slate-500 hover:text-[#00b4c3]">
-            ← Back to orders
+            {tx.backToOrders}
           </Link>
           <h1 className="text-3xl font-black text-slate-900 mt-2">{order.orderNumber}</h1>
           <div className="flex flex-wrap items-center gap-2 mt-1">
@@ -134,9 +164,31 @@ export default function FactoryOrderDetailPage() {
           target="_blank"
           className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-800"
         >
-          Public shipment page ↗
+          {tx.publicShipmentPage}
         </Link>
       </div>
+
+      {/* Validation banner — surfaces order-vs-application math
+          deviation. Pulled live from order fields via the same pure
+          helper the create path uses, so it stays consistent with the
+          brand notification that fires when an order is flagged. */}
+      {validation && severity && severity !== "info" ? (
+        <div
+          className={`mb-6 p-4 rounded-lg border text-sm ${
+            severity === "error"
+              ? "bg-red-50 border-red-200 text-red-800"
+              : "bg-amber-50 border-amber-200 text-amber-800"
+          }`}
+        >
+          <p className="font-bold mb-1">
+            {severity === "error" ? "🚨 " : "⚠️ "}
+            {tx.validationHeader}
+          </p>
+          {validation.findings.map((f: any, i: number) => (
+            <p key={i} className="text-xs">{f.message}</p>
+          ))}
+        </div>
+      ) : null}
 
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
@@ -149,35 +201,46 @@ export default function FactoryOrderDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Summary card */}
           <div className="bg-white border border-slate-200 rounded-xl p-6">
-            <h2 className="font-bold text-slate-900 mb-4">Order Details</h2>
+            <h2 className="font-bold text-slate-900 mb-4">{tx.orderDetails}</h2>
             <div className="grid grid-cols-2 gap-4 text-sm">
               {order.volumeLiters && (
                 <div>
-                  <p className="text-slate-500">Volume</p>
-                  <p className="font-bold text-slate-900">{order.volumeLiters}L ({order.bottles || Math.ceil(order.volumeLiters / 19)} bottles)</p>
+                  <p className="text-slate-500">{tx.detailVolume}</p>
+                  <p className="font-bold text-slate-900">
+                    {tx.detailVolumeFmt
+                      .replace("{liters}", String(order.volumeLiters))
+                      .replace(
+                        "{bottles}",
+                        String(order.bottles || Math.ceil(order.volumeLiters / 19)),
+                      )}
+                  </p>
                   {order.baseFuzeLiters && (
-                    <p className="text-xs text-slate-400">base {Number(order.baseFuzeLiters).toFixed(1)}L + {order.wastageFactorPct || 0}% wastage</p>
+                    <p className="text-xs text-slate-400">
+                      {tx.detailVolumeBreakdown
+                        .replace("{base}", Number(order.baseFuzeLiters).toFixed(1))
+                        .replace("{pct}", String(order.wastageFactorPct || 0))}
+                    </p>
                   )}
                 </div>
               )}
               {order.fuzeTier && (
-                <div><p className="text-slate-500">Tier</p><p className="font-bold text-slate-900">{order.fuzeTier}</p></div>
+                <div><p className="text-slate-500">{tx.detailTier}</p><p className="font-bold text-slate-900">{order.fuzeTier}</p></div>
               )}
               {order.treatmentMethod && (
-                <div><p className="text-slate-500">Method</p><p className="font-bold text-slate-900">{order.treatmentMethod.replace(/_/g, "-")}</p></div>
+                <div><p className="text-slate-500">{tx.detailMethod}</p><p className="font-bold text-slate-900">{order.treatmentMethod.replace(/_/g, "-")}</p></div>
               )}
               {order.fabricMassKg && (
-                <div><p className="text-slate-500">Fabric Mass</p><p className="font-bold text-slate-900">{Number(order.fabricMassKg).toFixed(1)} kg</p></div>
+                <div><p className="text-slate-500">{tx.detailFabricMass}</p><p className="font-bold text-slate-900">{Number(order.fabricMassKg).toFixed(1)} kg</p></div>
               )}
               {order.brand?.name && (
-                <div><p className="text-slate-500">Brand</p><p className="font-bold text-slate-900">{order.brand.name}</p></div>
+                <div><p className="text-slate-500">{tx.detailBrand}</p><p className="font-bold text-slate-900">{order.brand.name}</p></div>
               )}
               {order.fabric?.fuzeNumber && (
-                <div><p className="text-slate-500">Fabric</p><p className="font-bold text-slate-900">{order.fabric.fuzeNumber}</p></div>
+                <div><p className="text-slate-500">{tx.detailFabric}</p><p className="font-bold text-slate-900">{order.fabric.fuzeNumber}</p></div>
               )}
               {order.trackingNumber && (
                 <div className="col-span-2">
-                  <p className="text-slate-500">Tracking</p>
+                  <p className="text-slate-500">{tx.detailTracking}</p>
                   <p className="font-bold text-slate-900">{order.trackingNumber}{order.carrier ? ` · ${order.carrier}` : ""}</p>
                 </div>
               )}
@@ -186,14 +249,14 @@ export default function FactoryOrderDetailPage() {
 
           {/* Actions */}
           <div className="bg-white border border-slate-200 rounded-xl p-6">
-            <h2 className="font-bold text-slate-900 mb-4">Log Lifecycle Event</h2>
+            <h2 className="font-bold text-slate-900 mb-4">{tx.logEvent}</h2>
             <div className="flex flex-wrap gap-2">
               {canShip && (
                 <button
                   onClick={() => setAction("ship")}
                   className="px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg hover:bg-purple-700"
                 >
-                  🚛 Mark Shipped
+                  {tx.markShipped}
                 </button>
               )}
               {canReceive && isFactory && (
@@ -201,7 +264,7 @@ export default function FactoryOrderDetailPage() {
                   onClick={() => setAction("receive")}
                   className="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700"
                 >
-                  📦 Confirm Receipt
+                  {tx.confirmReceipt}
                 </button>
               )}
               {canTreat && isFactory && (
@@ -209,7 +272,7 @@ export default function FactoryOrderDetailPage() {
                   onClick={() => setAction("treat")}
                   className="px-4 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg hover:bg-[#009aa8]"
                 >
-                  💧 Log Treatment Applied
+                  {tx.logTreatment}
                 </button>
               )}
               {canSubmitIcp && isFactory && (
@@ -217,26 +280,39 @@ export default function FactoryOrderDetailPage() {
                   onClick={() => setAction("icp")}
                   className="px-4 py-2 bg-amber-600 text-white text-sm font-semibold rounded-lg hover:bg-amber-700"
                 >
-                  🧪 Submit ICP Sample
+                  {tx.submitIcp}
                 </button>
               )}
               <button
                 onClick={() => setAction("note")}
                 className="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-200"
               >
-                + Add Note
+                {tx.addNote}
               </button>
             </div>
 
             {/* SHIP form */}
             {action === "ship" && (
               <div className="mt-4 p-4 bg-purple-50 rounded-lg space-y-2">
-                <input placeholder="Tracking number" value={form.trackingNumber || ""} onChange={(e) => setForm({ ...form, trackingNumber: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-                <input placeholder="Carrier (FedEx, DHL...)" value={form.carrier || ""} onChange={(e) => setForm({ ...form, carrier: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-                <textarea placeholder="Notes" value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
+                <input placeholder={tx.shipTrackingPlaceholder} value={form.trackingNumber || ""} onChange={(e) => setForm({ ...form, trackingNumber: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                <input placeholder={tx.shipCarrierPlaceholder} value={form.carrier || ""} onChange={(e) => setForm({ ...form, carrier: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                <textarea placeholder={tx.shipNotesPlaceholder} value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
                 <div className="flex gap-2">
-                  <button disabled={submitting} onClick={() => logEvent(order.fulfillmentSource === "DIRECT_USA" ? "SHIPPED_FROM_FUZE" : "SHIPPED_FROM_DISTRIBUTOR", `Shipped via ${form.carrier || "carrier"}`, { trackingNumber: form.trackingNumber, carrier: form.carrier }, form.notes)} className="px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg">Mark Shipped</button>
-                  <button onClick={() => { setAction(null); setForm({}); }} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">Cancel</button>
+                  <button
+                    disabled={submitting}
+                    onClick={() =>
+                      logEvent(
+                        order.fulfillmentSource === "DIRECT_USA" ? "SHIPPED_FROM_FUZE" : "SHIPPED_FROM_DISTRIBUTOR",
+                        tx.shipTitleVia.replace("{carrier}", form.carrier || tx.shipDefaultCarrier),
+                        { trackingNumber: form.trackingNumber, carrier: form.carrier },
+                        form.notes,
+                      )
+                    }
+                    className="px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg"
+                  >
+                    {tx.shipSubmit}
+                  </button>
+                  <button onClick={() => { setAction(null); setForm({}); }} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">{tx.cancelAction}</button>
                 </div>
               </div>
             )}
@@ -244,11 +320,11 @@ export default function FactoryOrderDetailPage() {
             {/* RECEIVE form */}
             {action === "receive" && (
               <div className="mt-4 p-4 bg-emerald-50 rounded-lg space-y-2">
-                <p className="text-sm text-slate-700">Confirm this shipment arrived in good condition at your facility.</p>
-                <textarea placeholder="Intake notes (condition, seal integrity, temp, any damage...)" value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
+                <p className="text-sm text-slate-700">{tx.receivePrompt}</p>
+                <textarea placeholder={tx.receiveNotesPlaceholder} value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
                 <div className="flex gap-2">
-                  <button disabled={submitting} onClick={() => logEvent("RECEIVED_AT_FACTORY", "Received at factory", {}, form.notes)} className="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg">Confirm Receipt</button>
-                  <button onClick={() => { setAction(null); setForm({}); }} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">Cancel</button>
+                  <button disabled={submitting} onClick={() => logEvent("RECEIVED_AT_FACTORY", tx.receiveTitle, {}, form.notes)} className="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg">{tx.receiveSubmit}</button>
+                  <button onClick={() => { setAction(null); setForm({}); }} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">{tx.cancelAction}</button>
                 </div>
               </div>
             )}
@@ -258,26 +334,47 @@ export default function FactoryOrderDetailPage() {
               <div className="mt-4 p-4 bg-cyan-50 rounded-lg space-y-2">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-xs text-slate-600">Liters Used</label>
+                    <label className="text-xs text-slate-600">{tx.treatLitersUsed}</label>
                     <input type="number" value={form.litersUsed || ""} onChange={(e) => setForm({ ...form, litersUsed: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                   </div>
                   <div>
-                    <label className="text-xs text-slate-600">Meters Processed</label>
+                    <label className="text-xs text-slate-600">{tx.treatMetersProcessed}</label>
                     <input type="number" value={form.metersProcessed || ""} onChange={(e) => setForm({ ...form, metersProcessed: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <select value={form.method || order.treatmentMethod || "EXHAUST"} onChange={(e) => setForm({ ...form, method: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                    <option value="EXHAUST">Exhaust</option>
-                    <option value="PAD_DRY_CURE">Pad-Dry-Cure</option>
-                    <option value="SPRAY">Spray</option>
+                    <option value="EXHAUST">{tx.treatMethodExhaust}</option>
+                    <option value="PAD_DRY_CURE">{tx.treatMethodPadDryCure}</option>
+                    <option value="SPRAY">{tx.treatMethodSpray}</option>
                   </select>
-                  <input placeholder="Production run ID (optional)" value={form.productionRunId || ""} onChange={(e) => setForm({ ...form, productionRunId: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                  <input placeholder={tx.treatProductionRunPlaceholder} value={form.productionRunId || ""} onChange={(e) => setForm({ ...form, productionRunId: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                 </div>
-                <textarea placeholder="Treatment notes" value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
+                <textarea placeholder={tx.treatNotesPlaceholder} value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
                 <div className="flex gap-2">
-                  <button disabled={submitting} onClick={() => logEvent("TREATMENT_APPLIED", `Treated ${form.metersProcessed || "?"}m using ${form.litersUsed || "?"}L`, { litersUsed: form.litersUsed, metersProcessed: form.metersProcessed, method: form.method, productionRunId: form.productionRunId, fuzeTier: order.fuzeTier }, form.notes)} className="px-4 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg">Log Treatment</button>
-                  <button onClick={() => { setAction(null); setForm({}); }} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">Cancel</button>
+                  <button
+                    disabled={submitting}
+                    onClick={() =>
+                      logEvent(
+                        "TREATMENT_APPLIED",
+                        tx.treatTitle
+                          .replace("{meters}", form.metersProcessed || "?")
+                          .replace("{liters}", form.litersUsed || "?"),
+                        {
+                          litersUsed: form.litersUsed,
+                          metersProcessed: form.metersProcessed,
+                          method: form.method,
+                          productionRunId: form.productionRunId,
+                          fuzeTier: order.fuzeTier,
+                        },
+                        form.notes,
+                      )
+                    }
+                    className="px-4 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg"
+                  >
+                    {tx.treatSubmit}
+                  </button>
+                  <button onClick={() => { setAction(null); setForm({}); }} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">{tx.cancelAction}</button>
                 </div>
               </div>
             )}
@@ -285,13 +382,26 @@ export default function FactoryOrderDetailPage() {
             {/* ICP form */}
             {action === "icp" && (
               <div className="mt-4 p-4 bg-amber-50 rounded-lg space-y-2">
-                <p className="text-sm text-slate-700">Log that you've sent an ICP sample for certification.</p>
-                <input placeholder="Lab name (ITS / VL / FPC...)" value={form.labName || ""} onChange={(e) => setForm({ ...form, labName: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-                <input placeholder="Lab tracking / sample ID" value={form.labSampleId || ""} onChange={(e) => setForm({ ...form, labSampleId: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-                <textarea placeholder="Notes" value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
+                <p className="text-sm text-slate-700">{tx.icpPrompt}</p>
+                <input placeholder={tx.icpLabPlaceholder} value={form.labName || ""} onChange={(e) => setForm({ ...form, labName: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                <input placeholder={tx.icpSampleIdPlaceholder} value={form.labSampleId || ""} onChange={(e) => setForm({ ...form, labSampleId: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                <textarea placeholder={tx.icpNotesPlaceholder} value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
                 <div className="flex gap-2">
-                  <button disabled={submitting} onClick={() => logEvent("ICP_SAMPLE_SUBMITTED", `ICP sample sent to ${form.labName || "lab"}`, { labName: form.labName, labSampleId: form.labSampleId }, form.notes)} className="px-4 py-2 bg-amber-600 text-white text-sm font-semibold rounded-lg">Log ICP Submission</button>
-                  <button onClick={() => { setAction(null); setForm({}); }} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">Cancel</button>
+                  <button
+                    disabled={submitting}
+                    onClick={() =>
+                      logEvent(
+                        "ICP_SAMPLE_SUBMITTED",
+                        tx.icpTitle.replace("{lab}", form.labName || tx.icpDefaultLab),
+                        { labName: form.labName, labSampleId: form.labSampleId },
+                        form.notes,
+                      )
+                    }
+                    className="px-4 py-2 bg-amber-600 text-white text-sm font-semibold rounded-lg"
+                  >
+                    {tx.icpSubmit}
+                  </button>
+                  <button onClick={() => { setAction(null); setForm({}); }} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">{tx.cancelAction}</button>
                 </div>
               </div>
             )}
@@ -299,11 +409,11 @@ export default function FactoryOrderDetailPage() {
             {/* NOTE form */}
             {action === "note" && (
               <div className="mt-4 p-4 bg-slate-50 rounded-lg space-y-2">
-                <input placeholder="Short title" value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-                <textarea placeholder="Details" value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
+                <input placeholder={tx.noteTitlePlaceholder} value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                <textarea placeholder={tx.noteDetailsPlaceholder} value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
                 <div className="flex gap-2">
-                  <button disabled={submitting || !form.title} onClick={() => logEvent("NOTE", form.title, {}, form.notes)} className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg">Add Note</button>
-                  <button onClick={() => { setAction(null); setForm({}); }} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">Cancel</button>
+                  <button disabled={submitting || !form.title} onClick={() => logEvent("NOTE", form.title, {}, form.notes)} className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg">{tx.noteSubmit}</button>
+                  <button onClick={() => { setAction(null); setForm({}); }} className="px-4 py-2 bg-slate-100 text-sm rounded-lg">{tx.cancelAction}</button>
                 </div>
               </div>
             )}
@@ -311,9 +421,9 @@ export default function FactoryOrderDetailPage() {
 
           {/* Timeline */}
           <div className="bg-white border border-slate-200 rounded-xl p-6">
-            <h2 className="font-bold text-slate-900 mb-4">Lifecycle Timeline</h2>
+            <h2 className="font-bold text-slate-900 mb-4">{tx.timelineHeader}</h2>
             {events.length === 0 ? (
-              <p className="text-sm text-slate-500">No events yet.</p>
+              <p className="text-sm text-slate-500">{tx.timelineEmpty}</p>
             ) : (
               <div className="relative">
                 <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-slate-200" />
@@ -343,8 +453,8 @@ export default function FactoryOrderDetailPage() {
         {/* RIGHT — QR Code */}
         <div>
           <div className="bg-white border border-slate-200 rounded-xl p-6 sticky top-4 text-center">
-            <h3 className="font-bold text-slate-900 mb-1">Shipment QR Code</h3>
-            <p className="text-xs text-slate-500 mb-4">Print on the shipment label. Scans → SDS, COA, live timeline.</p>
+            <h3 className="font-bold text-slate-900 mb-1">{tx.qrTitle}</h3>
+            <p className="text-xs text-slate-500 mb-4">{tx.qrBlurb}</p>
             <img src={qrUrl} alt="Shipment QR" className="mx-auto border-2 border-slate-200 rounded-lg p-2" />
             <div className="mt-3 text-xs text-slate-500 break-all bg-slate-50 p-2 rounded">
               {shipmentUrl}
@@ -354,7 +464,7 @@ export default function FactoryOrderDetailPage() {
               download={`qr-${order.orderNumber}.png`}
               className="mt-3 inline-block w-full px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-800"
             >
-              Download QR
+              {tx.qrDownload}
             </a>
           </div>
         </div>

@@ -1002,6 +1002,82 @@ const en = {
         "Reports show as \"unlinked\" until our parser auto-links them to a brand or fabric. If a report has been pending review for more than 24h, message {email} and we'll attach it manually.",
     },
 
+    // Order detail page — /factory-portal/orders/[id]
+    orderDetail: {
+      backToOrders: "← Back to orders",
+      orderNotFound: "Order not found.",
+      publicShipmentPage: "Public shipment page ↗",
+      orderDetails: "Order Details",
+      detailVolume: "Volume",
+      detailVolumeFmt: "{liters}L ({bottles} bottles)",
+      detailVolumeBreakdown: "base {base}L + {pct}% wastage",
+      detailTier: "Tier",
+      detailMethod: "Method",
+      detailFabricMass: "Fabric Mass",
+      detailBrand: "Brand",
+      detailFabric: "Fabric",
+      detailTracking: "Tracking",
+      // Lifecycle actions
+      logEvent: "Log Lifecycle Event",
+      markShipped: "🚛 Mark Shipped",
+      confirmReceipt: "📦 Confirm Receipt",
+      logTreatment: "💧 Log Treatment Applied",
+      submitIcp: "🧪 Submit ICP Sample",
+      addNote: "+ Add Note",
+      cancelAction: "Cancel",
+      logEventFailed: "Failed to log event",
+      // Ship form
+      shipTrackingPlaceholder: "Tracking number",
+      shipCarrierPlaceholder: "Carrier (FedEx, DHL...)",
+      shipNotesPlaceholder: "Notes",
+      shipSubmit: "Mark Shipped",
+      shipDefaultCarrier: "carrier",
+      shipTitleVia: "Shipped via {carrier}",
+      // Receive form
+      receivePrompt: "Confirm this shipment arrived in good condition at your facility.",
+      receiveNotesPlaceholder: "Intake notes (condition, seal integrity, temp, any damage...)",
+      receiveSubmit: "Confirm Receipt",
+      receiveTitle: "Received at factory",
+      // Treatment form
+      treatLitersUsed: "Liters Used",
+      treatMetersProcessed: "Meters Processed",
+      treatProductionRunPlaceholder: "Production run ID (optional)",
+      treatNotesPlaceholder: "Treatment notes",
+      treatSubmit: "Log Treatment",
+      treatTitle: "Treated {meters}m using {liters}L",
+      treatMethodExhaust: "Exhaust",
+      treatMethodPadDryCure: "Pad-Dry-Cure",
+      treatMethodSpray: "Spray",
+      // ICP form
+      icpPrompt: "Log that you've sent an ICP sample for certification.",
+      icpLabPlaceholder: "Lab name (ITS / VL / FPC...)",
+      icpSampleIdPlaceholder: "Lab tracking / sample ID",
+      icpNotesPlaceholder: "Notes",
+      icpSubmit: "Log ICP Submission",
+      icpTitle: "ICP sample sent to {lab}",
+      icpDefaultLab: "lab",
+      // Note form
+      noteTitlePlaceholder: "Short title",
+      noteDetailsPlaceholder: "Details",
+      noteSubmit: "Add Note",
+      // Timeline
+      timelineHeader: "Lifecycle Timeline",
+      timelineEmpty: "No events yet.",
+      // QR card
+      qrTitle: "Shipment QR Code",
+      qrBlurb: "Print on the shipment label. Scans → SDS, COA, live timeline.",
+      qrDownload: "Download QR",
+      // Validation banner
+      validationHeader: "Application Validation",
+      validationOk: "Volume matches application math",
+      validationInfo:
+        "Volume within 10% of expected — fine. Expected {expected} L for {mass} kg at tier {tier}; actual {actual} L.",
+      validationWarn:
+        "Volume is {dev}% off expected. Expected {expected} L for {mass} kg at tier {tier}; actual {actual} L. Confirm fabric mass + tier with the factory.",
+      validationError:
+        "Volume is {dev}% off expected. Expected {expected} L for {mass} kg at tier {tier}; actual {actual} L. Please double-check fabric mass + tier before fulfillment.",
+    },
+
     // Orders — factory order placement + tracking
     orders: {
       pageTitle: "Order FUZE",
