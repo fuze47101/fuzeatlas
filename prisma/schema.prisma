@@ -343,6 +343,7 @@ model Brand {
   fuzeOrders       FuzeOrder[]      @relation("OrderBrand")
   orderAllocations OrderBrandAllocation[] @relation("BrandOrderAllocations")
   pricingTiers     BrandPricingTier[]      @relation("BrandPricingTiers")
+  profile          BrandProfile?           @relation("BrandHasProfile")
   meetings     Meeting[]      @relation("MeetingBrand")
   crmTasks     CrmTask[]      @relation("BrandCrmTasks")
   sourceRecords SourceRecord[]
@@ -3424,4 +3425,32 @@ model SupplyChainLink {
   @@index([fromType, fromId])
   @@index([toType, toId])
   @@index([relation, active])
+}
+
+// ─────────────────────────────────────────────
+// BRAND PROFILE (Phase 4B — ROADMAP_v2)
+// ─────────────────────────────────────────────
+// Customer-facing brand identity layered on top of the existing
+// Brand CRM row. Brand stores the pipeline / sales data; BrandProfile
+// stores the things a brand user sees about THEIR OWN brand on the
+// portal — logo, primary colour, hero copy, support contacts.
+//
+// 1:1 with Brand via @unique brandId. Cascade delete when the brand
+// is removed. publicSlug is unique so we can build /b/<slug> public
+// pages later.
+
+model BrandProfile {
+  id           String   @id @default(cuid())
+  brandId      String   @unique
+  brand        Brand    @relation("BrandHasProfile", fields: [brandId], references: [id], onDelete: Cascade)
+  logoUrl      String?
+  primaryColor String?  // hex
+  heroHeadline String?
+  heroSubhead  String?
+  supportEmail String?
+  supportPhone String?
+  departments  Json?    // [{name, lead, email}]
+  publicSlug   String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
