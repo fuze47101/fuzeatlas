@@ -79,11 +79,31 @@ export async function GET(req: Request) {
     let factoriesChecked = 0;
 
     for (const brand of brands) {
-      // 2. Factories in this brand's supply chain
-      const factories = await prisma.factory.findMany({
-        where: { fabrics: { some: { brandId: brand.id } } },
-        select: { id: true, name: true },
+      // 2. Factories in this brand's supply chain — read SupplyChainLink
+      // first (Phase 4A keystone), fall back to the legacy fabrics-by-
+      // brand join when this brand has no links yet. The fallback
+      // becomes dead code once every brand has been backfilled.
+      const supplyLinks = await prisma.supplyChainLink.findMany({
+        where: {
+          toType: "BRAND",
+          toId: brand.id,
+          fromType: "FACTORY",
+          relation: "SUPPLIES",
+          active: true,
+        },
+        select: { fromId: true },
       });
+
+      const factories =
+        supplyLinks.length > 0
+          ? await prisma.factory.findMany({
+              where: { id: { in: supplyLinks.map((l: any) => l.fromId) } },
+              select: { id: true, name: true },
+            })
+          : await prisma.factory.findMany({
+              where: { fabrics: { some: { brandId: brand.id } } },
+              select: { id: true, name: true },
+            });
 
       for (const factory of factories) {
         factoriesChecked++;

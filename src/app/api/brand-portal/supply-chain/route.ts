@@ -64,26 +64,39 @@ export async function GET() {
       return NextResponse.json({ ok: false, error: "Brand not found" }, { status: 404 });
     }
 
-    // Find every factory that has at least one fabric for this brand.
-    // We can't just group fabrics by factoryId because some fabrics
-    // have a null factoryId (intake without a factory yet) — those
-    // contribute to the brand's stats but not to a row in this view.
-    const factoriesWithFabrics = await prisma.factory.findMany({
+    // Find every factory that supplies this brand. Read SupplyChainLink
+    // first (Phase 4A keystone — single source of truth), falling back
+    // to the legacy Fabric.brandId join when no links exist for this
+    // brand yet. The fallback keeps the page working for any brand
+    // that hasn't been backfilled — once backfill-supply-chain-links
+    // has run for everyone the fallback becomes dead code we can delete.
+    const supplyLinks = await prisma.supplyChainLink.findMany({
       where: {
-        fabrics: { some: { brandId } },
+        toType: "BRAND",
+        toId: brandId,
+        fromType: "FACTORY",
+        relation: "SUPPLIES",
+        active: true,
       },
-      select: {
-        id: true,
-        name: true,
-        country: true,
-        city: true,
-        // Per-brand rollups via Prisma's relation count is not
-        // straightforward; we issue one query per factory below for
-        // accuracy. Supply chains are typically <20 factories per
-        // brand so the N+1 cost is acceptable here.
-      },
-      orderBy: { name: "asc" },
+      select: { fromId: true },
     });
+
+    const factoriesWithFabrics =
+      supplyLinks.length > 0
+        ? await prisma.factory.findMany({
+            where: { id: { in: supplyLinks.map((l: any) => l.fromId) } },
+            select: { id: true, name: true, country: true, city: true },
+            orderBy: { name: "asc" },
+          })
+        : await prisma.factory.findMany({
+            // Fallback: derive from fabrics tagged with this brand.
+            // Some fabrics have null factoryId (intake without a
+            // factory yet) — they contribute to brand stats but not
+            // to a row in this view. Same as the original behaviour.
+            where: { fabrics: { some: { brandId } } },
+            select: { id: true, name: true, country: true, city: true },
+            orderBy: { name: "asc" },
+          });
 
     const rows = await Promise.all(
       factoriesWithFabrics.map(async (f: any) => {

@@ -30,6 +30,9 @@ One line per commit (timestamp UTC, hash, what shipped).
 - 2026-05-10 — `f049600` — phase 4A: SupplyChainLink schema + bearer-authed migration (NOT yet applied).
 - 2026-05-10 — `62a483b` — preflight: idempotent PATH A endpoint for testType drift.
 - 2026-05-10 — `c3c9d4a` — preflight: cleanup — drop the one-off testtype endpoints.
+- 2026-05-10 — `a385078` — phase 4A: SupplyChainLink admin CRUD + backfill cron.
+- 2026-05-10 — `21514f1` — phase 4A: rewrite backfill cron defensively (per-step try/catch).
+- 2026-05-10 — backfill ran ok:true. 44 links: 28 FACTORY-SUPPLIES-BRAND from fabrics, 21 same edges from BrandFactory (dedup), 16 LAB-TESTS_FOR-FACTORY from TestRun×submission. 0 DISTRIBUTOR edges (FuzeOrder has no distributor+factory pairs yet, no Factory has distributorId set — system state finding).
 
 ### DB-DSN MISMATCH — local vs runtime (blocker for normal `prisma db push`)
 
