@@ -1034,6 +1034,35 @@ const en = {
         "Reports show as \"unlinked\" until our parser auto-links them to a brand or fabric. If a report has been pending review for more than 24h, message {email} and we'll attach it manually.",
     },
 
+    // Brand Network — /factory-portal/network (Phase 5C)
+    network: {
+      crumbCurrent: "Brand Network",
+      pageTitle: "Brand Network",
+      pageSubtitle:
+        "Brands you supply via Atlas, plus any pending invitations. Accept an invitation to join a brand's supply chain.",
+      loading: "Loading network…",
+      // Stats
+      statBrands: "Brands",
+      statPending: "Pending",
+      // Sections
+      brandsHeader: "Brands you supply",
+      pendingHeader: "Pending invitations",
+      // Brand row
+      tierLabel: "Required tier: {tier}",
+      cadenceOrders: "ICP every {n} orders",
+      cadenceLiters: "ICP every {n} L consumed",
+      noBrands: "No brands linked yet.",
+      noPending: "No pending invitations.",
+      // Pending row
+      from: "From {brand}",
+      sentTo: "Sent to {email}",
+      sentDate: "Sent {date}",
+      acceptButton: "Accept invitation",
+      accepting: "Accepting…",
+      acceptFailed: "Failed to accept",
+      acceptFlash: "Joined the brand network.",
+    },
+
     // Brand Specs — /factory-portal/specs
     specs: {
       crumbCurrent: "Brand Specs",

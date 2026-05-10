@@ -72,6 +72,8 @@ Phase 4 deliverables shipped:
 Phase 5A (brand team management) starts next.
 
 - 2026-05-10 — `fba5c94` — phase 5A: brand team management.
+- 2026-05-10 — `6c43353` — phase 5B: FactoryInvitation schema + bearer-authed migration.
+- 2026-05-10 — `b94b8cc` — phase 5B: endpoints + page + public landing + cleanup.
 
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 
