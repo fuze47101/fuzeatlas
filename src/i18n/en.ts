@@ -1495,6 +1495,27 @@ const en = {
     },
   },
 
+  // ─── FABRIC TIMELINE (per-fabric lifecycle page) ──
+  fabricTimeline: {
+    crumbCurrent: "Timeline",
+    pageTitle: "FUZE {n} — Lifecycle",
+    pageSubtitle: "Every event for FUZE {n}, newest at the top.",
+    loading: "Loading timeline…",
+    notFound: "Fabric not found.",
+    forbidden: "You don't have access to this fabric's timeline.",
+    // Filters
+    filterAll: "All",
+    filterSubmissions: "Submissions",
+    filterTests: "Tests",
+    filterRecipes: "Recipes",
+    filterOrders: "Orders",
+    filterConsumption: "Consumption",
+    // Empty
+    empty: "No events match the selected filters.",
+    // Print
+    print: "Print",
+  },
+
   // ─── PORTAL FEED (shared, mounted on all 4 portal landings) ──
   portalFeed: {
     header: "What just happened",
