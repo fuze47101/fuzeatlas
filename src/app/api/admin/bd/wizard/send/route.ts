@@ -34,6 +34,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import { humanize } from "@/lib/humanize";
 import { createSequenceForFirstSend, markStepSent } from "@/lib/bd-sequence";
+import { newTrackingToken, instrumentHtml } from "@/lib/email-tracking";
 
 function escapeHtml(s: string): string {
   return s
@@ -299,6 +300,7 @@ export async function POST(req: Request) {
 
     let sendResult: any = { ok: true, stub: true };
     let externalId: string | undefined;
+    let trackingToken: string | null = null;
 
     if (channel === "email") {
       // ── Hard preflight: refuse to pretend-send. ──
@@ -332,7 +334,10 @@ export async function POST(req: Request) {
         );
       }
 
-      const html = textToHtml(bodyOut);
+      // Phase 9A — instrument outbound HTML with a pixel + link rewriter
+      // so /api/tracking/open|click can record engagement.
+      trackingToken = newTrackingToken();
+      const html = instrumentHtml(textToHtml(bodyOut), trackingToken);
       sendResult = await sendEmail({
         to: contact.email!,
         subject,
@@ -430,6 +435,9 @@ export async function POST(req: Request) {
           sentAt,
           externalId: externalId || null,
           sentBy: user.id,
+          // Phase 9A — only the email channel actually carries the
+          // pixel + click links, so only stamp the token there.
+          trackingToken: channel === "email" ? trackingToken : null,
         },
       });
 

@@ -285,6 +285,12 @@ model Brand {
 
   raw Json?
 
+  // ─── Phase 9I — Referral attribution ────────────────────────
+  referredByBrandId   String?
+  referredByContactId String?
+  referralNote        String?
+  referralValue       Float?
+
   // Validation fields (Phase 1 brand audit)
   validationStatus  String?   // verified | irrelevant | dead | duplicate | pending | unknown
   validationReason  String?   // AI-generated explanation for the classification
@@ -912,12 +918,84 @@ model OutreachMessage {
   externalId  String?  // Twilio SID or Resend message ID
   sentBy      String?  // user ID or "system"
 
+  // ─── Phase 9A — open + click + reply tracking ───────────────
+  trackingToken  String?   @unique  // base64url(16) — pixel + link rewriter
+  openedAt       DateTime?           // first open
+  lastOpenedAt   DateTime?
+  openCount      Int       @default(0)
+  clickedAt      DateTime?           // first click on any tracked link
+  lastClickedAt  DateTime?
+  clickCount     Int       @default(0)
+  repliedAt      DateTime?
+  bouncedAt      DateTime?
+  bounceReason   String?
+
+  linkClicks  OutreachLinkClick[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([contactId])
   @@index([channel])
   @@index([sentAt])
+  @@index([trackingToken])
+  @@index([openedAt])
+  @@index([repliedAt])
+}
+
+// ─── Phase 9A — per-link click event log ───────────────────────
+model OutreachLinkClick {
+  id        String @id @default(cuid())
+  messageId String
+  message   OutreachMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  url       String
+  clickedAt DateTime @default(now())
+  userAgent String?
+  ipHash    String?  // SHA256 first 8 chars — unique-visitor estimate, not PII
+
+  @@index([messageId, clickedAt])
+}
+
+// ─── Phase 9E — Brand pipeline-stage audit trail ──────────────
+model BrandStageTransition {
+  id              String   @id @default(cuid())
+  brandId         String
+  fromStage       String?
+  toStage         String
+  transitionedAt  DateTime @default(now())
+  transitionedById String?
+
+  @@index([brandId, transitionedAt])
+  @@index([toStage, transitionedAt])
+}
+
+// ─── Phase 9H — BD playbook library ──────────────────────────
+model BDPlaybook {
+  id                          String   @id @default(cuid())
+  name                        String   @unique
+  textileCategory             String   // hospitality | activewear | intimates | kids | workwear | medical | industrial | other
+  description                 String   // markdown
+  recommendedSequenceId       String?
+  recommendedEmailTemplateIds String[]
+  notes                       String?
+  activeBy                    String[] // userIds currently using it
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  favorites UserPlaybookFavorite[]
+
+  @@index([textileCategory])
+}
+
+model UserPlaybookFavorite {
+  id         String   @id @default(cuid())
+  userId     String
+  playbookId String
+  playbook   BDPlaybook @relation(fields: [playbookId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, playbookId])
+  @@index([userId])
 }
 
 // ─────────────────────────────────────────────

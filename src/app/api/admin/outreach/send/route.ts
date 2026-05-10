@@ -139,6 +139,7 @@ export async function POST(req: NextRequest) {
     let externalId: string | null = null;
     let status = "sent";
     let failReason: string | null = null;
+    let trackingToken: string | null = null;
 
     // ── 1. DISPATCH ──────────────────────────────────────────────────
     if (channel === "sms") {
@@ -183,7 +184,11 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const html = /<\w+[^>]*>/.test(body) ? body : body.replace(/\n/g, "<br>");
+      // Phase 9A — instrument with a tracking pixel + click rewriter.
+      const { newTrackingToken, instrumentHtml } = await import("@/lib/email-tracking");
+      trackingToken = newTrackingToken();
+      const rawHtml = /<\w+[^>]*>/.test(body) ? body : body.replace(/\n/g, "<br>");
+      const html = instrumentHtml(rawHtml, trackingToken);
       const fromEmail = process.env.RESEND_OUTREACH_FROM || "outreach@fuzebiotech.com";
       const senderName = user.name ? `${user.name} (FUZE Biotech)` : "FUZE Biotech";
 
@@ -244,6 +249,9 @@ export async function POST(req: NextRequest) {
           failReason,
           externalId,
           sentBy: user.id,
+          // Phase 9A — only the email channel actually carries the
+          // pixel + tracked links.
+          trackingToken: channel === "email" ? trackingToken : null,
         },
       });
 
