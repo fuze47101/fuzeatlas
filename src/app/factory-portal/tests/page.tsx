@@ -27,6 +27,39 @@ interface TestRun {
   reportDocumentId?: string | null;
   reportDownloadUrl?: string | null;
   reportFilename?: string | null;
+  // Phase 7F / 8G — surface brand approval state on the row.
+  brandVisible?: boolean;
+  brandApprovalStatus?: "PENDING" | "APPROVED" | "REJECTED" | null;
+  brandRejectionReason?: string | null;
+}
+
+function ApprovalBadge({ status }: { status: "PENDING" | "APPROVED" | "REJECTED" }) {
+  const cls =
+    status === "PENDING"
+      ? "bg-amber-100 text-amber-800 border-amber-300"
+      : status === "APPROVED"
+        ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+        : "bg-red-100 text-red-800 border-red-300";
+  const label =
+    status === "PENDING"
+      ? "Awaiting brand"
+      : status === "APPROVED"
+        ? "Brand approved"
+        : "Brand rejected";
+  return (
+    <span
+      className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${cls}`}
+      title={
+        status === "PENDING"
+          ? "Stamped brand-visible. Awaiting brand approval before it appears in the brand library."
+          : status === "APPROVED"
+            ? "Brand approved this report — visible in the brand library."
+            : "Brand rejected this report — see rejection reason below."
+      }
+    >
+      {label}
+    </span>
+  );
 }
 
 interface TestData {
@@ -216,6 +249,9 @@ export default function FactoryTestResultsPage() {
                           {run.result}
                         </span>
                       )}
+                      {run.brandApprovalStatus && (
+                        <ApprovalBadge status={run.brandApprovalStatus} />
+                      )}
                     </div>
 
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm">
@@ -267,6 +303,14 @@ export default function FactoryTestResultsPage() {
                 {/* Details - expandable */}
                 {isExpanded && (
                   <div className="border-t border-slate-100 bg-slate-50 px-4 sm:px-6 py-4 space-y-3">
+                    {run.brandApprovalStatus === "REJECTED" && run.brandRejectionReason && (
+                      <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                        <p className="text-xs font-bold text-red-700 mb-1">
+                          Brand rejection reason
+                        </p>
+                        <p className="text-sm text-red-900">{run.brandRejectionReason}</p>
+                      </div>
+                    )}
                     {/* Tina ticket May 2026 — Download Report PDF surfaces
                         the report doc directly on the card so factories
                         don't have to email us asking for the file. */}

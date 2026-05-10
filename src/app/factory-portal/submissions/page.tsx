@@ -19,6 +19,29 @@ interface Submission {
     testType: string;
     status: string;
   }[];
+  // Phase 7F / 8G — surface brand approval state on the row.
+  brandApprovalStatus?: "PENDING" | "APPROVED" | "REJECTED" | null;
+  brandRejectionReason?: string | null;
+}
+
+function ApprovalBadge({ status }: { status: "PENDING" | "APPROVED" | "REJECTED" }) {
+  const cls =
+    status === "PENDING"
+      ? "bg-amber-100 text-amber-800 border-amber-300"
+      : status === "APPROVED"
+        ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+        : "bg-red-100 text-red-800 border-red-300";
+  const label =
+    status === "PENDING"
+      ? "Awaiting brand"
+      : status === "APPROVED"
+        ? "Brand approved"
+        : "Brand rejected";
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap border ${cls}`}>
+      {label}
+    </span>
+  );
 }
 
 export default function FactorySubmissionsPage() {
@@ -112,6 +135,9 @@ export default function FactorySubmissionsPage() {
                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${statusColors[submission.status] || "bg-slate-100 text-slate-600"}`}>
                       {submission.status}
                     </span>
+                    {submission.brandApprovalStatus && (
+                      <ApprovalBadge status={submission.brandApprovalStatus} />
+                    )}
                   </div>
                   <div className="flex items-center gap-3 text-sm text-slate-600">
                     <span className="font-mono font-medium">FUZE-{submission.fabric.fuzeNumber}</span>
@@ -126,6 +152,11 @@ export default function FactorySubmissionsPage() {
                         </span>
                       ))}
                     </div>
+                  )}
+                  {submission.brandApprovalStatus === "REJECTED" && submission.brandRejectionReason && (
+                    <p className="mt-2 text-xs text-red-700">
+                      <span className="font-bold">Rejection reason:</span> {submission.brandRejectionReason}
+                    </p>
                   )}
                 </div>
                 <div className="text-right ml-4">
