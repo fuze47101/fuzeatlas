@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { testRunScopeForFactory } from "@/lib/acl";
 
 /**
  * GET /api/factory-portal/tests
@@ -53,16 +54,10 @@ export async function GET(req: Request) {
       );
     }
 
-    // Scope: any TestRun whose fabric.factoryId OR submission.factoryId
-    // matches the caller's factory. Admins see everything.
-    const where: any = isAdmin
-      ? {}
-      : {
-          OR: [
-            { fabric: { factoryId } },
-            { submission: { factoryId } },
-          ],
-        };
+    // Scope via the shared ACL helper — same fragment used by every
+    // factory-side TestRun query. Future SupplyChainLink work swaps
+    // the helper body without touching this call site.
+    const where: any = isAdmin ? {} : testRunScopeForFactory(factoryId);
 
     const testRuns = await prisma.testRun.findMany({
       where,
