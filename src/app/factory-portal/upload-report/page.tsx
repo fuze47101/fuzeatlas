@@ -2,6 +2,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -20,6 +21,8 @@ import { useState, useEffect } from "react";
  */
 export default function FactoryUploadReportPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.factoryPortal.uploadReport;
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -76,7 +79,7 @@ export default function FactoryUploadReportPage() {
         loadUploads();
       }
     } catch {
-      setError("Upload failed. Please try again.");
+      setError(tx.uploadFailed);
     } finally {
       setUploading(false);
     }
@@ -88,17 +91,13 @@ export default function FactoryUploadReportPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/factory-portal" className="hover:text-[#00b4c3]">
-            Factory Portal
+            {tx.crumbHome}
           </Link>
           <span>/</span>
-          <span className="text-slate-800 font-medium">Upload Test Report</span>
+          <span className="text-slate-800 font-medium">{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">Upload Test Report</h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Drop in a lab PDF (ICP, antibacterial, fungal, odor, UV) and we&apos;ll auto-parse it and
-          link it to your fabric. If we can&apos;t auto-link it, it goes to admin review and stays
-          visible to you in the table below.
-        </p>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
+        <p className="text-sm text-slate-500 mt-1">{tx.pageSubtitle}</p>
       </div>
 
       {/* Upload Card */}
@@ -133,10 +132,8 @@ export default function FactoryUploadReportPage() {
               d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
             />
           </svg>
-          <p className="text-sm font-medium text-slate-600">
-            {file ? file.name : "Drop PDF report here or click to browse"}
-          </p>
-          <p className="text-xs text-slate-400 mt-1">PDF files up to 25MB</p>
+          <p className="text-sm font-medium text-slate-600">{file ? file.name : tx.dropHint}</p>
+          <p className="text-xs text-slate-400 mt-1">{tx.pdfSizeHint}</p>
         </div>
         <input
           id="report-file"
@@ -157,14 +154,14 @@ export default function FactoryUploadReportPage() {
                 onClick={() => setFile(null)}
                 className="px-3 py-1.5 text-sm text-slate-500 hover:text-slate-700"
               >
-                Remove
+                {tx.remove}
               </button>
               <button
                 onClick={handleUpload}
                 disabled={uploading}
                 className="px-5 py-2 bg-[#00b4c3] text-white rounded-lg text-sm font-bold hover:bg-[#009aa8] disabled:opacity-50"
               >
-                {uploading ? "Uploading & Parsing..." : "Upload Report"}
+                {uploading ? tx.uploadingButton : tx.uploadButton}
               </button>
             </div>
           </div>
@@ -181,29 +178,22 @@ export default function FactoryUploadReportPage() {
           <div className="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-5">
             {/* Always-on confirmation that the file was saved, regardless
                 of parser confidence — same UX fix Tina pushed for on
-                the distributor side. Without this, factories on slow
-                network watch the spinner stop and assume nothing
-                happened when confidence comes back low. */}
+                the distributor side. */}
             <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded text-sm text-emerald-800">
-              <strong>✓ File uploaded and saved</strong> · {result.filename || "—"}
+              <strong>{tx.savedBanner}</strong> · {result.filename || "—"}
               {result.documentId && (
                 <span className="ml-2 font-mono text-[11px] text-emerald-700">
                   doc:{result.documentId.slice(0, 12)}…
                 </span>
               )}
-              <p className="text-xs text-emerald-700 mt-1">
-                Your file is in the system. The parser confidence below is only about how much test
-                data we could auto-extract — even at 0%, the PDF is stored and an admin will review
-                it. You&apos;ll see it in the table at the bottom of this page tagged ⏳
-                &quot;Pending review&quot;.
-              </p>
+              <p className="text-xs text-emerald-700 mt-1">{tx.savedBlurb}</p>
             </div>
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <h3 className="font-bold text-slate-900">Parsed Report</h3>
+              <h3 className="font-bold text-slate-900">{tx.parsedReport}</h3>
               <div className="flex items-center gap-2">
                 {result.aiVision?.usedAsPrimary && (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-purple-100 text-purple-800">
-                    🧠 AI vision
+                    {tx.aiVisionBadge}
                   </span>
                 )}
                 <span
@@ -215,60 +205,55 @@ export default function FactoryUploadReportPage() {
                         : "bg-red-100 text-red-700"
                   }`}
                 >
-                  {result.confidence || 0}% confidence
+                  {tx.confidence.replace("{count}", String(result.confidence || 0))}
                 </span>
               </div>
             </div>
             {result.aiVision?.usedAsPrimary && (
               <div className="mb-3 p-2 bg-purple-50 border border-purple-200 rounded text-xs text-purple-900">
-                The PDF had little or no text layer (image-based scan). Claude AI vision read the
-                document directly and extracted the fields below. Review carefully — AI extraction
-                can miss or misread numbers in poor scans.
+                {tx.aiVisionBlurb}
               </div>
             )}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
               <div>
-                <span className="text-xs text-slate-500">Test Type</span>
+                <span className="text-xs text-slate-500">{tx.fieldTestType}</span>
                 <p className="font-medium text-slate-800">
                   {result.parsed?.testType || result.testType || "—"}
                 </p>
               </div>
               <div>
-                <span className="text-xs text-slate-500">Report #</span>
+                <span className="text-xs text-slate-500">{tx.fieldReportNumber}</span>
                 <p className="font-medium text-slate-800">
                   {result.parsed?.testReportNumber || result.reportNumber || "—"}
                 </p>
               </div>
               <div>
-                <span className="text-xs text-slate-500">Lab</span>
+                <span className="text-xs text-slate-500">{tx.fieldLab}</span>
                 <p className="font-medium text-slate-800">
                   {result.parsed?.labName || result.labName || "—"}
                 </p>
               </div>
               <div>
-                <span className="text-xs text-slate-500">Test Date</span>
+                <span className="text-xs text-slate-500">{tx.fieldTestDate}</span>
                 <p className="font-medium text-slate-800">
                   {result.parsed?.testDate || result.testDate || "—"}
                 </p>
               </div>
               <div>
-                <span className="text-xs text-slate-500">Method</span>
+                <span className="text-xs text-slate-500">{tx.fieldMethod}</span>
                 <p className="font-medium text-slate-800">
                   {result.parsed?.testMethodStd || result.testMethodStd || "—"}
                 </p>
               </div>
               <div>
-                <span className="text-xs text-slate-500">Wash Count</span>
+                <span className="text-xs text-slate-500">{tx.fieldWashCount}</span>
                 <p className="font-medium text-slate-800">
                   {result.parsed?.washCount ?? result.washCount ?? "—"}
                 </p>
               </div>
             </div>
             {(result.parsed?.confidence ?? result.confidence ?? 0) < 50 && (
-              <p className="mt-3 text-xs text-amber-600">
-                Low confidence parse. The report may use a format our parser doesn&apos;t recognize
-                yet. An admin will review the uploaded file.
-              </p>
+              <p className="mt-3 text-xs text-amber-600">{tx.lowConfidence}</p>
             )}
           </div>
         )}
@@ -276,14 +261,14 @@ export default function FactoryUploadReportPage() {
 
       {/* Upload History — scoped to the caller's factory */}
       <div>
-        <h2 className="text-lg font-bold text-slate-900 mb-4">Your Uploads</h2>
+        <h2 className="text-lg font-bold text-slate-900 mb-4">{tx.yourUploads}</h2>
         {loadingUploads ? (
           <div className="flex justify-center py-8">
             <div className="w-6 h-6 border-3 border-[#00b4c3] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : uploads.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-xl p-8 text-center">
-            <p className="text-sm text-slate-400">No reports uploaded yet for your factory</p>
+            <p className="text-sm text-slate-400">{tx.noUploads}</p>
           </div>
         ) : (
           <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
@@ -291,23 +276,25 @@ export default function FactoryUploadReportPage() {
               <thead className="bg-slate-50 border-b">
                 <tr>
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">
-                    Status
+                    {tx.colStatus}
                   </th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">
-                    File · Report #
-                  </th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">Test</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">
-                    Brand
+                    {tx.colFile}
                   </th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">
-                    FUZE / Customer ref
+                    {tx.colTest}
                   </th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">
-                    Lab · Date
+                    {tx.colBrand}
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">
+                    {tx.colFuzeRef}
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs">
+                    {tx.colLab}
                   </th>
                   <th className="text-center px-4 py-3 font-semibold text-slate-600 text-xs">
-                    Action
+                    {tx.colAction}
                   </th>
                 </tr>
               </thead>
@@ -324,13 +311,13 @@ export default function FactoryUploadReportPage() {
                         {isPending ? (
                           <span
                             className="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] uppercase tracking-wide"
-                            title="Saved successfully but parser couldn't auto-extract test data. An admin will review and link it."
+                            title={tx.statusPendingTitle}
                           >
-                            ⏳ Pending review
+                            {tx.statusPending}
                           </span>
                         ) : (
                           <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase tracking-wide">
-                            ✓ Confirmed
+                            {tx.statusConfirmed}
                           </span>
                         )}
                       </td>
@@ -343,14 +330,16 @@ export default function FactoryUploadReportPage() {
                       <td className="px-4 py-3 text-slate-600 text-xs">
                         <p className="font-semibold">{u.testType || "—"}</p>
                         {u.washCount != null && (
-                          <p className="text-slate-400">{u.washCount} washes</p>
+                          <p className="text-slate-400">
+                            {tx.washes.replace("{count}", String(u.washCount))}
+                          </p>
                         )}
                       </td>
                       <td className="px-4 py-3 text-slate-600 text-xs">
                         {u.brand?.name ? (
                           <span className="font-semibold text-slate-700">{u.brand.name}</span>
                         ) : (
-                          <span className="text-amber-600">unlinked</span>
+                          <span className="text-amber-600">{tx.unlinked}</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-xs">
@@ -367,7 +356,7 @@ export default function FactoryUploadReportPage() {
                         )}
                         {u.factoryFabricCode && (
                           <p className="text-slate-400 text-[11px]">
-                            factory: {u.factoryFabricCode}
+                            {tx.factoryLabel.replace("{code}", u.factoryFabricCode)}
                           </p>
                         )}
                       </td>
@@ -387,10 +376,10 @@ export default function FactoryUploadReportPage() {
                             rel="noreferrer"
                             className="text-blue-600 hover:underline font-semibold"
                           >
-                            ↓ Download
+                            {tx.download}
                           </a>
                         ) : !linked ? (
-                          <span className="text-amber-600">Awaiting admin review</span>
+                          <span className="text-amber-600">{tx.awaitingReview}</span>
                         ) : (
                           "—"
                         )}
@@ -403,12 +392,16 @@ export default function FactoryUploadReportPage() {
           </div>
         )}
         <p className="text-xs text-slate-400 mt-2">
-          Reports show as &quot;unlinked&quot; until our parser auto-links them to a brand or
-          fabric. If a report has been pending review for more than 24h, message{" "}
-          <a href="mailto:andrew@fuze47.com" className="text-blue-600 underline">
-            andrew@fuze47.com
-          </a>{" "}
-          and we&apos;ll attach it manually.
+          {tx.footerNote.split("{email}").map((part, i, arr) => (
+            <span key={i}>
+              {part}
+              {i < arr.length - 1 && (
+                <a href="mailto:andrew@fuze47.com" className="text-blue-600 underline">
+                  andrew@fuze47.com
+                </a>
+              )}
+            </span>
+          ))}
         </p>
       </div>
     </div>
