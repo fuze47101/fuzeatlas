@@ -344,6 +344,7 @@ model Brand {
   orderAllocations OrderBrandAllocation[] @relation("BrandOrderAllocations")
   pricingTiers     BrandPricingTier[]      @relation("BrandPricingTiers")
   profile          BrandProfile?           @relation("BrandHasProfile")
+  recipeRequests   RecipeRequest[]         @relation("BrandRecipeRequests")
   meetings     Meeting[]      @relation("MeetingBrand")
   crmTasks     CrmTask[]      @relation("BrandCrmTasks")
   sourceRecords SourceRecord[]
@@ -465,6 +466,7 @@ model Factory {
   fuzeConsumptions FuzeConsumption[]   @relation("FactoryConsumption")
   distributorPricing DistributorPricing[] @relation("FactoryDistributorPricing")
   notes           Note[]               @relation("FactoryNotes")
+  recipeRequests  RecipeRequest[]      @relation("FactoryRecipeRequests")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -3453,4 +3455,43 @@ model BrandProfile {
   publicSlug   String?  @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────
+// RECIPE REQUEST (Phase 4C — ROADMAP_v2)
+// ─────────────────────────────────────────────
+// Brand-to-factory recipe handoff as a first-class request. Today
+// recipes are graduated implicitly via RecipeBenchTest → notify →
+// done; brands have no explicit "I need a recipe for this fabric"
+// surface. RecipeRequest captures the brand intent + factory ack +
+// FUZE-ops fulfillment state.
+//
+// Status values:
+//   OPEN              — brand created the request
+//   IN_DEVELOPMENT    — FUZE ops or factory acknowledged + working
+//   RECIPE_PROVIDED   — fulfilled (fulfilledRecipeId set)
+//   DECLINED          — FUZE ops declined (e.g. fabric not suitable)
+//   EXPIRED           — auto-stamp once past a TTL with no progress
+
+model RecipeRequest {
+  id                String   @id @default(cuid())
+  brandId           String
+  factoryId         String
+  fabricId          String?
+  requestedTier     String?  // F1/F2/F3/F4
+  notes             String?
+  status            String   @default("OPEN")
+  requestedById     String?
+  requestedAt       DateTime @default(now())
+  fulfilledRecipeId String?
+  fulfilledAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  brand   Brand   @relation("BrandRecipeRequests", fields: [brandId], references: [id], onDelete: Cascade)
+  factory Factory @relation("FactoryRecipeRequests", fields: [factoryId], references: [id], onDelete: Cascade)
+
+  @@index([brandId, status])
+  @@index([factoryId, status])
+  @@index([fabricId])
 }

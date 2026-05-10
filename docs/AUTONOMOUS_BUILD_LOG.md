@@ -33,6 +33,54 @@ One line per commit (timestamp UTC, hash, what shipped).
 - 2026-05-10 — `a385078` — phase 4A: SupplyChainLink admin CRUD + backfill cron.
 - 2026-05-10 — `21514f1` — phase 4A: rewrite backfill cron defensively (per-step try/catch).
 - 2026-05-10 — backfill ran ok:true. 44 links: 28 FACTORY-SUPPLIES-BRAND from fabrics, 21 same edges from BrandFactory (dedup), 16 LAB-TESTS_FOR-FACTORY from TestRun×submission. 0 DISTRIBUTOR edges (FuzeOrder has no distributor+factory pairs yet, no Factory has distributorId set — system state finding).
+- 2026-05-10 — `957b1be` — phase 4A: refactor consumers to read SupplyChainLink first + cleanup.
+- 2026-05-10 — `c0a3f97` — phase 4B: BrandProfile schema + bearer-authed migration.
+- 2026-05-10 — `8b817e3` — phase 4B: API + landing augment + admin editor + cleanup.
+
+### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
+
+After Phase 4G, continue through:
+
+- **5A — Brand team management.** /brand-portal/team list + invite,
+  joins existing access-request flow with brandId pre-stamped.
+- **5B — Brand→Factory network.** FactoryInvitation model + search /
+  link / unlink / invite endpoints + /brand-portal/network +
+  /factory-invitation/[token] public landing.
+- **5C — Factory side of the network.** /factory-portal/network +
+  accept-invite + invitation email template.
+- **5D — NotificationSubscription.** Per-user prefs model +
+  /settings/notifications grid + check wired into every notify*
+  helper.
+- **6A — ProductDocument category + audience.** Extend with
+  category, audience[], productLine; backfill existing rows.
+- **6B — per-portal /library pages.** brand / factory / distributor
+  / lab — each filtered to its audience tag.
+- **6C — public /docs/[productLine].** No-auth, audience=PUBLIC.
+- **6D — admin product-documents extensions.** Category dropdown,
+  audience multi-select, bulk re-tag, download tracker.
+
+Final handoff section appends after 6D.
+
+### QUEUE EXTENSION — Phase 7 added 2026-05-10
+
+After Phase 6 lands, build the brand-approval workflow that's been
+implicit since Joseph's KUIU email ("approval QA and oversight").
+
+- **7A** — schema: brandApprovalStatus / brandRejectionReason on
+  TestRun + FabricSubmission + FuzeOrder; brandApprovedById/At on
+  Submission + Order (TestRun already has them); Brand.requiresApproval.
+- **7B/C** — /brand-portal/approvals queue (3 sections + history) +
+  API endpoints (GET queue, POST approve/reject, admin mirror).
+- **7D** — notify category approval_pending + ApprovalPendingEmail +
+  approval-overdue cron (14:30 UTC, > 5d items). Wired into test-
+  stamp / batch-stamp / intake / orders POST paths.
+- **7E** — requiresApproval toggle on /brand-portal/spec +
+  /admin/brands/[id]/spec. Default ON, OFF preserves today's behaviour.
+- **7F** — surface integration: factory submissions/tests, lab
+  uploads, admin orders/ongoing-tests show approval status.
+- **7G** — Approvals-waiting pill on /brand-portal landing.
+
+Final handoff section now appends after 7G.
 
 ### DB-DSN MISMATCH — local vs runtime (blocker for normal `prisma db push`)
 

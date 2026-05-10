@@ -238,6 +238,67 @@ The auto-triage workflow we shipped 2026-05-09 (`.github/workflows/auto-triage.y
 
 ---
 
+### Phase 5 — User management, brand-factory network, notification preferences (added 2026-05-10)
+
+The missing layer that makes the cross-portal vision usable. Brands invite teammates, declare their factory network, and every user controls their own notification preferences.
+
+**5A — Brand team management.** Brand-side teammate listing + invite at `/brand-portal/team`. POST creates an invitation that joins the existing access-request flow with the inviter's `brandId` pre-stamped. BRAND_MANAGER + admin-like roles can invite; BRAND_USER is read-only. Magic-link signups via an `InvitationToken` model are a cleaner alternative if the access-request flow is too slow.
+
+**5B — Brand → Factory network selection.** New `FactoryInvitation` model (brandId, invitedFactoryName/contact/email/phone/address, status PENDING|ACCEPTED|DECLINED|LINKED, linkedFactoryId, inviteToken). Endpoints: `/api/brand-portal/network` (list), `/network/search?q=` (find existing Atlas factories), `/network/link` POST (creates SupplyChainLink), `/network/unlink` DELETE (soft-delete via active=false), `/network/invite` POST (creates FactoryInvitation + email). Public landing `/factory-invitation/[token]` for invited factory with two CTAs: "Sign up" (creates Factory + User + SupplyChainLink) or "Already in Atlas" (auth flow + existing Factory link). UI at `/brand-portal/network` shows supplying factories with health badges (in-spec / overdue / quiet) plus an "Add Factory" search modal that falls back to invite form.
+
+**5C — Factory side of the network.** Mirror surface: `/factory-portal/network` (brands they supply via SupplyChainLink + pending invites), `/api/factory-portal/network/accept-invite` POST. Email template for the invitation.
+
+**5D — NotificationSubscription model + per-user preferences.** `NotificationSubscription { userId @unique, preferences Json }` — keys are categories (fabric_submission_received, test_result_brand_visible, icp_validated, recipe_graduated, icp_cadence_overdue, order_placed, order_application_flag, crm_activity, weekly_digest, monthly_digest). API: `/api/notifications/preferences` GET / PATCH. UI: `/settings/notifications` checkbox grid with category descriptions, warning when toggling off "critical" categories (test_result_brand_visible, icp_cadence_overdue). Wire `subscribed(userId, category)` check into every `notify*` helper. Defaults all-on; users opt out. Admins always get notifications regardless. Sales managers / brand managers can opt other users in/out via `/admin/users/[id]/notifications` (admin-only edit).
+
+---
+
+### Phase 6 — Document library access per portal (added 2026-05-10)
+
+Brands, factories, distributors, labs each need access to a library of FUZE-supplied reference documents.
+
+**6A — Document categories + audience.** Extend `ProductDocument` with `category` (tds_sds | toxicology | pricing | sustainability | education | claims_compliance | application_guide | case_study), `audience String[]` (BRAND | FACTORY | DISTRIBUTOR | LAB | PUBLIC), `productLine String?` (F1/F2/F3/F4 or null for product-wide). Migration backfills existing rows with category="tds_sds" and audience=["BRAND","FACTORY","DISTRIBUTOR","LAB"].
+
+**6B — Per-portal `/library` pages.** `/brand-portal/library`, `/factory-portal/library`, `/distributor-portal/library`, `/lab-portal/library` — each filtered to its audience tag. Tabs by category, download buttons.
+
+**6C — Public-facing `/docs/[productLine]`.** No-auth, audience=PUBLIC. Linked from fuzefaq.com.
+
+**6D — Admin-side document management extensions.** `/admin/product-documents` gains a category dropdown, audience multi-select, bulk re-tag affordance, and a download tracker (which roles have pulled each doc — useful for outreach + PR).
+
+**6 cross-cutting:** email templates for FactoryInvitation + BrandTeammateInvitation, `/api/auth/invitation/[token]` accept endpoint, NotificationSubscription check wrapped around every existing `notify*` helper.
+
+---
+
+### Phase 7 — Brand approval workflow (added 2026-05-10)
+
+The missing piece behind Joseph's "approval QA and oversight" — today FUZE Ops stamps brandVisible and the brand is informed; this phase makes the brand the actual approval authority.
+
+**7A — Schema additions.** Parallel approval columns on three models:
+- `TestRun` — brandApprovalStatus (PENDING|APPROVED|REJECTED|null), brandRejectionReason. brandVisible / brandApprovedById / brandApprovedAt already exist.
+- `FabricSubmission` — brandApprovalStatus, brandApprovedById, brandApprovedAt, brandRejectionReason.
+- `FuzeOrder` — same four (only PRODUCTION orders typically need approval; SAMPLE and HANGTAG do not).
+- New `Brand.requiresApproval Boolean @default(true)`. Backfill existing brands to true.
+
+PENDING is set automatically by the existing pipelines when:
+- TestRun.brandVisible flips to true AND brand.requiresApproval=true.
+- FabricSubmission is created with both brandId+factoryId AND brand.requiresApproval=true.
+- FuzeOrder POST sets it when brand.requiresApproval AND orderType=PRODUCTION AND brand has cadence stipulated (signals the brand wants oversight).
+
+**7B — Approvals queue page.** `/brand-portal/approvals`. Three sections: pending submissions, pending test results, pending orders. Each row: factory, summary, days-pending, severity (color by age), Approve / Reject CTAs. Reject opens a modal asking for required reason. History tab `/brand-portal/approvals/history` for closed items.
+
+**7C — API endpoints.** `/api/brand-portal/approvals` GET (returns three arrays scoped to caller's brand). `/api/brand-portal/approve` POST `{ kind, id, decision, reason? }` updates the right model + fans out factory/lab/ops notifications. On APPROVED stamps downstream effects (recipe graduation if ICP in-band, makes report token shareable, etc.). On REJECTED clears brandVisible and notifies factory + ops with reason — doesn't auto-cancel. `/api/admin/brands/[id]/approvals` GET as admin-side mirror.
+
+**7D — Notify + email + cron.** New notify category `approval_pending` (Phase 5D-aware — respects subscription prefs). `ApprovalPendingEmail` template with CTA to `/brand-portal/approvals`. Daily cron `/api/cron/approval-overdue` (14:30 UTC) walks items > 5d old, fires escalation to brand managers + admins, suppresses repeat fires within 22h. Wires into test-stamp / batch-stamp / intake / orders POST paths.
+
+**7E — `requiresApproval` toggle on spec page.** `/brand-portal/spec` and `/admin/brands/[id]/spec` get a toggle: "Require my approval before factory work, test results, and orders are finalized." Default ON for new brands. When OFF, the system skips PENDING and treats brandVisible items as auto-approved (preserves today's behaviour).
+
+**7F — Cross-portal surface integration.** Factory: `/factory-portal/submissions` + `/factory-portal/tests` show approval status badge per row. Lab: `/lab-portal/uploads` shows approval status. Admin: `/admin/orders` + `/admin/ongoing-tests` get an approval-status column + filter.
+
+**7G — Approvals-waiting pill on `/brand-portal` landing.** New stat tile, click → `/brand-portal/approvals`. Pulses red if any item is > 5 days old.
+
+**Order:** 7A → 7B+7C in parallel → 7D → 7E → 7F → 7G.
+
+---
+
 ### Phase 8 — Test-request consolidation
 
 Migrate `FuzeTestRequest` → `TestRequest`. Drop `FuzeTestRequest` model. Update factory portal `request-test` to write canonical model. One commit, clearly marked. Run staging first, validate, then prod.
