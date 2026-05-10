@@ -182,6 +182,10 @@ model User {
   // Admins always can (enforced in code). Everyone else needs canClaim = true.
   canClaim Boolean @default(false)
 
+  // Phase 10K — IANA timezone for quiet-hours-aware notifications.
+  // Null = no quiet-hours respect; everything fires immediately.
+  timezone String?
+
   // BD Wizard — the From: address we use when this rep sends outbound via
   // the wizard. Null = fall back to the user's Atlas login email. Reps
   // set this on /settings/profile so they can separate "my Atlas account"
@@ -717,6 +721,23 @@ model Lab {
   // Customer account number at this lab
   customerNumber String?
 
+  // ─── Phase 10A — lab self-service profile fields ────────────
+  opsContactName    String?
+  opsContactEmail   String?
+  opsContactPhone   String?
+  timezone          String?   // IANA tz, e.g. "America/Denver"
+  certifications    Json?     // [{ name, issuer, validUntil, verifiedAt }]
+  accreditationsJson Json?    // [{ standard, scope }] — ISO 17025 etc.
+  websiteUrl        String?
+  instrumentList    Json?     // [{ name, model, serial, calibrationDate }]
+  servicesOffered   Json?     // ["AATCC 100", "ASTM E2149", ...]
+  isFuzeOwned       Boolean   @default(false)  // true for the SLC FUZE lab
+  defaultLanguage   String    @default("en")
+
+  // Phase 10B / 10F relations
+  tests       LabTest[]
+  credits     LabCredit[]
+
   users         User[]       @relation("LabUsers")
   testRuns      TestRun[]
   testRequests  TestRequest[]
@@ -996,6 +1017,71 @@ model UserPlaybookFavorite {
 
   @@unique([userId, playbookId])
   @@index([userId])
+}
+
+// ─── Phase 10B — per-lab test catalog ────────────────────────
+model LabTest {
+  id                String   @id @default(cuid())
+  labId             String
+  lab               Lab      @relation(fields: [labId], references: [id], onDelete: Cascade)
+  testType          String   // ICP_MS, AATCC_100, ASTM_E2149, AATCC_30, ISO_18184, ...
+  protocolName      String   // "AATCC 100 — S. aureus, 24hr"
+  fuzeCostUsd       Float?
+  publishedPriceUsd Float?
+  slaDays           Int?
+  notes             String?
+  protocolJson      Json?    // 10I — incubation, broth, sterilization, etc.
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([labId, testType, protocolName])
+  @@index([labId, active])
+  @@index([testType])
+}
+
+// ─── Phase 10F — lab credit ledger ───────────────────────────
+model LabCredit {
+  id              String   @id @default(cuid())
+  labId           String
+  lab             Lab      @relation(fields: [labId], references: [id], onDelete: Cascade)
+  amountUsd       Float
+  sourceType      String   // REFERRAL | OVERPAYMENT | MANUAL_ADJUSTMENT
+  sourceNote      String?
+  createdAt       DateTime @default(now())
+  spentOnTestRunId String?
+  spentAt         DateTime?
+  spentNote       String?
+
+  @@index([labId, spentAt])
+}
+
+// ─── Phase 10G — AI anomaly review on test upload ────────────
+model AiTestReview {
+  id                String   @id @default(cuid())
+  testRunId         String   @unique
+  reviewedAt        DateTime @default(now())
+  modelUsed         String   // "claude-sonnet-4-6"
+  flags             Json     // [{ severity, code, message, evidence }]
+  recommendedAction String?  // APPROVE | REVIEW | RETEST | REJECT
+  reviewedNotes     String?
+
+  @@index([recommendedAction])
+}
+
+// ─── Phase 10K — quiet-hours-aware notification deliveries ───
+model NotificationDelivery {
+  id             String   @id @default(cuid())
+  notificationId String
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  scheduledFor   DateTime
+  deliveredAt    DateTime?
+  channel        String   // in_app | email | sms
+  attempts       Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@index([scheduledFor, deliveredAt])
+  @@index([notificationId])
 }
 
 // ─────────────────────────────────────────────
