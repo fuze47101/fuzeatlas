@@ -158,9 +158,15 @@ export async function POST(request: Request) {
       const totalPrice = unitPrice != null ? unitPrice * qty + (rushPrice || 0) : null;
       const estimatedDays = isRush ? (service?.rushDays ?? service?.turnaroundDays ?? null) : (service?.turnaroundDays ?? null);
 
+      // Phase 10I — FUZE policy: ICP testing is always ICP-MS, never
+      // ICP-OES. If a request line is testType=ICP, normalize the
+      // method to ICP-MS regardless of whatever the caller passed.
+      const isIcp = line.testType === "ICP";
+      const methodIn = line.testMethod || service?.testMethod || null;
+      const method = isIcp ? "ICP-MS" : methodIn;
       return {
         testType: line.testType,
-        testMethod: line.testMethod || service?.testMethod || null,
+        testMethod: method,
         description: line.description || service?.description || null,
         quantity: qty,
         unitPrice,
