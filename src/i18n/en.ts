@@ -1313,6 +1313,58 @@ const en = {
   brandPortal: {
     crumb: "Brand Portal",
 
+    // Landing page
+    landing: {
+      loading: "Loading your portal...",
+      unableToLoad: "Unable to load portal data",
+      welcome: "Welcome",
+      welcomeNamed: "Welcome, {firstName}",
+      brandSubtitle: "{brand} — FUZE Brand Portal",
+      // Stat tiles
+      statFabrics: "Fabrics",
+      statSubmissions: "Submissions",
+      statTestsPassed: "Tests Passed",
+      statTestsPending: "Tests Pending",
+      // Quick actions
+      quickFabricsTitle: "Fabrics",
+      quickFabricsSingular: "{count} fabric registered — add new fabrics or request testing",
+      quickFabricsPlural: "{count} fabrics registered — add new fabrics or request testing",
+      quickSubmissionsTitle: "Submissions & Workflow",
+      quickSubmissionsBlurb: "Track your fabrics through the FUZE treatment pipeline",
+      quickSupplyChainTitle: "Supply Chain",
+      quickSupplyChainBlurb:
+        "Every factory producing FUZE-treated fabrics for your account — submissions, tests, and consumption.",
+      quickPricingTitle: "Pricing & Volume",
+      quickPricingBlurb:
+        "Cumulative FUZE consumption across your supply chain — and your current discount.",
+      quickFaqTitle: "FUZE FAQ",
+      quickFaqBlurb: "Ask questions about FUZE treatments, testing, and more",
+      // Learn banner
+      learnLabel: "Learn FUZE",
+      learnTitle: "FUZE Basics — dosage, mechanism, testing",
+      learnBlurb:
+        "How FUZE compares to silver-ion, AgCl, zinc, and QAC chemistries. The five tests, and which one matches the FUZE mechanism.",
+      learnAction: "Read",
+      // Getting started
+      gettingStartedTitle: "Getting Started",
+      gettingStarted1Title: "Add your fabrics",
+      gettingStarted1Body:
+        "Go to Fabrics and click \"+ Add Fabric\" to register your fabrics with composition, weight, and construction details.",
+      gettingStarted2Title: "Request testing",
+      gettingStarted2Body:
+        "Click \"Request Testing\" on any fabric to select tests and submit a test request to FUZE or a partner lab.",
+      gettingStarted3Title: "Track progress",
+      gettingStarted3Body:
+        "Monitor your submissions through the pipeline in the Submissions page.",
+      // Recent fabrics table
+      yourFabricsHeader: "Your Fabrics",
+      viewAll: "View All →",
+      colFuzeNumber: "FUZE #",
+      colYourCode: "Your Code",
+      colConstruction: "Construction",
+      colComposition: "Composition",
+    },
+
     supplyChain: {
       crumbCurrent: "Supply Chain",
       pageTitle: "Supply Chain",
