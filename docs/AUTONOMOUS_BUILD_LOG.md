@@ -169,6 +169,44 @@ bearer-authed apply-* endpoint pattern to bypass that mismatch.
 - Vercel cron schedule entry for `approval-overdue` (currently
   fzcron-invokable; vercel.json change would auto-fire daily).
 
+## Phase 8 — UI/UX consolidation (in progress)
+
+- 2026-05-10 — `545aafa` — phase 8A: universal activity feed on every portal landing.
+- 2026-05-10 — `c579def` — phase 8B: per-fabric lifecycle timeline.
+- 2026-05-10 — `e2817a8` — phase 8C: /admin/command-center.
+- 2026-05-10 — `ec3d0d9` — phase 8D: mobile-layout scanner + targeted wrapper fix.
+- 2026-05-10 — `372a039` — phase 8E (step 1): /api/cron/inspect-db-host.
+
+### Phase 8E DSN comparison — STOP for manual reconciliation
+
+`fzcron inspect-db-host` returned the Vercel runtime DSN host:
+
+```
+postgresql://…@caboose.proxy.rlwy.net:28355/railway?sslmode=…
+```
+
+`.env.local` points at:
+
+```
+…@interchange.proxy.rlwy.net:31700/railway
+```
+
+Two different Railway proxies → two different databases. This is
+the historical "Railway public proxy ≠ real prod" issue documented
+in CLAUDE.md. The local DSN points at a stale/empty database; the
+runtime DB is on `caboose.proxy.rlwy.net:28355`.
+
+**Andrew action:** open the Railway dashboard, find the public-
+proxy connection string for the service backing
+`caboose.proxy.rlwy.net:28355`, paste it into
+`/Users/a801/Desktop/fuzeatlas/.env.local` as `DATABASE_URL=…`.
+Then `npx prisma db push` should work locally for future schema
+changes — the bearer-authed runtime endpoint pattern can be
+retired.
+
+The autonomous build does NOT modify `.env.local` automatically —
+secrets need to come from a trusted source (Railway dashboard).
+
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 
 After Phase 4G, continue through:
