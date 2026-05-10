@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { submissionScopeForFactory } from "@/lib/acl";
 
 export async function GET(req: Request) {
   try {
@@ -15,10 +16,12 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: "Factory not found" }, { status: 404 });
     }
 
+    // ACL helper picks up fabrics submitted directly via intake
+    // (FabricSubmission.factoryId set, Fabric.factoryId often null).
+    // Old query only checked Fabric.factoryId — same shape of bug
+    // that bit Tina's tests page (c0f67e6).
     const submissions = await prisma.fabricSubmission.findMany({
-      where: {
-        fabric: { factoryId },
-      },
+      where: submissionScopeForFactory(factoryId),
       include: {
         fabric: {
           select: {

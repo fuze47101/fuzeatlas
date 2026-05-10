@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { fabricScopeForFactory, submissionScopeForFactory } from "@/lib/acl";
 
 export async function GET(req: Request) {
   try {
@@ -16,25 +17,33 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: "Factory not found" }, { status: 404 });
     }
 
-    // Get stats
+    // Stats — use the shared ACL helpers so we count fabrics whose
+    // relationship lands on either Fabric.factoryId OR
+    // FabricSubmission.factoryId. The previous queries undercounted
+    // because intake-submitted fabrics often have a null Fabric.factoryId.
     const activeFabrics = await prisma.fabric.count({
       where: {
-        factoryId,
-        status: "ACTIVE",
+        AND: [fabricScopeForFactory(factoryId), { status: "ACTIVE" }],
       },
     });
 
     const pendingSubmissions = await prisma.fabricSubmission.count({
       where: {
-        fabric: { factoryId },
-        status: { in: ["SUBMITTED", "IN_REVIEW"] },
+        AND: [submissionScopeForFactory(factoryId), { status: { in: ["SUBMITTED", "IN_REVIEW"] } }],
       },
     });
 
     const completedTests = await prisma.testRequest.count({
       where: {
-        fabric: { factoryId },
-        status: "PASSED_COMPLETE",
+        AND: [
+          {
+            OR: [
+              { fabric: { factoryId } },
+              { fabric: { submissions: { some: { factoryId } } } },
+            ],
+          },
+          { status: "PASSED_COMPLETE" },
+        ],
       },
     });
 
