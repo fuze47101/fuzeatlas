@@ -79,6 +79,7 @@ Phase 5A (brand team management) starts next.
 - 2026-05-10 — `47922c7` — phase 5D: API + settings page + notify wiring + cleanup. **Phase 5 complete.** Email id `bc7c35a4-5552-4344-beff-e819374e499c`, SMS sid `SM1808245960676bdd9e523fa1049f27f3`.
 - 2026-05-10 — `12668b5` — phase 6A: ProductDocument category + audience + productLine.
 - 2026-05-10 — `34c0033` — phase 6A/6B: per-portal /library pages + unified API + cleanup.
+- 2026-05-10 — `10a1214` — phase 6C: public /docs/[productLine] no-auth landing.
 
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 

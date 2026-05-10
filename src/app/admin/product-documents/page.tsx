@@ -51,6 +51,10 @@ export default function ProductDocumentsPage() {
         fileUrl: form.fileUrl ?? existing?.fileUrl,
         version: form.version ?? existing?.version,
         effectiveDate: form.effectiveDate ?? existing?.effectiveDate,
+        // Phase 6D — library categorization fields.
+        category: form.category ?? existing?.category,
+        audience: form.audience ?? existing?.audience,
+        productLine: form.productLine ?? existing?.productLine,
       }),
     });
     if ((await res.json()).ok) {
@@ -59,6 +63,20 @@ export default function ProductDocumentsPage() {
       load();
     }
   }
+
+  // Phase 6D — categories + audiences + product lines.
+  const CATEGORIES = [
+    { value: "tds_sds", label: "TDS / SDS" },
+    { value: "toxicology", label: "Toxicology" },
+    { value: "pricing", label: "Pricing" },
+    { value: "sustainability", label: "Sustainability" },
+    { value: "education", label: "Education" },
+    { value: "claims_compliance", label: "Claims & Compliance" },
+    { value: "application_guide", label: "Application Guide" },
+    { value: "case_study", label: "Case Study" },
+  ];
+  const AUDIENCES = ["BRAND", "FACTORY", "DISTRIBUTOR", "LAB", "PUBLIC"];
+  const PRODUCT_LINES = ["", "F1", "F2", "F3", "F4"];
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-[#00b4c3] border-t-transparent rounded-full animate-spin" /></div>;
@@ -114,6 +132,9 @@ export default function ProductDocumentsPage() {
                         fileUrl: doc?.fileUrl || "",
                         version: doc?.version || "",
                         effectiveDate: doc?.effectiveDate ? new Date(doc.effectiveDate).toISOString().slice(0, 10) : "",
+                        category: doc?.category || "tds_sds",
+                        audience: doc?.audience || ["BRAND", "FACTORY", "DISTRIBUTOR", "LAB"],
+                        productLine: doc?.productLine || "",
                       });
                     }
                   }}
@@ -132,6 +153,67 @@ export default function ProductDocumentsPage() {
                   <input type="url" placeholder="File URL (PDF link)" value={form.fileUrl || ""} onChange={(e) => setForm({ ...form, fileUrl: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                   <input type="date" placeholder="Effective date" value={form.effectiveDate || ""} onChange={(e) => setForm({ ...form, effectiveDate: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                   <textarea placeholder="Description / notes" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
+
+                  {/* Phase 6D — library categorization */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Library category</label>
+                      <select
+                        value={form.category || "tds_sds"}
+                        onChange={(e) => setForm({ ...form, category: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                      >
+                        {CATEGORIES.map((c) => (
+                          <option key={c.value} value={c.value}>
+                            {c.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Product line</label>
+                      <select
+                        value={form.productLine || ""}
+                        onChange={(e) => setForm({ ...form, productLine: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                      >
+                        {PRODUCT_LINES.map((pl) => (
+                          <option key={pl || "any"} value={pl}>
+                            {pl ? `FUZE ${pl}` : "Product-wide"}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Audience (who can see this in their library)</label>
+                    <div className="flex flex-wrap gap-2">
+                      {AUDIENCES.map((aud) => {
+                        const active = (form.audience || []).includes(aud);
+                        return (
+                          <button
+                            key={aud}
+                            type="button"
+                            onClick={() => {
+                              const current: string[] = form.audience || [];
+                              const next = active
+                                ? current.filter((x) => x !== aud)
+                                : [...current, aud];
+                              setForm({ ...form, audience: next });
+                            }}
+                            className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
+                              active
+                                ? "bg-[#00b4c3] text-white"
+                                : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                            }`}
+                          >
+                            {aud}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   <button onClick={() => save(t.key)} className="px-5 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg">Save</button>
                 </div>
               )}
