@@ -345,6 +345,7 @@ model Brand {
   pricingTiers     BrandPricingTier[]      @relation("BrandPricingTiers")
   profile          BrandProfile?           @relation("BrandHasProfile")
   recipeRequests   RecipeRequest[]         @relation("BrandRecipeRequests")
+  factoryInvitations FactoryInvitation[]   @relation("BrandFactoryInvitations")
   meetings     Meeting[]      @relation("MeetingBrand")
   crmTasks     CrmTask[]      @relation("BrandCrmTasks")
   sourceRecords SourceRecord[]
@@ -3546,4 +3547,46 @@ model LabFormTemplate {
   updatedAt DateTime @updatedAt
 
   @@index([labId, active])
+}
+
+// ─────────────────────────────────────────────
+// FACTORY INVITATION (Phase 5B — ROADMAP_v2)
+// ─────────────────────────────────────────────
+// Brand-to-factory invitation flow. When a brand wants to add a
+// factory to their supply chain that's NOT already in Atlas, they
+// create one of these. inviteToken powers a public
+// /factory-invitation/[token] landing page where the factory can
+// either sign up fresh (creates Factory + User + SupplyChainLink)
+// or link an existing Factory account.
+//
+// Status enum:
+//   PENDING   — sent, awaiting response
+//   ACCEPTED  — factory accepted; linkedFactoryId set; brand-factory
+//               SupplyChainLink created
+//   DECLINED  — factory declined the invitation
+//   LINKED    — admin manually linked an existing Atlas Factory to
+//               this invitation (no new account created)
+
+model FactoryInvitation {
+  id                  String   @id @default(cuid())
+  brandId             String
+  brand               Brand    @relation("BrandFactoryInvitations", fields: [brandId], references: [id], onDelete: Cascade)
+  invitedFactoryName  String
+  invitedContactName  String?
+  invitedContactEmail String
+  invitedContactPhone String?
+  invitedAddress      String?
+  invitedCountry      String?
+  notes               String?
+  status              String   @default("PENDING")
+  linkedFactoryId     String?
+  invitedById         String?
+  invitedAt           DateTime @default(now())
+  respondedAt         DateTime?
+  inviteToken         String   @unique
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([brandId, status])
+  @@index([invitedContactEmail])
 }

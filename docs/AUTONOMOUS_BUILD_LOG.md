@@ -71,6 +71,8 @@ Phase 4 deliverables shipped:
 
 Phase 5A (brand team management) starts next.
 
+- 2026-05-10 — `fba5c94` — phase 5A: brand team management.
+
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 
 After Phase 4G, continue through:
