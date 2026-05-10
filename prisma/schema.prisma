@@ -3495,3 +3495,28 @@ model RecipeRequest {
   @@index([factoryId, status])
   @@index([fabricId])
 }
+
+// ─────────────────────────────────────────────
+// FUZE HQ INVENTORY (Phase 4D — ROADMAP_v2)
+// ─────────────────────────────────────────────
+// Central inventory at FUZE HQ in Salt Lake City. Append-only ledger
+// of stock-level snapshots that drive the admin inventory dashboard,
+// low-stock alerts, and the auto-decrement on direct shipments.
+//
+// One row per SKU; updates rather than appending. Reserved liters
+// move with outbound order lifecycle (committed on QUOTED, released
+// on DELIVERED or CANCELLED). reorderThreshold drives the alarm
+// banner on /admin/inventory.
+
+model FuzeHQInventory {
+  id                String   @id @default(cuid())
+  sku               String   @unique     // e.g. "FUZE-30MGL-19L-CARBOY"
+  description       String
+  onHandLiters      Float    @default(0)
+  reservedLiters    Float    @default(0) // committed to outbound shipments
+  reorderThreshold  Float?
+  lastInventoryAt   DateTime @default(now())
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}

@@ -36,6 +36,8 @@ One line per commit (timestamp UTC, hash, what shipped).
 - 2026-05-10 — `957b1be` — phase 4A: refactor consumers to read SupplyChainLink first + cleanup.
 - 2026-05-10 — `c0a3f97` — phase 4B: BrandProfile schema + bearer-authed migration.
 - 2026-05-10 — `8b817e3` — phase 4B: API + landing augment + admin editor + cleanup.
+- 2026-05-10 — `b9a587f` — phase 4C: RecipeRequest schema + bearer-authed migration.
+- 2026-05-10 — `9cae8b9` — phase 4C: API + factory page + brand affordance + cleanup.
 
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 
