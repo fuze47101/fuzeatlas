@@ -85,6 +85,89 @@ Phase 5A (brand team management) starts next.
 - 2026-05-10 — `1c9ab5a` — phase 7B/7C: approvals queue + endpoints + admin mirror + cleanup.
 - 2026-05-10 — `e447c63` — phase 7D: notifyApprovalPending + overdue cron + pipeline wiring.
 - 2026-05-10 — `fd9eeb0` — phase 7E: requiresApproval toggle on spec pages.
+- 2026-05-10 — `53af046` — phase 7F: surface brandApprovalStatus across factory + lab APIs.
+- 2026-05-10 — `5caf2bb` — phase 7G: approvals-waiting pill on /brand-portal landing. **Phase 7 complete.** Email id `b03383f6-b32e-48f0-8680-bcaa54bd5075`, SMS sid `SM6eee168eb02fd49810495dc51af3025c`.
+
+## Phase 4–7 complete — full handoff
+
+Final commit on main: `5caf2bb`.
+
+### Models added across phases
+
+- **Phase 4A** `SupplyChainLink` — polymorphic edge between
+  BRAND/FACTORY/DISTRIBUTOR/LAB/FUZE actors. Backfilled 44 edges
+  from existing relations.
+- **Phase 4B** `BrandProfile` — customer-facing brand identity
+  (logo, hero copy, support contacts, public slug).
+- **Phase 4C** `RecipeRequest` — brand-to-factory recipe handoff
+  with status (OPEN/IN_DEVELOPMENT/RECIPE_PROVIDED/DECLINED/EXPIRED).
+- **Phase 4D** `FuzeHQInventory` — central FUZE HQ stock with
+  on-hand / reserved / reorder threshold.
+- **Phase 4E** `LabFormTemplate` — configurable lab intake / result
+  / shipping forms with JSON field schema.
+- **Phase 5B** `FactoryInvitation` — brand-to-factory invitation
+  flow with public landing token.
+- **Phase 5D** `NotificationSubscription` — per-user category prefs
+  with always-on for admins.
+- **Phase 6A** `ProductDocument` extended with category + audience[]
+  + productLine.
+- **Phase 7A** Approval columns on TestRun + FabricSubmission +
+  FuzeOrder; `Brand.requiresApproval` toggle.
+
+### Crons registered
+
+- `/api/cron/test-cadence` (existing) — daily 14:00 UTC.
+- `/api/cron/approval-overdue` (Phase 7D) — daily 14:30 UTC.
+  Runtime endpoints can be added to vercel.json schedule when
+  desired; for now they're invokable via `fzcron`.
+
+### Notification categories
+
+15 total: fabric_submission_received, fabric_submission_status_change,
+test_request_status_change, test_result_brand_visible, icp_validated,
+recipe_graduated, icp_cadence_overdue, order_placed,
+order_status_change, order_application_flag, crm_activity,
+weekly_digest, monthly_digest, approval_pending, approval_overdue.
+
+### New portal surfaces
+
+- **Brand portal:** /supply-chain (existing), /spec (existing
+  + 7E toggle), /pricing (existing), /profile (4B admin editor),
+  /inventory (4F), /lab-pipeline (4F), /team (5A), /network (5B),
+  /library (6B), /approvals (7B), landing pill (7G).
+- **Factory portal:** /recipe-requests (4C), /specs (4F),
+  /inventory (4F), /network (5C), /library (6B).
+- **Distributor portal:** /incoming (4F), /restock stock banner (4F),
+  /library (6B).
+- **Lab portal:** /queue (4F), /specs (4F), /library (6B).
+- **Admin:** /brands/[id]/profile (4B), /brands/[id]/spec
+  (existing + 7E), /labs/[id]/form-templates (4E), /inventory (4D),
+  /brands/[id]/approvals (7C).
+- **Public:** /factory-invitation/[token] (5B),
+  /docs/[productLine] (6C).
+
+### Open product questions
+
+None at session end. The Phase 7 spec was carved cleanly enough that
+no judgment calls had to be deferred. One operational note: the
+testType drift inspection (PRE-FLIGHT) confirmed the live DB is
+already on the enum — `prisma db push` from local still 500s
+because `.env.local`'s DSN points at a different (stale) database
+than Vercel's runtime. All Phase 4–7 schema work routed through the
+bearer-authed apply-* endpoint pattern to bypass that mismatch.
+
+### TODOs remaining
+
+- Reconcile the local `.env.local` DSN vs Vercel runtime DSN so
+  `prisma db push` from local can be used for future schema work.
+- Optionally extend the batch-stamp path with the same approval-
+  pending hook the test-stamp PATCH uses (skipped this session;
+  PATCH is the high-traffic path).
+- Optionally surface approval-status badges in the existing factory
+  /factory-portal/tests + /factory-portal/submissions page UIs (data
+  is on the API rows now via 7F; no UI render has been added).
+- Vercel cron schedule entry for `approval-overdue` (currently
+  fzcron-invokable; vercel.json change would auto-fire daily).
 
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 
