@@ -17,6 +17,50 @@
  */
 
 import Link from "next/link";
+import { listSegments } from "@/lib/education-segments";
+
+// ─────────────────────────────────────────────────────────────
+//  Segment picker — quick links to /education/[segment] pitch pages
+// ─────────────────────────────────────────────────────────────
+
+function SegmentPicker() {
+  const segments = listSegments();
+  return (
+    <section className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8">
+      <div className="mb-4">
+        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+          Pitch by segment
+        </div>
+        <h2 className="text-2xl md:text-3xl font-black text-slate-900">
+          FUZE for your specific industry
+        </h2>
+        <p className="text-sm text-slate-600 mt-2 max-w-3xl">
+          The science above is universal. Each segment below has the recommended FUZE tier ladder,
+          test stack, regulatory checkmarks, and an outreach hook tailored to that audience.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {segments.map((s) => (
+          <Link
+            key={s.slug}
+            href={`/education/${s.slug}`}
+            className="group rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-300 p-4 transition-colors"
+          >
+            <div className="text-base font-black text-slate-900 group-hover:text-emerald-800">
+              {s.title}
+            </div>
+            <p className="text-xs text-slate-500 group-hover:text-emerald-700 leading-snug mt-1">
+              {s.audience}
+            </p>
+            <div className="text-[11px] text-emerald-700 font-semibold mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              Open segment page →
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 // ─────────────────────────────────────────────────────────────
 //  Section 1: Dosage hero — show the mass of chemistry to scale
@@ -841,6 +885,7 @@ export default function EducationPage() {
         </div>
       </div>
 
+      <SegmentPicker />
       <DosageHero />
       <MechanismCompare />
       <PerformanceStack />
