@@ -377,6 +377,10 @@ model Brand {
   icpCadenceEveryLitersConsumed Float?
   protocolDocUrl                String?
   brandSpecUpdatedAt            DateTime?
+  // Phase 7E — brand approval workflow toggle. Default ON for new
+  // brands. When OFF, the system skips PENDING and treats brand-
+  // visible items as auto-approved (preserves pre-7 behaviour).
+  requiresApproval              Boolean   @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1110,6 +1114,12 @@ model FabricSubmission {
   sourceRecords SourceRecord[]
   shipments SampleShipment[] @relation("SubmissionShipments")
 
+  // Phase 7A — brand approval workflow.
+  brandApprovalStatus  String?
+  brandApprovedById    String?
+  brandApprovedAt      DateTime?
+  brandRejectionReason String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1118,6 +1128,7 @@ model FabricSubmission {
   @@index([factoryFabricCode])
   @@index([status])
   @@index([testStatus])
+  @@index([brandApprovalStatus])
 }
 
 // ─────────────────────────────────────────────
@@ -1258,6 +1269,11 @@ model TestRun {
   brandVisible      Boolean  @default(false)
   brandApprovedById String?
   brandApprovedAt   DateTime?
+  // Phase 7A — brand approval workflow.
+  // PENDING set when brandVisible flips true AND brand.requiresApproval.
+  // APPROVED / REJECTED stamped via /api/brand-portal/approve.
+  brandApprovalStatus  String?
+  brandRejectionReason String?
 
   icpResult    IcpResult?
   abResult     AntibacterialResult?
@@ -2841,6 +2857,14 @@ model FuzeOrder {
   lifecycleEvents OrderLifecycleEvent[] @relation("OrderLifecycle")
 
   @@index([factoryId])
+  // Phase 7A — brand approval workflow. Defaults null on legacy rows;
+  // PENDING set on order POST when Brand.requiresApproval=true and
+  // orderType=PRODUCTION and brand has cadence stipulated.
+  brandApprovalStatus  String?
+  brandApprovedById    String?
+  brandApprovedAt      DateTime?
+  brandRejectionReason String?
+
   @@index([brandId])
   @@index([distributorId])
   @@index([accountManagerId])
@@ -2848,6 +2872,7 @@ model FuzeOrder {
   @@index([orderType])
   @@index([orderNumber])
   @@index([createdAt])
+  @@index([brandApprovalStatus])
 }
 
 // ─────────────────────────────────────────────
