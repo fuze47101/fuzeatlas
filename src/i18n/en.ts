@@ -1338,6 +1338,51 @@ const en = {
 
   // ─── ADMIN ─────────────────────────────────────
   admin: {
+    labFormTemplates: {
+      crumbCurrent: "Form Templates",
+      pageTitleWithLab: "Form Templates — {lab}",
+      pageSubtitle:
+        "Configurable lab intake / result / shipping forms. Each template defines a JSON field schema the ICP sample-prep wizard renders dynamically when this lab is the destination.",
+      loading: "Loading templates…",
+      addButton: "+ Add Template",
+      // Status
+      activeBadge: "Active",
+      inactiveBadge: "Inactive",
+      // Add modal
+      addModalTitle: "New form template",
+      nameLabel: "Template name",
+      namePlaceholder: "e.g. ICP Intake",
+      // Field row
+      fieldKey: "Key",
+      fieldLabel: "Label",
+      fieldType: "Type",
+      fieldRequired: "Required",
+      fieldOptions: "Options (CSV)",
+      addField: "+ Add field",
+      removeField: "Remove",
+      // Field types
+      typeText: "Text",
+      typeNumber: "Number",
+      typeSelect: "Select",
+      typeTextarea: "Textarea",
+      typeDate: "Date",
+      typeFile: "File",
+      // Per-template controls
+      activate: "Activate",
+      deactivate: "Deactivate",
+      edit: "Edit",
+      del: "Delete",
+      // Empty
+      emptyTitle: "No templates yet",
+      emptyBlurb:
+        "Create your first template — for example an ICP intake form — and the ICP sample-prep wizard will use it automatically when this lab is selected.",
+      // Buttons
+      save: "Save",
+      saving: "Saving…",
+      cancel: "Cancel",
+      delConfirm: "Delete template \"{name}\"?",
+      saveFailed: "Save failed",
+    },
     inventory: {
       pageTitle: "FUZE HQ Inventory",
       pageSubtitle:
