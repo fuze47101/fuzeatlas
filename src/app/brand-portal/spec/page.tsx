@@ -24,6 +24,7 @@ interface BrandSpec {
   name: string;
   requiredFuzeTier: string | null;
   icpCadenceEveryNBatches: number | null;
+  requiresApproval?: boolean;
   icpCadenceEveryLitersConsumed: number | null;
   protocolDocUrl: string | null;
   brandSpecUpdatedAt: string | null;
@@ -46,6 +47,7 @@ export default function BrandSpecPage() {
   const [form, setForm] = useState({
     requiredFuzeTier: "",
     icpCadenceEveryNBatches: "",
+    requiresApproval: true,
     icpCadenceEveryLitersConsumed: "",
     protocolDocUrl: "",
   });
@@ -59,6 +61,7 @@ export default function BrandSpecPage() {
         setForm({
           requiredFuzeTier: j.brand.requiredFuzeTier || "",
           icpCadenceEveryNBatches: j.brand.icpCadenceEveryNBatches?.toString() || "",
+          requiresApproval: j.brand.requiresApproval !== false,
           icpCadenceEveryLitersConsumed: j.brand.icpCadenceEveryLitersConsumed?.toString() || "",
           protocolDocUrl: j.brand.protocolDocUrl || "",
         });
@@ -77,6 +80,7 @@ export default function BrandSpecPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           requiredFuzeTier: form.requiredFuzeTier || null,
+          requiresApproval: form.requiresApproval,
           icpCadenceEveryNBatches: form.icpCadenceEveryNBatches
             ? parseInt(form.icpCadenceEveryNBatches, 10)
             : null,
@@ -212,6 +216,34 @@ export default function BrandSpecPage() {
               {tx.protocolPreview}
             </a>
           ) : null}
+        </div>
+
+        {/* Phase 7E — requiresApproval toggle */}
+        <div className="border-t border-slate-100 pt-6">
+          <h2 className="text-sm font-bold text-slate-900 mb-1">
+            {t.brandPortal.requiresApproval.header}
+          </h2>
+          <p className="text-xs text-slate-500 mb-3">{t.brandPortal.requiresApproval.blurb}</p>
+          <label className="inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.requiresApproval}
+              onChange={(e) => setForm({ ...form, requiresApproval: e.target.checked })}
+              className="sr-only peer"
+            />
+            <div className="relative w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[#00b4c3]">
+              <div
+                className={`absolute top-[2px] left-[2px] bg-white rounded-full h-5 w-5 transition-transform ${
+                  form.requiresApproval ? "translate-x-5" : ""
+                }`}
+              />
+            </div>
+            <span className="ml-3 text-sm font-semibold text-slate-700">
+              {form.requiresApproval
+                ? t.brandPortal.requiresApproval.labelOn
+                : t.brandPortal.requiresApproval.labelOff}
+            </span>
+          </label>
         </div>
 
         {error ? (

@@ -37,6 +37,7 @@ export async function GET(req: Request) {
       requiredFuzeTier: true,
       icpCadenceEveryNBatches: true,
       icpCadenceEveryLitersConsumed: true,
+      requiresApproval: true,
       protocolDocUrl: true,
       brandSpecUpdatedAt: true,
     },
@@ -115,6 +116,11 @@ export async function PATCH(req: Request) {
     data.protocolDocUrl = body.protocolDocUrl ? String(body.protocolDocUrl) : null;
   }
 
+  // Phase 7E — requiresApproval toggle.
+  if (body.requiresApproval !== undefined) {
+    data.requiresApproval = Boolean(body.requiresApproval);
+  }
+
   const brand = await prisma.brand.update({
     where: { id: targetBrandId },
     data,
@@ -124,6 +130,7 @@ export async function PATCH(req: Request) {
       requiredFuzeTier: true,
       icpCadenceEveryNBatches: true,
       icpCadenceEveryLitersConsumed: true,
+      requiresApproval: true,
       protocolDocUrl: true,
       brandSpecUpdatedAt: true,
     },

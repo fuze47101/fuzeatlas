@@ -83,6 +83,7 @@ Phase 5A (brand team management) starts next.
 - 2026-05-10 — `763db7d` — phase 6D: admin product-documents extensions. **Phase 6 complete.** Email id `62e3c78b-4e3a-42b4-9036-9179d86230e7`, SMS sid `SMd189d82bf7a55a7073231f5a2ac57853`.
 - 2026-05-10 — `cee018a` — phase 7A: brand approval workflow schema.
 - 2026-05-10 — `1c9ab5a` — phase 7B/7C: approvals queue + endpoints + admin mirror + cleanup.
+- 2026-05-10 — `e447c63` — phase 7D: notifyApprovalPending + overdue cron + pipeline wiring.
 
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 

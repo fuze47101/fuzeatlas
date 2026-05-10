@@ -1951,6 +1951,14 @@ const en = {
       saving: "Saving…",
     },
 
+    requiresApproval: {
+      header: "Approvals workflow",
+      blurb:
+        "When ON, brand-visible test results, fabric submissions, and production orders are queued for your approval before they finalize. Turn OFF to let FUZE Ops auto-finalize on stamp (preserves the pre-2026-05 behaviour).",
+      labelOn: "Require approvals",
+      labelOff: "Approvals not required",
+    },
+
     spec: {
       crumbCurrent: "Brand Spec",
       pageTitle: "Brand Spec",
