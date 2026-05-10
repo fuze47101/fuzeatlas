@@ -805,6 +805,38 @@ const en = {
     recentEvents: "Recent Lifecycle Events",
   },
 
+  // ─── DISTRIBUTOR PORTAL (Phase 4F) ────────────
+  distributorPortal: {
+    crumb: "Distributor Portal",
+    incoming: {
+      crumbCurrent: "Incoming Factory Orders",
+      pageTitle: "Incoming Factory Orders",
+      pageSubtitle:
+        "Pending orders from factories you supply, with application-validation flags surfaced inline. Review the math against fabric mass and tier before fulfillment.",
+      loading: "Loading orders…",
+      // Stats
+      statTotal: "Pending",
+      statFlagged: "Flagged",
+      // Table
+      colOrder: "Order #",
+      colFactory: "Factory",
+      colBrand: "Brand",
+      colVolume: "Volume",
+      colTier: "Tier",
+      colStatus: "Status",
+      colFlag: "Flag",
+      colCreated: "Created",
+      // Validation pills
+      validationOk: "OK",
+      validationInfo: "Info",
+      validationWarn: "Warn",
+      validationError: "Error",
+      noOrders: "No incoming factory orders pending.",
+      // Tooltip-ish
+      flagDetail: "Expected {expected} L · actual {actual} L",
+    },
+  },
+
   // ─── DISTRIBUTOR RESTOCK ──────────────────────
   restock: {
     title: "Restock from FUZE",
