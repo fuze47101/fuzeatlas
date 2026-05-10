@@ -1922,6 +1922,49 @@ const en = {
   // Customer-facing lab portal surfaces. Phase 0 of ROADMAP_v2.
   labPortal: {
     crumb: "Lab Portal",
+    queue: {
+      crumbCurrent: "Queue",
+      pageTitle: "Test Queue",
+      pageSubtitle:
+        "Incoming test requests + recent submissions across every factory you handle. Open requests first, recent submission context second.",
+      loading: "Loading queue…",
+      // Stats
+      statPending: "Pending requests",
+      statSubmissions: "Recent submissions",
+      // Sections
+      pendingHeader: "Pending requests",
+      submissionsHeader: "Recent submissions",
+      // Pending columns
+      colPo: "PO #",
+      colBrand: "Brand",
+      colFactory: "Factory",
+      colFabric: "Fabric",
+      colTier: "Tier",
+      colTests: "Tests",
+      colStatus: "Status",
+      colRequested: "Requested",
+      // Submission columns
+      colSubmissionDate: "Submission date",
+      colSubmissionStatus: "Status",
+      noPending: "No incoming requests.",
+      noSubmissions: "No recent submissions linked to your queue yet.",
+    },
+    specs: {
+      crumbCurrent: "Brand Specs",
+      pageTitle: "Brand Specs",
+      pageSubtitle:
+        "Specs from every brand whose fabrics you test. Use this to score results against the right tier and cadence.",
+      loading: "Loading specs…",
+      noBrands: "No brand specs yet — no factories you handle currently link to a brand with a stipulated spec.",
+      tierLabel: "Required tier:",
+      cadenceHeader: "ICP cadence",
+      cadenceEveryOrders: "Every {n} orders",
+      cadenceEveryLiters: "Every {n} L consumed",
+      cadenceNone: "No ICP cadence set",
+      tierNone: "No tier requirement",
+      protocolDoc: "📄 Protocol document",
+      lastUpdated: "Updated {date}",
+    },
 
     landing: {
       loading: "Loading lab portal...",
