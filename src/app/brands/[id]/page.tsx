@@ -7,6 +7,7 @@ import ActivityFeed from "@/components/ActivityFeed";
 import AddTaskButton from "@/components/AddTaskButton";
 import ClaimBrandButton from "@/components/ClaimBrandButton";
 import ReferralBadge from "@/components/ReferralBadge";
+import ChurnRiskBanner from "@/components/ChurnRiskBanner";
 
 const STAGES = [
   "LEAD",
@@ -433,6 +434,7 @@ export default function BrandDetailPage() {
           >
             &larr; {t.common.backToPipeline}
           </button>
+          <ChurnRiskBanner brandId={brand.id} />
           <h1 className="text-2xl font-black text-slate-900">{brand.name}</h1>
           <div className="flex items-center gap-3 mt-1 flex-wrap">
             <span
