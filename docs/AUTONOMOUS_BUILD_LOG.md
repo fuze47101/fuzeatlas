@@ -243,6 +243,154 @@ additions) is fully written but blocked behind this fix.
 - 2026-05-10 — `0795e18` — phase 9I: brand referral attribution.
 - 2026-05-10 — `4ce79d6` — phase 9J: churn-warn nightly cron.
 
+## Phase 11 complete — full handoff
+
+Phase 11 = the "mind-blowing demo" layer. Supply-chain globe,
+AI BD coach, predictive churn, competitor watch, AI auto-draft,
+zero-touch auto-reorder, AI protocol designer, voice-first
+factory intake. Every sub-phase shipped + verified ● Ready on
+Vercel under the new "verify after every push" rule with zero
+build breaks across all 8.
+
+### Models added (2)
+
+- **CoachFeedback** — (userId, suggestionId, kind, applied,
+  feedback). Records whether the rep applied a coach suggestion
+  or dismissed it; future training signal.
+- **CompetitorSnapshot** — (competitor, url, fetchedAt,
+  contentHash, extracted, diffFromPrev). One row per detected
+  competitor-page change.
+
+### Columns added
+
+- **Brand.churnRiskScore / churnRiskUpdatedAt / churnRiskReasoning**
+  — populated nightly by the predict-churn cron.
+- **Factory.lat / Factory.lng** — geocoded for the supply-chain
+  globe.
+- **Brand.lat / Brand.lng** — corporate HQ coordinates.
+- **Lab.lat / Lab.lng** — lab location coordinates.
+- **Distributor.lat / Distributor.lng** — distributor location.
+- **Distributor.autoReorderEnabled** (bool, default false) —
+  opt-in flag for the zero-touch reorder cron.
+
+### Crons added (3)
+
+- `/api/cron/migrate-11-geo` — one-shot. Applied 8 lat/lng cols
+  (all ok).
+- `/api/cron/migrate-11-bundle` — one-shot. Applied 10
+  CoachFeedback / churnRisk / CompetitorSnapshot / autoReorder
+  schema statements (all ok).
+- `/api/cron/predict-churn` — daily 03:00 UTC. Claude-driven
+  churn scoring for CUSTOMER_WON + BRAND_EXPANSION brands.
+  Falls back to a heuristic when ANTHROPIC_API_KEY is unset.
+- `/api/cron/competitor-watch` — daily 04:00 UTC. Walks the six
+  curated competitor URLs, hashes responses, persists snapshots
+  on change, fires notification on diff.
+- `/api/cron/auto-reorder` — every 6h. Two-pass: drafts
+  FuzeOrder { status: DRAFT_AUTO } when DistributorInventory drops
+  below reorder threshold; auto-confirms drafts older than 24h.
+
+### Surfaces shipped
+
+- **11A** — `/admin/command-center/globe` Three.js / R3F supply-
+  chain globe with pulsing factory nodes, color-coded entity
+  pins, animated shipment arcs, click-for-detail flyout, search
+  highlight, empty-state guide to `npm run seed:geocode`.
+  Backed by `/api/admin/globe` with 60s cache.
+  `scripts/geocode-entities.ts` — Nominatim @ 1.1s rate limit,
+  idempotent, opt-in via `--only` and `--limit` flags.
+- **11B** — `<BDCoachPanel />` drop-in for the BD wizard's
+  draft step. `/api/admin/bd/wizard/coach` pulls the rep's
+  last 50 tracked sends + brand context + sends Claude haiku-4-5
+  a strict-JSON prompt. Returns 1-3 specific edit suggestions
+  with confidence + reasoning + a "trained on Barth's last 47
+  emails" attribution caption. `/api/admin/bd/wizard/coach/feedback`
+  records apply/dismiss as a CoachFeedback row.
+- **11C** — `/api/cron/predict-churn` scores every CUSTOMER_WON
+  and BRAND_EXPANSION brand nightly using Claude + 90-day
+  activity slice (emails with open/reply tracking from 9A,
+  meetings, tests, orders, notes, tasks, engagement). Falls back
+  to a feature-richer heuristic if Claude isn't available.
+  Fires Notification when a brand crosses 70 (7-day suppression).
+  `<ChurnRiskBanner />` renders red/amber banner on
+  /brands/[id] when score > 60. `/api/brands/[id]/churn-risk`
+  surfaces the cached score + reasoning.
+- **11D** — `src/lib/competitor-targets.ts` curated list of 6
+  competitor URLs (Silvadur, Polygiene, Sciessent, Microban,
+  Sanitized AG, Aegis). `/api/cron/competitor-watch` daily
+  hashes each URL, sends body to Claude for structured
+  extraction { products, washCountClaims, certifications,
+  summary }, diffs vs previous snapshot, fires admin
+  notification on change. Posture: one fetch / URL / day,
+  identified UA, no paywall bypass.
+- **11E** — `/api/admin/bd/wizard/auto-draft` generates a full
+  first-draft outbound email tailored to brand textileCategory,
+  researchData, requiredFuzeTier, and regulatory triggers
+  per vertical (Texas AG for activewear, NY Hospitality angle,
+  PFAS-free for intimates/kids, ISO 18184 for medical). Strict
+  brand-voice enforcement — caller-side denylist scan retries
+  once with stricter prompt on violation; 422 on second
+  violation so the wizard falls back to manual draft.
+- **11F** — `/api/cron/auto-reorder` every 6h. For every
+  Distributor with autoReorderEnabled=true: scans
+  DistributorInventory.fuzeStockLiters vs reorderPointLiters,
+  drafts a FuzeOrder { status: DRAFT_AUTO } with median 90-day
+  volume (fallback 608L = 1 gaylord), notifies distributor
+  pool. Pass 2 auto-confirms drafts older than 24h.
+- **11G** — `/api/admin/protocol-designer` + `<ProtocolDesignerButton />`
+  on /fabrics/[id]. Claude haiku-4-5 picks the right test
+  battery for a given fabric (construction, GSM, tier,
+  jurisdiction) using the canonical FUZE testing playbook
+  embedded in the system prompt. Modal renders 4-tile summary
+  + reasoning + per-test card grid.
+- **11H** — `/factory-portal/intake/voice` mobile-first voice
+  intake. Web Speech API (Chrome/Safari) → live transcript →
+  `/api/factory-portal/intake/voice` Claude extraction →
+  inline review/edit form → submit through existing intake API
+  with `source: "voice-intake"`. Multilingual via Claude.
+  Whisper cloud fallback noted in comments — deferred.
+
+### Build break recovery (none)
+
+Phase 11 hit zero build breaks across 8 sub-phases under the
+new verify-after-every-push rule. Schema audits before each
+push caught every missing back-reference at write time.
+
+### Manual follow-ups for Andrew
+
+- **Run the geocoder** — `npm run seed:geocode` populates
+  lat/lng on every Factory / Brand / Lab / Distributor with
+  city + country set. Nominatim 1 req/sec → first pass takes
+  a few minutes. Until run, the globe shows the "no geocoded
+  entities yet" empty state.
+- **Tag a FUZE-HQ sentinel factory** — `auto-reorder` cron
+  needs a Factory with customerType="FUZE-HQ" to use as
+  origin on auto-drafted FuzeOrders. Falls back to oldest US
+  factory if missing; skips Pass 1 if neither exists. Set via
+  /admin/factories.
+- **Opt-in distributors to auto-reorder** — flip
+  Distributor.autoReorderEnabled per row when the
+  distributor is ready. Defaults to false.
+- **Resend inbound webhook secret** (still open from Phase 9B)
+  — pre-existing.
+- **DSN reconcile** (still open from Phase 8E) — pre-existing.
+
+### TODOs remaining
+
+- **Wire <BDCoachPanel />** into the existing 1900+ line BD
+  wizard DraftStep. Component is built but not yet mounted to
+  avoid touching the wizard surface during the autonomous
+  build. One-line import + render call.
+- **Wire auto-draft button** into the BD wizard similarly.
+- **Whisper fallback** for 11H — Web Speech covers iOS Safari
+  + Android Chrome; Whisper would catch desktop Firefox /
+  older devices. Deferred since OPENAI_API_KEY may not be set.
+- **Globe geocoder rate-budget** — Nominatim ToS caps at
+  ~1/sec. Future migration to Mapbox or a self-hosted
+  Nominatim mirror once volume warrants.
+
+---
+
 ## Phase 10 complete — full handoff
 
 Phase 10 was the lab depth pass. Lab self-service profiles,
