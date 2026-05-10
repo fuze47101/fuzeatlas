@@ -15,10 +15,17 @@ import { getCurrentUser } from "@/lib/auth";
 
 const ALLOWED_TIERS = ["F1", "F2", "F3", "F4"];
 
-export async function GET() {
+export async function GET(req: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
-  const brandId = user.brandId;
+
+  // Admin / EMPLOYEE / sales roles can view any brand's spec via ?brandId=.
+  // Brand users always get their own brand.
+  const url = new URL(req.url);
+  const queryBrandId = url.searchParams.get("brandId") || undefined;
+  const adminLikeRoles = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BRAND_MANAGER"];
+  const brandId = adminLikeRoles.includes(user.role) ? queryBrandId || user.brandId : user.brandId;
+
   if (!brandId) {
     return NextResponse.json({ ok: false, error: "No brand associated" }, { status: 403 });
   }
