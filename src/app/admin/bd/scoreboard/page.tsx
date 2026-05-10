@@ -24,6 +24,18 @@ interface RepRow {
   meetingsBooked: number;
   brandsConverted: number;
   replyRate: number;
+  // Phase 9D
+  opens?: number;
+  clicks?: number;
+  openRate?: number;
+  clickRate?: number;
+  replyRateTracked?: number;
+  activeSequences?: number;
+  pipelineCreatedUSD?: number;
+  closedWonContribution?: number;
+  pipelineVelocityDays?: number | null;
+  // Phase 9I
+  referralsDriven?: number;
 }
 
 interface Scoreboard {
@@ -178,14 +190,16 @@ export default function BDScoreboardPage() {
                 <tr>
                   <th className="text-left px-4 py-3">Rep</th>
                   <th className="text-right px-3 py-3">Emails</th>
-                  <th className="text-right px-3 py-3">LinkedIn</th>
-                  <th className="text-right px-3 py-3">Contacts</th>
-                  <th className="text-right px-3 py-3">Sequences</th>
-                  <th className="text-right px-3 py-3">Ready</th>
-                  <th className="text-right px-3 py-3">Replies</th>
+                  <th className="text-right px-3 py-3">Open %</th>
+                  <th className="text-right px-3 py-3">Click %</th>
                   <th className="text-right px-3 py-3">Reply %</th>
+                  <th className="text-right px-3 py-3">Seq Active</th>
+                  <th className="text-right px-3 py-3">Ready</th>
                   <th className="text-right px-3 py-3">Meetings</th>
-                  <th className="text-right px-4 py-3">Converted</th>
+                  <th className="text-right px-3 py-3">Velocity</th>
+                  <th className="text-right px-3 py-3">Pipeline $</th>
+                  <th className="text-right px-3 py-3">Refs</th>
+                  <th className="text-right px-4 py-3">Won (90d)</th>
                 </tr>
               </thead>
               <tbody>
@@ -209,9 +223,18 @@ export default function BDScoreboardPage() {
                     <td className="px-3 py-3 text-right tabular-nums font-semibold">
                       {row.emailsSent}
                     </td>
-                    <td className="px-3 py-3 text-right tabular-nums">{row.linkedinSent}</td>
-                    <td className="px-3 py-3 text-right tabular-nums">{row.contactsWorked}</td>
-                    <td className="px-3 py-3 text-right tabular-nums">{row.sequencesStarted}</td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {((row.openRate || 0) * 100).toFixed(1)}%
+                    </td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {((row.clickRate || 0) * 100).toFixed(1)}%
+                    </td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {(((row.replyRateTracked ?? row.replyRate) || 0) * 100).toFixed(1)}%
+                    </td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {row.activeSequences ?? row.sequencesStarted}
+                    </td>
                     <td className="px-3 py-3 text-right tabular-nums">
                       {row.stepsReady > 0 ? (
                         <span className="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-semibold">
@@ -221,15 +244,22 @@ export default function BDScoreboardPage() {
                         <span className="text-slate-400">0</span>
                       )}
                     </td>
-                    <td className="px-3 py-3 text-right tabular-nums font-semibold">
-                      {row.replies}
+                    <td className="px-3 py-3 text-right tabular-nums">{row.meetingsBooked}</td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {row.pipelineVelocityDays != null
+                        ? `${row.pipelineVelocityDays.toFixed(1)}d`
+                        : "—"}
                     </td>
                     <td className="px-3 py-3 text-right tabular-nums">
-                      {(row.replyRate * 100).toFixed(1)}%
+                      {(row.pipelineCreatedUSD || 0) > 0
+                        ? `$${Math.round((row.pipelineCreatedUSD || 0) / 1000)}K`
+                        : "—"}
                     </td>
-                    <td className="px-3 py-3 text-right tabular-nums">{row.meetingsBooked}</td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {row.referralsDriven ?? 0}
+                    </td>
                     <td className="px-4 py-3 text-right tabular-nums font-semibold text-emerald-700">
-                      {row.brandsConverted}
+                      {row.closedWonContribution ?? row.brandsConverted}
                     </td>
                   </tr>
                 ))}

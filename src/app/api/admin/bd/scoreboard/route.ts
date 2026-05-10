@@ -90,9 +90,19 @@ export async function GET(req: Request) {
 
     const url = new URL(req.url);
     const allReps = url.searchParams.get("all") === "1";
-    const daysRaw = parseInt(url.searchParams.get("days") || "30", 10);
-    const windowDays = Math.max(1, Math.min(isNaN(daysRaw) ? 30 : daysRaw, 365));
+
+    // Phase 9D — period preset: week / month / quarter. The legacy
+    // `days` param still works and takes precedence for backward
+    // compat with /home and existing dashboard cards.
+    const periodMap: Record<string, number> = { week: 7, month: 30, quarter: 90 };
+    const periodRaw = (url.searchParams.get("period") || "").toLowerCase();
+    const periodDays = periodMap[periodRaw];
+    const daysRaw = parseInt(url.searchParams.get("days") || "", 10);
+    const windowDays = !isNaN(daysRaw)
+      ? Math.max(1, Math.min(daysRaw, 365))
+      : periodDays || 30;
     const since = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000);
+    const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
 
     // Decide which reps to aggregate over.
     let repIds: string[];
@@ -264,17 +274,98 @@ export async function GET(req: Request) {
       }),
 
       // All OutreachMessage rows authored by any of these reps in window.
-      // We pull the individual rows (not a groupBy) because we need to
-      // count BY channel AND count distinct contactIds per rep — two
-      // things that don't fit into a single groupBy call. Reads are fast
-      // — (sentBy, sentAt) index + a ~30-day window keeps result sets
-      // small even for a busy team.
+      // Phase 9D — also pulls openedAt/clickedAt/repliedAt so the
+      // scoreboard can report open + reply rate without a second
+      // round trip.
       prisma.outreachMessage.findMany({
         where: {
           sentBy: { in: repIds },
           sentAt: { gte: since },
         },
-        select: { sentBy: true, contactId: true, channel: true },
+        select: {
+          sentBy: true,
+          contactId: true,
+          channel: true,
+          sentAt: true,
+          openedAt: true,
+          clickedAt: true,
+          repliedAt: true,
+        },
+      }),
+    ]);
+
+    // Phase 9D extras — gathered separately to avoid making the
+    // Promise.all above unwieldy. Each one is scoped to repIds so
+    // result sets stay small.
+    const [
+      activeSequencesPerRep,
+      forecastBrandsPerRep,
+      firstMeetingsByRep,
+      firstSendsByRep,
+      closedWonByRep,
+      referralsDrivenByRep,
+    ] = await Promise.all([
+      // Sequences in flight (status=active, point-in-time)
+      prisma.bDSequence.groupBy({
+        by: ["repId"],
+        where: { repId: { in: repIds }, status: "active" },
+        _count: { _all: true },
+      }),
+      // Brands owned by rep with a non-empty forecast string. Forecast
+      // is free-text; we'll parse $ in JS below.
+      prisma.brand.findMany({
+        where: {
+          salesRepId: { in: repIds },
+          forecast: { not: null },
+          updatedAt: { gte: since },
+        },
+        select: { salesRepId: true, forecast: true },
+      }),
+      // First Meeting per rep within the window — for velocity calc.
+      prisma.meeting.findMany({
+        where: {
+          organizerId: { in: repIds },
+          brandId: { not: null },
+          startTime: { gte: since },
+        },
+        select: { organizerId: true, brandId: true, contactId: true, startTime: true, createdAt: true },
+        orderBy: { createdAt: "asc" },
+      }),
+      // First OutreachMessage per (rep, contact) within the window —
+      // pairs with firstMeetingsByRep to compute pipeline velocity.
+      prisma.outreachMessage.findMany({
+        where: {
+          sentBy: { in: repIds },
+          channel: "email",
+          status: { in: ["sent", "delivered", "replied"] },
+          sentAt: { gte: since },
+        },
+        select: { sentBy: true, contactId: true, sentAt: true },
+        orderBy: { sentAt: "asc" },
+      }),
+      // Closed-won contribution — last 90 days, regardless of window.
+      prisma.brand.groupBy({
+        by: ["salesRepId"],
+        where: {
+          salesRepId: { in: repIds },
+          pipelineStage: "CUSTOMER_WON",
+          updatedAt: { gte: ninetyDaysAgo },
+        },
+        _count: { _all: true },
+      }),
+      // Phase 9I — referrals driven per rep. Counts brands where the
+      // rep is salesRepId AND referredByBrandId/referredByContactId
+      // is set. Lifetime, not windowed — referrals are sticky.
+      prisma.brand.groupBy({
+        by: ["salesRepId"],
+        where: {
+          salesRepId: { in: repIds },
+          OR: [
+            { referredByBrandId: { not: null } },
+            { referredByContactId: { not: null } },
+          ],
+        },
+        _count: { _all: true },
       }),
     ]);
 
@@ -303,17 +394,75 @@ export async function GET(req: Request) {
     const emailsSentByRep: Record<string, number> = {};
     const linkedinSentByRep: Record<string, number> = {};
     const contactsWorkedByRep: Record<string, Set<string>> = {};
+    const openCountByRep: Record<string, number> = {};
+    const clickCountByRep: Record<string, number> = {};
+    const replyCountByRep: Record<string, number> = {};
     for (const m of outreachMessagesAgg) {
       const rid = m?.sentBy;
       if (!rid) continue;
       if (m.channel === "email") {
         emailsSentByRep[rid] = (emailsSentByRep[rid] || 0) + 1;
+        if (m.openedAt) openCountByRep[rid] = (openCountByRep[rid] || 0) + 1;
+        if (m.clickedAt) clickCountByRep[rid] = (clickCountByRep[rid] || 0) + 1;
+        if (m.repliedAt) replyCountByRep[rid] = (replyCountByRep[rid] || 0) + 1;
       } else if (m.channel === "linkedin") {
         linkedinSentByRep[rid] = (linkedinSentByRep[rid] || 0) + 1;
       }
       if (m.contactId) {
         (contactsWorkedByRep[rid] ||= new Set()).add(m.contactId);
       }
+    }
+
+    // Phase 9D rollups.
+    const activeSeqByRep = mapAgg(activeSequencesPerRep, "repId");
+    const closedWonAgg = mapAgg(closedWonByRep, "salesRepId");
+    const referralsAgg = mapAgg(referralsDrivenByRep, "salesRepId");
+
+    // Pipeline created $ — parse forecast strings ("$15K", "$2M", "120000")
+    function parseForecastUSD(s: string | null | undefined): number {
+      if (!s) return 0;
+      const m = s.replace(/[\s,]/g, "").match(/\$?(\d+(?:\.\d+)?)\s*([kKmMbB]?)/);
+      if (!m) return 0;
+      const n = parseFloat(m[1]);
+      const mult =
+        m[2] === "k" || m[2] === "K"
+          ? 1_000
+          : m[2] === "m" || m[2] === "M"
+            ? 1_000_000
+            : m[2] === "b" || m[2] === "B"
+              ? 1_000_000_000
+              : 1;
+      return n * mult;
+    }
+    const pipelineCreatedByRep: Record<string, number> = {};
+    for (const b of forecastBrandsPerRep) {
+      if (!b.salesRepId) continue;
+      pipelineCreatedByRep[b.salesRepId] =
+        (pipelineCreatedByRep[b.salesRepId] || 0) + parseForecastUSD(b.forecast);
+    }
+
+    // Pipeline velocity: avg days from first email to first meeting per rep.
+    // For each rep, walk their messages oldest-first, snapshot earliest
+    // send per contact, then snapshot earliest meeting per contact.
+    const earliestSendPerRepContact = new Map<string, Date>();
+    for (const s of firstSendsByRep) {
+      if (!s.sentBy || !s.contactId || !s.sentAt) continue;
+      const key = `${s.sentBy}|${s.contactId}`;
+      if (!earliestSendPerRepContact.has(key))
+        earliestSendPerRepContact.set(key, s.sentAt);
+    }
+    const velocityBucket: Record<string, { sum: number; n: number }> = {};
+    for (const m of firstMeetingsByRep) {
+      if (!m.organizerId || !m.contactId) continue;
+      const key = `${m.organizerId}|${m.contactId}`;
+      const firstSend = earliestSendPerRepContact.get(key);
+      if (!firstSend) continue;
+      const t = m.createdAt || m.startTime;
+      const days = (t.getTime() - firstSend.getTime()) / 86400_000;
+      if (days < 0) continue;
+      const b = (velocityBucket[m.organizerId] ||= { sum: 0, n: 0 });
+      b.sum += days;
+      b.n += 1;
     }
 
     const rows = reps.map((rep) => {
@@ -332,6 +481,20 @@ export async function GET(req: Request) {
       const replyDenom = emailsSent > 0 ? emailsSent : sequencesStarted;
       const replyRate =
         replyDenom > 0 ? Math.min(1, replies / replyDenom) : 0;
+      // Phase 9D additions
+      const opens = openCountByRep[rep.id] || 0;
+      const clicks = clickCountByRep[rep.id] || 0;
+      const repliesViaTracking = replyCountByRep[rep.id] || 0;
+      const openRate = emailsSent > 0 ? opens / emailsSent : 0;
+      const clickRate = emailsSent > 0 ? clicks / emailsSent : 0;
+      const replyRateTracked =
+        emailsSent > 0 ? repliesViaTracking / emailsSent : 0;
+      const activeSequences = activeSeqByRep[rep.id] || 0;
+      const pipelineCreatedUSD = pipelineCreatedByRep[rep.id] || 0;
+      const closedWonContribution = closedWonAgg[rep.id] || 0;
+      const referralsDriven = referralsAgg[rep.id] || 0;
+      const v = velocityBucket[rep.id];
+      const pipelineVelocityDays = v ? v.sum / v.n : null;
       return {
         rep,
         emailsSent,
@@ -344,6 +507,19 @@ export async function GET(req: Request) {
         meetingsBooked,
         brandsConverted,
         replyRate,
+        // Phase 9D
+        opens,
+        clicks,
+        openRate,
+        clickRate,
+        repliesViaTracking,
+        replyRateTracked,
+        activeSequences,
+        pipelineCreatedUSD,
+        closedWonContribution,
+        pipelineVelocityDays,
+        // Phase 9I
+        referralsDriven,
       };
     });
 
@@ -372,10 +548,19 @@ export async function GET(req: Request) {
         acc.replies += r.replies;
         acc.meetingsBooked += r.meetingsBooked;
         acc.brandsConverted += r.brandsConverted;
+        // Phase 9D
+        acc.opens += r.opens;
+        acc.clicks += r.clicks;
+        acc.activeSequences += r.activeSequences;
+        acc.pipelineCreatedUSD += r.pipelineCreatedUSD;
+        acc.closedWonContribution += r.closedWonContribution;
+        acc.referralsDriven += r.referralsDriven;
         return acc;
       },
       emptyTotals(),
     );
+    totals.openRate = totals.emailsSent > 0 ? totals.opens / totals.emailsSent : 0;
+    totals.clickRate = totals.emailsSent > 0 ? totals.clicks / totals.emailsSent : 0;
     totals.contactsWorked = teamContactSet.size;
     totals.replyRate =
       totals.emailsSent > 0
@@ -422,5 +607,14 @@ function emptyTotals() {
     meetingsBooked: 0,
     brandsConverted: 0,
     replyRate: 0,
+    // Phase 9D
+    opens: 0,
+    clicks: 0,
+    openRate: 0,
+    clickRate: 0,
+    activeSequences: 0,
+    pipelineCreatedUSD: 0,
+    closedWonContribution: 0,
+    referralsDriven: 0,
   };
 }
