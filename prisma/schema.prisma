@@ -299,6 +299,11 @@ model Brand {
   lat                 Float?
   lng                 Float?
 
+  // ─── Phase 11C — Predictive churn (Claude-driven, nightly) ─
+  churnRiskScore      Float?
+  churnRiskUpdatedAt  DateTime?
+  churnRiskReasoning  String?
+
   // Validation fields (Phase 1 brand audit)
   validationStatus  String?   // verified | irrelevant | dead | duplicate | pending | unknown
   validationReason  String?   // AI-generated explanation for the classification
@@ -548,6 +553,9 @@ model Distributor {
   // Phase 11A — geocoded coordinates for the supply-chain globe.
   lat          Float?
   lng          Float?
+
+  // Phase 11F — opt-in zero-touch auto-reorder.
+  autoReorderEnabled Boolean @default(false)
 
   // Contact
   email        String?
@@ -1034,6 +1042,40 @@ model UserPlaybookFavorite {
 
   @@unique([userId, playbookId])
   @@index([userId])
+}
+
+// ─── Phase 11B — AI sales coach feedback ─────────────────────
+model CoachFeedback {
+  id           String   @id @default(cuid())
+  userId       String
+  suggestionId String
+  kind         String   // subject | opener | closer | cta
+  applied      Boolean
+  feedback     String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([kind])
+}
+
+// ─── Phase 11C — Predictive churn (real ML pass) ─────────────
+// Brand columns added inline on the Brand model:
+//   churnRiskScore Float?
+//   churnRiskUpdatedAt DateTime?
+//   churnRiskReasoning String?
+
+// ─── Phase 11D — Competitor pricing snapshots ────────────────
+model CompetitorSnapshot {
+  id           String   @id @default(cuid())
+  competitor   String
+  url          String
+  fetchedAt    DateTime @default(now())
+  contentHash  String
+  extracted    Json
+  diffFromPrev Json?
+
+  @@index([competitor, fetchedAt])
+  @@index([url, fetchedAt])
 }
 
 // ─── Phase 10B — per-lab test catalog ────────────────────────
