@@ -2,40 +2,37 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 
-const FUZE_TIERS = [
-  { value: "F1", label: "F1 — 1.0 mg/kg", desc: "Maximum antimicrobial performance", mgPerKg: 1.0 },
-  { value: "F2", label: "F2 — 0.75 mg/kg", desc: "High performance", mgPerKg: 0.75 },
-  { value: "F3", label: "F3 — 0.5 mg/kg", desc: "Standard performance", mgPerKg: 0.5 },
-  { value: "F4", label: "F4 — 0.25 mg/kg", desc: "Light performance", mgPerKg: 0.25 },
-];
+const FUZE_TIER_VALUES = [
+  { value: "F1", mgPerKg: 1.0 },
+  { value: "F2", mgPerKg: 0.75 },
+  { value: "F3", mgPerKg: 0.5 },
+  { value: "F4", mgPerKg: 0.25 },
+] as const;
 
 // Stock concentration of delivered FUZE (mg active metamaterial / L)
 const FUZE_STOCK_MG_PER_L = 30;
 
-const TREATMENT_METHODS = [
-  { value: "EXHAUST", label: "Exhaust (dyebath)", desc: "Bath exhaustion method" },
-  { value: "PAD_DRY_CURE", label: "Pad-Dry-Cure", desc: "Foulard + dry + cure" },
-  { value: "SPRAY", label: "Spray", desc: "6\" head spacing, 15 m/min" },
-];
+const TREATMENT_METHOD_VALUES = ["EXHAUST", "PAD_DRY_CURE", "SPRAY"] as const;
 
-const ORDER_TYPES = [
-  { value: "PRODUCTION", label: "Production Order", icon: "🏭", desc: "Full production volume of FUZE treatment" },
-  { value: "SAMPLE", label: "Sample Order", icon: "🧪", desc: "Sample for new account or fabric testing — FUZE subsidizes 50%" },
-  { value: "HANGTAG", label: "Hangtag Order", icon: "🏷️", desc: "FUZE-certified hangtags for treated fabrics" },
-];
+const ORDER_TYPE_VALUES = [
+  { value: "PRODUCTION", icon: "🏭" },
+  { value: "SAMPLE", icon: "🧪" },
+  { value: "HANGTAG", icon: "🏷️" },
+] as const;
 
-const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  DRAFT: { bg: "bg-gray-100", text: "text-gray-700", label: "Draft" },
-  QUOTED: { bg: "bg-blue-100", text: "text-blue-700", label: "Quoted" },
-  PENDING_APPROVAL: { bg: "bg-yellow-100", text: "text-yellow-700", label: "Pending Approval" },
-  APPROVED: { bg: "bg-green-100", text: "text-green-700", label: "Approved" },
-  PROCESSING: { bg: "bg-purple-100", text: "text-purple-700", label: "Processing" },
-  SHIPPED: { bg: "bg-indigo-100", text: "text-indigo-700", label: "Shipped" },
-  DELIVERED: { bg: "bg-emerald-100", text: "text-emerald-700", label: "Delivered" },
-  CANCELLED: { bg: "bg-red-100", text: "text-red-700", label: "Cancelled" },
+const STATUS_STYLE: Record<string, { bg: string; text: string }> = {
+  DRAFT: { bg: "bg-gray-100", text: "text-gray-700" },
+  QUOTED: { bg: "bg-blue-100", text: "text-blue-700" },
+  PENDING_APPROVAL: { bg: "bg-yellow-100", text: "text-yellow-700" },
+  APPROVED: { bg: "bg-green-100", text: "text-green-700" },
+  PROCESSING: { bg: "bg-purple-100", text: "text-purple-700" },
+  SHIPPED: { bg: "bg-indigo-100", text: "text-indigo-700" },
+  DELIVERED: { bg: "bg-emerald-100", text: "text-emerald-700" },
+  CANCELLED: { bg: "bg-red-100", text: "text-red-700" },
 };
 
 interface BrandAllocation {
@@ -96,7 +93,66 @@ const INITIAL_FORM: OrderFormData = {
 
 export default function FactoryOrdersPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.factoryPortal.orders;
   const router = useRouter();
+
+  const FUZE_TIERS = FUZE_TIER_VALUES.map((t) => ({
+    ...t,
+    label: tx.tierMgPerKg.replace("{tier}", t.value).replace("{mgkg}", String(t.mgPerKg)),
+    desc:
+      t.value === "F1"
+        ? tx.tierF1Desc
+        : t.value === "F2"
+          ? tx.tierF2Desc
+          : t.value === "F3"
+            ? tx.tierF3Desc
+            : tx.tierF4Desc,
+  }));
+  const TREATMENT_METHODS = TREATMENT_METHOD_VALUES.map((v) => ({
+    value: v,
+    label:
+      v === "EXHAUST" ? tx.methodExhaustLabel : v === "PAD_DRY_CURE" ? tx.methodPadDryCureLabel : tx.methodSprayLabel,
+    desc:
+      v === "EXHAUST" ? tx.methodExhaustDesc : v === "PAD_DRY_CURE" ? tx.methodPadDryCureDesc : tx.methodSprayDesc,
+  }));
+  const ORDER_TYPES = ORDER_TYPE_VALUES.map((o) => ({
+    ...o,
+    label:
+      o.value === "PRODUCTION"
+        ? tx.orderTypeProduction
+        : o.value === "SAMPLE"
+          ? tx.orderTypeSample
+          : tx.orderTypeHangtag,
+    desc:
+      o.value === "PRODUCTION"
+        ? tx.orderTypeProductionDesc
+        : o.value === "SAMPLE"
+          ? tx.orderTypeSampleDesc
+          : tx.orderTypeHangtagDesc,
+  }));
+  const statusLabel = (s: string) => {
+    switch (s) {
+      case "DRAFT":
+        return tx.statusDraft;
+      case "QUOTED":
+        return tx.statusQuoted;
+      case "PENDING_APPROVAL":
+        return tx.statusPendingApproval;
+      case "APPROVED":
+        return tx.statusApproved;
+      case "PROCESSING":
+        return tx.statusProcessing;
+      case "SHIPPED":
+        return tx.statusShipped;
+      case "DELIVERED":
+        return tx.statusDelivered;
+      case "CANCELLED":
+        return tx.statusCancelled;
+      default:
+        return s;
+    }
+  };
   const [orders, setOrders] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [brands, setBrands] = useState<any[]>([]);
@@ -168,7 +224,7 @@ export default function FactoryOrdersPage() {
   const effectiveBottles = form.bottles ? Number(form.bottles) : calculatedBottles;
 
   // ── FUZE Volume Calculator ──
-  // Fabric mass → silver needed (mg) → FUZE stock volume (L) at 30 mg/L
+  // Fabric mass → metamaterial needed (mg) → FUZE stock volume (L) at 30 mg/L
   const [showCalc, setShowCalc] = useState(false);
   const computeFabricMass = (): number => {
     if (form.fabricMassKg) return Number(form.fabricMassKg);
@@ -209,7 +265,7 @@ export default function FactoryOrdersPage() {
     // Validate at least one brand is selected
     const validAllocations = form.brandAllocations.filter((a) => a.brandId);
     if (validAllocations.length === 0) {
-      setError("Please select at least one brand this order is for. If the brand isn't listed, use 'Request New Brand' to add it.");
+      setError(tx.atLeastOneBrand);
       setSubmitting(false);
       return;
     }
@@ -217,7 +273,7 @@ export default function FactoryOrdersPage() {
     // Validate percentages sum to ~100
     const totalPct = validAllocations.reduce((sum, a) => sum + (Number(a.allocatedPct) || 0), 0);
     if (validAllocations.length > 1 && (totalPct < 95 || totalPct > 105)) {
-      setError(`Brand volume allocations should total 100%. Currently: ${totalPct}%`);
+      setError(tx.allocationsTotalError.replace("{pct}", String(totalPct)));
       setSubmitting(false);
       return;
     }
@@ -266,13 +322,17 @@ export default function FactoryOrdersPage() {
 
       if (data.ok) {
         setQuote(data.order);
-        setSuccess(`Order ${data.order.orderNumber} created with quote ${data.order.quoteNumber}!`);
+        setSuccess(
+          tx.createSuccess
+            .replace("{orderNumber}", data.order.orderNumber)
+            .replace("{quoteNumber}", data.order.quoteNumber),
+        );
         loadOrders();
       } else {
-        setError(data.error || "Failed to create order");
+        setError(data.error || tx.createFailed);
       }
     } catch (e: any) {
-      setError(e.message || "Failed to submit order");
+      setError(e.message || tx.createFailed);
     } finally {
       setSubmitting(false);
     }
@@ -288,22 +348,22 @@ export default function FactoryOrdersPage() {
       });
       const data = await res.json();
       if (data.ok) {
-        setSuccess("Quote accepted! Your account manager will review and approve.");
+        setSuccess(tx.acceptedSuccess);
         loadOrders();
         setSelectedOrder(null);
         setQuote(null);
       } else {
-        setError(data.error || "Failed to accept quote");
+        setError(data.error || tx.acceptFailed);
       }
     } catch (e: any) {
-      setError(e.message || "Error accepting quote");
+      setError(e.message || tx.acceptFailed);
     } finally {
       setAcceptingQuote(false);
     }
   }
 
   async function handleCancelOrder(orderId: string) {
-    if (!confirm("Are you sure you want to cancel this order?")) return;
+    if (!confirm(tx.cancelConfirm)) return;
     try {
       const res = await fetch("/api/orders", {
         method: "PATCH",
@@ -312,12 +372,12 @@ export default function FactoryOrdersPage() {
       });
       const data = await res.json();
       if (data.ok) {
-        setSuccess("Order cancelled.");
+        setSuccess(tx.cancelSuccess);
         loadOrders();
         setSelectedOrder(null);
       }
     } catch (e) {
-      setError("Failed to cancel order");
+      setError(tx.cancelFailed);
     }
   }
 
@@ -347,14 +407,14 @@ export default function FactoryOrdersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Order FUZE</h1>
-          <p className="text-slate-500 mt-1">Order FUZE treatment, samples, and hangtags</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{tx.pageTitle}</h1>
+          <p className="text-slate-500 mt-1">{tx.pageSubtitle}</p>
         </div>
         <button
           onClick={() => { setShowNewOrder(true); setForm(INITIAL_FORM); setQuote(null); setError(""); setSuccess(""); }}
           className="px-5 py-2.5 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009aa8] transition-colors shadow-lg shadow-[#00b4c3]/25 flex items-center gap-2"
         >
-          <span className="text-lg">+</span> New Order
+          <span className="text-lg">+</span> {tx.newOrder}
         </button>
       </div>
 
@@ -363,7 +423,7 @@ export default function FactoryOrdersPage() {
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 flex items-start gap-3">
           <span className="text-xl">⚠️</span>
           <div>
-            <p className="font-semibold">Error</p>
+            <p className="font-semibold">{tx.errorTitle}</p>
             <p className="text-sm">{error}</p>
           </div>
           <button onClick={() => setError("")} className="ml-auto text-red-400 hover:text-red-600">✕</button>
@@ -373,7 +433,7 @@ export default function FactoryOrdersPage() {
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 flex items-start gap-3">
           <span className="text-xl">✅</span>
           <div>
-            <p className="font-semibold">Success</p>
+            <p className="font-semibold">{tx.successTitle}</p>
             <p className="text-sm">{success}</p>
           </div>
           <button onClick={() => setSuccess("")} className="ml-auto text-green-400 hover:text-green-600">✕</button>
@@ -384,12 +444,12 @@ export default function FactoryOrdersPage() {
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-8">
           {[
-            { label: "Total Orders", value: stats.total, icon: "📦" },
-            { label: "Pending", value: stats.pending, icon: "⏳" },
-            { label: "Approved", value: stats.approved, icon: "✅" },
-            { label: "Processing", value: stats.processing, icon: "⚙️" },
-            { label: "Shipped", value: stats.shipped, icon: "🚚" },
-            { label: "Delivered", value: stats.delivered, icon: "📬" },
+            { label: tx.statTotal, value: stats.total, icon: "📦" },
+            { label: tx.statPending, value: stats.pending, icon: "⏳" },
+            { label: tx.statApproved, value: stats.approved, icon: "✅" },
+            { label: tx.statProcessing, value: stats.processing, icon: "⚙️" },
+            { label: tx.statShipped, value: stats.shipped, icon: "🚚" },
+            { label: tx.statDelivered, value: stats.delivered, icon: "📬" },
           ].map((s) => (
             <div key={s.label} className="bg-white rounded-xl border border-slate-200 p-4">
               <div className="flex items-center gap-2 mb-1">
@@ -415,7 +475,7 @@ export default function FactoryOrdersPage() {
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              {s === "all" ? "All Orders" : STATUS_COLORS[s]?.label || s}
+              {s === "all" ? tx.filterAll : statusLabel(s)}
             </button>
           )
         )}
@@ -425,19 +485,19 @@ export default function FactoryOrdersPage() {
       {filteredOrders.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
           <p className="text-4xl mb-4">📦</p>
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">No orders yet</h3>
-          <p className="text-slate-500 mb-6">Place your first order for FUZE treatment, samples, or hangtags.</p>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">{tx.noOrders}</h3>
+          <p className="text-slate-500 mb-6">{tx.noOrdersBlurb}</p>
           <button
             onClick={() => setShowNewOrder(true)}
             className="px-5 py-2.5 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009aa8] transition-colors"
           >
-            Place First Order
+            {tx.placeFirstOrder}
           </button>
         </div>
       ) : (
         <div className="space-y-3">
           {filteredOrders.map((order) => {
-            const statusInfo = STATUS_COLORS[order.status] || STATUS_COLORS.DRAFT;
+            const statusInfo = STATUS_STYLE[order.status] || STATUS_STYLE.DRAFT;
             return (
               <div
                 key={order.id}
@@ -453,7 +513,7 @@ export default function FactoryOrdersPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-semibold text-slate-900">{order.orderNumber}</span>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.text}`}>
-                          {statusInfo.label}
+                          {statusLabel(order.status)}
                         </span>
                         <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
                           {order.orderType}
@@ -462,29 +522,51 @@ export default function FactoryOrdersPage() {
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500 mt-1">
                         {order.volumeLiters && (
                           <span>
-                            {order.volumeLiters}L ({order.bottles || Math.ceil(order.volumeLiters / 19)} bottles)
+                            {tx.volumeAndBottles
+                              .replace("{liters}", String(order.volumeLiters))
+                              .replace(
+                                "{bottles}",
+                                String(order.bottles || Math.ceil(order.volumeLiters / 19)),
+                              )}
                             {order.wastageFactorPct > 0 && order.baseFuzeLiters && (
-                              <span className="text-amber-600"> · +{order.wastageFactorPct}% buffer</span>
+                              <span className="text-amber-600">
+                                {" "}
+                                · {tx.bufferAppend.replace("{pct}", String(order.wastageFactorPct))}
+                              </span>
                             )}
                           </span>
                         )}
-                        {order.hangtagQty && <span>{order.hangtagQty.toLocaleString()} hangtags</span>}
+                        {order.hangtagQty && (
+                          <span>{tx.hangtagsCount.replace("{count}", order.hangtagQty.toLocaleString())}</span>
+                        )}
                         {order.brandAllocations?.length > 0 ? (
                           <span>
                             {order.brandAllocations.length === 1
-                              ? `Brand: ${order.brandAllocations[0]?.brand?.name || order.brand?.name || "—"}`
-                              : `Brands: ${order.brandAllocations.map((a: any) => a.brand?.name).filter(Boolean).join(", ")}`}
+                              ? tx.brandLabel.replace(
+                                  "{name}",
+                                  order.brandAllocations[0]?.brand?.name || order.brand?.name || "—",
+                                )
+                              : tx.brandsLabel.replace(
+                                  "{names}",
+                                  order.brandAllocations.map((a: any) => a.brand?.name).filter(Boolean).join(", "),
+                                )}
                           </span>
-                        ) : order.brand?.name ? <span>Brand: {order.brand.name}</span> : null}
-                        {order.fabric?.fuzeNumber && <span>Fabric: {order.fabric.fuzeNumber}</span>}
-                        {order.fuzeTier && <span>Tier: {order.fuzeTier}</span>}
+                        ) : order.brand?.name ? (
+                          <span>{tx.brandLabel.replace("{name}", order.brand.name)}</span>
+                        ) : null}
+                        {order.fabric?.fuzeNumber && (
+                          <span>{tx.fabricLabel.replace("{fuze}", order.fabric.fuzeNumber)}</span>
+                        )}
+                        {order.fuzeTier && <span>{tx.tierLabel.replace("{tier}", order.fuzeTier)}</span>}
                       </div>
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="font-bold text-slate-900">{formatCurrency(order.totalPrice || 0, order.currency)}</p>
                     {order.isSampleSubsidized && order.subsidyAmount > 0 && (
-                      <p className="text-xs text-green-600 font-medium">FUZE subsidy: {formatCurrency(order.subsidyAmount)}</p>
+                      <p className="text-xs text-green-600 font-medium">
+                        {tx.subsidyApplied.replace("{amount}", formatCurrency(order.subsidyAmount))}
+                      </p>
                     )}
                     <p className="text-xs text-slate-400 mt-1">{formatDate(order.createdAt)}</p>
                   </div>
@@ -523,7 +605,7 @@ export default function FactoryOrdersPage() {
             <div className="p-6 border-b border-slate-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-slate-900">
-                  {quote ? "Quote Generated" : "New FUZE Order"}
+                  {quote ? tx.modalQuoteGenerated : tx.modalNewOrderTitle}
                 </h2>
                 <button
                   onClick={() => { setShowNewOrder(false); setQuote(null); }}
@@ -541,30 +623,36 @@ export default function FactoryOrdersPage() {
                   <div className="flex items-center gap-3 mb-4">
                     <span className="text-2xl">📋</span>
                     <div>
-                      <p className="font-bold text-blue-900">Quote {quote.quoteNumber}</p>
-                      <p className="text-sm text-blue-700">Order {quote.orderNumber}</p>
+                      <p className="font-bold text-blue-900">{tx.quoteHeading.replace("{number}", quote.quoteNumber)}</p>
+                      <p className="text-sm text-blue-700">{tx.quoteSubheading.replace("{number}", quote.orderNumber)}</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-blue-600 font-medium">Order Type</p>
+                      <p className="text-blue-600 font-medium">{tx.quoteOrderType}</p>
                       <p className="text-blue-900 font-semibold">{quote.orderType}</p>
                     </div>
                     {quote.volumeLiters && (
                       <div>
-                        <p className="text-blue-600 font-medium">Volume</p>
-                        <p className="text-blue-900 font-semibold">{quote.volumeLiters}L ({quote.bottles} bottles)</p>
+                        <p className="text-blue-600 font-medium">{tx.quoteVolume}</p>
+                        <p className="text-blue-900 font-semibold">
+                          {tx.volumeAndBottles
+                            .replace("{liters}", String(quote.volumeLiters))
+                            .replace("{bottles}", String(quote.bottles))}
+                        </p>
                         {quote.baseFuzeLiters && quote.wastageFactorPct !== undefined && (
                           <p className="text-xs text-blue-700 mt-0.5">
-                            base {Number(quote.baseFuzeLiters).toFixed(1)}L + {quote.wastageFactorPct}% wastage
+                            {tx.quoteVolumeBreakdown
+                              .replace("{base}", Number(quote.baseFuzeLiters).toFixed(1))
+                              .replace("{pct}", String(quote.wastageFactorPct))}
                           </p>
                         )}
                       </div>
                     )}
                     {quote.fabricMassKg && (
                       <div>
-                        <p className="text-blue-600 font-medium">Fabric</p>
+                        <p className="text-blue-600 font-medium">{tx.quoteFabric}</p>
                         <p className="text-blue-900 font-semibold">
                           {Number(quote.fabricMassKg).toLocaleString(undefined, { maximumFractionDigits: 1 })} kg
                           {quote.treatmentMethod && <span className="text-xs text-blue-700"> · {quote.treatmentMethod.replace("_", "-")}</span>}
@@ -573,45 +661,49 @@ export default function FactoryOrdersPage() {
                     )}
                     {quote.hangtagQty && (
                       <div>
-                        <p className="text-blue-600 font-medium">Hangtags</p>
+                        <p className="text-blue-600 font-medium">{tx.quoteHangtags}</p>
                         <p className="text-blue-900 font-semibold">{quote.hangtagQty.toLocaleString()}</p>
                       </div>
                     )}
                     <div>
-                      <p className="text-blue-600 font-medium">FUZE Tier</p>
+                      <p className="text-blue-600 font-medium">{tx.quoteFuzeTier}</p>
                       <p className="text-blue-900 font-semibold">{quote.fuzeTier || "—"}</p>
                     </div>
                     <div>
-                      <p className="text-blue-600 font-medium">Price per Liter</p>
+                      <p className="text-blue-600 font-medium">{tx.quotePricePerLiter}</p>
                       <p className="text-blue-900 font-semibold">{formatCurrency(quote.pricePerLiter || 0, quote.currency)}</p>
                     </div>
                     {quote.discountPct > 0 && (
                       <div>
-                        <p className="text-blue-600 font-medium">Volume Discount</p>
+                        <p className="text-blue-600 font-medium">{tx.quoteVolumeDiscount}</p>
                         <p className="text-blue-900 font-semibold">{quote.discountPct}%</p>
                       </div>
                     )}
                     <div>
-                      <p className="text-blue-600 font-medium">Fulfillment</p>
+                      <p className="text-blue-600 font-medium">{tx.quoteFulfillment}</p>
                       <p className="text-blue-900 font-semibold">
-                        {quote.fulfillmentSource === "DIRECT_USA" ? "Direct from USA" : quote.distributor?.name || "Distributor"}
+                        {quote.fulfillmentSource === "DIRECT_USA"
+                          ? tx.quoteFulfillmentDirectUSA
+                          : quote.distributor?.name || tx.quoteFulfillmentDistributor}
                       </p>
                     </div>
                   </div>
 
                   <div className="mt-4 pt-4 border-t border-blue-200">
                     <div className="flex items-center justify-between">
-                      <span className="text-blue-900 font-bold text-lg">Total</span>
+                      <span className="text-blue-900 font-bold text-lg">{tx.quoteTotal}</span>
                       <span className="text-blue-900 font-bold text-2xl">{formatCurrency(quote.totalPrice || 0, quote.currency)}</span>
                     </div>
                     {quote.isSampleSubsidized && quote.subsidyAmount > 0 && (
                       <div className="flex items-center justify-between mt-1">
-                        <span className="text-green-700 font-medium text-sm">FUZE Sample Subsidy (50%)</span>
+                        <span className="text-green-700 font-medium text-sm">{tx.quoteSubsidyLine}</span>
                         <span className="text-green-700 font-semibold">−{formatCurrency(quote.subsidyAmount)}</span>
                       </div>
                     )}
                     {quote.quoteExpiresAt && (
-                      <p className="text-xs text-blue-500 mt-2">Quote valid until {formatDate(quote.quoteExpiresAt)}</p>
+                      <p className="text-xs text-blue-500 mt-2">
+                        {tx.quoteValidUntil.replace("{date}", formatDate(quote.quoteExpiresAt))}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -622,25 +714,23 @@ export default function FactoryOrdersPage() {
                     disabled={acceptingQuote}
                     className="flex-1 px-5 py-3 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009aa8] transition-colors disabled:opacity-50"
                   >
-                    {acceptingQuote ? "Accepting..." : "Accept Quote & Submit"}
+                    {acceptingQuote ? tx.acceptingQuote : tx.acceptQuote}
                   </button>
                   <button
                     onClick={() => { setShowNewOrder(false); setQuote(null); }}
                     className="px-5 py-3 bg-slate-100 text-slate-700 rounded-lg font-semibold hover:bg-slate-200 transition-colors"
                   >
-                    Review Later
+                    {tx.reviewLater}
                   </button>
                 </div>
-                <p className="text-xs text-slate-400 mt-3 text-center">
-                  Accepting sends this order to your FUZE account manager for approval and fulfillment.
-                </p>
+                <p className="text-xs text-slate-400 mt-3 text-center">{tx.acceptInfoBlurb}</p>
               </div>
             ) : (
               /* ─── Order Form ─── */
               <form onSubmit={handleSubmitOrder} className="p-6 space-y-6">
                 {/* Order Type Selection */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-3">What would you like to order?</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-3">{tx.orderTypePrompt}</label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {ORDER_TYPES.map((type) => (
                       <button
@@ -671,20 +761,18 @@ export default function FactoryOrdersPage() {
                     >
                       <span className="flex items-center gap-2">
                         <span className="text-xl">🧮</span>
-                        <span className="font-semibold text-slate-900">Calculate from Fabric Spec</span>
-                        <span className="text-xs text-slate-500">(recommended)</span>
+                        <span className="font-semibold text-slate-900">{tx.calcToggle}</span>
+                        <span className="text-xs text-slate-500">{tx.calcRecommended}</span>
                       </span>
                       <span className="text-slate-400">{showCalc ? "▲" : "▼"}</span>
                     </button>
                     {showCalc && (
                       <div className="p-4 border-t border-[#00b4c3]/20 space-y-3">
-                        <p className="text-xs text-slate-600">
-                          Enter your fabric specs and we'll calculate the exact FUZE volume needed — including your wastage buffer.
-                        </p>
+                        <p className="text-xs text-slate-600">{tx.calcIntro}</p>
 
                         {/* Method */}
                         <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1">Treatment Method</label>
+                          <label className="block text-xs font-semibold text-slate-700 mb-1">{tx.calcMethodLabel}</label>
                           <div className="grid grid-cols-3 gap-2">
                             {TREATMENT_METHODS.map((m) => (
                               <button
@@ -706,26 +794,26 @@ export default function FactoryOrdersPage() {
 
                         {/* Fabric mass direct entry */}
                         <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1">Total Fabric Mass (kg)</label>
+                          <label className="block text-xs font-semibold text-slate-700 mb-1">{tx.calcMassLabel}</label>
                           <input
                             type="number"
                             value={form.fabricMassKg}
                             onChange={(e) => setForm({ ...form, fabricMassKg: e.target.value })}
-                            placeholder="If you already know total mass, enter it here"
+                            placeholder={tx.calcMassPlaceholder}
                             className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
                           />
                         </div>
 
                         <div className="flex items-center gap-2 text-xs text-slate-400">
                           <div className="flex-1 h-px bg-slate-200" />
-                          <span>OR compute from dimensions</span>
+                          <span>{tx.calcOrCompute}</span>
                           <div className="flex-1 h-px bg-slate-200" />
                         </div>
 
                         {/* Fabric dimensions */}
                         <div className="grid grid-cols-3 gap-2">
                           <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">Weight (g/m²)</label>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1">{tx.calcWeightLabel}</label>
                             <input
                               type="number"
                               value={form.fabricWeightGsm}
@@ -735,7 +823,7 @@ export default function FactoryOrdersPage() {
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">Length (m)</label>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1">{tx.calcLengthLabel}</label>
                             <input
                               type="number"
                               value={form.fabricLengthMeters}
@@ -745,7 +833,7 @@ export default function FactoryOrdersPage() {
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">Width (m)</label>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1">{tx.calcWidthLabel}</label>
                             <input
                               type="number"
                               step="0.01"
@@ -760,8 +848,8 @@ export default function FactoryOrdersPage() {
                         {/* Wastage */}
                         <div>
                           <label className="block text-xs font-semibold text-slate-700 mb-1">
-                            Wastage / Safety Buffer (%) —{" "}
-                            <span className="text-slate-500 font-normal">process losses, retreatment margin, QC cushion</span>
+                            {tx.calcWastageLabel}{" "}
+                            <span className="text-slate-500 font-normal">{tx.calcWastageHint}</span>
                           </label>
                           <div className="flex items-center gap-3">
                             <input
@@ -791,31 +879,41 @@ export default function FactoryOrdersPage() {
                         {fabricMass > 0 && selectedTier && (
                           <div className="bg-white rounded-lg border border-[#00b4c3]/40 p-3 space-y-1.5 text-sm">
                             <div className="flex justify-between">
-                              <span className="text-slate-600">Fabric mass</span>
+                              <span className="text-slate-600">{tx.calcLineFabricMass}</span>
                               <strong>{fabricMass.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg</strong>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-slate-600">Active ingredient needed ({selectedTier.value} @ {selectedTier.mgPerKg} mg/kg)</span>
+                              <span className="text-slate-600">
+                                {tx.calcLineActiveIngredient
+                                  .replace("{tier}", selectedTier.value)
+                                  .replace("{mgkg}", String(selectedTier.mgPerKg))}
+                              </span>
                               <strong>{(fabricMass * selectedTier.mgPerKg).toLocaleString(undefined, { maximumFractionDigits: 0 })} mg</strong>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-slate-600">Base FUZE volume (stock @ {FUZE_STOCK_MG_PER_L} mg/L)</span>
+                              <span className="text-slate-600">
+                                {tx.calcLineBaseVolume.replace("{stock}", String(FUZE_STOCK_MG_PER_L))}
+                              </span>
                               <strong>{baseFuzeLiters.toLocaleString(undefined, { maximumFractionDigits: 1 })} L</strong>
                             </div>
                             <div className="flex justify-between text-amber-700">
-                              <span>+ Wastage buffer ({wastagePct}%)</span>
+                              <span>{tx.calcLineWastage.replace("{pct}", String(wastagePct))}</span>
                               <strong>+{wastageLiters.toLocaleString(undefined, { maximumFractionDigits: 1 })} L</strong>
                             </div>
                             <div className="pt-1.5 border-t border-slate-200 flex justify-between text-base">
-                              <span className="font-semibold">Recommended order</span>
-                              <strong className="text-[#00b4c3]">{recommendedBottles} bottles ({recommendedVolume} L)</strong>
+                              <span className="font-semibold">{tx.calcLineRecommended}</span>
+                              <strong className="text-[#00b4c3]">
+                                {tx.calcRecommendedFmt
+                                  .replace("{bottles}", String(recommendedBottles))
+                                  .replace("{liters}", String(recommendedVolume))}
+                              </strong>
                             </div>
                             <button
                               type="button"
                               onClick={applyCalculation}
                               className="w-full mt-2 px-3 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg hover:bg-[#009aa8]"
                             >
-                              Apply to Order →
+                              {tx.calcApply}
                             </button>
                           </div>
                         )}
@@ -838,15 +936,15 @@ export default function FactoryOrdersPage() {
                     {form.orderType === "SAMPLE" && (
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Sample size (quick-pick)
+                          {tx.sampleSizeLabel}
                         </label>
                         <div className="flex flex-wrap gap-2">
                           {[
-                            { value: "0.5", label: "500 mL", desc: "smallest bench sample" },
-                            { value: "1", label: "1 L", desc: "standard lab sample" },
-                            { value: "2", label: "2 L", desc: "extended trial" },
-                            { value: "5", label: "5 L", desc: "small pilot" },
-                            { value: "19", label: "19 L (1 carboy)", desc: "full carboy" },
+                            { value: "0.5", label: tx.sampleSize500ml, desc: tx.sampleSize500mlDesc },
+                            { value: "1", label: tx.sampleSize1L, desc: tx.sampleSize1LDesc },
+                            { value: "2", label: tx.sampleSize2L, desc: tx.sampleSize2LDesc },
+                            { value: "5", label: tx.sampleSize5L, desc: tx.sampleSize5LDesc },
+                            { value: "19", label: tx.sampleSize19L, desc: tx.sampleSize19LDesc },
                           ].map((opt) => (
                             <button
                               key={opt.value}
@@ -869,59 +967,59 @@ export default function FactoryOrdersPage() {
                             </button>
                           ))}
                         </div>
-                        <p className="text-[11px] text-slate-500 mt-1">
-                          Or enter a custom volume below.
-                        </p>
+                        <p className="text-[11px] text-slate-500 mt-1">{tx.sampleSizeHint}</p>
                       </div>
                     )}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Volume (liters)</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">{tx.volumeLabel}</label>
                         <input
                           type="number"
                           step="0.1"
                           min="0"
                           value={form.volumeLiters}
                           onChange={(e) => setForm({ ...form, volumeLiters: e.target.value, bottles: "" })}
-                          placeholder={form.orderType === "SAMPLE" ? "e.g. 0.5, 1, 2" : "e.g. 190"}
+                          placeholder={form.orderType === "SAMPLE" ? tx.volumePlaceholderSample : tx.volumePlaceholderDefault}
                           className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                         />
                         {form.volumeLiters && (
                           <p className="text-xs text-slate-500 mt-1">
-                            {Number(form.volumeLiters) < 19 ? (
-                              <>
-                                = {(Number(form.volumeLiters) * 1000).toLocaleString()} mL · ships from carboy supply
-                              </>
-                            ) : (
-                              <>
-                                = {calculatedBottles} bottles (19L each)
-                              </>
-                            )}
+                            {Number(form.volumeLiters) < 19
+                              ? tx.volumeMlBreakdown.replace(
+                                  "{ml}",
+                                  (Number(form.volumeLiters) * 1000).toLocaleString(),
+                                )
+                              : tx.volumeBottlesBreakdown.replace("{count}", String(calculatedBottles))}
                             {form.baseFuzeLiters && Number(form.baseFuzeLiters) > 0 && (
-                              <> · base {Number(form.baseFuzeLiters).toFixed(1)}L + {wastagePct}% buffer</>
+                              <>
+                                {" · "}
+                                {tx.volumeBaseBuffer
+                                  .replace("{base}", Number(form.baseFuzeLiters).toFixed(1))
+                                  .replace("{pct}", String(wastagePct))}
+                              </>
                             )}
                           </p>
                         )}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Or enter bottles (19L)</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">{tx.bottlesLabel}</label>
                         <input
                           type="number"
                           value={form.bottles}
                           onChange={(e) => setForm({ ...form, bottles: e.target.value, volumeLiters: "" })}
-                          placeholder="e.g. 10"
+                          placeholder={tx.bottlesPlaceholder}
                           className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                           disabled={form.orderType === "SAMPLE"}
-                          title={form.orderType === "SAMPLE" ? "Sample orders use the volume field above for sub-19L sizes." : undefined}
+                          title={form.orderType === "SAMPLE" ? tx.bottlesSampleTitle : undefined}
                         />
                         {form.bottles && (
-                          <p className="text-xs text-slate-500 mt-1">= {calculatedVolume}L total</p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            {tx.bottlesTotal.replace("{liters}", String(calculatedVolume))}
+                          </p>
                         )}
                         {form.orderType === "SAMPLE" && (
-                          <p className="text-[11px] text-amber-600 mt-1">
-                            Disabled for samples — use volume field above.
-                          </p>
+                          <p className="text-[11px] text-amber-600 mt-1">{tx.bottlesSampleDisabled}</p>
                         )}
                       </div>
                     </div>
@@ -932,7 +1030,7 @@ export default function FactoryOrdersPage() {
                 {form.orderType !== "HANGTAG" && !showCalc && (
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Wastage / Safety Buffer — <span className="text-slate-500 font-normal">stored on the order for QC and inventory planning</span>
+                      {tx.wastageOutsideLabel} <span className="text-slate-500 font-normal">{tx.wastageOutsideHint}</span>
                     </label>
                     <div className="flex items-center gap-3">
                       <input
@@ -963,26 +1061,26 @@ export default function FactoryOrdersPage() {
                 {form.orderType === "HANGTAG" && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Hangtag Quantity</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">{tx.hangtagQtyLabel}</label>
                       <input
                         type="number"
                         value={form.hangtagQty}
                         onChange={(e) => setForm({ ...form, hangtagQty: e.target.value })}
-                        placeholder="e.g. 5000"
+                        placeholder={tx.hangtagQtyPlaceholder}
                         className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Design Variant</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">{tx.hangtagDesignLabel}</label>
                       <select
                         value={form.hangtagDesign}
                         onChange={(e) => setForm({ ...form, hangtagDesign: e.target.value })}
                         className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                       >
-                        <option value="">Standard FUZE Tag</option>
-                        <option value="premium">Premium FUZE Tag</option>
-                        <option value="custom">Custom Branded Tag</option>
+                        <option value="">{tx.hangtagDesignStandard}</option>
+                        <option value="premium">{tx.hangtagDesignPremium}</option>
+                        <option value="custom">{tx.hangtagDesignCustom}</option>
                       </select>
                     </div>
                   </div>
@@ -991,7 +1089,7 @@ export default function FactoryOrdersPage() {
                 {/* FUZE Tier */}
                 {form.orderType !== "HANGTAG" && (
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-3">FUZE Treatment Tier</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-3">{tx.fuzeTierLabel}</label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {FUZE_TIERS.map((tier) => (
                         <button
@@ -1016,7 +1114,7 @@ export default function FactoryOrdersPage() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="block text-sm font-semibold text-slate-700">
-                      Brand(s) this order is for <span className="text-red-500">*</span>
+                      {tx.brandsAttributionLabel} <span className="text-red-500">{tx.brandsAttributionRequired}</span>
                     </label>
                     <div className="flex items-center gap-2">
                       {form.brandAllocations.length < 5 && (
@@ -1033,14 +1131,14 @@ export default function FactoryOrdersPage() {
                           }
                           className="text-xs text-[#00b4c3] hover:text-[#009aa8] font-medium"
                         >
-                          + Add Another Brand
+                          {tx.addAnotherBrand}
                         </button>
                       )}
                     </div>
                   </div>
                   <p className="text-xs text-slate-400 mb-3">
-                    Every order must be linked to at least one brand. This tracks usage for account management, commissions, and brand rebates.
-                    {form.brandAllocations.length > 1 && " Split the volume percentage across brands."}
+                    {tx.brandsAttributionBlurb}
+                    {form.brandAllocations.length > 1 && tx.brandsAttributionSplit}
                   </p>
 
                   <div className="space-y-3">
@@ -1078,7 +1176,7 @@ export default function FactoryOrdersPage() {
                               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                               required={idx === 0}
                             >
-                              <option value="">Select brand...</option>
+                              <option value="">{tx.brandSelectPlaceholder}</option>
                               {availableBrands.map((b) => (
                                 <option key={b.id} value={b.id}>
                                   {b.name}
@@ -1175,12 +1273,12 @@ export default function FactoryOrdersPage() {
                         onClick={() => setShowRequestBrand(true)}
                         className="text-sm text-[#00b4c3] hover:text-[#009aa8] font-medium flex items-center gap-1"
                       >
-                        <span>🏢</span> Brand not listed? Request to add it
+                        <span>🏢</span> {tx.brandNotListed}
                       </button>
                     ) : (
                       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-semibold text-amber-800">Request New Brand</h4>
+                          <h4 className="text-sm font-semibold text-amber-800">{tx.requestNewBrand}</h4>
                           <button
                             type="button"
                             onClick={() => setShowRequestBrand(false)}
@@ -1189,30 +1287,27 @@ export default function FactoryOrdersPage() {
                             ✕
                           </button>
                         </div>
-                        <p className="text-xs text-amber-700">
-                          Submit a request and FUZE will reach out to the brand and add them to the system.
-                          You can continue placing your order once the brand is approved.
-                        </p>
+                        <p className="text-xs text-amber-700">{tx.requestNewBrandBlurb}</p>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                           <input
                             type="text"
                             value={newBrandName}
                             onChange={(e) => setNewBrandName(e.target.value)}
-                            placeholder="Brand name *"
+                            placeholder={tx.requestBrandNamePlaceholder}
                             className="px-3 py-2 border border-amber-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 outline-none"
                           />
                           <input
                             type="text"
                             value={newBrandWebsite}
                             onChange={(e) => setNewBrandWebsite(e.target.value)}
-                            placeholder="Website (optional)"
+                            placeholder={tx.requestBrandWebsitePlaceholder}
                             className="px-3 py-2 border border-amber-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 outline-none"
                           />
                           <input
                             type="text"
                             value={newBrandContact}
                             onChange={(e) => setNewBrandContact(e.target.value)}
-                            placeholder="Your contact there (optional)"
+                            placeholder={tx.requestBrandContactPlaceholder}
                             className="px-3 py-2 border border-amber-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-400 outline-none"
                           />
                         </div>
@@ -1233,7 +1328,7 @@ export default function FactoryOrdersPage() {
                               });
                               const data = await res.json();
                               if (data.ok) {
-                                setSuccess(`Brand "${newBrandName}" request submitted! FUZE will review and reach out.`);
+                                setSuccess(tx.requestBrandSuccess.replace("{name}", newBrandName));
                                 setShowRequestBrand(false);
                                 setNewBrandName("");
                                 setNewBrandWebsite("");
@@ -1241,17 +1336,17 @@ export default function FactoryOrdersPage() {
                                 // Reload brands in case it was auto-created
                                 loadContext();
                               } else {
-                                setError(data.error || "Failed to submit brand request");
+                                setError(data.error || tx.requestBrandFailed);
                               }
                             } catch {
-                              setError("Failed to submit brand request");
+                              setError(tx.requestBrandFailed);
                             } finally {
                               setRequestingBrand(false);
                             }
                           }}
                           className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 transition disabled:opacity-50"
                         >
-                          {requestingBrand ? "Submitting..." : "Submit Brand Request"}
+                          {requestingBrand ? tx.requestBrandSubmitting : tx.requestBrandSubmit}
                         </button>
                       </div>
                     )}
@@ -1260,34 +1355,34 @@ export default function FactoryOrdersPage() {
 
                 {/* Fabric Context */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Fabric (optional)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{tx.fabricLabelOptional}</label>
                   <select
                     value={form.fabricId}
                     onChange={(e) => setForm({ ...form, fabricId: e.target.value })}
                     className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                   >
-                    <option value="">Select fabric...</option>
+                    <option value="">{tx.fabricSelectPlaceholder}</option>
                     {fabrics.map((f) => (
                       <option key={f.id} value={f.id}>
                         {f.fuzeNumber || f.customerCode || f.id}
                       </option>
                     ))}
                   </select>
-                  <p className="text-xs text-slate-400 mt-1">Which fabric is being treated?</p>
+                  <p className="text-xs text-slate-400 mt-1">{tx.fabricHint}</p>
                 </div>
 
                 {/* Purpose Note */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Purpose / Notes</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{tx.purposeLabel}</label>
                   <textarea
                     value={form.purposeNote}
                     onChange={(e) => setForm({ ...form, purposeNote: e.target.value })}
                     placeholder={
                       form.orderType === "SAMPLE"
-                        ? "e.g. New account development — testing FUZE on polyester jersey for Rhone"
+                        ? tx.purposePlaceholderSample
                         : form.orderType === "HANGTAG"
-                        ? "e.g. FUZE-certified hangtags for Q3 production run"
-                        : "e.g. Production run for Brand X — Q3 delivery"
+                          ? tx.purposePlaceholderHangtag
+                          : tx.purposePlaceholderDefault
                     }
                     rows={2}
                     className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
@@ -1296,14 +1391,14 @@ export default function FactoryOrdersPage() {
 
                 {/* Shipping */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-3">Shipping Address</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-3">{tx.shippingAddressHeader}</label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="sm:col-span-3">
                       <input
                         type="text"
                         value={form.shippingAddress}
                         onChange={(e) => setForm({ ...form, shippingAddress: e.target.value })}
-                        placeholder="Street address"
+                        placeholder={tx.shippingStreet}
                         className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                       />
                     </div>
@@ -1312,7 +1407,7 @@ export default function FactoryOrdersPage() {
                         type="text"
                         value={form.shippingCity}
                         onChange={(e) => setForm({ ...form, shippingCity: e.target.value })}
-                        placeholder="City"
+                        placeholder={tx.shippingCity}
                         className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                       />
                     </div>
@@ -1321,7 +1416,7 @@ export default function FactoryOrdersPage() {
                         type="text"
                         value={form.shippingCountry}
                         onChange={(e) => setForm({ ...form, shippingCountry: e.target.value })}
-                        placeholder="Country"
+                        placeholder={tx.shippingCountry}
                         className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                       />
                     </div>
@@ -1330,11 +1425,11 @@ export default function FactoryOrdersPage() {
 
                 {/* Additional Notes */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Additional Notes</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{tx.additionalNotesLabel}</label>
                   <textarea
                     value={form.notes}
                     onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                    placeholder="Any special instructions for this order..."
+                    placeholder={tx.additionalNotesPlaceholder}
                     rows={2}
                     className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
                   />
@@ -1345,11 +1440,8 @@ export default function FactoryOrdersPage() {
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
                     <span className="text-xl">🎁</span>
                     <div>
-                      <p className="font-semibold text-green-800">FUZE Sample Support</p>
-                      <p className="text-sm text-green-700">
-                        FUZE subsidizes 50% of sample order costs to help you develop new accounts and test new fabrics.
-                        Your quote will reflect the subsidy automatically.
-                      </p>
+                      <p className="font-semibold text-green-800">{tx.sampleSubsidyTitle}</p>
+                      <p className="text-sm text-green-700">{tx.sampleSubsidyBlurb}</p>
                     </div>
                   </div>
                 )}
@@ -1361,14 +1453,14 @@ export default function FactoryOrdersPage() {
                     disabled={submitting}
                     className="flex-1 px-5 py-3 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009aa8] transition-colors disabled:opacity-50 shadow-lg shadow-[#00b4c3]/25"
                   >
-                    {submitting ? "Generating Quote..." : "Get Quote"}
+                    {submitting ? tx.generatingQuote : tx.getQuote}
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowNewOrder(false)}
                     className="px-5 py-3 bg-slate-100 text-slate-700 rounded-lg font-semibold hover:bg-slate-200 transition-colors"
                   >
-                    Cancel
+                    {tx.cancel}
                   </button>
                 </div>
               </form>
@@ -1387,7 +1479,9 @@ export default function FactoryOrdersPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">{selectedOrder.orderNumber}</h2>
-                  <p className="text-sm text-slate-500">{selectedOrder.orderType} Order</p>
+                  <p className="text-sm text-slate-500">
+                    {tx.detailOrderType.replace("{type}", selectedOrder.orderType)}
+                  </p>
                 </div>
                 <button
                   onClick={() => setSelectedOrder(null)}
@@ -1401,11 +1495,13 @@ export default function FactoryOrdersPage() {
             <div className="p-6 space-y-5">
               {/* Status */}
               <div className="flex items-center gap-3">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${STATUS_COLORS[selectedOrder.status]?.bg} ${STATUS_COLORS[selectedOrder.status]?.text}`}>
-                  {STATUS_COLORS[selectedOrder.status]?.label || selectedOrder.status}
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${STATUS_STYLE[selectedOrder.status]?.bg} ${STATUS_STYLE[selectedOrder.status]?.text}`}>
+                  {statusLabel(selectedOrder.status)}
                 </span>
                 {selectedOrder.trackingNumber && (
-                  <span className="text-sm text-slate-500">Tracking: {selectedOrder.trackingNumber}</span>
+                  <span className="text-sm text-slate-500">
+                    {tx.detailTracking.replace("{number}", selectedOrder.trackingNumber)}
+                  </span>
                 )}
               </div>
 
@@ -1414,72 +1510,72 @@ export default function FactoryOrdersPage() {
                 {selectedOrder.volumeLiters && (
                   <>
                     <div>
-                      <p className="text-slate-500 font-medium">Volume</p>
+                      <p className="text-slate-500 font-medium">{tx.detailVolume}</p>
                       <p className="text-slate-900 font-semibold">{selectedOrder.volumeLiters}L</p>
                     </div>
                     <div>
-                      <p className="text-slate-500 font-medium">Bottles</p>
+                      <p className="text-slate-500 font-medium">{tx.detailBottles}</p>
                       <p className="text-slate-900 font-semibold">{selectedOrder.bottles || Math.ceil(selectedOrder.volumeLiters / 19)}</p>
                     </div>
                   </>
                 )}
                 {selectedOrder.hangtagQty && (
                   <div>
-                    <p className="text-slate-500 font-medium">Hangtags</p>
+                    <p className="text-slate-500 font-medium">{tx.detailHangtags}</p>
                     <p className="text-slate-900 font-semibold">{selectedOrder.hangtagQty.toLocaleString()}</p>
                   </div>
                 )}
                 <div>
-                  <p className="text-slate-500 font-medium">FUZE Tier</p>
+                  <p className="text-slate-500 font-medium">{tx.detailFuzeTier}</p>
                   <p className="text-slate-900 font-semibold">{selectedOrder.fuzeTier || "—"}</p>
                 </div>
                 <div>
-                  <p className="text-slate-500 font-medium">Price/Liter</p>
+                  <p className="text-slate-500 font-medium">{tx.detailPricePerLiter}</p>
                   <p className="text-slate-900 font-semibold">{formatCurrency(selectedOrder.pricePerLiter || 0, selectedOrder.currency)}</p>
                 </div>
                 <div>
-                  <p className="text-slate-500 font-medium">Total</p>
+                  <p className="text-slate-500 font-medium">{tx.detailTotal}</p>
                   <p className="text-slate-900 font-bold text-lg">{formatCurrency(selectedOrder.totalPrice || 0, selectedOrder.currency)}</p>
                 </div>
                 {selectedOrder.brand?.name && (
                   <div>
-                    <p className="text-slate-500 font-medium">Brand</p>
+                    <p className="text-slate-500 font-medium">{tx.detailBrand}</p>
                     <p className="text-slate-900 font-semibold">{selectedOrder.brand.name}</p>
                   </div>
                 )}
                 {selectedOrder.fabric?.fuzeNumber && (
                   <div>
-                    <p className="text-slate-500 font-medium">Fabric</p>
+                    <p className="text-slate-500 font-medium">{tx.detailFabric}</p>
                     <p className="text-slate-900 font-semibold">{selectedOrder.fabric.fuzeNumber}</p>
                   </div>
                 )}
                 {selectedOrder.distributor?.name && (
                   <div>
-                    <p className="text-slate-500 font-medium">Fulfilled By</p>
+                    <p className="text-slate-500 font-medium">{tx.detailFulfilledBy}</p>
                     <p className="text-slate-900 font-semibold">{selectedOrder.distributor.name}</p>
                   </div>
                 )}
                 {selectedOrder.fulfillmentSource === "DIRECT_USA" && (
                   <div>
-                    <p className="text-slate-500 font-medium">Fulfilled By</p>
-                    <p className="text-slate-900 font-semibold">Direct from USA</p>
+                    <p className="text-slate-500 font-medium">{tx.detailFulfilledBy}</p>
+                    <p className="text-slate-900 font-semibold">{tx.detailFulfilledDirectUSA}</p>
                   </div>
                 )}
                 {selectedOrder.accountManager?.name && (
                   <div>
-                    <p className="text-slate-500 font-medium">Account Manager</p>
+                    <p className="text-slate-500 font-medium">{tx.detailAccountManager}</p>
                     <p className="text-slate-900 font-semibold">{selectedOrder.accountManager.name}</p>
                   </div>
                 )}
                 {selectedOrder.shippedDate && (
                   <div>
-                    <p className="text-slate-500 font-medium">Shipped</p>
+                    <p className="text-slate-500 font-medium">{tx.detailShipped}</p>
                     <p className="text-slate-900 font-semibold">{formatDate(selectedOrder.shippedDate)}</p>
                   </div>
                 )}
                 {selectedOrder.deliveredDate && (
                   <div>
-                    <p className="text-slate-500 font-medium">Delivered</p>
+                    <p className="text-slate-500 font-medium">{tx.detailDelivered}</p>
                     <p className="text-slate-900 font-semibold">{formatDate(selectedOrder.deliveredDate)}</p>
                   </div>
                 )}
@@ -1490,10 +1586,10 @@ export default function FactoryOrdersPage() {
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                   <div className="flex items-center gap-2">
                     <span>🎁</span>
-                    <p className="text-green-800 font-semibold">FUZE Sample Subsidy Applied</p>
+                    <p className="text-green-800 font-semibold">{tx.subsidyAppliedTitle}</p>
                   </div>
                   <p className="text-sm text-green-700 mt-1">
-                    FUZE is covering {formatCurrency(selectedOrder.subsidyAmount)} of this sample order.
+                    {tx.subsidyAppliedBlurb.replace("{amount}", formatCurrency(selectedOrder.subsidyAmount))}
                   </p>
                 </div>
               )}
@@ -1503,13 +1599,13 @@ export default function FactoryOrdersPage() {
                 <div className="bg-slate-50 rounded-lg p-4">
                   {selectedOrder.purposeNote && (
                     <div className="mb-2">
-                      <p className="text-xs text-slate-500 font-medium">Purpose</p>
+                      <p className="text-xs text-slate-500 font-medium">{tx.detailPurpose}</p>
                       <p className="text-sm text-slate-700">{selectedOrder.purposeNote}</p>
                     </div>
                   )}
                   {selectedOrder.notes && (
                     <div>
-                      <p className="text-xs text-slate-500 font-medium">Notes</p>
+                      <p className="text-xs text-slate-500 font-medium">{tx.detailNotes}</p>
                       <p className="text-sm text-slate-700">{selectedOrder.notes}</p>
                     </div>
                   )}
@@ -1524,7 +1620,7 @@ export default function FactoryOrdersPage() {
                     disabled={acceptingQuote}
                     className="flex-1 px-5 py-3 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009aa8] transition-colors disabled:opacity-50"
                   >
-                    {acceptingQuote ? "Accepting..." : "Accept Quote"}
+                    {acceptingQuote ? tx.acceptingQuote : tx.acceptQuoteShort}
                   </button>
                 )}
                 {selectedOrder.status === "DELIVERED" && (
@@ -1532,6 +1628,7 @@ export default function FactoryOrdersPage() {
                     onClick={() => {
                       // Pre-fill reorder form from previous order
                       setForm({
+                        ...INITIAL_FORM,
                         orderType: selectedOrder.orderType,
                         volumeLiters: selectedOrder.volumeLiters ? String(selectedOrder.volumeLiters) : "",
                         bottles: selectedOrder.bottles ? String(selectedOrder.bottles) : "",
@@ -1540,7 +1637,7 @@ export default function FactoryOrdersPage() {
                         fabricId: selectedOrder.fabric?.id || selectedOrder.fabricId || "",
                         hangtagQty: selectedOrder.hangtagQty ? String(selectedOrder.hangtagQty) : "",
                         hangtagDesign: selectedOrder.hangtagDesign || "",
-                        purposeNote: `Reorder of ${selectedOrder.orderNumber}`,
+                        purposeNote: tx.reorderPurpose.replace("{orderNumber}", selectedOrder.orderNumber),
                         shippingAddress: selectedOrder.shippingAddress || "",
                         shippingCity: selectedOrder.shippingCity || "",
                         shippingCountry: selectedOrder.shippingCountry || "",
@@ -1554,7 +1651,7 @@ export default function FactoryOrdersPage() {
                     }}
                     className="flex-1 px-5 py-3 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009aa8] transition-colors"
                   >
-                    Reorder
+                    {tx.reorder}
                   </button>
                 )}
                 {["DRAFT", "QUOTED"].includes(selectedOrder.status) && (
@@ -1562,14 +1659,14 @@ export default function FactoryOrdersPage() {
                     onClick={() => handleCancelOrder(selectedOrder.id)}
                     className="px-5 py-3 bg-red-50 text-red-700 rounded-lg font-semibold hover:bg-red-100 transition-colors"
                   >
-                    Cancel Order
+                    {tx.cancelOrder}
                   </button>
                 )}
                 <button
                   onClick={() => setSelectedOrder(null)}
                   className="px-5 py-3 bg-slate-100 text-slate-700 rounded-lg font-semibold hover:bg-slate-200 transition-colors"
                 >
-                  Close
+                  {tx.close}
                 </button>
               </div>
             </div>
