@@ -181,6 +181,137 @@ bearer-authed apply-* endpoint pattern to bypass that mismatch.
 - 2026-05-10 — `c03238e` — phase 8G (1/3): batch-stamp approval-pending hook.
 - 2026-05-10 — `a43e850` — phase 8G (2/3): factory-portal approval-status badges.
 - 2026-05-10 — `634f11a` — phase 8G (3/3): vercel.json approval-overdue cron entry.
+- 2026-05-10 — `acc351b` — phase 9A: outbound email open + click tracking.
+- 2026-05-10 — `f874cf7` — phase 9B: Resend inbound webhook (reply + bounce detection).
+- 2026-05-10 — `7a1dd54` — phase 9C: sequence funnel analytics.
+- 2026-05-10 — `a2f37f4` — phase 9D: rep scorecard HubSpot-parity extension.
+- 2026-05-10 — `dcf21d2` — phase 9E: pipeline funnel + BrandStageTransition audit log.
+- 2026-05-10 — `ed3d5da` — phase 9F: engagement-debug page + reusable scorer.
+- 2026-05-10 — `8714534` — phase 9G: BD touchpoint calendar (weekly grid).
+- 2026-05-10 — `1d4fa56` — phase 9H: BD playbook library + seed cron.
+- 2026-05-10 — `0795e18` — phase 9I: brand referral attribution.
+- 2026-05-10 — `4ce79d6` — phase 9J: churn-warn nightly cron.
+
+## Phase 9 complete — full handoff
+
+Phase 9 was the BD analytics + HubSpot-parity layer. New schema,
+new endpoints, new public webhooks, new operator dashboards.
+Schema applied via /api/cron/migrate-9-bundle (30 statements, all
+ok). Three starter playbooks seeded via /api/cron/seed-playbooks.
+
+### Models added
+
+- **OutreachLinkClick** — one row per tracked link click on an
+  outbound email. URL + user-agent + 8-char SHA256 IP hash for
+  unique-visitor estimation.
+- **BrandStageTransition** — audit row written on every
+  Brand.pipelineStage change. fromStage / toStage /
+  transitionedAt / transitionedById. Indexed for funnel queries.
+- **BDPlaybook** — name (unique), textileCategory, markdown
+  description, recommendedSequenceId, recommendedEmailTemplateIds,
+  notes, activeBy.
+- **UserPlaybookFavorite** — (userId, playbookId) unique. Per-rep
+  star toggle.
+
+### Columns added
+
+- **OutreachMessage**: trackingToken (unique), openedAt,
+  lastOpenedAt, openCount, clickedAt, lastClickedAt, clickCount,
+  repliedAt, bouncedAt, bounceReason.
+- **Brand**: referredByBrandId, referredByContactId,
+  referralNote, referralValue.
+
+### Crons updated / added
+
+- **/api/cron/migrate-9-bundle** — one-shot, bearer-authed,
+  idempotent. Applied the 30-statement Phase-9 schema.
+- **/api/cron/seed-playbooks** — bootstrap. Seeded the three
+  starter playbooks (Activewear / Hospitality / Outdoor-Hunting).
+- **/api/cron/churn-warn** — 14:45 UTC daily. Registered in
+  vercel.json.
+
+### Surfaces shipped
+
+- **9A** — Outbound email open + click tracking. Pixel +
+  link rewriter via src/lib/email-tracking.ts. Public endpoints
+  /api/tracking/open/[token] (1×1 GIF) and /api/tracking/click/[token]
+  (302 to original). DNT honored. Wired into both BD Wizard
+  send and /api/admin/outreach/send.
+- **9B** — Resend inbound webhook at /api/webhooks/resend-inbound.
+  HMAC-SHA256 signature verify via RESEND_WEBHOOK_SECRET (env var
+  needed in Vercel — see CLAUDE.md). Matches In-Reply-To +
+  References headers to OutreachMessage.externalId, stamps
+  repliedAt + INBOUND note + bumps lastActivityAt + fires
+  notification to original sender. Bounce path stamps
+  bouncedAt + bounceReason + flips Contact.emailStatus="invalid".
+- **9C** — /admin/bd/sequences/[id]/analytics + API. Per-step
+  funnel: sent / opens / clicks / replies / meetings + rates +
+  avg days to reply / meeting + subject-variant A/B table.
+  Accepts either a BDSequence id or cadenceKey.
+- **9D** — /admin/bd/scoreboard extended with HubSpot-parity
+  columns (open%, click%, reply%, active-seq, ready, meetings,
+  velocity, pipeline$, referrals, won-90d). `?period=week|month|quarter`
+  added; `?days=N` still works.
+- **9E** — /admin/bd/funnel + API. Per-stage current count +
+  30/60/90-day inflow vs outflow + avg dwell + conversion
+  rate to next stage (color-coded). BrandStageTransition rows
+  written on every PATCH /api/brands/[id] that changes
+  pipelineStage.
+- **9F** — /admin/brands/[id]/engagement-debug + reusable
+  src/lib/brand-engagement.ts explainEngagement() helper.
+  Shows score + per-factor breakdown (communication / testing /
+  pipeline / payment) with rationale + counterfactual ("if X
+  happened, score changes by Y").
+- **9G** — /admin/bd/calendar + API. Weekly grid combining
+  meetings, open CrmTasks, BDSequenceStep next-sends, and
+  75d+ inactivity warnings. `?mine=1` filter scopes to caller's
+  EntityManager assignments + Brand.salesRepId.
+- **9H** — /admin/bd/playbooks + APIs. Category filter chips
+  (8 categories), 2-column card grid, star-toggle favorites.
+  Three starter playbooks seeded; each is markdown-bodied with
+  pitch / hooks / objection handling.
+- **9I** — Brand referral attribution. Brand columns +
+  /api/brands/[id]/referral resolver + <ReferralBadge brandId>
+  client component mounted on /brands/[id] header. Scoreboard
+  "Refs" column (added in 9D) reads against these columns.
+- **9J** — /api/cron/churn-warn. For every CUSTOMER_WON brand:
+  recompute explainEngagement → compare to BrandEngagement.overallScore
+  → if slope ≤ −5 OR trend in (DECLINING, AT_RISK) AND no activity
+  for 14d, fire Notification(source=churn-warn) to salesRep +
+  admins. 7-day suppression.
+
+### Manual follow-ups for Andrew
+
+- **Resend inbound webhook setup** — In the Resend dashboard,
+  add a webhook pointing at `https://fuzeatlas.com/api/webhooks/resend-inbound`
+  with the `email.received` event enabled. Paste the signing
+  secret into Vercel env vars as `RESEND_WEBHOOK_SECRET` on
+  Production. Until done, the endpoint accepts payloads but
+  logs a warning. See CLAUDE.md "Resend Inbound Webhook" section.
+- **DSN reconcile** (still open from Phase 8E) — the bearer-authed
+  runtime migration pattern continues to work; pull the
+  Railway-dashboard DSN for `caboose.proxy.rlwy.net:28355` into
+  `.env.local` when convenient so local Prisma scripts can hit
+  the real prod DB again.
+
+### TODOs remaining
+
+- **Inline referral picker UI** — the API and badge are live;
+  the edit form on /brands/[id] hasn't been extended with
+  picker fields for referredByBrandId / referredByContactId /
+  referralNote / referralValue. Currently editable only via
+  raw PATCH or admin script.
+- **Funnel audit-log backfill** — BrandStageTransition only has
+  forward-going rows. A one-shot backfill that approximates
+  pre-9E history from Brand.updatedAt would warm up the
+  90-day funnel charts immediately.
+- **explainEngagement adoption in the cron** — Phase 9F's helper
+  isn't yet called by the existing /api/brand-engagement
+  recalculation route. Left frozen to keep the cron's known-
+  good behavior; future migration to the shared helper would
+  remove the duplicated math.
+
+---
 
 ## Phase 8 complete — full handoff
 
