@@ -168,6 +168,30 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
       },
     });
 
+    // Phase 9E — write a BrandStageTransition audit row on every real
+    // stage change (oldStage !== newStage). The /admin/bd/funnel page
+    // uses these rows to compute inflow / outflow + average days at
+    // stage. Fire-and-forget so a transition-log failure can never
+    // block the underlying brand update.
+    if (
+      pipelineStage !== undefined &&
+      pipelineStage !== oldStage
+    ) {
+      const userId = req.headers.get("x-user-id") || undefined;
+      prisma.brandStageTransition
+        .create({
+          data: {
+            brandId: params.id,
+            fromStage: oldStage || null,
+            toStage: pipelineStage,
+            transitionedById: userId || null,
+          },
+        })
+        .catch((e: any) =>
+          console.warn("[stage-transition] write failed:", e?.message),
+        );
+    }
+
     // BD Portal #36 Phase 6: alert admins in-app when a new handoff lands
     if (handoffPendingUpdate === true) {
       (async () => {
