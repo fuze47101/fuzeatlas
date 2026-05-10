@@ -20,13 +20,16 @@
     "check:brand-voice": "tsx scripts/check-brand-voice.ts",
     "check:brand-voice:staged": "tsx scripts/check-brand-voice.ts --staged",
     "check:mobile": "tsx scripts/check-mobile.ts",
-    "check:mobile:staged": "tsx scripts/check-mobile.ts --staged"
+    "check:mobile:staged": "tsx scripts/check-mobile.ts --staged",
+    "seed:geocode": "tsx scripts/geocode-entities.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-code": "^2.1.112",
     "@aws-sdk/client-s3": "^3.1005.0",
     "@aws-sdk/s3-request-presigner": "^3.1005.0",
     "@prisma/client": "^6.19.3",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@types/papaparse": "^5.5.2",
     "autoprefixer": "^10.4.20",
     "bcryptjs": "^2.4.3",
@@ -41,7 +44,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "resend": "^6.9.3",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "three": "^0.180.0"
   },
   "devDependencies": {
     "@types/node": "^25.2.3",

@@ -295,6 +295,10 @@ model Brand {
   referralNote        String?
   referralValue       Float?
 
+  // ─── Phase 11A — geocoded HQ coordinates for the supply-chain globe.
+  lat                 Float?
+  lng                 Float?
+
   // Validation fields (Phase 1 brand audit)
   validationStatus  String?   // verified | irrelevant | dead | duplicate | pending | unknown
   validationReason  String?   // AI-generated explanation for the classification
@@ -428,6 +432,11 @@ model Factory {
   country          String?
   secondaryCountry String?
 
+  // Phase 11A — geocoded coordinates for the supply-chain globe.
+  // Populated by scripts/geocode-entities.ts via Nominatim.
+  lat              Float?
+  lng              Float?
+
   development          String?
   presentationComplete Boolean?
   customerType         String?
@@ -535,6 +544,10 @@ model Distributor {
   region       String?   // "South Asia", "Middle East", "East Asia", "Europe", "Latin America", etc.
   city         String?
   address      String?
+
+  // Phase 11A — geocoded coordinates for the supply-chain globe.
+  lat          Float?
+  lng          Float?
 
   // Contact
   email        String?
@@ -733,6 +746,10 @@ model Lab {
   servicesOffered   Json?     // ["AATCC 100", "ASTM E2149", ...]
   isFuzeOwned       Boolean   @default(false)  // true for the SLC FUZE lab
   defaultLanguage   String    @default("en")
+
+  // Phase 11A — geocoded coordinates for the supply-chain globe.
+  lat               Float?
+  lng               Float?
 
   // Phase 10B / 10F relations
   tests       LabTest[]
