@@ -1458,6 +1458,49 @@ const en = {
       saving: "Saving…",
     },
 
+    submissions: {
+      pageTitle: "Submissions & Workflow",
+      pageSubtitle: "{brand} — Track your fabric submissions through the FUZE treatment pipeline",
+      loading: "Loading submissions...",
+      unableToLoad: "Unable to load",
+      // Stat tiles
+      statTotal: "Total Submissions",
+      statTestsPassed: "Tests Passed",
+      statTestsPending: "Tests Pending",
+      statFabrics: "Fabrics",
+      statComplete: "Complete",
+      // Stages
+      stageSubmitted: "Submitted",
+      stageInTreatment: "In Treatment",
+      stageTesting: "Testing",
+      stageApproved: "Approved",
+      stageProduction: "Production",
+      stageComplete: "Complete",
+      // Filters
+      filterAll: "All ({count})",
+      filterStage: "{icon} {label} ({count})",
+      // Test badges
+      badgeAllPass: "ALL PASS",
+      badgeIcpPass: "ICP ✓",
+      badgeFailed: "FAILED",
+      badgePending: "PENDING",
+      // Submission row
+      codePrefix: "Code: {code}",
+      gsmSuffix: "{gsm} GSM",
+      factoryPrefix: "Factory: {name}",
+      methodPrefix: "Method: {method}",
+      targetSuffix: "Target: {wash}w",
+      testCountSingular: "{count} test",
+      testCountPlural: "{count} tests",
+      stagePrefix: "Stage:",
+      // Empty states
+      noSubmissionsTitle: "No submissions yet",
+      noFilteredTitle: "No {filter} submissions",
+      noSubmissionsBlurb:
+        "Add fabrics first, then they'll appear here as submissions progress through the pipeline",
+      noFilteredBlurb: "Try a different filter to see your other submissions",
+    },
+
     pricing: {
       crumbCurrent: "Pricing & Volume",
       pageTitle: "Pricing & Volume",
