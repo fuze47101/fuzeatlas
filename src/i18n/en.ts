@@ -1002,6 +1002,47 @@ const en = {
         "Reports show as \"unlinked\" until our parser auto-links them to a brand or fabric. If a report has been pending review for more than 24h, message {email} and we'll attach it manually.",
     },
 
+    // Brand Specs — /factory-portal/specs
+    specs: {
+      crumbCurrent: "Brand Specs",
+      pageTitle: "Brand Specs",
+      pageSubtitle:
+        "Every brand that sources fabrics from your factory, with their FUZE tier and ICP-cadence requirements. Use this as the cheat-sheet for what each brand expects.",
+      loading: "Loading specs…",
+      noBrands: "No brand specs yet — no brands currently link to this factory.",
+      // Per-brand block
+      tierLabel: "Required tier:",
+      cadenceHeader: "ICP cadence",
+      cadenceEveryOrders: "Every {n} orders",
+      cadenceEveryLiters: "Every {n} L consumed",
+      cadenceNone: "No ICP cadence set",
+      tierNone: "No tier requirement",
+      protocolDoc: "📄 Protocol document",
+      lastUpdated: "Updated {date}",
+    },
+
+    // Inventory — /factory-portal/inventory
+    inventoryView: {
+      crumbCurrent: "FUZE Inventory",
+      pageTitle: "FUZE Inventory",
+      pageSubtitle:
+        "Your FUZE on-hand at this factory plus 30-day burn rate and projected days remaining. On-hand = received orders − logged consumption.",
+      loading: "Loading inventory…",
+      onHandLabel: "On hand (L)",
+      orderedLabel: "Total received (L)",
+      consumedLabel: "Total consumed (L)",
+      consumed30Label: "Consumed (last 30d, L)",
+      dailyBurnLabel: "Daily burn (L/day)",
+      daysRemainingLabel: "Days remaining",
+      daysRemainingNone: "No recent burn — projection unavailable",
+      recentHeader: "Recent consumption",
+      colDate: "Date",
+      colBrand: "Brand",
+      colTier: "Tier",
+      colLiters: "L used",
+      noRecent: "No consumption logged yet.",
+    },
+
     // Recipe Requests — /factory-portal/recipe-requests
     recipeRequests: {
       pageTitle: "Recipe Requests",
