@@ -6,6 +6,7 @@
  */
 
 import { prisma } from "@/lib/prisma";
+import { filterSubscribed } from "@/lib/notification-subscription";
 
 type NotificationType =
   | "TEST_APPROVED"
@@ -80,16 +81,21 @@ export async function notifyTestResult(params: {
     `/tests/${testId}`,
   );
 
-  // Notify brand users if linked
+  // Notify brand users if linked. Subscription check (Phase 5D) —
+  // category test_result_brand_visible. Admins always pass through.
   if (brandId) {
     const brandUsers = await prisma.user.findMany({
       where: { brandId, status: "ACTIVE" },
       select: { id: true },
     });
+    const recipients = await filterSubscribed(
+      brandUsers.map((u: any) => u.id),
+      "test_result_brand_visible",
+    );
     await Promise.all(
-      brandUsers.map((u: any) =>
+      recipients.map((uid) =>
         createNotification({
-          userId: u.id,
+          userId: uid,
           type: "TEST_RESULTS",
           title: `Test Results: ${testName}`,
           message: `Your test "${testName}" result: ${result}`,
@@ -105,10 +111,14 @@ export async function notifyTestResult(params: {
       where: { factoryId, status: "ACTIVE" },
       select: { id: true },
     });
+    const recipients = await filterSubscribed(
+      factoryUsers.map((u: any) => u.id),
+      "test_result_brand_visible",
+    );
     await Promise.all(
-      factoryUsers.map((u: any) =>
+      recipients.map((uid) =>
         createNotification({
-          userId: u.id,
+          userId: uid,
           type: "TEST_RESULTS",
           title: `Test Results: ${testName}`,
           message: `Test "${testName}" result: ${result}`,
@@ -258,7 +268,7 @@ export async function notifyNewSubmission(params: {
     `/fabrics`,
   );
 
-  // 2. Factory teammates — confirmation that intake landed in the system.
+  // 2. Factory teammates — subscription-filtered (Phase 5D).
   if (factoryId) {
     try {
       const factoryUsers = await prisma.user.findMany({
@@ -266,26 +276,28 @@ export async function notifyNewSubmission(params: {
         select: { id: true },
       });
       const link = fabricId ? `/fabrics/${fabricId}` : "/factory-portal/submissions";
+      const candidateIds = factoryUsers
+        .filter((u: any) => u.id !== submitterUserId)
+        .map((u: any) => u.id);
+      const recipients = await filterSubscribed(candidateIds, "fabric_submission_received");
       await Promise.all(
-        factoryUsers
-          .filter((u: any) => u.id !== submitterUserId)
-          .map((u: any) =>
-            createNotification({
-              userId: u.id,
-              type: "BRAND_ACTIVITY",
-              title: `Fabric submitted: ${fabricName}`,
-              message: `${submittedBy} submitted ${fabricName} from ${factoryName}. Track progress in the factory portal.`,
-              link,
-              metadata: { submissionId, fabricId },
-            }),
-          ),
+        recipients.map((uid) =>
+          createNotification({
+            userId: uid,
+            type: "BRAND_ACTIVITY",
+            title: `Fabric submitted: ${fabricName}`,
+            message: `${submittedBy} submitted ${fabricName} from ${factoryName}. Track progress in the factory portal.`,
+            link,
+            metadata: { submissionId, fabricId },
+          }),
+        ),
       );
     } catch (err) {
       console.error("[notify] new-submission factory fan-out failed:", err);
     }
   }
 
-  // 3. Brand owners — visibility into incoming work for their account.
+  // 3. Brand owners — subscription-filtered (Phase 5D).
   if (brandId) {
     try {
       const brandUsers = await prisma.user.findMany({
@@ -293,10 +305,14 @@ export async function notifyNewSubmission(params: {
         select: { id: true },
       });
       const link = fabricId ? `/fabrics/${fabricId}` : "/brand-portal/submissions";
+      const recipients = await filterSubscribed(
+        brandUsers.map((u: any) => u.id),
+        "fabric_submission_received",
+      );
       await Promise.all(
-        brandUsers.map((u: any) =>
+        recipients.map((uid) =>
           createNotification({
-            userId: u.id,
+            userId: uid,
             type: "BRAND_ACTIVITY",
             title: `New fabric submission: ${fabricName}`,
             message: `${factoryName} submitted ${fabricName} for your account. Track in the brand portal.`,
@@ -387,18 +403,20 @@ export async function notifyTestRequestStatus(params: {
           where: { brandId, status: "ACTIVE" },
           select: { id: true },
         });
+        const candidateIds = brandUsers
+          .filter((u: any) => u.id !== createdByUserId)
+          .map((u: any) => u.id);
+        const recipients = await filterSubscribed(candidateIds, "test_request_status_change");
         await Promise.all(
-          brandUsers
-            .filter((u: any) => u.id !== createdByUserId)
-            .map((u: any) =>
-              createNotification({
-                userId: u.id,
-                type: "PO_STATUS",
-                title: `Test Request ${label}: ${ref}`,
-                message: orgMessage,
-                link: `/brand-portal/tests`,
-              }),
-            ),
+          recipients.map((uid) =>
+            createNotification({
+              userId: uid,
+              type: "PO_STATUS",
+              title: `Test Request ${label}: ${ref}`,
+              message: orgMessage,
+              link: `/brand-portal/tests`,
+            }),
+          ),
         );
       } catch (err) {
         console.error("[notify] brand fan-out failed:", err);
@@ -411,18 +429,20 @@ export async function notifyTestRequestStatus(params: {
           where: { factoryId, status: "ACTIVE" },
           select: { id: true },
         });
+        const candidateIds = factoryUsers
+          .filter((u: any) => u.id !== createdByUserId)
+          .map((u: any) => u.id);
+        const recipients = await filterSubscribed(candidateIds, "test_request_status_change");
         await Promise.all(
-          factoryUsers
-            .filter((u: any) => u.id !== createdByUserId)
-            .map((u: any) =>
-              createNotification({
-                userId: u.id,
-                type: "PO_STATUS",
-                title: `Test Request ${label}: ${ref}`,
-                message: orgMessage,
-                link: `/factory-portal/tests`,
-              }),
-            ),
+          recipients.map((uid) =>
+            createNotification({
+              userId: uid,
+              type: "PO_STATUS",
+              title: `Test Request ${label}: ${ref}`,
+              message: orgMessage,
+              link: `/factory-portal/tests`,
+            }),
+          ),
         );
       } catch (err) {
         console.error("[notify] factory fan-out failed:", err);
@@ -482,8 +502,8 @@ export async function notifyNewOrder(params: {
   const detail = volumeLiters ? `${volumeLiters}L` : hangtagQty ? `${hangtagQty} hangtags` : "";
   const brandNote = brandName ? ` for ${brandName}` : "";
 
-  // Notify account manager
-  if (accountManagerId) {
+  // Notify account manager — subscription-filtered (Phase 5D).
+  if (accountManagerId && (await filterSubscribed([accountManagerId], "order_placed")).length > 0) {
     await createNotification({
       userId: accountManagerId,
       type: "PO_STATUS",
@@ -538,16 +558,20 @@ export async function notifyOrderStatusChange(params: {
     message = `Order ${orderNumber} has been shipped! Tracking: ${trackingNumber}${carrier ? ` (${carrier})` : ""}.`;
   }
 
-  // Notify factory users
+  // Notify factory users — subscription-filtered (Phase 5D).
   const factoryUsers = await prisma.user.findMany({
     where: { factoryId, status: "ACTIVE" },
     select: { id: true },
   });
+  const factoryRecipients = await filterSubscribed(
+    factoryUsers.map((u: any) => u.id),
+    "order_status_change",
+  );
 
   await Promise.all(
-    factoryUsers.map((u: any) =>
+    factoryRecipients.map((uid) =>
       createNotification({
-        userId: u.id,
+        userId: uid,
         type: "PO_STATUS",
         title: `Order ${label}: ${orderNumber}`,
         message,
@@ -562,10 +586,14 @@ export async function notifyOrderStatusChange(params: {
       where: { distributorId, status: "ACTIVE" },
       select: { id: true },
     });
+    const distRecipients = await filterSubscribed(
+      distUsers.map((u: any) => u.id),
+      "order_status_change",
+    );
     await Promise.all(
-      distUsers.map((u: any) =>
+      distRecipients.map((uid) =>
         createNotification({
-          userId: u.id,
+          userId: uid,
           type: "PO_STATUS",
           title: `Order ${label}: ${orderNumber}`,
           message: `Order ${orderNumber} for ${factoryName}: ${label.toLowerCase()}.`,

@@ -1438,6 +1438,63 @@ const en = {
     },
   },
 
+  // ─── SETTINGS ──────────────────────────────────
+  settings: {
+    notifications: {
+      pageTitle: "Notification preferences",
+      pageSubtitle:
+        "Choose what you want to be notified about. Defaults are everything on — flip categories off when they're noise. FUZE Ops admins always receive notifications regardless of your settings.",
+      loading: "Loading preferences…",
+      saving: "Saving…",
+      saved: "Saved.",
+      saveFailed: "Save failed",
+      // Group headers
+      groupOps: "Operations",
+      groupTesting: "Testing & QA",
+      groupOrders: "Orders",
+      groupApprovals: "Approvals",
+      groupDigest: "Digests",
+      groupOther: "Other",
+      // Categories — user-facing labels + descriptions
+      catFabricSubmission: "Fabric submissions",
+      catFabricSubmissionDesc: "When a factory creates or updates a fabric submission",
+      catRecipeGraduated: "Recipe graduations",
+      catRecipeGraduatedDesc: "When a recipe is graduated for production use",
+      catTestRequest: "Test requests",
+      catTestRequestDesc: "When a test request changes status",
+      catTestResultBrandVisible: "Brand-visible test results",
+      catTestResultBrandVisibleDesc:
+        "When a test result is stamped brand-visible (CRITICAL — keep on for compliance)",
+      catIcpValidated: "ICP validation",
+      catIcpValidatedDesc: "When an ICP comes back in-band",
+      catIcpOverdue: "ICP cadence overdue",
+      catIcpOverdueDesc:
+        "When a factory is overdue for an ICP (CRITICAL — keep on for spec compliance)",
+      catOrderPlaced: "Order placed",
+      catOrderPlacedDesc: "When a new FUZE order is created",
+      catOrderStatus: "Order status changes",
+      catOrderStatusDesc: "When an order moves through fulfillment states",
+      catOrderFlag: "Order application flags",
+      catOrderFlagDesc: "When an order's volume doesn't match the application math",
+      catApprovalPending: "Approvals pending",
+      catApprovalPendingDesc:
+        "When a submission / test result / order needs your approval (CRITICAL — keep on)",
+      catApprovalOverdue: "Approvals overdue",
+      catApprovalOverdueDesc: "When an item has been pending your approval > 5 days",
+      catCrmActivity: "CRM activity",
+      catCrmActivityDesc: "Notes, calls, meetings logged on accounts you manage",
+      catWeeklyDigest: "Weekly digest",
+      catWeeklyDigestDesc: "Monday morning summary email",
+      catMonthlyDigest: "Monthly digest",
+      catMonthlyDigestDesc: "Month-end summary email",
+      // Critical-toggle warning
+      criticalWarning:
+        "This is a critical category. Turning it off can mean missing important compliance signals. Continue?",
+      adminInfo:
+        "You're an admin — you'll receive every notification regardless of these settings. They still apply to your peers.",
+    },
+  },
+
   // ─── ADMIN ─────────────────────────────────────
   admin: {
     labFormTemplates: {
