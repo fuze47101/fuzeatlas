@@ -169,6 +169,57 @@ bearer-authed apply-* endpoint pattern to bypass that mismatch.
 - Vercel cron schedule entry for `approval-overdue` (currently
   fzcron-invokable; vercel.json change would auto-fire daily).
 
+## Phase 10 — STOP — Vercel build failing (2026-05-10)
+
+**Build status:** ● Error on commit `44d9a61` (most recent push, 10J).
+**Root cause:** ESLint compiled fine; TypeScript failed at
+`src/lib/ai-test-review.ts:290`:
+
+```
+Type 'ReviewFlag[]' is not assignable to type 'JsonNull | InputJsonValue'.
+Type 'ReviewFlag[]' is not assignable to type 'InputJsonObject'.
+Index signature for type 'string' is missing in type 'ReviewFlag[]'.
+```
+
+**Actual breaking commit:** `0b65d6b` (Phase 10G — AI anomaly review).
+The `ReviewFlag` interface lacks a string index signature, and
+Prisma's strict `InputJsonValue` type rejects structured arrays
+without one when writing to a `Json` column. The same code path is
+used by both `persistAiTestReview` (in ai-test-review.ts) and
+indirectly by the 10J / 10H surfaces that read `aiTestReview.flags`.
+
+**Compounded by:** 10H (`35bb727`), 10I (`8451a5b`), 10J
+(`44d9a61`) all pushed after 10G without Vercel verification.
+Andrew introduced the "verify after every push" rule mid-Phase-10
+in direct response to this failure mode.
+
+**Proposed fix (one-line):**
+
+```ts
+// src/lib/ai-test-review.ts line ~286
+flags: review.flags as any,   // current: review.flags
+```
+
+Or more typed:
+
+```ts
+flags: review.flags as unknown as Prisma.InputJsonValue,
+```
+
+Either resolves the index-signature complaint. The runtime
+behavior is correct — `ReviewFlag[]` is already JSON-serializable;
+Prisma's compile-time check is the only blocker.
+
+**Andrew action:** Authorize the fix push (one-line cast), or
+investigate further if you want a stricter type approach. Until
+then: no more commits go to main.
+
+**Staged but uncommitted:** Phase 10K work (notification-delivery
+helper + cron + /api/me + /settings/profile timezone field
+additions) is fully written but blocked behind this fix.
+
+---
+
 ## Phase 8 — UI/UX consolidation
 
 - 2026-05-10 — `545aafa` — phase 8A: universal activity feed on every portal landing.

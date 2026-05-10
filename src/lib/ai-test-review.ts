@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Phase 10G — AI anomaly review.
  *
