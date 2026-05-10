@@ -17,6 +17,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface BrandSpec {
   id: string;
@@ -28,14 +29,15 @@ interface BrandSpec {
   brandSpecUpdatedAt: string | null;
 }
 
-const TIERS = [
-  { code: "F1", label: "F1 Full Spectrum (1.0 mg/kg)" },
-  { code: "F2", label: "F2 Advanced Performance (0.75 mg/kg)" },
-  { code: "F3", label: "F3 Core Performance (0.5 mg/kg)" },
-  { code: "F4", label: "F4 Essential Protection (0.25 mg/kg)" },
-];
-
 export default function BrandSpecPage() {
+  const { t } = useI18n();
+  const tx = t.brandPortal.spec;
+  const TIERS = [
+    { code: "F1", label: tx.tierF1 },
+    { code: "F2", label: tx.tierF2 },
+    { code: "F3", label: tx.tierF3 },
+    { code: "F4", label: tx.tierF4 },
+  ];
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +54,7 @@ export default function BrandSpecPage() {
     fetch("/api/brand-portal/spec")
       .then((r) => r.json())
       .then((j) => {
-        if (!j.ok) throw new Error(j.error || "Failed to load spec");
+        if (!j.ok) throw new Error(j.error || tx.loadFailed);
         setSpec(j.brand);
         setForm({
           requiredFuzeTier: j.brand.requiredFuzeTier || "",
@@ -63,6 +65,7 @@ export default function BrandSpecPage() {
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function save() {
@@ -84,11 +87,11 @@ export default function BrandSpecPage() {
         }),
       });
       const j = await res.json();
-      if (!j.ok) throw new Error(j.error || "Save failed");
+      if (!j.ok) throw new Error(j.error || tx.saveFailed);
       setSpec(j.brand);
       setSavedAt(new Date().toISOString());
     } catch (e: any) {
-      setError(e?.message || "Save failed");
+      setError(e?.message || tx.saveFailed);
     } finally {
       setSaving(false);
     }
@@ -96,13 +99,13 @@ export default function BrandSpecPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 text-slate-400">Loading spec…</div>
+      <div className="flex items-center justify-center h-64 text-slate-400">{tx.loading}</div>
     );
   }
   if (!spec) {
     return (
       <div className="flex items-center justify-center h-64 text-red-500">
-        {error || "Unable to load brand spec"}
+        {error || tx.unableToLoad}
       </div>
     );
   }
@@ -112,21 +115,18 @@ export default function BrandSpecPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/brand-portal" className="hover:text-[#00b4c3]">
-            Brand Portal
+            {t.brandPortal.crumb}
           </Link>
           <span>›</span>
-          <span>Brand Spec</span>
+          <span>{tx.crumbCurrent}</span>
         </div>
         <h1 className="text-2xl font-black text-slate-900">
-          Brand Spec — {spec.name}
+          {tx.pageTitleWithBrand.replace("{brand}", spec.name)}
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          The stipulated FUZE specification for your account. Determines order validation
-          tolerances and ICP cadence checks across your supply chain.
-        </p>
+        <p className="text-sm text-slate-500 mt-1">{tx.pageSubtitle}</p>
         {spec.brandSpecUpdatedAt ? (
           <p className="text-xs text-slate-400 mt-2">
-            Last updated {new Date(spec.brandSpecUpdatedAt).toLocaleString()}
+            {tx.lastUpdated.replace("{date}", new Date(spec.brandSpecUpdatedAt).toLocaleString())}
           </p>
         ) : null}
       </div>
@@ -134,19 +134,14 @@ export default function BrandSpecPage() {
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
         {/* Required FUZE tier */}
         <div>
-          <label className="block text-sm font-bold text-slate-900 mb-1">
-            Required FUZE tier
-          </label>
-          <p className="text-xs text-slate-500 mb-3">
-            Every order placed by a factory in your supply chain must use this tier. Off-tier
-            orders are flagged for review and a notification is sent to your team.
-          </p>
+          <label className="block text-sm font-bold text-slate-900 mb-1">{tx.tierLabel}</label>
+          <p className="text-xs text-slate-500 mb-3">{tx.tierBlurb}</p>
           <select
             value={form.requiredFuzeTier}
             onChange={(e) => setForm({ ...form, requiredFuzeTier: e.target.value })}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
           >
-            <option value="">— No tier requirement —</option>
+            <option value="">{tx.tierPlaceholder}</option>
             {TIERS.map((t) => (
               <option key={t.code} value={t.code}>
                 {t.label}
@@ -156,65 +151,53 @@ export default function BrandSpecPage() {
         </div>
 
         <div className="border-t border-slate-100 pt-6">
-          <h2 className="text-sm font-bold text-slate-900 mb-1">ICP cadence</h2>
-          <p className="text-xs text-slate-500 mb-4">
-            Set one or both. The daily cadence cron flags a factory as overdue for an ICP
-            submission once <em>either</em> threshold is exceeded since their last test.
-          </p>
+          <h2 className="text-sm font-bold text-slate-900 mb-1">{tx.cadenceHeader}</h2>
+          <p className="text-xs text-slate-500 mb-4">{tx.cadenceBlurb}</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Every N production orders
+                {tx.cadenceNBatchesLabel}
               </label>
               <input
                 type="number"
                 min={1}
                 step={1}
-                placeholder="e.g. 5"
+                placeholder={tx.cadenceNBatchesPlaceholder}
                 value={form.icpCadenceEveryNBatches}
                 onChange={(e) =>
                   setForm({ ...form, icpCadenceEveryNBatches: e.target.value })
                 }
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
               />
-              <p className="text-xs text-slate-400 mt-1">
-                One ICP per N FuzeOrder rows since the last passing ICP.
-              </p>
+              <p className="text-xs text-slate-400 mt-1">{tx.cadenceNBatchesHint}</p>
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Every X liters consumed
+                {tx.cadenceLitersLabel}
               </label>
               <input
                 type="number"
                 min={1}
                 step={1}
-                placeholder="e.g. 200"
+                placeholder={tx.cadenceLitersPlaceholder}
                 value={form.icpCadenceEveryLitersConsumed}
                 onChange={(e) =>
                   setForm({ ...form, icpCadenceEveryLitersConsumed: e.target.value })
                 }
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
               />
-              <p className="text-xs text-slate-400 mt-1">
-                One ICP per X liters of FuzeConsumption since the last passing ICP.
-              </p>
+              <p className="text-xs text-slate-400 mt-1">{tx.cadenceLitersHint}</p>
             </div>
           </div>
         </div>
 
         <div className="border-t border-slate-100 pt-6">
-          <label className="block text-sm font-bold text-slate-900 mb-1">
-            Protocol document URL
-          </label>
-          <p className="text-xs text-slate-500 mb-3">
-            Public link (or Atlas-hosted document URL) to your stipulated protocol PDF. Surfaces
-            on your supply chain dashboard so every factory can reference it.
-          </p>
+          <label className="block text-sm font-bold text-slate-900 mb-1">{tx.protocolUrlLabel}</label>
+          <p className="text-xs text-slate-500 mb-3">{tx.protocolUrlBlurb}</p>
           <input
             type="url"
-            placeholder="https://…/protocol.pdf"
+            placeholder={tx.protocolUrlPlaceholder}
             value={form.protocolDocUrl}
             onChange={(e) => setForm({ ...form, protocolDocUrl: e.target.value })}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
@@ -226,7 +209,7 @@ export default function BrandSpecPage() {
               rel="noopener noreferrer"
               className="inline-block mt-2 text-xs text-[#00b4c3] hover:underline"
             >
-              Preview document →
+              {tx.protocolPreview}
             </a>
           ) : null}
         </div>
@@ -238,7 +221,7 @@ export default function BrandSpecPage() {
         ) : null}
         {savedAt ? (
           <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">
-            Saved at {new Date(savedAt).toLocaleTimeString()}.
+            {tx.savedAt.replace("{time}", new Date(savedAt).toLocaleTimeString())}
           </div>
         ) : null}
 
@@ -248,7 +231,7 @@ export default function BrandSpecPage() {
             disabled={saving}
             className="rounded-lg bg-[#00b4c3] hover:bg-[#009ba8] disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2 text-sm font-bold transition-colors"
           >
-            {saving ? "Saving…" : "Save spec"}
+            {saving ? tx.saving : tx.save}
           </button>
         </div>
       </div>

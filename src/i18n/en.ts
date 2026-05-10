@@ -1290,43 +1290,44 @@ const en = {
 
     spec: {
       crumbCurrent: "Brand Spec",
-      pageTitle: "Brand Spec & ICP Cadence",
+      pageTitle: "Brand Spec",
       pageTitleWithBrand: "Brand Spec — {brand}",
       pageSubtitle:
-        "Stipulate the FUZE tier and ICP testing cadence every factory in your supply chain must meet. Atlas auto-flags any factory that falls behind.",
-      readOnlyTitle: "Read-only view",
-      readOnlyBlurb:
-        "Your role can view but not edit this spec. Ask your account manager to update tier or cadence requirements.",
+        "The stipulated FUZE specification for your account. Determines order validation tolerances and ICP cadence checks across your supply chain.",
+      lastUpdated: "Last updated {date}",
       loading: "Loading spec…",
-      errorFallback: "Failed to load spec",
-      saveError: "Save failed",
-      networkError: "Network error",
-      saved: "Spec saved.",
+      loadFailed: "Failed to load spec",
+      saveFailed: "Save failed",
+      unableToLoad: "Unable to load brand spec",
+      savedAt: "Saved at {time}.",
       // Required tier
-      requiredTierLabel: "Required FUZE tier",
-      tierNone: "No requirement",
-      tierF1Hint: "F1 — 1.0 mg/kg · maximum performance",
-      tierF2Hint: "F2 — 0.75 mg/kg · advanced",
-      tierF3Hint: "F3 — 0.5 mg/kg · core",
-      tierF4Hint: "F4 — 0.25 mg/kg · foundation",
+      tierLabel: "Required FUZE tier",
+      tierBlurb:
+        "Every order placed by a factory in your supply chain must use this tier. Off-tier orders are flagged for review and a notification is sent to your team.",
+      tierPlaceholder: "— No tier requirement —",
+      tierF1: "F1 Full Spectrum (1.0 mg/kg)",
+      tierF2: "F2 Advanced Performance (0.75 mg/kg)",
+      tierF3: "F3 Core Performance (0.5 mg/kg)",
+      tierF4: "F4 Essential Protection (0.25 mg/kg)",
       // ICP cadence
       cadenceHeader: "ICP cadence",
       cadenceBlurb:
-        "Set one or both. Atlas flags a factory the day either threshold is crossed without a brand-visible ICP test on file.",
-      cadenceNBatchesLabel: "Every N orders",
-      cadenceNBatchesHint: "e.g. 5 — every 5th order needs an ICP",
-      cadenceLitersLabel: "Every X liters",
-      cadenceLitersHint: "e.g. 1000 — every 1000L consumed needs an ICP",
+        "Set one or both. The daily cadence cron flags a factory as overdue for an ICP submission once either threshold is exceeded since their last test.",
+      cadenceNBatchesLabel: "Every N production orders",
+      cadenceNBatchesPlaceholder: "e.g. 5",
+      cadenceNBatchesHint: "One ICP per N FuzeOrder rows since the last passing ICP.",
+      cadenceLitersLabel: "Every X liters consumed",
+      cadenceLitersPlaceholder: "e.g. 200",
+      cadenceLitersHint: "One ICP per X liters of FuzeConsumption since the last passing ICP.",
       // Protocol doc
       protocolUrlLabel: "Protocol document URL",
-      protocolUrlPlaceholder: "https://docs.brand.com/fuze-protocol-v2.pdf",
-      protocolUrlHint:
-        "Link to your written brand protocol — testing methodology, packaging requirements, anything factories must follow. Surfaces on the supply-chain dashboard as a clickable chip.",
-      protocolUrlPreview: "Open document →",
+      protocolUrlBlurb:
+        "Public link (or Atlas-hosted document URL) to your stipulated protocol PDF. Surfaces on your supply chain dashboard so every factory can reference it.",
+      protocolUrlPlaceholder: "https://…/protocol.pdf",
+      protocolPreview: "Preview document →",
       // Buttons
       save: "Save spec",
       saving: "Saving…",
-      backToSupplyChain: "← Back to Supply Chain",
     },
 
     pricing: {
