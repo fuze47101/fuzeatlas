@@ -216,6 +216,7 @@ model User {
   testRequestsCreated  TestRequest[] @relation("TestRequestRequester")
   testRequestsApproved TestRequest[] @relation("TestRequestApprover")
   notifications Notification[] @relation("UserNotifications")
+  notifSubscription NotificationSubscription? @relation("UserNotifSub")
   crmTasksOwned   CrmTask[] @relation("OwnedCrmTasks")
   crmTasksCreated CrmTask[] @relation("CreatedCrmTasks")
   auditLogs AuditLog[] @relation("UserAuditLogs")
@@ -3589,4 +3590,40 @@ model FactoryInvitation {
 
   @@index([brandId, status])
   @@index([invitedContactEmail])
+}
+
+// ─────────────────────────────────────────────
+// NOTIFICATION SUBSCRIPTION (Phase 5D — ROADMAP_v2)
+// ─────────────────────────────────────────────
+// One row per user; preferences stored as a JSON object keyed by
+// notification category. Defaults are ALL ON — users opt out.
+//
+// Categories (keys in preferences JSON, value = boolean):
+//   fabric_submission_received
+//   fabric_submission_status_change
+//   test_request_status_change
+//   test_result_brand_visible
+//   icp_validated
+//   recipe_graduated
+//   icp_cadence_overdue
+//   order_placed
+//   order_status_change
+//   order_application_flag
+//   crm_activity
+//   weekly_digest
+//   monthly_digest
+//   approval_pending          (Phase 7D)
+//   approval_overdue          (Phase 7D)
+//
+// Critical categories (test_result_brand_visible, icp_cadence_overdue,
+// approval_pending) get a UI warning when the user toggles them off.
+// Admins always receive notifications regardless of subscription —
+// that's enforced in the notify helpers, not the schema.
+
+model NotificationSubscription {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation("UserNotifSub", fields: [userId], references: [id], onDelete: Cascade)
+  preferences Json     @default("{}")
+  updatedAt   DateTime @updatedAt
 }
