@@ -1331,43 +1331,43 @@ const en = {
     },
 
     pricing: {
-      crumbCurrent: "Volume Pricing",
-      pageTitle: "Volume Pricing",
-      pageTitleWithBrand: "Volume Pricing — {brand}",
+      crumbCurrent: "Pricing & Volume",
+      pageTitle: "Pricing & Volume",
+      pageTitleWithBrand: "Pricing & Volume — {brand}",
       pageSubtitle:
-        "Your lifetime FUZE consumption across every factory, and the volume discount tier you've earned.",
-      loading: "Loading pricing…",
-      errorFallback: "Failed to load pricing",
+        "Cumulative FUZE consumption across every factory in your supply chain. Volume across factories rolls up into your discount — buying more, anywhere in your supply chain, advances you up the ladder.",
+      loading: "Loading pricing rollup…",
+      loadFailed: "Failed to load pricing",
       networkError: "Network error",
+      unableToLoad: "Unable to load pricing",
       // Hero card
-      currentDiscountLabel: "Current Discount",
-      noTierLabel: "No volume discount yet",
-      lifetimeLitersLabel: "Lifetime liters",
-      factoriesLabel: "Factories",
-      ordersLabel: "Orders",
-      tierBadge: "{label}",
+      yourPricing: "Your Pricing",
+      discountPct: "{pct}% off",
+      noDiscountFallback:
+        "Standard pricing — additional discounts unlock as cumulative volume grows.",
+      qualifiedAt: "Qualified at {liters} consumed",
+      lifetimeConsumed: "Lifetime FUZE consumed",
+      factoryCountSingular: "across {n} factory · {orders} order{ordersPlural}",
+      factoryCountPlural: "across {n} factories · {orders} order{ordersPlural}",
       // Progress bar
-      nextTierAt: "Next: {label} at {liters} L",
-      gapLabel: "{liters} L to go",
-      atTopTier: "You're at the top tier — congrats.",
-      noLadderConfigured: "No discount ladder configured for this brand yet.",
-      // Ladder section
-      ladderHeader: "Discount ladder",
-      ladderHint:
-        "Each rung is hit by lifetime FUZE consumption summed across every factory. Once unlocked, the discount applies to all future orders.",
-      ladderQualified: "Qualified",
-      ladderCurrent: "Current",
-      ladderLocked: "Locked",
-      ladderThreshold: "{liters} L",
-      ladderDiscount: "{pct}% off",
+      progressOfTotal: "{consumed} of {total}",
+      progressGap: "{gap} to {pct}% off{label}",
+      progressGapLabel: " ({label})",
+      atTopTier: "You've qualified for the highest available discount.",
+      // Volume pricing levels
+      volumePricingHeader: "Volume pricing",
+      youAreHere: "You are here",
+      thresholdSubtitle: "{liters} cumulative consumption",
+      // Standard pricing fallback
+      standardTitle: "Standard pricing",
+      standardBlurb:
+        "Volume discounts will appear here once your contract terms are configured. Reach out to your account manager to discuss pricing.",
       // Per-factory breakdown
-      factoryHeader: "Per-factory consumption",
-      factoryHint:
-        "How your lifetime liters break out by factory. Click a row for the full factory detail.",
+      factoryHeader: "Consumption by factory",
+      factoryHint: "Where the {total} came from. Sorted by largest contributor.",
       colFactory: "Factory",
-      colLiters: "Liters",
+      colFuzeConsumed: "FUZE consumed",
       colShare: "Share",
-      noFactories: "No FUZE consumption logged yet.",
     },
   },
 

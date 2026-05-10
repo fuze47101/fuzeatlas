@@ -11,6 +11,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface Tier {
   id: string;
@@ -47,6 +48,8 @@ function fmtLiters(n: number): string {
 }
 
 export default function BrandPricingPage() {
+  const { t } = useI18n();
+  const tx = t.brandPortal.pricing;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<Rollup | null>(null);
@@ -55,24 +58,23 @@ export default function BrandPricingPage() {
     fetch("/api/brand-portal/pricing-rollup")
       .then((r) => r.json())
       .then((j) => {
-        if (!j.ok) throw new Error(j.error || "Failed to load pricing");
+        if (!j.ok) throw new Error(j.error || tx.loadFailed);
         setData(j);
       })
-      .catch((e) => setError(e?.message || "Network error"))
+      .catch((e) => setError(e?.message || tx.networkError))
       .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 text-slate-400">
-        Loading pricing rollup…
-      </div>
+      <div className="flex items-center justify-center h-64 text-slate-400">{tx.loading}</div>
     );
   }
   if (!data) {
     return (
       <div className="flex items-center justify-center h-64 text-red-500">
-        {error || "Unable to load pricing"}
+        {error || tx.unableToLoad}
       </div>
     );
   }
@@ -90,19 +92,15 @@ export default function BrandPricingPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/brand-portal" className="hover:text-[#00b4c3]">
-            Brand Portal
+            {t.brandPortal.crumb}
           </Link>
           <span>›</span>
-          <span>Pricing & Volume</span>
+          <span>{tx.crumbCurrent}</span>
         </div>
         <h1 className="text-2xl font-black text-slate-900">
-          Pricing & Volume — {data.brand.name}
+          {tx.pageTitleWithBrand.replace("{brand}", data.brand.name)}
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Cumulative FUZE consumption across every factory in your supply chain. Volume across
-          factories rolls up into your discount tier — buying more, anywhere in your supply
-          chain, advances you up the ladder.
-        </p>
+        <p className="text-sm text-slate-500 mt-1">{tx.pageSubtitle}</p>
       </div>
 
       {/* Hero — current pricing + progress to next */}
@@ -110,31 +108,34 @@ export default function BrandPricingPage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4">
           <div>
             <div className="text-xs uppercase tracking-widest opacity-80 mb-1">
-              Your Pricing
+              {tx.yourPricing}
             </div>
             <div className="text-4xl font-black">
               {data.currentTier
-                ? `${data.currentTier.discountPct}% off`
+                ? tx.discountPct.replace("{pct}", String(data.currentTier.discountPct))
                 : "—"}
             </div>
             <div className="text-sm opacity-90 mt-1">
               {data.currentTier?.label
                 ? data.currentTier.label
                 : data.currentTier
-                ? `Qualified at ${fmtLiters(data.currentTier.thresholdLiters)} consumed`
-                : "Standard pricing — additional discounts unlock as cumulative volume grows."}
+                  ? tx.qualifiedAt.replace(
+                      "{liters}",
+                      fmtLiters(data.currentTier.thresholdLiters),
+                    )
+                  : tx.noDiscountFallback}
             </div>
           </div>
           <div className="text-right">
             <div className="text-xs uppercase tracking-widest opacity-80 mb-1">
-              Lifetime FUZE consumed
+              {tx.lifetimeConsumed}
             </div>
             <div className="text-3xl font-black">{fmtLiters(consumed)}</div>
             <div className="text-xs opacity-90 mt-1">
-              across {data.totals.factoryCount} factor
-              {data.totals.factoryCount === 1 ? "y" : "ies"} ·{" "}
-              {data.totals.orderCount} order
-              {data.totals.orderCount === 1 ? "" : "s"}
+              {(data.totals.factoryCount === 1 ? tx.factoryCountSingular : tx.factoryCountPlural)
+                .replace("{n}", String(data.totals.factoryCount))
+                .replace("{orders}", String(data.totals.orderCount))
+                .replace("{ordersPlural}", data.totals.orderCount === 1 ? "" : "s")}
             </div>
           </div>
         </div>
@@ -149,39 +150,43 @@ export default function BrandPricingPage() {
             </div>
             <div className="flex justify-between text-xs mt-2 opacity-90">
               <span>
-                {fmtLiters(consumed)} of {fmtLiters(next.thresholdLiters)}
+                {tx.progressOfTotal
+                  .replace("{consumed}", fmtLiters(consumed))
+                  .replace("{total}", fmtLiters(next.thresholdLiters))}
               </span>
               <span>
-                {fmtLiters(data.litersToNextTier || 0)} to{" "}
-                <strong>{next.discountPct}% off</strong>
-                {next.label ? ` (${next.label})` : ""}
+                {tx.progressGap
+                  .replace("{gap}", fmtLiters(data.litersToNextTier || 0))
+                  .replace("{pct}", String(next.discountPct))
+                  .replace(
+                    "{label}",
+                    next.label ? tx.progressGapLabel.replace("{label}", next.label) : "",
+                  )}
               </span>
             </div>
           </>
         ) : data.currentTier ? (
-          <div className="text-xs opacity-90 mt-2">
-            You&apos;ve qualified for the highest available discount.
-          </div>
+          <div className="text-xs opacity-90 mt-2">{tx.atTopTier}</div>
         ) : null}
       </div>
 
       {/* Pricing levels visualization */}
       {data.tiers.length > 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-          <h2 className="text-base font-bold text-slate-900 mb-4">Volume pricing</h2>
+          <h2 className="text-base font-bold text-slate-900 mb-4">{tx.volumePricingHeader}</h2>
           <div className="space-y-2">
-            {data.tiers.map((t) => {
-              const qualified = consumed >= t.thresholdLiters;
-              const isCurrent = data.currentTier?.id === t.id;
+            {data.tiers.map((rung) => {
+              const qualified = consumed >= rung.thresholdLiters;
+              const isCurrent = data.currentTier?.id === rung.id;
               return (
                 <div
-                  key={t.id}
+                  key={rung.id}
                   className={`flex items-center justify-between rounded-lg px-4 py-3 ${
                     isCurrent
                       ? "bg-[#00b4c3]/10 ring-2 ring-[#00b4c3]"
                       : qualified
-                      ? "bg-slate-50"
-                      : "bg-white border border-dashed border-slate-200"
+                        ? "bg-slate-50"
+                        : "bg-white border border-dashed border-slate-200"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -190,21 +195,24 @@ export default function BrandPricingPage() {
                     </span>
                     <div>
                       <div className="font-bold text-slate-900">
-                        {t.discountPct}% off
-                        {t.label ? (
+                        {tx.discountPct.replace("{pct}", String(rung.discountPct))}
+                        {rung.label ? (
                           <span className="ml-2 text-xs uppercase tracking-wider text-slate-500 font-medium">
-                            {t.label}
+                            {rung.label}
                           </span>
                         ) : null}
                       </div>
                       <div className="text-xs text-slate-500">
-                        {fmtLiters(t.thresholdLiters)} cumulative consumption
+                        {tx.thresholdSubtitle.replace(
+                          "{liters}",
+                          fmtLiters(rung.thresholdLiters),
+                        )}
                       </div>
                     </div>
                   </div>
                   {isCurrent ? (
                     <span className="text-xs font-bold uppercase tracking-wider text-[#00b4c3]">
-                      You are here
+                      {tx.youAreHere}
                     </span>
                   ) : null}
                 </div>
@@ -215,13 +223,8 @@ export default function BrandPricingPage() {
       ) : (
         <div className="bg-white rounded-xl border border-dashed border-slate-300 p-6 mb-6 text-center">
           <div className="text-4xl mb-2">📊</div>
-          <div className="text-sm font-bold text-slate-900 mb-1">
-            Standard pricing
-          </div>
-          <p className="text-xs text-slate-500 max-w-md mx-auto">
-            Volume discounts will appear here once your contract terms are configured. Reach out
-            to your account manager to discuss pricing.
-          </p>
+          <div className="text-sm font-bold text-slate-900 mb-1">{tx.standardTitle}</div>
+          <p className="text-xs text-slate-500 max-w-md mx-auto">{tx.standardBlurb}</p>
         </div>
       )}
 
@@ -229,17 +232,17 @@ export default function BrandPricingPage() {
       {data.perFactory.length > 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-100 bg-slate-50">
-            <h2 className="font-bold text-slate-900">Consumption by factory</h2>
+            <h2 className="font-bold text-slate-900">{tx.factoryHeader}</h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Where the {fmtLiters(consumed)} came from. Sorted by largest contributor.
+              {tx.factoryHint.replace("{total}", fmtLiters(consumed))}
             </p>
           </div>
           <table className="w-full text-sm">
             <thead className="bg-white text-xs text-slate-500 uppercase tracking-wider">
               <tr className="border-b border-slate-100">
-                <th className="text-left px-5 py-2 font-bold">Factory</th>
-                <th className="text-right px-5 py-2 font-bold">FUZE consumed</th>
-                <th className="text-right px-5 py-2 font-bold">Share</th>
+                <th className="text-left px-5 py-2 font-bold">{tx.colFactory}</th>
+                <th className="text-right px-5 py-2 font-bold">{tx.colFuzeConsumed}</th>
+                <th className="text-right px-5 py-2 font-bold">{tx.colShare}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
