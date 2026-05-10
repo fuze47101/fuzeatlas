@@ -23,6 +23,8 @@ const SELF_EDITABLE = new Set([
   "outboundFromEmail",
   "outboundFromName",
   "outboundSignature",
+  // Phase 10K — IANA timezone for quiet-hours-aware notifications.
+  "timezone",
 ]);
 
 /** Basic RFC-5322-ish email sanity — not RFC-complete, just "looks like email". */
@@ -68,6 +70,7 @@ export async function GET() {
         outboundFromEmail: true,
         outboundFromName: true,
         outboundSignature: true,
+        timezone: true,
       },
     });
     if (!user) {
@@ -161,6 +164,7 @@ export async function PATCH(req: Request) {
         outboundFromEmail: true,
         outboundFromName: true,
         outboundSignature: true,
+        timezone: true,
       },
     });
 

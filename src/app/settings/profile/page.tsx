@@ -19,6 +19,7 @@ interface Me {
   role: string;
   status: string;
   outboundFromEmail: string | null;
+  timezone?: string | null;
   outboundFromName: string | null;
   outboundSignature: string | null;
 }
@@ -36,6 +37,7 @@ export default function ProfileSettingsPage() {
   const [fromEmail, setFromEmail] = useState("");
   const [fromName, setFromName] = useState("");
   const [signature, setSignature] = useState("");
+  const [timezone, setTimezone] = useState("");
 
   // Calendar subscription URL (loaded async — see effect below)
   const [calendarFeed, setCalendarFeed] = useState<{
@@ -61,6 +63,7 @@ export default function ProfileSettingsPage() {
         setFromEmail(data.user.outboundFromEmail || "");
         setFromName(data.user.outboundFromName || data.user.name || "");
         setSignature(data.user.outboundSignature || "");
+        setTimezone(data.user.timezone || "");
       } catch (e: any) {
         if (!cancelled) setError(e?.message || "Failed to load profile");
       } finally {
@@ -113,6 +116,7 @@ export default function ProfileSettingsPage() {
           outboundFromEmail: fromEmail.trim() || null,
           outboundFromName: fromName.trim() || null,
           outboundSignature: signature,
+          timezone: timezone.trim() || null,
         }),
       });
       const data = await res.json();
@@ -224,6 +228,42 @@ export default function ProfileSettingsPage() {
                 disabled
                 className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500"
               />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Timezone (IANA, e.g. America/Denver, Asia/Taipei)
+              </label>
+              <input
+                type="text"
+                value={timezone}
+                onChange={(e) => setTimezone(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
+                placeholder="America/Denver"
+                list="iana-tz-suggestions"
+              />
+              <datalist id="iana-tz-suggestions">
+                <option value="America/Denver" />
+                <option value="America/New_York" />
+                <option value="America/Los_Angeles" />
+                <option value="America/Chicago" />
+                <option value="Europe/London" />
+                <option value="Europe/Paris" />
+                <option value="Asia/Taipei" />
+                <option value="Asia/Shanghai" />
+                <option value="Asia/Hong_Kong" />
+                <option value="Asia/Tokyo" />
+                <option value="Asia/Seoul" />
+                <option value="Asia/Singapore" />
+                <option value="Asia/Bangkok" />
+                <option value="Asia/Istanbul" />
+                <option value="Australia/Sydney" />
+              </datalist>
+              <p className="text-[11px] text-slate-400 mt-1">
+                Non-urgent notifications between 22:00 and 07:00 local time
+                are deferred to 08:00 the next morning. Errors and
+                approval-required signals fire immediately regardless.
+              </p>
             </div>
           </div>
         </section>

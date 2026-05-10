@@ -2084,6 +2084,12 @@ model Notification {
 
   createdAt DateTime @default(now())
 
+  // Phase 10K back-reference. NotificationDelivery rows track per-channel
+  // (in-app / email / SMS) scheduled delivery so timezone-aware queueing
+  // can defer non-urgent pings to the recipient's local morning. Required
+  // by Prisma even though we rarely read deliveries from this side.
+  deliveries NotificationDelivery[]
+
   @@index([userId, read])
   @@index([userId, createdAt])
   @@index([type])
