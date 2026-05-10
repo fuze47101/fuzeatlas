@@ -40,6 +40,8 @@ One line per commit (timestamp UTC, hash, what shipped).
 - 2026-05-10 — `9cae8b9` — phase 4C: API + factory page + brand affordance + cleanup.
 - 2026-05-10 — `63da661` — phase 4D: FuzeHQInventory schema + bearer-authed migration.
 - 2026-05-10 — `1c445c7` — phase 4D: admin API + dashboard + order auto-decrement + cleanup.
+- 2026-05-10 — `6039a80` — phase 4E: LabFormTemplate schema + bearer-authed migration.
+- 2026-05-10 — `fec02d2` — phase 4E: admin CRUD + lab read + editor + cleanup.
 
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 

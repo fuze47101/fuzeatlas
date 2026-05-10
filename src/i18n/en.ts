@@ -1538,6 +1538,56 @@ const en = {
         "Need to set test cadence per factory or approve new submissions? Those controls are coming next — for now you can drill into any factory above to see the underlying data.",
     },
 
+    inventoryView: {
+      crumbCurrent: "FUZE Inventory",
+      pageTitle: "FUZE Inventory",
+      pageSubtitle:
+        "Estimated FUZE on hand at every factory in your supply chain. On-hand = orders received − consumption logged. Factories may also draw from shared stock for other programs; treat this as a rolling estimate, not an audited count.",
+      loading: "Loading inventory…",
+      // Totals
+      totalFactories: "Factories",
+      totalOrders: "Total ordered (L)",
+      totalConsumed: "Total consumed (L)",
+      totalOnHand: "Estimated on hand (L)",
+      // Table
+      colFactory: "Factory",
+      colOrdered: "Ordered (L)",
+      colConsumed: "Consumed (L)",
+      colOnHand: "On hand (L)",
+      colLastUse: "Last use",
+      noFactories: "No factories yet in your supply chain.",
+    },
+    labPipeline: {
+      crumbCurrent: "Lab Pipeline",
+      pageTitle: "Lab Pipeline",
+      pageSubtitle:
+        "Every test request and brand-visible result for fabrics in your supply chain — across every lab, every factory.",
+      loading: "Loading pipeline…",
+      tabPending: "Pending ({n})",
+      tabResults: "Results ({n})",
+      // Pending columns
+      colPo: "PO #",
+      colFactory: "Factory",
+      colFabric: "Fabric",
+      colLab: "Lab",
+      colTier: "Tier",
+      colTests: "Tests",
+      colStatus: "Status",
+      colRequested: "Requested",
+      // Results columns
+      colReport: "Report #",
+      colTest: "Test",
+      colDate: "Date",
+      colResult: "Result",
+      // Empty
+      noPending: "Nothing in flight.",
+      noResults: "No brand-visible results yet.",
+      // Result classifiers
+      resultPass: "Pass",
+      resultFail: "Fail",
+      resultPending: "Pending",
+    },
+
     profile: {
       crumbCurrent: "Brand Profile",
       pageTitleWithBrand: "Brand Profile — {brand}",
