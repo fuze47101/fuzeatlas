@@ -75,6 +75,8 @@ Phase 5A (brand team management) starts next.
 - 2026-05-10 — `6c43353` — phase 5B: FactoryInvitation schema + bearer-authed migration.
 - 2026-05-10 — `b94b8cc` — phase 5B: endpoints + page + public landing + cleanup.
 - 2026-05-10 — `6563b61` — phase 5C: factory side of the network.
+- 2026-05-10 — `d4c98a6` — phase 5D: NotificationSubscription schema + bearer-authed migration.
+- 2026-05-10 — `47922c7` — phase 5D: API + settings page + notify wiring + cleanup. **Phase 5 complete.** Email id `bc7c35a4-5552-4344-beff-e819374e499c`, SMS sid `SM1808245960676bdd9e523fa1049f27f3`.
 
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 

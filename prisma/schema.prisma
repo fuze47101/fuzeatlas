@@ -2990,10 +2990,21 @@ model ProductDocument {
   uploadedById String?
   uploadedByName String?
 
+  // Phase 6A — library categorization. category is one of the
+  // ROADMAP_v2 categories (tds_sds, toxicology, pricing,
+  // sustainability, education, claims_compliance, application_guide,
+  // case_study). audience is a string array of any of BRAND,
+  // FACTORY, DISTRIBUTOR, LAB, PUBLIC. productLine is F1/F2/F3/F4
+  // when product-line-specific, null otherwise.
+  category    String   @default("tds_sds")
+  audience    String[] @default(["BRAND", "FACTORY", "DISTRIBUTOR", "LAB"])
+  productLine String?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([docType])
+  @@index([category])
 }
 
 // ─────────────────────────────────────────────
