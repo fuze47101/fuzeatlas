@@ -16,3 +16,4 @@ One line per commit (timestamp UTC, hash, what shipped).
 - 2026-05-09 — `ae4ec86` — /education/[segment] pitch pages for 6 verticals (G).
 - 2026-05-09 — `71b1357` — i18n /brand-portal landing page (Phase 0 continuation).
 - 2026-05-09 — `9af7ed9` — brand-voice scanner + fix shipping-doc hardcoded defaults.
+- 2026-05-09 — `5c7f71b` — Phase 4 ACL helper + adopt in factory-portal/tests.

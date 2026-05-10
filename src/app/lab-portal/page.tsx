@@ -1,9 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 export default function LabPortalDashboard() {
   const router = useRouter();
+  const { t } = useI18n();
+  const tx = t.labPortal.landing;
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,15 +21,11 @@ export default function LabPortalDashboard() {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center h-64 text-slate-400">
-        Loading lab portal...
-      </div>
+      <div className="flex items-center justify-center h-64 text-slate-400">{tx.loading}</div>
     );
   if (!data)
     return (
-      <div className="flex items-center justify-center h-64 text-red-400">
-        Unable to load lab portal
-      </div>
+      <div className="flex items-center justify-center h-64 text-red-400">{tx.unableToLoad}</div>
     );
 
   const { lab, stats, testRequests } = data;
@@ -34,9 +33,9 @@ export default function LabPortalDashboard() {
   return (
     <div className="max-w-[1400px] mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900">Lab Portal</h1>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">
-          {lab.name} — Manage your test catalog and incoming requests
+          {tx.pageSubtitle.replace("{lab}", lab.name)}
         </p>
       </div>
 
@@ -44,23 +43,23 @@ export default function LabPortalDashboard() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
         <div className="bg-white rounded-xl p-4 shadow-sm border text-center">
           <div className="text-2xl font-black text-[#00b4c3]">{stats.totalServices}</div>
-          <div className="text-xs text-slate-500">Test Services</div>
+          <div className="text-xs text-slate-500">{tx.statTotalServices}</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border text-center">
           <div className="text-2xl font-black text-amber-500">{stats.pendingRequests}</div>
-          <div className="text-xs text-slate-500">Pending Requests</div>
+          <div className="text-xs text-slate-500">{tx.statPendingRequests}</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border text-center">
           <div className="text-2xl font-black text-blue-600">{stats.activeRequests}</div>
-          <div className="text-xs text-slate-500">In Progress</div>
+          <div className="text-xs text-slate-500">{tx.statActiveRequests}</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border text-center">
           <div className="text-2xl font-black text-emerald-600">{stats.completedRequests}</div>
-          <div className="text-xs text-slate-500">Completed</div>
+          <div className="text-xs text-slate-500">{tx.statCompletedRequests}</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border text-center">
           <div className="text-2xl font-black text-slate-700">{stats.totalTestRuns}</div>
-          <div className="text-xs text-slate-500">Total Test Runs</div>
+          <div className="text-xs text-slate-500">{tx.statTotalTestRuns}</div>
         </div>
       </div>
 
@@ -70,38 +69,38 @@ export default function LabPortalDashboard() {
           {
             href: "/lab-portal/upload",
             icon: "📤",
-            label: "Upload Report",
-            desc: "Upload a completed test report",
+            label: tx.quickUploadLabel,
+            desc: tx.quickUploadDesc,
           },
           {
             href: "/lab-portal/uploads",
             icon: "📋",
-            label: "Upload History",
-            desc: "View all reports you've uploaded",
+            label: tx.quickUploadsLabel,
+            desc: tx.quickUploadsDesc,
           },
           {
             href: "/lab-portal/catalog",
             icon: "🧪",
-            label: "Test Catalog",
-            desc: "Manage your tests and pricing",
+            label: tx.quickCatalogLabel,
+            desc: tx.quickCatalogDesc,
           },
           {
             href: "/lab-portal/requests",
             icon: "📬",
-            label: "Test Requests",
-            desc: `${stats.pendingRequests} pending`,
+            label: tx.quickRequestsLabel,
+            desc: tx.quickRequestsDescPending.replace("{count}", String(stats.pendingRequests)),
           },
           {
             href: "/lab-portal/forms",
             icon: "📄",
-            label: "Forms & Docs",
-            desc: "Upload test forms",
+            label: tx.quickFormsLabel,
+            desc: tx.quickFormsDesc,
           },
           {
             href: "/lab-portal/profile",
             icon: "🏢",
-            label: "Lab Profile",
-            desc: "Update your information",
+            label: tx.quickProfileLabel,
+            desc: tx.quickProfileDesc,
           },
         ].map((card) => (
           <button
@@ -119,66 +118,70 @@ export default function LabPortalDashboard() {
       {/* Recent Requests */}
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         <div className="px-5 py-4 border-b bg-slate-50">
-          <h2 className="font-bold text-slate-900">Recent Test Requests</h2>
+          <h2 className="font-bold text-slate-900">{tx.recentRequestsHeader}</h2>
         </div>
         {testRequests.length === 0 ? (
           <div className="text-center py-12 text-slate-400">
             <div className="text-4xl mb-2">📋</div>
-            <p className="text-sm">
-              No test requests yet. They will appear here when customers submit orders.
-            </p>
+            <p className="text-sm">{tx.noRequests}</p>
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs text-slate-500 uppercase tracking-wider border-b">
-                <th className="px-5 py-3">PO Number</th>
-                <th className="px-5 py-3">Brand</th>
-                <th className="px-5 py-3">Fabric</th>
-                <th className="px-5 py-3">Tests</th>
-                <th className="px-5 py-3">Status</th>
-                <th className="px-5 py-3 text-right">Est. Cost</th>
+                <th className="px-5 py-3">{tx.colPoNumber}</th>
+                <th className="px-5 py-3">{tx.colBrand}</th>
+                <th className="px-5 py-3">{tx.colFabric}</th>
+                <th className="px-5 py-3">{tx.colTests}</th>
+                <th className="px-5 py-3">{tx.colStatus}</th>
+                <th className="px-5 py-3 text-right">{tx.colEstCost}</th>
               </tr>
             </thead>
             <tbody>
-              {testRequests.slice(0, 10).map((r: any) => (
-                <tr
-                  key={r.id}
-                  className="border-t border-slate-100 hover:bg-blue-50 transition-colors"
-                >
-                  <td className="px-5 py-3 font-mono font-bold text-[#00b4c3] text-xs">
-                    {r.poNumber}
-                  </td>
-                  <td className="px-5 py-3 text-slate-700">{r.brand?.name || "—"}</td>
-                  <td className="px-5 py-3 text-slate-700">
-                    {r.fabric ? `FUZE ${r.fabric.fuzeNumber}` : "—"}
-                    {r.fabric?.construction && (
-                      <span className="text-slate-400 ml-1">({r.fabric.construction})</span>
-                    )}
-                  </td>
-                  <td className="px-5 py-3">
-                    {r.lines?.length || 0} test{(r.lines?.length || 0) !== 1 ? "s" : ""}
-                  </td>
-                  <td className="px-5 py-3">
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        r.status === "COMPLETE"
-                          ? "bg-green-100 text-green-700"
-                          : r.status === "IN_PROGRESS"
-                            ? "bg-blue-100 text-blue-700"
-                            : r.status === "APPROVED"
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-amber-100 text-amber-700"
-                      }`}
-                    >
-                      {r.status.replace(/_/g, " ")}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-right font-semibold">
-                    {r.estimatedCost ? `$${r.estimatedCost}` : "—"}
-                  </td>
-                </tr>
-              ))}
+              {testRequests.slice(0, 10).map((r: any) => {
+                const count = r.lines?.length || 0;
+                return (
+                  <tr
+                    key={r.id}
+                    className="border-t border-slate-100 hover:bg-blue-50 transition-colors"
+                  >
+                    <td className="px-5 py-3 font-mono font-bold text-[#00b4c3] text-xs">
+                      {r.poNumber}
+                    </td>
+                    <td className="px-5 py-3 text-slate-700">{r.brand?.name || "—"}</td>
+                    <td className="px-5 py-3 text-slate-700">
+                      {r.fabric ? `FUZE ${r.fabric.fuzeNumber}` : "—"}
+                      {r.fabric?.construction && (
+                        <span className="text-slate-400 ml-1">({r.fabric.construction})</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3">
+                      {(count === 1 ? tx.testsCountSingular : tx.testsCountPlural).replace(
+                        "{count}",
+                        String(count),
+                      )}
+                    </td>
+                    <td className="px-5 py-3">
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          r.status === "COMPLETE"
+                            ? "bg-green-100 text-green-700"
+                            : r.status === "IN_PROGRESS"
+                              ? "bg-blue-100 text-blue-700"
+                              : r.status === "APPROVED"
+                                ? "bg-emerald-100 text-emerald-700"
+                                : "bg-amber-100 text-amber-700"
+                        }`}
+                      >
+                        {r.status.replace(/_/g, " ")}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 text-right font-semibold">
+                      {r.estimatedCost ? `$${r.estimatedCost}` : "—"}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}

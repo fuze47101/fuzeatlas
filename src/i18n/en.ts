@@ -1499,6 +1499,49 @@ const en = {
     },
   },
 
+  // ─── LAB PORTAL ───────────────────────────────
+  // Customer-facing lab portal surfaces. Phase 0 of ROADMAP_v2.
+  labPortal: {
+    crumb: "Lab Portal",
+
+    landing: {
+      loading: "Loading lab portal...",
+      unableToLoad: "Unable to load lab portal",
+      pageTitle: "Lab Portal",
+      pageSubtitle: "{lab} — Manage your test catalog and incoming requests",
+      // Stats
+      statTotalServices: "Test Services",
+      statPendingRequests: "Pending Requests",
+      statActiveRequests: "In Progress",
+      statCompletedRequests: "Completed",
+      statTotalTestRuns: "Total Test Runs",
+      // Quick action cards
+      quickUploadLabel: "Upload Report",
+      quickUploadDesc: "Upload a completed test report",
+      quickUploadsLabel: "Upload History",
+      quickUploadsDesc: "View all reports you've uploaded",
+      quickCatalogLabel: "Test Catalog",
+      quickCatalogDesc: "Manage your tests and pricing",
+      quickRequestsLabel: "Test Requests",
+      quickRequestsDescPending: "{count} pending",
+      quickFormsLabel: "Forms & Docs",
+      quickFormsDesc: "Upload test forms",
+      quickProfileLabel: "Lab Profile",
+      quickProfileDesc: "Update your information",
+      // Recent requests table
+      recentRequestsHeader: "Recent Test Requests",
+      noRequests: "No test requests yet. They will appear here when customers submit orders.",
+      colPoNumber: "PO Number",
+      colBrand: "Brand",
+      colFabric: "Fabric",
+      colTests: "Tests",
+      colStatus: "Status",
+      colEstCost: "Est. Cost",
+      testsCountSingular: "{count} test",
+      testsCountPlural: "{count} tests",
+    },
+  },
+
   // ─── PRODUCT DOCUMENTS ────────────────────────
   productDocs: {
     title: "Product Documents",
