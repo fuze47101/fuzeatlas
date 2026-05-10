@@ -6,6 +6,7 @@ import { useI18n } from "@/i18n";
 import ActivityFeed from "@/components/ActivityFeed";
 import AddTaskButton from "@/components/AddTaskButton";
 import ClaimBrandButton from "@/components/ClaimBrandButton";
+import ReferralBadge from "@/components/ReferralBadge";
 
 const STAGES = [
   "LEAD",
@@ -433,7 +434,7 @@ export default function BrandDetailPage() {
             &larr; {t.common.backToPipeline}
           </button>
           <h1 className="text-2xl font-black text-slate-900">{brand.name}</h1>
-          <div className="flex items-center gap-3 mt-1">
+          <div className="flex items-center gap-3 mt-1 flex-wrap">
             <span
               className="px-2 py-0.5 rounded-full text-xs font-bold text-white"
               style={{ background: STAGE_COLORS[brand.pipelineStage] || "#6366f1" }}
@@ -445,6 +446,7 @@ export default function BrandDetailPage() {
                 {t.brands.rep}: {brand.salesRep.name}
               </span>
             )}
+            <ReferralBadge brandId={brand.id} />
           </div>
         </div>
         <div className="flex gap-2 items-center">

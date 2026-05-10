@@ -108,6 +108,11 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
       salesRepId,
       dateOfInitialContact,
       presentationDate,
+      // Phase 9I — referral attribution
+      referredByBrandId,
+      referredByContactId,
+      referralNote,
+      referralValue,
     } = body;
 
     // Check if pipelineStage is changing (for auto-scheduling + BD handoff)
@@ -163,6 +168,22 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
         }),
         ...(presentationDate !== undefined && {
           presentationDate: presentationDate ? new Date(presentationDate) : null,
+        }),
+        // Phase 9I — referral attribution
+        ...(referredByBrandId !== undefined && {
+          referredByBrandId: referredByBrandId || null,
+        }),
+        ...(referredByContactId !== undefined && {
+          referredByContactId: referredByContactId || null,
+        }),
+        ...(referralNote !== undefined && {
+          referralNote: referralNote || null,
+        }),
+        ...(referralValue !== undefined && {
+          referralValue:
+            referralValue === null || referralValue === ""
+              ? null
+              : Number(referralValue),
         }),
         ...(handoffPendingUpdate !== undefined && { handoffPending: handoffPendingUpdate }),
       },
