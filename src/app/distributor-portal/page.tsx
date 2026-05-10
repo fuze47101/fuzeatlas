@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import PortalActivityFeed from "@/components/PortalActivityFeed";
 
 interface Stats {
   // Inventory (the operations view Tina #P1 asked for — what's
@@ -282,6 +283,9 @@ export default function DistributorPortalPage() {
           </p>
         </div>
       </div>
+
+      {/* Phase 8A — universal activity feed before quick links. */}
+      <PortalActivityFeed />
 
       {/* Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

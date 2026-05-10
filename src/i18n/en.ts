@@ -1495,6 +1495,15 @@ const en = {
     },
   },
 
+  // ─── PORTAL FEED (shared, mounted on all 4 portal landings) ──
+  portalFeed: {
+    header: "What just happened",
+    blurb: "Last 10 events on your account.",
+    empty: "Nothing new — you're caught up.",
+    goTo: "Open →",
+    loading: "Loading…",
+  },
+
   // ─── LIBRARY (shared, used by all 4 portal /library pages) ──
   library: {
     crumbCurrent: "Library",

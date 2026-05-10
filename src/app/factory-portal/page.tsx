@@ -5,6 +5,7 @@ import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import PortalActivityFeed from "@/components/PortalActivityFeed";
 
 interface Stats {
   activeFabrics: number;
@@ -126,6 +127,9 @@ export default function FactoryPortalPage() {
           </span>
         </div>
       </Link>
+
+      {/* Phase 8A — universal activity feed between Learn FUZE banner and quick links. */}
+      <PortalActivityFeed />
 
       {/* Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

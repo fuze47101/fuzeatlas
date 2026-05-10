@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
+import PortalActivityFeed from "@/components/PortalActivityFeed";
 
 export default function LabPortalDashboard() {
   const router = useRouter();
@@ -62,6 +63,9 @@ export default function LabPortalDashboard() {
           <div className="text-xs text-slate-500">{tx.statTotalTestRuns}</div>
         </div>
       </div>
+
+      {/* Phase 8A — universal activity feed before quick actions. */}
+      <PortalActivityFeed />
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">

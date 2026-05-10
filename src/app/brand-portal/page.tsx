@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { useI18n } from "@/i18n";
+import PortalActivityFeed from "@/components/PortalActivityFeed";
 
 export default function BrandPortalDashboard() {
   const router = useRouter();
@@ -142,6 +143,9 @@ export default function BrandPortalDashboard() {
           <div className="text-xs text-slate-500 mt-1">Approvals waiting</div>
         </button>
       </div>
+
+      {/* Phase 8A — universal activity feed between stats and quick actions. */}
+      <PortalActivityFeed />
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
