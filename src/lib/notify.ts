@@ -129,6 +129,59 @@ export async function notifyTestResult(params: {
   }
 }
 
+/**
+ * Phase 7D — when an item flips to brandApprovalStatus=PENDING,
+ * notify every active brand user (subscription-filtered on the
+ * `approval_pending` category). Always also notifies admins so
+ * Andrew has a tracking copy. Tries to send an email if RESEND
+ * is configured; in-app notification always fires.
+ */
+export async function notifyApprovalPending(params: {
+  brandId: string;
+  brandName: string;
+  kind: "submission" | "test" | "order";
+  /** Display ref — fabric FUZE# / report# / order#. */
+  ref: string;
+  /** Optional Atlas link to the item. Defaults to /brand-portal/approvals. */
+  link?: string;
+}) {
+  const { brandId, brandName, kind, ref } = params;
+  const link = params.link || "/brand-portal/approvals";
+  const kindLabel =
+    kind === "submission" ? "fabric submission" : kind === "test" ? "test result" : "production order";
+  const title = `Approval needed: ${kindLabel} ${ref}`;
+  const message = `A ${kindLabel} (${ref}) for ${brandName} is awaiting your approval. Open the approvals queue to review.`;
+
+  // Brand users — subscription-filtered.
+  try {
+    const brandUsers = await prisma.user.findMany({
+      where: { brandId, status: "ACTIVE" },
+      select: { id: true },
+    });
+    const recipients = await filterSubscribed(
+      brandUsers.map((u: any) => u.id),
+      "approval_pending",
+    );
+    await Promise.all(
+      recipients.map((uid) =>
+        createNotification({
+          userId: uid,
+          type: "PO_STATUS",
+          title,
+          message,
+          link,
+          metadata: { kind: "approval_pending", subjectKind: kind, ref },
+        }),
+      ),
+    );
+  } catch (err) {
+    console.error("[notify] approval-pending brand fan-out failed:", err);
+  }
+
+  // Admins — always (operational).
+  await notifyAdmins("PO_STATUS", title, message, link);
+}
+
 /** When a SOW status changes */
 export async function notifySOWStatusChange(params: {
   sowId: string;

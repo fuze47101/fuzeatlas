@@ -537,6 +537,44 @@ export async function POST(req: Request) {
       }
     }
 
+    // ─── Phase 7D: brand-approval workflow.
+    //   When the order is PRODUCTION + tied to a brand + that brand
+    //   has requiresApproval=true + has cadence stipulated (signals
+    //   they want oversight), stamp PENDING and fire approval_pending. ──
+    if (
+      order.brandId &&
+      order.orderType === "PRODUCTION"
+    ) {
+      try {
+        const brand = await prisma.brand.findUnique({
+          where: { id: order.brandId },
+          select: {
+            name: true,
+            requiresApproval: true,
+            icpCadenceEveryNBatches: true,
+            icpCadenceEveryLitersConsumed: true,
+          },
+        });
+        const wantsOversight =
+          !!(brand?.icpCadenceEveryNBatches || brand?.icpCadenceEveryLitersConsumed);
+        if (brand?.requiresApproval && wantsOversight) {
+          await prisma.fuzeOrder.update({
+            where: { id: order.id },
+            data: { brandApprovalStatus: "PENDING" },
+          });
+          const { notifyApprovalPending } = await import("@/lib/notify");
+          await notifyApprovalPending({
+            brandId: order.brandId,
+            brandName: brand.name,
+            kind: "order",
+            ref: order.orderNumber,
+          });
+        }
+      } catch (err) {
+        console.error("[approval-pending] order POST hook (non-blocking):", err);
+      }
+    }
+
     // ─── Trigger notifications (fire-and-forget) ───
     try {
       // In-app notification to AM + admins

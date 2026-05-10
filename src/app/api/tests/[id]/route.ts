@@ -126,9 +126,28 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       if (brandVisible) {
         brandVisData.brandApprovedById = userId;
         brandVisData.brandApprovedAt = new Date();
+
+        // Phase 7D — when stamping brand-visible AND the brand has
+        // requiresApproval=true, set brandApprovalStatus=PENDING so
+        // the brand sees it in their approval queue. Look up brand
+        // requirement via the existing submission relation.
+        try {
+          const ctx = await prisma.testRun.findUnique({
+            where: { id },
+            select: { submission: { select: { brand: { select: { requiresApproval: true } } } } },
+          });
+          if (ctx?.submission?.brand?.requiresApproval) {
+            brandVisData.brandApprovalStatus = "PENDING";
+          }
+        } catch {
+          /* if the lookup fails, default to no PENDING — fail open */
+        }
       } else {
         brandVisData.brandApprovedById = null;
         brandVisData.brandApprovedAt = null;
+        // Clearing brandVisible also clears any pending approval
+        // that was tied to it.
+        brandVisData.brandApprovalStatus = null;
       }
     }
 
@@ -251,6 +270,34 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
           },
         });
       }
+    }
+
+    // ── Phase 7D: fan out approval-pending notification when this
+    //    flip put the row into PENDING. Fire-and-forget; non-blocking. ──
+    if (brandVisible === true && brandVisData.brandApprovalStatus === "PENDING") {
+      (async () => {
+        try {
+          const ctx = await prisma.testRun.findUnique({
+            where: { id },
+            select: {
+              testType: true,
+              testReportNumber: true,
+              submission: { select: { brandId: true, brand: { select: { name: true } } } },
+            },
+          });
+          if (ctx?.submission?.brandId && ctx?.submission?.brand?.name) {
+            const { notifyApprovalPending } = await import("@/lib/notify");
+            await notifyApprovalPending({
+              brandId: ctx.submission.brandId,
+              brandName: ctx.submission.brand.name,
+              kind: "test",
+              ref: `${ctx.testType}${ctx.testReportNumber ? ` #${ctx.testReportNumber}` : ""}`,
+            });
+          }
+        } catch (err) {
+          console.error("[approval-pending] test notify failed:", err);
+        }
+      })();
     }
 
     // ── Send enhanced results email when stamping for brand visibility ──
