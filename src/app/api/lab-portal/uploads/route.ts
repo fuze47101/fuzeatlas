@@ -58,6 +58,10 @@ export async function GET(req: Request) {
             fuzeInternalReportNumber: true,
             testDate: true,
             washCount: true,
+            // Phase 7F — surface brand approval status to the lab.
+            brandVisible: true,
+            brandApprovalStatus: true,
+            brandRejectionReason: true,
             // Per-method result tables (one is non-null depending on
             // testType). Selecting the id is enough to know "yes,
             // a result row exists" — full result data is a heavier

@@ -42,13 +42,17 @@ export async function GET(req: Request) {
       orderBy: { createdAt: "desc" },
     });
 
-    // Transform data
-    const transformedSubmissions = submissions.map(s => ({
+    // Transform data — Phase 7F surfaces approval status alongside
+    // the operational status so factories see what the brand is
+    // sitting on.
+    const transformedSubmissions = submissions.map((s: any) => ({
       id: s.id,
       status: s.status,
       fabric: s.fabric,
       createdAt: s.createdAt,
-      testResults: s.testRequests.map(tr => ({
+      brandApprovalStatus: s.brandApprovalStatus || null,
+      brandRejectionReason: s.brandRejectionReason || null,
+      testResults: s.testRequests.map((tr: any) => ({
         testType: "FUZE Treatment",
         status: tr.status,
       })),

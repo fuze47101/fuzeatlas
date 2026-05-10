@@ -135,6 +135,11 @@ export async function GET(req: Request) {
         // Brand attribution for context — visible to the factory only
         // when FUZE has linked a brand to the submission.
         brandName: run.submission?.brand?.name || null,
+        // Phase 7F — surface approval status so factory sees what the
+        // brand is holding up + the rejection reason if any.
+        brandVisible: run.brandVisible,
+        brandApprovalStatus: run.brandApprovalStatus || null,
+        brandRejectionReason: run.brandRejectionReason || null,
         // Report PDF download — the headline missing piece in Tina's
         // ticket. `null` when no report doc has landed yet.
         reportDocumentId: reportDoc?.id || null,

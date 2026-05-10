@@ -84,6 +84,7 @@ Phase 5A (brand team management) starts next.
 - 2026-05-10 — `cee018a` — phase 7A: brand approval workflow schema.
 - 2026-05-10 — `1c9ab5a` — phase 7B/7C: approvals queue + endpoints + admin mirror + cleanup.
 - 2026-05-10 — `e447c63` — phase 7D: notifyApprovalPending + overdue cron + pipeline wiring.
+- 2026-05-10 — `fd9eeb0` — phase 7E: requiresApproval toggle on spec pages.
 
 ### QUEUE EXTENSION — Phases 5 + 6 added 2026-05-10
 
