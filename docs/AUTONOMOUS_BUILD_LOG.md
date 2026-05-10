@@ -169,13 +169,100 @@ bearer-authed apply-* endpoint pattern to bypass that mismatch.
 - Vercel cron schedule entry for `approval-overdue` (currently
   fzcron-invokable; vercel.json change would auto-fire daily).
 
-## Phase 8 — UI/UX consolidation (in progress)
+## Phase 8 — UI/UX consolidation
 
 - 2026-05-10 — `545aafa` — phase 8A: universal activity feed on every portal landing.
 - 2026-05-10 — `c579def` — phase 8B: per-fabric lifecycle timeline.
 - 2026-05-10 — `e2817a8` — phase 8C: /admin/command-center.
 - 2026-05-10 — `ec3d0d9` — phase 8D: mobile-layout scanner + targeted wrapper fix.
 - 2026-05-10 — `372a039` — phase 8E (step 1): /api/cron/inspect-db-host.
+- 2026-05-10 — `d436c01` — phase 8E (cleanup): drop endpoint + log STOP for manual DSN reconcile.
+- 2026-05-10 — `956874e` — phase 8F: thread useI18n through /distributor-portal landing.
+- 2026-05-10 — `c03238e` — phase 8G (1/3): batch-stamp approval-pending hook.
+- 2026-05-10 — `a43e850` — phase 8G (2/3): factory-portal approval-status badges.
+- 2026-05-10 — `634f11a` — phase 8G (3/3): vercel.json approval-overdue cron entry.
+
+## Phase 8 complete — full handoff
+
+Phase 8 was a pure UI/UX/operations consolidation pass. **No new
+Prisma models** were added — all data shape was already in place
+from Phases 4–7. Surfaces shipped + scaffolding crons + a few
+operator-quality fixes.
+
+### Models added
+
+None. Phase 8 was deliberately schema-free — no migrations to push.
+
+### Crons updated
+
+- `/api/cron/approval-overdue` — registered in `vercel.json` at
+  14:30 UTC daily. Handler was already in place from Phase 7;
+  this phase only wired the schedule.
+
+### Surfaces shipped
+
+- **8A** — `PortalActivityFeed` mounted on all four portal
+  landings (brand / factory / distributor / lab). Single shared
+  component, scoped server-side via `/api/portal-activity`.
+- **8B** — Per-fabric lifecycle timeline at
+  `/fabrics/by-fuze/[fuzeNumber]/timeline` with the matching
+  read-only API at `/api/fabrics/by-fuze/[fuzeNumber]/timeline`.
+  Routed under `by-fuze/` to avoid the existing `[id]/`
+  conflict.
+- **8C** — `/admin/command-center` aggregating six metric
+  tiles + brand × factory cadence matrix + recent activity
+  + distributor low-stock alerts + brand approval queues.
+  API route caches at 30s with stale-while-revalidate=120.
+- **8D** — `scripts/check-mobile.ts` mobile-layout
+  anti-pattern scanner (table without overflow wrapper,
+  `min-w-[>400px]`, `grid-cols-{>=5}` without smaller
+  variant). Wired into `package.json`. Targeted wrapper
+  fix on the one offending file.
+- **8E** — DSN inspection endpoint built + dropped after
+  comparison. Confirmed `.env.local` points at
+  `interchange.proxy.rlwy.net:31700` while runtime points
+  at `caboose.proxy.rlwy.net:28355`. Logged as a STOP
+  requiring manual reconcile (see section below).
+- **8F** — `/distributor-portal` landing fully i18n'd
+  through `t.distributorPortal.landing.*`. Closes the
+  Phase 0 i18n surface for all four operator-facing
+  portal landings (brand / factory / distributor / lab).
+- **8G** — three independent operator hooks:
+  1. `POST /api/tests/batch-stamp` now mirrors the
+     PATCH `/api/tests/[id]` approval-pending hook —
+     stamps `brandApprovalStatus=PENDING` and fans out
+     `notifyApprovalPending` per row when the brand
+     has `requiresApproval=true`.
+  2. `/factory-portal/tests` and `/factory-portal/submissions`
+     surface inline approval-status badges + rejection
+     reason text. Data was already on the API tier from
+     Phase 7F — pure UI thread-through.
+  3. `vercel.json` approval-overdue cron registration.
+
+### TODOs remaining
+
+- **DSN reconcile** (Phase 8E STOP) — Andrew updates
+  `.env.local` from the Railway dashboard so local
+  Prisma scripts work against the real prod DB again.
+  Once done, the bearer-authed runtime migration
+  endpoint pattern can be retired.
+- **Distributor portal sub-pages i18n** — only the
+  landing was threaded in 8F. `/distributor-portal/restock`,
+  `/inventory`, `/documents`, `/invoices`, `/test-request`,
+  `/test-reports`, `/incoming` still hold hardcoded copy.
+  Same pattern applies — add `t.distributorPortal.<page>.*`
+  namespaces and replace.
+- **17-locale fan-out** — every namespace added across
+  Phases 4–8 lives in `src/i18n/en.ts` only. Other
+  locales fall back via `deepFallback` so the UI never
+  breaks, but real translations (zh/es/tr/etc.) are
+  pending. Spec for that work is in `ROADMAP_v2.md`.
+- **Phase 7F approval queue admin mirror** — the brand
+  approval queue is reachable from the brand portal +
+  command center, but there's no `/admin/brands/[id]/approvals`
+  detail page yet for FUZE-Ops to triage / nudge.
+
+---
 
 ### Phase 8E DSN comparison — STOP for manual reconciliation
 
