@@ -20,3 +20,4 @@ One line per commit (timestamp UTC, hash, what shipped).
 - 2026-05-09 — `313eae5` — i18n /lab-portal landing.
 - 2026-05-09 — `dc137f9` — adopt ACL helper in factory-portal stats + submissions (fixes Tina-style undercount).
 - 2026-05-09 — `56241b7` — i18n /brand-portal/submissions.
+- 2026-05-09 — `6c18844` — i18n /brand-portal/contacts.

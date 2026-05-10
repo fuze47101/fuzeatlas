@@ -1458,6 +1458,38 @@ const en = {
       saving: "Saving…",
     },
 
+    chat: {
+      goBack: "Go back",
+      title: "FUZE AI Assistant",
+      subtitle: "Ask anything about FUZE antimicrobial technology",
+      newChat: "New Chat",
+      onlineLabel: "Online",
+      // Welcome
+      greetingTitle: "Hi! I'm FUZE AI",
+      greetingBlurb:
+        "I'm trained on FUZE's complete product documentation. Ask me about antimicrobial tiers, testing standards, pricing, safety certifications, application methods, and more.",
+      // Suggested
+      qTiers: "What FUZE tiers are available?",
+      qBaby: "Is FUZE safe for baby products?",
+      qCost: "How much does treatment cost per meter?",
+      qStandards: "What testing standards does FUZE meet?",
+      qStarted: "How do we get started with FUZE?",
+      qEnv: "Is FUZE environmentally friendly?",
+      qPolyester: "Can FUZE be applied to polyester?",
+      qVirus: "Does FUZE work against viruses?",
+      // Errors
+      errorRetry: "Sorry, I encountered an error. Please try again.",
+      errorOffline: "Unable to connect. Please check your connection.",
+      // Input
+      inputPlaceholder: "Type your question about FUZE products...",
+      sendButton: "Send",
+      // Footer
+      footerNote:
+        "FUZE AI is powered by product documentation. For specific contract or order inquiries, contact your sales representative.",
+      // Bubble identifiers
+      youLabel: "You",
+    },
+
     contacts: {
       pageTitle: "Contacts & Approvers",
       pageSubtitle: "{brand} — Manage contacts who interact with FUZE",

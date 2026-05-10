@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -8,18 +9,21 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-const SUGGESTED = [
-  { q: "What FUZE tiers are available?", icon: "🧪" },
-  { q: "Is FUZE safe for baby products?", icon: "👶" },
-  { q: "How much does treatment cost per meter?", icon: "💰" },
-  { q: "What testing standards does FUZE meet?", icon: "📋" },
-  { q: "How do we get started with FUZE?", icon: "🚀" },
-  { q: "Is FUZE environmentally friendly?", icon: "🌿" },
-  { q: "Can FUZE be applied to polyester?", icon: "🧵" },
-  { q: "Does FUZE work against viruses?", icon: "🦠" },
-];
-
 export default function BrandChatPage() {
+  const { t } = useI18n();
+  const tx = t.brandPortal.chat;
+
+  const SUGGESTED = [
+    { q: tx.qTiers, icon: "🧪" },
+    { q: tx.qBaby, icon: "👶" },
+    { q: tx.qCost, icon: "💰" },
+    { q: tx.qStandards, icon: "📋" },
+    { q: tx.qStarted, icon: "🚀" },
+    { q: tx.qEnv, icon: "🌿" },
+    { q: tx.qPolyester, icon: "🧵" },
+    { q: tx.qVirus, icon: "🦠" },
+  ];
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,6 +41,49 @@ export default function BrandChatPage() {
     inputRef.current?.focus();
   }, []);
 
+  const sendMessage = useCallback(
+    async (text: string) => {
+      if (!text.trim() || loading) return;
+
+      const userMsg: ChatMessage = { role: "user", content: text.trim(), timestamp: new Date() };
+      setMessages((prev) => [...prev, userMsg]);
+      setInput("");
+      setLoading(true);
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: text.trim(),
+            history: messages.map((m) => ({ role: m.role, content: m.content })),
+          }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: data.reply, timestamp: new Date() },
+          ]);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: tx.errorRetry, timestamp: new Date() },
+          ]);
+        }
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: tx.errorOffline, timestamp: new Date() },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loading, messages, tx.errorRetry, tx.errorOffline],
+  );
+
   // Auto-send question from ?q= parameter (e.g. from FAQ buttons on login page)
   useEffect(() => {
     const q = searchParams.get("q");
@@ -46,46 +93,6 @@ export default function BrandChatPage() {
     }
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const sendMessage = useCallback(async (text: string) => {
-    if (!text.trim() || loading) return;
-
-    const userMsg: ChatMessage = { role: "user", content: text.trim(), timestamp: new Date() };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
-    setLoading(true);
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: text.trim(),
-          history: messages.map((m) => ({ role: m.role, content: m.content })),
-        }),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: data.reply, timestamp: new Date() },
-        ]);
-      } else {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "Sorry, I encountered an error. Please try again.", timestamp: new Date() },
-        ]);
-      }
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "Unable to connect. Please check your connection.", timestamp: new Date() },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  }, [loading, messages]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     sendMessage(input);
@@ -93,7 +100,7 @@ export default function BrandChatPage() {
 
   function renderContent(content: string) {
     return content.split("\n").map((line, i) => {
-      let rendered = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      let rendered = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
       if (rendered.startsWith("- ")) {
         return (
           <div key={i} className="flex gap-2 ml-3 my-0.5">
@@ -123,7 +130,7 @@ export default function BrandChatPage() {
         <button
           onClick={() => router.back()}
           className="w-9 h-9 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-colors shrink-0"
-          title="Go back"
+          title={tx.goBack}
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -133,21 +140,25 @@ export default function BrandChatPage() {
           F
         </div>
         <div>
-          <h1 className="text-lg font-bold text-slate-800">FUZE AI Assistant</h1>
-          <p className="text-sm text-slate-500">Ask anything about FUZE antimicrobial technology</p>
+          <h1 className="text-lg font-bold text-slate-800">{tx.title}</h1>
+          <p className="text-sm text-slate-500">{tx.subtitle}</p>
         </div>
         <div className="ml-auto flex items-center gap-2">
           {messages.length > 0 && (
             <button
-              onClick={() => { setMessages([]); autoSentRef.current = false; router.replace("/brand-portal/chat"); }}
+              onClick={() => {
+                setMessages([]);
+                autoSentRef.current = false;
+                router.replace("/brand-portal/chat");
+              }}
               className="px-3 py-1.5 text-xs font-medium text-slate-500 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
             >
-              New Chat
+              {tx.newChat}
             </button>
           )}
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Online
+            {tx.onlineLabel}
           </span>
         </div>
       </div>
@@ -160,12 +171,8 @@ export default function BrandChatPage() {
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#00b4c3] to-[#0090a0] mx-auto flex items-center justify-center text-4xl text-white mb-5 shadow-xl">
                 F
               </div>
-              <h2 className="text-xl font-bold text-slate-800 mb-2">
-                Hi! I&apos;m FUZE AI
-              </h2>
-              <p className="text-slate-500 mb-8 max-w-md mx-auto">
-                I&apos;m trained on FUZE&apos;s complete product documentation. Ask me about antimicrobial tiers, testing standards, pricing, safety certifications, application methods, and more.
-              </p>
+              <h2 className="text-xl font-bold text-slate-800 mb-2">{tx.greetingTitle}</h2>
+              <p className="text-slate-500 mb-8 max-w-md mx-auto">{tx.greetingBlurb}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
                 {SUGGESTED.map((item) => (
                   <button
@@ -199,7 +206,7 @@ export default function BrandChatPage() {
               </div>
               {msg.role === "user" && (
                 <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-1">
-                  You
+                  {tx.youLabel}
                 </div>
               )}
             </div>
@@ -208,15 +215,17 @@ export default function BrandChatPage() {
           {/* Suggested follow-up questions after getting an answer */}
           {messages.length > 0 && !loading && messages[messages.length - 1].role === "assistant" && (
             <div className="flex flex-wrap gap-2 ml-11">
-              {SUGGESTED.filter(s => !messages.some(m => m.role === "user" && m.content === s.q)).slice(0, 4).map((item) => (
-                <button
-                  key={item.q}
-                  onClick={() => sendMessage(item.q)}
-                  className="px-3 py-1.5 bg-white rounded-full border border-slate-200 text-xs text-slate-500 hover:border-[#00b4c3] hover:text-[#00b4c3] transition-all"
-                >
-                  {item.icon} {item.q}
-                </button>
-              ))}
+              {SUGGESTED.filter((s) => !messages.some((m) => m.role === "user" && m.content === s.q))
+                .slice(0, 4)
+                .map((item) => (
+                  <button
+                    key={item.q}
+                    onClick={() => sendMessage(item.q)}
+                    className="px-3 py-1.5 bg-white rounded-full border border-slate-200 text-xs text-slate-500 hover:border-[#00b4c3] hover:text-[#00b4c3] transition-all"
+                  >
+                    {item.icon} {item.q}
+                  </button>
+                ))}
             </div>
           )}
 
@@ -247,7 +256,7 @@ export default function BrandChatPage() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your question about FUZE products..."
+              placeholder={tx.inputPlaceholder}
               className="flex-1 px-5 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-[#00b4c3] focus:ring-2 focus:ring-[#00b4c3]/20 bg-slate-50"
               disabled={loading}
             />
@@ -256,15 +265,13 @@ export default function BrandChatPage() {
               disabled={!input.trim() || loading}
               className="px-6 py-3 rounded-xl bg-[#00b4c3] text-white font-medium text-sm hover:bg-[#0090a0] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
             >
-              <span>Send</span>
+              <span>{tx.sendButton}</span>
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19V5m0 0l-7 7m7-7l7 7" />
               </svg>
             </button>
           </div>
-          <p className="text-[11px] text-slate-400 mt-2 text-center">
-            FUZE AI is powered by product documentation. For specific contract or order inquiries, contact your sales representative.
-          </p>
+          <p className="text-[11px] text-slate-400 mt-2 text-center">{tx.footerNote}</p>
         </form>
       </div>
     </div>
