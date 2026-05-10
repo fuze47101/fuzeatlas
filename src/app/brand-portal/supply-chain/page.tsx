@@ -122,6 +122,44 @@ export default function BrandSupplyChainPage() {
   >(null);
   const [totals, setTotals] = useState<Totals | null>(null);
   const [factories, setFactories] = useState<FactoryRow[]>([]);
+  // Recipe-request modal state — Phase 4C affordance.
+  const [recipeFor, setRecipeFor] = useState<FactoryRow | null>(null);
+  const [recipeForm, setRecipeForm] = useState<{ tier: string; fabricId: string; notes: string }>({
+    tier: "",
+    fabricId: "",
+    notes: "",
+  });
+  const [recipeSubmitting, setRecipeSubmitting] = useState(false);
+  const [recipeFlash, setRecipeFlash] = useState<string | null>(null);
+  const trx = t.brandPortal.recipeRequest;
+
+  async function submitRecipeRequest() {
+    if (!recipeFor) return;
+    setRecipeSubmitting(true);
+    setRecipeFlash(null);
+    try {
+      const r = await fetch("/api/brand-portal/recipe-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          factoryId: recipeFor.factoryId,
+          requestedTier: recipeForm.tier || null,
+          fabricId: recipeForm.fabricId || null,
+          notes: recipeForm.notes || null,
+        }),
+      });
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || trx.submitFailed);
+      setRecipeFlash(trx.successFlash);
+      setRecipeFor(null);
+      setRecipeForm({ tier: "", fabricId: "", notes: "" });
+      setTimeout(() => setRecipeFlash(null), 3000);
+    } catch (e: any) {
+      setRecipeFlash(e?.message || trx.submitFailed);
+    } finally {
+      setRecipeSubmitting(false);
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -332,6 +370,15 @@ export default function BrandSupplyChainPage() {
                           </span>
                         ) : null}
                       </div>
+                      <button
+                        onClick={() => {
+                          setRecipeFor(row);
+                          setRecipeForm({ tier: "", fabricId: "", notes: "" });
+                        }}
+                        className="mt-2 text-[11px] font-semibold text-[#00b4c3] hover:underline"
+                      >
+                        {trx.cta} →
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -342,6 +389,81 @@ export default function BrandSupplyChainPage() {
       )}
 
       <p className="text-xs text-slate-400 mt-6">{tx.footerNote}</p>
+
+      {recipeFlash ? (
+        <div className="fixed bottom-6 right-6 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800 shadow-lg z-50">
+          {recipeFlash}
+        </div>
+      ) : null}
+
+      {recipeFor ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+            <div className="p-6 border-b border-slate-200">
+              <h2 className="text-lg font-bold text-slate-900">
+                {trx.modalTitle.replace("{factory}", recipeFor.factoryName)}
+              </h2>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {trx.tierLabel}
+                </label>
+                <select
+                  value={recipeForm.tier}
+                  onChange={(e) => setRecipeForm({ ...recipeForm, tier: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+                >
+                  <option value="">{trx.tierPlaceholder}</option>
+                  <option value="F1">F1</option>
+                  <option value="F2">F2</option>
+                  <option value="F3">F3</option>
+                  <option value="F4">F4</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {trx.fabricLabel}
+                </label>
+                <input
+                  type="text"
+                  value={recipeForm.fabricId}
+                  onChange={(e) => setRecipeForm({ ...recipeForm, fabricId: e.target.value })}
+                  placeholder={trx.fabricPlaceholder}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {trx.notesLabel}
+                </label>
+                <textarea
+                  value={recipeForm.notes}
+                  onChange={(e) => setRecipeForm({ ...recipeForm, notes: e.target.value })}
+                  placeholder={trx.notesPlaceholder}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3] resize-none"
+                />
+              </div>
+            </div>
+            <div className="p-6 border-t border-slate-200 flex justify-end gap-2">
+              <button
+                onClick={() => setRecipeFor(null)}
+                className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900"
+              >
+                {trx.cancel}
+              </button>
+              <button
+                onClick={submitRecipeRequest}
+                disabled={recipeSubmitting}
+                className="px-5 py-2 rounded-lg bg-[#00b4c3] text-white text-sm font-bold hover:bg-[#009ba8] disabled:opacity-50"
+              >
+                {recipeSubmitting ? trx.submitting : trx.submit}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

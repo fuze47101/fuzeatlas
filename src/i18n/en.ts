@@ -1002,6 +1002,34 @@ const en = {
         "Reports show as \"unlinked\" until our parser auto-links them to a brand or fabric. If a report has been pending review for more than 24h, message {email} and we'll attach it manually.",
     },
 
+    // Recipe Requests — /factory-portal/recipe-requests
+    recipeRequests: {
+      pageTitle: "Recipe Requests",
+      pageSubtitle:
+        "Brands send requests for FUZE recipes against your fabrics. Acknowledge to start work; FUZE Ops attaches the validated recipe once development is complete.",
+      loading: "Loading requests…",
+      empty: "No recipe requests yet.",
+      emptyBlurb:
+        "When a brand asks for a recipe on one of your fabrics, the request shows up here.",
+      // Status pills
+      statusOpen: "Open",
+      statusInDevelopment: "In development",
+      statusRecipeProvided: "Recipe provided",
+      statusDeclined: "Declined",
+      statusExpired: "Expired",
+      // Row metadata
+      brandLabel: "Brand: {name}",
+      requestedAt: "Requested {date}",
+      tierLabel: "Requested tier: {tier}",
+      fabricLabel: "Fabric: {fuze}",
+      notesLabel: "Notes",
+      // Buttons
+      ackButton: "Acknowledge",
+      acking: "Acknowledging…",
+      ackHint: "Marks this in development so the brand knows you're working on it.",
+      ackFailed: "Failed to acknowledge",
+    },
+
     // Order detail page — /factory-portal/orders/[id]
     orderDetail: {
       backToOrders: "← Back to orders",
@@ -1526,6 +1554,24 @@ const en = {
         "FUZE AI is powered by product documentation. For specific contract or order inquiries, contact your sales representative.",
       // Bubble identifiers
       youLabel: "You",
+    },
+
+    // Brand-side affordance — request a recipe from a factory in the
+    // supply-chain dashboard. Single-row form rendered inline.
+    recipeRequest: {
+      cta: "Request recipe",
+      modalTitle: "Request recipe from {factory}",
+      tierLabel: "Tier",
+      tierPlaceholder: "Select tier",
+      fabricLabel: "Fabric (optional)",
+      fabricPlaceholder: "Select fabric",
+      notesLabel: "Notes (optional)",
+      notesPlaceholder: "Anything specific the factory should know…",
+      submit: "Send request",
+      submitting: "Sending…",
+      submitFailed: "Failed to send request",
+      successFlash: "Request sent.",
+      cancel: "Cancel",
     },
 
     contacts: {
