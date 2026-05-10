@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import PortalActivityFeed from "@/components/PortalActivityFeed";
+import { useI18n } from "@/i18n";
 
 interface Stats {
   // Inventory (the operations view Tina #P1 asked for — what's
@@ -31,6 +32,8 @@ interface Stats {
 export default function DistributorPortalPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.landing;
   const [stats, setStats] = useState<Stats>({
     stockLiters: 0,
     stockBottles: 0,
@@ -88,19 +91,13 @@ export default function DistributorPortalPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-          <span>Distributor Portal</span>
+          <span>{tx.crumb}</span>
         </div>
-        <h1 className="text-3xl font-black text-slate-900 mb-1">Welcome Back</h1>
-        <p className="text-slate-600">
-          Manage your FUZE distribution documents, invoices, and logistics
-        </p>
+        <h1 className="text-3xl font-black text-slate-900 mb-1">{tx.heading}</h1>
+        <p className="text-slate-600">{tx.subheading}</p>
       </div>
 
-      {/* ─── Inventory at a glance ────────────────────────────────────
-          Tina's #P1 review: what a distributor actually opens the
-          portal to see is "what's in the warehouse and when do I run
-          out". The old CFO/invoices tile row dropped below into a
-          secondary section. */}
+      {/* ─── Inventory at a glance ──────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div
           className={`rounded-xl p-6 ${
@@ -116,7 +113,7 @@ export default function DistributorPortalPage() {
                   stats.lowStock ? "text-red-700" : "text-white/80"
                 }`}
               >
-                FUZE Stock On Hand
+                {tx.stockOnHand}
               </p>
               <p
                 className={`text-3xl font-black ${
@@ -130,14 +127,14 @@ export default function DistributorPortalPage() {
                   stats.lowStock ? "text-red-600" : "text-white/80"
                 }`}
               >
-                {stats.stockBottles.toLocaleString()} carboys
+                {stats.stockBottles.toLocaleString()} {tx.carboysSuffix}
                 {stats.reorderPointLiters > 0 && (
-                  <> · reorder at {stats.reorderPointLiters.toLocaleString()}L</>
+                  <> · {tx.reorderAt} {stats.reorderPointLiters.toLocaleString()}L</>
                 )}
               </p>
               {stats.lowStock && (
                 <p className="text-xs text-red-700 font-semibold mt-1">
-                  ⚠ Below reorder point
+                  {tx.belowReorder}
                 </p>
               )}
             </div>
@@ -149,7 +146,7 @@ export default function DistributorPortalPage() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-semibold text-slate-600 mb-1">
-                Days of Stock Left
+                {tx.daysOfStockLeft}
               </p>
               <p className="text-3xl font-black text-slate-900">
                 {stats.daysOfStockLeft != null
@@ -158,8 +155,8 @@ export default function DistributorPortalPage() {
               </p>
               <p className="text-xs text-slate-500 mt-1">
                 {stats.dailyBurn > 0
-                  ? `${stats.dailyBurn} L/day × 90-day avg`
-                  : "no recent shipments"}
+                  ? tx.dailyBurnFmt.replace("{burn}", String(stats.dailyBurn))
+                  : tx.noRecentShipments}
               </p>
             </div>
             <span className="text-2xl">⏳</span>
@@ -170,7 +167,7 @@ export default function DistributorPortalPage() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-semibold text-slate-600 mb-1">
-                Last Shipment In
+                {tx.lastShipmentIn}
               </p>
               {stats.lastShipmentDate ? (
                 <>
@@ -186,12 +183,12 @@ export default function DistributorPortalPage() {
                 </>
               ) : (
                 <>
-                  <p className="text-lg font-semibold text-slate-400">none yet</p>
+                  <p className="text-lg font-semibold text-slate-400">{tx.noneYet}</p>
                   <Link
                     href="/distributor-portal/restock"
                     className="text-xs text-[#00b4c3] font-semibold hover:underline mt-1 inline-block"
                   >
-                    Place a restock order →
+                    {tx.placeRestockOrder}
                   </Link>
                 </>
               )}
@@ -204,13 +201,13 @@ export default function DistributorPortalPage() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-semibold text-slate-600 mb-1">
-                Out the Door (90d)
+                {tx.outTheDoor}
               </p>
               <p className="text-3xl font-black text-slate-900">
                 {stats.last90DaysOutbound.toLocaleString()}L
               </p>
               <p className="text-xs text-slate-500 mt-1">
-                shipped to factories
+                {tx.shippedToFactories}
               </p>
             </div>
             <span className="text-2xl">🚚</span>
@@ -225,11 +222,11 @@ export default function DistributorPortalPage() {
       >
         <div className="flex items-center justify-between gap-4">
           <div>
-            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">Learn FUZE</div>
-            <h3 className="text-base font-bold text-slate-900">FUZE Basics — for your sales conversations</h3>
-            <p className="text-xs text-slate-600 mt-1">Dosage scale, ion-release vs contact-kill mechanism, the five tests, and how to position FUZE against silver-ion / zinc / QAC competitors in any factory or brand meeting.</p>
+            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">{tx.learnFuzeKicker}</div>
+            <h3 className="text-base font-bold text-slate-900">{tx.learnFuzeTitle}</h3>
+            <p className="text-xs text-slate-600 mt-1">{tx.learnFuzeBody}</p>
           </div>
-          <span className="shrink-0 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-bold">Read →</span>
+          <span className="shrink-0 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-bold">{tx.learnFuzeCta}</span>
         </div>
       </a>
 
@@ -237,7 +234,7 @@ export default function DistributorPortalPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         <div className="bg-white border border-slate-200 rounded-lg p-3">
           <p className="text-[10px] uppercase font-bold text-slate-500">
-            Active Factories
+            {tx.activeFactories}
           </p>
           <p className="text-xl font-black text-slate-900">
             {stats.activeFactories}
@@ -245,7 +242,7 @@ export default function DistributorPortalPage() {
         </div>
         <div className="bg-white border border-slate-200 rounded-lg p-3">
           <p className="text-[10px] uppercase font-bold text-slate-500">
-            Invoices
+            {tx.invoices}
           </p>
           <p className="text-xl font-black text-slate-900">
             {stats.totalInvoices}
@@ -259,7 +256,7 @@ export default function DistributorPortalPage() {
           }`}
         >
           <p className="text-[10px] uppercase font-bold text-slate-500">
-            Outstanding
+            {tx.outstanding}
           </p>
           <p
             className={`text-base font-black ${
@@ -270,13 +267,13 @@ export default function DistributorPortalPage() {
           </p>
           {stats.unpaidInvoices > 0 && (
             <p className="text-[10px] text-amber-600">
-              {stats.unpaidInvoices} unpaid
+              {stats.unpaidInvoices} {tx.unpaidSuffix}
             </p>
           )}
         </div>
         <div className="bg-white border border-slate-200 rounded-lg p-3">
           <p className="text-[10px] uppercase font-bold text-slate-500">
-            Documents
+            {tx.documents}
           </p>
           <p className="text-xl font-black text-slate-900">
             {stats.totalDocuments}
@@ -295,14 +292,12 @@ export default function DistributorPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-lg mb-1">Restock from FUZE</h3>
-              <p className="text-sm text-white/80">
-                Order carboys, gaylords, or containers direct from FUZE HQ
-              </p>
+              <h3 className="font-bold text-lg mb-1">{tx.restockTitle}</h3>
+              <p className="text-sm text-white/80">{tx.restockBody}</p>
             </div>
             <span className="text-3xl">💧</span>
           </div>
-          <div className="text-sm text-white/90 font-semibold">Place new order &rarr;</div>
+          <div className="text-sm text-white/90 font-semibold">{tx.restockCta}</div>
         </Link>
         <Link
           href="/distributor-portal/inventory"
@@ -310,12 +305,12 @@ export default function DistributorPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-slate-900 text-lg mb-1">Inventory & Pricing</h3>
-              <p className="text-sm text-slate-600">Stock levels and factory pricing tiers</p>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">{tx.inventoryTitle}</h3>
+              <p className="text-sm text-slate-600">{tx.inventoryBody}</p>
             </div>
             <span className="text-3xl">📦</span>
           </div>
-          <div className="text-sm text-[#00b4c3] font-medium">Manage inventory &rarr;</div>
+          <div className="text-sm text-[#00b4c3] font-medium">{tx.inventoryCta}</div>
         </Link>
         <Link
           href="/distributor-portal/documents"
@@ -323,12 +318,12 @@ export default function DistributorPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-lg mb-1">Document Library</h3>
-              <p className="text-sm text-white/80">C of A, BOL, customs, import/export docs</p>
+              <h3 className="font-bold text-lg mb-1">{tx.docLibTitle}</h3>
+              <p className="text-sm text-white/80">{tx.docLibBody}</p>
             </div>
             <span className="text-3xl">📂</span>
           </div>
-          <div className="text-sm text-white/80">Browse all documents &rarr;</div>
+          <div className="text-sm text-white/80">{tx.docLibCta}</div>
         </Link>
         <Link
           href="/distributor-portal/invoices"
@@ -336,12 +331,12 @@ export default function DistributorPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-slate-900 text-lg mb-1">Invoices</h3>
-              <p className="text-sm text-slate-600">View and track payment status</p>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">{tx.invoicesTitle}</h3>
+              <p className="text-sm text-slate-600">{tx.invoicesBody}</p>
             </div>
             <span className="text-3xl">📄</span>
           </div>
-          <div className="text-sm text-[#00b4c3] font-medium">View invoices &rarr;</div>
+          <div className="text-sm text-[#00b4c3] font-medium">{tx.invoicesCta}</div>
         </Link>
         <Link
           href="/distributor-portal/test-request"
@@ -349,14 +344,12 @@ export default function DistributorPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-slate-900 text-lg mb-1">Apply for Test</h3>
-              <p className="text-sm text-slate-600">
-                Submit ICP / AM / other tests for your customers
-              </p>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">{tx.testRequestTitle}</h3>
+              <p className="text-sm text-slate-600">{tx.testRequestBody}</p>
             </div>
             <span className="text-3xl">🧪</span>
           </div>
-          <div className="text-sm text-[#00b4c3] font-medium">Start a request &rarr;</div>
+          <div className="text-sm text-[#00b4c3] font-medium">{tx.testRequestCta}</div>
         </Link>
         <Link
           href="/distributor-portal/test-reports"
@@ -364,14 +357,12 @@ export default function DistributorPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-slate-900 text-lg mb-1">Test Reports</h3>
-              <p className="text-sm text-slate-600">
-                Lab reports for the brands &amp; factories you serve
-              </p>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">{tx.testReportsTitle}</h3>
+              <p className="text-sm text-slate-600">{tx.testReportsBody}</p>
             </div>
             <span className="text-3xl">🔬</span>
           </div>
-          <div className="text-sm text-[#00b4c3] font-medium">View reports &rarr;</div>
+          <div className="text-sm text-[#00b4c3] font-medium">{tx.testReportsCta}</div>
         </Link>
         <Link
           href="/fabric-library"
@@ -379,12 +370,12 @@ export default function DistributorPortalPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-bold text-slate-900 text-lg mb-1">FUZE Fabric Library</h3>
-              <p className="text-sm text-slate-600">Browse all tested fabrics</p>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">{tx.fabricLibTitle}</h3>
+              <p className="text-sm text-slate-600">{tx.fabricLibBody}</p>
             </div>
             <span className="text-3xl">📚</span>
           </div>
-          <div className="text-sm text-[#00b4c3] font-medium">Explore fabrics &rarr;</div>
+          <div className="text-sm text-[#00b4c3] font-medium">{tx.fabricLibCta}</div>
         </Link>
       </div>
     </div>
