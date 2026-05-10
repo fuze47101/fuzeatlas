@@ -3392,3 +3392,36 @@ enum EmailTemplateScope {
   SHARED
   GLOBAL
 }
+
+// ─────────────────────────────────────────────
+// SUPPLY CHAIN LINK (Phase 4A — ROADMAP_v2)
+// ─────────────────────────────────────────────
+// Generalizes the brand ↔ factory ↔ distributor ↔ lab graph that's
+// currently expressed via half a dozen ad-hoc relations
+// (Brand.salesRepId, Fabric.factoryId, FuzeOrder.distributorId,
+// FuzeOrder.brandId, FabricSubmission.factoryId, etc.). One row per
+// directed link; backfill walks the existing relations and creates
+// rows so consumers can read a single source of truth.
+//
+// Stringly-typed (fromType / toType) on purpose — adding typed FK
+// columns for every actor pair would force N×M back-relations on
+// Brand / Factory / Distributor / Lab. The polymorphic shape keeps
+// the schema flexible while the indexes below keep lookups fast.
+
+model SupplyChainLink {
+  id        String   @id @default(cuid())
+  fromType  String   // BRAND | FACTORY | DISTRIBUTOR | LAB | FUZE
+  fromId    String
+  toType    String   // BRAND | FACTORY | DISTRIBUTOR | LAB | FUZE
+  toId      String
+  relation  String   // SUPPLIES | DISTRIBUTES_TO | TESTS_FOR | OWNS | CONSULTS_FOR
+  active    Boolean  @default(true)
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([fromType, fromId, toType, toId, relation], name: "supply_chain_link_unique")
+  @@index([fromType, fromId])
+  @@index([toType, toId])
+  @@index([relation, active])
+}
