@@ -9,6 +9,7 @@
  */
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import PublicPageBeacon from "@/components/PublicPageBeacon";
 
 interface ActiveTier {
   tier: string;
@@ -96,6 +97,7 @@ export default async function VerifiedStorefrontPage({
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <PublicPageBeacon path={`/verified/${publicSlug}`} />
       {/* Hero */}
       <section
         className="relative px-6 py-20 sm:py-28"

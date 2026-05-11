@@ -5,6 +5,7 @@
  * CLAUDE.md + downloadable PUBLIC-audience ProductDocuments.
  */
 import Link from "next/link";
+import PublicPageBeacon from "@/components/PublicPageBeacon";
 
 const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://fuzeatlas.com";
@@ -58,6 +59,7 @@ export default async function ClaimsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <PublicPageBeacon path="/claims" />
       {/* Hero */}
       <section className="bg-gradient-to-br from-[#00b4c3] to-[#009ba8] text-white px-6 py-16">
         <div className="max-w-4xl mx-auto">
