@@ -103,9 +103,9 @@ export async function GET(req: Request) {
         take: 5,
       }),
     ),
-    check("/admin/conversion-tracking", "factory groupBy by status", () =>
+    check("/admin/conversion-tracking", "factory groupBy by customerType", () =>
       prisma.factory.groupBy({
-        by: ["status"],
+        by: ["customerType"],
         _count: { _all: true },
       }),
     ),
@@ -127,13 +127,8 @@ export async function GET(req: Request) {
     ),
     check("/factory-portal/tests — test results", "testRun findMany w/submission scoping", () =>
       prisma.testRun.findMany({
-        where: {
-          OR: [
-            { fabric: { factoryId: { not: null } } },
-            { submission: { factoryId: { not: null } } },
-          ],
-        },
-        select: { id: true, fuzeNumber: true, brandVisible: true },
+        where: { submission: { factoryId: { not: null } } },
+        select: { id: true, testType: true, brandVisible: true },
         take: 5,
       }),
     ),
