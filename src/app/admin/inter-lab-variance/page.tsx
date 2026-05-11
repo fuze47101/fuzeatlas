@@ -97,8 +97,14 @@ export default function InterLabVariancePage() {
               ))}
               {data.multiLabGroups.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="text-center py-10 text-slate-400">
-                    No multi-lab fabrics in the window.
+                  <td colSpan={5} className="px-4 py-10">
+                    <div className="max-w-md mx-auto text-center">
+                      <p className="text-3xl mb-2" aria-hidden="true">⚖️</p>
+                      <p className="font-bold text-slate-900">No multi-lab fabrics yet</p>
+                      <p className="text-sm text-slate-600 mt-1">
+                        Inter-lab variance compares fabrics tested by ≥2 labs in the last {data.windowDays} days. Once you have the same fabric tested at a partner lab AND at FUZE USA (or any 2-lab pair), it'll show up here.
+                      </p>
+                    </div>
                   </td>
                 </tr>
               )}

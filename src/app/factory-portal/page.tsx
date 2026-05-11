@@ -62,7 +62,7 @@ export default function FactoryPortalPage() {
     <div className="p-4 sm:p-8 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+        <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
           <span>{t.factoryPortal.crumb}</span>
         </div>
         <h1 className="text-3xl font-black text-slate-900 mb-1">{t.factoryPortal.welcomeBack}</h1>

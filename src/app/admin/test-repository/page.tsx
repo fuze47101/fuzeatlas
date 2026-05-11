@@ -348,8 +348,14 @@ export default function TestRepositoryPage() {
             })}
             {data?.rows.length === 0 && (
               <tr>
-                <td colSpan={11} className="text-center py-10 text-slate-400">
-                  No tests match the current filters.
+                <td colSpan={11} className="px-4 py-10">
+                  <div className="max-w-md mx-auto text-center">
+                    <p className="text-3xl mb-2" aria-hidden="true">🔎</p>
+                    <p className="font-bold text-slate-900">No tests match these filters</p>
+                    <p className="text-sm text-slate-600 mt-1">
+                      Try widening the date range, clearing the tier/passed filter, or removing the test-type constraint.
+                    </p>
+                  </div>
                 </td>
               </tr>
             )}

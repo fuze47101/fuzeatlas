@@ -66,9 +66,9 @@ export default function BrandPortalDashboard() {
             <>
               <h1 className="text-2xl font-black text-slate-900">{profile.heroHeadline}</h1>
               {profile.heroSubhead ? (
-                <p className="text-sm text-slate-500 mt-1">{profile.heroSubhead}</p>
+                <p className="text-sm text-slate-600 mt-1">{profile.heroSubhead}</p>
               ) : (
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="text-sm text-slate-600 mt-1">
                   {firstName ? tx.welcomeNamed.replace("{firstName}", firstName) : tx.welcome}
                 </p>
               )}
@@ -78,7 +78,7 @@ export default function BrandPortalDashboard() {
               <h1 className="text-2xl font-black text-slate-900">
                 {firstName ? tx.welcomeNamed.replace("{firstName}", firstName) : tx.welcome}
               </h1>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-sm text-slate-600 mt-1">
                 {tx.brandSubtitle.replace("{brand}", brand.name)}
               </p>
             </>
@@ -97,19 +97,19 @@ export default function BrandPortalDashboard() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         <div className="bg-white rounded-xl p-5 shadow-sm border text-center">
           <div className="text-3xl font-black text-[#00b4c3]">{stats.totalFabrics}</div>
-          <div className="text-xs text-slate-500 mt-1">{tx.statFabrics}</div>
+          <div className="text-xs text-slate-600 mt-1">{tx.statFabrics}</div>
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm border text-center">
           <div className="text-3xl font-black text-slate-700">{stats.totalSubmissions}</div>
-          <div className="text-xs text-slate-500 mt-1">{tx.statSubmissions}</div>
+          <div className="text-xs text-slate-600 mt-1">{tx.statSubmissions}</div>
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm border text-center">
           <div className="text-3xl font-black text-emerald-600">{stats.testsPassed}</div>
-          <div className="text-xs text-slate-500 mt-1">{tx.statTestsPassed}</div>
+          <div className="text-xs text-slate-600 mt-1">{tx.statTestsPassed}</div>
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm border text-center">
           <div className="text-3xl font-black text-amber-500">{stats.testsPending}</div>
-          <div className="text-xs text-slate-500 mt-1">{tx.statTestsPending}</div>
+          <div className="text-xs text-slate-600 mt-1">{tx.statTestsPending}</div>
         </div>
         {/* Approvals pill — clicks through to /brand-portal/approvals.
             Pulses red if any item is overdue (>5d). */}
@@ -140,7 +140,7 @@ export default function BrandPortalDashboard() {
           >
             {approvals?.pendingTotal ?? 0}
           </div>
-          <div className="text-xs text-slate-500 mt-1">Approvals waiting</div>
+          <div className="text-xs text-slate-600 mt-1">Approvals waiting</div>
         </button>
       </div>
 
@@ -155,7 +155,7 @@ export default function BrandPortalDashboard() {
         >
           <div className="text-2xl mb-2">🧵</div>
           <div className="font-bold text-slate-900">{tx.quickFabricsTitle}</div>
-          <div className="text-xs text-slate-500 mt-1">
+          <div className="text-xs text-slate-600 mt-1">
             {(stats.totalFabrics === 1 ? tx.quickFabricsSingular : tx.quickFabricsPlural).replace(
               "{count}",
               String(stats.totalFabrics),
@@ -168,7 +168,7 @@ export default function BrandPortalDashboard() {
         >
           <div className="text-2xl mb-2">📋</div>
           <div className="font-bold text-slate-900">{tx.quickSubmissionsTitle}</div>
-          <div className="text-xs text-slate-500 mt-1">{tx.quickSubmissionsBlurb}</div>
+          <div className="text-xs text-slate-600 mt-1">{tx.quickSubmissionsBlurb}</div>
         </button>
         {/* KUIU promise May 2026 — brand-side oversight of every factory
             in their supply chain. */}
@@ -186,7 +186,7 @@ export default function BrandPortalDashboard() {
         >
           <div className="text-2xl mb-2">📊</div>
           <div className="font-bold text-slate-900">{tx.quickPricingTitle}</div>
-          <div className="text-xs text-slate-500 mt-1">{tx.quickPricingBlurb}</div>
+          <div className="text-xs text-slate-600 mt-1">{tx.quickPricingBlurb}</div>
         </button>
         <button
           onClick={() => router.push("/brand-portal/chat")}
@@ -194,7 +194,7 @@ export default function BrandPortalDashboard() {
         >
           <div className="text-2xl mb-2">💬</div>
           <div className="font-bold text-slate-900">{tx.quickFaqTitle}</div>
-          <div className="text-xs text-slate-500 mt-1">{tx.quickFaqBlurb}</div>
+          <div className="text-xs text-slate-600 mt-1">{tx.quickFaqBlurb}</div>
         </button>
       </div>
 
@@ -258,7 +258,7 @@ export default function BrandPortalDashboard() {
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs text-slate-500 uppercase tracking-wider border-b">
+              <tr className="text-left text-xs text-slate-600 uppercase tracking-wider border-b">
                 <th className="px-5 py-3">{tx.colFuzeNumber}</th>
                 <th className="px-5 py-3">{tx.colYourCode}</th>
                 <th className="px-5 py-3">{tx.colConstruction}</th>

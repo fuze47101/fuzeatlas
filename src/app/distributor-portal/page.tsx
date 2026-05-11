@@ -90,7 +90,7 @@ export default function DistributorPortalPage() {
     <div className="p-4 sm:p-8 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+        <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
           <span>{tx.crumb}</span>
         </div>
         <h1 className="text-3xl font-black text-slate-900 mb-1">{tx.heading}</h1>
@@ -153,7 +153,7 @@ export default function DistributorPortalPage() {
                   ? `${stats.daysOfStockLeft}`
                   : "—"}
               </p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-600 mt-1">
                 {stats.dailyBurn > 0
                   ? tx.dailyBurnFmt.replace("{burn}", String(stats.dailyBurn))
                   : tx.noRecentShipments}
@@ -174,7 +174,7 @@ export default function DistributorPortalPage() {
                   <p className="text-2xl font-black text-slate-900">
                     {stats.lastShipmentLiters?.toLocaleString()}L
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-slate-600 mt-1">
                     {new Date(stats.lastShipmentDate).toLocaleDateString()}
                     {stats.lastShipmentOrderNumber && (
                       <> · {stats.lastShipmentOrderNumber}</>
@@ -206,7 +206,7 @@ export default function DistributorPortalPage() {
               <p className="text-3xl font-black text-slate-900">
                 {stats.last90DaysOutbound.toLocaleString()}L
               </p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-600 mt-1">
                 {tx.shippedToFactories}
               </p>
             </div>
@@ -233,7 +233,7 @@ export default function DistributorPortalPage() {
       {/* ─── Secondary: factories + invoices + docs (CFO view) ───── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-[10px] uppercase font-bold text-slate-500">
+          <p className="text-[10px] uppercase font-bold text-slate-600">
             {tx.activeFactories}
           </p>
           <p className="text-xl font-black text-slate-900">
@@ -241,7 +241,7 @@ export default function DistributorPortalPage() {
           </p>
         </div>
         <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-[10px] uppercase font-bold text-slate-500">
+          <p className="text-[10px] uppercase font-bold text-slate-600">
             {tx.invoices}
           </p>
           <p className="text-xl font-black text-slate-900">
@@ -255,7 +255,7 @@ export default function DistributorPortalPage() {
               : "border-slate-200 bg-white"
           }`}
         >
-          <p className="text-[10px] uppercase font-bold text-slate-500">
+          <p className="text-[10px] uppercase font-bold text-slate-600">
             {tx.outstanding}
           </p>
           <p
@@ -272,7 +272,7 @@ export default function DistributorPortalPage() {
           )}
         </div>
         <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-[10px] uppercase font-bold text-slate-500">
+          <p className="text-[10px] uppercase font-bold text-slate-600">
             {tx.documents}
           </p>
           <p className="text-xl font-black text-slate-900">

@@ -309,10 +309,36 @@ Two commits, zero build breaks, verify-after-every-push held.
   for deep-link highlighting when the consuming page doesn't need
   the full `<HighlightedRow />` wrapper.
 
+### Phase 13 follow-up adoption pass 1 (2026-05-10)
+
+Started rolling the Phase 13 primitives out across pages without
+needing new spec.
+
+- `<Breadcrumbs />` built (`src/components/Breadcrumbs.tsx`) and
+  `<FormField />` built (`src/components/FormField.tsx`) — both
+  are wrappers, ready for ad-hoc breadcrumb HTML + form-field
+  patterns to migrate onto them incrementally.
+- Body-copy contrast bumped slate-500 → slate-600 across the six
+  highest-traffic landings (`/home`, `/brand-portal`,
+  `/factory-portal`, `/distributor-portal`, `/lab-portal`,
+  `/admin/command-center`). Leaves slate-400 alone (icons,
+  disabled state, placeholders).
+- Empty states upgraded on `/admin/test-repository` ("No tests
+  match these filters — try widening the date range…") and
+  `/admin/inter-lab-variance` ("No multi-lab fabrics yet — needs
+  ≥2 labs in the window…"). Both replace bare slate-400 text
+  with emoji + title + actionable body copy.
+
+Still pending (per-page touches, no spec change needed): mount
+`<Breadcrumbs />` on long-tail >2-level pages, mount `<FormField />`
+on the five spec/pricing/intake/profile forms, continue contrast
+pass on the rest of /admin, mount `<EmptyState />` on more list
+surfaces.
+
 ### Surfaces marked complete
 
-- 13A Empty states audit — `<EmptyState />` primitive built;
-  applies as pages adopt it
+- 13A Empty states audit — `<EmptyState />` primitive built; two
+  adopters landed in pass 1 (test-repo, inter-lab-variance)
 - 13B LoadingSkeleton component — shipped
 - 13C ErrorPanel component — shipped
 - 13E Sidebar grouping consolidation — shipped

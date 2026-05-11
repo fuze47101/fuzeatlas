@@ -78,7 +78,7 @@ export default function HomePage() {
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       {/* Greeting */}
       <div className="mb-8">
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-600">
           {time.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
         </p>
         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">

@@ -35,7 +35,7 @@ export default function LabPortalDashboard() {
     <div className="max-w-[1400px] mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-600 mt-1">
           {tx.pageSubtitle.replace("{lab}", lab.name)}
         </p>
       </div>
@@ -44,23 +44,23 @@ export default function LabPortalDashboard() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
         <div className="bg-white rounded-xl p-4 shadow-sm border text-center">
           <div className="text-2xl font-black text-[#00b4c3]">{stats.totalServices}</div>
-          <div className="text-xs text-slate-500">{tx.statTotalServices}</div>
+          <div className="text-xs text-slate-600">{tx.statTotalServices}</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border text-center">
           <div className="text-2xl font-black text-amber-500">{stats.pendingRequests}</div>
-          <div className="text-xs text-slate-500">{tx.statPendingRequests}</div>
+          <div className="text-xs text-slate-600">{tx.statPendingRequests}</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border text-center">
           <div className="text-2xl font-black text-blue-600">{stats.activeRequests}</div>
-          <div className="text-xs text-slate-500">{tx.statActiveRequests}</div>
+          <div className="text-xs text-slate-600">{tx.statActiveRequests}</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border text-center">
           <div className="text-2xl font-black text-emerald-600">{stats.completedRequests}</div>
-          <div className="text-xs text-slate-500">{tx.statCompletedRequests}</div>
+          <div className="text-xs text-slate-600">{tx.statCompletedRequests}</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm border text-center">
           <div className="text-2xl font-black text-slate-700">{stats.totalTestRuns}</div>
-          <div className="text-xs text-slate-500">{tx.statTotalTestRuns}</div>
+          <div className="text-xs text-slate-600">{tx.statTotalTestRuns}</div>
         </div>
       </div>
 
@@ -114,7 +114,7 @@ export default function LabPortalDashboard() {
           >
             <div className="text-2xl mb-2">{card.icon}</div>
             <div className="font-bold text-slate-900 text-sm">{card.label}</div>
-            <div className="text-xs text-slate-500 mt-1">{card.desc}</div>
+            <div className="text-xs text-slate-600 mt-1">{card.desc}</div>
           </button>
         ))}
       </div>
@@ -132,7 +132,7 @@ export default function LabPortalDashboard() {
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs text-slate-500 uppercase tracking-wider border-b">
+              <tr className="text-left text-xs text-slate-600 uppercase tracking-wider border-b">
                 <th className="px-5 py-3">{tx.colPoNumber}</th>
                 <th className="px-5 py-3">{tx.colBrand}</th>
                 <th className="px-5 py-3">{tx.colFabric}</th>

@@ -94,7 +94,7 @@ export default function CommandCenterPage() {
     <div className="max-w-[1400px] mx-auto p-4 sm:p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
-        <p className="text-sm text-slate-500 mt-1">{tx.pageSubtitle}</p>
+        <p className="text-sm text-slate-600 mt-1">{tx.pageSubtitle}</p>
       </div>
 
       {/* Metrics strip */}
@@ -124,14 +124,14 @@ export default function CommandCenterPage() {
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="px-5 py-3 border-b bg-slate-50">
             <h2 className="font-bold text-slate-900 text-sm">{tx.matrixHeader}</h2>
-            <p className="text-xs text-slate-500">{tx.matrixHint}</p>
+            <p className="text-xs text-slate-600">{tx.matrixHint}</p>
           </div>
           {data.brandFactoryMatrix.length === 0 ? (
-            <div className="text-sm text-slate-500 text-center py-10">{tx.noOverdue}</div>
+            <div className="text-sm text-slate-600 text-center py-10">{tx.noOverdue}</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
-                <thead className="bg-white text-xs uppercase tracking-wider text-slate-500 border-b">
+                <thead className="bg-white text-xs uppercase tracking-wider text-slate-600 border-b">
                   <tr>
                     <th className="text-left px-4 py-2 font-bold">{tx.colBrand}</th>
                     <th className="text-left px-4 py-2 font-bold">{tx.colFactory}</th>
@@ -176,7 +176,7 @@ export default function CommandCenterPage() {
               <h2 className="font-bold text-slate-900 text-sm">{tx.activityHeader}</h2>
             </div>
             {data.recentActivity.length === 0 ? (
-              <p className="text-xs text-slate-500 text-center py-6">{tx.noActivity}</p>
+              <p className="text-xs text-slate-600 text-center py-6">{tx.noActivity}</p>
             ) : (
               <ul className="divide-y divide-slate-100 max-h-72 overflow-y-auto">
                 {data.recentActivity.slice(0, 12).map((a) => (
@@ -194,7 +194,7 @@ export default function CommandCenterPage() {
               <h2 className="font-bold text-slate-900 text-sm">{tx.distributorsHeader}</h2>
             </div>
             {data.distributorAlerts.length === 0 ? (
-              <p className="text-xs text-slate-500 text-center py-6">{tx.noLowStock}</p>
+              <p className="text-xs text-slate-600 text-center py-6">{tx.noLowStock}</p>
             ) : (
               <ul className="divide-y divide-slate-100">
                 {data.distributorAlerts.map((d) => (
@@ -214,7 +214,7 @@ export default function CommandCenterPage() {
               <h2 className="font-bold text-slate-900 text-sm">{tx.approvalsHeader}</h2>
             </div>
             {data.approvalQueues.length === 0 ? (
-              <p className="text-xs text-slate-500 text-center py-6">{tx.noPendingApprovals}</p>
+              <p className="text-xs text-slate-600 text-center py-6">{tx.noPendingApprovals}</p>
             ) : (
               <ul className="divide-y divide-slate-100">
                 {data.approvalQueues.map((q) => (
@@ -243,7 +243,7 @@ function Tile({ n, label, accent }: { n: number; label: string; accent: string }
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm border">
       <div className={`text-2xl font-black ${accent}`}>{n}</div>
-      <div className="text-xs text-slate-500 mt-1">{label}</div>
+      <div className="text-xs text-slate-600 mt-1">{label}</div>
     </div>
   );
 }
