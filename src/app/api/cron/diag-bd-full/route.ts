@@ -167,7 +167,7 @@ export async function GET(req: Request) {
         take: 5,
       }),
     ),
-    run("firstMeetingsByRep (Meeting brandId+contactId not null)", () =>
+    run("firstMeetingsByRep (FIXED — no contactId in select)", () =>
       prisma.meeting.findMany({
         where: {
           organizerId: { in: repIds },
@@ -177,7 +177,6 @@ export async function GET(req: Request) {
         select: {
           organizerId: true,
           brandId: true,
-          contactId: true,
           startTime: true,
           createdAt: true,
         },
