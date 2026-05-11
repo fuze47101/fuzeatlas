@@ -243,6 +243,99 @@ additions) is fully written but blocked behind this fix.
 - 2026-05-10 — `0795e18` — phase 9I: brand referral attribution.
 - 2026-05-10 — `4ce79d6` — phase 9J: churn-warn nightly cron.
 
+## Phase 14 complete — full handoff
+
+Phase 14 = expert UX audit + per-portal sweep + role-scoped
+document ACL + education + next-action heuristics + onboarding
+wizard + seed scripts + activity timeline.
+
+Two commits, schema bundle applied clean (6/6), zero build breaks.
+
+### Audit deliverables
+
+- **`docs/UX_AUDIT_PHASE_14.md`** — 47 findings across 5 portals
+  + admin (7 CRITICAL, 15 HIGH, 17 MEDIUM, 8 LOW). Each entry
+  tagged with severity + actionable fix.
+- **`docs/ROLE_DOCUMENT_MATRIX.md`** — Role × document-category
+  matrix. 11 roles × 25 doc categories. Per-cell verdict:
+  ALLOW / EXCERPT / DENY. Plus per-entity restriction rules
+  (brand A never sees brand B's pricing tier contracts).
+- **`docs/REDUNDANCY_AUDIT.md`** — Five auto-fixable duplicates
+  (already resolved in Phase 13E nav consolidation) + four
+  ambiguous cases surfaced for Andrew's call.
+
+### Libraries shipped
+
+- **`src/lib/document-acl.ts`** — `canViewDocument(doc, user)`
+  returns ALLOW / EXCERPT / DENY. Privileged roles bypass.
+- **`src/lib/education-cards.ts`** — `ROLE_EDUCATION` keyed by
+  BRAND / FACTORY / DISTRIBUTOR / LAB / ADMIN (5-6 cards each).
+- **`src/lib/next-action.ts`** — pure heuristic helpers for
+  brand / factory / lab / distributor state.
+
+### Components shipped (drop-ins)
+
+- **`<EducationCards role={...} />`**
+- **`<NextActionPanel actions={...} />`**
+- **`<OnboardingWizard role={...} completedAt={...} />`**
+- **`<ActivityTimeline events={...} />`**
+
+### Schema additions (6 columns)
+
+Applied via `/api/cron/migrate-14-bundle` (6/6 ok):
+- `ProductDocument.restrictedToBrandId / restrictedToFactoryId /
+  restrictedToDistributorId / restrictedToLabId` — per-entity
+  document scoping.
+- `User.onboardingCompletedAt` + `User.onboardingState` — wizard
+  state.
+
+### Seed scripts (Phase 14D)
+
+`scripts/seed-customer-data.ts` with 5 idempotent subcommands,
+wired as npm aliases:
+- `npm run seed:brand-spec`
+- `npm run seed:pricing-tier`
+- `npm run seed:supply-chain-link`
+- `npm run seed:factory-invitation`
+- `npm run seed:lab-test-catalog`
+
+### Data entry hub (Phase 14D)
+
+`/admin/data-entry` — single page, 4 focused mini-form sections
+(brand spec / pricing tier / supply chain link / lab test pricing).
+Toast confirmation on save. CLI usage hints at the bottom.
+
+### New APIs
+
+- `POST /api/me/onboarding` — flips
+  `User.onboardingCompletedAt` and persists `onboardingState`.
+- `GET /api/cron/migrate-14-bundle` — one-shot schema bundle.
+
+### TODOs remaining (incremental adoption, no spec needed)
+
+- Mount `<OnboardingWizard />` at top of each portal landing.
+- Mount `<ActivityTimeline />` as new tab on
+  /brands/[id], /factories/[id], /fabrics/[id], /orders/[id],
+  /test-results/[id]. Build the per-entity event normalizer.
+- Mount `<EducationCards role={user.role} />` on each portal
+  landing.
+- Mount `<NextActionPanel actions={...} />` on entity detail
+  pages.
+- Tag existing ProductDocument rows with `restrictedTo*` +
+  audience role-tier fields. The ACL is fail-safe (denies on
+  unknown) so nothing breaks without tagging; pages just
+  under-surface docs until the tags are populated.
+
+### Manual follow-ups for Andrew
+
+None new. All deliverables are code-only.
+
+### Severity counts
+
+7 CRITICAL, 15 HIGH, 17 MEDIUM, 8 LOW = 47 audit findings.
+
+---
+
 ## Phase 13 complete — full handoff
 
 Phase 13 = polish + UX consistency. Strictly polish — no new
