@@ -4,6 +4,32 @@
 
 body { @apply bg-slate-50 text-slate-900; }
 
+/* Phase 13F — consistent focus ring across the app. Add to any
+   button / link / row that doesn't already have one. */
+.focus-ring:focus,
+.focus-ring:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #00b4c3;
+}
+
+/* Phase 13M — toast slide-in keyframe used by ToastProvider. */
+@keyframes slidein {
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+/* Phase 13I — row flash for ?highlight=ID deep-linking. The
+   HighlightedRow component toggles a ring class; this is the
+   fallback animation if the consuming page wants a CSS-only flash. */
+@keyframes row-flash {
+  0%   { background-color: rgba(0,180,195,0.15); }
+  100% { background-color: transparent; }
+}
+.row-flash {
+  animation: row-flash 2.2s ease-out both;
+}
+
 /* RTL support for Urdu */
 html[dir="rtl"] .sidebar-nav { direction: rtl; text-align: right; }
 html[dir="rtl"] input, html[dir="rtl"] textarea { direction: ltr; text-align: left; }

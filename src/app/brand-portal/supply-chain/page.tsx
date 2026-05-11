@@ -208,10 +208,18 @@ export default function BrandSupplyChainPage() {
           <span>›</span>
           <span>{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">
-          {tx.pageTitle}
-          {brand?.name ? <span className="text-slate-400 font-normal"> — {brand.name}</span> : null}
-        </h1>
+        <div className="flex items-baseline justify-between gap-3 flex-wrap">
+          <h1 className="text-2xl font-black text-slate-900">
+            {tx.pageTitle}
+            {brand?.name ? <span className="text-slate-400 font-normal"> — {brand.name}</span> : null}
+          </h1>
+          <button
+            onClick={() => typeof window !== "undefined" && window.print()}
+            className="no-print text-xs px-3 py-1 rounded border border-slate-300 hover:bg-slate-50 focus-ring"
+          >
+            🖨 Print for QBR
+          </button>
+        </div>
         <p className="text-sm text-slate-500 mt-1">{tx.pageSubtitle}</p>
 
         {/* Brand-stipulated spec strip — what every factory in this
