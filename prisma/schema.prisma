@@ -1042,6 +1042,60 @@ model BDPlaybook {
   @@index([textileCategory])
 }
 
+// ─── Phase 15 IMP-1 — Brand workspace claim/request ────────
+// When a new brand-side user lands without a brandId, they can
+// request a workspace. Admin reviews under /settings/access-requests.
+model BrandWorkspaceRequest {
+  id                  String   @id @default(cuid())
+  requestedByUserId   String
+  suggestedBrandName  String
+  suggestedDomain     String?
+  status              String   @default("PENDING") // PENDING | APPROVED | REJECTED
+  resolvedAt          DateTime?
+  resolvedByUserId    String?
+  resolvedBrandId     String?
+  createdAt           DateTime @default(now())
+
+  @@index([status, createdAt])
+  @@index([requestedByUserId])
+}
+
+// ─── Phase 15 IMP-2 — Role escalation request ──────────────
+// When a user hits a RestrictedSurface and clicks Request access,
+// this row captures the ask. EntityManager + admins get notified.
+model RoleEscalationRequest {
+  id                String   @id @default(cuid())
+  requestedByUserId String
+  scope             String   // "brand" | "factory" | "distributor" | "lab"
+  scopeId           String
+  requestedRole     String
+  reason            String?
+  status            String   @default("PENDING")
+  resolvedAt        DateTime?
+  resolvedByUserId  String?
+  createdAt         DateTime @default(now())
+
+  @@index([status, createdAt])
+  @@index([requestedByUserId])
+  @@index([scope, scopeId])
+}
+
+// ─── Phase 15 IMP-4 — Per-user onboarding checklist state ──
+// Keyed by (user, surface) so each portal has its own checklist.
+model UserOnboardingState {
+  id              String    @id @default(cuid())
+  userId          String
+  surface         String    // "brand-portal" | "factory-portal" | ...
+  completedItems  String[]  @default([])
+  dismissed       Boolean   @default(false)
+  dismissedAt     DateTime?
+  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime  @default(now())
+
+  @@unique([userId, surface])
+  @@index([userId])
+}
+
 model UserPlaybookFavorite {
   id         String   @id @default(cuid())
   userId     String

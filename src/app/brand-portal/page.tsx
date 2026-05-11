@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { useI18n } from "@/i18n";
 import PortalActivityFeed from "@/components/PortalActivityFeed";
+import BrandClaimCard from "@/components/BrandClaimCard";
+import LoadingSkeleton from "@/components/LoadingSkeleton";
 
 export default function BrandPortalDashboard() {
   const router = useRouter();
@@ -39,7 +41,13 @@ export default function BrandPortalDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">{tx.loading}</div>;
+  if (loading) return <LoadingSkeleton variant="page" label={tx.loading} />;
+
+  // IMP-1 — Phase 15: when the user lacks a brand association, show
+  // the claim card (inferred / search / request workspace) instead
+  // of the bare "no brand associated" dead end.
+  if (!user?.brandId) return <BrandClaimCard />;
+
   if (!data) return <div className="flex items-center justify-center h-64 text-red-400">{tx.unableToLoad}</div>;
 
   const { brand, fabrics, stats } = data;
