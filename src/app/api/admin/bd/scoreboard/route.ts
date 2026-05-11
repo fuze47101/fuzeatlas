@@ -322,13 +322,19 @@ export async function GET(req: Request) {
         select: { salesRepId: true, forecast: true },
       }),
       // First Meeting per rep within the window — for velocity calc.
+      // NOTE: Meeting model has no contactId column (attendees live in a
+      // JSON blob). Velocity is now joined on (rep, brandId) instead of
+      // (rep, contactId) — less precise but unblocks the scoreboard.
+      // The original contactId-based join was throwing "Unknown field
+      // contactId" and rejecting the entire Promise.all, which is why
+      // the scoreboard showed "No BD activity" for everyone.
       prisma.meeting.findMany({
         where: {
           organizerId: { in: repIds },
           brandId: { not: null },
           startTime: { gte: since },
         },
-        select: { organizerId: true, brandId: true, contactId: true, startTime: true, createdAt: true },
+        select: { organizerId: true, brandId: true, startTime: true, createdAt: true },
         orderBy: { createdAt: "asc" },
       }),
       // First OutreachMessage per (rep, contact) within the window —
@@ -442,20 +448,38 @@ export async function GET(req: Request) {
     }
 
     // Pipeline velocity: avg days from first email to first meeting per rep.
-    // For each rep, walk their messages oldest-first, snapshot earliest
-    // send per contact, then snapshot earliest meeting per contact.
-    const earliestSendPerRepContact = new Map<string, Date>();
+    // We pivot via Contact → brandId because Meeting has no contactId column.
+    // First, fetch the brandId for every contact the rep emailed in the
+    // window, then key by (rep, brandId) for both sides of the velocity
+    // calc. Same precision as the original because BD outreach is
+    // brand-scoped.
+    const sendContactIds = Array.from(
+      new Set(firstSendsByRep.map((s) => s.contactId).filter(Boolean) as string[]),
+    );
+    const contactBrandMap = new Map<string, string>();
+    if (sendContactIds.length > 0) {
+      const contacts = await prisma.contact.findMany({
+        where: { id: { in: sendContactIds }, brandId: { not: null } },
+        select: { id: true, brandId: true },
+      });
+      for (const c of contacts) {
+        if (c.brandId) contactBrandMap.set(c.id, c.brandId);
+      }
+    }
+    const earliestSendPerRepBrand = new Map<string, Date>();
     for (const s of firstSendsByRep) {
       if (!s.sentBy || !s.contactId || !s.sentAt) continue;
-      const key = `${s.sentBy}|${s.contactId}`;
-      if (!earliestSendPerRepContact.has(key))
-        earliestSendPerRepContact.set(key, s.sentAt);
+      const brandId = contactBrandMap.get(s.contactId);
+      if (!brandId) continue;
+      const key = `${s.sentBy}|${brandId}`;
+      if (!earliestSendPerRepBrand.has(key))
+        earliestSendPerRepBrand.set(key, s.sentAt);
     }
     const velocityBucket: Record<string, { sum: number; n: number }> = {};
     for (const m of firstMeetingsByRep) {
-      if (!m.organizerId || !m.contactId) continue;
-      const key = `${m.organizerId}|${m.contactId}`;
-      const firstSend = earliestSendPerRepContact.get(key);
+      if (!m.organizerId || !m.brandId) continue;
+      const key = `${m.organizerId}|${m.brandId}`;
+      const firstSend = earliestSendPerRepBrand.get(key);
       if (!firstSend) continue;
       const t = m.createdAt || m.startTime;
       const days = (t.getTime() - firstSend.getTime()) / 86400_000;
