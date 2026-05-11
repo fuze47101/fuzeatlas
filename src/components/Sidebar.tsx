@@ -389,8 +389,11 @@ export default function Sidebar() {
 
     // Translate helper — keep using existing keys where available, fallback to module's English label
     function translateModuleLabel(m: ModuleDef): string {
+      // Phase 13E — sales-pipeline absorbed business-development. We
+      // pull the same translation key for back-compat; future i18n
+      // rename to groupSalesPipeline can land independently.
       const tMap: Record<string, string | undefined> = {
-        "business-development": t.nav.groupBizDev,
+        "sales-pipeline": t.nav.groupBizDev,
         operations: t.nav.groupOps,
         "quality-labs": t.nav.groupQualityLabs,
         partners: t.nav.groupPartners,

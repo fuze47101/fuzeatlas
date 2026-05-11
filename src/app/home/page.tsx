@@ -55,7 +55,13 @@ export default function HomePage() {
   // English ones baked into modules.ts.
   const translatedModules = MODULES.map((m) => {
     const tMap: Record<string, { label: string; blurb: string }> = {
-      "business-development": { label: t.home.bizDev, blurb: t.home.bizDevBlurb },
+      // Phase 13E — sales-pipeline replaces the old business-development
+      // key. Fall back to bizDev translation if the new salesPipeline key
+      // isn't in en.ts yet.
+      "sales-pipeline": {
+        label: (t.home as any).salesPipeline || t.home.bizDev,
+        blurb: (t.home as any).salesPipelineBlurb || t.home.bizDevBlurb,
+      },
       operations: { label: t.home.operations, blurb: t.home.operationsBlurb },
       "quality-labs": { label: t.home.qualityLabs, blurb: t.home.qualityLabsBlurb },
       partners: { label: t.home.partners, blurb: t.home.partnersBlurb },
