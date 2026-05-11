@@ -243,6 +243,181 @@ additions) is fully written but blocked behind this fix.
 - 2026-05-10 — `0795e18` — phase 9I: brand referral attribution.
 - 2026-05-10 — `4ce79d6` — phase 9J: churn-warn nightly cron.
 
+## Phase 15 IMP tier complete — full handoff
+
+Phase 15 = hole-plug build response to the Phase 14 audit. The IMP
+(imperative) tier is the "must close before Joseph/KUIU sees it
+again" set. NEED / NICE / BONUS / MIND-BLOW tiers held — Andrew
+stops the autonomous build here for verification.
+
+Seven commits, zero build breaks under verify-after-every-push.
+Schema bundle (10 statements) applied clean.
+
+### Commits
+
+| Step | Commit | Theme |
+| --- | --- | --- |
+| IMP-3 | `c666e8c` | `/admin` landing — module picker scoped to ADMIN/EMPLOYEE/SALES_MANAGER, redirect on non-admin |
+| IMP-1 | `14d6991` | Brand claim card + BrandWorkspaceRequest model + brand-inference helper + 3 API endpoints |
+| IMP-2 | `a64ad22` | RestrictedSurface + RoleEscalationRequest model + request-role endpoint + managers helper |
+| IMP-4 | `ca9f27c` | OnboardingChecklist + UserOnboardingState + onboarding-state API + per-portal lists |
+| IMP-5 | `672179b` | Document repository + role visibility matrix + 5 portal pages + check:doc-acl test |
+| IMP-6 | `e531373` | 4 fan-out helpers (pricing tier / spec change / raw data / invitation accepted) with 22h dedupe |
+
+### Schema additions (3 models)
+
+Applied via `/api/cron/migrate-15-bundle` (10/10 ok):
+
+- **BrandWorkspaceRequest** — { requestedByUserId, suggestedBrandName,
+  suggestedDomain, status (PENDING/APPROVED/REJECTED), resolvedAt,
+  resolvedByUserId, resolvedBrandId, createdAt }. Indexed
+  (status, createdAt) + (requestedByUserId).
+- **RoleEscalationRequest** — { requestedByUserId, scope, scopeId,
+  requestedRole, reason?, status, resolvedAt, resolvedByUserId,
+  createdAt }. Indexed (status, createdAt) + (requestedByUserId)
+  + (scope, scopeId).
+- **UserOnboardingState** — { userId, surface, completedItems[],
+  dismissed, dismissedAt, updatedAt, createdAt }. Unique (userId,
+  surface). One row per portal per user.
+
+### Components shipped (4 drop-ins)
+
+- **`<BrandClaimCard />`** — three-path claim flow for brand-side
+  users without a brandId. Inferred (email-domain match) /
+  Searched / Requested. Auto-claim allowed only when email-domain
+  match confirms the brand identity.
+- **`<RestrictedSurface />`** — explainer wall replacing bare
+  "Forbidden" 403. Lists teammates with the gating role + Request
+  access button + optional reason textarea.
+- **`<OnboardingChecklist />`** — surface-keyed checklist card
+  with item-level toggle + dismiss + auto-completion merge from
+  server-derived state. Sits across the top of every portal
+  landing.
+- **`<DocumentRepository />`** — 4-tab unified doc browser
+  (Compliance / Testing / Commercial / Operations) + search +
+  trust-pack CTA. Drop-in for any portal page.
+
+### Libraries shipped (4 new)
+
+- **`src/lib/brand-inference.ts`** — `emailDomainOf()` +
+  `inferBrandFromEmail()`. Skips personal-domain catalogs (gmail,
+  qq.com, 163.com, etc.); matches email hostname to
+  Brand.website with `.subdomain` allowance.
+- **`src/lib/onboarding-checklists.ts`** — `ROLE_EDUCATION`-style
+  source of truth, 5 items per portal. `checklistForRole()`
+  helper.
+- **`src/lib/document-acl.ts` extended** — `listDocumentsForUser()`
+  walks ProductDocument + Document + Brand.protocolDocUrl,
+  normalizes to a `DocumentRow` shape, filters by per-user ACL +
+  per-entity scope. Privileged roles bypass.
+- **4 new notify helpers** in `src/lib/notify.ts` — see below.
+
+### Notification fan-out helpers (IMP-6)
+
+All four use the shared `alreadyNotified(kind, scopeId)` 22h
+dedupe (matches `Notification.metadata.kind` + `scopeId` within
+the window).
+
+- **`notifyPricingTierChange`** → fans BRAND_ACTIVITY to all
+  brand users at the brand. Wired in POST + PATCH
+  `/api/admin/brand-pricing-tiers`.
+- **`notifySpecChange`** → fans to every factory user whose
+  factory has an active SupplyChainLink to the brand, plus
+  admins. Wired in PATCH `/api/brand-portal/spec` — only fires
+  when one of (requiredFuzeTier / icpCadenceEveryNBatches /
+  icpCadenceEveryLitersConsumed / protocolDocUrl /
+  requiresApproval) actually changed.
+- **`notifyRawDataReceived`** → INTERNAL-ONLY: admins + the
+  uploading lab's LAB_MANAGER. Brand is NOT pinged here —
+  notifyTestResult covers the brand-visible flip later. Wired
+  in POST `/api/tests/upload` right after the Document row is
+  created with a labId.
+- **`notifyInvitationAccepted`** → fans to the brand's primary
+  EntityManager + admin fallback. Wired in POST
+  `/api/factory-portal/network/accept-invite` after the
+  $transaction.
+
+### New APIs (7)
+
+- `GET /api/brand-portal/infer-brand` — server-side email-domain
+  resolver.
+- `GET /api/brand-portal/brand-search?q=` — typeahead.
+- `POST /api/brand-portal/request-workspace` — two modes (claim
+  existing by id, request new workspace).
+- `POST /api/brand-portal/request-role` — creates RoleEscalationRequest.
+- `GET /api/brand-portal/managers` — BRAND_MANAGER roster.
+- `GET + PATCH /api/me/onboarding-state` — upsert per (user, surface).
+- `GET /api/{brand,factory,distributor,lab,admin}-portal/documents`
+  and `/api/admin/documents-unified` — unified repository feed.
+- `POST /api/brand-portal/trust-pack` — 501 stub; ZIP composer
+  deferred.
+- `GET /api/cron/migrate-15-bundle` — one-shot schema bundle.
+
+### Pages shipped (5)
+
+- `/brand-portal/documents` — unified repo + trust pack CTA.
+- `/factory-portal/documents` — unified repo.
+- `/lab-portal/documents` — unified repo.
+- `/admin/documents` — admin-gated, full corpus visibility.
+- `/admin` upgraded from redirect-only to a real module picker.
+
+### Test
+
+- `scripts/check-doc-acl.ts` + `npm run check:doc-acl` — 13/13
+  passing. Asserts the visibility matrix against
+  `canViewDocument` for representative fixtures (cross-brand
+  pricing tier DENY, brand-A test report DENY for brand-B,
+  chemistry-detail EXCERPT for non-privileged, lab-Z
+  accreditation visibility, etc.).
+
+### TODOs deferred to NEED tier (no spec change needed)
+
+- **Bare-Forbidden conversions across the other portals** —
+  IMP-2 wired `<RestrictedSurface />` to
+  `/brand-portal/approvals` as the canonical example.
+  `/factory-portal/*`, `/lab-portal/*`, `/distributor-portal/*`
+  still bounce role-denied users to `/dashboard` via
+  `router.push` without explanation. Each portal needs its own
+  `/api/{portal}/request-role` + `/api/{portal}/managers`
+  endpoints (mirror brand-portal pattern), then convert the
+  pages that gate on role to call `<RestrictedSurface />`.
+- **Distributor /documents unification** — sibling endpoint at
+  `/api/distributor-portal/documents-unified` exists; the
+  current `/distributor-portal/documents` page renders a
+  different shape. Pick canonical, redirect or replace.
+- **Trust pack ZIP composer** — `/api/brand-portal/trust-pack`
+  returns 501. Wire `jszip` (or stream zip on the fly) to
+  bundle EPA + California EPA + OEKO-TEX + bluesign + PFAS
+  attestation + SDS + this brand's protocol + most-recent ICP
+  per factory.
+- **Auto-completion wiring** — brand-portal's checklist already
+  auto-marks via the existing page-data fetch. Factory /
+  distributor / lab / admin portals mount the checklist but
+  don't yet pass `autoCompleted` — items only complete when
+  the user clicks the checkbox.
+
+### Manual follow-ups for Andrew
+
+None new. All Phase 15 IMP deliverables are code-only — no env
+vars, no third-party setup.
+
+### Verification status (per ticket)
+
+- IMP-3 ● Ready
+- IMP-1 ● Ready + schema bundle 10/10 applied
+- IMP-2 ● Ready
+- IMP-4 ● Ready
+- IMP-5 ● Ready + check:doc-acl 13/13
+- IMP-6 ● Ready
+- Final handoff commit ● Ready (this entry)
+
+Stopping here per Andrew's direction. NEED-1 through NEED-7
+queued in `docs/PHASE_15_HOLE_PLUG.md` lines 236-401 but will not
+auto-start until Andrew confirms the IMP tier verifies clean in
+production.
+
+---
+
 ## Phase 14 complete — full handoff
 
 Phase 14 = expert UX audit + per-portal sweep + role-scoped
