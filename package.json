@@ -21,7 +21,12 @@
     "check:brand-voice:staged": "tsx scripts/check-brand-voice.ts --staged",
     "check:mobile": "tsx scripts/check-mobile.ts",
     "check:mobile:staged": "tsx scripts/check-mobile.ts --staged",
-    "seed:geocode": "tsx scripts/geocode-entities.ts"
+    "seed:geocode": "tsx scripts/geocode-entities.ts",
+    "seed:brand-spec": "tsx scripts/seed-customer-data.ts brand-spec",
+    "seed:pricing-tier": "tsx scripts/seed-customer-data.ts pricing-tier",
+    "seed:supply-chain-link": "tsx scripts/seed-customer-data.ts supply-chain-link",
+    "seed:factory-invitation": "tsx scripts/seed-customer-data.ts factory-invitation",
+    "seed:lab-test-catalog": "tsx scripts/seed-customer-data.ts lab-test-catalog"
   },
   "dependencies": {
     "@anthropic-ai/claude-code": "^2.1.112",
