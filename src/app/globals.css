@@ -13,6 +13,24 @@ body { @apply bg-slate-50 text-slate-900; }
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px #00b4c3;
 }
 
+/* Phase 13D — inline form validation styling. Any descendant
+   input/select/textarea inside a .form-field-error wrapper, OR
+   anything explicitly aria-invalid="true", gets a red ring. */
+.form-field-error input,
+.form-field-error select,
+.form-field-error textarea,
+[aria-invalid="true"] {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 1px #fecaca;
+}
+.form-field-error input:focus,
+.form-field-error select:focus,
+.form-field-error textarea:focus,
+[aria-invalid="true"]:focus {
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #dc2626;
+}
+
 /* Phase 13M — toast slide-in keyframe used by ToastProvider. */
 @keyframes slidein {
   from { transform: translateY(8px); opacity: 0; }
