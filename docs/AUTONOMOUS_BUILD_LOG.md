@@ -243,6 +243,150 @@ additions) is fully written but blocked behind this fix.
 - 2026-05-10 — `0795e18` — phase 9I: brand referral attribution.
 - 2026-05-10 — `4ce79d6` — phase 9J: churn-warn nightly cron.
 
+## Phase 12 complete — full handoff
+
+Phase 12 = the public trust layer. Atlas is now the public proof
+point for every certified brand. Every sub-phase shipped + verified
+● Ready under the verify-after-every-push rule. Zero build breaks
+across the 5 Phase-12 commits.
+
+This closes the autonomous build sequence **Phases 4 → 12** —
+nine consecutive phases shipped to production main.
+
+### Models added (4)
+
+- **HangtagQR** — (token unique, brandId, fabricId?, productSku,
+  batchCode, scannedCount, firstScannedAt, lastScannedAt). One row
+  per minted QR; resolves to the public verification page.
+- **BrandEsgSnapshot** — (brandId, period unique-per-brand,
+  periodStart, periodEnd, fabricsCertified, testsRunCount,
+  testsPassedCount, fuzeConsumedLiters, factoryCountActive,
+  zeroPfasFabricCount, publicPdfUrl, publishedAt). Quarterly ESG
+  impact snapshot, admin publishes by stamping publishedAt.
+- **PressKitItem** — (type ∈ LOGO|IMAGE|RELEASE|NEWS_LINK, url,
+  caption, releaseDate, active). Drives the public /press kit.
+- **PublicPageView** — (path, brandId?, ipHash, userAgent,
+  referer, createdAt). Indexed (brandId, createdAt) + (path,
+  createdAt). Bot-filtered + session-deduped client beacon.
+
+### Columns added
+
+- **BrandProfile.publicEnabled** (bool, default false) — gates
+  the /verified/[publicSlug] storefront. Brand owner opts in.
+
+### Crons added (1)
+
+- `/api/cron/migrate-12-bundle` — one-shot. Applied all Phase 12
+  schema (15 statements, all ok).
+- `/api/cron/generate-esg-snapshot` — registered in vercel.json
+  at `0 6 1 1,4,7,10 *` (1st of Jan / Apr / Jul / Oct at 06:00
+  UTC). For every publicEnabled brand, upserts the prior
+  quarter's BrandEsgSnapshot. Idempotent — re-runs upsert in
+  place; supports `?period=YYYY-QN` override for ad-hoc backfill.
+
+### Public surfaces shipped
+
+- **12A** — `/verified/[publicSlug]` brand storefront. Server-
+  rendered with edge cache 5min + revalidate 5min. Hero block
+  with brand logo + heroHeadline + "✓ Certified by FUZE Atlas"
+  badge + primary-color gradient. 3 stat tiles (fabrics certified
+  / tests passed 12mo / countries shipping). Active tier grid
+  (F1-F4 with washes + concentration + last-passed date). About
+  FUZE expandable in canonical voice (non-leaching metamaterial,
+  OEKO-TEX Class I, bluesign, EPA registered, California EPA
+  approved Q1 2026, PFAS-free, ASTM E2149 + AATCC 100 + AATCC 30
+  + ISO 18184 + ISO 20743). Verification CTA. OG/Twitter
+  metadata. 404 unless BrandProfile.publicEnabled=true AND ≥1
+  TestRun with brandApprovalStatus=APPROVED exists.
+- **12B** — `/verified/qr/[token]` public hangtag verification.
+  Increments scannedCount + stamps firstScannedAt / lastScannedAt
+  on every hit (dynamic="force-dynamic"). Renders "✓ Verified
+  FUZE-treated" badge + brand name + tier + product card +
+  most-recent APPROVED test (ICP Ag or AB log reduction) +
+  sustainability impact (FUZE liters consumed). 404 on unknown
+  token. Admin `/admin/brands/[id]/hangtag-qr` bulk-minter with
+  12-char Crockford-base32 tokens, batch up to 500, CSV export
+  with full verify URLs ready for QR generators.
+- **12C** — `/verified/[publicSlug]/esg` public ESG snapshot
+  listing. Renders published snapshots (publishedAt not null)
+  with 4-tile per-quarter cards + pass rate + optional PDF
+  download. Admin attaches PDF + flips publishedAt to publish.
+- **12D** — `/claims` public claims library. FUZE technology
+  overview + 6-card certifications grid + standards explainer
+  (per-method body copy for ASTM E2149 / AATCC 100 / AATCC 30 /
+  ISO 18184 / ISO 20743) + methodology jab section (verbatim
+  CLAUDE.md positioning with explicit competitor-attribution
+  caveat so brand-voice scanner accepts it) + PUBLIC-audience
+  ProductDocument download grid grouped by category. OG metadata.
+- **12E** — `/press` public press kit. About FUZE Biotech + SLC
+  address + press contact + logos grid + imagery gallery + press
+  releases list + in-the-news links. `/admin/press-kit` admin
+  manager with add-item form + type filter + active toggle +
+  delete.
+- **12F** — `/sitemap.xml` dynamic via `app/sitemap.ts` — pulls
+  every publicly-enabled BrandProfile + PUBLIC ProductDocument
+  + the static `/claims` `/press` URLs. Build-time DB-unreachable
+  fallback returns just the static set. `/robots.txt` via
+  `app/robots.ts` — allows /verified/* /claims /press /docs/
+  /education /fabric-library; disallows every authenticated
+  surface; surfaces the sitemap URL.
+- **12G** — Public page-view analytics:
+  - `<PublicPageBeacon path={...} />` client component mounted on
+    /claims, /press, /verified/[slug]. Uses navigator.sendBeacon
+    with fetch keepalive fallback. Bot UA filter + session-
+    storage dedupe per path.
+  - POST `/api/public/page-view` — public endpoint, validates
+    path is on the allowlist, resolves brandId server-side from
+    /verified/[slug] (only if publicEnabled), hashes IP via
+    SHA-256 first 8 chars. Never stores raw IP.
+  - GET `/api/brand-portal/storefront` — 30-day totals + top
+    paths + top referrers + QR scan totals scoped to caller's
+    brand.
+  - `/brand-portal/storefront` brand-owner traffic view.
+
+### Permission gates (defense in depth)
+
+- `/verified/[slug]` storefront: 404 unless publicEnabled=true
+  AND ≥1 APPROVED test exists. Two independent gates.
+- `/verified/[slug]/esg`: only returns snapshots where
+  publishedAt is not null — admin must explicitly publish.
+- `/api/public/page-view`: path allowlist enforced; brandId
+  resolved server-side (caller-supplied brandId ignored).
+- `/verified/qr/[token]`: 404 on unknown token. Scan counter
+  bumped before render so traffic is observable in real time.
+
+### Privacy posture
+
+- IPs are SHA-256 hashed first 8 chars (~16M keyspace) — used
+  for unique-visitor estimation only.
+- Bot UAs filtered out before write (googlebot, bingbot, slurp,
+  yandex, baiduspider, duckduckbot, sogou, exabot, facebot,
+  ia_archiver, twitterbot, linkedinbot, whatsapp, generic
+  crawl/spider/bot).
+- Session-storage dedupe prevents dev hot-reload double-counts.
+
+### Manual follow-ups for Andrew
+
+- **Opt-in brands** — set `BrandProfile.publicEnabled=true` per
+  brand that wants a public storefront. Until done, every
+  /verified/[slug] route returns 404.
+- **Populate PressKitItem** — add real logos, imagery, press
+  releases via /admin/press-kit. Until done, /press shows the
+  about block only.
+- **Per-snapshot PDFs** — BrandEsgSnapshot.publicPdfUrl is left
+  blank by the cron. Admin attaches PDFs manually and stamps
+  publishedAt to publish. Auto-PDF rendering deferred.
+- **QR generator** — the bulk minter writes tokens + CSV; pair
+  with any QR generator (qrcode CLI, qr-code-generator.com, etc.)
+  to produce printable hangtag art.
+
+### Pre-existing STOPs (carried forward)
+
+- DSN reconcile from Phase 8E
+- Resend inbound webhook secret from Phase 9B
+
+---
+
 ## Phase 11 complete — full handoff
 
 Phase 11 = the "mind-blowing demo" layer. Supply-chain globe,
