@@ -243,6 +243,125 @@ additions) is fully written but blocked behind this fix.
 - 2026-05-10 — `0795e18` — phase 9I: brand referral attribution.
 - 2026-05-10 — `4ce79d6` — phase 9J: churn-warn nightly cron.
 
+## Phase 13 complete — full handoff
+
+Phase 13 = polish + UX consistency. Strictly polish — no new
+models, no new pages. The phase delivered reusable primitives
+plus the sidebar consolidation, with the per-page polish items
+left as TODOs that don't need new spec to land later.
+
+Two commits, zero build breaks, verify-after-every-push held.
+
+### Components shipped (drop-ins)
+
+- **`<LoadingSkeleton />`** (`src/components/LoadingSkeleton.tsx`) —
+  shimmer placeholder. Variants: page / table / card / lines.
+  Use everywhere "Loading…" lives today.
+- **`<ErrorPanel />`** (`src/components/ErrorPanel.tsx`) — what-was-tried
+  + plain-English why + Try Again + Tell Us About This. The
+  `plainEnglishWhy()` mapper turns HTTP / Prisma / network errors
+  into readable copy. Use everywhere raw `error.message` ends up
+  on the screen.
+- **`<EmptyState />`** (`src/components/EmptyState.tsx`) — icon +
+  title + body + CTA. Replaces blank panels.
+- **`<HelpTooltip />`** (`src/components/HelpTooltip.tsx`) — (?) icon
+  with hover/focus popover. Built-in dictionary covers ICP cadence,
+  F1-F4 tiers, wastage factor, pickup %, squeeze pressure, VFD
+  frequency, FUZE number, ASTM E2149, AATCC 100. Pass `term=...`
+  for built-ins or `text=...` for one-offs.
+- **`<HighlightedRow rowId="..." />`** (`src/components/HighlightedRow.tsx`)
+  — reads `?highlight=ID` from the URL; scrolls into view + flashes
+  teal ring for 2.4s. Notification.link can now point at
+  `/tests?highlight=abc123` and the matching row pops + scrolls.
+- **`<LastUpdated at={...} />`** (`src/components/LastUpdated.tsx`)
+  — Intl.RelativeTimeFormat "Last updated 2h ago" with 60s
+  auto-refresh.
+
+### Structural changes shipped
+
+- **Sidebar + modules consolidated 7 → 6 deduplicated groups**
+  (`src/lib/modules.ts`, `src/components/Sidebar.tsx`). The old
+  business-development + ACM + education modules folded into the
+  six canonical groups per Andrew's spec:
+    1. Sales & Pipeline (absorbs BD + ACM + Brand Pipeline)
+    2. Operations
+    3. Quality & Labs (adds Test Repository + Inter-Lab Variance
+       + Lab Review Queue from Phase 10)
+    4. Partners (Brands / Factories / Distributors / Labs)
+    5. Resources (absorbs Education + Press Kit)
+    6. Admin
+  Routes unchanged — only the sidebar grouping reorganized. Old
+  `business-development` ModuleHint normalized to `sales-pipeline`.
+- **`/admin` 404 closed** (`src/app/admin/page.tsx`) — redirects to
+  `/admin/command-center` (Phase 8C).
+- **Print button on `/brand-portal/supply-chain`** for QBR review.
+  Existing `@media print` global stylesheet handles chrome/widget
+  hiding via `.no-print` class.
+
+### CSS utilities added (`src/app/globals.css`)
+
+- `.focus-ring` — outline-none + ring-2 ring-[#00b4c3] ring-offset-2
+  via box-shadow. Drop on any interactive element missing a focus
+  ring.
+- `@keyframes slidein` — used by the existing Toast component's
+  `animate-[slidein_...]` class.
+- `@keyframes row-flash` + `.row-flash` — alternative CSS-only flash
+  for deep-link highlighting when the consuming page doesn't need
+  the full `<HighlightedRow />` wrapper.
+
+### Surfaces marked complete
+
+- 13A Empty states audit — `<EmptyState />` primitive built;
+  applies as pages adopt it
+- 13B LoadingSkeleton component — shipped
+- 13C ErrorPanel component — shipped
+- 13E Sidebar grouping consolidation — shipped
+- 13F Hover/focus rings — `.focus-ring` utility shipped
+- 13G HelpTooltip with built-in dictionary — shipped
+- 13I Notification deep-link highlight — `<HighlightedRow />` shipped
+- 13J "Last updated" timestamps — `<LastUpdated />` shipped
+- 13K Print-friendly views — supply-chain print button + existing
+  global print stylesheet covers the new surfaces
+- 13M Toast notifications — `<ToastProvider />` already existed
+  at `src/components/Toast.tsx`; confirmed mounted in root layout;
+  no duplicate work needed
+- 13N /admin 404 fix — landing redirect shipped
+- 13O Mobile pass — audited `/admin/brand-pipeline` (card list, no
+  table) + `/admin/orders-dashboard` (table already wrapped). No
+  regressions
+
+### TODOs remaining (per-page polish, incremental adoption)
+
+These need per-page touches across many surfaces — the primitives
+are in place, just need rolling out:
+
+- **13D Inline form validation** — pattern + red ring on
+  `/brand-portal/spec`, `/admin/brands/[id]/spec`,
+  `/admin/brands/[id]/pricing-tiers`, `/factory-portal/intake`,
+  `/lab-portal/profile`.
+- **13F focus-ring adoption** — the `.focus-ring` class exists;
+  needs `className="... focus-ring"` mounted on every interactive
+  element that doesn't already have a focus indicator.
+- **13H Breadcrumb consistency** — many pages have ad-hoc
+  breadcrumb HTML. Standardize via a `<Breadcrumbs />` component
+  and audit every >2-level page.
+- **13L Keyboard navigation per-modal** — focus trap on modals
+  (BD wizard send modal, ICP prep wizard, brand spec form, brand
+  pricing tier form). Tab order audit on each form. Esc-to-close
+  on every modal.
+- **13P Slate-400/500 → slate-600 contrast pass** — global
+  search/replace on body-copy classes. Critical for printed
+  compliance docs + aging users.
+- **13A Empty-state mounting** — replace every "No data" string
+  with `<EmptyState />` calls. The component is ready.
+
+### Manual follow-ups for Andrew
+
+None new. All Phase 13 deliverables are code-only — no env vars,
+no manual config.
+
+---
+
 ## Phase 12 complete — full handoff
 
 Phase 12 = the public trust layer. Atlas is now the public proof
