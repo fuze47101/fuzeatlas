@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { notifySpecChange } from "@/lib/notify";
 
 /**
  * Brand spec — the brand-stipulated FUZE specification that drives:
@@ -135,6 +136,26 @@ export async function PATCH(req: Request) {
       brandSpecUpdatedAt: true,
     },
   });
+
+  // Phase 15 IMP-6 — fan out spec change to every factory in the
+  // brand's supply chain (plus admins). Only fire when one of the
+  // spec-relevant fields actually changed; suppress 22h dupes via
+  // the helper's metadata.kind check.
+  const SPEC_FIELDS = [
+    "requiredFuzeTier",
+    "icpCadenceEveryNBatches",
+    "icpCadenceEveryLitersConsumed",
+    "protocolDocUrl",
+    "requiresApproval",
+  ];
+  const changed = Object.keys(data).filter((k) => SPEC_FIELDS.includes(k));
+  if (changed.length > 0) {
+    notifySpecChange({
+      brandId: brand.id,
+      brandName: brand.name,
+      changedFields: changed,
+    }).catch((e) => console.warn("[spec-change] notify failed:", e));
+  }
 
   return NextResponse.json({ ok: true, brand });
 }

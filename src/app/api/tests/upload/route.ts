@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { notifyRawDataReceived } from "@/lib/notify";
 import { parseITSReport } from "@/lib/parsers/testReportParser";
 import type { ParsedITSReport } from "@/lib/parsers/testReportParser";
 import { extractTestDataWithAIVision } from "@/lib/parsers/aiVisionExtractor";
@@ -582,6 +583,21 @@ export async function POST(req: Request) {
         },
       },
     });
+
+    // Phase 15 IMP-6 — internal-only ping to admin + lab manager
+    // when raw test data lands, BEFORE the brand-visible stamp.
+    // Fire-and-forget so a notify failure can't block the upload.
+    if (uploaderLabId) {
+      const labRow = await prisma.lab
+        .findUnique({ where: { id: uploaderLabId }, select: { name: true } })
+        .catch(() => null);
+      notifyRawDataReceived({
+        testRunId: document.id,
+        labId: uploaderLabId,
+        labName: labRow?.name || null,
+        testType: "Lab upload",
+      }).catch((e) => console.warn("[raw-data-received] notify failed:", e));
+    }
 
     // Detect report type and parse accordingly
     let parsed: ParsedTestData | null = null;

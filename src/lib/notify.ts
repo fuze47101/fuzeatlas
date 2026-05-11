@@ -836,3 +836,235 @@ export async function notifyUserLogin(params: {
     console.error("[LOGIN-NOTIFY] Error:", err);
   }
 }
+
+// ════════════════════════════════════════════════════════════════
+// Phase 15 IMP-6 — notification fan-out coverage gaps.
+//
+// Four new helpers + 22h dedupe via metadata.kind. Each suppresses
+// re-pings for the same (kind, scopeId) within the suppression
+// window so a flurry of edits doesn't spam the user pool.
+// ════════════════════════════════════════════════════════════════
+
+const FAN_OUT_SUPPRESSION_HOURS = 22;
+
+async function alreadyNotified(kind: string, scopeId: string): Promise<boolean> {
+  const since = new Date(Date.now() - FAN_OUT_SUPPRESSION_HOURS * 60 * 60_000);
+  const recent = await prisma.notification.findFirst({
+    where: {
+      createdAt: { gte: since },
+      metadata: { path: ["kind"], equals: kind },
+      AND: {
+        metadata: { path: ["scopeId"], equals: scopeId },
+      },
+    },
+    select: { id: true },
+  });
+  return !!recent;
+}
+
+/**
+ * When a BrandPricingTier changes — fans to every brand user at the
+ * brand (their volume discount just moved). Admin sees its own
+ * notification via the existing admin-fan path; this helper covers
+ * the brand-user side.
+ */
+export async function notifyPricingTierChange(params: {
+  brandId: string;
+  brandName?: string | null;
+  changeSummary: string;
+}) {
+  const kind = "pricing-tier-change";
+  if (await alreadyNotified(kind, params.brandId)) return;
+  const brand =
+    params.brandName ||
+    (await prisma.brand.findUnique({
+      where: { id: params.brandId },
+      select: { name: true },
+    }))?.name ||
+    "your brand";
+  const users = await prisma.user.findMany({
+    where: { brandId: params.brandId, status: "ACTIVE" },
+    select: { id: true },
+  });
+  const title = `Pricing tier updated for ${brand}`;
+  const link = `/brand-portal/pricing`;
+  await Promise.all(
+    users.map((u) =>
+      createNotification({
+        userId: u.id,
+        type: "BRAND_ACTIVITY",
+        title,
+        message: params.changeSummary,
+        link,
+        metadata: { kind, scopeId: params.brandId, brandId: params.brandId },
+      }),
+    ),
+  );
+}
+
+/**
+ * When a brand's spec changes (requiredFuzeTier / ICP cadence /
+ * protocolDocUrl) — fans to every factory user whose factory has
+ * an active SupplyChainLink (BRAND→FACTORY, SUPPLIES) to this brand.
+ * Plus admins for visibility.
+ */
+export async function notifySpecChange(params: {
+  brandId: string;
+  brandName?: string | null;
+  changedFields: string[];
+}) {
+  const kind = "spec-change";
+  if (await alreadyNotified(kind, params.brandId)) return;
+  const brand =
+    params.brandName ||
+    (await prisma.brand.findUnique({
+      where: { id: params.brandId },
+      select: { name: true },
+    }))?.name ||
+    "Brand";
+
+  // Find factories linked to this brand via SupplyChainLink.
+  const links = await prisma.supplyChainLink.findMany({
+    where: {
+      fromType: "BRAND",
+      fromId: params.brandId,
+      toType: "FACTORY",
+      active: true,
+    },
+    select: { toId: true },
+  });
+  const factoryIds = links.map((l) => l.toId);
+  if (factoryIds.length === 0) return;
+
+  const factoryUsers = await prisma.user.findMany({
+    where: { factoryId: { in: factoryIds }, status: "ACTIVE" },
+    select: { id: true, factoryId: true },
+  });
+  const adminIds = await getAdminIds();
+  const recipientIds = Array.from(
+    new Set<string>([...factoryUsers.map((u) => u.id), ...adminIds]),
+  );
+
+  const summary = params.changedFields.length
+    ? params.changedFields.join(", ")
+    : "spec fields";
+  const title = `${brand} updated their FUZE spec`;
+  const message = `Changed: ${summary}. Review the new spec and acknowledge.`;
+  await Promise.all(
+    recipientIds.map((userId) =>
+      createNotification({
+        userId,
+        type: "BRAND_ACTIVITY",
+        title,
+        message,
+        link: `/factory-portal/specs`,
+        metadata: {
+          kind,
+          scopeId: params.brandId,
+          brandId: params.brandId,
+          changedFields: params.changedFields,
+        },
+      }),
+    ),
+  );
+}
+
+/**
+ * Internal-only notification when raw lab data lands on a TestRun
+ * BEFORE the brand-visible stamp. Recipients: admins + the
+ * uploading lab's lab managers. Brand is NOT pinged here — that
+ * happens later via notifyTestResult on the brand-visible flip.
+ */
+export async function notifyRawDataReceived(params: {
+  testRunId: string;
+  testType?: string | null;
+  labId?: string | null;
+  labName?: string | null;
+}) {
+  const kind = "raw-data-received";
+  if (await alreadyNotified(kind, params.testRunId)) return;
+
+  const recipientIds = new Set<string>(await getAdminIds());
+  if (params.labId) {
+    const labMgrs = await prisma.user.findMany({
+      where: { labId: params.labId, role: "LAB_MANAGER", status: "ACTIVE" },
+      select: { id: true },
+    });
+    for (const u of labMgrs) recipientIds.add(u.id);
+  }
+
+  const title = `📥 Raw test data received${params.labName ? ` from ${params.labName}` : ""}`;
+  const message = `${params.testType || "Test"} run ${params.testRunId.slice(-6)} is ready for FUZE Ops review before brand-visible stamping.`;
+  const link = `/test-results/${params.testRunId}`;
+  await Promise.all(
+    Array.from(recipientIds).map((userId) =>
+      createNotification({
+        userId,
+        type: "TEST_RESULTS",
+        title,
+        message,
+        link,
+        metadata: {
+          kind,
+          scopeId: params.testRunId,
+          testRunId: params.testRunId,
+          internal: true,
+        },
+      }),
+    ),
+  );
+}
+
+/**
+ * When a FactoryInvitation flips to ACCEPTED — fans to the brand's
+ * primary EntityManager (the AM who owns the relationship) so they
+ * can welcome the factory and follow up.
+ */
+export async function notifyInvitationAccepted(params: {
+  invitationId: string;
+  brandId: string;
+  factoryName?: string | null;
+  linkedFactoryId?: string | null;
+}) {
+  const kind = "invitation-accepted";
+  if (await alreadyNotified(kind, params.invitationId)) return;
+
+  // Primary EntityManager for this brand, with admin fallback.
+  const ems = await prisma.entityManager.findMany({
+    where: { entityType: "BRAND", entityId: params.brandId },
+    select: { userId: true, isPrimary: true },
+  });
+  const primary = ems.find((e) => e.isPrimary)?.userId;
+  const recipientIds = new Set<string>(await getAdminIds());
+  if (primary) recipientIds.add(primary);
+
+  const brand =
+    (
+      await prisma.brand.findUnique({
+        where: { id: params.brandId },
+        select: { name: true },
+      })
+    )?.name || "Brand";
+  const title = `🤝 ${params.factoryName || "Factory"} accepted ${brand}'s invitation`;
+  const message = `New supply-chain link. Reach out to confirm spec + cadence.`;
+  const link = params.linkedFactoryId
+    ? `/factories/${params.linkedFactoryId}`
+    : `/brands/${params.brandId}`;
+  await Promise.all(
+    Array.from(recipientIds).map((userId) =>
+      createNotification({
+        userId,
+        type: "BRAND_ACTIVITY",
+        title,
+        message,
+        link,
+        metadata: {
+          kind,
+          scopeId: params.invitationId,
+          invitationId: params.invitationId,
+          brandId: params.brandId,
+        },
+      }),
+    ),
+  );
+}

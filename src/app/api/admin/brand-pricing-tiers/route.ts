@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { notifyPricingTierChange } from "@/lib/notify";
 
 /**
  * Admin-side CRUD for the per-brand pricing tier ladder.
@@ -71,6 +72,11 @@ export async function POST(req: Request) {
       active: active === undefined ? true : Boolean(active),
     },
   });
+  // Phase 15 IMP-6 — fan out to brand users.
+  notifyPricingTierChange({
+    brandId,
+    changeSummary: `New tier "${tier.label || "rung"}" — ${tier.discountPct}% discount at ${tier.thresholdLiters}L`,
+  }).catch((e) => console.warn("[pricing-tier-create] notify failed:", e));
   return NextResponse.json({ ok: true, tier });
 }
 
@@ -103,6 +109,11 @@ export async function PATCH(req: Request) {
   if (label !== undefined) data.label = label ? String(label) : null;
   if (active !== undefined) data.active = Boolean(active);
   const tier = await prisma.brandPricingTier.update({ where: { id }, data });
+  // Phase 15 IMP-6 — fan out to brand users.
+  notifyPricingTierChange({
+    brandId: tier.brandId,
+    changeSummary: `Tier "${tier.label || "rung"}" updated — ${tier.discountPct}% discount at ${tier.thresholdLiters}L`,
+  }).catch((e) => console.warn("[pricing-tier-update] notify failed:", e));
   return NextResponse.json({ ok: true, tier });
 }
 

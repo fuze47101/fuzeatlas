@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { notifyInvitationAccepted } from "@/lib/notify";
 
 /**
  * POST /api/factory-portal/network/accept-invite
@@ -74,6 +75,22 @@ export async function POST(req: Request) {
       update: { active: true },
     }),
   ]);
+
+  // Phase 15 IMP-6 — fan to the brand's primary EntityManager + admins.
+  try {
+    const factory = await prisma.factory.findUnique({
+      where: { id: user.factoryId },
+      select: { name: true },
+    });
+    notifyInvitationAccepted({
+      invitationId: invite.id,
+      brandId: invite.brandId,
+      factoryName: factory?.name || null,
+      linkedFactoryId: user.factoryId,
+    }).catch((e) => console.warn("[invitation-accepted] notify failed:", e));
+  } catch (e) {
+    console.warn("[invitation-accepted] lookup failed:", e);
+  }
 
   return NextResponse.json({ ok: true });
 }
