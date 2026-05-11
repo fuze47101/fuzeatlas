@@ -27,7 +27,11 @@
     "seed:pricing-tier": "tsx scripts/seed-customer-data.ts pricing-tier",
     "seed:supply-chain-link": "tsx scripts/seed-customer-data.ts supply-chain-link",
     "seed:factory-invitation": "tsx scripts/seed-customer-data.ts factory-invitation",
-    "seed:lab-test-catalog": "tsx scripts/seed-customer-data.ts lab-test-catalog"
+    "seed:lab-test-catalog": "tsx scripts/seed-customer-data.ts lab-test-catalog",
+    "seed:brand": "tsx scripts/seed-brand.ts",
+    "seed:factory": "tsx scripts/seed-factory.ts",
+    "seed:lab": "tsx scripts/seed-lab.ts",
+    "seed:distributor-tiers": "tsx scripts/seed-distributor-tiers.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-code": "^2.1.112",
