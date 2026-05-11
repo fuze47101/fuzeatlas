@@ -186,6 +186,13 @@ model User {
   // Null = no quiet-hours respect; everything fires immediately.
   timezone String?
 
+  // Phase 14E — onboarding wizard state.
+  // onboardingCompletedAt: timestamp of finished wizard, null until done.
+  // onboardingState: JSON bag of in-progress step / skipped flags so the
+  //   wizard is resumable across sessions.
+  onboardingCompletedAt DateTime?
+  onboardingState       Json?
+
   // BD Wizard — the From: address we use when this rep sends outbound via
   // the wizard. Null = fall back to the user's Atlas login email. Reps
   // set this on /settings/profile so they can separate "my Atlas account"
@@ -3256,6 +3263,16 @@ model ProductDocument {
   category    String   @default("tds_sds")
   audience    String[] @default(["BRAND", "FACTORY", "DISTRIBUTOR", "LAB"])
   productLine String?
+
+  // ─── Phase 14B — per-entity scoping for sensitive docs ─────
+  // When set, document is only visible to users whose
+  // brandId/factoryId/distributorId/labId matches. Brand A never
+  // sees Brand B's pricing tier contracts even if audience would
+  // otherwise allow it. Admin / EMPLOYEE bypass all restrictions.
+  restrictedToBrandId       String?
+  restrictedToFactoryId     String?
+  restrictedToDistributorId String?
+  restrictedToLabId         String?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
