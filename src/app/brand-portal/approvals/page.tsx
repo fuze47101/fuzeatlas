@@ -12,6 +12,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/i18n";
+import { useAuth } from "@/lib/AuthContext";
+import RestrictedSurface, { type TeammateLite } from "@/components/RestrictedSurface";
+import LoadingSkeleton from "@/components/LoadingSkeleton";
 
 type Severity = "fresh" | "watch" | "overdue";
 
@@ -63,6 +66,7 @@ function daysCopy(
 export default function BrandPortalApprovalsPage() {
   const { t } = useI18n();
   const tx = t.brandPortal.approvals;
+  const { user } = useAuth();
 
   const [data, setData] = useState<{
     pendingSubmissions: SubmissionRow[];
@@ -71,6 +75,8 @@ export default function BrandPortalApprovalsPage() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
+  const [teamWithRole, setTeamWithRole] = useState<TeammateLite[]>([]);
   const [flash, setFlash] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [reject, setReject] = useState<{
@@ -83,7 +89,19 @@ export default function BrandPortalApprovalsPage() {
   async function load() {
     setLoading(true);
     try {
-      const j = await fetch("/api/brand-portal/approvals").then((r) => r.json());
+      const res = await fetch("/api/brand-portal/approvals");
+      if (res.status === 403) {
+        setForbidden(true);
+        // Best-effort fetch of brand teammates with BRAND_MANAGER so
+        // the explainer can name them. Endpoint is auth-gated; if it
+        // returns nothing the surface still works without the names.
+        try {
+          const tm = await fetch("/api/brand-portal/managers").then((r) => r.json());
+          if (tm.ok && Array.isArray(tm.managers)) setTeamWithRole(tm.managers);
+        } catch {}
+        return;
+      }
+      const j = await res.json();
       if (!j.ok) throw new Error(j.error || "Failed to load");
       setData({
         pendingSubmissions: j.pendingSubmissions || [],
@@ -149,8 +167,19 @@ export default function BrandPortalApprovalsPage() {
   }
 
   if (loading) {
+    return <LoadingSkeleton variant="page" label={tx.loading} />;
+  }
+  if (forbidden) {
     return (
-      <div className="flex items-center justify-center h-64 text-slate-400">{tx.loading}</div>
+      <RestrictedSurface
+        requiredRole="BRAND_MANAGER"
+        featureLabel="Brand approvals queue"
+        scope="brand"
+        scopeId={user?.brandId || null}
+        currentRole={user?.role}
+        teamWithRole={teamWithRole}
+        rationale="Approving brand-visible test results, fabric submissions, and incoming FUZE orders is a brand-manager responsibility — it touches the brand's compliance surface."
+      />
     );
   }
   if (!data) {
