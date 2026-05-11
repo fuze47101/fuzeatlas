@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import FormField from "@/components/FormField";
 
 export default function LabProfilePage() {
   const [data, setData] = useState<any>(null);
@@ -87,26 +88,51 @@ export default function LabProfilePage() {
           <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-3">
             Operations contact
           </h2>
-          <p className="text-xs text-slate-500 mb-3">
+          <p className="text-xs text-slate-600 mb-3">
             Day-to-day point of contact at your lab — who FUZE pings about
             specific shipments, sample status, and report uploads.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
-              { key: "opsContactName", label: "Name" },
-              { key: "opsContactEmail", label: "Email" },
-              { key: "opsContactPhone", label: "Phone" },
-            ].map((field) => (
-              <div key={field.key}>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">{field.label}</label>
-                <input
-                  type="text"
-                  value={profile[field.key] || ""}
-                  onChange={(e) => update(field.key, e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:outline-none"
-                />
-              </div>
-            ))}
+              {
+                key: "opsContactName",
+                label: "Name",
+                required: true,
+                helper: "Person FUZE ops reaches out to first",
+              },
+              {
+                key: "opsContactEmail",
+                label: "Email",
+                helper: "We CC this on every shipment + result",
+                validator: (v: string) =>
+                  v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? "Not a valid email" : null,
+              },
+              {
+                key: "opsContactPhone",
+                label: "Phone",
+                helper: "Optional — used only on time-sensitive escalations",
+              },
+            ].map((field) => {
+              const value = profile[field.key] || "";
+              const err = field.validator ? field.validator(value) : null;
+              return (
+                <FormField
+                  key={field.key}
+                  label={field.label}
+                  required={field.required}
+                  helperText={field.helper}
+                  error={err}
+                >
+                  <input
+                    type="text"
+                    value={value}
+                    onChange={(e) => update(field.key, e.target.value)}
+                    aria-invalid={!!err}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:outline-none"
+                  />
+                </FormField>
+              );
+            })}
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 interface LabResult {
   labId: string;
@@ -51,8 +52,15 @@ export default function InterLabVariancePage() {
 
   return (
     <div className="max-w-[1280px] mx-auto p-4 sm:p-6">
+      <Breadcrumbs
+        className="mb-2"
+        items={[
+          { label: "Quality & Labs" },
+          { label: "Inter-lab variance" },
+        ]}
+      />
       <h1 className="text-2xl font-black text-slate-900 mb-1">Inter-lab variance</h1>
-      <p className="text-sm text-slate-500 mb-6">
+      <p className="text-sm text-slate-600 mb-6">
         Where the same fabric was tested by ≥2 labs in the last {data.windowDays} days. Sorted
         by range (max − min) descending.
       </p>

@@ -121,7 +121,7 @@ export default function BDScoreboardPage() {
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       <div className="mb-6 flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+          <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
             <Link href="/admin" className="hover:text-[#00b4c3]">Admin</Link>
             <span>/</span>
             <Link href="/admin/bd/sequences" className="hover:text-[#00b4c3]">BD</Link>
@@ -216,7 +216,7 @@ export default function BDScoreboardPage() {
                       <div className="font-semibold text-slate-900">
                         {row.rep.name || row.rep.email}
                       </div>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-slate-600">
                         {row.rep.role.replace("_", " ")}
                       </div>
                     </td>
@@ -267,7 +267,7 @@ export default function BDScoreboardPage() {
             </table>
           </div>
 
-          <p className="text-xs text-slate-500 mt-3">
+          <p className="text-xs text-slate-600 mt-3">
             Window starts {new Date(data.since).toLocaleDateString()}. Refreshes every 5 minutes.
             &quot;Emails&quot; = every outbound email the rep sent (wizard + brand page + contact page).
             &quot;Sequences&quot; is the subset that ran through a multi-step cadence. &quot;Contacts&quot; is

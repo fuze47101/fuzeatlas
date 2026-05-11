@@ -87,13 +87,13 @@ export default function PlaybooksPage() {
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
       <div className="mb-6 flex items-end justify-between">
         <div>
-          <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+          <div className="flex items-center gap-2 text-xs text-slate-600 mb-1">
             <Link href="/admin/bd" className="hover:text-[#00b4c3]">BD</Link>
             <span>·</span>
             <span className="text-slate-800 font-medium">Playbooks</span>
           </div>
           <h1 className="text-2xl font-black text-slate-900">BD playbooks</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-600 mt-1">
             Category-tagged outreach guidance. Favorite the ones you use; brands
             show a suggested playbook based on Brand.textileCategory.
           </p>
@@ -119,7 +119,7 @@ export default function PlaybooksPage() {
       {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded">{error}</div>}
 
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
+        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-600">
           No playbooks yet for this category.
           {isEditor && (
             <p className="text-xs mt-2">
@@ -158,7 +158,7 @@ export default function PlaybooksPage() {
                 {p.description.length > 320 && "…"}
               </p>
               {p.notes && (
-                <p className="text-xs text-slate-500 mt-3 italic">{p.notes}</p>
+                <p className="text-xs text-slate-600 mt-3 italic">{p.notes}</p>
               )}
             </div>
           ))}

@@ -103,7 +103,7 @@ export default function CalendarPage() {
     <div className="max-w-[1400px] mx-auto p-4 sm:p-6">
       <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+          <div className="flex items-center gap-2 text-xs text-slate-600 mb-1">
             <Link href="/admin/bd" className="hover:text-[#00b4c3]">BD</Link>
             <span>·</span>
             <span className="text-slate-800 font-medium">Calendar</span>
@@ -111,7 +111,7 @@ export default function CalendarPage() {
           <h1 className="text-2xl font-black text-slate-900">
             Touchpoint calendar
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-600 mt-1">
             {fmtDay(weekStart)} – {fmtDay(weekEnd)}
           </p>
         </div>
@@ -157,7 +157,7 @@ export default function CalendarPage() {
               className={`rounded-xl border ${isToday ? "border-[#00b4c3]" : "border-slate-200"} bg-white p-3 min-h-[180px]`}
             >
               <div className="flex items-baseline justify-between mb-2">
-                <p className="text-xs uppercase tracking-wider text-slate-500">
+                <p className="text-xs uppercase tracking-wider text-slate-600">
                   {d.toLocaleDateString(undefined, { weekday: "short" })}
                 </p>
                 <p className={`text-lg font-black ${isToday ? "text-[#00b4c3]" : "text-slate-900"}`}>

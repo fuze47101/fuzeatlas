@@ -335,6 +335,19 @@ on the five spec/pricing/intake/profile forms, continue contrast
 pass on the rest of /admin, mount `<EmptyState />` on more list
 surfaces.
 
+#### Adoption pass 2 (2026-05-10)
+
+- `<Breadcrumbs />` mounted on `/admin/inter-lab-variance`,
+  `/admin/lab-review`, `/admin/test-repository` (all three got
+  Quality & Labs › <page> crumbs).
+- Contrast bump continued: text-slate-500 → text-slate-600 on
+  `/admin/bd/scoreboard`, `/admin/bd/funnel`, `/admin/bd/calendar`,
+  `/admin/bd/playbooks`.
+- `<FormField />` demo on `/lab-portal/profile` Operations Contact
+  section — email field gets inline regex validation, name field
+  required indicator, helper text on all three. Pattern is now
+  visible for the remaining spec/pricing/intake forms to adopt.
+
 ### Surfaces marked complete
 
 - 13A Empty states audit — `<EmptyState />` primitive built; two

@@ -9,6 +9,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 interface Row {
   id: string;
@@ -147,10 +148,17 @@ export default function TestRepositoryPage() {
 
   return (
     <div className="max-w-[1400px] mx-auto p-4 sm:p-6">
+      <Breadcrumbs
+        className="mb-2"
+        items={[
+          { label: "Quality & Labs" },
+          { label: "Test repository" },
+        ]}
+      />
       <div className="mb-4 flex items-end justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-black text-slate-900">Test repository</h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-600">
             Every TestRun queryable. Compare {selected.size} selected · Export CSV.
           </p>
         </div>

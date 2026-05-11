@@ -5,6 +5,7 @@
  */
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 interface Item {
   kind: "AI_REVIEW" | "REJECTION";
@@ -47,10 +48,17 @@ export default function LabReviewPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6">
+      <Breadcrumbs
+        className="mb-2"
+        items={[
+          { label: "Quality & Labs" },
+          { label: "Lab review queue" },
+        ]}
+      />
       <h1 className="text-2xl font-black text-slate-900 mb-1">
         Monday review queue
       </h1>
-      <p className="text-sm text-slate-500 mb-6">
+      <p className="text-sm text-slate-600 mb-6">
         AI-flagged test runs + brand rejections from the last 7 days. Walk
         through the queue at Monday's meeting; each item links to the
         underlying detail page where you can schedule retest / approve /

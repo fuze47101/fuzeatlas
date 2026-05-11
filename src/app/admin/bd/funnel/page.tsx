@@ -54,7 +54,7 @@ export default function FunnelPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="p-6 text-slate-500">Loading…</div>;
+  if (loading) return <div className="p-6 text-slate-600">Loading…</div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
 
   const maxCount = Math.max(1, ...rows.map((r) => r.currentCount));
@@ -62,13 +62,13 @@ export default function FunnelPage() {
   return (
     <div className="max-w-[1280px] mx-auto p-4 sm:p-6">
       <div className="mb-6">
-        <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+        <div className="flex items-center gap-2 text-xs text-slate-600 mb-1">
           <Link href="/admin/bd" className="hover:text-[#00b4c3]">BD</Link>
           <span>·</span>
           <span className="text-slate-800 font-medium">Funnel</span>
         </div>
         <h1 className="text-2xl font-black text-slate-900">Pipeline funnel</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-600 mt-1">
           Inflow / outflow over the last 30 / 60 / 90 days, plus stage-to-stage
           conversion rate. Sourced from BrandStageTransition rows written on every
           Brand.pipelineStage flip.
@@ -77,7 +77,7 @@ export default function FunnelPage() {
 
       <div className="rounded-xl border border-slate-200 bg-white overflow-x-auto">
         <table className="w-full text-sm min-w-[960px]">
-          <thead className="bg-slate-50 border-b text-xs uppercase tracking-wider text-slate-500">
+          <thead className="bg-slate-50 border-b text-xs uppercase tracking-wider text-slate-600">
             <tr>
               <th className="text-left px-4 py-3">Stage</th>
               <th className="text-right px-3 py-3">Current</th>
@@ -101,7 +101,7 @@ export default function FunnelPage() {
                       {r.stage.replace(/_/g, " ")}
                     </div>
                     {r.next && (
-                      <div className="text-[11px] text-slate-500">
+                      <div className="text-[11px] text-slate-600">
                         → {r.next.replace(/_/g, " ")}
                       </div>
                     )}
@@ -142,7 +142,7 @@ export default function FunnelPage() {
                         >
                           {pct(r.conversionToNext)}
                         </div>
-                        <div className="text-[10px] text-slate-500">
+                        <div className="text-[10px] text-slate-600">
                           n={r.conversionDenom}
                         </div>
                       </div>
@@ -157,7 +157,7 @@ export default function FunnelPage() {
         </table>
       </div>
 
-      <p className="text-xs text-slate-500 mt-3">
+      <p className="text-xs text-slate-600 mt-3">
         Conversion = exits that landed on the canonical next stage / total exits
         observed in the last 90 days. Stages with no exits in the window show
         n=0 — they're slow or stable, not bad.
