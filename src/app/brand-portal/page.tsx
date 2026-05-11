@@ -6,6 +6,8 @@ import { useI18n } from "@/i18n";
 import PortalActivityFeed from "@/components/PortalActivityFeed";
 import BrandClaimCard from "@/components/BrandClaimCard";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
+import OnboardingChecklist from "@/components/OnboardingChecklist";
+import { ONBOARDING_CHECKLISTS } from "@/lib/onboarding-checklists";
 
 export default function BrandPortalDashboard() {
   const router = useRouter();
@@ -57,7 +59,17 @@ export default function BrandPortalDashboard() {
     : undefined;
 
   return (
-    <div className="max-w-[1400px] mx-auto">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-0">
+      <OnboardingChecklist
+        surface="brand-portal"
+        items={ONBOARDING_CHECKLISTS["brand-portal"]}
+        autoCompleted={[
+          ...(profile ? ["confirm-profile"] : []),
+          ...(brand?.requiredFuzeTier ? ["set-spec"] : []),
+          ...((data?.stats?.factoryCount ?? 0) > 0 ? ["link-factory"] : []),
+          ...(brand?.protocolDocUrl ? ["upload-protocol"] : []),
+        ]}
+      />
       {/* Welcome Header — augmented with BrandProfile when present.
           When no profile row exists the bare brand.name greeting from
           the prior version still renders, no layout shift. */}

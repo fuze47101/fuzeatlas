@@ -5,6 +5,8 @@ import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import OnboardingChecklist from "@/components/OnboardingChecklist";
+import { ONBOARDING_CHECKLISTS } from "@/lib/onboarding-checklists";
 import PortalActivityFeed from "@/components/PortalActivityFeed";
 
 interface Stats {
@@ -60,6 +62,10 @@ export default function FactoryPortalPage() {
 
   return (
     <div className="p-4 sm:p-8 max-w-6xl mx-auto">
+      <OnboardingChecklist
+        surface="factory-portal"
+        items={ONBOARDING_CHECKLISTS["factory-portal"]}
+      />
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">

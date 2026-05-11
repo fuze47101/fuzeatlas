@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
 import PortalActivityFeed from "@/components/PortalActivityFeed";
+import OnboardingChecklist from "@/components/OnboardingChecklist";
+import { ONBOARDING_CHECKLISTS } from "@/lib/onboarding-checklists";
 
 export default function LabPortalDashboard() {
   const router = useRouter();
@@ -32,7 +34,11 @@ export default function LabPortalDashboard() {
   const { lab, stats, testRequests } = data;
 
   return (
-    <div className="max-w-[1400px] mx-auto">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-0">
+      <OnboardingChecklist
+        surface="lab-portal"
+        items={ONBOARDING_CHECKLISTS["lab-portal"]}
+      />
       <div className="mb-6">
         <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-600 mt-1">

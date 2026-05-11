@@ -19,6 +19,8 @@ import { useAuth } from "@/lib/AuthContext";
 import { MODULES } from "@/lib/modules";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import OnboardingChecklist from "@/components/OnboardingChecklist";
+import { ONBOARDING_CHECKLISTS } from "@/lib/onboarding-checklists";
 
 const ADMIN_ROLES = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER"]);
 
@@ -55,6 +57,10 @@ export default function AdminLandingPage() {
   return (
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       <Breadcrumbs className="mb-2" items={[{ label: "Admin" }]} />
+      <OnboardingChecklist
+        surface="admin"
+        items={ONBOARDING_CHECKLISTS.admin}
+      />
       <h1 className="text-3xl sm:text-4xl font-black text-slate-900">
         Admin
       </h1>
