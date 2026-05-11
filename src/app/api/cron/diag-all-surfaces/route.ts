@@ -139,7 +139,7 @@ export async function GET(req: Request) {
     ),
     check("/factory-portal/intake — submissions", "fabricSubmission findMany", () =>
       prisma.fabricSubmission.findMany({
-        select: { id: true, factoryId: true, fuzeNumber: true, status: true },
+        select: { id: true, factoryId: true, fuzeFabricNumber: true, status: true },
         take: 5,
         orderBy: { createdAt: "desc" },
       }),
@@ -202,14 +202,14 @@ export async function GET(req: Request) {
     check("/lab-portal/queue — pending test requests", "testRequest findMany pending", () =>
       prisma.testRequest.findMany({
         where: { status: { in: ["APPROVED", "SUBMITTED", "IN_PROGRESS"] } },
-        select: { id: true, status: true, labId: true, fuzeNumber: true },
+        select: { id: true, status: true, labId: true, fuzeFabricNumber: true },
         take: 5,
       }),
     ),
     check("/lab-portal/uploads — recent reports", "document findMany kind=REPORT", () =>
       prisma.document.findMany({
         where: { kind: "REPORT" },
-        select: { id: true, name: true, createdAt: true },
+        select: { id: true, filename: true, createdAt: true },
         take: 5,
         orderBy: { createdAt: "desc" },
       }),
@@ -230,7 +230,7 @@ export async function GET(req: Request) {
     check("/admin/access-requests", "accessRequest findMany pending", () =>
       prisma.accessRequest.findMany({
         where: { status: "PENDING" },
-        select: { id: true, requestedByUserId: true, createdAt: true },
+        select: { id: true, firstName: true, lastName: true, email: true, userId: true, createdAt: true },
         take: 5,
       }),
     ),
@@ -253,8 +253,8 @@ export async function GET(req: Request) {
         take: 5,
       }),
     ),
-    check("ESG snapshot cron — quarterly snapshot table", "esgSnapshot findFirst", () =>
-      prisma.esgSnapshot.findFirst({ select: { id: true, brandId: true, periodEnd: true } }),
+    check("ESG snapshot cron — quarterly snapshot table", "brandEsgSnapshot findFirst", () =>
+      prisma.brandEsgSnapshot.findFirst({ select: { id: true } }),
     ),
 
     // ── User / org integrity ────────────────────────────────────
@@ -273,7 +273,7 @@ export async function GET(req: Request) {
     ),
     check("supply chain links", "supplyChainLink findMany", () =>
       prisma.supplyChainLink.findMany({
-        select: { id: true, brandId: true, factoryId: true },
+        select: { id: true, fromType: true, fromId: true, toType: true, toId: true, relation: true },
         take: 5,
       }),
     ),
