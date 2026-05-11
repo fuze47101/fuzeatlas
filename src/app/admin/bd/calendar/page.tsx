@@ -10,6 +10,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 interface Item {
   kind: "MEETING" | "TASK" | "SEQUENCE_STEP" | "WARNING";
@@ -103,11 +104,13 @@ export default function CalendarPage() {
     <div className="max-w-[1400px] mx-auto p-4 sm:p-6">
       <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2 text-xs text-slate-600 mb-1">
-            <Link href="/admin/bd" className="hover:text-[#00b4c3]">BD</Link>
-            <span>·</span>
-            <span className="text-slate-800 font-medium">Calendar</span>
-          </div>
+          <Breadcrumbs
+            className="mb-1"
+            items={[
+              { label: "Sales & Pipeline" },
+              { label: "BD calendar" },
+            ]}
+          />
           <h1 className="text-2xl font-black text-slate-900">
             Touchpoint calendar
           </h1>

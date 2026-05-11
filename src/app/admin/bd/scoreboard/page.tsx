@@ -11,6 +11,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 interface RepRow {
   rep: { id: string; name: string | null; email: string; role: string };
@@ -121,13 +122,13 @@ export default function BDScoreboardPage() {
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       <div className="mb-6 flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
-            <Link href="/admin" className="hover:text-[#00b4c3]">Admin</Link>
-            <span>/</span>
-            <Link href="/admin/bd/sequences" className="hover:text-[#00b4c3]">BD</Link>
-            <span>/</span>
-            <span>Scoreboard</span>
-          </div>
+          <Breadcrumbs
+            className="mb-2"
+            items={[
+              { label: "Sales & Pipeline" },
+              { label: "BD scoreboard" },
+            ]}
+          />
           <h1 className="text-3xl font-black text-slate-900">BD Scoreboard</h1>
           <p className="text-slate-600 mt-1">
             Per-rep outreach &amp; conversion over the selected window.

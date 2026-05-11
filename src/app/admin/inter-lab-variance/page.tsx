@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import LoadingSkeleton from "@/components/LoadingSkeleton";
 
 interface LabResult {
   labId: string;
@@ -48,7 +49,7 @@ export default function InterLabVariancePage() {
   }, []);
 
   if (error) return <div className="p-6 text-red-700">{error}</div>;
-  if (!data) return <div className="p-6 text-slate-500">Loading…</div>;
+  if (!data) return <LoadingSkeleton variant="page" lines={6} label="Loading inter-lab variance" />;
 
   return (
     <div className="max-w-[1280px] mx-auto p-4 sm:p-6">

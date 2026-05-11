@@ -381,7 +381,7 @@ export default function IcpSamplePrepWizardPage() {
           FUZE Biotech · Quality &amp; Labs
         </p>
         <h1 className="text-3xl font-black text-slate-900 mt-1">ICP Sample Prep</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-600 mt-1">
           Build a CTLA submission packet with one or more FUZE-treated fabric samples.
           One PO covers the whole batch; CTLA bills per fabric submission number.
         </p>
@@ -422,7 +422,7 @@ export default function IcpSamplePrepWizardPage() {
             {s.n}
           </div>
           <span
-            className={`text-xs font-semibold ${step === s.n ? "text-slate-900" : "text-slate-500"}`}
+            className={`text-xs font-semibold ${step === s.n ? "text-slate-900" : "text-slate-600"}`}
             dangerouslySetInnerHTML={{ __html: s.label }}
           />
           {i < 4 && <div className="flex-1 h-px bg-slate-200" />}
@@ -464,9 +464,9 @@ export default function IcpSamplePrepWizardPage() {
 
             <div className="mt-4 border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-[520px] overflow-auto">
               {fabricsLoading ? (
-                <div className="p-6 text-center text-slate-500 text-sm">Loading fabrics…</div>
+                <div className="p-6 text-center text-slate-600 text-sm">Loading fabrics…</div>
               ) : fabrics.length === 0 ? (
-                <div className="p-6 text-center text-slate-500 text-sm">No fabrics match.</div>
+                <div className="p-6 text-center text-slate-600 text-sm">No fabrics match.</div>
               ) : (
                 fabrics.map((f) => {
                   const selected = selectedIds.includes(f.id);
@@ -493,10 +493,10 @@ export default function IcpSamplePrepWizardPage() {
                             ? `FUZE-${fuzeNumOf(f)}`
                             : f.id.slice(0, 8)}
                           {customerCodeOf(f) && (
-                            <span className="text-slate-500 font-normal"> · {customerCodeOf(f)}</span>
+                            <span className="text-slate-600 font-normal"> · {customerCodeOf(f)}</span>
                           )}
                         </div>
-                        <div className="text-xs text-slate-500 truncate">
+                        <div className="text-xs text-slate-600 truncate">
                           {[f.construction, f.color, f.weightGsm ? `${f.weightGsm} gsm` : null]
                             .filter(Boolean)
                             .join(" · ") || "(no details)"}
@@ -531,14 +531,14 @@ export default function IcpSamplePrepWizardPage() {
             <h2 className="text-lg font-black text-slate-900 mb-1">
               2. Confirm the fabric details we pulled from the library
             </h2>
-            <p className="text-xs text-slate-500 mb-4">
+            <p className="text-xs text-slate-600 mb-4">
               These come straight from the Atlas fabric record — no re-typing. Remove any row that
               isn&apos;t actually in the bag, or go back to add more.
             </p>
 
             <div className="overflow-auto border border-slate-200 rounded-lg">
               <table className="min-w-full text-sm">
-                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className="bg-slate-50 text-xs uppercase text-slate-600">
                   <tr>
                     <th className="px-3 py-2 text-left">FUZE #</th>
                     <th className="px-3 py-2 text-left">Customer code</th>
@@ -575,7 +575,7 @@ export default function IcpSamplePrepWizardPage() {
                   ))}
                   {samples.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-3 py-6 text-center text-slate-500 text-sm">
+                      <td colSpan={7} className="px-3 py-6 text-center text-slate-600 text-sm">
                         No samples selected. Go back and pick at least one fabric.
                       </td>
                     </tr>
@@ -610,7 +610,7 @@ export default function IcpSamplePrepWizardPage() {
             <h2 className="text-lg font-black text-slate-900 mb-1">
               3. Apply FUZE — build the bath, pad, and dry
             </h2>
-            <p className="text-xs text-slate-500 mb-4">
+            <p className="text-xs text-slate-600 mb-4">
               Pull the recipe straight from this fabric&apos;s latest Recipe Bench Test. Pick the
               FUZE tier and bath volume — we compute mL of 30 ppm FUZE stock + mL of DI water on
               the fly. Pad through the vertical micro-padder at the saved settings, dry in the
@@ -641,10 +641,10 @@ export default function IcpSamplePrepWizardPage() {
                         <p className="font-bold text-slate-900">
                           {s.fuzeNumber ? `FUZE-${s.fuzeNumber}` : "Sample"}
                           {s.customerCode && (
-                            <span className="text-slate-500 font-normal"> · {s.customerCode}</span>
+                            <span className="text-slate-600 font-normal"> · {s.customerCode}</span>
                           )}
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-slate-600">
                           {[s.construction, s.color, s.weightGsm ? `${s.weightGsm} gsm` : null]
                             .filter(Boolean)
                             .join(" · ")}
@@ -685,11 +685,11 @@ export default function IcpSamplePrepWizardPage() {
                             <div className="px-3 py-2 rounded border border-slate-300 bg-white text-sm">
                               <span className="font-semibold">{bench.testNumber}</span>
                               {bench.testDate && (
-                                <span className="text-slate-500 ml-2 text-xs">
+                                <span className="text-slate-600 ml-2 text-xs">
                                   {new Date(bench.testDate).toLocaleDateString()}
                                 </span>
                               )}
-                              <span className="block text-xs text-slate-500 mt-0.5">
+                              <span className="block text-xs text-slate-600 mt-0.5">
                                 Pickup: <b>{bench.pickupDryToWetPct ?? "—"}%</b>
                                 {bench.applicationMethod && (
                                   <> · {bench.applicationMethod}</>
@@ -724,7 +724,7 @@ export default function IcpSamplePrepWizardPage() {
                               </button>
                             ))}
                           </div>
-                          <p className="text-[11px] text-slate-500 -mt-2 mb-3">
+                          <p className="text-[11px] text-slate-600 -mt-2 mb-3">
                             {TIERS.find((t) => t.key === s.tier)?.label}
                           </p>
 
@@ -826,12 +826,12 @@ export default function IcpSamplePrepWizardPage() {
 
                                 {/* Padder settings — snapshot from bench test */}
                                 <div className="mt-3 pt-2 border-t border-slate-200">
-                                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
+                                  <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-1">
                                     Padder settings (from bench)
                                   </p>
                                   <div className="grid grid-cols-3 gap-2 text-xs">
                                     <div>
-                                      <span className="text-slate-500 block">Squeeze</span>
+                                      <span className="text-slate-600 block">Squeeze</span>
                                       <span className="font-bold text-slate-900">
                                         {bench.squeezePressure != null
                                           ? `${bench.squeezePressure} bar`
@@ -839,7 +839,7 @@ export default function IcpSamplePrepWizardPage() {
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-slate-500 block">VFD</span>
+                                      <span className="text-slate-600 block">VFD</span>
                                       <span className="font-bold text-slate-900">
                                         {bench.vfdFrequencyHz != null
                                           ? `${bench.vfdFrequencyHz} Hz`
@@ -847,7 +847,7 @@ export default function IcpSamplePrepWizardPage() {
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-slate-500 block">Line speed</span>
+                                      <span className="text-slate-600 block">Line speed</span>
                                       <span className="font-bold text-slate-900">
                                         {bench.lineSpeedMPerMin != null
                                           ? `${bench.lineSpeedMPerMin} m/min`
@@ -858,7 +858,7 @@ export default function IcpSamplePrepWizardPage() {
                                 </div>
                               </div>
                             ) : (
-                              <p className="text-sm text-slate-500">
+                              <p className="text-sm text-slate-600">
                                 Enter a bath volume and tier to see the recipe.
                               </p>
                             )}
@@ -881,13 +881,13 @@ export default function IcpSamplePrepWizardPage() {
                           <span className="text-emerald-700 font-bold">
                             ✓ Recorded as <span className="font-mono">{s.appNumber}</span>
                             {s.driedAt && (
-                              <span className="text-slate-500 font-normal ml-2">
+                              <span className="text-slate-600 font-normal ml-2">
                                 dried {new Date(s.driedAt).toLocaleString()}
                               </span>
                             )}
                           </span>
                         ) : (
-                          <span className="text-slate-500">
+                          <span className="text-slate-600">
                             Not yet recorded — pad + dry, then hit the button.
                           </span>
                         )}
@@ -982,7 +982,7 @@ export default function IcpSamplePrepWizardPage() {
             <h2 className="text-lg font-black text-slate-900 mb-1">
               4. Weigh each sample + confirm tier
             </h2>
-            <p className="text-xs text-slate-500 mb-4">
+            <p className="text-xs text-slate-600 mb-4">
               Cut with the {WHEEL_CM2} cm² wheel, fragment to ~5 mm bits, and weigh the whole bag.
               We need <b>more than {SHIP_TARGET_G.toFixed(1)} g</b> per fabric — CTLA digests {DIGEST_TARGET_G.toFixed(1)} g at a time.
             </p>
@@ -998,10 +998,10 @@ export default function IcpSamplePrepWizardPage() {
                         <p className="font-bold text-slate-900">
                           {s.fuzeNumber ? `FUZE-${s.fuzeNumber}` : "Sample"}{" "}
                           {s.customerCode && (
-                            <span className="text-slate-500 font-normal"> · {s.customerCode}</span>
+                            <span className="text-slate-600 font-normal"> · {s.customerCode}</span>
                           )}
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-slate-600">
                           {[s.construction, s.color, s.weightGsm ? `${s.weightGsm} gsm` : null]
                             .filter(Boolean)
                             .join(" · ")}
@@ -1035,7 +1035,7 @@ export default function IcpSamplePrepWizardPage() {
                             : "border-slate-300 focus:ring-[#00b4c3]/40 focus:border-[#00b4c3]"
                         }`}
                       />
-                      <span className="text-xs text-slate-500">g</span>
+                      <span className="text-xs text-slate-600">g</span>
                     </div>
                     {short && (
                       <p className="text-[11px] text-amber-700 mt-1">
@@ -1113,7 +1113,7 @@ export default function IcpSamplePrepWizardPage() {
             <h2 className="text-lg font-black text-slate-900 mb-1">
               5. Review &amp; submit to CTLA
             </h2>
-            <p className="text-xs text-slate-500 mb-4">
+            <p className="text-xs text-slate-600 mb-4">
               Submitting creates a FUZE PO, auto-adds a line per fabric (so CTLA can invoice per
               submission number), and opens the printable packet to drop in the shipping bag.
             </p>
@@ -1164,7 +1164,7 @@ export default function IcpSamplePrepWizardPage() {
             {/* Summary table */}
             <div className="overflow-auto border border-slate-200 rounded-lg">
               <table className="min-w-full text-sm">
-                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className="bg-slate-50 text-xs uppercase text-slate-600">
                   <tr>
                     <th className="px-3 py-2 text-left">FUZE #</th>
                     <th className="px-3 py-2 text-left">Customer code</th>
@@ -1182,7 +1182,7 @@ export default function IcpSamplePrepWizardPage() {
                       <td className="px-3 py-2">{[s.construction, s.color].filter(Boolean).join(" · ") || "—"}</td>
                       <td className="px-3 py-2 text-right font-semibold">{Number(s.sampleMassG).toFixed(2)}</td>
                       <td className="px-3 py-2">{s.tier}</td>
-                      <td className="px-3 py-2 text-slate-500 font-mono text-xs">
+                      <td className="px-3 py-2 text-slate-600 font-mono text-xs">
                         {s.appNumber || "—"}
                       </td>
                     </tr>

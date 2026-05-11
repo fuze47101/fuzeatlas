@@ -107,7 +107,7 @@ export default function OrdersDashboardPage() {
       <div className="mb-8 bg-white border border-slate-200 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-slate-900">Weekly Shipped Volume (last 8 weeks)</h2>
-          <span className="text-xs text-slate-500">bar height = liters shipped</span>
+          <span className="text-xs text-slate-600">bar height = liters shipped</span>
         </div>
         <div className="flex items-end gap-2 h-40">
           {data.weeklyTrend.map((w: any) => {
@@ -124,7 +124,7 @@ export default function OrdersDashboardPage() {
                     </div>
                   </div>
                 </div>
-                <span className="text-[10px] text-slate-500">
+                <span className="text-[10px] text-slate-600">
                   {new Date(w.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 </span>
               </div>
@@ -138,7 +138,7 @@ export default function OrdersDashboardPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <h2 className="font-bold text-slate-900 mb-4">Top Factories (90d)</h2>
           {data.topFactories.length === 0 ? (
-            <p className="text-sm text-slate-500">No factory orders in the last 90 days.</p>
+            <p className="text-sm text-slate-600">No factory orders in the last 90 days.</p>
           ) : (
             <div className="space-y-2">
               {data.topFactories.map((f: any, i: number) => (
@@ -147,12 +147,12 @@ export default function OrdersDashboardPage() {
                     <span className="w-6 h-6 rounded-full bg-[#00b4c3]/10 text-[#00b4c3] text-xs font-bold flex items-center justify-center">{i + 1}</span>
                     <div className="min-w-0">
                       <p className="font-semibold text-slate-900 text-sm truncate">{f.name}</p>
-                      <p className="text-xs text-slate-500">{f.country} · {f.orders} orders</p>
+                      <p className="text-xs text-slate-600">{f.country} · {f.orders} orders</p>
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="font-bold text-slate-900">{fmt(f.liters)}L</p>
-                    <p className="text-xs text-slate-500">{fmtUsd(f.value)}</p>
+                    <p className="text-xs text-slate-600">{fmtUsd(f.value)}</p>
                   </div>
                 </Link>
               ))}
@@ -164,7 +164,7 @@ export default function OrdersDashboardPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <h2 className="font-bold text-slate-900 mb-4">Top Brands (90d)</h2>
           {data.topBrands.length === 0 ? (
-            <p className="text-sm text-slate-500">No brand allocations in the last 90 days.</p>
+            <p className="text-sm text-slate-600">No brand allocations in the last 90 days.</p>
           ) : (
             <div className="space-y-2">
               {data.topBrands.map((b: any, i: number) => (
@@ -175,7 +175,7 @@ export default function OrdersDashboardPage() {
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="font-bold text-slate-900">{fmt(b.liters)}L</p>
-                    <p className="text-xs text-slate-500">{b.orders} orders</p>
+                    <p className="text-xs text-slate-600">{b.orders} orders</p>
                   </div>
                 </Link>
               ))}
@@ -188,12 +188,12 @@ export default function OrdersDashboardPage() {
       <div className="bg-white border border-slate-200 rounded-xl p-6 mb-8">
         <h2 className="font-bold text-slate-900 mb-4">Orders Requiring Attention</h2>
         {data.actionable.length === 0 ? (
-          <p className="text-sm text-slate-500">No open orders. 🎉</p>
+          <p className="text-sm text-slate-600">No open orders. 🎉</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs text-slate-500 uppercase tracking-wide border-b border-slate-200">
+                <tr className="text-left text-xs text-slate-600 uppercase tracking-wide border-b border-slate-200">
                   <th className="pb-2 pr-3">Order</th>
                   <th className="pb-2 pr-3">Factory</th>
                   <th className="pb-2 pr-3">Brand</th>
@@ -234,7 +234,7 @@ export default function OrdersDashboardPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <h2 className="font-bold text-slate-900 mb-4">Low-Stock Distributors</h2>
           {data.lowStock.length === 0 ? (
-            <p className="text-sm text-slate-500">All distributors above reorder point. ✓</p>
+            <p className="text-sm text-slate-600">All distributors above reorder point. ✓</p>
           ) : (
             <div className="space-y-2">
               {data.lowStock.map((d: any) => (
@@ -258,7 +258,7 @@ export default function OrdersDashboardPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <h2 className="font-bold text-slate-900 mb-4">Distributor Restocks In Flight</h2>
           {data.restockInFlight.length === 0 ? (
-            <p className="text-sm text-slate-500">No open restock orders.</p>
+            <p className="text-sm text-slate-600">No open restock orders.</p>
           ) : (
             <div className="space-y-2">
               {data.restockInFlight.map((o: any) => (
@@ -269,7 +269,7 @@ export default function OrdersDashboardPage() {
                 >
                   <div className="min-w-0">
                     <p className="font-semibold text-slate-900 text-sm">{o.orderNumber}</p>
-                    <p className="text-xs text-slate-500 truncate">
+                    <p className="text-xs text-slate-600 truncate">
                       {o.distributor?.name} · {o.unitQuantity} × {o.unitType.replace("_", " ")} · {fmt(o.totalLiters)}L
                     </p>
                   </div>
@@ -287,7 +287,7 @@ export default function OrdersDashboardPage() {
       <div className="bg-white border border-slate-200 rounded-xl p-6">
         <h2 className="font-bold text-slate-900 mb-4">Recent Lifecycle Events</h2>
         {data.recentEvents.length === 0 ? (
-          <p className="text-sm text-slate-500">No recent events.</p>
+          <p className="text-sm text-slate-600">No recent events.</p>
         ) : (
           <div className="space-y-2">
             {data.recentEvents.map((e: any) => (
@@ -296,7 +296,7 @@ export default function OrdersDashboardPage() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm">
                     <span className="font-semibold text-slate-900">{e.order?.orderNumber}</span>
-                    <span className="text-slate-500"> · {e.order?.factory?.name}</span>
+                    <span className="text-slate-600"> · {e.order?.factory?.name}</span>
                   </p>
                   <p className="text-sm text-slate-700">{e.title}</p>
                   <p className="text-xs text-slate-400">
@@ -329,7 +329,7 @@ function KpiCard({ icon, label, value, hint, accent = "slate" }: any) {
         <span className="text-xl">{icon}</span>
       </div>
       <p className="text-3xl font-black text-slate-900">{value}</p>
-      {hint && <p className="text-xs text-slate-500 mt-1">{hint}</p>}
+      {hint && <p className="text-xs text-slate-600 mt-1">{hint}</p>}
     </div>
   );
 }

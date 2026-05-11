@@ -335,6 +335,20 @@ on the five spec/pricing/intake/profile forms, continue contrast
 pass on the rest of /admin, mount `<EmptyState />` on more list
 surfaces.
 
+#### Adoption pass 3 (2026-05-10)
+
+- `<Breadcrumbs />` mounted on `/admin/bd/scoreboard`,
+  `/admin/bd/funnel`, `/admin/bd/calendar`. Replaced the existing
+  ad-hoc inline breadcrumb spans with the canonical
+  Sales & Pipeline › <page> pattern.
+- Contrast pass continued on `/admin/icp-sample-prep` (29 hits),
+  `/admin/recipe-calculator` (18), `/admin/orders-dashboard` (15).
+  `/admin/weekly-review` had zero slate-500 instances; skipped.
+- `<LoadingSkeleton />` mounted on `/admin/inter-lab-variance`
+  (`variant="page"`, 6 shimmer lines). First real adoption of the
+  Phase 13B primitive — drop-in replacement for the bare
+  "Loading…" div.
+
 #### Adoption pass 2 (2026-05-10)
 
 - `<Breadcrumbs />` mounted on `/admin/inter-lab-variance`,

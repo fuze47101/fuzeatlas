@@ -12,6 +12,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 interface StageRow {
   stage: string;
@@ -62,11 +63,13 @@ export default function FunnelPage() {
   return (
     <div className="max-w-[1280px] mx-auto p-4 sm:p-6">
       <div className="mb-6">
-        <div className="flex items-center gap-2 text-xs text-slate-600 mb-1">
-          <Link href="/admin/bd" className="hover:text-[#00b4c3]">BD</Link>
-          <span>·</span>
-          <span className="text-slate-800 font-medium">Funnel</span>
-        </div>
+        <Breadcrumbs
+          className="mb-1"
+          items={[
+            { label: "Sales & Pipeline" },
+            { label: "BD funnel" },
+          ]}
+        />
         <h1 className="text-2xl font-black text-slate-900">Pipeline funnel</h1>
         <p className="text-sm text-slate-600 mt-1">
           Inflow / outflow over the last 30 / 60 / 90 days, plus stage-to-stage

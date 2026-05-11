@@ -391,7 +391,7 @@ export default function RecipeCalculatorPage() {
                 className={`w-8 h-8 rounded-full font-black text-xs flex items-center justify-center transition-all ${
                   state === "done" ? "bg-emerald-500 text-white cursor-pointer hover:bg-emerald-600" :
                   state === "current" ? "bg-[#00b4c3] text-white ring-4 ring-[#00b4c3]/20" :
-                  "bg-slate-200 text-slate-500"
+                  "bg-slate-200 text-slate-600"
                 }`}
               >
                 {state === "done" ? "✓" : s.n}
@@ -578,7 +578,7 @@ export default function RecipeCalculatorPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-xs text-slate-500 border-b border-slate-200">
+                  <tr className="text-xs text-slate-600 border-b border-slate-200">
                     <th className="text-left px-2 py-2">Run</th>
                     <th className="text-left px-2 py-2">Dry weight (g)</th>
                     <th className="text-left px-2 py-2">Wet after pad (g)</th>
@@ -605,7 +605,7 @@ export default function RecipeCalculatorPage() {
                           <input type="number" step="0.001" value={r.wet} onChange={(e) => setRuns((rs) => rs.map((x, j) => j === i ? { ...x, wet: e.target.value } : x))} placeholder="3.30" className="w-full px-2 py-1.5 border border-slate-300 rounded font-mono" />
                         </td>
                         <td className="px-2 py-2 text-right font-mono font-semibold">{p !== null ? p.toFixed(1) + "%" : "—"}</td>
-                        <td className={`px-2 py-2 text-right font-mono text-xs ${flagged ? "text-red-600 font-bold" : "text-slate-500"}`}>
+                        <td className={`px-2 py-2 text-right font-mono text-xs ${flagged ? "text-red-600 font-bold" : "text-slate-600"}`}>
                           {dev !== null ? (dev > 0 ? "+" : "") + dev.toFixed(1) + "%" : "—"}
                           {flagged && <span className="ml-1">⚠</span>}
                         </td>
@@ -636,7 +636,7 @@ export default function RecipeCalculatorPage() {
                 </div>
               </div>
             )}
-            <p className="text-xs text-slate-500">* Run 1 required. Runs 2 &amp; 3 strongly recommended — any run &gt;10% from the mean flags the sample.</p>
+            <p className="text-xs text-slate-600">* Run 1 required. Runs 2 &amp; 3 strongly recommended — any run &gt;10% from the mean flags the sample.</p>
           </div>
         )}
 
@@ -667,7 +667,7 @@ export default function RecipeCalculatorPage() {
                       </button>
                     ))}
                   </div>
-                  <p className="text-[10px] text-slate-500 mt-1">{tier} = {TIER_MG_PER_KG[tier]} mg/kg OWF target</p>
+                  <p className="text-[10px] text-slate-600 mt-1">{tier} = {TIER_MG_PER_KG[tier]} mg/kg OWF target</p>
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-600 mb-1 block">Bath volume (reservoir)</label>
@@ -725,7 +725,7 @@ export default function RecipeCalculatorPage() {
             </div>
             {calc.pickupDryToWetPct !== undefined && calc.pickupDryToWetPct > 0 && (
               <div className="p-4 bg-white border-2 border-slate-300 rounded-lg">
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">
                   Wet-on-wet reference (measured dry-to-wet pickup: {calc.pickupDryToWetPct.toFixed(1)}%)
                 </p>
                 <table className="w-full text-xs">
@@ -756,7 +756,7 @@ export default function RecipeCalculatorPage() {
                     })}
                   </tbody>
                 </table>
-                <p className="text-[10px] text-slate-500 mt-2">Full adjusted recipe (mL FUZE per L bath + dilution ratio) appears on the printed Recipe Report.</p>
+                <p className="text-[10px] text-slate-600 mt-2">Full adjusted recipe (mL FUZE per L bath + dilution ratio) appears on the printed Recipe Report.</p>
               </div>
             )}
           </div>
@@ -801,7 +801,7 @@ export default function RecipeCalculatorPage() {
                     </tbody>
                   </table>
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">Pickup {pickupUsed.toFixed(1)}% · Stock {form.stockMgPerL} mg/L · Add the rest as water to reach the bath volume.</p>
+                <p className="text-[10px] text-slate-600 mt-1">Pickup {pickupUsed.toFixed(1)}% · Stock {form.stockMgPerL} mg/L · Add the rest as water to reach the bath volume.</p>
               </div>
             )}
 
@@ -838,7 +838,7 @@ export default function RecipeCalculatorPage() {
         {step === 8 && (
           <div className="space-y-5">
             <div className="p-4 bg-slate-50 rounded-lg">
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Test summary</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">Test summary</p>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                 <span className="text-slate-600">Fabric</span><span className="font-semibold">{form.fabricLabel || "—"}</span>
                 <span className="text-slate-600">GSM (computed)</span><span className="font-semibold font-mono">{calc.computedGsm?.toFixed(0) || form.fabricWeightGsm || "—"} g/m²</span>
@@ -852,21 +852,21 @@ export default function RecipeCalculatorPage() {
             </div>
 
             <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Four-tier bath recipe</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">Four-tier bath recipe</p>
               <div className="grid grid-cols-4 gap-2">
                 {["F1","F2","F3","F4"].map(t => (
                   <div key={t} className="border-2 border-[#00b4c3] rounded-lg p-3">
                     <p className="font-black text-[#00b4c3] text-lg">{t}</p>
-                    <p className="text-[10px] text-slate-500">{TIER_MG_PER_KG[t]} mg/kg OWF</p>
+                    <p className="text-[10px] text-slate-600">{TIER_MG_PER_KG[t]} mg/kg OWF</p>
                     <div className="mt-2 space-y-1 text-xs">
-                      <div><p className="text-slate-500">Bath conc</p><p className="font-mono font-bold">{fmt(calc[`${t}_bath`])} mg/L</p></div>
-                      <div><p className="text-slate-500">Dilution</p><p className="font-mono font-bold">1 : {fmt(calc[`${t}_ratio`], 1)}</p></div>
+                      <div><p className="text-slate-600">Bath conc</p><p className="font-mono font-bold">{fmt(calc[`${t}_bath`])} mg/L</p></div>
+                      <div><p className="text-slate-600">Dilution</p><p className="font-mono font-bold">1 : {fmt(calc[`${t}_ratio`], 1)}</p></div>
                       <div>
-                        <p className="text-slate-500">FUZE per L bath</p>
+                        <p className="text-slate-600">FUZE per L bath</p>
                         <p className="font-mono font-bold">{fmt(calc[`${t}_ml`], 1)} mL</p>
-                        <p className="font-mono text-[10px] text-slate-500">≈ {fmt(calc[`${t}_ml`], 1)} g (water-based)</p>
+                        <p className="font-mono text-[10px] text-slate-600">≈ {fmt(calc[`${t}_ml`], 1)} g (water-based)</p>
                       </div>
-                      {calc[`${t}_liters`] && <div className="pt-1 border-t border-slate-200"><p className="text-slate-500 text-[10px]">for {form.targetProductionKg}kg</p><p className="font-mono font-bold text-[#00b4c3]">{fmt(calc[`${t}_liters`])} L</p></div>}
+                      {calc[`${t}_liters`] && <div className="pt-1 border-t border-slate-200"><p className="text-slate-600 text-[10px]">for {form.targetProductionKg}kg</p><p className="font-mono font-bold text-[#00b4c3]">{fmt(calc[`${t}_liters`])} L</p></div>}
                     </div>
                   </div>
                 ))}
@@ -876,7 +876,7 @@ export default function RecipeCalculatorPage() {
             {/* QUICK BATH TABLE on review too */}
             {pickupUsed && (
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Quick bath reference</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">Quick bath reference</p>
                 <div className="overflow-x-auto bg-slate-900 text-white rounded-lg">
                   <table className="w-full text-sm">
                     <thead>
@@ -997,7 +997,7 @@ export default function RecipeCalculatorPage() {
           <button onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1} className="px-5 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg disabled:opacity-40">
             ← Back
           </button>
-          <span className="text-sm text-slate-500">Step {step} of {STEPS.length}</span>
+          <span className="text-sm text-slate-600">Step {step} of {STEPS.length}</span>
           {step < STEPS.length && (
             <button onClick={() => setStep(step + 1)} disabled={!canAdvance()} className="px-5 py-2 bg-[#00b4c3] text-white font-semibold rounded-lg hover:bg-[#009aa8] disabled:opacity-40">
               Next →
