@@ -241,6 +241,12 @@ model User {
   entityManagers   EntityManager[]      @relation("UserEntityManagers")
   feedbackReports  FeedbackReport[]     @relation("FeedbackSubmitter")
 
+  // NEED-7a — self-service org user roster invitations. The inviter
+  // sends a magic-link signup invite; the invitee accepts and lands
+  // with the right FK + role pre-stamped.
+  sentOrgInvitations     OrgInvitation[] @relation("OrgInviter")
+  acceptedOrgInvitations OrgInvitation[] @relation("OrgInviteAcceptor")
+
   // Weekly Exec Review (gated dashboard — see WeeklyExecReport)
   ownedWeeklyReports   WeeklyExecReport[]      @relation("WeeklyReportOwner")
   grantedReportShares  WeeklyExecReportShare[] @relation("WeeklyShareGrantor")
@@ -2151,6 +2157,50 @@ model EntityManager {
   @@unique([entityType, entityId, userId, role])
   @@index([entityType, entityId])
   @@index([userId])
+}
+
+/// NEED-7a — self-service org user roster invitation.
+///
+/// Brand/factory/distributor/lab admins use `/[portal]/team` to invite
+/// teammates without going through a FUZE admin. The invite is a
+/// magic link keyed by `token`; the invitee lands at
+/// `/signup/invitation/[token]`, sets a password, and a `User` row
+/// is provisioned with `entityType` FK + `role` pre-stamped from this
+/// row. PENDING rows expire on `expiresAt`; the daily expiry sweep
+/// flips them to EXPIRED.
+model OrgInvitation {
+  id String @id @default(cuid())
+
+  entityType String   // BRAND | FACTORY | DISTRIBUTOR | LAB
+  entityId   String   // brandId / factoryId / distributorId / labId
+
+  invitedByUserId String
+  invitedBy       User   @relation("OrgInviter", fields: [invitedByUserId], references: [id])
+
+  email     String   // lowercased, normalized
+  role      String   // BRAND_USER | BRAND_MANAGER | FACTORY_USER | FACTORY_MANAGER | DISTRIBUTOR_USER | LAB_USER etc.
+  firstName String?
+  lastName  String?
+  jobTitle  String?
+  notes     String?
+
+  token     String   @unique  // 32-char random; one-time use
+  status    String   @default("PENDING") // PENDING | ACCEPTED | REVOKED | EXPIRED
+  expiresAt DateTime
+
+  acceptedAt       DateTime?
+  acceptedByUserId String?
+  acceptedBy       User?     @relation("OrgInviteAcceptor", fields: [acceptedByUserId], references: [id])
+
+  revokedAt        DateTime?
+  revokedByUserId  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([entityType, entityId, status])
+  @@index([email, status])
+  @@index([status, expiresAt])
 }
 
 // ─────────────────────────────────────────────
