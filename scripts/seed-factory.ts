@@ -1,11 +1,9 @@
 /**
- * NEED-1 — seed-factory
+ * NEED-1 — seed-factory (CLI wrapper)
  *
- * Idempotent. Creates a Factory + the SupplyChainLink rows that
- * connect it to (a) its distributor and (b) the named brands. For
- * brands that DON'T exist yet, drops a FactoryInvitation row keyed
- * on (brandId, invitedFactoryName) so the brand can confirm via
- * /factory-invitation/[token].
+ * Hard work lives in src/lib/seed-factory.ts. This script is the CLI
+ * face. The bulk import wizard at /admin/import/factories also calls
+ * the same lib, so behavior is consistent across surfaces.
  *
  * Usage:
  *   npx tsx scripts/seed-factory.ts \
@@ -14,14 +12,14 @@
  *     --distributor="Harris & Menuk" \
  *     --brands="KUIU,Rhone,Lululemon"
  *
- *   # Optional:
- *   --city="Penang"
- *   --website=https://penfabric.com
+ *   Optional:
+ *     --city="Penang"
+ *     --website=https://penfabric.com
  *
  * Production safety: refuses unless ALLOW_PROD_SEED=1.
  */
-
 import { PrismaClient } from "@prisma/client";
+import { seedFactory, SeedFactoryError } from "../src/lib/seed-factory";
 
 const prisma = new PrismaClient();
 
@@ -55,136 +53,55 @@ function refuseProdWithoutFlag() {
   }
 }
 
-function randToken() {
-  return `inv-${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36).slice(-6)}`;
-}
-
 async function main() {
   refuseProdWithoutFlag();
   const args = parseArgs();
 
-  const factoryName = need(args, "name");
-  const country = need(args, "country");
-  const distributorName = args["distributor"] || null;
-  const brandsCsv = (args["brands"] || "").trim();
-  const brandNames = brandsCsv ? brandsCsv.split(",").map((s) => s.trim()).filter(Boolean) : [];
-  const city = args["city"] || null;
-  const website = args["website"] || null;
-
-  // Factory upsert (natural key: name).
-  const factory = await prisma.factory.upsert({
-    where: { name: factoryName },
-    create: {
-      name: factoryName,
-      country,
-      city,
-      website,
-    },
-    update: {
-      // Conservatively fill country/city/website if missing.
-      ...(country ? { country } : {}),
-      ...(city ? { city } : {}),
-      ...(website ? { website } : {}),
-    },
-  });
-
-  const isNewFactory =
-    factory.createdAt && Date.now() - factory.createdAt.getTime() < 5_000;
-  if (isNewFactory) {
-    console.log(`✓ Created factory "${factory.name}" in ${country}`);
-  } else {
-    console.log(`= Factory "${factory.name}" already in place`);
-  }
-
-  // Distributor link (factory.distributorId).
-  if (distributorName) {
-    const distributor = await prisma.distributor.findFirst({
-      where: { name: { equals: distributorName, mode: "insensitive" } },
-      select: { id: true, name: true },
+  try {
+    const result = await seedFactory(prisma, {
+      name: need(args, "name"),
+      country: need(args, "country"),
+      distributor: args["distributor"] || null,
+      brands: args["brands"]
+        ? args["brands"].split(",").map((s) => s.trim()).filter(Boolean)
+        : [],
+      city: args["city"] || null,
+      website: args["website"] || null,
     });
-    if (!distributor) {
-      console.warn(
-        `  ⚠ Distributor "${distributorName}" not found — link skipped. Add the distributor first.`,
-      );
-    } else {
-      if (factory.distributorId !== distributor.id) {
-        await prisma.factory.update({
-          where: { id: factory.id },
-          data: { distributorId: distributor.id },
-        });
-        console.log(`  ✓ Linked factory → distributor "${distributor.name}"`);
-      } else {
-        console.log(`  = Factory already linked to distributor "${distributor.name}"`);
-      }
-    }
-  }
 
-  // Per-brand: existing brand → SupplyChainLink; missing brand →
-  // FactoryInvitation row so the brand can claim later.
-  for (const brandName of brandNames) {
-    const brand = await prisma.brand.findFirst({
-      where: { name: { equals: brandName, mode: "insensitive" } },
-      select: { id: true, name: true },
-    });
-    if (brand) {
-      // Upsert the link in both directions — brand→factory (SUPPLIES)
-      // covers the dashboard query; factory→brand is the inverse.
-      const link = await prisma.supplyChainLink.upsert({
-        where: {
-          supply_chain_link_unique: {
-            fromType: "BRAND",
-            fromId: brand.id,
-            toType: "FACTORY",
-            toId: factory.id,
-            relation: "SUPPLIES",
-          },
-        },
-        create: {
-          fromType: "BRAND",
-          fromId: brand.id,
-          toType: "FACTORY",
-          toId: factory.id,
-          relation: "SUPPLIES",
-          active: true,
-        },
-        update: { active: true },
-      });
-      const created = Date.now() - link.createdAt.getTime() < 5_000;
+    if (result.outcome === "created") {
+      console.log(`✓ Created factory "${result.factoryName}"`);
+    } else if (result.outcome === "filled") {
       console.log(
-        `  ${created ? "✓" : "="} SupplyChainLink BRAND ${brand.name} → FACTORY ${factory.name}`,
+        `= Filled missing fields on existing factory "${result.factoryName}": ${result.filledFields.join(", ")}`,
       );
     } else {
-      // No brand row yet — drop an invitation for an admin to chase.
-      // Dedupe on (brandName, factoryName, status=PENDING) by checking
-      // for an existing one keyed on invitedFactoryName+invitedContactEmail.
-      // We use a synthetic contact email derived from the brand name so
-      // re-running the same seed doesn't double-insert.
-      const syntheticEmail = `invite+${brandName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}@fuze47.com`;
-      const existing = await prisma.factoryInvitation.findFirst({
-        where: {
-          invitedFactoryName: factoryName,
-          invitedContactEmail: syntheticEmail,
-          status: "PENDING",
-        },
-        select: { id: true },
-      });
-      if (existing) {
-        console.log(
-          `  = FactoryInvitation pending for brand "${brandName}" → factory "${factoryName}" (row ${existing.id})`,
-        );
-        continue;
-      }
-      // We need a brandId for FactoryInvitation. Spec says invitation
-      // is brand-initiated — but here we're seeding "factory exists,
-      // brand doesn't yet". Skip and log so an admin can add the
-      // brand first.
-      console.warn(
-        `  ⚠ Brand "${brandName}" not found. Run seed-brand first, or use the inverse FactoryInvitation flow from the brand portal.`,
+      console.log(`= Factory "${result.factoryName}" already in place — no changes`);
+    }
+    if (result.distributorLinked) {
+      console.log(`  ✓ Linked to distributor "${result.distributorLinked}"`);
+    }
+    if (result.distributorSkipped) {
+      console.log(
+        `  ⚠ Distributor "${result.distributorSkipped}" not found — link skipped`,
       );
     }
+    for (const brand of result.brandsLinked) {
+      console.log(`  ✓ SupplyChainLink BRAND ${brand} → FACTORY ${result.factoryName}`);
+    }
+    for (const brand of result.brandsMissing) {
+      console.warn(
+        `  ⚠ Brand "${brand}" not found. Run seed-brand first to add it.`,
+      );
+    }
+    console.log(`\nFactory id: ${result.factoryId}`);
+  } catch (e: any) {
+    if (e instanceof SeedFactoryError) {
+      console.error(`✗ ${e.message}`);
+      process.exit(2);
+    }
+    throw e;
   }
-
-  console.log(`\nFactory id: ${factory.id}`);
 }
 
 main()
