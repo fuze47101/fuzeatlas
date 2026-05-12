@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Fragment } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 
@@ -819,7 +819,8 @@ export default function UserManagementPage() {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b border-slate-100 hover:bg-slate-50">
+                <Fragment key={u.id}>
+                <tr className="border-b border-slate-100 hover:bg-slate-50">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-full bg-[#00b4c3] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -978,6 +979,87 @@ export default function UserManagementPage() {
                     )}
                   </td>
                 </tr>
+                {/* Extension row — appears under the editing row.
+                    Shows the inline entity FK picker when the picked role
+                    requires one (DISTRIBUTOR_USER → distributor, etc.) so
+                    save doesn't fail with "missing assignment". Also surfaces
+                    editError so users can see WHY a save failed. Without
+                    this, the inline Save button silently 400s when the role
+                    needs an FK that isn't set (Danny case, May 11 2026). */}
+                {editingId === u.id && (
+                  <tr className="bg-slate-50 border-b border-slate-100">
+                    <td colSpan={5} className="px-4 py-3">
+                      <div className="flex flex-wrap gap-3 items-end">
+                        {NEEDS_BRAND.includes(editRole) && (
+                          <div className="flex-1 min-w-[200px]">
+                            <label className="text-xs text-slate-500">Brand</label>
+                            <select
+                              value={editBrandId}
+                              onChange={(e) => setEditBrandId(e.target.value)}
+                              className="w-full border border-slate-300 rounded px-2 py-1 text-xs mt-1"
+                            >
+                              <option value="">— pick a brand —</option>
+                              {brands.map((b) => (
+                                <option key={b.id} value={b.id}>{b.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                        {NEEDS_FACTORY.includes(editRole) && (
+                          <div className="flex-1 min-w-[200px]">
+                            <label className="text-xs text-slate-500">Factory</label>
+                            <select
+                              value={editFactoryId}
+                              onChange={(e) => setEditFactoryId(e.target.value)}
+                              className="w-full border border-slate-300 rounded px-2 py-1 text-xs mt-1"
+                            >
+                              <option value="">— pick a factory —</option>
+                              {factories.map((f) => (
+                                <option key={f.id} value={f.id}>{f.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                        {NEEDS_DISTRIBUTOR.includes(editRole) && (
+                          <div className="flex-1 min-w-[200px]">
+                            <label className="text-xs text-slate-500">Distributor</label>
+                            <select
+                              value={editDistributorId}
+                              onChange={(e) => setEditDistributorId(e.target.value)}
+                              className="w-full border border-slate-300 rounded px-2 py-1 text-xs mt-1"
+                            >
+                              <option value="">— pick a distributor —</option>
+                              {distributors.map((d) => (
+                                <option key={d.id} value={d.id}>{d.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                        {NEEDS_LAB.includes(editRole) && (
+                          <div className="flex-1 min-w-[200px]">
+                            <label className="text-xs text-slate-500">Lab</label>
+                            <select
+                              value={editLabId}
+                              onChange={(e) => setEditLabId(e.target.value)}
+                              className="w-full border border-slate-300 rounded px-2 py-1 text-xs mt-1"
+                            >
+                              <option value="">— pick a lab —</option>
+                              {labs.map((l) => (
+                                <option key={l.id} value={l.id}>{l.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                        {editError && (
+                          <div className="flex-1 min-w-[300px] text-xs text-red-700 bg-red-50 border border-red-200 rounded px-2 py-2">
+                            {editError}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+                </Fragment>
               ))}
             </tbody>
           </table>
