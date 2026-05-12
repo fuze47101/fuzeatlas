@@ -32,10 +32,22 @@ interface Fabric {
 interface LabOption {
   id: string;
   name: string;
+  // Phase 15 hole-plug — full ship-to address + ops contact + sample
+  // prep notes for the picked lab. Drives Section 5 of /factory-portal
+  // /request-test so the shipping panel reflects the chosen lab rather
+  // than always showing FUZE HQ.
+  address?: string | null;
   city?: string | null;
   state?: string | null;
   country?: string | null;
   region?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  website?: string | null;
+  opsContactName?: string | null;
+  opsContactEmail?: string | null;
+  opsContactPhone?: string | null;
+  notes?: string | null;
   accreditations?: string | null;
   icpApproved: boolean;
   abApproved: boolean;
@@ -553,31 +565,88 @@ export default function RequestFuzeTestPage() {
             </h2>
           </div>
 
-          {/* Shipping Addresses */}
-          <div className="space-y-4 mb-6">
-            {FUZE_SHIPPING_ADDRESSES.map((addr) => (
-              <div key={addr.label} className="p-4 border border-slate-200 rounded-lg bg-slate-50">
-                <h4 className="font-semibold text-slate-900 mb-2">{addr.label}</h4>
-                <div className="space-y-1 text-sm text-slate-700">
-                  <p>
-                    <span className="font-medium">{addr.company}</span>
-                  </p>
-                  <p>ATTN: {addr.attention}</p>
-                  <p>{addr.address1}</p>
-                  {addr.address2 && <p>{addr.address2}</p>}
-                  <p>
-                    {addr.city}
-                    {addr.stateProvince && `, ${addr.stateProvince}`}
-                    {addr.postalCode && ` ${addr.postalCode}`}
-                  </p>
-                  <p>{addr.country}</p>
-                  {addr.phone && <p>Phone: {addr.phone}</p>}
-                  {addr.email && <p>Email: {addr.email}</p>}
+          {/* Picked-lab address card — Phase 15 hole-plug (Tina ticket
+              cmp1ukl2r). When a specific lab is chosen, show its address
+              + ops contact + lab-supplied sample prep notes here, instead
+              of always showing the static FUZE HQ addresses. When the
+              user leaves "Let FUZE decide", fall back to the FUZE
+              shipping addresses below. */}
+          {(() => {
+            const lab = labs.find((l) => l.id === selectedLab);
+            if (!lab) return null;
+            const cityLine = [lab.city, lab.state, lab.country].filter(Boolean).join(", ");
+            return (
+              <div className="mb-6 p-4 border-2 border-[#00b4c3] rounded-lg bg-[#00b4c3]/5">
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <h4 className="font-bold text-slate-900">
+                    Ship to: {lab.name}
+                  </h4>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00b4c3] text-white font-bold uppercase tracking-wider">
+                    Selected lab
+                  </span>
                 </div>
-                {addr.notes && <p className="mt-2 text-xs text-slate-600 italic">{addr.notes}</p>}
+                <div className="space-y-1 text-sm text-slate-700">
+                  {lab.opsContactName && (
+                    <p>
+                      ATTN: <span className="font-medium">{lab.opsContactName}</span>
+                    </p>
+                  )}
+                  {lab.address ? (
+                    <p>{lab.address}</p>
+                  ) : (
+                    <p className="text-amber-700 italic">
+                      Street address not on file — contact the lab directly before shipping.
+                    </p>
+                  )}
+                  {cityLine && <p>{cityLine}</p>}
+                  {(lab.opsContactPhone || lab.phone) && (
+                    <p>Phone: {lab.opsContactPhone || lab.phone}</p>
+                  )}
+                  {(lab.opsContactEmail || lab.email) && (
+                    <p>Email: {lab.opsContactEmail || lab.email}</p>
+                  )}
+                </div>
+                {lab.notes && (
+                  <div className="mt-3 p-3 bg-white border border-[#00b4c3]/40 rounded-md">
+                    <p className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Sample-prep instructions from {lab.name}
+                    </p>
+                    <p className="text-xs text-slate-700 whitespace-pre-wrap">{lab.notes}</p>
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
+            );
+          })()}
+
+          {/* FUZE Shipping Addresses — shown when no specific lab is
+              chosen (the "Let FUZE decide" path) so factories still have
+              a default ship-to fallback. */}
+          {!selectedLab && (
+            <div className="space-y-4 mb-6">
+              {FUZE_SHIPPING_ADDRESSES.map((addr) => (
+                <div key={addr.label} className="p-4 border border-slate-200 rounded-lg bg-slate-50">
+                  <h4 className="font-semibold text-slate-900 mb-2">{addr.label}</h4>
+                  <div className="space-y-1 text-sm text-slate-700">
+                    <p>
+                      <span className="font-medium">{addr.company}</span>
+                    </p>
+                    <p>ATTN: {addr.attention}</p>
+                    <p>{addr.address1}</p>
+                    {addr.address2 && <p>{addr.address2}</p>}
+                    <p>
+                      {addr.city}
+                      {addr.stateProvince && `, ${addr.stateProvince}`}
+                      {addr.postalCode && ` ${addr.postalCode}`}
+                    </p>
+                    <p>{addr.country}</p>
+                    {addr.phone && <p>Phone: {addr.phone}</p>}
+                    {addr.email && <p>Email: {addr.email}</p>}
+                  </div>
+                  {addr.notes && <p className="mt-2 text-xs text-slate-600 italic">{addr.notes}</p>}
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Shipping Instructions */}
           <div className="mb-6">

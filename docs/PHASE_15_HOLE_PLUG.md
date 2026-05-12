@@ -635,6 +635,67 @@ For every ticket above, the standard verification dance:
 
 ---
 
+## NEED-FROM-USER-FEEDBACK — captured from May 11–12 ticket queue
+
+These five items came directly off real users (Tina Hong, Tina Dist,
+Angela Tsai, Ryan Prince) on May 11–12 and are queued behind the bug
+bundle (#1/#3/#4/#7) which has already shipped. They are NEED-tier
+because they unblock active customers — distributors testing for
+mills, factory PMs, BD reps doing job-change reassignments. Order
+by ticket id; build behind Andrew's signoff that the bug bundle is
+clean.
+
+### NEED-FB-1 — Edit fabric metadata after submission (Angela, cmp21i6vy)
+
+Surface: `/distributor-portal/fabrics`. Inline pencil per row, opens
+row-level edit for construction, color, yarnType, fabricCategory,
+customer code, factory code. PATCH `/api/distributor-portal/fabrics/[id]`
+ACL-gated to `distributorId`. **FUZE number stays immutable
+post-submission.**
+
+### NEED-FB-2 — Editable bath volume on /pricing/calculator (Tina, cmp2158ge)
+
+Mills work bath-volume-first, not order-volume-first. Add a "Bath
+volume (L)" input. Recompute:
+
+  `mL FUZE = bath_volume × (tier_mg_per_kg / pickup%) / 30 × 1000`
+  `mL DI   = bath_volume × 1000 − mL FUZE`
+
+Show per-batch cost in mill's local currency when their distributor
+is set. Mirror the math in `src/lib/recipe-math.ts` so the same
+formula powers `/admin/recipe-calculator` and the bench-test wizard.
+
+Tina also flagged: at F1 (1 ppm) with 100% pickup the bath% reads
+wrong — should be 3.3% pre-pickup divide. Diff the current formula
+against the math above on the way in.
+
+### NEED-FB-3 — Default-filter mill order picker to caller's factory (Tina, cmp1v463x)
+
+Surface: `/factory-portal/orders/new`. Fabric picker should default
+to `factoryId === user.factoryId` (or appears in
+`user.factory.submissions`). Add a "Show all" toggle for the rare
+cross-factory case (default off; admin-only is fine).
+
+### NEED-FB-4 — Inline new fabric on distributor test-request (Tina Dist, cmp1u686c)
+
+Surface: `/distributor-portal/test-request`. Distributors onboarding
+a mill often want to apply for a test BEFORE the mill's first formal
+fabric submission. Add a "+ New fabric" mini-modal: factory picker
+scoped to distributor's factories, construction/color/yarn fields.
+Creates a `Fabric` + `FabricSubmission` stamped with both `factoryId`
+and `distributorId`. Returns new `fabricId`, auto-selects in the
+test-request flow.
+
+### NEED-FB-5 — Move contact to different brand (career change) (Ryan, cmp1sp1kr)
+
+Surface: `/contacts/[id]`. "Move to different brand" action. Updates
+`contact.brandId`. Stamps a `Note` on BOTH the old and new brand
+recording the career change with timestamp + the rep who moved them.
+Preserves outreach history under the new brand for continuity.
+Bound by the same role gate as other contact-edit actions.
+
+---
+
 ## Notes on what is NOT in this plan
 
 - **Slack integration** — out, per Andrew May 10 2026.

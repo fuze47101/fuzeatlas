@@ -2,15 +2,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { fabricScopeForDistributor } from "@/lib/acl";
 
 /**
  * GET /api/distributor-portal/fabric-search?q=...
  *
- * Returns fabrics visible to this distributor — i.e. fabrics whose
- * factoryId is in distributor.factories OR whose brandId is on a
- * Project assigned to this distributor.
- *
- * Used by /distributor-portal/test-request for fabric pickers.
+ * Returns fabrics visible to this distributor. Phase 15 hole-plug
+ * (Angela / Tina Dist tickets) — the scope is now delegated to
+ * `fabricScopeForDistributor()` in src/lib/acl.ts so fabrics that
+ * link to a factory under this distributor only via
+ * FabricSubmission still surface.
  */
 export async function GET(req: Request) {
   try {
@@ -50,38 +51,24 @@ export async function GET(req: Request) {
     const where: any = {};
     const ands: any[] = [];
 
-    if (!isAdmin) {
-      const scopeOr: any[] = [];
-      if (factoryIds.length > 0) scopeOr.push({ factoryId: { in: factoryIds } });
-      if (brandIds.length > 0) scopeOr.push({ brandId: { in: brandIds } });
-      // Also include the distributor's own portfolio fabrics — the
-      // ones they're testing independently or in co-op programs.
-      // Tagged with ownership: "distributor" in the response so the
-      // test-request UI can surface the distinction.
-      if (isDistributor) {
-        const distributorId = (user as any).distributorId;
-        if (distributorId) scopeOr.push({ distributorId });
-      }
-      if (scopeOr.length === 0) return NextResponse.json({ ok: true, fabrics: [] });
-      ands.push({ OR: scopeOr });
+    if (!isAdmin && isDistributor) {
+      const distributorId = (user as any).distributorId;
+      ands.push(fabricScopeForDistributor(distributorId, { brandIds }));
     }
 
     // Optional explicit factory filter — used by the test-request
-    // page's factory-first picker. When set, narrows fabric results
-    // to that one factory regardless of scope OR above (still
-    // bounded by what the caller is allowed to see — distributors
-    // can't pass an arbitrary factoryId outside their scope).
+    // page's factory-first picker. Match fabrics whose direct
+    // factoryId is the picked factory OR which are linked to that
+    // factory only via FabricSubmission (same scope-shape miss that
+    // bit Tina previously — see commit c0f67e6).
     const factoryIdFilter = url.searchParams.get("factoryId")?.trim();
     if (factoryIdFilter) {
-      if (isDistributor && !factoryIds.includes(factoryIdFilter)) {
-        // Distributor passed a factoryId not in their own list —
-        // could be a brand-side fabric they have via projects, but
-        // for the test-request flow we keep it tight: must be one
-        // of the distributor's factories.
-        ands.push({ factoryId: factoryIdFilter });
-      } else {
-        ands.push({ factoryId: factoryIdFilter });
-      }
+      ands.push({
+        OR: [
+          { factoryId: factoryIdFilter },
+          { submissions: { some: { factoryId: factoryIdFilter } } },
+        ],
+      });
     }
 
     if (q) {

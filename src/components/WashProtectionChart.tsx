@@ -216,20 +216,23 @@ export default function WashProtectionChart({ comparison, competitor, fuzeLabel 
           {competitor.product} • ${competitorCostPerApplication.toFixed(2)}/m (one mill application)
         </text>
 
-        {/* Marketing-claim cliff marker */}
+        {/* Marketing-claim cliff marker — annotation drops BELOW the line so
+            it stops colliding with the competitor product label above. The
+            short dotted tick down to the unprotected-zone band is now ~32px
+            tall instead of running all the way to the X-axis. */}
         <circle cx={x(compEnd)} cy={compY} r={6} fill={COLORS.comp} stroke="#fff" strokeWidth={2} />
         <line
           x1={x(compEnd)}
           x2={x(compEnd)}
           y1={compY + 6}
-          y2={H - PAD_B - 4}
+          y2={compY + 28}
           stroke={COLORS.comp}
           strokeDasharray="3 3"
           strokeWidth={1.5}
         />
         <text
           x={x(compEnd)}
-          y={compY - 12}
+          y={compY + 44}
           textAnchor={compEnd > xMax * 0.6 ? "end" : "start"}
           fontSize={11}
           fontWeight={700}

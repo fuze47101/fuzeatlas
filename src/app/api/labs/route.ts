@@ -41,6 +41,11 @@ export async function GET(req: Request) {
       select: {
         id: true,
         name: true,
+        // Phase 15 hole-plug — address + ops contact surface back to the
+        // factory request-test page so when a non-FUZE lab is chosen
+        // we can show Tina the ship-to address for that lab instead of
+        // the static FUZE_SHIPPING_ADDRESSES card.
+        address: true,
         city: true,
         state: true,
         country: true,
@@ -48,6 +53,9 @@ export async function GET(req: Request) {
         website: true,
         email: true,
         phone: true,
+        opsContactName: true,
+        opsContactEmail: true,
+        opsContactPhone: true,
         accreditations: true,
         icpApproved: true,
         abApproved: true,

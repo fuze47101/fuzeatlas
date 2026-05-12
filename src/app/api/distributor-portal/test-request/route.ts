@@ -111,16 +111,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Select at least one test" }, { status: 400 });
     }
 
-    // Resolve distributor scope (factory IDs + brand IDs)
-    let scopedFactoryIds: string[] = [];
+    // Resolve distributor brand scope (factory scope is handled by the
+    // ACL helper below). Phase 15 hole-plug — submission-side factory
+    // membership now counts as in-scope.
     let scopedBrandIds: string[] = [];
     if (isDistributor) {
-      const factories = await prisma.factory.findMany({
-        where: { distributorId },
-        select: { id: true },
-      });
-      scopedFactoryIds = factories.map((f) => f.id);
-
       const projects = await prisma.project.findMany({
         where: { distributorId, brandId: { not: null } },
         select: { brandId: true },
@@ -146,9 +141,17 @@ export async function POST(req: Request) {
     }
 
     if (isDistributor) {
-      const factoryMatch = fabric.factoryId && scopedFactoryIds.includes(fabric.factoryId);
-      const brandMatch = fabric.brandId && scopedBrandIds.includes(fabric.brandId);
-      if (!factoryMatch && !brandMatch) {
+      // Re-query the fabric through the ACL scope to confirm visibility.
+      // This catches all four valid paths: direct distributorId, factory
+      // under distributor, submission-linked factory under distributor,
+      // and project-scoped brand.
+      const { fabricScopeForDistributor } = await import("@/lib/acl");
+      const scope = fabricScopeForDistributor(distributorId, { brandIds: scopedBrandIds });
+      const allowed = await prisma.fabric.findFirst({
+        where: { AND: [{ id: fabricId }, scope as any] },
+        select: { id: true },
+      });
+      if (!allowed) {
         return NextResponse.json(
           { ok: false, error: "Fabric is not in your distributor scope" },
           { status: 403 },

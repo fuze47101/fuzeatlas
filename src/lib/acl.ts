@@ -83,6 +83,37 @@ export function fabricScopeForBrand(brandId: string) {
   return { brandId } as const;
 }
 
+/**
+ * Where fragment to scope a Fabric query to a specific distributor.
+ *
+ * Phase 15 hole-plug — Angela Tsai / Tina Distributor tickets
+ * (cmp26kl5q / cmp1u9irr). The previous inline scope on
+ * `/api/distributor-portal/fabric-search` only matched on
+ * `fabric.factoryId` and `fabric.brandId`, missing two valid
+ * paths: (a) fabrics whose direct `distributorId` matches but
+ * the factory link is null, (b) fabrics linked to a factory
+ * under this distributor only via a FabricSubmission row.
+ *
+ * The helper covers all four cases. Tag rows with a Prisma
+ * `OR` at the call site:
+ *
+ *   prisma.fabric.findMany({ where: fabricScopeForDistributor(id), ... })
+ */
+export function fabricScopeForDistributor(
+  distributorId: string,
+  opts?: { brandIds?: string[] },
+) {
+  const brandIds = opts?.brandIds || [];
+  return {
+    OR: [
+      { distributorId },
+      { factory: { distributorId } },
+      { submissions: { some: { factory: { distributorId } } } },
+      ...(brandIds.length > 0 ? [{ brandId: { in: brandIds } }] : []),
+    ],
+  } as const;
+}
+
 /** Where fragment to scope a FuzeOrder query to a specific factory. */
 export function orderScopeForFactory(factoryId: string) {
   return { factoryId } as const;
