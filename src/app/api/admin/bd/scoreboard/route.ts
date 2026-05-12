@@ -251,13 +251,20 @@ export async function GET(req: Request) {
       }),
 
       // meetingsBooked — Meeting.organizerId, brandId required so we count
-      // BD-context meetings only (not internal standups)
+      // BD-context meetings only (not internal standups). Also EXCLUDES
+      // autoScheduled=true rows — those are pipeline-stage system events
+      // (Brand Testing Kickoff, Factory Onboarding Meeting, etc.) not real
+      // customer meetings the rep actually booked. Without this filter,
+      // moving one brand through 4 pipeline stages inflates a rep's
+      // meeting count by 4, which is exactly what triggered Ryan's
+      // "I scheduled 2 meetings, scoreboard says 5" report May 11.
       prisma.meeting.groupBy({
         by: ["organizerId"],
         where: {
           organizerId: { in: repIds },
           brandId: { not: null },
           startTime: { gte: since },
+          OR: [{ autoScheduled: false }, { autoScheduled: null }],
         },
         _count: { _all: true },
       }),
@@ -325,14 +332,15 @@ export async function GET(req: Request) {
       // NOTE: Meeting model has no contactId column (attendees live in a
       // JSON blob). Velocity is now joined on (rep, brandId) instead of
       // (rep, contactId) — less precise but unblocks the scoreboard.
-      // The original contactId-based join was throwing "Unknown field
-      // contactId" and rejecting the entire Promise.all, which is why
-      // the scoreboard showed "No BD activity" for everyone.
+      // Also excludes autoScheduled=true (pipeline-stage events) since
+      // those aren't real customer meetings and would compress velocity
+      // to ~0 days artificially.
       prisma.meeting.findMany({
         where: {
           organizerId: { in: repIds },
           brandId: { not: null },
           startTime: { gte: since },
+          OR: [{ autoScheduled: false }, { autoScheduled: null }],
         },
         select: { organizerId: true, brandId: true, startTime: true, createdAt: true },
         orderBy: { createdAt: "asc" },
