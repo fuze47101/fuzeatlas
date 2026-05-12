@@ -10,6 +10,10 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }>
   QUOTED: { bg: "bg-blue-100", text: "text-blue-700", label: "Quoted" },
   PENDING_APPROVAL: { bg: "bg-yellow-100", text: "text-yellow-700", label: "Pending Approval" },
   APPROVED: { bg: "bg-green-100", text: "text-green-700", label: "Approved" },
+  // CONFIRMED — set by /api/consumption when a factory logs an order via
+  // the consumption page. Lives between APPROVED and PROCESSING in
+  // practice. Admin should be able to push it forward to PROCESSING.
+  CONFIRMED: { bg: "bg-teal-100", text: "text-teal-700", label: "Confirmed" },
   PROCESSING: { bg: "bg-purple-100", text: "text-purple-700", label: "Processing" },
   SHIPPED: { bg: "bg-indigo-100", text: "text-indigo-700", label: "Shipped" },
   DELIVERED: { bg: "bg-emerald-100", text: "text-emerald-700", label: "Delivered" },
@@ -418,6 +422,16 @@ export default function AdminOrdersPage() {
                 />
               </div>
 
+              {/* Inline error surface — was previously set by handleAction
+                  but never rendered, so cancel/process/etc failures looked
+                  like silent no-ops. Surfaces here means admin sees the
+                  reason (e.g. invalid status transition, missing FK). */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-3 py-2 text-sm">
+                  {error}
+                </div>
+              )}
+
               {/* Actions by Status */}
               <div className="space-y-3">
                 {selectedOrder.status === "PENDING_APPROVAL" && (
@@ -439,7 +453,7 @@ export default function AdminOrdersPage() {
                   </div>
                 )}
 
-                {selectedOrder.status === "APPROVED" && (
+                {(selectedOrder.status === "APPROVED" || selectedOrder.status === "CONFIRMED") && (
                   <button
                     onClick={() => handleAction(selectedOrder.id, "process")}
                     disabled={updating}

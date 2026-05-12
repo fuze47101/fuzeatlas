@@ -1123,7 +1123,10 @@ export default function DashboardPage() {
   // Route to appropriate dashboard based on role
   if (data.role === "ADMIN" || data.role === "EMPLOYEE") {
     return <AdminDashboard data={data} t={t} />;
-  } else if (data.role === "SALES_MANAGER" || data.role === "SALES_REP") {
+  } else if (data.role === "SALES_MANAGER" || data.role === "SALES_REP" || data.role === "BD_REP") {
+    // BD_REP added May 11 — Ryan's role was falling through to the
+    // admin fallback which 403s on /api/dashboard for non-admins.
+    // BD_REP shares the SalesDashboard surface since it's the same shape.
     return <SalesDashboard data={data} t={t} />;
   } else if (data.role === "TESTING_MANAGER") {
     return <TestingDashboard data={data} t={t} />;

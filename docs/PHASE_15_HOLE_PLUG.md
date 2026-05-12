@@ -375,6 +375,38 @@ factory could keep shipping F2-treated fabric for weeks.
 **Acceptance.** Brand bumps tier; factory sees the banner; acks;
 brand sees "Acknowledged by Wei Chen at Penfabric on May 10 09:14".
 
+### NEED-7a. Self-service org user roster (added May 11 per Andrew)
+
+**Symptom.** Today the only path to add a user is for a FUZE admin to do
+it in `/settings/users`. Brand/factory/distributor/lab admins can't
+invite their own team. Every onboarding becomes admin pingpong.
+
+**Fix.**
+- New `/[portal]/team` page on each portal (brand, factory, distributor,
+  lab). Renders the roster of all `User` rows where the relevant FK
+  matches the caller's org (e.g. `brandId === caller.brandId`).
+- "Invite teammate" button → email + role picker (constrained to the
+  org's own role family: BRAND_USER / BRAND_MANAGER for brand, etc.).
+  Sends an invitation email with a one-time signup link.
+- New `OrgInvitation` model: `{ id, entityType, entityId,
+  invitedByUserId, email, role, token, status (PENDING/ACCEPTED/REVOKED),
+  expiresAt }`. Token-based magic-link signup, no password required at
+  invite time.
+- New `/signup/invitation/[token]` page — user lands, sets password,
+  account is created with `entityType` FK + role pre-stamped from the
+  invitation row.
+- Org admins (FACTORY_MANAGER, BRAND_MANAGER, DISTRIBUTOR_MANAGER,
+  LAB_ADMIN) can also remove or deactivate teammates from `/team`.
+  Cannot change their own role (anti-foot-gun).
+- Standard onboarding email template, branded with the org's logo if
+  uploaded, otherwise generic FUZE branding.
+
+**Acceptance.** A KUIU brand manager goes to `/brand-portal/team`,
+clicks "Invite", enters `colleague@kuiu.com`, picks BRAND_USER, hits
+send. The colleague receives an email, clicks the link, sets a
+password, and lands at `/brand-portal` with their brandId already set
+and role applied. No FUZE admin in the loop.
+
 ### NEED-7. Lab portal: assignment + accept/reject
 
 **Symptom.** Test requests currently route to "the lab" with no

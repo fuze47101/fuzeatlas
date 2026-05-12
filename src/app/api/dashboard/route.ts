@@ -135,8 +135,11 @@ export async function GET(req: NextRequest) {
       };
     }
 
-    // SALES_MANAGER / SALES_REP: Pipeline focused
-    else if (userRole === "SALES_MANAGER" || userRole === "SALES_REP") {
+    // SALES_MANAGER / SALES_REP / BD_REP: Pipeline focused
+    // BD_REP added May 11 — Ryan was hitting the admin fallback which
+    // 403s on /api/dashboard for non-admins, producing the
+    // "KPI link leads to error page" ticket. BD reps are sales-shaped.
+    else if (userRole === "SALES_MANAGER" || userRole === "SALES_REP" || userRole === "BD_REP") {
       let salesBrands: any[] = [];
       let upcomingMeetings = 0;
       let brandEngagementScores: any[] = [];
@@ -144,7 +147,7 @@ export async function GET(req: NextRequest) {
 
       try {
         // Get brands assigned to this sales rep
-        if (userRole === "SALES_REP" && userId) {
+        if ((userRole === "SALES_REP" || userRole === "BD_REP") && userId) {
           salesBrands = await prisma.brand.findMany({
             where: { salesRepId: userId },
             select: { id: true, name: true, pipelineStage: true },
@@ -447,7 +450,7 @@ export async function GET(req: NextRequest) {
 
     // ─── Internal-only data (pipeline, revenue, test requests) ─────────────
     // Only fetch for internal roles — not for BRAND_USER, FACTORY_USER, DISTRIBUTOR_USER
-    const isInternalRole = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "TESTING_MANAGER", "FABRIC_MANAGER", "FACTORY_MANAGER"].includes(userRole);
+    const isInternalRole = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP", "TESTING_MANAGER", "FABRIC_MANAGER", "FACTORY_MANAGER"].includes(userRole);
 
     let revenueData: any = null;
     let testRequestStats: any = null;
