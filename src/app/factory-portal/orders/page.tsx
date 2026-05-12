@@ -178,6 +178,38 @@ export default function FactoryOrdersPage() {
   // ADMIN/EMPLOYEE who hit this page from a different scope).
   const [showAllFabrics, setShowAllFabrics] = useState(false);
 
+  // Phase 15 NEED-3 — workflow auto-fill. Pre-fills brand + tier +
+  // shipping address + treatment method from the factory's profile
+  // and its most recent order. Cached so the same data doesn't
+  // re-fetch every time the user closes/reopens the form.
+  const [orderDefaults, setOrderDefaults] = useState<any>(null);
+  const [appliedDefaults, setAppliedDefaults] = useState(false);
+
+  function applyDefaultsToForm(d: any): OrderFormData {
+    const base = { ...INITIAL_FORM };
+    if (!d) return base;
+    if (d.suggestedBrand?.id) {
+      base.brandId = d.suggestedBrand.id;
+      base.brandAllocations = [
+        {
+          brandId: d.suggestedBrand.id,
+          brandName: d.suggestedBrand.name || "",
+          allocatedPct: "100",
+          notes: "",
+        },
+      ];
+    }
+    if (d.suggestedFuzeTier) base.fuzeTier = d.suggestedFuzeTier;
+    if (d.suggestedShippingAddress) base.shippingAddress = d.suggestedShippingAddress;
+    if (d.suggestedShippingCity) base.shippingCity = d.suggestedShippingCity;
+    if (d.suggestedShippingCountry) base.shippingCountry = d.suggestedShippingCountry;
+    if (d.lastOrder?.orderType) base.orderType = d.lastOrder.orderType;
+    if (d.lastOrder?.treatmentMethod) base.treatmentMethod = d.lastOrder.treatmentMethod;
+    if (d.lastOrder?.wastageFactorPct != null)
+      base.wastageFactorPct = String(d.lastOrder.wastageFactorPct);
+    return base;
+  }
+
   const isFactory = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
   const isAdmin = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"].includes(user?.role || "");
 
@@ -207,15 +239,22 @@ export default function FactoryOrdersPage() {
 
   async function loadContext() {
     try {
-      // Load brands the factory works with
-      const [brandsRes, fabricsRes] = await Promise.all([
+      // Load brands the factory works with + auto-fill defaults
+      // (NEED-3) in one parallel fetch so the "New Order" button is
+      // instant once context loads.
+      const [brandsRes, fabricsRes, defaultsRes] = await Promise.all([
         fetch("/api/brands?limit=100"),
         fetch("/api/fabrics?limit=100"),
+        fetch("/api/factory-portal/orders/defaults"),
       ]);
       const brandsData = await brandsRes.json();
       const fabricsData = await fabricsRes.json();
+      const defaultsData = await defaultsRes.json().catch(() => null);
       if (brandsData.ok || brandsData.brands) setBrands(brandsData.brands || []);
       if (fabricsData.ok || fabricsData.fabrics) setFabrics(fabricsData.fabrics || []);
+      if (defaultsData?.ok && defaultsData.defaults) {
+        setOrderDefaults(defaultsData.defaults);
+      }
     } catch (e) {
       console.error("Failed to load context:", e);
     }
@@ -416,7 +455,14 @@ export default function FactoryOrdersPage() {
           <p className="text-slate-500 mt-1">{tx.pageSubtitle}</p>
         </div>
         <button
-          onClick={() => { setShowNewOrder(true); setForm(INITIAL_FORM); setQuote(null); setError(""); setSuccess(""); }}
+          onClick={() => {
+            setShowNewOrder(true);
+            setForm(applyDefaultsToForm(orderDefaults));
+            setAppliedDefaults(!!orderDefaults?.suggestedBrand);
+            setQuote(null);
+            setError("");
+            setSuccess("");
+          }}
           className="px-5 py-2.5 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009aa8] transition-colors shadow-lg shadow-[#00b4c3]/25 flex items-center gap-2"
         >
           <span className="text-lg">+</span> {tx.newOrder}
@@ -620,6 +666,56 @@ export default function FactoryOrdersPage() {
                 </button>
               </div>
             </div>
+
+            {/* NEED-3 auto-fill banner — surfaces what we pre-filled so
+                the user can sanity-check at a glance. Renders only on
+                a fresh "New Order" (not the Reorder flow, which has
+                its own context). */}
+            {!quote && appliedDefaults && orderDefaults && (
+              <div className="mx-6 mt-4 p-3 bg-cyan-50 border border-cyan-200 rounded-lg flex items-start justify-between gap-3">
+                <div className="text-xs text-slate-700">
+                  <p className="font-semibold text-cyan-900">
+                    Pre-filled from your factory profile
+                  </p>
+                  <p className="mt-0.5 text-slate-600">
+                    Brand{" "}
+                    <span className="font-semibold text-slate-900">
+                      {orderDefaults.suggestedBrand?.name || "—"}
+                    </span>{" "}
+                    · tier{" "}
+                    <span className="font-semibold text-slate-900">
+                      {orderDefaults.suggestedFuzeTier || "—"}
+                    </span>
+                    {orderDefaults.distributor?.name && (
+                      <>
+                        {" "}· distributor{" "}
+                        <span className="font-semibold text-slate-900">
+                          {orderDefaults.distributor.name}
+                        </span>
+                      </>
+                    )}
+                    {orderDefaults.lastOrder && (
+                      <>
+                        {" "}· treatment{" "}
+                        <span className="font-semibold text-slate-900">
+                          {orderDefaults.lastOrder.treatmentMethod || "—"}
+                        </span>
+                      </>
+                    )}
+                    . You only need to enter the volume.
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setForm(INITIAL_FORM);
+                    setAppliedDefaults(false);
+                  }}
+                  className="shrink-0 text-[11px] px-2 py-1 rounded bg-white border border-cyan-300 text-cyan-700 hover:bg-cyan-100 font-medium"
+                >
+                  Start blank
+                </button>
+              </div>
+            )}
 
             {/* ─── Quote Review ─── */}
             {quote ? (

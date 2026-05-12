@@ -126,6 +126,11 @@ export default function DistributorOrdersPage() {
     shippingCountry: "",
   });
 
+  // Phase 15 NEED-3 — distributor order auto-fill from median of last
+  // 3 production orders. New accounts fall back to GAYLORD x1.
+  const [orderDefaults, setOrderDefaults] = useState<any>(null);
+  const [appliedDefaults, setAppliedDefaults] = useState(false);
+
   useEffect(() => {
     if (user?.role !== "DISTRIBUTOR_USER" && !["ADMIN", "EMPLOYEE"].includes(user?.role || "")) {
       router.push("/home");
@@ -162,12 +167,15 @@ export default function DistributorOrdersPage() {
   async function loadFactoriesAndBrands() {
     setFactoryLoadError(null);
     try {
-      const [fRes, bRes] = await Promise.all([
+      const [fRes, bRes, dRes] = await Promise.all([
         fetch("/api/distributor-portal/pricing"),
         fetch("/api/brands?limit=200"),
+        // NEED-3 — auto-fill defaults from last 3 production orders.
+        fetch("/api/distributor-portal/orders/defaults"),
       ]);
       const fData = await fRes.json();
       const bData = await bRes.json();
+      const dData = await dRes.json().catch(() => null);
       if (fData.ok) {
         setFactories(fData.factories || []);
         // Surface graceful-degradation signal from API: distributor user
@@ -179,6 +187,7 @@ export default function DistributorOrdersPage() {
         console.error("Factory load failed:", fData);
       }
       if (bData.ok || bData.brands) setBrands(bData.brands || []);
+      if (dData?.ok && dData.defaults) setOrderDefaults(dData.defaults);
     } catch (e: any) {
       setFactoryLoadError(e?.message || "Network error loading factories");
       console.error("loadFactoriesAndBrands error:", e);
@@ -308,7 +317,22 @@ export default function DistributorOrdersPage() {
           </p>
         </div>
         <button
-          onClick={() => setShowCreate(true)}
+          onClick={() => {
+            // NEED-3 — apply auto-fill defaults from last 3 orders.
+            if (orderDefaults?.hasHistory) {
+              setCreateForm((f) => ({
+                ...f,
+                unitType: orderDefaults.suggestedUnitType || f.unitType,
+                unitQuantity: orderDefaults.suggestedUnitQuantity || f.unitQuantity,
+                fuzeTier: orderDefaults.suggestedFuzeTier || f.fuzeTier,
+                shippingAddress: orderDefaults.suggestedShippingAddress || f.shippingAddress,
+                shippingCity: orderDefaults.suggestedShippingCity || f.shippingCity,
+                shippingCountry: orderDefaults.suggestedShippingCountry || f.shippingCountry,
+              }));
+              setAppliedDefaults(true);
+            }
+            setShowCreate(true);
+          }}
           className="px-5 py-2.5 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009ba8] transition-colors shadow-sm flex items-center gap-2 self-start sm:self-auto"
         >
           <span className="text-lg">+</span> Create Factory Order
@@ -444,6 +468,47 @@ export default function DistributorOrdersPage() {
               </p>
             </div>
             <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              {/* NEED-3 auto-fill banner */}
+              {appliedDefaults && orderDefaults?.hasHistory && (
+                <div className="p-3 bg-cyan-50 border border-cyan-200 rounded-lg flex items-start justify-between gap-3">
+                  <div className="text-xs text-slate-700">
+                    <p className="font-semibold text-cyan-900">
+                      Pre-filled from your last {orderDefaults.lastOrderCount}{" "}
+                      order{orderDefaults.lastOrderCount === 1 ? "" : "s"}
+                    </p>
+                    <p className="mt-0.5 text-slate-600">
+                      Suggested{" "}
+                      <span className="font-semibold text-slate-900">
+                        {orderDefaults.suggestedUnitQuantity}×{" "}
+                        {orderDefaults.suggestedUnitType?.replace(/_/g, " ").toLowerCase()}
+                      </span>{" "}
+                      based on a median order size of{" "}
+                      <span className="font-semibold text-slate-900">
+                        {Math.round(orderDefaults.medianVolumeLiters).toLocaleString()}L
+                      </span>
+                      . Adjust the volume below if this batch is different.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setCreateForm((f) => ({
+                        ...f,
+                        unitType: "GAYLORD",
+                        unitQuantity: 1,
+                        fuzeTier: "F1",
+                        shippingAddress: "",
+                        shippingCity: "",
+                        shippingCountry: "",
+                      }));
+                      setAppliedDefaults(false);
+                    }}
+                    className="shrink-0 text-[11px] px-2 py-1 rounded bg-white border border-cyan-300 text-cyan-700 hover:bg-cyan-100 font-medium"
+                  >
+                    Start blank
+                  </button>
+                </div>
+              )}
+
               {/* Factory Selection */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1">Factory *</label>
