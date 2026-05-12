@@ -76,6 +76,61 @@ export default function DistributorFabricPortfolioPage() {
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({ ...initialForm });
 
+  // Phase 15 NEED-FB-1 — inline-edit a row's fabric metadata after
+  // submission. FUZE number stays immutable; everything else in the
+  // initialForm shape is editable.
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({ ...initialForm });
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  function startEdit(f: Fabric) {
+    setEditingId(f.id);
+    setEditForm({
+      customerReference: f.customerReference || "",
+      customerCode: f.customerCode || "",
+      factoryCode: f.factoryCode || "",
+      construction: f.construction || "",
+      color: f.color || "",
+      weightGsm: f.weightGsm != null ? String(f.weightGsm) : "",
+      widthInches: f.widthInches != null ? String(f.widthInches) : "",
+      yarnType: f.yarnType || "",
+      fabricCategory: f.fabricCategory || "",
+      endUse: f.endUse || "",
+      targetFuzeTier: f.targetFuzeTier || "",
+      finishNote: f.finishNote || "",
+      note: f.note || "",
+    });
+  }
+
+  async function saveEdit(id: string) {
+    setSavingEdit(true);
+    setError(null);
+    try {
+      const payload: any = {};
+      for (const [k, v] of Object.entries(editForm)) {
+        payload[k] = v === "" ? null : v;
+      }
+      const res = await fetch(`/api/distributor-portal/fabrics/${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        setError(json.error || `HTTP ${res.status}`);
+        return;
+      }
+      setFabrics((rows) => rows.map((r) => (r.id === id ? json.fabric : r)));
+      setEditingId(null);
+      setSuccess("Fabric updated");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (e: any) {
+      setError(e?.message || "Update failed");
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
   useEffect(() => {
     if (!user) return;
     if (user.role !== "DISTRIBUTOR_USER" && !["ADMIN", "EMPLOYEE"].includes(user.role)) {
@@ -353,74 +408,211 @@ export default function DistributorFabricPortfolioPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {fabrics.map((f) => (
-                <tr key={f.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3">
-                    <p className="font-bold text-slate-900">
-                      {f.customerReference || f.customerCode || f.factoryCode || "—"}
-                    </p>
-                    {f.fuzeNumber && (
-                      <p className="text-xs font-mono text-slate-500">FUZE-{f.fuzeNumber}</p>
-                    )}
-                    {(f.customerCode || f.factoryCode) && f.customerReference && (
-                      <p className="text-[11px] text-slate-400">
-                        {f.customerCode && <>cust: {f.customerCode}</>}
-                        {f.customerCode && f.factoryCode && <> · </>}
-                        {f.factoryCode && <>fac: {f.factoryCode}</>}
+              {fabrics.map((f) => {
+                const isEditing = editingId === f.id;
+                if (isEditing) {
+                  return (
+                    <tr key={f.id} className="bg-cyan-50/50">
+                      <td colSpan={6} className="px-4 py-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                            Edit fabric
+                            {f.fuzeNumber && (
+                              <span className="ml-2 font-mono text-slate-500">
+                                FUZE-{f.fuzeNumber}
+                              </span>
+                            )}
+                            <span className="ml-2 font-normal normal-case text-[11px] text-slate-400">
+                              · FUZE number is immutable post-submission
+                            </span>
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => saveEdit(f.id)}
+                              disabled={savingEdit}
+                              className="px-3 py-1.5 bg-[#00b4c3] hover:bg-[#009aa8] text-white rounded text-xs font-bold disabled:opacity-50"
+                            >
+                              {savingEdit ? "Saving…" : "Save"}
+                            </button>
+                            <button
+                              onClick={() => setEditingId(null)}
+                              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-medium"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                          <Field
+                            label="Customer reference"
+                            value={editForm.customerReference}
+                            onChange={(v) =>
+                              setEditForm({ ...editForm, customerReference: v })
+                            }
+                          />
+                          <Field
+                            label="Customer code"
+                            value={editForm.customerCode}
+                            onChange={(v) => setEditForm({ ...editForm, customerCode: v })}
+                          />
+                          <Field
+                            label="Factory code"
+                            value={editForm.factoryCode}
+                            onChange={(v) => setEditForm({ ...editForm, factoryCode: v })}
+                          />
+                          <Field
+                            label="Construction"
+                            value={editForm.construction}
+                            onChange={(v) => setEditForm({ ...editForm, construction: v })}
+                          />
+                          <Field
+                            label="Color"
+                            value={editForm.color}
+                            onChange={(v) => setEditForm({ ...editForm, color: v })}
+                          />
+                          <Field
+                            label="Weight (gsm)"
+                            type="number"
+                            value={editForm.weightGsm}
+                            onChange={(v) => setEditForm({ ...editForm, weightGsm: v })}
+                          />
+                          <Field
+                            label="Width (inches)"
+                            type="number"
+                            value={editForm.widthInches}
+                            onChange={(v) => setEditForm({ ...editForm, widthInches: v })}
+                          />
+                          <Field
+                            label="Yarn type"
+                            value={editForm.yarnType}
+                            onChange={(v) => setEditForm({ ...editForm, yarnType: v })}
+                          />
+                          <SelectField
+                            label="Fabric category"
+                            value={editForm.fabricCategory}
+                            onChange={(v) =>
+                              setEditForm({ ...editForm, fabricCategory: v })
+                            }
+                            options={["", "knit", "woven", "nonwoven"]}
+                          />
+                          <Field
+                            label="End use"
+                            value={editForm.endUse}
+                            onChange={(v) => setEditForm({ ...editForm, endUse: v })}
+                          />
+                          <SelectField
+                            label="Target FUZE tier"
+                            value={editForm.targetFuzeTier}
+                            onChange={(v) =>
+                              setEditForm({ ...editForm, targetFuzeTier: v })
+                            }
+                            options={["", "F1", "F2", "F3", "F4"]}
+                          />
+                          <Field
+                            label="Finish notes"
+                            value={editForm.finishNote}
+                            onChange={(v) => setEditForm({ ...editForm, finishNote: v })}
+                          />
+                        </div>
+                        <div className="mt-3">
+                          <label className="block text-xs font-medium text-slate-700 mb-1">
+                            Notes
+                          </label>
+                          <textarea
+                            value={editForm.note}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, note: e.target.value })
+                            }
+                            rows={2}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none text-sm"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                }
+                return (
+                  <tr key={f.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3">
+                      <p className="font-bold text-slate-900">
+                        {f.customerReference || f.customerCode || f.factoryCode || "—"}
                       </p>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-slate-600">
-                    <p className="font-semibold text-slate-800">{f.construction || "—"}</p>
-                    <p>{f.color || ""}</p>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-slate-600">
-                    {f.weightGsm && <p>{f.weightGsm} gsm</p>}
-                    {f.widthInches && <p>{f.widthInches}"</p>}
-                    {f.yarnType && <p className="text-slate-500">{f.yarnType}</p>}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-slate-600">
-                    <p>{f.endUse || "—"}</p>
-                    {f.targetFuzeTier && (
-                      <span className="inline-block px-1.5 py-0.5 rounded bg-cyan-50 text-cyan-800 font-bold text-[10px] mt-1">
-                        {f.targetFuzeTier}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-xs">
-                    {f.brand && (
-                      <p className="text-slate-700">
-                        🏷 <Link href={`/brands/${f.brand.id}`} className="hover:underline text-blue-600">{f.brand.name}</Link>
-                      </p>
-                    )}
-                    {f.factory && (
-                      <p className="text-slate-700">
-                        🏭 {f.factory.name}
-                        {f.factory.country && (
-                          <span className="text-slate-400"> · {f.factory.country}</span>
-                        )}
-                      </p>
-                    )}
-                    {!f.brand && !f.factory && (
-                      <span className="text-slate-400 italic">no links yet</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right text-xs">
-                    <Link
-                      href={`/distributor-portal/test-request?fabricId=${f.id}`}
-                      className="inline-block px-2.5 py-1 bg-[#00b4c3] hover:bg-[#009aa8] text-white rounded font-bold mr-1"
-                    >
-                      🧪 Test
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(f)}
-                      className="inline-block px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded font-medium border border-red-200"
-                    >
-                      🗑
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                      {f.fuzeNumber && (
+                        <p className="text-xs font-mono text-slate-500">FUZE-{f.fuzeNumber}</p>
+                      )}
+                      {(f.customerCode || f.factoryCode) && f.customerReference && (
+                        <p className="text-[11px] text-slate-400">
+                          {f.customerCode && <>cust: {f.customerCode}</>}
+                          {f.customerCode && f.factoryCode && <> · </>}
+                          {f.factoryCode && <>fac: {f.factoryCode}</>}
+                        </p>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-600">
+                      <p className="font-semibold text-slate-800">{f.construction || "—"}</p>
+                      <p>{f.color || ""}</p>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-600">
+                      {f.weightGsm && <p>{f.weightGsm} gsm</p>}
+                      {f.widthInches && <p>{f.widthInches}"</p>}
+                      {f.yarnType && <p className="text-slate-500">{f.yarnType}</p>}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-600">
+                      <p>{f.endUse || "—"}</p>
+                      {f.targetFuzeTier && (
+                        <span className="inline-block px-1.5 py-0.5 rounded bg-cyan-50 text-cyan-800 font-bold text-[10px] mt-1">
+                          {f.targetFuzeTier}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-xs">
+                      {f.brand && (
+                        <p className="text-slate-700">
+                          🏷{" "}
+                          <Link
+                            href={`/brands/${f.brand.id}`}
+                            className="hover:underline text-blue-600"
+                          >
+                            {f.brand.name}
+                          </Link>
+                        </p>
+                      )}
+                      {f.factory && (
+                        <p className="text-slate-700">
+                          🏭 {f.factory.name}
+                          {f.factory.country && (
+                            <span className="text-slate-400"> · {f.factory.country}</span>
+                          )}
+                        </p>
+                      )}
+                      {!f.brand && !f.factory && (
+                        <span className="text-slate-400 italic">no links yet</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right text-xs whitespace-nowrap">
+                      <Link
+                        href={`/distributor-portal/test-request?fabricId=${f.id}`}
+                        className="inline-block px-2.5 py-1 bg-[#00b4c3] hover:bg-[#009aa8] text-white rounded font-bold mr-1"
+                      >
+                        🧪 Test
+                      </Link>
+                      <button
+                        onClick={() => startEdit(f)}
+                        className="inline-block px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-medium border border-slate-200 mr-1"
+                        title="Edit fabric metadata"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => handleDelete(f)}
+                        className="inline-block px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded font-medium border border-red-200"
+                      >
+                        🗑
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

@@ -566,10 +566,10 @@ function ReassignBrandButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-xs text-slate-500 hover:text-blue-600 underline decoration-dotted"
-        title="Move this contact to a different brand"
+        className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold border border-blue-200"
+        title="Move this contact to a different brand (career change, M&A, etc.)"
       >
-        (move)
+        ↪ Move to different brand
       </button>
       {open && (
         <div

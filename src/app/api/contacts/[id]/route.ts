@@ -93,22 +93,25 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         const fromName = oldBrand?.name || "(unknown)";
         const toName = newBrand?.name || "(unknown)";
         const movedBy = user?.name || user?.email || "an admin";
+        const contactLabel = contact.name || contact.email || id;
+        const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+        // Phase 15 NEED-FB-5 — career-change framing on both ends. The
+        // outreach history under the new brand keeps continuity since
+        // OutreachMessage rows reference contactId, not brandId.
         await prisma.note.create({
           data: {
             brandId: reassignNote.fromBrandId,
             authorId: user?.id || null,
             noteType: "ACTIVITY",
-            content: `Contact ${contact.name || contact.email || id} moved to ${toName} by ${movedBy}.`,
+            content: `Contact ${contactLabel} moved to ${toName} (career change / reassignment) by ${movedBy} on ${stamp}. Outreach history under this brand stays intact for the historical record.`,
           },
         });
-        // Also drop a forward-looking note on the new brand so the
-        // recipient pipeline shows where this contact came from.
         await prisma.note.create({
           data: {
             brandId: reassignNote.toBrandId,
             authorId: user?.id || null,
             noteType: "ACTIVITY",
-            content: `Contact ${contact.name || contact.email || id} moved here from ${fromName} by ${movedBy}.`,
+            content: `Contact ${contactLabel} moved here from ${fromName} (career change / reassignment) by ${movedBy} on ${stamp}. Prior outreach history is preserved under the contact for continuity.`,
           },
         });
       } catch (e) {

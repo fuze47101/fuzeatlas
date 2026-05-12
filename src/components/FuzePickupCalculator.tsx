@@ -7,6 +7,7 @@ import {
   type ExhaustInputs, type ExhaustOutputs,
   type SprayInputs, type SprayOutputs,
 } from "@/lib/fuze-pickup-calc";
+import { calcBathFromVolume } from "@/lib/recipe-math";
 
 type AppMethod = "exhaust" | "pad-dry-cure" | "spray";
 
@@ -47,6 +48,12 @@ export default function FuzePickupCalculator({
   const [pumpRate, setPumpRate] = useState(DEFAULT_PUMP_RATE);
   const [fabricSpeed, setFabricSpeed] = useState(DEFAULT_SPRAY_SPEED);
   const [concentrationFactor, setConcentrationFactor] = useState(1.0);
+
+  // Phase 15 NEED-FB-2 (Tina ticket cmp2158ge) — mills work bath-volume-
+  // first. They fill the trough with N liters, then need mL FUZE + mL DI
+  // to dose. Optional FUZE $/L lets the mill see per-batch cost.
+  const [millBathVolumeL, setMillBathVolumeL] = useState<number>(20);
+  const [millPricePerLiterUsd, setMillPricePerLiterUsd] = useState<string>("");
 
   // Real-world override inputs
   const [showRealWorld, setShowRealWorld] = useState(false);
@@ -232,6 +239,133 @@ export default function FuzePickupCalculator({
           )}
         </div>
       )}
+
+      {/* Mill bench worksheet — bath-volume-first (Phase 15 NEED-FB-2).
+          Mills don't size their trough off fabric weight; they fill the
+          padder with N liters and need to know how to dose it. Shown
+          only on pad-dry-cure mode where this workflow applies. */}
+      {method === "pad-dry-cure" && (() => {
+        const mill = calcBathFromVolume({
+          bathVolumeL: millBathVolumeL,
+          tierMgPerKg: tier.dose,
+          pickupPct,
+        });
+        const priceUsd = parseFloat(millPricePerLiterUsd);
+        const fuzeLiters = mill.mlFuze / 1000;
+        const batchCost =
+          Number.isFinite(priceUsd) && priceUsd > 0 && fuzeLiters > 0
+            ? fuzeLiters * priceUsd
+            : null;
+        return (
+          <div className="bg-emerald-50/50 rounded-2xl border border-emerald-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-bold text-emerald-700 uppercase tracking-wider">
+                  Mill bench worksheet — bath-volume-first
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Fill the padder trough with the bath volume you actually
+                  work with; we'll dial in mL FUZE + mL DI for tier {tier.id}.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label className={labelClass}>Bath Volume (L)</label>
+                <input
+                  type="number"
+                  value={millBathVolumeL}
+                  onChange={(e) => setMillBathVolumeL(Number(e.target.value))}
+                  className={inputClass}
+                  placeholder="20"
+                  min={0}
+                />
+                <p className="text-[10px] text-slate-400 mt-1">
+                  What your trough holds for this batch
+                </p>
+              </div>
+              <div>
+                <label className={labelClass}>Wet Pickup Rate (%)</label>
+                <input
+                  type="number"
+                  value={pickupPct}
+                  onChange={(e) => setPickupPct(Number(e.target.value))}
+                  className={inputClass}
+                  placeholder="70"
+                />
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Same pickup % used above; edit here and it flows back
+                </p>
+              </div>
+              <div>
+                <label className={labelClass}>
+                  FUZE $/L (optional)
+                </label>
+                <input
+                  type="number"
+                  value={millPricePerLiterUsd}
+                  onChange={(e) => setMillPricePerLiterUsd(e.target.value)}
+                  className={inputClass}
+                  placeholder="e.g. 45"
+                  min={0}
+                />
+                <p className="text-[10px] text-slate-400 mt-1">
+                  From your distributor invoice
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+              <ResultCard
+                label="mL FUZE per batch"
+                value={mill.mlFuze.toFixed(1)}
+                unit="mL"
+                highlight
+              />
+              <ResultCard
+                label="mL DI water per batch"
+                value={mill.mlDi.toFixed(1)}
+                unit="mL"
+              />
+              <ResultCard
+                label="FUZE % of bath"
+                value={mill.fuzePctOfBath.toFixed(3)}
+                unit="%"
+                highlight
+              />
+              <ResultCard
+                label="Bath concentration"
+                value={mill.bathConcentrationMgL.toFixed(3)}
+                unit="mg/L"
+              />
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <ResultCard
+                label="Total mg Ag in bath"
+                value={mill.fuzeNeededMg.toFixed(2)}
+                unit="mg"
+              />
+              <ResultCard
+                label="FUZE liters"
+                value={fuzeLiters.toFixed(4)}
+                unit="L"
+              />
+              {batchCost !== null && (
+                <ResultCard
+                  label="Per-batch FUZE cost"
+                  value={`$${batchCost.toFixed(2)}`}
+                  highlight
+                />
+              )}
+            </div>
+            <p className="text-[10px] text-slate-500 mt-4">
+              At {tier.id} ({tier.dose} mg/kg) with {pickupPct}% pickup, the
+              bath needs to deliver {mill.bathConcentrationMgL.toFixed(3)} mg/L
+              so that each kg of fabric absorbs {tier.dose} mg of FUZE.
+              Stock concentration: {STOCK_MG_PER_L} mg/L.
+            </p>
+          </div>
+        );
+      })()}
 
       {method === "spray" && sprayResults && (
         <div className="bg-gradient-to-r from-slate-50 to-[#00b4c3]/5 rounded-2xl border border-[#00b4c3]/20 p-6">

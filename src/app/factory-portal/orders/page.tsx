@@ -172,6 +172,11 @@ export default function FactoryOrdersPage() {
   const [newBrandWebsite, setNewBrandWebsite] = useState("");
   const [newBrandContact, setNewBrandContact] = useState("");
   const [requestingBrand, setRequestingBrand] = useState(false);
+  // Phase 15 NEED-FB-3 (Tina ticket cmp1v463x) — default the order
+  // form's fabric picker to this factory's own fabrics. "Show all"
+  // toggle exists for the rare cross-factory ordering case (and
+  // ADMIN/EMPLOYEE who hit this page from a different scope).
+  const [showAllFabrics, setShowAllFabrics] = useState(false);
 
   const isFactory = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
   const isAdmin = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"].includes(user?.role || "");
@@ -1353,22 +1358,60 @@ export default function FactoryOrdersPage() {
                   </div>
                 </div>
 
-                {/* Fabric Context */}
+                {/* Fabric Context — Phase 15 NEED-FB-3: default to
+                    this factory's own fabrics, with a "Show all" toggle
+                    for the rare cross-factory case. */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{tx.fabricLabelOptional}</label>
-                  <select
-                    value={form.fabricId}
-                    onChange={(e) => setForm({ ...form, fabricId: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                  >
-                    <option value="">{tx.fabricSelectPlaceholder}</option>
-                    {fabrics.map((f) => (
-                      <option key={f.id} value={f.id}>
-                        {f.fuzeNumber || f.customerCode || f.id}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-slate-400 mt-1">{tx.fabricHint}</p>
+                  <div className="flex items-baseline justify-between mb-1">
+                    <label className="block text-sm font-medium text-slate-700">
+                      {tx.fabricLabelOptional}
+                    </label>
+                    {user?.factoryId && (
+                      <label className="inline-flex items-center gap-1.5 text-[11px] text-slate-500 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={showAllFabrics}
+                          onChange={(e) => setShowAllFabrics(e.target.checked)}
+                          className="w-3 h-3 accent-[#00b4c3]"
+                        />
+                        Show all fabrics (not just my factory's)
+                      </label>
+                    )}
+                  </div>
+                  {(() => {
+                    const myFactoryId = user?.factoryId || null;
+                    const showAll = !myFactoryId || showAllFabrics;
+                    const filtered = showAll
+                      ? fabrics
+                      : fabrics.filter((f: any) => f.factoryId === myFactoryId);
+                    return (
+                      <>
+                        <select
+                          value={form.fabricId}
+                          onChange={(e) => setForm({ ...form, fabricId: e.target.value })}
+                          className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
+                        >
+                          <option value="">{tx.fabricSelectPlaceholder}</option>
+                          {filtered.map((f: any) => (
+                            <option key={f.id} value={f.id}>
+                              {f.fuzeNumber || f.customerCode || f.id}
+                            </option>
+                          ))}
+                        </select>
+                        <p className="text-xs text-slate-400 mt-1">
+                          {tx.fabricHint}
+                          {!showAll && myFactoryId && (
+                            <>
+                              {" "}
+                              <span className="text-[#00b4c3] font-medium">
+                                Showing your factory's fabrics ({filtered.length} of {fabrics.length}).
+                              </span>
+                            </>
+                          )}
+                        </p>
+                      </>
+                    );
+                  })()}
                 </div>
 
                 {/* Purpose Note */}

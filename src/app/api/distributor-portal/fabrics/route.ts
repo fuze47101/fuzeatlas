@@ -163,7 +163,35 @@ export async function POST(req: Request) {
     if (factoryId) data.factoryId = String(factoryId);
 
     const fabric = await prisma.fabric.create({ data });
-    return NextResponse.json({ ok: true, fabric });
+
+    // Phase 15 NEED-FB-4 — when a distributor onboards a fabric on
+    // behalf of a mill (factoryId provided), stamp a FabricSubmission
+    // row keyed to that same fabric so the mill's portfolio + supply
+    // chain pipeline picks it up. Stays a no-op when the distributor
+    // is just maintaining their own portfolio (no factoryId).
+    let submission: any = null;
+    if (data.factoryId) {
+      try {
+        submission = await prisma.fabricSubmission.create({
+          data: {
+            fabricId: fabric.id,
+            factoryId: data.factoryId,
+            brandId: data.brandId || null,
+            fuzeFabricNumber: fabric.fuzeNumber ?? null,
+            customerFabricCode: fabric.customerCode || null,
+            factoryFabricCode: fabric.factoryCode || null,
+            status: "Submitted",
+            testStatus: "PENDING",
+            progressPercent: 5,
+            category: "DISTRIBUTOR_ONBOARDED",
+          },
+        });
+      } catch (e) {
+        console.warn("[distributor-portal.fabrics POST] submission create failed:", e);
+      }
+    }
+
+    return NextResponse.json({ ok: true, fabric, submission });
   } catch (e: any) {
     console.error("[distributor-portal.fabrics] POST error:", e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });

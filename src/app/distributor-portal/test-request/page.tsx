@@ -74,6 +74,98 @@ export default function DistributorTestRequestPage() {
     labName?: string;
   } | null>(null);
 
+  // Phase 15 NEED-FB-4 (Tina Dist ticket cmp1u686c) — inline "+ New
+  // fabric" so distributors can apply for a test against a mill that
+  // hasn't done its first formal fabric submission yet. The created
+  // Fabric + FabricSubmission row carries both factoryId + distributorId
+  // so it shows up under the mill's portfolio AND the distributor's.
+  const [showNewFabric, setShowNewFabric] = useState(false);
+  const [creatingFabric, setCreatingFabric] = useState(false);
+  const [newFabric, setNewFabric] = useState({
+    factoryId: "",
+    customerReference: "",
+    customerCode: "",
+    factoryCode: "",
+    construction: "",
+    color: "",
+    yarnType: "",
+    weightGsm: "",
+    fabricCategory: "",
+  });
+
+  async function handleCreateNewFabric() {
+    if (!newFabric.factoryId) {
+      setError("Pick a mill before adding a fabric");
+      return;
+    }
+    if (
+      !newFabric.customerReference &&
+      !newFabric.customerCode &&
+      !newFabric.factoryCode &&
+      !newFabric.construction &&
+      !newFabric.color
+    ) {
+      setError(
+        "Provide at least one identifier — customer ref, code, construction, or color",
+      );
+      return;
+    }
+    setCreatingFabric(true);
+    setError("");
+    try {
+      const res = await fetch("/api/distributor-portal/fabrics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          factoryId: newFabric.factoryId,
+          customerReference: newFabric.customerReference || undefined,
+          customerCode: newFabric.customerCode || undefined,
+          factoryCode: newFabric.factoryCode || undefined,
+          construction: newFabric.construction || undefined,
+          color: newFabric.color || undefined,
+          yarnType: newFabric.yarnType || undefined,
+          weightGsm: newFabric.weightGsm || undefined,
+          fabricCategory: newFabric.fabricCategory || undefined,
+        }),
+      });
+      const j = await res.json();
+      if (!res.ok || !j.ok) {
+        setError(j.error || `HTTP ${res.status}`);
+        return;
+      }
+      const factoryName =
+        factoryOptions.find((f) => f.id === newFabric.factoryId)?.name || null;
+      setSelectedFabric({
+        id: j.fabric.id,
+        fuzeNumber: j.fabric.fuzeNumber ?? null,
+        customerCode: j.fabric.customerCode ?? null,
+        factoryCode: j.fabric.factoryCode ?? null,
+        fabricCategory: j.fabric.fabricCategory ?? null,
+        color: j.fabric.color ?? null,
+        construction: j.fabric.construction ?? null,
+        weightGsm: j.fabric.weightGsm ?? null,
+        brand: null,
+        factory: factoryName ? { id: newFabric.factoryId, name: factoryName } : null,
+      });
+      setShowNewFabric(false);
+      setNewFabric({
+        factoryId: "",
+        customerReference: "",
+        customerCode: "",
+        factoryCode: "",
+        construction: "",
+        color: "",
+        yarnType: "",
+        weightGsm: "",
+        fabricCategory: "",
+      });
+    } catch (e: any) {
+      setError(e?.message || "Failed to create fabric");
+    } finally {
+      setCreatingFabric(false);
+    }
+  }
+
   useEffect(() => {
     if (!user) return;
     if (user.role !== "DISTRIBUTOR_USER" && user.role !== "ADMIN" && user.role !== "EMPLOYEE") {
@@ -225,7 +317,131 @@ export default function DistributorTestRequestPage() {
 
       {/* Step 1: Pick a fabric */}
       <section className="bg-white border border-slate-200 rounded-xl p-5 mb-5">
-        <h2 className="font-bold text-slate-900 mb-3">1. Choose fabric</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-bold text-slate-900">1. Choose fabric</h2>
+          {!selectedFabric && !showNewFabric && factoryOptions.some((f) => f.assigned) && (
+            <button
+              onClick={() => setShowNewFabric(true)}
+              className="text-xs px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded font-bold border border-emerald-200"
+              title="Onboard a fabric for a mill before they're in the portal"
+            >
+              + New fabric
+            </button>
+          )}
+        </div>
+
+        {showNewFabric && (
+          <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-bold text-emerald-900 text-sm">
+                Onboard fabric for a mill
+              </h3>
+              <button
+                onClick={() => setShowNewFabric(false)}
+                className="text-xs text-slate-500 hover:text-slate-800 underline"
+              >
+                Cancel
+              </button>
+            </div>
+            <p className="text-[11px] text-emerald-800 mb-3">
+              Use this for mills that haven't done a formal submission yet.
+              The fabric is stamped to both the mill and your distributor
+              account so it shows up everywhere it should.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="sm:col-span-2">
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Mill <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={newFabric.factoryId}
+                  onChange={(e) =>
+                    setNewFabric({ ...newFabric, factoryId: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white"
+                >
+                  <option value="">Choose a mill…</option>
+                  {factoryOptions
+                    .filter((f) => f.assigned)
+                    .map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.name}
+                        {f.country ? ` · ${f.country}` : ""}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <NewFabricField
+                label="Customer ref"
+                value={newFabric.customerReference}
+                onChange={(v) => setNewFabric({ ...newFabric, customerReference: v })}
+              />
+              <NewFabricField
+                label="Customer code"
+                value={newFabric.customerCode}
+                onChange={(v) => setNewFabric({ ...newFabric, customerCode: v })}
+              />
+              <NewFabricField
+                label="Factory code"
+                value={newFabric.factoryCode}
+                onChange={(v) => setNewFabric({ ...newFabric, factoryCode: v })}
+              />
+              <NewFabricField
+                label="Construction"
+                value={newFabric.construction}
+                onChange={(v) => setNewFabric({ ...newFabric, construction: v })}
+              />
+              <NewFabricField
+                label="Color"
+                value={newFabric.color}
+                onChange={(v) => setNewFabric({ ...newFabric, color: v })}
+              />
+              <NewFabricField
+                label="Yarn type"
+                value={newFabric.yarnType}
+                onChange={(v) => setNewFabric({ ...newFabric, yarnType: v })}
+              />
+              <NewFabricField
+                label="Weight (gsm)"
+                value={newFabric.weightGsm}
+                onChange={(v) => setNewFabric({ ...newFabric, weightGsm: v })}
+                type="number"
+              />
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Fabric category
+                </label>
+                <select
+                  value={newFabric.fabricCategory}
+                  onChange={(e) =>
+                    setNewFabric({ ...newFabric, fabricCategory: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-sm bg-white"
+                >
+                  <option value="">—</option>
+                  <option value="knit">knit</option>
+                  <option value="woven">woven</option>
+                  <option value="nonwoven">nonwoven</option>
+                </select>
+              </div>
+            </div>
+            <div className="mt-3 flex items-center gap-2">
+              <button
+                onClick={handleCreateNewFabric}
+                disabled={creatingFabric || !newFabric.factoryId}
+                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded text-xs font-bold"
+              >
+                {creatingFabric ? "Creating…" : "Create + use for this test"}
+              </button>
+              <button
+                onClick={() => setShowNewFabric(false)}
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
         {selectedFabric ? (
           <div className="flex items-start justify-between gap-4 p-4 bg-[#00b4c3]/5 border border-[#00b4c3]/30 rounded-lg">
             <div>
@@ -527,6 +743,30 @@ export default function DistributorTestRequestPage() {
           </button>
         </section>
       )}
+    </div>
+  );
+}
+
+function NewFabricField({
+  label,
+  value,
+  onChange,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+}) {
+  return (
+    <div>
+      <label className="block text-[11px] font-semibold text-slate-700 mb-1">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:ring-2 focus:ring-emerald-400 outline-none"
+      />
     </div>
   );
 }
