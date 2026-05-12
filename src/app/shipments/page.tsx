@@ -20,7 +20,17 @@ export default function ShipmentsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const toast = useToast();
+
+  // Phase 15 — Kaylee shipment-button fix (cmp2roui8). Fabric picker
+  // is now a typeahead against /api/fabrics so the FK is always a
+  // real cuid, never free text. Lab picker is a real dropdown.
+  const [fabricSearch, setFabricSearch] = useState("");
+  const [fabricResults, setFabricResults] = useState<any[]>([]);
+  const [fabricLoading, setFabricLoading] = useState(false);
+  const [selectedFabric, setSelectedFabric] = useState<any>(null);
+  const [labs, setLabs] = useState<any[]>([]);
   const [confirmStatus, setConfirmStatus] = useState<{ id: string; status: string } | null>(null);
   const [editingShipment, setEditingShipment] = useState<any | null>(null);
   const [editForm, setEditForm] = useState({
@@ -56,31 +66,84 @@ export default function ShipmentsPage() {
     fetchShipments();
   }, [filterStatus]);
 
+  // Load lab list once when the form opens (small set, no need to debounce).
+  useEffect(() => {
+    if (!showForm || labs.length > 0) return;
+    fetch("/api/labs")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j?.ok && Array.isArray(j.labs)) setLabs(j.labs);
+      })
+      .catch(() => {});
+  }, [showForm, labs.length]);
+
+  // Debounced fabric typeahead. Hits /api/fabrics?q=... and surfaces
+  // FUZE number + customer code so Kaylee can search by either.
+  useEffect(() => {
+    if (!showForm) return;
+    const q = fabricSearch.trim();
+    if (!q) {
+      setFabricResults([]);
+      return;
+    }
+    const handle = setTimeout(async () => {
+      setFabricLoading(true);
+      try {
+        const r = await fetch(`/api/fabrics?q=${encodeURIComponent(q)}&pageSize=15`);
+        const j = await r.json();
+        if (j?.ok || j?.fabrics) {
+          setFabricResults(j.fabrics || j.items || []);
+        } else {
+          setFabricResults([]);
+        }
+      } catch {
+        setFabricResults([]);
+      } finally {
+        setFabricLoading(false);
+      }
+    }, 250);
+    return () => clearTimeout(handle);
+  }, [fabricSearch, showForm]);
+
   const handleCreateShipment = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.fabricId) {
+      toast.error("Pick a fabric from the search picker before submitting.");
+      return;
+    }
+    setSubmitting(true);
     try {
       const res = await fetch("/api/shipments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
-      if (data.ok) {
-        setShowForm(false);
-        setFormData({
-          fabricId: "",
-          labId: "",
-          testRequestId: "",
-          carrier: "",
-          trackingNumber: "",
-          sampleCount: 1,
-          sampleType: "",
-          sampleCondition: "",
-        });
-        fetchShipments();
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.ok) {
+        toast.error(data?.error || `Failed to create shipment (HTTP ${res.status}).`);
+        return;
       }
-    } catch (error) {
+      toast.success("Shipment created.");
+      setShowForm(false);
+      setFormData({
+        fabricId: "",
+        labId: "",
+        testRequestId: "",
+        carrier: "",
+        trackingNumber: "",
+        sampleCount: 1,
+        sampleType: "",
+        sampleCondition: "",
+      });
+      setSelectedFabric(null);
+      setFabricSearch("");
+      setFabricResults([]);
+      fetchShipments();
+    } catch (error: any) {
       console.error("Error creating shipment:", error);
+      toast.error(error?.message || "Network error while creating shipment.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -166,30 +229,112 @@ export default function ShipmentsPage() {
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
             <h3 className="text-lg font-bold text-slate-900 mb-4">New Shipment</h3>
             <form onSubmit={handleCreateShipment} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div>
+              <div className="md:col-span-2 lg:col-span-3 relative">
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Fabric
+                  Fabric <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  placeholder="Fabric ID or code"
-                  value={formData.fabricId}
-                  onChange={(e) => setFormData({ ...formData, fabricId: e.target.value })}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
-                />
+                {selectedFabric ? (
+                  <div className="flex items-center justify-between gap-3 px-3 py-2 border-2 border-[#00b4c3] bg-[#00b4c3]/5 rounded-lg">
+                    <div className="text-sm">
+                      <span className="font-bold text-slate-900">
+                        FUZE-{selectedFabric.fuzeNumber ?? "?"}
+                      </span>
+                      {selectedFabric.customerCode && (
+                        <span className="text-slate-600 ml-2">
+                          · {selectedFabric.customerCode}
+                        </span>
+                      )}
+                      {selectedFabric.brand && (
+                        <span className="text-slate-500 ml-2">
+                          · {selectedFabric.brand}
+                        </span>
+                      )}
+                      {selectedFabric.factory && (
+                        <span className="text-slate-500 ml-2">
+                          · {selectedFabric.factory}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedFabric(null);
+                        setFormData({ ...formData, fabricId: "" });
+                        setFabricSearch("");
+                      }}
+                      className="text-xs text-slate-500 hover:text-slate-800 underline"
+                    >
+                      Change
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      placeholder="Search by FUZE number, customer code, factory code…"
+                      value={fabricSearch}
+                      onChange={(e) => setFabricSearch(e.target.value)}
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
+                    />
+                    {fabricSearch.trim() && (
+                      <div className="absolute z-10 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-md max-h-64 overflow-y-auto">
+                        {fabricLoading ? (
+                          <div className="px-3 py-2 text-xs text-slate-400">Searching…</div>
+                        ) : fabricResults.length === 0 ? (
+                          <div className="px-3 py-2 text-xs text-slate-400">
+                            No fabrics match.
+                          </div>
+                        ) : (
+                          fabricResults.map((f: any) => (
+                            <button
+                              key={f.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedFabric(f);
+                                setFormData({ ...formData, fabricId: f.id });
+                                setFabricResults([]);
+                                setFabricSearch("");
+                              }}
+                              className="w-full text-left px-3 py-2 hover:bg-[#00b4c3]/5 border-b border-slate-100 last:border-b-0"
+                            >
+                              <div className="text-sm font-semibold text-slate-900">
+                                FUZE-{f.fuzeNumber ?? "?"}
+                                {f.customerCode && (
+                                  <span className="text-slate-500 font-normal">
+                                    {" "}
+                                    · {f.customerCode}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[11px] text-slate-500">
+                                {f.brand ? `🏷 ${f.brand}` : ""}
+                                {f.brand && f.factory ? " · " : ""}
+                                {f.factory ? `🏭 ${f.factory}` : ""}
+                              </div>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Lab
-                </label>
-                <input
-                  type="text"
-                  placeholder="Lab ID or name"
+                <label className="block text-sm font-medium text-slate-700 mb-1">Lab</label>
+                <select
                   value={formData.labId}
                   onChange={(e) => setFormData({ ...formData, labId: e.target.value })}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
-                />
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-[#00b4c3] outline-none"
+                >
+                  <option value="">— Choose a lab —</option>
+                  {labs.map((l: any) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                      {l.country ? ` · ${l.country}` : ""}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
@@ -253,9 +398,10 @@ export default function ShipmentsPage() {
 
               <button
                 type="submit"
-                className="col-span-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-2 rounded-lg font-medium text-sm hover:shadow-lg transition-all"
+                disabled={submitting || !formData.fabricId}
+                className="col-span-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-2 rounded-lg font-medium text-sm hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create Shipment
+                {submitting ? "Creating…" : "Create Shipment"}
               </button>
             </form>
           </div>

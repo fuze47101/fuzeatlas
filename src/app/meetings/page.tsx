@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import ErrorPanel from "@/components/ErrorPanel";
 
 interface Meeting {
   id: string;
@@ -62,9 +63,12 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function MeetingsPage() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
-  const [stats, setStats] = useState<Stats>({ upcoming: 0, thisWeek: 0, completed: 0, total: 0 });
+  const [stats, setStats] = useState<Stats | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
+  // Silent-zero sweep — show an explicit error banner instead of
+  // rendering 0/0/0 stat cards when /api/meetings 500s.
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [filter, setFilter] = useState("upcoming");
   const [showCreate, setShowCreate] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
@@ -101,20 +105,29 @@ export default function MeetingsPage() {
     location: "", brandId: "", projectId: "",
   });
 
-  const loadMeetings = () => {
+  const loadMeetings = async () => {
     const params = new URLSearchParams();
     if (filter === "upcoming") params.set("upcoming", "true");
     else if (filter !== "all") params.set("status", filter);
 
-    fetch(`/api/meetings?${params.toString()}`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.ok) {
-          setMeetings(d.meetings);
-          setStats(d.stats);
-        }
-      })
-      .finally(() => setLoading(false));
+    setLoadError(null);
+    try {
+      const res = await fetch(`/api/meetings?${params.toString()}`);
+      const d = await res.json().catch(() => null);
+      if (!res.ok || !d || d.ok === false || !d.stats) {
+        setLoadError(
+          (d && (d.error || d.message)) ||
+            `Couldn't load meetings (HTTP ${res.status}).`,
+        );
+        return;
+      }
+      setMeetings(d.meetings || []);
+      setStats(d.stats);
+    } catch (e: any) {
+      setLoadError(e?.message || "Network error while loading meetings.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -336,20 +349,26 @@ export default function MeetingsPage() {
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        {[
-          { label: "This Week", value: stats.thisWeek, color: "text-blue-600", bg: "bg-blue-50" },
-          { label: "Upcoming", value: stats.upcoming, color: "text-[#00b4c3]", bg: "bg-[#00b4c3]/10" },
-          { label: "Completed", value: stats.completed, color: "text-emerald-600", bg: "bg-emerald-50" },
-          { label: "Total", value: stats.total, color: "text-slate-600", bg: "bg-slate-50" },
-        ].map((s) => (
-          <div key={s.label} className={`${s.bg} rounded-xl p-4 border border-slate-100`}>
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{s.label}</p>
-            <p className={`text-2xl font-bold ${s.color} mt-1`}>{s.value}</p>
-          </div>
-        ))}
-      </div>
+      {/* Stats — silent-zero sweep: explicit error banner instead of zeros. */}
+      {loadError ? (
+        <div className="mb-6">
+          <ErrorPanel context="Load meetings" error={loadError} onRetry={loadMeetings} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          {[
+            { label: "This Week", value: stats?.thisWeek ?? 0, color: "text-blue-600", bg: "bg-blue-50" },
+            { label: "Upcoming", value: stats?.upcoming ?? 0, color: "text-[#00b4c3]", bg: "bg-[#00b4c3]/10" },
+            { label: "Completed", value: stats?.completed ?? 0, color: "text-emerald-600", bg: "bg-emerald-50" },
+            { label: "Total", value: stats?.total ?? 0, color: "text-slate-600", bg: "bg-slate-50" },
+          ].map((s) => (
+            <div key={s.label} className={`${s.bg} rounded-xl p-4 border border-slate-100`}>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{s.label}</p>
+              <p className={`text-2xl font-bold ${s.color} mt-1`}>{s.value}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Pipeline Templates */}
       <div className="mb-6">

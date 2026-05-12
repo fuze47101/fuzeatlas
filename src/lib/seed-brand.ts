@@ -96,6 +96,16 @@ export async function seedBrand(
     );
   }
 
+  // Pre-flight check so the outcome classifier doesn't rely on a
+  // 5-second freshness heuristic — that broke seed-brand-smoke when
+  // run 2 fired within a second of run 1 (both said "created" because
+  // the Brand was 1s old from run 1's POV). Querying first is one
+  // extra round-trip but gives us a reliable "preexisted" flag.
+  const preExisting = await prisma.brand.findUnique({
+    where: { name },
+    select: { id: true },
+  });
+
   const brand = await prisma.brand.upsert({
     where: { name },
     create: {
@@ -111,7 +121,7 @@ export async function seedBrand(
     update: {},
   });
 
-  const isFreshCreate = brand.createdAt && Date.now() - brand.createdAt.getTime() < 5_000;
+  const isFreshCreate = !preExisting;
 
   const specPatch: Record<string, any> = {};
   if (!brand.requiredFuzeTier) specPatch.requiredFuzeTier = tier;

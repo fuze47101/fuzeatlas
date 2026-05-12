@@ -1,8 +1,9 @@
 // @ts-nocheck
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
+import ErrorPanel from "@/components/ErrorPanel";
 
 interface UploadDoc {
   id: string;
@@ -38,24 +39,34 @@ export default function LabUploadsPage() {
   const [documents, setDocuments] = useState<UploadDoc[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  // Silent-zero sweep — explicit retry banner instead of zeros.
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const res = await fetch("/api/lab-portal/uploads?limit=200");
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data || data.ok === false) {
+        setLoadError(
+          (data && (data.error || data.message)) ||
+            `Couldn't load upload history (HTTP ${res.status}).`,
+        );
+        return;
+      }
+      setDocuments(data.documents || []);
+      setStats(data.stats || null);
+    } catch (e: any) {
+      setLoadError(e?.message || "Network error while loading uploads.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await fetch("/api/lab-portal/uploads?limit=200");
-        const data = await res.json();
-        if (data.ok) {
-          setDocuments(data.documents || []);
-          setStats(data.stats || null);
-        }
-      } catch (e) {
-        console.error("Failed to load uploads:", e);
-      } finally {
-        setLoading(false);
-      }
-    };
     load();
-  }, []);
+  }, [load]);
 
   if (loading) {
     return (
@@ -97,6 +108,12 @@ export default function LabUploadsPage() {
           Upload Report
         </Link>
       </div>
+
+      {loadError && (
+        <div className="mb-4">
+          <ErrorPanel context="Load lab uploads" error={loadError} onRetry={load} />
+        </div>
+      )}
 
       {/* Stats Cards */}
       {stats && (

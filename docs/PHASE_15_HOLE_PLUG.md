@@ -686,6 +686,30 @@ Creates a `Fabric` + `FabricSubmission` stamped with both `factoryId`
 and `distributorId`. Returns new `fabricId`, auto-selects in the
 test-request flow.
 
+### NEED-FB-6 — Complete factory portal i18n thread-through (Jun, cmp2rbpm6)
+
+Surface: every `/factory-portal/*` page (and parity for `/brand-portal`,
+`/distributor-portal`, `/lab-portal` while we're at it). Phase 0 of i18n
+landed the scaffolding (`src/i18n/`, `useI18n()`, `I18nProvider`,
+deepFallback to English) and threaded one page — `/factory-portal/page.tsx`
+— against the new `factoryPortal` namespace. Jun (FACTORY_USER) is seeing
+~25% coverage because the other factory portal pages still have
+hardcoded English strings. The fix is mechanical, not architectural:
+walk every customer-facing factory-portal page, pull hardcoded strings
+into the `factoryPortal` namespace in `src/i18n/en.ts`, and thread
+through with `t.factoryPortal.<key>`. Locale files (`zh.ts`, `tw.ts`,
+`ko.ts`, etc.) will deep-fallback to English until a translator passes
+through — but every string at least gets surfaced as a thread point.
+
+Pages still to convert (factory portal, surface inventory):
+`/factory-portal/intake`, `/factory-portal/upload-report`,
+`/factory-portal/orders`, `/factory-portal/fabrics`,
+`/factory-portal/tests`, `/factory-portal/request-test`,
+`/factory-portal/team` (new this session), `/factory-portal/network`,
+plus the shared components rendered into them.
+
+Then mirror the pattern for brand/distributor/lab portals as Phase 0c.
+
 ### NEED-FB-5 — Move contact to different brand (career change) (Ryan, cmp1sp1kr)
 
 Surface: `/contacts/[id]`. "Move to different brand" action. Updates

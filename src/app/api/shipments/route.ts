@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 
 /* ── GET /api/shipments ── list shipments with filters ────────── */
 export async function GET(req: Request) {
@@ -53,11 +54,27 @@ export async function GET(req: Request) {
   }
 }
 
-/* ── POST /api/shipments ── create shipment ────────── */
+/* ── POST /api/shipments ── create shipment ──────────
+ *
+ * Phase 15 Kaylee fix (cmp2roui8) — previously read userId from a
+ * spoof-able `x-user-id` header that the frontend never set, and
+ * accepted `fabricId` / `labId` as free-text from the form (Kaylee
+ * was typing "FUZE 2504" hoping it would resolve). Both led to a
+ * silent 500 with the button "doing nothing" from her POV. Now:
+ *   - session lookup via getCurrentUser
+ *   - validate fabricId + labId exist before insert; explicit 400
+ *     with a human-readable error if they don't
+ *   - bubble the actual error message back to the client so the
+ *     toast can show it
+ */
 export async function POST(req: Request) {
   try {
-    const userId = req.headers.get("x-user-id");
-    const body = await req.json();
+    const sessionUser = await getCurrentUser();
+    if (!sessionUser) {
+      return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json().catch(() => ({}));
     const {
       fabricId,
       submissionId,
@@ -76,45 +93,75 @@ export async function POST(req: Request) {
       notes,
     } = body;
 
+    // FK pre-checks — produces a real error message instead of a
+    // Prisma constraint blowup the user can't act on.
+    if (!fabricId) {
+      return NextResponse.json(
+        { ok: false, error: "Pick a fabric from the search picker — a fabric is required." },
+        { status: 400 },
+      );
+    }
+    const fabricExists = await prisma.fabric.findUnique({
+      where: { id: String(fabricId) },
+      select: { id: true },
+    });
+    if (!fabricExists) {
+      return NextResponse.json(
+        { ok: false, error: "That fabric id wasn't found. Use the search picker so we attach a real fabric." },
+        { status: 400 },
+      );
+    }
+    if (labId) {
+      const labExists = await prisma.lab.findUnique({
+        where: { id: String(labId) },
+        select: { id: true },
+      });
+      if (!labExists) {
+        return NextResponse.json(
+          { ok: false, error: "That lab wasn't found. Pick a lab from the dropdown." },
+          { status: 400 },
+        );
+      }
+    }
+
     const shipment = await prisma.sampleShipment.create({
       data: {
-        fabricId,
-        submissionId,
-        testRequestId,
-        originName,
-        originAddress,
-        destinationName,
-        destinationAddress,
-        labId,
-        carrier,
-        trackingNumber,
+        fabricId: String(fabricId),
+        submissionId: submissionId || null,
+        testRequestId: testRequestId || null,
+        originName: originName || null,
+        originAddress: originAddress || null,
+        destinationName: destinationName || null,
+        destinationAddress: destinationAddress || null,
+        labId: labId ? String(labId) : null,
+        carrier: carrier || null,
+        trackingNumber: trackingNumber || null,
         sampleCount: sampleCount || 1,
-        sampleType,
-        sampleCondition,
-        weight,
-        notes,
-        createdBy: userId,
+        sampleType: sampleType || null,
+        sampleCondition: sampleCondition || null,
+        weight: weight || null,
+        notes: notes || null,
+        createdBy: sessionUser.id,
         status: "PREPARING",
       },
       include: { events: true, fabric: true, lab: true, testRequest: true },
     });
 
-    // Create initial CREATED event
     await prisma.shipmentEvent.create({
       data: {
         shipmentId: shipment.id,
         eventType: "CREATED",
-        handler: userId,
+        handler: sessionUser.id,
         notes: "Shipment created",
       },
     });
 
     return NextResponse.json({ ok: true, shipment });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating shipment:", error);
     return NextResponse.json(
-      { ok: false, error: "Failed to create shipment" },
-      { status: 500 }
+      { ok: false, error: error?.message || "Failed to create shipment" },
+      { status: 500 },
     );
   }
 }

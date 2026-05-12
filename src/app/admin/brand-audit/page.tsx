@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import ErrorPanel from "@/components/ErrorPanel";
 
 interface Brand {
   id: string;
@@ -50,6 +51,10 @@ export default function BrandAuditPage() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [filtered, setFiltered] = useState<Brand[]>([]);
   const [validating, setValidating] = useState(false);
+  // Silent-zero sweep — surface API failures explicitly instead of
+  // hiding the stats panel and rendering an empty table that looks
+  // like "no brands need validation."
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [validationLog, setValidationLog] = useState<string[]>([]);
   const [actionResult, setActionResult] = useState<string | null>(null);
 
@@ -62,20 +67,29 @@ export default function BrandAuditPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const loadData = useCallback(async () => {
+    setLoadError(null);
     try {
       const [statsRes, brandsRes] = await Promise.all([
         fetch("/api/admin/brand-validate"),
         fetch("/api/brands"),
       ]);
-      const statsData = await statsRes.json();
-      const brandsData = await brandsRes.json();
+      const statsData = await statsRes.json().catch(() => null);
+      const brandsData = await brandsRes.json().catch(() => null);
 
-      if (statsData.ok) setStats(statsData.stats);
-      if (brandsData.ok && brandsData.brands) {
+      if (!statsRes.ok || !statsData || statsData.ok === false || !statsData.stats) {
+        setLoadError(
+          (statsData && (statsData.error || statsData.message)) ||
+            `Couldn't load brand validation stats (HTTP ${statsRes.status}).`,
+        );
+        return;
+      }
+      setStats(statsData.stats);
+      if (brandsData?.ok && brandsData.brands) {
         setBrands(brandsData.brands);
         setFiltered(brandsData.brands);
       }
-    } catch {
+    } catch (e: any) {
+      setLoadError(e?.message || "Network error while loading brand audit.");
     } finally {
       setLoading(false);
     }
@@ -198,6 +212,12 @@ export default function BrandAuditPage() {
           </div>
         )}
       </div>
+
+      {loadError && (
+        <div className="mb-4">
+          <ErrorPanel context="Load brand audit" error={loadError} onRetry={loadData} />
+        </div>
+      )}
 
       {/* Progress + Stats */}
       {stats && (

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
 import BulkEnrichButton from "@/components/BulkEnrichButton";
+import ErrorPanel from "@/components/ErrorPanel";
 
 const CATEGORIES = [
   "Activewear & Athleisure",
@@ -64,11 +65,30 @@ export default function BrandDiscoveryPage() {
   const [history, setHistory] = useState<DiscoveryResult[]>([]);
   const [error, setError] = useState("");
   const [stats, setStats] = useState<any>(null);
+  // Silent-zero sweep — render an explicit error instead of an
+  // empty discovery dashboard when /api/brands/discover 500s.
+  const [statsError, setStatsError] = useState<string | null>(null);
+
+  const refreshStats = async () => {
+    setStatsError(null);
+    try {
+      const r = await fetch("/api/brands/discover");
+      const j = await r.json().catch(() => null);
+      if (!r.ok || !j || j.ok === false) {
+        setStatsError(
+          (j && (j.error || j.message)) ||
+            `Couldn't load discovery stats (HTTP ${r.status}).`,
+        );
+        return;
+      }
+      setStats(j);
+    } catch (e: any) {
+      setStatsError(e?.message || "Network error while loading discovery stats.");
+    }
+  };
 
   useEffect(() => {
-    fetch("/api/brands/discover")
-      .then(r => r.json())
-      .then(j => { if (j.ok) setStats(j); });
+    refreshStats();
   }, []);
 
   const runDiscovery = async () => {
@@ -93,9 +113,7 @@ export default function BrandDiscoveryPage() {
       setHistory(prev => [json, ...prev]);
 
       // Refresh stats
-      fetch("/api/brands/discover")
-        .then(r => r.json())
-        .then(j => { if (j.ok) setStats(j); });
+      refreshStats();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -124,9 +142,7 @@ export default function BrandDiscoveryPage() {
     }
 
     // Refresh stats
-    fetch("/api/brands/discover")
-      .then(r => r.json())
-      .then(j => { if (j.ok) setStats(j); });
+    await refreshStats();
 
     setRunning(false);
   };
@@ -170,6 +186,12 @@ export default function BrandDiscoveryPage() {
           </Link>
         </div>
       </div>
+
+      {statsError && (
+        <div className="mb-4">
+          <ErrorPanel context="Load discovery stats" error={statsError} onRetry={refreshStats} />
+        </div>
+      )}
 
       {/* Auto-enrich callout — this is new behavior since we wired Apollo
           people-search into /api/brands/discover. Worth telling reps so

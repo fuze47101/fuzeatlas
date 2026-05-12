@@ -2,6 +2,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import ErrorPanel from "@/components/ErrorPanel";
 
 // ─── SMS/Email Templates ───────────────────────────────
 const SMS_TEMPLATES = {
@@ -74,6 +75,8 @@ export default function LeadManagementPage() {
   const [brands, setBrands] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  // Silent-zero sweep — explicit retry banner instead of an empty list.
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [filterVertical, setFilterVertical] = useState("");
   const [filterOutreach, setFilterOutreach] = useState("");
@@ -95,8 +98,9 @@ export default function LeadManagementPage() {
   // Enrichment
   const [enriching, setEnriching] = useState<Set<string>>(new Set());
 
-  const fetchData = useCallback(() => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
+    setLoadError(null);
     const params = new URLSearchParams();
     if (search) params.set("search", search);
     if (filterVertical) params.set("vertical", filterVertical);
@@ -106,16 +110,24 @@ export default function LeadManagementPage() {
     params.set("page", String(page));
     params.set("limit", "50");
 
-    fetch(`/api/admin/outreach?${params}`)
-      .then((r) => r.json())
-      .then((j) => {
-        if (j.ok) {
-          setBrands(j.brands);
-          setStats(j.stats);
-          setPagination(j.pagination);
-        }
-      })
-      .finally(() => setLoading(false));
+    try {
+      const res = await fetch(`/api/admin/outreach?${params}`);
+      const j = await res.json().catch(() => null);
+      if (!res.ok || !j || j.ok === false) {
+        setLoadError(
+          (j && (j.error || j.message)) ||
+            `Couldn't load lead management data (HTTP ${res.status}).`,
+        );
+        return;
+      }
+      setBrands(j.brands || []);
+      setStats(j.stats);
+      setPagination(j.pagination);
+    } catch (e: any) {
+      setLoadError(e?.message || "Network error while loading leads.");
+    } finally {
+      setLoading(false);
+    }
   }, [search, filterVertical, filterOutreach, filterEmail, filterPipeline, page]);
 
   useEffect(() => {
@@ -245,16 +257,23 @@ export default function LeadManagementPage() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
-          <StatCard label="Total Contacts" value={stats.totalContacts} />
-          <StatCard label="With Email" value={stats.withEmail} color="text-green-600" />
-          <StatCard label="With Phone" value={stats.withPhone} color="text-blue-600" />
-          <StatCard label="Enriched" value={stats.enriched} color="text-purple-600" />
-          <StatCard label="Not Contacted" value={stats.byOutreachStatus?.not_contacted || 0} color="text-gray-500" />
-          <StatCard label="Contacted" value={(stats.byOutreachStatus?.contacted || 0) + (stats.byOutreachStatus?.responded || 0)} color="text-cyan-600" />
+      {/* Stats Cards — silent-zero sweep: don't render six "0" cards
+          when the API failed; render an explicit retry banner. */}
+      {loadError ? (
+        <div className="mb-6">
+          <ErrorPanel context="Load lead pipeline" error={loadError} onRetry={fetchData} />
         </div>
+      ) : (
+        stats && (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
+            <StatCard label="Total Contacts" value={stats.totalContacts} />
+            <StatCard label="With Email" value={stats.withEmail} color="text-green-600" />
+            <StatCard label="With Phone" value={stats.withPhone} color="text-blue-600" />
+            <StatCard label="Enriched" value={stats.enriched} color="text-purple-600" />
+            <StatCard label="Not Contacted" value={stats.byOutreachStatus?.not_contacted || 0} color="text-gray-500" />
+            <StatCard label="Contacted" value={(stats.byOutreachStatus?.contacted || 0) + (stats.byOutreachStatus?.responded || 0)} color="text-cyan-600" />
+          </div>
+        )
       )}
 
       {/* Filters */}
