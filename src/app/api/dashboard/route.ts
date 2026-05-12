@@ -1,41 +1,96 @@
 // @ts-nocheck
 import { NextResponse, NextRequest } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { getCurrentUser } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   try {
-    // Extract user info from headers (injected by middleware)
-    const userId = req.headers.get("x-user-id");
-    const userRole = req.headers.get("x-user-role") || "PUBLIC";
+    // SECURITY — May 11 fix: previously this route read x-user-id/x-user-role
+    // from spoof-able middleware headers, which silently ignored the
+    // impersonation cookie. Net effect: an ADMIN running "View As" against
+    // a FACTORY_USER still saw the full ADMIN dashboard with global counts
+    // (1,351 fabrics, 2,576 brands, etc.) instead of being scoped to the
+    // factory. Switching to getCurrentUser() honors the impersonation
+    // cookie set by /api/admin/impersonate.
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+      return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = currentUser.id;
+    const userRole = currentUser.role;
+    const user = {
+      id: currentUser.id,
+      role: currentUser.role,
+      brandId: currentUser.brandId,
+      factoryId: currentUser.factoryId,
+      distributorId: currentUser.distributorId,
+    };
 
-    // Fetch user data for role-specific filtering
-    const user = userId ? await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, role: true, brandId: true, factoryId: true, distributorId: true, salesManagerId: true },
-    }) : null;
+    // ─── COMMON QUERIES — now role-scoped ─────────────
+    // For non-internal roles, counts are filtered to only what the user
+    // is allowed to see. A factory user sees their own factory's fabrics
+    // and submissions, not the global 1,351 / 2,576.
+    const factoryScope = userRole === "FACTORY_USER" || userRole === "FACTORY_MANAGER"
+      ? { factoryId: user.factoryId }
+      : null;
+    const brandScope = userRole === "BRAND_USER" || userRole === "BRAND_MANAGER"
+      ? { brandId: user.brandId }
+      : null;
+    const distributorScope = userRole === "DISTRIBUTOR_USER" || userRole === "DISTRIBUTOR_MANAGER"
+      ? { distributorId: user.distributorId }
+      : null;
+    const isInternalCounts = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP", "TESTING_MANAGER", "FABRIC_MANAGER"].includes(userRole);
 
-    // ─── COMMON QUERIES (all roles) ─────────────
     const [
       fabrics, brands, factories, distributors, labs,
       testRuns, icpResults, antibacterialResults, fungalResults, odorResults,
       submissions, contacts, allUsers, notes,
     ] = await Promise.all([
-      prisma.fabric.count(),
-      prisma.brand.count(),
-      prisma.factory.count(),
-      prisma.distributor.count({ where: { active: true } }),
+      // Fabrics
+      isInternalCounts
+        ? prisma.fabric.count()
+        : factoryScope
+          ? prisma.fabric.count({ where: { factoryId: factoryScope.factoryId } })
+          : brandScope
+            ? prisma.fabric.count({ where: { brandId: brandScope.brandId } })
+            : 0,
+      // Brands — only internal roles see the full brand count; entity users see 0 or their one brand
+      isInternalCounts ? prisma.brand.count() : brandScope ? 1 : 0,
+      // Factories — only internal roles see all; factory user sees 1 (their own)
+      isInternalCounts ? prisma.factory.count() : factoryScope ? 1 : 0,
+      // Distributors — only internal roles see the full directory
+      isInternalCounts ? prisma.distributor.count({ where: { active: true } }) : 0,
+      // Labs — visible to all (it's a service directory)
       prisma.lab.count(),
-      prisma.testRun.count(),
-      prisma.icpResult.count(),
-      prisma.antibacterialResult.count(),
-      prisma.fungalResult.count(),
-      prisma.odorResult.count(),
-      prisma.fabricSubmission.count(),
-      prisma.contact.count(),
-      prisma.user.count(),
-      prisma.note.count(),
+      // TestRuns — scoped through submission.factoryId for factory users
+      isInternalCounts
+        ? prisma.testRun.count()
+        : factoryScope
+          ? prisma.testRun.count({ where: { submission: { factoryId: factoryScope.factoryId } } })
+          : brandScope
+            ? prisma.testRun.count({ where: { submission: { brandId: brandScope.brandId } } })
+            : 0,
+      // Result counts — only internal roles get globals; entity users get 0
+      isInternalCounts ? prisma.icpResult.count() : 0,
+      isInternalCounts ? prisma.antibacterialResult.count() : 0,
+      isInternalCounts ? prisma.fungalResult.count() : 0,
+      isInternalCounts ? prisma.odorResult.count() : 0,
+      // Submissions — factory users see their own
+      isInternalCounts
+        ? prisma.fabricSubmission.count()
+        : factoryScope
+          ? prisma.fabricSubmission.count({ where: { factoryId: factoryScope.factoryId } })
+          : brandScope
+            ? prisma.fabricSubmission.count({ where: { brandId: brandScope.brandId } })
+            : 0,
+      // Contacts — internal only
+      isInternalCounts ? prisma.contact.count() : 0,
+      // User count — internal only
+      isInternalCounts ? prisma.user.count() : 0,
+      // Notes — internal only (notes are CRM-internal)
+      isInternalCounts ? prisma.note.count() : 0,
     ]);
 
     // Pipeline breakdown

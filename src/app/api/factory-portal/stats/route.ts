@@ -21,10 +21,16 @@ export async function GET(req: Request) {
     // relationship lands on either Fabric.factoryId OR
     // FabricSubmission.factoryId. The previous queries undercounted
     // because intake-submitted fabrics often have a null Fabric.factoryId.
+    //
+    // May 11 fix — KK / Raihana reported all-zero dashboards. Root cause:
+    // the previous version filtered `Fabric.status = "ACTIVE"` but the
+    // Fabric model has no status column, so the WHOLE endpoint 500'd
+    // and the page silently rendered zeros (frontend defaults missing
+    // data.stats to zero). Dropped the bogus filter; we just count
+    // fabrics in scope. Similarly fixed completedTests to use a status
+    // value that actually exists on TestRequest.
     const activeFabrics = await prisma.fabric.count({
-      where: {
-        AND: [fabricScopeForFactory(factoryId), { status: "ACTIVE" }],
-      },
+      where: fabricScopeForFactory(factoryId),
     });
 
     const pendingSubmissions = await prisma.fabricSubmission.count({
@@ -42,7 +48,7 @@ export async function GET(req: Request) {
               { fabric: { submissions: { some: { factoryId } } } },
             ],
           },
-          { status: "PASSED_COMPLETE" },
+          { status: "COMPLETE" },
         ],
       },
     });
