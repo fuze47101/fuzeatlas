@@ -59,6 +59,7 @@ export async function POST(req: Request) {
     claimBrandId,
     claimUserEmail,
     notify = false,
+    triageNotes,
   } = body || {};
 
   if (!feedbackId || typeof feedbackId !== "string") {
@@ -67,7 +68,11 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-  const allowedStatuses = ["FIXED", "REJECTED", "DUPLICATE", "CLOSED"];
+  // Phase 15 hole-plug — added ACCEPTED + TRIAGED so the bearer-authed
+  // path can move tickets through intermediate states (e.g. the
+  // formaldehyde-binder competitive-intel query from Tina needs to be
+  // ACCEPTED with a triage note, not closed out as FIXED).
+  const allowedStatuses = ["FIXED", "REJECTED", "DUPLICATE", "CLOSED", "ACCEPTED", "TRIAGED"];
   if (!allowedStatuses.includes(newStatus)) {
     return NextResponse.json(
       { ok: false, error: `newStatus must be one of ${allowedStatuses.join(", ")}` },
@@ -166,18 +171,29 @@ export async function POST(req: Request) {
     result.previousStatus = ticket.status;
 
     const defaultRes = `Resolved via /api/cron/admin-resolve at ${new Date().toISOString()}.`;
-    if (ticket.status === newStatus) {
+    const terminalStatuses = ["FIXED", "REJECTED", "DUPLICATE", "CLOSED"];
+    const isTerminal = terminalStatuses.includes(newStatus);
+
+    if (ticket.status === newStatus && !triageNotes) {
       result.actions.push(`ticket-status-skip (already ${newStatus})`);
     } else {
+      const updateData: any = { status: newStatus };
+      if (isTerminal) {
+        updateData.resolvedById = admin.id;
+        updateData.resolvedAt = new Date();
+        updateData.resolution = resolution || defaultRes;
+        updateData.resolutionUrl = resolutionUrl || null;
+      } else {
+        // ACCEPTED / TRIAGED — stamp triage attribution, not resolution.
+        updateData.triagedById = admin.id;
+        updateData.triagedAt = new Date();
+      }
+      if (typeof triageNotes === "string" && triageNotes.length > 0) {
+        updateData.triageNotes = triageNotes;
+      }
       await prisma.feedbackReport.update({
         where: { id: feedbackId },
-        data: {
-          status: newStatus,
-          resolvedById: admin.id,
-          resolvedAt: new Date(),
-          resolution: resolution || defaultRes,
-          resolutionUrl: resolutionUrl || null,
-        },
+        data: updateData,
       });
       result.actions.push(`ticket-status-updated (${ticket.status} → ${newStatus})`);
     }
