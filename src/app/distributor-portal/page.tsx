@@ -3,11 +3,12 @@
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import PortalActivityFeed from "@/components/PortalActivityFeed";
 import { useI18n } from "@/i18n";
 import OnboardingChecklist from "@/components/OnboardingChecklist";
 import { ONBOARDING_CHECKLISTS } from "@/lib/onboarding-checklists";
+import ErrorPanel from "@/components/ErrorPanel";
 
 interface Stats {
   // Inventory (the operations view Tina #P1 asked for — what's
@@ -36,46 +37,40 @@ export default function DistributorPortalPage() {
   const router = useRouter();
   const { t } = useI18n();
   const tx = t.distributorPortal.landing;
-  const [stats, setStats] = useState<Stats>({
-    stockLiters: 0,
-    stockBottles: 0,
-    reorderPointLiters: 0,
-    lowStock: false,
-    lastShipmentDate: null,
-    lastShipmentLiters: null,
-    lastShipmentOrderNumber: null,
-    last90DaysOutbound: 0,
-    dailyBurn: 0,
-    daysOfStockLeft: null,
-    inventoryUpdatedAt: null,
-    activeFactories: 0,
-    totalInvoices: 0,
-    unpaidInvoices: 0,
-    outstandingAmount: 0,
-    totalDocuments: 0,
-  });
+  const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  // Phase 15 silent-zero sweep — never render 0L / 0 factories when
+  // the API call actually failed. Show an explicit retry banner.
+  const [error, setError] = useState<string | null>(null);
+
+  const loadStats = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/distributor-portal/stats");
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data || data.ok === false || !data.stats) {
+        setError(
+          (data && (data.error || data.message)) ||
+            `Couldn't load distributor stats (HTTP ${res.status}).`,
+        );
+        return;
+      }
+      setStats(data.stats);
+    } catch (e: any) {
+      setError(e?.message || "Network error while loading stats.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (user?.role !== "DISTRIBUTOR_USER") {
       router.push("/dashboard");
       return;
     }
-
-    const loadStats = async () => {
-      try {
-        const res = await fetch("/api/distributor-portal/stats");
-        const data = await res.json();
-        if (data.ok) setStats(data.stats);
-      } catch (e) {
-        console.error("Failed to load stats:", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadStats();
-  }, [user, router]);
+  }, [user, router, loadStats]);
 
   if (loading) {
     return (
@@ -87,6 +82,29 @@ export default function DistributorPortalPage() {
 
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
+
+  // Silent-zero sweep — if the stats fetch failed, render the header
+  // and an explicit ErrorPanel with a retry button. Do NOT fall
+  // through to the StatCards (they'd read from `stats!` and crash, or
+  // worse, show zeros that mislead the user).
+  if (error || !stats) {
+    return (
+      <div className="p-4 sm:p-8 max-w-6xl mx-auto">
+        <div className="mb-8">
+          <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
+            <span>{tx.crumb}</span>
+          </div>
+          <h1 className="text-3xl font-black text-slate-900 mb-1">{tx.heading}</h1>
+          <p className="text-slate-600">{tx.subheading}</p>
+        </div>
+        <ErrorPanel
+          context="Load distributor stats"
+          error={error || "No stats payload returned."}
+          onRetry={loadStats}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-8 max-w-6xl mx-auto">

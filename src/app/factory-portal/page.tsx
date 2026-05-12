@@ -4,10 +4,11 @@ import { useAuth } from "@/lib/AuthContext";
 import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import OnboardingChecklist from "@/components/OnboardingChecklist";
 import { ONBOARDING_CHECKLISTS } from "@/lib/onboarding-checklists";
 import PortalActivityFeed from "@/components/PortalActivityFeed";
+import ErrorPanel from "@/components/ErrorPanel";
 
 interface Stats {
   activeFabrics: number;
@@ -20,37 +21,40 @@ export default function FactoryPortalPage() {
   const { user } = useAuth();
   const { t } = useI18n();
   const router = useRouter();
-  const [stats, setStats] = useState<Stats>({
-    activeFabrics: 0,
-    pendingSubmissions: 0,
-    completedTests: 0,
-    sampleTrials: 0,
-  });
+  const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  // Phase 15 silent-zero sweep — surface API failures instead of
+  // rendering zeros that customers misread as "you have no data."
+  const [error, setError] = useState<string | null>(null);
+
+  const loadStats = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/factory-portal/stats");
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data || data.ok === false || !data.stats) {
+        setError(
+          (data && (data.error || data.message)) ||
+            `Couldn't load stats (HTTP ${res.status}).`,
+        );
+        return;
+      }
+      setStats(data.stats);
+    } catch (e: any) {
+      setError(e?.message || "Network error while loading stats.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (user?.role !== "FACTORY_USER" && user?.role !== "FACTORY_MANAGER") {
       router.push("/dashboard");
       return;
     }
-
-    // Load stats
-    const loadStats = async () => {
-      try {
-        const res = await fetch("/api/factory-portal/stats");
-        const data = await res.json();
-        if (data.ok) {
-          setStats(data.stats);
-        }
-      } catch (e) {
-        console.error("Failed to load stats:", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadStats();
-  }, [user, router]);
+  }, [user, router, loadStats]);
 
   if (loading) {
     return (
@@ -75,13 +79,19 @@ export default function FactoryPortalPage() {
         <p className="text-slate-600">{t.factoryPortal.welcomeSubtitle}</p>
       </div>
 
-      {/* Quick Stats */}
+      {/* Quick Stats — silent-zero sweep: render an explicit error
+          banner instead of zeros when the API call failed. */}
+      {error ? (
+        <div className="mb-8">
+          <ErrorPanel context="Load factory stats" error={error} onRetry={loadStats} />
+        </div>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-slate-600 mb-1">{t.factoryPortal.statActiveFabrics}</p>
-              <p className="text-3xl font-black text-slate-900">{stats.activeFabrics}</p>
+              <p className="text-3xl font-black text-slate-900">{stats?.activeFabrics ?? 0}</p>
             </div>
             <span className="text-3xl">🧵</span>
           </div>
@@ -90,7 +100,7 @@ export default function FactoryPortalPage() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-slate-600 mb-1">{t.factoryPortal.statPendingSubmissions}</p>
-              <p className="text-3xl font-black text-slate-900">{stats.pendingSubmissions}</p>
+              <p className="text-3xl font-black text-slate-900">{stats?.pendingSubmissions ?? 0}</p>
             </div>
             <span className="text-3xl">⏳</span>
           </div>
@@ -99,7 +109,7 @@ export default function FactoryPortalPage() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-slate-600 mb-1">{t.factoryPortal.statCompletedTests}</p>
-              <p className="text-3xl font-black text-slate-900">{stats.completedTests}</p>
+              <p className="text-3xl font-black text-slate-900">{stats?.completedTests ?? 0}</p>
             </div>
             <span className="text-3xl">✅</span>
           </div>
@@ -108,12 +118,13 @@ export default function FactoryPortalPage() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-slate-600 mb-1">{t.factoryPortal.statSampleTrials}</p>
-              <p className="text-3xl font-black text-slate-900">{stats.sampleTrials}</p>
+              <p className="text-3xl font-black text-slate-900">{stats?.sampleTrials ?? 0}</p>
             </div>
             <span className="text-3xl">🧪</span>
           </div>
         </div>
       </div>
+      )}
 
       {/* Learn FUZE — quick link to the technology basics page */}
       <Link

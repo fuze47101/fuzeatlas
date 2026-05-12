@@ -4,7 +4,8 @@
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import ErrorPanel from "@/components/ErrorPanel";
 
 const STATUS_COLORS: Record<string, string> = {
   DRAFT: "bg-slate-100 text-slate-600",
@@ -31,6 +32,31 @@ export default function OrdersDashboardPage() {
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  // Silent-zero sweep — surface API failures instead of hanging on
+  // the loading spinner (the old `try/finally` with no catch would
+  // silently swallow network errors and never set data).
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/orders-dashboard");
+      const d = await res.json().catch(() => null);
+      if (!res.ok || !d || d.ok === false) {
+        setError(
+          (d && (d.error || d.message)) ||
+            `Couldn't load orders dashboard (HTTP ${res.status}).`,
+        );
+        return;
+      }
+      setData(d);
+    } catch (e: any) {
+      setError(e?.message || "Network error while loading orders dashboard.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (user && !["ADMIN", "EMPLOYEE", "SALES_MANAGER"].includes(user.role)) {
@@ -38,22 +64,31 @@ export default function OrdersDashboardPage() {
       return;
     }
     load();
-  }, [user]);
+  }, [user, router, load]);
 
-  async function load() {
-    try {
-      const res = await fetch("/api/admin/orders-dashboard");
-      const d = await res.json();
-      if (d.ok) setData(d);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (loading || !data) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-[#00b4c3] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="p-4 sm:p-8 max-w-7xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-black text-slate-900 mb-1">Orders Dashboard</h1>
+          <p className="text-slate-600">
+            Global view of the FUZE order pipeline — factory orders, distributor
+            restocks, consumption, and stock.
+          </p>
+        </div>
+        <ErrorPanel
+          context="Load orders dashboard"
+          error={error || "No data returned."}
+          onRetry={load}
+        />
       </div>
     );
   }

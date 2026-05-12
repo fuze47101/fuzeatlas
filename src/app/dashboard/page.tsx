@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/i18n";
 import MyTasksPanel from "@/components/MyTasksPanel";
+import ErrorPanel from "@/components/ErrorPanel";
 
 type DashData = {
   ok: boolean;
@@ -1102,15 +1103,34 @@ export default function DashboardPage() {
   const { t } = useI18n();
   const [data, setData] = useState<DashData | null>(null);
   const [loading, setLoading] = useState(true);
+  // Silent-zero sweep — capture API error so we render a retry panel
+  // instead of a bare red-text "load failed" message.
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/dashboard");
+      const j = await res.json().catch(() => null);
+      if (!res.ok || !j || j.ok === false) {
+        setError(
+          (j && (j.error || j.message)) ||
+            `Couldn't load dashboard (HTTP ${res.status}).`,
+        );
+        return;
+      }
+      setData(j);
+    } catch (e: any) {
+      setError(e?.message || "Network error while loading dashboard.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    fetch("/api/dashboard")
-      .then((r) => r.json())
-      .then((j) => {
-        if (j.ok) setData(j);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    load();
+  }, [load]);
 
   if (loading)
     return (
@@ -1118,7 +1138,16 @@ export default function DashboardPage() {
         {t.dashboard.loadingDashboard}
       </div>
     );
-  if (!data) return <div className="text-red-500 p-6">{t.dashboard.loadFailed}</div>;
+  if (error || !data)
+    return (
+      <div className="max-w-3xl mx-auto p-6">
+        <ErrorPanel
+          context={t.dashboard.loadFailed || "Load dashboard"}
+          error={error || "No dashboard payload returned."}
+          onRetry={load}
+        />
+      </div>
+    );
 
   // Route to appropriate dashboard based on role
   if (data.role === "ADMIN" || data.role === "EMPLOYEE") {
