@@ -247,6 +247,9 @@ model User {
   sentOrgInvitations     OrgInvitation[] @relation("OrgInviter")
   acceptedOrgInvitations OrgInvitation[] @relation("OrgInviteAcceptor")
 
+  // NEED-6 — brand spec acknowledgements this user clicked through.
+  specAcknowledgements   BrandSpecAcknowledgement[] @relation("SpecAckUser")
+
   // Weekly Exec Review (gated dashboard — see WeeklyExecReport)
   ownedWeeklyReports   WeeklyExecReport[]      @relation("WeeklyReportOwner")
   grantedReportShares  WeeklyExecReportShare[] @relation("WeeklyShareGrantor")
@@ -376,6 +379,8 @@ model Brand {
   fuzeOrders       FuzeOrder[]      @relation("OrderBrand")
   orderAllocations OrderBrandAllocation[] @relation("BrandOrderAllocations")
   pricingTiers     BrandPricingTier[]      @relation("BrandPricingTiers")
+  // NEED-6 — factory acknowledgements of this brand's spec.
+  specAcknowledgements BrandSpecAcknowledgement[] @relation("BrandSpecAcks")
   profile          BrandProfile?           @relation("BrandHasProfile")
   hangtagQRs       HangtagQR[]             @relation("BrandHangtagQR")
   esgSnapshots     BrandEsgSnapshot[]      @relation("BrandEsgSnapshots")
@@ -512,6 +517,8 @@ model Factory {
   distributorPricing DistributorPricing[] @relation("FactoryDistributorPricing")
   notes           Note[]               @relation("FactoryNotes")
   recipeRequests  RecipeRequest[]      @relation("FactoryRecipeRequests")
+  // NEED-6 — this factory's ack-trail across every brand it supplies.
+  specAcknowledgements BrandSpecAcknowledgement[] @relation("FactorySpecAcks")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2201,6 +2208,47 @@ model OrgInvitation {
   @@index([entityType, entityId, status])
   @@index([email, status])
   @@index([status, expiresAt])
+}
+
+/// NEED-6 — Brand spec acknowledgement loop.
+///
+/// When a brand bumps `Brand.brandSpecUpdatedAt` (e.g. F2 → F1), every
+/// factory in that brand's supply chain needs to see the change and
+/// confirm. We stamp one BrandSpecAcknowledgement row per (brand,
+/// factory) the first time someone on the factory side opens
+/// `/factory-portal/spec/<brandId>` and clicks confirm. `specVersion`
+/// is set to the `brandSpecUpdatedAt` at the time of ack.
+///
+/// Pending check: a (brandId, factoryId) pair is "ack pending" when
+/// either there's no row for the pair, OR the most-recent row's
+/// `specVersion < brand.brandSpecUpdatedAt`.
+model BrandSpecAcknowledgement {
+  id String @id @default(cuid())
+
+  brandId   String
+  brand     Brand   @relation("BrandSpecAcks", fields: [brandId], references: [id], onDelete: Cascade)
+  factoryId String
+  factory   Factory @relation("FactorySpecAcks", fields: [factoryId], references: [id], onDelete: Cascade)
+
+  /// The brandSpecUpdatedAt at the time of ack — lets us detect when
+  /// a later spec change made the existing ack stale.
+  specVersion DateTime
+
+  acknowledgedByUserId String
+  acknowledgedBy       User   @relation("SpecAckUser", fields: [acknowledgedByUserId], references: [id])
+  acknowledgedAt       DateTime @default(now())
+
+  /// Snapshot of the four spec fields at time of ack — for the
+  /// audit trail and "what did they actually agree to" question.
+  acknowledgedTier         String?
+  acknowledgedCadenceBatches  Int?
+  acknowledgedCadenceLiters   Float?
+  acknowledgedProtocolDocUrl  String?
+
+  createdAt DateTime @default(now())
+
+  @@index([brandId, factoryId, specVersion])
+  @@index([factoryId, specVersion])
 }
 
 // ─────────────────────────────────────────────

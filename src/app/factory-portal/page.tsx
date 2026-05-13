@@ -9,6 +9,7 @@ import OnboardingChecklist from "@/components/OnboardingChecklist";
 import { ONBOARDING_CHECKLISTS } from "@/lib/onboarding-checklists";
 import PortalActivityFeed from "@/components/PortalActivityFeed";
 import ErrorPanel from "@/components/ErrorPanel";
+import SpecAckBanner from "@/components/SpecAckBanner";
 
 interface Stats {
   activeFabrics: number;
@@ -70,6 +71,9 @@ export default function FactoryPortalPage() {
         surface="factory-portal"
         items={ONBOARDING_CHECKLISTS["factory-portal"]}
       />
+      {/* NEED-6 — surfaces brands with newer specs than this factory's
+          last ack. Renders nothing when the queue is empty. */}
+      <SpecAckBanner />
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">

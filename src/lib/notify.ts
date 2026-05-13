@@ -970,6 +970,83 @@ export async function notifySpecChange(params: {
 }
 
 /**
+ * NEED-6 — fired when a factory user clicks through and confirms a
+ * brand's updated FUZE spec. Recipients: the brand's primary
+ * EntityManager (ACCOUNT_MANAGER, isPrimary=true) + admins. Closes
+ * the loop on notifySpecChange.
+ */
+export async function notifySpecAcknowledged(params: {
+  brandId: string;
+  factoryId: string;
+  factoryName?: string | null;
+  acknowledgedByUserId: string;
+  acknowledgedByName?: string | null;
+}) {
+  const kind = "spec-ack";
+  // Scope the dedupe to the (brand, factory, ack-user) tuple so a
+  // re-ack from a different person on the same factory still fires.
+  const dedupeKey = `${params.brandId}:${params.factoryId}:${params.acknowledgedByUserId}`;
+  if (await alreadyNotified(kind, dedupeKey)) return;
+
+  const brand = await prisma.brand.findUnique({
+    where: { id: params.brandId },
+    select: { id: true, name: true },
+  });
+  if (!brand) return;
+  const factoryName =
+    params.factoryName ||
+    (await prisma.factory.findUnique({
+      where: { id: params.factoryId },
+      select: { name: true },
+    }))?.name ||
+    "Factory";
+  const ackerName =
+    params.acknowledgedByName ||
+    (await prisma.user.findUnique({
+      where: { id: params.acknowledgedByUserId },
+      select: { name: true, email: true },
+    }))?.name ||
+    "Factory user";
+
+  // Primary AM for this brand + admins.
+  const ems = await prisma.entityManager.findMany({
+    where: {
+      entityType: "BRAND",
+      entityId: brand.id,
+      role: "ACCOUNT_MANAGER",
+    },
+    select: { userId: true, isPrimary: true },
+  });
+  const primaryAmIds = ems.filter((e) => e.isPrimary).map((e) => e.userId);
+  const fallbackAmIds = ems.map((e) => e.userId);
+  const recipientIds = Array.from(
+    new Set<string>([
+      ...(primaryAmIds.length ? primaryAmIds : fallbackAmIds),
+      ...(await getAdminIds()),
+    ]),
+  );
+
+  await Promise.all(
+    recipientIds.map((userId) =>
+      createNotification({
+        userId,
+        type: "BRAND_ACTIVITY",
+        title: `${factoryName} acknowledged ${brand.name}'s updated spec`,
+        message: `${ackerName} confirmed the new FUZE spec at ${factoryName}.`,
+        link: `/brand-portal/supply-chain`,
+        metadata: {
+          kind,
+          scopeId: dedupeKey,
+          brandId: brand.id,
+          factoryId: params.factoryId,
+          acknowledgedByUserId: params.acknowledgedByUserId,
+        },
+      }),
+    ),
+  );
+}
+
+/**
  * Internal-only notification when raw lab data lands on a TestRun
  * BEFORE the brand-visible stamp. Recipients: admins + the
  * uploading lab's lab managers. Brand is NOT pinged here — that

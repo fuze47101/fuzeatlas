@@ -272,6 +272,24 @@ export async function GET(req: Request) {
         take: 5,
       }),
     ),
+    // NEED-6 — brand spec acknowledgement loop. Catches schema drift
+    // (missing table / FK / index) before the factory portal banner
+    // starts 500'ing on real users.
+    check(
+      "/factory-portal/spec — brand spec ack loop",
+      "brandSpecAcknowledgement findMany",
+      () =>
+        prisma.brandSpecAcknowledgement.findMany({
+          select: {
+            id: true,
+            brandId: true,
+            factoryId: true,
+            specVersion: true,
+            acknowledgedAt: true,
+          },
+          take: 1,
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
