@@ -290,6 +290,24 @@ export async function GET(req: Request) {
           take: 1,
         }),
     ),
+    // NEED-7 — lab assignment accept/reject. Selects the 5 new
+    // columns explicitly so the smoke test fails fast if the
+    // migrate-lab-assignment cron hasn't been run.
+    check(
+      "/lab-portal/queue — lab accept/reject columns",
+      "testRequest findFirst lab-assignment columns",
+      () =>
+        prisma.testRequest.findFirst({
+          select: {
+            id: true,
+            labAssignedAt: true,
+            labAssignedById: true,
+            labAcceptedAt: true,
+            labRejectedAt: true,
+            labRejectionReason: true,
+          },
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

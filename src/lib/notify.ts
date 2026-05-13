@@ -1047,6 +1047,94 @@ export async function notifySpecAcknowledged(params: {
 }
 
 /**
+ * NEED-7 — lab rejected an assignment. Fans to brand owner +
+ * admins so the test can be reassigned. The brand needs to know
+ * because their expected completion just slipped.
+ */
+export async function notifyLabAssignmentRejected(params: {
+  testRequestId: string;
+  poNumber?: string | null;
+  brandId?: string | null;
+  brandName?: string | null;
+  labName?: string | null;
+  reason?: string | null;
+}) {
+  const kind = "lab-assignment-rejected";
+  if (await alreadyNotified(kind, params.testRequestId)) return;
+
+  const recipientIds = new Set<string>(await getAdminIds());
+  if (params.brandId) {
+    const brandUsers = await prisma.user.findMany({
+      where: { brandId: params.brandId, status: "ACTIVE" },
+      select: { id: true },
+    });
+    for (const u of brandUsers) recipientIds.add(u.id);
+  }
+
+  const labLabel = params.labName || "the assigned lab";
+  const brandLabel = params.brandName || "your brand";
+  const title = `${labLabel} declined test request ${params.poNumber || ""}`.trim();
+  const message = params.reason
+    ? `${labLabel} declined this test for ${brandLabel}. Reason: ${params.reason}. Reassign to another lab.`
+    : `${labLabel} declined this test for ${brandLabel}. Reassign to another lab.`;
+
+  await Promise.all(
+    Array.from(recipientIds).map((userId) =>
+      createNotification({
+        userId,
+        type: "TEST_APPROVED",
+        title,
+        message,
+        link: `/test-requests/${params.testRequestId}`,
+        metadata: {
+          kind,
+          scopeId: params.testRequestId,
+          testRequestId: params.testRequestId,
+          brandId: params.brandId || null,
+        },
+      }),
+    ),
+  );
+}
+
+/**
+ * NEED-7 — 24h SLA escalation. Fired by /api/cron/lab-assignment-overdue
+ * when a lab hasn't accepted or rejected an assignment within 24h.
+ * Admin-only ping so the assignment can be moved manually.
+ */
+export async function notifyLabAssignmentOverdue(params: {
+  testRequestId: string;
+  poNumber?: string | null;
+  labName?: string | null;
+  brandName?: string | null;
+  hoursOverdue: number;
+}) {
+  const kind = "lab-assignment-overdue";
+  if (await alreadyNotified(kind, params.testRequestId)) return;
+
+  const adminIds = await getAdminIds();
+  if (adminIds.length === 0) return;
+
+  await Promise.all(
+    adminIds.map((userId) =>
+      createNotification({
+        userId,
+        type: "TEST_APPROVED",
+        title: `Lab assignment SLA breached — ${params.poNumber || params.testRequestId.slice(0, 8)}`,
+        message: `${params.labName || "Assigned lab"} hasn't responded to ${params.brandName || "the brand"}'s test request in ${params.hoursOverdue}h. Reassign.`,
+        link: `/test-requests/${params.testRequestId}`,
+        metadata: {
+          kind,
+          scopeId: params.testRequestId,
+          testRequestId: params.testRequestId,
+          hoursOverdue: params.hoursOverdue,
+        },
+      }),
+    ),
+  );
+}
+
+/**
  * Internal-only notification when raw lab data lands on a TestRun
  * BEFORE the brand-visible stamp. Recipients: admins + the
  * uploading lab's lab managers. Brand is NOT pinged here — that

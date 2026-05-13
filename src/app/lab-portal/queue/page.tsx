@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/i18n";
 
@@ -50,8 +50,13 @@ export default function LabQueuePage() {
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // NEED-7 — accept/reject in-flight tracking.
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [flash, setFlash] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoading(true);
+    setError(null);
     fetch("/api/lab-portal/queue")
       .then((r) => r.json())
       .then((j) => {
@@ -62,6 +67,60 @@ export default function LabQueuePage() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function acceptAssignment(id: string) {
+    setBusyId(id);
+    setError(null);
+    setFlash(null);
+    try {
+      const r = await fetch(`/api/lab-portal/test-requests/${id}/accept`, { method: "POST" });
+      const j = await r.json().catch(() => null);
+      if (!r.ok || !j?.ok) {
+        setError(j?.error || `Accept failed (HTTP ${r.status}).`);
+        return;
+      }
+      setFlash("Assignment accepted — expected completion calculated.");
+      setTimeout(() => setFlash(null), 4000);
+      await load();
+    } catch (e: any) {
+      setError(e?.message || "Network error.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function rejectAssignment(id: string) {
+    const reason = prompt(
+      "Why is your lab declining this request?\n\n(Brand + admin see this and reassign accordingly.)",
+    );
+    if (!reason || !reason.trim()) return;
+    setBusyId(id);
+    setError(null);
+    setFlash(null);
+    try {
+      const r = await fetch(`/api/lab-portal/test-requests/${id}/reject`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: reason.trim() }),
+      });
+      const j = await r.json().catch(() => null);
+      if (!r.ok || !j?.ok) {
+        setError(j?.error || `Reject failed (HTTP ${r.status}).`);
+        return;
+      }
+      setFlash("Assignment declined — admin notified for reassignment.");
+      setTimeout(() => setFlash(null), 4000);
+      await load();
+    } catch (e: any) {
+      setError(e?.message || "Network error.");
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   if (loading) {
     return (
@@ -86,6 +145,11 @@ export default function LabQueuePage() {
       {error ? (
         <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
           {error}
+        </div>
+      ) : null}
+      {flash ? (
+        <div className="mb-4 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-800">
+          {flash}
         </div>
       ) : null}
 
@@ -120,31 +184,63 @@ export default function LabQueuePage() {
                   <th className="text-left px-4 py-2 font-bold">{tx.colTests}</th>
                   <th className="text-left px-4 py-2 font-bold">{tx.colStatus}</th>
                   <th className="text-left px-4 py-2 font-bold">{tx.colRequested}</th>
+                  <th className="text-left px-4 py-2 font-bold">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {pending.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-2 font-mono font-semibold text-[#00b4c3]">
-                      {p.poNumber || "—"}
-                    </td>
-                    <td className="px-4 py-2 text-slate-700">{p.brand?.name || "—"}</td>
-                    <td className="px-4 py-2 text-slate-700">
-                      {p.submission?.factory?.name || "—"}
-                    </td>
-                    <td className="px-4 py-2 text-slate-700">
-                      FUZE {p.submission?.fuzeFabricNumber || p.fabric?.fuzeNumber || "—"}
-                    </td>
-                    <td className="px-4 py-2 text-slate-700">{p.pricingTier || "—"}</td>
-                    <td className="px-4 py-2 text-slate-600">{p.lines?.length || 0}</td>
-                    <td className="px-4 py-2">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-800">
-                        {p.status.replace(/_/g, " ")}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2 text-slate-600">{formatDate(p.requestedAt)}</td>
-                  </tr>
-                ))}
+                {pending.map((p) => {
+                  const awaitingAck = p.status === "ASSIGNED_TO_LAB";
+                  return (
+                    <tr key={p.id} className="hover:bg-slate-50">
+                      <td className="px-4 py-2 font-mono font-semibold text-[#00b4c3]">
+                        {p.poNumber || "—"}
+                      </td>
+                      <td className="px-4 py-2 text-slate-700">{p.brand?.name || "—"}</td>
+                      <td className="px-4 py-2 text-slate-700">
+                        {p.submission?.factory?.name || "—"}
+                      </td>
+                      <td className="px-4 py-2 text-slate-700">
+                        FUZE {p.submission?.fuzeFabricNumber || p.fabric?.fuzeNumber || "—"}
+                      </td>
+                      <td className="px-4 py-2 text-slate-700">{p.pricingTier || "—"}</td>
+                      <td className="px-4 py-2 text-slate-600">{p.lines?.length || 0}</td>
+                      <td className="px-4 py-2">
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                            awaitingAck
+                              ? "bg-orange-100 text-orange-800"
+                              : "bg-amber-100 text-amber-800"
+                          }`}
+                        >
+                          {p.status.replace(/_/g, " ")}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 text-slate-600">{formatDate(p.requestedAt)}</td>
+                      <td className="px-4 py-2">
+                        {awaitingAck ? (
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={() => acceptAssignment(p.id)}
+                              disabled={busyId === p.id}
+                              className="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold disabled:opacity-50"
+                            >
+                              {busyId === p.id ? "…" : "Accept"}
+                            </button>
+                            <button
+                              onClick={() => rejectAssignment(p.id)}
+                              disabled={busyId === p.id}
+                              className="px-2 py-1 rounded bg-white border border-red-300 text-red-700 hover:bg-red-50 text-[11px] font-bold disabled:opacity-50"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-[11px] text-slate-400">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

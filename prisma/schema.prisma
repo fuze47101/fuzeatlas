@@ -2005,7 +2005,10 @@ model TestRequest {
   customerFabricCode String?  // brand's code
   factoryFabricCode  String?  // factory's code
 
-  // Status workflow: DRAFT → PENDING_APPROVAL → APPROVED → SUBMITTED → IN_PROGRESS → RESULTS_RECEIVED → COMPLETE → CANCELLED
+  // Status workflow: DRAFT → PENDING_APPROVAL → APPROVED → ASSIGNED_TO_LAB
+  //                  → SUBMITTED → IN_PROGRESS → RESULTS_RECEIVED → COMPLETE → CANCELLED
+  // (NEED-7 added the ASSIGNED_TO_LAB interstitial between APPROVED and
+  // SUBMITTED — the lab must explicitly accept before testing starts.)
   status        String    @default("DRAFT")
 
   // Approval
@@ -2037,6 +2040,17 @@ model TestRequest {
   testingStartedAt         DateTime?   // When admin clicks "Start Testing"
   testingStartedById       String?     // Who started it
   estimatedCompletionDate  DateTime?   // Calculated when testing starts
+
+  // NEED-7 — lab assignment accept/reject loop. Admin sets
+  // labAssignedAt + labAssignedById when handing off; lab user
+  // flips labAcceptedAt or labRejectedAt + labRejectionReason.
+  // SLA cron at /api/cron/lab-assignment-overdue escalates if
+  // neither timestamp lands within 24h of labAssignedAt.
+  labAssignedAt        DateTime?
+  labAssignedById      String?
+  labAcceptedAt        DateTime?
+  labRejectedAt        DateTime?
+  labRejectionReason   String?
 
   // Line items
   lines         TestRequestLine[]

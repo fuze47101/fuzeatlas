@@ -278,16 +278,35 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 
     // ─── Action: Mark as Submitted to Lab ─────────────────────────
+    // NEED-7 — this is now the "assign to lab" step: status moves to
+    // ASSIGNED_TO_LAB and the lab user must explicitly accept (or
+    // reject) within 24h via /api/lab-portal/test-requests/[id]/accept
+    // or /reject. The lab's accept flips it to SUBMITTED.
     if (action === "submit_to_lab") {
       if (existing.status !== "APPROVED") {
-        return NextResponse.json({ ok: false, error: "Only approved requests can be submitted to lab" }, { status: 400 });
+        return NextResponse.json({ ok: false, error: "Only approved requests can be assigned to a lab" }, { status: 400 });
+      }
+      if (!existing.labId) {
+        return NextResponse.json(
+          { ok: false, error: "Set a labId on this request before assigning." },
+          { status: 400 },
+        );
       }
       const updated = await prisma.testRequest.update({
         where: { id },
-        data: { status: "SUBMITTED" },
+        data: {
+          status: "ASSIGNED_TO_LAB",
+          labAssignedAt: new Date(),
+          labAssignedById: userId,
+          // Clear any stale prior-cycle reject metadata in case this
+          // request was reassigned after a rejection.
+          labAcceptedAt: null,
+          labRejectedAt: null,
+          labRejectionReason: null,
+        },
       });
-      notifyTestRequestChange(id, "SUBMITTED", existing).catch(() => {});
-      return NextResponse.json({ ok: true, testRequest: updated, message: "Marked as submitted to lab" });
+      notifyTestRequestChange(id, "ASSIGNED_TO_LAB", existing).catch(() => {});
+      return NextResponse.json({ ok: true, testRequest: updated, message: "Assigned to lab — awaiting acceptance" });
     }
 
     // ─── Action: Mark In Progress ─────────────────────────
