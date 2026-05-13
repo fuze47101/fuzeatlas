@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { notifyPricingTierChange } from "@/lib/notify";
+import { recordChange } from "@/lib/audit";
 
 /**
  * Admin-side CRUD for the per-brand pricing tier ladder.
@@ -77,6 +78,22 @@ export async function POST(req: Request) {
     brandId,
     changeSummary: `New tier "${tier.label || "rung"}" — ${tier.discountPct}% discount at ${tier.thresholdLiters}L`,
   }).catch((e) => console.warn("[pricing-tier-create] notify failed:", e));
+  // Phase 15 NEED-4 — log create. Stamp under both BrandPricingTier
+  // and the parent Brand so the brand portal's activity log surfaces it.
+  recordChange({
+    actorUserId: user.id,
+    entity: "BrandPricingTier",
+    entityId: tier.id,
+    description: `Created pricing tier "${tier.label || "rung"}" (${tier.discountPct}% @ ${tier.thresholdLiters}L)`,
+    before: null,
+    after: {
+      brandId: tier.brandId,
+      thresholdLiters: tier.thresholdLiters,
+      discountPct: tier.discountPct,
+      label: tier.label,
+      active: tier.active,
+    },
+  }).catch((e) => console.warn("[pricing-tier-create] audit failed:", e));
   return NextResponse.json({ ok: true, tier });
 }
 
@@ -108,12 +125,37 @@ export async function PATCH(req: Request) {
   }
   if (label !== undefined) data.label = label ? String(label) : null;
   if (active !== undefined) data.active = Boolean(active);
+  const beforeTier = await prisma.brandPricingTier.findUnique({
+    where: { id },
+    select: {
+      brandId: true,
+      thresholdLiters: true,
+      discountPct: true,
+      label: true,
+      active: true,
+    },
+  });
   const tier = await prisma.brandPricingTier.update({ where: { id }, data });
   // Phase 15 IMP-6 — fan out to brand users.
   notifyPricingTierChange({
     brandId: tier.brandId,
     changeSummary: `Tier "${tier.label || "rung"}" updated — ${tier.discountPct}% discount at ${tier.thresholdLiters}L`,
   }).catch((e) => console.warn("[pricing-tier-update] notify failed:", e));
+  // Phase 15 NEED-4 — audit log.
+  recordChange({
+    actorUserId: user.id,
+    entity: "BrandPricingTier",
+    entityId: tier.id,
+    description: `Updated pricing tier "${tier.label || "rung"}"`,
+    before: beforeTier,
+    after: {
+      brandId: tier.brandId,
+      thresholdLiters: tier.thresholdLiters,
+      discountPct: tier.discountPct,
+      label: tier.label,
+      active: tier.active,
+    },
+  }).catch((e) => console.warn("[pricing-tier-update] audit failed:", e));
   return NextResponse.json({ ok: true, tier });
 }
 
@@ -128,6 +170,25 @@ export async function DELETE(req: Request) {
   if (!id) {
     return NextResponse.json({ ok: false, error: "id required" }, { status: 400 });
   }
+  const beforeTier = await prisma.brandPricingTier.findUnique({
+    where: { id },
+    select: {
+      brandId: true,
+      thresholdLiters: true,
+      discountPct: true,
+      label: true,
+      active: true,
+    },
+  });
   await prisma.brandPricingTier.delete({ where: { id } });
+  // Phase 15 NEED-4 — audit log.
+  recordChange({
+    actorUserId: user.id,
+    entity: "BrandPricingTier",
+    entityId: id,
+    description: `Deleted pricing tier "${beforeTier?.label || "rung"}"`,
+    before: beforeTier,
+    after: null,
+  }).catch((e) => console.warn("[pricing-tier-delete] audit failed:", e));
   return NextResponse.json({ ok: true });
 }

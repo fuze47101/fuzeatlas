@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { recordChange } from "@/lib/audit";
 
 /**
  * Admin CRUD for SupplyChainLink (Phase 4A — ROADMAP_v2 keystone).
@@ -72,6 +73,19 @@ export async function POST(req: Request) {
   if (!validateRelation(body.relation)) return bad("relation invalid");
   if (!body.fromId || !body.toId) return bad("fromId + toId required");
 
+  const beforeLink = await prisma.supplyChainLink.findUnique({
+    where: {
+      supply_chain_link_unique: {
+        fromType: body.fromType,
+        fromId: body.fromId,
+        toType: body.toType,
+        toId: body.toId,
+        relation: body.relation,
+      },
+    },
+    select: { id: true, active: true, notes: true },
+  });
+
   const link = await prisma.supplyChainLink.upsert({
     where: {
       supply_chain_link_unique: {
@@ -97,6 +111,30 @@ export async function POST(req: Request) {
     },
   });
 
+  // Phase 15 NEED-4 — audit. Log on each end of the link separately
+  // so each portal's activity log surfaces its half of the change.
+  const afterShape = {
+    fromType: link.fromType,
+    fromId: link.fromId,
+    toType: link.toType,
+    toId: link.toId,
+    relation: link.relation,
+    active: link.active,
+    notes: link.notes,
+  };
+  recordChange({
+    actorUserId: user.id,
+    entity: "SupplyChainLink",
+    entityId: link.id,
+    description: beforeLink
+      ? `Refreshed ${link.fromType} → ${link.toType} link (${link.relation})`
+      : `Linked ${link.fromType} → ${link.toType} (${link.relation})`,
+    before: beforeLink
+      ? { active: beforeLink.active, notes: beforeLink.notes }
+      : null,
+    after: afterShape,
+  }).catch((e) => console.warn("[supply-chain-link.upsert] audit failed:", e));
+
   return NextResponse.json({ ok: true, link });
 }
 
@@ -112,10 +150,24 @@ export async function PATCH(req: Request) {
   if (typeof body.active === "boolean") data.active = body.active;
   if (typeof body.notes === "string" || body.notes === null) data.notes = body.notes;
 
+  const beforeLink = await prisma.supplyChainLink.findUnique({
+    where: { id: body.id },
+    select: { active: true, notes: true, fromType: true, toType: true, relation: true },
+  });
   const link = await prisma.supplyChainLink.update({
     where: { id: body.id },
     data,
   });
+  recordChange({
+    actorUserId: user.id,
+    entity: "SupplyChainLink",
+    entityId: link.id,
+    description: `Updated ${link.fromType} → ${link.toType} link (${link.relation})`,
+    before: beforeLink
+      ? { active: beforeLink.active, notes: beforeLink.notes }
+      : null,
+    after: { active: link.active, notes: link.notes },
+  }).catch((e) => console.warn("[supply-chain-link.update] audit failed:", e));
   return NextResponse.json({ ok: true, link });
 }
 
@@ -128,6 +180,28 @@ export async function DELETE(req: Request) {
   const id = url.searchParams.get("id");
   if (!id) return bad("id required");
 
+  const beforeLink = await prisma.supplyChainLink.findUnique({
+    where: { id },
+    select: {
+      fromType: true,
+      fromId: true,
+      toType: true,
+      toId: true,
+      relation: true,
+      active: true,
+      notes: true,
+    },
+  });
   await prisma.supplyChainLink.delete({ where: { id } });
+  recordChange({
+    actorUserId: user.id,
+    entity: "SupplyChainLink",
+    entityId: id,
+    description: beforeLink
+      ? `Removed ${beforeLink.fromType} → ${beforeLink.toType} link (${beforeLink.relation})`
+      : "Removed supply chain link",
+    before: beforeLink,
+    after: null,
+  }).catch((e) => console.warn("[supply-chain-link.delete] audit failed:", e));
   return NextResponse.json({ ok: true });
 }

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { notifySpecChange } from "@/lib/notify";
+import { recordChange } from "@/lib/audit";
 
 /**
  * Brand spec — the brand-stipulated FUZE specification that drives:
@@ -122,6 +123,21 @@ export async function PATCH(req: Request) {
     data.requiresApproval = Boolean(body.requiresApproval);
   }
 
+  // Phase 15 NEED-4 — capture before-snapshot so the audit-log row
+  // shows exactly which fields the spec change moved.
+  const beforeBrand = await prisma.brand.findUnique({
+    where: { id: targetBrandId },
+    select: {
+      id: true,
+      name: true,
+      requiredFuzeTier: true,
+      icpCadenceEveryNBatches: true,
+      icpCadenceEveryLitersConsumed: true,
+      requiresApproval: true,
+      protocolDocUrl: true,
+    },
+  });
+
   const brand = await prisma.brand.update({
     where: { id: targetBrandId },
     data,
@@ -136,6 +152,29 @@ export async function PATCH(req: Request) {
       brandSpecUpdatedAt: true,
     },
   });
+
+  recordChange({
+    actorUserId: user.id,
+    entity: "Brand",
+    entityId: brand.id,
+    description: `Updated brand spec for ${brand.name}`,
+    before: beforeBrand
+      ? {
+          requiredFuzeTier: beforeBrand.requiredFuzeTier,
+          icpCadenceEveryNBatches: beforeBrand.icpCadenceEveryNBatches,
+          icpCadenceEveryLitersConsumed: beforeBrand.icpCadenceEveryLitersConsumed,
+          requiresApproval: beforeBrand.requiresApproval,
+          protocolDocUrl: beforeBrand.protocolDocUrl,
+        }
+      : null,
+    after: {
+      requiredFuzeTier: brand.requiredFuzeTier,
+      icpCadenceEveryNBatches: brand.icpCadenceEveryNBatches,
+      icpCadenceEveryLitersConsumed: brand.icpCadenceEveryLitersConsumed,
+      requiresApproval: brand.requiresApproval,
+      protocolDocUrl: brand.protocolDocUrl,
+    },
+  }).catch((e) => console.warn("[brand-portal.spec] audit failed:", e));
 
   // Phase 15 IMP-6 — fan out spec change to every factory in the
   // brand's supply chain (plus admins). Only fire when one of the
