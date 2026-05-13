@@ -1,9 +1,17 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { uploadToS3, generateS3Key, deleteFromS3, isS3Configured, S3_PREFIXES } from "@/lib/s3";
+import { deleteFromS3, isS3Configured } from "@/lib/s3";
+import { uploadDocument } from "@/lib/upload";
 
-/* ── POST /api/labs/[id]/documents ── upload a lab form ── */
+/* ── POST /api/labs/[id]/documents ── upload a lab form ──
+ *
+ * NEED-5 migration — was calling uploadToS3 + prisma.document.create
+ * inline. Now goes through the canonical uploadDocument() helper so
+ * all upload sites share one prefix policy + Document shape + ACL
+ * stamp. Behaviour preserved: when S3 isn't configured we still
+ * fall back to storing the base64 blob in Document.raw.
+ */
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -22,23 +30,33 @@ export async function POST(
       return NextResponse.json({ ok: false, error: "Lab not found" }, { status: 404 });
     }
 
-    let fileUrl = url || null;
-    let s3Bucket: string | null = null;
-    let s3Key: string | null = null;
-
-    // Upload base64 data to S3 if available and configured
+    // S3 path — funnel through the canonical helper.
     if (base64Data && isS3Configured()) {
       const buffer = Buffer.from(base64Data, "base64");
-      const key = generateS3Key(S3_PREFIXES.LAB_DOCS, filename, id);
-      const s3Result = await uploadToS3(key, buffer, contentType || "application/pdf", {
-        labId: id,
-        originalFilename: filename,
+      const result = await uploadDocument({
+        kind: "LAB_FORM",
+        file: {
+          buffer,
+          filename,
+          contentType: contentType || "application/pdf",
+          sizeBytes: sizeBytes || buffer.length,
+        },
+        entity: { labId: id },
+        acl: { labId: id },
       });
-      fileUrl = s3Result.url;
-      s3Bucket = s3Result.bucket;
-      s3Key = s3Result.key;
+      return NextResponse.json({
+        ok: true,
+        document: {
+          id: result.documentId,
+          filename: result.filename,
+          contentType: result.contentType,
+          sizeBytes: result.sizeBytes,
+          url: result.url,
+        },
+      });
     }
 
+    // Non-S3 fallback — base64 stays in raw for dev / pre-config envs.
     const doc = await prisma.document.create({
       data: {
         kind: "LAB_FORM",
@@ -46,15 +64,22 @@ export async function POST(
         contentType: contentType || "application/pdf",
         sizeBytes: sizeBytes || null,
         labId: id,
-        url: fileUrl,
-        bucket: s3Bucket,
-        key: s3Key,
-        // Legacy fallback: store base64 in raw if S3 not configured
-        raw: (!isS3Configured() && base64Data) ? { base64: base64Data } : null,
+        url: url || null,
+        raw: base64Data ? { base64: base64Data } : null,
       },
     });
 
-    return NextResponse.json({ ok: true, document: { id: doc.id, filename: doc.filename, contentType: doc.contentType, sizeBytes: doc.sizeBytes, createdAt: doc.createdAt } });
+    return NextResponse.json({
+      ok: true,
+      document: {
+        id: doc.id,
+        filename: doc.filename,
+        contentType: doc.contentType,
+        sizeBytes: doc.sizeBytes,
+        url: doc.url,
+        createdAt: doc.createdAt,
+      },
+    });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
