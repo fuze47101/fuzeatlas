@@ -491,25 +491,44 @@ export default function FabricDetailPage() {
                         )}
                       </td>
                       <td className="py-2 pr-3 text-right whitespace-nowrap">
+                        {/* Recipe Report — admins/employees get the full
+                            /admin/recipe-calculator/[id]/report page.
+                            Factory + brand users get the read-only
+                            customer-facing view at /recipe-report/[id]
+                            (no /admin gate, scoped to their fabric).
+                            Previously every role saw the /admin link,
+                            which bounced FACTORY_USER back to /home and
+                            embarrassed us in front of Penfabric May 12. */}
                         <a href={`/admin/recipe-calculator/${t.id}/report`} target="_blank" className="text-xs text-[#00b4c3] font-semibold hover:underline mr-2">📄 Report</a>
                         <a href={`/admin/recipe-calculator/${t.id}/print`} target="_blank" className="text-xs text-slate-600 font-semibold hover:underline mr-2">🖨</a>
-                        {t.graduatedRecipeId ? (
+                        {/* Graduate is an internal lab operation — only
+                            admin/employee/testing-manager see it. KK
+                            Chan should never see this button. */}
+                        {(user?.role === "ADMIN" || user?.role === "EMPLOYEE" || user?.role === "TESTING_MANAGER") && (
+                          t.graduatedRecipeId ? (
+                            <span className="text-xs text-emerald-700 font-semibold">✓ Recipe</span>
+                          ) : (
+                            <button
+                              onClick={async () => {
+                                if (!confirm(`Graduate ${t.testNumber} into 4 published FabricRecipes (F1–F4)?`)) return;
+                                try {
+                                  const r = await fetch(`/api/admin/recipe-bench-tests/${t.id}/graduate`, { method: "POST" });
+                                  const d = await r.json();
+                                  if (d.ok) { alert(d.message); location.reload(); }
+                                  else alert(`Failed: ${d.error}`);
+                                } catch (e: any) { alert(`Error: ${e.message}`); }
+                              }}
+                              className="text-xs text-amber-600 font-semibold hover:underline"
+                            >
+                              ⭐ Graduate
+                            </button>
+                          )
+                        )}
+                        {/* For non-admin viewers, surface the graduation status
+                            without the action button so they know whether the
+                            recipe has been published. */}
+                        {!(user?.role === "ADMIN" || user?.role === "EMPLOYEE" || user?.role === "TESTING_MANAGER") && t.graduatedRecipeId && (
                           <span className="text-xs text-emerald-700 font-semibold">✓ Recipe</span>
-                        ) : (
-                          <button
-                            onClick={async () => {
-                              if (!confirm(`Graduate ${t.testNumber} into 4 published FabricRecipes (F1–F4)?`)) return;
-                              try {
-                                const r = await fetch(`/api/admin/recipe-bench-tests/${t.id}/graduate`, { method: "POST" });
-                                const d = await r.json();
-                                if (d.ok) { alert(d.message); location.reload(); }
-                                else alert(`Failed: ${d.error}`);
-                              } catch (e: any) { alert(`Error: ${e.message}`); }
-                            }}
-                            className="text-xs text-amber-600 font-semibold hover:underline"
-                          >
-                            ⭐ Graduate
-                          </button>
                         )}
                       </td>
                     </tr>

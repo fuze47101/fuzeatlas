@@ -43,6 +43,12 @@ const EXTERNAL_ALLOWED_PATHS = [
   "/api/brand-portal/test-request",
   "/education",       // Education hub — accessible to every signed-in role
   "/education/",      // Education sub-pages (story, application, compliance, claims)
+  // Recipe report + print pages live under /admin/recipe-calculator/* but the
+  // API ACLs by fabric ownership (factory/brand users see only their own).
+  // Without these exemptions middleware bounced KK Chan to /home when he
+  // clicked the Report button on his own Penfabric fabric (May 12 2026).
+  "/admin/recipe-calculator/",
+  "/api/admin/recipe-bench-tests/",
 ];
 
 // Roles that are considered "external" (cannot access internal pages)

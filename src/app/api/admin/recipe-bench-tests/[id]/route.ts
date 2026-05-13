@@ -10,9 +10,17 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     if (!user) {
       return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
     }
-    // Any authenticated internal user can read a bench test (read-only)
-    const allowed = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "LAB_USER", "LAB_MANAGER"];
-    if (!allowed.includes(user.role)) {
+    // Internal roles get unrestricted read. External roles
+    // (FACTORY_USER, FACTORY_MANAGER, BRAND_USER, BRAND_MANAGER) are
+    // allowed to read a bench test ONLY for fabrics they own.
+    // May 12 fix — KK Chan at Penfabric reported clicking the Report
+    // button on his fabric just bounced him to /home (the previous 403
+    // happened before the page render and middleware sent him home).
+    // Now factory users can pull the recipe report for their own
+    // fabrics, brand users can pull it for their brand's fabrics.
+    const internalRoles = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP", "TESTING_MANAGER", "FABRIC_MANAGER", "LAB_USER", "LAB_MANAGER"];
+    const externalRoles = ["FACTORY_USER", "FACTORY_MANAGER", "BRAND_USER", "BRAND_MANAGER"];
+    if (!internalRoles.includes(user.role) && !externalRoles.includes(user.role)) {
       return NextResponse.json(
         { ok: false, error: `Role ${user.role} not permitted` },
         { status: 403 },
@@ -40,6 +48,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
             weightGsm: true,
             yarnType: true,
             widthInches: true,
+            brandId: true,
+            factoryId: true,
+            submissions: { select: { factoryId: true, brandId: true } },
             brand: { select: { id: true, name: true } },
             factory: { select: { id: true, name: true } },
           },
@@ -47,6 +58,28 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       },
     });
     if (!test) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
+
+    // External-role ownership check
+    if (externalRoles.includes(user.role)) {
+      const fabric = test.fabric;
+      const isFactoryUser = user.role === "FACTORY_USER" || user.role === "FACTORY_MANAGER";
+      const isBrandUser = user.role === "BRAND_USER" || user.role === "BRAND_MANAGER";
+      const factoryOk = isFactoryUser && (
+        fabric?.factoryId === user.factoryId ||
+        fabric?.submissions?.some((s) => s.factoryId === user.factoryId)
+      );
+      const brandOk = isBrandUser && (
+        fabric?.brandId === user.brandId ||
+        fabric?.submissions?.some((s) => s.brandId === user.brandId)
+      );
+      if (!factoryOk && !brandOk) {
+        return NextResponse.json(
+          { ok: false, error: "Not authorized to view this fabric's recipe" },
+          { status: 403 },
+        );
+      }
+    }
+
     return NextResponse.json({ ok: true, test });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
