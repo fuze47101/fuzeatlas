@@ -9,6 +9,7 @@ import { useI18n } from "@/i18n";
 import OnboardingChecklist from "@/components/OnboardingChecklist";
 import { ONBOARDING_CHECKLISTS } from "@/lib/onboarding-checklists";
 import ErrorPanel from "@/components/ErrorPanel";
+import { SkeletonPortalLanding } from "@/components/Skeleton";
 
 interface Stats {
   // Inventory (the operations view Tina #P1 asked for — what's
@@ -73,11 +74,7 @@ export default function DistributorPortalPage() {
   }, [user, router, loadStats]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#00b4c3] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <SkeletonPortalLanding />;
   }
 
   const formatCurrency = (amount: number) =>

@@ -10,6 +10,7 @@ import { ONBOARDING_CHECKLISTS } from "@/lib/onboarding-checklists";
 import PortalActivityFeed from "@/components/PortalActivityFeed";
 import ErrorPanel from "@/components/ErrorPanel";
 import SpecAckBanner from "@/components/SpecAckBanner";
+import { SkeletonPortalLanding } from "@/components/Skeleton";
 
 interface Stats {
   activeFabrics: number;
@@ -58,11 +59,7 @@ export default function FactoryPortalPage() {
   }, [user, router, loadStats]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#00b4c3] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <SkeletonPortalLanding />;
   }
 
   return (

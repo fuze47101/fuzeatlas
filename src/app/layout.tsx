@@ -5,6 +5,7 @@ import I18nProvider from "@/i18n/I18nProvider";
 import AuthLayout from "@/components/AuthLayout";
 import { ToastProvider } from "@/components/Toast";
 import FeedbackButton from "@/components/FeedbackButton";
+import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 
 export const metadata: Metadata = {
   title: {
@@ -49,6 +50,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ToastProvider>
               <AuthLayout>{children}</AuthLayout>
               <FeedbackButton />
+              {/* NICE-4 — admin keyboard shortcuts. Self-gates by role,
+                  no-op for non-internal users. */}
+              <KeyboardShortcuts />
             </ToastProvider>
           </I18nProvider>
         </AuthProvider>

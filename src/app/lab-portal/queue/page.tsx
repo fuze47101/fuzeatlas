@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/i18n";
+import EmptyState from "@/components/EmptyState";
 
 interface PendingRow {
   id: string;
@@ -170,7 +171,13 @@ export default function LabQueuePage() {
           <h2 className="font-bold text-slate-900 text-sm">{tx.pendingHeader}</h2>
         </div>
         {pending.length === 0 ? (
-          <div className="text-sm text-slate-500 text-center py-10">{tx.noPending}</div>
+          <div className="p-5">
+            <EmptyState
+              icon="🧪"
+              title="Inbox zero"
+              body="No pending test requests. New assignments will show up here with Accept / Reject buttons."
+            />
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
