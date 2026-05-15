@@ -332,6 +332,25 @@ export async function GET(req: Request) {
           take: 1,
         }),
     ),
+    // MB-1 — ICP × AB correlation chart. Catches schema drift on
+    // the testRun → icpResult + abResult join the scatter depends on.
+    check(
+      "/analytics/icp-correlation — TestRun w/ ICP + AB",
+      "testRun findFirst icpResult+abResult",
+      () =>
+        prisma.testRun.findFirst({
+          where: {
+            brandVisible: true,
+            icpResult: { isNot: null },
+            abResult: { isNot: null },
+          },
+          select: {
+            id: true,
+            icpResult: { select: { agValue: true } },
+            abResult: { select: { percentReduction: true } },
+          },
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
