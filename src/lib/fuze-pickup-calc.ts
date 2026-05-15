@@ -105,17 +105,39 @@ export function calcExhaust(inputs: ExhaustInputs): ExhaustOutputs {
     // Concentration in the pad bath so that the pickup delivers the target
     const padConcentrationMgL = targetMgOnFabric / padSolutionVolumeLiters;
 
+    // Trough sizing: mills typically mix ~3× the per-pass pickup volume so
+    // the trough stays full as fabric runs through. Note that scaling the
+    // bath VOLUME up does NOT change the concentration — you also have to
+    // scale stock up by the same factor. Both bath concentration (mg/L)
+    // and stock-fraction (% by volume) are independent of trough size.
+    //
+    // Tina caught this May 13: previously line 115 divided stock by 3×
+    // bath volume (without scaling stock), and line 116 divided
+    // padConcentrationMgL by 3, both of which under-reported by 3×.
+    // Net effect on production: any mill following the calculator was
+    // dosing 1/3 of the FUZE they should have been — antimicrobial
+    // efficacy tests would fail for unexplained reasons. Fix below
+    // matches the bench-test Recipe Report math (which has always been
+    // correct).
+    const totalTroughBathL = padSolutionVolumeLiters * 3;
+    const totalStockNeededL = fuzeVolumeLiters * 3;
     return {
       fabricWeightKg: round(fabricWeightKg, 3),
       fabricWeightLbs: round(fabricWeightLbs, 2),
-      bathVolumeLiters: round(padSolutionVolumeLiters * 3, 2), // trough is ~3x pickup volume
+      bathVolumeLiters: round(totalTroughBathL, 2),
       fuzeNeededMg: round(fuzeNeededMg, 2),
-      fuzeVolumeLiters: round(fuzeVolumeLiters, 4),
-      fuzeVolumeML: round(fuzeVolumeML, 1),
-      fuzePctOfBath: round((fuzeVolumeLiters / (padSolutionVolumeLiters * 3)) * 100, 4),
-      bathConcentrationMgL: round(padConcentrationMgL / 3, 4), // trough concentration
-      bottlesNeeded: round(fuzeVolumeLiters / BOTTLE_LITERS, 3),
-      bottlesNeededRounded: Math.ceil(fuzeVolumeLiters / BOTTLE_LITERS),
+      // Now reflects total stock for the trough (3× pickup-only stock),
+      // matching the trough volume above.
+      fuzeVolumeLiters: round(totalStockNeededL, 4),
+      fuzeVolumeML: round(totalStockNeededL * 1000, 1),
+      // % stock by volume in the bath = stock / bath. Independent of trough
+      // size because both scale together.
+      fuzePctOfBath: round((fuzeVolumeLiters / padSolutionVolumeLiters) * 100, 4),
+      // Bath concentration (mg/L) is the same whether you mix 1L or 100L —
+      // it's set by the dose target and pickup, not by trough size.
+      bathConcentrationMgL: round(padConcentrationMgL, 4),
+      bottlesNeeded: round(totalStockNeededL / BOTTLE_LITERS, 3),
+      bottlesNeededRounded: Math.ceil(totalStockNeededL / BOTTLE_LITERS),
       padSolutionVolumeLiters: round(padSolutionVolumeLiters, 2),
       padConcentrationMgL: round(padConcentrationMgL, 4),
     };
