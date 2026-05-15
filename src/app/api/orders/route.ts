@@ -217,7 +217,17 @@ export async function GET(req: Request) {
     if (isFactory && user.factoryId) {
       where.factoryId = user.factoryId;
     } else if (isDistributor && user.distributorId) {
-      where.distributorId = user.distributorId;
+      // Same ACL family as the May 11 fabrics fix: include orders
+      // tied to factories under this distributor even if the order's
+      // own distributorId is null. Tina Distributor reported May 13
+      // that orders she created weren't showing on her list — root
+      // cause was orders stamped to a factory whose own distributorId
+      // matched her org but the FuzeOrder.distributorId was null.
+      where.OR = [
+        { distributorId: user.distributorId },
+        { factory: { distributorId: user.distributorId } },
+        { orderedById: user.id },
+      ];
     } else if (!isInternal) {
       return NextResponse.json({ ok: false, error: "Access denied" }, { status: 403 });
     }

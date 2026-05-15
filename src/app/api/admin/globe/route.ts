@@ -30,7 +30,12 @@ export async function GET() {
     }),
     prisma.brand.findMany({
       where: { lat: { not: null }, lng: { not: null } },
-      select: { id: true, name: true, country: true, lat: true, lng: true, pipelineStage: true },
+      // Brand schema has no `country` column (unlike Factory/Lab/Distributor).
+      // Selecting it threw "Unknown field" → 500 → globe page rendered the
+      // empty error state Tina + Jett both reported May 13. Dropped from
+      // select; brand pins on the globe just won't have a country chip in
+      // the tooltip until country is added to the Brand model.
+      select: { id: true, name: true, lat: true, lng: true, pipelineStage: true },
     }),
     prisma.lab.findMany({
       where: { lat: { not: null }, lng: { not: null } },

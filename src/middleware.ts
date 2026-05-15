@@ -23,7 +23,11 @@ const COOKIE_NAME = "fuze-session";
 const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/forgot-password", "/reset-password", "/verify-email", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/verify-email", "/api/auth/invitation/", "/signup/invitation/", "/api/access-requests", "/api/cron", "/calendar/", "/api/inbound/", "/report/", "/api/fabric-report/", "/factory-invitation/", "/api/factory-invitations/", "/docs/", "/api/docs/public", "/api/tracking/", "/api/webhooks/", "/verified/", "/claims", "/press", "/api/public/", "/sitemap.xml", "/robots.txt"];
 
 // Routes restricted to internal roles only (ADMIN, EMPLOYEE, SALES_*, TESTING_*, FABRIC_*)
-// Factory, Brand, and Distributor users CANNOT access these even with a valid session
+// Factory, Brand, and Distributor users CANNOT access these even with a valid session.
+// Note that "/admin" already covers /admin/command-center/globe — but the
+// command-center page was rendering for non-admin viewers (View-As) and
+// throwing data-fetch errors instead of bouncing cleanly. The middleware
+// gate now stops that at the door. Tina and Jett both reported May 13.
 const INTERNAL_ONLY_PATHS = [
   "/pipeline", "/revenue", "/invoices", "/brand-engagement",
   "/brands", "/factories",
