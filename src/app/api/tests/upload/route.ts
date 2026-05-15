@@ -7,7 +7,8 @@ import { parseITSReport } from "@/lib/parsers/testReportParser";
 import type { ParsedITSReport } from "@/lib/parsers/testReportParser";
 import { extractTestDataWithAIVision } from "@/lib/parsers/aiVisionExtractor";
 import type { AIExtractedTestData } from "@/lib/parsers/aiVisionExtractor";
-import { uploadToS3, generateS3Key, isS3Configured, S3_PREFIXES } from "@/lib/s3";
+import { isS3Configured } from "@/lib/s3";
+import { uploadDocument } from "@/lib/upload";
 
 /* ── PDF text extraction (lightweight, no native deps) ────────── */
 async function extractPdfText(buffer: Buffer): Promise<string> {
@@ -518,27 +519,8 @@ export async function POST(req: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Upload to S3 if configured, otherwise fall back to base64
-    let fileUrl: string;
-    let s3Bucket: string | null = null;
-    let s3Key: string | null = null;
-
-    if (isS3Configured()) {
-      const key = generateS3Key(S3_PREFIXES.TEST_REPORTS, file.name);
-      const s3Result = await uploadToS3(key, buffer, file.type, {
-        originalFilename: file.name,
-        uploadedAt: new Date().toISOString(),
-      });
-      fileUrl = s3Result.url;
-      s3Bucket = s3Result.bucket;
-      s3Key = s3Result.key;
-    } else {
-      // Fallback: base64 data URL (legacy)
-      const base64 = buffer.toString("base64");
-      fileUrl = `data:application/pdf;base64,${base64}`;
-    }
-
-    // Extract text from PDF
+    // Extract text from PDF first so we have the parse error / text
+    // ready before we write the Document row.
     let pdfText = "";
     let parseError: string | null = null;
     try {
@@ -547,42 +529,62 @@ export async function POST(req: Request) {
       parseError = `PDF text extraction failed: ${err.message}`;
     }
 
-    // Store document record. Stash uploader provenance in `raw` so
-    // distributor-uploaded files (where labId is null because the
-    // session user is DISTRIBUTOR_USER, not LAB) can still surface
-    // in the distributor portal's "Your uploads" view via a
-    // raw.uploaderDistributorId filter. Without this, Tina's
-    // distributor-portal uploads were invisible to her own portal.
+    // NEED-5 migration — funnel through uploadDocument(). The helper
+    // stamps uploader ACL bits in Document.raw automatically; the
+    // extra uploaderRole field stays in raw via extraRaw. Non-S3
+    // base64 fallback is preserved for dev environments.
     const uploaderUserId = sessionUser?.id || null;
     const uploaderDistributorId = (sessionUser as any)?.distributorId || null;
-    // Tina ticket (May 2026): factories had no path to upload at all,
-    // and the underlying /api/tests/upload didn't persist factoryId,
-    // so once we add the factory portal upload page admins still
-    // wouldn't be able to tell which factory dropped the file. Mirror
-    // the distributorId pattern so the factory portal listing
-    // endpoint can surface the user's own pending uploads.
     const uploaderFactoryId = (sessionUser as any)?.factoryId || null;
     const uploaderBrandId = (sessionUser as any)?.brandId || null;
-    const document = await prisma.document.create({
-      data: {
+    let document: any;
+    if (isS3Configured()) {
+      const result = await uploadDocument({
         kind: "REPORT",
-        filename: file.name,
-        contentType: file.type,
-        sizeBytes: file.size,
-        url: fileUrl,
-        bucket: s3Bucket,
-        key: s3Key,
-        labId: uploaderLabId,
-        raw: {
-          uploaderUserId,
-          uploaderDistributorId,
-          uploaderFactoryId,
-          uploaderBrandId,
-          uploaderRole: sessionUser?.role || null,
-          uploadedAt: new Date().toISOString(),
+        file: {
+          buffer,
+          filename: file.name,
+          contentType: file.type,
+          sizeBytes: file.size,
         },
-      },
-    });
+        entity: { labId: uploaderLabId || null },
+        uploaderUserId,
+        acl: {
+          brandId: uploaderBrandId,
+          factoryId: uploaderFactoryId,
+          distributorId: uploaderDistributorId,
+          labId: uploaderLabId || null,
+        },
+        extraRaw: { uploaderRole: sessionUser?.role || null },
+      });
+      document = {
+        id: result.documentId,
+        bucket: result.bucket,
+        key: result.key,
+        url: result.url,
+      };
+    } else {
+      // Dev fallback: base64 data URL in Document.url.
+      const base64 = buffer.toString("base64");
+      document = await prisma.document.create({
+        data: {
+          kind: "REPORT",
+          filename: file.name,
+          contentType: file.type,
+          sizeBytes: file.size,
+          url: `data:application/pdf;base64,${base64}`,
+          labId: uploaderLabId,
+          raw: {
+            uploaderUserId,
+            uploaderDistributorId,
+            uploaderFactoryId,
+            uploaderBrandId,
+            uploaderRole: sessionUser?.role || null,
+            uploadedAt: new Date().toISOString(),
+          },
+        },
+      });
+    }
 
     // Phase 15 IMP-6 — internal-only ping to admin + lab manager
     // when raw test data lands, BEFORE the brand-visible stamp.

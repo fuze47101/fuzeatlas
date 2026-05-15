@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { uploadToS3, generateS3Key, isS3Configured, S3_PREFIXES } from "@/lib/s3";
+import { isS3Configured } from "@/lib/s3";
+import { uploadDocument } from "@/lib/upload";
 import { aiFetch, getUserIdFromHeaders } from "@/lib/ai-fetch";
 
 const prisma = new PrismaClient();
@@ -352,36 +353,41 @@ export async function POST(req: Request) {
       extractError = `PDF text extraction failed: ${err.message}`;
     }
 
-    // Upload to S3 if configured, otherwise fall back to base64
-    let fileUrl: string;
-    let s3Bucket: string | null = null;
-    let s3Key: string | null = null;
-
+    // NEED-5 migration — funnel through uploadDocument(). The
+    // non-S3 base64 fallback survives intact for dev / pre-config
+    // environments where S3 isn't wired.
+    let document: any;
     if (isS3Configured()) {
-      const key = generateS3Key(S3_PREFIXES.FABRIC_INTAKE, file.name);
-      const s3Result = await uploadToS3(key, buffer, file.type, {
-        originalFilename: file.name,
-        uploadedAt: new Date().toISOString(),
-      });
-      fileUrl = s3Result.url;
-      s3Bucket = s3Result.bucket;
-      s3Key = s3Result.key;
-    } else {
-      const base64 = buffer.toString("base64");
-      fileUrl = `data:application/pdf;base64,${base64}`;
-    }
-
-    const document = await prisma.document.create({
-      data: {
+      const sessionUserId = getUserIdFromHeaders(req.headers);
+      const result = await uploadDocument({
         kind: "SUBMISSION_DOC",
-        filename: file.name,
-        contentType: file.type,
-        sizeBytes: file.size,
-        url: fileUrl,
-        bucket: s3Bucket,
-        key: s3Key,
-      },
-    });
+        file: {
+          buffer,
+          filename: file.name,
+          contentType: file.type,
+          sizeBytes: file.size,
+        },
+        uploaderUserId: sessionUserId || null,
+      });
+      document = {
+        id: result.documentId,
+        bucket: result.bucket,
+        key: result.key,
+        url: result.url,
+      };
+    } else {
+      // Dev fallback: base64 data URL in Document.url, no S3 metadata.
+      const base64 = buffer.toString("base64");
+      document = await prisma.document.create({
+        data: {
+          kind: "SUBMISSION_DOC",
+          filename: file.name,
+          contentType: file.type,
+          sizeBytes: file.size,
+          url: `data:application/pdf;base64,${base64}`,
+        },
+      });
+    }
 
     // Parse with LLM
     let parsed: any = null;

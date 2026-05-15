@@ -9,6 +9,7 @@
  * option). Same idempotent semantics either way.
  */
 import type { PrismaClient } from "@prisma/client";
+import { recordChange } from "@/lib/audit";
 
 export interface SeedBrandInput {
   /** Brand display name. Natural key — upsert is keyed on this. */
@@ -132,6 +133,31 @@ export async function seedBrand(
     await prisma.brand.update({ where: { id: brand.id }, data: specPatch });
   }
 
+  // NEED-4 audit hook — capture before-state so we can tell whether
+  // this seed call (a) created a new EntityManager, (b) flipped an
+  // existing rep to primary, or (c) was a no-op.
+  const emBefore = await prisma.entityManager.findUnique({
+    where: {
+      entityType_entityId_userId_role: {
+        entityType: "BRAND",
+        entityId: brand.id,
+        userId: rep.id,
+        role: "ACCOUNT_MANAGER",
+      },
+    },
+    select: { id: true, isPrimary: true },
+  });
+  const otherPrimariesBefore = await prisma.entityManager.findMany({
+    where: {
+      entityType: "BRAND",
+      entityId: brand.id,
+      role: "ACCOUNT_MANAGER",
+      isPrimary: true,
+      ...(emBefore ? { id: { not: emBefore.id } } : {}),
+    },
+    select: { id: true, userId: true },
+  });
+
   const em = await prisma.entityManager.upsert({
     where: {
       entityType_entityId_userId_role: {
@@ -160,6 +186,49 @@ export async function seedBrand(
     },
     data: { isPrimary: false },
   });
+
+  // Audit row — only fires when something actually changed (recordChange
+  // is no-op on identical snapshots). The "primary AM was X, now Y"
+  // case is the one we want surfaced in the brand portal activity log
+  // because it's a contract-level reassignment.
+  if (!emBefore) {
+    recordChange({
+      actorUserId: rep.id,
+      entity: "EntityManager",
+      entityId: em.id,
+      description: `Assigned ${rep.name || rep.email} as primary AM for ${brand.name}`,
+      before: null,
+      after: {
+        entityType: "BRAND",
+        entityId: brand.id,
+        userId: rep.id,
+        role: "ACCOUNT_MANAGER",
+        isPrimary: true,
+      },
+    }).catch((e) => console.warn("[seed-brand] em-create audit failed:", e));
+  } else if (!emBefore.isPrimary) {
+    recordChange({
+      actorUserId: rep.id,
+      entity: "EntityManager",
+      entityId: em.id,
+      description: `Promoted ${rep.name || rep.email} to primary AM for ${brand.name}`,
+      before: { isPrimary: emBefore.isPrimary },
+      after: { isPrimary: true },
+    }).catch((e) => console.warn("[seed-brand] em-promote audit failed:", e));
+  }
+
+  // Log demotion rows for the others (one row per demoted ex-primary)
+  // so the brand activity log shows the full picture of the swap.
+  for (const dem of otherPrimariesBefore) {
+    recordChange({
+      actorUserId: rep.id,
+      entity: "EntityManager",
+      entityId: dem.id,
+      description: `Cleared primary-AM flag for prior rep on ${brand.name}`,
+      before: { isPrimary: true },
+      after: { isPrimary: false },
+    }).catch((e) => console.warn("[seed-brand] em-demote audit failed:", e));
+  }
 
   let websiteFilled: string | null = null;
   if (!brand.website && website) {
