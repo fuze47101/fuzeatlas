@@ -324,15 +324,22 @@ export default function AdminFeedbackPage() {
                       </div>
                     </div>
 
-                    {/* Screenshot */}
+                    {/* Screenshot — routed through admin-gated proxy
+                        so raw S3 URLs never leave the server. The
+                        proxy short-lived-presigns reports that live
+                        in the bucket+key shape. */}
                     {r.screenshotUrl && (
                       <div>
                         <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">
                           Screenshot
                         </p>
-                        <a href={r.screenshotUrl} target="_blank" rel="noreferrer">
+                        <a
+                          href={`/api/admin/feedback/${r.id}/screenshot`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
                           <img
-                            src={r.screenshotUrl}
+                            src={`/api/admin/feedback/${r.id}/screenshot`}
                             alt="Report screenshot"
                             className="max-h-80 rounded-lg border border-slate-200 bg-white"
                           />

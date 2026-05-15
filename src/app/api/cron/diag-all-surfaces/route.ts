@@ -364,6 +364,18 @@ export async function GET(req: Request) {
           take: 1,
         }),
     ),
+    // TRACK-1 — feedback screenshot proxy. Catches drift on the
+    // FeedbackReport.screenshotKey/Bucket columns the admin-gated
+    // /api/admin/feedback/[id]/screenshot route depends on.
+    check(
+      "/api/admin/feedback/[id]/screenshot — schema columns",
+      "feedbackReport findFirst w/ screenshot fields",
+      () =>
+        prisma.feedbackReport.findFirst({
+          select: { id: true, screenshotKey: true, screenshotBucket: true },
+          take: 1,
+        } as any),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
