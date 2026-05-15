@@ -111,17 +111,35 @@ export default function DocumentRepository({
       const res = await fetch(trustPackPath, { method: "POST" });
       if (res.status === 501) {
         const j = await res.json().catch(() => null);
-        setTrustPackFeedback(j?.message || "Trust pack ZIP coming soon.");
+        setTrustPackFeedback(j?.message || "Trust pack composer not yet provisioned.");
       } else if (!res.ok) {
-        setTrustPackFeedback(`Failed (${res.status}).`);
+        const j = await res.json().catch(() => null);
+        setTrustPackFeedback(j?.error || `Failed (${res.status}).`);
       } else {
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `fuze-trust-pack-${new Date().toISOString().slice(0, 10)}.zip`;
-        a.click();
-        URL.revokeObjectURL(url);
+        // BONUS-2 — server returns a print-ready HTML document. Open in
+        // a new tab so the user can Ctrl-P / Cmd-P → Save as PDF. Same
+        // flow the sustainability report uses.
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("text/html")) {
+          const html = await res.text();
+          const blob = new Blob([html], { type: "text/html" });
+          const url = URL.createObjectURL(blob);
+          window.open(url, "_blank");
+          setTrustPackFeedback(
+            "Trust pack opened in a new tab. Use Ctrl/Cmd + P → Save as PDF.",
+          );
+        } else {
+          // Future: server returns a ZIP. Keep the download path alive
+          // so a different backend implementation works without a
+          // frontend change.
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `fuze-trust-pack-${new Date().toISOString().slice(0, 10)}`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }
       }
     } catch (e: any) {
       setTrustPackFeedback(e?.message || "Failed");
