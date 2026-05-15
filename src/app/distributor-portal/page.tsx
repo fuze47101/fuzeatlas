@@ -43,21 +43,32 @@ export default function DistributorPortalPage() {
   // Phase 15 silent-zero sweep — never render 0L / 0 factories when
   // the API call actually failed. Show an explicit retry banner.
   const [error, setError] = useState<string | null>(null);
+  // BONUS-4 — preview-only commission estimate. Silent on no orders.
+  const [commission, setCommission] = useState<any>(null);
 
   const loadStats = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/distributor-portal/stats");
-      const data = await res.json().catch(() => null);
-      if (!res.ok || !data || data.ok === false || !data.stats) {
+      const [statsRes, commRes] = await Promise.all([
+        fetch("/api/distributor-portal/stats"),
+        fetch("/api/distributor-portal/commission-preview").catch(() => null),
+      ]);
+      const data = await statsRes.json().catch(() => null);
+      if (!statsRes.ok || !data || data.ok === false || !data.stats) {
         setError(
           (data && (data.error || data.message)) ||
-            `Couldn't load distributor stats (HTTP ${res.status}).`,
+            `Couldn't load distributor stats (HTTP ${statsRes.status}).`,
         );
         return;
       }
       setStats(data.stats);
+      if (commRes) {
+        const commJson = await commRes.json().catch(() => null);
+        if (commJson?.ok && commJson.preview?.orderCount > 0) {
+          setCommission(commJson.preview);
+        }
+      }
     } catch (e: any) {
       setError(e?.message || "Network error while loading stats.");
     } finally {
@@ -117,6 +128,38 @@ export default function DistributorPortalPage() {
         <h1 className="text-3xl font-black text-slate-900 mb-1">{tx.heading}</h1>
         <p className="text-slate-600">{tx.subheading}</p>
       </div>
+
+      {/* BONUS-4 — quarter-to-date commission preview. Silent when
+          there are no shipped orders this quarter. Preview only —
+          no payout flow yet. */}
+      {commission && commission.orderCount > 0 && (
+        <div className="mb-6 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 p-5 flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-700">
+              Estimated commission — this quarter
+            </p>
+            <p className="text-3xl font-black text-emerald-900 mt-1">
+              ${commission.estimatedCommission.toLocaleString(undefined, {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}
+            </p>
+            <p className="text-xs text-slate-600 mt-1">
+              {commission.orderCount} shipped order
+              {commission.orderCount === 1 ? "" : "s"} ·{" "}
+              {commission.litersShipped.toLocaleString()} L · gross $
+              {commission.grossShipped.toLocaleString(undefined, {
+                maximumFractionDigits: 0,
+              })}{" "}
+              × {commission.marginPct}% margin
+            </p>
+            <p className="text-[10px] text-slate-500 mt-1.5 italic">
+              Preview only — final commission lands when the full system ships.
+            </p>
+          </div>
+          <span className="text-3xl shrink-0" aria-hidden="true">💰</span>
+        </div>
+      )}
 
       {/* ─── Inventory at a glance ──────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">

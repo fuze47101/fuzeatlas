@@ -8,6 +8,7 @@ import AddTaskButton from "@/components/AddTaskButton";
 import ClaimBrandButton from "@/components/ClaimBrandButton";
 import ReferralBadge from "@/components/ReferralBadge";
 import ChurnRiskBanner from "@/components/ChurnRiskBanner";
+import BrandSuggestionsPanel from "@/components/BrandSuggestionsPanel";
 
 const STAGES = [
   "LEAD",
@@ -509,6 +510,9 @@ export default function BrandDetailPage() {
           {success}
         </div>
       )}
+
+      {/* BONUS-3 — AM next-moves panel. Silent on empty. */}
+      <BrandSuggestionsPanel brandId={brand.id} />
 
       {/* ── Pipeline Stage Progression Bar ── */}
       <div className="bg-white rounded-xl p-4 shadow-sm border mb-6">
