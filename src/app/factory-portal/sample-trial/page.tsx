@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import Link from "next/link";
 
 interface Fabric {
@@ -66,6 +67,8 @@ const TIER_DESCRIPTIONS: Record<string, string> = {
 export default function SampleTrialPage() {
   const router = useRouter();
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.factoryPortal.sampleTrial;
   const [tab, setTab] = useState<"form" | "list">("list");
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -268,7 +271,7 @@ export default function SampleTrialPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-emerald-900 mb-2">Sample Trial Request Submitted</h2>
+          <h2 className="text-xl font-bold text-emerald-900 mb-2">{tx.successTitle}</h2>
           <p className="text-emerald-700 mb-6">
             Your FUZE sample trial request has been submitted for review. You will receive notification when your sample is approved and shipped.
           </p>
@@ -303,10 +306,10 @@ export default function SampleTrialPage() {
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/factory-portal" className="hover:text-[#00b4c3]">Factory Portal</Link>
           <span>/</span>
-          <span>Sample Trials</span>
+          <span>{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1">FUZE Sample Trial Request</h1>
-        <p className="text-slate-600">Request FUZE product samples for fabric treatment trials</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1">{tx.pageTitle}</h1>
+        <p className="text-slate-600">{tx.pageSubtitle}</p>
       </div>
 
       {/* Tabs */}
@@ -692,7 +695,7 @@ export default function SampleTrialPage() {
           {/* Submit */}
           <button type="submit" disabled={submitting}
             className="w-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-3.5 rounded-xl font-semibold text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all disabled:opacity-50">
-            {submitting ? "Submitting Request..." : "Submit Sample Trial Request"}
+            {submitting ? tx.submittingButton : tx.submitButton}
           </button>
         </form>
       )}

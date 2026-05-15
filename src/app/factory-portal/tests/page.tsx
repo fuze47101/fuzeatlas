@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 
 interface TestRun {
   id: string;
@@ -91,6 +92,8 @@ const TYPE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
 
 export default function FactoryTestResultsPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.factoryPortal.testsList;
   const [data, setData] = useState<TestData | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -159,7 +162,7 @@ export default function FactoryTestResultsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Test Results</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{tx.pageTitle}</h1>
           <p className="text-slate-500 text-sm mt-0.5">
             {data?.total || 0} test results for your fabrics
           </p>
@@ -171,7 +174,7 @@ export default function FactoryTestResultsPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#00b4c3] text-white text-sm font-bold hover:bg-[#009aa8] shadow-sm"
         >
           <span>📤</span>
-          Upload Test Report
+          {tx.uploadReport}
         </Link>
       </div>
 
@@ -214,7 +217,7 @@ export default function FactoryTestResultsPage() {
       <div className="space-y-3">
         {filtered.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-xl p-12 text-center text-slate-400">
-            {search || filterType ? "No test results match your filters" : "No test results yet"}
+            {search || filterType ? "No test results match your filters" : tx.emptyTitle}
           </div>
         ) : (
           filtered.map((run) => {

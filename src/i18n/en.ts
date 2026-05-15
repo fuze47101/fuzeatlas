@@ -1504,6 +1504,95 @@ const en = {
       brandRejected: "Brand rejected",
     },
 
+    // NEED-FB-6 — Request Test page (top-level chrome).
+    requestTestPage: {
+      crumbCurrent: "Request FUZE Test",
+      pageTitle: "Request FUZE Test",
+      pageSubtitle:
+        "Select a fabric and the FUZE tests you need performed. Our lab will handle sample preparation, testing, and reporting.",
+      sectionFabric: "Select Fabric",
+      sectionLab: "Select Lab",
+      sectionTests: "Select Tests",
+      sectionRequirements: "Sample Requirements",
+      sectionShipping: "Shipping Address & Instructions",
+      sectionNotes: "Additional Notes",
+      submitButton: "Submit Test Request",
+      submittingButton: "Submitting…",
+      successTitle: "Test Request Submitted",
+      successBody:
+        "Your FUZE test request has been submitted successfully. Please prepare your fabric samples according to the shipping instructions below.",
+      submitAnother: "Submit Another Request",
+      noFabricsHint: "No fabrics found. Please submit a fabric first.",
+      labOptionalHint: "(optional — FUZE will route if left blank)",
+      letFuzeDecide: "Let FUZE decide (recommended)",
+      moqLabel: "Minimum Sample:",
+      controlRequiredTitle: "Control Fabric Required",
+      controlRequiredBody:
+        "For accurate results, you must supply an equal amount of untreated control fabric from the same production lot/batch.",
+      testsSelectedLabel: "Tests Selected:",
+      estimatedCostLabel: "Estimated Cost:",
+      shippingInstructions: "Shipping Instructions",
+      addTrackingButton: "Add Tracking Number",
+      hideTrackingButton: "Hide Tracking Number",
+      trackingPlaceholder: "Enter DHL/FedEx/UPS tracking number…",
+      otherTestLabel: "Other",
+      otherTestDesc:
+        "Request a test method not listed above. Describe the test and we will provide a quote.",
+      otherTestPlaceholder: "Describe the test method, standard, or requirements…",
+    },
+
+    // NEED-FB-6 — Fabrics list page (top-level chrome).
+    fabricsList: {
+      crumbCurrent: "Fabrics",
+      pageTitle: "Fabrics",
+      pageSubtitle: "Every fabric submitted by your factory.",
+      newFabric: "+ Submit fabric",
+      searchPlaceholder: "Search by FUZE number, code, color…",
+      emptyTitle: "No fabrics yet",
+      emptyBody: "Submit a fabric to start tracking treatment.",
+      colFuze: "FUZE #",
+      colCustomerCode: "Customer code",
+      colFactoryCode: "Factory code",
+      colConstruction: "Construction",
+      colColor: "Color",
+      colCreated: "Created",
+    },
+
+    // NEED-FB-6 — Tests results page (top-level chrome).
+    testsList: {
+      crumbCurrent: "Test Results",
+      pageTitle: "Test Results",
+      pageSubtitle:
+        "Lab-verified results for every fabric your factory has submitted. Reports refresh as the lab stamps them brand-visible.",
+      emptyTitle: "No test results yet",
+      emptyBody: "Submit fabrics and request testing to see results land here.",
+      colDate: "Date",
+      colFabric: "Fabric",
+      colTestType: "Test type",
+      colLab: "Lab",
+      colStatus: "Status",
+      colReport: "Report",
+      openReport: "Open →",
+      uploadReport: "Upload Test Report",
+    },
+
+    // NEED-FB-6 — Sample trial page (top-level chrome).
+    sampleTrial: {
+      crumbCurrent: "Request FUZE Sample",
+      pageTitle: "Request FUZE Sample",
+      pageSubtitle:
+        "Request product samples for fabric treatment trials. We'll prep, ship, and follow up.",
+      submitButton: "Request Sample",
+      submittingButton: "Requesting…",
+      successTitle: "Sample request submitted",
+      sectionContact: "Contact",
+      sectionShipping: "Shipping",
+      sectionVolume: "Trial Volume",
+      sectionFabric: "Fabric Context",
+      sectionNotes: "Notes",
+      newRequestButton: "Request another sample",
+    },
+
     // NEED-FB-6 — My Requests page.
     myRequests: {
       crumbCurrent: "My Requests",

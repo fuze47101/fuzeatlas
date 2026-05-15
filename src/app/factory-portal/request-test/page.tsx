@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import {
   FUZE_TEST_CATALOG,
   FUZE_SHIPPING_ADDRESSES,
@@ -58,6 +59,8 @@ interface LabOption {
 
 export default function RequestFuzeTestPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.factoryPortal.requestTestPage;
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -232,7 +235,7 @@ export default function RequestFuzeTestPage() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-emerald-900 mb-2">Test Request Submitted</h2>
+          <h2 className="text-xl font-bold text-emerald-900 mb-2">{tx.successTitle}</h2>
           <p className="text-emerald-700 mb-4">
             Your FUZE test request has been submitted successfully. Please prepare your fabric
             samples according to the shipping instructions and submit them to the address below.
@@ -269,11 +272,8 @@ export default function RequestFuzeTestPage() {
     <div className="p-4 sm:p-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Request FUZE Test</h1>
-        <p className="text-slate-600">
-          Select a fabric and the FUZE tests you need performed. Our lab will handle sample
-          preparation, testing, and reporting.
-        </p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">{tx.pageTitle}</h1>
+        <p className="text-slate-600">{tx.pageSubtitle}</p>
       </div>
 
       {/* Main form */}
@@ -290,7 +290,7 @@ export default function RequestFuzeTestPage() {
             <div className="w-8 h-8 rounded-full bg-[#00b4c3] text-white text-sm font-bold flex items-center justify-center">
               1
             </div>
-            <h2 className="text-lg font-semibold text-slate-900">Select Fabric</h2>
+            <h2 className="text-lg font-semibold text-slate-900">{tx.sectionFabric}</h2>
           </div>
 
           {fabrics.length === 0 ? (
@@ -320,7 +320,7 @@ export default function RequestFuzeTestPage() {
             <div className="w-8 h-8 rounded-full bg-[#00b4c3] text-white text-sm font-bold flex items-center justify-center">
               2
             </div>
-            <h2 className="text-lg font-semibold text-slate-900">Select Lab</h2>
+            <h2 className="text-lg font-semibold text-slate-900">{tx.sectionLab}</h2>
             <span className="text-xs text-slate-500">
               (optional — FUZE will route if left blank)
             </span>
@@ -392,7 +392,7 @@ export default function RequestFuzeTestPage() {
             <div className="w-8 h-8 rounded-full bg-[#00b4c3] text-white text-sm font-bold flex items-center justify-center">
               3
             </div>
-            <h2 className="text-lg font-semibold text-slate-900">Select Tests</h2>
+            <h2 className="text-lg font-semibold text-slate-900">{tx.sectionTests}</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -485,7 +485,7 @@ export default function RequestFuzeTestPage() {
                   d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              Sample Requirements
+              {tx.sectionRequirements}
             </h3>
 
             <div className="space-y-3 text-sm">
@@ -561,7 +561,7 @@ export default function RequestFuzeTestPage() {
               5
             </div>
             <h2 className="text-lg font-semibold text-slate-900">
-              Shipping Address & Instructions
+              {tx.sectionShipping}
             </h2>
           </div>
 
@@ -708,7 +708,7 @@ export default function RequestFuzeTestPage() {
             disabled={submitting || (selectedTests.size === 0 && !otherTestSelected)}
             className="flex-1 bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-3 rounded-lg font-semibold text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all disabled:opacity-50"
           >
-            {submitting ? "Submitting..." : "Submit Test Request"}
+            {submitting ? tx.submittingButton : tx.submitButton}
           </button>
         </div>
       </form>

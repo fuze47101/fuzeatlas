@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -168,6 +169,8 @@ interface Fabric {
 
 export default function FactoryFabricsPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.factoryPortal.fabricsList;
   const router = useRouter();
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
   const [loading, setLoading] = useState(true);
@@ -319,9 +322,9 @@ export default function FactoryFabricsPage() {
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
             <Link href="/factory-portal" className="hover:text-[#00b4c3]">Factory Portal</Link>
             <span>/</span>
-            <span className="text-slate-800 font-medium">My Fabrics</span>
+            <span className="text-slate-800 font-medium">{tx.crumbCurrent}</span>
           </div>
-          <h1 className="text-2xl font-black text-slate-900">My Fabrics</h1>
+          <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
           <p className="text-sm text-slate-500 mt-1">
             {fabrics.length} fabric{fabrics.length !== 1 ? "s" : ""} registered for FUZE treatment
           </p>
@@ -355,7 +358,7 @@ export default function FactoryFabricsPage() {
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search by code, construction, FUZE number..."
+              placeholder={tx.searchPlaceholder}
               className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
             />
           </div>
@@ -446,7 +449,7 @@ export default function FactoryFabricsPage() {
       {fabrics.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
           <p className="text-slate-500 mb-2">
-            {search ? "No fabrics match your search" : "No fabrics yet"}
+            {search ? "No fabrics match your search" : tx.emptyTitle}
           </p>
           {search ? (
             <button
