@@ -398,6 +398,44 @@ export async function GET(req: Request) {
           select: { id: true, url: true },
         }),
     ),
+    // Distributor Portal Ordering — verify the new pieces resolve:
+    // tier ladder rows, factory-orders scope, quote-input shape, and
+    // the new poNumber / distributorTierIndexAtOrder columns on
+    // FuzeOrder (Prisma will throw at runtime if the migration
+    // didn't land).
+    check(
+      "/distributor-portal/pricing-tiers — ladder rows",
+      "distributorPricing tierIndex 1..5",
+      () =>
+        prisma.distributorPricing.findMany({
+          where: { tierIndex: { in: [1, 2, 3, 4, 5] } },
+          select: { id: true, tierIndex: true, pricePerLiter: true, currency: true },
+          take: 25,
+        }),
+    ),
+    check(
+      "/distributor-portal/factory-orders — scoped orders",
+      "fuzeOrder count grouped via factory.distributorId",
+      () =>
+        prisma.fuzeOrder.findMany({
+          where: { factory: { distributorId: { not: null } } },
+          select: { id: true, orderNumber: true, distributorId: true },
+          take: 25,
+        }),
+    ),
+    check(
+      "/factory-portal/orders/new — distributor tier snapshot column",
+      "fuzeOrder findFirst poNumber/distributorTierIndexAtOrder",
+      () =>
+        prisma.fuzeOrder.findFirst({
+          select: {
+            id: true,
+            poNumber: true,
+            poDocumentUrl: true,
+            distributorTierIndexAtOrder: true,
+          } as any,
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

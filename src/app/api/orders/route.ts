@@ -300,6 +300,9 @@ export async function POST(req: Request) {
       // Fabric spec / wastage (optional — captured by factory calculator)
       fabricWeightGsm, fabricLengthMeters, fabricWidthMeters, fabricMassKg,
       treatmentMethod, baseFuzeLiters, wastageFactorPct,
+      // Distributor Portal Ordering — factory attaches PO + we snapshot
+      // the distributor tier the quote was priced at.
+      poNumber, poDocumentUrl, distributorTierIndexAtOrder,
     } = body;
 
     // Factory users can only order for their own factory
@@ -411,6 +414,17 @@ export async function POST(req: Request) {
         wastageFactorPct: wastageFactorPct !== undefined && wastageFactorPct !== null
           ? Number(wastageFactorPct)
           : 10,
+
+        // Distributor Portal Ordering snapshots (TRACK distributor-orders).
+        // poNumber is the factory's PO they attach when they approve the
+        // quote; distributorTierIndexAtOrder freezes the tier so future
+        // ladder edits don't reprice historical orders.
+        poNumber: poNumber || null,
+        poDocumentUrl: poDocumentUrl || null,
+        distributorTierIndexAtOrder:
+          distributorTierIndexAtOrder != null
+            ? Number(distributorTierIndexAtOrder)
+            : null,
 
         notes: notes || null,
 

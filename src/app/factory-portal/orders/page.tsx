@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 
 const FUZE_TIER_VALUES = [
   { value: "F1", mgPerKg: 1.0 },
@@ -454,19 +455,27 @@ export default function FactoryOrdersPage() {
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{tx.pageTitle}</h1>
           <p className="text-slate-500 mt-1">{tx.pageSubtitle}</p>
         </div>
-        <button
-          onClick={() => {
-            setShowNewOrder(true);
-            setForm(applyDefaultsToForm(orderDefaults));
-            setAppliedDefaults(!!orderDefaults?.suggestedBrand);
-            setQuote(null);
-            setError("");
-            setSuccess("");
-          }}
-          className="px-5 py-2.5 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009aa8] transition-colors shadow-lg shadow-[#00b4c3]/25 flex items-center gap-2"
-        >
-          <span className="text-lg">+</span> {tx.newOrder}
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/factory-portal/orders/new"
+            className="px-4 py-2 text-sm bg-white border border-slate-300 text-slate-700 rounded-lg font-semibold hover:border-[#00b4c3] hover:text-[#00b4c3] transition-colors"
+          >
+            Full quote + PO flow →
+          </Link>
+          <button
+            onClick={() => {
+              setShowNewOrder(true);
+              setForm(applyDefaultsToForm(orderDefaults));
+              setAppliedDefaults(!!orderDefaults?.suggestedBrand);
+              setQuote(null);
+              setError("");
+              setSuccess("");
+            }}
+            className="px-5 py-2.5 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009aa8] transition-colors shadow-lg shadow-[#00b4c3]/25 flex items-center gap-2"
+          >
+            <span className="text-lg">+</span> {tx.newOrder}
+          </button>
+        </div>
       </div>
 
       {/* Alerts */}

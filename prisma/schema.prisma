@@ -3250,6 +3250,14 @@ model FuzeOrder {
   baseFuzeLiters     Float?   // Calculated FUZE needed before wastage
   wastageFactorPct   Float?   @default(10)  // Wastage / safety buffer %
 
+  // Distributor Portal Ordering — factory attaches a PO when they
+  // accept a quote; we snapshot the distributor tier the quote was
+  // priced at so future tier-ladder edits don't retroactively
+  // reprice historical orders.
+  poNumber                    String?
+  poDocumentUrl               String?
+  distributorTierIndexAtOrder Int?
+
   notes           String?
   adminNotes      String?
   factoryNotes    String?  // Factory's internal notes
@@ -3278,6 +3286,7 @@ model FuzeOrder {
   @@index([orderNumber])
   @@index([createdAt])
   @@index([brandApprovalStatus])
+  @@index([poNumber])
 }
 
 // ─────────────────────────────────────────────

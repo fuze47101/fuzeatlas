@@ -441,6 +441,38 @@ export default function DistributorPortalPage() {
           </div>
           <div className="text-sm text-[#00b4c3] font-medium">{tx.fabricLibCta}</div>
         </Link>
+
+        {/* Distributor Portal Ordering — new surfaces */}
+        <Link
+          href="/distributor-portal/factory-orders"
+          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">Factory orders</h3>
+              <p className="text-sm text-slate-600">
+                FUZE orders flowing in from the factories you supply.
+              </p>
+            </div>
+            <span className="text-3xl">🏭</span>
+          </div>
+          <div className="text-sm text-[#00b4c3] font-medium">View orders →</div>
+        </Link>
+        <Link
+          href="/distributor-portal/pricing-tiers"
+          className="bg-white border border-slate-200 rounded-xl p-6 hover:border-[#00b4c3] hover:shadow-lg transition-all"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="font-bold text-slate-900 text-lg mb-1">Pricing tiers</h3>
+              <p className="text-sm text-slate-600">
+                Manage your 5-tier price ladder for factories under you.
+              </p>
+            </div>
+            <span className="text-3xl">📊</span>
+          </div>
+          <div className="text-sm text-[#00b4c3] font-medium">Edit tiers →</div>
+        </Link>
       </div>
     </div>
   );
