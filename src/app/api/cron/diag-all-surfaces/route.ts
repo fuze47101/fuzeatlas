@@ -308,6 +308,18 @@ export async function GET(req: Request) {
           },
         }),
     ),
+    // NICE-5 — ⌘K palette backend. Catches search fan-out regressions
+    // (e.g. a Prisma rename that breaks one of the 6 table queries).
+    check(
+      "⌘K palette — brand search",
+      "brand findMany contains(test)",
+      () =>
+        prisma.brand.findMany({
+          where: { name: { contains: "test", mode: "insensitive" } },
+          select: { id: true, name: true },
+          take: 1,
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

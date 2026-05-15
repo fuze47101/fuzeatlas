@@ -6,6 +6,7 @@ import AuthLayout from "@/components/AuthLayout";
 import { ToastProvider } from "@/components/Toast";
 import FeedbackButton from "@/components/FeedbackButton";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts";
+import CommandPalette from "@/components/CommandPalette";
 
 export const metadata: Metadata = {
   title: {
@@ -53,6 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {/* NICE-4 — admin keyboard shortcuts. Self-gates by role,
                   no-op for non-internal users. */}
               <KeyboardShortcuts />
+              {/* NICE-5 — ⌘K global search palette. Same role gate. */}
+              <CommandPalette />
             </ToastProvider>
           </I18nProvider>
         </AuthProvider>
