@@ -351,6 +351,19 @@ export async function GET(req: Request) {
           },
         }),
     ),
+    // MB-2 — supply chain map. Catches drift on the
+    // SupplyChainLink → Factory (lat/lng) + FuzeConsumption grouping
+    // the map page depends on.
+    check(
+      "/brand-portal/supply-chain/map — links + factory geo",
+      "supplyChainLink findMany BRAND→FACTORY active",
+      () =>
+        prisma.supplyChainLink.findMany({
+          where: { fromType: "BRAND", toType: "FACTORY", active: true },
+          select: { fromId: true, toId: true },
+          take: 1,
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
