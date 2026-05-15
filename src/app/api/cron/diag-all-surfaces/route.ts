@@ -320,6 +320,18 @@ export async function GET(req: Request) {
           take: 1,
         }),
     ),
+    // BONUS-5 — lab queue digest. Catches breakage in the underlying
+    // labs+users query the daily 07:00 digest depends on.
+    check(
+      "/api/cron/lab-queue-digest — labs+users join",
+      "lab findMany w/ active users",
+      () =>
+        prisma.lab.findMany({
+          where: { active: true, users: { some: { status: "ACTIVE" } } },
+          select: { id: true, timezone: true, users: { select: { email: true }, take: 1 } },
+          take: 1,
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
