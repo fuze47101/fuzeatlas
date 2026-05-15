@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 
 interface Submission {
   id: string;
@@ -24,7 +25,13 @@ interface Submission {
   brandRejectionReason?: string | null;
 }
 
-function ApprovalBadge({ status }: { status: "PENDING" | "APPROVED" | "REJECTED" }) {
+function ApprovalBadge({
+  status,
+  labels,
+}: {
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  labels: { awaiting: string; approved: string; rejected: string };
+}) {
   const cls =
     status === "PENDING"
       ? "bg-amber-100 text-amber-800 border-amber-300"
@@ -33,10 +40,10 @@ function ApprovalBadge({ status }: { status: "PENDING" | "APPROVED" | "REJECTED"
         : "bg-red-100 text-red-800 border-red-300";
   const label =
     status === "PENDING"
-      ? "Awaiting brand"
+      ? labels.awaiting
       : status === "APPROVED"
-        ? "Brand approved"
-        : "Brand rejected";
+        ? labels.approved
+        : labels.rejected;
   return (
     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap border ${cls}`}>
       {label}
@@ -47,6 +54,8 @@ function ApprovalBadge({ status }: { status: "PENDING" | "APPROVED" | "REJECTED"
 export default function FactorySubmissionsPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
+  const tx = t.factoryPortal.submissions;
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -64,17 +73,17 @@ export default function FactorySubmissionsPage() {
         if (data.ok) {
           setSubmissions(data.submissions);
         } else {
-          setError(data.error || "Failed to load submissions");
+          setError(data.error || tx.loadFailed);
         }
       } catch (e) {
-        setError("Failed to load submissions");
+        setError(tx.loadFailed);
       } finally {
         setLoading(false);
       }
     };
 
     loadSubmissions();
-  }, [user, router]);
+  }, [user, router, tx.loadFailed]);
 
   if (loading) {
     return (
@@ -99,12 +108,14 @@ export default function FactorySubmissionsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-            <Link href="/factory-portal" className="hover:text-[#00b4c3]">Factory Portal</Link>
+            <Link href="/factory-portal" className="hover:text-[#00b4c3]">
+              {t.factoryPortal.crumb}
+            </Link>
             <span>/</span>
-            <span className="text-slate-800 font-medium">Submissions</span>
+            <span className="text-slate-800 font-medium">{tx.crumbCurrent}</span>
           </div>
-          <h1 className="text-2xl font-black text-slate-900">Fabric Submissions</h1>
-          <p className="text-sm text-slate-500 mt-1">Track the status of your fabric submissions</p>
+          <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
+          <p className="text-sm text-slate-500 mt-1">{tx.pageSubtitle}</p>
         </div>
       </div>
 
@@ -115,10 +126,10 @@ export default function FactorySubmissionsPage() {
       {/* Submissions List */}
       {submissions.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
-          <p className="text-slate-500 mb-4">No submissions yet</p>
+          <p className="text-slate-500 mb-4">{tx.emptyTitle}</p>
           <Link href="/factory-portal/intake"
             className="text-[#00b4c3] hover:underline font-medium text-sm">
-            Submit a fabric →
+            {tx.submitFabric}
           </Link>
         </div>
       ) : (
@@ -136,13 +147,25 @@ export default function FactorySubmissionsPage() {
                       {submission.status}
                     </span>
                     {submission.brandApprovalStatus && (
-                      <ApprovalBadge status={submission.brandApprovalStatus} />
+                      <ApprovalBadge
+                        status={submission.brandApprovalStatus}
+                        labels={{
+                          awaiting: tx.brandAwaiting,
+                          approved: tx.brandApproved,
+                          rejected: tx.brandRejected,
+                        }}
+                      />
                     )}
                   </div>
                   <div className="flex items-center gap-3 text-sm text-slate-600">
                     <span className="font-mono font-medium">FUZE-{submission.fabric.fuzeNumber}</span>
                     <span>·</span>
-                    <span>Submitted {new Date(submission.createdAt).toLocaleDateString()}</span>
+                    <span>
+                      {tx.submittedOn.replace(
+                        "{date}",
+                        new Date(submission.createdAt).toLocaleDateString(),
+                      )}
+                    </span>
                   </div>
                   {submission.testResults && submission.testResults.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -155,7 +178,7 @@ export default function FactorySubmissionsPage() {
                   )}
                   {submission.brandApprovalStatus === "REJECTED" && submission.brandRejectionReason && (
                     <p className="mt-2 text-xs text-red-700">
-                      <span className="font-bold">Rejection reason:</span> {submission.brandRejectionReason}
+                      <span className="font-bold">{tx.rejectionReasonLabel}</span> {submission.brandRejectionReason}
                     </p>
                   )}
                 </div>

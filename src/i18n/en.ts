@@ -1488,6 +1488,37 @@ const en = {
       orderNotFound: "Order not found",
       loadingOrders: "Loading orders...",
     },
+
+    // NEED-FB-6 — Submissions list page.
+    submissions: {
+      crumbCurrent: "Submissions",
+      pageTitle: "Fabric Submissions",
+      pageSubtitle: "Track the status of your fabric submissions",
+      loadFailed: "Failed to load submissions",
+      emptyTitle: "No submissions yet",
+      submitFabric: "Submit a fabric →",
+      submittedOn: "Submitted {date}",
+      rejectionReasonLabel: "Rejection reason:",
+      brandAwaiting: "Awaiting brand",
+      brandApproved: "Brand approved",
+      brandRejected: "Brand rejected",
+    },
+
+    // NEED-FB-6 — My Requests page.
+    myRequests: {
+      crumbCurrent: "My Requests",
+      pageTitle: "My Test Requests",
+      pageSubtitle: "Track every test request you've submitted",
+      loadFailed: "Couldn't load your requests",
+      emptyTitle: "No requests yet",
+      emptyBody: "Submit a fabric, then request testing to see the request here.",
+      colPo: "PO",
+      colFabric: "Fabric",
+      colLab: "Lab",
+      colTests: "Tests",
+      colStatus: "Status",
+      colSubmitted: "Submitted",
+    },
   },
 
   // ─── SETTINGS ──────────────────────────────────
