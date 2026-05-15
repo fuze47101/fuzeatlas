@@ -4,6 +4,7 @@
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {
   DRAFT: { bg: "bg-gray-100", text: "text-gray-700", label: "Draft" },
@@ -511,6 +512,17 @@ export default function AdminOrdersPage() {
                     Cancel Order
                   </button>
                 )}
+
+                {/* TRACK 3 — Print QR Label for the shipment. Opens in
+                    a new tab so the modal stays open and the admin can
+                    keep working through the queue. */}
+                <Link
+                  href={`/admin/orders/${selectedOrder.id}/qr-label`}
+                  target="_blank"
+                  className="block text-center w-full px-4 py-2.5 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 text-sm"
+                >
+                  🖨 Print QR Shipment Label
+                </Link>
               </div>
 
               <button

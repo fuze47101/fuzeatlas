@@ -7,8 +7,11 @@ import { prisma } from "@/lib/prisma";
  * GET /api/public/shipment/[orderNumber]
  *
  * Target of QR codes printed on FUZE shipments. Returns sanitized
- * order info, status timeline, and links to public SDS / COA / cert
- * documents.
+ * order info, status timeline, and links to the live SDS / COA
+ * documents the QR scanner actually needs. SDS + COA are resolved
+ * from ComplianceDocument by category string ("SDS_MSDS" / "COA"),
+ * picking the newest of each so the QR always points at the current
+ * version.
  */
 export async function GET(
   req: Request,
@@ -62,7 +65,31 @@ export async function GET(
       },
     });
 
-    return NextResponse.json({ ok: true, order, events });
+    // TRACK 3 — surface real SDS + COA documents. The QR on the
+    // shipment must take the factory operator to documents that
+    // actually exist, not a generic library stub.
+    const [sdsDoc, coaDoc] = await Promise.all([
+      prisma.complianceDocument.findFirst({
+        where: { category: "SDS_MSDS" },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, title: true, version: true, url: true, filename: true, updatedAt: true },
+      }),
+      prisma.complianceDocument.findFirst({
+        where: { category: "COA" },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, title: true, version: true, url: true, filename: true, updatedAt: true },
+      }),
+    ]);
+
+    return NextResponse.json({
+      ok: true,
+      order,
+      events,
+      documents: {
+        sds: sdsDoc,
+        coa: coaDoc,
+      },
+    });
   } catch (e: any) {
     console.error("Public shipment error:", e);
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });

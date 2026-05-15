@@ -376,6 +376,28 @@ export async function GET(req: Request) {
           take: 1,
         } as any),
     ),
+    // TRACK 3 — QR shipment label resolves real SDS + COA from
+    // ComplianceDocument. The public /shipment/[orderNumber] page
+    // dies open and unauthenticated; the SDS + COA links it surfaces
+    // depend on at least one of each category existing in the table.
+    check(
+      "/shipment/[orderNumber] — SDS document",
+      "complianceDocument findFirst category=SDS_MSDS",
+      () =>
+        prisma.complianceDocument.findFirst({
+          where: { category: "SDS_MSDS" },
+          select: { id: true, url: true },
+        }),
+    ),
+    check(
+      "/shipment/[orderNumber] — COA document",
+      "complianceDocument findFirst category=COA",
+      () =>
+        prisma.complianceDocument.findFirst({
+          where: { category: "COA" },
+          select: { id: true, url: true },
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

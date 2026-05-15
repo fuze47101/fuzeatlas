@@ -67,7 +67,9 @@ export default async function PublicShipmentPage({
     );
   }
 
-  const { order, events } = data;
+  const { order, events, documents } = data;
+  const sds = documents?.sds || null;
+  const coa = documents?.coa || null;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -159,26 +161,38 @@ export default async function PublicShipmentPage({
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <h2 className="font-bold text-lg text-slate-900 mb-4">Product Documents</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Link
-              href="/compliance-library"
+            <a
+              href={sds?.url || "/compliance-library"}
+              target={sds?.url ? "_blank" : undefined}
+              rel={sds?.url ? "noopener noreferrer" : undefined}
               className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-[#00b4c3] hover:bg-cyan-50/30 transition-colors"
             >
               <span className="text-2xl">📋</span>
               <div>
                 <p className="font-semibold text-slate-900 text-sm">Safety Data Sheet (SDS)</p>
-                <p className="text-xs text-slate-500">Chemical safety information</p>
+                <p className="text-xs text-slate-500">
+                  {sds
+                    ? `${sds.title || "FUZE SDS"}${sds.version ? ` · v${sds.version}` : ""}`
+                    : "Open the compliance library"}
+                </p>
               </div>
-            </Link>
-            <Link
-              href="/compliance-library"
+            </a>
+            <a
+              href={coa?.url || "/compliance-library"}
+              target={coa?.url ? "_blank" : undefined}
+              rel={coa?.url ? "noopener noreferrer" : undefined}
               className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-[#00b4c3] hover:bg-cyan-50/30 transition-colors"
             >
               <span className="text-2xl">📜</span>
               <div>
                 <p className="font-semibold text-slate-900 text-sm">Certificate of Analysis (COA)</p>
-                <p className="text-xs text-slate-500">This batch's spec verification</p>
+                <p className="text-xs text-slate-500">
+                  {coa
+                    ? `${coa.title || "FUZE COA"}${coa.version ? ` · v${coa.version}` : ""}`
+                    : "Open the compliance library"}
+                </p>
               </div>
-            </Link>
+            </a>
           </div>
         </div>
 
