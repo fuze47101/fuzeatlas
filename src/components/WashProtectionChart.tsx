@@ -171,12 +171,15 @@ export default function WashProtectionChart({ comparison, competitor, fuzeLabel 
           />
         )}
 
-        {/* FUZE flat line + label dot at end */}
+        {/* FUZE flat line + label dot at end. Label sits 22px above the
+            line (was 12) so it stops colliding with the "NO VALIDATED
+            WASH DATA HERE" headline below it when FUZE and competitor
+            $/m are similar. Tina flagged May 13. */}
         <path d={fuzePath} stroke={COLORS.fuze} strokeWidth={3} fill="none" strokeLinecap="round" />
         <circle cx={x(xMax)} cy={fuzeY} r={5} fill={COLORS.fuze} stroke="#fff" strokeWidth={2} />
         <text
           x={x(xMax) - 6}
-          y={fuzeY - 12}
+          y={fuzeY - 22}
           textAnchor="end"
           fontSize={12}
           fontWeight={700}
@@ -216,23 +219,24 @@ export default function WashProtectionChart({ comparison, competitor, fuzeLabel 
           {competitor.product} • ${competitorCostPerApplication.toFixed(2)}/m (one mill application)
         </text>
 
-        {/* Marketing-claim cliff marker — annotation drops BELOW the line so
-            it stops colliding with the competitor product label above. The
-            short dotted tick down to the unprotected-zone band is now ~32px
-            tall instead of running all the way to the X-axis. */}
+        {/* Marketing-claim cliff marker — annotation drops BELOW the line.
+            The "Marketing claim ends" text moved from compY+44 to compY+92
+            so it sits BELOW the 3-line unvalidated-zone block (which now
+            occupies compY+30 .. compY+74) instead of overlapping the
+            "garment has shipped" line. Tina flagged May 13. */}
         <circle cx={x(compEnd)} cy={compY} r={6} fill={COLORS.comp} stroke="#fff" strokeWidth={2} />
         <line
           x1={x(compEnd)}
           x2={x(compEnd)}
           y1={compY + 6}
-          y2={compY + 28}
+          y2={compY + 80}
           stroke={COLORS.comp}
           strokeDasharray="3 3"
           strokeWidth={1.5}
         />
         <text
           x={x(compEnd)}
-          y={compY + 44}
+          y={compY + 96}
           textAnchor={compEnd > xMax * 0.6 ? "end" : "start"}
           fontSize={11}
           fontWeight={700}
@@ -241,12 +245,15 @@ export default function WashProtectionChart({ comparison, competitor, fuzeLabel 
           Marketing claim ends: {competitorMaxProtectedWashes} washes (self-published)
         </text>
 
-        {/* Unvalidated zone annotation — past the competitor's marketing number */}
+        {/* Unvalidated zone annotation — anchored to the competitor line
+            (compY) instead of innerH/2 so it always sits a fixed distance
+            below the lines regardless of where they land vertically.
+            Spacing increased from 18px to 22px between rows. */}
         {competitorUnprotectedWashes > 0 && (
           <g>
             <text
               x={x((competitorMaxProtectedWashes + xMax) / 2)}
-              y={PAD_T + innerH / 2 - 8}
+              y={compY + 30}
               textAnchor="middle"
               fontSize={13}
               fontWeight={700}
@@ -256,7 +263,7 @@ export default function WashProtectionChart({ comparison, competitor, fuzeLabel 
             </text>
             <text
               x={x((competitorMaxProtectedWashes + xMax) / 2)}
-              y={PAD_T + innerH / 2 + 10}
+              y={compY + 52}
               textAnchor="middle"
               fontSize={11}
               fill={COLORS.comp}
@@ -265,7 +272,7 @@ export default function WashProtectionChart({ comparison, competitor, fuzeLabel 
             </text>
             <text
               x={x((competitorMaxProtectedWashes + xMax) / 2)}
-              y={PAD_T + innerH / 2 + 28}
+              y={compY + 74}
               textAnchor="middle"
               fontSize={11}
               fontWeight={600}
