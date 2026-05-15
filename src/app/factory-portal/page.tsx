@@ -11,6 +11,7 @@ import PortalActivityFeed from "@/components/PortalActivityFeed";
 import ErrorPanel from "@/components/ErrorPanel";
 import SpecAckBanner from "@/components/SpecAckBanner";
 import { SkeletonPortalLanding } from "@/components/Skeleton";
+import NextOrderWidget from "@/components/NextOrderWidget";
 
 interface Stats {
   activeFabrics: number;
@@ -71,6 +72,9 @@ export default function FactoryPortalPage() {
       {/* NEED-6 — surfaces brands with newer specs than this factory's
           last ack. Renders nothing when the queue is empty. */}
       <SpecAckBanner />
+      {/* NICE-7 — reorder predictor. Silent on day-one factories (no
+          consumption history yet) so we don't shout at new accounts. */}
+      <NextOrderWidget />
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">

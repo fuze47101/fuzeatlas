@@ -20,18 +20,21 @@ export default function BrandPortalDashboard() {
     pendingTotal: number;
     overdueTotal: number;
   } | null>(null);
+  const [esg, setEsg] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch portal data + brand profile + approvals queue in parallel.
-    // Profile is optional — fallback to the bare brand.name greeting.
-    // Approvals counts power the pulsing pill (Phase 7G).
+    // Fetch portal data + brand profile + approvals queue + ESG snapshot
+    // in parallel. ESG is decorative — silent on failure (handled by
+    // /api/brand-portal/esg-snapshot which can return zeros without
+    // breaking).
     Promise.all([
       fetch("/api/brand-portal").then((r) => r.json()).catch(() => null),
       fetch("/api/brand-portal/profile").then((r) => r.json()).catch(() => null),
       fetch("/api/brand-portal/approvals").then((r) => r.json()).catch(() => null),
+      fetch("/api/brand-portal/esg-snapshot").then((r) => r.json()).catch(() => null),
     ])
-      .then(([d, p, a]) => {
+      .then(([d, p, a, e]) => {
         if (d?.ok) setData(d);
         if (p?.ok) setProfile(p.profile || null);
         if (a?.ok) {
@@ -39,6 +42,7 @@ export default function BrandPortalDashboard() {
           const overdue = all.filter((r: any) => r.severity === "overdue").length;
           setApprovals({ pendingTotal: all.length, overdueTotal: overdue });
         }
+        if (e?.ok && e.stats) setEsg(e.stats);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -112,6 +116,67 @@ export default function BrandPortalDashboard() {
           />
         ) : null}
       </div>
+
+      {/* NICE-6 — ESG at-a-glance strip. Silent when esg is null
+          (snapshot endpoint failed or brand has no consumption yet).
+          Three stats: total FUZE liters used, kg fabric treated, kg
+          CO₂e avoided vs PFAS. Numbers come from
+          /api/brand-portal/esg-snapshot which aggregates
+          FuzeConsumption for this brand. */}
+      {esg && esg.totalLitersUsed > 0 && (
+        <div className="mb-6 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 p-5">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-700">
+                Sustainability impact — to date
+              </p>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Aggregated across every factory in {brand.name}'s supply chain.
+              </p>
+            </div>
+            <span className="text-2xl" aria-hidden="true">
+              🌱
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <div className="text-2xl sm:text-3xl font-black text-emerald-800">
+                {Math.round(esg.totalLitersUsed).toLocaleString()}
+                <span className="text-sm font-normal text-emerald-600 ml-1">L</span>
+              </div>
+              <div className="text-[11px] text-slate-600 mt-1">FUZE used</div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-black text-teal-800">
+                {Math.round(esg.kgFabricTreated).toLocaleString()}
+                <span className="text-sm font-normal text-teal-600 ml-1">kg</span>
+              </div>
+              <div className="text-[11px] text-slate-600 mt-1">
+                fabric treated
+                {esg.kgEstimateBasis === "gsm-fallback" && (
+                  <span className="text-slate-400 ml-1" title="Estimated from meters × 180 gsm">
+                    ≈
+                  </span>
+                )}
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-black text-cyan-800">
+                {Math.round(esg.co2AvoidedKg).toLocaleString()}
+                <span className="text-sm font-normal text-cyan-600 ml-1">kg</span>
+              </div>
+              <div className="text-[11px] text-slate-600 mt-1">
+                CO₂e avoided vs PFAS
+                {esg.co2AvoidedGasolineGallons >= 1 && (
+                  <span className="block text-slate-400">
+                    ≈ {Math.round(esg.co2AvoidedGasolineGallons).toLocaleString()} gal gasoline
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats Cards — Phase 7G adds the Approvals pill (pulsing red when overdue) */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
