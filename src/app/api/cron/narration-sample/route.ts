@@ -30,7 +30,6 @@ export async function GET(req: Request) {
         tr."aiNarration",
         tr."aiNarrationModel",
         tr."aiNarrationGeneratedAt",
-        sub."fuzeTier" AS "submissionTier",
         br."name" AS "brandName",
         fac."name" AS "factoryName",
         fab."fuzeNumber" AS "fabricFuzeNumber"
