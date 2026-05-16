@@ -100,8 +100,14 @@ export async function loadCorrelationPoints(
 ): Promise<CorrelationPoint[]> {
   const where: any = {
     brandVisible: true,
-    icpResult: { isNot: null, agValue: { not: null } },
-    abResult: { isNot: null, percentReduction: { not: null } },
+    // Prisma relation-filter syntax: field constraints on the related
+    // record go INSIDE an `is: {...}` block, not siblinged with
+    // `isNot`. Previous shape `{ isNot: null, agValue: {...} }` threw
+    // "Unknown argument is" — caught when Akina (Rhone) hit the page
+    // May 16. Using `is: { ... }` implies the relation exists AND the
+    // field constraint holds, which is exactly what we want here.
+    icpResult: { is: { agValue: { not: null } } },
+    abResult: { is: { percentReduction: { not: null } } },
   };
   if (brandId) {
     where.submission = { fabric: { brandId } };
