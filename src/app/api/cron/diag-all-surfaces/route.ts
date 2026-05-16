@@ -508,6 +508,16 @@ export async function GET(req: Request) {
         return [fp.crumb, fp.intake?.crumbHome, fp.ordersNew?.pageTitle];
       },
     ),
+    // TRACK 3 — admin home activity feed sanity. Confirms the seven
+    // model rollups the feed depends on resolve without throwing.
+    check(
+      "/api/admin/home-activity — last 7d window",
+      "fuzeOrder count last 7 days",
+      () =>
+        prisma.fuzeOrder.count({
+          where: { createdAt: { gte: new Date(Date.now() - 7 * 24 * 3600 * 1000) } },
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

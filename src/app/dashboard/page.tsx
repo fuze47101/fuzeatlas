@@ -4,6 +4,7 @@ import { useI18n } from "@/i18n";
 import MyTasksPanel from "@/components/MyTasksPanel";
 import ErrorPanel from "@/components/ErrorPanel";
 import TopPipelinePotential from "@/components/TopPipelinePotential";
+import HomeActivityFeed from "@/components/HomeActivityFeed";
 
 type DashData = {
   ok: boolean;
@@ -357,6 +358,12 @@ function AdminDashboard({ data, t }: { data: DashData; t: any }) {
       {/* MB-4 — Top 10 brands by predicted value (BD reps' call-list). */}
       <div className="mb-6">
         <TopPipelinePotential />
+      </div>
+
+      {/* TRACK 3 — Tina's admin activity feed. Real-time stream of
+          who's submitting fabric, placing orders, registering. */}
+      <div className="mb-6">
+        <HomeActivityFeed />
       </div>
 
       {/* KPI Cards */}

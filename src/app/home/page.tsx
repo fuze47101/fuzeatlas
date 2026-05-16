@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MODULES, type ModuleDef } from "@/lib/modules";
 import BDScoreboardCard from "@/components/BDScoreboardCard";
+import HomeActivityFeed from "@/components/HomeActivityFeed";
 
 /**
  * Module Home — the "where do I want to go today" landing page for
@@ -92,6 +93,14 @@ export default function HomePage() {
       <div className="mb-6">
         <BDScoreboardCard />
       </div>
+
+      {/* TRACK 3 — admin home activity feed (Tina's request).
+          Only renders for admin/employee/sales-manager. */}
+      {user?.role && ["ADMIN", "EMPLOYEE", "SALES_MANAGER"].includes(user.role) && (
+        <div className="mb-6">
+          <HomeActivityFeed />
+        </div>
+      )}
 
       {/* Module Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
