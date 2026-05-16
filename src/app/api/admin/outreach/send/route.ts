@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     // EmailModal → outreach/send path. Both shapes now work.
     const contentType = req.headers.get("content-type") || "";
     let payload: any;
-    let attachments: { filename: string; contentType?: string; base64: string }[] = [];
+    const attachments: { filename: string; contentType?: string; base64: string }[] = [];
 
     if (contentType.includes("multipart/form-data")) {
       const form = await req.formData();

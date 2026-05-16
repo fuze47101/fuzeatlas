@@ -209,7 +209,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get or create the weekly digest campaign
-    let campaign = scheduleWeeklyDigest();
+    const campaign = scheduleWeeklyDigest();
 
     // Fetch real data for this send
     const digestData = await getWeeklyDigestData();

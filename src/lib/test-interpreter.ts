@@ -126,7 +126,7 @@ function checkAATCCTM100(abResult?: any): ComplianceCheck | null {
 
   const reduction = abResult.percentReduction;
   let passed = false;
-  let threshold = '≥99.9%';
+  const threshold = '≥99.9%';
   let detail = '';
 
   if (reduction >= 99.9) {

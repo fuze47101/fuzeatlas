@@ -173,7 +173,7 @@ function drawAddressAndMeta(
   doc.font("Helvetica-Bold").fontSize(8).fillColor(FUZE_DARK);
   doc.text(billTo.company, colBillTo, y, { width: 150 });
   const billToCompanyHeight = doc.heightOfString(billTo.company, { width: 150 });
-  let billY = y + billToCompanyHeight + 2;
+  const billY = y + billToCompanyHeight + 2;
   doc.font("Helvetica").fontSize(8).fillColor(FUZE_GRAY);
   const billAddr = [billTo.address1, billTo.address2, billTo.address3, billTo.address4, `${billTo.postalCode || ""} ${billTo.country}`.trim()].filter(Boolean).join("\n");
   doc.text(billAddr, colBillTo, billY, { width: 150 });
@@ -182,7 +182,7 @@ function drawAddressAndMeta(
   // Ship To
   doc.font("Helvetica-Bold").fontSize(8).fillColor(FUZE_DARK);
   doc.text(shipTo.company, colShipTo, y, { width: 150 });
-  let shipY = y + billToCompanyHeight + 2;
+  const shipY = y + billToCompanyHeight + 2;
   doc.font("Helvetica").fontSize(8).fillColor(FUZE_GRAY);
   const shipAddr = [shipTo.address1, shipTo.address2, shipTo.address3, shipTo.address4, `${shipTo.postalCode || ""} ${shipTo.country}`.trim()].filter(Boolean).join("\n");
   doc.text(shipAddr, colShipTo, shipY, { width: 150 });

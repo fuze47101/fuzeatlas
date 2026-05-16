@@ -359,7 +359,7 @@ export async function GET(req: NextRequest) {
 
     // FACTORY_MANAGER / FACTORY_USER: Factory focused
     else if (userRole === "FACTORY_MANAGER" || userRole === "FACTORY_USER") {
-      let factoryId = user?.factoryId;
+      const factoryId = user?.factoryId;
       let factoryName = "";
       let factoryFabrics: any[] = [];
       let factoryTestResults: any[] = [];
@@ -423,7 +423,7 @@ export async function GET(req: NextRequest) {
 
     // BRAND_USER: Brand portal view
     else if (userRole === "BRAND_USER") {
-      let brandId = user?.brandId;
+      const brandId = user?.brandId;
       let brandName = "";
       let approvedTests: any[] = [];
       let upcomingMeetings = 0;
@@ -475,7 +475,7 @@ export async function GET(req: NextRequest) {
 
     // DISTRIBUTOR_USER: Distributor overview
     else if (userRole === "DISTRIBUTOR_USER") {
-      let distributorId = user?.distributorId;
+      const distributorId = user?.distributorId;
       let distributorBrands: any[] = [];
       let factoriesCount = 0;
 

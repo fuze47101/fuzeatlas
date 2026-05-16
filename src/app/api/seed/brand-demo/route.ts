@@ -250,7 +250,7 @@ export async function POST() {
 
     if (existingTests === 0 && submissions.length >= 3) {
       // Find or reference a lab
-      let lab = await prisma.lab.findFirst();
+      const lab = await prisma.lab.findFirst();
 
       // Test runs for submission 0 (ACME-PF-001 — Performance Polyester)
       if (submissions[0]) {

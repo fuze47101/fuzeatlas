@@ -34,7 +34,7 @@ export async function GET() {
       return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    let brandId = user.brandId;
+    const brandId = user.brandId;
     // Allow internal users to view any brand via the existing admin
     // pattern: they pass ?brandId=… on a sibling endpoint. For now this
     // endpoint scopes strictly to the caller's brand, the same way the

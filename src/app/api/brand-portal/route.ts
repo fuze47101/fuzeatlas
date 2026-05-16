@@ -10,7 +10,7 @@ export async function GET() {
     if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 
     // For brand users, scope to their brand; for internal users, require brandId param
-    let brandId = user.brandId;
+    const brandId = user.brandId;
     if (!brandId && (user.role === "ADMIN" || user.role === "EMPLOYEE")) {
       // Admins can access any brand - pass brandId as query param
       return NextResponse.json({ ok: false, error: "brandId required for admin access" }, { status: 400 });

@@ -71,7 +71,7 @@ export default function IncomingOrdersPage() {
 
   useEffect(() => {
     if (user) load();
-    // eslint-disable-next-line
+     
   }, [user]);
 
   async function patch(orderId: string, fields: any) {

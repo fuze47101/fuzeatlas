@@ -185,7 +185,7 @@ export function generateIcsContent(params: {
     uid || `fuze-atlas-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@fuzeatlas.com`;
   const finalStatus = status || (method === "CANCEL" ? "CANCELLED" : "CONFIRMED");
 
-  let ics = [
+  const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//FUZE Atlas//Meeting//EN",

@@ -34,11 +34,10 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
-      # Lint step DISABLED 2026-05-15 — see ci.yml for the same comment.
-      # eslint v10 dropped legacy .eslintrc.json support; flat-config
-      # migration queued separately.
-      # - name: Lint code
-      #   run: npm run lint
+      # Lint with the migrated flat config (eslint.config.mjs). See
+      # ci.yml for context on the warn-vs-error backlog policy.
+      - name: Lint code
+        run: npm run lint
 
       # Type check TypeScript code
       - name: Type check

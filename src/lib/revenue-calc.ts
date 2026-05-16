@@ -168,7 +168,7 @@ export function calculateInvoiceMetrics(invoices: InvoiceForMetrics[]): {
   let totalPaid = 0;
   let totalOverdue = 0;
   let overdueCount = 0;
-  let daysToPay: number[] = [];
+  const daysToPay: number[] = [];
 
   for (const inv of invoices) {
     if (inv.status === "PAID") {

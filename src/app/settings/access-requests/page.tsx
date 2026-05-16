@@ -85,7 +85,7 @@ export default function AccessRequestsPage() {
 
   const loadRequests = async (status?: string, type?: string) => {
     try {
-      let params = [];
+      const params = [];
       if (status) params.push(`status=${status}`);
       if (type && type !== "ALL") params.push(`type=${type}`);
       const url = `/api/access-requests${params.length ? "?" + params.join("&") : ""}`;

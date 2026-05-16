@@ -23,7 +23,7 @@
  * Reference: docs/BD_WIZARD_OVERHAUL.md → "Anti-AI-detection checklist".
  */
 
-/* eslint-disable no-irregular-whitespace */
+ 
 
 const BANNED_PHRASES: Array<[RegExp, string]> = [
   // Hedging / throat-clearing tells. AI models default to these openings.

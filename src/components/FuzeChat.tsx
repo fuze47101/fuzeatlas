@@ -99,7 +99,7 @@ export default function FuzeChat() {
   function renderContent(content: string) {
     return content.split("\n").map((line, i) => {
       // Bold
-      let rendered = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      const rendered = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       // Bullet points
       if (rendered.startsWith("- ")) {
         return (

@@ -86,7 +86,11 @@ export const MODULES: ModuleDef[] = [
     accent: "from-orange-500 to-orange-700",
     sidebarAccent: "text-orange-400",
     blurb: "Submissions, tests, orders, batches, inventory",
-    landing: "/admin/orders-dashboard",
+    // Landing matches the first item in the card list (KPI Dashboard)
+    // so clicking the card == clicking the top of the card listing.
+    // Andrew flagged May 13: card click was landing somewhere
+    // unexpected vs. what the card shows.
+    landing: "/dashboard",
     items: [
       { label: "KPI Dashboard", href: "/dashboard", icon: "📊" },
       { label: "Submissions", href: "/admin/orders", icon: "📥" },
@@ -111,7 +115,10 @@ export const MODULES: ModuleDef[] = [
     accent: "from-violet-500 to-violet-700",
     sidebarAccent: "text-violet-400",
     blurb: "Lab pipeline, ICP sample prep, recipes, test catalog, variance",
-    landing: "/tests",
+    // Landing matches the first item in the card list (Fabrics) so the
+    // user lands at the natural start of the fabric→recipe→test
+    // workflow, not in the middle of it. Andrew flagged May 13.
+    landing: "/fabrics",
     items: [
       // Fabric core
       { label: "Fabrics", href: "/fabrics", icon: "🧵" },

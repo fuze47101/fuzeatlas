@@ -225,7 +225,7 @@ export function filterFactories(
 // ── Calculate profile completeness ──
 export function calcProfileCompleteness(factory: any): number {
   let filled = 0;
-  let total = 10;
+  const total = 10;
 
   if (factory.millType) filled++;
   if (factory.country) filled++;

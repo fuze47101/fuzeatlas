@@ -15,7 +15,7 @@ export default function ApiDocsPage() {
       return apiDocumentation;
     }
 
-    let results = apiDocumentation.map(group => ({
+    const results = apiDocumentation.map(group => ({
       ...group,
       endpoints: group.endpoints.filter(ep => {
         const matchesSearch = !searchQuery ||

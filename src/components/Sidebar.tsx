@@ -255,7 +255,7 @@ export default function Sidebar() {
   // ═══════════════════════════════════════════════════════════════
   let groups: NavGroup[] = [];
   let scopedModule: ModuleDef | undefined;
-  let onHome = pathname === "/home";
+  const onHome = pathname === "/home";
 
   if (isBrandUser) {
     groups = [

@@ -135,7 +135,7 @@ export async function POST(req: Request) {
       };
       const rdAliases = aliases[rd.name] || [];
 
-      let existing = allDistributors.find(d => {
+      const existing = allDistributors.find(d => {
         const dLower = d.name.toLowerCase();
         const rdLower = rd.name.toLowerCase();
         if (dLower.includes(rdLower) || rdLower.includes(dLower)) return true;

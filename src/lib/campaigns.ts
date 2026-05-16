@@ -219,7 +219,7 @@ export async function executeCampaign(id: string): Promise<{ sent: number; faile
     try {
       // Get template HTML - this would be populated by the API route or template engine
       const templateId = campaign.templateId;
-      let html = `<p>Campaign: ${campaign.name}</p><p>Subject: ${campaign.subject}</p>`;
+      const html = `<p>Campaign: ${campaign.name}</p><p>Subject: ${campaign.subject}</p>`;
 
       const result = await sendEmail({
         to: recipient.email,

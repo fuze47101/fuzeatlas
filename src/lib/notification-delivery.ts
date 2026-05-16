@@ -77,7 +77,7 @@ function next8amLocal(tz: string, now: Date = new Date()): Date {
     const d = parseInt(get("day"), 10);
     // If it's already past midnight local time but before 7am,
     // schedule today at 8am; if 22-23, schedule tomorrow at 8am.
-    let targetDate = new Date(Date.UTC(y, m - 1, d, 8, 0, 0));
+    const targetDate = new Date(Date.UTC(y, m - 1, d, 8, 0, 0));
     if (localHour >= QUIET_START_HOUR) {
       targetDate.setUTCDate(targetDate.getUTCDate() + 1);
     }

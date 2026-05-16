@@ -298,7 +298,7 @@ export default function UserManagementPage() {
   const handleExecuteAction = async () => {
     if (!modalUserId || !modalType) return;
 
-    let action = modalType;
+    const action = modalType;
     const body: any = { action };
 
     if (modalType === "change-role" && selectedNewRole) {

@@ -109,7 +109,7 @@ export async function POST(req: Request) {
     // Barth ticket May 2026.
     const requestContentType = req.headers.get("content-type") || "";
     let body: any;
-    let wizardAttachments: { filename: string; contentType: string; base64: string }[] = [];
+    const wizardAttachments: { filename: string; contentType: string; base64: string }[] = [];
 
     if (requestContentType.includes("multipart/form-data")) {
       const form = await req.formData();

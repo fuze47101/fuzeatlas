@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
     const range = url.searchParams.get("range") || "30d";
 
     let startDate = new Date();
-    let endDate = new Date();
+    const endDate = new Date();
 
     if (range === "7d") {
       startDate.setDate(startDate.getDate() - 7);

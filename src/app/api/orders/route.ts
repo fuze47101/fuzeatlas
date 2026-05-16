@@ -328,7 +328,7 @@ export async function POST(req: Request) {
     let totalPrice = 0;
     let effectiveVolume = volumeLiters ? Number(volumeLiters) : null;
     let effectiveBottles = bottles ? Number(bottles) : null;
-    let effectiveHangtagQty = hangtagQty ? Number(hangtagQty) : null;
+    const effectiveHangtagQty = hangtagQty ? Number(hangtagQty) : null;
 
     if (orderType === "HANGTAG") {
       const perUnit = pricingInfo.hangtagPricePerUnit || 0.15; // Default hangtag price

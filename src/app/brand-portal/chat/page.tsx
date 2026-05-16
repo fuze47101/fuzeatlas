@@ -100,7 +100,7 @@ export default function BrandChatPage() {
 
   function renderContent(content: string) {
     return content.split("\n").map((line, i) => {
-      let rendered = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      const rendered = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
       if (rendered.startsWith("- ")) {
         return (
           <div key={i} className="flex gap-2 ml-3 my-0.5">

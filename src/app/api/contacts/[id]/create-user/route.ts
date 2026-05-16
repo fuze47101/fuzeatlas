@@ -82,7 +82,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     // contact is linked to. Precedence: factory → brand → distributor.
     // (Contact has no labId today — labs use AccessRequest instead.)
     let derivedRole: string;
-    let userData: {
+    const userData: {
       factoryId?: string;
       brandId?: string;
       distributorId?: string;

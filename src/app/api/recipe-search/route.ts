@@ -116,7 +116,7 @@ export async function GET(req: Request) {
 
     // Factory filter — limit non-internal users to their own
     // factory if they tried to scope to one they shouldn't see.
-    let effectiveFactoryId: string | null = factoryId || null;
+    const effectiveFactoryId: string | null = factoryId || null;
     if (
       effectiveFactoryId &&
       !isInternalFull &&

@@ -149,6 +149,12 @@ export default function HomePage() {
             📋 Documents
           </Link>
           <Link
+            href="/education"
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+          >
+            🎓 Education
+          </Link>
+          <Link
             href="/settings/profile"
             className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
           >
