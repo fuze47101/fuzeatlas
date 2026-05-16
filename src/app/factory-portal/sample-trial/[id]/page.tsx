@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import Link from "next/link";
 
 const STATUS_STEPS = [
@@ -47,6 +48,8 @@ export default function TrialDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.factoryPortal.sampleTrialDetail;
   const [trial, setTrial] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -228,9 +231,9 @@ export default function TrialDetailPage() {
     <div className="p-4 sm:p-8 max-w-4xl mx-auto">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
-        <Link href="/factory-portal" className="hover:text-[#00b4c3]">Factory Portal</Link>
+        <Link href="/factory-portal" className="hover:text-[#00b4c3]">{t.factoryPortal.crumb}</Link>
         <span>/</span>
-        <Link href="/factory-portal/sample-trial" className="hover:text-[#00b4c3]">Sample Trials</Link>
+        <Link href="/factory-portal/sample-trial" className="hover:text-[#00b4c3]">{tx.breadcrumb}</Link>
         <span>/</span>
         <span className="text-slate-900 font-medium">FUZE-{trial.fabric?.fuzeNumber || "—"}</span>
       </div>
@@ -239,7 +242,7 @@ export default function TrialDetailPage() {
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 mb-1">
-            Sample Trial — FUZE-{trial.fabric?.fuzeNumber || "—"} {trial.fabric?.customerCode ? `(${trial.fabric.customerCode})` : ""}
+            {tx.pageTitleFallback} — FUZE-{trial.fabric?.fuzeNumber || "—"} {trial.fabric?.customerCode ? `(${trial.fabric.customerCode})` : ""}
           </h1>
           <div className="flex items-center gap-3 text-sm text-slate-500">
             <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${STATUS_COLORS[trial.status] || "bg-slate-100 text-slate-700"}`}>

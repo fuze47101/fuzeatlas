@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import ErrorPanel from "@/components/ErrorPanel";
 
 interface BrandSpec {
@@ -56,6 +57,8 @@ export default function FactoryBrandSpecAckPage() {
   const params = useParams<{ brandId: string }>();
   const router = useRouter();
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.factoryPortal.brandSpec;
   const brandId = params?.brandId;
 
   const [brand, setBrand] = useState<BrandSpec | null>(null);
@@ -144,13 +147,13 @@ export default function FactoryBrandSpecAckPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/factory-portal" className="hover:text-[#00b4c3]">
-            Factory Portal
+            {t.factoryPortal.crumb}
           </Link>
           <span>›</span>
-          <span>Brand spec — {brand.name}</span>
+          <span>{tx.crumbCurrent} — {brand.name}</span>
         </div>
         <h1 className="text-2xl font-black text-slate-900">
-          {brand.name} — FUZE spec
+          {brand.name} — {tx.pageTitleFallback}
         </h1>
         <p className="text-sm text-slate-500 mt-1">
           Last updated{" "}

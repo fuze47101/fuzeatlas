@@ -492,6 +492,22 @@ export async function GET(req: Request) {
           take: 25,
         }),
     ),
+    // NEED-FB-6 — i18n smoke check. Imports src/i18n/en.ts and
+    // verifies the factoryPortal namespace shape so a stray broken
+    // bracket can't ship to prod without surfacing here.
+    check(
+      "i18n — src/i18n/en.ts factoryPortal namespace",
+      "dynamic import + factoryPortal keys",
+      async () => {
+        const mod = await import("@/i18n/en");
+        const en = (mod as any).default;
+        const fp = en?.factoryPortal;
+        if (!fp || typeof fp !== "object") {
+          throw new Error("factoryPortal namespace missing");
+        }
+        return [fp.crumb, fp.intake?.crumbHome, fp.ordersNew?.pageTitle];
+      },
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

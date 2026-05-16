@@ -1608,6 +1608,130 @@ const en = {
       colStatus: "Status",
       colSubmitted: "Submitted",
     },
+
+    // NEED-FB-6 — Documents page chrome (wrapper around the shared
+    // DocumentRepository component).
+    documentsPage: {
+      crumbCurrent: "Documents",
+      pageTitle: "Documents",
+      pageSubtitle:
+        "FUZE compliance pack, your brands' protocols, your factory's test reports, and your distributor's pricing tiers.",
+    },
+
+    // NEED-FB-6 — New Order create flow (TRACK 3 distributor ordering).
+    ordersNew: {
+      crumbCurrent: "New Order",
+      pageTitle: "New FUZE Order",
+      pageSubtitle:
+        "Order FUZE for a production run. We auto-compute the volume from the fabric spec and price it at your distributor's tier.",
+      section1Title: "1. Fabric & treatment",
+      section2Title: "2. Quote",
+      section3Title: "3. Brand allocation",
+      section3Subtitle: "Allocate this order across one or more brands. Must sum to 100%.",
+      section4Title: "4. Purchase order & shipping",
+      fabricLabel: "Fabric",
+      fabricSelectPlaceholder: "— select a fabric —",
+      fabricMassLabel: "Fabric mass (kg)",
+      fuzeTierLabel: "FUZE tier",
+      wastageLabel: "Wastage %",
+      methodLabel: "Treatment method",
+      getQuoteButton: "Get quote",
+      gettingQuoteButton: "Computing…",
+      fuzeVolumeLabel: "FUZE volume",
+      distributorTierLabel: "Distributor tier",
+      quotedPriceLabel: "Quoted price",
+      noPriceWarning:
+        "No tier price matched — your distributor needs to confirm pricing before approval.",
+      warningsHeader: "Warnings",
+      addBrandButton: "+ Add brand",
+      pickBrandPlaceholder: "— pick brand —",
+      removeButton: "Remove",
+      poNumberLabel: "Your PO number",
+      poDocumentUrlLabel: "PO document URL (optional)",
+      shippingAddressLabel: "Shipping address",
+      shippingCityLabel: "City",
+      shippingCountryLabel: "Country",
+      productionRunNoteLabel: "Production run note (optional)",
+      submitButton: "Submit order to distributor",
+      submittingButton: "Submitting order…",
+      backToOrders: "Orders",
+      breadcrumbFactoryPortal: "Factory Portal",
+      loadingContext: "Loading order context…",
+      loadErrorTitle: "Couldn't load the order screen",
+      retryButton: "Retry",
+      noFabricsHint: "No fabrics found. Submit a fabric in Intake first.",
+    },
+
+    // NEED-FB-6 — Sample trial detail page (review one trial submission).
+    sampleTrialDetail: {
+      breadcrumb: "Sample Trials",
+      backToList: "← Back to list",
+      pageTitleFallback: "Sample Trial Request",
+      statusLabel: "Status",
+      brandLabel: "Brand",
+      factoryLabel: "Factory",
+      fabricLabel: "Fabric",
+      labLabel: "ICP Lab",
+      submittedLabel: "Submitted",
+      reviewedLabel: "Reviewed",
+      shippedLabel: "Shipped",
+      tierLabel: "Target FUZE Tier",
+      trialTypeLabel: "Trial Type",
+      purposeLabel: "Purpose",
+      totalMetersLabel: "Total meters",
+      sampleVolumeLabel: "Sample volume (L)",
+      shippingFreightHeader: "Shipping & Freight",
+      notesHeader: "Notes",
+      adminNotesHeader: "Admin Notes (internal)",
+      timelineHeader: "Timeline",
+      loadingDetail: "Loading sample trial…",
+      notFoundTitle: "Sample trial not found",
+      notFoundBody: "The trial may have been deleted, or you don't have access.",
+    },
+
+    // NEED-FB-6 — Brand spec acknowledgement page (factory user
+    // confirms the brand's required tier + cadence).
+    brandSpec: {
+      crumbCurrent: "Brand spec",
+      pageTitleFallback: "Brand requirements",
+      pageSubtitle:
+        "Review the brand's stipulated FUZE tier, ICP cadence, and any protocol documents before producing.",
+      requiredTierLabel: "Required FUZE tier",
+      icpCadenceLabel: "ICP cadence",
+      cadenceEveryNBatches: "Every {n} orders",
+      cadenceEveryLiters: "Every {n} L consumed",
+      protocolDocLabel: "Protocol document",
+      openDocLink: "Open document →",
+      ackHistoryHeader: "Acknowledgement history",
+      ackedByLabel: "Acknowledged by",
+      ackedAtLabel: "Acknowledged at",
+      ackedTierLabel: "Acknowledged tier",
+      ackButton: "Acknowledge current spec",
+      ackingButton: "Saving acknowledgement…",
+      noChangesLabel: "Spec is up-to-date.",
+      loadFailed: "Couldn't load brand spec",
+    },
+
+    // NEED-FB-6 — Voice intake page (microphone-driven fabric submission).
+    voiceIntake: {
+      crumbCurrent: "Voice intake",
+      pageTitle: "Voice intake",
+      pageSubtitle:
+        "Dictate fabric details into the mic. We transcribe + parse to fields you can correct before saving.",
+      startRecordingButton: "🎙 Start recording",
+      stopRecordingButton: "⏹ Stop recording",
+      uploadingLabel: "Uploading recording…",
+      transcribingLabel: "Transcribing…",
+      parsingLabel: "Parsing fields…",
+      transcriptHeader: "Transcript",
+      parsedFieldsHeader: "Parsed fields",
+      saveButton: "Save fabric",
+      savingButton: "Saving…",
+      tryAgainButton: "Try again",
+      micErrorTitle: "Microphone error",
+      micErrorBody:
+        "We couldn't access your microphone. Check browser permissions and retry.",
+    },
   },
 
   // ─── SETTINGS ──────────────────────────────────

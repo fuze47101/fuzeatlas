@@ -2,6 +2,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -30,6 +31,8 @@ const TIER_LABELS: Record<string, string> = {
 
 export default function FactoryOrderNewPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.factoryPortal.ordersNew;
   const router = useRouter();
 
   const isFactory = ["FACTORY_USER", "FACTORY_MANAGER"].includes(user?.role || "");
@@ -224,7 +227,7 @@ export default function FactoryOrderNewPage() {
   if (loading) {
     return (
       <div className="p-8 max-w-4xl mx-auto">
-        <p className="text-slate-500">Loading order context…</p>
+        <p className="text-slate-500">{tx.loadingContext}</p>
       </div>
     );
   }
@@ -233,13 +236,13 @@ export default function FactoryOrderNewPage() {
     return (
       <div className="p-8 max-w-4xl mx-auto">
         <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm">
-          <p className="font-bold mb-1">Couldn't load the order screen</p>
+          <p className="font-bold mb-1">{tx.loadErrorTitle}</p>
           <p>{loadError}</p>
           <button
             onClick={load}
             className="mt-2 px-3 py-1 bg-red-100 text-red-700 rounded text-xs font-semibold hover:bg-red-200"
           >
-            Retry
+            {tx.retryButton}
           </button>
         </div>
       </div>
@@ -251,25 +254,22 @@ export default function FactoryOrderNewPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/factory-portal" className="hover:text-[#00b4c3]">
-            Factory Portal
+            {tx.breadcrumbFactoryPortal}
           </Link>
           <span>/</span>
           <Link href="/factory-portal/orders" className="hover:text-[#00b4c3]">
-            Orders
+            {tx.backToOrders}
           </Link>
           <span>/</span>
-          <span className="text-slate-800 font-medium">New Order</span>
+          <span className="text-slate-800 font-medium">{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-900">New FUZE Order</h1>
-        <p className="text-slate-500 text-sm mt-1">
-          Order FUZE for a production run. We auto-compute the volume from the fabric spec and price
-          it at your distributor's tier.
-        </p>
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900">{tx.pageTitle}</h1>
+        <p className="text-slate-500 text-sm mt-1">{tx.pageSubtitle}</p>
       </div>
 
       {/* Step 1 — Fabric + spec */}
       <section className="bg-white border border-slate-200 rounded-2xl p-5 mb-4">
-        <h2 className="text-lg font-bold text-slate-900 mb-3">1. Fabric & treatment</h2>
+        <h2 className="text-lg font-bold text-slate-900 mb-3">{tx.section1Title}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="sm:col-span-2">
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
@@ -362,13 +362,13 @@ export default function FactoryOrderNewPage() {
 
       {/* Step 2 — Quote */}
       <section className="bg-white border border-slate-200 rounded-2xl p-5 mb-4">
-        <h2 className="text-lg font-bold text-slate-900 mb-3">2. Quote</h2>
+        <h2 className="text-lg font-bold text-slate-900 mb-3">{tx.section2Title}</h2>
         <button
           onClick={fetchQuote}
           disabled={quoting || !fabricId || !fabricMassKg}
           className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-800 disabled:opacity-50"
         >
-          {quoting ? "Computing…" : "Get quote"}
+          {quoting ? tx.gettingQuoteButton : tx.getQuoteButton}
         </button>
         {quoteError && (
           <div className="mt-3 bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 text-sm">
@@ -434,10 +434,8 @@ export default function FactoryOrderNewPage() {
 
       {/* Step 3 — Brand allocation */}
       <section className="bg-white border border-slate-200 rounded-2xl p-5 mb-4">
-        <h2 className="text-lg font-bold text-slate-900 mb-1">3. Brand allocation</h2>
-        <p className="text-xs text-slate-500 mb-3">
-          Allocate this order across one or more brands. Must sum to 100%.
-        </p>
+        <h2 className="text-lg font-bold text-slate-900 mb-1">{tx.section3Title}</h2>
+        <p className="text-xs text-slate-500 mb-3">{tx.section3Subtitle}</p>
         <div className="space-y-2">
           {allocations.map((a, i) => (
             <div key={i} className="flex items-center gap-2">
@@ -489,7 +487,7 @@ export default function FactoryOrderNewPage() {
 
       {/* Step 4 — PO + shipping */}
       <section className="bg-white border border-slate-200 rounded-2xl p-5 mb-4">
-        <h2 className="text-lg font-bold text-slate-900 mb-3">4. Purchase order & shipping</h2>
+        <h2 className="text-lg font-bold text-slate-900 mb-3">{tx.section4Title}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
@@ -573,7 +571,7 @@ export default function FactoryOrderNewPage() {
         disabled={submitting || !quote}
         className="w-full px-6 py-3.5 bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#00b4c3]/30 disabled:opacity-50"
       >
-        {submitting ? "Submitting order…" : "Submit order to distributor"}
+        {submitting ? tx.submittingButton : tx.submitButton}
       </button>
     </div>
   );

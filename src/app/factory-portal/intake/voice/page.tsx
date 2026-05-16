@@ -21,6 +21,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { useI18n } from "@/i18n";
 
 interface ParsedFields {
   fabricName?: string | null;
@@ -39,6 +40,8 @@ interface ParseResponse {
 }
 
 export default function VoiceIntakePage() {
+  const { t } = useI18n();
+  const tx = t.factoryPortal.voiceIntake;
   const [supported, setSupported] = useState<boolean | null>(null);
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState("");
@@ -160,7 +163,7 @@ export default function VoiceIntakePage() {
   if (supported === false) {
     return (
       <div className="max-w-md mx-auto p-6 text-center">
-        <h1 className="text-xl font-bold text-slate-900 mb-2">Voice intake</h1>
+        <h1 className="text-xl font-bold text-slate-900 mb-2">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-600">
           This browser doesn't support voice dictation. Open this page in Chrome
           (Android) or Safari (iOS) on your phone.
@@ -171,7 +174,7 @@ export default function VoiceIntakePage() {
 
   return (
     <div className="max-w-md mx-auto p-4 sm:p-6">
-      <h1 className="text-2xl font-black text-slate-900 mb-2">Voice intake</h1>
+      <h1 className="text-2xl font-black text-slate-900 mb-2">{tx.pageTitle}</h1>
       <p className="text-sm text-slate-500 mb-6">
         Tap the mic, dictate the fabric details, then tap Parse. The system
         extracts the fields for you to review.
