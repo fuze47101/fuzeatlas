@@ -1565,6 +1565,15 @@ model TestRun {
   aiReviewDate  DateTime?
   aiReviewNotes String?        // Human-editable notes from AI flags
 
+  // MB-3 — plain-English narration for brand-visible test results.
+  // Generated async after brandVisible flips true. The brand-voice
+  // gate rejects + retries (2x) anything containing silver/nano
+  // before persisting.
+  aiNarration                    String?
+  aiNarrationModel               String?
+  aiNarrationGeneratedAt         DateTime?
+  aiNarrationGenerationFailedAt  DateTime?
+
   // Brand visibility: only "stamped" tests visible to brand users
   brandVisible      Boolean  @default(false)
   brandApprovedById String?

@@ -102,6 +102,12 @@ export async function GET(req: Request) {
         washCount: true,
         brandVisible: true,
         brandApprovalStatus: true,
+        // MB-3 narration columns — admin test repo grew a narration
+        // column with regen button.
+        aiNarration: true,
+        aiNarrationModel: true,
+        aiNarrationGeneratedAt: true,
+        aiNarrationGenerationFailedAt: true,
         lab: { select: { id: true, name: true } },
         icpResult: { select: { agValue: true, auValue: true, unit: true } },
         abResult: {

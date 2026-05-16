@@ -436,6 +436,36 @@ export async function GET(req: Request) {
           } as any,
         }),
     ),
+    // MB-3 — narration columns landed. The retry cron + brand-visible
+    // flip path both read/write these; if the migration didn't run
+    // Prisma will throw and surface here.
+    check(
+      "MB-3 narration — TestRun ai-narration columns",
+      "testRun findFirst aiNarration/aiNarrationGeneratedAt",
+      () =>
+        prisma.testRun.findFirst({
+          select: {
+            id: true,
+            aiNarration: true,
+            aiNarrationModel: true,
+            aiNarrationGeneratedAt: true,
+            aiNarrationGenerationFailedAt: true,
+          } as any,
+        }),
+    ),
+    check(
+      "MB-3 narration — retry-queue candidates",
+      "testRun count brandVisible=true & aiNarration null",
+      () =>
+        prisma.testRun.findMany({
+          where: {
+            brandVisible: true,
+            OR: [{ aiNarration: null }, { aiNarration: "" }],
+          } as any,
+          select: { id: true } as any,
+          take: 25,
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

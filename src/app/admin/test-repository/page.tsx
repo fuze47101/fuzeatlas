@@ -20,6 +20,10 @@ interface Row {
   washCount: number | null;
   brandVisible: boolean;
   brandApprovalStatus: string | null;
+  aiNarration: string | null;
+  aiNarrationModel: string | null;
+  aiNarrationGeneratedAt: string | null;
+  aiNarrationGenerationFailedAt: string | null;
   lab: { id: string; name: string } | null;
   icpResult: { agValue: number | null; unit: string | null } | null;
   abResult: { organism1: string | null; result1: number | null; result2: number | null; pass: boolean | null } | null;
@@ -269,6 +273,7 @@ export default function TestRepositoryPage() {
               <th className="text-right px-3 py-2">Wash</th>
               <th className="text-left px-3 py-2">Result</th>
               <th className="text-left px-3 py-2">Approval</th>
+              <th className="text-left px-3 py-2">Narration</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -351,12 +356,15 @@ export default function TestRepositoryPage() {
                       <span className="text-slate-400">—</span>
                     )}
                   </td>
+                  <td className="px-3 py-2 text-xs max-w-[320px]">
+                    <NarrationCell row={r} onRefresh={load} />
+                  </td>
                 </tr>
               );
             })}
             {data?.rows.length === 0 && (
               <tr>
-                <td colSpan={11} className="px-4 py-10">
+                <td colSpan={12} className="px-4 py-10">
                   <div className="max-w-md mx-auto text-center">
                     <p className="text-3xl mb-2" aria-hidden="true">🔎</p>
                     <p className="font-bold text-slate-900">No tests match these filters</p>
@@ -425,6 +433,94 @@ export default function TestRepositoryPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * MB-3 — NarrationCell renders the test's aiNarration (collapsed by
+ * default), expands on click, and offers an admin-only Regenerate
+ * button that calls POST /api/admin/tests/[id]/regenerate-narration.
+ * Falls back to a "Generate" affordance when no narration exists,
+ * which is the same endpoint (regenerate-narration also creates from
+ * scratch).
+ */
+function NarrationCell({ row, onRefresh }: { row: Row; onRefresh: () => void }) {
+  const [expanded, setExpanded] = useState(false);
+  const [working, setWorking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function regen() {
+    setWorking(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/tests/${row.id}/regenerate-narration`, {
+        method: "POST",
+      });
+      const j = await res.json();
+      if (!j.ok) setError(j.error || "Regenerate failed");
+      else onRefresh();
+    } catch (e: any) {
+      setError(e?.message || "Regenerate failed");
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  if (!row.aiNarration) {
+    return (
+      <div className="flex items-center gap-2">
+        {row.aiNarrationGenerationFailedAt ? (
+          <span
+            className="text-amber-700 cursor-help"
+            title={`Last attempt failed: ${new Date(row.aiNarrationGenerationFailedAt).toLocaleString()}`}
+          >
+            ⚠ retry pending
+          </span>
+        ) : (
+          <span className="text-slate-400">—</span>
+        )}
+        <button
+          onClick={regen}
+          disabled={working}
+          className="text-[10px] px-2 py-0.5 bg-slate-900 text-white rounded font-semibold hover:bg-slate-700 disabled:opacity-50"
+        >
+          {working ? "..." : row.aiNarrationGenerationFailedAt ? "Retry" : "Generate"}
+        </button>
+        {error && <span className="text-red-600 text-[10px]">{error}</span>}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <p
+        className={`text-slate-700 leading-snug cursor-pointer ${
+          expanded ? "" : "line-clamp-3"
+        }`}
+        onClick={() => setExpanded(!expanded)}
+      >
+        {row.aiNarration}
+      </p>
+      <div className="mt-1 flex items-center gap-2">
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-[10px] text-[#00b4c3] font-semibold hover:underline"
+        >
+          {expanded ? "Collapse" : "Expand"}
+        </button>
+        <button
+          onClick={regen}
+          disabled={working}
+          className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-700 rounded font-semibold hover:bg-slate-200 disabled:opacity-50"
+        >
+          {working ? "..." : "Regenerate"}
+        </button>
+        {row.aiNarrationModel && (
+          <span className="text-[10px] text-slate-400">{row.aiNarrationModel}</span>
+        )}
+        {error && <span className="text-red-600 text-[10px]">{error}</span>}
+      </div>
     </div>
   );
 }

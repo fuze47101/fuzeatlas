@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { notifyTestResult } from "@/lib/notify";
+import { generateAndPersistNarration } from "@/lib/test-narration";
 
 /* ── POST /api/tests/batch-stamp ── stamp/unstamp multiple tests for brand visibility */
 export async function POST(req: Request) {
@@ -145,6 +146,14 @@ export async function POST(req: Request) {
               notifiedCount++;
             } catch (e) {
               console.error(`[batch-stamp] notifyTestResult ${t.id} failed:`, e);
+            }
+            // MB-3 — fire narration generation per test. Non-blocking;
+            // failures stamp aiNarrationGenerationFailedAt so the
+            // retry cron picks them up.
+            try {
+              await generateAndPersistNarration(t.id);
+            } catch (narrErr) {
+              console.error(`[batch-stamp] narration ${t.id} failed:`, narrErr);
             }
           }),
         );

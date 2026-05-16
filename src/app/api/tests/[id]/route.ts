@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { sendResultsReadyEmail } from "@/lib/email";
 import { getCurrentUser } from "@/lib/auth";
 import { notifyTestResult } from "@/lib/notify";
+import { generateAndPersistNarration } from "@/lib/test-narration";
 
 /* ── GET /api/tests/[id] ── fetch single test run with all details */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -446,6 +447,17 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
           });
         } catch (notifyErr) {
           console.error("[NOTIFY] notifyTestResult failed:", notifyErr);
+        }
+
+        // MB-3 — fire plain-English narration generation async. Never
+        // blocks the brand-visible flip; failures stamp
+        // aiNarrationGenerationFailedAt so the retry cron picks them
+        // up. Brand-voice gate inside generateAndPersistNarration
+        // rejects + retries up to 2x before failing.
+        try {
+          await generateAndPersistNarration(id);
+        } catch (narrationErr) {
+          console.error("[NARRATION] generation failed (non-blocking):", narrationErr);
         }
       })();
     }

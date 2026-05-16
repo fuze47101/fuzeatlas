@@ -80,7 +80,38 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       }
     }
 
-    return NextResponse.json({ ok: true, test });
+    // MB-3 — surface the most recent brand-visible TestRun narration
+    // for the same fabric so the recipe report can render the plain-
+    // English summary at the top. Cheap fan-out; the fabric is
+    // already loaded in the include above. Falls back to null when
+    // no narrated test exists for the fabric yet.
+    let narration: { text: string; model: string | null; generatedAt: Date | null; testRunId: string } | null = null;
+    if (test?.fabric?.id) {
+      const tr = (await prisma.testRun.findFirst({
+        where: {
+          brandVisible: true,
+          aiNarration: { not: null },
+          submission: { fabricId: test.fabric.id },
+        } as any,
+        select: {
+          id: true,
+          aiNarration: true,
+          aiNarrationModel: true,
+          aiNarrationGeneratedAt: true,
+        } as any,
+        orderBy: { aiNarrationGeneratedAt: "desc" } as any,
+      })) as any;
+      if (tr?.aiNarration) {
+        narration = {
+          text: tr.aiNarration,
+          model: tr.aiNarrationModel,
+          generatedAt: tr.aiNarrationGeneratedAt,
+          testRunId: tr.id,
+        };
+      }
+    }
+
+    return NextResponse.json({ ok: true, test, narration });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
