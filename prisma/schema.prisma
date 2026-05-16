@@ -320,6 +320,15 @@ model Brand {
   churnRiskUpdatedAt  DateTime?
   churnRiskReasoning  String?
 
+  // ─── MB-4 — ML-lite pipeline-value prediction ──────────────
+  // Stamped nightly by /api/cron/recompute-pipeline-predictions.
+  // predictedValueUSD = expectedAnnualVolumeL × $36/L × stageProbability.
+  // factors is the breakdown so an admin row can be inspected
+  // without re-running the helper.
+  predictedValueUSD          Float?
+  predictedValueComputedAt   DateTime?
+  predictedValueFactors      Json?
+
   // Validation fields (Phase 1 brand audit)
   validationStatus  String?   // verified | irrelevant | dead | duplicate | pending | unknown
   validationReason  String?   // AI-generated explanation for the classification

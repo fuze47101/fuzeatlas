@@ -178,6 +178,11 @@ export async function GET(req: Request) {
         engagement: {
           select: { overallScore: true, engagementTrend: true },
         },
+        // MB-4 — predicted pipeline value (recompute cron stamps these
+        // nightly). Surfaced as a column + sort option on the page.
+        predictedValueUSD: true,
+        predictedValueComputedAt: true,
+        predictedValueFactors: true,
         createdAt: true,
         dateOfInitialContact: true,
       },
@@ -232,6 +237,9 @@ export async function GET(req: Request) {
         counts: b._count,
         createdAt: b.createdAt,
         dateOfInitialContact: b.dateOfInitialContact,
+        predictedValueUSD: b.predictedValueUSD ?? null,
+        predictedValueComputedAt: b.predictedValueComputedAt ?? null,
+        predictedValueFactors: b.predictedValueFactors ?? null,
       };
     });
 

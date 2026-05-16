@@ -466,6 +466,32 @@ export async function GET(req: Request) {
           take: 25,
         }),
     ),
+    // MB-4 — pipeline-prediction column lands + at least one brand
+    // has a stamp. If the column missing → Prisma throws; if the
+    // cron hasn't run yet the count is 0 but the call still resolves.
+    check(
+      "MB-4 prediction — Brand.predictedValueUSD column",
+      "brand findFirst predictedValueUSD/predictedValueComputedAt",
+      () =>
+        prisma.brand.findFirst({
+          select: {
+            id: true,
+            predictedValueUSD: true,
+            predictedValueComputedAt: true,
+            predictedValueFactors: true,
+          } as any,
+        }),
+    ),
+    check(
+      "MB-4 prediction — Top-10 widget readiness",
+      "brand count predictedValueUSD not null",
+      () =>
+        prisma.brand.findMany({
+          where: { predictedValueUSD: { not: null } } as any,
+          select: { id: true } as any,
+          take: 25,
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

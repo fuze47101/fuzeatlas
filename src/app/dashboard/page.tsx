@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/i18n";
 import MyTasksPanel from "@/components/MyTasksPanel";
 import ErrorPanel from "@/components/ErrorPanel";
+import TopPipelinePotential from "@/components/TopPipelinePotential";
 
 type DashData = {
   ok: boolean;
@@ -351,6 +352,11 @@ function AdminDashboard({ data, t }: { data: DashData; t: any }) {
       {/* My Tasks */}
       <div className="mb-6">
         <MyTasksPanel limit={6} />
+      </div>
+
+      {/* MB-4 — Top 10 brands by predicted value (BD reps' call-list). */}
+      <div className="mb-6">
+        <TopPipelinePotential />
       </div>
 
       {/* KPI Cards */}

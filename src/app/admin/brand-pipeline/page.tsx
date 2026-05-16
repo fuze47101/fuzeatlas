@@ -47,6 +47,9 @@ interface BrandEntry {
   lastNote: { content: string; noteType: string; date: string; contactName: string | null } | null;
   daysSinceActivity: number | null;
   counts: Record<string, number>;
+  predictedValueUSD: number | null;
+  predictedValueComputedAt: string | null;
+  predictedValueFactors: any;
   createdAt: string;
   dateOfInitialContact: string | null;
 }
@@ -74,6 +77,30 @@ const STAGE_COLORS: Record<string, string> = {
   CUSTOMER_WON: "bg-teal-100 text-teal-700",
   ARCHIVE: "bg-slate-100 text-slate-500",
 };
+
+// MB-4 — chip color scales with stage-probability so the eye can
+// scan high-confidence dollar values quickly. Thresholds match the
+// STAGE_PROBABILITY lookup in src/lib/pipeline-prediction.ts.
+function potentialChipClass(stageProbability: number | undefined | null): string {
+  const p = typeof stageProbability === "number" ? stageProbability : 0;
+  if (p >= 0.65) return "bg-emerald-100 text-emerald-700"; // FACTORY_TESTING+
+  if (p >= 0.30) return "bg-amber-100 text-amber-700"; // BRAND_TESTING / FACTORY_ONBOARDING
+  return "bg-slate-100 text-slate-600"; // LEAD / PRESENTATION
+}
+
+function potentialTooltip(b: BrandEntry): string {
+  const f = (b.predictedValueFactors || {}) as any;
+  const parts = [
+    `$${Math.round((b.predictedValueUSD || 0)).toLocaleString()} predicted (12mo)`,
+    `Stage: ${f.pipelineStage || b.stage} (${Math.round((f.stageProbability || 0) * 100)}%)`,
+    f.matchedVertical ? `Vertical: ${f.matchedVertical}` : "Vertical: default",
+    `Base annual: ${Math.round(f.verticalBaseAnnualL || 0).toLocaleString()} L`,
+    `Engagement ×${(f.engagementMultiplier || 1).toFixed(2)}`,
+    `Relevance ×${(f.relevanceMultiplier || 1).toFixed(2)}`,
+    f.actualsAnchor ? "(anchored to actuals)" : "",
+  ];
+  return parts.filter(Boolean).join(" · ");
+}
 
 const RELEVANCE_BADGE: Record<string, string> = {
   high: "bg-emerald-100 text-emerald-700",
@@ -112,7 +139,7 @@ export default function BrandPipelinePage() {
   const [stageFilter] = useState("LEAD");
   const [relevanceFilter, setRelevanceFilter] = useState("all");
   const [viewFilter, setViewFilter] = useState("actionable");
-  const [sortBy, setSortBy] = useState<"relevance" | "stage" | "name" | "activity" | "contacts">(
+  const [sortBy, setSortBy] = useState<"relevance" | "stage" | "name" | "activity" | "contacts" | "potential">(
     "relevance",
   );
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -215,6 +242,15 @@ export default function BrandPipelinePage() {
     if (sortBy === "name") return a.name.localeCompare(b.name);
     if (sortBy === "activity") return (a.daysSinceActivity ?? 999) - (b.daysSinceActivity ?? 999);
     if (sortBy === "contacts") return b.contactCount - a.contactCount;
+    if (sortBy === "potential") {
+      // MB-4 — sort by predicted $ value, descending. Brands without
+      // a prediction (cron hasn't stamped yet, or stage is ARCHIVE)
+      // fall to the bottom rather than disappearing.
+      const va = a.predictedValueUSD ?? -1;
+      const vb = b.predictedValueUSD ?? -1;
+      if (vb !== va) return vb - va;
+      return a.name.localeCompare(b.name);
+    }
     return 0;
   });
 
@@ -340,6 +376,7 @@ export default function BrandPipelinePage() {
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
         >
           <option value="relevance">Sort: Relevance</option>
+          <option value="potential">Sort: Potential $</option>
           <option value="stage">Sort: Stage</option>
           <option value="name">Sort: A-Z</option>
           <option value="activity">Sort: Last Activity</option>
@@ -418,6 +455,19 @@ export default function BrandPipelinePage() {
                       {b.textileCategory && (
                         <span className="text-[10px] text-slate-400 truncate hidden lg:inline">
                           {b.textileCategory.replace(/_/g, " ")}
+                        </span>
+                      )}
+                      {/* MB-4 — predicted 12-month $ value. Color
+                          scales with stage probability (green = late
+                          stage / high confidence, yellow = mid,
+                          slate = early lead). Tooltip surfaces the
+                          factor breakdown. */}
+                      {b.predictedValueUSD != null && b.predictedValueUSD > 0 && (
+                        <span
+                          className={`px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 ${potentialChipClass(b.predictedValueFactors?.stageProbability)}`}
+                          title={potentialTooltip(b)}
+                        >
+                          ${Math.round(b.predictedValueUSD / 1000)}k potential
                         </span>
                       )}
                     </div>
