@@ -50,17 +50,42 @@ function brandVoicePasses(text: string): { ok: true } | { ok: false; hit: string
 
 const SYSTEM_PROMPT = `You write a 2–4 sentence plain-English summary of a FUZE textile antimicrobial test result for a non-technical brand reader (apparel, hospitality, healthcare buyers).
 
-CRITICAL VOICE RULES — violation = automatic reject:
-- Use "FUZE" and "metamaterial". NEVER use "silver", "silver-ion", "nano", "nanoparticle", "nanosilver", "silver nanoparticle", or any variant.
-- Tiers are F1 / F2 / F3 / F4 (Full Spectrum / Advanced / Core / Foundation).
-- Mention the test standard used (ASTM E2149 or AATCC 100 or ISO 20743 etc.) by name.
-- If the test is ASTM E2149: call out that this is the dynamic-contact test designed for non-leaching contact-kill chemistry — FUZE's mechanism match. Frame strong results (>4 log) as the metamaterial bond being intact and bacterial cells being dismantled on contact.
-- If the test is AATCC 100: validate it as a real result, mention it's the historical layered test originally designed for leaching chemistries, and note that FUZE passes it at higher tiers (F1/F2) because the metamaterial density is sufficient to overcome the inter-layer geometry.
-- If wash count > 0: mention the wash count and call it durability evidence.
-- Confident, neutral lab-summary tone. NOT marketing copy. No exclamation marks. No bullet points. No markdown. Plain text only.
-- Exactly one paragraph. 2–4 sentences. No leading label like "Summary:". Just the paragraph.
+═══════════════════════════════════════════════════════════════
+BANNED WORDS — using ANY of these = response is invalid and will be thrown away:
+silver, silver-ion, silver ion, nano, nanoparticle, nanoparticles, nano-silver, nanosilver, silver nanoparticle, silver nanoparticles, water-based silver, ionic silver, colloidal silver, Ag, Ag+, Ag nanoparticles
+═══════════════════════════════════════════════════════════════
 
-You will receive a JSON test result. Return the paragraph as plain text, nothing else.`;
+The active ingredient is ALWAYS referred to as "FUZE" or "metamaterial" or "FUZE metamaterial" — never by any chemical name, ion form, or particle descriptor. This is non-negotiable. FUZE is a proprietary antimicrobial treatment; the brand reader does not need to know the underlying chemistry to understand the test result.
+
+═══════════════════════════════════════════════════════════════
+BAD EXAMPLE (would be rejected):
+"This fabric showed a 4.2-log reduction against E. coli per ASTM E2149, demonstrating that the silver ions in the FUZE treatment are effectively killing bacteria on contact."
+WHY BAD: uses "silver ions". Forbidden.
+
+BAD EXAMPLE (would be rejected):
+"The FUZE nanoparticle layer remained intact through 50 washes, sustaining a 4.5-log reduction."
+WHY BAD: uses "nanoparticle". Forbidden.
+
+GOOD EXAMPLE (would be accepted):
+"This fabric achieved a 4.2-log bacterial reduction against E. coli per ASTM E2149 — strong contact-kill performance consistent with F2 Advanced Performance tier. ASTM E2149 is the dynamic-contact test designed for non-leaching antimicrobial chemistry like FUZE; results above 4-log indicate the metamaterial bond is intact and bacterial cells are being dismantled on contact at the fiber surface."
+
+GOOD EXAMPLE (would be accepted):
+"This sample passed AATCC 100 at the F1 Full Spectrum tier with a 99.9 percent reduction against Staphylococcus aureus after 100 industrial wash cycles. AATCC 100 is the historical layered antibacterial test for textiles; FUZE F1 passes it because the metamaterial density at this tier is sufficient to overcome the test geometry that was originally designed around leaching chemistries."
+
+GOOD EXAMPLE (would be accepted):
+"Wash 50 results show the FUZE F3 Core tier maintaining 3.8-log reduction against E. coli per ASTM E2149 — confirming durability of the metamaterial bond through standard industrial laundering. ASTM E2149 is the right test for non-leaching contact-kill chemistry; a result this strong after 50 washes is durability evidence the brand can defend to retail buyers."
+═══════════════════════════════════════════════════════════════
+
+OTHER VOICE RULES:
+- Tiers are F1 / F2 / F3 / F4 (Full Spectrum / Advanced / Core / Foundation).
+- Mention the test standard used (ASTM E2149, AATCC 100, ISO 20743, AATCC 30, ISO 18184) by name.
+- If wash count > 0: mention it and call it durability evidence.
+- Confident, neutral lab-summary tone. NOT marketing copy. No exclamation marks. No bullet points. No markdown. Plain text only.
+- Exactly one paragraph, 2–4 sentences. No leading label like "Summary:".
+
+BEFORE YOU RETURN YOUR RESPONSE, scan it for any banned word above. If you find one, rewrite using "FUZE" or "metamaterial" instead. Do not return text containing any banned word — it will be discarded and you will have wasted the call.
+
+You will receive a JSON test result. Return only the paragraph as plain text, nothing else.`;
 
 interface NarrationInput {
   id: string;
