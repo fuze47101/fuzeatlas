@@ -33,17 +33,27 @@ export type Scope =
   | { distributorId: string }
   | { admin: true };
 
-/** Where fragment to scope a TestRun query to a specific factory. */
+/** Where fragment to scope a TestRun query to a specific factory.
+ *
+ * NOTE: TestRun has no direct `fabric` relation in the schema — only
+ * `submission`, `lab`, and `project`. Reach Fabric via
+ * `submission.fabric`. The prior version OR'd a `fabric: {...}` filter
+ * which threw "Unknown argument fabric" on every factory portal
+ * Tests page load. Audit-fixed May 16.
+ */
 export function testRunScopeForFactory(factoryId: string) {
   return {
-    OR: [{ fabric: { factoryId } }, { submission: { factoryId } }],
+    OR: [
+      { submission: { factoryId } },
+      { submission: { fabric: { factoryId } } },
+    ],
   } as const;
 }
 
 /** Where fragment to scope a TestRun query to a specific brand. */
 export function testRunScopeForBrand(brandId: string) {
   return {
-    OR: [{ fabric: { brandId } }, { submission: { fabric: { brandId } } }],
+    submission: { fabric: { brandId } },
   } as const;
 }
 
@@ -51,8 +61,8 @@ export function testRunScopeForBrand(brandId: string) {
 export function testRunScopeForDistributor(distributorId: string) {
   return {
     OR: [
-      { fabric: { factory: { distributorId } } },
       { submission: { factory: { distributorId } } },
+      { submission: { fabric: { factory: { distributorId } } } },
     ],
   } as const;
 }

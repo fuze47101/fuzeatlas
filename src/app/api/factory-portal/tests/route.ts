@@ -62,18 +62,14 @@ export async function GET(req: Request) {
     const testRuns = await prisma.testRun.findMany({
       where,
       include: {
-        fabric: {
-          select: {
-            id: true,
-            fuzeNumber: true,
-            customerCode: true,
-            factoryCode: true,
-          },
-        },
+        // TestRun has no direct `fabric` relation in the schema.
+        // Reach Fabric via submission.fabric. Audit fix May 16.
         submission: {
           select: {
             id: true,
-            submissionDate: true,
+            // FabricSubmission has no submissionDate column either —
+            // use createdAt instead. Same audit.
+            createdAt: true,
             factoryId: true,
             factory: { select: { id: true, name: true } },
             brand: { select: { id: true, name: true } },
@@ -83,6 +79,14 @@ export async function GET(req: Request) {
             fuzeFabricNumber: true,
             customerFabricCode: true,
             factoryFabricCode: true,
+            fabric: {
+              select: {
+                id: true,
+                fuzeNumber: true,
+                customerCode: true,
+                factoryCode: true,
+              },
+            },
           },
         },
         lab: { select: { id: true, name: true } },
@@ -107,11 +111,13 @@ export async function GET(req: Request) {
 
     const runs = testRuns.map((run) => {
       const reportDoc = run.documents?.[0] || null;
-      const fuzeNumber = run.fabric?.fuzeNumber ?? run.submission?.fuzeFabricNumber ?? null;
-      const customerCode =
-        run.fabric?.customerCode ?? run.submission?.customerFabricCode ?? null;
-      const factoryCode =
-        run.fabric?.factoryCode ?? run.submission?.factoryFabricCode ?? null;
+      // Fabric is now nested under submission (TestRun has no direct
+      // fabric relation). Walk through submission.fabric, fall back to
+      // submission-level fields.
+      const subFabric = run.submission?.fabric || null;
+      const fuzeNumber = subFabric?.fuzeNumber ?? run.submission?.fuzeFabricNumber ?? null;
+      const customerCode = subFabric?.customerCode ?? run.submission?.customerFabricCode ?? null;
+      const factoryCode = subFabric?.factoryCode ?? run.submission?.factoryFabricCode ?? null;
       return {
         id: run.id,
         testType: run.testType,
@@ -123,14 +129,19 @@ export async function GET(req: Request) {
         fuzeNumber,
         customerCode,
         factoryCode,
-        fabricId: run.fabricId,
+        // fabricId lives on TestRun directly via the submission, but we
+        // don't have it in the select anymore. Drop or pull from nested
+        // submission.fabric if available.
+        fabricId: subFabric?.id || null,
         hasIcp: run.hasIcp,
         hasAb: run.hasAb,
         hasFungal: run.hasFungal,
         hasOdor: run.hasOdor,
         result: run.result,
-        submissionDate: run.submission?.submissionDate
-          ? new Date(run.submission.submissionDate).toLocaleDateString()
+        // FabricSubmission has no submissionDate column; createdAt is
+        // the equivalent. Audit fix May 16.
+        submissionDate: run.submission?.createdAt
+          ? new Date(run.submission.createdAt).toLocaleDateString()
           : null,
         // Brand attribution for context — visible to the factory only
         // when FUZE has linked a brand to the submission.

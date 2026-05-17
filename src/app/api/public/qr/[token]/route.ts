@@ -78,7 +78,14 @@ export async function GET(
         testMethodStd: true,
         testDate: true,
         washCount: true,
-        submission: { select: { fuzeTier: true } },
+        // Tier on Fabric.targetFuzeTier, NOT FabricSubmission. Was
+        // throwing "Unknown field fuzeTier" on every QR scan. Audit
+        // May 16.
+        submission: {
+          select: {
+            fabric: { select: { targetFuzeTier: true } },
+          },
+        },
         icpResult: { select: { agValue: true, unit: true } },
         abResult: { select: { result1: true, organism1: true, pass: true } },
       },
@@ -89,14 +96,19 @@ export async function GET(
         method: tr.testMethodStd,
         date: tr.testDate,
         washCount: tr.washCount,
+        // Brand-voice fix: previously returned "Ag X ppm" — "Ag" is
+        // the chemical symbol for silver, BANNED in customer-facing
+        // copy. Public hangtag QR scans were leaking it. Now returns
+        // "FUZE residual X.XX ppm" which matches the FUZE voice (see
+        // src/lib/fuze-knowledge.ts).
         result:
           tr.icpResult?.agValue != null
-            ? `Ag ${tr.icpResult.agValue.toFixed(2)} ${tr.icpResult.unit || "ppm"}`
+            ? `FUZE residual ${tr.icpResult.agValue.toFixed(2)} ${tr.icpResult.unit || "ppm"}`
             : tr.abResult?.result1 != null
               ? `${tr.abResult.result1.toFixed(2)} log reduction${tr.abResult.organism1 ? ` vs ${tr.abResult.organism1}` : ""}`
               : "Verified",
       };
-      fuzeTier = tr.submission?.fuzeTier || null;
+      fuzeTier = tr.submission?.fabric?.targetFuzeTier || null;
       washCount = tr.washCount || null;
     }
   }

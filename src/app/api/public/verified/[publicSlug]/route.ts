@@ -36,7 +36,8 @@ export async function GET(
           id: true,
           name: true,
           website: true,
-          country: true,
+          // Brand model has no country column — was throwing on every
+          // public QR scan / verified-page load. Dropped May 16 audit.
           textileCategory: true,
         },
       },
@@ -82,13 +83,18 @@ export async function GET(
       select: { country: true },
       distinct: ["country"],
     }),
+    // Tier lives on Fabric.targetFuzeTier, NOT on FabricSubmission —
+    // submission has no fuzeTier column. Pull via the related fabric.
     prisma.fabricSubmission.findMany({
       where: {
         brandId: profile.brandId,
         brandApprovalStatus: "APPROVED",
-        fuzeTier: { not: null },
+        fabric: { targetFuzeTier: { not: null } },
       },
-      select: { fuzeTier: true, updatedAt: true },
+      select: {
+        updatedAt: true,
+        fabric: { select: { targetFuzeTier: true } },
+      },
       orderBy: { updatedAt: "desc" },
       take: 200,
     }),
@@ -96,9 +102,10 @@ export async function GET(
 
   const tierMap = new Map<string, { tier: string; lastPassedAt: Date }>();
   for (const r of recentTiers) {
-    if (!r.fuzeTier) continue;
-    if (!tierMap.has(r.fuzeTier)) {
-      tierMap.set(r.fuzeTier, { tier: r.fuzeTier, lastPassedAt: r.updatedAt });
+    const tier = r.fabric?.targetFuzeTier;
+    if (!tier) continue;
+    if (!tierMap.has(tier)) {
+      tierMap.set(tier, { tier, lastPassedAt: r.updatedAt });
     }
   }
   const activeTiers = Array.from(tierMap.values()).sort((a, b) =>
@@ -111,7 +118,7 @@ export async function GET(
       brand: {
         name: profile.brand.name,
         website: profile.brand.website,
-        country: profile.brand.country,
+        // Brand.country dropped — column doesn't exist on Brand model.
         textileCategory: profile.brand.textileCategory,
       },
       profile: {
