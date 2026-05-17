@@ -2,11 +2,14 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function DistributorInventoryPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.inventoryView;
   const router = useRouter();
   const [inventory, setInventory] = useState<any>(null);
   const [pricing, setPricing] = useState<any[]>([]);
@@ -197,8 +200,8 @@ export default function DistributorInventoryPage() {
     <div className="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Inventory & Pricing</h1>
-          <p className="text-slate-500 mt-1">Manage your FUZE stock levels and factory pricing</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{tx.pageTitle}</h1>
+          <p className="text-slate-500 mt-1">{tx.pageSubtitle}</p>
         </div>
       </div>
 

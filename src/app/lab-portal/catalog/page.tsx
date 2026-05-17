@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 
 const TEST_TYPES = [
   "ICP", "ANTIBACTERIAL", "FUNGAL", "ODOR", "UV", "MICROFIBER",
@@ -18,6 +19,8 @@ const EMPTY_SERVICE = {
 };
 
 export default function LabCatalogPage() {
+  const { t } = useI18n();
+  const tx = t.labPortal.catalogPage;
   const [data, setData] = useState<any>(null);
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,7 +86,7 @@ export default function LabCatalogPage() {
     <div className="max-w-[1400px] mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">Test Catalog</h1>
+          <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
           <p className="text-sm text-slate-500 mt-1">{data.lab.name} — {services.length} test{services.length !== 1 ? "s" : ""} listed</p>
         </div>
         <div className="flex gap-2">

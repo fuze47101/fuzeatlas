@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
 import ErrorPanel from "@/components/ErrorPanel";
+import { useI18n } from "@/i18n";
 
 interface UploadDoc {
   id: string;
@@ -36,6 +37,8 @@ interface Stats {
 
 export default function LabUploadsPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.labPortal.uploadsPage;
   const [documents, setDocuments] = useState<UploadDoc[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -83,12 +86,12 @@ export default function LabUploadsPage() {
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
             <Link href="/lab-portal" className="hover:text-[#00b4c3]">
-              Lab Portal
+              {t.labPortal.crumb}
             </Link>
             <span>/</span>
-            <span>Upload History</span>
+            <span>{tx.crumbCurrent}</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Upload History</h1>
+          <h1 className="text-2xl font-bold text-slate-900">{tx.pageTitle}</h1>
           <p className="text-slate-500 text-sm mt-1">
             View all reports uploaded and verify their status
           </p>

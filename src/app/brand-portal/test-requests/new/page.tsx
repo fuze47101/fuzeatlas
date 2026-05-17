@@ -15,6 +15,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import ErrorPanel from "@/components/ErrorPanel";
 
 interface LabService {
@@ -50,6 +51,8 @@ interface Fabric {
 
 export default function BrandNewTestRequestPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.brandPortal.testRequestNew;
   const router = useRouter();
 
   const [defaults, setDefaults] = useState<any>(null);
@@ -213,16 +216,16 @@ export default function BrandNewTestRequestPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/brand-portal" className="hover:text-[#00b4c3]">
-            Brand Portal
+            {t.brandPortal.crumb}
           </Link>
           <span>›</span>
           <Link href="/brand-portal/tests" className="hover:text-[#00b4c3]">
-            Tests
+            {t.brandPortal.testsList.crumbCurrent}
           </Link>
           <span>›</span>
-          <span>New request</span>
+          <span>{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">New test request</h1>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">
           Pick a fabric + the tests you want; we'll route to the right lab. Pre-filled
           from your brand spec where possible.

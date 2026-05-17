@@ -1,8 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import FormField from "@/components/FormField";
+import { useI18n } from "@/i18n";
 
 export default function LabProfilePage() {
+  const { t } = useI18n();
+  const tx = t.labPortal.profilePage;
   const [data, setData] = useState<any>(null);
   const [profile, setProfile] = useState<any>({});
   const [loading, setLoading] = useState(true);
@@ -47,7 +50,7 @@ export default function LabProfilePage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900">Lab Profile</h1>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">Update your laboratory information visible to FUZE and customers.</p>
       </div>
 

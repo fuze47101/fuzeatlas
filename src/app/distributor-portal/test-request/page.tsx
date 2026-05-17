@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -42,6 +43,8 @@ interface Lab {
 
 export default function DistributorTestRequestPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.testRequestPage;
   const router = useRouter();
 
   const [searchInput, setSearchInput] = useState("");
@@ -280,12 +283,12 @@ export default function DistributorTestRequestPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/distributor-portal" className="hover:text-[#00b4c3]">
-            Distributor Portal
+            {t.distributorPortal.crumb}
           </Link>
           <span>/</span>
-          <span className="text-slate-800 font-medium">Apply for Test</span>
+          <span className="text-slate-800 font-medium">{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">Apply for Test (ICP / AM / Other)</h1>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">
           Submit ICP, antibacterial, antifungal or other lab tests on behalf of one of your
           customers

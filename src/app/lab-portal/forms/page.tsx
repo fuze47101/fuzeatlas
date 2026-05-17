@@ -1,7 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 
 export default function LabFormsPage() {
+  const { t } = useI18n();
+  const tx = t.labPortal.formsPage;
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +24,7 @@ export default function LabFormsPage() {
     <div className="max-w-[1000px] mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">Forms & Documents</h1>
+          <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
           <p className="text-sm text-slate-500 mt-1">{data.lab.name} — Upload test forms for each service you offer.</p>
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 
 interface Credit {
   id: string;
@@ -12,6 +13,8 @@ interface Credit {
 }
 
 export default function LabCreditsPage() {
+  const { t } = useI18n();
+  const tx = t.labPortal.creditsPage;
   const [data, setData] = useState<{ credits: Credit[]; balance: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +33,7 @@ export default function LabCreditsPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-4 sm:p-6">
-      <h1 className="text-2xl font-black text-slate-900 mb-2">Lab credits</h1>
+      <h1 className="text-2xl font-black text-slate-900 mb-2">{tx.pageTitle}</h1>
       <p className="text-sm text-slate-500 mb-6">
         Credit FUZE has accumulated with you for past referrals + adjustments.
         Auto-applies against future FUZE-paid testing at this lab.

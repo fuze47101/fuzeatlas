@@ -2,6 +2,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -32,6 +33,8 @@ const STATUS_GROUPS: Array<{ id: string; label: string; statuses: string[] }> = 
 
 export default function DistributorFactoryOrdersPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.factoryOrders;
   const router = useRouter();
 
   const isDistributor = user?.role === "DISTRIBUTOR_USER";
@@ -108,15 +111,13 @@ export default function DistributorFactoryOrdersPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/distributor-portal" className="hover:text-[#00b4c3]">
-            Distributor Portal
+            {t.distributorPortal.crumb}
           </Link>
           <span>/</span>
-          <span className="text-slate-800 font-medium">Factory Orders</span>
+          <span className="text-slate-800 font-medium">{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-900">Factory Orders</h1>
-        <p className="text-slate-500 text-sm mt-1">
-          FUZE orders flowing in from the factories you supply.
-        </p>
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900">{tx.pageTitle}</h1>
+        <p className="text-slate-500 text-sm mt-1">{tx.pageSubtitle}</p>
       </div>
 
       {/* Stats */}

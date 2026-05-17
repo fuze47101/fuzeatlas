@@ -2,6 +2,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { calcQuote, money, type CalcInputs, type CalcOutputs } from "@/lib/fuze-calc";
 
 /* ── Test Request Modal ── */
@@ -350,6 +351,8 @@ function CostCard({ fabric }: { fabric: any }) {
 export default function BrandPortalFabricsPage() {
   const router = useRouter();
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.brandPortal.fabricsList;
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
@@ -436,7 +439,7 @@ export default function BrandPortalFabricsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">Fabrics</h1>
+          <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
           <p className="text-sm text-slate-500 mt-1">
             {data.brand.name} — {data.fabrics.length} fabric{data.fabrics.length !== 1 ? "s" : ""} registered
           </p>

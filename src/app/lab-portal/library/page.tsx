@@ -1,6 +1,8 @@
 "use client";
 import LibraryView from "@/components/LibraryView";
+import { useI18n } from "@/i18n";
 
 export default function LabPortalLibraryPage() {
-  return <LibraryView crumbLabel="Lab Portal" crumbHref="/lab-portal" />;
+  const { t } = useI18n();
+  return <LibraryView crumbLabel={t.labPortal.crumb} crumbHref="/lab-portal" />;
 }

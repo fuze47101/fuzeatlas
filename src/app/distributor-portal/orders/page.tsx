@@ -2,6 +2,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 
@@ -92,6 +93,8 @@ const UNIT_META: Record<string, { label: string; liters: number; desc: string; i
 
 export default function DistributorOrdersPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.ordersPage;
   const router = useRouter();
   const [orders, setOrders] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
@@ -311,10 +314,8 @@ export default function DistributorOrdersPage() {
     <div className="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto">
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Orders</h1>
-          <p className="text-slate-500 mt-1">
-            Orders assigned to your distribution center for fulfillment
-          </p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{tx.pageTitle}</h1>
+          <p className="text-slate-500 mt-1">{tx.pageSubtitle}</p>
         </div>
         <button
           onClick={() => {

@@ -2,12 +2,15 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function DistributorUploadReportPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.uploadReportPage;
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -74,11 +77,11 @@ export default function DistributorUploadReportPage() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-          <Link href="/distributor-portal" className="hover:text-[#00b4c3]">Distributor Portal</Link>
+          <Link href="/distributor-portal" className="hover:text-[#00b4c3]">{t.distributorPortal.crumb}</Link>
           <span>/</span>
-          <span className="text-slate-800 font-medium">Upload Test Report</span>
+          <span className="text-slate-800 font-medium">{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">Upload Test Report</h1>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">
           Upload lab test reports (PDF) for parsing and linking to fabrics
         </p>

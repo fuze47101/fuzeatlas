@@ -2,6 +2,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -34,6 +35,8 @@ const UNITS: Array<{
 
 export default function DistributorRestockNewPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.restockNew;
   const router = useRouter();
 
   const isDistributor = user?.role === "DISTRIBUTOR_USER";
@@ -155,20 +158,17 @@ export default function DistributorRestockNewPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/distributor-portal" className="hover:text-[#00b4c3]">
-            Distributor Portal
+            {t.distributorPortal.crumb}
           </Link>
           <span>/</span>
           <Link href="/distributor-portal/restock" className="hover:text-[#00b4c3]">
-            Restock
+            {t.distributorPortal.restock.crumbCurrent}
           </Link>
           <span>/</span>
-          <span className="text-slate-800 font-medium">New</span>
+          <span className="text-slate-800 font-medium">{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-900">New Restock Order</h1>
-        <p className="text-slate-500 text-sm mt-1">
-          Order raw FUZE from FUZE Direct in Salt Lake City. International orders ship by gaylord
-          minimum (32 × 19L = 608L) or container.
-        </p>
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900">{tx.pageTitle}</h1>
+        <p className="text-slate-500 text-sm mt-1">{tx.pageSubtitle}</p>
       </div>
 
       <form onSubmit={submit} className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">

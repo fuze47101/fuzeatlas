@@ -12,8 +12,11 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import IcpCorrelationChart from "@/components/IcpCorrelationChart";
 import ErrorPanel from "@/components/ErrorPanel";
+import { useI18n } from "@/i18n";
 
 export default function BrandIcpCorrelationPage() {
+  const { t } = useI18n();
+  const tx = t.brandPortal.icpCorrelation;
   const [points, setPoints] = useState<any[]>([]);
   const [regression, setRegression] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -47,12 +50,12 @@ export default function BrandIcpCorrelationPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/brand-portal" className="hover:text-[#00b4c3]">
-            Brand Portal
+            {t.brandPortal.crumb}
           </Link>
           <span>›</span>
-          <span>ICP correlation</span>
+          <span>{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">ICP × AB correlation</h1>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">
           Your brand's FUZE residual measurements (from ICP testing) plotted against
           antibacterial kill rate. Confirms the dosage-efficacy relationship across

@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -55,6 +56,8 @@ const DOC_TYPE_COLORS: Record<string, string> = {
 
 export default function DistributorDocumentsPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.documentsPage;
   const router = useRouter();
   const [documents, setDocuments] = useState<DistDoc[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,14 +111,12 @@ export default function DistributorDocumentsPage() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-          <Link href="/distributor-portal" className="hover:text-[#00b4c3]">Distributor Portal</Link>
+          <Link href="/distributor-portal" className="hover:text-[#00b4c3]">{t.distributorPortal.crumb}</Link>
           <span>/</span>
-          <span className="text-slate-800 font-medium">Documents</span>
+          <span className="text-slate-800 font-medium">{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">Document Library</h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Certificates of Analysis, Bills of Lading, customs and import/export documentation
-        </p>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
+        <p className="text-sm text-slate-500 mt-1">{tx.pageSubtitle}</p>
       </div>
 
       {/* Filters */}

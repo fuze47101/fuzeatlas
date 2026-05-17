@@ -15,6 +15,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 
 interface Order {
   id: string;
@@ -45,6 +46,8 @@ interface Sub {
 
 export default function IncomingOrdersPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.incomingOrdersPage;
   const [orders, setOrders] = useState<Order[]>([]);
   const [subs, setSubs] = useState<Sub[]>([]);
   const [summary, setSummary] = useState<any>(null);
@@ -105,14 +108,12 @@ export default function IncomingOrdersPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/distributor-portal" className="hover:text-[#00b4c3]">
-            Distributor Portal
+            {t.distributorPortal.crumb}
           </Link>
           <span>/</span>
-          <span>Incoming Orders</span>
+          <span>{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-3xl font-black text-slate-900">
-          Incoming Restocks (from your sub-distributors)
-        </h1>
+        <h1 className="text-3xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-slate-600 mt-1">
           You're acting as a master — these are restock orders your
           sub-distributors have placed against your warehouse. Approve,

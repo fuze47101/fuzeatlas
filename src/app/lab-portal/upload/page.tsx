@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface UploadResult {
   documentId: string;
@@ -50,6 +51,8 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function LabUploadPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.labPortal.uploadPage;
   const [tab, setTab] = useState<"upload" | "pending">("upload");
 
   // Upload state
@@ -197,12 +200,12 @@ export default function LabUploadPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
           <Link href="/lab-portal" className="hover:text-[#00b4c3]">
-            Lab Portal
+            {t.labPortal.crumb}
           </Link>
           <span>/</span>
-          <span>Test Reports</span>
+          <span>{tx.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">📄 Test Report Upload</h1>
+        <h1 className="text-2xl font-black text-slate-900">📄 {tx.pageTitle}</h1>
         <p className="text-slate-500 mt-1">Upload completed test reports and track pending tests</p>
       </div>
 

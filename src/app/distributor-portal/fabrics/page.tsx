@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 
 interface Fabric {
   id: string;
@@ -62,6 +63,8 @@ const initialForm = {
 
 export default function DistributorFabricPortfolioPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.fabricsList;
   const router = useRouter();
 
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
@@ -230,12 +233,12 @@ export default function DistributorFabricPortfolioPage() {
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
             <Link href="/distributor-portal" className="hover:text-[#00b4c3]">
-              Distributor Portal
+              {t.distributorPortal.crumb}
             </Link>
             <span>/</span>
-            <span className="font-medium text-slate-800">Fabric Portfolio</span>
+            <span className="font-medium text-slate-800">{tx.crumbCurrent}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900">My Fabric Portfolio</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900">{tx.pageTitle}</h1>
           <p className="text-slate-500 mt-1 max-w-2xl text-sm">
             Fabrics you own or are testing independently — co-op programs,
             multi-brand pilots, exploratory development. These are

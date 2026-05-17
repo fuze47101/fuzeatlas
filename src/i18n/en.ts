@@ -887,6 +887,111 @@ const en = {
       // Tooltip-ish
       flagDetail: "Expected {expected} L · actual {actual} L",
     },
+
+    // ─── Per-page chrome added in NEED-FB-6 depth pass ──
+    common: {
+      retry: "Retry",
+      loading: "Loading…",
+      saving: "Saving…",
+      cancel: "Cancel",
+      save: "Save",
+      close: "Close",
+      back: "Back",
+      submit: "Submit",
+      submitting: "Submitting…",
+      delete: "Delete",
+      edit: "Edit",
+    },
+    restock: {
+      crumbCurrent: "Restock",
+      pageTitle: "Restock from FUZE",
+      pageSubtitle:
+        "Order carboys, gaylords, or containers from FUZE Direct in Salt Lake City.",
+    },
+    restockNew: {
+      crumbCurrent: "New",
+      pageTitle: "New Restock Order",
+      pageSubtitle:
+        "Order raw FUZE from FUZE Direct in Salt Lake City. International orders ship by gaylord minimum (32 × 19L = 608L) or container.",
+    },
+    factoryOrders: {
+      crumbCurrent: "Factory Orders",
+      pageTitle: "Factory Orders",
+      pageSubtitle: "FUZE orders flowing in from the factories you supply.",
+    },
+    pricingTiers: {
+      crumbCurrent: "Pricing Tiers",
+      pageTitle: "Factory Pricing Tiers",
+      pageSubtitle:
+        "Set up to 5 pricing tiers for the factories you supply. Each factory you supply gets assigned to one tier; the quote engine reads that tier's price when the factory orders.",
+    },
+    fabricsList: {
+      crumbCurrent: "Fabrics",
+      pageTitle: "Tested Fabrics",
+      pageSubtitle:
+        "Every fabric that has moved through your distributor pipeline — submissions, treatments, tests.",
+    },
+    inventoryView: {
+      crumbCurrent: "Inventory",
+      pageTitle: "Inventory & Pricing",
+      pageSubtitle:
+        "FUZE stock on hand, reorder points, and the price ladder you offer your factories.",
+    },
+    invoicesPage: {
+      crumbCurrent: "Invoices",
+      pageTitle: "Invoices",
+      pageSubtitle: "Track outstanding amounts and payment status.",
+    },
+    documentsPage: {
+      crumbCurrent: "Documents",
+      pageTitle: "Documents",
+      pageSubtitle:
+        "Compliance pack, C of A, BOL, customs and import/export documents.",
+    },
+    testRequestPage: {
+      crumbCurrent: "Apply for Test",
+      pageTitle: "Apply for Test",
+      pageSubtitle:
+        "Submit ICP, antimicrobial, or other tests for the brands and factories you serve.",
+    },
+    testReportsPage: {
+      crumbCurrent: "Test Reports",
+      pageTitle: "Test Reports",
+      pageSubtitle:
+        "Lab reports for the brands and factories you serve. Refresh after stamping brand-visible.",
+    },
+    uploadReportPage: {
+      crumbCurrent: "Upload Report",
+      pageTitle: "Upload Test Report",
+      pageSubtitle:
+        "Drag-and-drop a lab PDF. We parse and link it to the right fabric.",
+    },
+    ordersPage: {
+      crumbCurrent: "Orders",
+      pageTitle: "Orders",
+      pageSubtitle: "Active FUZE orders the factories you supply have placed.",
+    },
+    incomingOrdersPage: {
+      crumbCurrent: "Incoming Orders",
+      pageTitle: "Incoming Orders",
+      pageSubtitle: "Orders sent from sub-distributors for you to fulfill.",
+    },
+    libraryPage: {
+      crumbCurrent: "Library",
+      pageTitle: "Library",
+      pageSubtitle: "FUZE knowledge, sustainability data, and reference docs.",
+    },
+    activityLogPage: {
+      crumbCurrent: "Activity Log",
+      pageTitle: "Activity Log",
+      pageSubtitle: "Audit trail of every action on your distributor account.",
+    },
+    teamPage: {
+      crumbCurrent: "Team",
+      pageTitle: "Team",
+      pageSubtitle:
+        "Invite teammates, manage roles, and revoke access for departed members.",
+    },
   },
 
   // ─── DISTRIBUTOR RESTOCK ──────────────────────
@@ -2531,6 +2636,67 @@ const en = {
       colFuzeConsumed: "FUZE consumed",
       colShare: "Share",
     },
+
+    // ─── Per-page chrome added in NEED-FB-6 depth pass ──
+    common: {
+      retry: "Retry",
+      loading: "Loading…",
+      cancel: "Cancel",
+      save: "Save",
+      close: "Close",
+    },
+    fabricsList: {
+      crumbCurrent: "Fabrics",
+      pageTitle: "Fabrics",
+      pageSubtitle:
+        "Every fabric your brand has submitted for FUZE treatment, with current treatment + test state.",
+    },
+    storefrontPage: {
+      crumbCurrent: "Storefront",
+      pageTitle: "Brand Storefront",
+      pageSubtitle:
+        "Configure the public-facing storefront page customers see when they scan your QR codes.",
+    },
+    testsList: {
+      crumbCurrent: "Tests",
+      pageTitle: "Test Results",
+      pageSubtitle:
+        "Lab-verified results for fabrics in your supply chain.",
+    },
+    libraryPage: {
+      crumbCurrent: "Library",
+      pageTitle: "Library",
+      pageSubtitle: "Reference docs, FUZE knowledge, sustainability data.",
+    },
+    activityLogPage: {
+      crumbCurrent: "Activity Log",
+      pageTitle: "Activity Log",
+      pageSubtitle: "Audit trail of every action on your brand account.",
+    },
+    documentsPage: {
+      crumbCurrent: "Documents",
+      pageTitle: "Documents",
+      pageSubtitle:
+        "Compliance pack, ESG snapshots, protocol docs you've shared with factories.",
+    },
+    testRequestNew: {
+      crumbCurrent: "New Test Request",
+      pageTitle: "New Test Request",
+      pageSubtitle:
+        "Request testing on a fabric in your supply chain. The lab assignment, tier validation, and notifications fan out automatically.",
+    },
+    supplyChainMap: {
+      crumbCurrent: "Supply Chain Map",
+      pageTitle: "Supply Chain Map",
+      pageSubtitle:
+        "Geographic view of every factory in your supply chain. Marker size scales with FUZE consumption.",
+    },
+    icpCorrelation: {
+      crumbCurrent: "ICP × Antimicrobial Correlation",
+      pageTitle: "ICP × Antimicrobial Correlation",
+      pageSubtitle:
+        "Scatterplot of fabric ICP loading vs measured antimicrobial reduction. Confirms the dose-response slope holds across your supply chain.",
+    },
   },
 
   // ─── LAB PORTAL ───────────────────────────────
@@ -2616,6 +2782,89 @@ const en = {
       colEstCost: "Est. Cost",
       testsCountSingular: "{count} test",
       testsCountPlural: "{count} tests",
+    },
+
+    // ─── Per-page chrome added in NEED-FB-6 depth pass ──
+    common: {
+      retry: "Retry",
+      loading: "Loading…",
+      cancel: "Cancel",
+      save: "Save",
+      close: "Close",
+    },
+    formsPage: {
+      crumbCurrent: "Forms",
+      pageTitle: "Lab Forms",
+      pageSubtitle:
+        "Templates for the lab forms your team fills in alongside each test run.",
+    },
+    catalogPage: {
+      crumbCurrent: "Test Catalog",
+      pageTitle: "Test Catalog",
+      pageSubtitle:
+        "Tests this lab offers, with turnaround days, prices, and methodology notes.",
+    },
+    labTestsPage: {
+      crumbCurrent: "Lab Tests",
+      pageTitle: "Lab Tests",
+      pageSubtitle: "Tests this lab supports, with edit/disable controls.",
+    },
+    uploadsPage: {
+      crumbCurrent: "Uploads",
+      pageTitle: "Uploaded Reports",
+      pageSubtitle:
+        "Test reports uploaded by your lab team, with parse status.",
+    },
+    uploadPage: {
+      crumbCurrent: "Upload",
+      pageTitle: "Upload Test Report",
+      pageSubtitle:
+        "Drag-and-drop a lab PDF. We parse the result fields and link to the right fabric.",
+    },
+    requestsPage: {
+      crumbCurrent: "Requests",
+      pageTitle: "Test Requests",
+      pageSubtitle:
+        "Active requests assigned to your lab. Accept to pick up, reject to bounce back.",
+    },
+    libraryPage: {
+      crumbCurrent: "Library",
+      pageTitle: "Library",
+      pageSubtitle: "Reference docs, FUZE knowledge, sustainability data.",
+    },
+    activityLogPage: {
+      crumbCurrent: "Activity Log",
+      pageTitle: "Activity Log",
+      pageSubtitle: "Audit trail of every action on your lab account.",
+    },
+    profilePage: {
+      crumbCurrent: "Profile",
+      pageTitle: "Lab Profile",
+      pageSubtitle:
+        "Update your lab's contact info, capabilities, and turnaround times.",
+    },
+    teamPage: {
+      crumbCurrent: "Team",
+      pageTitle: "Team",
+      pageSubtitle:
+        "Invite teammates, manage roles, and revoke access for departed members.",
+    },
+    documentsPage: {
+      crumbCurrent: "Documents",
+      pageTitle: "Documents",
+      pageSubtitle: "Reports, instrument manuals, and reference docs.",
+    },
+    creditsPage: {
+      crumbCurrent: "Credits",
+      pageTitle: "Lab Credits",
+      pageSubtitle:
+        "Prepaid testing credits remaining on your account, with consumption history.",
+    },
+    wizardPage: {
+      crumbCurrent: "Wizard",
+      pageTitle: "Test Wizard",
+      pageSubtitle:
+        "Step-by-step lab form for this test type. Save as you go.",
     },
   },
 

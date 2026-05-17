@@ -1,6 +1,8 @@
 "use client";
 import LibraryView from "@/components/LibraryView";
+import { useI18n } from "@/i18n";
 
 export default function DistributorPortalLibraryPage() {
-  return <LibraryView crumbLabel="Distributor Portal" crumbHref="/distributor-portal" />;
+  const { t } = useI18n();
+  return <LibraryView crumbLabel={t.distributorPortal.crumb} crumbHref="/distributor-portal" />;
 }

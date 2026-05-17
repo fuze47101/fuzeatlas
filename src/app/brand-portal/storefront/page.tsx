@@ -8,6 +8,7 @@
  */
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface Payload {
   ok: boolean;
@@ -20,6 +21,8 @@ interface Payload {
 }
 
 export default function StorefrontTrafficPage() {
+  const { t } = useI18n();
+  const tx = t.brandPortal.storefrontPage;
   const [data, setData] = useState<Payload | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +42,7 @@ export default function StorefrontTrafficPage() {
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900">Storefront traffic</h1>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">
           Public-page visits + QR hangtag scans over the last {data.windowDays}{" "}
           days.

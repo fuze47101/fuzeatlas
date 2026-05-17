@@ -2,6 +2,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -78,6 +79,8 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function DistributorRestockPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.restock;
   const router = useRouter();
   const [distributor, setDistributor] = useState<Distributor | null>(null);
   const [effective, setEffective] = useState<EffectivePricing | null>(null);
@@ -203,17 +206,17 @@ export default function DistributorRestockPage() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-          <Link href="/distributor-portal" className="hover:text-[#00b4c3]">Distributor Portal</Link>
+          <Link href="/distributor-portal" className="hover:text-[#00b4c3]">{t.distributorPortal.crumb}</Link>
           <span>›</span>
-          <span>Restock from {sourceName}</span>
+          <span>{tx.crumbCurrent} — {sourceName}</span>
         </div>
         <h1 className="text-3xl font-black text-slate-900 mb-1">
-          Restock from {sourceName}
+          {tx.pageTitle} — {sourceName}
         </h1>
         <p className="text-slate-600">
           {ordersFromParent && parent
             ? `Order FUZE product from your master distributor — ${parent.name}${parent.country ? `, ${parent.country}` : ""}.`
-            : "Order FUZE product directly from FUZE HQ in Salt Lake City"}
+            : tx.pageSubtitle}
         </p>
       </div>
 

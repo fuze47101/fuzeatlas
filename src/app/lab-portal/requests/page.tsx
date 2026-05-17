@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING_APPROVAL: "bg-amber-100 text-amber-700",
@@ -12,6 +13,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function LabRequestsPage() {
+  const { t } = useI18n();
+  const tx = t.labPortal.requestsPage;
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -32,7 +35,7 @@ export default function LabRequestsPage() {
   return (
     <div className="max-w-[1400px] mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900">Test Requests</h1>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">{data.lab.name} — Incoming test orders from FUZE customers</p>
       </div>
 

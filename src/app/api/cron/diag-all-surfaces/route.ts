@@ -492,9 +492,11 @@ export async function GET(req: Request) {
           take: 25,
         }),
     ),
-    // NEED-FB-6 — i18n smoke check. Imports src/i18n/en.ts and
-    // verifies the factoryPortal namespace shape so a stray broken
-    // bracket can't ship to prod without surfacing here.
+    // NEED-FB-6 — i18n smoke check across all 4 portal namespaces.
+    // Imports src/i18n/en.ts and verifies every portal's depth-pass
+    // additions (factoryPortal, distributorPortal, brandPortal,
+    // labPortal) so a stray broken bracket can't ship to prod
+    // without surfacing here.
     check(
       "i18n — src/i18n/en.ts factoryPortal namespace",
       "dynamic import + factoryPortal keys",
@@ -506,6 +508,81 @@ export async function GET(req: Request) {
           throw new Error("factoryPortal namespace missing");
         }
         return [fp.crumb, fp.intake?.crumbHome, fp.ordersNew?.pageTitle];
+      },
+    ),
+    check(
+      "i18n — distributorPortal namespace depth-pass",
+      "dynamic import + distributorPortal page namespaces",
+      async () => {
+        const mod = await import("@/i18n/en");
+        const en = (mod as any).default;
+        const dp = en?.distributorPortal;
+        const required = [
+          "restock",
+          "restockNew",
+          "factoryOrders",
+          "pricingTiers",
+          "inventoryView",
+          "invoicesPage",
+          "documentsPage",
+          "ordersPage",
+          "testReportsPage",
+          "testRequestPage",
+          "uploadReportPage",
+        ];
+        const missing = required.filter((k) => !dp?.[k]?.pageTitle);
+        if (missing.length) {
+          throw new Error(`distributorPortal missing: ${missing.join(", ")}`);
+        }
+        return required.length;
+      },
+    ),
+    check(
+      "i18n — brandPortal namespace depth-pass",
+      "dynamic import + brandPortal page namespaces",
+      async () => {
+        const mod = await import("@/i18n/en");
+        const en = (mod as any).default;
+        const bp = en?.brandPortal;
+        const required = [
+          "fabricsList",
+          "storefrontPage",
+          "testsList",
+          "documentsPage",
+          "testRequestNew",
+          "supplyChainMap",
+          "icpCorrelation",
+        ];
+        const missing = required.filter((k) => !bp?.[k]?.pageTitle);
+        if (missing.length) {
+          throw new Error(`brandPortal missing: ${missing.join(", ")}`);
+        }
+        return required.length;
+      },
+    ),
+    check(
+      "i18n — labPortal namespace depth-pass",
+      "dynamic import + labPortal page namespaces",
+      async () => {
+        const mod = await import("@/i18n/en");
+        const en = (mod as any).default;
+        const lp = en?.labPortal;
+        const required = [
+          "formsPage",
+          "catalogPage",
+          "labTestsPage",
+          "uploadsPage",
+          "uploadPage",
+          "requestsPage",
+          "profilePage",
+          "creditsPage",
+          "wizardPage",
+        ];
+        const missing = required.filter((k) => !lp?.[k]?.pageTitle);
+        if (missing.length) {
+          throw new Error(`labPortal missing: ${missing.join(", ")}`);
+        }
+        return required.length;
       },
     ),
     // TRACK 3 — admin home activity feed sanity. Confirms the seven

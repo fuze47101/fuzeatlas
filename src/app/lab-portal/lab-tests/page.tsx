@@ -10,6 +10,7 @@
  * present and the viewer is internal.
  */
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 import { useAuth } from "@/lib/AuthContext";
 
 interface Row {
@@ -35,6 +36,8 @@ const TEST_TYPES = [
 
 export default function LabTestsPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.labPortal.labTestsPage;
   const [rows, setRows] = useState<Row[]>([]);
   const [canEditFuzeCost, setCanEditFuzeCost] = useState(false);
   const [draft, setDraft] = useState<Partial<Row>>({});
@@ -100,7 +103,7 @@ export default function LabTestsPage() {
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900">Test catalog</h1>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">
           Per-protocol pricing + SLA. Published price is what FUZE charges
           customers; FUZE cost is what FUZE pays you (FUZE-internal only).

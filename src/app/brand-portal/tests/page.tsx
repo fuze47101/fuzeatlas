@@ -22,6 +22,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 
 const TYPE_COLORS: Record<string, string> = {
   ICP: "bg-violet-100 text-violet-700",
@@ -59,6 +60,8 @@ interface Run {
 export default function BrandPortalTestsPage() {
   const router = useRouter();
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.brandPortal.testsList;
   const isAdmin = !!user && ["ADMIN", "SUPER_ADMIN"].includes(user.role);
 
   const [tests, setTests] = useState<Run[]>([]);
@@ -164,7 +167,7 @@ export default function BrandPortalTestsPage() {
   return (
     <div className="max-w-[1400px] mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900">Test Results</h1>
+        <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">
           {brand?.name || "Your brand"} — {tests.length} test result
           {tests.length !== 1 ? "s" : ""}

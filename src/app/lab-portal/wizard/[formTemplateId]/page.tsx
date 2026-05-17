@@ -9,6 +9,7 @@
  *   3. Submit → creates a TestRequest
  */
 import { use, useState } from "react";
+import { useI18n } from "@/i18n";
 
 interface FormField {
   key: string;
@@ -39,6 +40,8 @@ export default function LabWizardPage({
   params: Promise<{ formTemplateId: string }>;
 }) {
   const { formTemplateId } = use(params);
+  const { t } = useI18n();
+  const tx = t.labPortal.wizardPage;
   const [step, setStep] = useState(1);
   const [fabricId, setFabricId] = useState("");
   const [brandId, setBrandId] = useState("");
@@ -97,7 +100,7 @@ export default function LabWizardPage({
   return (
     <div className="max-w-3xl mx-auto p-4 sm:p-6">
       <h1 className="text-2xl font-black text-slate-900 mb-2">
-        Lab intake wizard
+        {tx.pageTitle}
       </h1>
       <p className="text-sm text-slate-500 mb-6">
         Step {step} of 3. The AI auto-fills fields from what Atlas already

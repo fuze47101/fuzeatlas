@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -29,6 +30,8 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function DistributorInvoicesPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const tx = t.distributorPortal.invoicesPage;
   const router = useRouter();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,11 +76,11 @@ export default function DistributorInvoicesPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-            <Link href="/distributor-portal" className="hover:text-[#00b4c3]">Distributor Portal</Link>
+            <Link href="/distributor-portal" className="hover:text-[#00b4c3]">{t.distributorPortal.crumb}</Link>
             <span>/</span>
-            <span className="text-slate-800 font-medium">Invoices</span>
+            <span className="text-slate-800 font-medium">{tx.crumbCurrent}</span>
           </div>
-          <h1 className="text-2xl font-black text-slate-900">Invoices</h1>
+          <h1 className="text-2xl font-black text-slate-900">{tx.pageTitle}</h1>
           <p className="text-sm text-slate-500 mt-1">
             {invoices.length} invoice{invoices.length !== 1 ? "s" : ""}
             {totalOutstanding > 0 && (

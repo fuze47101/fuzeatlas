@@ -16,6 +16,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import ErrorPanel from "@/components/ErrorPanel";
+import { useI18n } from "@/i18n";
 
 interface Pin {
   id: string;
@@ -69,6 +70,8 @@ function fmtLiters(n: number): string {
 }
 
 export default function BrandSupplyChainMapPage() {
+  const { t } = useI18n();
+  const tx = t.brandPortal.supplyChainMap;
   const [pins, setPins] = useState<Pin[]>([]);
   const [ungeocoded, setUngeocoded] = useState<Ungeocoded[]>([]);
   const [totalLifetimeLiters, setTotalLifetimeLiters] = useState(0);
@@ -113,17 +116,17 @@ export default function BrandSupplyChainMapPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/brand-portal" className="hover:text-[#00b4c3]">
-            Brand Portal
+            {t.brandPortal.crumb}
           </Link>
           <span>›</span>
           <Link href="/brand-portal/supply-chain" className="hover:text-[#00b4c3]">
             Supply chain
           </Link>
           <span>›</span>
-          <span>Map</span>
+          <span>{tx.crumbCurrent}</span>
         </div>
         <h1 className="text-2xl font-black text-slate-900">
-          {brand?.name ? `${brand.name} — supply chain map` : "Supply chain map"}
+          {brand?.name ? `${brand.name} — ${tx.pageTitle.toLowerCase()}` : tx.pageTitle}
         </h1>
         <p className="text-sm text-slate-500 mt-1">
           Every factory linked to your brand, pinned by location. Pin size scales with
