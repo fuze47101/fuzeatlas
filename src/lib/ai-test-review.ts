@@ -35,7 +35,10 @@ interface ReviewInput {
     result2: number | null;
     pass: boolean | null;
     initialCount?: number | null;
-    contactHours?: number | null;
+    // Schema column is contactTime (string like "24 Hours"). The
+    // earlier numeric contactHours was always undefined so the
+    // 24h-incubation protocol check below never fired.
+    contactTime?: string | null;
     broth?: string | null;
     sterilization?: string | null;
     notes?: string | null;
@@ -70,13 +73,20 @@ export function runProtocolChecks(t: ReviewInput): ReviewFlag[] {
   // ─── ASTM E2149 protocol checklist ──────────────────────────
   if (t.testType === "ANTIBACTERIAL" && t.testMethodStd && /e[\s-]?2149/i.test(t.testMethodStd)) {
     const ab = t.abResult || ({} as any);
-    if (ab.contactHours != null && ab.contactHours !== 24) {
-      flags.push({
-        severity: "warn",
-        code: "astm_e2149_incubation_off",
-        message: `ASTM E2149 protocol expects 24h incubation; this run logged ${ab.contactHours}h.`,
-        evidence: { contactHours: ab.contactHours },
-      });
+    // contactTime is a free-text string like "24 Hours" / "48 hr" /
+    // "1 hour". Parse a leading number; flag when it's recorded and
+    // not 24 (ASTM E2149's spec'd window).
+    if (ab.contactTime) {
+      const m = String(ab.contactTime).match(/(\d+(?:\.\d+)?)/);
+      const hrs = m ? Number(m[1]) : null;
+      if (hrs != null && hrs !== 24) {
+        flags.push({
+          severity: "warn",
+          code: "astm_e2149_incubation_off",
+          message: `ASTM E2149 protocol expects 24h incubation; this run logged ${ab.contactTime}.`,
+          evidence: { contactTime: ab.contactTime, parsedHours: hrs },
+        });
+      }
     }
     if (ab.broth && !/mueller[\s-]?hinton.*low.*sulfur|mh.*low.*sulfur/i.test(ab.broth)) {
       flags.push({

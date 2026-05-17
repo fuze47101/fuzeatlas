@@ -62,16 +62,17 @@ export async function POST(req: Request) {
       customerCode: true,
       construction: true,
       weightGsm: true,
-      width: true,
+      widthInches: true,
       yarnType: true,
       fabricCategory: true,
       color: true,
       note: true,
+      // Tier lives on Fabric.targetFuzeTier, not FabricSubmission. The
+      // earlier `submissions.fuzeTier` select threw a Prisma column-
+      // not-found error and 500'd the protocol-designer call.
+      targetFuzeTier: true,
       submissions: {
-        select: {
-          brandId: true,
-          fuzeTier: true,
-        },
+        select: { brandId: true },
         take: 1,
         orderBy: { createdAt: "desc" },
       },
@@ -89,7 +90,6 @@ export async function POST(req: Request) {
           id: true,
           name: true,
           textileCategory: true,
-          country: true,
           requiredFuzeTier: true,
           protocolDocUrl: true,
         },
@@ -140,7 +140,7 @@ Return JSON only:
         fuzeNumber: fabric.fuzeNumber,
         construction: fabric.construction,
         weightGsm: fabric.weightGsm,
-        width: fabric.width,
+        widthInches: fabric.widthInches,
         yarnType: fabric.yarnType,
         category: fabric.fabricCategory,
         color: fabric.color,
@@ -150,11 +150,12 @@ Return JSON only:
         ? {
             name: brand.name,
             textileCategory: brand.textileCategory,
-            jurisdiction: brand.country,
             requiredFuzeTier: brand.requiredFuzeTier,
           }
         : null,
-      defaultTierFromSubmission: fabric.submissions[0]?.fuzeTier || null,
+      // Tier comes from Fabric.targetFuzeTier (FabricSubmission has no
+      // fuzeTier column despite the legacy reference).
+      defaultTierFromFabric: fabric.targetFuzeTier || null,
     },
     null,
     2,

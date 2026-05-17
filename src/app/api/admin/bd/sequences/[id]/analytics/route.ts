@@ -102,20 +102,22 @@ export async function GET(
     : [];
 
   const outreachById = new Map(outreach.map((o) => [o.id, o]));
+  // Map step → owning brandId via sequenceId so the meeting-match
+  // can attribute by brand (Meeting has no contactId column).
+  const stepBrandBySeq = new Map(sequences.map((s) => [s.id, s.brandId]));
 
-  // Meetings within 7d of any send for any of the sequence's contacts.
-  const contactIds = Array.from(new Set(sequences.map((s) => s.contactId)));
-  const brandIds = Array.from(new Set(sequences.map((s) => s.brandId)));
+  // Meetings within 7d of any send for any of the sequence's brands.
+  // Meeting is brand-scoped only — there's no contactId column on the
+  // Meeting model. Removing the contactId branch and using startTime
+  // (the real Meeting column) instead of the legacy scheduledAt name.
+  const brandIds = Array.from(new Set(sequences.map((s) => s.brandId).filter(Boolean)));
 
-  const meetings = await prisma.meeting.findMany({
-    where: {
-      OR: [
-        contactIds.length ? { contactId: { in: contactIds } } : undefined,
-        brandIds.length ? { brandId: { in: brandIds } } : undefined,
-      ].filter(Boolean) as any,
-    },
-    select: { id: true, scheduledAt: true, createdAt: true, brandId: true, contactId: true },
-  });
+  const meetings = brandIds.length
+    ? await prisma.meeting.findMany({
+        where: { brandId: { in: brandIds } },
+        select: { id: true, startTime: true, createdAt: true, brandId: true },
+      })
+    : [];
 
   // Bucket per stepIndex.
   const stepBuckets = new Map<
@@ -178,10 +180,13 @@ export async function GET(
         if (om.openedAt) sv.opens++;
         b.subjects.set(subj, sv);
       }
-      // Was a meeting created within 7d of this send tied to the same contact?
+      // Was a meeting created within 7d of this send tied to the same brand?
+      // Meeting is brand-scoped (no contactId column) so we attribute by
+      // brandId proximity via the step's sequence.
+      const stepBrandId = stepBrandBySeq.get(step.sequenceId);
       const meetingMatch = meetings.find((m) => {
-        if (m.contactId !== om.contactId) return false;
         if (!om.sentAt) return false;
+        if (m.brandId && stepBrandId && m.brandId !== stepBrandId) return false;
         const d = (m.createdAt.getTime() - om.sentAt.getTime()) / 86400_000;
         return d >= 0 && d <= 7;
       });

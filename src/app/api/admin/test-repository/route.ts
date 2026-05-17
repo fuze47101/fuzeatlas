@@ -78,12 +78,14 @@ export async function GET(req: Request) {
     if (from) where.testDate.gte = new Date(from);
     if (to) where.testDate.lte = new Date(to);
   }
-  // Brand / factory / tier live on the linked submission.
+  // Brand / factory live on the linked submission; tier lives on
+  // the linked fabric (Fabric.targetFuzeTier — FabricSubmission has
+  // no fuzeTier column).
   if (brandId || factoryId || fuzeTier) {
     where.submission = {};
     if (brandId) where.submission.brandId = brandId;
     if (factoryId) where.submission.factoryId = factoryId;
-    if (fuzeTier) where.submission.fuzeTier = fuzeTier;
+    if (fuzeTier) where.submission.fabric = { targetFuzeTier: fuzeTier };
   }
 
   const [total, rows] = await Promise.all([
@@ -125,7 +127,6 @@ export async function GET(req: Request) {
           select: {
             id: true,
             fuzeFabricNumber: true,
-            fuzeTier: true,
             brand: { select: { id: true, name: true } },
             factory: { select: { id: true, name: true, country: true } },
             fabric: {
@@ -136,6 +137,7 @@ export async function GET(req: Request) {
                 construction: true,
                 weightGsm: true,
                 fabricCategory: true,
+                targetFuzeTier: true,
               },
             },
           },

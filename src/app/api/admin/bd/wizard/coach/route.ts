@@ -41,7 +41,6 @@ export async function POST(req: Request) {
         id: true,
         name: true,
         textileCategory: true,
-        country: true,
         researchData: true,
         backgroundInfo: true,
         requiredFuzeTier: true,
@@ -113,7 +112,6 @@ Constraints:
       brand: {
         name: brand.name,
         textileCategory: brand.textileCategory,
-        country: brand.country,
         requiredFuzeTier: brand.requiredFuzeTier,
       },
       contact: contact

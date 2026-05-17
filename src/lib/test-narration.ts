@@ -100,13 +100,22 @@ interface NarrationInput {
     result1: number | null;
     result2: number | null;
     pass: boolean | null;
-    contactHours?: number | null;
+    // Schema column is `contactTime` (string like "24 Hours"), not a
+    // numeric contactHours field. Earlier narrations silently lost
+    // this signal because the field was always undefined.
+    contactTime?: string | null;
   } | null;
   fungalResult?: { writtenResult: string | null; pass: boolean | null } | null;
   odorResult?: { testedOdor: string | null; result: string | null; pass: boolean | null } | null;
+  // Submission carries no fuzeTier column — tier lives on the linked
+  // fabric (Fabric.targetFuzeTier). Pulling from the nested fabric
+  // select instead.
   submission?: {
-    fuzeTier: string | null;
-    fabric: { fuzeNumber: number | null; fabricCategory: string | null } | null;
+    fabric: {
+      fuzeNumber: number | null;
+      fabricCategory: string | null;
+      targetFuzeTier: string | null;
+    } | null;
   } | null;
   lab?: { name: string | null } | null;
 }
@@ -138,14 +147,14 @@ async function callClaudeOnce(input: NarrationInput): Promise<string> {
             result1: input.abResult.result1,
             result2: input.abResult.result2,
             pass: input.abResult.pass,
-            contactHours: input.abResult.contactHours,
+            contactTime: input.abResult.contactTime,
           }
         : null,
       fungal: input.fungalResult,
       odor: input.odorResult,
     },
     fabric: {
-      tier: input.submission?.fuzeTier,
+      tier: input.submission?.fabric?.targetFuzeTier,
       fuzeNumber: input.submission?.fabric?.fuzeNumber,
       category: input.submission?.fabric?.fabricCategory,
     },
@@ -202,7 +211,7 @@ export async function generateTestNarration(testRunId: string): Promise<{
       odorResult: true,
       submission: {
         include: {
-          fabric: { select: { fuzeNumber: true, fabricCategory: true } },
+          fabric: { select: { fuzeNumber: true, fabricCategory: true, targetFuzeTier: true } },
         },
       },
       lab: { select: { name: true } },

@@ -125,7 +125,6 @@ export async function POST(req: Request) {
         id: true,
         name: true,
         textileCategory: true,
-        country: true,
         requiredFuzeTier: true,
         researchData: true,
         backgroundInfo: true,
@@ -168,7 +167,6 @@ Return JSON only, exactly this shape:
       brand: {
         name: brand.name,
         textileCategory: brand.textileCategory,
-        country: brand.country,
         requiredFuzeTier: brand.requiredFuzeTier,
         backgroundInfo: brand.backgroundInfo,
         researchData: brand.researchData,

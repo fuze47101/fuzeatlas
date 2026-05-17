@@ -32,7 +32,6 @@ interface Row {
   submission: {
     id: string;
     fuzeFabricNumber: number | null;
-    fuzeTier: string | null;
     brand: { id: string; name: string } | null;
     factory: { id: string; name: string; country: string | null } | null;
     fabric: {
@@ -42,6 +41,7 @@ interface Row {
       construction: string | null;
       weightGsm: number | null;
       fabricCategory: string | null;
+      targetFuzeTier: string | null;
     } | null;
   } | null;
 }
@@ -131,7 +131,7 @@ export default function TestRepositoryPage() {
         r.submission?.brand?.name || "",
         r.submission?.factory?.name || "",
         r.submission?.fuzeFabricNumber || r.submission?.fabric?.fuzeNumber || "",
-        r.submission?.fuzeTier || "",
+        r.submission?.fabric?.targetFuzeTier || "",
         r.washCount ?? "",
         r.testReportNumber || "",
         r.icpResult?.agValue ?? "",
@@ -335,7 +335,7 @@ export default function TestRepositoryPage() {
                       <span className="text-slate-400"> · {r.submission.fabric.customerCode}</span>
                     )}
                   </td>
-                  <td className="px-3 py-2 text-slate-700">{r.submission?.fuzeTier || "—"}</td>
+                  <td className="px-3 py-2 text-slate-700">{r.submission?.fabric?.targetFuzeTier || "—"}</td>
                   <td className="px-3 py-2 text-slate-700">{r.lab?.name || "—"}</td>
                   <td className="px-3 py-2 text-right tabular-nums">{r.washCount ?? "—"}</td>
                   <td className="px-3 py-2 font-mono text-xs">{result}</td>
@@ -400,7 +400,7 @@ export default function TestRepositoryPage() {
                   ["Date", (r: Row) => (r.testDate ? new Date(r.testDate).toLocaleDateString() : "—")],
                   ["Brand", (r: Row) => r.submission?.brand?.name || "—"],
                   ["Factory", (r: Row) => r.submission?.factory?.name || "—"],
-                  ["Tier", (r: Row) => r.submission?.fuzeTier || "—"],
+                  ["Tier", (r: Row) => r.submission?.fabric?.targetFuzeTier || "—"],
                   ["Wash count", (r: Row) => r.washCount ?? "—"],
                   ["Lab", (r: Row) => r.lab?.name || "—"],
                   [
