@@ -281,6 +281,19 @@ export default function BrandPortalDashboard() {
           <div className="font-bold text-slate-900">{tx.quickFaqTitle}</div>
           <div className="text-xs text-slate-600 mt-1">{tx.quickFaqBlurb}</div>
         </button>
+        {/* Joseph KUIU follow-up — surface the ICP × antimicrobial
+            correlation chart on the brand profile so buyers can pull
+            it up while talking to their factories. */}
+        <button
+          onClick={() => router.push("/brand-portal/analytics/icp-correlation")}
+          className="bg-white rounded-xl border border-slate-200 hover:border-violet-400 hover:shadow-md transition-all p-6 text-left"
+        >
+          <div className="text-2xl mb-2">📈</div>
+          <div className="font-bold text-slate-900">ICP × Antimicrobial Correlation</div>
+          <div className="text-xs text-slate-600 mt-1">
+            Scatterplot of fabric ICP loading vs measured kill rate across your supply chain.
+          </div>
+        </button>
       </div>
 
       {/* Learn FUZE — links to /education */}

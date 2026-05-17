@@ -273,7 +273,7 @@ function emailWrapper(content: string) {
         ${content}
       </div>
       <div style="border-top: 1px solid #e5e7eb; padding: 16px 0; text-align: center; color: #9ca3af; font-size: 12px;">
-        FUZE Biotech &mdash; Antimicrobial Textile Solutions
+        FUZE &mdash; Metamaterial Antimicrobial Textile Treatment
       </div>
     </div>
   `;
