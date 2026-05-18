@@ -43,7 +43,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        {/* `maximum-scale=1` was blocking pinch-zoom and trapping the
+            iPhone in a zoomed-in state after focusing an input
+            (Mobile Fix May 2026). Removed; the 16px input rule in
+            globals.css prevents the auto-zoom-on-focus that was
+            the underlying complaint. */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className="bg-slate-50 text-slate-900 antialiased overflow-x-hidden">
         <AuthProvider>

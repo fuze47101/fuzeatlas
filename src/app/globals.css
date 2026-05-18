@@ -4,6 +4,45 @@
 
 body { @apply bg-slate-50 text-slate-900; }
 
+/* ── Mobile fix (May 2026) ────────────────────────────────────
+ * iOS Safari auto-zooms the viewport when an input/select/textarea
+ * with computed font-size < 16px receives focus, and then doesn't
+ * smoothly zoom back out. Force 16px on every text input below the
+ * sm: breakpoint so the zoom-in-and-stick never triggers. Tailwind's
+ * text-xs / text-sm utilities are the common offenders — this rule
+ * wins via !important.
+ *
+ * Checkboxes / radios / file inputs are excluded so we don't pump
+ * up their visual size unnecessarily.
+ */
+@media (max-width: 640px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Mobile fix (May 2026) ────────────────────────────────────
+ * Admin tables on mobile: many pages render <table> directly without
+ * an `overflow-x-auto` wrapper. With body's `overflow-x-hidden`,
+ * wide tables get clipped at the viewport edge and rows are
+ * unreadable on an iPhone. Letting the table itself scroll
+ * horizontally on small viewports recovers the data without
+ * changing any page markup.
+ *
+ * Only fires below md: (768px). Existing wrapped tables keep
+ * working — the outer wrapper still handles overflow first.
+ */
+@media (max-width: 767px) {
+  main table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 /* Phase 13F — consistent focus ring across the app. Add to any
    button / link / row that doesn't already have one. */
 .focus-ring:focus,

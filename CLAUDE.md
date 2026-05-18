@@ -210,7 +210,7 @@ All other distributors (Archroma, CHT, DyStar, Pulcra, etc.) are INACTIVE — th
 | **Bearer-Authed Cron Endpoints**| LIVE — `/api/cron/feedback-list` (read-only ticket queue), `/api/cron/admin-resolve` (one-off ticket + brand + email actions). Bypasses local Prisma issues; pattern for future "trigger admin action via curl" needs.            |
 | **ICP Sample Prep Flow**        | LIVE (wizard + SOP + print packet); awaiting first real CTLA submission                                                                                                                                                            |
 | **Scoped Module Sidebar**       | LIVE — sidebar scopes to active module, "← All Modules (Home)" returns to 6-card picker                                                                                                                                            |
-| **Mobile View Fix**             | PLANNED — admin pages broken on iPhone                                                                                                                                                                                             |
+| **Mobile View Fix**             | LIVE (2026-05-18) — viewport meta drops `maximum-scale=1`, inputs forced to 16px below sm: (prevents iOS Safari auto-zoom-on-focus), bare `<table>` elements in `<main>` get auto-scrolling on small viewports. globals.css. |
 | **Email Deliverability**        | RESOLVED — system emails fine (Resend + DMARC approved). Earlier "digest missing" was handler crashing + middleware blocking all crons (now fixed).                                                                                |
 | **Solaris Testing (FZ-500)**    | ACTIVE — IR / radiant heat deflection protocol. Raspberry Pi-driven test bench (Type K thermocouples on plate, SHT31 in air gap). `SolarisTest` model lives in schema. Compares FUZE-treated vs untreated fabric IR absorption. The Raspberry Pi work for Nike lives HERE. |
 | **Helios Project**              | SEPARATE — downstream testing track, distinct from Solaris. Don't conflate the two. Solaris = IR heat deflection bench (active, what we've been building). Helios = its own project, NOT in scope of recent Atlas work.            |
@@ -384,6 +384,266 @@ Order placed → Product shipped → Received → Treatment applied → ICP subm
 ### QR Code on Shipment
 
 Each order gets QR → links to SDS, COA for the shipment. Factory scans on receive + on application.
+
+## Built Features (Sessions — May 12-16, 2026)
+
+The biggest week of shipping by volume so far. **Phase 15 of the
+PHASE_15_HOLE_PLUG.md spec is essentially complete** — IMP-1→6,
+NEED-1→7 + 7a, NEED-FB-1→5, NICE-1→7, BONUS-1→5, MIND-BLOW MB-1/2/3/4/5
+all shipped. Only remaining open items: NEED-FB-6 i18n depth pass
+(factory portal complete 23/23, brand/distributor/lab portals in
+progress) and SRS Dubai Q2 shipments (blocked on $/L from Andrew).
+
+### Headline ships
+
+**Distributor Portal Ordering** (commit `8209c4e`) — biggest unbuilt
+feature on the entire CLAUDE.md roadmap. Full flow shipped:
+- `/distributor-portal/restock/new` — distributor → FUZE restock
+  (carboy/gaylord/container picker)
+- `/distributor-portal/factory-orders` — distributor sees orders
+  flowing in from their factories
+- `/distributor-portal/pricing-tiers` — 5-tier ladder editor in
+  distributor's local currency
+- `/factory-portal/orders/new` — full quote → multi-brand allocation
+  → PO upload → submit flow
+- Schema: extended `FuzeOrder` with `poNumber`, `currency`,
+  `distributorTierIndexAtOrder`; kept separate `DistributorRestockOrder`
+  model (per-bottle vs per-volume, ship-from-SLC vs
+  ship-from-distributor-warehouse — different enough not to unify).
+
+**MIND-BLOW tier (5/5 shipped):**
+- MB-1 — ICP × AB correlation chart at `/admin/analytics/icp-correlation`
+  + `/brand-portal/analytics/icp-correlation` (commit `fad42d2`). The
+  chart Joseph Zack at KUIU explicitly asked for. SVG scatter, OLS
+  regression line, R², tier-colored dots. Brand-scoped for
+  BRAND_USER/BRAND_MANAGER.
+- MB-2 — Geographic supply-chain map at
+  `/brand-portal/supply-chain/map` (commit `013cc04`). Hand-rolled SVG
+  equirectangular projection (skipped leaflet to keep bundle small),
+  factory pins sized by lifetime FUZE consumption.
+- MB-3 — AI-narrated test reports. Trigger: TestRun.brandVisible
+  flips true → async Claude call generates 2-4 sentence plain-English
+  summary. Voice locked via `src/lib/test-narration.ts` (explicit
+  BANNED words list — silver/nano/Ag/etc — + BAD/GOOD examples after
+  a "silver" slip-in was caught by the brand-voice gate on May 16,
+  prompt tightened). Retry queue at `/api/cron/narration-retry`,
+  hourly cooldown. Renders on Recipe Report PDF + admin test
+  repository with regenerate button.
+- MB-4 — Predicted brand pipeline value. Daily cron computes
+  `Brand.predictedValueUSD` = vertical multiplier × engagement boost
+  × stage probability × $36/L. Surfaces as "$X potential" chips on
+  pipeline rows + "Top 10 by potential" widget on /home. 2,576 brands
+  ranked at first run.
+- MB-5 — Quarterly ESG snapshot autoemail. Extended existing Q1/Q4/Q7/Q10
+  cron to email per-brand PDF to primary AM + active BRAND_MANAGER
+  users with brand logo + KPI tiles. Closes wishlist #1.
+
+**NEED-7a — Self-service org rosters.** `/[portal]/team` page per
+brand/factory/distributor/lab. Org admins invite teammates by email,
+token-based magic-link signup at `/signup/invitation/[token]`,
+role pre-stamped from invitation. Removes the FUZE-admin-in-the-loop
+bottleneck Andrew flagged May 11.
+
+**NEED-6 — Brand spec acknowledgement loop.** Per-factory ack required
+when brand updates required FUZE tier or ICP cadence. Banner on
+`/factory-portal`, ack page at `/factory-portal/spec/[brandId]`,
+`notifySpecAcknowledged` fans to AM + admins on confirm. Closes the
+loop on the May 9 spec-change flow.
+
+**NEED-FB-6 partial — i18n thread-through.** Factory portal: 23/23
+pages complete. Distributor + brand + lab portals: in progress as of
+end-of-session May 16. Jun Park's ticket cmp2rbpm6 resolved.
+**Translation values not filled in yet — only English threaded;
+deepFallback handles missing locales. Translators fill in zh/ja/es/tr
+as a separate pass.** Distributor portal next because SRS-Turkey,
+Mercado Global, Global Shine, Hi-Goal serve non-English-primary mills.
+
+### Schema-drift bugs found and fixed (12 in total this week)
+
+Pattern is consistent: Prisma query selects/filters on a field or
+relation that doesn't exist on the model, throws "Unknown argument" or
+"Unknown field" at runtime. Vercel build passes (TypeScript can't
+catch Prisma client field mismatches without strict generation),
+customer sees 500.
+
+**5 customer-facing fixes (May 16 audit pass):**
+1. `/api/public/verified/[publicSlug]` — `Brand.country` doesn't exist
+   on Brand. Public hangtag verification was 500'ing.
+2. Same route — `FabricSubmission.fuzeTier` doesn't exist. Pull from
+   `submission.fabric.targetFuzeTier`.
+3. `/api/public/qr/[token]` — same `FabricSubmission.fuzeTier` bug.
+   Also caught a brand-voice leak: returned `"Ag X ppm"` to public QR
+   scans. Replaced with `"FUZE residual X.XX ppm"`.
+4. `/api/factory-portal/tests` + `src/lib/acl.ts` —
+   `TestRun.fabric` relation doesn't exist (only `submission`, `lab`,
+   `project`). Fixed `testRunScopeForFactory`, `testRunScopeForBrand`,
+   `testRunScopeForDistributor` to reach Fabric via `submission.fabric`.
+5. Same route — `FabricSubmission.submissionDate` doesn't exist. Use
+   `createdAt`.
+
+**6 internal-only fixes queued for Code:**
+1. `/api/admin/bd/wizard/auto-draft` — `Brand.country`
+2. `/api/admin/bd/wizard/coach` — `Brand.country`
+3. `/api/admin/protocol-designer` — three drifts (`Fabric.width` →
+   `widthInches`, `FabricSubmission.fuzeTier` → use fabric's,
+   `Brand.country`)
+4. `/api/admin/test-repository` — `FabricSubmission.fuzeTier`
+5. `/api/admin/bd/sequences/[id]/analytics` — `Meeting.contactId`
+   (Meeting has no contact relation — brand-only) + `Meeting.scheduledAt`
+   should be `startTime`
+6. `src/lib/test-narration.ts` — reads `submission.fuzeTier` (always
+   undefined). Every MB-3 narration shipped so far is silently
+   omitting the FUZE tier. Worth a regen sweep after the fix.
+
+**Earlier customer-facing fixes (May 11-13):**
+- BD scoreboard 500 — `Meeting.contactId` referenced in velocity calc
+  (Meeting has no contactId column).
+- BD scoreboard 500 — `Meeting.autoScheduled` filter shape
+  (`OR: [{ autoScheduled: false }, { autoScheduled: null }]` rejected
+  because the column is non-nullable Boolean; use `autoScheduled: false`
+  directly).
+- BD scoreboard inflated meeting count — Ryan saw 5, only had
+  scheduled 2. Pipeline-stage auto-scheduled events were counting.
+  Added `autoScheduled: false` filter.
+- Factory portal stats — `Fabric.status = "ACTIVE"` filter. Fabric
+  has no status column. Endpoint was 500'ing silently, frontend
+  rendered all-zeros for KK Chan + Raihana.
+- Dashboard impersonation defect — `/api/dashboard` was reading
+  `x-user-id`/`x-user-role` headers from middleware (set from real
+  session cookie, NOT impersonation cookie). Admin running "View As"
+  on a FACTORY_USER still saw full ADMIN dashboard with global
+  counts. Switched to `getCurrentUser()`. Also added per-role count
+  scoping so even non-impersonated FACTORY users see only their own
+  fabrics/submissions, not the global 1,351 / 2,576.
+- Order modal — `CONFIRMED` status (set by `/api/consumption` path
+  when factories log orders) was unknown to `STATUS_COLORS` map,
+  showing blank badge + no action button. Added entry + extended the
+  "Start Processing" condition to handle CONFIRMED.
+- Inline user-edit row — no FK picker for entity-required roles
+  (DISTRIBUTOR_USER, FACTORY_USER, etc.) AND no error display when
+  save 400'd. Danny was stuck unable to save because the role
+  requires a `distributorId` that the inline row had no UI to set.
+  Added extension `<tr>` below the editing row with conditional FK
+  picker per role + inline error display.
+- KK Chan / Penfabric Report + Graduate buttons — Report bounced to
+  `/home` because middleware blocked `/admin/recipe-calculator/*` for
+  external users. Graduate button visible to FACTORY_USER but was an
+  internal lab operation. Fix: middleware exempts the recipe-calculator
+  paths; API ACLs by fabric ownership; Graduate hidden from non-admin.
+- Pricing calculator under-dose 3x — calculator scaled bath VOLUME
+  up 3x for trough sizing but didn't scale stock proportionally.
+  Reported `1.8%` stock-by-volume when truth was `4.76%`. Tina caught
+  it. Bench-test Recipe Report math was always correct.
+- WashProtectionChart label collisions — when FUZE and competitor at
+  same $/m, the label block stacked on the lines. Anchored to compY
+  not innerH/2 + bumped Marketing-claim cliff label below the
+  unvalidated-zone text.
+- Globe `/admin/command-center/globe` — `Brand.country` select bug
+  again. Tina + Jett both reported.
+- Distributor orders list ACL — Tina Distributor created an order
+  that didn't appear in her list because `FuzeOrder.distributorId`
+  was null but `factory.distributorId` matched her org. OR'd through.
+- Smoke test caught it all — `diag-all-surfaces` extended to 45+
+  entries now. Every new dashboard widget shipped this week added a
+  check entry as part of the build standing rule.
+
+### Infrastructure work
+
+- **ESLint flat-config migration** (commit `5b5ef53`). Repo had
+  `eslint: ^10.1.0` pinned but only `.eslintrc.json` (legacy format).
+  ESLint 10 dropped legacy config support, so CI Pipeline was failing
+  on every push for 8+ hours (Vercel passed because it doesn't run
+  lint). Codemod `npx @next/codemod@canary next-lint-to-eslint-cli .`
+  produced `eslint.config.mjs`. Demoted strict rules to warn to handle
+  3000+ row backlog of `any` / `@ts-nocheck`. 33 files auto-fixed.
+  Lint re-enabled in `.github/workflows/ci.yml` + `preview.yml`. CI
+  green from commit forward.
+- **S3 screenshot proxy** (TRACK 1 from May 15 — commit `9bac69e`).
+  `admin/feedback` was rendering screenshots as raw S3 URLs, but the
+  bucket is private (returns 403). Inline screenshots silently broken
+  for every admin. New endpoint `/api/admin/feedback/[id]/screenshot`
+  returns presigned URL.
+- **CI smoke testing** is now load-bearing. `fzcron diag-all-surfaces`
+  is the standing regression net. 43→45→47 checks added across the
+  week. Pattern: anytime Code ships a new dashboard widget, a smoke
+  check entry MUST be added in the same commit. This caught at least
+  3 bugs before they reached customers.
+- **Anthropic credits gotcha** — May 16, MB-3 narration generation
+  hit HTTP 400 "credit balance too low" after 11 brand-visible flips
+  burned the balance. Atlas's Claude-driven features (AI test review,
+  BD coach, FUZE FAQ chat, MB-3 narrations) all went silent until
+  Andrew topped up at console.anthropic.com. Worth setting an auto-top-up
+  threshold + alert. The retry queue picked up the backlog cleanly
+  after credits landed.
+
+### Tickets cleared (10+ this week)
+
+Per-customer close-loop emails went out via the
+`/api/cron/admin-resolve` bearer-authed endpoint for: Tina's pricing
+calculator catch, Tina's globe error, Tina's sustainability chart
+overlap, Tina Distributor's orders-not-showing, Jett Lai's
+View-As-globe error, Tina's admin dashboard suggestion (ACCEPTED →
+Phase 15 NEED-add), Jun Park's i18n gap (FIXED with NEED-FB-6 partial
+notification), Scott Smith's auto-claim toggle, Ryan Prince's bulk
+enrich + KPI link 404 fix, KK Chan's Penfabric Report/Graduate access.
+**Only the Silvadur formaldehyde question (Tina) remains ACCEPTED
+intentionally — waiting on her to attach the SDS/technical bulletin
+the mill cited for a proper CIL audit before /sustainability
+publishes anything definitive on Silvadur's binder posture.**
+
+### Pending non-code (Andrew)
+
+- Joseph Zack / KUIU follow-up email — draft written May 16 evening,
+  parked for Monday send. Email body in cowork session log; references
+  the new ICP correlation chart (the thing he explicitly asked for),
+  supply chain map, quarterly ESG autoemail, team rosters. Two
+  outstanding items still on Andrew: XX accelerated evaporation
+  target + 1.0 → 3.0 log reduction bump on the protocol doc.
+- Real customer data entry now possible via seed scripts — KUIU,
+  Penfabric, Rhone, BesTex, North Face, Nike all have empty brand
+  spec / pricing tier / SupplyChainLink data. Templates ready, just
+  needs Andrew minutes-per-brand to fill in values.
+- SRS Dubai Q2 shipments — still blocked on $/L + orderType.
+- Distributor portal pilot — `/distributor-portal/restock/new`,
+  `/distributor-portal/factory-orders`, `/distributor-portal/pricing-tiers`,
+  `/factory-portal/orders/new` — all live and never clicked by a
+  human end-to-end yet.
+- Mobile view fix — admin pages still broken on iPhone.
+
+### Tomorrow / next session priorities
+
+1. Verify the 3-track Code chain landed (internal schema-drift fixes,
+   i18n depth pass on distributor/brand/lab portals, Joseph code-side
+   items — signature block + chart on profile).
+2. Pilot the unpiloted surfaces (see above list).
+3. Send Joseph email Monday morning (draft ready).
+4. Real customer data entry session — start with KUIU, Penfabric,
+   Rhone.
+5. Consider scoping Phase 16 — wishlist items #4 (real-time test
+   tracking), #7 (Factory Performance Scoring), #8 (Brand PLM API)
+   are next-tier candidates.
+
+### Standing patterns reinforced this week
+
+- **Verify-after-every-push:** introduced after the Phase 10G 9-cascade
+  build break. Code now waits for Vercel green AND `diag-all-surfaces`
+  green between every commit. Caught 0 regressions across 25+
+  production pushes this week.
+- **Error-state-not-zeros:** every dashboard widget must render an
+  explicit error banner on API 500 — never silently fall through to
+  zeros. The Tina-Penfabric all-zero stats bug was the trigger; this
+  pattern is now standing.
+- **Bearer-authed runtime migration endpoints:** the workaround for
+  DSN drift. Pattern: `/api/cron/migrate-<scope>` reads
+  `CRON_SECRET` from env, runs `prisma.$executeRawUnsafe` ALTER
+  statements, returns count + verdict. Used for NEED-6 spec ack,
+  NEED-7 lab assignment, NEED-7a org invitations, MB-3 narration
+  columns, MB-4 prediction column, distributor-order columns.
+- **`fzcron` helper** in zsh wraps every bearer-authed cron endpoint.
+  Now standing alias for: digests, diags, migrations, narration
+  retry, admin-resolve, ESG snapshot generation, ad-hoc admin actions.
+
+---
 
 ## Built Features (Session — May 9, 2026 cont. — KUIU build)
 
@@ -713,11 +973,9 @@ Vercel Sensitive flag means `DATABASE_URL` value never reveals in the dashboard 
 ### Pending — Pick up next session
 
 - **Distributor Portal Ordering** — flagged NEXT in Active Projects. Distributors order from FUZE (carboys / gaylords / containers); factories order through their distributor at the right pricing tier; multi-currency. Auto-assigns brands to orders.
-- **Mobile View Fix** — admin pages broken on iPhone, still PLANNED.
 - **Verify which Railway service holds prod data** — `interchange.proxy.rlwy.net:31700/railway` returned P2021 (empty). Real prod DSN lives somewhere; figure it out so local Prisma scripts work for one-offs again.
 - **Set DATABASE_URL_PROD properly** in `.env.local` once that's verified.
 - **#69 Seed SRS Dubai shipments for Q2 exec report** — still blocked on Andrew for $/L and orderType.
-- **Hurricane Ventures rename script** — still committed but unrun.
 - **#70 Weekly Exec Review verification** — auto-cron now runs every Monday, so this auto-resolves the next time the cron fires (test by triggering manually: `fzcron weekly-review` on Andrew's Mac).
 
 ### Lessons / patterns from this session
