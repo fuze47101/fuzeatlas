@@ -30,7 +30,7 @@ const STAGE_META: Record<string, { label: string; color: string; icon: string }>
   FACTORY_ONBOARDING: { label: "Factory Onboarding", color: "bg-purple-100 text-purple-800 border-purple-200", icon: "🏭" },
   FACTORY_TESTING: { label: "Factory Testing", color: "bg-violet-100 text-violet-800 border-violet-200", icon: "🔬" },
   PRODUCTION: { label: "Production", color: "bg-emerald-100 text-emerald-800 border-emerald-200", icon: "✅" },
-  BRAND_EXPANSION: { label: "Brand Expansion", color: "bg-teal-100 text-teal-800 border-teal-200", icon: "🚀" },
+  BRAND_EXPANSION: { label: "Re-Connect", color: "bg-teal-100 text-teal-800 border-teal-200", icon: "🔄" },
   CUSTOMER_WON: { label: "Customer Won", color: "bg-amber-100 text-amber-800 border-amber-200", icon: "🏆" },
 };
 

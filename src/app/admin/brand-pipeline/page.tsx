@@ -62,7 +62,7 @@ const STAGES = [
   { key: "FACTORY_ONBOARDING", label: "Factory Onboard", color: "bg-amber-500" },
   { key: "FACTORY_TESTING", label: "Factory Testing", color: "bg-orange-500" },
   { key: "PRODUCTION", label: "Production", color: "bg-green-500" },
-  { key: "BRAND_EXPANSION", label: "Expansion", color: "bg-emerald-500" },
+  { key: "BRAND_EXPANSION", label: "Re-Connect", color: "bg-emerald-500" },
   { key: "CUSTOMER_WON", label: "Won", color: "bg-teal-600" },
 ];
 

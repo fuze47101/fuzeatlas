@@ -28,7 +28,7 @@ const STAGE_LABELS: Record<string, string> = {
   FACTORY_ONBOARDING: "Factory Onboard",
   FACTORY_TESTING: "Factory Testing",
   PRODUCTION: "Production",
-  BRAND_EXPANSION: "Expansion",
+  BRAND_EXPANSION: "Re-Connect",
   ARCHIVE: "Archive",
   CUSTOMER_WON: "Won",
 };

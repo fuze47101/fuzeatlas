@@ -171,7 +171,10 @@ const en = {
     stageFactoryOnboarding: "Factory Onboard",
     stageFactoryTesting: "Factory Testing",
     stageProduction: "Production",
-    stageBrandExpansion: "Expansion",
+    // Re-purposed 2026-05-18: was "Expansion" (post-CUSTOMER_WON growth);
+    // now means "Re-Connect" — stale brands that need outreach to restart.
+    // Underlying enum stays BRAND_EXPANSION so no DB migration required.
+    stageBrandExpansion: "Re-Connect",
     stageArchive: "Archive",
     stageCustomerWon: "Won",
   },
@@ -246,7 +249,7 @@ const en = {
     FACTORY_ONBOARDING: "Factory Onboard",
     FACTORY_TESTING: "Factory Testing",
     PRODUCTION: "Production",
-    BRAND_EXPANSION: "Expansion",
+    BRAND_EXPANSION: "Re-Connect",
     ARCHIVE: "Archive",
     CUSTOMER_WON: "Won",
   },

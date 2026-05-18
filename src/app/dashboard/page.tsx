@@ -82,7 +82,7 @@ const getStageLabels = (t: any): Record<string, string> => ({
   FACTORY_ONBOARDING: t.dashboard.stageFactoryOnboarding || "Factory Onboard",
   FACTORY_TESTING: t.dashboard.stageFactoryTesting || "Factory Testing",
   PRODUCTION: t.dashboard.stageProduction || "Production",
-  BRAND_EXPANSION: t.dashboard.stageBrandExpansion || "Expansion",
+  BRAND_EXPANSION: t.dashboard.stageBrandExpansion || "Re-Connect",
   ARCHIVE: t.dashboard.stageArchive || "Archive",
   CUSTOMER_WON: t.dashboard.stageCustomerWon || "Won",
 });
