@@ -192,15 +192,22 @@ export async function GET(req: Request) {
     });
 
     // Build per-stage summary (across ALL returned results)
+    // BRAND_EXPANSION (Re-Connect) now sits right after PRESENTATION in
+    // the workflow — stalled brands needing re-engagement before
+    // re-entering BRAND_TESTING.
     const stageSummary: Record<string, number> = {};
-    const STAGES = ["LEAD", "PRESENTATION", "BRAND_TESTING", "FACTORY_ONBOARDING", "FACTORY_TESTING", "PRODUCTION", "BRAND_EXPANSION", "CUSTOMER_WON", "ARCHIVE"];
+    const STAGES = ["LEAD", "PRESENTATION", "BRAND_EXPANSION", "BRAND_TESTING", "FACTORY_ONBOARDING", "FACTORY_TESTING", "PRODUCTION", "CUSTOMER_WON", "ARCHIVE"];
     for (const s of STAGES) stageSummary[s] = 0;
 
-    // Build enriched brand list and sort: brands with contacts first, then by stage priority
+    // Build enriched brand list and sort: brands with contacts first, then by stage priority.
+    // Re-Connect dropped from priority 1 (was second-highest under the
+    // old "Expansion" meaning) to priority 6 — re-connect brands are
+    // stalled relationships needing reach-out, less actionable than
+    // active customers but more actionable than fresh leads.
     const STAGE_ORDER: Record<string, number> = {
-      PRODUCTION: 0, BRAND_EXPANSION: 1, CUSTOMER_WON: 2,
-      FACTORY_TESTING: 3, FACTORY_ONBOARDING: 4, BRAND_TESTING: 5,
-      PRESENTATION: 6, LEAD: 7, ARCHIVE: 8,
+      PRODUCTION: 0, CUSTOMER_WON: 1,
+      FACTORY_TESTING: 2, FACTORY_ONBOARDING: 3, BRAND_TESTING: 4,
+      PRESENTATION: 5, BRAND_EXPANSION: 6, LEAD: 7, ARCHIVE: 8,
     };
 
     const pipeline = brands.map((b) => {

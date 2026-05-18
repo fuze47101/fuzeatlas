@@ -95,8 +95,8 @@ export async function GET(req: NextRequest) {
 
     // Pipeline breakdown
     const stages = [
-      "LEAD","PRESENTATION","BRAND_TESTING","FACTORY_ONBOARDING",
-      "FACTORY_TESTING","PRODUCTION","BRAND_EXPANSION","ARCHIVE","CUSTOMER_WON",
+      "LEAD","PRESENTATION","BRAND_EXPANSION","BRAND_TESTING","FACTORY_ONBOARDING",
+      "FACTORY_TESTING","PRODUCTION","CUSTOMER_WON","ARCHIVE",
     ];
     const pipeline = await Promise.all(
       stages.map(async (stage) => ({

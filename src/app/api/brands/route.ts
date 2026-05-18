@@ -41,9 +41,12 @@ export async function GET(req: Request) {
       ...(take ? { take } : {}),
     });
 
+    // BRAND_EXPANSION (Re-Connect) sits right after PRESENTATION in the
+    // workflow — stalled brands needing re-engagement before re-entering
+    // BRAND_TESTING. ARCHIVE moved to the end since it's terminal.
     const stages = [
-      "LEAD","PRESENTATION","BRAND_TESTING","FACTORY_ONBOARDING",
-      "FACTORY_TESTING","PRODUCTION","BRAND_EXPANSION","ARCHIVE","CUSTOMER_WON",
+      "LEAD","PRESENTATION","BRAND_EXPANSION","BRAND_TESTING","FACTORY_ONBOARDING",
+      "FACTORY_TESTING","PRODUCTION","CUSTOMER_WON","ARCHIVE",
     ];
 
     const grouped: Record<string, any[]> = {};

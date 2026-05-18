@@ -8,13 +8,16 @@ import AddCompanyModal from "@/components/AddCompanyModal";
 // LEAD and ARCHIVE are intentionally excluded — leads live in the BD
 // pipeline at /admin/brand-pipeline (BD Wizard, sequences, scoring),
 // and archived brands are not active partnerships. Andrew 2026-05-18.
+// Re-Connect (BRAND_EXPANSION) sits right after Presentation in the
+// workflow — brand stalled post-presentation, needs re-engagement
+// before re-entering BRAND_TESTING.
 const STAGES = [
   "PRESENTATION",
+  "BRAND_EXPANSION",
   "BRAND_TESTING",
   "FACTORY_ONBOARDING",
   "FACTORY_TESTING",
   "PRODUCTION",
-  "BRAND_EXPANSION",
   "CUSTOMER_WON",
 ];
 const STAGE_COLORS: Record<string, string> = {

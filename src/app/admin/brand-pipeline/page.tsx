@@ -55,14 +55,18 @@ interface BrandEntry {
 }
 
 // ── Constants ──
+// Re-Connect (BRAND_EXPANSION) sits right after Presentation in the
+// workflow: a brand stalls post-presentation and goes here for
+// re-engagement before being pulled back into BRAND_TESTING. Andrew
+// 2026-05-18.
 const STAGES = [
   { key: "LEAD", label: "Lead", color: "bg-indigo-500" },
   { key: "PRESENTATION", label: "Presentation", color: "bg-purple-500" },
+  { key: "BRAND_EXPANSION", label: "Re-Connect", color: "bg-emerald-500" },
   { key: "BRAND_TESTING", label: "Brand Testing", color: "bg-sky-500" },
   { key: "FACTORY_ONBOARDING", label: "Factory Onboard", color: "bg-amber-500" },
   { key: "FACTORY_TESTING", label: "Factory Testing", color: "bg-orange-500" },
   { key: "PRODUCTION", label: "Production", color: "bg-green-500" },
-  { key: "BRAND_EXPANSION", label: "Re-Connect", color: "bg-emerald-500" },
   { key: "CUSTOMER_WON", label: "Won", color: "bg-teal-600" },
 ];
 
