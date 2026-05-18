@@ -361,11 +361,40 @@ async function ensureBrand() {
   return created;
 }
 
+// Factory name aliases — caught by diag-sanmar-dupes on May 18 2026.
+// The mill names Tina uses in her spreadsheet don't always exact-match
+// what's already in Atlas. Map seed names to existing factory names
+// (or direct IDs) so the seed reuses what's there instead of creating
+// duplicates. Extend this map if more conflicts surface.
+const FACTORY_ALIASES: Record<string, { existingName?: string; existingId?: string }> = {
+  "XinKaiSheng (New Kasum)": { existingName: "NK" },
+  "New Wide": { existingName: "New Wide Enterprise Co." },
+};
+
 async function ensureFactory(name: string) {
+  const alias = FACTORY_ALIASES[name];
+  // Try the alias first if defined
+  if (alias?.existingId) {
+    const byId = await prisma.factory.findUnique({ where: { id: alias.existingId } });
+    if (byId) {
+      console.log(`· Reusing factory (alias id): ${name} → ${byId.name} (${byId.id})`);
+      return byId;
+    }
+  }
+  if (alias?.existingName) {
+    const byAlias = await prisma.factory.findFirst({ where: { name: alias.existingName } });
+    if (byAlias) {
+      console.log(`· Reusing factory (alias name): ${name} → ${byAlias.name} (${byAlias.id})`);
+      return byAlias;
+    }
+  }
+  // Then try the exact seed name
   const existing = await prisma.factory.findFirst({ where: { name } });
   if (existing) {
+    console.log(`· Reusing factory (exact): ${name} (${existing.id})`);
     return existing;
   }
+  // Create fresh as last resort
   const created = await prisma.factory.create({
     data: {
       name,
