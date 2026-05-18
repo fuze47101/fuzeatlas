@@ -178,6 +178,7 @@ export const MODULES: ModuleDef[] = [
       { label: "Document Library", href: "/compliance-library", icon: "📋" },
       { label: "Product Documents (TDS/SDS/COA)", href: "/admin/product-documents", icon: "📘" },
       { label: "SOWs", href: "/sow", icon: "📄" },
+      { label: "Pricing Calculator", href: "/pricing", icon: "💰" },
       { label: "Application Calculator", href: "/pricing/calculator", icon: "🧮" },
       // Education (folded in from former Education module)
       { label: "FUZE Basics", href: "/education", icon: "🎓" },

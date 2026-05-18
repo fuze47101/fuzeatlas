@@ -9,6 +9,9 @@ export default function PickupCalculatorPage() {
         <p className="text-sm text-slate-500 mt-1">
           Calculate FUZE bath concentration, spray parameters, and volume requirements for your application method.
         </p>
+        <p className="text-xs text-slate-400 mt-1">
+          Looking for cost per meter? See the <a href="/pricing" className="underline text-emerald-700 hover:text-emerald-900">Pricing Calculator</a>.
+        </p>
       </div>
       <div className="bg-white rounded-xl p-6 shadow-sm border">
         <FuzePickupCalculator />
