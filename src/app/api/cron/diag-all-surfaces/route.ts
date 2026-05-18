@@ -398,6 +398,17 @@ export async function GET(req: Request) {
           select: { id: true, url: true },
         }),
     ),
+    // Brand fabric portfolio (Tina spreadsheet replacement) — verifies
+    // the new Fabric.developmentStatus column landed and the rollup
+    // query for /admin/brands/[id]/fabrics resolves.
+    check(
+      "/admin/brands/[id]/fabrics — fabric developmentStatus column",
+      "fabric findFirst select developmentStatus",
+      () =>
+        prisma.fabric.findFirst({
+          select: { id: true, developmentStatus: true, factoryCode: true } as any,
+        }),
+    ),
     // Distributor Portal Ordering — verify the new pieces resolve:
     // tier ladder rows, factory-orders scope, quote-input shape, and
     // the new poNumber / distributorTierIndexAtOrder columns on

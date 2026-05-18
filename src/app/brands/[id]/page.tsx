@@ -1030,12 +1030,21 @@ export default function BrandDetailPage() {
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-slate-900">{t.brandTabs.fabrics}</h3>
-            <button
-              onClick={() => router.push(`/fabrics/new?brandId=${id}`)}
-              className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700"
-            >
-              + New Fabric
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => router.push(`/admin/brands/${id}/fabrics`)}
+                className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700"
+                title="Full portfolio view with mill grouping, ICP/AM rollup, status, CSV export"
+              >
+                📋 Open Fabric Portfolio →
+              </button>
+              <button
+                onClick={() => router.push(`/fabrics/new?brandId=${id}`)}
+                className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700"
+              >
+                + New Fabric
+              </button>
+            </div>
           </div>
           {(brand.fabrics?.length ?? 0) === 0 ? (
             <p className="text-slate-400 text-sm text-center py-8">{t.common.noFabrics}</p>

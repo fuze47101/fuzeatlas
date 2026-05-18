@@ -1310,6 +1310,17 @@ model Fabric {
   intakeFormId     String?    // Reference to uploaded intake form
   intakeParsedAt   DateTime?  // When the intake form was parsed
 
+  // Development workflow status — the column Tina tracks in her
+  // SanMar spreadsheet. Captures where a fabric sits in the
+  // development/trial/AM-test/bulk-production lifecycle. Separate from
+  // labStatus (which is internal lab pipeline) and from
+  // FabricSubmission.status (which is the per-submission state).
+  // Free-text but constrained at the UI to: NEW, TRIAL_IN_PROGRESS,
+  // TRIAL_COMPLETE, AWAITING_AM_TEST, AM_TESTING_FUZE_USA,
+  // PROCEED_TO_BULK, BULK_PRODUCTION, DROPPED, NO_FURTHER_UPDATE,
+  // FURTHER_UPDATE_PENDING. Added May 18 — Tina spreadsheet replacement.
+  developmentStatus           String?
+
   // Lab lifecycle
   // UPLOADED → RECEIVED → TESTING → COMPLETE (→ ARCHIVED)
   labStatus                   String?   @default("UPLOADED")
