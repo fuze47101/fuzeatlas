@@ -319,6 +319,37 @@ runtime logs for `[resend-inbound]`.
 - Production branch: `main` (auto-deploys to Vercel)
 - **Prisma migrations**: Use `npx prisma db push` (shadow DB migration is broken due to constraint conflict)
 
+### Auto-close feedback tickets from commits
+
+Reference a `FeedbackReport` ID in your commit body to auto-close it
+(GitHub-style close-via-commit, but post-deploy and bearer-authed).
+
+The hourly cron `/api/cron/auto-resolve-from-commits` scans the last
+25 commits on `main`, pulls every cuid matching `cm[a-z0-9]{24}`,
+flips the matching reports to `FIXED`, stamps the commit SHA +
+author + message snippet as the resolution note, and sends the
+standard "we fixed it" email to the reporter. Re-runs are
+idempotent — already-FIXED reports get skipped.
+
+Example commit message:
+
+```
+fix: factory dropdown not showing approved factories
+
+Wrong filter on /api/factory-portal/factories — was excluding
+brands the factory had ever submitted for. Now matches the
+admin endpoint's filter.
+
+Closes cmot3i3pk00iijo04hgcjcvyf
+```
+
+When the next hourly cron fires (`10 * * * *`), Scott Smith's
+ticket flips to FIXED with a link to this commit and an email
+goes out automatically. No CLI step.
+
+Multi-close: put multiple cuids in one commit; the cron handles
+all of them in the same pass.
+
 ## Key Models & Relationships
 
 ### EntityManager (NEW — multi-manager)

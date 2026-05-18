@@ -8,10 +8,11 @@ import { sendEmail } from "@/lib/email";
  * PATCH /api/admin/feedback/[id]
  *
  * Update triage state. Accepts partial:
- *   { status?, triageNotes?, resolution?, resolutionUrl?, priority? }
+ *   { status?, triageNotes?, resolution?, resolutionUrl?, priority?, notify? }
  *
  * Side effects:
- *   — When transitioning to FIXED, sends an email to the requester (once).
+ *   — When transitioning to FIXED with notify=true (default), sends
+ *     an email to the requester (once). Pass notify=false to suppress.
  */
 export async function PATCH(req: Request, context: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser().catch(() => null);
@@ -54,9 +55,12 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
     data,
   });
 
-  // Send "we fixed it" notification on transition into FIXED (only once)
+  // Send "we fixed it" notification on transition into FIXED (only once).
+  // Caller can pass notify=false to suppress (internal-only resolution).
+  const wantNotify = body.notify !== false;
   let notified = false;
   if (
+    wantNotify &&
     data.status === "FIXED" &&
     existing.status !== "FIXED" &&
     !existing.notifiedAt &&

@@ -595,6 +595,18 @@ export async function GET(req: Request) {
           where: { createdAt: { gte: new Date(Date.now() - 7 * 24 * 3600 * 1000) } },
         }),
     ),
+    // auto-resolve-from-commits readiness — count terminal-status
+    // FeedbackReports so the cron's idempotency guard has something
+    // to check against. Returning 0 is fine; this confirms the
+    // status enum is queryable.
+    check(
+      "/api/cron/auto-resolve-from-commits — terminal-status guard",
+      "feedbackReport count status in FIXED/CLOSED/REJECTED/DUPLICATE",
+      () =>
+        prisma.feedbackReport.count({
+          where: { status: { in: ["FIXED", "CLOSED", "REJECTED", "DUPLICATE"] } },
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

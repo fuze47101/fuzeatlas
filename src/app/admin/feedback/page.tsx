@@ -84,6 +84,8 @@ export default function AdminFeedbackPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
+  // Inline resolve modal — replaces the CLI step for the 90% case.
+  const [resolveTarget, setResolveTarget] = useState<FeedbackReport | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -245,36 +247,48 @@ export default function AdminFeedbackPage() {
                 key={r.id}
                 className="bg-white border border-slate-200 rounded-xl overflow-hidden"
               >
-                {/* Row header */}
-                <button
-                  onClick={() => setExpandedId(expanded ? null : r.id)}
-                  className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-slate-50 transition"
-                >
-                  <span className="text-xl">{cat.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold border ${STATUS_STYLE[r.status]}`}
-                      >
-                        {r.status.replace("_", " ")}
-                      </span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
-                        {cat.label}
-                      </span>
-                      {r.portal && <span className="text-[10px] text-slate-400">{r.portal}</span>}
+                {/* Row header — clickable region expands; the Resolve
+                    button is a sibling that stops propagation. */}
+                <div className="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition">
+                  <button
+                    onClick={() => setExpandedId(expanded ? null : r.id)}
+                    className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                  >
+                    <span className="text-xl">{cat.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold border ${STATUS_STYLE[r.status]}`}
+                        >
+                          {r.status.replace("_", " ")}
+                        </span>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
+                          {cat.label}
+                        </span>
+                        {r.portal && <span className="text-[10px] text-slate-400">{r.portal}</span>}
+                      </div>
+                      <p className="text-sm font-semibold text-slate-900 mt-0.5 truncate">
+                        {r.title}
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        {r.userName || r.userEmail || "Anonymous"}
+                        {r.userRole ? ` · ${r.userRole}` : ""} ·{" "}
+                        {new Date(r.createdAt).toLocaleString()}
+                      </p>
                     </div>
-                    <p className="text-sm font-semibold text-slate-900 mt-0.5 truncate">
-                      {r.title}
-                    </p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      {r.userName || r.userEmail || "Anonymous"}
-                      {r.userRole ? ` · ${r.userRole}` : ""} ·{" "}
-                      {new Date(r.createdAt).toLocaleString()}
-                    </p>
-                  </div>
-                  {r.screenshotUrl && <span className="text-xs text-slate-400">📎</span>}
-                  <span className="text-slate-400 text-sm">{expanded ? "▾" : "▸"}</span>
-                </button>
+                    {r.screenshotUrl && <span className="text-xs text-slate-400">📎</span>}
+                    <span className="text-slate-400 text-sm">{expanded ? "▾" : "▸"}</span>
+                  </button>
+                  {r.status !== "FIXED" && r.status !== "CLOSED" && r.status !== "REJECTED" && r.status !== "DUPLICATE" && (
+                    <button
+                      onClick={() => setResolveTarget(r)}
+                      disabled={saving === r.id}
+                      className="shrink-0 px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+                    >
+                      Resolve
+                    </button>
+                  )}
+                </div>
 
                 {/* Expanded body */}
                 {expanded && (
@@ -424,6 +438,147 @@ export default function AdminFeedbackPage() {
           })}
         </div>
       )}
+
+      {/* Inline Resolve modal — replaces the fzcron admin-resolve
+          step for the 90% case. Reuses PATCH /api/admin/feedback/[id]
+          which already handles the FIXED transition + email. */}
+      {resolveTarget && (
+        <ResolveModal
+          report={resolveTarget}
+          onClose={() => setResolveTarget(null)}
+          onResolved={async (patch) => {
+            await updateReport(resolveTarget.id, patch);
+            setResolveTarget(null);
+          }}
+          saving={saving === resolveTarget.id}
+        />
+      )}
+    </div>
+  );
+}
+
+function ResolveModal({
+  report,
+  onClose,
+  onResolved,
+  saving,
+}: {
+  report: FeedbackReport;
+  onClose: () => void;
+  onResolved: (patch: any) => Promise<void> | void;
+  saving: boolean;
+}) {
+  const [status, setStatus] = useState<Status>("FIXED");
+  const [resolution, setResolution] = useState<string>(report.resolution || "");
+  const [notify, setNotify] = useState(true);
+
+  // Email is only sent on FIXED transitions — disable the checkbox
+  // for other terminal statuses so it can't look like it will fire.
+  const willEmail = status === "FIXED" && !!report.userEmail && !report.notifiedAt;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-2xl max-w-lg w-full"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-5 border-b border-slate-200">
+          <p className="text-[10px] uppercase tracking-widest text-slate-500">
+            Resolve feedback
+          </p>
+          <p className="text-sm font-bold text-slate-900 mt-1 line-clamp-2">{report.title}</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            {report.userName || report.userEmail || "Anonymous"} ·{" "}
+            {new Date(report.createdAt).toLocaleString()}
+          </p>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <div>
+            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Status
+            </label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as Status)}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+              disabled={saving}
+            >
+              <option value="FIXED">FIXED — shipped a fix</option>
+              <option value="REJECTED">REJECTED — won't fix</option>
+              <option value="DUPLICATE">DUPLICATE — already tracked</option>
+              <option value="CLOSED">CLOSED — no longer relevant</option>
+              <option value="TRIAGED">TRIAGED — needs more input</option>
+              <option value="ACCEPTED">ACCEPTED — taking it on</option>
+              <option value="IN_PROGRESS">IN_PROGRESS — actively working</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-1">
+              Resolution note (shown to reporter on FIXED)
+            </label>
+            <textarea
+              value={resolution}
+              onChange={(e) => setResolution(e.target.value)}
+              rows={4}
+              placeholder='E.g. "Factory dropdown now shows all approved factories. Try again on the same page."'
+              className="w-full px-3 py-2 border border-emerald-300 bg-emerald-50/40 rounded-lg text-sm"
+              disabled={saving}
+            />
+          </div>
+
+          <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={notify}
+              onChange={(e) => setNotify(e.target.checked)}
+              disabled={!willEmail || saving}
+              className="w-4 h-4"
+            />
+            <span>
+              Notify reporter
+              {!willEmail && (
+                <span className="text-[11px] text-slate-400 ml-2">
+                  {report.notifiedAt
+                    ? "(already notified)"
+                    : !report.userEmail
+                      ? "(no email on file)"
+                      : status !== "FIXED"
+                        ? "(only sends on FIXED)"
+                        : ""}
+                </span>
+              )}
+            </span>
+          </label>
+        </div>
+
+        <div className="px-5 py-4 border-t border-slate-200 flex items-center justify-end gap-2">
+          <button
+            onClick={onClose}
+            disabled={saving}
+            className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() =>
+              onResolved({
+                status,
+                resolution: resolution || report.resolution || "",
+                notify,
+              })
+            }
+            disabled={saving}
+            className="px-5 py-2 bg-emerald-600 text-white text-sm font-bold rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+          >
+            {saving ? "Resolving…" : "Resolve"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
