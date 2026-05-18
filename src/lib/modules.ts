@@ -151,10 +151,12 @@ export const MODULES: ModuleDef[] = [
     icon: "🤝",
     accent: "from-amber-500 to-amber-700",
     sidebarAccent: "text-amber-400",
-    blurb: "Brands, factories, distributors, labs",
+    // Partners = active working relationships. NOT leads / BD prospecting —
+    // that lives in the Sales & Pipeline module to avoid duplication.
+    blurb: "Active brand partners, factories, distributors, labs",
     landing: "/brands",
     items: [
-      { label: "Brands", href: "/brands", icon: "👕" },
+      { label: "Brand Partners", href: "/brands", icon: "👕" },
       { label: "Factories", href: "/factories", icon: "🏭" },
       { label: "Distributors", href: "/admin/distributors", icon: "🌍" },
       { label: "Distributor Documents", href: "/admin/distributor-docs", icon: "📂" },

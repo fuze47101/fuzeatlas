@@ -4,15 +4,17 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
 import AddCompanyModal from "@/components/AddCompanyModal";
 
+// Partners view = working / production brand partners.
+// LEAD and ARCHIVE are intentionally excluded — leads live in the BD
+// pipeline at /admin/brand-pipeline (BD Wizard, sequences, scoring),
+// and archived brands are not active partnerships. Andrew 2026-05-18.
 const STAGES = [
-  "LEAD",
   "PRESENTATION",
   "BRAND_TESTING",
   "FACTORY_ONBOARDING",
   "FACTORY_TESTING",
   "PRODUCTION",
   "BRAND_EXPANSION",
-  "ARCHIVE",
   "CUSTOMER_WON",
 ];
 const STAGE_COLORS: Record<string, string> = {
@@ -125,10 +127,10 @@ export default function BrandsPage() {
 
   return (
     <div className="max-w-[1600px] mx-auto">
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-3">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">{t.brands.title}</h1>
-          <p className="text-sm text-slate-500 mt-1">{`${total} ${t.brands.brandsAcrossStages.replace("{count}", String(STAGES.length))}`}</p>
+          <h1 className="text-2xl font-black text-slate-900">Brand Partners</h1>
+          <p className="text-sm text-slate-500 mt-1">Active and production-stage brand partnerships. {total} brands across {STAGES.length} stages.</p>
         </div>
         <div className="flex items-center gap-3">
           <input
@@ -159,6 +161,20 @@ export default function BrandsPage() {
         onClose={() => setAddCompanyOpen(false)}
         initialType="BRAND"
       />
+
+      {/* Cross-link banner — LEAD-stage work lives in BD pipeline, not here */}
+      <div className="mb-5 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 flex items-center justify-between gap-4">
+        <div className="text-sm text-blue-900">
+          <strong>Looking for leads?</strong> Lead-stage brands, BD outreach, and
+          pipeline scoring live in the Business Development module, not here.
+        </div>
+        <a
+          href="/admin/brand-pipeline"
+          className="shrink-0 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700"
+        >
+          Open BD Pipeline →
+        </a>
+      </div>
 
       {/* Pipeline summary strip */}
       <div className="flex gap-1 mb-6 rounded-xl overflow-hidden h-10">
