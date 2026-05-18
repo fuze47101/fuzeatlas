@@ -778,7 +778,7 @@ const en = {
     stageFactoryOnboarding: "Factory Onboarding",
     stageFactoryTesting: "Factory Testing",
     stageProduction: "Production",
-    stageBrandExpansion: "Brand Expansion",
+    stageBrandExpansion: "Re-Connect",
     stageCustomerWon: "Customer Won",
   },
 

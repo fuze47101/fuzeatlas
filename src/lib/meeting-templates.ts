@@ -93,19 +93,21 @@ export const PIPELINE_MEETING_TEMPLATES: Record<string, MeetingTemplate> = {
     ],
   },
   BRAND_EXPANSION: {
+    // Stage was repurposed 2026-05-18 from "Expansion" → "Re-Connect".
+    // Meaning: brand stalled post-presentation, needs re-engagement to
+    // restart the conversation. Auto-scheduled meeting reflects that.
     meetingType: "BRAND_PRESENTATION",
-    title: "Brand Expansion Strategy Session",
+    title: "Re-Connect Outreach Session",
     description:
-      "Discuss expansion opportunities — new product lines, additional tiers, new factories, or geographic markets.",
-    durationMinutes: 60,
+      "Re-engage a brand that stalled after the initial presentation. Reset the conversation, reaffirm the value proposition, and identify what changed since the last touch.",
+    durationMinutes: 45,
     suggestedAttendees: ["SALES_REP", "SALES_MANAGER"],
     agenda: [
-      "Current partnership performance review",
-      "New product line opportunities",
-      "Additional FUZE tier applications",
-      "New factory or market expansion",
-      "Volume & revenue projections",
-      "Action items & next steps",
+      "What was the original use case / pitch?",
+      "What changed since the last touch — internal at the brand, market, regulatory?",
+      "Refresh the FUZE pitch against their current priorities",
+      "Identify the next-step blocker (technical, commercial, or political)",
+      "Set the next concrete touchpoint and owner",
     ],
   },
 };
