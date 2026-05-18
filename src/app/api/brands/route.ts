@@ -17,8 +17,19 @@ const AUTO_CLAIM_ROLES = new Set([
   "BD_REP",
 ]);
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    // Accept ?limit= to cap return size — callers like
+    // /factory-portal/orders/new pass limit=100 expecting a slim
+    // payload for the dropdown. Audit caught May 16 that this was
+    // being silently ignored.
+    const { searchParams } = new URL(req.url);
+    const limitRaw = parseInt(searchParams.get("limit") || "0", 10);
+    const take =
+      Number.isFinite(limitRaw) && limitRaw > 0
+        ? Math.min(limitRaw, 5000)
+        : undefined;
+
     const brands = await prisma.brand.findMany({
       include: {
         salesRep: { select: { id: true, name: true } },
@@ -27,6 +38,7 @@ export async function GET() {
         },
       },
       orderBy: { name: "asc" },
+      ...(take ? { take } : {}),
     });
 
     const stages = [

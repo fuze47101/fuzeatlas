@@ -11,7 +11,11 @@ export async function GET(req: Request) {
     // library back (preserving the original contract).
     const { searchParams } = new URL(req.url);
     const q = (searchParams.get("q") || "").trim();
-    const pageSizeRaw = parseInt(searchParams.get("pageSize") || "0", 10);
+    // Accept both `pageSize` (original) and `limit` (the more common
+    // convention used by /factory-portal/orders pages). Audit caught
+    // May 16 — /factory-portal/orders was passing `?limit=100` and the
+    // server was silently ignoring it, returning the full table.
+    const pageSizeRaw = parseInt(searchParams.get("pageSize") || searchParams.get("limit") || "0", 10);
     const take = Number.isFinite(pageSizeRaw) && pageSizeRaw > 0 ? Math.min(pageSizeRaw, 1000) : undefined;
 
     // Build a broad OR filter. Ashlee types "2504" → we want that to match
