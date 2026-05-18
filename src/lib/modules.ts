@@ -180,6 +180,7 @@ export const MODULES: ModuleDef[] = [
       // Education (folded in from former Education module)
       { label: "FUZE Basics", href: "/education", icon: "🎓" },
       { label: "How FUZE Works", href: "/education#mechanism", icon: "⚛️" },
+      { label: "Life Cycle Analysis", href: "/education/lifecycle", icon: "♻️" },
       { label: "Testing & Validation", href: "/education#testing", icon: "🧪" },
       { label: "Performance Stack (F1–F4)", href: "/education#performance-stack", icon: "🪜" },
       { label: "The FUZE Story", href: "/education/story", icon: "🌍" },
