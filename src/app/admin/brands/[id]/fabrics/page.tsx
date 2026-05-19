@@ -166,8 +166,8 @@ export default function BrandFabricsPage() {
     if (!data) return;
     const headers = [
       "Mill",
-      "Mill Fabric #",
       "FUZE #",
+      "Mill Fabric #",
       "Type",
       "Content",
       "Weight (gsm)",
@@ -187,8 +187,8 @@ export default function BrandFabricsPage() {
       for (const r of g.rows) {
         const cells = [
           g.factory.name,
+          r.fuzeNumber != null ? `FUZE-${r.fuzeNumber}` : "",
           r.factoryCode || "",
-          r.fuzeNumber != null ? String(r.fuzeNumber) : "",
           r.type || "",
           r.content || "",
           r.weightGsm != null ? String(r.weightGsm) : "",
@@ -358,6 +358,7 @@ export default function BrandFabricsPage() {
             <table className="w-full text-xs">
               <thead className="bg-slate-50 text-slate-600">
                 <tr>
+                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">FUZE #</th>
                   <th className="text-left px-3 py-2 font-bold whitespace-nowrap">Mill Fabric #</th>
                   <th className="text-left px-3 py-2 font-bold whitespace-nowrap">Type</th>
                   <th className="text-left px-3 py-2 font-bold">Content</th>
@@ -382,10 +383,23 @@ export default function BrandFabricsPage() {
                       key={r.id}
                       className={`border-t border-slate-100 ${idx % 2 === 0 ? "bg-white" : "bg-slate-50/40"}`}
                     >
-                      <td className="px-3 py-2 font-mono text-slate-900">
-                        <Link href={`/fabrics/${r.id}`} className="text-blue-700 hover:underline">
-                          {r.factoryCode || (r.fuzeNumber ? `FUZE-${r.fuzeNumber}` : "(no code)")}
-                        </Link>
+                      <td className="px-3 py-2 font-mono text-slate-900 whitespace-nowrap">
+                        {r.fuzeNumber ? (
+                          <Link href={`/fabrics/${r.id}`} className="text-blue-700 hover:underline font-bold">
+                            FUZE-{r.fuzeNumber}
+                          </Link>
+                        ) : (
+                          <span className="text-slate-400 italic text-[10px]">unassigned</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 font-mono text-slate-700">
+                        {r.factoryCode ? (
+                          <Link href={`/fabrics/${r.id}`} className="text-slate-800 hover:underline">
+                            {r.factoryCode}
+                          </Link>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
                       </td>
                       <td className="px-3 py-2 text-slate-700">
                         {r.type === "ACTUAL"

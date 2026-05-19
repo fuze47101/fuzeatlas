@@ -98,6 +98,16 @@ async function ensureFactory(name, log) {
   return created;
 }
 
+async function nextFuzeNumber() {
+  // Mirrors the brand-portal allocator pattern: max(fuzeNumber) + 1.
+  const last = await prisma.fabric.findFirst({
+    where: { fuzeNumber: { not: null } },
+    orderBy: { fuzeNumber: "desc" },
+    select: { fuzeNumber: true },
+  });
+  return (last?.fuzeNumber || 0) + 1;
+}
+
 async function upsertFabric(brandId, factoryId, row) {
   const existing = await prisma.fabric.findFirst({ where: { brandId, factoryCode: row.factoryCode } });
   const devStatus = mapTinaStatusToEnum(row.rawStatus);
@@ -112,11 +122,62 @@ async function upsertFabric(brandId, factoryId, row) {
     developmentStatus: devStatus, note,
   };
   if (existing) {
-    await prisma.fabric.update({ where: { id: existing.id }, data });
-    return { fabric: existing, created: false };
+    // Backfill fuzeNumber if missing (older seed runs didn't set one).
+    const updateData = { ...data };
+    if (existing.fuzeNumber == null) {
+      updateData.fuzeNumber = await nextFuzeNumber();
+    }
+    const updated = await prisma.fabric.update({ where: { id: existing.id }, data: updateData });
+    return { fabric: updated, created: false };
   }
-  const created = await prisma.fabric.create({ data });
+  const created = await prisma.fabric.create({
+    data: { ...data, fuzeNumber: await nextFuzeNumber() },
+  });
   return { fabric: created, created: true };
+}
+
+async function ensureBrandFactoryLink(brandId, factoryId, log) {
+  // BrandFactory junction — drives the Factories tile count on /admin/brands/[id].
+  try {
+    const bfExisting = await prisma.brandFactory.findUnique({
+      where: { brandId_factoryId: { brandId, factoryId } },
+      select: { id: true },
+    });
+    if (!bfExisting) {
+      await prisma.brandFactory.create({
+        data: { brandId, factoryId, note: "Auto-linked from seed-sanmar fabric upsert" },
+      });
+      log.push(`  + BrandFactory link created (${brandId} → ${factoryId})`);
+    }
+  } catch (e) {
+    log.push(`  ⚠ BrandFactory link failed: ${e?.message}`);
+  }
+  // SupplyChainLink — drives the "No factory linked" suggested-next-move card.
+  try {
+    const sclExisting = await prisma.supplyChainLink.findUnique({
+      where: {
+        supply_chain_link_unique: {
+          fromType: "BRAND", fromId: brandId,
+          toType: "FACTORY", toId: factoryId,
+          relation: "SUPPLIES",
+        },
+      },
+      select: { id: true },
+    });
+    if (!sclExisting) {
+      await prisma.supplyChainLink.create({
+        data: {
+          fromType: "BRAND", fromId: brandId,
+          toType: "FACTORY", toId: factoryId,
+          relation: "SUPPLIES", active: true,
+          notes: "Auto-linked from seed-sanmar fabric upsert",
+        },
+      });
+      log.push(`  + SupplyChainLink created (${brandId} → ${factoryId})`);
+    }
+  } catch (e) {
+    log.push(`  ⚠ SupplyChainLink failed: ${e?.message}`);
+  }
 }
 
 async function ensureSubmission(brandId, factoryId, fabricId, row) {
@@ -188,6 +249,7 @@ export async function POST(req: Request) {
       }
       const { fabric, created: wasCreated } = await upsertFabric(brand.id, factoryId, row);
       if (wasCreated) created++; else updated++;
+      await ensureBrandFactoryLink(brand.id, factoryId, log);
       const sub = await ensureSubmission(brand.id, factoryId, fabric.id, row);
       if (await ensureIcpTest(sub.id, row)) icpCreated++;
       if (await ensureAmTest(sub.id, row)) amCreated++;
