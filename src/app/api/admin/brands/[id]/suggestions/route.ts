@@ -47,14 +47,22 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   }
   const reason = (body.reason || "").trim();
 
-  await prisma.note.create({
-    data: {
-      brandId: id,
-      authorId: user.id,
-      noteType: "ACTIVITY",
-      content: `${SUGGESTION_DISMISS_NOTE_PREFIX} ${suggestionId}${reason ? ` — ${reason}` : ""}`,
-    },
-  });
+  try {
+    await prisma.note.create({
+      data: {
+        brandId: id,
+        userId: user.id, // Note model field is userId, not authorId (schema-drift fix 2026-05-18)
+        noteType: "ACTIVITY",
+        date: new Date(),
+        content: `${SUGGESTION_DISMISS_NOTE_PREFIX} ${suggestionId}${reason ? ` — ${reason}` : ""}`,
+      },
+    });
+  } catch (e: any) {
+    return NextResponse.json(
+      { ok: false, error: e?.message || "Failed to dismiss" },
+      { status: 500 },
+    );
+  }
 
   return NextResponse.json({ ok: true });
 }
