@@ -238,6 +238,18 @@ export default function FactoryOrderDetailPage() {
               {order.fabric?.fuzeNumber && (
                 <div><p className="text-slate-500">{tx.detailFabric}</p><p className="font-bold text-slate-900">{order.fabric.fuzeNumber}</p></div>
               )}
+              {/* Tina ticket cmpdo2s9e — surface which distributor is
+                  responsible. Data was already on the GET; the row
+                  just wasn't being rendered. */}
+              <div>
+                <p className="text-slate-500">{tx.detailDistributor}</p>
+                <p className="font-bold text-slate-900">
+                  {order.distributor?.name ||
+                    (order.fulfillmentSource === "DIRECT_USA"
+                      ? tx.detailDistributorDirect
+                      : "—")}
+                </p>
+              </div>
               {order.trackingNumber && (
                 <div className="col-span-2">
                   <p className="text-slate-500">{tx.detailTracking}</p>

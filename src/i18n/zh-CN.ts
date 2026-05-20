@@ -1256,6 +1256,8 @@ const zhCN: Translations = {
       detailFabricMass: "面料质量",
       detailBrand: "品牌",
       detailFabric: "面料",
+      detailDistributor: "分销商",
+      detailDistributorDirect: "FUZE Direct(美国)",
       detailTracking: "运单号",
       logEvent: "记录生命周期事件",
       markShipped: "🚛 标记已发货",

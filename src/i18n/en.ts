@@ -1402,6 +1402,8 @@ const en = {
       detailFabricMass: "Fabric Mass",
       detailBrand: "Brand",
       detailFabric: "Fabric",
+      detailDistributor: "Distributor",
+      detailDistributorDirect: "FUZE Direct (USA)",
       detailTracking: "Tracking",
       // Lifecycle actions
       logEvent: "Log Lifecycle Event",
