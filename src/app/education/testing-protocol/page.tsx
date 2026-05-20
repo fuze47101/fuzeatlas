@@ -72,16 +72,17 @@ export default function TestingProtocolPage() {
       {/* Top-of-page summary card */}
       <div className="bg-slate-900 text-white rounded-2xl p-6 mb-8">
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-          The seven rules
+          The eight rules
         </p>
         <ol className="space-y-1.5 text-sm">
           <li><span className="font-black text-emerald-300">1.</span> ICP first. No antimicrobial test starts without ICP confirmation of fabric loading in mg/kg.</li>
-          <li><span className="font-black text-emerald-300">2.</span> Sterilization is UV ONLY. Autoclave destroys the test.</li>
-          <li><span className="font-black text-emerald-300">3.</span> Growth medium is low-sulfur. Mueller Hinton Broth is the standard.</li>
+          <li><span className="font-black text-emerald-300">2.</span> Sterilization is UV ONLY. Autoclave at 120°C opens nylon, polyester, and synthetic blends — destroys the test.</li>
+          <li><span className="font-black text-emerald-300">3.</span> Growth medium is low-sulfur. Mueller Hinton Broth is preferred.</li>
           <li><span className="font-black text-emerald-300">4.</span> No pre-test handling of the fabric. No hand-washing the sample.</li>
-          <li><span className="font-black text-emerald-300">5.</span> ASTM E2149 contact time is 24 hours minimum.</li>
+          <li><span className="font-black text-emerald-300">5.</span> ASTM E2149 contact time is 24 hours minimum. Use <em>E. coli</em> as the test organism.</li>
           <li><span className="font-black text-emerald-300">6.</span> ASTM E2149 is the primary recommended test for every FUZE tier.</li>
           <li><span className="font-black text-emerald-300">7.</span> AATCC 100 and ISO 20743 are supported ONLY at ICP ≥ 1.0 mg/kg (F1 Full Spectrum).</li>
+          <li><span className="font-black text-emerald-300">8.</span> Use the right test organism per method (see table in §5b). Non-standard organisms require justification.</li>
         </ol>
       </div>
 
@@ -126,23 +127,50 @@ export default function TestingProtocolPage() {
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
           Fabric samples must be sterilized via UV exposure before antimicrobial testing.
-          <strong> Autoclave sterilization is forbidden.</strong> Autoclave at 120°C under
-          pressure opens synthetic fibers — especially nylon — and the FUZE metamaterial
-          that was permanently bonded to the fiber surface gets absorbed into the now-open
-          fiber matrix. Once absorbed, the particles can no longer make physical contact
-          with the bacterial cells the test introduces. FUZE&apos;s mechanism is contact-kill.
+          <strong> Autoclave sterilization is forbidden.</strong> Autoclave at 120°C
+          under pressure opens the fiber structure of synthetics — nylon, polyester,
+          and the synthetic blends that make up most performance and hospitality
+          textiles. When the fibers open, the FUZE metamaterial that was permanently
+          bonded to the fiber surface gets absorbed into the now-open fiber matrix.
+          Once absorbed, the particles can no longer make physical contact with the
+          bacterial cells the test introduces. FUZE&apos;s mechanism is contact-kill.
           No contact, no kill. False failure.
         </p>
         <div className="bg-slate-100 border-l-4 border-slate-400 px-4 py-3 mb-4 max-w-3xl">
-          <p className="text-sm text-slate-700">
-            <strong>Bacterial mobility makes the false-failure non-uniform.</strong>{" "}
-            Highly mobile bacteria like <em>Staphylococcus aureus</em> still show ~90%
-            reduction on autoclave-prepped samples because Staph moves through the
-            suspension and finds the surviving surface chemistry. Less-mobile bacteria
-            like <em>Klebsiella pneumoniae</em> show the worst results (0.0% reduction
-            is common) because they can&apos;t physically reach the buried particles. If
-            a test report shows decent Staph numbers but zero/near-zero Kleb, that&apos;s
-            the autoclave signature.
+          <p className="text-sm font-bold text-slate-800 mb-2">
+            Bacterial morphology makes the false-failure non-uniform.
+          </p>
+          <p className="text-sm text-slate-700 mb-2">
+            FUZE is contact-kill — bacteria must physically encounter the metamaterial
+            particles to be neutralized. Different test organisms have wildly different
+            abilities to find chemistry that&apos;s been buried by autoclave, which is
+            why autoclave-damaged samples produce species-dependent results.
+          </p>
+          <ul className="text-sm text-slate-700 space-y-1.5 list-disc pl-5">
+            <li>
+              <strong><em>Staphylococcus aureus</em> / MRSA</strong> — small, motile
+              (via flagella in some strains, swarming in others), actively seeks
+              surface contact. Even on autoclave-damaged fabric will typically show
+              ~90% reduction because it finds the surviving surface chemistry.
+            </li>
+            <li>
+              <strong><em>Klebsiella pneumoniae</em></strong> — large gram-negative
+              bacillus with a double-membrane envelope (outer membrane + peptidoglycan
+              + inner membrane), heavily encapsulated in a mucoid polysaccharide layer
+              (the &quot;pink&quot; sugar shell on MacConkey agar from its lactose-positive
+              metabolism), and{" "}
+              <strong>non-motile</strong>. Cannot actively seek out chemistry. If FUZE
+              has been buried by autoclave, Kleb will not find it. This is why
+              Klebsiella results from autoclave-damaged samples crash to 0–10%
+              reduction — Kleb is the worst-case detector for inaccessibility.
+            </li>
+          </ul>
+          <p className="text-sm text-slate-700 mt-2">
+            <strong>Diagnostic signal:</strong> if a test report shows decent
+            <em> Staph</em> numbers (≥80%) but near-zero <em>Klebsiella</em>, that&apos;s
+            the autoclave signature. The chemistry is on the fabric (ICP will confirm)
+            but the test prep has rendered it inaccessible to bacteria that can&apos;t
+            chase it.
           </p>
         </div>
 
@@ -280,6 +308,85 @@ export default function TestingProtocolPage() {
           ISO 20743 and AATCC 100 already have their own defined contact periods (24h
           and 18-24h respectively) — those don&apos;t need adjustment. The 24-hour minimum
           applies specifically to ASTM E2149.
+        </p>
+      </section>
+
+      {/* Section 5b — Recommended test organisms */}
+      <section className="mb-10">
+        <div className="flex items-baseline gap-3 mb-3">
+          <span className="text-2xl font-black text-[#00b4c3]">5b.</span>
+          <h2 className="text-2xl font-black text-slate-900">Recommended Test Organisms</h2>
+        </div>
+        <p className="text-slate-700 mb-3 max-w-3xl">
+          The right test organism matters as much as the right test method. Choose
+          organisms whose growth and motility characteristics give the chemistry a
+          fair chance to demonstrate efficacy, and which produce repeatable results
+          across test runs.
+        </p>
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden max-w-3xl mb-4">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-100">
+              <tr>
+                <th className="text-left px-4 py-3 font-bold text-slate-700">Test</th>
+                <th className="text-left px-4 py-3 font-bold text-slate-700">Recommended organism</th>
+                <th className="text-left px-4 py-3 font-bold text-slate-700">Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-t border-slate-100">
+                <td className="px-4 py-3 font-bold text-slate-900">ASTM E2149</td>
+                <td className="px-4 py-3 text-slate-700"><em>Escherichia coli</em><br /><span className="text-xs text-slate-500">(ATCC 25922 or ATCC 8739)</span></td>
+                <td className="px-4 py-3 text-slate-700 text-xs">
+                  Gram-negative, motile (peritrichous flagella), short lag phase,
+                  consistent log-phase kinetics, no dormancy. Continues growing through
+                  the 24-hour contact period so the differential between control and
+                  treated samples remains measurable at endpoint. The cleanest
+                  gram-negative organism for non-leaching contact-kill chemistry.
+                </td>
+              </tr>
+              <tr className="border-t border-slate-100">
+                <td className="px-4 py-3 font-bold text-slate-900">AATCC 100<br /><span className="text-xs text-slate-500 font-normal">(F1 only)</span></td>
+                <td className="px-4 py-3 text-slate-700"><em>S. aureus</em> + <em>K. pneumoniae</em><br /><span className="text-xs text-slate-500">(standard pairing)</span></td>
+                <td className="px-4 py-3 text-slate-700 text-xs">
+                  The standard&apos;s historical gram-positive + gram-negative pairing.
+                  Acceptable at F1 because the metamaterial density overcomes the
+                  layered-coupon geometry. Confirm sterilization is UV (not autoclave)
+                  before running Kleb — autoclave-damaged samples will produce
+                  near-zero Kleb reduction regardless of chemistry.
+                </td>
+              </tr>
+              <tr className="border-t border-slate-100">
+                <td className="px-4 py-3 font-bold text-slate-900">ISO 20743<br /><span className="text-xs text-slate-500 font-normal">(F1 only)</span></td>
+                <td className="px-4 py-3 text-slate-700"><em>S. aureus</em> + <em>K. pneumoniae</em></td>
+                <td className="px-4 py-3 text-slate-700 text-xs">
+                  Same standard pairing as AATCC 100. Same caveat — UV sterilization
+                  is mandatory for the Kleb result to be valid.
+                </td>
+              </tr>
+              <tr className="border-t border-slate-100">
+                <td className="px-4 py-3 font-bold text-slate-900">AATCC 30<br /><span className="text-xs text-slate-500 font-normal">(antifungal)</span></td>
+                <td className="px-4 py-3 text-slate-700"><em>Aspergillus brasiliensis</em></td>
+                <td className="px-4 py-3 text-slate-700 text-xs">
+                  Standard antifungal challenge organism. F1-only test.
+                </td>
+              </tr>
+              <tr className="border-t border-slate-100">
+                <td className="px-4 py-3 font-bold text-slate-900">ISO 18184<br /><span className="text-xs text-slate-500 font-normal">(antiviral)</span></td>
+                <td className="px-4 py-3 text-slate-700">Influenza A H1N1 or H3N2</td>
+                <td className="px-4 py-3 text-slate-700 text-xs">
+                  Standard antiviral challenge per the ISO method. F1-only test.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="text-slate-700 max-w-3xl text-sm">
+          If your lab proposes a non-standard organism (especially for ASTM E2149),
+          push back unless they can justify it relative to the test&apos;s intended
+          mechanism. <em>P. aeruginosa</em>, <em>S. epidermidis</em>, and other
+          alternative organisms can produce inconsistent results depending on strain
+          biofilm tendency and growth kinetics — stay with the table above unless
+          a brand or regulatory spec specifically requires a different organism.
         </p>
       </section>
 
