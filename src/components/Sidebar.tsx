@@ -52,6 +52,9 @@ interface NavItem {
   href: string;
   label: string;
   icon: string;
+  // Phase 16 i18n — points into t.modules[labelKey]. Falls back to
+  // the English `label` when missing or the locale lacks the key.
+  labelKey?: string;
   badge?: number;
 }
 
@@ -61,6 +64,11 @@ interface NavGroup {
 }
 
 function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
+  // Phase 16 i18n — labelKey-aware. Falls back to the English `label`
+  // when labelKey is absent or the active locale doesn't have it.
+  const { t } = useI18n();
+  const mods = (t as any).modules || {};
+  const shown = (item.labelKey && mods[item.labelKey]) || item.label;
   const active = pathname === item.href || pathname.startsWith(item.href + "/");
   return (
     <Link
@@ -75,7 +83,7 @@ function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
       `}
     >
       <span className="text-base">{item.icon}</span>
-      <span className="flex-1">{item.label}</span>
+      <span className="flex-1">{shown}</span>
       {item.badge && item.badge > 0 ? (
         <span
           className={`min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ${
@@ -146,7 +154,7 @@ export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const { locale, setLocale, t } = useI18n();
-  const { user, logout, impersonation } = useAuth();
+  const { user, logout, impersonation, loading } = useAuth();
 
   const isBrandUser = user?.role === "BRAND_USER";
   const isFactoryUser = user?.role === "FACTORY_USER" || user?.role === "FACTORY_MANAGER";
@@ -334,16 +342,23 @@ export default function Sidebar() {
       // "High tide raises all boats" — distributor-side BD reps
       // (Jeremy, Kathir, Tandy, Scott Smith) need the wizard + the
       // scoreboard in their sidebar so they can run outreach for FUZE
-      // alongside their distributor day-jobs.
-      {
-        label: "Business Development",
-        items: [
-          { href: "/admin/bd/wizard", label: "BD Wizard", icon: "🪄" },
-          { href: "/admin/bd/scoreboard", label: "BD Scoreboard", icon: "📊" },
-          { href: "/admin/brand-pipeline", label: "Brand Pipeline (Leads)", icon: "🔥" },
-          { href: "/recipe-search", label: "Recipe Search", icon: "🔎" },
-        ],
-      },
+      // alongside their distributor day-jobs. Pure distributors (Danny,
+      // etc.) should NOT see these. Gate on user.canClaim — the flag
+      // we already use to mark BD-eligible non-admin users. Danny's
+      // canClaim is false; Jeremy/Kathir/Tandy/Scott's is true.
+      ...(user?.canClaim
+        ? [
+            {
+              label: "Business Development",
+              items: [
+                { href: "/admin/bd/wizard", label: "BD Wizard", icon: "🪄" },
+                { href: "/admin/bd/scoreboard", label: "BD Scoreboard", icon: "📊" },
+                { href: "/admin/brand-pipeline", label: "Brand Pipeline (Leads)", icon: "🔥" },
+                { href: "/recipe-search", label: "Recipe Search", icon: "🔎" },
+              ],
+            },
+          ]
+        : []),
       {
         label: "Resources",
         items: [
@@ -419,6 +434,7 @@ export default function Sidebar() {
           .map((it) => ({
             href: it.href,
             label: it.label,
+            labelKey: it.labelKey,
             icon: it.icon || "•",
             badge: badgeFor(it),
           })),
@@ -711,8 +727,13 @@ export default function Sidebar() {
           )}
         </div>
 
-        {/* View As switcher */}
-        {(user?.role === "ADMIN" || impersonation?.active) && (
+        {/* View As switcher — render eagerly during auth-loading so it
+            doesn't flicker out on every page refresh for admins.
+            (Bug surfaced 2026-05-18: race condition where user was null
+            mid-hydration caused the conditional to fail and re-show
+            after auth fetched. Loading-state guard keeps the slot
+            visible across the hydration window for both cases.) */}
+        {(loading || user?.role === "ADMIN" || impersonation?.active) && (
           <div className="px-3 pb-2">
             <ViewAsSwitcher />
           </div>

@@ -32,6 +32,10 @@ export type ModuleItem = {
   badgeKey?: "testRequests" | "accessRequests";
   adminOnly?: boolean;
   hideInCard?: boolean;
+  // Phase 16 i18n — points into t.modules[labelKey] for translation.
+  // Consumers do `t.modules[labelKey] || label` so old call sites keep
+  // working until they migrate.
+  labelKey?: string;
 };
 
 export type ModuleDef = {
@@ -58,23 +62,23 @@ export const MODULES: ModuleDef[] = [
     landing: "/admin/brand-pipeline",
     items: [
       // BD execution surfaces
-      { label: "BD Wizard", href: "/admin/bd/wizard", icon: "🪄" },
-      { label: "BD Sequences", href: "/admin/bd/sequences", icon: "🔁" },
-      { label: "BD Scoreboard", href: "/admin/bd/scoreboard", icon: "📊" },
-      { label: "BD Funnel", href: "/admin/bd/funnel", icon: "🪜" },
-      { label: "BD Calendar", href: "/admin/bd/calendar", icon: "🗓️" },
-      { label: "BD Playbooks", href: "/admin/bd/playbooks", icon: "📘" },
+      { label: "BD Wizard", labelKey: "bdWizard", href: "/admin/bd/wizard", icon: "🪄" },
+      { label: "BD Sequences", labelKey: "bdSequences", href: "/admin/bd/sequences", icon: "🔁" },
+      { label: "BD Scoreboard", labelKey: "bdScoreboard", href: "/admin/bd/scoreboard", icon: "📊" },
+      { label: "BD Funnel", labelKey: "bdFunnel", href: "/admin/bd/funnel", icon: "🪜" },
+      { label: "BD Calendar", labelKey: "bdCalendar", href: "/admin/bd/calendar", icon: "🗓️" },
+      { label: "BD Playbooks", labelKey: "bdPlaybooks", href: "/admin/bd/playbooks", icon: "📘" },
       // Unified pipeline
-      { label: "Brand Pipeline", href: "/admin/brand-pipeline", icon: "🔥" },
-      { label: "Brand Discovery", href: "/admin/brand-discovery", icon: "🌎" },
-      { label: "Contact Hygiene", href: "/admin/contact-hygiene", icon: "🧽" },
+      { label: "Brand Pipeline", labelKey: "brandPipeline", href: "/admin/brand-pipeline", icon: "🔥" },
+      { label: "Brand Discovery", labelKey: "brandDiscovery", href: "/admin/brand-discovery", icon: "🌎" },
+      { label: "Contact Hygiene", labelKey: "contactHygiene", href: "/admin/contact-hygiene", icon: "🧽" },
       // Conversion + revenue
-      { label: "Conversion Tracking", href: "/admin/conversion-tracking", icon: "🔄" },
-      { label: "Pricing & Volume", href: "/pipeline", icon: "💰" },
-      { label: "Invoices", href: "/invoices", icon: "🧾" },
+      { label: "Conversion Tracking", labelKey: "conversionTracking", href: "/admin/conversion-tracking", icon: "🔄" },
+      { label: "Pricing & Volume", labelKey: "pricingVolume", href: "/pipeline", icon: "💰" },
+      { label: "Invoices", labelKey: "invoices", href: "/invoices", icon: "🧾" },
       // ACM essentials folded in
-      { label: "My Tasks", href: "/acm/tasks", icon: "✅" },
-      { label: "Meetings", href: "/meetings", icon: "📅" },
+      { label: "My Tasks", labelKey: "myTasks", href: "/acm/tasks", icon: "✅" },
+      { label: "Meetings", labelKey: "meetings", href: "/meetings", icon: "📅" },
     ],
   },
 
@@ -92,18 +96,18 @@ export const MODULES: ModuleDef[] = [
     // unexpected vs. what the card shows.
     landing: "/dashboard",
     items: [
-      { label: "KPI Dashboard", href: "/dashboard", icon: "📊" },
-      { label: "Submissions", href: "/admin/orders", icon: "📥" },
-      { label: "Tests", href: "/tests", icon: "🧫" },
-      { label: "Orders Dashboard", href: "/admin/orders-dashboard", icon: "📦" },
-      { label: "Production Batches", href: "/admin/batches", icon: "🏭" },
-      { label: "Worldwide Inventory", href: "/admin/worldwide-inventory", icon: "🌍" },
-      { label: "Consumption & Reorder", href: "/admin/consumption", icon: "📈" },
-      { label: "Distributor Restocks", href: "/admin/distributor-restock", icon: "💧" },
-      { label: "Sample Tracking", href: "/shipments", icon: "📮" },
-      { label: "Shipping Docs", href: "/shipping-docs", icon: "🚢" },
-      { label: "Command Center", href: "/admin/command-center", icon: "🛰️", adminOnly: true },
-      { label: "Supply-chain Globe", href: "/admin/command-center/globe", icon: "🌐", adminOnly: true },
+      { label: "KPI Dashboard", labelKey: "kpiDashboard", href: "/dashboard", icon: "📊" },
+      { label: "Submissions", labelKey: "submissions", href: "/admin/orders", icon: "📥" },
+      { label: "Tests", labelKey: "tests", href: "/tests", icon: "🧫" },
+      { label: "Orders Dashboard", labelKey: "ordersDashboard", href: "/admin/orders-dashboard", icon: "📦" },
+      { label: "Production Batches", labelKey: "productionBatches", href: "/admin/batches", icon: "🏭" },
+      { label: "Worldwide Inventory", labelKey: "worldwideInventory", href: "/admin/worldwide-inventory", icon: "🌍" },
+      { label: "Consumption & Reorder", labelKey: "consumptionReorder", href: "/admin/consumption", icon: "📈" },
+      { label: "Distributor Restocks", labelKey: "distributorRestocks", href: "/admin/distributor-restock", icon: "💧" },
+      { label: "Sample Tracking", labelKey: "sampleTracking", href: "/shipments", icon: "📮" },
+      { label: "Shipping Docs", labelKey: "shippingDocs", href: "/shipping-docs", icon: "🚢" },
+      { label: "Command Center", labelKey: "commandCenter", href: "/admin/command-center", icon: "🛰️", adminOnly: true },
+      { label: "Supply-chain Globe", labelKey: "supplyChainGlobe", href: "/admin/command-center/globe", icon: "🌐", adminOnly: true },
     ],
   },
 
@@ -121,26 +125,26 @@ export const MODULES: ModuleDef[] = [
     landing: "/fabrics",
     items: [
       // Fabric core
-      { label: "Fabrics", href: "/fabrics", icon: "🧵" },
-      { label: "Fabric Intake", href: "/fabrics/intake", icon: "📥" },
-      { label: "FUZE Fabric Library", href: "/fabric-library", icon: "📚" },
+      { label: "Fabrics", labelKey: "fabrics", href: "/fabrics", icon: "🧵" },
+      { label: "Fabric Intake", labelKey: "fabricIntake", href: "/fabrics/intake", icon: "📥" },
+      { label: "FUZE Fabric Library", labelKey: "fuzeFabricLibrary", href: "/fabric-library", icon: "📚" },
       // Recipe bench
-      { label: "Recipe Library", href: "/recipes", icon: "📖" },
-      { label: "Recipe Calculator", href: "/admin/recipe-calculator", icon: "🧪" },
-      { label: "Recipe Bench SOP", href: "/admin/recipe-calculator/sop", icon: "📋" },
+      { label: "Recipe Library", labelKey: "recipeLibrary", href: "/recipes", icon: "📖" },
+      { label: "Recipe Calculator", labelKey: "recipeCalculator", href: "/admin/recipe-calculator", icon: "🧪" },
+      { label: "Recipe Bench SOP", labelKey: "recipeBenchSop", href: "/admin/recipe-calculator/sop", icon: "📋" },
       // ICP sample prep
-      { label: "ICP Sample Prep", href: "/admin/icp-sample-prep", icon: "⚖️" },
-      { label: "ICP Prep SOP", href: "/admin/icp-sample-prep/sop", icon: "📋" },
+      { label: "ICP Sample Prep", labelKey: "icpSamplePrep", href: "/admin/icp-sample-prep", icon: "⚖️" },
+      { label: "ICP Prep SOP", labelKey: "icpPrepSop", href: "/admin/icp-sample-prep/sop", icon: "📋" },
       // Lab pipeline + analytics
-      { label: "Test Requests", href: "/test-requests", icon: "📝", badgeKey: "testRequests" },
-      { label: "Ongoing Tests", href: "/admin/ongoing-tests", icon: "🔬" },
-      { label: "Sample Trials", href: "/admin/sample-trials", icon: "🧪" },
-      { label: "Test Repository", href: "/admin/test-repository", icon: "🗂️", adminOnly: true },
-      { label: "Inter-Lab Variance", href: "/admin/inter-lab-variance", icon: "📊", adminOnly: true },
-      { label: "Lab Review Queue", href: "/admin/lab-review", icon: "📋", adminOnly: true },
-      { label: "Test Catalog & Pricing", href: "/admin/test-catalog", icon: "💲", adminOnly: true },
+      { label: "Test Requests", labelKey: "testRequests", href: "/test-requests", icon: "📝", badgeKey: "testRequests" },
+      { label: "Ongoing Tests", labelKey: "ongoingTests", href: "/admin/ongoing-tests", icon: "🔬" },
+      { label: "Sample Trials", labelKey: "sampleTrials", href: "/admin/sample-trials", icon: "🧪" },
+      { label: "Test Repository", labelKey: "testRepository", href: "/admin/test-repository", icon: "🗂️", adminOnly: true },
+      { label: "Inter-Lab Variance", labelKey: "interLabVariance", href: "/admin/inter-lab-variance", icon: "📊", adminOnly: true },
+      { label: "Lab Review Queue", labelKey: "labReviewQueue", href: "/admin/lab-review", icon: "📋", adminOnly: true },
+      { label: "Test Catalog & Pricing", labelKey: "testCatalogPricing", href: "/admin/test-catalog", icon: "💲", adminOnly: true },
       // Solaris IR (instrumentation)
-      { label: "Solaris IR Test (FZ-500)", href: "/admin/solaris-test", icon: "☀️" },
+      { label: "Solaris IR Test (FZ-500)", labelKey: "solarisIrTest", href: "/admin/solaris-test", icon: "☀️" },
     ],
   },
 
@@ -156,11 +160,11 @@ export const MODULES: ModuleDef[] = [
     blurb: "Active brand partners, factories, distributors, labs",
     landing: "/brands",
     items: [
-      { label: "Brand Partners", href: "/brands", icon: "👕" },
-      { label: "Factories", href: "/factories", icon: "🏭" },
-      { label: "Distributors", href: "/admin/distributors", icon: "🌍" },
-      { label: "Distributor Documents", href: "/admin/distributor-docs", icon: "📂" },
-      { label: "Labs", href: "/labs", icon: "🏢" },
+      { label: "Brand Partners", labelKey: "brandPartners", href: "/brands", icon: "👕" },
+      { label: "Factories", labelKey: "factories", href: "/factories", icon: "🏭" },
+      { label: "Distributors", labelKey: "distributors", href: "/admin/distributors", icon: "🌍" },
+      { label: "Distributor Documents", labelKey: "distributorDocuments", href: "/admin/distributor-docs", icon: "📂" },
+      { label: "Labs", labelKey: "labs", href: "/labs", icon: "🏢" },
     ],
   },
 
@@ -175,29 +179,29 @@ export const MODULES: ModuleDef[] = [
     landing: "/compliance-library",
     items: [
       // Document library
-      { label: "Document Library", href: "/compliance-library", icon: "📋" },
-      { label: "Product Documents (TDS/SDS/COA)", href: "/admin/product-documents", icon: "📘" },
-      { label: "SOWs", href: "/sow", icon: "📄" },
-      { label: "Pricing Calculator", href: "/pricing", icon: "💰" },
-      { label: "Application Calculator", href: "/pricing/calculator", icon: "🧮" },
+      { label: "Document Library", labelKey: "documentLibrary", href: "/compliance-library", icon: "📋" },
+      { label: "Product Documents (TDS/SDS/COA)", labelKey: "productDocuments", href: "/admin/product-documents", icon: "📘" },
+      { label: "SOWs", labelKey: "sows", href: "/sow", icon: "📄" },
+      { label: "Pricing Calculator", labelKey: "pricingCalculator", href: "/pricing", icon: "💰" },
+      { label: "Application Calculator", labelKey: "applicationCalculator", href: "/pricing/calculator", icon: "🧮" },
       // Education (folded in from former Education module)
-      { label: "FUZE Basics", href: "/education", icon: "🎓" },
-      { label: "How FUZE Works", href: "/education#mechanism", icon: "⚛️" },
-      { label: "Life Cycle Analysis", href: "/education/lifecycle", icon: "♻️" },
-      { label: "Testing & Validation", href: "/education#testing", icon: "🧪" },
-      { label: "Performance Stack (F1–F4)", href: "/education#performance-stack", icon: "🪜" },
-      { label: "The FUZE Story", href: "/education/story", icon: "🌍" },
-      { label: "Application Methods", href: "/education/application", icon: "🏭" },
-      { label: "Sustainability Report", href: "/sustainability", icon: "🌱" },
+      { label: "FUZE Basics", labelKey: "fuzeBasics", href: "/education", icon: "🎓" },
+      { label: "How FUZE Works", labelKey: "howFuzeWorks", href: "/education#mechanism", icon: "⚛️" },
+      { label: "Life Cycle Analysis", labelKey: "lifeCycleAnalysis", href: "/education/lifecycle", icon: "♻️" },
+      { label: "Testing & Validation", labelKey: "testingValidation", href: "/education#testing", icon: "🧪" },
+      { label: "Performance Stack (F1–F4)", labelKey: "performanceStack", href: "/education#performance-stack", icon: "🪜" },
+      { label: "The FUZE Story", labelKey: "fuzeStory", href: "/education/story", icon: "🌍" },
+      { label: "Application Methods", labelKey: "applicationMethods", href: "/education/application", icon: "🏭" },
+      { label: "Sustainability Report", labelKey: "sustainabilityReport", href: "/sustainability", icon: "🌱" },
       // Press kit + compliance + competitive
-      { label: "Press Kit (admin)", href: "/admin/press-kit", icon: "📰", adminOnly: true },
-      { label: "Public Claims", href: "/claims", icon: "📜" },
-      { label: "Compliance & Certifications", href: "/education/compliance", icon: "✅" },
-      { label: "Market Landscape", href: "/admin/competitor-pricing", icon: "📊" },
+      { label: "Press Kit (admin)", labelKey: "pressKit", href: "/admin/press-kit", icon: "📰", adminOnly: true },
+      { label: "Public Claims", labelKey: "publicClaims", href: "/claims", icon: "📜" },
+      { label: "Compliance & Certifications", labelKey: "complianceCertifications", href: "/education/compliance", icon: "✅" },
+      { label: "Market Landscape", labelKey: "marketLandscape", href: "/admin/competitor-pricing", icon: "📊" },
       // Reports
-      { label: "Weekly Summary", href: "/reports", icon: "📈" },
-      { label: "Weekly Exec Review", href: "/admin/weekly-review", icon: "📊", adminOnly: true },
-      { label: "FUZE AI FAQ", href: "/brand-portal/chat", icon: "💬" },
+      { label: "Weekly Summary", labelKey: "weeklySummary", href: "/reports", icon: "📈" },
+      { label: "Weekly Exec Review", labelKey: "weeklyExecReview", href: "/admin/weekly-review", icon: "📊", adminOnly: true },
+      { label: "FUZE AI FAQ", labelKey: "fuzeAiFaq", href: "/brand-portal/chat", icon: "💬" },
     ],
   },
 
@@ -212,19 +216,20 @@ export const MODULES: ModuleDef[] = [
     landing: "/settings/users",
     adminOnly: true,
     items: [
-      { label: "My Profile", href: "/settings/profile", icon: "👤" },
-      { label: "Notifications", href: "/notifications", icon: "🔔" },
-      { label: "User Management", href: "/settings/users", icon: "👥" },
+      { label: "My Profile", labelKey: "myProfile", href: "/settings/profile", icon: "👤" },
+      { label: "Notifications", labelKey: "notifications", href: "/notifications", icon: "🔔" },
+      { label: "User Management", labelKey: "userManagement", href: "/settings/users", icon: "👥" },
       {
         label: "Access Requests",
+        labelKey: "accessRequests",
         href: "/settings/access-requests",
         icon: "📩",
         badgeKey: "accessRequests",
       },
-      { label: "Availability Settings", href: "/settings/availability", icon: "⏰" },
-      { label: "Exchange Rates", href: "/settings/exchange-rates", icon: "💱" },
-      { label: "Email Templates", href: "/settings/email-templates", icon: "✉️" },
-      { label: "Audit Log", href: "/settings/audit-log", icon: "📜" },
+      { label: "Availability Settings", labelKey: "availabilitySettings", href: "/settings/availability", icon: "⏰" },
+      { label: "Exchange Rates", labelKey: "exchangeRates", href: "/settings/exchange-rates", icon: "💱" },
+      { label: "Email Templates", labelKey: "emailTemplates", href: "/settings/email-templates", icon: "✉️" },
+      { label: "Audit Log", labelKey: "auditLog", href: "/settings/audit-log", icon: "📜" },
     ],
   },
 ];

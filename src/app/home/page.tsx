@@ -114,66 +114,79 @@ export default function HomePage() {
         <p className="text-xs font-bold uppercase text-slate-400 tracking-wide mb-3">
           {t.home.quickJump}
         </p>
+        {/* Phase 3 — shortcut tiles reuse the modules: namespace so
+            every locale gets translated labels. Existing role gates
+            preserved from prior session. */}
         <div className="flex flex-wrap gap-2">
-          <Link
-            href="/admin/bd/wizard"
-            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
-          >
-            🪄 BD Wizard
-          </Link>
-          <Link
-            href="/dashboard"
-            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
-          >
-            📊 KPI Dashboard
-          </Link>
-          <Link
-            href="/admin/orders-dashboard"
-            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
-          >
-            📦 Orders
-          </Link>
-          <Link
-            href="/admin/brand-pipeline"
-            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
-          >
-            🔥 Pipeline
-          </Link>
-          <Link
-            href="/admin/icp-sample-prep"
-            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
-          >
-            ⚖️ ICP Sample Prep
-          </Link>
+          {isInternal && (
+            <Link
+              href="/admin/bd/wizard"
+              className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+            >
+              🪄 {(t as any).modules?.bdWizard || "BD Wizard"}
+            </Link>
+          )}
+          {isInternal && (
+            <Link
+              href="/dashboard"
+              className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+            >
+              📊 {(t as any).modules?.kpiDashboard || "KPI Dashboard"}
+            </Link>
+          )}
+          {isInternal && (
+            <Link
+              href="/admin/orders-dashboard"
+              className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+            >
+              📦 {(t as any).modules?.orders || "Orders"}
+            </Link>
+          )}
+          {isInternal && (
+            <Link
+              href="/admin/brand-pipeline"
+              className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+            >
+              🔥 {(t as any).modules?.pipeline || "Pipeline"}
+            </Link>
+          )}
+          {isAdmin && (
+            <Link
+              href="/admin/icp-sample-prep"
+              className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
+            >
+              ⚖️ {(t as any).modules?.icpSamplePrep || "ICP Sample Prep"}
+            </Link>
+          )}
           <Link
             href="/notifications"
             className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
           >
-            🔔 Notifications
+            🔔 {(t as any).modules?.notifications || "Notifications"}
           </Link>
           <Link
             href="/compliance-library"
             className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
           >
-            📋 Documents
+            📋 {(t as any).modules?.documents || "Documents"}
           </Link>
           <Link
             href="/education"
             className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
           >
-            🎓 Education
+            🎓 {(t as any).modules?.education || "Education"}
           </Link>
           <Link
             href="/settings/profile"
             className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
           >
-            👤 My Profile
+            👤 {(t as any).modules?.myProfile || "My Profile"}
           </Link>
           <Link
             href="/settings/email-templates"
             className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-[#00b4c3] hover:text-[#00b4c3]"
           >
-            ✉️ Email Templates
+            ✉️ {(t as any).modules?.emailTemplates || "Email Templates"}
           </Link>
         </div>
       </div>
@@ -182,6 +195,12 @@ export default function HomePage() {
 }
 
 function ModuleCard({ module: m }: { module: ModuleDef }) {
+  // Pulled in scope here so the inline tile labels translate too.
+  // `t.modules[item.labelKey]` falls back to the English `item.label`
+  // when a labelKey is missing or the locale doesn't yet have a value.
+  // deepFallback handles language files that haven't been translated.
+  const { t } = useI18n();
+  const mods = (t as any).modules || {};
   const visibleItems = m.items.filter((it) => !it.hideInCard);
   return (
     <Link
@@ -202,7 +221,7 @@ function ModuleCard({ module: m }: { module: ModuleDef }) {
         {visibleItems.slice(0, 7).map((item) => (
           <span key={item.href} className="text-xs text-slate-600 truncate">
             {item.icon ? `${item.icon} ` : "· "}
-            {item.label}
+            {(item.labelKey && mods[item.labelKey]) || item.label}
           </span>
         ))}
         {visibleItems.length > 7 && (
