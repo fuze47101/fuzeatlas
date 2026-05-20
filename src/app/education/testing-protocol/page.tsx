@@ -81,8 +81,8 @@ export default function TestingProtocolPage() {
           <li><span className="font-black text-emerald-300">4.</span> No pre-test handling of the fabric. No hand-washing the sample.</li>
           <li><span className="font-black text-emerald-300">5.</span> ASTM E2149 contact time is 24 hours minimum. Use <em>E. coli</em> as the test organism.</li>
           <li><span className="font-black text-emerald-300">6.</span> ASTM E2149 is the primary recommended test for every FUZE tier.</li>
-          <li><span className="font-black text-emerald-300">7.</span> AATCC 100 and ISO 20743 are supported ONLY at ICP ≥ 1.0 mg/kg (F1 Full Spectrum).</li>
-          <li><span className="font-black text-emerald-300">8.</span> Use the right test organism per method (see table in §5b). Non-standard organisms require justification.</li>
+          <li><span className="font-black text-emerald-300">7.</span> AATCC 100, ISO 20743, and JIS L 1902 are supported ONLY at ICP ≥ 1.0 mg/kg (F1 Full Spectrum) with UV sterilization.</li>
+          <li><span className="font-black text-emerald-300">8.</span> Use the right test organism per method (see table in §5b). For anti-odor / activewear claims, run <em>Moraxella osloensis</em>.</li>
         </ol>
       </div>
 
@@ -364,6 +364,31 @@ export default function TestingProtocolPage() {
                 </td>
               </tr>
               <tr className="border-t border-slate-100">
+                <td className="px-4 py-3 font-bold text-slate-900">JIS L 1902<br /><span className="text-xs text-slate-500 font-normal">(F1 only)</span></td>
+                <td className="px-4 py-3 text-slate-700"><em>S. aureus</em> + <em>K. pneumoniae</em></td>
+                <td className="px-4 py-3 text-slate-700 text-xs">
+                  Japanese textile antimicrobial standard, harmonized with ISO 20743.
+                  Same organism pairing, same UV-prep requirement. JIS L 1902 is the
+                  certifying standard for the Japanese SEK Mark — required if you&apos;re
+                  pursuing SEK certification for the Japanese market.
+                </td>
+              </tr>
+              <tr className="border-t border-slate-100 bg-amber-50/40">
+                <td className="px-4 py-3 font-bold text-slate-900">Anti-odor<br /><span className="text-xs text-slate-500 font-normal">(activewear / hospitality)</span></td>
+                <td className="px-4 py-3 text-slate-700"><em>Moraxella osloensis</em><br /><span className="text-xs text-slate-500">(ATCC 19976)</span></td>
+                <td className="px-4 py-3 text-slate-700 text-xs">
+                  Gram-negative diplococcus, the primary causative agent of laundry
+                  malodor. <em>Moraxella osloensis</em> metabolizes residual sweat
+                  components in worn or damp textiles and produces 4-methyl-3-hexenoic
+                  acid — the volatile organic compound the human nose registers as the
+                  &quot;sour wet-laundry funk&quot; of poorly-dried activewear, towels,
+                  gym socks, and hospitality bedding. Run on ISO 20743 / JIS L 1902 /
+                  AATCC 100 protocol with the F1 + UV requirements above. This is the
+                  organism that backs anti-odor claims for activewear, performance
+                  apparel, athletic socks, and high-turnover hospitality textiles.
+                </td>
+              </tr>
+              <tr className="border-t border-slate-100">
                 <td className="px-4 py-3 font-bold text-slate-900">AATCC 30<br /><span className="text-xs text-slate-500 font-normal">(antifungal)</span></td>
                 <td className="px-4 py-3 text-slate-700"><em>Aspergillus brasiliensis</em></td>
                 <td className="px-4 py-3 text-slate-700 text-xs">
@@ -380,7 +405,7 @@ export default function TestingProtocolPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-slate-700 max-w-3xl text-sm">
+        <p className="text-slate-700 max-w-3xl text-sm mb-4">
           If your lab proposes a non-standard organism (especially for ASTM E2149),
           push back unless they can justify it relative to the test&apos;s intended
           mechanism. <em>P. aeruginosa</em>, <em>S. epidermidis</em>, and other
@@ -388,6 +413,46 @@ export default function TestingProtocolPage() {
           biofilm tendency and growth kinetics — stay with the table above unless
           a brand or regulatory spec specifically requires a different organism.
         </p>
+
+        {/* Moraxella deep-dive — biggest market lever on the page */}
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-300 rounded-2xl p-5 max-w-3xl">
+          <p className="text-xs font-bold uppercase tracking-widest text-amber-800 mb-2">
+            Anti-odor positioning — why Moraxella matters
+          </p>
+          <p className="text-sm text-slate-800 mb-3">
+            <em>Moraxella osloensis</em> is the bacteria the activewear and performance
+            apparel industry actually cares about. Standard antimicrobial test organisms
+            (<em>S. aureus</em>, <em>K. pneumoniae</em>, <em>E. coli</em>) demonstrate
+            infection-control efficacy — important for healthcare, hospitality bedding,
+            childcare. But the consumer complaint that drives activewear repurchase
+            cycles and brand reputation is one specific thing: <strong>smell</strong>.
+            And the smell is almost always Moraxella.
+          </p>
+          <p className="text-sm text-slate-800 mb-3">
+            <em>M. osloensis</em> colonizes worn or damp synthetic fabric, feeds on
+            residual sweat lipids, and produces a volatile organic acid
+            (4-methyl-3-hexenoic acid) that human noses register as the characteristic
+            sour stink of poorly-dried gym clothes, towels, or hospitality linen left in
+            a hamper too long. Polyester and nylon blends are especially susceptible
+            because their hydrophobic surfaces hold the lipid substrate Moraxella feeds on.
+          </p>
+          <p className="text-sm text-slate-800 mb-3">
+            FUZE&apos;s non-leaching contact-kill mechanism neutralizes <em>M. osloensis</em>
+            on the fiber surface before it can colonize and produce the malodor compound.
+            This is the testing claim that matters for: activewear (Nike, Lululemon,
+            North Face, KUIU), performance apparel, athletic socks, hospitality bedding
+            (JLA Nomad Home® line), childcare textiles, and any consumer-facing application
+            where the buyer&apos;s repeat-purchase decision hinges on how the fabric smells
+            after the second or third wear.
+          </p>
+          <p className="text-sm text-slate-800">
+            <strong>How to run it:</strong> request <em>Moraxella osloensis</em>
+            (ATCC 19976) on either ISO 20743 or JIS L 1902 protocol. F1 + UV
+            sterilization required, same as all other layered-coupon tests. Result
+            should be reported as log reduction at 24h; ≥99% reduction is the standard
+            anti-odor pass threshold.
+          </p>
+        </div>
       </section>
 
       {/* Section 6 — Recommended Tests */}
@@ -399,10 +464,12 @@ export default function TestingProtocolPage() {
         <p className="text-slate-700 mb-4 max-w-3xl">
           The right test depends on the FUZE tier applied. ASTM E2149 is the primary
           recommended test for every tier because it was designed for non-leaching
-          contact-kill chemistry. AATCC 100 and ISO 20743 are supported only at the F1
-          Full Spectrum tier where the application density is sufficient to overcome
-          those tests&apos; layered-coupon geometry (which was designed for ion-leaching
-          chemistries and disadvantages non-leaching antimicrobials at lower densities).
+          contact-kill chemistry. AATCC 100, ISO 20743, and JIS L 1902 are supported
+          only at the F1 Full Spectrum tier (ICP ≥ 1.0 mg/kg) AND only with UV
+          sterilization. Those three tests share a layered-coupon geometry that was
+          designed around ion-leaching chemistries and disadvantages non-leaching
+          antimicrobials at lower densities. Without the F1 application density AND
+          proper UV prep, results are meaningless.
         </p>
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden max-w-3xl">
           <table className="w-full text-sm">
@@ -438,10 +505,11 @@ export default function TestingProtocolPage() {
                 <td className="px-4 py-3 text-slate-700">1.0</td>
                 <td className="px-4 py-3"><span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded">ASTM E2149</span></td>
                 <td className="px-4 py-3 text-xs">
-                  <span className="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded mr-1">AATCC 100</span>
-                  <span className="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded mr-1">ISO 20743</span>
-                  <span className="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded mr-1">AATCC 30 (antifungal)</span>
-                  <span className="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded">ISO 18184 (antiviral)</span>
+                  <span className="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded mr-1 inline-block mb-1">AATCC 100</span>
+                  <span className="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded mr-1 inline-block mb-1">ISO 20743</span>
+                  <span className="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded mr-1 inline-block mb-1">JIS L 1902</span>
+                  <span className="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded mr-1 inline-block mb-1">AATCC 30 (antifungal)</span>
+                  <span className="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded mr-1 inline-block mb-1">ISO 18184 (antiviral)</span>
                 </td>
               </tr>
             </tbody>
