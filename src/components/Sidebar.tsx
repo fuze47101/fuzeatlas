@@ -268,75 +268,76 @@ export default function Sidebar() {
   if (isBrandUser) {
     groups = [
       {
-        label: "My Program",
+        label: t.nav.groupMyProgram || "My Program",
         items: [
-          { href: "/brand-portal/fabrics", label: "Fabrics", icon: "🧵" },
-          { href: "/brand-portal/submissions", label: "Submissions", icon: "📋" },
-          { href: "/brand-portal/tests", label: "Test Results", icon: "🧪" },
-          { href: "/brand-portal/contacts", label: "Contacts", icon: "👥" },
+          { href: "/brand-portal/fabrics", label: "Fabrics", labelKey: "fabrics", icon: "🧵" },
+          { href: "/brand-portal/submissions", label: "Submissions", labelKey: "submissions", icon: "📋" },
+          { href: "/brand-portal/tests", label: "Test Results", labelKey: "testResults", icon: "🧪" },
+          { href: "/brand-portal/contacts", label: "Contacts", labelKey: "contacts", icon: "👥" },
         ],
       },
       {
-        label: "Resources",
+        label: t.nav.groupResources || "Resources",
         items: [
-          { href: "/fabric-library", label: "FUZE Fabric Library", icon: "📚" },
-          { href: "/compliance-library", label: "Document Center", icon: "📋" },
-          { href: "/book-meeting", label: "Book Meeting", icon: "📅" },
-          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
-          { href: "/factories", label: "Factory Search", icon: "🔍" },
-          { href: "/pricing", label: "Pricing & Environment", icon: "💰" },
-          { href: "/pricing/calculator", label: "Application Calculator", icon: "🧮" },
-          { href: "/sustainability", label: "Sustainability", icon: "🌍" },
-          { href: "/admin/esg-reports", label: "ESG Impact Report", icon: "🌱" },
+          { href: "/fabric-library", label: "FUZE Fabric Library", labelKey: "fuzeFabricLibrary", icon: "📚" },
+          { href: "/compliance-library", label: "Document Center", labelKey: "documentCenter", icon: "📋" },
+          { href: "/book-meeting", label: "Book Meeting", labelKey: "bookMeeting", icon: "📅" },
+          { href: "/brand-portal/chat", label: "FUZE FAQ", labelKey: "fuzeAiFaq", icon: "💬" },
+          { href: "/factories", label: "Factory Search", labelKey: "factorySearch", icon: "🔍" },
+          { href: "/pricing", label: "Pricing & Environment", labelKey: "pricingEnvironment", icon: "💰" },
+          { href: "/pricing/calculator", label: "Application Calculator", labelKey: "applicationCalculator", icon: "🧮" },
+          { href: "/sustainability", label: "Sustainability", labelKey: "sustainability", icon: "🌍" },
+          { href: "/admin/esg-reports", label: "ESG Impact Report", labelKey: "esgImpactReport", icon: "🌱" },
         ],
       },
     ];
   } else if (isFactoryUser) {
     groups = [
       {
-        label: "Factory Portal",
+        label: t.nav.groupFactoryPortal || "Factory Portal",
         items: [
-          { href: "/factory-portal/intake", label: "Submit Fabric", icon: "📥" },
-          { href: "/factory-portal/fabrics", label: "Fabrics & Submissions", icon: "🧵" },
-          { href: "/factory-portal/tests", label: "Test Results", icon: "🧪" },
-          { href: "/factory-portal/upload-report", label: "Upload Test Report", icon: "📤" },
-          { href: "/factory-portal/sample-trial", label: "Sample Trials", icon: "🧪" },
-          { href: "/factory-portal/request-test", label: "Request Test", icon: "📋" },
-          { href: "/factory-portal/my-requests", label: "My Requests", icon: "📦" },
-          { href: "/factory-portal/orders", label: "Order FUZE", icon: "🛒" },
+          { href: "/factory-portal/intake", label: "Submit Fabric", labelKey: "submitFabric", icon: "📥" },
+          { href: "/factory-portal/fabrics", label: "Fabrics & Submissions", labelKey: "fabricsAndSubmissions", icon: "🧵" },
+          { href: "/factory-portal/tests", label: "Test Results", labelKey: "testResults", icon: "🧪" },
+          { href: "/factory-portal/upload-report", label: "Upload Test Report", labelKey: "uploadTestReport", icon: "📤" },
+          { href: "/factory-portal/sample-trial", label: "Sample Trials", labelKey: "sampleTrials", icon: "🧪" },
+          { href: "/factory-portal/request-test", label: "Request Test", labelKey: "requestTest", icon: "📋" },
+          { href: "/factory-portal/my-requests", label: "My Requests", labelKey: "myRequests", icon: "📦" },
+          { href: "/factory-portal/orders", label: "Order FUZE", labelKey: "orderFuze", icon: "🛒" },
         ],
       },
       {
-        label: "Resources",
+        label: t.nav.groupResources || "Resources",
         items: [
-          { href: "/fabric-library", label: "FUZE Fabric Library", icon: "📚" },
-          { href: "/compliance-library", label: "Document Center", icon: "📋" },
-          { href: "/pricing", label: "Pricing", icon: "💰" },
-          { href: "/pricing/calculator", label: "Application Calculator", icon: "🧮" },
-          { href: "/sustainability", label: "Sustainability", icon: "🌱" },
-          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
+          { href: "/fabric-library", label: "FUZE Fabric Library", labelKey: "fuzeFabricLibrary", icon: "📚" },
+          { href: "/compliance-library", label: "Document Center", labelKey: "documentCenter", icon: "📋" },
+          { href: "/pricing", label: "Pricing", labelKey: "pricing", icon: "💰" },
+          { href: "/pricing/calculator", label: "Application Calculator", labelKey: "applicationCalculator", icon: "🧮" },
+          { href: "/sustainability", label: "Sustainability", labelKey: "sustainability", icon: "🌱" },
+          { href: "/brand-portal/chat", label: "FUZE FAQ", labelKey: "fuzeAiFaq", icon: "💬" },
         ],
       },
     ];
   } else if (isDistributorUser) {
     groups = [
       {
-        label: "Distributor Portal",
+        label: t.nav.groupDistributorPortal || "Distributor Portal",
         items: [
-          { href: "/distributor-portal/restock", label: "Restock from FUZE", icon: "💧" },
-          { href: "/distributor-portal/orders", label: "Factory Orders", icon: "📦" },
+          { href: "/distributor-portal/restock", label: "Restock from FUZE", labelKey: "restockFromFuze", icon: "💧" },
+          { href: "/distributor-portal/orders", label: "Factory Orders", labelKey: "factoryOrders", icon: "📦" },
           {
             href: "/distributor-portal/incoming-orders",
             label: "Sub-Distributor Orders",
+            labelKey: "subDistributorOrders",
             icon: "📥",
           },
-          { href: "/distributor-portal/inventory", label: "Inventory & Pricing", icon: "📊" },
-          { href: "/distributor-portal/fabrics", label: "Fabric Portfolio", icon: "📒" },
-          { href: "/distributor-portal/test-request", label: "Apply for Test", icon: "🧪" },
-          { href: "/distributor-portal/upload-report", label: "Upload Test Report", icon: "📤" },
-          { href: "/distributor-portal/test-reports", label: "Test Reports", icon: "🔬" },
-          { href: "/distributor-portal/documents", label: "Document Library", icon: "📂" },
-          { href: "/distributor-portal/invoices", label: "Invoices", icon: "📄" },
+          { href: "/distributor-portal/inventory", label: "Inventory & Pricing", labelKey: "inventoryPricing", icon: "📊" },
+          { href: "/distributor-portal/fabrics", label: "Fabric Portfolio", labelKey: "fabricPortfolio", icon: "📒" },
+          { href: "/distributor-portal/test-request", label: "Apply for Test", labelKey: "applyForTest", icon: "🧪" },
+          { href: "/distributor-portal/upload-report", label: "Upload Test Report", labelKey: "uploadTestReport", icon: "📤" },
+          { href: "/distributor-portal/test-reports", label: "Test Reports", labelKey: "testReports", icon: "🔬" },
+          { href: "/distributor-portal/documents", label: "Document Library", labelKey: "documentLibrary", icon: "📂" },
+          { href: "/distributor-portal/invoices", label: "Invoices", labelKey: "invoices", icon: "📄" },
         ],
       },
       // "High tide raises all boats" — distributor-side BD reps
@@ -349,48 +350,49 @@ export default function Sidebar() {
       ...(user?.canClaim
         ? [
             {
-              label: "Business Development",
+              label: t.nav.groupBizDev || "Business Development",
               items: [
-                { href: "/admin/bd/wizard", label: "BD Wizard", icon: "🪄" },
-                { href: "/admin/bd/scoreboard", label: "BD Scoreboard", icon: "📊" },
-                { href: "/admin/brand-pipeline", label: "Brand Pipeline (Leads)", icon: "🔥" },
-                { href: "/recipe-search", label: "Recipe Search", icon: "🔎" },
+                { href: "/admin/bd/wizard", label: "BD Wizard", labelKey: "bdWizard", icon: "🪄" },
+                { href: "/admin/bd/scoreboard", label: "BD Scoreboard", labelKey: "bdScoreboard", icon: "📊" },
+                { href: "/admin/brand-pipeline", label: "Brand Pipeline (Leads)", labelKey: "brandPipelineLeads", icon: "🔥" },
+                { href: "/recipe-search", label: "Recipe Search", labelKey: "recipeSearch", icon: "🔎" },
               ],
             },
           ]
         : []),
       {
-        label: "Resources",
+        label: t.nav.groupResources || "Resources",
         items: [
-          { href: "/fabric-library", label: "FUZE Fabric Library", icon: "📚" },
-          { href: "/compliance-library", label: "Document Center", icon: "📋" },
-          { href: "/pricing", label: "Pricing", icon: "💰" },
-          { href: "/sustainability", label: "Sustainability", icon: "🌱" },
-          { href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" },
+          { href: "/fabric-library", label: "FUZE Fabric Library", labelKey: "fuzeFabricLibrary", icon: "📚" },
+          { href: "/compliance-library", label: "Document Center", labelKey: "documentCenter", icon: "📋" },
+          { href: "/pricing", label: "Pricing", labelKey: "pricing", icon: "💰" },
+          { href: "/sustainability", label: "Sustainability", labelKey: "sustainability", icon: "🌱" },
+          { href: "/brand-portal/chat", label: "FUZE FAQ", labelKey: "fuzeAiFaq", icon: "💬" },
         ],
       },
     ];
   } else if (isLabUser) {
     groups = [
       {
-        label: "Lab Portal",
+        label: t.nav.groupLabPortal || "Lab Portal",
         items: [
-          { href: "/lab-portal/catalog", label: "Test Catalog", icon: "🧪" },
+          { href: "/lab-portal/catalog", label: "Test Catalog", labelKey: "testCatalog", icon: "🧪" },
           {
             href: "/lab-portal/requests",
             label: "Test Requests",
+            labelKey: "testRequests",
             icon: "📋",
             badge: labPendingCount,
           },
-          { href: "/lab-portal/upload", label: "Upload Reports", icon: "📤" },
-          { href: "/lab-portal/uploads", label: "Upload History", icon: "📊" },
-          { href: "/lab-portal/forms", label: "Forms & Documents", icon: "📄" },
-          { href: "/lab-portal/profile", label: "Lab Profile", icon: "🏢" },
+          { href: "/lab-portal/upload", label: "Upload Reports", labelKey: "uploadReports", icon: "📤" },
+          { href: "/lab-portal/uploads", label: "Upload History", labelKey: "uploadHistory", icon: "📊" },
+          { href: "/lab-portal/forms", label: "Forms & Documents", labelKey: "formsAndDocuments", icon: "📄" },
+          { href: "/lab-portal/profile", label: "Lab Profile", labelKey: "labProfile", icon: "🏢" },
         ],
       },
       {
-        label: "Resources",
-        items: [{ href: "/brand-portal/chat", label: "FUZE FAQ", icon: "💬" }],
+        label: t.nav.groupResources || "Resources",
+        items: [{ href: "/brand-portal/chat", label: "FUZE FAQ", labelKey: "fuzeAiFaq", icon: "💬" }],
       },
     ];
   } else {
