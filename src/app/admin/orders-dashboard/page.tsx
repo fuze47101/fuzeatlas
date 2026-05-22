@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import ErrorPanel from "@/components/ErrorPanel";
+import { useI18n } from "@/i18n";
 
 const STATUS_COLORS: Record<string, string> = {
   DRAFT: "bg-slate-100 text-slate-600",
@@ -16,6 +17,17 @@ const STATUS_COLORS: Record<string, string> = {
   SHIPPED: "bg-cyan-100 text-cyan-700",
   DELIVERED: "bg-green-100 text-green-700",
   CANCELLED: "bg-red-100 text-red-700",
+};
+
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  DRAFT: "statusDraft",
+  QUOTED: "statusQuoted",
+  PENDING_APPROVAL: "statusPendingApproval",
+  APPROVED: "statusApproved",
+  PROCESSING: "statusProcessing",
+  SHIPPED: "statusShipped",
+  DELIVERED: "statusDelivered",
+  CANCELLED: "statusCancelled",
 };
 
 const EVENT_ICONS: Record<string, string> = {
@@ -30,6 +42,10 @@ const EVENT_ICONS: Record<string, string> = {
 export default function OrdersDashboardPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
+  const od = (t as any).ordersDashboard || {};
+  const statusLabel = (s: string) =>
+    od[STATUS_LABEL_KEYS[s] || ""] || s.replace("_", " ");
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   // Silent-zero sweep — surface API failures instead of hanging on
@@ -46,17 +62,17 @@ export default function OrdersDashboardPage() {
       if (!res.ok || !d || d.ok === false) {
         setError(
           (d && (d.error || d.message)) ||
-            `Couldn't load orders dashboard (HTTP ${res.status}).`,
+            `${od.loadFailed || "Couldn't load orders dashboard"} (HTTP ${res.status}).`,
         );
         return;
       }
       setData(d);
     } catch (e: any) {
-      setError(e?.message || "Network error while loading orders dashboard.");
+      setError(e?.message || od.networkError || "Network error while loading orders dashboard.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [od.loadFailed, od.networkError]);
 
   useEffect(() => {
     if (user && !["ADMIN", "EMPLOYEE", "SALES_MANAGER"].includes(user.role)) {
@@ -78,15 +94,15 @@ export default function OrdersDashboardPage() {
     return (
       <div className="p-4 sm:p-8 max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-black text-slate-900 mb-1">Orders Dashboard</h1>
+          <h1 className="text-3xl font-black text-slate-900 mb-1">{od.title || "Orders Dashboard"}</h1>
           <p className="text-slate-600">
-            Global view of the FUZE order pipeline — factory orders, distributor
-            restocks, consumption, and stock.
+            {od.subtitle ||
+              "Global view of the FUZE order pipeline — factory orders, distributor restocks, consumption, and stock."}
           </p>
         </div>
         <ErrorPanel
-          context="Load orders dashboard"
-          error={error || "No data returned."}
+          context={od.loadContext || "Load orders dashboard"}
+          error={error || od.noData || "No data returned."}
           onRetry={load}
         />
       </div>
@@ -102,34 +118,34 @@ export default function OrdersDashboardPage() {
   return (
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-900 mb-1">Orders Dashboard</h1>
-        <p className="text-slate-600">Global view of the FUZE order pipeline — factory orders, distributor restocks, consumption, and stock.</p>
+        <h1 className="text-3xl font-black text-slate-900 mb-1">{od.title || "Orders Dashboard"}</h1>
+        <p className="text-slate-600">{od.subtitle || "Global view of the FUZE order pipeline — factory orders, distributor restocks, consumption, and stock."}</p>
       </div>
 
       {/* ─── Top KPI Row ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <KpiCard icon="📦" label="Active Orders" value={fmt(data.kpis.totalActiveOrders)} hint={`${data.kpis.pendingApprovalCount} pending approval`} accent="blue" />
-        <KpiCard icon="🚛" label="Shipped This Week" value={`${fmt(data.kpis.shippedThisWeek.liters)}L`} hint={`${data.kpis.shippedThisWeek.count} orders`} accent="cyan" />
-        <KpiCard icon="💧" label="Consumed (30d)" value={`${fmt(data.kpis.consumedThisMonth.liters)}L`} hint={`${fmt(data.kpis.consumedThisMonth.meters)}m fabric treated`} accent="emerald" />
-        <KpiCard icon="💰" label="Open Pipeline" value={fmtUsd(data.kpis.openPipeline.value)} hint={`${fmt(data.kpis.openPipeline.liters)}L in flight`} accent="amber" />
+        <KpiCard icon="📦" label={od.activeOrders || "Active Orders"} value={fmt(data.kpis.totalActiveOrders)} hint={`${data.kpis.pendingApprovalCount} ${od.pendingApproval || "pending approval"}`} accent="blue" />
+        <KpiCard icon="🚛" label={od.shippedWeek || "Shipped This Week"} value={`${fmt(data.kpis.shippedThisWeek.liters)}L`} hint={`${data.kpis.shippedThisWeek.count} ${od.ordersWord || "orders"}`} accent="cyan" />
+        <KpiCard icon="💧" label={od.consumed || "Consumed (30d)"} value={`${fmt(data.kpis.consumedThisMonth.liters)}L`} hint={`${fmt(data.kpis.consumedThisMonth.meters)}m ${od.fabricTreated || "fabric treated"}`} accent="emerald" />
+        <KpiCard icon="💰" label={od.openPipeline || "Open Pipeline"} value={fmtUsd(data.kpis.openPipeline.value)} hint={`${fmt(data.kpis.openPipeline.liters)}${od.litersInFlight || "L in flight"}`} accent="amber" />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <KpiCard icon="📊" label="Shipped (30d)" value={`${fmt(data.kpis.shippedThisMonth.liters)}L`} hint={fmtUsd(data.kpis.shippedThisMonth.value)} />
-        <KpiCard icon="🏭" label="Distributor Stock" value={`${fmt(data.kpis.totalDistributorStock)}L`} hint="global warehouses" />
-        <KpiCard icon="💧" label="Restock Orders Open" value={fmt(data.kpis.distributorRestockOpen)} hint="distributors ← FUZE HQ" />
-        <KpiCard icon="⚠️" label="Low-Stock Distributors" value={fmt(data.lowStock.length)} hint="below reorder point" accent={data.lowStock.length > 0 ? "red" : "slate"} />
+        <KpiCard icon="📊" label={od.shippedMonth || "Shipped (30d)"} value={`${fmt(data.kpis.shippedThisMonth.liters)}L`} hint={fmtUsd(data.kpis.shippedThisMonth.value)} />
+        <KpiCard icon="🏭" label={od.distributorStock || "Distributor Stock"} value={`${fmt(data.kpis.totalDistributorStock)}L`} hint={od.globalWarehouses || "global warehouses"} />
+        <KpiCard icon="💧" label={od.restockOpen || "Restock Orders Open"} value={fmt(data.kpis.distributorRestockOpen)} hint="distributors ← FUZE HQ" />
+        <KpiCard icon="⚠️" label={od.lowStock || "Low-Stock Distributors"} value={fmt(data.lowStock.length)} hint={od.belowReorder || "below reorder point"} accent={data.lowStock.length > 0 ? "red" : "slate"} />
       </div>
 
       {/* ─── Status Strip ─── */}
       <div className="mb-8">
-        <h2 className="font-bold text-slate-900 mb-3">Orders by Status</h2>
+        <h2 className="font-bold text-slate-900 mb-3">{od.byStatus || "Orders by Status"}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
           {["DRAFT", "QUOTED", "PENDING_APPROVAL", "APPROVED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"].map((s) => {
             const stat = data.byStatus.find((b: any) => b.status === s);
             return (
               <div key={s} className={`rounded-lg p-3 ${STATUS_COLORS[s]}`}>
-                <p className="text-[10px] font-bold uppercase tracking-wide opacity-80">{s.replace("_", " ")}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wide opacity-80">{statusLabel(s)}</p>
                 <p className="text-2xl font-black mt-0.5">{stat?.count || 0}</p>
                 <p className="text-[10px] opacity-70">{fmt(stat?.liters || 0)}L</p>
               </div>
@@ -141,8 +157,8 @@ export default function OrdersDashboardPage() {
       {/* ─── Weekly Trend ─── */}
       <div className="mb-8 bg-white border border-slate-200 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-bold text-slate-900">Weekly Shipped Volume (last 8 weeks)</h2>
-          <span className="text-xs text-slate-600">bar height = liters shipped</span>
+          <h2 className="font-bold text-slate-900">{od.weeklyVolume || "Weekly Shipped Volume (last 8 weeks)"}</h2>
+          <span className="text-xs text-slate-600">{od.barHeightHint || "bar height = liters shipped"}</span>
         </div>
         <div className="flex items-end gap-2 h-40">
           {data.weeklyTrend.map((w: any) => {
@@ -155,7 +171,7 @@ export default function OrdersDashboardPage() {
                     style={{ height: `${Math.max(pct, 2)}%` }}
                   >
                     <div className="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap transition-opacity">
-                      {fmt(w.liters)}L · {w.orders} orders · {fmtUsd(w.value)}
+                      {fmt(w.liters)}L · {w.orders} {od.ordersWord || "orders"} · {fmtUsd(w.value)}
                     </div>
                   </div>
                 </div>
@@ -171,9 +187,9 @@ export default function OrdersDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* ─── Top Factories ─── */}
         <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <h2 className="font-bold text-slate-900 mb-4">Top Factories (90d)</h2>
+          <h2 className="font-bold text-slate-900 mb-4">{od.topFactories || "Top Factories (90d)"}</h2>
           {data.topFactories.length === 0 ? (
-            <p className="text-sm text-slate-600">No factory orders in the last 90 days.</p>
+            <p className="text-sm text-slate-600">{od.noFactoryOrders || "No factory orders in the last 90 days."}</p>
           ) : (
             <div className="space-y-2">
               {data.topFactories.map((f: any, i: number) => (
@@ -182,7 +198,7 @@ export default function OrdersDashboardPage() {
                     <span className="w-6 h-6 rounded-full bg-[#00b4c3]/10 text-[#00b4c3] text-xs font-bold flex items-center justify-center">{i + 1}</span>
                     <div className="min-w-0">
                       <p className="font-semibold text-slate-900 text-sm truncate">{f.name}</p>
-                      <p className="text-xs text-slate-600">{f.country} · {f.orders} orders</p>
+                      <p className="text-xs text-slate-600">{f.country} · {f.orders} {od.ordersWord || "orders"}</p>
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
@@ -197,9 +213,9 @@ export default function OrdersDashboardPage() {
 
         {/* ─── Top Brands ─── */}
         <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <h2 className="font-bold text-slate-900 mb-4">Top Brands (90d)</h2>
+          <h2 className="font-bold text-slate-900 mb-4">{od.topBrands || "Top Brands (90d)"}</h2>
           {data.topBrands.length === 0 ? (
-            <p className="text-sm text-slate-600">No brand allocations in the last 90 days.</p>
+            <p className="text-sm text-slate-600">{od.noBrandAllocations || "No brand allocations in the last 90 days."}</p>
           ) : (
             <div className="space-y-2">
               {data.topBrands.map((b: any, i: number) => (
@@ -210,7 +226,7 @@ export default function OrdersDashboardPage() {
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="font-bold text-slate-900">{fmt(b.liters)}L</p>
-                    <p className="text-xs text-slate-600">{b.orders} orders</p>
+                    <p className="text-xs text-slate-600">{b.orders} {od.ordersWord || "orders"}</p>
                   </div>
                 </Link>
               ))}
@@ -221,21 +237,21 @@ export default function OrdersDashboardPage() {
 
       {/* ─── Actionable Orders ─── */}
       <div className="bg-white border border-slate-200 rounded-xl p-6 mb-8">
-        <h2 className="font-bold text-slate-900 mb-4">Orders Requiring Attention</h2>
+        <h2 className="font-bold text-slate-900 mb-4">{od.attention || "Orders Requiring Attention"}</h2>
         {data.actionable.length === 0 ? (
-          <p className="text-sm text-slate-600">No open orders. 🎉</p>
+          <p className="text-sm text-slate-600">{od.noActionable || "No open orders. 🎉"}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs text-slate-600 uppercase tracking-wide border-b border-slate-200">
-                  <th className="pb-2 pr-3">Order</th>
-                  <th className="pb-2 pr-3">Factory</th>
-                  <th className="pb-2 pr-3">Brand</th>
-                  <th className="pb-2 pr-3">Volume</th>
-                  <th className="pb-2 pr-3">Value</th>
-                  <th className="pb-2 pr-3">Distributor</th>
-                  <th className="pb-2">Status</th>
+                  <th className="pb-2 pr-3">{od.colOrder || "Order"}</th>
+                  <th className="pb-2 pr-3">{od.colFactory || "Factory"}</th>
+                  <th className="pb-2 pr-3">{od.colBrand || "Brand"}</th>
+                  <th className="pb-2 pr-3">{od.colVolume || "Volume"}</th>
+                  <th className="pb-2 pr-3">{od.colValue || "Value"}</th>
+                  <th className="pb-2 pr-3">{od.colDistributor || "Distributor"}</th>
+                  <th className="pb-2">{od.colStatus || "Status"}</th>
                 </tr>
               </thead>
               <tbody>
@@ -248,12 +264,12 @@ export default function OrdersDashboardPage() {
                     <td className="py-2 pr-3 font-semibold text-slate-900">{o.orderNumber}</td>
                     <td className="py-2 pr-3 text-slate-700">{o.factory?.name || "—"}</td>
                     <td className="py-2 pr-3 text-slate-700">{o.brand?.name || "—"}</td>
-                    <td className="py-2 pr-3 text-slate-700">{o.volumeLiters ? `${o.volumeLiters}L` : o.hangtagQty ? `${o.hangtagQty} tags` : "—"}</td>
+                    <td className="py-2 pr-3 text-slate-700">{o.volumeLiters ? `${o.volumeLiters}L` : o.hangtagQty ? `${o.hangtagQty} ${od.tagsSuffix || "tags"}` : "—"}</td>
                     <td className="py-2 pr-3 text-slate-700">{fmtUsd(o.totalPrice || 0)}</td>
-                    <td className="py-2 pr-3 text-slate-600 text-xs">{o.distributor?.name || "Direct USA"}</td>
+                    <td className="py-2 pr-3 text-slate-600 text-xs">{o.distributor?.name || od.directUSA || "Direct USA"}</td>
                     <td className="py-2">
                       <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${STATUS_COLORS[o.status]}`}>
-                        {o.status.replace("_", " ")}
+                        {statusLabel(o.status)}
                       </span>
                     </td>
                   </tr>
@@ -267,9 +283,9 @@ export default function OrdersDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* ─── Low Stock Distributors ─── */}
         <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <h2 className="font-bold text-slate-900 mb-4">Low-Stock Distributors</h2>
+          <h2 className="font-bold text-slate-900 mb-4">{od.lowStock || "Low-Stock Distributors"}</h2>
           {data.lowStock.length === 0 ? (
-            <p className="text-sm text-slate-600">All distributors above reorder point. ✓</p>
+            <p className="text-sm text-slate-600">{od.aboveReorder || "All distributors above reorder point. ✓"}</p>
           ) : (
             <div className="space-y-2">
               {data.lowStock.map((d: any) => (
@@ -280,7 +296,7 @@ export default function OrdersDashboardPage() {
                 >
                   <div>
                     <p className="font-semibold text-red-900 text-sm">{d.name}</p>
-                    <p className="text-xs text-red-700">{d.country} · {fmt(d.stockLiters)}L / reorder at {fmt(d.reorderAt)}L</p>
+                    <p className="text-xs text-red-700">{d.country} · {fmt(d.stockLiters)}L / {od.reorderAtPrefix || "reorder at"} {fmt(d.reorderAt)}L</p>
                   </div>
                   <span className="text-xs font-bold text-red-700">-{fmt(d.deficit)}L</span>
                 </Link>
@@ -291,9 +307,9 @@ export default function OrdersDashboardPage() {
 
         {/* ─── Restock In Flight ─── */}
         <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <h2 className="font-bold text-slate-900 mb-4">Distributor Restocks In Flight</h2>
+          <h2 className="font-bold text-slate-900 mb-4">{od.restockInFlight || "Distributor Restocks In Flight"}</h2>
           {data.restockInFlight.length === 0 ? (
-            <p className="text-sm text-slate-600">No open restock orders.</p>
+            <p className="text-sm text-slate-600">{od.noRestockInFlight || "No open restock orders."}</p>
           ) : (
             <div className="space-y-2">
               {data.restockInFlight.map((o: any) => (
@@ -309,7 +325,7 @@ export default function OrdersDashboardPage() {
                     </p>
                   </div>
                   <span className={`px-2 py-0.5 text-xs font-bold rounded-full flex-shrink-0 ${STATUS_COLORS[o.status] || "bg-slate-100"}`}>
-                    {o.status.replace("_", " ")}
+                    {statusLabel(o.status)}
                   </span>
                 </Link>
               ))}
@@ -320,9 +336,9 @@ export default function OrdersDashboardPage() {
 
       {/* ─── Recent Lifecycle Events ─── */}
       <div className="bg-white border border-slate-200 rounded-xl p-6">
-        <h2 className="font-bold text-slate-900 mb-4">Recent Lifecycle Events</h2>
+        <h2 className="font-bold text-slate-900 mb-4">{od.recentEvents || "Recent Lifecycle Events"}</h2>
         {data.recentEvents.length === 0 ? (
-          <p className="text-sm text-slate-600">No recent events.</p>
+          <p className="text-sm text-slate-600">{od.noRecentEvents || "No recent events."}</p>
         ) : (
           <div className="space-y-2">
             {data.recentEvents.map((e: any) => (

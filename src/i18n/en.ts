@@ -928,11 +928,47 @@ const en = {
     belowReorder: "below reorder point",
     byStatus: "Orders by Status",
     weeklyVolume: "Weekly Shipped Volume (last 8 weeks)",
+    barHeightHint: "bar height = liters shipped",
     topFactories: "Top Factories (90d)",
     topBrands: "Top Brands (90d)",
     attention: "Orders Requiring Attention",
     restockInFlight: "Distributor Restocks In Flight",
     recentEvents: "Recent Lifecycle Events",
+    // Order status pills (rendered in the strip + actionable table)
+    statusDraft: "DRAFT",
+    statusQuoted: "QUOTED",
+    statusPendingApproval: "PENDING APPROVAL",
+    statusApproved: "APPROVED",
+    statusProcessing: "PROCESSING",
+    statusShipped: "SHIPPED",
+    statusDelivered: "DELIVERED",
+    statusCancelled: "CANCELLED",
+    // Empty states
+    noFactoryOrders: "No factory orders in the last 90 days.",
+    noBrandAllocations: "No brand allocations in the last 90 days.",
+    noActionable: "No open orders. 🎉",
+    aboveReorder: "All distributors above reorder point. ✓",
+    noRestockInFlight: "No open restock orders.",
+    noRecentEvents: "No recent events.",
+    // Top-factories / top-brands rows
+    ordersWord: "orders",
+    // Actionable table columns
+    colOrder: "Order",
+    colFactory: "Factory",
+    colBrand: "Brand",
+    colVolume: "Volume",
+    colValue: "Value",
+    colDistributor: "Distributor",
+    colStatus: "Status",
+    tagsSuffix: "tags",
+    directUSA: "Direct USA",
+    // Low-stock row
+    reorderAtPrefix: "reorder at",
+    // Error state
+    loadContext: "Load orders dashboard",
+    loadFailed: "Couldn't load orders dashboard",
+    networkError: "Network error while loading orders dashboard.",
+    noData: "No data returned.",
   },
 
   // ─── DISTRIBUTOR PORTAL (Phase 4F) ────────────
