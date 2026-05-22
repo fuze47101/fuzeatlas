@@ -4,6 +4,7 @@
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING_APPROVAL: "bg-amber-100 text-amber-800",
@@ -25,6 +26,8 @@ const NEXT_STATUS: Record<string, string> = {
 export default function AdminDistributorRestockPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
+  const tx = (t as any).distributorRestockAdmin || {};
   const [distributors, setDistributors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingPricing, setEditingPricing] = useState<string | null>(null);
@@ -118,22 +121,22 @@ export default function AdminDistributorRestockPage() {
   return (
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-900 mb-1">Distributor Restock Management</h1>
-        <p className="text-slate-600">FUZE → distributor pricing, stock levels, and order fulfillment</p>
+        <h1 className="text-3xl font-black text-slate-900 mb-1">{tx.title || "Distributor Restock Management"}</h1>
+        <p className="text-slate-600">{tx.subtitle || "FUZE → distributor pricing, stock levels, and order fulfillment"}</p>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-white border border-slate-200 rounded-xl p-5">
-          <p className="text-sm text-slate-500 mb-1">Active Distributors</p>
+          <p className="text-sm text-slate-500 mb-1">{tx.activeDistributors || "Active Distributors"}</p>
           <p className="text-3xl font-black text-slate-900">{distributors.length}</p>
         </div>
         <div className="bg-white border border-amber-300 bg-amber-50/50 rounded-xl p-5">
-          <p className="text-sm text-amber-700 mb-1">Open Orders</p>
+          <p className="text-sm text-amber-700 mb-1">{tx.openOrders || "Open Orders"}</p>
           <p className="text-3xl font-black text-amber-900">{totalPending}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-xl p-5">
-          <p className="text-sm text-slate-500 mb-1">Distributor Stock (Global)</p>
+          <p className="text-sm text-slate-500 mb-1">{tx.distributorStockGlobal || "Distributor Stock (Global)"}</p>
           <p className="text-3xl font-black text-slate-900">{totalInventory.toLocaleString()}L</p>
         </div>
       </div>
@@ -157,7 +160,7 @@ export default function AdminDistributorRestockPage() {
                 <div className="flex gap-2">
                   {d.restockOrders?.length > 0 && (
                     <span className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">
-                      {d.restockOrders.length} open order{d.restockOrders.length > 1 ? "s" : ""}
+                      {d.restockOrders.length} {d.restockOrders.length > 1 ? (tx.openOrderPlural || "open orders") : (tx.openOrderSingular || "open order")}
                     </span>
                   )}
                 </div>
@@ -167,7 +170,7 @@ export default function AdminDistributorRestockPage() {
                 {/* Pricing */}
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wide">FUZE Pricing</h3>
+                    <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wide">{tx.fuzePricing || "FUZE Pricing"}</h3>
                     <button
                       onClick={() => {
                         setEditingPricing(editingPricing === d.id ? null : d.id);
@@ -179,7 +182,7 @@ export default function AdminDistributorRestockPage() {
                       }}
                       className="text-xs text-[#00b4c3] hover:underline font-semibold"
                     >
-                      {editingPricing === d.id ? "Cancel" : "Edit"}
+                      {editingPricing === d.id ? (tx.cancel || "Cancel") : (tx.edit || "Edit")}
                     </button>
                   </div>
                   {editingPricing === d.id ? (
@@ -188,7 +191,7 @@ export default function AdminDistributorRestockPage() {
                         <input
                           type="number"
                           step="0.01"
-                          placeholder="Price/L"
+                          placeholder={tx.pricePerL || "Price/L"}
                           value={form.fuzeRestockPricePerLiter}
                           onChange={(e) => setForm({ ...form, fuzeRestockPricePerLiter: e.target.value })}
                           className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm"
@@ -204,7 +207,7 @@ export default function AdminDistributorRestockPage() {
                       </div>
                       <input
                         type="text"
-                        placeholder="Pricing notes (optional)"
+                        placeholder={tx.pricingNotesPlaceholder || "Pricing notes (optional)"}
                         value={form.fuzeRestockNotes}
                         onChange={(e) => setForm({ ...form, fuzeRestockNotes: e.target.value })}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
@@ -213,23 +216,23 @@ export default function AdminDistributorRestockPage() {
                         onClick={() => savePricing(d.id)}
                         className="w-full px-3 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg"
                       >
-                        Save Pricing
+                        {tx.savePricing || "Save Pricing"}
                       </button>
                     </div>
                   ) : hasPricing ? (
                     <div>
-                      <p className="text-2xl font-black text-slate-900">{fmt(d.fuzeRestockPricePerLiter, d.fuzeRestockCurrency)}<span className="text-sm font-medium text-slate-500">/liter</span></p>
+                      <p className="text-2xl font-black text-slate-900">{fmt(d.fuzeRestockPricePerLiter, d.fuzeRestockCurrency)}<span className="text-sm font-medium text-slate-500">{tx.perLiter || "/liter"}</span></p>
                       {d.fuzeRestockNotes && <p className="text-xs text-slate-500 mt-1">{d.fuzeRestockNotes}</p>}
                     </div>
                   ) : (
-                    <p className="text-sm text-red-600 font-medium">⚠ No pricing set</p>
+                    <p className="text-sm text-red-600 font-medium">{tx.noPricingSet || "⚠ No pricing set"}</p>
                   )}
                 </div>
 
                 {/* Inventory */}
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wide">Stock on Hand</h3>
+                    <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wide">{tx.stockOnHand || "Stock on Hand"}</h3>
                     <button
                       onClick={() => {
                         setEditingInventory(editingInventory === d.id ? null : d.id);
@@ -241,7 +244,7 @@ export default function AdminDistributorRestockPage() {
                       }}
                       className="text-xs text-[#00b4c3] hover:underline font-semibold"
                     >
-                      {editingInventory === d.id ? "Cancel" : "Edit"}
+                      {editingInventory === d.id ? (tx.cancel || "Cancel") : (tx.edit || "Edit")}
                     </button>
                   </div>
                   {editingInventory === d.id ? (
@@ -249,21 +252,21 @@ export default function AdminDistributorRestockPage() {
                       <div className="grid grid-cols-3 gap-2">
                         <input
                           type="number"
-                          placeholder="Liters"
+                          placeholder={tx.litersPh || "Liters"}
                           value={form.fuzeStockLiters}
                           onChange={(e) => setForm({ ...form, fuzeStockLiters: e.target.value })}
                           className="px-2 py-2 border border-slate-300 rounded-lg text-sm"
                         />
                         <input
                           type="number"
-                          placeholder="Bottles"
+                          placeholder={tx.bottlesPh || "Bottles"}
                           value={form.fuzeStockBottles}
                           onChange={(e) => setForm({ ...form, fuzeStockBottles: e.target.value })}
                           className="px-2 py-2 border border-slate-300 rounded-lg text-sm"
                         />
                         <input
                           type="number"
-                          placeholder="Reorder @"
+                          placeholder={tx.reorderAtPh || "Reorder @"}
                           value={form.reorderPointLiters}
                           onChange={(e) => setForm({ ...form, reorderPointLiters: e.target.value })}
                           className="px-2 py-2 border border-slate-300 rounded-lg text-sm"
@@ -273,7 +276,7 @@ export default function AdminDistributorRestockPage() {
                         onClick={() => saveInventory(d.id)}
                         className="w-full px-3 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg"
                       >
-                        Save Inventory
+                        {tx.saveInventory || "Save Inventory"}
                       </button>
                     </div>
                   ) : (
@@ -282,8 +285,8 @@ export default function AdminDistributorRestockPage() {
                         {stock.toLocaleString()}L
                       </p>
                       <p className="text-xs text-slate-500">
-                        {d.inventory?.fuzeStockBottles || 0} bottles · Reorder at {reorder}L
-                        {isLow && <span className="text-red-600 font-semibold ml-1">· LOW</span>}
+                        {d.inventory?.fuzeStockBottles || 0} {tx.bottlesSuffix || "bottles"} · {tx.reorderAtPrefix || "Reorder at"} {reorder}L
+                        {isLow && <span className="text-red-600 font-semibold ml-1">{tx.lowFlag || "· LOW"}</span>}
                       </p>
                     </div>
                   )}
@@ -293,7 +296,7 @@ export default function AdminDistributorRestockPage() {
               {/* Open Orders */}
               {d.restockOrders?.length > 0 && (
                 <div className="border-t border-slate-200 p-5">
-                  <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wide mb-3">Open Orders</h3>
+                  <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wide mb-3">{tx.openOrdersHeader || "Open Orders"}</h3>
                   <div className="space-y-2">
                     {d.restockOrders.map((o: any) => (
                       <div key={o.id} className="bg-slate-50 rounded-lg p-3">
@@ -308,7 +311,7 @@ export default function AdminDistributorRestockPage() {
                             <p className="text-xs text-slate-600">
                               {o.unitQuantity} × {o.unitType.replace("_", " ")} · {o.totalLiters.toLocaleString()}L · <strong>{fmt(o.totalPrice, o.currency)}</strong>
                             </p>
-                            {o.trackingNumber && <p className="text-xs text-slate-500 mt-1">Tracking: {o.trackingNumber} ({o.carrier || "?"})</p>}
+                            {o.trackingNumber && <p className="text-xs text-slate-500 mt-1">{tx.trackingLabel || "Tracking:"} {o.trackingNumber} ({o.carrier || "?"})</p>}
                           </div>
                           <div className="flex gap-2">
                             {NEXT_STATUS[o.status] && (
@@ -331,7 +334,7 @@ export default function AdminDistributorRestockPage() {
                                 onClick={() => advanceOrder(o.id, "CANCELLED")}
                                 className="px-3 py-1.5 bg-red-100 text-red-700 text-xs font-semibold rounded-lg hover:bg-red-200"
                               >
-                                Cancel
+                                {tx.cancelBtn || "Cancel"}
                               </button>
                             )}
                           </div>
@@ -343,14 +346,14 @@ export default function AdminDistributorRestockPage() {
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                               <input
                                 type="text"
-                                placeholder="Tracking #"
+                                placeholder={tx.trackingNumPh || "Tracking #"}
                                 value={form.trackingNumber}
                                 onChange={(e) => setForm({ ...form, trackingNumber: e.target.value })}
                                 className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
                               />
                               <input
                                 type="text"
-                                placeholder="Carrier (DHL, FedEx...)"
+                                placeholder={tx.carrierPh || "Carrier (DHL, FedEx...)"}
                                 value={form.carrier}
                                 onChange={(e) => setForm({ ...form, carrier: e.target.value })}
                                 className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
@@ -370,7 +373,7 @@ export default function AdminDistributorRestockPage() {
                               })}
                               className="w-full px-3 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg"
                             >
-                              Mark as Shipped
+                              {tx.markShipped || "Mark as Shipped"}
                             </button>
                           </div>
                         )}
