@@ -7,14 +7,30 @@ import { sendEmail } from "@/lib/email";
  * GET/POST /api/cron/auto-resolve-from-commits
  *
  * Runs hourly. Pulls the last 25 commits on main from GitHub, scans
- * each commit message body for FeedbackReport cuid IDs (pattern:
- * cm[a-z0-9]{24}). For each ID:
+ * each commit message body for FeedbackReport cuid IDs preceded by
+ * GitHub-convention close keywords (Close / Closes / Closed / Fix /
+ * Fixes / Fixed / Resolve / Resolves / Resolved). Case-insensitive.
+ * For each ID found in a close-segment:
  *
  *   - Skip if the report is already FIXED / CLOSED / REJECTED /
  *     DUPLICATE (idempotent — re-runs are safe).
  *   - Otherwise flip to FIXED, stamp the commit SHA + author +
  *     message snippet as the resolution note, send the standard
  *     fixed-it email to the reporter.
+ *
+ * Scope tightened 2026-05-20 after multiple false-FIXED incidents
+ * where Code referenced ticket cuids in passing (e.g. "see ticket
+ * cmXXX") and the old regex (any cuid anywhere) auto-closed those
+ * tickets incorrectly. Now requires explicit keyword prefix — same
+ * convention as GitHub's commit-to-issue close syntax.
+ *
+ * Supported patterns:
+ *   "Closes cmAAA"                  → [cmAAA]
+ *   "Fixes cmAAA, cmBBB"            → [cmAAA, cmBBB] (multi-close)
+ *   "Resolves cmAAA and cmBBB"      → [cmAAA, cmBBB]
+ *   "Closed cmAAA. Other stuff."    → [cmAAA] (sentence-scoped)
+ *   "See ticket cmAAA"              → []  (no keyword)
+ *   "Implementation for cmAAA"      → []  (no keyword)
  *
  * Tracking "last successful run" via idempotency rather than a
  * separate side-table — already-FIXED reports never get re-emailed
@@ -29,7 +45,24 @@ import { sendEmail } from "@/lib/email";
 const CRON_SECRET = process.env.CRON_SECRET;
 const REPO = process.env.GITHUB_REPO || "fuze47101/fuzeatlas";
 const COMMIT_FETCH_COUNT = 25;
-const CUID_RX = /\bcm[a-z0-9]{24}\b/g;
+
+// Two-stage matcher (clearer than a single mega-regex):
+//   1. KEYWORD_SEGMENT_RX finds each close-keyword sentence/clause
+//      (terminated by period, newline, or end-of-string). This bounds
+//      the cuid harvest to the explicit close context so a later
+//      "see ticket cmXXX" reference doesn't get sucked in.
+//   2. CUID_RX harvests all cuids from each matched segment. Supports
+//      multi-close via comma, space, or "and" separation.
+//
+// Cuid length note: real-world Prisma cuids in this codebase are 25
+// characters total (`cm` + 23 chars). The PRIOR regex `cm[a-z0-9]{24}`
+// required 26 chars and therefore never matched anything in production —
+// the cron had been silently no-op'ing since it shipped. Range
+// {22,28} covers current cuid format with comfortable headroom for
+// future Prisma cuid spec changes without re-introducing fragility.
+const KEYWORD_SEGMENT_RX =
+  /\b(?:close[ds]?|fix(?:e[ds])?|resolve[ds]?)\s+[^.\n]*(?:\.|\n|$)/gi;
+const CUID_RX = /\bcm[a-z0-9]{22,28}\b/g;
 
 // Statuses that mean "already resolved" — skip these so re-runs
 // don't churn or send duplicate emails.
@@ -91,7 +124,16 @@ async function handle(req: Request) {
     const sha = c.sha;
     const msg = c.commit?.message || "";
     const author = c.commit?.author?.name || c.author?.login || "unknown";
-    const matches = Array.from(new Set(msg.match(CUID_RX) || []));
+
+    // Two-stage: find every close-keyword segment, then harvest cuids
+    // from each. Skip the commit entirely if no close keyword present.
+    const closeSegments = msg.match(KEYWORD_SEGMENT_RX) || [];
+    const cuidsInClose: string[] = [];
+    for (const segment of closeSegments) {
+      const ids = segment.match(CUID_RX);
+      if (ids) cuidsInClose.push(...ids);
+    }
+    const matches = Array.from(new Set(cuidsInClose));
     if (matches.length === 0) continue;
 
     for (const feedbackId of matches) {
