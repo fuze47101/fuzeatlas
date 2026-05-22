@@ -122,6 +122,37 @@ export async function middleware(req: NextRequest) {
       }
     }
 
+    // Cross-portal bounce — external users hitting a portal that isn't
+    // theirs get redirected to their own. Penny (LAB_USER) reported
+    // "Lab portal - All lab accounts show as screenshot" with the URL
+    // /distributor-portal/incoming-orders; she'd reached a distributor
+    // page whose API rejected her, leaving a broken/empty render. UI
+    // links and onboarding deep-links shouldn't be able to strand a
+    // portal user on the wrong portal. Ticket cmpdngy6x0001i604x5k11rc3.
+    if (EXTERNAL_ROLES.includes(user.role)) {
+      const PORTAL_PATHS: Record<string, string[]> = {
+        FACTORY_USER: ["/factory-portal"],
+        FACTORY_MANAGER: ["/factory-portal"],
+        BRAND_USER: ["/brand-portal"],
+        BRAND_MANAGER: ["/brand-portal"],
+        DISTRIBUTOR_USER: ["/distributor-portal"],
+        LAB_USER: ["/lab-portal"],
+      };
+      const ALL_PORTAL_PREFIXES = ["/factory-portal", "/brand-portal", "/distributor-portal", "/lab-portal"];
+      const ownPrefixes = PORTAL_PATHS[user.role] || [];
+      const onSomePortal = ALL_PORTAL_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
+      const onOwnPortal = ownPrefixes.some((p) => pathname === p || pathname.startsWith(p + "/"));
+      if (onSomePortal && !onOwnPortal) {
+        if (pathname.startsWith("/api/")) {
+          return NextResponse.json(
+            { ok: false, error: "Wrong portal for this role" },
+            { status: 403 }
+          );
+        }
+        return NextResponse.redirect(new URL(ownPrefixes[0] || "/login", req.url));
+      }
+    }
+
     // Block external users from internal-only routes
     if (EXTERNAL_ROLES.includes(user.role)) {
       const isExempt = EXTERNAL_ALLOWED_PATHS.some((p) => pathname.startsWith(p));
