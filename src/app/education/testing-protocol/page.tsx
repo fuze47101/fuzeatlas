@@ -69,20 +69,24 @@ export default function TestingProtocolPage() {
         </p>
       </div>
 
-      {/* Top-of-page summary card */}
+      {/* Top-of-page summary card.
+          Was 8 rules; rule #4 ("no pre-test handling") removed 2026-05-22
+          after multiple follow-up tests showed a single pre-wash hand
+          rinse VAULTS results to 99.9% by clearing surface glucose,
+          interfering chemistry, and sacrificial residues. Renumbered
+          rules 5-8 to 4-7. */}
       <div className="bg-slate-900 text-white rounded-2xl p-6 mb-8">
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-          The eight rules
+          The seven rules
         </p>
         <ol className="space-y-1.5 text-sm">
           <li><span className="font-black text-emerald-300">1.</span> ICP first. No antimicrobial test starts without ICP confirmation of fabric loading in mg/kg.</li>
           <li><span className="font-black text-emerald-300">2.</span> Sterilization is UV ONLY. Autoclave at 120°C opens nylon, polyester, and synthetic blends — destroys the test.</li>
           <li><span className="font-black text-emerald-300">3.</span> Growth medium is low-sulfur. Mueller Hinton Broth is preferred.</li>
-          <li><span className="font-black text-emerald-300">4.</span> No pre-test handling of the fabric. No hand-washing the sample.</li>
-          <li><span className="font-black text-emerald-300">5.</span> ASTM E2149 contact time is 24 hours minimum. Use <em>E. coli</em> as the test organism.</li>
-          <li><span className="font-black text-emerald-300">6.</span> ASTM E2149 is the primary recommended test for every FUZE tier.</li>
-          <li><span className="font-black text-emerald-300">7.</span> AATCC 100, ISO 20743, and JIS L 1902 are supported ONLY at ICP ≥ 1.0 mg/kg (F1 Full Spectrum) with UV sterilization.</li>
-          <li><span className="font-black text-emerald-300">8.</span> Use the right test organism per method (see table in §5b). For anti-odor / activewear claims, run <em>Moraxella osloensis</em>.</li>
+          <li><span className="font-black text-emerald-300">4.</span> ASTM E2149 contact time is 24 hours minimum. Use <em>E. coli</em> as the test organism.</li>
+          <li><span className="font-black text-emerald-300">5.</span> ASTM E2149 is the primary recommended test for every FUZE tier.</li>
+          <li><span className="font-black text-emerald-300">6.</span> AATCC 100, ISO 20743, and JIS L 1902 are supported ONLY at ICP ≥ 1.0 mg/kg (F1 Full Spectrum) with UV sterilization.</li>
+          <li><span className="font-black text-emerald-300">7.</span> Use the right test organism per method (see table in §4b). For anti-odor / activewear claims, run <em>Moraxella osloensis</em>.</li>
         </ol>
       </div>
 
@@ -268,31 +272,16 @@ export default function TestingProtocolPage() {
         </p>
       </section>
 
-      {/* Section 4 — Sample Handling */}
+      {/* Section 4 — Contact Time. Section "Sample Handling — No Pre-Test
+          Washing" was removed 2026-05-22 after multiple follow-up tests
+          showed a single pre-wash hand rinse VAULTS results to 99.9% by
+          clearing surface glucose, interfering chemistry, and sacrificial
+          residues. The original BV Hong Kong observation was a one-off
+          attributable to chemistry distribution on those specific spray
+          samples, not a generalizable rule. */}
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
           <span className="text-2xl font-black text-[#00b4c3]">4.</span>
-          <h2 className="text-2xl font-black text-slate-900">Sample Handling — No Pre-Test Washing</h2>
-        </div>
-        <p className="text-slate-700 mb-3 max-w-3xl">
-          Do not hand-wash, rinse, or otherwise manipulate the fabric sample before
-          testing. Spray-applied FUZE in particular has a surface distribution profile
-          that physical handling can disrupt — pre-test handwashing can move chemistry
-          off the sampled surface and produce a false negative on coupons that would
-          otherwise pass at the same loading.
-        </p>
-        <p className="text-slate-700 max-w-3xl">
-          BV Hong Kong&apos;s May 2026 follow-up battery (samples 52251530641 and 52251530638)
-          confirmed this directly. Initial test runs returned 0.0% reduction. The
-          repeated runs, performed without the pre-test hand wash, returned strong
-          positive readings with the same fabric and same chemistry.
-        </p>
-      </section>
-
-      {/* Section 5 — Contact Time */}
-      <section className="mb-10">
-        <div className="flex items-baseline gap-3 mb-3">
-          <span className="text-2xl font-black text-[#00b4c3]">5.</span>
           <h2 className="text-2xl font-black text-slate-900">Contact Time — 24 Hours Minimum (ASTM E2149)</h2>
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
@@ -311,10 +300,10 @@ export default function TestingProtocolPage() {
         </p>
       </section>
 
-      {/* Section 5b — Recommended test organisms */}
+      {/* Section 4b — Recommended test organisms */}
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
-          <span className="text-2xl font-black text-[#00b4c3]">5b.</span>
+          <span className="text-2xl font-black text-[#00b4c3]">4b.</span>
           <h2 className="text-2xl font-black text-slate-900">Recommended Test Organisms</h2>
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
@@ -455,10 +444,10 @@ export default function TestingProtocolPage() {
         </div>
       </section>
 
-      {/* Section 6 — Recommended Tests */}
+      {/* Section 5 — Recommended Tests */}
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
-          <span className="text-2xl font-black text-[#00b4c3]">6.</span>
+          <span className="text-2xl font-black text-[#00b4c3]">5.</span>
           <h2 className="text-2xl font-black text-slate-900">Tier × Test Compatibility</h2>
         </div>
         <p className="text-slate-700 mb-4 max-w-3xl">
@@ -523,10 +512,10 @@ export default function TestingProtocolPage() {
         </p>
       </section>
 
-      {/* Section 7 — Why these matter */}
+      {/* Section 6 — Why these matter */}
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
-          <span className="text-2xl font-black text-[#00b4c3]">7.</span>
+          <span className="text-2xl font-black text-[#00b4c3]">6.</span>
           <h2 className="text-2xl font-black text-slate-900">Why the Protocol Matters</h2>
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
@@ -555,17 +544,18 @@ export default function TestingProtocolPage() {
         </p>
         <p className="text-slate-700 max-w-3xl">
           When the protocol gets violated — autoclave buries the particles, sulfur
-          neutralizes the chemistry, pre-test handling disrupts the spray distribution,
-          AATCC 100 is run at insufficient loading — the test fails not because FUZE
-          doesn&apos;t work, but because the test conditions prevent the mechanism from
-          firing. We don&apos;t accept those results. Neither should you.
+          neutralizes the chemistry, ICP is skipped so application levels are unknown,
+          AATCC 100 is run at insufficient loading, the wrong test organism is used —
+          the test fails not because FUZE doesn&apos;t work, but because the test
+          conditions prevent the mechanism from firing. We don&apos;t accept those
+          results. Neither should you.
         </p>
       </section>
 
-      {/* Section 8 — Lab sign-off */}
+      {/* Section 7 — Lab sign-off */}
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
-          <span className="text-2xl font-black text-[#00b4c3]">8.</span>
+          <span className="text-2xl font-black text-[#00b4c3]">7.</span>
           <h2 className="text-2xl font-black text-slate-900">Acknowledgment</h2>
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
