@@ -135,6 +135,35 @@ export default function BrandSpecPage() {
         ) : null}
       </div>
 
+      {/* Reference to the FUZE Certified Testing Protocol — the spec
+          stipulations below are calibrated against this protocol.
+          Brand managers should review before approving. Added 2026-05-20
+          per Andrew: protocol is referenced in every brand's approval
+          of their testing procedures, no per-user checkbox gate. */}
+      <div className="bg-amber-50 border border-amber-300 rounded-xl p-4 mb-6 flex items-start gap-3">
+        <span className="text-xl shrink-0">📋</span>
+        <div className="flex-1 text-sm">
+          <p className="font-bold text-amber-900 mb-1">Required reading before approving your testing spec</p>
+          <p className="text-amber-900 mb-2">
+            The tier requirement, ICP cadence, and protocol document you set
+            below are calibrated against the <strong>FUZE Certified Testing Protocol</strong>.
+            Review it first so your approval reflects the testing conditions
+            FUZE supports. Test results submitted under conditions that deviate
+            from the protocol (autoclave sterilization, sulfur-rich growth medium,
+            sub-F1 loading for AATCC/ISO/JIS, missing ICP verification) will not
+            be certified.
+          </p>
+          <Link
+            href="/education/testing-protocol"
+            className="inline-block text-sm font-bold text-amber-900 underline decoration-2 hover:text-amber-700"
+            target="_blank"
+            rel="noopener"
+          >
+            Open Certified Testing Protocol →
+          </Link>
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
         {/* Required FUZE tier */}
         <div>
