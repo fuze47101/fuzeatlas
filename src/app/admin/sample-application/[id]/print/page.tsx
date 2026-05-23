@@ -21,6 +21,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import PrintButton from "./PrintButton";
+import { getServerTranslations } from "@/i18n/server";
 
 async function getApplication(id: string) {
   // Next 15: headers() is async. We build an absolute URL off the inbound
@@ -55,10 +56,14 @@ function fmtNum(n: number | null | undefined, digits = 2, unit = ""): string {
 
 export default async function SampleApplicationPrintPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 }) {
   const { id } = await params;
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).sampleApplicationPrint;
   const app = await getApplication(id);
   if (!app) notFound();
 
@@ -74,7 +79,7 @@ export default async function SampleApplicationPrintPage({
           href="/admin/icp-sample-prep"
           className="text-xs font-bold text-slate-600 hover:text-slate-900"
         >
-          ← Back to ICP Sample Prep
+          {T.backToPrep}
         </Link>
         <PrintButton />
       </div>
@@ -85,22 +90,22 @@ export default async function SampleApplicationPrintPage({
         <div className="border-b-2 border-slate-900 pb-3 mb-4 flex items-end justify-between">
           <div>
             <p className="text-[10px] font-bold text-[#00b4c3] tracking-[0.25em] uppercase">
-              FUZE Biotech · Lab Operations
+              {T.kicker}
             </p>
             <h1 className="text-2xl font-black text-slate-900 mt-1 leading-tight">
-              Sample Application Recipe Card
+              {T.pageTitle}
             </h1>
             <p className="text-xs text-slate-600 mt-1">
-              Vertical micro-padder · bath prep + dry lifecycle
+              {T.pageSubtitle}
             </p>
           </div>
           <div className="text-right">
             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
-              Application #
+              {T.appNumberLabel}
             </p>
             <p className="text-lg font-mono font-bold">{app.appNumber}</p>
             <p className="text-[10px] text-slate-500 mt-1">
-              Created {fmtDate(app.createdAt)}
+              {T.createdLabel} {fmtDate(app.createdAt)}
             </p>
           </div>
         </div>
@@ -108,12 +113,12 @@ export default async function SampleApplicationPrintPage({
         {/* Fabric identity */}
         <section className="mb-4">
           <h2 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">
-            Fabric
+            {T.fabricSection}
           </h2>
           <div className="border border-slate-300 rounded p-3 bg-slate-50">
             <div className="flex items-baseline justify-between mb-1">
               <p className="text-xl font-black">
-                {f.fuzeNumber ? `FUZE-${f.fuzeNumber}` : "(no FUZE#)"}
+                {f.fuzeNumber ? `FUZE-${f.fuzeNumber}` : T.noFuzeNumber}
               </p>
               <p className="text-sm text-slate-600">
                 {f.customerCode && <span className="font-bold">{f.customerCode}</span>}
@@ -127,9 +132,9 @@ export default async function SampleApplicationPrintPage({
             </p>
             {(f.brand?.name || f.factory?.name) && (
               <p className="text-xs text-slate-500 mt-1">
-                {f.brand?.name && <>Brand: <b>{f.brand.name}</b></>}
+                {f.brand?.name && <>{T.brandLabel} <b>{f.brand.name}</b></>}
                 {f.brand?.name && f.factory?.name && " · "}
-                {f.factory?.name && <>Factory: <b>{f.factory.name}</b></>}
+                {f.factory?.name && <>{T.factoryLabel} <b>{f.factory.name}</b></>}
               </p>
             )}
           </div>
@@ -138,49 +143,49 @@ export default async function SampleApplicationPrintPage({
         {/* Bath recipe */}
         <section className="mb-4">
           <h2 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">
-            Bath Recipe
+            {T.bathRecipeSection}
           </h2>
           <div className="grid grid-cols-2 gap-3">
             <div className="border border-slate-300 rounded p-3">
-              <p className="text-[10px] text-slate-500 uppercase font-bold">Tier</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold">{T.tierLabel}</p>
               <p className="text-2xl font-black mt-1">{app.tier}</p>
               <p className="text-[11px] text-slate-500 mt-1">
-                target pickup: {app.tier === "F1" ? "1.00" : app.tier === "F2" ? "0.75" : app.tier === "F3" ? "0.50" : "0.25"} mg/kg
+                {T.targetPickup} {app.tier === "F1" ? "1.00" : app.tier === "F2" ? "0.75" : app.tier === "F3" ? "0.50" : "0.25"} mg/kg
               </p>
             </div>
             <div className="border border-slate-300 rounded p-3">
-              <p className="text-[10px] text-slate-500 uppercase font-bold">Bath volume</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold">{T.bathVolumeLabel}</p>
               <p className="text-2xl font-black mt-1">{fmtNum(app.bathVolumeL, 2)} L</p>
               <p className="text-[11px] text-slate-500 mt-1">
-                concentration: {fmtNum(app.bathConcentrationMgPerL, 3)} mg/L
+                {T.concentrationLabel} {fmtNum(app.bathConcentrationMgPerL, 3)} mg/L
               </p>
             </div>
           </div>
 
           <div className="mt-3 border-2 border-slate-900 rounded p-4 bg-white">
             <p className="text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">
-              Mix this bath:
+              {T.mixThisBath}
             </p>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center border-r border-slate-300 pr-4">
                 <p className="text-[10px] text-slate-500 uppercase font-bold">
-                  FUZE stock ({fmtNum(app.stockMgPerL, 0)} mg/L)
+                  {T.fuzeStock} ({fmtNum(app.stockMgPerL, 0)} mg/L)
                 </p>
                 <p className="text-4xl font-black text-[#00b4c3] mt-1 leading-none">
                   {fmtNum(app.fuzeMl, 2)}
                 </p>
-                <p className="text-sm font-bold">mL</p>
+                <p className="text-sm font-bold">{T.mlUnit}</p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] text-slate-500 uppercase font-bold">DI water</p>
+                <p className="text-[10px] text-slate-500 uppercase font-bold">{T.diWater}</p>
                 <p className="text-4xl font-black text-slate-900 mt-1 leading-none">
                   {fmtNum(app.waterMl, 2)}
                 </p>
-                <p className="text-sm font-bold">mL</p>
+                <p className="text-sm font-bold">{T.mlUnit}</p>
               </div>
             </div>
             <p className="text-[11px] text-slate-500 mt-2 pt-2 border-t border-slate-200">
-              Derived from pickup WPU <b>{fmtNum(pickupPct, 2)}%</b> measured in bench test{" "}
+              {T.derivedFromPickup} <b>{fmtNum(pickupPct, 2)}%</b> {T.measuredInBench}{" "}
               <span className="font-mono font-bold">
                 {bench.testNumber || "—"}
               </span>
@@ -191,39 +196,39 @@ export default async function SampleApplicationPrintPage({
         {/* Padder settings */}
         <section className="mb-4">
           <h2 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">
-            Padder settings (from bench test)
+            {T.padderSettings}
           </h2>
           <div className="grid grid-cols-4 gap-2">
             <div className="border border-slate-300 rounded p-2 text-center">
-              <p className="text-[10px] text-slate-500 uppercase font-bold">Squeeze</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold">{T.squeeze}</p>
               <p className="text-lg font-black mt-1">
                 {fmtNum(app.squeezePressure, 1)}
               </p>
-              <p className="text-[10px] text-slate-500">bar</p>
+              <p className="text-[10px] text-slate-500">{T.barUnit}</p>
             </div>
             <div className="border border-slate-300 rounded p-2 text-center">
-              <p className="text-[10px] text-slate-500 uppercase font-bold">VFD</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold">{T.vfd}</p>
               <p className="text-lg font-black mt-1">
                 {fmtNum(app.vfdFrequencyHz, 1)}
               </p>
-              <p className="text-[10px] text-slate-500">Hz</p>
+              <p className="text-[10px] text-slate-500">{T.hzUnit}</p>
             </div>
             <div className="border border-slate-300 rounded p-2 text-center">
-              <p className="text-[10px] text-slate-500 uppercase font-bold">Line speed</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold">{T.lineSpeed}</p>
               <p className="text-lg font-black mt-1">
                 {fmtNum(app.lineSpeedMPerMin, 1)}
               </p>
-              <p className="text-[10px] text-slate-500">m/min</p>
+              <p className="text-[10px] text-slate-500">{T.mPerMinUnit}</p>
             </div>
             <div className="border border-slate-300 rounded p-2 text-center">
-              <p className="text-[10px] text-slate-500 uppercase font-bold">Pickup</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold">{T.pickup}</p>
               <p className="text-lg font-black mt-1">{fmtNum(pickupPct, 2)}</p>
-              <p className="text-[10px] text-slate-500">%</p>
+              <p className="text-[10px] text-slate-500">{T.percentUnit}</p>
             </div>
           </div>
           {bench.applicationMethod && (
             <p className="text-[11px] text-slate-500 mt-2">
-              Method: <b>{bench.applicationMethod}</b>
+              {T.methodLabel} <b>{bench.applicationMethod}</b>
             </p>
           )}
         </section>
@@ -231,19 +236,19 @@ export default async function SampleApplicationPrintPage({
         {/* Lifecycle */}
         <section className="mb-4">
           <h2 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">
-            Lifecycle
+            {T.lifecycleSection}
           </h2>
           <div className="grid grid-cols-2 gap-2">
             <div className="border border-slate-300 rounded p-2">
-              <p className="text-[10px] text-slate-500 uppercase font-bold">Padded</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold">{T.paddedLabel}</p>
               <p className="text-sm font-bold mt-1">
-                {app.paddedAt ? fmtDate(app.paddedAt) : "— not recorded —"}
+                {app.paddedAt ? fmtDate(app.paddedAt) : T.notRecorded}
               </p>
             </div>
             <div className="border border-slate-300 rounded p-2">
-              <p className="text-[10px] text-slate-500 uppercase font-bold">Dried</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold">{T.driedLabel}</p>
               <p className="text-sm font-bold mt-1">
-                {app.driedAt ? fmtDate(app.driedAt) : "— not recorded —"}
+                {app.driedAt ? fmtDate(app.driedAt) : T.notRecorded}
               </p>
             </div>
           </div>
@@ -252,12 +257,12 @@ export default async function SampleApplicationPrintPage({
         {/* Operator + notes */}
         <section className="mb-4 grid grid-cols-1 gap-2">
           <div className="border border-slate-300 rounded p-2">
-            <p className="text-[10px] text-slate-500 uppercase font-bold">Operator</p>
+            <p className="text-[10px] text-slate-500 uppercase font-bold">{T.operatorLabel}</p>
             <p className="text-sm mt-1">{app.operator || "—"}</p>
           </div>
           {app.notes && (
             <div className="border border-slate-300 rounded p-2">
-              <p className="text-[10px] text-slate-500 uppercase font-bold">Notes</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold">{T.notesLabel}</p>
               <p className="text-sm mt-1 whitespace-pre-wrap">{app.notes}</p>
             </div>
           )}
@@ -266,9 +271,9 @@ export default async function SampleApplicationPrintPage({
         {/* Footer */}
         <div className="mt-6 pt-3 border-t border-slate-300 text-[10px] text-slate-500 flex items-center justify-between">
           <span>
-            FUZE Atlas · Sample Application <b className="font-mono">{app.appNumber}</b>
+            {T.footerLeft} <b className="font-mono">{app.appNumber}</b>
           </span>
-          <span>Printed {fmtDate(new Date().toISOString())}</span>
+          <span>{T.footerPrinted} {fmtDate(new Date().toISOString())}</span>
         </div>
       </div>
 
