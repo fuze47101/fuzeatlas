@@ -2015,7 +2015,162 @@ const th: Translations = {
         "กราฟกระจายของการโหลด ICP ของผ้ากับการลดต้านจุลชีพที่วัด ยืนยันว่าความชันการตอบสนองโดสยังคงอยู่ทั่วห่วงโซ่อุปทานของคุณ",
     },
   },
-  labPortal: { crumb: "พอร์ทัลแล็บ", landing: { loading: "กำลังโหลด…", unableToLoad: "โหลดพอร์ทัลแล็บไม่ได้", pageTitle: "พอร์ทัลแล็บ", pageSubtitle: "{lab} — จัดการแค็ตตาล็อกการทดสอบและคำขอเข้า", statTotalServices: "บริการทดสอบ", statPendingRequests: "คำขอรอ", statActiveRequests: "กำลังดำเนินการ", statCompletedRequests: "เสร็จสิ้น", statTotalTestRuns: "รวมการรันทั้งหมด", quickUploadLabel: "อัปโหลดรายงาน", quickUploadDesc: "อัปโหลดรายงานที่เสร็จสิ้น", quickUploadsLabel: "ประวัติการอัปโหลด", quickUploadsDesc: "ดูรายงานทั้งหมดที่อัปโหลด", quickCatalogLabel: "แค็ตตาล็อกการทดสอบ", quickCatalogDesc: "จัดการการทดสอบและราคา", quickRequestsLabel: "คำขอ", quickRequestsDescPending: "{count} รออยู่", quickFormsLabel: "แบบฟอร์ม & เอกสาร", quickFormsDesc: "อัปโหลดแบบฟอร์ม", quickProfileLabel: "โปรไฟล์แล็บ", quickProfileDesc: "อัปเดตข้อมูล", recentRequestsHeader: "คำขอล่าสุด", noRequests: "ยังไม่มีคำขอ", colPoNumber: "PO", colBrand: "แบรนด์", colFabric: "ผ้า", colTests: "การทดสอบ", colStatus: "สถานะ", colEstCost: "ต้นทุนประมาณ", testsCountSingular: "{count} การทดสอบ", testsCountPlural: "{count} การทดสอบ" } },
+  labPortal: {
+    crumb: "พอร์ทัลห้องปฏิบัติการ",
+    queue: {
+      crumbCurrent: "คิว",
+      pageTitle: "คิวการทดสอบ",
+      pageSubtitle:
+        "คำขอทดสอบขาเข้า + การส่งล่าสุดจากทุกโรงงานที่คุณดูแล คำขอที่เปิดอยู่ก่อน บริบทการส่งล่าสุดเป็นลำดับที่สอง",
+      loading: "กำลังโหลดคิว…",
+      statPending: "คำขอที่รอดำเนินการ",
+      statSubmissions: "การส่งล่าสุด",
+      pendingHeader: "คำขอที่รอดำเนินการ",
+      submissionsHeader: "การส่งล่าสุด",
+      colPo: "PO #",
+      colBrand: "แบรนด์",
+      colFactory: "โรงงาน",
+      colFabric: "ผ้า",
+      colTier: "ขั้น",
+      colTests: "การทดสอบ",
+      colStatus: "สถานะ",
+      colRequested: "ขอแล้ว",
+      colSubmissionDate: "วันที่ส่ง",
+      colSubmissionStatus: "สถานะ",
+      noPending: "ไม่มีคำขอขาเข้า",
+      noSubmissions: "ยังไม่มีการส่งล่าสุดที่เชื่อมโยงกับคิวของคุณ",
+    },
+    specs: {
+      crumbCurrent: "ข้อกำหนดแบรนด์",
+      pageTitle: "ข้อกำหนดแบรนด์",
+      pageSubtitle:
+        "ข้อกำหนดจากแบรนด์ทุกแบรนด์ที่คุณทดสอบผ้าให้ ใช้สิ่งนี้ในการให้คะแนนผลลัพธ์เทียบกับขั้นและจังหวะที่ถูกต้อง",
+      loading: "กำลังโหลดข้อกำหนด…",
+      noBrands: "ยังไม่มีข้อกำหนดแบรนด์ — ไม่มีโรงงานที่คุณดูแลในปัจจุบันที่เชื่อมโยงกับแบรนด์ที่มีข้อกำหนดที่กำหนดไว้",
+      tierLabel: "ขั้นที่ต้องการ:",
+      cadenceHeader: "จังหวะ ICP",
+      cadenceEveryOrders: "ทุก {n} คำสั่งซื้อ",
+      cadenceEveryLiters: "ทุก {n} L ที่บริโภค",
+      cadenceNone: "ยังไม่ได้ตั้งจังหวะ ICP",
+      tierNone: "ไม่มีข้อกำหนดขั้น",
+      protocolDoc: "📄 เอกสารโปรโตคอล",
+      lastUpdated: "อัปเดต {date}",
+    },
+    landing: {
+      loading: "กำลังโหลดพอร์ทัลห้องปฏิบัติการ...",
+      unableToLoad: "ไม่สามารถโหลดพอร์ทัลห้องปฏิบัติการได้",
+      pageTitle: "พอร์ทัลห้องปฏิบัติการ",
+      pageSubtitle: "{lab} — จัดการแคตตาล็อกการทดสอบและคำขอขาเข้าของคุณ",
+      statTotalServices: "บริการทดสอบ",
+      statPendingRequests: "คำขอที่รอดำเนินการ",
+      statActiveRequests: "กำลังดำเนินการ",
+      statCompletedRequests: "เสร็จสิ้น",
+      statTotalTestRuns: "จำนวนการดำเนินการทดสอบทั้งหมด",
+      quickUploadLabel: "อัปโหลดรายงาน",
+      quickUploadDesc: "อัปโหลดรายงานการทดสอบที่เสร็จสมบูรณ์",
+      quickUploadsLabel: "ประวัติการอัปโหลด",
+      quickUploadsDesc: "ดูรายงานทั้งหมดที่คุณอัปโหลด",
+      quickCatalogLabel: "แคตตาล็อกการทดสอบ",
+      quickCatalogDesc: "จัดการการทดสอบและราคาของคุณ",
+      quickRequestsLabel: "คำขอทดสอบ",
+      quickRequestsDescPending: "{count} รอดำเนินการ",
+      quickFormsLabel: "แบบฟอร์มและเอกสาร",
+      quickFormsDesc: "อัปโหลดแบบฟอร์มการทดสอบ",
+      quickProfileLabel: "โปรไฟล์ห้องปฏิบัติการ",
+      quickProfileDesc: "อัปเดตข้อมูลของคุณ",
+      recentRequestsHeader: "คำขอทดสอบล่าสุด",
+      noRequests: "ยังไม่มีคำขอทดสอบ จะปรากฏที่นี่เมื่อลูกค้าส่งคำสั่งซื้อ",
+      colPoNumber: "หมายเลข PO",
+      colBrand: "แบรนด์",
+      colFabric: "ผ้า",
+      colTests: "การทดสอบ",
+      colStatus: "สถานะ",
+      colEstCost: "ค่าใช้จ่ายโดยประมาณ",
+      testsCountSingular: "{count} การทดสอบ",
+      testsCountPlural: "{count} การทดสอบ",
+    },
+    common: {
+      retry: "ลองอีกครั้ง",
+      loading: "กำลังโหลด…",
+      cancel: "ยกเลิก",
+      save: "บันทึก",
+      close: "ปิด",
+    },
+    formsPage: {
+      crumbCurrent: "แบบฟอร์ม",
+      pageTitle: "แบบฟอร์มห้องปฏิบัติการ",
+      pageSubtitle:
+        "เทมเพลตสำหรับแบบฟอร์มห้องปฏิบัติการที่ทีมของคุณกรอกพร้อมกับการดำเนินการทดสอบแต่ละครั้ง",
+    },
+    catalogPage: {
+      crumbCurrent: "แคตตาล็อกการทดสอบ",
+      pageTitle: "แคตตาล็อกการทดสอบ",
+      pageSubtitle:
+        "การทดสอบที่ห้องปฏิบัติการนี้ให้บริการ พร้อมจำนวนวันในการดำเนินการ ราคา และบันทึกวิธีการ",
+    },
+    labTestsPage: {
+      crumbCurrent: "การทดสอบของห้องแล็บ",
+      pageTitle: "การทดสอบของห้องแล็บ",
+      pageSubtitle: "การทดสอบที่ห้องแล็บนี้รองรับ พร้อมการควบคุมแก้ไข/ปิดใช้งาน",
+    },
+    uploadsPage: {
+      crumbCurrent: "การอัปโหลด",
+      pageTitle: "รายงานที่อัปโหลด",
+      pageSubtitle:
+        "รายงานการทดสอบที่ทีมห้องปฏิบัติการของคุณอัปโหลด พร้อมสถานะการแยกวิเคราะห์",
+    },
+    uploadPage: {
+      crumbCurrent: "อัปโหลด",
+      pageTitle: "อัปโหลดรายงานการทดสอบ",
+      pageSubtitle:
+        "ลากและวาง PDF ห้องปฏิบัติการ เราจะแยกวิเคราะห์ฟิลด์ผลลัพธ์และเชื่อมโยงกับผ้าที่ถูกต้อง",
+    },
+    requestsPage: {
+      crumbCurrent: "คำขอ",
+      pageTitle: "คำขอทดสอบ",
+      pageSubtitle:
+        "คำขอที่ใช้งานอยู่ที่กำหนดให้กับห้องปฏิบัติการของคุณ ยอมรับเพื่อรับ ปฏิเสธเพื่อส่งคืน",
+    },
+    libraryPage: {
+      crumbCurrent: "ห้องสมุด",
+      pageTitle: "ห้องสมุด",
+      pageSubtitle: "เอกสารอ้างอิง ความรู้ FUZE และข้อมูลความยั่งยืน",
+    },
+    activityLogPage: {
+      crumbCurrent: "บันทึกกิจกรรม",
+      pageTitle: "บันทึกกิจกรรม",
+      pageSubtitle: "เส้นทางการตรวจสอบของทุกการกระทำในบัญชีห้องปฏิบัติการของคุณ",
+    },
+    profilePage: {
+      crumbCurrent: "โปรไฟล์",
+      pageTitle: "โปรไฟล์ห้องปฏิบัติการ",
+      pageSubtitle:
+        "อัปเดตข้อมูลติดต่อ ความสามารถ และเวลาดำเนินการของห้องปฏิบัติการของคุณ",
+    },
+    teamPage: {
+      crumbCurrent: "ทีม",
+      pageTitle: "ทีม",
+      pageSubtitle:
+        "เชิญเพื่อนร่วมทีม จัดการบทบาท และเพิกถอนการเข้าถึงสำหรับสมาชิกที่ออกไป",
+    },
+    documentsPage: {
+      crumbCurrent: "เอกสาร",
+      pageTitle: "เอกสาร",
+      pageSubtitle: "รายงาน คู่มือเครื่องมือ และเอกสารอ้างอิง",
+    },
+    creditsPage: {
+      crumbCurrent: "เครดิต",
+      pageTitle: "เครดิตห้องปฏิบัติการ",
+      pageSubtitle:
+        "เครดิตการทดสอบที่ชำระล่วงหน้าที่เหลืออยู่ในบัญชีของคุณ พร้อมประวัติการบริโภค",
+    },
+    wizardPage: {
+      crumbCurrent: "ตัวช่วยสร้าง",
+      pageTitle: "ตัวช่วยสร้างการทดสอบ",
+      pageSubtitle:
+        "แบบฟอร์มห้องปฏิบัติการแบบทีละขั้นตอนสำหรับประเภทการทดสอบนี้ บันทึกขณะดำเนินการ",
+    },
+  },
   productDocs: { title: "เอกสารผลิตภัณฑ์", subtitle: "เอกสารทั่วไปสำหรับผลิตภัณฑ์ทั้งหมด (TDS, SDS, คู่มือการใช้งาน)", upload: "อัปโหลด", update: "อัปเดต", cancel: "ยกเลิก", save: "บันทึก", noDoc: "ยังไม่ได้อัปโหลดเอกสาร", uploadedBy: "อัปโหลดโดย", viewFile: "ดูไฟล์ →", titleField: "ชื่อ", version: "เวอร์ชัน (เช่น v3.1)", fileUrl: "URL ของไฟล์ (PDF)", effectiveDate: "วันที่มีผลใช้", description: "คำอธิบาย / หมายเหตุ" },
 
 };
