@@ -11,6 +11,7 @@
  * FUZE-certified SKU" state instead of a 404 page.
  */
 import Link from "next/link";
+import { getServerTranslations } from "@/i18n/server";
 
 interface VerifyResponse {
   ok: boolean;
@@ -76,10 +77,14 @@ async function loadVerify(code: string): Promise<VerifyResponse | null> {
 
 export default async function VerifySkuPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ code: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 }) {
   const { code } = await params;
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).verifySku;
   const data = await loadVerify(code);
 
   // Network / API error — render a soft "couldn't verify right now" state.
@@ -88,9 +93,9 @@ export default async function VerifySkuPage({
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-md border border-slate-200 p-8 text-center">
           <div className="text-4xl mb-3">🤔</div>
-          <h1 className="text-lg font-bold text-slate-900 mb-1">Couldn't verify this code</h1>
+          <h1 className="text-lg font-bold text-slate-900 mb-1">{T.errorTitle}</h1>
           <p className="text-sm text-slate-600">
-            We had trouble reaching the verification database. Try again in a moment.
+            {T.errorBlurb}
           </p>
         </div>
       </div>
@@ -103,17 +108,15 @@ export default async function VerifySkuPage({
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-md border border-slate-200 p-8 text-center">
           <div className="text-4xl mb-3">🔎</div>
-          <h1 className="text-lg font-bold text-slate-900 mb-1">Not a FUZE-certified SKU</h1>
+          <h1 className="text-lg font-bold text-slate-900 mb-1">{T.notCertifiedTitle}</h1>
           <p className="text-sm text-slate-600 mb-4">
-            The code <span className="font-mono font-bold">{code}</span> isn't in our
-            verification database. If this came from a FUZE hangtag, please contact the
-            brand directly.
+            {T.notCertifiedBlurbPrefix} <span className="font-mono font-bold">{code}</span> {T.notCertifiedBlurbSuffix}
           </p>
           <Link
             href="https://fuzefaq.com"
             className="inline-block text-xs text-[#00b4c3] font-bold hover:underline"
           >
-            What is FUZE? →
+            {T.whatIsFuze}
           </Link>
         </div>
       </div>
@@ -132,13 +135,13 @@ export default async function VerifySkuPage({
           <div className="flex items-start justify-between gap-4 mb-6">
             <div>
               <div className="text-[10px] uppercase tracking-widest font-bold text-emerald-200 mb-1">
-                FUZE Verified
+                {T.fuzeVerified}
               </div>
               <h1 className="text-2xl sm:text-3xl font-black">
-                This fabric is treated with FUZE
+                {T.pageTitle}
               </h1>
               <p className="text-sm text-emerald-100 mt-1">
-                Antimicrobial textile treatment — third-party validated.
+                {T.pageSubtitle}
               </p>
             </div>
             <span className="text-4xl shrink-0" aria-hidden="true">
@@ -150,7 +153,7 @@ export default async function VerifySkuPage({
             {data.brand && (
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-emerald-200 font-bold">
-                  Brand
+                  {T.brandLabel}
                 </p>
                 <p className="text-lg font-bold mt-0.5">{data.brand.name}</p>
               </div>
@@ -158,7 +161,7 @@ export default async function VerifySkuPage({
             {data.factory && (
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-emerald-200 font-bold">
-                  Mill
+                  {T.millLabel}
                 </p>
                 <p className="text-lg font-bold mt-0.5">
                   {data.factory.name}
@@ -173,13 +176,13 @@ export default async function VerifySkuPage({
             {fabric.tier && (
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-emerald-200 font-bold">
-                  FUZE tier
+                  {T.fuzeTierLabel}
                 </p>
                 <p className="text-lg font-bold mt-0.5">
                   {fabric.tier}
                   {tierInfo && (
                     <span className="text-emerald-200 font-normal ml-1">
-                      · {tierInfo.washes} wash claim
+                      · {tierInfo.washes} {T.washClaimSuffix}
                     </span>
                   )}
                 </p>
@@ -188,7 +191,7 @@ export default async function VerifySkuPage({
             {fabric.fuzeNumber != null && (
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-emerald-200 font-bold">
-                  FUZE number
+                  {T.fuzeNumberLabel}
                 </p>
                 <p className="text-lg font-mono font-bold mt-0.5">
                   FUZE-{fabric.fuzeNumber}
@@ -202,16 +205,16 @@ export default async function VerifySkuPage({
         {latestTest && (
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-6">
             <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-1">
-              Most recent lab validation
+              {T.recentValidation}
             </p>
             <p className="text-base font-bold text-slate-900">
-              {latestTest.testType.replace(/_/g, " ")} test —{" "}
-              <span className="text-emerald-700">passed</span>
+              {latestTest.testType.replace(/_/g, " ")} {T.testTypeSuffix}{" "}
+              <span className="text-emerald-700">{T.testPassed}</span>
             </p>
             <p className="text-sm text-slate-600 mt-1">
-              {latestTest.labName ? `Validated by ${latestTest.labName}` : "Validated by a third-party lab"}
+              {latestTest.labName ? `${T.validatedByPrefix} ${latestTest.labName}` : T.validatedByGeneric}
               {latestTest.labCountry ? ` (${latestTest.labCountry})` : ""}
-              {" "}on{" "}
+              {" "}{T.validatedOn}{" "}
               <span className="font-semibold text-slate-900">
                 {formatDate(latestTest.testDate)}
               </span>
@@ -219,7 +222,7 @@ export default async function VerifySkuPage({
             </p>
             {latestTest.reportNumber && (
               <p className="text-[11px] text-slate-500 mt-2 font-mono">
-                Report ref: {latestTest.reportNumber}
+                {T.reportRefPrefix} {latestTest.reportNumber}
               </p>
             )}
           </div>
@@ -229,7 +232,7 @@ export default async function VerifySkuPage({
         {data.certifications && data.certifications.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-6">
             <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-3">
-              FUZE certifications
+              {T.certifications}
             </p>
             <div className="flex flex-wrap gap-2">
               {data.certifications.map((c) => (
@@ -248,20 +251,18 @@ export default async function VerifySkuPage({
         {/* About strip */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
           <p className="text-sm text-slate-700">
-            FUZE is a proprietary antimicrobial textile treatment by FUZE Biotech. It uses
-            metamaterial chemistry that bonds to fibers during standard textile finishing
-            — no PFAS, no binders, no curing oven required.
+            {T.aboutBody}
           </p>
           <Link
             href="https://fuzefaq.com"
             className="inline-block text-xs text-[#00b4c3] font-bold hover:underline mt-2"
           >
-            Learn more about FUZE →
+            {T.learnMore}
           </Link>
         </div>
 
         <p className="text-center text-[10px] text-slate-400 mt-6">
-          FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com
+          {T.footerAddress}
         </p>
       </div>
     </div>

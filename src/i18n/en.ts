@@ -3088,6 +3088,38 @@ const en = {
     description: "Description / notes",
   },
 
+  // ─── HANGTAG SKU VERIFICATION (public garment QR landing) ───
+  verifySku: {
+    errorTitle: "Couldn't verify this code",
+    errorBlurb:
+      "We had trouble reaching the verification database. Try again in a moment.",
+    notCertifiedTitle: "Not a FUZE-certified SKU",
+    notCertifiedBlurbPrefix: "The code",
+    notCertifiedBlurbSuffix:
+      "isn't in our verification database. If this came from a FUZE hangtag, please contact the brand directly.",
+    whatIsFuze: "What is FUZE? →",
+    fuzeVerified: "FUZE Verified",
+    pageTitle: "This fabric is treated with FUZE",
+    pageSubtitle: "Antimicrobial textile treatment — third-party validated.",
+    brandLabel: "Brand",
+    millLabel: "Mill",
+    fuzeTierLabel: "FUZE tier",
+    fuzeNumberLabel: "FUZE number",
+    washClaimSuffix: "wash claim",
+    recentValidation: "Most recent lab validation",
+    testPassed: "passed",
+    testTypeSuffix: "test —",
+    validatedByPrefix: "Validated by",
+    validatedByGeneric: "Validated by a third-party lab",
+    validatedOn: "on",
+    reportRefPrefix: "Report ref:",
+    certifications: "FUZE certifications",
+    aboutBody:
+      "FUZE is a proprietary antimicrobial textile treatment by FUZE Biotech. It uses metamaterial chemistry that bonds to fibers during standard textile finishing — no PFAS, no binders, no curing oven required.",
+    learnMore: "Learn more about FUZE →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
   // ─── BATCH QR VERIFICATION (public scan landing page) ───
   verifyBatch: {
     authRequired: "Atlas Login Required",
