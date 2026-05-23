@@ -2015,7 +2015,162 @@ const bn: Translations = {
         "ফ্যাব্রিক ICP লোডিং বনাম পরিমাপকৃত অ্যান্টিমাইক্রোবিয়াল হ্রাসের স্ক্যাটারপ্লট। আপনার সরবরাহ শৃঙ্খল জুড়ে ডোজ-প্রতিক্রিয়া ঢাল বজায় থাকে তা নিশ্চিত করে।",
     },
   },
-  labPortal: { crumb: "ল্যাব পোর্টাল", landing: { loading: "ল্যাব পোর্টাল লোড হচ্ছে…", unableToLoad: "ল্যাব পোর্টাল লোড করা যায়নি", pageTitle: "ল্যাব পোর্টাল", pageSubtitle: "{lab} — পরীক্ষা ক্যাটালগ ও আগত অনুরোধ পরিচালনা করুন", statTotalServices: "পরীক্ষা পরিষেবা", statPendingRequests: "অপেক্ষমাণ অনুরোধ", statActiveRequests: "চলমান", statCompletedRequests: "সম্পন্ন", statTotalTestRuns: "মোট রান", quickUploadLabel: "রিপোর্ট আপলোড", quickUploadDesc: "একটি সম্পন্ন রিপোর্ট আপলোড করুন", quickUploadsLabel: "আপলোড ইতিহাস", quickUploadsDesc: "আপনার আপলোডকৃত সব রিপোর্ট দেখুন", quickCatalogLabel: "পরীক্ষা ক্যাটালগ", quickCatalogDesc: "পরীক্ষা ও মূল্য পরিচালনা", quickRequestsLabel: "অনুরোধ", quickRequestsDescPending: "{count}টি অপেক্ষমাণ", quickFormsLabel: "ফর্ম ও ডকুমেন্ট", quickFormsDesc: "পরীক্ষা ফর্ম আপলোড", quickProfileLabel: "ল্যাব প্রোফাইল", quickProfileDesc: "আপনার তথ্য আপডেট করুন", recentRequestsHeader: "সাম্প্রতিক অনুরোধ", noRequests: "এখনো কোনো অনুরোধ নেই।", colPoNumber: "PO", colBrand: "ব্র্যান্ড", colFabric: "কাপড়", colTests: "পরীক্ষা", colStatus: "অবস্থা", colEstCost: "আনুমানিক খরচ", testsCountSingular: "{count}টি পরীক্ষা", testsCountPlural: "{count}টি পরীক্ষা" } },
+  labPortal: {
+    crumb: "ল্যাব পোর্টাল",
+    queue: {
+      crumbCurrent: "সারি",
+      pageTitle: "পরীক্ষা সারি",
+      pageSubtitle:
+        "আপনি পরিচালনা করেন এমন প্রতিটি কারখানা থেকে আসা পরীক্ষার অনুরোধ + সাম্প্রতিক জমাগুলি। প্রথমে খোলা অনুরোধ, দ্বিতীয়ত সাম্প্রতিক জমার প্রসঙ্গ।",
+      loading: "সারি লোড হচ্ছে…",
+      statPending: "মুলতুবি অনুরোধ",
+      statSubmissions: "সাম্প্রতিক জমা",
+      pendingHeader: "মুলতুবি অনুরোধ",
+      submissionsHeader: "সাম্প্রতিক জমা",
+      colPo: "PO #",
+      colBrand: "ব্র্যান্ড",
+      colFactory: "কারখানা",
+      colFabric: "ফ্যাব্রিক",
+      colTier: "টিয়ার",
+      colTests: "পরীক্ষা",
+      colStatus: "স্থিতি",
+      colRequested: "অনুরোধকৃত",
+      colSubmissionDate: "জমা দেওয়ার তারিখ",
+      colSubmissionStatus: "স্থিতি",
+      noPending: "কোনো আগত অনুরোধ নেই।",
+      noSubmissions: "আপনার সারির সাথে যুক্ত এখনো কোনো সাম্প্রতিক জমা নেই।",
+    },
+    specs: {
+      crumbCurrent: "ব্র্যান্ড স্পেসিফিকেশন",
+      pageTitle: "ব্র্যান্ড স্পেসিফিকেশন",
+      pageSubtitle:
+        "প্রতিটি ব্র্যান্ডের স্পেসিফিকেশন যাদের ফ্যাব্রিক আপনি পরীক্ষা করেন। সঠিক টিয়ার ও ছন্দের বিপরীতে ফলাফল মূল্যায়ন করতে এটি ব্যবহার করুন।",
+      loading: "স্পেসিফিকেশন লোড হচ্ছে…",
+      noBrands: "এখনো কোনো ব্র্যান্ড স্পেসিফিকেশন নেই — আপনি যেসব কারখানা পরিচালনা করেন সেগুলি বর্তমানে কোনো নির্ধারিত স্পেসিফিকেশন সহ ব্র্যান্ডের সাথে যুক্ত নয়।",
+      tierLabel: "প্রয়োজনীয় টিয়ার:",
+      cadenceHeader: "ICP ছন্দ",
+      cadenceEveryOrders: "প্রতি {n} অর্ডার",
+      cadenceEveryLiters: "প্রতি {n} L খরচে",
+      cadenceNone: "কোনো ICP ছন্দ সেট করা নেই",
+      tierNone: "কোনো টিয়ার প্রয়োজনীয়তা নেই",
+      protocolDoc: "📄 প্রোটোকল নথি",
+      lastUpdated: "আপডেট হয়েছে {date}",
+    },
+    landing: {
+      loading: "ল্যাব পোর্টাল লোড হচ্ছে...",
+      unableToLoad: "ল্যাব পোর্টাল লোড করতে অক্ষম",
+      pageTitle: "ল্যাব পোর্টাল",
+      pageSubtitle: "{lab} — আপনার পরীক্ষার ক্যাটালগ ও আগত অনুরোধ পরিচালনা করুন",
+      statTotalServices: "পরীক্ষা পরিষেবা",
+      statPendingRequests: "মুলতুবি অনুরোধ",
+      statActiveRequests: "চলমান",
+      statCompletedRequests: "সম্পন্ন",
+      statTotalTestRuns: "মোট পরীক্ষা রান",
+      quickUploadLabel: "রিপোর্ট আপলোড",
+      quickUploadDesc: "একটি সম্পূর্ণ পরীক্ষার রিপোর্ট আপলোড করুন",
+      quickUploadsLabel: "আপলোড ইতিহাস",
+      quickUploadsDesc: "আপনি আপলোড করেছেন এমন সমস্ত রিপোর্ট দেখুন",
+      quickCatalogLabel: "পরীক্ষা ক্যাটালগ",
+      quickCatalogDesc: "আপনার পরীক্ষা ও মূল্য পরিচালনা করুন",
+      quickRequestsLabel: "পরীক্ষার অনুরোধ",
+      quickRequestsDescPending: "{count} মুলতুবি",
+      quickFormsLabel: "ফর্ম ও নথি",
+      quickFormsDesc: "পরীক্ষার ফর্ম আপলোড",
+      quickProfileLabel: "ল্যাব প্রোফাইল",
+      quickProfileDesc: "আপনার তথ্য আপডেট করুন",
+      recentRequestsHeader: "সাম্প্রতিক পরীক্ষার অনুরোধ",
+      noRequests: "এখনো কোনো পরীক্ষার অনুরোধ নেই। গ্রাহকরা অর্ডার জমা দিলে এখানে দেখাবে।",
+      colPoNumber: "PO নম্বর",
+      colBrand: "ব্র্যান্ড",
+      colFabric: "ফ্যাব্রিক",
+      colTests: "পরীক্ষা",
+      colStatus: "স্থিতি",
+      colEstCost: "আনুমানিক খরচ",
+      testsCountSingular: "{count} পরীক্ষা",
+      testsCountPlural: "{count} পরীক্ষা",
+    },
+    common: {
+      retry: "আবার চেষ্টা করুন",
+      loading: "লোড হচ্ছে…",
+      cancel: "বাতিল",
+      save: "সংরক্ষণ",
+      close: "বন্ধ",
+    },
+    formsPage: {
+      crumbCurrent: "ফর্ম",
+      pageTitle: "ল্যাব ফর্ম",
+      pageSubtitle:
+        "প্রতিটি পরীক্ষা রানের পাশাপাশি আপনার টিম যেসব ল্যাব ফর্ম পূরণ করে তার টেমপ্লেট।",
+    },
+    catalogPage: {
+      crumbCurrent: "পরীক্ষা ক্যাটালগ",
+      pageTitle: "পরীক্ষা ক্যাটালগ",
+      pageSubtitle:
+        "এই ল্যাব যেসব পরীক্ষা অফার করে, টার্নঅ্যারাউন্ড দিন, মূল্য ও পদ্ধতিগত নোট সহ।",
+    },
+    labTestsPage: {
+      crumbCurrent: "ল্যাব পরীক্ষা",
+      pageTitle: "ল্যাব পরীক্ষা",
+      pageSubtitle: "এই ল্যাব যেসব পরীক্ষা সমর্থন করে, সম্পাদনা/নিষ্ক্রিয় কন্ট্রোল সহ।",
+    },
+    uploadsPage: {
+      crumbCurrent: "আপলোড",
+      pageTitle: "আপলোডকৃত রিপোর্ট",
+      pageSubtitle:
+        "আপনার ল্যাব টিম দ্বারা আপলোডকৃত পরীক্ষার রিপোর্ট, পার্স স্থিতি সহ।",
+    },
+    uploadPage: {
+      crumbCurrent: "আপলোড",
+      pageTitle: "পরীক্ষার রিপোর্ট আপলোড",
+      pageSubtitle:
+        "একটি ল্যাব PDF টেনে আনুন এবং ছাড়ুন। আমরা ফলাফল ক্ষেত্র পার্স করি এবং সঠিক ফ্যাব্রিকের সাথে লিঙ্ক করি।",
+    },
+    requestsPage: {
+      crumbCurrent: "অনুরোধ",
+      pageTitle: "পরীক্ষার অনুরোধ",
+      pageSubtitle:
+        "আপনার ল্যাবে বরাদ্দকৃত সক্রিয় অনুরোধ। নিতে গ্রহণ করুন, ফেরত পাঠাতে প্রত্যাখ্যান করুন।",
+    },
+    libraryPage: {
+      crumbCurrent: "লাইব্রেরি",
+      pageTitle: "লাইব্রেরি",
+      pageSubtitle: "রেফারেন্স নথি, FUZE জ্ঞান, স্থিতিশীলতা ডেটা।",
+    },
+    activityLogPage: {
+      crumbCurrent: "কার্যকলাপ লগ",
+      pageTitle: "কার্যকলাপ লগ",
+      pageSubtitle: "আপনার ল্যাব অ্যাকাউন্টে প্রতিটি ক্রিয়ার অডিট ট্রেইল।",
+    },
+    profilePage: {
+      crumbCurrent: "প্রোফাইল",
+      pageTitle: "ল্যাব প্রোফাইল",
+      pageSubtitle:
+        "আপনার ল্যাবের যোগাযোগের তথ্য, ক্ষমতা ও টার্নঅ্যারাউন্ড সময় আপডেট করুন।",
+    },
+    teamPage: {
+      crumbCurrent: "টিম",
+      pageTitle: "টিম",
+      pageSubtitle:
+        "টিমমেটদের আমন্ত্রণ জানান, ভূমিকা পরিচালনা করুন, এবং প্রস্থানকারী সদস্যদের জন্য অ্যাক্সেস প্রত্যাহার করুন।",
+    },
+    documentsPage: {
+      crumbCurrent: "নথি",
+      pageTitle: "নথি",
+      pageSubtitle: "রিপোর্ট, যন্ত্র ম্যানুয়াল ও রেফারেন্স নথি।",
+    },
+    creditsPage: {
+      crumbCurrent: "ক্রেডিট",
+      pageTitle: "ল্যাব ক্রেডিট",
+      pageSubtitle:
+        "আপনার অ্যাকাউন্টে বাকি প্রিপেইড পরীক্ষা ক্রেডিট, খরচের ইতিহাস সহ।",
+    },
+    wizardPage: {
+      crumbCurrent: "উইজার্ড",
+      pageTitle: "পরীক্ষা উইজার্ড",
+      pageSubtitle:
+        "এই পরীক্ষার ধরনের জন্য ধাপে ধাপে ল্যাব ফর্ম। যেতে যেতে সংরক্ষণ করুন।",
+    },
+  },
   productDocs: { title: "পণ্য ডকুমেন্ট", subtitle: "পুরো পণ্যের জন্য সাধারণ ডকুমেন্ট (TDS, SDS, অ্যাপ্লিকেশন গাইড)। স্থির এবং প্রতিটি ব্যাচে প্রযোজ্য। ব্যাচ-নির্দিষ্ট COA প্রোডাকশন ব্যাচে আপলোড করা হয়।", upload: "আপলোড", update: "আপডেট", cancel: "বাতিল", save: "সংরক্ষণ", noDoc: "ডকুমেন্ট এখনো আপলোড করা হয়নি।", uploadedBy: "আপলোডকারী", viewFile: "ফাইল দেখুন →", titleField: "শিরোনাম", version: "সংস্করণ (যেমন v3.1)", fileUrl: "ফাইল URL (PDF)", effectiveDate: "কার্যকর তারিখ", description: "বিবরণ / নোট" },
 
 };
