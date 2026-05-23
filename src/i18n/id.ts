@@ -2015,7 +2015,162 @@ const id: Translations = {
         "Scatterplot dari beban ICP kain vs pengurangan antimikroba yang diukur. Mengonfirmasi kemiringan respons-dosis bertahan di seluruh rantai pasokan Anda.",
     },
   },
-  labPortal: { crumb: "Portal Lab", landing: { loading: "Memuat portal lab…", unableToLoad: "Tidak dapat memuat portal lab", pageTitle: "Portal Lab", pageSubtitle: "{lab} — Kelola katalog uji dan permintaan masuk", statTotalServices: "Layanan Uji", statPendingRequests: "Permintaan Menunggu", statActiveRequests: "Berlangsung", statCompletedRequests: "Selesai", statTotalTestRuns: "Total Run", quickUploadLabel: "Unggah laporan", quickUploadDesc: "Unggah laporan yang selesai", quickUploadsLabel: "Riwayat unggah", quickUploadsDesc: "Lihat semua laporan", quickCatalogLabel: "Katalog uji", quickCatalogDesc: "Kelola uji dan harga", quickRequestsLabel: "Permintaan", quickRequestsDescPending: "{count} menunggu", quickFormsLabel: "Formulir & Dokumen", quickFormsDesc: "Unggah formulir uji", quickProfileLabel: "Profil lab", quickProfileDesc: "Perbarui info Anda", recentRequestsHeader: "Permintaan terbaru", noRequests: "Belum ada permintaan.", colPoNumber: "PO", colBrand: "Merek", colFabric: "Kain", colTests: "Uji", colStatus: "Status", colEstCost: "Perkiraan biaya", testsCountSingular: "{count} uji", testsCountPlural: "{count} uji" } },
+  labPortal: {
+    crumb: "Portal Lab",
+    queue: {
+      crumbCurrent: "Antrian",
+      pageTitle: "Antrian Uji",
+      pageSubtitle:
+        "Permintaan uji masuk + pengajuan terkini di setiap pabrik yang Anda tangani. Permintaan terbuka dulu, konteks pengajuan terkini kedua.",
+      loading: "Memuat antrian…",
+      statPending: "Permintaan tertunda",
+      statSubmissions: "Pengajuan terkini",
+      pendingHeader: "Permintaan tertunda",
+      submissionsHeader: "Pengajuan terkini",
+      colPo: "PO #",
+      colBrand: "Merek",
+      colFactory: "Pabrik",
+      colFabric: "Kain",
+      colTier: "Tingkat",
+      colTests: "Uji",
+      colStatus: "Status",
+      colRequested: "Diminta",
+      colSubmissionDate: "Tanggal pengajuan",
+      colSubmissionStatus: "Status",
+      noPending: "Tidak ada permintaan masuk.",
+      noSubmissions: "Belum ada pengajuan terkini yang terkait dengan antrian Anda.",
+    },
+    specs: {
+      crumbCurrent: "Spesifikasi Merek",
+      pageTitle: "Spesifikasi Merek",
+      pageSubtitle:
+        "Spesifikasi dari setiap merek yang kainnya Anda uji. Gunakan ini untuk menilai hasil terhadap tingkat dan irama yang tepat.",
+      loading: "Memuat spesifikasi…",
+      noBrands: "Belum ada spesifikasi merek — tidak ada pabrik yang Anda tangani saat ini terkait dengan merek dengan spesifikasi yang ditetapkan.",
+      tierLabel: "Tingkat yang diperlukan:",
+      cadenceHeader: "Irama ICP",
+      cadenceEveryOrders: "Setiap {n} pesanan",
+      cadenceEveryLiters: "Setiap {n} L dikonsumsi",
+      cadenceNone: "Tidak ada irama ICP yang diatur",
+      tierNone: "Tidak ada persyaratan tingkat",
+      protocolDoc: "📄 Dokumen protokol",
+      lastUpdated: "Diperbarui {date}",
+    },
+    landing: {
+      loading: "Memuat portal lab...",
+      unableToLoad: "Tidak dapat memuat portal lab",
+      pageTitle: "Portal Lab",
+      pageSubtitle: "{lab} — Kelola katalog uji dan permintaan masuk Anda",
+      statTotalServices: "Layanan Uji",
+      statPendingRequests: "Permintaan Tertunda",
+      statActiveRequests: "Sedang Berlangsung",
+      statCompletedRequests: "Selesai",
+      statTotalTestRuns: "Total Run Uji",
+      quickUploadLabel: "Unggah Laporan",
+      quickUploadDesc: "Unggah laporan uji yang selesai",
+      quickUploadsLabel: "Riwayat Unggahan",
+      quickUploadsDesc: "Lihat semua laporan yang telah Anda unggah",
+      quickCatalogLabel: "Katalog Uji",
+      quickCatalogDesc: "Kelola uji dan harga Anda",
+      quickRequestsLabel: "Permintaan Uji",
+      quickRequestsDescPending: "{count} tertunda",
+      quickFormsLabel: "Formulir & Dokumen",
+      quickFormsDesc: "Unggah formulir uji",
+      quickProfileLabel: "Profil Lab",
+      quickProfileDesc: "Perbarui informasi Anda",
+      recentRequestsHeader: "Permintaan Uji Terkini",
+      noRequests: "Belum ada permintaan uji. Akan muncul di sini ketika pelanggan mengirimkan pesanan.",
+      colPoNumber: "Nomor PO",
+      colBrand: "Merek",
+      colFabric: "Kain",
+      colTests: "Uji",
+      colStatus: "Status",
+      colEstCost: "Estimasi Biaya",
+      testsCountSingular: "{count} uji",
+      testsCountPlural: "{count} uji",
+    },
+    common: {
+      retry: "Coba lagi",
+      loading: "Memuat…",
+      cancel: "Batal",
+      save: "Simpan",
+      close: "Tutup",
+    },
+    formsPage: {
+      crumbCurrent: "Formulir",
+      pageTitle: "Formulir Lab",
+      pageSubtitle:
+        "Templat untuk formulir lab yang diisi tim Anda bersama setiap run uji.",
+    },
+    catalogPage: {
+      crumbCurrent: "Katalog Uji",
+      pageTitle: "Katalog Uji",
+      pageSubtitle:
+        "Uji yang ditawarkan lab ini, dengan hari turnaround, harga, dan catatan metodologi.",
+    },
+    labTestsPage: {
+      crumbCurrent: "Uji Lab",
+      pageTitle: "Uji Lab",
+      pageSubtitle: "Uji yang didukung lab ini, dengan kontrol edit/nonaktifkan.",
+    },
+    uploadsPage: {
+      crumbCurrent: "Unggahan",
+      pageTitle: "Laporan yang Diunggah",
+      pageSubtitle:
+        "Laporan uji yang diunggah oleh tim lab Anda, dengan status parsing.",
+    },
+    uploadPage: {
+      crumbCurrent: "Unggah",
+      pageTitle: "Unggah Laporan Uji",
+      pageSubtitle:
+        "Seret dan lepas PDF lab. Kami mem-parsing kolom hasil dan menautkan ke kain yang tepat.",
+    },
+    requestsPage: {
+      crumbCurrent: "Permintaan",
+      pageTitle: "Permintaan Uji",
+      pageSubtitle:
+        "Permintaan aktif yang ditugaskan ke lab Anda. Terima untuk mengambil, tolak untuk mengembalikan.",
+    },
+    libraryPage: {
+      crumbCurrent: "Perpustakaan",
+      pageTitle: "Perpustakaan",
+      pageSubtitle: "Dokumen referensi, pengetahuan FUZE, data keberlanjutan.",
+    },
+    activityLogPage: {
+      crumbCurrent: "Log Aktivitas",
+      pageTitle: "Log Aktivitas",
+      pageSubtitle: "Jejak audit setiap tindakan pada akun lab Anda.",
+    },
+    profilePage: {
+      crumbCurrent: "Profil",
+      pageTitle: "Profil Lab",
+      pageSubtitle:
+        "Perbarui info kontak, kapabilitas, dan waktu turnaround lab Anda.",
+    },
+    teamPage: {
+      crumbCurrent: "Tim",
+      pageTitle: "Tim",
+      pageSubtitle:
+        "Undang rekan tim, kelola peran, dan cabut akses untuk anggota yang keluar.",
+    },
+    documentsPage: {
+      crumbCurrent: "Dokumen",
+      pageTitle: "Dokumen",
+      pageSubtitle: "Laporan, manual instrumen, dan dokumen referensi.",
+    },
+    creditsPage: {
+      crumbCurrent: "Kredit",
+      pageTitle: "Kredit Lab",
+      pageSubtitle:
+        "Kredit uji prabayar yang tersisa di akun Anda, dengan riwayat konsumsi.",
+    },
+    wizardPage: {
+      crumbCurrent: "Wizard",
+      pageTitle: "Wizard Uji",
+      pageSubtitle:
+        "Formulir lab langkah demi langkah untuk jenis uji ini. Simpan saat Anda berjalan.",
+    },
+  },
   productDocs: { title: "Dokumen Produk", subtitle: "Dokumen umum untuk seluruh produk (TDS, SDS, panduan aplikasi). Statis dan berlaku untuk setiap batch. COA spesifik batch diunggah di Batch Produksi.", upload: "Unggah", update: "Perbarui", cancel: "Batal", save: "Simpan", noDoc: "Dokumen belum diunggah.", uploadedBy: "Diunggah oleh", viewFile: "Lihat file →", titleField: "Judul", version: "Versi (mis. v3.1)", fileUrl: "URL file (PDF)", effectiveDate: "Tanggal berlaku", description: "Deskripsi / catatan" },
 
 };
