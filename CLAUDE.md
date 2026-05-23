@@ -416,6 +416,179 @@ Order placed → Product shipped → Received → Treatment applied → ICP subm
 
 Each order gets QR → links to SDS, COA for the shipment. Factory scans on receive + on application.
 
+## Built Features (Session — May 20-22, 2026 — i18n full rollout + protocol publish)
+
+Biggest shipping week of the year by commit count. **~100 commits across three days** covering: full 17-locale i18n parity (compact + full-depth in progress), the FUZE Certified Testing Protocol page, auto-resolve-from-commits cron fix (silent bug discovery), account management for typo-fixes, and a Tina-live-call escalation cleanup.
+
+### i18n — 17 locales to full parity (the big rollout)
+
+The 17 canonical textile-manufacturing locales are now all at namespace parity with `en.ts` and most are in deep translation. The locales were stuck at May-6 baseline (sparse coverage); shipped from 35% effective coverage to ~95% navigation + 60-100% deep workflow depending on locale.
+
+**The 17 locales** (this list is canon — do not filter for "fast fixes"):
+
+| Locale | Customer context |
+|---|---|
+| en | Default + US/UK |
+| zh-CN | Mainland China |
+| zh-TW | Taiwan (Formosa, Far Eastern, Eclat) |
+| vi | Vietnam (Nike/Adidas hub) |
+| bn | Bangladesh (#2 apparel exporter) |
+| hi | India north |
+| ta | India Tamil Nadu cluster |
+| ko | Korea (performance fabric) |
+| th | Thailand |
+| tr | Turkey (SRS-Turkey) |
+| ja | Japan (SEK Mark) |
+| id | Indonesia (Hi-Goal) |
+| ms | Malaysia (Penfabric — flagship) |
+| ur | Pakistan |
+| es | Spain + LatAm (Mercado Global) |
+| it | Italy (luxury textile) |
+| km | Cambodia |
+
+**What shipped (Track A — staged escalation fixes):**
+
+- `ViewAsSwitcher` flicker fix (Sidebar.tsx) — guards on `loading || user?.role === "ADMIN" || impersonation?.active` so admin slot stays rendered across the auth-hydration race window. Was disappearing on every page refresh.
+- Distributor BD-link leak fix — pure distributors (Danny) no longer see BD Wizard/Scoreboard/Pipeline links. Gated on `user.canClaim` so BD-rep distributors (Jeremy, Kathir, Tandy, Scott) still see them.
+- `/home` shortcut bar role gates — first 5 tiles (BD Wizard, KPI Dashboard, Orders, Pipeline, ICP Sample Prep) wrapped in `isInternal`/`isAdmin` checks.
+- Dismiss button on brand suggestions schema-drift fix — Note model field is `userId` not `authorId`. Wrapped in try/catch so future drift surfaces 500 with actual error instead of silent no-op.
+- `/admin/brands/[id]/fabrics` — split FUZE# from Mill Fabric# into two distinct columns. CSV export reordered.
+- `seed-sanmar` self-healing — added `ensureBrandFactoryLink()` that upserts `BrandFactory` + `SupplyChainLink` rows for every (brand, factory) pair. Added `nextFuzeNumber()` so every fabric gets an Atlas-issued FUZE-N on insert + backfill on update.
+
+**What shipped (Track B — i18n completion phases 1-4):**
+
+- Phase 1-3: 14 missing namespaces added to `zh-CN.ts` with proper Simplified Chinese translations. `src/lib/modules.ts` refactored with `labelKey` field so module items reference translation keys. Consumers (home page card grid, scoped sidebar) use `t.modules[labelKey] || label` fallback. `/home` shortcut bar tiles use the same keys.
+- Phase 4: Portal sidebars (factory/brand/distributor/lab in `Sidebar.tsx`) use the same `labelKey` pattern. New `modules:` namespace covers every portal sidebar item. Translation keys added to all 5 maintained locales (en, zh-CN, ja, es, tr) plus zh-TW.
+
+**What shipped (Track C — 17-locale parity compact pass):**
+
+All 12 stale locales (zh-TW, vi, bn, hi, ta, ko, th, id, ms, ur, it, km) added the 19 missing namespaces relative to `en.ts`. Each is at "compact" depth — namespace SHAPE filled in so TypeScript passes and customer-visible landing pages translate cleanly, but deep workflow sub-namespaces (factoryPortal intake forms, brandPortal contacts edit modes) still `deepFallback` to English. One commit per locale.
+
+**zh-TW specifically** — regenerated from zh-CN via `opencc s2twp` (mechanical Simplified → Traditional with Taiwan-idioms profile: 軟體 / 資料庫 / 預設 / 使用者 / 滑鼠 / 影片 / 網路 / 專案 / 設定 / 聯絡人). Native Taiwanese reviewer sweep still recommended.
+
+**What's in flight (Track D — full-depth translation, ongoing):**
+
+Code is grinding through ~28 namespaces × 11 stale locales = ~300 per-(locale × namespace) commits. Per-namespace strategy chosen instead of per-locale to minimize rollback blast radius. Strategy: one commit per (locale, namespace) pair. Status as of last check:
+
+| Namespace | Locales done | Notes |
+|---|---|---|
+| `translation`, `labPortal`, `distributorPortal`, `brandPortal`, `admin` | 11/11 each | First five completed |
+| `settings.notifications` | 8/11 (ur, it, km remaining) | In progress |
+| `factoryPortal` + ~22 others | 0/11 | Pending — `factoryPortal` is the highest-impact remaining namespace |
+
+File-size growth confirms real translation depth: stale locales now at 113-220 KB (vs original 20-35 KB baseline), comparable to `en.ts` at 122 KB. Multi-byte scripts (hi, ta, ur, km) are 1.5-1.8× en.ts size as expected for Devanagari/Tamil/Arabic/Khmer.
+
+**Brand voice — strict enforcement across all 17 languages.** Zero `silver` / `nano` / `Ag` / language-specific transliterations (銀, 银, 纳米, ナノ, 나노, سلور, نانو, نینو, चांदी, नैनो, plata, gümüş, perak, argento, etc.) in any user-facing translated value. Per-locale ban lists in spec at `specs/2026-05-20-full-i18n-parity-17-locales.md`. Two pre-existing competitive-positioning strings in `en.ts:1032` + `2318` are legitimate (name competitor chemistries to argue against them — that's correct brand voice).
+
+**Self-caught violation:** Code shipped Urdu compact-pass commit `c5a4c65` containing `سلور نینو` (Urdu transliteration of "silver nano") in `faqPlaceholder`. Caught in the brand-voice grep post-commit, fixed in `3fe5cd8` (replaced with FUZE/metamateryal framing). Demonstrates that the per-locale grep verification is doing its job.
+
+### FUZE Certified Testing Protocol page (NEW — gates customer testing)
+
+New page at `/education/testing-protocol`. Andrew's response to a customer test failure where ICP came back at 0.68 mg/kg (above F3 floor) but AATCC 100 + ASTM E2149 both failed because the lab used autoclave sterilization. Bureau Veritas Hong Kong validated the failure mode with an 8-sample side-by-side battery (UV vs autoclave, same fabric, same chemistry) — UV samples all hit ≥99.9% reduction, autoclave samples ranged 0% to 87% with several at zero.
+
+**Seven rules** (was eight — rule #4 "no pre-test handling" removed 2026-05-22 after multiple follow-up tests showed a single pre-wash hand rinse VAULTS results to 99.9% by clearing surface glucose, interfering chemistry, and sacrificial residues; the original BV observation was a one-off attributable to chemistry distribution on those specific spray samples, not a generalizable rule):
+
+1. **ICP first.** No antimicrobial test starts without ICP confirmation of fabric loading in mg/kg. Formosa Labs Taipei is the recommended ICP lab.
+2. **UV sterilization only.** Autoclave at 120°C opens synthetic fibers — nylon, polyester, synthetic blends — and the surface-bonded metamaterial absorbs into the now-open fiber matrix. No contact, no kill.
+3. **Low-sulfur growth medium.** Mueller Hinton Broth preferred (CLSI-standard, low sulfur, neutral pH). Acknowledges MHB can be hard to source — fallback: ask for lowest-sulfur medium your lab has, decline blood-supplemented options.
+4. **ASTM E2149 contact time 24 hours minimum.** Standard's default 1-hour was calibrated around ion-leaching antimicrobials. FUZE is contact-kill with slower kinetics. Use *E. coli* (ATCC 25922 or 8739) as the test organism — motile, consistent log-phase kinetics, no dormancy.
+5. **ASTM E2149 is the primary recommended test for every FUZE tier.** Non-leaching contact-kill chemistry requires the test geometry designed for it.
+6. **AATCC 100, ISO 20743, and JIS L 1902 are supported ONLY at ICP ≥ 1.0 mg/kg (F1 Full Spectrum) with UV sterilization.** Layered-coupon test geometry was designed around ion-leaching chemistries and disadvantages non-leaching antimicrobials at lower densities. JIS L 1902 is required for Japanese SEK Mark certification.
+7. **Use the right test organism per method.** Standard table in §4b covers the recommended pairings: AATCC 100/ISO 20743/JIS L 1902 → Staph + Kleb; AATCC 30 → Aspergillus brasiliensis (antifungal); ISO 18184 → Influenza A H1N1/H3N2 (antiviral).
+
+**Anti-odor positioning — Moraxella osloensis (ATCC 19976).** The biggest commercial positioning lever on the page. *M. osloensis* is the gram-negative diplococcus that causes laundry malodor in worn/damp activewear and hospitality textiles — produces 4-methyl-3-hexenoic acid as the signature VOC the human nose registers as "wet-laundry funk." Polyester + nylon especially susceptible because their hydrophobic surfaces retain the sweat lipid substrate. FUZE's contact-kill mechanism neutralizes Moraxella on the fiber surface before colonization, before malodor. Run on ISO 20743 / JIS L 1902 / AATCC 100 protocol with F1 + UV requirements. This is the testing claim that backs anti-odor positioning for activewear (Nike, Lululemon, North Face, KUIU), athletic socks, hospitality bedding (JLA Nomad Home®), childcare textiles.
+
+**Microbiology nuance — Klebsiella is the worst-case detector for autoclave damage.** Gram-negative double-membrane envelope (outer membrane + peptidoglycan + inner membrane), heavily encapsulated in a mucoid polysaccharide layer (the "pink sugar shell" on MacConkey agar from lactose-positive metabolism), **and crucially non-motile**. Cannot actively chase chemistry. If FUZE has been buried by autoclave, Kleb will not find it — results crash to 0-10% reduction. Compare to Staph/MRSA which are small + motile + actively seek surface contact, so they still show ~90% reduction on autoclave-damaged samples by finding the surviving surface chemistry. **Diagnostic signature on a test report:** decent Staph (≥80%) + near-zero Kleb = autoclave damage, NOT chemistry failure. The chemistry is on the fabric (ICP confirms); the test prep rendered it inaccessible.
+
+**Where the protocol is referenced.** Brand spec pages (`/brand-portal/spec`, `/admin/brands/[id]/spec`) now show an amber-callout banner above the form pointing brand managers + AMs at the protocol page before they configure their testing spec. Wired into the Resources tile via `modules.ts`. No per-user checkbox gate — per Andrew's correction, the protocol is referenced in each brand's approval of their testing procedures (brand-level acknowledgment via spec setup, not per-access-request gate).
+
+### Auto-resolve-from-commits cron — two bugs fixed in one commit (`f2aa84f`)
+
+The hourly cron at `/api/cron/auto-resolve-from-commits` had been silently broken since it shipped. Two bugs:
+
+1. **Scope too loose.** Old regex matched ANY cuid anywhere in the commit body. Code's i18n commits referenced ticket cuids in passing (e.g. `"i18n(es): full parity\n\nrefs cmpdnfb9f..."`) and the cron interpreted those as close-this-ticket. Fix: require GitHub-convention prefix (`Closes` / `Closed` / `Close` / `Fixes` / `Fixed` / `Fix` / `Resolves` / `Resolved` / `Resolve`) preceding the cuid. Case-insensitive. Cuids harvested only from the sentence/line containing the keyword.
+2. **Cuid length wrong.** Old regex `cm[a-z0-9]{24}` (26 chars total) but real Prisma cuids in this codebase are 25 chars (cm + 23). The regex therefore **never matched anything in production** — the cron had been a complete no-op since shipped. Fix: `cm[a-z0-9]{22,28}` covers current cuid format with headroom for future Prisma cuid spec changes.
+
+17 test cases validated covering tense variants (close/closed, fix/fixed, resolve/resolved), case insensitivity, comma/space/and separators for multi-close, sentence scoping (period + newline terminators), and negative cases.
+
+**Behavior change after deploy:** the cron now actually fires for the first time. Going forward, drop `Closes <cuid>` in commit bodies and the hourly cron picks them up + sends close-loop emails. The "false-FIXED" pattern Andrew thought was happening pre-fix was actually impossible (cron never matched anything) — those tickets must have been closed via `admin-resolve` calls. After deploy, the cron correctly closed Penny's ticket `cmpdngy6x...` from commit `15e22bb` "fix(middleware): bounce external users away from wrong portal" which had the keyword prefix.
+
+### Account management — typo recovery + admin email editing
+
+Built on the back of Jany Lu (Charming Fabrics, Malaysia) reporting "Invalid email or password" with credentials Andrew personally set. Login returns that generic error for both user-not-found AND password-mismatch cases. The two patterns this session shipped distinguish them and let admins recover stuck accounts without DB access:
+
+**`/api/cron/diag-user?email=<email>`** (bearer-authed read-only). Returns user exists?, status, role, hash-present boolean (never the hash itself), bcrypt cost, plus **fuzzy similar-email search** to catch typos at account creation. This is how we discovered Jany's account was created as `any.lu@charmingfabrics.com` (missing leading "j") — diag surfaced it via the fuzzy match.
+
+**`/api/cron/admin-reset-password`** (bearer-authed POST). One-shot user recovery accepting any combination of:
+- `newPassword` (resets password — same 6-char minimum as `/api/auth/register`)
+- `newEmail` (corrects email typo with format validation + collision check)
+- `activate: true` (flips status to ACTIVE if not already)
+
+At least one of the three must be present. Single call now fixes email + resets password + activates in one atomic transaction. Returns clean 409 if `newEmail` collides with another user.
+
+**Inline email/name editing in `/settings/users`.** The admin UI was already accepting email via the PATCH endpoint but had no field to edit it — Andrew flagged the gap during Jany recovery. Added:
+- `editEmail` + `editName` state vars on the page component, initialized from the user record on `startEdit()`
+- Email input replaces read-only text in the desktop edit row
+- Name + email inputs added to the top of the mobile edit row
+- `body.email` + `body.name` included in PATCH on save
+- API now validates email format (basic RFC-ish regex) + collision-checks against other users + returns 409 with clear error message naming the colliding user id
+
+Going forward, account typos get fixed in two clicks instead of a curl. The bearer-authed `admin-reset-password` endpoint stays for password resets, multi-action recovery, and out-of-band fixes.
+
+### Schema-drift bugs caught and fixed (this session)
+
+Pattern unchanged from prior sessions — Prisma `select`/`where` referencing non-existent fields. Caught:
+
+1. **`Note.authorId`** referenced in `/api/admin/brands/[id]/suggestions` POST. Real field is `Note.userId`. The Dismiss button on brand suggestion cards was silently 500-ing for weeks. Fix wrapped in try/catch so future drift surfaces actual error.
+2. **Cuid length** in `auto-resolve-from-commits` (covered above) — not strictly schema drift but same family of "the code thought reality was X, reality was Y, silent failure."
+
+### Bearer-authed runtime endpoints added this session
+
+- `/api/cron/backfill-brand-factory-links` — derives `BrandFactory` + `SupplyChainLink` rows from `Fabric.factoryId` for every brand globally. Optional `?brandId=` scope. Idempotent. Fixes the "Factories tile shows 1 but the brand has 9 factories via fabrics" gap (three relations used to drive three different counts).
+- `/api/cron/diag-brand-fabrics?brand=NAME` — generic fabric portfolio readiness check for any brand. Reports fabric count, factory-assignment rate, FUZE-number coverage, dev-status coverage, junction table state, per-factory rollup, plus verdicts (e.g. "⚠ N fabric(s) have no FUZE number — column will show 'unassigned'").
+- `/api/cron/seed-sanmar` — already shipped; this session added `ensureBrandFactoryLink()` + `nextFuzeNumber()` so future seed re-runs are self-healing.
+- `/api/cron/diag-user` — covered above.
+- `/api/cron/admin-reset-password` — covered above.
+- `/api/cron/diag-sanmar-dupes` — read-only diag confirming no duplicate Brand / Factory / Fabric rows after seed runs.
+
+### Tina ticket batch — 5 tickets, all resolved
+
+Pulled via `fzcron feedback-list`. Triage + resolution:
+
+| # | Reporter | Type | Resolution |
+|---|---|---|---|
+| 1 | Tina Hong (Mill - order missing distributor) | BUG | FIXED via commit c8a41e1 surfacing distributor on factory order detail page |
+| 2 | Penny Wang / Intertek (Lab portal screenshot) | BUG | FIXED via middleware bounce in commit 15e22bb — lab users now correctly redirected away from distributor portal pages |
+| 3 | Tina Distributor (Add factory authority) | FEATURE | ACCEPTED for Phase 16 — distributor self-service factory roster |
+| 4 | Kaylee (Fabric photo upload) | FEATURE | ACCEPTED for Phase 16 — intake + receipt verification photos |
+| 5 | Tina Hong (Silvadur formaldehyde) | WAITING | ACCEPTED, parked on Tina's SDS doc for proper CIL audit |
+
+`byStatus` end state: `{FIXED: 53, TRIAGED: 1, CLOSED: 1, ACCEPTED: 3, REJECTED: 1, NEW: 0}`. Inbox zero on actionable tickets.
+
+### Standing patterns reinforced this session
+
+- **17-locale picker is canon, not a draft.** Do not filter languages out as a "fast fix" even when they're stale — they represent the top textile-manufacturing markets globally and customers expect them to work. Bring them to parity, don't hide them.
+- **Brand voice strict across all 17 languages.** Never silver / nano / Ag / language-specific transliteration in any user-facing string. Per-locale grep verification before every push. Caught one self-violation (Urdu سلور نینو) and one near-miss this session — the discipline is working.
+- **Per-(locale × namespace) commits beats per-locale commits for big translation rollouts.** Smaller blast radius, easier rollback, better visibility into progress. Code adopted this voluntarily when faced with the 11-locale × 19-namespace matrix.
+- **Bearer-authed runtime migration pattern continues to scale.** This session added 5+ new `/api/cron/*` endpoints. The pattern is now standard for: data fixes, diagnostics, one-off migrations, admin actions without UI surface. Local DB DSN drift is no longer a blocker for any one-off admin work.
+- **Tina is the sole native-speaker reviewer for now.** Mandarin native, fluent Japanese + Korean. Covers zh-CN / zh-TW / ja / ko (4 of 17 locales). The other 13 ship at Claude-quality with explicit `NATIVE-REVIEW NEEDED` flag in commit bodies; native review is a parallel workstream Andrew routes per locale when contact identified.
+- **File-size growth as translation-depth proxy.** Compact-shape locales are 20-35 KB; full-depth locales are 110-220 KB (multi-byte scripts skew higher). Quick health check: if a locale file is < 90 KB and the locale is supposedly fully translated, something's wrong.
+
+### Pending / parked items (May 22)
+
+- **Code's 11-locale full-depth grind in progress.** ~5/19 deep-workflow namespaces complete across all 11 stale locales. Remaining ~28 commits × 11 locales = ~300 to go. Estimated 3-4 more hours of Code grinding. Biggest remaining namespace is `factoryPortal` — milestone for Vietnamese / Malaysian / Indonesian factory users walking the intake wizard.
+- **Native-speaker review** for the 11 Claude-quality stale locales. Tina (zh-CN/zh-TW/ja/ko) is the sole reviewer currently. Other 7 locales (vi/ms/hi/ta/th/id/bn/ur/it/km) ship as Claude-quality flagged for native review when contact identified per region.
+- **Tina ↔ Penny lab portal screen-share** in Taipei.
+- **Tina Silvadur formaldehyde SDS** — waiting on her to send the doc for proper CIL audit before publishing anything on `/sustainability`.
+- **Jany Lu confirmation** she can now log in.
+- **fuzefaq.com Railway build failure** — parked (Andrew not prioritizing).
+- **Phase 16 queue items added this session:**
+  - Distributor self-service factory roster (Tina Distributor)
+  - Fabric photo upload at intake + receipt (Kaylee)
+  - Auto-resolve cron re-notify when status transitions multiple times (caught when Penny ticket flipped TRIAGED → FIXED but didn't email her about the FIX)
+  - Email confirmation step on user account creation (would have caught Jany typo upstream)
+  - Bulk diag: users with similar-looking emails to known Brand/Factory contacts (Levenshtein distance ≤ 2)
+
 ## Built Features (Sessions — May 12-16, 2026)
 
 The biggest week of shipping by volume so far. **Phase 15 of the
