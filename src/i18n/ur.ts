@@ -2015,7 +2015,162 @@ const ur: Translations = {
         "کپڑے کی ICP لوڈنگ بمقابلہ ناپی گئی اینٹی مائکروبیل کمی کا اسکیٹر پلاٹ۔ تصدیق کرتا ہے کہ خوراک-جواب کی ڈھلوان آپ کی سپلائی چین میں برقرار رہتی ہے۔",
     },
   },
-  labPortal: { crumb: "لیب پورٹل", landing: { loading: "لیب پورٹل لوڈ…", unableToLoad: "لیب پورٹل لوڈ نہیں ہو سکا", pageTitle: "لیب پورٹل", pageSubtitle: "{lab} — ٹیسٹ کیٹلاگ اور آنے والی درخواستوں کا انتظام کریں", statTotalServices: "ٹیسٹ کی خدمات", statPendingRequests: "زیر التواء درخواستیں", statActiveRequests: "جاری", statCompletedRequests: "مکمل", statTotalTestRuns: "کل رنز", quickUploadLabel: "رپورٹ اپ لوڈ", quickUploadDesc: "مکمل رپورٹ اپ لوڈ کریں", quickUploadsLabel: "اپ لوڈ تاریخ", quickUploadsDesc: "تمام رپورٹس دیکھیں", quickCatalogLabel: "ٹیسٹ کیٹلاگ", quickCatalogDesc: "ٹیسٹ اور قیمت کا انتظام", quickRequestsLabel: "درخواستیں", quickRequestsDescPending: "{count} زیر التواء", quickFormsLabel: "فارمز & دستاویزات", quickFormsDesc: "ٹیسٹ فارمز اپ لوڈ", quickProfileLabel: "لیب پروفائل", quickProfileDesc: "اپنی معلومات اپ ڈیٹ کریں", recentRequestsHeader: "حالیہ درخواستیں", noRequests: "ابھی تک کوئی درخواستیں نہیں۔", colPoNumber: "PO", colBrand: "برانڈ", colFabric: "کپڑا", colTests: "ٹیسٹ", colStatus: "حالت", colEstCost: "متوقع قیمت", testsCountSingular: "{count} ٹیسٹ", testsCountPlural: "{count} ٹیسٹ" } },
+  labPortal: {
+    crumb: "لیب پورٹل",
+    queue: {
+      crumbCurrent: "قطار",
+      pageTitle: "ٹیسٹ قطار",
+      pageSubtitle:
+        "آپ جس ہر فیکٹری کو سنبھالتے ہیں اس سے آنے والی ٹیسٹ کی درخواستیں + حالیہ جمع کرائیاں۔ پہلے کھلی درخواستیں، پھر حالیہ جمع کا سیاق و سباق۔",
+      loading: "قطار لوڈ ہو رہی ہے…",
+      statPending: "زیر التواء درخواستیں",
+      statSubmissions: "حالیہ جمع کرائیاں",
+      pendingHeader: "زیر التواء درخواستیں",
+      submissionsHeader: "حالیہ جمع کرائیاں",
+      colPo: "PO #",
+      colBrand: "برانڈ",
+      colFactory: "فیکٹری",
+      colFabric: "کپڑا",
+      colTier: "درجہ",
+      colTests: "ٹیسٹس",
+      colStatus: "حالت",
+      colRequested: "درخواست شدہ",
+      colSubmissionDate: "جمع کرانے کی تاریخ",
+      colSubmissionStatus: "حالت",
+      noPending: "کوئی آنے والی درخواست نہیں۔",
+      noSubmissions: "ابھی تک آپ کی قطار سے منسلک حالیہ کوئی جمع نہیں۔",
+    },
+    specs: {
+      crumbCurrent: "برانڈ کی تفصیلات",
+      pageTitle: "برانڈ کی تفصیلات",
+      pageSubtitle:
+        "ہر اس برانڈ کی تفصیلات جس کے کپڑے آپ ٹیسٹ کرتے ہیں۔ نتائج کو درست درجے اور تال کے خلاف اسکور کرنے کے لیے یہ استعمال کریں۔",
+      loading: "تفصیلات لوڈ ہو رہی ہیں…",
+      noBrands: "ابھی تک کوئی برانڈ تفصیلات نہیں — آپ جن فیکٹریوں کو سنبھالتے ہیں ان میں سے کوئی فی الحال طے شدہ تفصیلات والے برانڈ سے منسلک نہیں۔",
+      tierLabel: "درکار درجہ:",
+      cadenceHeader: "ICP تال",
+      cadenceEveryOrders: "ہر {n} آرڈرز",
+      cadenceEveryLiters: "ہر {n} L استعمال",
+      cadenceNone: "کوئی ICP تال مقرر نہیں",
+      tierNone: "کوئی درجہ کی ضرورت نہیں",
+      protocolDoc: "📄 پروٹوکول دستاویز",
+      lastUpdated: "اپ ڈیٹ ہوا {date}",
+    },
+    landing: {
+      loading: "لیب پورٹل لوڈ ہو رہا ہے...",
+      unableToLoad: "لیب پورٹل لوڈ کرنے سے قاصر",
+      pageTitle: "لیب پورٹل",
+      pageSubtitle: "{lab} — اپنے ٹیسٹ کیٹلاگ اور آنے والی درخواستوں کا انتظام کریں",
+      statTotalServices: "ٹیسٹ خدمات",
+      statPendingRequests: "زیر التواء درخواستیں",
+      statActiveRequests: "جاری",
+      statCompletedRequests: "مکمل",
+      statTotalTestRuns: "کل ٹیسٹ رنز",
+      quickUploadLabel: "رپورٹ اپلوڈ کریں",
+      quickUploadDesc: "ایک مکمل ٹیسٹ رپورٹ اپلوڈ کریں",
+      quickUploadsLabel: "اپلوڈ کی تاریخ",
+      quickUploadsDesc: "آپ نے اپلوڈ کی تمام رپورٹس دیکھیں",
+      quickCatalogLabel: "ٹیسٹ کیٹلاگ",
+      quickCatalogDesc: "اپنے ٹیسٹس اور قیمتوں کا انتظام کریں",
+      quickRequestsLabel: "ٹیسٹ کی درخواستیں",
+      quickRequestsDescPending: "{count} زیر التواء",
+      quickFormsLabel: "فارم اور دستاویزات",
+      quickFormsDesc: "ٹیسٹ فارم اپلوڈ کریں",
+      quickProfileLabel: "لیب پروفائل",
+      quickProfileDesc: "اپنی معلومات اپ ڈیٹ کریں",
+      recentRequestsHeader: "حالیہ ٹیسٹ کی درخواستیں",
+      noRequests: "ابھی تک کوئی ٹیسٹ کی درخواست نہیں۔ گاہکوں کے آرڈر جمع کرانے پر یہ یہاں نظر آئیں گے۔",
+      colPoNumber: "PO نمبر",
+      colBrand: "برانڈ",
+      colFabric: "کپڑا",
+      colTests: "ٹیسٹس",
+      colStatus: "حالت",
+      colEstCost: "تخمینی لاگت",
+      testsCountSingular: "{count} ٹیسٹ",
+      testsCountPlural: "{count} ٹیسٹس",
+    },
+    common: {
+      retry: "دوبارہ کوشش کریں",
+      loading: "لوڈ ہو رہا ہے…",
+      cancel: "منسوخ",
+      save: "محفوظ کریں",
+      close: "بند کریں",
+    },
+    formsPage: {
+      crumbCurrent: "فارم",
+      pageTitle: "لیب فارم",
+      pageSubtitle:
+        "ہر ٹیسٹ رن کے ساتھ آپ کی ٹیم جو لیب فارم بھرتی ہے ان کے ٹیمپلیٹس۔",
+    },
+    catalogPage: {
+      crumbCurrent: "ٹیسٹ کیٹلاگ",
+      pageTitle: "ٹیسٹ کیٹلاگ",
+      pageSubtitle:
+        "یہ لیب جو ٹیسٹ پیش کرتی ہے، ٹرناراؤنڈ دن، قیمتیں اور طریقہ کار کے نوٹس کے ساتھ۔",
+    },
+    labTestsPage: {
+      crumbCurrent: "لیب ٹیسٹس",
+      pageTitle: "لیب ٹیسٹس",
+      pageSubtitle: "یہ لیب جو ٹیسٹ سپورٹ کرتی ہے، ترمیم/غیر فعال کنٹرولز کے ساتھ۔",
+    },
+    uploadsPage: {
+      crumbCurrent: "اپلوڈز",
+      pageTitle: "اپلوڈ شدہ رپورٹس",
+      pageSubtitle:
+        "آپ کی لیب ٹیم کی اپلوڈ کردہ ٹیسٹ رپورٹس، پارس اسٹیٹس کے ساتھ۔",
+    },
+    uploadPage: {
+      crumbCurrent: "اپلوڈ",
+      pageTitle: "ٹیسٹ رپورٹ اپلوڈ کریں",
+      pageSubtitle:
+        "ایک لیب PDF کھینچیں اور چھوڑیں۔ ہم نتیجہ فیلڈز کو پارس کرتے ہیں اور درست کپڑے سے لنک کرتے ہیں۔",
+    },
+    requestsPage: {
+      crumbCurrent: "درخواستیں",
+      pageTitle: "ٹیسٹ کی درخواستیں",
+      pageSubtitle:
+        "آپ کی لیب کو تفویض کردہ فعال درخواستیں۔ اٹھانے کے لیے قبول کریں، واپس بھیجنے کے لیے مسترد کریں۔",
+    },
+    libraryPage: {
+      crumbCurrent: "لائبریری",
+      pageTitle: "لائبریری",
+      pageSubtitle: "حوالہ دستاویزات، FUZE علم، پائیداری ڈیٹا۔",
+    },
+    activityLogPage: {
+      crumbCurrent: "سرگرمی لاگ",
+      pageTitle: "سرگرمی لاگ",
+      pageSubtitle: "آپ کے لیب اکاؤنٹ پر ہر کارروائی کا آڈٹ ٹریل۔",
+    },
+    profilePage: {
+      crumbCurrent: "پروفائل",
+      pageTitle: "لیب پروفائل",
+      pageSubtitle:
+        "اپنی لیب کی رابطے کی معلومات، صلاحیتیں اور ٹرناراؤنڈ اوقات اپ ڈیٹ کریں۔",
+    },
+    teamPage: {
+      crumbCurrent: "ٹیم",
+      pageTitle: "ٹیم",
+      pageSubtitle:
+        "ٹیم کے ساتھیوں کو دعوت دیں، کرداروں کا انتظام کریں، اور رخصت ہونے والے ارکان کے لیے رسائی واپس لیں۔",
+    },
+    documentsPage: {
+      crumbCurrent: "دستاویزات",
+      pageTitle: "دستاویزات",
+      pageSubtitle: "رپورٹس، آلات کے دستی کتابچے، اور حوالہ دستاویزات۔",
+    },
+    creditsPage: {
+      crumbCurrent: "کریڈٹس",
+      pageTitle: "لیب کریڈٹس",
+      pageSubtitle:
+        "آپ کے اکاؤنٹ پر باقی پیشگی ادائیگی شدہ ٹیسٹنگ کریڈٹس، استعمال کی تاریخ کے ساتھ۔",
+    },
+    wizardPage: {
+      crumbCurrent: "وزرڈ",
+      pageTitle: "ٹیسٹ وزرڈ",
+      pageSubtitle:
+        "اس ٹیسٹ کی قسم کے لیے قدم بہ قدم لیب فارم۔ آگے بڑھتے ہوئے محفوظ کریں۔",
+    },
+  },
   productDocs: { title: "پراڈکٹ دستاویزات", subtitle: "پورے پراڈکٹ کے لیے عام دستاویزات (TDS، SDS، اپلیکیشن گائیڈ)۔ جامد اور ہر بیچ پر لاگو۔ بیچ مخصوص COAs پروڈکشن بیچز میں اپ لوڈ کیے جاتے ہیں۔", upload: "اپ لوڈ", update: "اپ ڈیٹ", cancel: "منسوخ", save: "محفوظ", noDoc: "دستاویز ابھی اپ لوڈ نہیں کی گئی۔", uploadedBy: "اپ لوڈر", viewFile: "فائل دیکھیں →", titleField: "عنوان", version: "ورژن (مثلاً v3.1)", fileUrl: "فائل URL (PDF)", effectiveDate: "موثر تاریخ", description: "تفصیل / نوٹس" },
 
 };
