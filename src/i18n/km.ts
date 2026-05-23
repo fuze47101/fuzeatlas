@@ -2015,7 +2015,162 @@ const km: Translations = {
         "Scatterplot នៃ ICP loading ក្រណាត់ប្រៀបធៀបនឹងការកាត់បន្ថយប្រឆាំងមីក្រូជីវសាស្ត្រដែលបានវាស់។ បញ្ជាក់ថាជម្រាលឆ្លើយតបកម្រិតថ្នាំរក្សាបាននៅទូទាំងខ្សែសង្វាក់ផ្គត់ផ្គង់របស់អ្នក។",
     },
   },
-  labPortal: { crumb: "ផតថលមន្ទីរពិសោធន៍", landing: { loading: "កំពុងផ្ទុក…", unableToLoad: "មិនអាចផ្ទុក", pageTitle: "ផតថលមន្ទីរពិសោធន៍", pageSubtitle: "{lab} — គ្រប់គ្រងកាតាឡុក", statTotalServices: "សេវាសាកល្បង", statPendingRequests: "ការស្នើសុំរង់ចាំ", statActiveRequests: "កំពុងដំណើរការ", statCompletedRequests: "បានបញ្ចប់", statTotalTestRuns: "ការដំណើរការសរុប", quickUploadLabel: "បង្ហោះរបាយការណ៍", quickUploadDesc: "បង្ហោះរបាយការណ៍", quickUploadsLabel: "ប្រវត្តិបង្ហោះ", quickUploadsDesc: "មើល", quickCatalogLabel: "កាតាឡុក", quickCatalogDesc: "គ្រប់គ្រង", quickRequestsLabel: "ការស្នើសុំ", quickRequestsDescPending: "{count} រង់ចាំ", quickFormsLabel: "ទម្រង់", quickFormsDesc: "បង្ហោះ", quickProfileLabel: "ប្រវត្តិ", quickProfileDesc: "ធ្វើបច្ចុប្បន្នភាព", recentRequestsHeader: "ការស្នើសុំថ្មីៗ", noRequests: "មិនទាន់មាន", colPoNumber: "PO", colBrand: "ម៉ាក", colFabric: "ក្រណាត់", colTests: "សាកល្បង", colStatus: "ស្ថានភាព", colEstCost: "ការប៉ាន់ប្រមាណ", testsCountSingular: "{count} សាកល្បង", testsCountPlural: "{count} សាកល្បង" } },
+  labPortal: {
+    crumb: "ច្រកមន្ទីរពិសោធន៍",
+    queue: {
+      crumbCurrent: "ជួរ",
+      pageTitle: "ជួរតេស្ត",
+      pageSubtitle:
+        "សំណើតេស្តចូល + ការដាក់ស្នើថ្មីៗពីរោងចក្រនីមួយៗដែលអ្នកដោះស្រាយ។ សំណើបើកមុន សិន ហើយបរិបទនៃការដាក់ស្នើថ្មីៗបន្ទាប់។",
+      loading: "កំពុងផ្ទុកជួរ…",
+      statPending: "សំណើរង់ចាំ",
+      statSubmissions: "ការដាក់ស្នើថ្មីៗ",
+      pendingHeader: "សំណើរង់ចាំ",
+      submissionsHeader: "ការដាក់ស្នើថ្មីៗ",
+      colPo: "PO #",
+      colBrand: "ម៉ាក",
+      colFactory: "រោងចក្រ",
+      colFabric: "ក្រណាត់",
+      colTier: "កម្រិត",
+      colTests: "តេស្ត",
+      colStatus: "ស្ថានភាព",
+      colRequested: "បានស្នើ",
+      colSubmissionDate: "កាលបរិច្ឆេទដាក់ស្នើ",
+      colSubmissionStatus: "ស្ថានភាព",
+      noPending: "មិនមានសំណើចូលទេ។",
+      noSubmissions: "មិនទាន់មានការដាក់ស្នើថ្មីៗដែលភ្ជាប់ទៅជួររបស់អ្នកទេ។",
+    },
+    specs: {
+      crumbCurrent: "លក្ខណៈបច្ចេកទេសម៉ាក",
+      pageTitle: "លក្ខណៈបច្ចេកទេសម៉ាក",
+      pageSubtitle:
+        "លក្ខណៈបច្ចេកទេសពីម៉ាកគ្រប់ម៉ាកដែលក្រណាត់របស់ពួកគេអ្នកធ្វើតេស្ត។ ប្រើវាដើម្បីដាក់ពិន្ទុលទ្ធផលធៀបនឹងកម្រិត និងល្បឿនត្រឹមត្រូវ។",
+      loading: "កំពុងផ្ទុកលក្ខណៈបច្ចេកទេស…",
+      noBrands: "មិនទាន់មានលក្ខណៈបច្ចេកទេសម៉ាកទេ — រោងចក្រដែលអ្នកដោះស្រាយបច្ចុប្បន្នមិនបានភ្ជាប់ទៅម៉ាកដែលមានលក្ខណៈបច្ចេកទេសកំណត់ទេ។",
+      tierLabel: "កម្រិតដែលត្រូវការ៖",
+      cadenceHeader: "ល្បឿន ICP",
+      cadenceEveryOrders: "រាល់ការបញ្ជា {n}",
+      cadenceEveryLiters: "រាល់ការប្រើប្រាស់ {n} L",
+      cadenceNone: "មិនបានកំណត់ល្បឿន ICP ទេ",
+      tierNone: "គ្មានតម្រូវការកម្រិត",
+      protocolDoc: "📄 ឯកសារពិធីការ",
+      lastUpdated: "បានធ្វើបច្ចុប្បន្នភាព {date}",
+    },
+    landing: {
+      loading: "កំពុងផ្ទុកច្រកមន្ទីរពិសោធន៍...",
+      unableToLoad: "មិនអាចផ្ទុកច្រកមន្ទីរពិសោធន៍បានទេ",
+      pageTitle: "ច្រកមន្ទីរពិសោធន៍",
+      pageSubtitle: "{lab} — គ្រប់គ្រងកាតាឡុកតេស្ត និងសំណើចូលរបស់អ្នក",
+      statTotalServices: "សេវាកម្មតេស្ត",
+      statPendingRequests: "សំណើរង់ចាំ",
+      statActiveRequests: "កំពុងដំណើរការ",
+      statCompletedRequests: "បានបញ្ចប់",
+      statTotalTestRuns: "ការដំណើរការតេស្តសរុប",
+      quickUploadLabel: "ផ្ទុករបាយការណ៍",
+      quickUploadDesc: "ផ្ទុករបាយការណ៍តេស្តដែលបញ្ចប់",
+      quickUploadsLabel: "ប្រវត្តិការផ្ទុក",
+      quickUploadsDesc: "មើលរបាយការណ៍ទាំងអស់ដែលអ្នកបានផ្ទុក",
+      quickCatalogLabel: "កាតាឡុកតេស្ត",
+      quickCatalogDesc: "គ្រប់គ្រងតេស្ត និងតម្លៃរបស់អ្នក",
+      quickRequestsLabel: "សំណើតេស្ត",
+      quickRequestsDescPending: "{count} រង់ចាំ",
+      quickFormsLabel: "ទម្រង់ និងឯកសារ",
+      quickFormsDesc: "ផ្ទុកទម្រង់តេស្ត",
+      quickProfileLabel: "ប្រវត្តិរូបមន្ទីរពិសោធន៍",
+      quickProfileDesc: "ធ្វើបច្ចុប្បន្នភាពព័ត៌មានរបស់អ្នក",
+      recentRequestsHeader: "សំណើតេស្តថ្មីៗ",
+      noRequests: "មិនទាន់មានសំណើតេស្តទេ។ វានឹងបង្ហាញនៅទីនេះនៅពេលអតិថិជនដាក់ស្នើការបញ្ជាទិញ។",
+      colPoNumber: "លេខ PO",
+      colBrand: "ម៉ាក",
+      colFabric: "ក្រណាត់",
+      colTests: "តេស្ត",
+      colStatus: "ស្ថានភាព",
+      colEstCost: "តម្លៃប៉ាន់ប្រមាណ",
+      testsCountSingular: "តេស្ត {count}",
+      testsCountPlural: "តេស្ត {count}",
+    },
+    common: {
+      retry: "ព្យាយាមម្តងទៀត",
+      loading: "កំពុងផ្ទុក…",
+      cancel: "បោះបង់",
+      save: "រក្សាទុក",
+      close: "បិទ",
+    },
+    formsPage: {
+      crumbCurrent: "ទម្រង់",
+      pageTitle: "ទម្រង់មន្ទីរពិសោធន៍",
+      pageSubtitle:
+        "គំរូសម្រាប់ទម្រង់មន្ទីរពិសោធន៍ដែលក្រុមរបស់អ្នកបំពេញរួមជាមួយការដំណើរការតេស្តនីមួយៗ។",
+    },
+    catalogPage: {
+      crumbCurrent: "កាតាឡុកតេស្ត",
+      pageTitle: "កាតាឡុកតេស្ត",
+      pageSubtitle:
+        "តេស្តដែលមន្ទីរពិសោធន៍នេះផ្តល់ ជាមួយចំនួនថ្ងៃបង្វិល តម្លៃ និងកំណត់ចំណាំវិធីសាស្ត្រ។",
+    },
+    labTestsPage: {
+      crumbCurrent: "តេស្តមន្ទីរពិសោធន៍",
+      pageTitle: "តេស្តមន្ទីរពិសោធន៍",
+      pageSubtitle: "តេស្តដែលមន្ទីរពិសោធន៍នេះគាំទ្រ ជាមួយការគ្រប់គ្រងកែសម្រួល/បិទ។",
+    },
+    uploadsPage: {
+      crumbCurrent: "ការផ្ទុក",
+      pageTitle: "របាយការណ៍ដែលបានផ្ទុក",
+      pageSubtitle:
+        "របាយការណ៍តេស្តដែលបានផ្ទុកដោយក្រុមមន្ទីរពិសោធន៍របស់អ្នក ជាមួយស្ថានភាពញែក។",
+    },
+    uploadPage: {
+      crumbCurrent: "ផ្ទុក",
+      pageTitle: "ផ្ទុករបាយការណ៍តេស្ត",
+      pageSubtitle:
+        "អូស-ហើយ-ទម្លាក់ PDF មន្ទីរពិសោធន៍។ យើងញែកវាលលទ្ធផល ហើយភ្ជាប់ទៅក្រណាត់ត្រឹមត្រូវ។",
+    },
+    requestsPage: {
+      crumbCurrent: "សំណើ",
+      pageTitle: "សំណើតេស្ត",
+      pageSubtitle:
+        "សំណើសកម្មដែលបានចាត់តាំងទៅមន្ទីរពិសោធន៍របស់អ្នក។ ទទួលយកដើម្បីយក បដិសេធដើម្បីផ្ញើត្រឡប់។",
+    },
+    libraryPage: {
+      crumbCurrent: "បណ្ណាល័យ",
+      pageTitle: "បណ្ណាល័យ",
+      pageSubtitle: "ឯកសារយោង ចំណេះដឹង FUZE ទិន្នន័យនិរន្តរភាព។",
+    },
+    activityLogPage: {
+      crumbCurrent: "កំណត់ហេតុសកម្មភាព",
+      pageTitle: "កំណត់ហេតុសកម្មភាព",
+      pageSubtitle: "ការតាមដានសវនកម្មនៃរាល់សកម្មភាពលើគណនីមន្ទីរពិសោធន៍របស់អ្នក។",
+    },
+    profilePage: {
+      crumbCurrent: "ប្រវត្តិរូប",
+      pageTitle: "ប្រវត្តិរូបមន្ទីរពិសោធន៍",
+      pageSubtitle:
+        "ធ្វើបច្ចុប្បន្នភាពព័ត៌មានទំនាក់ទំនង សមត្ថភាព និងពេលបង្វិលនៃមន្ទីរពិសោធន៍របស់អ្នក។",
+    },
+    teamPage: {
+      crumbCurrent: "ក្រុម",
+      pageTitle: "ក្រុម",
+      pageSubtitle:
+        "អញ្ជើញសមាជិកក្រុម គ្រប់គ្រងតួនាទី និងដកសិទ្ធិចូលសម្រាប់សមាជិកដែលចាកចេញ។",
+    },
+    documentsPage: {
+      crumbCurrent: "ឯកសារ",
+      pageTitle: "ឯកសារ",
+      pageSubtitle: "របាយការណ៍ សៀវភៅណែនាំឧបករណ៍ និងឯកសារយោង។",
+    },
+    creditsPage: {
+      crumbCurrent: "ឥណទាន",
+      pageTitle: "ឥណទានមន្ទីរពិសោធន៍",
+      pageSubtitle:
+        "ឥណទានតេស្តដែលបង់ជាមុនដែលនៅសល់លើគណនីរបស់អ្នក ជាមួយប្រវត្តិប្រើប្រាស់។",
+    },
+    wizardPage: {
+      crumbCurrent: "មគ្គុទ្ទេសក៍",
+      pageTitle: "មគ្គុទ្ទេសក៍តេស្ត",
+      pageSubtitle:
+        "ទម្រង់មន្ទីរពិសោធន៍មួយជំហានម្តងសម្រាប់ប្រភេទតេស្តនេះ។ រក្សាទុកនៅពេលអ្នកដំណើរការ។",
+    },
+  },
   productDocs: { title: "ឯកសារផលិតផល", subtitle: "ឯកសារទូទៅ (TDS, SDS)", upload: "បង្ហោះ", update: "ធ្វើបច្ចុប្បន្នភាព", cancel: "បោះបង់", save: "រក្សាទុក", noDoc: "មិនទាន់បានបង្ហោះ។", uploadedBy: "បានបង្ហោះដោយ", viewFile: "មើល →", titleField: "ចំណងជើង", version: "កំណែ", fileUrl: "URL (PDF)", effectiveDate: "កាលបរិច្ឆេទ", description: "ការពិពណ៌នា" },
 
 };
