@@ -3,11 +3,18 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useI18n, LOCALES } from "@/i18n";
+import type { Locale } from "@/i18n";
 
 /**
  * Full FUZE Recipe Report — the polished, factory-facing version of
  * a bench test. Meant to print to 2 pages (letter/A4), hand to a
  * factory or brand. Save-as-PDF from the browser.
+ *
+ * Strings now flow through the global useI18n() under recipeReport.*
+ * — every locale that has translations renders this report natively.
+ * Set the global locale (header switcher) OR override locally for
+ * print-in-different-language via the in-page selector.
  */
 
 const TIER_MG_PER_KG: Record<string, number> = { F1: 1.0, F2: 0.75, F3: 0.5, F4: 0.25 };
@@ -18,295 +25,25 @@ function fuzeLitersForBath(bathL: number, pickupPct: number, mgPerKg: number, st
   return ((mgPerKg / (pickupPct / 100)) * bathL) / stock;
 }
 
-// ─────────────────────────────────────────────
-// i18n — English / 中文 / 日本語
-// ─────────────────────────────────────────────
-type Lang = "en" | "zh" | "ja";
-const STRINGS = {
-  en: {
-    recipeReport: "Recipe Report",
-    subtitle: "Antimicrobial textile treatment",
-    benchTest: "Bench Test",
-    prepared: "Prepared",
-    fuzeLab: "FUZE Lab · Salt Lake City, UT",
-    qcPassed: "✓ QC Passed",
-    qcFailed: "⚠ QC Failed",
-    graduated: "⭐ Graduated to FabricRecipe",
-    execSummary: "Executive Summary",
-    fabric: "Fabric",
-    method: "Method",
-    measuredPickup: "Measured pickup",
-    dryToWetBasis: "dry-to-wet · triplicate mean",
-    pickupDataUnusable: "⚠ Pickup data unusable — do not rely on the recipe values below.",
-    pickupRerun:
-      "No valid dry-to-wet pickup on record. Re-run this bench test with a dry sample weighed before and after the FUZE pad pass.",
-    fourTierTitle: "Four-tier Bath Recipe — g of FUZE per L of bath",
-    tierPerfMax: "Maximum",
-    tierPerfHigh: "High",
-    tierPerfStd: "Standard",
-    tierPerfLight: "Light",
-    fuzePerL: "FUZE per L of bath",
-    gPerL: "g/L",
-    bathConc: "Bath concentration",
-    dilution: "Dilution ratio",
-    tierNote:
-      "The g/L figure is constant — it does not change with bath size. The total kg of FUZE per production bath is in the cookbook table below.",
-    cookbookTitle: "Production Bath Cookbook — total kg of FUZE per bath size",
-    bathVol: "Bath Volume",
-    total: "total",
-    cookbookNote1:
-      "Concentration does not change with bath size — see the g/L figure on each tier card. The table above shows the",
-    cookbookNote2: "total mass of FUZE stock",
-    cookbookNote3:
-      "to add for a bath of that volume, then top up to the bath volume with DI water.",
-    pickupShort: "Pickup",
-    stockShort: "Stock FUZE",
-    adjustmentTitle: "Production Adjustment for Moist Incoming Fabric — g of FUZE per L of bath",
-    adjustmentIntro1: "If your fabric enters the FUZE padder",
-    adjustmentIntro2: "already moist",
-    adjustmentIntro3:
-      "from a prior process (wash, dye, desize), the pad still brings it to the same equilibrium pickup — but part of that mass is pre-existing water, not new FUZE. To hit the tier target, use a",
-    adjustmentIntro4: "more concentrated bath",
-    adjustmentIntro5: "based on your incoming residual moisture.",
-    effectivePickupFormula: "Effective pickup = measured dry-to-wet pickup",
-    minusMoisture: "− incoming moisture",
-    incomingMoisture: "Incoming moisture",
-    dryLabel: "0% (dry)",
-    effectivePickup: "Effective pickup",
-    tooWet: "too wet",
-    adjustmentFooter:
-      "\"too wet\" means incoming moisture is at or above the padder's equilibrium pickup — the fabric can't accept additional FUZE bath at that tier target. Dry the fabric further before treatment, or use a more concentrated bath (lower tier → higher mg/kg basis recipe).",
-    measurements: "Measurements",
-    triplicateRuns: "Triplicate sample runs",
-    run: "Run",
-    dryG: "Dry (g)",
-    wetG: "Wet after pad (g)",
-    pickupCol: "Pickup %",
-    mean: "Mean",
-    processParams: "Process Parameters",
-    sampleArea: "Sample area",
-    squeezePressure: "Squeeze pressure",
-    vfdFreq: "VFD frequency",
-    lineSpeed: "Line speed",
-    drying: "Drying",
-    curing: "Curing",
-    fuzeStock: "FUZE stock",
-    liquorRatio: "Liquor ratio (exhaust)",
-    testBathTitle: "Bench Test Bath + ICP Validation",
-    testBathApplied: "Test bath applied",
-    tier: "Tier",
-    reservoir: "reservoir",
-    fuzeStockLabel: "FUZE stock",
-    water: "Water",
-    icpVerification: "ICP verification",
-    expected: "Expected",
-    measured: "Measured",
-    affinity: "Affinity",
-    resultPending: "Result pending",
-    methodology: "Methodology",
-    methodologyBody: (p: number, hz: number, stock: number) =>
-      `Pickup rate measured per AATCC / ASTM pad application method on the FUZE lab vertical padder (HTAI P-B0, 41 cm roller circumference) — fabric passes upward through a bath held in the reservoir between two pads pressed at 4 bar. Samples cut at 100 cm² on a FUZE cutter, conditioned at 20–25 °C. Dry-to-wet run: dry sample submerged in clean DI water 10 s, drained 3 s, padded at ${p ?? "—"} bar / ${hz ?? "—"} Hz (single pass), weighed within 10 s. Measurements performed in triplicate; reported pickup is the arithmetic mean. Bench test bath prepared at the target tier concentration from 30 mg/L FUZE stock and pad-applied through the same reservoir for ICP verification. Dilution recipe derived from pickup mean using FUZE stock concentration ${stock} mg/L and tier OWF targets (F1 1.0 mg/kg · F2 0.75 mg/kg · F3 0.5 mg/kg · F4 0.25 mg/kg).`,
-    labNotes: "Lab Notes",
-    footerLeft:
-      "FUZE Biotech · 1895 West 2100 South · Salt Lake City, UT 84119 USA · andrew@fuze47.com",
-    footerRight: "Report generated",
-    printBtn: "🖨 Print / Save as PDF",
-    back: "← Back",
-    language: "Language",
-    preparedFor: "Prepared for",
-    brandLabel: "Brand",
-    factoryLabel: "Factory",
-    brandItemNo: "Brand item #",
-    factoryItemNo: "Factory item #",
-  },
-  zh: {
-    recipeReport: "配方报告",
-    subtitle: "抗菌纺织处理",
-    benchTest: "实验室测试",
-    prepared: "准备日期",
-    fuzeLab: "FUZE 实验室 · 美国犹他州盐湖城",
-    qcPassed: "✓ 质检通过",
-    qcFailed: "⚠ 质检未通过",
-    graduated: "⭐ 已升级为 FabricRecipe",
-    execSummary: "摘要",
-    fabric: "面料",
-    method: "工艺",
-    measuredPickup: "实测上染率",
-    dryToWetBasis: "干对湿基准 · 三次测量平均值",
-    pickupDataUnusable: "⚠ 上染率数据无效 — 请勿依据下方配方值。",
-    pickupRerun:
-      "未记录有效的干对湿上染率。请重新进行实验室测试,先称量干样,过 FUZE 轧车后再次称量。",
-    fourTierTitle: "四等级浴液配方 — 每升浴液的 FUZE 添加克数",
-    tierPerfMax: "最高",
-    tierPerfHigh: "高",
-    tierPerfStd: "标准",
-    tierPerfLight: "轻度",
-    fuzePerL: "每升浴液 FUZE 添加量",
-    gPerL: "克/升",
-    bathConc: "浴液浓度",
-    dilution: "稀释比",
-    tierNote:
-      "克/升 数值与浴液体积无关 — 体积变化时该数值保持不变。每次生产所需 FUZE 总公斤数见下方配方表。",
-    cookbookTitle: "生产浴液配方表 — 不同浴液体积的 FUZE 总公斤数",
-    bathVol: "浴液体积",
-    total: "总量",
-    cookbookNote1: "浓度不随浴液体积变化 — 请参阅各等级卡片上的 克/升 数值。上表显示的是",
-    cookbookNote2: "FUZE 原液的总质量",
-    cookbookNote3: ",之后用去离子水补足至浴液体积。",
-    pickupShort: "上染率",
-    stockShort: "FUZE 原液浓度",
-    adjustmentTitle: "湿态来布生产调整 — 每升浴液的 FUZE 克数",
-    adjustmentIntro1: "如果面料进入 FUZE 轧车时",
-    adjustmentIntro2: "已含有水分",
-    adjustmentIntro3:
-      "(来自前道水洗、染色、退浆等工序),轧车仍会将其带到相同的平衡上染率 — 但其中部分质量是面料已有的水分,而非新加入的 FUZE。要达到目标等级,需使用",
-    adjustmentIntro4: "更高浓度的浴液",
-    adjustmentIntro5: ",根据来布残余含水率调整。",
-    effectivePickupFormula: "有效上染率 = 实测干对湿上染率",
-    minusMoisture: "− 来布含水率",
-    incomingMoisture: "来布含水率",
-    dryLabel: "0%(干)",
-    effectivePickup: "有效上染率",
-    tooWet: "过湿",
-    adjustmentFooter:
-      "「过湿」表示来布含水率已达到或超过轧车平衡上染率 — 面料无法在该等级目标下再吸收 FUZE 浴液。请先进一步烘干面料,或使用更高浓度的浴液(降低等级 → 提升 mg/kg 目标配方)。",
-    measurements: "测量数据",
-    triplicateRuns: "三次取样测量",
-    run: "次数",
-    dryG: "干重(克)",
-    wetG: "轧后湿重(克)",
-    pickupCol: "上染率 %",
-    mean: "平均值",
-    processParams: "工艺参数",
-    sampleArea: "样品面积",
-    squeezePressure: "轧压",
-    vfdFreq: "VFD 频率",
-    lineSpeed: "线速",
-    drying: "烘干",
-    curing: "固化",
-    fuzeStock: "FUZE 原液",
-    liquorRatio: "浴比(浸染)",
-    testBathTitle: "实验室测试浴液 + ICP 验证",
-    testBathApplied: "已应用测试浴液",
-    tier: "等级",
-    reservoir: "储液槽",
-    fuzeStockLabel: "FUZE 原液",
-    water: "水",
-    icpVerification: "ICP 验证",
-    expected: "预期值",
-    measured: "实测值",
-    affinity: "吸收率",
-    resultPending: "结果待出",
-    methodology: "检测方法",
-    methodologyBody: (p: number, hz: number, stock: number) =>
-      `上染率测量依据 AATCC / ASTM 轧染工艺,于 FUZE 实验室的立式轧车(HTAI P-B0,辊周长 41 cm)上进行 — 面料自下而上穿过两个以 4 bar 压力夹合的轧辊之间的浴液储液槽。样品使用 FUZE 裁样器裁取 100 cm²,在 20–25 °C 条件下调湿。干对湿流程:干样浸入洁净去离子水 10 秒,沥水 3 秒,以 ${p ?? "—"} bar / ${hz ?? "—"} Hz(单次过辊)轧压,10 秒内称重。三次平行测量,报告中的上染率为算术平均值。实验室测试浴液按目标等级浓度自 30 mg/L FUZE 原液配制,经同一储液槽轧染以进行 ICP 验证。稀释配方依据上染率平均值和 FUZE 原液浓度 ${stock} mg/L 以及各等级 OWF 目标(F1 1.0 mg/kg · F2 0.75 mg/kg · F3 0.5 mg/kg · F4 0.25 mg/kg)导出。`,
-    labNotes: "实验室备注",
-    footerLeft:
-      "FUZE Biotech · 1895 West 2100 South · Salt Lake City, UT 84119 USA · andrew@fuze47.com",
-    footerRight: "报告生成时间",
-    printBtn: "🖨 打印 / 另存为 PDF",
-    back: "← 返回",
-    language: "语言",
-    preparedFor: "服务对象",
-    brandLabel: "品牌",
-    factoryLabel: "工厂",
-    brandItemNo: "品牌物料号",
-    factoryItemNo: "工厂物料号",
-  },
-  ja: {
-    recipeReport: "レシピレポート",
-    subtitle: "抗菌繊維処理",
-    benchTest: "ベンチテスト",
-    prepared: "作成日",
-    fuzeLab: "FUZE ラボ · 米国ユタ州ソルトレイクシティ",
-    qcPassed: "✓ QC 合格",
-    qcFailed: "⚠ QC 不合格",
-    graduated: "⭐ FabricRecipe に昇格済",
-    execSummary: "サマリー",
-    fabric: "生地",
-    method: "工法",
-    measuredPickup: "実測ピックアップ",
-    dryToWetBasis: "ドライ→ウェット基準 · 三連平均",
-    pickupDataUnusable: "⚠ ピックアップデータ無効 — 以下のレシピ値は使用しないでください。",
-    pickupRerun:
-      "有効なドライ→ウェットのピックアップ記録がありません。乾燥サンプルを計量してから FUZE パッドを通し、再度計量して再テストしてください。",
-    fourTierTitle: "4ティアバスレシピ — バス 1 L あたりの FUZE 添加 g",
-    tierPerfMax: "最大",
-    tierPerfHigh: "高",
-    tierPerfStd: "標準",
-    tierPerfLight: "ライト",
-    fuzePerL: "バス 1L あたりの FUZE",
-    gPerL: "g/L",
-    bathConc: "バス濃度",
-    dilution: "希釈比",
-    tierNote:
-      "g/L の値はバス容量が変わっても一定です。生産バスあたりの FUZE 総 kg は下記のクックブック表を参照してください。",
-    cookbookTitle: "生産バスクックブック — バスサイズ別の FUZE 総 kg",
-    bathVol: "バス容量",
-    total: "合計",
-    cookbookNote1: "濃度はバス容量によって変わりません — 各ティアカードの g/L を参照。上の表は",
-    cookbookNote2: "FUZE ストックの総質量",
-    cookbookNote3: "を示します。その後、脱イオン水でバス容量まで補給してください。",
-    pickupShort: "ピックアップ",
-    stockShort: "FUZE ストック",
-    adjustmentTitle: "湿潤入荷生地向け生産調整 — バス 1L あたり FUZE の g",
-    adjustmentIntro1: "生地が前工程 (洗浄・染色・糊抜き等) から",
-    adjustmentIntro2: "湿潤状態",
-    adjustmentIntro3:
-      "で FUZE パッダーに入る場合、パッドは同じ平衡ピックアップまで搾りますが、その質量の一部は既存の水分であり新たな FUZE ではありません。ティア目標に到達するには、入荷残留水分に基づき",
-    adjustmentIntro4: "より高濃度のバス",
-    adjustmentIntro5: "を使用してください。",
-    effectivePickupFormula: "実効ピックアップ = 実測ドライ→ウェットピックアップ",
-    minusMoisture: "− 入荷水分",
-    incomingMoisture: "入荷水分",
-    dryLabel: "0%(ドライ)",
-    effectivePickup: "実効ピックアップ",
-    tooWet: "過湿",
-    adjustmentFooter:
-      "「過湿」は入荷水分がパッダーの平衡ピックアップ以上であることを意味します — その場合、生地はそのティア目標で追加の FUZE バスを取り込めません。さらに乾燥させるか、より高濃度のバス(低ティア → より高い mg/kg 基準レシピ)を使用してください。",
-    measurements: "測定値",
-    triplicateRuns: "三連サンプル測定",
-    run: "回",
-    dryG: "乾燥 (g)",
-    wetG: "パッド後湿重 (g)",
-    pickupCol: "ピックアップ %",
-    mean: "平均",
-    processParams: "プロセスパラメータ",
-    sampleArea: "サンプル面積",
-    squeezePressure: "搾り圧力",
-    vfdFreq: "VFD 周波数",
-    lineSpeed: "ライン速度",
-    drying: "乾燥",
-    curing: "キュア",
-    fuzeStock: "FUZE ストック",
-    liquorRatio: "浴比(浸染)",
-    testBathTitle: "ベンチテストバス + ICP 検証",
-    testBathApplied: "適用テストバス",
-    tier: "ティア",
-    reservoir: "リザーバ",
-    fuzeStockLabel: "FUZE ストック",
-    water: "水",
-    icpVerification: "ICP 検証",
-    expected: "期待値",
-    measured: "実測値",
-    affinity: "親和率",
-    resultPending: "結果待ち",
-    methodology: "試験方法",
-    methodologyBody: (p: number, hz: number, stock: number) =>
-      `AATCC / ASTM パッド塗布法に従い、FUZE ラボの縦型パッダー (HTAI P-B0、ローラ周長 41 cm) にてピックアップ率を測定 — 生地はリザーバに保持されたバス内を通過し、4 bar で圧着された 2 つのパッドの間を上方向に通過する。サンプルは FUZE カッターで 100 cm² に裁断、20–25 °C で調湿。ドライ→ウェット試験:乾燥サンプルを清浄な脱イオン水に 10 秒浸漬、3 秒排水、${p ?? "—"} bar / ${hz ?? "—"} Hz (シングルパス) でパッディング、10 秒以内に計量。三連で測定し、報告ピックアップは算術平均値。ベンチテストバスは 30 mg/L の FUZE ストックから目標ティア濃度で調製し、同一リザーバでパッディングして ICP 検証を実施。希釈レシピはピックアップ平均値と FUZE ストック濃度 ${stock} mg/L、および各ティアの OWF 目標 (F1 1.0 mg/kg · F2 0.75 mg/kg · F3 0.5 mg/kg · F4 0.25 mg/kg) から導出。`,
-    labNotes: "ラボ備考",
-    footerLeft:
-      "FUZE Biotech · 1895 West 2100 South · Salt Lake City, UT 84119 USA · andrew@fuze47.com",
-    footerRight: "レポート生成日時",
-    printBtn: "🖨 印刷 / PDF 保存",
-    back: "← 戻る",
-    language: "言語",
-    preparedFor: "提出先",
-    brandLabel: "ブランド",
-    factoryLabel: "工場",
-    brandItemNo: "ブランド品番",
-    factoryItemNo: "工場品番",
-  },
+// Map our locale codes to BCP-47 codes for Intl date formatting.
+const DATE_LOCALE: Record<string, string> = {
+  en: "en-US",
+  es: "es-ES",
+  tr: "tr-TR",
+  it: "it-IT",
+  ja: "ja-JP",
+  ko: "ko-KR",
+  vi: "vi-VN",
+  ms: "ms-MY",
+  hi: "hi-IN",
+  ta: "ta-IN",
+  th: "th-TH",
+  id: "id-ID",
+  bn: "bn-BD",
+  ur: "ur-PK",
+  km: "km-KH",
+  "zh-CN": "zh-CN",
+  "zh-TW": "zh-TW",
 };
 
 export default function RecipeReportPage() {
@@ -315,9 +52,14 @@ export default function RecipeReportPage() {
   const [narration, setNarration] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
-  const [lang, setLang] = useState<Lang>("en");
-  const T = STRINGS[lang];
-  const locale = lang === "zh" ? "zh-CN" : lang === "ja" ? "ja-JP" : "en-US";
+  const { t, locale: globalLocale, setLocale } = useI18n();
+  // Print-overridable local locale — defaults to the user's global locale
+  // but a recipient picking "print in Indonesian for Hi-Goal" can change it
+  // here without affecting their Atlas-wide language.
+  const [printLocale, setPrintLocale] = useState<Locale | null>(null);
+  const locale = (printLocale ?? globalLocale) as Locale;
+  const T = t.recipeReport;
+  const dateLocale = DATE_LOCALE[locale as string] || "en-US";
 
   useEffect(() => {
     fetch(`/api/admin/recipe-bench-tests/${id}`)
@@ -390,26 +132,18 @@ export default function RecipeReportPage() {
         </a>
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-500">{T.language}:</span>
-          <div className="inline-flex rounded-lg border border-slate-300 overflow-hidden text-xs">
-            <button
-              onClick={() => setLang("en")}
-              className={`px-3 py-1.5 font-semibold ${lang === "en" ? "bg-slate-900 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
-            >
-              English
-            </button>
-            <button
-              onClick={() => setLang("zh")}
-              className={`px-3 py-1.5 font-semibold border-l border-slate-300 ${lang === "zh" ? "bg-slate-900 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
-            >
-              中文
-            </button>
-            <button
-              onClick={() => setLang("ja")}
-              className={`px-3 py-1.5 font-semibold border-l border-slate-300 ${lang === "ja" ? "bg-slate-900 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
-            >
-              日本語
-            </button>
-          </div>
+          <select
+            value={locale}
+            onChange={(e) => setPrintLocale(e.target.value as Locale)}
+            className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-300 bg-white text-slate-700"
+            aria-label={T.language}
+          >
+            {LOCALES.map((l) => (
+              <option key={l.code} value={l.code}>
+                {l.flag} {l.label}
+              </option>
+            ))}
+          </select>
           <button
             onClick={() => window.print()}
             className="px-5 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800"
@@ -448,7 +182,7 @@ export default function RecipeReportPage() {
               </h1>
               <p className="text-sm text-slate-600 mt-1">
                 {T.prepared}{" "}
-                {new Date(test.testDate).toLocaleDateString(locale, {
+                {new Date(test.testDate).toLocaleDateString(dateLocale, {
                   month: "long",
                   day: "numeric",
                   year: "numeric",
@@ -946,7 +680,10 @@ export default function RecipeReportPage() {
             {T.methodology}
           </h2>
           <p className="text-slate-700">
-            {T.methodologyBody(test.squeezePressure, test.vfdFrequencyHz, stock)}
+            {T.methodologyBody
+              .replace("{p}", test.squeezePressure ?? "—")
+              .replace("{hz}", test.vfdFrequencyHz ?? "—")
+              .replace("{stock}", String(stock))}
           </p>
         </section>
 
@@ -963,7 +700,7 @@ export default function RecipeReportPage() {
         <footer className="pt-4 mt-6 border-t-2 border-slate-300 text-[10px] text-slate-500 flex justify-between">
           <span>{T.footerLeft}</span>
           <span>
-            {T.footerRight} {new Date().toLocaleString(locale)}
+            {T.footerRight} {new Date().toLocaleString(dateLocale)}
           </span>
         </footer>
       </div>
