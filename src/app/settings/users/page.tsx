@@ -93,6 +93,10 @@ export default function UserManagementPage() {
   // Edit form
   const [editRole, setEditRole] = useState("");
   const [editStatus, setEditStatus] = useState("");
+  // Email is editable (typo correction — Jany Lu case 2026-05-22).
+  // API enforces format + collision check before save.
+  const [editEmail, setEditEmail] = useState("");
+  const [editName, setEditName] = useState("");
   // Entity-pickers shown in edit mode based on role. Tina's bug:
   // editing FACTORY_USER → DISTRIBUTOR_USER previously sent only
   // {role, status}, which left factoryId stale + distributorId null.
@@ -209,6 +213,8 @@ export default function UserManagementPage() {
     setEditingId(u.id);
     setEditRole(u.role);
     setEditStatus(u.status);
+    setEditEmail(u.email || "");
+    setEditName(u.name || "");
     setEditBrandId(u.brandId || "");
     setEditFactoryId(u.factoryId || "");
     setEditDistributorId(u.distributorId || "");
@@ -229,6 +235,10 @@ export default function UserManagementPage() {
       // DISTRIBUTOR_USER without a way to clear factoryId or set
       // distributorId.
       const body: any = { role: editRole, status: editStatus };
+      // Email + name editable from inline row. API enforces email format
+      // + collision check on save (Jany Lu typo-correction case).
+      if (editEmail && editEmail.trim()) body.email = editEmail.trim();
+      if (editName && editName.trim()) body.name = editName.trim();
       const isBrand = NEEDS_BRAND.includes(editRole);
       const isFactory = NEEDS_FACTORY.includes(editRole);
       const isDistributor = NEEDS_DISTRIBUTOR.includes(editRole);
@@ -677,6 +687,25 @@ export default function UserManagementPage() {
             {/* Inline edit for mobile */}
             {editingId === u.id && (
               <div className="mt-3 pt-3 border-t border-slate-200 space-y-2">
+                {/* Name + Email editable (typo correction for Jany Lu case 2026-05-22) */}
+                <div>
+                  <label className="text-xs text-slate-500">Name</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-500">Email</label>
+                  <input
+                    type="email"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1 font-mono"
+                  />
+                </div>
                 <div>
                   <label className="text-xs text-slate-500">Role</label>
                   <select
@@ -846,7 +875,17 @@ export default function UserManagementPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-slate-600 hidden lg:table-cell">
-                    {u.email}
+                    {editingId === u.id ? (
+                      <input
+                        type="email"
+                        value={editEmail}
+                        onChange={(e) => setEditEmail(e.target.value)}
+                        className="border border-slate-300 rounded px-2 py-1 text-xs w-full font-mono"
+                        placeholder="email@example.com"
+                      />
+                    ) : (
+                      u.email
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     {editingId === u.id ? (

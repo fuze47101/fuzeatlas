@@ -21,7 +21,33 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (body.role) update.role = body.role;
     if (body.status) update.status = body.status;
     if (body.name) update.name = body.name;
-    if (body.email) update.email = body.email.toLowerCase().trim();
+    if (body.email) {
+      const normalized = body.email.toLowerCase().trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+        return NextResponse.json(
+          { ok: false, error: `Invalid email format: "${normalized}"` },
+          { status: 400 },
+        );
+      }
+      // Collision check — block if another user already has this email.
+      // Allow same-user no-op so saving an edit row without changing the
+      // email field doesn't error.
+      const collision = await prisma.user.findUnique({
+        where: { email: normalized },
+        select: { id: true, email: true, name: true },
+      });
+      if (collision && collision.id !== id) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: `Email "${normalized}" is already used by ${collision.name || "another user"} (id ${collision.id}). Resolve the duplicate first.`,
+            code: "EMAIL_COLLISION",
+          },
+          { status: 409 },
+        );
+      }
+      update.email = normalized;
+    }
     if (typeof body.canClaim === "boolean") update.canClaim = body.canClaim;
 
     // Entity assignment — partially addresses task #73 (role-change flow).
