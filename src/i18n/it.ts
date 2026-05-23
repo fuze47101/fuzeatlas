@@ -2015,7 +2015,162 @@ const it: Translations = {
         "Scatterplot del carico ICP del tessuto vs la riduzione antimicrobica misurata. Conferma che la pendenza dose-risposta si mantiene nella tua catena di fornitura.",
     },
   },
-  labPortal: { crumb: "Portale Lab", landing: { loading: "Caricamento portale lab…", unableToLoad: "Impossibile caricare il portale lab", pageTitle: "Portale Lab", pageSubtitle: "{lab} — Gestisci catalogo test e richieste", statTotalServices: "Servizi test", statPendingRequests: "Richieste in attesa", statActiveRequests: "In corso", statCompletedRequests: "Completate", statTotalTestRuns: "Esecuzioni totali", quickUploadLabel: "Carica report", quickUploadDesc: "Carica un report completato", quickUploadsLabel: "Cronologia caricamenti", quickUploadsDesc: "Vedi tutti i report caricati", quickCatalogLabel: "Catalogo test", quickCatalogDesc: "Gestisci test e prezzi", quickRequestsLabel: "Richieste", quickRequestsDescPending: "{count} in attesa", quickFormsLabel: "Moduli & Documenti", quickFormsDesc: "Carica moduli test", quickProfileLabel: "Profilo lab", quickProfileDesc: "Aggiorna le tue informazioni", recentRequestsHeader: "Richieste recenti", noRequests: "Nessuna richiesta ancora.", colPoNumber: "PO", colBrand: "Marchio", colFabric: "Tessuto", colTests: "Test", colStatus: "Stato", colEstCost: "Costo stimato", testsCountSingular: "{count} test", testsCountPlural: "{count} test" } },
+  labPortal: {
+    crumb: "Portale Laboratorio",
+    queue: {
+      crumbCurrent: "Coda",
+      pageTitle: "Coda dei test",
+      pageSubtitle:
+        "Richieste di test in entrata + invii recenti da ogni stabilimento che gestisci. Richieste aperte prima, contesto degli invii recenti dopo.",
+      loading: "Caricamento coda…",
+      statPending: "Richieste in sospeso",
+      statSubmissions: "Invii recenti",
+      pendingHeader: "Richieste in sospeso",
+      submissionsHeader: "Invii recenti",
+      colPo: "PO #",
+      colBrand: "Brand",
+      colFactory: "Stabilimento",
+      colFabric: "Tessuto",
+      colTier: "Livello",
+      colTests: "Test",
+      colStatus: "Stato",
+      colRequested: "Richiesto",
+      colSubmissionDate: "Data di invio",
+      colSubmissionStatus: "Stato",
+      noPending: "Nessuna richiesta in entrata.",
+      noSubmissions: "Nessun invio recente ancora collegato alla tua coda.",
+    },
+    specs: {
+      crumbCurrent: "Specifiche Brand",
+      pageTitle: "Specifiche Brand",
+      pageSubtitle:
+        "Specifiche di ogni brand di cui testi i tessuti. Usalo per valutare i risultati rispetto al livello e alla cadenza giusti.",
+      loading: "Caricamento specifiche…",
+      noBrands: "Nessuna specifica brand ancora — nessuno degli stabilimenti che gestisci è attualmente collegato a un brand con una specifica stabilita.",
+      tierLabel: "Livello richiesto:",
+      cadenceHeader: "Cadenza ICP",
+      cadenceEveryOrders: "Ogni {n} ordini",
+      cadenceEveryLiters: "Ogni {n} L consumati",
+      cadenceNone: "Nessuna cadenza ICP impostata",
+      tierNone: "Nessun requisito di livello",
+      protocolDoc: "📄 Documento protocollo",
+      lastUpdated: "Aggiornato {date}",
+    },
+    landing: {
+      loading: "Caricamento portale laboratorio...",
+      unableToLoad: "Impossibile caricare il portale laboratorio",
+      pageTitle: "Portale Laboratorio",
+      pageSubtitle: "{lab} — Gestisci il tuo catalogo di test e le richieste in entrata",
+      statTotalServices: "Servizi di test",
+      statPendingRequests: "Richieste in sospeso",
+      statActiveRequests: "In corso",
+      statCompletedRequests: "Completati",
+      statTotalTestRuns: "Esecuzioni totali di test",
+      quickUploadLabel: "Carica report",
+      quickUploadDesc: "Carica un report di test completato",
+      quickUploadsLabel: "Cronologia caricamenti",
+      quickUploadsDesc: "Visualizza tutti i report che hai caricato",
+      quickCatalogLabel: "Catalogo test",
+      quickCatalogDesc: "Gestisci i tuoi test e i prezzi",
+      quickRequestsLabel: "Richieste di test",
+      quickRequestsDescPending: "{count} in sospeso",
+      quickFormsLabel: "Moduli e documenti",
+      quickFormsDesc: "Carica moduli di test",
+      quickProfileLabel: "Profilo laboratorio",
+      quickProfileDesc: "Aggiorna le tue informazioni",
+      recentRequestsHeader: "Richieste di test recenti",
+      noRequests: "Nessuna richiesta di test ancora. Appariranno qui quando i clienti invieranno ordini.",
+      colPoNumber: "Numero PO",
+      colBrand: "Brand",
+      colFabric: "Tessuto",
+      colTests: "Test",
+      colStatus: "Stato",
+      colEstCost: "Costo stimato",
+      testsCountSingular: "{count} test",
+      testsCountPlural: "{count} test",
+    },
+    common: {
+      retry: "Riprova",
+      loading: "Caricamento…",
+      cancel: "Annulla",
+      save: "Salva",
+      close: "Chiudi",
+    },
+    formsPage: {
+      crumbCurrent: "Moduli",
+      pageTitle: "Moduli laboratorio",
+      pageSubtitle:
+        "Modelli per i moduli di laboratorio che il tuo team compila insieme a ogni esecuzione di test.",
+    },
+    catalogPage: {
+      crumbCurrent: "Catalogo test",
+      pageTitle: "Catalogo test",
+      pageSubtitle:
+        "I test offerti da questo laboratorio, con giorni di turnaround, prezzi e note metodologiche.",
+    },
+    labTestsPage: {
+      crumbCurrent: "Test del laboratorio",
+      pageTitle: "Test del laboratorio",
+      pageSubtitle: "I test supportati da questo laboratorio, con controlli di modifica/disattivazione.",
+    },
+    uploadsPage: {
+      crumbCurrent: "Caricamenti",
+      pageTitle: "Report caricati",
+      pageSubtitle:
+        "Report di test caricati dal tuo team di laboratorio, con stato di analisi.",
+    },
+    uploadPage: {
+      crumbCurrent: "Carica",
+      pageTitle: "Carica report di test",
+      pageSubtitle:
+        "Trascina e rilascia un PDF di laboratorio. Analizziamo i campi dei risultati e colleghiamo al tessuto corretto.",
+    },
+    requestsPage: {
+      crumbCurrent: "Richieste",
+      pageTitle: "Richieste di test",
+      pageSubtitle:
+        "Richieste attive assegnate al tuo laboratorio. Accetta per prendere in carico, rifiuta per rimandare indietro.",
+    },
+    libraryPage: {
+      crumbCurrent: "Libreria",
+      pageTitle: "Libreria",
+      pageSubtitle: "Documenti di riferimento, conoscenza FUZE, dati di sostenibilità.",
+    },
+    activityLogPage: {
+      crumbCurrent: "Registro attività",
+      pageTitle: "Registro attività",
+      pageSubtitle: "Traccia di audit di ogni azione sul tuo account laboratorio.",
+    },
+    profilePage: {
+      crumbCurrent: "Profilo",
+      pageTitle: "Profilo laboratorio",
+      pageSubtitle:
+        "Aggiorna le informazioni di contatto, le capacità e i tempi di turnaround del tuo laboratorio.",
+    },
+    teamPage: {
+      crumbCurrent: "Team",
+      pageTitle: "Team",
+      pageSubtitle:
+        "Invita compagni di team, gestisci ruoli e revoca l'accesso per i membri usciti.",
+    },
+    documentsPage: {
+      crumbCurrent: "Documenti",
+      pageTitle: "Documenti",
+      pageSubtitle: "Report, manuali degli strumenti e documenti di riferimento.",
+    },
+    creditsPage: {
+      crumbCurrent: "Crediti",
+      pageTitle: "Crediti laboratorio",
+      pageSubtitle:
+        "Crediti di test prepagati rimanenti sul tuo account, con cronologia dei consumi.",
+    },
+    wizardPage: {
+      crumbCurrent: "Procedura guidata",
+      pageTitle: "Procedura guidata di test",
+      pageSubtitle:
+        "Modulo di laboratorio passo-passo per questo tipo di test. Salva mentre procedi.",
+    },
+  },
   productDocs: { title: "Documenti prodotto", subtitle: "Documenti comuni a tutto il prodotto (TDS, SDS, guida applicazione). Statici e applicabili a ogni lotto.", upload: "Carica", update: "Aggiorna", cancel: "Annulla", save: "Salva", noDoc: "Documento non ancora caricato.", uploadedBy: "Caricato da", viewFile: "Vedi file →", titleField: "Titolo", version: "Versione (es. v3.1)", fileUrl: "URL file (PDF)", effectiveDate: "Data di entrata in vigore", description: "Descrizione / note" },
 
 };
