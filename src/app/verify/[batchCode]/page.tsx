@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 /**
  * Batch QR destination — auth-gated.
@@ -20,6 +21,8 @@ const DOC_META: Record<string, { label: string; icon: string; desc: string }> = 
 export default function VerifyBatchPage() {
   const { batchCode } = useParams<{ batchCode: string }>();
   const router = useRouter();
+  const { t } = useI18n();
+  const T = t.verifyBatch;
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [authNeeded, setAuthNeeded] = useState(false);
@@ -50,19 +53,18 @@ export default function VerifyBatchPage() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
           <div className="w-16 h-16 mx-auto rounded-full bg-[#00b4c3]/10 flex items-center justify-center text-3xl mb-4">🔒</div>
-          <h1 className="text-2xl font-black text-slate-900 mb-2">Atlas Login Required</h1>
+          <h1 className="text-2xl font-black text-slate-900 mb-2">{T.authRequired}</h1>
           <p className="text-slate-600 mb-6">
-            Batch <span className="font-mono font-bold text-slate-900">{batchCode}</span> details — including
-            COA, TDS, SDS — are available to Atlas users only.
+            {T.authBatchPrefix} <span className="font-mono font-bold text-slate-900">{batchCode}</span> {T.authBlurb}
           </p>
           <Link
             href={`/login?redirect=/verify/${batchCode}`}
             className="inline-block w-full px-5 py-3 bg-[#00b4c3] text-white font-bold rounded-lg hover:bg-[#009aa8]"
           >
-            Log in to Atlas →
+            {T.loginCta}
           </Link>
           <p className="text-xs text-slate-500 mt-4">
-            Don't have an account? Contact <a href="mailto:andrew@fuze47.com" className="text-[#00b4c3]">andrew@fuze47.com</a>
+            {T.noAccountQuestion} <a href="mailto:andrew@fuze47.com" className="text-[#00b4c3]">andrew@fuze47.com</a>
           </p>
         </div>
       </div>
@@ -73,9 +75,9 @@ export default function VerifyBatchPage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-slate-900">Batch Not Found</h1>
-          <p className="text-slate-600 mt-2">We couldn't find batch {batchCode}.</p>
-          <Link href="/home" className="text-[#00b4c3] font-semibold mt-4 inline-block">Return to Atlas →</Link>
+          <h1 className="text-2xl font-bold text-slate-900">{T.notFoundTitle}</h1>
+          <p className="text-slate-600 mt-2">{T.notFoundBlurb} {batchCode}.</p>
+          <Link href="/home" className="text-[#00b4c3] font-semibold mt-4 inline-block">{T.returnHome}</Link>
         </div>
       </div>
     );
@@ -91,23 +93,23 @@ export default function VerifyBatchPage() {
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-full bg-[#00b4c3] flex items-center justify-center text-xl font-black">F</div>
             <div>
-              <p className="text-xs text-white/60 uppercase tracking-wide">FUZE Biotech · Salt Lake City</p>
-              <p className="text-sm text-white/80">Batch Verification</p>
+              <p className="text-xs text-white/60 uppercase tracking-wide">{T.productionLocation}</p>
+              <p className="text-sm text-white/80">{T.batchVerification}</p>
             </div>
           </div>
           <h1 className="text-3xl font-black mt-4 font-mono">{batch.batchCode}</h1>
           <div className="flex flex-wrap items-center gap-2 mt-2">
             {batch.qcPassed ? (
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-100 border border-emerald-400/30">
-                ✓ QC Passed
+                {T.qcPassed}
               </span>
             ) : (
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-100 border border-red-400/30">
-                ⚠ QC Failed
+                {T.qcFailed}
               </span>
             )}
             <span className="text-white/70 text-sm">
-              Produced {new Date(batch.productionDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+              {T.produced} {new Date(batch.productionDate).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}
             </span>
           </div>
         </div>
@@ -116,32 +118,32 @@ export default function VerifyBatchPage() {
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
         {/* Batch Details */}
         <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="font-bold text-lg text-slate-900 mb-4">Batch Details</h2>
+          <h2 className="font-bold text-lg text-slate-900 mb-4">{T.batchDetails}</h2>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-slate-500">Volume Produced</p>
+              <p className="text-slate-500">{T.volumeProduced}</p>
               <p className="font-bold text-slate-900 text-lg">{batch.volumeProducedLiters.toLocaleString()}L</p>
             </div>
             {batch.bottlesFilled && (
               <div>
-                <p className="text-slate-500">Bottles Filled</p>
+                <p className="text-slate-500">{T.bottlesFilled}</p>
                 <p className="font-bold text-slate-900 text-lg">{batch.bottlesFilled} × 19L</p>
               </div>
             )}
             <div>
-              <p className="text-slate-500">Concentration</p>
-              <p className="font-bold text-slate-900">{batch.concentrationMgPerL} mg/L FUZE metamaterial</p>
+              <p className="text-slate-500">{T.concentration}</p>
+              <p className="font-bold text-slate-900">{batch.concentrationMgPerL} {T.fuzeMetamaterial}</p>
             </div>
             <div>
-              <p className="text-slate-500">Production Date</p>
+              <p className="text-slate-500">{T.productionDate}</p>
               <p className="font-bold text-slate-900">
-                {new Date(batch.productionDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                {new Date(batch.productionDate).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
               </p>
             </div>
           </div>
           {batch.notes && (
             <div className="mt-4 pt-4 border-t border-slate-200">
-              <p className="text-xs text-slate-500 uppercase font-bold mb-1">Batch Notes</p>
+              <p className="text-xs text-slate-500 uppercase font-bold mb-1">{T.batchNotes}</p>
               <p className="text-sm text-slate-700">{batch.notes}</p>
             </div>
           )}
@@ -149,7 +151,7 @@ export default function VerifyBatchPage() {
 
         {/* Documents */}
         <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="font-bold text-lg text-slate-900 mb-4">Documents</h2>
+          <h2 className="font-bold text-lg text-slate-900 mb-4">{T.documents}</h2>
           <div className="space-y-3">
             {/* Batch-specific COA */}
             {batch.coaDocUrl ? (
@@ -161,17 +163,17 @@ export default function VerifyBatchPage() {
               >
                 <span className="text-3xl">📜</span>
                 <div className="flex-1">
-                  <p className="font-bold text-slate-900">Certificate of Analysis (COA)</p>
-                  <p className="text-xs text-slate-600">This batch's spec verification · Uploaded {batch.coaUploadedAt && new Date(batch.coaUploadedAt).toLocaleDateString()}</p>
+                  <p className="font-bold text-slate-900">{T.coaTitle}</p>
+                  <p className="text-xs text-slate-600">{T.coaDescPrefix} {batch.coaUploadedAt && new Date(batch.coaUploadedAt).toLocaleDateString()}</p>
                 </div>
-                <span className="text-[#00b4c3] font-bold">View →</span>
+                <span className="text-[#00b4c3] font-bold">{T.view}</span>
               </a>
             ) : (
               <div className="flex items-center gap-4 p-4 rounded-lg bg-amber-50 border border-amber-200">
                 <span className="text-3xl opacity-50">📜</span>
                 <div className="flex-1">
-                  <p className="font-bold text-amber-900">COA Pending</p>
-                  <p className="text-xs text-amber-700">Certificate of Analysis not yet uploaded for this batch.</p>
+                  <p className="font-bold text-amber-900">{T.coaPending}</p>
+                  <p className="text-xs text-amber-700">{T.coaPendingBlurb}</p>
                 </div>
               </div>
             )}
@@ -198,18 +200,18 @@ export default function VerifyBatchPage() {
             })}
 
             {productDocs.length === 0 && (
-              <p className="text-sm text-slate-500 italic">TDS / SDS not yet uploaded. Admin can add them in Product Documents.</p>
+              <p className="text-sm text-slate-500 italic">{T.docsEmpty}</p>
             )}
           </div>
         </div>
 
         {/* Footer */}
         <div className="text-center text-xs text-slate-400 py-4">
-          <p>FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA</p>
+          <p>{T.footerAddress}</p>
           <p className="mt-1">
-            Questions? <a href="mailto:andrew@fuze47.com" className="text-[#00b4c3]">andrew@fuze47.com</a>
+            {T.footerQuestions} <a href="mailto:andrew@fuze47.com" className="text-[#00b4c3]">andrew@fuze47.com</a>
             {" · "}
-            <Link href="/home" className="text-[#00b4c3]">Return to Atlas</Link>
+            <Link href="/home" className="text-[#00b4c3]">{T.footerReturnAtlas}</Link>
           </p>
         </div>
       </div>

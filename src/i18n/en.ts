@@ -3088,6 +3088,41 @@ const en = {
     description: "Description / notes",
   },
 
+  // ─── BATCH QR VERIFICATION (public scan landing page) ───
+  verifyBatch: {
+    authRequired: "Atlas Login Required",
+    authBatchPrefix: "Batch",
+    authBlurb:
+      "details — including COA, TDS, SDS — are available to Atlas users only.",
+    loginCta: "Log in to Atlas →",
+    noAccountQuestion: "Don't have an account? Contact",
+    notFoundTitle: "Batch Not Found",
+    notFoundBlurb: "We couldn't find batch",
+    returnHome: "Return to Atlas →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "Batch Verification",
+    qcPassed: "✓ QC Passed",
+    qcFailed: "⚠ QC Failed",
+    produced: "Produced",
+    batchDetails: "Batch Details",
+    volumeProduced: "Volume Produced",
+    bottlesFilled: "Bottles Filled",
+    concentration: "Concentration",
+    productionDate: "Production Date",
+    fuzeMetamaterial: "mg/L FUZE metamaterial",
+    batchNotes: "Batch Notes",
+    documents: "Documents",
+    coaTitle: "Certificate of Analysis (COA)",
+    coaDescPrefix: "This batch's spec verification · Uploaded",
+    coaPending: "COA Pending",
+    coaPendingBlurb: "Certificate of Analysis not yet uploaded for this batch.",
+    view: "View →",
+    docsEmpty: "TDS / SDS not yet uploaded. Admin can add them in Product Documents.",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Questions?",
+    footerReturnAtlas: "Return to Atlas",
+  },
+
   // ─── SAMPLE APPLICATION RECIPE CARD (bench-side print) ───
   sampleApplicationPrint: {
     backToPrep: "← Back to ICP Sample Prep",
