@@ -2015,7 +2015,162 @@ const hi: Translations = {
         "कपड़ा ICP लोडिंग बनाम मापी गई एंटीमाइक्रोबियल कमी का स्कैटरप्लॉट। पुष्टि करता है कि खुराक-प्रतिक्रिया ढलान आपकी आपूर्ति श्रृंखला में बनी रहती है।",
     },
   },
-  labPortal: { crumb: "लैब पोर्टल", landing: { loading: "लैब पोर्टल लोड…", unableToLoad: "लैब पोर्टल लोड नहीं हो सका", pageTitle: "लैब पोर्टल", pageSubtitle: "{lab} — परीक्षण कैटलॉग और आने वाले अनुरोध प्रबंधित करें", statTotalServices: "परीक्षण सेवाएं", statPendingRequests: "प्रतीक्षित अनुरोध", statActiveRequests: "चल रहे", statCompletedRequests: "पूर्ण", statTotalTestRuns: "कुल रन", quickUploadLabel: "रिपोर्ट अपलोड", quickUploadDesc: "एक पूर्ण रिपोर्ट अपलोड करें", quickUploadsLabel: "अपलोड इतिहास", quickUploadsDesc: "आपके द्वारा अपलोड की गई सभी रिपोर्ट देखें", quickCatalogLabel: "परीक्षण कैटलॉग", quickCatalogDesc: "परीक्षण और मूल्य प्रबंधित", quickRequestsLabel: "अनुरोध", quickRequestsDescPending: "{count} प्रतीक्षित", quickFormsLabel: "फॉर्म और दस्तावेज़", quickFormsDesc: "परीक्षण फॉर्म अपलोड", quickProfileLabel: "लैब प्रोफ़ाइल", quickProfileDesc: "अपनी जानकारी अपडेट करें", recentRequestsHeader: "हाल के अनुरोध", noRequests: "अभी कोई अनुरोध नहीं।", colPoNumber: "PO", colBrand: "ब्रांड", colFabric: "कपड़ा", colTests: "परीक्षण", colStatus: "स्थिति", colEstCost: "अनुमानित लागत", testsCountSingular: "{count} परीक्षण", testsCountPlural: "{count} परीक्षण" } },
+  labPortal: {
+    crumb: "लैब पोर्टल",
+    queue: {
+      crumbCurrent: "कतार",
+      pageTitle: "परीक्षण कतार",
+      pageSubtitle:
+        "आप जिन सभी कारखानों को संभालते हैं उनसे आने वाले परीक्षण अनुरोध + हाल की प्रस्तुतियाँ। पहले खुले अनुरोध, फिर हाल के प्रस्तुति संदर्भ।",
+      loading: "कतार लोड हो रही है…",
+      statPending: "लंबित अनुरोध",
+      statSubmissions: "हाल की प्रस्तुतियाँ",
+      pendingHeader: "लंबित अनुरोध",
+      submissionsHeader: "हाल की प्रस्तुतियाँ",
+      colPo: "PO #",
+      colBrand: "ब्रांड",
+      colFactory: "कारखाना",
+      colFabric: "फ़ैब्रिक",
+      colTier: "स्तर",
+      colTests: "परीक्षण",
+      colStatus: "स्थिति",
+      colRequested: "अनुरोधित",
+      colSubmissionDate: "प्रस्तुति तिथि",
+      colSubmissionStatus: "स्थिति",
+      noPending: "कोई आने वाले अनुरोध नहीं।",
+      noSubmissions: "आपकी कतार से जुड़ी अभी तक कोई हाल की प्रस्तुति नहीं।",
+    },
+    specs: {
+      crumbCurrent: "ब्रांड विनिर्देश",
+      pageTitle: "ब्रांड विनिर्देश",
+      pageSubtitle:
+        "हर ब्रांड के विनिर्देश जिसके फ़ैब्रिक का आप परीक्षण करते हैं। इसका उपयोग परिणामों को सही स्तर और लय के विरुद्ध स्कोर करने के लिए करें।",
+      loading: "विनिर्देश लोड हो रहे हैं…",
+      noBrands: "अभी तक कोई ब्रांड विनिर्देश नहीं — आप जिन कारखानों को संभालते हैं उनमें से कोई वर्तमान में किसी निर्धारित विनिर्देश वाले ब्रांड से नहीं जुड़ता।",
+      tierLabel: "आवश्यक स्तर:",
+      cadenceHeader: "ICP लय",
+      cadenceEveryOrders: "हर {n} ऑर्डर",
+      cadenceEveryLiters: "हर {n} L खपत",
+      cadenceNone: "कोई ICP लय निर्धारित नहीं",
+      tierNone: "कोई स्तर आवश्यकता नहीं",
+      protocolDoc: "📄 प्रोटोकॉल दस्तावेज़",
+      lastUpdated: "अद्यतन {date}",
+    },
+    landing: {
+      loading: "लैब पोर्टल लोड हो रहा है...",
+      unableToLoad: "लैब पोर्टल लोड नहीं हो सका",
+      pageTitle: "लैब पोर्टल",
+      pageSubtitle: "{lab} — अपने परीक्षण कैटलॉग और आने वाले अनुरोधों का प्रबंधन करें",
+      statTotalServices: "परीक्षण सेवाएँ",
+      statPendingRequests: "लंबित अनुरोध",
+      statActiveRequests: "प्रगति पर",
+      statCompletedRequests: "पूर्ण",
+      statTotalTestRuns: "कुल परीक्षण रन",
+      quickUploadLabel: "रिपोर्ट अपलोड करें",
+      quickUploadDesc: "एक पूर्ण परीक्षण रिपोर्ट अपलोड करें",
+      quickUploadsLabel: "अपलोड इतिहास",
+      quickUploadsDesc: "आपके द्वारा अपलोड की गई सभी रिपोर्ट देखें",
+      quickCatalogLabel: "परीक्षण कैटलॉग",
+      quickCatalogDesc: "अपने परीक्षण और मूल्य निर्धारण का प्रबंधन करें",
+      quickRequestsLabel: "परीक्षण अनुरोध",
+      quickRequestsDescPending: "{count} लंबित",
+      quickFormsLabel: "फ़ॉर्म और दस्तावेज़",
+      quickFormsDesc: "परीक्षण फ़ॉर्म अपलोड करें",
+      quickProfileLabel: "लैब प्रोफ़ाइल",
+      quickProfileDesc: "अपनी जानकारी अद्यतन करें",
+      recentRequestsHeader: "हाल के परीक्षण अनुरोध",
+      noRequests: "अभी तक कोई परीक्षण अनुरोध नहीं। ग्राहकों के ऑर्डर जमा करने पर वे यहाँ दिखाई देंगे।",
+      colPoNumber: "PO नंबर",
+      colBrand: "ब्रांड",
+      colFabric: "फ़ैब्रिक",
+      colTests: "परीक्षण",
+      colStatus: "स्थिति",
+      colEstCost: "अनुमानित लागत",
+      testsCountSingular: "{count} परीक्षण",
+      testsCountPlural: "{count} परीक्षण",
+    },
+    common: {
+      retry: "पुनः प्रयास",
+      loading: "लोड हो रहा है…",
+      cancel: "रद्द",
+      save: "सहेजें",
+      close: "बंद करें",
+    },
+    formsPage: {
+      crumbCurrent: "फ़ॉर्म",
+      pageTitle: "लैब फ़ॉर्म",
+      pageSubtitle:
+        "प्रत्येक परीक्षण रन के साथ आपकी टीम जो लैब फ़ॉर्म भरती है उसके टेम्पलेट।",
+    },
+    catalogPage: {
+      crumbCurrent: "परीक्षण कैटलॉग",
+      pageTitle: "परीक्षण कैटलॉग",
+      pageSubtitle:
+        "इस लैब द्वारा प्रदान किए जाने वाले परीक्षण, टर्नअराउंड दिनों, कीमतों और कार्यप्रणाली नोट्स के साथ।",
+    },
+    labTestsPage: {
+      crumbCurrent: "लैब परीक्षण",
+      pageTitle: "लैब परीक्षण",
+      pageSubtitle: "इस लैब द्वारा समर्थित परीक्षण, संपादन/अक्षम नियंत्रणों के साथ।",
+    },
+    uploadsPage: {
+      crumbCurrent: "अपलोड",
+      pageTitle: "अपलोड की गई रिपोर्ट",
+      pageSubtitle:
+        "आपकी लैब टीम द्वारा अपलोड की गई परीक्षण रिपोर्ट, पार्स स्थिति के साथ।",
+    },
+    uploadPage: {
+      crumbCurrent: "अपलोड",
+      pageTitle: "परीक्षण रिपोर्ट अपलोड करें",
+      pageSubtitle:
+        "लैब PDF खींचें और छोड़ें। हम परिणाम फ़ील्ड को पार्स करते हैं और सही फ़ैब्रिक से लिंक करते हैं।",
+    },
+    requestsPage: {
+      crumbCurrent: "अनुरोध",
+      pageTitle: "परीक्षण अनुरोध",
+      pageSubtitle:
+        "आपकी लैब को सौंपे गए सक्रिय अनुरोध। उठाने के लिए स्वीकार करें, वापस भेजने के लिए अस्वीकार करें।",
+    },
+    libraryPage: {
+      crumbCurrent: "पुस्तकालय",
+      pageTitle: "पुस्तकालय",
+      pageSubtitle: "संदर्भ दस्तावेज़, FUZE ज्ञान, स्थिरता डेटा।",
+    },
+    activityLogPage: {
+      crumbCurrent: "गतिविधि लॉग",
+      pageTitle: "गतिविधि लॉग",
+      pageSubtitle: "आपके लैब खाते पर हर कार्रवाई का ऑडिट ट्रेल।",
+    },
+    profilePage: {
+      crumbCurrent: "प्रोफ़ाइल",
+      pageTitle: "लैब प्रोफ़ाइल",
+      pageSubtitle:
+        "अपनी लैब की संपर्क जानकारी, क्षमताओं और टर्नअराउंड समय को अद्यतन करें।",
+    },
+    teamPage: {
+      crumbCurrent: "टीम",
+      pageTitle: "टीम",
+      pageSubtitle:
+        "टीम के साथियों को आमंत्रित करें, भूमिकाओं का प्रबंधन करें, और छोड़े गए सदस्यों के लिए पहुँच रद्द करें।",
+    },
+    documentsPage: {
+      crumbCurrent: "दस्तावेज़",
+      pageTitle: "दस्तावेज़",
+      pageSubtitle: "रिपोर्ट, उपकरण मैनुअल और संदर्भ दस्तावेज़।",
+    },
+    creditsPage: {
+      crumbCurrent: "क्रेडिट",
+      pageTitle: "लैब क्रेडिट",
+      pageSubtitle:
+        "आपके खाते पर बचे प्रीपेड परीक्षण क्रेडिट, खपत इतिहास के साथ।",
+    },
+    wizardPage: {
+      crumbCurrent: "विज़ार्ड",
+      pageTitle: "परीक्षण विज़ार्ड",
+      pageSubtitle:
+        "इस परीक्षण प्रकार के लिए चरण-दर-चरण लैब फ़ॉर्म। जैसे आप आगे बढ़ें वैसे सहेजें।",
+    },
+  },
   productDocs: { title: "उत्पाद दस्तावेज़", subtitle: "पूरे उत्पाद के लिए सामान्य दस्तावेज़ (TDS, SDS, आवेदन गाइड)। स्थिर और प्रत्येक बैच पर लागू। बैच-विशिष्ट COA उत्पादन बैच में अपलोड किए जाते हैं।", upload: "अपलोड", update: "अपडेट", cancel: "रद्द", save: "सहेजें", noDoc: "दस्तावेज़ अभी अपलोड नहीं किया गया।", uploadedBy: "अपलोडकर्ता", viewFile: "फ़ाइल देखें →", titleField: "शीर्षक", version: "संस्करण (जैसे v3.1)", fileUrl: "फ़ाइल URL (PDF)", effectiveDate: "प्रभावी तिथि", description: "विवरण / नोट" },
 
 };
