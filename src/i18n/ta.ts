@@ -2015,7 +2015,162 @@ const ta: Translations = {
         "துணி ICP ஏற்றுதல் மற்றும் அளவிடப்பட்ட எதிர்நுண்ணுயிர் குறைப்பு ஆகியவற்றின் சிதறல் வரைபடம். அளவு-பதில் சாய்வு உங்கள் சப்ளை சங்கிலி முழுவதும் வைத்திருப்பதை உறுதிப்படுத்துகிறது.",
     },
   },
-  labPortal: { crumb: "ஆய்வக போர்டல்", landing: { loading: "ஆய்வக போர்டல் ஏற்றுகிறது…", unableToLoad: "ஆய்வக போர்டலை ஏற்ற முடியவில்லை", pageTitle: "ஆய்வக போர்டல்", pageSubtitle: "{lab} — சோதனை பட்டியல் மற்றும் வரும் கோரிக்கைகள்", statTotalServices: "சோதனை சேவைகள்", statPendingRequests: "காத்திருக்கும் கோரிக்கைகள்", statActiveRequests: "செயலில்", statCompletedRequests: "முடிந்தது", statTotalTestRuns: "மொத்த இயக்கங்கள்", quickUploadLabel: "அறிக்கை பதிவேற்று", quickUploadDesc: "முடிக்கப்பட்ட அறிக்கையை பதிவேற்று", quickUploadsLabel: "பதிவேற்ற வரலாறு", quickUploadsDesc: "நீங்கள் பதிவேற்றிய அனைத்து அறிக்கைகளையும் பார்க்கவும்", quickCatalogLabel: "சோதனை பட்டியல்", quickCatalogDesc: "சோதனைகள் மற்றும் விலை நிர்வகி", quickRequestsLabel: "கோரிக்கைகள்", quickRequestsDescPending: "{count} காத்திருக்கிறது", quickFormsLabel: "படிவங்கள் & ஆவணங்கள்", quickFormsDesc: "சோதனை படிவங்களை பதிவேற்று", quickProfileLabel: "ஆய்வக சுயவிவரம்", quickProfileDesc: "உங்கள் தகவலை புதுப்பி", recentRequestsHeader: "சமீபத்திய கோரிக்கைகள்", noRequests: "இன்னும் கோரிக்கைகள் இல்லை.", colPoNumber: "PO", colBrand: "பிராண்ட்", colFabric: "துணி", colTests: "சோதனைகள்", colStatus: "நிலை", colEstCost: "மதிப்பீடு செலவு", testsCountSingular: "{count} சோதனை", testsCountPlural: "{count} சோதனைகள்" } },
+  labPortal: {
+    crumb: "ஆய்வக போர்டல்",
+    queue: {
+      crumbCurrent: "வரிசை",
+      pageTitle: "சோதனை வரிசை",
+      pageSubtitle:
+        "நீங்கள் கையாளும் ஒவ்வொரு தொழிற்சாலையிலிருந்தும் வரும் சோதனை கோரிக்கைகள் + சமீபத்திய சமர்ப்பிப்புகள். முதலில் திறந்த கோரிக்கைகள், பின்னர் சமீபத்திய சமர்ப்பிப்பு சூழல்.",
+      loading: "வரிசை ஏற்றுகிறது…",
+      statPending: "நிலுவை கோரிக்கைகள்",
+      statSubmissions: "சமீபத்திய சமர்ப்பிப்புகள்",
+      pendingHeader: "நிலுவை கோரிக்கைகள்",
+      submissionsHeader: "சமீபத்திய சமர்ப்பிப்புகள்",
+      colPo: "PO #",
+      colBrand: "பிராண்ட்",
+      colFactory: "தொழிற்சாலை",
+      colFabric: "துணி",
+      colTier: "அடுக்கு",
+      colTests: "சோதனைகள்",
+      colStatus: "நிலை",
+      colRequested: "கோரப்பட்டது",
+      colSubmissionDate: "சமர்ப்பிப்பு தேதி",
+      colSubmissionStatus: "நிலை",
+      noPending: "உள்வரும் கோரிக்கைகள் இல்லை.",
+      noSubmissions: "உங்கள் வரிசையுடன் இணைக்கப்பட்ட சமீபத்திய சமர்ப்பிப்புகள் இன்னும் இல்லை.",
+    },
+    specs: {
+      crumbCurrent: "பிராண்ட் விவரக்குறிப்புகள்",
+      pageTitle: "பிராண்ட் விவரக்குறிப்புகள்",
+      pageSubtitle:
+        "துணிகளை நீங்கள் சோதிக்கும் ஒவ்வொரு பிராண்டின் விவரக்குறிப்புகள். முடிவுகளை சரியான அடுக்கு மற்றும் தாளத்திற்கு எதிராக மதிப்பெண்ணிட இதை பயன்படுத்தவும்.",
+      loading: "விவரக்குறிப்புகள் ஏற்றுகிறது…",
+      noBrands: "இன்னும் பிராண்ட் விவரக்குறிப்புகள் இல்லை — நீங்கள் கையாளும் தொழிற்சாலைகள் தற்போது நிர்ணயிக்கப்பட்ட விவரக்குறிப்பு கொண்ட பிராண்டுடன் இணைக்கப்படவில்லை.",
+      tierLabel: "தேவையான அடுக்கு:",
+      cadenceHeader: "ICP தாளம்",
+      cadenceEveryOrders: "ஒவ்வொரு {n} ஆர்டர்களுக்கும்",
+      cadenceEveryLiters: "ஒவ்வொரு {n} L பயன்பாட்டிற்கும்",
+      cadenceNone: "ICP தாளம் அமைக்கப்படவில்லை",
+      tierNone: "அடுக்கு தேவை இல்லை",
+      protocolDoc: "📄 நெறிமுறை ஆவணம்",
+      lastUpdated: "புதுப்பிக்கப்பட்டது {date}",
+    },
+    landing: {
+      loading: "ஆய்வக போர்டல் ஏற்றுகிறது...",
+      unableToLoad: "ஆய்வக போர்டலை ஏற்ற முடியவில்லை",
+      pageTitle: "ஆய்வக போர்டல்",
+      pageSubtitle: "{lab} — உங்கள் சோதனை அட்டவணை மற்றும் உள்வரும் கோரிக்கைகளை நிர்வகிக்கவும்",
+      statTotalServices: "சோதனை சேவைகள்",
+      statPendingRequests: "நிலுவை கோரிக்கைகள்",
+      statActiveRequests: "முன்னேற்றத்தில்",
+      statCompletedRequests: "முடிக்கப்பட்டது",
+      statTotalTestRuns: "மொத்த சோதனை ரன்கள்",
+      quickUploadLabel: "அறிக்கையை பதிவேற்று",
+      quickUploadDesc: "முடிக்கப்பட்ட சோதனை அறிக்கையை பதிவேற்று",
+      quickUploadsLabel: "பதிவேற்ற வரலாறு",
+      quickUploadsDesc: "நீங்கள் பதிவேற்றிய அனைத்து அறிக்கைகளையும் பார்க்கவும்",
+      quickCatalogLabel: "சோதனை அட்டவணை",
+      quickCatalogDesc: "உங்கள் சோதனைகள் மற்றும் விலை நிர்ணயத்தை நிர்வகிக்கவும்",
+      quickRequestsLabel: "சோதனை கோரிக்கைகள்",
+      quickRequestsDescPending: "{count} நிலுவையில்",
+      quickFormsLabel: "படிவங்கள் மற்றும் ஆவணங்கள்",
+      quickFormsDesc: "சோதனை படிவங்களை பதிவேற்று",
+      quickProfileLabel: "ஆய்வக சுயவிவரம்",
+      quickProfileDesc: "உங்கள் தகவலை புதுப்பிக்கவும்",
+      recentRequestsHeader: "சமீபத்திய சோதனை கோரிக்கைகள்",
+      noRequests: "இன்னும் சோதனை கோரிக்கைகள் இல்லை. வாடிக்கையாளர்கள் ஆர்டர்களை சமர்ப்பிக்கும்போது அவை இங்கே தோன்றும்.",
+      colPoNumber: "PO எண்",
+      colBrand: "பிராண்ட்",
+      colFabric: "துணி",
+      colTests: "சோதனைகள்",
+      colStatus: "நிலை",
+      colEstCost: "மதிப்பிடப்பட்ட செலவு",
+      testsCountSingular: "{count} சோதனை",
+      testsCountPlural: "{count} சோதனைகள்",
+    },
+    common: {
+      retry: "மீண்டும் முயற்சி",
+      loading: "ஏற்றுகிறது…",
+      cancel: "ரத்து",
+      save: "சேமி",
+      close: "மூடு",
+    },
+    formsPage: {
+      crumbCurrent: "படிவங்கள்",
+      pageTitle: "ஆய்வக படிவங்கள்",
+      pageSubtitle:
+        "ஒவ்வொரு சோதனை ரன்னுடன் உங்கள் குழு நிரப்பும் ஆய்வக படிவங்களுக்கான வார்ப்புருக்கள்.",
+    },
+    catalogPage: {
+      crumbCurrent: "சோதனை அட்டவணை",
+      pageTitle: "சோதனை அட்டவணை",
+      pageSubtitle:
+        "இந்த ஆய்வகம் வழங்கும் சோதனைகள், திரும்ப வரும் நாட்கள், விலைகள் மற்றும் வழிமுறை குறிப்புகளுடன்.",
+    },
+    labTestsPage: {
+      crumbCurrent: "ஆய்வக சோதனைகள்",
+      pageTitle: "ஆய்வக சோதனைகள்",
+      pageSubtitle: "இந்த ஆய்வகம் ஆதரிக்கும் சோதனைகள், திருத்த/முடக்க கட்டுப்பாடுகளுடன்.",
+    },
+    uploadsPage: {
+      crumbCurrent: "பதிவேற்றங்கள்",
+      pageTitle: "பதிவேற்றப்பட்ட அறிக்கைகள்",
+      pageSubtitle:
+        "உங்கள் ஆய்வக குழுவால் பதிவேற்றப்பட்ட சோதனை அறிக்கைகள், பாகுபடுத்தும் நிலையுடன்.",
+    },
+    uploadPage: {
+      crumbCurrent: "பதிவேற்று",
+      pageTitle: "சோதனை அறிக்கையை பதிவேற்று",
+      pageSubtitle:
+        "ஒரு ஆய்வக PDF-ஐ இழுத்து விடுங்கள். முடிவு புலங்களை நாங்கள் பாகுபடுத்தி சரியான துணியுடன் இணைக்கிறோம்.",
+    },
+    requestsPage: {
+      crumbCurrent: "கோரிக்கைகள்",
+      pageTitle: "சோதனை கோரிக்கைகள்",
+      pageSubtitle:
+        "உங்கள் ஆய்வகத்திற்கு ஒதுக்கப்பட்ட செயலில் உள்ள கோரிக்கைகள். எடுக்க ஏற்றுக்கொள்ளவும், மீண்டும் அனுப்ப நிராகரிக்கவும்.",
+    },
+    libraryPage: {
+      crumbCurrent: "நூலகம்",
+      pageTitle: "நூலகம்",
+      pageSubtitle: "குறிப்பு ஆவணங்கள், FUZE அறிவு, நிலைத்தன்மை தரவு.",
+    },
+    activityLogPage: {
+      crumbCurrent: "செயல்பாட்டு பதிவு",
+      pageTitle: "செயல்பாட்டு பதிவு",
+      pageSubtitle: "உங்கள் ஆய்வக கணக்கில் ஒவ்வொரு செயலின் தணிக்கை சுவடு.",
+    },
+    profilePage: {
+      crumbCurrent: "சுயவிவரம்",
+      pageTitle: "ஆய்வக சுயவிவரம்",
+      pageSubtitle:
+        "உங்கள் ஆய்வகத்தின் தொடர்பு தகவல், திறன்கள் மற்றும் திரும்ப வரும் நேரத்தை புதுப்பிக்கவும்.",
+    },
+    teamPage: {
+      crumbCurrent: "குழு",
+      pageTitle: "குழு",
+      pageSubtitle:
+        "குழு உறுப்பினர்களை அழைக்கவும், பாத்திரங்களை நிர்வகிக்கவும், வெளியேறிய உறுப்பினர்களுக்கான அணுகலை ரத்து செய்யவும்.",
+    },
+    documentsPage: {
+      crumbCurrent: "ஆவணங்கள்",
+      pageTitle: "ஆவணங்கள்",
+      pageSubtitle: "அறிக்கைகள், கருவி கையேடுகள் மற்றும் குறிப்பு ஆவணங்கள்.",
+    },
+    creditsPage: {
+      crumbCurrent: "கிரெடிட்கள்",
+      pageTitle: "ஆய்வக கிரெடிட்கள்",
+      pageSubtitle:
+        "உங்கள் கணக்கில் மீதமுள்ள முன்பணம் செலுத்தப்பட்ட சோதனை கிரெடிட்கள், பயன்பாட்டு வரலாற்றுடன்.",
+    },
+    wizardPage: {
+      crumbCurrent: "விசார்ட்",
+      pageTitle: "சோதனை விசார்ட்",
+      pageSubtitle:
+        "இந்த சோதனை வகைக்கான படிப்படியான ஆய்வக படிவம். நீங்கள் முன்னேறும்போது சேமிக்கவும்.",
+    },
+  },
   productDocs: { title: "தயாரிப்பு ஆவணங்கள்", subtitle: "முழு தயாரிப்புக்கான பொதுவான ஆவணங்கள் (TDS, SDS, பயன்பாட்டு வழிகாட்டி).", upload: "பதிவேற்று", update: "புதுப்பி", cancel: "ரத்து", save: "சேமி", noDoc: "ஆவணம் இன்னும் பதிவேற்றப்படவில்லை.", uploadedBy: "பதிவேற்றியவர்", viewFile: "கோப்பைப் பார் →", titleField: "தலைப்பு", version: "பதிப்பு (எ.கா. v3.1)", fileUrl: "கோப்பு URL (PDF)", effectiveDate: "அமலில் தேதி", description: "விளக்கம் / குறிப்புகள்" },
 
 };
