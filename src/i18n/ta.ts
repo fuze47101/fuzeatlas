@@ -7669,6 +7669,21 @@ const ta: Translations = {
     titleHint: 'எ.கா. "Mr.", "Dr."',
   },
 
+  importFactories: {
+    title: "Bulk import — தொழிற்சாலைகள்",
+    subtitle: "தொழிற்சாலைகளின் CSV-ஐ ஒட்டவும் அல்லது பதிவேற்றவும். நாம் பெயர் (natural key) மூலம் upsert செய்வோம், நீங்கள் ஒன்றை கொடுத்தால் ஒரு distributor-உடன் இணைப்போம், மற்றும் Atlas-இல் ஏற்கனவே உள்ள ஒவ்வொரு brand-க்கும் SupplyChainLink வரிசைகளை stamp செய்வோம். இன்னும் இல்லாத Brands 'missing' என அறிக்கையிடப்படுகின்றன, எனவே முதலில் brand இறக்குமதியை இயக்கலாம்.",
+    backLabel: "தொழிற்சாலைகள்",
+    factoryNameLabel: "தொழிற்சாலை பெயர்",
+    factoryNameHint: "(natural key — upsert இங்கே keyed)",
+    countryLabel: "நாடு",
+    distributorLabel: "விநியோகஸ்தர்",
+    distributorHint: "Distributor.name-இல் case-insensitive match; கிடைக்கவில்லை என்றால் skipped",
+    brandsLabel: "Brands",
+    brandsHint: "comma-separated; ஒவ்வொரு பெயரும் ஒரு Brand-ஆக இருக்க வேண்டும்",
+    cityLabel: "நகரம்",
+    websiteLabel: "வலைத்தளம்",
+  },
+
 };
 
 export default ta;
