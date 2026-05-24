@@ -7271,6 +7271,32 @@ const th: Translations = {
     errSendFailed: "ไม่สามารถส่งอีเมลตรวจสอบได้",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "เอกสารสาธารณะ",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "เอกสารอ้างอิงสาธารณะสำหรับสายผลิตภัณฑ์ FUZE",
+    headerLeadAfter: "สำหรับเอกสารส่วนตัว (TDS/SDS เต็ม ราคาภายใน คู่มือการใช้งาน) เข้าสู่ระบบพอร์ทัล FUZE Atlas สำหรับบทบาทของคุณ",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "พิษวิทยา",
+    catPricing: "ราคา",
+    catSustainability: "ความยั่งยืน",
+    catEducation: "การศึกษา",
+    catClaimsCompliance: "การเรียกร้อง & การปฏิบัติตาม",
+    catApplicationGuide: "คู่มือการใช้งาน",
+    catCaseStudy: "กรณีศึกษา",
+    loading: "กำลังโหลด…",
+    emptyBefore: "ไม่มีเอกสารสาธารณะที่พร้อมใช้สำหรับ",
+    emptyAfter: "ติดต่อ FUZE สำหรับห้องสมุดส่วนตัว",
+    loginCta: "เข้าสู่ระบบ Atlas →",
+    versionPrefix: "เวอร์ชัน",
+    downloadBtn: "↓ ดาวน์โหลด",
+    unknownLineTitle: "สายผลิตภัณฑ์ไม่ทราบ",
+    unknownLineBody: "FUZE มีสี่ระดับ: F1, F2, F3, F4 ลองหนึ่งในนั้น",
+    errLoadFailed: "ไม่สามารถโหลดได้",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default th;
