@@ -4554,6 +4554,48 @@ const hi: Translations = {
     sanityRangesHeader: "सैनिटी चेक रेंज",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "साप्ताहिक कार्यकारी समीक्षा",
+    weekOfTemplate: "का सप्ताह",
+    coveringPrefix: "कवर करता है",
+    daysWindowSuffix: "-दिन विंडो",
+    ownerLabel: "स्वामी:",
+    generatedLabel: "उत्पन्न",
+    enterPresent: "प्रस्तुत करें",
+    exitPresent: "प्रस्तुति समाप्त करें",
+    refreshing: "रीफ्रेश हो रहा है…",
+    refreshSnapshot: "स्नैपशॉट रीफ्रेश करें",
+
+    execSummaryTitle: "कार्यकारी सारांश",
+    execSummaryPlaceholder: "बोर्ड के लिए शीर्ष-पंक्ति निष्कर्ष। ब्लर पर सहेजा गया।",
+    saving: "सहेज रहे हैं…",
+
+    salesDistributionTitle: "बिक्री और वितरण",
+    bookedDollars: "बुक किए गए $",
+    shippedDollars: "भेजे गए $",
+    bookedLiters: "बुक किए गए L",
+    shippedLiters: "भेजे गए L",
+    ordersSuffix: "ऑर्डर",
+    shipmentsSuffix: "शिपमेंट",
+    kgShippedSuffix: "kg भेजा गया",
+    byOrderTypeLabel: "ऑर्डर प्रकार द्वारा",
+
+    sowProgressTitle: "SOW प्रगति",
+    sowDraft: "मसौदा",
+    sowSent: "भेजा गया",
+    sowSigned: "हस्ताक्षरित",
+    sowActive: "सक्रिय",
+    sowComplete: "पूर्ण",
+    sowSignedThisWindow: "इस विंडो में हस्ताक्षरित",
+    sowNewlyOpened: "नए खोले गए",
+    sowActiveTitle: "सक्रिय",
+    sowStale: "स्थगित (>30d कोई गति नहीं)",
+    sowEmptyNoSignatures: "इस विंडो में कोई नए हस्ताक्षर नहीं।",
+    sowEmptyNoOpened: "इस विंडो में कोई SOW नहीं खोले गए।",
+    sowEmptyNoActive: "कोई सक्रिय SOW नहीं।",
+    sowEmptyNothingStuck: "कुछ भी अटका हुआ नहीं।",
+  },
+
 };
 
 export default hi;
