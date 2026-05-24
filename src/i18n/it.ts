@@ -5828,6 +5828,54 @@ const it: Translations = {
     btnCreating: "Creazione...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "Libreria tessuti FUZE",
+    pageSubtitle: "Sfoglia tessuti trattati con FUZE e risultati di test verificati attraverso la nostra rete globale. Tutti i dati sono anonimizzati — le identità di stabilimenti e brand sono confidenziali.",
+
+    statFabrics: "Tessuti testati",
+    statTests: "Test totali",
+    statIcp: "Analisi ICP",
+    statAb: "Test antimicrobici",
+
+    searchPlaceholder: "Cerca per costruzione, filato, uso finale, numero FUZE...",
+    filterAllTypes: "Tutti i tipi di test",
+    filterIcp: "Analisi ICP",
+    filterAntibacterial: "Antibatterico",
+    filterFungal: "Antifungino",
+    filterOdor: "Controllo odori",
+    passOnly: "Solo superati",
+
+    emptyTitle: "Nessun tessuto corrisponde ai criteri",
+    emptyClear: "Cancella tutti i filtri",
+    errorFailedLoad: "Caricamento libreria tessuti non riuscito",
+    errorFailedDefault: "Caricamento non riuscito",
+
+    testsSuffix: "test",
+    testSuffix: "test",
+    propConstruction: "Costruzione:",
+    propWeight: "Peso:",
+    propWidth: "Larghezza:",
+    propYarn: "Filato:",
+    propCategory: "Categoria:",
+    propEndUse: "Uso finale:",
+    propWeave: "Armatura:",
+    propColor: "Colore:",
+
+    colTest: "Test",
+    colMethod: "Metodo",
+    colWashes: "Lavaggi",
+    colResult: "Risultato",
+    colStatus: "Stato",
+    pass: "Superato",
+    fail: "Non superato",
+    passBadge: "SUPERATO",
+    failBadge: "NON SUPERATO",
+
+    paginationPrev: "Precedente",
+    paginationNext: "Successivo",
+    paginationLabel: "Pagina {page} di {pages}",
+  },
+
 };
 
 export default it;
