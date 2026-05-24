@@ -8400,6 +8400,17 @@ const en = {
     removeFavoriteTitle: "Remove favorite",
     addFavoriteTitle: "Add favorite",
   },
+  icpCorrelation: {
+    adminCrumb: "Admin",
+    crumb: "ICP correlation",
+    heading: "ICP × AB correlation",
+    subtitle: "The chart Joseph (KUIU) asked about. FUZE residual on fabric (ICP-measured) plotted against antibacterial kill rate across every brand-visible test run in Atlas. Best-fit line + R² overlaid.",
+    errorContext: "Load ICP correlation",
+    couldntLoadPrefix: "Couldn't load correlation data",
+    networkError: "Network error.",
+    loadingState: "Loading correlation data…",
+    footnote: "Customer-facing copy uses \"FUZE residual\" — the metamaterial measurement from the lab's ICP report. Always labelled FUZE / metamaterial in customer deliverables (CLAUDE.md brand-voice rule).",
+  },
   engagementDebug: {
     crumb: "Engagement debug",
     engagementSuffix: "engagement",

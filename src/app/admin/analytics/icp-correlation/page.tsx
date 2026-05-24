@@ -11,8 +11,11 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import IcpCorrelationChart from "@/components/IcpCorrelationChart";
 import ErrorPanel from "@/components/ErrorPanel";
+import { useI18n } from "@/i18n";
 
 export default function AdminIcpCorrelationPage() {
+  const { t } = useI18n();
+  const T = t.icpCorrelation;
   const [points, setPoints] = useState<any[]>([]);
   const [regression, setRegression] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -25,17 +28,17 @@ export default function AdminIcpCorrelationPage() {
       const r = await fetch("/api/analytics/icp-correlation");
       const j = await r.json().catch(() => null);
       if (!r.ok || !j?.ok) {
-        setLoadError(j?.error || `Couldn't load correlation data (HTTP ${r.status}).`);
+        setLoadError(j?.error || `${T.couldntLoadPrefix} (HTTP ${r.status}).`);
         return;
       }
       setPoints(j.points || []);
       setRegression(j.regression || null);
     } catch (e: any) {
-      setLoadError(e?.message || "Network error.");
+      setLoadError(e?.message || T.networkError);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [T]);
 
   useEffect(() => {
     load();
@@ -46,28 +49,26 @@ export default function AdminIcpCorrelationPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/admin" className="hover:text-[#00b4c3]">
-            Admin
+            {T.adminCrumb}
           </Link>
           <span>›</span>
-          <span>ICP correlation</span>
+          <span>{T.crumb}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">ICP × AB correlation</h1>
+        <h1 className="text-2xl font-black text-slate-900">{T.heading}</h1>
         <p className="text-sm text-slate-500 mt-1">
-          The chart Joseph (KUIU) asked about. FUZE residual on fabric (ICP-measured)
-          plotted against antibacterial kill rate across every brand-visible test run
-          in Atlas. Best-fit line + R² overlaid.
+          {T.subtitle}
         </p>
       </div>
 
       {loadError && (
         <div className="mb-4">
-          <ErrorPanel context="Load ICP correlation" error={loadError} onRetry={load} />
+          <ErrorPanel context={T.errorContext} error={loadError} onRetry={load} />
         </div>
       )}
 
       {loading ? (
         <div className="h-96 flex items-center justify-center text-slate-400">
-          Loading correlation data…
+          {T.loadingState}
         </div>
       ) : (
         <IcpCorrelationChart
@@ -78,9 +79,7 @@ export default function AdminIcpCorrelationPage() {
       )}
 
       <p className="text-[11px] text-slate-500 mt-4">
-        Customer-facing copy uses "FUZE residual" — the metamaterial measurement
-        from the lab's ICP report. NEVER labelled "silver" or "Ag" in customer
-        deliverables (CLAUDE.md brand-voice rule).
+        {T.footnote}
       </p>
     </div>
   );
