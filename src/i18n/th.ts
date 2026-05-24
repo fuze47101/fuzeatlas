@@ -5828,6 +5828,54 @@ const th: Translations = {
     btnCreating: "กำลังสร้าง...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "ห้องสมุดผ้า FUZE",
+    pageSubtitle: "เรียกดูผ้าที่บำบัด FUZE และผลการทดสอบที่ตรวจสอบในเครือข่ายทั่วโลกของเรา ข้อมูลทั้งหมดถูกทำให้ไม่ระบุชื่อ — ตัวตนของโรงงานและแบรนด์เป็นความลับ",
+
+    statFabrics: "ผ้าที่ทดสอบ",
+    statTests: "การทดสอบทั้งหมด",
+    statIcp: "การวิเคราะห์ ICP",
+    statAb: "การทดสอบต้านจุลชีพ",
+
+    searchPlaceholder: "ค้นหาด้วยการก่อสร้าง เส้นด้าย การใช้งาน หมายเลข FUZE...",
+    filterAllTypes: "ทุกประเภทการทดสอบ",
+    filterIcp: "การวิเคราะห์ ICP",
+    filterAntibacterial: "ต้านแบคทีเรีย",
+    filterFungal: "ต้านเชื้อรา",
+    filterOdor: "ควบคุมกลิ่น",
+    passOnly: "ผ่านเท่านั้น",
+
+    emptyTitle: "ไม่มีผ้าตรงกับเกณฑ์ของคุณ",
+    emptyClear: "ล้างตัวกรองทั้งหมด",
+    errorFailedLoad: "ไม่สามารถโหลดห้องสมุดผ้าได้",
+    errorFailedDefault: "ไม่สามารถโหลดได้",
+
+    testsSuffix: "การทดสอบ",
+    testSuffix: "การทดสอบ",
+    propConstruction: "การก่อสร้าง:",
+    propWeight: "น้ำหนัก:",
+    propWidth: "ความกว้าง:",
+    propYarn: "เส้นด้าย:",
+    propCategory: "หมวดหมู่:",
+    propEndUse: "การใช้งานปลายทาง:",
+    propWeave: "การทอ:",
+    propColor: "สี:",
+
+    colTest: "การทดสอบ",
+    colMethod: "วิธีการ",
+    colWashes: "การซัก",
+    colResult: "ผลลัพธ์",
+    colStatus: "สถานะ",
+    pass: "ผ่าน",
+    fail: "ไม่ผ่าน",
+    passBadge: "ผ่าน",
+    failBadge: "ไม่ผ่าน",
+
+    paginationPrev: "ก่อนหน้า",
+    paginationNext: "ถัดไป",
+    paginationLabel: "หน้า {page} จาก {pages}",
+  },
+
 };
 
 export default th;
