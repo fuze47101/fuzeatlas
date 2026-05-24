@@ -5627,6 +5627,35 @@ const id: Translations = {
     sendErrorPrefix: "Error:",
   },
 
+  educationApplication: {
+    pageMetaTitle: "Metode Aplikasi",
+    backLink: "← Kembali ke Dasar FUZE",
+    kicker: "Metode Aplikasi",
+    heroTitle: "FUZE bekerja di lini finishing Anda yang sudah ada",
+    heroBody: "Anda tidak perlu tank baru, oven baru, atau peralatan baru untuk mengaplikasikan FUZE. Tiga jalur aplikasi mencakup setiap setup produksi tekstil yang beroperasi saat ini. F4 Essential Protection tidak memerlukan oven curing sama sekali pada banyak substrat.",
+    methodExhaustName: "Exhaust (dyebath)",
+    methodExhaustDesc: "Tambahkan FUZE ke dyebath. Metamaterial berikatan selama proses exhaust pewarnaan yang ada. Tanpa tank baru, tanpa vessel baru, tanpa lini baru.",
+    methodExhaustWhen: "Terbaik untuk pewarnaan kontinu volume tinggi. Metamaterial terintegrasi dengan langkah fiksasi pewarna.",
+    methodPdcName: "Pad-Dry-Cure",
+    methodPdcDesc: "Jalankan kain melalui padder standar yang dimuat dengan bath FUZE encer. Squeeze, dry, cure seperti biasa. Suhu curing 150-170°C.",
+    methodPdcWhen: "Jalur aplikasi paling umum. Kompatibel dengan setiap lini finishing tekstil yang beroperasi saat ini.",
+    methodSprayName: "Spray (head-spaced)",
+    methodSprayDesc: "Jarak head 6 inci, kecepatan lini 15 m/menit. Mengatomisasi FUZE encer pada permukaan kain, lalu dry/cure. Ideal untuk garmen jadi atau substrat non-woven.",
+    methodSprayWhen: "Garmen yang sudah dipotong/dijahit, atau substrat khusus di mana exhaust/PDC tidak berlaku.",
+    whenToUseLabel: "Kapan digunakan",
+    operatorTitle: "Mengapa ini penting bagi operator pabrik",
+    operatorBullet1: "✓ Tanpa peralatan modal baru. FUZE masuk ke lini pad/dye/spray yang ada.",
+    operatorBullet2: "✓ Tanpa binder, tanpa crosslinker, tanpa formaldehida. Lebih sedikit inventaris untuk dikelola, tanpa protokol penanganan zat karsinogenik.",
+    operatorBullet3: "✓ Tanpa ketergantungan oven curing di F4. Aplikasi tier lebih rendah dapat air-dry; F1-F3 menggunakan 150-170°C, range yang sama dengan finishing PDC standar.",
+    operatorBullet4: "✓ Tanpa masa pakai pada FUZE tersimpan. Drum dan carboy dapat berada di ruang finishing Anda tanpa terdegradasi.",
+    operatorBullet5: "✓ Carboy 19L standar adalah unit pesanan terkecil. Pesan volume kustom (47L, 285L, 1300L) saat Anda butuh kecocokan tepat.",
+    runNumbersTitle: "Jalankan angka Anda",
+    runNumbersBody: "Kalkulator aplikasi menghitung volume FUZE tepat yang dibutuhkan per meter persegi kain pada tier pilihan Anda. Masukkan berat kain (gsm), lebar, dan tier target — dapatkan kembali liter bath FUZE, mL stock concentrate, dan dolar per meter linear.",
+    runNumbersCta: "Buka kalkulator aplikasi →",
+    backBasicsBtn: "Kembali ke Dasar FUZE",
+    seePricingBtn: "Lihat harga & tier",
+  },
+
 };
 
 export default id;
