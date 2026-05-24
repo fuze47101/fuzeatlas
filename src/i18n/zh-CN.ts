@@ -6078,6 +6078,54 @@ const zhCN: Translations = {
     btnCreating: "创建中……",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "FUZE 面料库",
+    pageSubtitle: "浏览我们全球网络中经 FUZE 处理的面料和经过验证的测试结果。所有数据均已匿名化——工厂和品牌身份保密。",
+
+    statFabrics: "已测试面料",
+    statTests: "测试总数",
+    statIcp: "ICP 分析",
+    statAb: "抗菌测试",
+
+    searchPlaceholder: "按结构、纱线、最终用途、FUZE 编号搜索……",
+    filterAllTypes: "所有测试类型",
+    filterIcp: "ICP 分析",
+    filterAntibacterial: "抗菌",
+    filterFungal: "抗真菌",
+    filterOdor: "防异味",
+    passOnly: "仅通过",
+
+    emptyTitle: "没有面料符合您的条件",
+    emptyClear: "清除所有筛选条件",
+    errorFailedLoad: "加载面料库失败",
+    errorFailedDefault: "加载失败",
+
+    testsSuffix: "项测试",
+    testSuffix: "项测试",
+    propConstruction: "结构：",
+    propWeight: "重量：",
+    propWidth: "宽度：",
+    propYarn: "纱线：",
+    propCategory: "类别：",
+    propEndUse: "最终用途：",
+    propWeave: "织造：",
+    propColor: "颜色：",
+
+    colTest: "测试",
+    colMethod: "方法",
+    colWashes: "洗涤次数",
+    colResult: "结果",
+    colStatus: "状态",
+    pass: "通过",
+    fail: "失败",
+    passBadge: "通过",
+    failBadge: "失败",
+
+    paginationPrev: "上一页",
+    paginationNext: "下一页",
+    paginationLabel: "第 {page} 页，共 {pages} 页",
+  },
+
 };
 
 export default zhCN;
