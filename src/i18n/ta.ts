@@ -7450,6 +7450,33 @@ const ta: Translations = {
     contactLink: "தொடர்பு",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "Brand",
+    crumb: "Hangtag QR",
+    heading: "Hangtag QR tokens",
+    subtitlePrefix: "ஒவ்வொரு token-ம் ஒரு பொது சரிபார்ப்பு பக்கத்திற்கு resolve ஆகிறது",
+    subtitleSuffix: "Scan count + first / last scan timestamps ஒரு வரிசைக்கு கண்காணிக்கப்படுகின்றன.",
+    mintTokensTitle: "Tokens Mint செய்",
+    countPlaceholder: "count",
+    fabricIdPlaceholder: "fabricId (விருப்பம்)",
+    skuPlaceholder: "தயாரிப்பு SKU",
+    batchPlaceholder: "batch code",
+    mintBtn: "Mint",
+    mintingBusy: "Mint செய்கிறது…",
+    mintFootnote: "ஒரு mint-க்கு அதிகபட்சம் 500. உங்கள் தேர்வு QR generator-ஐப் பயன்படுத்தி hangtags-இல் QR codes-ஆக விளைவாக வரும் tokens-ஐ அச்சிடவும் (ஒவ்வொரு URL-ம் சரியாக verify-page URL).",
+    mintFailedError: "Mint தோல்வியடைந்தது",
+    tokenSingular: "token",
+    tokenPlural: "tokens",
+    exportCsvBtn: "CSV ஏற்றுமதி",
+    colToken: "Token",
+    colSkuBatch: "SKU / Batch",
+    colFabric: "ஃபேப்ரிக்",
+    colScans: "Scans",
+    colLastScan: "Last scan",
+    colVerifyUrl: "Verify URL",
+    emptyState: "இன்னும் tokens இல்லை — மேலே உங்கள் முதல் batch-ஐ mint செய்.",
+  },
+
 };
 
 export default ta;
