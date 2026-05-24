@@ -4472,6 +4472,27 @@ const ja: Translations = {
     exportReportTemplate: "{product} vs FUZE レポートをエクスポート",
   },
 
+  educationClaims: {
+    backLink: "← FUZE の基礎へ戻る",
+    eyebrow: "主張できる内容",
+    pageTitle: "FUZE 処理生地に対し正当に主張できるブランドクレーム",
+    pageIntro: "コンプライアンスチーム、ブランドマーケティング、ハングタグコピー向けのリファレンスです。3 カテゴリー: 製品クレーム、サステナビリティクレーム、認証クレーム。各行は以下に分類されます:",
+    introCiteFreely: "自由に引用可",
+    introWithData: "ティア固有データと併せ引用",
+    introAvoid: "避ける",
+    introTail: "— 理由を平易な英語で記載。",
+    productClaimsTitle: "製品 / 効力クレーム",
+    sustainabilityClaimsTitle: "サステナビリティクレーム",
+    certClaimsTitle: "認証クレーム",
+    badgeCiteFreely: "自由に引用",
+    badgeWithData: "データと併せ",
+    badgeAvoid: "避ける",
+    fifraTitle: "FIFRA に関する注記",
+    fifraBody: "FIFRA (Federal Insecticide, Fungicide, and Rodenticide Act) は米国における抗菌クレームを規制します。処理品免除により「抗菌処理済」のような記述的クレームは個別の製品レベル EPA 登録なしで認められますが、具体的な病原体クレーム (「大腸菌を 99.9% 死滅」等) には活性成分の登録に紐付く試験データの裏付けが必要です。本ページはガイダンスであり法的助言ではありません — 提案されたマーケティング文言の公開前に社内コンプライアンスチームの確認を必ず受けてください。",
+    backToBasics: "FUZE の基礎へ戻る",
+    seeCerts: "認証スタックを見る",
+  },
+
 };
 
 export default ja;
