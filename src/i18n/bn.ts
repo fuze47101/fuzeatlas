@@ -7208,6 +7208,28 @@ const bn: Translations = {
     errNetwork: "নেটওয়ার্ক ত্রুটি",
   },
 
+  notificationsPage: {
+    loading: "নোটিফিকেশন লোড হচ্ছে...",
+    title: "নোটিফিকেশন",
+    unreadLabel: "অপঠিত",
+    allCaughtUp: "সব আপডেট",
+    totalLabel: "মোট",
+    markAllRead: "সব পঠিত হিসেবে চিহ্নিত করুন",
+    filterAll: "সব",
+    filterUnread: "অপঠিত",
+    allTypes: "সব ধরনের",
+    emptyUnreadTitle: "কোনো অপঠিত নোটিফিকেশন নেই",
+    emptyAllTitle: "এখনও কোনো নোটিফিকেশন নেই",
+    emptyUnreadBody: "আপনি সব আপডেট!",
+    emptyAllBody: "আপনার অ্যাকাউন্টে কার্যকলাপ থাকলে নোটিফিকেশন এখানে দেখাবে।",
+    viewDetails: "বিস্তারিত দেখুন →",
+    markAsRead: "পঠিত হিসেবে চিহ্নিত করুন",
+    justNow: "এখনই",
+    minSuffix: "m আগে",
+    hourSuffix: "h আগে",
+    daySuffix: "d আগে",
+  },
+
 };
 
 export default bn;
