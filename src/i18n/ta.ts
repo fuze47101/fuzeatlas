@@ -4891,6 +4891,81 @@ const ta: Translations = {
     docTypeOther: "மற்றவை",
   },
 
+  consumptionAdmin: {
+    loading: "நுகர்வுத் தரவு ஏற்றுகிறது...",
+    pageTitle: "நுகர்வு & மறுஉத்தரவு",
+    pageSubtitle: "தொழிற்சாலை FUZE பயன்பாடு, கணிக்கப்பட்ட run-out தேதிகள், மற்றும் தானியங்கி மறுஉத்தரவு triggers-ஐ கண்காணி",
+
+    btnNewOrder: "+ புதிய ஆர்டர்",
+    btnLogUsage: "+ Usage பதிவு",
+
+    kpiActiveFactories: "செயலில் உள்ள தொழிற்சாலைகள்",
+    kpiOfTotal: "மொத்தம் {n}-இல்",
+    kpiTotalOrdered: "மொத்தம் ஆர்டர் செய்யப்பட்டது",
+    kpiPending: "{n} காத்திருக்கிறது",
+    kpiTotalConsumed: "மொத்தம் நுகரப்பட்டது",
+    kpiAcrossAll: "அனைத்து தொழிற்சாலைகளிலும்",
+    kpiReorderAlerts: "மறுஉத்தரவு எச்சரிக்கைகள்",
+    kpiAlertsSplit: "{c} விமர்சனம், {w} எச்சரிக்கை",
+
+    annualDemandLabel: "ஆண்டு கணிக்கப்பட்ட தேவை",
+    annualDemandUnit: "லிட்டர்கள்",
+    annualDemandBottles: "~{n} பாட்டில்கள்",
+    annualDemandRevenue: "~${n} வருவாய்",
+
+    sectionFactoryInventory: "தொழிற்சாலை சரக்கு நிலை",
+    emptyTitle: "இன்னும் FUZE-இயக்கப்பட்ட தொழிற்சாலைகள் இல்லை.",
+    emptySub: "fuzeEnabled = true கொண்ட தொழிற்சாலைகள் இங்கே தோன்றும்.",
+
+    cellRemaining: "மீதம்",
+    cellBurn: "Burn/நாள்",
+    cellRunOut: "Run-out",
+    daysSuffix: "நா",
+    daysWord: "நாட்கள்",
+    fabricsSuffix: "ஃபேப்ரிக்குகள்",
+    fabricSuffix: "ஃபேப்ரிக்",
+    activeOrdersSuffix: "செயலில் உள்ள ஆர்டர்கள்",
+    activeOrderSuffix: "செயலில் உள்ள ஆர்டர்",
+
+    colFactory: "தொழிற்சாலை",
+    colCountry: "நாடு",
+    colOrdered: "ஆர்டர்",
+    colConsumed: "நுகரப்பட்டது",
+    colRemaining: "மீதம்",
+    colBurnDay: "Burn/நாள்",
+    colRunOut: "Run-Out",
+    colStatus: "நிலை",
+
+    modalOrderTitle: "புதிய FUZE ஆர்டர்",
+    modalUsageTitle: "FUZE Usage பதிவு",
+    fieldFactory: "தொழிற்சாலை",
+    placeholderFactory: "தொழிற்சாலையைத் தேர்ந்தெடு...",
+    fieldVolumeL: "அளவு (லிட்டர்கள்)",
+    fieldTier: "டியர்",
+    fieldNotes: "குறிப்புகள்",
+    fieldLitersUsed: "பயன்படுத்தப்பட்ட லிட்டர்கள்",
+    fieldMetersProcessed: "செயலாக்கப்பட்ட மீட்டர்கள்",
+    placeholderOptional: "விருப்பம்",
+    fieldMethod: "முறை",
+    placeholderSelect: "தேர்ந்தெடு...",
+    methodExhaust: "Exhaust (Dyebath)",
+    methodPad: "Pad-Dry-Cure",
+    methodSpray: "Spray",
+
+    summaryBottles: "பாட்டில்கள் (ஒவ்வொன்றும் 19L):",
+    summaryEstTotal: "மதிப்பிடப்பட்ட மொத்தம்:",
+
+    btnCancel: "ரத்து",
+    btnCreating: "உருவாக்குகிறது...",
+    btnCreateOrder: "ஆர்டர் உருவாக்கு",
+    btnLogging: "பதிவு செய்கிறது...",
+    btnLogUsageSubmit: "Usage பதிவு",
+
+    errorCreateOrder: "ஆர்டரை உருவாக்க முடியவில்லை",
+    errorLogUsage: "நுகர்வைப் பதிவு செய்ய முடியவில்லை",
+    errorNetwork: "நெட்வொர்க் பிழை",
+  },
+
 };
 
 export default ta;
