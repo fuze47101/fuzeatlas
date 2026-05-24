@@ -7857,6 +7857,18 @@ const it: Translations = {
     addFavoriteTitle: "Aggiungi ai preferiti",
   },
 
+  icpCorrelation: {
+    adminCrumb: "Admin",
+    crumb: "Correlazione ICP",
+    heading: "Correlazione ICP × AB",
+    subtitle: "Il grafico richiesto da Joseph (KUIU). FUZE residuo sul tessuto (misurato via ICP) confrontato con il tasso di abbattimento batterico in ogni esecuzione di test visibile al brand in Atlas. Linea di best-fit + R² sovrapposti.",
+    errorContext: "Caricamento correlazione ICP",
+    couldntLoadPrefix: "Impossibile caricare i dati di correlazione",
+    networkError: "Errore di rete.",
+    loadingState: "Caricamento dati di correlazione…",
+    footnote: "I testi rivolti al cliente usano \"FUZE residuo\" — la misurazione del metamateriale dal report ICP del laboratorio. Sempre etichettato FUZE / metamateriale nei deliverable per i clienti (regola di brand voice da CLAUDE.md).",
+  },
+
 };
 
 export default it;
