@@ -7645,6 +7645,35 @@ const zhTW: Translations = {
     errGeneric: "變更密碼失敗",
   },
 
+  claimsLandingPage: {
+    heroTitle: "聲明、認證與方法論",
+    heroSubtitle: "FUZE 如何運作、它取得哪些認證，以及我們為何選擇這種方式進行測試。",
+    techTitle: "FUZE 技術",
+    techBody1: "FUZE 是一款圍繞 FUZE metamaterial 打造的專有抗菌紡織品處理產品 — 於鹽湖城自有廠房，透過液態雷射剝蝕技術從回收電子產品中製造。此處理在標準紡織品後加工過程中（吸盡法、軋染—烘乾—固化、或噴塗法）永久結合於纖維，不改變面料的手感、染色、垂墜或透氣性。",
+    techBody2: "FUZE 設計上即為非溶出型。減菌效能源自細菌與纖維表面上已結合 FUZE metamaterial 的直接物理接觸 — 沒有任何化學物質釋出至洗滌水、無 PFAS、無黏合劑、無固化化學。此姿態使 FUZE 在每一陣法規順風中（德州總檢察長 PFAS 調查、加州 SB-707）皆站在正確的一邊。",
+    techBody3: "處理等級：F1 Full Spectrum（1.0 mg/kg，驗證 100 次水洗）· F2 Advanced（0.75 mg/kg，75 次水洗）· F3 Core（0.5 mg/kg，50 次水洗）· F4 Foundation（0.25 mg/kg，25 次水洗）。水洗次數透過獨立實驗室 AATCC 100 + ISO 20743 測試文件化，可應要求提供。",
+    certsTitle: "認證",
+    certEpaTitle: "美國 EPA 聯邦登記",
+    certEpaBody: "FUZE 化學配方已於美國環境保護署登記為抗菌類農藥。",
+    certCaEpaTitle: "加州 EPA 核准（2026 Q1）",
+    certCaEpaBody: "在加州較嚴格的法規體系下，獲准用於運動服、嬰幼童紡織品與醫療保健用途。",
+    certOekoTitle: "OEKO-TEX Standard 100 Class I",
+    certOekoBody: "經認證可直接接觸皮膚 — 包含嬰兒服與貼身衣物。",
+    certBluesignTitle: "bluesign® 認可",
+    certBluesignBody: "化學配方依 bluesign 準則經驗證對勞工、消費者與環境安全。",
+    certPfasTitle: "不含 PFAS",
+    certPfasBody: "配方中任何位置皆不含全氟與多氟烷基物質。無黏合劑、無固化助劑。",
+    certStandardsTitle: "已驗證之標準",
+    certStandardsBody: "AATCC 100、ASTM E2149、AATCC 30、ISO 18184、ISO 20743 — 第三方報告可應要求提供。",
+    standardsTitle: "測試標準",
+    standardsBody: "紡織品抗菌效能不是單一數字 — 它高度取決於您採用哪個測試標準，以及該標準是否適合該化學機制。以下是 FUZE 在各種測試方法上的對應方式。",
+    jabTitle: "我們為何以 ASTM E2149 為主",
+    jabBody: "我們以 ASTM E2149 為主，因為它是為非溶出型抗菌劑而設計的測試。其他依賴 AATCC 100 的競品之所以這麼做，是因為 AATCC 100 的多層堆疊幾何有利於溶出離子飽和層間空間 — 該測試從架構上就偏好溶出型機制。FUZE 設計上即不溶出。請在對的測試上見真章。",
+    jabFootnote: "（競品對應：層疊測試的注意事項適用於溶出型離子處理劑與四級銨類處理劑 — 不適用於 FUZE。）",
+    documentsTitle: "文件",
+    pressKitLink: "媒體資料包",
+  },
+
 };
 
 export default zhTW;
