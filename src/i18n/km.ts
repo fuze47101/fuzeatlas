@@ -7571,6 +7571,26 @@ const km: Translations = {
     footnote: "Customer-facing copy uses \"FUZE residual\" — the metamaterial measurement from the lab's ICP report. Always labelled FUZE / metamaterial in customer deliverables (CLAUDE.md brand-voice rule).",
   },
 
+  engagementDebug: {
+    crumb: "ការ debug ការចូលរួម",
+    engagementSuffix: "engagement",
+    calculatedLabel: "Calculated",
+    overallScoreLabel: "Overall score",
+    outOf100: "out of 100",
+    inputsLabel: "Inputs",
+    daysSinceContact: "Days since contact",
+    tests30d: "ការសាកល្បង (30d)",
+    tests90d: "ការសាកល្បង (90d)",
+    avgPayDays: "Avg pay days",
+    overdueInvoices: "Overdue invoices",
+    factorBreakdownTitle: "Factor breakdown",
+    weightLabel: "weight",
+    contributesLabel: "contributes",
+    ptsLabel: "pts",
+    loading: "កំពុងផ្ទុក…",
+    failedToLoad: "បរាជ័យ to load",
+  },
+
 };
 
 export default km;
