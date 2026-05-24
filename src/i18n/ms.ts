@@ -5130,6 +5130,81 @@ const ms: Translations = {
     docTypeOther: "Lain-lain",
   },
 
+  consumptionAdmin: {
+    loading: "Memuatkan data penggunaan...",
+    pageTitle: "Penggunaan & Pesanan Semula",
+    pageSubtitle: "Jejak penggunaan FUZE kilang, tarikh kehabisan diunjurkan, dan pencetus pesanan semula automatik",
+
+    btnNewOrder: "+ Pesanan Baharu",
+    btnLogUsage: "+ Log Penggunaan",
+
+    kpiActiveFactories: "Kilang Aktif",
+    kpiOfTotal: "daripada {n} jumlah",
+    kpiTotalOrdered: "Jumlah Ditempah",
+    kpiPending: "{n} menunggu",
+    kpiTotalConsumed: "Jumlah Digunakan",
+    kpiAcrossAll: "merentas semua kilang",
+    kpiReorderAlerts: "Amaran Pesanan Semula",
+    kpiAlertsSplit: "{c} kritikal, {w} amaran",
+
+    annualDemandLabel: "Permintaan Tahunan Diunjurkan",
+    annualDemandUnit: "liter",
+    annualDemandBottles: "~{n} botol",
+    annualDemandRevenue: "~${n} hasil",
+
+    sectionFactoryInventory: "Status Inventori Kilang",
+    emptyTitle: "Belum ada kilang yang diaktifkan FUZE.",
+    emptySub: "Kilang dengan fuzeEnabled = true akan dipaparkan di sini.",
+
+    cellRemaining: "Baki",
+    cellBurn: "Pembakaran/hari",
+    cellRunOut: "Habis",
+    daysSuffix: "h",
+    daysWord: "hari",
+    fabricsSuffix: "fabrik",
+    fabricSuffix: "fabrik",
+    activeOrdersSuffix: "pesanan aktif",
+    activeOrderSuffix: "pesanan aktif",
+
+    colFactory: "Kilang",
+    colCountry: "Negara",
+    colOrdered: "Ditempah",
+    colConsumed: "Digunakan",
+    colRemaining: "Baki",
+    colBurnDay: "Pembakaran/Hari",
+    colRunOut: "Habis",
+    colStatus: "Status",
+
+    modalOrderTitle: "Pesanan FUZE Baharu",
+    modalUsageTitle: "Log Penggunaan FUZE",
+    fieldFactory: "Kilang",
+    placeholderFactory: "Pilih kilang...",
+    fieldVolumeL: "Isi padu (liter)",
+    fieldTier: "Tier",
+    fieldNotes: "Nota",
+    fieldLitersUsed: "Liter Digunakan",
+    fieldMetersProcessed: "Meter Diproses",
+    placeholderOptional: "Pilihan",
+    fieldMethod: "Kaedah",
+    placeholderSelect: "Pilih...",
+    methodExhaust: "Eksaus (Tab Pencelup)",
+    methodPad: "Pad-Keringkan-Awet",
+    methodSpray: "Semburan",
+
+    summaryBottles: "Botol (19L setiap satu):",
+    summaryEstTotal: "Anggaran jumlah:",
+
+    btnCancel: "Batal",
+    btnCreating: "Mencipta...",
+    btnCreateOrder: "Cipta Pesanan",
+    btnLogging: "Melog...",
+    btnLogUsageSubmit: "Log Penggunaan",
+
+    errorCreateOrder: "Gagal mencipta pesanan",
+    errorLogUsage: "Gagal melog penggunaan",
+    errorNetwork: "Ralat rangkaian",
+  },
+
 };
 
 export default ms;
