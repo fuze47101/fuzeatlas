@@ -7802,6 +7802,24 @@ const ta: Translations = {
     footerCertifiedBy: "FUZE Atlas-ஆல் சான்றளிக்கப்பட்டது",
   },
 
+  forgotPassword: {
+    brandSubtitle: "உங்கள் கடவுச்சொல்லை மீட்டமை",
+    cardTitle: "உங்கள் கடவுச்சொல்லை மறந்துவிட்டீர்களா?",
+    cardBody: "உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடவும், உங்கள் கடவுச்சொல்லை மீட்டமைக்க ஒரு link-ஐ நாங்கள் அனுப்புவோம்.",
+    emailLabel: "மின்னஞ்சல் முகவரி",
+    emailPlaceholder: "you@801inc.com",
+    sendBtn: "Reset Link அனுப்பு",
+    sendingBusy: "அனுப்புகிறது...",
+    rememberPrefix: "உங்கள் கடவுச்சொல்லை நினைவில் கொள்கிறீர்களா?",
+    signInLink: "Sign in",
+    failedFallback: "கோரிக்கையை செயல்படுத்த முடியவில்லை",
+    networkError: "நெட்வொர்க் பிழை",
+    checkEmailTitle: "உங்கள் மின்னஞ்சலை சரிபார்க்கவும்",
+    checkEmailBody: "அந்த மின்னஞ்சலுடன் ஒரு கணக்கு இருந்தால், விரைவில் ஒரு கடவுச்சொல் மீட்டமைப்பு link-ஐப் பெறுவீர்கள்.",
+    backToSignIn: "Sign In-க்குத் திரும்பு",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default ta;
