@@ -7849,6 +7849,30 @@ const ur: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "دعوت نامہ لوڈ ہو رہا ہے…",
+    notFoundTitle: "دعوت نامہ نہیں ملا",
+    notFoundFallback: "ہو سکتا ہے یہ دعوت نامہ لنک ختم ہو چکا ہو یا پہلے ہی استعمال ہو چکا ہو۔",
+    chipLabel: "FUZE Atlas دعوت نامہ",
+    headingMiddle: "نے مدعو کیا",
+    headingSuffix: "اپنی FUZE سپلائی چین میں",
+    heroSubtitleFallbackPrefix: "اپنی سپلائی چین میں antimicrobial ٹیکسٹائل پروگراموں کو مربوط کرنے کے لیے FUZE Atlas استعمال کرتا ہے۔",
+    heroSubtitleFallbackSuffix: "شامل ہونے سے فیکٹری کو ٹیسٹنگ کے لیے کپڑے جمع کرنے، FUZE آرڈرز دینے، اور ICP نتائج کا سراغ لگانے کی اجازت ملتی ہے — سب کچھ براہ راست برانڈ سے منسلک۔",
+    notePrefix: "کی طرف سے نوٹ",
+    closedPrefix: "یہ دعوت نامہ پہلے ہی ہو چکا ہے",
+    closedReachOutPrefix: "رابطہ کریں",
+    closedTeamFallbackPrefix: "سے",
+    closedTeamFallbackSuffix: "ٹیم",
+    closedFreshLink: "اگر آپ کو نیا لنک چاہیے۔",
+    signUpCta: "سائن اپ",
+    signUpSubPrefix: "ایک نیا",
+    signUpSubSuffix: "Atlas پر اکاؤنٹ بنائیں",
+    alreadyInCta: "ہم پہلے سے Atlas میں ہیں",
+    alreadyInSub: "لاگ ان کریں اور اپنی موجودہ فیکٹری کو منسلک کریں",
+    sentPrefix: "دعوت نامہ بھیج دیا گیا",
+    questionsPrefix: "· سوالات؟",
+  },
+
 };
 
 export default ur;
