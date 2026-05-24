@@ -5047,6 +5047,61 @@ const bn: Translations = {
     scopeFallback: "ডিফল্ট",
   },
 
+  brandDiscovery: {
+    crumbHome: "হোম",
+    crumbWizard: "BD উইজার্ড",
+    crumbHere: "ব্র্যান্ড আবিষ্কার",
+    pageTitle: "🌎 বিশ্বব্যাপী ব্র্যান্ড আবিষ্কার",
+    pageSubtitle: "মাল্টি-AI ইঞ্জিন — Anthropic, OpenAI এবং Grok জুড়ে টেক্সটাইল ব্র্যান্ড খুঁজে ও যাচাই করে, তারপর স্বয়ংক্রিয়ভাবে প্রতিটি নতুন ব্র্যান্ডে Apollo যোগাযোগ সংযুক্ত করে যাতে BD উইজার্ড সাথে সাথে সেগুলি ব্যবহার করতে পারে।",
+
+    statTotalLabel: "DB-তে মোট ব্র্যান্ড",
+    backToWizard: "← উইজার্ডে ফিরে যান",
+    backToWizardTitle: "নতুন ব্র্যান্ড অবতরণের পরে উইজার্ডে রাউন্ড-ট্রিপ",
+
+    statsErrorContext: "আবিষ্কার পরিসংখ্যান লোড করুন",
+    statsErrorFallback: "আবিষ্কার পরিসংখ্যান লোড করা যায়নি",
+    statsNetworkError: "আবিষ্কার পরিসংখ্যান লোড করার সময় নেটওয়ার্ক ত্রুটি।",
+
+    autoEnrichTitle: "স্বয়ংক্রিয় সমৃদ্ধকরণ চালু আছে",
+    autoEnrichBody: "এখানে তৈরি প্রতিটি নতুন ব্র্যান্ড ডোমেন দ্বারা Apollo পিপল-সার্চের মাধ্যমে 8 জন পর্যন্ত সিনিয়র যোগাযোগ (প্রতিষ্ঠাতা / সি-সুট / VP / প্রধান / পরিচালক) সংযুক্ত পায়। BD উইজার্ডের ফিল্টার এই ব্র্যান্ডগুলিকে অবিলম্বে যেতে দেয় — কোনো আলাদা সমৃদ্ধকরণ পাসের প্রয়োজন নেই।",
+
+    settingsHeading: "আবিষ্কার সেটিংস",
+    labelCategory: "বিভাগ",
+    labelRegion: "অঞ্চল",
+    labelTargetCount: "লক্ষ্য সংখ্যা",
+    btnDiscovering: "🔍 আবিষ্কার করা হচ্ছে...",
+    btnRunDiscovery: "🚀 আবিষ্কার চালান",
+    btnRunning: "চলমান...",
+    btnAllCategories: "🌍 সমস্ত বিভাগ",
+
+    runningBanner: "⏳ Anthropic + OpenAI + Grok জুড়ে মাল্টি-AI আবিষ্কার চলছে... প্রতি বিভাগে 30-60 সেকেন্ড।",
+    errorPrefix: "❌",
+    errorDefault: "আবিষ্কার ব্যর্থ",
+
+    resultsHeadingPrefix: "আবিষ্কারের ফলাফল —",
+    chipAiSources: "AI উৎস:",
+    chipFound: "পাওয়া গেছে:",
+    chipAfterDedup: "ডিডুপের পরে:",
+    chipCreated: "তৈরি:",
+    chipContactsAttached: "📇 যোগাযোগ সংযুক্ত:",
+
+    colBrand: "ব্র্যান্ড",
+    colSegment: "সেগমেন্ট",
+    colPriority: "অগ্রাধিকার",
+    colValidation: "যাচাই",
+    colContacts: "যোগাযোগ",
+    colAiSources: "AI উৎস",
+    colActions: "ক্রিয়া",
+    tierPrefix: "টিয়ার",
+    aisConfirmed: "AI নিশ্চিত করেছে",
+    aiConfirmed: "AI নিশ্চিত",
+    viewResearch: "দেখুন ও গবেষণা",
+
+    historyHeading: "আবিষ্কার ইতিহাস (এই সেশন)",
+    historyFoundLabel: "পাওয়া গেছে:",
+    historyCreatedLabel: "তৈরি:",
+  },
+
 };
 
 export default bn;
