@@ -7434,6 +7434,28 @@ const ja: Translations = {
     errNetwork: "ネットワークエラー",
   },
 
+  notificationsPage: {
+    loading: "通知を読み込み中...",
+    title: "通知",
+    unreadLabel: "未読",
+    allCaughtUp: "すべて確認済み",
+    totalLabel: "合計",
+    markAllRead: "すべて既読にする",
+    filterAll: "すべて",
+    filterUnread: "未読",
+    allTypes: "すべてのタイプ",
+    emptyUnreadTitle: "未読の通知はありません",
+    emptyAllTitle: "通知はまだありません",
+    emptyUnreadBody: "すべて確認済みです！",
+    emptyAllBody: "アカウントにアクティビティがあると、通知がここに表示されます。",
+    viewDetails: "詳細を表示 →",
+    markAsRead: "既読にする",
+    justNow: "たった今",
+    minSuffix: "分前",
+    hourSuffix: "時間前",
+    daySuffix: "日前",
+  },
+
 };
 
 export default ja;
