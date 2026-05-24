@@ -6788,6 +6788,32 @@ const ur: Translations = {
     footerQuestions: "سوالات؟",
   },
 
+  settingsExchangeRates: {
+    title: "زر مبادلہ کی شرحیں",
+    subtitle: "کرنسی تبادلہ کی شرحوں کا انتظام کریں",
+    addRateBtn: "شرح شامل کریں",
+    cancelBtn: "منسوخ کریں",
+    addFormTitle: "زر مبادلہ کی شرح شامل کریں",
+    ratePlaceholder: "شرح",
+    submitAddBtn: "شرح شامل کریں",
+    converterTitle: "کرنسی کنورٹر",
+    fromLabel: "سے",
+    toLabel: "تک",
+    amountLabel: "رقم",
+    convertBtn: "تبدیل کریں",
+    rateResultPrefix: "شرح:",
+    quickStatsTitle: "فوری اعداد و شمار",
+    totalCurrenciesLabel: "کل کرنسیاں",
+    activeRatesLabel: "فعال شرحیں",
+    currentRatesTitle: "موجودہ شرحیں (بیس: USD)",
+    loading: "لوڈ ہو رہا ہے...",
+    emptyState: "کوئی زر مبادلہ کی شرحیں ترتیب نہیں دی گئیں",
+    colCurrencyPair: "کرنسی جوڑا",
+    colRate: "شرح",
+    colEffectiveDate: "نافذ ہونے کی تاریخ",
+    colSource: "ذریعہ",
+  },
+
 };
 
 export default ur;
