@@ -6266,6 +6266,31 @@ const es: Translations = {
     footerNote: "Ordenado: stock bajo primero, luego inactivo, luego por días-de-stock-restantes ascendente. \"Consumo diario\" = media móvil de 90 días de litros enviados a fábricas. \"Días restantes\" = stock actual ÷ consumo diario. \"Inactivo\" = sin pedidos de fábrica en los últimos 90 días. \"Sin precio\" significa que la tarifa mayorista de FUZE no está fijada; el distribuidor no puede colocar pedidos de reabastecimiento. Edita en la página por distribuidor.",
   },
 
+  conversionTracking: {
+    crumbDashboard: "Panel",
+    crumbCurrent: "Muestra → Producción",
+    title: "Conversión Muestra → Producción",
+    subtitle: "Sigue qué fábricas recibieron muestras y se convirtieron a pedidos de producción",
+    cardFactoriesSampled: "Fábricas muestreadas",
+    cardConverted: "Convertidas",
+    cardConversionRate: "Tasa de conversión",
+    cardAvgDays: "Días medios para convertir",
+    cardProdVolume: "Volumen de producción",
+    cardProdRevenue: "Ingresos de producción",
+    tabAll: "Todas",
+    tabConverted: "Convertidas",
+    tabPending: "Pendientes",
+    emptyText: "Aún no se han encontrado pedidos de muestra",
+    badgeConverted: "CONVERTIDA",
+    badgePending: "PENDIENTE",
+    sectionSamples: "Pedidos de muestra",
+    sectionTrials: "Solicitudes de prueba",
+    sectionProduction: "Pedidos de producción",
+    productionLabel: "Producción",
+    daysToConvertSuffix: "días para convertir",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default es;
