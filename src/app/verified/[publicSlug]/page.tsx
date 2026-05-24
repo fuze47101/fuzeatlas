@@ -10,6 +10,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PublicPageBeacon from "@/components/PublicPageBeacon";
+import { getServerTranslations } from "@/i18n/server";
 
 interface ActiveTier {
   tier: string;
@@ -86,10 +87,14 @@ export async function generateMetadata({
 
 export default async function VerifiedStorefrontPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ publicSlug: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 }) {
   const { publicSlug } = await params;
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).publicVerifiedPage;
   const data = await loadStorefront(publicSlug);
   if (!data) notFound();
 
@@ -107,7 +112,7 @@ export default async function VerifiedStorefrontPage({
       >
         <div className="max-w-5xl mx-auto text-white">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur text-xs font-bold uppercase tracking-wider mb-4">
-            ✓ Certified by FUZE Atlas
+            {T.certifiedBadge}
           </div>
           {data.profile.logoUrl && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -129,13 +134,13 @@ export default async function VerifiedStorefrontPage({
       {/* Live stats */}
       <section className="max-w-5xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatCard label="Fabrics certified" value={data.stats.fabricsCertified} />
+          <StatCard label={T.statFabricsCertified} value={data.stats.fabricsCertified} />
           <StatCard
-            label="Tests passed (12 months)"
+            label={T.statTestsPassed}
             value={data.stats.testsPassed12mo}
           />
           <StatCard
-            label="Countries shipping"
+            label={T.statCountries}
             value={data.stats.countriesShipping}
           />
         </div>
@@ -145,10 +150,10 @@ export default async function VerifiedStorefrontPage({
       {data.activeTiers.length > 0 && (
         <section className="max-w-5xl mx-auto px-6 pb-12">
           <h2 className="text-2xl font-black text-slate-900 mb-1">
-            Active FUZE tiers
+            {T.activeTiersTitle}
           </h2>
           <p className="text-sm text-slate-600 mb-4">
-            Treatment levels currently in production at certified facilities.
+            {T.activeTiersBody}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {data.activeTiers.map((t) => {
@@ -174,7 +179,7 @@ export default async function VerifiedStorefrontPage({
                     </p>
                   )}
                   <p className="text-[11px] text-slate-400 mt-2">
-                    Last passed{" "}
+                    {T.lastPassedLabel}{" "}
                     {new Date(t.lastPassedAt).toLocaleDateString()}
                   </p>
                 </div>
@@ -188,7 +193,7 @@ export default async function VerifiedStorefrontPage({
       <section className="max-w-5xl mx-auto px-6 pb-12">
         <details className="rounded-xl border border-slate-200 bg-white p-5">
           <summary className="cursor-pointer font-bold text-slate-900">
-            About FUZE technology
+            {T.aboutSummaryTitle}
           </summary>
           <div className="mt-3 text-sm text-slate-700 space-y-3">
             <p>
@@ -227,17 +232,16 @@ export default async function VerifiedStorefrontPage({
           }}
         >
           <h2 className="text-2xl font-black mb-2">
-            Verify a specific product
+            {T.verifyCtaTitle}
           </h2>
           <p className="text-sm text-white/90 mb-4">
-            Every certified product carries a unique QR code linked to its
-            production batch and test history.
+            {T.verifyCtaBody}
           </p>
           <Link
             href="/verified/qr"
             className="inline-block px-5 py-2 rounded-md bg-white text-slate-900 font-bold hover:bg-slate-100"
           >
-            Look up a product →
+            {T.verifyCtaBtn}
           </Link>
         </div>
       </section>
@@ -246,7 +250,7 @@ export default async function VerifiedStorefrontPage({
       <footer className="max-w-5xl mx-auto px-6 py-8 text-xs text-slate-500 border-t border-slate-200">
         <div className="flex flex-wrap justify-between gap-2">
           <p>
-            Certified by FUZE Atlas ·{" "}
+            {T.footerCertifiedBy} ·{" "}
             <a href="https://fuzeatlas.com" className="hover:underline">
               fuzeatlas.com
             </a>
@@ -254,7 +258,7 @@ export default async function VerifiedStorefrontPage({
           <p>
             {data.brand.website && (
               <a href={data.brand.website} className="hover:underline">
-                Brand site →
+                {T.brandSiteLink}
               </a>
             )}
             {data.profile.supportEmail && (
@@ -264,7 +268,7 @@ export default async function VerifiedStorefrontPage({
                   href={`mailto:${data.profile.supportEmail}`}
                   className="hover:underline"
                 >
-                  Contact
+                  {T.contactLink}
                 </a>
               </>
             )}
