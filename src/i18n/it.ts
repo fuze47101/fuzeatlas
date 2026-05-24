@@ -7256,6 +7256,21 @@ const it: Translations = {
     errNetwork: "Errore di rete",
   },
 
+  verifyEmail: {
+    verifyingTitle: "Verifica dell'email in corso...",
+    successTitle: "Email verificata",
+    welcomePrefix: "Benvenuto",
+    successBody: "La tua email è stata verificata. Reindirizzamento al login...",
+    failedTitle: "Verifica fallita",
+    resendVerificationBtn: "Invia di nuovo email di verifica",
+    checkEmailTitle: "Controlla la tua email",
+    checkEmailBody: "Un link di verifica è stato inviato al tuo indirizzo email. Clicca sul link per verificare il tuo account.",
+    resendEmailBtn: "Invia di nuovo email",
+    sendingBtn: "Invio in corso...",
+    errVerifyFailed: "Verifica email fallita",
+    errSendFailed: "Invio email di verifica fallito",
+  },
+
 };
 
 export default it;
