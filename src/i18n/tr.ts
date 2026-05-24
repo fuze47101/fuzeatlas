@@ -3230,6 +3230,31 @@ const tr: Translations = {
     deleteFailed: "Silme başarısız",
   },
 
+  educationMain: {
+    kicker: "FUZE Temelleri",
+    pageTitle: "FUZE gerçekte nasıl çalışır — ve neden farklıdır",
+    pageIntro: "FUZE'nin kumaşa ne koyduğu, bakterileri nasıl öldürdüğü, hangi testlerin onu doğru ölçtüğü ve bir marka bizimle iyonik / çinko / QAC tabanlı rakipler arasında seçim yaparken bunun ne anlama geldiği hakkında dört bölümlü bir başlangıç rehberi.",
+    forBrands: "Markalar için",
+    forFactories: "Fabrikalar için",
+    forDistributors: "Distribütörler için",
+    forSalesReps: "Satış temsilcileri için",
+    segmentKicker: "Segment bazlı sunum",
+    segmentTitle: "Kendi sektörünüz için FUZE",
+    segmentIntro: "Yukarıdaki bilim evrenseldir. Aşağıdaki her segment, o hedef kitleye özel önerilen FUZE seviye merdiveni, test yığını, mevzuat onayları ve outreach hook'una sahiptir.",
+    openSegment: "Segment sayfasını aç →",
+    dosageKicker: "Bölüm 1 — Ayak İzi",
+    mechanismKicker: "Bölüm 2 — Mekanizma",
+    mechanismTitle: "Sızıntılı iyonlar vs iyonik olmayan temas-öldürme",
+    performanceKicker: "Bölüm 3 — Performans Yığını (F1 → F4)",
+    performanceTitle: "Her seviye kalıcıdır. Her adım yeni bir FUZE katmanı ekler.",
+    testsKicker: "Bölüm 4 — Beş test",
+    testsTitle: "Piyasadaki beş test — yalnızca biri FUZE'nin mekanizması için tasarlandı",
+    synthesisKicker: "Bölüm 5 — Bunun markanız için anlamı",
+    synthesisTitle: "Her tedarik zinciri toplantısına götürmeniz gereken üç şey",
+    ctaPricing: "Belirli bir rakibe karşı maliyeti gör",
+    ctaSustainability: "Sürdürülebilirlik etkisini gör",
+  },
+
 };
 
 export default tr;
