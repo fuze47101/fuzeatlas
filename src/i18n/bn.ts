@@ -7820,6 +7820,30 @@ const bn: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "আমন্ত্রণ লোড হচ্ছে…",
+    notFoundTitle: "আমন্ত্রণ পাওয়া যায়নি",
+    notFoundFallback: "এই আমন্ত্রণ লিঙ্কের মেয়াদ শেষ হয়ে গেছে বা ইতিমধ্যে ব্যবহৃত হয়েছে।",
+    chipLabel: "FUZE Atlas আমন্ত্রণ",
+    headingMiddle: "আমন্ত্রণ জানিয়েছেন",
+    headingSuffix: "তাদের FUZE সরবরাহ চেইনে যোগ দিতে",
+    heroSubtitleFallbackPrefix: "তাদের সরবরাহ চেইন জুড়ে অ্যান্টিমাইক্রোবিয়াল টেক্সটাইল প্রোগ্রাম সমন্বয় করতে FUZE Atlas ব্যবহার করেন।",
+    heroSubtitleFallbackSuffix: "যোগদান কারখানাকে কাপড় পরীক্ষার জন্য জমা দিতে, FUZE অর্ডার দিতে এবং ICP ফলাফল ট্র্যাক করতে দেয় — সবকিছুই সরাসরি ব্র্যান্ডের সাথে সংযুক্ত।",
+    notePrefix: "থেকে নোট",
+    closedPrefix: "এই আমন্ত্রণ ইতিমধ্যে",
+    closedReachOutPrefix: "যোগাযোগ করুন",
+    closedTeamFallbackPrefix: "",
+    closedTeamFallbackSuffix: "টিমের সাথে",
+    closedFreshLink: "যদি আপনার একটি নতুন লিঙ্ক প্রয়োজন হয়।",
+    signUpCta: "সাইন আপ করুন",
+    signUpSubPrefix: "একটি নতুন তৈরি করুন",
+    signUpSubSuffix: "Atlas-এ অ্যাকাউন্ট",
+    alreadyInCta: "আমরা ইতিমধ্যে Atlas-এ আছি",
+    alreadyInSub: "লগ ইন করুন এবং আপনার বিদ্যমান কারখানা সংযুক্ত করুন",
+    sentPrefix: "আমন্ত্রণ পাঠানো হয়েছে",
+    questionsPrefix: "· প্রশ্ন আছে?",
+  },
+
 };
 
 export default bn;
