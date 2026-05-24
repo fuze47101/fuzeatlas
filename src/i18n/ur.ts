@@ -7662,6 +7662,24 @@ const ur: Translations = {
     emptyBody: "فلٹرز کو وسیع کرنے کی کوشش کریں — یا \"توثیق شدہ بینچ ٹیسٹ\" فلٹر کو ہٹا دیں اگر آپ ایسے کپڑے دیکھنا چاہتے ہیں جو ابھی ترقی کے مرحلے میں ہیں۔",
   },
 
+  importBrands: {
+    title: "بلک امپورٹ — برانڈز",
+    subtitle: "تجارتی شو، فہرست، یا ریسرچ ڈمپ سے برانڈ امیدواروں کا CSV پیسٹ یا اپ لوڈ کریں۔ ہم کالم میپ کریں گے، توثیق کا پیش منظر دکھائیں گے، اور CLI کے استعمال کردہ اسی سیڈ-برانڈ ہیلپر کے ذریعے idempotent طور پر لکھیں گے۔",
+    backLabel: "برانڈ پائپ لائن",
+    brandNameLabel: "برانڈ کا نام",
+    brandNameHint: "(قدرتی کلید — upsert یہاں کلیدی ہے)",
+    domainLabel: "ای میل ڈومین",
+    domainHint: 'مثال "rhone.com"',
+    repEmailLabel: "بنیادی AM ای میل",
+    repEmailHint: "Atlas صارف کے طور پر پہلے سے موجود ہونا ضروری ہے",
+    tierLabel: "درکار FUZE درجہ",
+    tierHint: "F1 / F2 / F3 / F4 — طے شدہ F2",
+    cadenceLabel: "ICP cadence (ہر N بیچ)",
+    cadenceHint: "طے شدہ 5",
+    countryLabel: "ملک",
+    websiteLabel: "ویب سائٹ",
+  },
+
 };
 
 export default ur;
