@@ -7670,6 +7670,19 @@ const zhCN: Translations = {
     pressKitLink: "媒体资料包",
   },
 
+  educationCompliance: {
+    backLink: "← 返回 FUZE 基础",
+    kicker: "合规与认证",
+    heroTitle: "品牌所要求的每一项认证清单",
+    heroBody: "一张截图搞定您的供应商问卷。EPA 联邦 + 加州、OEKO-TEX Standard 100 Class I、bluesign® 认证、无 PFAS、无甲醛、符合 ZDHC。四个等级均覆盖抗菌、抗病毒、抗真菌测试数据——报告可应要求提供。",
+    activeBadge: "有效 ✓",
+    docCopiesTitle: "需要文档原件？",
+    docCopiesBody: "文档中心收录每一项认证、SDS、TDS 和 COA 的实时 PDF 副本。合规团队可直接下载用于供应商问卷。",
+    docCenterCta: "打开文档中心 →",
+    backBasicsBtn: "返回 FUZE 基础",
+    whatYouCanClaimBtn: "可声明的内容 →",
+  },
+
 };
 
 export default zhCN;
