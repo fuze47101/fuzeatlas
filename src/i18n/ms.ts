@@ -8083,6 +8083,19 @@ const ms: Translations = {
     questionsPrefix: "· Soalan?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "Playbook",
+    heading: "Playbook BD",
+    subtitle: "Panduan jangkauan ditanda kategori. Sukai yang anda gunakan; jenama menunjukkan playbook yang dicadangkan berdasarkan Brand.textileCategory.",
+    failedFallback: "Gagal",
+    emptyBody: "Belum ada playbook untuk kategori ini.",
+    emptySeedHint: "Cetuskan",
+    emptySeedHintSuffix: "melalui fzcron untuk memasukkan tiga playbook permulaan.",
+    removeFavoriteTitle: "Buang kegemaran",
+    addFavoriteTitle: "Tambah kegemaran",
+  },
+
 };
 
 export default ms;
