@@ -7633,6 +7633,24 @@ const th: Translations = {
     emptyBody: "ลองขยายตัวกรอง — หรือลบตัวกรอง \"bench test ที่ตรวจสอบ\" หากต้องการดูผ้าที่ยังอยู่กลางการพัฒนา",
   },
 
+  importBrands: {
+    title: "Bulk import — แบรนด์",
+    subtitle: "วางหรืออัปโหลด CSV ของผู้สมัครแบรนด์จากงานแสดงสินค้า รายการ หรือ research dump เราจะ map คอลัมน์ ดูตัวอย่างการตรวจสอบ และเขียนแบบ idempotent ผ่านตัวช่วย seed-brand เดียวกับที่ CLI ใช้",
+    backLabel: "Pipeline แบรนด์",
+    brandNameLabel: "ชื่อแบรนด์",
+    brandNameHint: "(natural key — upsert คีย์ที่นี่)",
+    domainLabel: "โดเมนอีเมล",
+    domainHint: "เช่น \"rhone.com\"",
+    repEmailLabel: "อีเมล AM หลัก",
+    repEmailHint: "ต้องมีอยู่แล้วเป็นผู้ใช้ Atlas",
+    tierLabel: "ระดับ FUZE ที่ต้องการ",
+    tierHint: "F1 / F2 / F3 / F4 — ค่าเริ่มต้น F2",
+    cadenceLabel: "ICP cadence (ทุก N ชุด)",
+    cadenceHint: "ค่าเริ่มต้น 5",
+    countryLabel: "ประเทศ",
+    websiteLabel: "เว็บไซต์",
+  },
+
 };
 
 export default th;
