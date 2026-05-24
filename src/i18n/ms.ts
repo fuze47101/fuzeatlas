@@ -4766,6 +4766,16 @@ const ms: Translations = {
     sanityCheckHeader: "Pemeriksaan Kewarasan (apa yang CTLA harus laporkan)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "Rangkaian Pengedar",
+    pageSubtitle: "Urus rakan kongsi pengedaran global, inventori, dan liputan anda",
+    inventoryCta: "📊 Inventori & Kadar Pembakaran",
+    worldwideCta: "🌍 Inventori Seluruh Dunia",
+    newDistributorCta: "+ Pengedar Baharu",
+    newDistributorModalTitle: "Pengedar baharu",
+    nameRequiredError: "Nama diperlukan",
+  },
+
 };
 
 export default ms;
