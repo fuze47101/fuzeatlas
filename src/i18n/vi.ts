@@ -5279,6 +5279,81 @@ const vi: Translations = {
     docTypeOther: "Khác",
   },
 
+  consumptionAdmin: {
+    loading: "Đang tải dữ liệu tiêu thụ...",
+    pageTitle: "Tiêu thụ & Đặt hàng lại",
+    pageSubtitle: "Theo dõi việc sử dụng FUZE của nhà máy, ngày dự kiến hết và kích hoạt đặt hàng lại tự động",
+
+    btnNewOrder: "+ Đơn hàng mới",
+    btnLogUsage: "+ Ghi nhận sử dụng",
+
+    kpiActiveFactories: "Nhà máy đang hoạt động",
+    kpiOfTotal: "trên {n} tổng cộng",
+    kpiTotalOrdered: "Tổng đã đặt",
+    kpiPending: "{n} chờ duyệt",
+    kpiTotalConsumed: "Tổng đã tiêu thụ",
+    kpiAcrossAll: "trên tất cả nhà máy",
+    kpiReorderAlerts: "Cảnh báo đặt hàng lại",
+    kpiAlertsSplit: "{c} nghiêm trọng, {w} cảnh báo",
+
+    annualDemandLabel: "Nhu cầu dự kiến hàng năm",
+    annualDemandUnit: "lít",
+    annualDemandBottles: "~{n} chai",
+    annualDemandRevenue: "~${n} doanh thu",
+
+    sectionFactoryInventory: "Trạng thái tồn kho nhà máy",
+    emptyTitle: "Chưa có nhà máy nào kích hoạt FUZE.",
+    emptySub: "Các nhà máy có fuzeEnabled = true sẽ hiển thị ở đây.",
+
+    cellRemaining: "Còn lại",
+    cellBurn: "Tiêu hao/ngày",
+    cellRunOut: "Hết hàng",
+    daysSuffix: "n",
+    daysWord: "ngày",
+    fabricsSuffix: "vải",
+    fabricSuffix: "vải",
+    activeOrdersSuffix: "đơn hàng đang hoạt động",
+    activeOrderSuffix: "đơn hàng đang hoạt động",
+
+    colFactory: "Nhà máy",
+    colCountry: "Quốc gia",
+    colOrdered: "Đã đặt",
+    colConsumed: "Đã tiêu thụ",
+    colRemaining: "Còn lại",
+    colBurnDay: "Tiêu hao/Ngày",
+    colRunOut: "Hết hàng",
+    colStatus: "Trạng thái",
+
+    modalOrderTitle: "Đơn hàng FUZE mới",
+    modalUsageTitle: "Ghi nhận sử dụng FUZE",
+    fieldFactory: "Nhà máy",
+    placeholderFactory: "Chọn nhà máy...",
+    fieldVolumeL: "Khối lượng (lít)",
+    fieldTier: "Hạng",
+    fieldNotes: "Ghi chú",
+    fieldLitersUsed: "Số lít đã dùng",
+    fieldMetersProcessed: "Số mét đã xử lý",
+    placeholderOptional: "Tùy chọn",
+    fieldMethod: "Phương pháp",
+    placeholderSelect: "Chọn...",
+    methodExhaust: "Exhaust (Dyebath)",
+    methodPad: "Pad-Dry-Cure",
+    methodSpray: "Phun",
+
+    summaryBottles: "Chai (19L mỗi chai):",
+    summaryEstTotal: "Tổng ước tính:",
+
+    btnCancel: "Hủy",
+    btnCreating: "Đang tạo...",
+    btnCreateOrder: "Tạo đơn hàng",
+    btnLogging: "Đang ghi...",
+    btnLogUsageSubmit: "Ghi nhận sử dụng",
+
+    errorCreateOrder: "Không tạo được đơn hàng",
+    errorLogUsage: "Không ghi nhận được tiêu thụ",
+    errorNetwork: "Lỗi mạng",
+  },
+
 };
 
 export default vi;
