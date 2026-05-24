@@ -7808,6 +7808,19 @@ const vi: Translations = {
     pressKitLink: "Bộ tài liệu báo chí",
   },
 
+  educationCompliance: {
+    backLink: "← Quay lại FUZE cơ bản",
+    kicker: "Tuân thủ & Chứng nhận",
+    heroTitle: "Mọi bộ chứng nhận mà thương hiệu yêu cầu",
+    heroBody: "Một ảnh chụp màn hình cho bảng câu hỏi nhà cung cấp của bạn. EPA liên bang + California, OEKO-TEX Standard 100 Class I, bluesign® được phê duyệt, không PFAS, không formaldehyde, phù hợp với ZDHC. Dữ liệu thử nghiệm kháng khuẩn / kháng virus / kháng nấm trên cả bốn hạng — báo cáo có sẵn theo yêu cầu.",
+    activeBadge: "Hoạt động ✓",
+    docCopiesTitle: "Cần bản sao tài liệu thực tế?",
+    docCopiesBody: "Trung tâm tài liệu chứa các bản sao PDF trực tiếp của mọi chứng nhận, SDS, TDS và COA. Các nhóm tuân thủ có thể tải xuống trực tiếp cho bảng câu hỏi nhà cung cấp.",
+    docCenterCta: "Mở Trung tâm tài liệu →",
+    backBasicsBtn: "Quay lại FUZE cơ bản",
+    whatYouCanClaimBtn: "Những gì bạn có thể tuyên bố →",
+  },
+
 };
 
 export default vi;
