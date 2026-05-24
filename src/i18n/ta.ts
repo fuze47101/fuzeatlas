@@ -7230,6 +7230,32 @@ const ta: Translations = {
     daySuffix: "நா முன்",
   },
 
+  resetPassword: {
+    tagline: "புதிய கடவுச்சொல்லை உருவாக்கு",
+    formTitle: "கடவுச்சொல்லை மீட்டமை",
+    newPasswordLabel: "புதிய கடவுச்சொல்",
+    newPasswordPlaceholder: "புதிய கடவுச்சொல்லை உள்ளிடவும்",
+    confirmPasswordLabel: "கடவுச்சொல்லை உறுதிப்படுத்து",
+    confirmPasswordPlaceholder: "கடவுச்சொல்லை உறுதிப்படுத்து",
+    resetBtn: "கடவுச்சொல்லை மீட்டமை",
+    resettingBtn: "மீட்டமைக்கிறது...",
+    backToSignIn: "Sign In-க்குத் திரும்பு",
+    successTitle: "கடவுச்சொல் வெற்றிகரமாக மீட்டமைக்கப்பட்டது",
+    successBody: "உங்கள் கடவுச்சொல் வெற்றிகரமாக மீட்டமைக்கப்பட்டது. இப்போது உங்கள் புதிய கடவுச்சொல்லுடன் sign in செய்யலாம்.",
+    signInBtn: "Sign In",
+    invalidLinkTitle: "Invalid Reset Link",
+    invalidLinkBody: "Reset link தவறானது அல்லது காலாவதியாகியுள்ளது. புதியதை கோரவும்.",
+    requestNewLinkBtn: "புதிய Link கோரு",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "ஏற்றுகிறது...",
+    errInvalidToken: "Invalid அல்லது missing reset token",
+    errInvalidTokenShort: "Invalid reset token",
+    errMinLength: "கடவுச்சொல் குறைந்தபட்சம் 6 எழுத்துக்கள் இருக்க வேண்டும்",
+    errMismatch: "கடவுச்சொற்கள் பொருந்தவில்லை",
+    errResetFailed: "கடவுச்சொல்லை மீட்டமைக்க முடியவில்லை",
+    errNetwork: "நெட்வொர்க் பிழை",
+  },
+
 };
 
 export default ta;
