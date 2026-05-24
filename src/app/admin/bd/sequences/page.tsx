@@ -19,6 +19,7 @@
  */
 import { useEffect, useMemo, useState, useCallback } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface SeqStep {
   id: string;
@@ -104,6 +105,8 @@ function contactDisplay(c: SeqContact): string {
 }
 
 export default function BDSequencesPage() {
+  const { t } = useI18n();
+  const T = t.bdSequencesList;
   const [sequences, setSequences] = useState<Sequence[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -203,21 +206,21 @@ export default function BDSequencesPage() {
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <div className="text-xs uppercase tracking-wider text-slate-500">BD Wizard</div>
-          <h1 className="text-2xl font-semibold text-slate-900">Sequences</h1>
+          <div className="text-xs uppercase tracking-wider text-slate-500">{T.kicker}</div>
+          <h1 className="text-2xl font-semibold text-slate-900">{T.heading}</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Long-funnel outbound. Cron advances steps hourly. Ready steps park on{" "}
+            {T.subtitlePrefix}{" "}
             <Link href="/acm/tasks" className="text-indigo-600 underline-offset-2 hover:underline">
               /acm/tasks
             </Link>{" "}
-            for your review — nothing auto-sends.
+            {T.subtitleSuffix}
           </p>
         </div>
         <Link
           href="/admin/bd/wizard"
           className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-700"
         >
-          Open BD Wizard →
+          {T.openWizardBtn}
         </Link>
       </div>
 
@@ -241,7 +244,7 @@ export default function BDSequencesPage() {
         ))}
         {counts.readySteps > 0 && (
           <span className="ml-2 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-amber-900">
-            🔔 {counts.readySteps} step{counts.readySteps === 1 ? "" : "s"} awaiting your review
+            🔔 {counts.readySteps} {counts.readySteps === 1 ? T.stepAwaitingSingular : T.stepsAwaitingPlural}
           </span>
         )}
         {isAdmin && (
@@ -251,14 +254,14 @@ export default function BDSequencesPage() {
               checked={showAll}
               onChange={(e) => setShowAll(e.target.checked)}
             />
-            Show all reps
+            {T.showAllRepsLabel}
           </label>
         )}
       </div>
 
       {loading ? (
         <div className="rounded-lg border border-slate-200 bg-white p-8 text-center text-slate-500">
-          Loading sequences…
+          {T.loadingState}
         </div>
       ) : error ? (
         <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
@@ -268,17 +271,17 @@ export default function BDSequencesPage() {
         <div className="rounded-lg border border-dashed border-slate-300 bg-white p-12 text-center text-slate-500">
           <div className="text-4xl">🪁</div>
           <div className="mt-3 text-base font-medium text-slate-700">
-            No {statusFilter} sequences
+            {T.emptyHeadPrefix} {statusFilter} {T.emptyHeadSuffix}
           </div>
           <div className="mt-1 text-sm">
-            Kick one off by sending your first email through the{" "}
+            {T.emptyBodyPrefix}{" "}
             <Link
               href="/admin/bd/wizard"
               className="text-indigo-600 underline-offset-2 hover:underline"
             >
-              BD Wizard
+              {T.emptyBodyLink}
             </Link>
-            . Every first send spins up a 6-step cadence automatically.
+            {T.emptyBodySuffix}
           </div>
         </div>
       ) : (
@@ -286,12 +289,12 @@ export default function BDSequencesPage() {
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
               <tr>
-                <th className="px-4 py-3 text-left">Brand / Contact</th>
-                <th className="px-4 py-3 text-left">Progress</th>
-                <th className="px-4 py-3 text-left">Next</th>
-                {showAll && isAdmin && <th className="px-4 py-3 text-left">Rep</th>}
-                <th className="px-4 py-3 text-left">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th className="px-4 py-3 text-left">{T.colBrandContact}</th>
+                <th className="px-4 py-3 text-left">{T.colProgress}</th>
+                <th className="px-4 py-3 text-left">{T.colNext}</th>
+                {showAll && isAdmin && <th className="px-4 py-3 text-left">{T.colRep}</th>}
+                <th className="px-4 py-3 text-left">{T.colStatus}</th>
+                <th className="px-4 py-3 text-right">{T.colActions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -353,7 +356,7 @@ export default function BDSequencesPage() {
                     <td className="px-4 py-3">
                       {readyStep ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-900">
-                          🔔 {CHANNEL_LABEL[readyStep.channel] || readyStep.channel} ready
+                          🔔 {CHANNEL_LABEL[readyStep.channel] || readyStep.channel} {T.readyChipSuffix}
                         </span>
                       ) : s.nextStep ? (
                         <span className="text-xs text-slate-600">
@@ -391,21 +394,21 @@ export default function BDSequencesPage() {
                             href={`/admin/bd/wizard?stepId=${readyStep.id}`}
                             className="rounded-md bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:bg-indigo-700"
                           >
-                            Review & send
+                            {T.reviewSendBtn}
                           </Link>
                         ) : readyStep ? (
                           <Link
                             href={`/admin/bd/sequences/${s.id}`}
                             className="rounded-md border border-indigo-300 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
                           >
-                            Open
+                            {T.openBtn}
                           </Link>
                         ) : (
                           <Link
                             href={`/admin/bd/sequences/${s.id}`}
                             className="rounded-md border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
                           >
-                            View
+                            {T.viewBtn}
                           </Link>
                         )}
                         {s.status === "active" && (
@@ -415,14 +418,14 @@ export default function BDSequencesPage() {
                               onClick={() => pause(s.id)}
                               className="rounded-md border border-amber-300 bg-white px-2 py-1 text-xs text-amber-800 hover:bg-amber-50 disabled:opacity-50"
                             >
-                              Pause
+                              {T.pauseBtn}
                             </button>
                             <button
                               disabled={busyId === s.id}
                               onClick={() => exit(s.id)}
                               className="rounded-md border border-rose-300 bg-white px-2 py-1 text-xs text-rose-800 hover:bg-rose-50 disabled:opacity-50"
                             >
-                              Exit
+                              {T.exitBtn}
                             </button>
                           </>
                         )}
@@ -432,7 +435,7 @@ export default function BDSequencesPage() {
                             onClick={() => resume(s.id)}
                             className="rounded-md border border-emerald-300 bg-white px-2 py-1 text-xs text-emerald-800 hover:bg-emerald-50 disabled:opacity-50"
                           >
-                            Resume
+                            {T.resumeBtn}
                           </button>
                         )}
                       </div>
