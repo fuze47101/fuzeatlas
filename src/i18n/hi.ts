@@ -4596,6 +4596,49 @@ const hi: Translations = {
     sowEmptyNothingStuck: "कुछ भी अटका हुआ नहीं।",
   },
 
+  ordersAdmin: {
+    pageTitle: "ऑर्डर प्रबंधन",
+    pageSubtitle: "सभी FUZE ऑर्डर की समीक्षा करें, अनुमोदित करें, और ट्रैक करें",
+    myAccountsOnly: "केवल मेरे खाते",
+    awaitingApprovalTemplate: "{n} ऑर्डर{s} अनुमोदन प्रतीक्षित",
+
+    statTotal: "कुल",
+    statPending: "लंबित",
+    statApproved: "अनुमोदित",
+    statProcessing: "प्रक्रिया में",
+    statShipped: "भेजा गया",
+    statDelivered: "वितरित",
+    statRevenue: "राजस्व",
+
+    filterAll: "सभी",
+    filterAllTypes: "सभी प्रकार",
+
+    emptyMessage: "फ़िल्टर से मेल खाने वाला कोई ऑर्डर नहीं",
+
+    colOrder: "ऑर्डर",
+    colFactory: "कारखाना",
+    colType: "प्रकार",
+    colVolume: "मात्रा",
+    colBrand: "ब्रांड",
+    colTotal: "कुल",
+    colFulfillment: "पूर्ति",
+    colStatus: "स्थिति",
+    colDate: "तिथि",
+
+    statusDraft: "मसौदा",
+    statusQuoted: "उद्धृत",
+    statusPendingApproval: "अनुमोदन प्रतीक्षित",
+    statusApproved: "अनुमोदित",
+    statusConfirmed: "पुष्टि",
+    statusProcessing: "प्रक्रिया में",
+    statusShipped: "भेजा गया",
+    statusDelivered: "वितरित",
+    statusCancelled: "रद्द",
+
+    directUsaLabel: "सीधे USA",
+    tagsSuffix: "टैग",
+  },
+
 };
 
 export default hi;
