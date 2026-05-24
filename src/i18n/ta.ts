@@ -2589,6 +2589,37 @@ const ta: Translations = {
     factoryLabel: "தொழிற்சாலை:",
   },
 
+  verifySku: {
+    errorTitle: "இந்த குறியீட்டை சரிபார்க்க முடியவில்லை",
+    errorBlurb:
+      "சரிபார்ப்பு தரவுத்தளத்தை அணுகுவதில் சிக்கல் ஏற்பட்டது. ஒரு கணம் கழித்து மீண்டும் முயற்சிக்கவும்.",
+    notCertifiedTitle: "FUZE-சான்றளிக்கப்பட்ட SKU அல்ல",
+    notCertifiedBlurbPrefix: "குறியீடு",
+    notCertifiedBlurbSuffix:
+      "எங்கள் சரிபார்ப்பு தரவுத்தளத்தில் இல்லை. இது FUZE hangtag-இலிருந்து வந்திருந்தால், தயவுசெய்து பிராண்டை நேரடியாகத் தொடர்பு கொள்ளவும்.",
+    whatIsFuze: "FUZE என்றால் என்ன? →",
+    fuzeVerified: "FUZE சரிபார்க்கப்பட்டது",
+    pageTitle: "இந்த ஃபேப்ரிக் FUZE-உடன் சிகிச்சை அளிக்கப்பட்டுள்ளது",
+    pageSubtitle: "ஆன்டிமைக்ரோபியல் ஃபேப்ரிக் சிகிச்சை — மூன்றாம் தரப்பு சரிபார்க்கப்பட்டது.",
+    brandLabel: "பிராண்ட்",
+    millLabel: "மில்",
+    fuzeTierLabel: "FUZE டியர்",
+    fuzeNumberLabel: "FUZE எண்",
+    washClaimSuffix: "சலவை உரிமைகோரல்",
+    recentValidation: "சமீபத்திய ஆய்வக சரிபார்ப்பு",
+    testPassed: "தேர்ச்சி பெற்றது",
+    testTypeSuffix: "சோதனை —",
+    validatedByPrefix: "சரிபார்த்தவர்",
+    validatedByGeneric: "மூன்றாம் தரப்பு ஆய்வகத்தால் சரிபார்க்கப்பட்டது",
+    validatedOn: "தேதியில்",
+    reportRefPrefix: "அறிக்கை குறிப்பு:",
+    certifications: "FUZE சான்றிதழ்கள்",
+    aboutBody:
+      "FUZE என்பது FUZE Biotech-இன் தனிப்பட்ட ஆன்டிமைக்ரோபியல் ஃபேப்ரிக் சிகிச்சை ஆகும். இது நிலையான ஃபேப்ரிக் ஃபினிஷிங்கின் போது இழைகளுடன் பிணைக்கும் மெட்டா-மெட்டீரியல் வேதியியலைப் பயன்படுத்துகிறது — PFAS இல்லை, பைண்டர்கள் இல்லை, கியூரிங் ஓவன் தேவையில்லை.",
+    learnMore: "FUZE பற்றி மேலும் அறிய →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default ta;
