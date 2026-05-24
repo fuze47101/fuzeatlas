@@ -4730,6 +4730,18 @@ const zhTW: Translations = {
     nextButton: "下一步 →",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — 文件預覽",
+    printSavePdf: "列印 / 儲存 PDF",
+    close: "關閉",
+    documentNotFound: "找不到文件",
+    loadingError: "無法載入文件",
+    networkError: "網路錯誤",
+    docNumberLabel: "文件編號:",
+    confidentialFooter: "FUZE Biotech Inc. — 機密文件",
+    generatedTemplate: "產生時間:",
+  },
+
 };
 
 export default zhTW;
