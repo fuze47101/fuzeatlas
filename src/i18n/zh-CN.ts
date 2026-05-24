@@ -5692,6 +5692,69 @@ const zhCN: Translations = {
     footerGenerated: "表单生成于",
   },
 
+  sampleTrials: {
+    crumbDashboard: "仪表盘",
+    crumbHere: "样品试制",
+    pageTitle: "样品试制管理",
+    pageSubtitle: "审核、审批、发运并跟踪所有工厂样品试制申请",
+
+    statTotal: "总数",
+    statNeedsAction: "需要处理",
+
+    searchPlaceholder: "搜索面料、工厂、品牌、联系人...",
+    filterAllStatuses: "所有状态",
+    filterAllFactories: "所有工厂",
+
+    errorFailedLoad: "加载试制失败",
+    errorUpdate: "更新失败",
+    errorNetwork: "网络错误",
+
+    quickActionPrefix: "快速操作 —",
+    trialFallback: "试制",
+    labelStatus: "状态",
+    labelTracking: "追踪号",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "管理员备注",
+    placeholderAdminNotes: "内部备注...",
+    labelRejectReason: "拒绝原因",
+    btnSave: "保存更改",
+    btnSaving: "保存中...",
+    btnCancel: "取消",
+
+    emptyFiltered: "无试制匹配筛选条件",
+    emptyDefault: "暂无样品试制",
+
+    colFabric: "面料",
+    colFactory: "工厂",
+    colPurpose: "用途",
+    colStatus: "状态",
+    colDetails: "详情",
+    colIcpLab: "ICP 实验室",
+    colDate: "日期",
+    colActions: "操作",
+
+    purposeBrand: "品牌",
+    purposeSelfDev: "自研",
+    trialLab: "实验室",
+    trialProduction: "量产",
+    detailsTierPrefix: "等级:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "提交人:",
+    actionAction: "操作",
+    actionView: "查看",
+
+    statusSubmitted: "已提交",
+    statusUnderReview: "审核中",
+    statusApproved: "已批准",
+    statusRejected: "已拒绝",
+    statusShipped: "已发运",
+    statusReceived: "已接收",
+    statusInProgress: "进行中",
+    statusIcpPending: "ICP 待处理",
+    statusIcpSubmitted: "ICP 已提交",
+    statusComplete: "已完成",
+  },
+
 };
 
 export default zhCN;
