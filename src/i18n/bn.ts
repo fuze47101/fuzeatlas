@@ -4527,6 +4527,16 @@ const bn: Translations = {
     sanityCheckHeader: "স্যানিটি চেক (CTLA কী রিপোর্ট করবে)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "ডিস্ট্রিবিউটর নেটওয়ার্ক",
+    pageSubtitle: "আপনার বৈশ্বিক বিতরণ অংশীদার, স্টক, এবং কভারেজ পরিচালনা করুন",
+    inventoryCta: "📊 স্টক ও বার্ন রেট",
+    worldwideCta: "🌍 বিশ্বব্যাপী স্টক",
+    newDistributorCta: "+ নতুন ডিস্ট্রিবিউটর",
+    newDistributorModalTitle: "নতুন ডিস্ট্রিবিউটর",
+    nameRequiredError: "নাম প্রয়োজন",
+  },
+
 };
 
 export default bn;
