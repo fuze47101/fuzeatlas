@@ -7104,6 +7104,26 @@ const ko: Translations = {
     emptyState: "아직 크레딧이 없습니다.",
   },
 
+  bdFunnel: {
+    loading: "로드 중…",
+    crumbSalesPipeline: "영업 및 파이프라인",
+    crumbBdFunnel: "BD 퍼널",
+    title: "파이프라인 퍼널",
+    subtitle: "최근 30 / 60 / 90일간의 유입 / 유출, 단계 간 전환율. 모든 Brand.pipelineStage 전환에서 작성된 BrandStageTransition 행에서 가져옴.",
+    colStage: "단계",
+    colCurrent: "현재",
+    colIn30: "30일 유입",
+    colIn60: "60일 유입",
+    colIn90: "90일 유입",
+    colOut30: "30일 유출",
+    colOut60: "60일 유출",
+    colOut90: "90일 유출",
+    colAvgDwell: "평균 체류",
+    colToNext: "→ 다음",
+    footerHint: "전환 = 다음 정규 단계에 도달한 종료 / 최근 90일간 관찰된 총 종료. 윈도우에 종료가 없는 단계는 n=0 표시 — 느리거나 안정적입니다, 나쁜 것이 아닙니다.",
+    errLoadFailed: "퍼널 로드 실패",
+  },
+
 };
 
 export default ko;
