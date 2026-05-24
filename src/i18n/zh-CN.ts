@@ -4889,6 +4889,92 @@ const zhCN: Translations = {
     tagsSuffix: "标签",
   },
 
+  leadManagement: {
+    pageTitle: "线索管理与外联",
+    pageSubtitle: "管理联系人、通过 Apollo 补全数据、发送 SMS/邮件外联",
+
+    loadErrorContext: "加载线索管道",
+    loadErrorFallback: "无法加载线索管理数据",
+    networkError: "加载线索时网络错误。",
+    loading: "正在加载线索...",
+
+    statTotalContacts: "联系人总数",
+    statWithEmail: "有邮箱",
+    statWithPhone: "有电话",
+    statEnriched: "已补全",
+    statNotContacted: "未联系",
+    statContacted: "已联系",
+
+    searchPlaceholder: "搜索品牌或联系人...",
+    filterAllPipelineStages: "全部管道阶段",
+    stageLead: "线索",
+    stagePresentation: "路演",
+    stageBrandTesting: "品牌测试",
+    stageFactoryOnboarding: "工厂入驻",
+    stageProduction: "生产",
+    stageArchive: "归档",
+
+    filterAllVerticals: "全部行业",
+    verticalApparel: "服装",
+    verticalHospitality: "酒店业",
+    verticalWorkwear: "工装",
+    verticalHomeTextiles: "家纺",
+
+    filterAllOutreachStatus: "全部外联状态",
+    outreachNotContacted: "未联系",
+    outreachContacted: "已联系",
+    outreachResponded: "已回复",
+    outreachMeetingBooked: "已预约会议",
+    outreachNotInterested: "无兴趣",
+
+    filterAllEmailStatus: "全部邮箱状态",
+    emailVerified: "已验证",
+    emailExtrapolated: "已外推",
+    emailUnavailable: "不可用",
+
+    colBrand: "品牌",
+    colContact: "联系人",
+    colTitle: "职位",
+    colEmail: "邮箱",
+    colPhone: "电话",
+    colLI: "LI",
+    colEmailed: "已发邮件",
+    colOutreach: "外联",
+    colActions: "操作",
+
+    inProfile: "在个人资料中",
+    enrichedLabel: "已补全",
+    noContactsNeedsEnrichment: "无联系人 —— 需补全",
+    msgsSuffix: "条消息",
+    markLinkedinReached: "标记为 LinkedIn 已联系",
+    markEmailed: "标记为已发邮件",
+
+    actionSms: "短信",
+    actionEmail: "邮件",
+    actionEnrich: "补全",
+    titleSendSms: "发送短信",
+    titleSendEmail: "发送邮件",
+    titleEnrichApollo: "通过 Apollo 补全",
+
+    paginationLabel: "第 {page} / {pages} 页({total} 个品牌)",
+    paginationPrev: "上一页",
+    paginationNext: "下一页",
+
+    modalSendSmsTo: "发送短信至",
+    modalSendEmailTo: "发送邮件至",
+    fieldTemplate: "模板",
+    fieldToPrefix: "收件人:",
+    fieldSubject: "主题",
+    fieldMessage: "正文",
+    charsSuffix: "字符",
+    sendSms: "发送短信",
+    sendEmail: "发送邮件",
+    sendingButton: "发送中...",
+    cancelButton: "取消",
+    sendSuccess: "消息发送成功!",
+    sendErrorPrefix: "错误:",
+  },
+
 };
 
 export default zhCN;
