@@ -7386,6 +7386,24 @@ const km: Translations = {
     websiteLabel: "Website",
   },
 
+  reportSharePage: {
+    unavailableTitle: "របាយការណ៍ unavailable",
+    unavailableBodyPrefix: "For long-term access, sign in at",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "and find the report under My របាយការណ៍, or reply to the email this came from.",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · Application & Validation របាយការណ៍",
+    heading: "FUZE Treatment រូបមន្ត & Validation",
+    issuedLabel: "បានចេញ",
+    linkValidUntil: "· This direct link is valid until",
+    preparedForTitle: "Prepared For",
+    execSummaryTitle: "Executive Summary",
+    recipeTitle: "Recommended រូបមន្ត",
+    fuzeRequiredTitle: "FUZE ត្រូវការ (ផលិតកម្ម Bath Sizes)",
+    labIcpTitle: "Independent មន្ទីរពិសោធន៍ ICP Verification",
+    accessLaterTitle: "Accessing This របាយការណ៍ Later",
+  },
+
 };
 
 export default km;
