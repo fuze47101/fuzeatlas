@@ -7055,6 +7055,26 @@ const zhCN: Translations = {
     emptyBias: "尚无偏差数据。",
   },
 
+  labCreditsAdmin: {
+    loading: "加载中……",
+    crumbLabs: "实验室",
+    crumbCredits: "积分",
+    creditsSuffix: "积分",
+    balanceLabel: "与此实验室的 FUZE 余额",
+    balanceHint: "自动从此实验室未来的 FUZE 付费测试中扣除。",
+    addCreditTitle: "添加积分",
+    amountPlaceholder: "$ 金额",
+    sourceNotePlaceholder: "来源备注",
+    addCreditBtn: "添加积分",
+    colCreated: "创建时间",
+    colAmount: "金额",
+    colSource: "来源",
+    colNote: "备注",
+    colSpent: "已花费",
+    availableLabel: "可用",
+    emptyState: "尚无积分。",
+  },
+
 };
 
 export default zhCN;
