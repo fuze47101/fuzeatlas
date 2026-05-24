@@ -7651,6 +7651,24 @@ const it: Translations = {
     websiteLabel: "Sito web",
   },
 
+  importContacts: {
+    title: "Importazione in blocco — Contatti",
+    subtitle: "Incolla o carica un CSV di contatti. L'email è la chiave naturale — eseguiamo l'upsert per email quando presente. Le righe senza email ma con un URL LinkedIn vengono importate come \"email mancante\" affinché il job di arricchimento Apollo esistente possa rintracciarle. Le righe senza nessuno dei due valori vengono rifiutate.",
+    backLabel: "Gestione lead",
+    firstNameLabel: "Nome",
+    lastNameLabel: "Cognome",
+    emailLabel: "Email",
+    emailHint: "obbligatoria se non c'è l'URL LinkedIn",
+    linkedinLabel: "URL LinkedIn",
+    linkedinHint: "identificatore di riserva quando manca l'email",
+    brandNameLabel: "Nome del brand",
+    brandNameHint: "corrispondenza non case-sensitive su Brand.name; non collegato se non trovato",
+    jobTitleLabel: "Ruolo",
+    phoneLabel: "Telefono",
+    titleLabel: "Titolo (onorifico)",
+    titleHint: 'es. "Sig.", "Dott."',
+  },
+
 };
 
 export default it;
