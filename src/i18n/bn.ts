@@ -6011,6 +6011,31 @@ const bn: Translations = {
     footerNote: "সাজানো: প্রথমে কম-স্টক, তারপর নিষ্ক্রিয়, তারপর স্টকের-অবশিষ্ট-দিন বৃদ্ধিক্রমে। \"দৈনিক বার্ন\" = কারখানায় পাঠানো লিটারের রোলিং 90-দিনের গড়। \"অবশিষ্ট দিন\" = বর্তমান স্টক ÷ দৈনিক বার্ন। \"নিষ্ক্রিয়\" = গত 90 দিনে কোনো কারখানা অর্ডার নেই। \"মূল্য নেই\" মানে FUZE পাইকারি হার সেট নেই; ডিস্ট্রিবিউটর রিস্টক অর্ডার দিতে পারে না।",
   },
 
+  conversionTracking: {
+    crumbDashboard: "ড্যাশবোর্ড",
+    crumbCurrent: "নমুনা → উৎপাদন",
+    title: "নমুনা → উৎপাদন কনভার্শন",
+    subtitle: "কোন কারখানাগুলি নমুনা পেয়েছে এবং উৎপাদন অর্ডারে কনভার্ট হয়েছে হয়েছে তা ট্র্যাক করুন",
+    cardFactoriesSampled: "নমুনা পাওয়া কারখানা",
+    cardConverted: "কনভার্ট হয়েছে",
+    cardConversionRate: "কনভার্শন হার",
+    cardAvgDays: "কনভার্শনের গড় দিন",
+    cardProdVolume: "উৎপাদন ভলিউম",
+    cardProdRevenue: "উৎপাদন রাজস্ব",
+    tabAll: "সব",
+    tabConverted: "কনভার্ট হয়েছে",
+    tabPending: "মুলতুবি",
+    emptyText: "এখনও কোনো নমুনা অর্ডার পাওয়া যায়নি",
+    badgeConverted: "কনভার্ট হয়েছে",
+    badgePending: "মুলতুবি",
+    sectionSamples: "নমুনা অর্ডার",
+    sectionTrials: "ট্রায়াল অনুরোধ",
+    sectionProduction: "উৎপাদন অর্ডার",
+    productionLabel: "উৎপাদন",
+    daysToConvertSuffix: "কনভার্শনের দিন",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default bn;
