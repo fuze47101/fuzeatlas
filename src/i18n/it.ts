@@ -7230,6 +7230,32 @@ const it: Translations = {
     daySuffix: "g fa",
   },
 
+  resetPassword: {
+    tagline: "Crea una nuova password",
+    formTitle: "Reimposta password",
+    newPasswordLabel: "Nuova password",
+    newPasswordPlaceholder: "Inserisci la nuova password",
+    confirmPasswordLabel: "Conferma password",
+    confirmPasswordPlaceholder: "Conferma la password",
+    resetBtn: "Reimposta password",
+    resettingBtn: "Reimpostazione in corso...",
+    backToSignIn: "Torna all'accesso",
+    successTitle: "Password reimpostata con successo",
+    successBody: "La tua password è stata reimpostata con successo. Ora puoi accedere con la nuova password.",
+    signInBtn: "Accedi",
+    invalidLinkTitle: "Link di reset non valido",
+    invalidLinkBody: "Il link di reset non è valido o è scaduto. Richiedine uno nuovo.",
+    requestNewLinkBtn: "Richiedi nuovo link",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "Caricamento...",
+    errInvalidToken: "Token di reset non valido o mancante",
+    errInvalidTokenShort: "Token di reset non valido",
+    errMinLength: "La password deve avere almeno 6 caratteri",
+    errMismatch: "Le password non corrispondono",
+    errResetFailed: "Reset password fallito",
+    errNetwork: "Errore di rete",
+  },
+
 };
 
 export default it;
