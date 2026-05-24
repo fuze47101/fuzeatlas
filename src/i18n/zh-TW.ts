@@ -4893,6 +4893,92 @@ const zhTW: Translations = {
     tagsSuffix: "個標籤",
   },
 
+  leadManagement: {
+    pageTitle: "潛在客戶管理與對外開發",
+    pageSubtitle: "管理聯絡人、透過 Apollo 補強資料、寄送 SMS/電子郵件",
+
+    loadErrorContext: "載入潛客 Pipeline",
+    loadErrorFallback: "無法載入潛在客戶管理資料",
+    networkError: "載入潛客時發生網路錯誤。",
+    loading: "正在載入潛客...",
+
+    statTotalContacts: "聯絡人總數",
+    statWithEmail: "已有電子郵件",
+    statWithPhone: "已有電話",
+    statEnriched: "已補強",
+    statNotContacted: "未聯絡",
+    statContacted: "已聯絡",
+
+    searchPlaceholder: "搜尋品牌或聯絡人...",
+    filterAllPipelineStages: "所有 Pipeline 階段",
+    stageLead: "潛客",
+    stagePresentation: "簡報",
+    stageBrandTesting: "品牌測試",
+    stageFactoryOnboarding: "工廠導入",
+    stageProduction: "量產",
+    stageArchive: "封存",
+
+    filterAllVerticals: "所有產業別",
+    verticalApparel: "服飾",
+    verticalHospitality: "飯店餐旅",
+    verticalWorkwear: "工作服",
+    verticalHomeTextiles: "家用紡織",
+
+    filterAllOutreachStatus: "所有對外開發狀態",
+    outreachNotContacted: "未聯絡",
+    outreachContacted: "已聯絡",
+    outreachResponded: "已回覆",
+    outreachMeetingBooked: "已預約會議",
+    outreachNotInterested: "無興趣",
+
+    filterAllEmailStatus: "所有電子郵件狀態",
+    emailVerified: "已驗證",
+    emailExtrapolated: "推算",
+    emailUnavailable: "無法取得",
+
+    colBrand: "品牌",
+    colContact: "聯絡人",
+    colTitle: "職稱",
+    colEmail: "電子郵件",
+    colPhone: "電話",
+    colLI: "LI",
+    colEmailed: "已寄信",
+    colOutreach: "對外開發",
+    colActions: "操作",
+
+    inProfile: "於檔案中",
+    enrichedLabel: "已補強",
+    noContactsNeedsEnrichment: "無聯絡人 — 需補強",
+    msgsSuffix: "封訊息",
+    markLinkedinReached: "標記為已透過 LinkedIn 聯絡",
+    markEmailed: "標記為已寄信",
+
+    actionSms: "簡訊",
+    actionEmail: "電子郵件",
+    actionEnrich: "補強",
+    titleSendSms: "寄送簡訊",
+    titleSendEmail: "寄送電子郵件",
+    titleEnrichApollo: "透過 Apollo 補強",
+
+    paginationLabel: "第 {page} 頁 / 共 {pages} 頁({total} 個品牌)",
+    paginationPrev: "上一頁",
+    paginationNext: "下一頁",
+
+    modalSendSmsTo: "寄送簡訊給",
+    modalSendEmailTo: "寄送電子郵件給",
+    fieldTemplate: "範本",
+    fieldToPrefix: "收件:",
+    fieldSubject: "主旨",
+    fieldMessage: "訊息",
+    charsSuffix: "個字元",
+    sendSms: "寄送簡訊",
+    sendEmail: "寄送電子郵件",
+    sendingButton: "寄送中...",
+    cancelButton: "取消",
+    sendSuccess: "訊息已成功送出!",
+    sendErrorPrefix: "錯誤:",
+  },
+
 };
 
 export default zhTW;
