@@ -7158,6 +7158,29 @@ const ms: Translations = {
     errAddFailed: "Tambah gagal",
   },
 
+  accountsAdmin: {
+    title: "Akaun",
+    subtitleBefore: "Jenama yang melepasi peringkat Lead — menerima persembahan, dalam ujian, mengeluarkan, atau sudah pelanggan. Untuk prospek baharu, pergi ke",
+    brandPipelineLink: "Saluran Paip Jenama",
+    allFilter: "Semua",
+    stagePresentation: "Persembahan",
+    stageBrandTesting: "Ujian Jenama",
+    stageFactoryOnboarding: "Onboarding Kilang",
+    stageFactoryTesting: "Ujian Kilang",
+    stageProduction: "Pengeluaran",
+    stageReConnect: "Sambung Semula",
+    stageCustomerWon: "Pelanggan Dimenangi",
+    searchPlaceholder: "Cari akaun mengikut nama atau kenalan...",
+    emptyTitle: "Belum ada akaun dalam pandangan ini",
+    emptyBody: "Akaun muncul apabila jenama berpindah dari LEAD ke PRESENTATION atau lebih.",
+    goToPipelineBtn: "Pergi ke Saluran Paip Jenama",
+    highRelevanceBadge: "🔥 Relevansi tinggi",
+    amPrefix: "AM:",
+    contactsLabel: "kenalan",
+    enrichedSuffix: "diperkaya",
+    backToLeadOption: "← Kembali ke Lead",
+  },
+
 };
 
 export default ms;
