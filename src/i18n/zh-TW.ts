@@ -5759,6 +5759,55 @@ const zhTW: Translations = {
     statusComplete: "已完成",
   },
 
+  brandFabricsAdmin: {
+    loading: "正在載入布料組合…",
+    errorTitle: "無法載入布料組合",
+    errorUnknown: "未知錯誤",
+    errorFailedLoad: "載入失敗",
+    errorSave: "儲存失敗",
+    btnTryAgain: "再試一次",
+
+    crumbPartners: "品牌夥伴",
+    crumbHere: "布料組合",
+    titleSuffix: "— 布料組合",
+    subtitle: "本品牌所有工廠的全部布料。顯示 {shown} / 共 {total} 塊布料。",
+    btnExportCsv: "⬇ 匯出 CSV",
+
+    searchPlaceholder: "搜尋布料 #、客戶代碼、纖維成份…",
+    filterAllMills: "所有工廠",
+    filterAllTypes: "所有類型",
+    typeDevelopment: "開發",
+    typeActualBulk: "實際(大貨)",
+    typeForecast: "預測",
+    typeRd: "研發",
+    filterAllStatuses: "所有狀態",
+
+    emptyFabric: "🧵",
+    emptyTitle: "無符合篩選條件的布料。",
+    emptySub: "請調整上方篩選器或清除搜尋以檢視完整組合。",
+    fabricSingular: "塊布料",
+    fabricPlural: "塊布料",
+    openFactory: "開啟工廠 →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "工廠布料 #",
+    colType: "類型",
+    colContent: "纖維成份",
+    colGsm: "GSM",
+    colCustomerCode: "客戶代碼",
+    colTrial: "試作",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "ICP 數值",
+    colTestDate: "測試日期",
+    colStatus: "狀態",
+
+    unassigned: "未指派",
+    typeBulkProduction: "大貨量產",
+    notSet: "— 未設定 —",
+    titleOpenFabric: "開啟布料詳情",
+  },
+
 };
 
 export default zhTW;
