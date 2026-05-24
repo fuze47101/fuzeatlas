@@ -3709,6 +3709,49 @@ const id: Translations = {
     noData: "Tidak ada data",
   },
 
+  ordersAdmin: {
+    pageTitle: "Manajemen Pesanan",
+    pageSubtitle: "Tinjau, setujui, dan lacak semua pesanan FUZE",
+    myAccountsOnly: "Hanya akun saya",
+    awaitingApprovalTemplate: "{n} pesanan{s} menunggu persetujuan",
+
+    statTotal: "Total",
+    statPending: "Menunggu",
+    statApproved: "Disetujui",
+    statProcessing: "Diproses",
+    statShipped: "Dikirim",
+    statDelivered: "Diterima",
+    statRevenue: "Pendapatan",
+
+    filterAll: "Semua",
+    filterAllTypes: "Semua Tipe",
+
+    emptyMessage: "Tidak ada pesanan yang cocok dengan filter",
+
+    colOrder: "Pesanan",
+    colFactory: "Pabrik",
+    colType: "Tipe",
+    colVolume: "Volume",
+    colBrand: "Brand",
+    colTotal: "Total",
+    colFulfillment: "Pemenuhan",
+    colStatus: "Status",
+    colDate: "Tanggal",
+
+    statusDraft: "Draft",
+    statusQuoted: "Dikutip",
+    statusPendingApproval: "Menunggu Persetujuan",
+    statusApproved: "Disetujui",
+    statusConfirmed: "Dikonfirmasi",
+    statusProcessing: "Diproses",
+    statusShipped: "Dikirim",
+    statusDelivered: "Diterima",
+    statusCancelled: "Dibatalkan",
+
+    directUsaLabel: "Langsung USA",
+    tagsSuffix: "tag",
+  },
+
 };
 
 export default id;
