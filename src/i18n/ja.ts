@@ -6262,6 +6262,38 @@ const ja: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "テストカタログと価格",
+    subtitle: "テストタイプ、価格、所要時間、サンプル要件を管理します。変更は工場のテスト依頼フォームに即座に反映されます。",
+    sourcePrefix: "ソース:",
+    sourceDb: "データベース (管理者管理)",
+    sourceStatic: "静的デフォルト",
+    successMsg: "テストを更新しました",
+    failedSave: "保存に失敗しました",
+    networkErr: "ネットワークエラー",
+    colTestName: "テスト名",
+    colCategory: "カテゴリ",
+    colPrice: "価格 (USD)",
+    colTurnaround: "所要時間",
+    colMinSample: "最小サンプル",
+    colControl: "対照?",
+    colActive: "有効",
+    colActions: "操作",
+    daysSuffix: "日",
+    metersSuffix: "m",
+    yes: "はい",
+    no: "いいえ",
+    saveBtn: "保存",
+    savingDots: "...",
+    cancelBtn: "キャンセル",
+    editBtn: "編集",
+    catRecipeBuild: "レシピ構築",
+    catPerformance: "性能",
+    catQuality: "品質",
+    catCertification: "認証",
+    lastUpdatedTpl: "{who}が{when}に最終更新",
+  },
+
 };
 
 export default ja;
