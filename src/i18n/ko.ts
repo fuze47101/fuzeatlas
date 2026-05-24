@@ -7152,6 +7152,29 @@ const ko: Translations = {
     errLoadFailed: "분석 로드 실패",
   },
 
+  orderQrLabel: {
+    orderNotFound: "주문을 찾을 수 없습니다.",
+    headerKicker: "QR 라벨",
+    previewPublicLink: "공개 페이지 미리보기 →",
+    brandLine: "FUZE Biotech",
+    brandLocation: "Salt Lake City, Utah USA",
+    orderLabel: "주문",
+    scanToVerifyTitle: "스캔하여 확인",
+    scanToVerifyBody: "이 라벨을 휴대폰 카메라로 열어 배송 상태, 수명 주기, SDS 및 COA를 로드하십시오.",
+    tierLabel: "등급",
+    volumeLabel: "부피",
+    bottlesSuffix: "병",
+    methodLabel: "방법",
+    typeLabel: "유형",
+    shipToLabel: "배송지",
+    forBrandLabel: "브랜드용",
+    viaDistributorLabel: "디스트리뷰터 경유",
+    fabricLabel: "원단",
+    trackingLabel: "추적",
+    footerTagline: "FUZE F1–F4 · 메타머티리얼 항균 가공 · PFAS-free",
+    printedPrefix: "인쇄됨",
+  },
+
 };
 
 export default ko;
