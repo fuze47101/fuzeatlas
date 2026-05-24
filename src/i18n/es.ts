@@ -5987,6 +5987,58 @@ const es: Translations = {
     verdictUnscanned: "sin escanear",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← Configuración",
+    pageTitle: "Plantillas de correo",
+    pageSubtitle: "Estructuras de correo reutilizables para alcance comercial. Usa {firstName}, {company}, etc. para personalizar al vuelo.",
+    btnNew: "+ Nueva plantilla",
+    errorRequired: "Título, asunto y cuerpo son obligatorios.",
+    errorLoadUser: "No se pudo cargar el usuario",
+    errorLoadTemplates: "No se pudieron cargar las plantillas",
+    confirmArchive: "¿Archivar \"{title}\"? Ya no aparecerá en el selector.",
+
+    formHeadingEdit: "Editar plantilla",
+    formHeadingNew: "Nueva plantilla",
+    labelTitle: "Título",
+    placeholderTitle: "p. ej. Primer contacto (ropa deportiva)",
+    labelCategory: "Categoría",
+    placeholderCategory: "p. ej. intro, re-engage, icp-request",
+    labelScope: "Alcance",
+    scopePrivate: "Privada (solo yo)",
+    scopeShared: "Compartida (todo el equipo)",
+    scopeGlobal: "Global (predeterminada de la organización)",
+    labelSubject: "Asunto",
+    placeholderSubject: "Hola {firstName} — breve introducción de FUZE para {company}",
+    labelBody: "Cuerpo",
+    btnSaving: "Guardando…",
+    btnSaveChanges: "Guardar cambios",
+    btnCreate: "Crear plantilla",
+    btnCancel: "Cancelar",
+
+    previewHeading: "Vista previa",
+    previewHelp: "Edita los valores de ejemplo a continuación para ver cómo se procesan tus tokens.",
+    previewSubjectLabel: "Asunto",
+    previewBodyLabel: "Cuerpo",
+
+    slotsHeading: "Espacios de selección rápida del Asistente BD",
+    slotsHelp: "Fija hasta 10 de tus plantillas en espacios numerados. En el paso Borrador del asistente, verás una barra de botones 1–10 que rellena con un clic el asunto y el cuerpo.",
+    openBdWizard: "Abrir Asistente BD →",
+    slotEmptyTitle: "Espacio vacío — asigna a continuación.",
+    slotEmpty: "vacío",
+
+    loadingTemplates: "Cargando plantillas…",
+    groupPrivate: "Tus plantillas",
+    groupShared: "Compartidas con el equipo",
+    groupGlobal: "Predeterminadas de la organización",
+    usedSuffix: "usadas",
+    byPrefix: "por",
+    bdSlot: "Espacio BD",
+    edit: "Editar",
+    archive: "Archivar",
+
+    emptyTpl: "Aún no hay plantillas. Haz clic en + Nueva plantilla para crear la primera.",
+  },
+
 };
 
 export default es;
