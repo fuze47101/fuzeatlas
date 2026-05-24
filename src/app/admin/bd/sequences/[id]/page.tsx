@@ -11,6 +11,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface Step {
   id: string;
@@ -50,13 +51,6 @@ interface Seq {
   steps: Step[];
 }
 
-const CHANNEL_LABEL: Record<string, string> = {
-  email: "Email",
-  linkedin_connect: "LinkedIn connect",
-  linkedin_dm: "LinkedIn DM",
-  paid: "Paid retargeting",
-  tradeshow: "Tradeshow invite",
-};
 const CHANNEL_EMOJI: Record<string, string> = {
   email: "✉️",
   linkedin_connect: "🤝",
@@ -91,10 +85,20 @@ export default function SequenceDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = String(params?.id || "");
+  const { t } = useI18n();
+  const T = t.bdSequenceDetail;
   const [seq, setSeq] = useState<Seq | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [busyStepId, setBusyStepId] = useState<string | null>(null);
+
+  const CHANNEL_LABEL: Record<string, string> = {
+    email: T.channelEmail,
+    linkedin_connect: T.channelLinkedinConnect,
+    linkedin_dm: T.channelLinkedinDm,
+    paid: T.channelPaid,
+    tradeshow: T.channelTradeshow,
+  };
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -102,14 +106,14 @@ export default function SequenceDetailPage() {
     try {
       const res = await fetch(`/api/admin/bd/sequence/${id}`);
       const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data?.error || `Failed: ${res.status}`);
+      if (!res.ok || !data.ok) throw new Error(data?.error || `${T.errFailedPrefix} ${res.status}`);
       setSeq(data.sequence);
     } catch (e: any) {
-      setError(e?.message || "Failed to load");
+      setError(e?.message || T.errLoadFailed);
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, T.errFailedPrefix, T.errLoadFailed]);
 
   useEffect(() => {
     load();
@@ -123,10 +127,10 @@ export default function SequenceDetailPage() {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data?.error || `Failed: ${res.status}`);
+      if (!res.ok || !data.ok) throw new Error(data?.error || `${T.errFailedPrefix} ${res.status}`);
       await load();
     } catch (e: any) {
-      alert(e?.message || "Action failed");
+      alert(e?.message || T.errActionFailed);
     }
   }
 
@@ -136,7 +140,7 @@ export default function SequenceDetailPage() {
   async function markRepliedManual() {
     if (!seq) return;
     const summary = prompt(
-      `What did ${contactDisplay(seq.contact)} say? (short summary — the reply wizard uses this to draft a response)`,
+      `${T.replyPromptBefore} ${contactDisplay(seq.contact)} ${T.replyPromptAfter}`,
       "",
     );
     if (summary === null) return; // cancelled
@@ -147,10 +151,10 @@ export default function SequenceDetailPage() {
         body: JSON.stringify({ source: "manual", replySummary: summary || undefined }),
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data?.error || `Failed: ${res.status}`);
+      if (!res.ok || !data.ok) throw new Error(data?.error || `${T.errFailedPrefix} ${res.status}`);
       router.push(`/admin/bd/wizard/reply?sequenceId=${id}`);
     } catch (e: any) {
-      alert(e?.message || "Could not mark replied");
+      alert(e?.message || T.errMarkRepliedFailed);
     }
   }
 
@@ -173,10 +177,10 @@ export default function SequenceDetailPage() {
         body: JSON.stringify(body),
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data?.error || `Failed: ${res.status}`);
+      if (!res.ok || !data.ok) throw new Error(data?.error || `${T.errFailedPrefix} ${res.status}`);
       await load();
     } catch (e: any) {
-      alert(e?.message || "Step action failed");
+      alert(e?.message || T.errStepFailed);
     } finally {
       setBusyStepId(null);
     }
@@ -185,7 +189,7 @@ export default function SequenceDetailPage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-10 text-center text-slate-500">
-        Loading sequence…
+        {T.loading}
       </div>
     );
   }
@@ -193,14 +197,14 @@ export default function SequenceDetailPage() {
     return (
       <div className="mx-auto max-w-4xl px-4 py-10">
         <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
-          {error || "Sequence not found"}
+          {error || T.notFound}
         </div>
         <div className="mt-4">
           <Link
             href="/admin/bd/sequences"
             className="text-indigo-600 underline-offset-2 hover:underline"
           >
-            ← Back to sequences
+            {T.backToSequences}
           </Link>
         </div>
       </div>
@@ -211,13 +215,13 @@ export default function SequenceDetailPage() {
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-4 text-xs text-slate-500">
         <Link href="/admin/bd/sequences" className="hover:underline">
-          ← All sequences
+          {T.allSequencesLink}
         </Link>
       </div>
 
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <div className="text-xs uppercase tracking-wider text-slate-500">BD Sequence</div>
+          <div className="text-xs uppercase tracking-wider text-slate-500">{T.kicker}</div>
           <h1 className="text-2xl font-semibold text-slate-900">
             <Link href={`/brands/${seq.brand.id}`} className="hover:text-indigo-700">
               {seq.brand.name}
@@ -226,7 +230,7 @@ export default function SequenceDetailPage() {
           </h1>
           <p className="mt-1 text-sm text-slate-600">
             {seq.contact.jobTitle ? `${seq.contact.jobTitle} · ` : ""}
-            Started {fmtDate(seq.startedAt)} by {seq.rep.name || seq.rep.email} · cadence:{" "}
+            {T.startedLabel} {fmtDate(seq.startedAt)} {T.byLabel} {seq.rep.name || seq.rep.email} · {T.cadenceLabel}{" "}
             {seq.cadenceKey}
           </p>
         </div>
@@ -235,9 +239,9 @@ export default function SequenceDetailPage() {
             <button
               onClick={markRepliedManual}
               className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-800 hover:bg-emerald-100"
-              title="Prospect replied — exit this sequence and draft a response"
+              title={T.replyReceivedTitle}
             >
-              Reply received
+              {T.replyReceivedBtn}
             </button>
           )}
           {seq.status === "exited" && seq.exitReason === "replied" && (
@@ -245,14 +249,14 @@ export default function SequenceDetailPage() {
               href={`/admin/bd/wizard/reply?sequenceId=${seq.id}`}
               className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-800 hover:bg-emerald-100"
             >
-              Open reply wizard
+              {T.openReplyWizardBtn}
             </Link>
           )}
           <Link
             href={`/admin/bd/sequences/${seq.id}/analytics`}
             className="rounded-md border border-indigo-300 bg-white px-3 py-1.5 text-sm font-medium text-indigo-800 hover:bg-indigo-50"
           >
-            📊 Analytics
+            {T.analyticsBtn}
           </Link>
           {seq.status === "active" && (
             <>
@@ -260,19 +264,19 @@ export default function SequenceDetailPage() {
                 onClick={() => patchSeq({ action: "pause" })}
                 className="rounded-md border border-amber-300 bg-white px-3 py-1.5 text-sm text-amber-800 hover:bg-amber-50"
               >
-                Pause
+                {T.pauseBtn}
               </button>
               <button
                 onClick={() => {
                   const reason = prompt(
-                    "Exit reason (replied / meeting_booked / unqualified / manual_stop / replaced):",
+                    T.exitPrompt,
                     "manual_stop",
                   );
                   if (reason) patchSeq({ action: "exit", reason });
                 }}
                 className="rounded-md border border-rose-300 bg-white px-3 py-1.5 text-sm text-rose-800 hover:bg-rose-50"
               >
-                Exit
+                {T.exitBtn}
               </button>
             </>
           )}
@@ -281,7 +285,7 @@ export default function SequenceDetailPage() {
               onClick={() => patchSeq({ action: "resume" })}
               className="rounded-md border border-emerald-300 bg-white px-3 py-1.5 text-sm text-emerald-800 hover:bg-emerald-50"
             >
-              Resume
+              {T.resumeBtn}
             </button>
           )}
         </div>
@@ -290,21 +294,21 @@ export default function SequenceDetailPage() {
       <div className="mb-6 rounded-lg border border-slate-200 bg-white p-4 text-sm">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
           <div>
-            Status: <span className="font-medium capitalize">{seq.status}</span>
+            {T.statusLabel} <span className="font-medium capitalize">{seq.status}</span>
             {seq.exitReason && (
               <span className="ml-2 text-xs text-slate-500">({seq.exitReason})</span>
             )}
           </div>
           <div>
-            Progress:{" "}
+            {T.progressLabel}{" "}
             <span className="font-medium">
               {seq.sentSteps + seq.skippedSteps}/{seq.totalSteps}
             </span>{" "}
             <span className="text-slate-400">
-              ({seq.sentSteps} sent · {seq.skippedSteps} skipped)
+              ({seq.sentSteps} {T.sentLabel} · {seq.skippedSteps} {T.skippedLabel})
             </span>
           </div>
-          {seq.completedAt && <div>Completed: {fmtDate(seq.completedAt)}</div>}
+          {seq.completedAt && <div>{T.completedLabel} {fmtDate(seq.completedAt)}</div>}
         </div>
       </div>
 
@@ -316,7 +320,7 @@ export default function SequenceDetailPage() {
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{CHANNEL_EMOJI[s.channel] || "·"}</span>
                   <span className="font-medium text-slate-900">
-                    Step {s.stepIndex + 1} · {CHANNEL_LABEL[s.channel] || s.channel}
+                    {T.stepPrefix} {s.stepIndex + 1} · {CHANNEL_LABEL[s.channel] || s.channel}
                   </span>
                   <span
                     className={`inline-block rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${
@@ -327,22 +331,22 @@ export default function SequenceDetailPage() {
                   </span>
                 </div>
                 <div className="mt-1 text-xs text-slate-500">
-                  Scheduled: {fmtDate(s.scheduledFor)}
-                  {s.sentAt && <> · Sent: {fmtDate(s.sentAt)}</>}
-                  {s.readyAt && !s.sentAt && <> · Ready: {fmtDate(s.readyAt)}</>}
-                  {s.skippedAt && <> · Skipped: {fmtDate(s.skippedAt)}</>}
+                  {T.scheduledMeta} {fmtDate(s.scheduledFor)}
+                  {s.sentAt && <> · {T.sentMeta} {fmtDate(s.sentAt)}</>}
+                  {s.readyAt && !s.sentAt && <> · {T.readyMeta} {fmtDate(s.readyAt)}</>}
+                  {s.skippedAt && <> · {T.skippedMeta} {fmtDate(s.skippedAt)}</>}
                 </div>
                 {s.failReason && (
-                  <div className="mt-1 text-xs text-rose-700">Note: {s.failReason}</div>
+                  <div className="mt-1 text-xs text-rose-700">{T.notePrefix} {s.failReason}</div>
                 )}
                 {(s.draftSubject || s.draftBody) && (
                   <details className="mt-2 text-sm text-slate-700">
                     <summary className="cursor-pointer text-xs text-indigo-600 hover:underline">
-                      {s.status === "sent" ? "View sent message" : "View draft"}
+                      {s.status === "sent" ? T.viewSent : T.viewDraft}
                     </summary>
                     {s.draftSubject && (
                       <div className="mt-2 text-xs text-slate-500">
-                        <span className="font-medium text-slate-700">Subject:</span>{" "}
+                        <span className="font-medium text-slate-700">{T.subjectLabel}</span>{" "}
                         {s.draftSubject}
                       </div>
                     )}
@@ -361,7 +365,7 @@ export default function SequenceDetailPage() {
                     href={`/admin/bd/wizard?stepId=${s.id}`}
                     className="rounded-md bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:bg-indigo-700"
                   >
-                    Review & send
+                    {T.reviewSendBtn}
                   </Link>
                 )}
                 {s.status === "ready" &&
@@ -373,19 +377,19 @@ export default function SequenceDetailPage() {
                       onClick={() => stepAction(s.id, "mark_sent")}
                       className="rounded-md border border-emerald-300 bg-white px-2 py-1 text-xs text-emerald-800 hover:bg-emerald-50 disabled:opacity-50"
                     >
-                      Mark sent
+                      {T.markSentBtn}
                     </button>
                   )}
                 {(s.status === "pending" || s.status === "ready") && (
                   <button
                     disabled={busyStepId === s.id}
                     onClick={() => {
-                      const reason = prompt("Skip reason (optional):") || undefined;
+                      const reason = prompt(T.skipReasonPrompt) || undefined;
                       stepAction(s.id, "skip", reason);
                     }}
                     className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-50"
                   >
-                    Skip
+                    {T.skipBtn}
                   </button>
                 )}
               </div>
