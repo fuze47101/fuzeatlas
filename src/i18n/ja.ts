@@ -4763,6 +4763,23 @@ const ja: Translations = {
     nameRequiredError: "名前は必須です",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← 計算機に戻る",
+    printButton: "🖨 印刷 / PDFとして保存",
+    eyebrow: "FUZE Biotech · ラボSOP",
+    pageTitle: "ベンチテスト手順",
+    pageSubtitle: "FUZE レシピ計算機 — パッド・ドライ・キュア ピックアップ率と希釈",
+    docLabel: "ドキュメント: SOP-FUZE-LAB-001",
+    revLabel: "改訂: 1.0 ·",
+    purposeHeader: "目的",
+    equipmentHeader: "機器",
+    chemistryRefHeader: "FUZE 化学リファレンス",
+    criticalRulesHeader: "⚠ 重要なプロトコルルール",
+    procedureHeader: "手順",
+    formulasHeader: "計算式（QCクロスチェック用）",
+    sanityRangesHeader: "妥当性チェック範囲",
+  },
+
 };
 
 export default ja;
