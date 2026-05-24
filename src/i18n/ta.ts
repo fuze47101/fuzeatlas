@@ -7208,6 +7208,28 @@ const ta: Translations = {
     errNetwork: "நெட்வொர்க் பிழை",
   },
 
+  notificationsPage: {
+    loading: "அறிவிப்புகள் ஏற்றுகிறது...",
+    title: "அறிவிப்புகள்",
+    unreadLabel: "படிக்காதது",
+    allCaughtUp: "அனைத்தும் முடிந்தது",
+    totalLabel: "மொத்தம்",
+    markAllRead: "அனைத்தையும் படித்ததாக குறி",
+    filterAll: "அனைத்தும்",
+    filterUnread: "படிக்காதது",
+    allTypes: "அனைத்து வகைகள்",
+    emptyUnreadTitle: "படிக்காத அறிவிப்புகள் இல்லை",
+    emptyAllTitle: "இன்னும் அறிவிப்புகள் இல்லை",
+    emptyUnreadBody: "நீங்கள் அனைத்தையும் முடித்துவிட்டீர்கள்!",
+    emptyAllBody: "உங்கள் கணக்கில் செயல்பாடு இருக்கும்போது அறிவிப்புகள் இங்கே தோன்றும்.",
+    viewDetails: "விவரங்களைப் பார் →",
+    markAsRead: "படித்ததாக குறி",
+    justNow: "சற்று முன்",
+    minSuffix: "நிமி முன்",
+    hourSuffix: "மணி முன்",
+    daySuffix: "நா முன்",
+  },
+
 };
 
 export default ta;
