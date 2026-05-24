@@ -7374,6 +7374,27 @@ const ur: Translations = {
     seeSustainabilityBtn: "پائیداری کا اثر دیکھیں",
   },
 
+  pressLanding: {
+    heroTitle: "پریس کٹ",
+    heroSubtitle: "FUZE Biotech کے لیے لوگو، تصاویر، ریلیزز، اور کمپنی کا پس منظر۔",
+    aboutTitle: "FUZE Biotech کے بارے میں",
+    aboutBody1: "FUZE Biotech، صدر دفتر سالٹ لیک سٹی، یوٹا، ایک ملکیتی اینٹی مائکروبیل ٹیکسٹائل ٹریٹمنٹ تیار کرتا ہے جو FUZE metamaterial کے گرد بنایا گیا ہے۔ ٹریٹمنٹ معیاری ٹیکسٹائل فنشنگ کے دوران فائبرز سے مستقل طور پر بانڈ ہو جاتا ہے — کوئی PFAS نہیں، کوئی بائنڈرز نہیں، فیبرک کے ہینڈ یا سانس لینے کی صلاحیت میں کوئی کیمسٹری کی تبدیلی نہیں۔",
+    aboutBody2: "پروڈکٹ EPA رجسٹرڈ (وفاقی)، کیلیفورنیا EPA منظور شدہ (Q1 2026)، OEKO-TEX Standard 100 Class I، اور bluesign® منظور شدہ ہے۔ کارکردگی ASTM E2149، AATCC 100، AATCC 30، ISO 18184، اور ISO 20743 سے آزاد تھرڈ-پارٹی لیبز کی توثیق شدہ ہے۔",
+    foundedLabel: "قائم",
+    foundedValue: "Salt Lake City, UT",
+    addressLabel: "پتہ",
+    pressContactLabel: "پریس رابطہ",
+    logosSection: "لوگو",
+    logoAltFallback: "FUZE لوگو",
+    downloadLabel: "ڈاؤن لوڈ ←",
+    imagerySection: "تصاویر",
+    imageAltFallback: "FUZE تصاویر",
+    releasesSection: "پریس ریلیزز",
+    releaseFallback: "ریلیز",
+    newsSection: "خبروں میں",
+    claimsLink: "دعوے",
+  },
+
 };
 
 export default ur;
