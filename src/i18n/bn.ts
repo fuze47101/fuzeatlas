@@ -7420,6 +7420,19 @@ const bn: Translations = {
     pressKitLink: "প্রেস কিট",
   },
 
+  educationCompliance: {
+    backLink: "← FUZE Basics-এ ফিরে যান",
+    kicker: "কমপ্লায়েন্স ও সার্টিফিকেশন",
+    heroTitle: "প্রতিটি সার্টিফিকেশন স্ট্যাক যা একটি ব্র্যান্ড জিজ্ঞাসা করে",
+    heroBody: "আপনার ভেন্ডর প্রশ্নাবলীর জন্য একটি স্ক্রিনশট। EPA ফেডারেল + California, OEKO-TEX Standard 100 Class I, bluesign®-অনুমোদিত, PFAS-মুক্ত, ফরমালডিহাইড-মুক্ত, ZDHC-সংলগ্ন। চারটি টিয়ার জুড়ে অ্যান্টিব্যাকটেরিয়াল / অ্যান্টিভাইরাল / অ্যান্টিফাঙ্গাল টেস্ট ডেটা — অনুরোধে রিপোর্ট উপলব্ধ।",
+    activeBadge: "অ্যাক্টিভ ✓",
+    docCopiesTitle: "প্রকৃত ডকুমেন্ট কপি দরকার?",
+    docCopiesBody: "ডকুমেন্ট সেন্টারে প্রতিটি সার্টিফিকেশন, SDS, TDS, এবং COA-এর লাইভ PDF কপি রয়েছে। কমপ্লায়েন্স দল ভেন্ডর প্রশ্নাবলীর জন্য সরাসরি ডাউনলোড করতে পারে।",
+    docCenterCta: "ডকুমেন্ট সেন্টার খুলুন →",
+    backBasicsBtn: "FUZE Basics-এ ফিরে যান",
+    whatYouCanClaimBtn: "আপনি কী দাবি করতে পারেন →",
+  },
+
 };
 
 export default bn;
