@@ -7526,6 +7526,23 @@ const it: Translations = {
     fieldChangedPlural: "campi modificati",
   },
 
+  adminLanding: {
+    loadingLabel: "Caricamento admin",
+    crumb: "Admin",
+    heading: "Admin",
+    subtitle: "Superfici di controllo FUZE-Ops. Seleziona un modulo per approfondire oppure usa la barra laterale per la navigazione completa.",
+    openPrefix: "Apri",
+    fastPathLabel: "Percorso rapido",
+    dataEntryHubTitle: "Hub di inserimento dati",
+    dataEntryHubBody: "Imposta specifiche del brand, tier di prezzo, collegamento alla supply chain, prezzi di laboratorio — tutto in un'unica pagina.",
+    liveStateLabel: "Stato in tempo reale",
+    commandCenterTitle: "Command Center",
+    commandCenterBody: "Sei riquadri metrici, matrice di cadenza brand × stabilimento, attività recenti, code.",
+    weeklyLabel: "Settimanale",
+    mondayReviewTitle: "Coda di revisione del lunedì",
+    mondayReviewBody: "Esecuzioni di test segnalate dall'IA + rifiuti dei brand. L'email della domenica alle 22:00 UTC alimenta l'agenda.",
+  },
+
 };
 
 export default it;
