@@ -6120,6 +6120,58 @@ const vi: Translations = {
     verdictUnscanned: "chưa quét",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← Cài đặt",
+    pageTitle: "Mẫu email",
+    pageSubtitle: "Khung email có thể tái sử dụng cho tiếp cận. Dùng {firstName}, {company}, v.v. để cá nhân hóa nhanh.",
+    btnNew: "+ Mẫu mới",
+    errorRequired: "Tiêu đề, chủ đề và nội dung là bắt buộc.",
+    errorLoadUser: "Không tải được người dùng",
+    errorLoadTemplates: "Không tải được mẫu",
+    confirmArchive: "Lưu trữ \"{title}\"? Nó sẽ không còn hiển thị trong trình chọn nữa.",
+
+    formHeadingEdit: "Chỉnh sửa mẫu",
+    formHeadingNew: "Mẫu mới",
+    labelTitle: "Tiêu đề",
+    placeholderTitle: "ví dụ: Giới thiệu đầu tiên (đồ thể thao)",
+    labelCategory: "Danh mục",
+    placeholderCategory: "ví dụ: giới thiệu, kết nối lại, yêu cầu-icp",
+    labelScope: "Phạm vi",
+    scopePrivate: "Riêng tư (chỉ tôi)",
+    scopeShared: "Chia sẻ (cả nhóm)",
+    scopeGlobal: "Toàn cầu (mặc định tổ chức)",
+    labelSubject: "Chủ đề",
+    placeholderSubject: "Chào {firstName} — giới thiệu nhanh FUZE cho {company}",
+    labelBody: "Nội dung",
+    btnSaving: "Đang lưu…",
+    btnSaveChanges: "Lưu thay đổi",
+    btnCreate: "Tạo mẫu",
+    btnCancel: "Hủy",
+
+    previewHeading: "Xem trước",
+    previewHelp: "Chỉnh sửa giá trị mẫu bên dưới để xem các token của bạn hiển thị như thế nào.",
+    previewSubjectLabel: "Chủ đề",
+    previewBodyLabel: "Nội dung",
+
+    slotsHeading: "Vị trí chọn nhanh BD Wizard",
+    slotsHelp: "Ghim tối đa 10 mẫu của bạn vào các vị trí có số. Trên bước Draft của wizard, bạn sẽ thấy dải nút 1-10 để điền chủ đề và nội dung bằng một cú nhấp.",
+    openBdWizard: "Mở BD Wizard →",
+    slotEmptyTitle: "Vị trí trống — gán bên dưới.",
+    slotEmpty: "trống",
+
+    loadingTemplates: "Đang tải mẫu…",
+    groupPrivate: "Mẫu của bạn",
+    groupShared: "Chia sẻ với nhóm",
+    groupGlobal: "Mặc định toàn tổ chức",
+    usedSuffix: "đã dùng",
+    byPrefix: "bởi",
+    bdSlot: "Vị trí BD",
+    edit: "Chỉnh sửa",
+    archive: "Lưu trữ",
+
+    emptyTpl: "Chưa có mẫu nào. Nhấp + Mẫu mới để tạo mẫu đầu tiên.",
+  },
+
 };
 
 export default vi;
