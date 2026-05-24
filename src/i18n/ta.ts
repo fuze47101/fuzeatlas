@@ -7633,6 +7633,24 @@ const ta: Translations = {
     emptyBody: "வடிகட்டிகளை விரிவாக்க முயற்சிக்கவும் — அல்லது இன்னும் mid-development-இல் உள்ள ஃபேப்ரிக்குகளைப் பார்க்க விரும்பினால் \"validated bench test\" வடிகட்டியை அகற்றவும்.",
   },
 
+  importBrands: {
+    title: "Bulk import — Brands",
+    subtitle: "ஒரு trade show, பட்டியல், அல்லது ஆராய்ச்சி dump-இலிருந்து brand candidates-இன் CSV-ஐ ஒட்டவும் அல்லது பதிவேற்றவும். நாம் columns-ஐ map செய்வோம், validation-ஐ முன்னோட்டம் காட்டுவோம், மற்றும் CLI பயன்படுத்தும் அதே seed-brand helper மூலம் idempotently எழுதுவோம்.",
+    backLabel: "Brand Pipeline",
+    brandNameLabel: "Brand பெயர்",
+    brandNameHint: "(natural key — upsert இங்கே keyed)",
+    domainLabel: "Email domain",
+    domainHint: 'எ.கா. "rhone.com"',
+    repEmailLabel: "முதன்மை AM மின்னஞ்சல்",
+    repEmailHint: "Atlas பயனராக ஏற்கனவே இருக்க வேண்டும்",
+    tierLabel: "தேவையான FUZE டியர்",
+    tierHint: "F1 / F2 / F3 / F4 — இயல்புநிலை F2",
+    cadenceLabel: "ICP cadence (ஒவ்வொரு N batches)",
+    cadenceHint: "இயல்புநிலை 5",
+    countryLabel: "நாடு",
+    websiteLabel: "வலைத்தளம்",
+  },
+
 };
 
 export default ta;
