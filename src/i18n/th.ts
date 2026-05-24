@@ -6825,6 +6825,26 @@ const th: Translations = {
     emptyState: "ยังไม่มีเครดิต",
   },
 
+  bdFunnel: {
+    loading: "กำลังโหลด…",
+    crumbSalesPipeline: "ขาย & Pipeline",
+    crumbBdFunnel: "BD funnel",
+    title: "Pipeline funnel",
+    subtitle: "Inflow / outflow ในช่วง 30 / 60 / 90 วันที่ผ่านมา พร้อมอัตราการแปลงระหว่างขั้น มาจากแถว BrandStageTransition ที่เขียนเมื่อ Brand.pipelineStage flip",
+    colStage: "ขั้น",
+    colCurrent: "ปัจจุบัน",
+    colIn30: "เข้า 30 วัน",
+    colIn60: "เข้า 60 วัน",
+    colIn90: "เข้า 90 วัน",
+    colOut30: "ออก 30 วัน",
+    colOut60: "ออก 60 วัน",
+    colOut90: "ออก 90 วัน",
+    colAvgDwell: "Dwell เฉลี่ย",
+    colToNext: "→ ถัดไป",
+    footerHint: "การแปลง = ทางออกที่ลงที่ขั้นถัดไปมาตรฐาน / ทางออกรวมที่สังเกตในช่วง 90 วันที่ผ่านมา ขั้นที่ไม่มีทางออกในหน้าต่างแสดง n=0 — พวกเขาช้าหรือเสถียร ไม่ใช่แย่",
+    errLoadFailed: "ไม่สามารถโหลด funnel ได้",
+  },
+
 };
 
 export default th;
