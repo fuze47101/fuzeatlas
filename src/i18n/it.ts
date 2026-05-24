@@ -5047,6 +5047,61 @@ const it: Translations = {
     scopeFallback: "Predefinito",
   },
 
+  brandDiscovery: {
+    crumbHome: "Home",
+    crumbWizard: "BD Wizard",
+    crumbHere: "Brand Discovery",
+    pageTitle: "🌎 Brand Discovery globale",
+    pageSubtitle: "Motore multi-AI — trova e valida brand tessili tra Anthropic, OpenAI e Grok, quindi collega automaticamente i contatti Apollo a ogni nuovo brand in modo che il BD Wizard possa utilizzarli immediatamente.",
+
+    statTotalLabel: "Brand totali nel DB",
+    backToWizard: "← Torna al Wizard",
+    backToWizardTitle: "Andata e ritorno al wizard quando arrivano nuovi brand",
+
+    statsErrorContext: "Carica statistiche discovery",
+    statsErrorFallback: "Impossibile caricare le statistiche di discovery",
+    statsNetworkError: "Errore di rete durante il caricamento delle statistiche di discovery.",
+
+    autoEnrichTitle: "Auto-arricchimento attivo",
+    autoEnrichBody: "Ogni nuovo brand creato qui riceve fino a 8 contatti senior (fondatore / C-suite / VP / head / director) collegati tramite Apollo people-search per dominio. Il filtro del BD Wizard fa passare questi brand immediatamente — non è necessaria una passata di arricchimento separata.",
+
+    settingsHeading: "Impostazioni discovery",
+    labelCategory: "Categoria",
+    labelRegion: "Regione",
+    labelTargetCount: "Numero target",
+    btnDiscovering: "🔍 Discovery in corso...",
+    btnRunDiscovery: "🚀 Esegui discovery",
+    btnRunning: "Esecuzione in corso...",
+    btnAllCategories: "🌍 Tutte le categorie",
+
+    runningBanner: "⏳ Discovery multi-AI in esecuzione su Anthropic + OpenAI + Grok... Richiede 30-60 secondi per categoria.",
+    errorPrefix: "❌",
+    errorDefault: "Discovery non riuscita",
+
+    resultsHeadingPrefix: "Risultati discovery —",
+    chipAiSources: "Fonti AI:",
+    chipFound: "Trovati:",
+    chipAfterDedup: "Dopo dedup:",
+    chipCreated: "Creati:",
+    chipContactsAttached: "📇 Contatti collegati:",
+
+    colBrand: "Brand",
+    colSegment: "Segmento",
+    colPriority: "Priorità",
+    colValidation: "Validazione",
+    colContacts: "Contatti",
+    colAiSources: "Fonti AI",
+    colActions: "Azioni",
+    tierPrefix: "Livello",
+    aisConfirmed: "AI confermati",
+    aiConfirmed: "AI confermato",
+    viewResearch: "Vedi e ricerca",
+
+    historyHeading: "Cronologia discovery (questa sessione)",
+    historyFoundLabel: "Trovati:",
+    historyCreatedLabel: "Creati:",
+  },
+
 };
 
 export default it;
