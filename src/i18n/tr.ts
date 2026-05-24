@@ -8150,6 +8150,18 @@ const tr: Translations = {
     addFavoriteTitle: "Favorilere ekle",
   },
 
+  icpCorrelation: {
+    adminCrumb: "Yönetim",
+    crumb: "ICP korelasyonu",
+    heading: "ICP × AB korelasyonu",
+    subtitle: "Joseph'in (KUIU) sorduğu grafik. Atlas'taki marka tarafından görüntülenebilir her test çalıştırmasında, kumaş üzerindeki FUZE kalıntısı (ICP ile ölçülen) antibakteriyel öldürme oranına karşı çizilir. En iyi uyum çizgisi + R² üst üste bindirilmiştir.",
+    errorContext: "ICP korelasyonu yüklenirken",
+    couldntLoadPrefix: "Korelasyon verisi yüklenemedi",
+    networkError: "Ağ hatası.",
+    loadingState: "Korelasyon verisi yükleniyor…",
+    footnote: "Müşteriye yönelik metin \"FUZE kalıntısı\" terimini kullanır — laboratuvarın ICP raporundaki metamateryal ölçümü. Müşteri çıktılarında her zaman FUZE / metamateryal olarak etiketlenir (CLAUDE.md marka sesi kuralı).",
+  },
+
 };
 
 export default tr;
