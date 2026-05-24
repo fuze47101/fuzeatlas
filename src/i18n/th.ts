@@ -7366,6 +7366,31 @@ const th: Translations = {
     claimsLink: "การอ้าง",
   },
 
+  changePassword: {
+    titleDefault: "เปลี่ยนรหัสผ่าน",
+    titleForced: "ตั้งรหัสผ่านใหม่",
+    forcedBanner: "คุณได้รับรหัสผ่านชั่วคราว กรุณาสร้างรหัสผ่านที่ปลอดภัยเพื่อดำเนินการต่อ",
+    currentPasswordLabel: "รหัสผ่านปัจจุบัน",
+    newPasswordLabel: "รหัสผ่านใหม่",
+    newPasswordPlaceholder: "อย่างน้อย 8 ตัวอักษร 1 ตัวใหญ่ 1 ตัวเลข",
+    confirmPasswordLabel: "ยืนยันรหัสผ่านใหม่",
+    reqMinChars: "อย่างน้อย 8 ตัวอักษร",
+    reqUppercase: "หนึ่งตัวอักษรพิมพ์ใหญ่",
+    reqNumber: "หนึ่งตัวเลข",
+    reqMatch: "รหัสผ่านตรงกัน",
+    updateBtn: "อัปเดตรหัสผ่าน",
+    setAndContinueBtn: "ตั้งรหัสผ่าน & ดำเนินการต่อ",
+    updatingBtn: "กำลังอัปเดต...",
+    cancelBtn: "ยกเลิก",
+    passwordUpdatedTitle: "อัปเดตรหัสผ่านแล้ว",
+    redirecting: "กำลังเปลี่ยนเส้นทาง...",
+    errPasswordsDoNotMatch: "รหัสผ่านไม่ตรงกัน",
+    errMinLength: "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
+    errNeedUppercase: "รหัสผ่านต้องมีตัวอักษรพิมพ์ใหญ่อย่างน้อยหนึ่งตัว",
+    errNeedNumber: "รหัสผ่านต้องมีตัวเลขอย่างน้อยหนึ่งตัว",
+    errGeneric: "ไม่สามารถเปลี่ยนรหัสผ่านได้",
+  },
+
 };
 
 export default th;
