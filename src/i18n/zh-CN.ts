@@ -5755,6 +5755,55 @@ const zhCN: Translations = {
     statusComplete: "已完成",
   },
 
+  brandFabricsAdmin: {
+    loading: "正在加载面料组合...",
+    errorTitle: "无法加载面料组合",
+    errorUnknown: "未知错误",
+    errorFailedLoad: "加载失败",
+    errorSave: "保存失败",
+    btnTryAgain: "重试",
+
+    crumbPartners: "品牌合作伙伴",
+    crumbHere: "面料组合",
+    titleSuffix: "— 面料组合",
+    subtitle: "该品牌下所有工厂的全部面料。已显示 {shown} / {total} 种面料。",
+    btnExportCsv: "⬇ 导出 CSV",
+
+    searchPlaceholder: "搜索面料 #、客户编码、成分...",
+    filterAllMills: "所有工厂",
+    filterAllTypes: "所有类型",
+    typeDevelopment: "开发",
+    typeActualBulk: "实际(量产)",
+    typeForecast: "预测",
+    typeRd: "研发",
+    filterAllStatuses: "所有状态",
+
+    emptyFabric: "🧵",
+    emptyTitle: "无面料匹配筛选条件。",
+    emptySub: "调整上方筛选器或清除搜索以查看完整组合。",
+    fabricSingular: "种面料",
+    fabricPlural: "种面料",
+    openFactory: "打开工厂 →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "工厂面料 #",
+    colType: "类型",
+    colContent: "成分",
+    colGsm: "克重",
+    colCustomerCode: "客户编码",
+    colTrial: "试制",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "ICP 值",
+    colTestDate: "测试日期",
+    colStatus: "状态",
+
+    unassigned: "未分配",
+    typeBulkProduction: "量产",
+    notSet: "— 未设置 —",
+    titleOpenFabric: "打开面料详情",
+  },
+
 };
 
 export default zhCN;
