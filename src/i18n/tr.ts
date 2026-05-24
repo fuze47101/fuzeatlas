@@ -4889,6 +4889,49 @@ const tr: Translations = {
     sowEmptyNothingStuck: "Takılan bir şey yok.",
   },
 
+  ordersAdmin: {
+    pageTitle: "Sipariş Yönetimi",
+    pageSubtitle: "Tüm FUZE siparişlerini inceleyin, onaylayın ve takip edin",
+    myAccountsOnly: "Yalnızca hesaplarım",
+    awaitingApprovalTemplate: "Onay bekleyen {n} sipariş{s}",
+
+    statTotal: "Toplam",
+    statPending: "Beklemede",
+    statApproved: "Onaylandı",
+    statProcessing: "İşleniyor",
+    statShipped: "Sevk Edildi",
+    statDelivered: "Teslim Edildi",
+    statRevenue: "Gelir",
+
+    filterAll: "Tümü",
+    filterAllTypes: "Tüm Türler",
+
+    emptyMessage: "Filtrelerle eşleşen sipariş yok",
+
+    colOrder: "Sipariş",
+    colFactory: "Fabrika",
+    colType: "Tür",
+    colVolume: "Hacim",
+    colBrand: "Marka",
+    colTotal: "Toplam",
+    colFulfillment: "Sevkiyat",
+    colStatus: "Durum",
+    colDate: "Tarih",
+
+    statusDraft: "Taslak",
+    statusQuoted: "Teklif Edildi",
+    statusPendingApproval: "Onay Bekliyor",
+    statusApproved: "Onaylandı",
+    statusConfirmed: "Onaylandı",
+    statusProcessing: "İşleniyor",
+    statusShipped: "Sevk Edildi",
+    statusDelivered: "Teslim Edildi",
+    statusCancelled: "İptal Edildi",
+
+    directUsaLabel: "Direkt ABD",
+    tagsSuffix: "etiket",
+  },
+
 };
 
 export default tr;
