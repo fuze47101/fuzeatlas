@@ -5958,6 +5958,58 @@ const ja: Translations = {
     verdictUnscanned: "未スキャン",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← 設定",
+    pageTitle: "メールテンプレート",
+    pageSubtitle: "アウトリーチ用の再利用可能なメールひな型。{firstName}、{company} 等を使用して動的にパーソナライズできます。",
+    btnNew: "+ 新規テンプレート",
+    errorRequired: "タイトル、件名、本文は必須です。",
+    errorLoadUser: "ユーザー情報の読み込みに失敗しました",
+    errorLoadTemplates: "テンプレートの読み込みに失敗しました",
+    confirmArchive: "「{title}」をアーカイブしますか？ピッカーに表示されなくなります。",
+
+    formHeadingEdit: "テンプレートを編集",
+    formHeadingNew: "新規テンプレート",
+    labelTitle: "タイトル",
+    placeholderTitle: "例: 初回紹介（アスレチックアパレル）",
+    labelCategory: "カテゴリ",
+    placeholderCategory: "例: 紹介、再エンゲージ、icp-request",
+    labelScope: "適用範囲",
+    scopePrivate: "プライベート（自分のみ）",
+    scopeShared: "共有（チーム全体）",
+    scopeGlobal: "グローバル（組織デフォルト）",
+    labelSubject: "件名",
+    placeholderSubject: "{firstName} 様 — {company} 向けFUZE紹介",
+    labelBody: "本文",
+    btnSaving: "保存中…",
+    btnSaveChanges: "変更を保存",
+    btnCreate: "テンプレートを作成",
+    btnCancel: "キャンセル",
+
+    previewHeading: "プレビュー",
+    previewHelp: "下のサンプル値を編集して、トークンの表示を確認できます。",
+    previewSubjectLabel: "件名",
+    previewBodyLabel: "本文",
+
+    slotsHeading: "BDウィザード クイックピックスロット",
+    slotsHelp: "最大10件のテンプレートを番号スロットにピン留めできます。ウィザードのドラフトステップで、件名と本文をワンクリックで入力できる1〜10のボタンバーが表示されます。",
+    openBdWizard: "BDウィザードを開く →",
+    slotEmptyTitle: "空のスロット — 下から割り当ててください。",
+    slotEmpty: "空",
+
+    loadingTemplates: "テンプレートを読み込み中…",
+    groupPrivate: "自分のテンプレート",
+    groupShared: "チームと共有",
+    groupGlobal: "組織全体のデフォルト",
+    usedSuffix: "回使用",
+    byPrefix: "作成者:",
+    bdSlot: "BDスロット",
+    edit: "編集",
+    archive: "アーカイブ",
+
+    emptyTpl: "テンプレートはまだありません。+ 新規テンプレート をクリックして最初のテンプレートを作成してください。",
+  },
+
 };
 
 export default ja;
