@@ -8038,6 +8038,24 @@ const zhTW: Translations = {
     footerVerifiedBy: "由 FUZE Atlas 驗證",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "ESG 快照 — FUZE Atlas",
+    metaDescPrefix: "由 FUZE Atlas 認證的",
+    metaDescSuffix: "季度 ESG 影響報告。",
+    backArrowPrefix: "←",
+    headingSuffix: "— ESG 影響",
+    heroSubtitle: "經 FUZE 認證的布料與抗菌測試結果的季度快照。",
+    emptyBody: "尚未發布任何快照。季度報告會在下一季度開始時發布。",
+    statFabricsCertified: "已認證布料",
+    statTestsPassed: "通過測試",
+    statFuzeLiters: "FUZE 公升數",
+    statFactories: "工廠",
+    passRateLabel: "通過率：",
+    downloadPdf: "下載 PDF →",
+    footerCertifiedBy: "由 FUZE Atlas 認證",
+  },
+
 };
 
 export default zhTW;
