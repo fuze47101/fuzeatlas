@@ -4804,6 +4804,48 @@ const zhCN: Translations = {
     printedTemplate: "打印于 {date}",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "每周执行评审",
+    weekOfTemplate: "周次",
+    coveringPrefix: "覆盖",
+    daysWindowSuffix: "天窗口",
+    ownerLabel: "负责人:",
+    generatedLabel: "生成于",
+    enterPresent: "进入时存在",
+    exitPresent: "退出时存在",
+    refreshing: "刷新中…",
+    refreshSnapshot: "刷新快照",
+
+    execSummaryTitle: "执行摘要",
+    execSummaryPlaceholder: "面向董事会的核心要点。失焦时保存。",
+    saving: "保存中…",
+
+    salesDistributionTitle: "销售与分销",
+    bookedDollars: "已下单 $",
+    shippedDollars: "已发货 $",
+    bookedLiters: "已下单 L",
+    shippedLiters: "已发货 L",
+    ordersSuffix: "笔订单",
+    shipmentsSuffix: "次发货",
+    kgShippedSuffix: "kg 已发",
+    byOrderTypeLabel: "按订单类型",
+
+    sowProgressTitle: "SOW 进度",
+    sowDraft: "草稿",
+    sowSent: "已发出",
+    sowSigned: "已签署",
+    sowActive: "进行中",
+    sowComplete: "已完成",
+    sowSignedThisWindow: "本窗口内已签署",
+    sowNewlyOpened: "新打开",
+    sowActiveTitle: "进行中",
+    sowStale: "停滞 (>30 天无动作)",
+    sowEmptyNoSignatures: "本窗口内无新签署。",
+    sowEmptyNoOpened: "本窗口内无新打开 SOW。",
+    sowEmptyNoActive: "无进行中的 SOW。",
+    sowEmptyNothingStuck: "无停滞项。",
+  },
+
 };
 
 export default zhCN;
