@@ -7098,6 +7098,26 @@ const tr: Translations = {
     emptyBias: "Henüz sapma verisi yok.",
   },
 
+  labCreditsAdmin: {
+    loading: "Yükleniyor…",
+    crumbLabs: "Laboratuvarlar",
+    crumbCredits: "Krediler",
+    creditsSuffix: "kredi",
+    balanceLabel: "Bu laboratuvarla FUZE bakiyesi",
+    balanceHint: "Bu laboratuvarda gelecekteki FUZE ödemeli testlerden otomatik düşülür.",
+    addCreditTitle: "Kredi ekle",
+    amountPlaceholder: "$ tutar",
+    sourceNotePlaceholder: "kaynak notu",
+    addCreditBtn: "Kredi ekle",
+    colCreated: "Oluşturuldu",
+    colAmount: "Tutar",
+    colSource: "Kaynak",
+    colNote: "Not",
+    colSpent: "Harcanan",
+    availableLabel: "kullanılabilir",
+    emptyState: "Henüz kredi yok.",
+  },
+
 };
 
 export default tr;
