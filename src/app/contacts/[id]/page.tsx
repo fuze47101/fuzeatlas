@@ -36,6 +36,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 
 // ──────────────────────────────────────────────────────────────────────
 // Types
@@ -131,6 +132,8 @@ function fmtDate(iso?: string | null) {
 // Page
 
 export default function ContactDetailPage() {
+  const { t } = useI18n();
+  const T = t.contactDetail;
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
@@ -154,7 +157,7 @@ export default function ContactDetailPage() {
       // Activity route returns both the contact and the timeline in one
       // call — use it as the source of truth for consistency.
       if (!activityRes?.ok) {
-        setError(activityRes?.error || "Failed to load contact");
+        setError(activityRes?.error || T.failedLoadContact);
         return;
       }
 
@@ -197,7 +200,7 @@ export default function ContactDetailPage() {
     return (
       <div className="p-8 max-w-5xl mx-auto">
         <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4">
-          {error || "Contact not found"}
+          {error || T.contactNotFound}
         </div>
       </div>
     );
@@ -212,7 +215,7 @@ export default function ContactDetailPage() {
       ? { kind: "distributor", id: contact.distributor.id, name: contact.distributor.name, href: `/admin/distributors/${contact.distributor.id}` }
       : null;
 
-  const displayName = contact.name || `${contact.firstName || ""} ${contact.lastName || ""}`.trim() || "Unnamed Contact";
+  const displayName = contact.name || `${contact.firstName || ""} ${contact.lastName || ""}`.trim() || T.unnamedContact;
   const displayTitle = contact.title || contact.jobTitle || "";
 
   return (
@@ -220,7 +223,7 @@ export default function ContactDetailPage() {
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
         <Link href="/contacts" className="hover:text-slate-700">
-          Contacts
+          {T.contactsBreadcrumb}
         </Link>
         {parent && (
           <>
@@ -249,7 +252,7 @@ export default function ContactDetailPage() {
                 {parent && (
                   <div className="text-sm text-slate-500 mt-0.5 flex items-center gap-2">
                     <span>
-                      at{" "}
+                      {T.at}{" "}
                       <Link href={parent.href} className="text-blue-600 hover:underline font-medium">
                         {parent.name}
                       </Link>
@@ -269,7 +272,7 @@ export default function ContactDetailPage() {
               <div className="flex flex-wrap gap-1.5 items-start">
                 {contact.decisionMaker && (
                   <span className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-800 font-bold">
-                    ★ Decision Maker
+                    {T.decisionMaker}
                   </span>
                 )}
                 {contact.seniority && (
@@ -328,7 +331,7 @@ export default function ContactDetailPage() {
                     {contact.personalEmail}
                   </a>
                   <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-slate-100 text-slate-500">
-                    personal
+                    {T.personalEmailLabel}
                   </span>
                 </div>
               )}
@@ -349,7 +352,7 @@ export default function ContactDetailPage() {
                     rel="noopener noreferrer"
                     className="hover:text-blue-600 truncate"
                   >
-                    LinkedIn profile
+                    {T.linkedinProfile}
                   </a>
                 </div>
               )}
@@ -361,7 +364,7 @@ export default function ContactDetailPage() {
               )}
               {contact.enrichmentSource && (
                 <div className="flex items-center gap-2 text-slate-500 text-xs">
-                  <span>Enriched via {contact.enrichmentSource}</span>
+                  <span>{T.enrichedVia} {contact.enrichmentSource}</span>
                   {contact.enrichedAt && (
                     <span>
                       · {new Date(contact.enrichedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
@@ -380,26 +383,26 @@ export default function ContactDetailPage() {
             disabled={!contact.email && !contact.personalEmail}
             className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            📧 Email
+            {T.emailBtn}
           </button>
           <button
             onClick={() => setModal("meeting")}
             className="px-3 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 flex items-center gap-2"
           >
-            📅 Schedule Meeting
+            {T.scheduleMeeting}
           </button>
           <button
             onClick={() => setModal("call")}
             disabled={!contact.phone}
             className="px-3 py-2 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            📞 Log Call
+            {T.logCall}
           </button>
           <button
             onClick={() => setModal("note")}
             className="px-3 py-2 bg-slate-700 text-white rounded-lg text-sm font-semibold hover:bg-slate-800 flex items-center gap-2"
           >
-            📝 Add Note
+            {T.addNote}
           </button>
         </div>
       </div>
@@ -407,15 +410,15 @@ export default function ContactDetailPage() {
       {/* ─── Timeline ─── */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-slate-800">Activity</h2>
+          <h2 className="text-lg font-bold text-slate-800">{T.activity}</h2>
           <div className="text-xs text-slate-500">
-            {timeline.length} {timeline.length === 1 ? "item" : "items"}
+            {timeline.length} {timeline.length === 1 ? T.itemSingular : T.itemPlural}
           </div>
         </div>
 
         {timeline.length === 0 ? (
           <div className="text-center py-10 text-slate-400 text-sm">
-            No activity yet. Fire off an email or log a call to start the timeline.
+            {T.noActivity}
           </div>
         ) : (
           <ol className="space-y-3 relative border-l-2 border-slate-100 ml-2">
@@ -468,8 +471,8 @@ export default function ContactDetailPage() {
         <NoteModal
           contact={contact}
           kind="CALL"
-          title="Log a call"
-          placeholder="What did you talk about? Outcome, objections, next steps..."
+          title={T.logCallTitle}
+          placeholder={T.logCallPlaceholder}
           onClose={() => setModal(null)}
           onSaved={() => {
             setModal(null);
@@ -481,8 +484,8 @@ export default function ContactDetailPage() {
         <NoteModal
           contact={contact}
           kind="NOTE"
-          title="Add a note"
-          placeholder="Context, research, reminders..."
+          title={T.addNoteTitle}
+          placeholder={T.addNotePlaceholder}
           onClose={() => setModal(null)}
           onSaved={() => {
             setModal(null);
@@ -510,6 +513,8 @@ function ReassignBrandButton({
   currentBrandId: string | null;
   onMoved: () => void;
 }) {
+  const { t } = useI18n();
+  const T = t.contactDetail;
   const [open, setOpen] = useState(false);
   const [brands, setBrands] = useState<any[]>([]);
   const [filter, setFilter] = useState("");
@@ -547,7 +552,7 @@ function ReassignBrandButton({
         body: JSON.stringify({ brandId: targetId }),
       });
       const json = await res.json();
-      if (!json.ok) throw new Error(json.error || "Move failed");
+      if (!json.ok) throw new Error(json.error || T.moveFailed);
       onMoved();
     } catch (e: any) {
       setErr(e.message);
@@ -567,9 +572,9 @@ function ReassignBrandButton({
         type="button"
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold border border-blue-200"
-        title="Move this contact to a different brand (career change, M&A, etc.)"
+        title={T.moveBrandHint}
       >
-        ↪ Move to different brand
+        {T.moveBrandBtn}
       </button>
       {open && (
         <div
@@ -582,11 +587,10 @@ function ReassignBrandButton({
           >
             <div className="p-4 border-b border-slate-200">
               <h2 className="text-lg font-bold text-slate-900">
-                Move contact to another brand
+                {T.moveContactTitle}
               </h2>
               <p className="text-xs text-slate-500 mt-1">
-                A note is logged on both the old and new brand
-                timelines so the audit trail stays clean.
+                {T.moveContactDesc}
               </p>
             </div>
             <div className="p-4 border-b border-slate-100">
@@ -595,7 +599,7 @@ function ReassignBrandButton({
                 type="text"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                placeholder="Search brands..."
+                placeholder={T.searchBrands}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
               />
             </div>
@@ -605,7 +609,7 @@ function ReassignBrandButton({
             <div className="flex-1 overflow-y-auto p-2">
               {filtered.length === 0 ? (
                 <p className="p-3 text-sm text-slate-500">
-                  No matches.
+                  {T.noMatches}
                 </p>
               ) : (
                 filtered.slice(0, 100).map((b: any) => (
@@ -622,7 +626,7 @@ function ReassignBrandButton({
                     </span>
                     {b.id === currentBrandId && (
                       <span className="ml-2 text-xs text-slate-400">
-                        (current)
+                        {T.current}
                       </span>
                     )}
                   </button>
@@ -634,7 +638,7 @@ function ReassignBrandButton({
                 onClick={() => setOpen(false)}
                 className="px-4 py-1.5 text-sm text-slate-600 hover:bg-slate-100 rounded"
               >
-                Cancel
+                {T.cancel}
               </button>
             </div>
           </div>
@@ -648,6 +652,8 @@ function ReassignBrandButton({
 // Timeline card
 
 function TimelineCard({ item }: { item: TimelineItem }) {
+  const { t } = useI18n();
+  const T = t.contactDetail;
   const at = fmtDate(item.at);
 
   if (item.kind === "EMAIL") {
@@ -656,7 +662,7 @@ function TimelineCard({ item }: { item: TimelineItem }) {
       <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-3">
         <div className="flex items-center justify-between gap-2 text-xs text-slate-500 mb-1">
           <span className="font-semibold text-blue-700">
-            {n.emailDirection === "INBOUND" ? "📨 Inbound email" : "📤 Sent email"}
+            {n.emailDirection === "INBOUND" ? T.inboundEmail : T.sentEmail}
           </span>
           <span>{at}</span>
         </div>
@@ -677,7 +683,7 @@ function TimelineCard({ item }: { item: TimelineItem }) {
       <div className="bg-amber-50/50 border border-amber-100 rounded-lg p-3">
         <div className="flex items-center justify-between gap-2 text-xs text-slate-500 mb-1">
           <span className="font-semibold text-amber-700">
-            ✉ Outreach ({m.channel || "email"})
+            {T.outreachLabel} ({m.channel || "email"})
           </span>
           <span>{at}</span>
         </div>
@@ -694,7 +700,7 @@ function TimelineCard({ item }: { item: TimelineItem }) {
     return (
       <div className="bg-amber-50/50 border border-amber-100 rounded-lg p-3">
         <div className="flex items-center justify-between gap-2 text-xs text-slate-500 mb-1">
-          <span className="font-semibold text-amber-700">📇 Outreach check · {o.type}</span>
+          <span className="font-semibold text-amber-700">{T.outreachCheck} · {o.type}</span>
           <span>{at}</span>
         </div>
         {o.notes && <div className="text-sm text-slate-700 whitespace-pre-wrap mt-1">{o.notes}</div>}
@@ -707,12 +713,12 @@ function TimelineCard({ item }: { item: TimelineItem }) {
   const n = item.data;
   const kindLabel =
     n.noteType === "CALL"
-      ? "📞 Call logged"
+      ? T.callLogged
       : n.noteType === "MEETING"
-      ? "📅 Meeting"
+      ? T.meetingNote
       : n.noteType === "AI_INSIGHT"
-      ? "🤖 AI insight"
-      : "📝 Note";
+      ? T.aiInsight
+      : T.note;
   return (
     <div className="bg-slate-50 border border-slate-100 rounded-lg p-3">
       <div className="flex items-center justify-between gap-2 text-xs text-slate-500 mb-1">
@@ -738,6 +744,8 @@ function EmailModal({
   onClose: () => void;
   onSent: () => void;
 }) {
+  const { t } = useI18n();
+  const T = t.contactDetail;
   const parentName = contact.brand?.name || contact.factory?.name || contact.distributor?.name || "your company";
   const firstName = contact.firstName || (contact.name || "").split(" ")[0] || "there";
 
@@ -761,7 +769,7 @@ function EmailModal({
       const next = [...prev, ...incoming];
       const total = next.reduce((s, f) => s + f.size, 0);
       if (total > 25 * 1024 * 1024) {
-        setErr("Attachments exceed 25 MB total — Resend won't accept them.");
+        setErr(T.attachmentsExceed);
         return prev;
       }
       setErr("");
@@ -798,7 +806,7 @@ function EmailModal({
         });
       }
       const sendJson = await sendRes.json();
-      if (!sendJson.ok) throw new Error(sendJson.error || "Email send failed");
+      if (!sendJson.ok) throw new Error(sendJson.error || T.emailSendFailed);
       // The send route now writes the Note (with email metadata) inside
       // the same transaction — no follow-up /api/notes call needed (#20).
       onSent();
@@ -810,13 +818,13 @@ function EmailModal({
   };
 
   return (
-    <Modal onClose={onClose} title={`Email ${contact.name || contact.firstName || "contact"}`}>
+    <Modal onClose={onClose} title={T.emailTitle.replace("{name}", contact.name || contact.firstName || T.contactFallback)}>
       <div className="space-y-3">
         <div className="text-sm text-slate-500">
-          To: <span className="font-mono text-slate-700">{toAddress || "(no email on file)"}</span>
+          {T.toLabel} <span className="font-mono text-slate-700">{toAddress || T.noEmailOnFile}</span>
         </div>
         <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase">Subject</label>
+          <label className="text-xs font-semibold text-slate-500 uppercase">{T.subject}</label>
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
@@ -824,7 +832,7 @@ function EmailModal({
           />
         </div>
         <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase">Message</label>
+          <label className="text-xs font-semibold text-slate-500 uppercase">{T.message}</label>
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
@@ -838,7 +846,7 @@ function EmailModal({
             enforced both client-side here and server-side in the send
             route. */}
         <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase">Attachments</label>
+          <label className="text-xs font-semibold text-slate-500 uppercase">{T.attachments}</label>
           <div
             className="mt-1 border-2 border-dashed border-slate-300 rounded-lg px-3 py-3 text-center cursor-pointer hover:border-blue-400 transition-colors"
             onClick={() => document.getElementById("contact-email-files")?.click()}
@@ -856,7 +864,7 @@ function EmailModal({
             }}
           >
             <span className="text-xs text-slate-500">
-              Drop files here or click to attach (PDF, DOCX, images, etc. — 25 MB total)
+              {T.attachmentsHint}
             </span>
           </div>
           <input
@@ -884,7 +892,7 @@ function EmailModal({
                     type="button"
                     onClick={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
                     className="ml-2 text-slate-400 hover:text-red-600"
-                    aria-label={`Remove ${file.name}`}
+                    aria-label={T.removeFile.replace("{name}", file.name)}
                   >
                     ✕
                   </button>
@@ -900,14 +908,14 @@ function EmailModal({
             onClick={onClose}
             className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200"
           >
-            Cancel
+            {T.cancel}
           </button>
           <button
             onClick={handleSend}
             disabled={sending || !toAddress || !subject.trim() || !body.trim()}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:bg-slate-300"
           >
-            {sending ? "Sending…" : "Send"}
+            {sending ? T.sending : T.sendBtn}
           </button>
         </div>
       </div>
@@ -927,6 +935,8 @@ function MeetingModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useI18n();
+  const T = t.contactDetail;
   const parentName = contact.brand?.name || contact.factory?.name || contact.distributor?.name || "";
   const now = new Date();
   const nextSlot = new Date(now.getTime() + 24 * 60 * 60 * 1000);
@@ -963,7 +973,7 @@ function MeetingModal({
         }),
       });
       const j = await res.json();
-      if (!j.ok) throw new Error(j.error || "Failed to create meeting");
+      if (!j.ok) throw new Error(j.error || T.failedCreateMeeting);
 
       // Log to contact timeline
       await fetch("/api/notes", {
@@ -986,10 +996,10 @@ function MeetingModal({
   };
 
   return (
-    <Modal onClose={onClose} title="Schedule meeting">
+    <Modal onClose={onClose} title={T.scheduleMeetingTitle}>
       <div className="space-y-3">
         <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase">Title</label>
+          <label className="text-xs font-semibold text-slate-500 uppercase">{T.titleLabel}</label>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -998,7 +1008,7 @@ function MeetingModal({
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase">Start</label>
+            <label className="text-xs font-semibold text-slate-500 uppercase">{T.startLabel}</label>
             <input
               type="datetime-local"
               value={startTime}
@@ -1007,7 +1017,7 @@ function MeetingModal({
             />
           </div>
           <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase">End</label>
+            <label className="text-xs font-semibold text-slate-500 uppercase">{T.endLabel}</label>
             <input
               type="datetime-local"
               value={endTimeStr}
@@ -1017,7 +1027,7 @@ function MeetingModal({
           </div>
         </div>
         <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase">Agenda (optional)</label>
+          <label className="text-xs font-semibold text-slate-500 uppercase">{T.agendaLabel}</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -1026,7 +1036,7 @@ function MeetingModal({
           />
         </div>
         <div className="text-xs text-slate-500">
-          Attendee: <span className="font-mono">{contact.email || "(no email on file)"}</span>
+          {T.attendeeLabel} <span className="font-mono">{contact.email || T.noEmailOnFile}</span>
         </div>
         {err && <div className="text-red-600 text-sm">{err}</div>}
         <div className="flex gap-2 justify-end pt-2">
@@ -1034,14 +1044,14 @@ function MeetingModal({
             onClick={onClose}
             className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200"
           >
-            Cancel
+            {T.cancel}
           </button>
           <button
             onClick={handleSave}
             disabled={saving || !title.trim()}
             className="px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 disabled:bg-slate-300"
           >
-            {saving ? "Saving…" : "Schedule"}
+            {saving ? T.savingShort : T.scheduleBtn}
           </button>
         </div>
       </div>
@@ -1067,6 +1077,8 @@ function NoteModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useI18n();
+  const T = t.contactDetail;
   const [content, setContent] = useState("");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
@@ -1087,7 +1099,7 @@ function NoteModal({
         }),
       });
       const j = await res.json();
-      if (!j.ok) throw new Error(j.error || "Failed to save");
+      if (!j.ok) throw new Error(j.error || T.failedSave);
       onSaved();
     } catch (e: any) {
       setErr(e.message);
@@ -1113,7 +1125,7 @@ function NoteModal({
             onClick={onClose}
             className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200"
           >
-            Cancel
+            {T.cancel}
           </button>
           <button
             onClick={handleSave}
@@ -1122,7 +1134,7 @@ function NoteModal({
               kind === "CALL" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-slate-700 hover:bg-slate-800"
             }`}
           >
-            {saving ? "Saving…" : "Save"}
+            {saving ? T.savingShort : T.saveBtn}
           </button>
         </div>
       </div>
