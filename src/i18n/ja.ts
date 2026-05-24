@@ -7888,6 +7888,24 @@ const ja: Translations = {
     emptyBody: "フィルタを広げてお試しください。あるいは、開発中のファブリックも確認したい場合は「ベンチ試験で検証済み」フィルタを外してください。",
   },
 
+  importBrands: {
+    title: "一括インポート — ブランド",
+    subtitle: "展示会、リスト、リサーチデータから取得したブランド候補の CSV を貼り付けるか、アップロードしてください。列をマッピングし、検証をプレビューしたうえで、CLI と同じ seed-brand ヘルパーを通じてべき等に書き込みます。",
+    backLabel: "ブランドパイプライン",
+    brandNameLabel: "ブランド名",
+    brandNameHint: "(自然キー — このキーで upsert します)",
+    domainLabel: "メールドメイン",
+    domainHint: '例 "rhone.com"',
+    repEmailLabel: "プライマリ AM のメールアドレス",
+    repEmailHint: "Atlas のユーザーとして既に存在している必要があります",
+    tierLabel: "必須 FUZE ティア",
+    tierHint: "F1 / F2 / F3 / F4 — デフォルトは F2",
+    cadenceLabel: "ICP ケイデンス (N バッチごと)",
+    cadenceHint: "デフォルトは 5",
+    countryLabel: "国",
+    websiteLabel: "ウェブサイト",
+  },
+
 };
 
 export default ja;
