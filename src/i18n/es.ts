@@ -5146,6 +5146,81 @@ const es: Translations = {
     docTypeOther: "Otro",
   },
 
+  consumptionAdmin: {
+    loading: "Cargando datos de consumo...",
+    pageTitle: "Consumo y reorden",
+    pageSubtitle: "Siga el uso de FUZE por fábrica, fechas proyectadas de agotamiento y disparadores automatizados de reorden",
+
+    btnNewOrder: "+ Nuevo pedido",
+    btnLogUsage: "+ Registrar uso",
+
+    kpiActiveFactories: "Fábricas activas",
+    kpiOfTotal: "de {n} en total",
+    kpiTotalOrdered: "Total pedido",
+    kpiPending: "{n} pendientes",
+    kpiTotalConsumed: "Total consumido",
+    kpiAcrossAll: "en todas las fábricas",
+    kpiReorderAlerts: "Alertas de reorden",
+    kpiAlertsSplit: "{c} críticas, {w} advertencia",
+
+    annualDemandLabel: "Demanda anual proyectada",
+    annualDemandUnit: "litros",
+    annualDemandBottles: "~{n} botellas",
+    annualDemandRevenue: "~${n} ingresos",
+
+    sectionFactoryInventory: "Estado del inventario de fábricas",
+    emptyTitle: "Aún no hay fábricas habilitadas para FUZE.",
+    emptySub: "Las fábricas con fuzeEnabled = true aparecerán aquí.",
+
+    cellRemaining: "Restante",
+    cellBurn: "Consumo/día",
+    cellRunOut: "Agotamiento",
+    daysSuffix: "d",
+    daysWord: "días",
+    fabricsSuffix: "tejidos",
+    fabricSuffix: "tejido",
+    activeOrdersSuffix: "pedidos activos",
+    activeOrderSuffix: "pedido activo",
+
+    colFactory: "Fábrica",
+    colCountry: "País",
+    colOrdered: "Pedido",
+    colConsumed: "Consumido",
+    colRemaining: "Restante",
+    colBurnDay: "Consumo/día",
+    colRunOut: "Agotamiento",
+    colStatus: "Estado",
+
+    modalOrderTitle: "Nuevo pedido FUZE",
+    modalUsageTitle: "Registrar uso de FUZE",
+    fieldFactory: "Fábrica",
+    placeholderFactory: "Seleccionar fábrica...",
+    fieldVolumeL: "Volumen (litros)",
+    fieldTier: "Nivel",
+    fieldNotes: "Notas",
+    fieldLitersUsed: "Litros usados",
+    fieldMetersProcessed: "Metros procesados",
+    placeholderOptional: "Opcional",
+    fieldMethod: "Método",
+    placeholderSelect: "Seleccionar...",
+    methodExhaust: "Agotamiento (baño de tinte)",
+    methodPad: "Pad-Dry-Cure",
+    methodSpray: "Pulverización",
+
+    summaryBottles: "Botellas (19 L cada una):",
+    summaryEstTotal: "Total estimado:",
+
+    btnCancel: "Cancelar",
+    btnCreating: "Creando...",
+    btnCreateOrder: "Crear pedido",
+    btnLogging: "Registrando...",
+    btnLogUsageSubmit: "Registrar uso",
+
+    errorCreateOrder: "Error al crear el pedido",
+    errorLogUsage: "Error al registrar el consumo",
+    errorNetwork: "Error de red",
+  },
+
 };
 
 export default es;
