@@ -7614,6 +7614,25 @@ const ta: Translations = {
     footerPrefix: "FUZE Atlas API Documentation - கடைசியாக புதுப்பிக்கப்பட்டது",
   },
 
+  recipeSearch: {
+    heading: "Recipe தேடல்",
+    subtitle: "நெட்வொர்க்-முழுவதும் FUZE recipe நூலகம். Atlas-இல் சரிபார்க்கப்பட்ட ஒவ்வொரு ஃபேப்ரிக்கிலும் தேடவும் — ஃபேப்ரிக் உங்களுடையதாக இல்லாவிட்டாலும், நீங்கள் வேலை செய்வதை நிரூபிக்கப்பட்ட recipe-உடன் பொருத்தவும். Out-of-scope வரிசைகள் அநாமதேயமாக்கப்பட்டுள்ளன ஆனால் recipe physics தெரியும்.",
+    keywordPlaceholder: "Keyword (cotton, jersey, twill...)",
+    anyCategory: "எந்த வகையும்",
+    knit: "பின்னல்",
+    woven: "நெய்த",
+    nonwoven: "நெய்யப்படாத",
+    fiberPlaceholder: "ஃபைபர் (cotton, poly...)",
+    gsmMinPlaceholder: "GSM min",
+    gsmMaxPlaceholder: "GSM max",
+    anyTier: "எந்த டியரும்",
+    onlyValidatedLabel: "அளவிடப்பட்ட pickup கொண்ட ஃபேப்ரிக்குகளை மட்டும் காட்டு (சரிபார்க்கப்பட்ட bench test)",
+    searchingBtn: "தேடுகிறது...",
+    searchBtn: "தேடு",
+    emptyTitle: "பொருந்தும் recipes இன்னும் இல்லை.",
+    emptyBody: "வடிகட்டிகளை விரிவாக்க முயற்சிக்கவும் — அல்லது இன்னும் mid-development-இல் உள்ள ஃபேப்ரிக்குகளைப் பார்க்க விரும்பினால் \"validated bench test\" வடிகட்டியை அகற்றவும்.",
+  },
+
 };
 
 export default ta;
