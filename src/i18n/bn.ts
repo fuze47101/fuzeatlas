@@ -5784,6 +5784,50 @@ const bn: Translations = {
     emptyTpl: "এখনও কোনো টেমপ্লেট নেই। আপনার প্রথমটি তৈরি করতে + নতুন টেমপ্লেট ক্লিক করুন।",
   },
 
+  pipelineUserPage: {
+    loading: "পাইপলাইন লোড হচ্ছে...",
+    pageTitle: "রাজস্ব পাইপলাইন",
+    pageSubtitle: "উন্নয়ন থেকে উৎপাদন পর্যন্ত ডিল ট্র্যাক করুন",
+    btnNewDeal: "+ নতুন ডিল",
+
+    kpiTotalPipeline: "মোট পাইপলাইন",
+    kpiTotalPipelineSubTpl: "{n} ডিল",
+    kpiWeighted: "ওজনযুক্ত পূর্বাভাস",
+    kpiWeightedSub: "সম্ভাবনা-সমন্বিত",
+    kpiActual: "প্রকৃত রাজস্ব",
+    kpiActualSub: "ইনভয়েস ও পরিশোধিত",
+    kpiConversion: "কনভার্শন",
+    kpiConversionSub: "প্রকৃত / পাইপলাইন",
+
+    cardProdPrefix: "উৎপাদন:",
+    emptyDeals: "কোনো ডিল নেই",
+    weightedPrefix: "· wt:",
+
+    editTitlePrefix: "প্রকল্প সম্পাদনা:",
+    fieldName: "প্রকল্পের নাম",
+    fieldStage: "পর্যায়",
+    keepCurrent: "বর্তমান রাখুন",
+    fieldBrand: "ব্র্যান্ড",
+    fieldNone: "কোনোটিই নয়",
+    fieldProjectedValue: "প্রক্ষেপিত মান ($)",
+    fieldProbability: "সম্ভাবনা (%)",
+    fieldFuzeTier: "FUZE টিয়ার",
+    fieldAnnualVolume: "বার্ষিক ভলিউম (m)",
+    fieldFactory: "কারখানা",
+    fieldDistributor: "ডিস্ট্রিবিউটর",
+    autoFromFactory: "কারখানা থেকে স্বয়ংক্রিয়",
+    fieldExpectedProd: "প্রত্যাশিত উৎপাদন",
+    fieldActualProd: "প্রকৃত উৎপাদন",
+    btnSaveChanges: "পরিবর্তন সংরক্ষণ করুন",
+    btnSaving: "সংরক্ষণ হচ্ছে...",
+    btnCancel: "বাতিল",
+
+    newDealTitle: "নতুন ডিল",
+    newDealPlaceholder: "প্রকল্প / ডিল নাম...",
+    btnCreate: "তৈরি করুন",
+    btnCreating: "তৈরি হচ্ছে...",
+  },
+
 };
 
 export default bn;
