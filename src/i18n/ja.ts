@@ -8112,6 +8112,18 @@ const ja: Translations = {
     addFavoriteTitle: "お気に入りに追加",
   },
 
+  icpCorrelation: {
+    adminCrumb: "管理",
+    crumb: "ICP 相関",
+    heading: "ICP × AB 相関",
+    subtitle: "Joseph (KUIU) からご要望のあったチャートです。ファブリック上の FUZE 残留量 (ICP 測定値) を、Atlas 内のすべてのブランド可視試験ランにおける抗菌殺菌率に対してプロットしています。最良適合線と R² を重ね合わせています。",
+    errorContext: "ICP 相関を読み込み",
+    couldntLoadPrefix: "相関データを読み込めませんでした",
+    networkError: "ネットワークエラー。",
+    loadingState: "相関データを読み込み中…",
+    footnote: "お客様向けの表記では「FUZE 残留量」を用います — ラボの ICP レポートから得られるメタマテリアル測定値です。お客様向け成果物では常に FUZE / メタマテリアルとして表記しています (CLAUDE.md ブランドボイス規則)。",
+  },
+
 };
 
 export default ja;
