@@ -5765,6 +5765,31 @@ const km: Translations = {
     footerNote: "Sorted: low-stock first, then idle, then by days-of-stock-left ascending. \"Daily burn\" = rolling 90-day average of liters shipped to factories. \"Days left\" = current stock ÷ daily burn. \"Idle\" = no factory orders in last 90 days. \"ទេ price\" means FUZE wholesale rate is unset; the distributor cannot place restock orders. កែសម្រួល on the per-distributor page.",
   },
 
+  conversionTracking: {
+    crumbDashboard: "ផ្ទាំងបញ្ជា",
+    crumbCurrent: "គំរូ → ផលិតកម្ម",
+    title: "គំរូ → ផលិតកម្ម Conversion",
+    subtitle: "Track which factories received samples and converted to production orders",
+    cardFactoriesSampled: "រោងចក្រ គំរូd",
+    cardConverted: "Converted",
+    cardConversionRate: "Conversion Rate",
+    cardAvgDays: "Avg Days to Convert",
+    cardProdVolume: "ផលិតកម្ម បរិមាណ",
+    cardProdRevenue: "ផលិតកម្ម ប្រាក់ចំណូល",
+    tabAll: "ទាំងអស់",
+    tabConverted: "Converted",
+    tabPending: "កំពុងរង់ចាំ",
+    emptyText: "ទេ sample orders found yet",
+    badgeConverted: "CONVERTED",
+    badgePending: "PENDING",
+    sectionSamples: "គំរូ ការបញ្ជាទិញ",
+    sectionTrials: "Trial Requests",
+    sectionProduction: "ផលិតកម្ម ការបញ្ជាទិញ",
+    productionLabel: "ផលិតកម្ម",
+    daysToConvertSuffix: "days to convert",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default km;
