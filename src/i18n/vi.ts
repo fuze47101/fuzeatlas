@@ -7213,6 +7213,26 @@ const vi: Translations = {
     emptyState: "Chưa có tín dụng nào.",
   },
 
+  bdFunnel: {
+    loading: "Đang tải…",
+    crumbSalesPipeline: "Bán hàng & Pipeline",
+    crumbBdFunnel: "Phễu BD",
+    title: "Phễu pipeline",
+    subtitle: "Vào / ra trong 30 / 60 / 90 ngày qua, cộng với tỷ lệ chuyển đổi giai đoạn-sang-giai đoạn. Lấy nguồn từ các hàng BrandStageTransition được ghi trên mỗi lần lật Brand.pipelineStage.",
+    colStage: "Giai đoạn",
+    colCurrent: "Hiện tại",
+    colIn30: "Vào 30d",
+    colIn60: "Vào 60d",
+    colIn90: "Vào 90d",
+    colOut30: "Ra 30d",
+    colOut60: "Ra 60d",
+    colOut90: "Ra 90d",
+    colAvgDwell: "Lưu trú TB",
+    colToNext: "→ tiếp",
+    footerHint: "Chuyển đổi = số lần thoát đến giai đoạn tiếp theo chuẩn / tổng số lần thoát quan sát được trong 90 ngày qua. Các giai đoạn không có lần thoát nào trong cửa sổ hiển thị n=0 — chúng chậm hoặc ổn định, không phải xấu.",
+    errLoadFailed: "Không tải được phễu",
+  },
+
 };
 
 export default vi;
