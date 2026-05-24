@@ -3047,6 +3047,29 @@ const id: Translations = {
     questionsPrefix: "· Pertanyaan?",
   },
 
+  educationStory: {
+    backLink: "← Kembali ke Dasar FUZE",
+    kicker: "Kisah FUZE",
+    heroTitle: "Dari elektronik daur ulang ke antibakteri permanen",
+    heroBody: "Metamaterial FUZE diproduksi melalui liquid laser ablation: laser 30-amp, meja produksi 1m², dan bahan baku elektronik daur ulang. Seluruh sel produksi dapat ditenagai surya. Kami bukan hanya antibakteri — kami adalah operasi upcycling limbah elektronik yang berakhir di kain Anda.",
+    card1Title: "Bahan baku daur ulang",
+    card1Body: "Setiap gram bahan aktif FUZE berasal dari logam mulia elemental yang dipulihkan dari elektronik akhir-masa-pakai. Kami tidak menambang. Kami tidak memurnikan material perawan. Kami menarik logam yang seharusnya akan berakhir di TPA atau diinsinerasi.",
+    card2Title: "Liquid laser ablation",
+    card2Body: "Pulsa laser 30-amp menguapkan bahan baku logam yang direndam dalam air DI ultramurni 99,998% 18-megaohm. Yang mengembun adalah metamaterial FUZE — allotrope elemental densitas tinggi, 20 ppm dalam konsentrasi stock yang dikirim. Tanpa pelarut. Tanpa kimia prekursor. Tanpa surfaktan.",
+    card3Title: "Produksi yang dapat ditenagai surya",
+    card3Body: "Sel produksi 1m² berjalan dengan listrik kira-kira yang diproduksi array surya residensial pada hari cerah. Brand yang berkomitmen pada FUZE berkomitmen pada supply chain antibakteri yang bisa net-zero di tahap produksi — sesuatu yang tidak bisa diklaim kompetitor ion logam / zinc / QAC.",
+    esgTitle: "Apa artinya dalam laporan ESG Anda",
+    esgBullet1: "✓ Klaim bahan baku sirkular — FUZE diproduksi dari elektronik akhir-masa-pakai, mendukung komitmen ekonomi sirkular Anda.",
+    esgBullet2: "✓ Produksi yang dapat net-zero — sel produksi kompatibel surya. Padukan dengan kontrak pasokan terbarukan dan langkah antibakteri berkontribusi nol emisi scope-2.",
+    esgBullet3: "✓ Nol kontribusi penambangan perawan — tidak diperlukan koordinasi dengan supply chain mineral konflik atau yang berasal dari tambang.",
+    esgBullet4: "✓ Bebas PFAS, bebas formaldehida, bebas binder, bebas oven curing — setiap input petrokimia yang dibutuhkan kompetitor, FUZE menghilangkan.",
+    esgBullet5: "✓ Kebersihan air terdokumentasi — FUZE tidak melepaskan apa pun ke air cuci. Kontribusi hilir Anda terhadap beban pengolahan air kota = 0.",
+    differentTitle: "Jenis perusahaan antibakteri yang berbeda",
+    differentBody: "Sebagian besar perusahaan antibakteri tekstil adalah perusahaan kimia. Mereka mencampur, mengencerkan, memformulasi, dan mengirim drum kimia tersintesis ke mill. Kami adalah operasi material-science: kami mengablasi logam dalam air dan mengirim hasilnya. Kesederhanaan adalah pembeda. Lebih sedikit kimia pada kain. Lebih sedikit kimia di air cuci. Lebih sedikit kimia di lini produksi. Lebih sedikit kimia di laporan ESG Anda.",
+    backBasicsBtn: "Kembali ke Dasar FUZE",
+    seeSustainabilityBtn: "Lihat dampak keberlanjutan",
+  },
+
 };
 
 export default id;
