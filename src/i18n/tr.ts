@@ -8020,6 +8020,36 @@ const tr: Translations = {
     nextBtn: "Sonraki",
   },
 
+  bdSequencesList: {
+    kicker: "BD Sihirbazı",
+    heading: "Sekanslar",
+    subtitlePrefix: "Uzun huni giden iletişim. Cron adımları saatlik ilerletir. Hazır adımlar şurada park eder:",
+    subtitleSuffix: "incelemeniz için — hiçbir şey otomatik gönderilmez.",
+    openWizardBtn: "BD Sihirbazını Aç →",
+    stepAwaitingSingular: "incelemenizi bekleyen adım",
+    stepsAwaitingPlural: "incelemenizi bekleyen adım",
+    showAllRepsLabel: "Tüm temsilcileri göster",
+    loadingState: "Sekanslar yükleniyor…",
+    emptyHeadPrefix: "Yok",
+    emptyHeadSuffix: "sekans",
+    emptyBodyPrefix: "İlk e-postanızı şu üzerinden göndererek başlatın:",
+    emptyBodyLink: "BD Sihirbazı",
+    emptyBodySuffix: ". Her ilk gönderim otomatik olarak 6 adımlık bir kadans başlatır.",
+    colBrandContact: "Marka / Kişi",
+    colProgress: "İlerleme",
+    colNext: "Sonraki",
+    colRep: "Temsilci",
+    colStatus: "Durum",
+    colActions: "Eylemler",
+    readyChipSuffix: "hazır",
+    reviewSendBtn: "İncele ve gönder",
+    openBtn: "Aç",
+    viewBtn: "Görüntüle",
+    pauseBtn: "Duraklat",
+    exitBtn: "Çıkış",
+    resumeBtn: "Devam et",
+  },
+
 };
 
 export default tr;
