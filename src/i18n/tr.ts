@@ -4769,6 +4769,18 @@ const tr: Translations = {
     nextButton: "İleri →",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — Belge Önizlemesi",
+    printSavePdf: "Yazdır / PDF Olarak Kaydet",
+    close: "Kapat",
+    documentNotFound: "Belge bulunamadı",
+    loadingError: "Belge yüklenemedi",
+    networkError: "Ağ hatası",
+    docNumberLabel: "Belge #:",
+    confidentialFooter: "FUZE Biotech Inc. — Gizli",
+    generatedTemplate: "Oluşturuldu:",
+  },
+
 };
 
 export default tr;
