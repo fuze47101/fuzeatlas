@@ -10,6 +10,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import ErrorPanel from "@/components/ErrorPanel";
+import { useI18n } from "@/i18n";
 
 interface ActivityRow {
   id: string;
@@ -61,6 +62,8 @@ function summarizeValue(v: any): string {
 }
 
 export default function AdminAuditLogPage() {
+  const { t } = useI18n();
+  const T = t.adminAuditLog;
   const [rows, setRows] = useState<ActivityRow[]>([]);
   const [entities, setEntities] = useState<string[]>([]);
   const [actions, setActions] = useState<string[]>([]);
@@ -83,7 +86,7 @@ export default function AdminAuditLogPage() {
       const res = await fetch(`/api/admin/audit-log?${params.toString()}`);
       const j = await res.json().catch(() => null);
       if (!res.ok || !j?.ok) {
-        setLoadError(j?.error || `Couldn't load audit log (HTTP ${res.status}).`);
+        setLoadError(j?.error || `${T.couldntLoadPrefix} (HTTP ${res.status}).`);
         return;
       }
       setRows(j.rows || []);
@@ -93,7 +96,7 @@ export default function AdminAuditLogPage() {
       if (entities.length === 0) setEntities(j.distinctEntities || []);
       if (actions.length === 0) setActions(j.distinctActions || []);
     } catch (e: any) {
-      setLoadError(e?.message || "Network error while loading audit log.");
+      setLoadError(e?.message || T.networkError);
     } finally {
       setLoading(false);
     }
@@ -108,35 +111,34 @@ export default function AdminAuditLogPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/admin" className="hover:text-[#00b4c3]">
-            Admin
+            {T.adminCrumb}
           </Link>
           <span>›</span>
-          <span>Audit log</span>
+          <span>{T.crumb}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">Audit log</h1>
+        <h1 className="text-2xl font-black text-slate-900">{T.heading}</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Full audit trail across every entity. Filter by action, entity, or date.
-          90-day retention.
+          {T.subtitle}
         </p>
       </div>
 
       {loadError && (
         <div className="mb-4">
-          <ErrorPanel context="Load audit log" error={loadError} onRetry={load} />
+          <ErrorPanel context={T.errorContext} error={loadError} onRetry={load} />
         </div>
       )}
 
       <div className="flex flex-wrap items-end gap-3 mb-4 bg-white border border-slate-200 rounded-lg p-3">
         <div>
           <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-            Action
+            {T.actionLabel}
           </label>
           <select
             value={actionFilter}
             onChange={(e) => setActionFilter(e.target.value)}
             className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm bg-white"
           >
-            <option value="">All actions</option>
+            <option value="">{T.allActionsOption}</option>
             {actions.map((a) => (
               <option key={a} value={a}>
                 {a}
@@ -146,14 +148,14 @@ export default function AdminAuditLogPage() {
         </div>
         <div>
           <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-            Entity
+            {T.entityLabel}
           </label>
           <select
             value={entityFilter}
             onChange={(e) => setEntityFilter(e.target.value)}
             className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm bg-white"
           >
-            <option value="">All entities</option>
+            <option value="">{T.allEntitiesOption}</option>
             {entities.map((e) => (
               <option key={e} value={e}>
                 {e}
@@ -163,7 +165,7 @@ export default function AdminAuditLogPage() {
         </div>
         <div>
           <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-            Since
+            {T.sinceLabel}
           </label>
           <input
             type="date"
@@ -180,18 +182,18 @@ export default function AdminAuditLogPage() {
           }}
           className="text-xs text-slate-500 hover:text-[#00b4c3] underline px-2 py-1"
         >
-          Reset
+          {T.resetBtn}
         </button>
-        <span className="text-xs text-slate-500 ml-auto">{rows.length} rows</span>
+        <span className="text-xs text-slate-500 ml-auto">{rows.length} {T.rowsSuffix}</span>
       </div>
 
       {loading ? (
         <div className="h-64 flex items-center justify-center text-slate-400">
-          Loading audit log…
+          {T.loadingState}
         </div>
       ) : rows.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-10 text-center text-sm text-slate-500">
-          No audit rows match these filters.
+          {T.emptyState}
         </div>
       ) : (
         <ul className="space-y-2">
@@ -220,14 +222,13 @@ export default function AdminAuditLogPage() {
               </div>
               <p className="text-sm text-slate-800 mt-1">{r.description}</p>
               <p className="text-[11px] text-slate-500 mt-0.5">
-                by {r.actor?.name || r.actor?.email || "System"}
+                {T.byPrefix} {r.actor?.name || r.actor?.email || T.systemActor}
               </p>
 
               {r.changes && Object.keys(r.changes).length > 0 && (
                 <details className="mt-2">
                   <summary className="text-[11px] text-slate-500 cursor-pointer hover:text-[#00b4c3]">
-                    {Object.keys(r.changes).length} field
-                    {Object.keys(r.changes).length === 1 ? "" : "s"} changed
+                    {Object.keys(r.changes).length} {Object.keys(r.changes).length === 1 ? T.fieldChangedSingular : T.fieldChangedPlural}
                   </summary>
                   <table className="mt-2 w-full text-[11px]">
                     <tbody className="divide-y divide-slate-100">
