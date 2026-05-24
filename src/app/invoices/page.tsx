@@ -5,6 +5,7 @@ import { INVOICE_STATUSES, formatMoney, daysAgo } from "@/lib/revenue-calc";
 import { CURRENCIES } from "@/lib/fuze-calc";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { useI18n } from "@/i18n";
 
 type Invoice = {
   id: string;
@@ -33,6 +34,8 @@ const STATUS_BADGE: Record<string, string> = {
 };
 
 export default function InvoicesPage() {
+  const { t } = useI18n();
+  const T = t.invoicesUserPage;
   const { user } = useAuth();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [summary, setSummary] = useState<any>(null);
@@ -109,7 +112,7 @@ export default function InvoicesPage() {
           dueDate: "", amount: "", currency: "USD", status: "DRAFT",
           distributorId: "", factoryId: "", brandId: "", projectId: "", description: "",
         });
-        toast.success("Invoice created");
+        toast.success(T.invoiceCreated);
         load();
       }
     } finally {
@@ -120,7 +123,7 @@ export default function InvoicesPage() {
   const updateStatus = (id: string, newStatus: string) => {
     // Require confirmation for significant status changes (F-025)
     if (newStatus === "PAID" || newStatus === "CANCELLED") {
-      const label = newStatus === "PAID" ? "Mark this invoice as paid?" : "Cancel this invoice?";
+      const label = newStatus === "PAID" ? T.markPaidPrompt : T.cancelInvoicePrompt;
       setConfirmAction({ id, status: newStatus, label });
       return;
     }
@@ -133,7 +136,7 @@ export default function InvoicesPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),
     });
-    toast.success(`Invoice marked as ${newStatus}`);
+    toast.success(T.invoiceMarkedAs.replace("{status}", newStatus));
     load();
   };
 
@@ -173,21 +176,21 @@ export default function InvoicesPage() {
       });
       const j = await res.json();
       if (j.ok) {
-        toast.success("Invoice updated");
+        toast.success(T.invoiceUpdated);
         setEditingInvoice(null);
         load();
       } else {
-        toast.error(j.error || "Failed to update invoice");
+        toast.error(j.error || T.failedUpdate);
       }
     } catch {
-      toast.error("Failed to update invoice");
+      toast.error(T.failedUpdate);
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64 text-slate-400">Loading invoices...</div>;
+    return <div className="flex items-center justify-center h-64 text-slate-400">{T.loading}</div>;
   }
 
   return (
@@ -195,14 +198,14 @@ export default function InvoicesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Invoice Tracker</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Track distributor invoices and payments</p>
+          <h1 className="text-2xl font-bold text-slate-900">{T.pageTitle}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{T.pageSubtitle}</p>
         </div>
         <button
           onClick={() => setShowCreate(true)}
           className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
         >
-          + New Invoice
+          {T.newInvoice}
         </button>
       </div>
 
@@ -210,19 +213,19 @@ export default function InvoicesPage() {
       {summary && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-[10px] font-medium text-slate-400 uppercase">Total Paid</p>
+            <p className="text-[10px] font-medium text-slate-400 uppercase">{T.totalPaid}</p>
             <p className="text-xl font-bold text-emerald-600">{formatMoney(summary.totalPaid)}</p>
           </div>
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-[10px] font-medium text-slate-400 uppercase">Outstanding</p>
+            <p className="text-[10px] font-medium text-slate-400 uppercase">{T.outstanding}</p>
             <p className="text-xl font-bold text-amber-600">{formatMoney(summary.totalOutstanding)}</p>
           </div>
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-[10px] font-medium text-slate-400 uppercase">Collection Rate</p>
+            <p className="text-[10px] font-medium text-slate-400 uppercase">{T.collectionRate}</p>
             <p className="text-xl font-bold text-blue-600">{summary.collectionRate}%</p>
           </div>
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-[10px] font-medium text-slate-400 uppercase">Total Invoices</p>
+            <p className="text-[10px] font-medium text-slate-400 uppercase">{T.totalInvoices}</p>
             <p className="text-xl font-bold text-slate-700">{invoices.length}</p>
           </div>
         </div>
@@ -236,7 +239,7 @@ export default function InvoicesPage() {
             !statusFilter ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
           }`}
         >
-          All
+          {T.all}
         </button>
         {INVOICE_STATUSES.map((s) => (
           <button
@@ -257,21 +260,21 @@ export default function InvoicesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-slate-50 text-left text-xs text-slate-400 uppercase">
-                <th className="py-2.5 px-3">Invoice #</th>
-                <th className="py-2.5 px-3">Date</th>
-                <th className="py-2.5 px-3">Factory</th>
-                <th className="py-2.5 px-3">Distributor</th>
-                <th className="py-2.5 px-3">Brand</th>
-                <th className="py-2.5 px-3 text-right">Amount</th>
-                <th className="py-2.5 px-3">Status</th>
-                <th className="py-2.5 px-3 text-right">Age</th>
-                <th className="py-2.5 px-3">Actions</th>
+                <th className="py-2.5 px-3">{T.invoiceNum}</th>
+                <th className="py-2.5 px-3">{T.date}</th>
+                <th className="py-2.5 px-3">{T.factory}</th>
+                <th className="py-2.5 px-3">{T.distributor}</th>
+                <th className="py-2.5 px-3">{T.brand}</th>
+                <th className="py-2.5 px-3 text-right">{T.amount}</th>
+                <th className="py-2.5 px-3">{T.status}</th>
+                <th className="py-2.5 px-3 text-right">{T.age}</th>
+                <th className="py-2.5 px-3">{T.actions}</th>
               </tr>
             </thead>
             <tbody>
               {invoices.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-slate-400">No invoices found</td>
+                  <td colSpan={9} className="py-12 text-center text-slate-400">{T.noInvoices}</td>
                 </tr>
               )}
               {invoices.map((inv) => (
@@ -301,14 +304,14 @@ export default function InvoicesPage() {
                         onClick={() => startEditInvoice(inv)}
                         className="text-xs text-[#00b4c3] hover:text-[#009aaa] font-medium"
                       >
-                        Edit
+                        {T.edit}
                       </button>
                       {inv.status !== "PAID" && inv.status !== "CANCELLED" && (
                         <button
                           onClick={() => updateStatus(inv.id, "PAID")}
                           className="text-xs text-emerald-600 hover:text-emerald-800 font-medium"
                         >
-                          Mark Paid
+                          {T.markPaid}
                         </button>
                       )}
                     </div>
@@ -324,73 +327,73 @@ export default function InvoicesPage() {
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowCreate(false)}>
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 m-4" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-slate-900 mb-4">Create Invoice</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">{T.createInvoiceTitle}</h3>
             <div className="grid grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto">
               <div>
-                <label className="text-xs font-medium text-slate-500">Invoice Number *</label>
+                <label className="text-xs font-medium text-slate-500">{T.invoiceNumberLabel}</label>
                 <input className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.invoiceNumber} onChange={(e) => set("invoiceNumber", e.target.value)} />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Date *</label>
+                <label className="text-xs font-medium text-slate-500">{T.dateLabel}</label>
                 <input type="date" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.invoiceDate} onChange={(e) => set("invoiceDate", e.target.value)} />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Distributor *</label>
+                <label className="text-xs font-medium text-slate-500">{T.distributorRequired}</label>
                 <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.distributorId} onChange={(e) => set("distributorId", e.target.value)}>
-                  <option value="">Select...</option>
+                  <option value="">{T.selectPlaceholder}</option>
                   {distributors.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Factory *</label>
+                <label className="text-xs font-medium text-slate-500">{T.factoryRequired}</label>
                 <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.factoryId} onChange={(e) => set("factoryId", e.target.value)}>
-                  <option value="">Select...</option>
+                  <option value="">{T.selectPlaceholder}</option>
                   {factories.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Amount *</label>
+                <label className="text-xs font-medium text-slate-500">{T.amountRequired}</label>
                 <input type="number" step="0.01" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.amount} onChange={(e) => set("amount", e.target.value)} />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Currency</label>
+                <label className="text-xs font-medium text-slate-500">{T.currency}</label>
                 <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.currency} onChange={(e) => set("currency", e.target.value)}>
                   {CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Status</label>
+                <label className="text-xs font-medium text-slate-500">{T.statusLabel}</label>
                 <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.status} onChange={(e) => set("status", e.target.value)}>
                   {INVOICE_STATUSES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Due Date</label>
+                <label className="text-xs font-medium text-slate-500">{T.dueDate}</label>
                 <input type="date" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.dueDate} onChange={(e) => set("dueDate", e.target.value)} />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Brand</label>
+                <label className="text-xs font-medium text-slate-500">{T.brandLabel}</label>
                 <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.brandId} onChange={(e) => set("brandId", e.target.value)}>
-                  <option value="">None</option>
+                  <option value="">{T.none}</option>
                   {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Project</label>
+                <label className="text-xs font-medium text-slate-500">{T.project}</label>
                 <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.projectId} onChange={(e) => set("projectId", e.target.value)}>
-                  <option value="">None</option>
+                  <option value="">{T.none}</option>
                   {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </div>
               <div className="col-span-2">
-                <label className="text-xs font-medium text-slate-500">Description</label>
+                <label className="text-xs font-medium text-slate-500">{T.description}</label>
                 <input className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.description} onChange={(e) => set("description", e.target.value)} />
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
-              <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-slate-600">Cancel</button>
+              <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-slate-600">{T.cancel}</button>
               <button onClick={handleCreate} disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50">
-                {saving ? "Creating..." : "Create Invoice"}
+                {saving ? T.creating : T.createInvoiceBtn}
               </button>
             </div>
           </div>
@@ -401,68 +404,68 @@ export default function InvoicesPage() {
       {editingInvoice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setEditingInvoice(null)}>
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 m-4" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-slate-900 mb-4">Edit Invoice — {editingInvoice.invoiceNumber}</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">{T.editInvoiceTitle.replace("{num}", editingInvoice.invoiceNumber)}</h3>
             <div className="grid grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto">
               <div>
-                <label className="text-xs font-medium text-slate-500">Invoice Date</label>
+                <label className="text-xs font-medium text-slate-500">{T.invoiceDate}</label>
                 <input type="date" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.invoiceDate}
                   onChange={(e) => setEditForm({ ...editForm, invoiceDate: e.target.value })} />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Due Date</label>
+                <label className="text-xs font-medium text-slate-500">{T.dueDate}</label>
                 <input type="date" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.dueDate}
                   onChange={(e) => setEditForm({ ...editForm, dueDate: e.target.value })} />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Amount</label>
+                <label className="text-xs font-medium text-slate-500">{T.amount}</label>
                 <input type="number" step="0.01" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.amount}
                   onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })} />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Currency</label>
+                <label className="text-xs font-medium text-slate-500">{T.currency}</label>
                 <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.currency}
                   onChange={(e) => setEditForm({ ...editForm, currency: e.target.value })}>
                   {CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Status</label>
+                <label className="text-xs font-medium text-slate-500">{T.statusLabel}</label>
                 <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.status}
                   onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}>
                   {INVOICE_STATUSES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Brand</label>
+                <label className="text-xs font-medium text-slate-500">{T.brandLabel}</label>
                 <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.brandId}
                   onChange={(e) => setEditForm({ ...editForm, brandId: e.target.value })}>
-                  <option value="">None</option>
+                  <option value="">{T.none}</option>
                   {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500">Project</label>
+                <label className="text-xs font-medium text-slate-500">{T.project}</label>
                 <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.projectId}
                   onChange={(e) => setEditForm({ ...editForm, projectId: e.target.value })}>
-                  <option value="">None</option>
+                  <option value="">{T.none}</option>
                   {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </div>
               <div className="col-span-2">
-                <label className="text-xs font-medium text-slate-500">Description</label>
+                <label className="text-xs font-medium text-slate-500">{T.description}</label>
                 <input className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.description}
                   onChange={(e) => setEditForm({ ...editForm, description: e.target.value })} />
               </div>
               <div className="col-span-2">
-                <label className="text-xs font-medium text-slate-500">Notes</label>
+                <label className="text-xs font-medium text-slate-500">{T.notes}</label>
                 <textarea className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={editForm.notes} rows={2}
                   onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })} />
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
-              <button onClick={() => setEditingInvoice(null)} className="px-4 py-2 text-sm text-slate-600">Cancel</button>
+              <button onClick={() => setEditingInvoice(null)} className="px-4 py-2 text-sm text-slate-600">{T.cancel}</button>
               <button onClick={saveEditInvoice} disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-[#00b4c3] hover:bg-[#009aaa] rounded-lg disabled:opacity-50">
-                {saving ? "Saving..." : "Save Changes"}
+                {saving ? T.saving : T.saveChanges}
               </button>
             </div>
           </div>
@@ -472,11 +475,11 @@ export default function InvoicesPage() {
       {/* Confirm Status Change (F-025) */}
       <ConfirmDialog
         open={!!confirmAction}
-        title={confirmAction?.label || "Confirm"}
+        title={confirmAction?.label || T.confirm}
         message={confirmAction?.status === "PAID"
-          ? "This will record the invoice as paid and update revenue calculations. Are you sure?"
-          : "This will cancel the invoice. You can change the status back later if needed."}
-        confirmLabel={confirmAction?.status === "PAID" ? "Mark as Paid" : "Cancel Invoice"}
+          ? T.paidConfirmMsg
+          : T.cancelConfirmMsg}
+        confirmLabel={confirmAction?.status === "PAID" ? T.markAsPaid : T.cancelInvoice}
         variant={confirmAction?.status === "CANCELLED" ? "danger" : "warning"}
         onConfirm={() => {
           if (confirmAction) doStatusUpdate(confirmAction.id, confirmAction.status);
