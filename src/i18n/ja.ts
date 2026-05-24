@@ -7031,6 +7031,26 @@ const ja: Translations = {
     emptyBias: "バイアスデータはまだありません。",
   },
 
+  labCreditsAdmin: {
+    loading: "読み込み中…",
+    crumbLabs: "ラボ",
+    crumbCredits: "クレジット",
+    creditsSuffix: "クレジット",
+    balanceLabel: "このラボでのFUZE残高",
+    balanceHint: "このラボでの将来のFUZE支払いテストから自動的に控除されます。",
+    addCreditTitle: "クレジットを追加",
+    amountPlaceholder: "$ 金額",
+    sourceNotePlaceholder: "ソースメモ",
+    addCreditBtn: "クレジットを追加",
+    colCreated: "作成日",
+    colAmount: "金額",
+    colSource: "ソース",
+    colNote: "メモ",
+    colSpent: "使用済み",
+    availableLabel: "利用可能",
+    emptyState: "クレジットはまだありません。",
+  },
+
 };
 
 export default ja;
