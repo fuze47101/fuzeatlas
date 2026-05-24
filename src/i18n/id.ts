@@ -2757,6 +2757,23 @@ const id: Translations = {
     errSendFailed: "Gagal mengirim email verifikasi",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← Kembali ke kalkulator",
+    printButton: "🖨 Cetak / Simpan sebagai PDF",
+    eyebrow: "FUZE Biotech · SOP Lab",
+    pageTitle: "Prosedur Bench Test",
+    pageSubtitle: "Kalkulator Resep FUZE — Pickup Rate & Pengenceran Pad-Dry-Cure",
+    docLabel: "Doc: SOP-FUZE-LAB-001",
+    revLabel: "Rev: 1.0 ·",
+    purposeHeader: "Tujuan",
+    equipmentHeader: "Peralatan",
+    chemistryRefHeader: "Referensi Kimia FUZE",
+    criticalRulesHeader: "⚠ Aturan Protokol Kritis",
+    procedureHeader: "Prosedur",
+    formulasHeader: "Formula (untuk cek silang QC)",
+    sanityRangesHeader: "Rentang Sanity Check",
+  },
+
 };
 
 export default id;
