@@ -7939,6 +7939,24 @@ const ja: Translations = {
     websiteLabel: "ウェブサイト",
   },
 
+  reportSharePage: {
+    unavailableTitle: "レポートを表示できません",
+    unavailableBodyPrefix: "長期的にアクセスするには、こちらにサインインしてください:",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "にサインインし、「マイレポート」からレポートをご確認いただくか、こちらの送信元メールにご返信ください。",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · 適用・検証レポート",
+    heading: "FUZE 処理レシピと検証",
+    issuedLabel: "発行日",
+    linkValidUntil: "· このダイレクトリンクの有効期限",
+    preparedForTitle: "宛先",
+    execSummaryTitle: "エグゼクティブサマリー",
+    recipeTitle: "推奨レシピ",
+    fuzeRequiredTitle: "必要 FUZE 量 (生産時の浴サイズ)",
+    labIcpTitle: "独立試験機関による ICP 検証",
+    accessLaterTitle: "後でこのレポートにアクセスする",
+  },
+
 };
 
 export default ja;
