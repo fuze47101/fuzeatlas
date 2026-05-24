@@ -2676,6 +2676,19 @@ const id: Translations = {
     generatedTemplate: "Dibuat:",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "Playbook",
+    heading: "Playbook BD",
+    subtitle: "Panduan outreach dengan tag kategori. Tandai favorit yang Anda gunakan; brand menampilkan playbook yang disarankan berdasarkan Brand.textileCategory.",
+    failedFallback: "Gagal",
+    emptyBody: "Belum ada playbook untuk kategori ini.",
+    emptySeedHint: "Picu",
+    emptySeedHintSuffix: "melalui fzcron untuk menambahkan tiga playbook awal.",
+    removeFavoriteTitle: "Hapus favorit",
+    addFavoriteTitle: "Tambah favorit",
+  },
+
 };
 
 export default id;
