@@ -4794,6 +4794,32 @@ const tr: Translations = {
     openProfile: "Profili Aç",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← ICP Numune Hazırlığına Geri Dön",
+    printButton: "🖨 Yazdır / PDF Olarak Kaydet",
+    eyebrow: "FUZE Biotech · Laboratuvar SOP",
+    pageTitle: "ICP-MS Numune Hazırlığı",
+    pageSubtitle: "Kes → tart → parçala → torbala → ICP-MS doğrulaması için CTLA'ya (Utah) gönder",
+    docLabel: "Belge: SOP-FUZE-LAB-002",
+    revLabel: "Rev: 1.0 ·",
+
+    purposeHeader: "Amaç",
+    equipmentHeader: "Ekipman",
+    massTargetsHeader: "Kütle Hedefleri (kritik)",
+    shipToLabel: "CTLA'ya gönder",
+    digestPerRunLabel: "Çalıştırma başına çürütme",
+    cutterGeometryLabel: "Kesici geometrisi",
+
+    criticalRulesHeader: "⚠ Kritik Hazırlık Kuralları",
+    procedureHeader: "Prosedür",
+    shippingAddressHeader: "Sevkiyat Adresi (sihirbaz tarafından otomatik doldurulur)",
+    shipToHeader: "Şuraya gönder",
+    returnAddressHeader: "İade adresi + raporlama",
+    reportToLabel: "Şuraya raporla:",
+    preShipChecklistHeader: "✅ Sevkiyat Öncesi Kontrol Listesi (sihirbaz bunu pakete yazdırır)",
+    sanityCheckHeader: "Mantık Kontrolü (CTLA'nın raporlaması gereken)",
+  },
+
 };
 
 export default tr;
