@@ -6083,6 +6083,54 @@ const es: Translations = {
     btnCreating: "Creando...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "Biblioteca de tejidos FUZE",
+    pageSubtitle: "Explora tejidos tratados con FUZE y resultados de pruebas verificados en nuestra red global. Todos los datos son anónimos — las identidades de fábricas y marcas son confidenciales.",
+
+    statFabrics: "Tejidos probados",
+    statTests: "Pruebas totales",
+    statIcp: "Análisis ICP",
+    statAb: "Pruebas antimicrobianas",
+
+    searchPlaceholder: "Buscar por construcción, hilo, uso final, número FUZE...",
+    filterAllTypes: "Todos los tipos de prueba",
+    filterIcp: "Análisis ICP",
+    filterAntibacterial: "Antibacteriana",
+    filterFungal: "Antifúngica",
+    filterOdor: "Control de olor",
+    passOnly: "Solo aprobadas",
+
+    emptyTitle: "Ningún tejido coincide con tus criterios",
+    emptyClear: "Borrar todos los filtros",
+    errorFailedLoad: "No se pudo cargar la biblioteca de tejidos",
+    errorFailedDefault: "Error al cargar",
+
+    testsSuffix: "pruebas",
+    testSuffix: "prueba",
+    propConstruction: "Construcción:",
+    propWeight: "Peso:",
+    propWidth: "Ancho:",
+    propYarn: "Hilo:",
+    propCategory: "Categoría:",
+    propEndUse: "Uso final:",
+    propWeave: "Tejido:",
+    propColor: "Color:",
+
+    colTest: "Prueba",
+    colMethod: "Método",
+    colWashes: "Lavados",
+    colResult: "Resultado",
+    colStatus: "Estado",
+    pass: "Aprobado",
+    fail: "Reprobado",
+    passBadge: "APROBADO",
+    failBadge: "REPROBADO",
+
+    paginationPrev: "Anterior",
+    paginationNext: "Siguiente",
+    paginationLabel: "Página {page} de {pages}",
+  },
+
 };
 
 export default es;
