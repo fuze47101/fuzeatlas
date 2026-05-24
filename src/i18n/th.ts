@@ -7669,6 +7669,21 @@ const th: Translations = {
     titleHint: "เช่น \"Mr.\", \"Dr.\"",
   },
 
+  importFactories: {
+    title: "Bulk import — โรงงาน",
+    subtitle: "วางหรืออัปโหลด CSV ของโรงงาน เราจะ upsert ตามชื่อ (natural key) เชื่อมโยงกับผู้จัดจำหน่ายหากคุณระบุ และประทับแถว SupplyChainLink สำหรับแต่ละแบรนด์ที่มีอยู่แล้วใน Atlas แบรนด์ที่ยังไม่มีถูกรายงานเป็น 'missing' เพื่อให้คุณรันการนำเข้าแบรนด์ก่อน",
+    backLabel: "โรงงาน",
+    factoryNameLabel: "ชื่อโรงงาน",
+    factoryNameHint: "(natural key — upsert คีย์ที่นี่)",
+    countryLabel: "ประเทศ",
+    distributorLabel: "ผู้จัดจำหน่าย",
+    distributorHint: "การจับคู่ที่ไม่คำนึงถึงตัวพิมพ์บน Distributor.name; ข้ามหากไม่พบ",
+    brandsLabel: "แบรนด์",
+    brandsHint: "คั่นด้วยจุลภาค; แต่ละชื่อต้องมีอยู่เป็น Brand",
+    cityLabel: "เมือง",
+    websiteLabel: "เว็บไซต์",
+  },
+
 };
 
 export default th;
