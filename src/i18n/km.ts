@@ -2589,6 +2589,37 @@ const km: Translations = {
     factoryLabel: "រោងចក្រ:",
   },
 
+  verifySku: {
+    errorTitle: "មិនអាចផ្ទៀងផ្ទាត់កូដនេះ",
+    errorBlurb:
+      "We had trouble reaching the verification database. ព្យាយាមម្តងទៀត in a moment.",
+    notCertifiedTitle: "មិនមែនជា SKU ដែលមានវិញ្ញាបនបត្រ FUZE",
+    notCertifiedBlurbPrefix: "The code",
+    notCertifiedBlurbSuffix:
+      "isn't in our verification database. If this came from a FUZE hangtag, please contact the brand directly.",
+    whatIsFuze: "FUZE ជាអ្វី? →",
+    fuzeVerified: "FUZE បានផ្ទៀងផ្ទាត់",
+    pageTitle: "ក្រណាត់នេះត្រូវបានព្យាបាលដោយ FUZE",
+    pageSubtitle: "ការព្យាបាលប្រឆាំងមីក្រូជីវាណូលើក្រណាត់ — ផ្ទៀងផ្ទាត់ដោយភាគីទីបី.",
+    brandLabel: "ម៉ាក",
+    millLabel: "Mill",
+    fuzeTierLabel: "កម្រិត FUZE",
+    fuzeNumberLabel: "លេខ FUZE",
+    washClaimSuffix: "ការអះអាងលាង",
+    recentValidation: "ការផ្ទៀងផ្ទាត់មន្ទីរពិសោធន៍ថ្មីបំផុត",
+    testPassed: "passed",
+    testTypeSuffix: "test —",
+    validatedByPrefix: "ផ្ទៀងផ្ទាត់ដោយ",
+    validatedByGeneric: "ផ្ទៀងផ្ទាត់ដោយមន្ទីរពិសោធន៍ភាគីទីបី",
+    validatedOn: "on",
+    reportRefPrefix: "របាយការណ៍ ref:",
+    certifications: "វិញ្ញាបនបត្រ FUZE",
+    aboutBody:
+      "FUZE is a proprietary antimicrobial textile treatment by FUZE Biotech. It uses metamaterial chemistry that bonds to fibers during standard textile finishing — no PFAS, no binders, no curing oven required.",
+    learnMore: "ស្វែងយល់បន្ថែមអំពី FUZE →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default km;
