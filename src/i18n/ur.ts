@@ -7698,6 +7698,21 @@ const ur: Translations = {
     titleHint: 'مثال "جناب"، "ڈاکٹر"',
   },
 
+  importFactories: {
+    title: "بلک امپورٹ — فیکٹریاں",
+    subtitle: "فیکٹریوں کا CSV پیسٹ یا اپ لوڈ کریں۔ ہم نام (قدرتی کلید) سے upsert کریں گے، اگر آپ ایک ڈسٹری بیوٹر فراہم کریں تو اس سے منسلک کریں گے، اور Atlas میں پہلے سے موجود ہر برانڈ کے لیے SupplyChainLink قطاروں پر مہر لگائیں گے۔ ایسے برانڈز جو ابھی موجود نہیں ہیں 'غائب' کے طور پر رپورٹ کیے جاتے ہیں تاکہ آپ پہلے برانڈ امپورٹ چلا سکیں۔",
+    backLabel: "فیکٹریاں",
+    factoryNameLabel: "فیکٹری کا نام",
+    factoryNameHint: "(قدرتی کلید — upsert یہاں کلیدی ہے)",
+    countryLabel: "ملک",
+    distributorLabel: "ڈسٹری بیوٹر",
+    distributorHint: "Distributor.name پر کیس-غیر حساس ملاپ؛ نہ ملنے پر چھوڑ دیا جائے گا",
+    brandsLabel: "برانڈز",
+    brandsHint: "کاما سے الگ؛ ہر نام کا Brand کے طور پر موجود ہونا ضروری ہے",
+    cityLabel: "شہر",
+    websiteLabel: "ویب سائٹ",
+  },
+
 };
 
 export default ur;
