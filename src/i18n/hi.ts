@@ -7295,6 +7295,31 @@ const hi: Translations = {
     footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
   },
 
+  signupInvitation: {
+    appKicker: "FUZE Atlas",
+    joinPrefix: "जुड़ें",
+    invitedSuffix: "आमंत्रित",
+    youWereInvited: "आपको आमंत्रित किया गया था",
+    asLabel: "के रूप में",
+    emailLabel: "ईमेल",
+    yourNameLabel: "आपका नाम",
+    fullNamePlaceholder: "पूरा नाम",
+    passwordLabel: "पासवर्ड",
+    passwordPlaceholder: "कम से कम 8 वर्ण",
+    confirmPasswordLabel: "पासवर्ड की पुष्टि करें",
+    confirmPasswordPlaceholder: "पासवर्ड पुनः दर्ज करें",
+    creatingBtn: "खाता बनाया जा रहा है…",
+    acceptBtn: "आमंत्रण स्वीकार करें और साइन इन करें",
+    expiresPrefix: "आमंत्रण समाप्त",
+    problemTitle: "आमंत्रण समस्या",
+    problemDefault: "यह आमंत्रण लोड नहीं हो सका।",
+    goToSignIn: "साइन-इन पर जाएं",
+    errPasswordTooShort: "पासवर्ड कम से कम 8 वर्ण होना चाहिए।",
+    errPasswordsMismatch: "पासवर्ड मेल नहीं खाते।",
+    errNetwork: "नेटवर्क त्रुटि",
+    errServerUnreachable: "सर्वर तक पहुंच नहीं हो सकी",
+  },
+
 };
 
 export default hi;
