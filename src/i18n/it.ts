@@ -5505,6 +5505,55 @@ const it: Translations = {
     statusComplete: "Completato",
   },
 
+  brandFabricsAdmin: {
+    loading: "Caricamento portfolio tessuti…",
+    errorTitle: "Impossibile caricare il portfolio tessuti",
+    errorUnknown: "Errore sconosciuto",
+    errorFailedLoad: "Caricamento non riuscito",
+    errorSave: "Salvataggio non riuscito",
+    btnTryAgain: "Riprova",
+
+    crumbPartners: "Partner Brand",
+    crumbHere: "Portfolio tessuti",
+    titleSuffix: "— Portfolio tessuti",
+    subtitle: "Tutti i tessuti di tutti gli stabilimenti per questo brand. {shown} di {total} tessuti mostrati.",
+    btnExportCsv: "⬇ Esporta CSV",
+
+    searchPlaceholder: "Cerca tessuto #, codice cliente, contenuto…",
+    filterAllMills: "Tutti gli stabilimenti",
+    filterAllTypes: "Tutti i tipi",
+    typeDevelopment: "Sviluppo",
+    typeActualBulk: "Effettivo (Bulk)",
+    typeForecast: "Previsione",
+    typeRd: "R&S",
+    filterAllStatuses: "Tutti gli stati",
+
+    emptyFabric: "🧵",
+    emptyTitle: "Nessun tessuto corrisponde ai filtri.",
+    emptySub: "Modifica i filtri sopra o cancella la ricerca per vedere l'intero portfolio.",
+    fabricSingular: "tessuto",
+    fabricPlural: "tessuti",
+    openFactory: "Apri stabilimento →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "Tessuto stabilimento #",
+    colType: "Tipo",
+    colContent: "Contenuto",
+    colGsm: "GSM",
+    colCustomerCode: "Codice cliente",
+    colTrial: "Trial",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "Valore ICP",
+    colTestDate: "Data del test",
+    colStatus: "Stato",
+
+    unassigned: "non assegnato",
+    typeBulkProduction: "Produzione di massa",
+    notSet: "— Non impostato —",
+    titleOpenFabric: "Apri dettaglio tessuto",
+  },
+
 };
 
 export default it;
