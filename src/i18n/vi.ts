@@ -7193,6 +7193,26 @@ const vi: Translations = {
     emptyBias: "Chưa có dữ liệu sai lệch.",
   },
 
+  labCreditsAdmin: {
+    loading: "Đang tải…",
+    crumbLabs: "Phòng lab",
+    crumbCredits: "Tín dụng",
+    creditsSuffix: "tín dụng",
+    balanceLabel: "Số dư FUZE với phòng lab này",
+    balanceHint: "Tự động khấu trừ từ các thử nghiệm trả tiền FUZE tương lai tại phòng lab này.",
+    addCreditTitle: "Thêm tín dụng",
+    amountPlaceholder: "Số tiền $",
+    sourceNotePlaceholder: "ghi chú nguồn",
+    addCreditBtn: "Thêm tín dụng",
+    colCreated: "Đã tạo",
+    colAmount: "Số tiền",
+    colSource: "Nguồn",
+    colNote: "Ghi chú",
+    colSpent: "Đã chi",
+    availableLabel: "khả dụng",
+    emptyState: "Chưa có tín dụng nào.",
+  },
+
 };
 
 export default vi;
