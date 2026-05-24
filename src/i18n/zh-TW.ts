@@ -8123,6 +8123,26 @@ const zhTW: Translations = {
     footnote: "對客戶的文案使用「FUZE 殘留量」——即實驗室 ICP 報告中的元材料量測值。在所有交付給客戶的文件中皆標示為 FUZE／元材料（CLAUDE.md 品牌語調規範）。",
   },
 
+  engagementDebug: {
+    crumb: "互動除錯",
+    engagementSuffix: "互動",
+    calculatedLabel: "已計算",
+    overallScoreLabel: "整體分數",
+    outOf100: "／100",
+    inputsLabel: "輸入",
+    daysSinceContact: "距離上次聯絡天數",
+    tests30d: "測試（30 天）",
+    tests90d: "測試（90 天）",
+    avgPayDays: "平均付款天數",
+    overdueInvoices: "逾期發票",
+    factorBreakdownTitle: "因子拆解",
+    weightLabel: "權重",
+    contributesLabel: "貢獻",
+    ptsLabel: "分",
+    loading: "載入中…",
+    failedToLoad: "載入失敗",
+  },
+
 };
 
 export default zhTW;
