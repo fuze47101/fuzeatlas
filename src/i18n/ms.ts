@@ -4740,6 +4740,32 @@ const ms: Translations = {
     openProfile: "Buka Profil",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← Kembali ke Penyediaan Sampel ICP",
+    printButton: "🖨 Cetak / Simpan sebagai PDF",
+    eyebrow: "FUZE Biotech · SOP Makmal",
+    pageTitle: "Penyediaan Sampel ICP-MS",
+    pageSubtitle: "Potong → timbang → fragmenkan → bungkus → hantar ke CTLA (Utah) untuk pengesahan ICP-MS",
+    docLabel: "Dok: SOP-FUZE-LAB-002",
+    revLabel: "Sem: 1.0 ·",
+
+    purposeHeader: "Tujuan",
+    equipmentHeader: "Peralatan",
+    massTargetsHeader: "Sasaran Jisim (kritikal)",
+    shipToLabel: "Hantar ke CTLA",
+    digestPerRunLabel: "Hadam per larian",
+    cutterGeometryLabel: "Geometri pemotong",
+
+    criticalRulesHeader: "⚠ Peraturan Prep Kritikal",
+    procedureHeader: "Prosedur",
+    shippingAddressHeader: "Alamat Penghantaran (diisi auto oleh wizard)",
+    shipToHeader: "Hantar ke",
+    returnAddressHeader: "Alamat pulangan + pelaporan",
+    reportToLabel: "Laporkan kepada:",
+    preShipChecklistHeader: "✅ Senarai Semak Pra-Hantar (wizard mencetak ini pada pakej)",
+    sanityCheckHeader: "Pemeriksaan Kewarasan (apa yang CTLA harus laporkan)",
+  },
+
 };
 
 export default ms;
