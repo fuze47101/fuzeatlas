@@ -6942,6 +6942,34 @@ const th: Translations = {
     backToLeadOption: "← กลับไปยัง Lead",
   },
 
+  commandCenterGlobe: {
+    loading: "กำลังโหลด globe…",
+    title: "Globe ห่วงโซ่อุปทาน",
+    emptyTitle: "ยังไม่มีเอนทิตีที่ถูก geocode",
+    emptyHint: "รัน geocoder เพื่อเติม lat/lng จากเมือง + ประเทศของแต่ละเอนทิตี:",
+    emptyFooter: "Nominatim มีขีดจำกัดอัตรา 1 req/sec — การผ่านเต็มใช้เวลาไม่กี่นาที การรันใหม่ข้ามแถวที่มีพิกัดอยู่แล้ว",
+    factoriesLabel: "โรงงาน",
+    brandsLabel: "แบรนด์",
+    labsLabel: "ห้องปฏิบัติการ",
+    distributorsLabel: "ผู้จัดจำหน่าย",
+    shipmentsLabel: "การจัดส่ง (90 วัน)",
+    searchPlaceholder: "ค้นหาเอนทิตี…",
+    legendFactory: "โรงงาน",
+    legendPulseHint: "(pulse = ใช้งาน 30 วัน)",
+    legendBrand: "Brand HQ",
+    legendFuzeLab: "ห้องปฏิบัติการของ FUZE",
+    legendPartnerLab: "ห้องปฏิบัติการพันธมิตร",
+    legendDistributor: "ผู้จัดจำหน่าย",
+    kindFactory: "โรงงาน",
+    kindBrand: "แบรนด์",
+    kindLab: "ห้องปฏิบัติการ",
+    kindDistributor: "ผู้จัดจำหน่าย",
+    stageLabel: "ขั้น:",
+    activeBadge: "⚡ ใช้งานอยู่ (30 วัน)",
+    openDetailBtn: "เปิดรายละเอียด →",
+    errLoadFailed: "ไม่สามารถโหลด globe ได้",
+  },
+
 };
 
 export default th;
