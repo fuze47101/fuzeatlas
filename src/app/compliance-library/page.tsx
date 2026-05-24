@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { useI18n } from "@/i18n";
 
 interface ComplianceDoc {
   id: string;
@@ -22,49 +23,61 @@ interface ComplianceDoc {
   updatedAt: string;
 }
 
-/* ── BUILT-IN CATEGORIES (expandable — admins can add custom) ── */
-const BUILT_IN_CATEGORIES: { id: string; label: string; icon: string; color: string; desc: string }[] = [
-  { id: "SDS_MSDS", label: "SDS / MSDS", icon: "\u{1F9EA}", color: "bg-red-50 text-red-700 border-red-200", desc: "Safety Data Sheets & Material Safety Data Sheets" },
-  { id: "TDS", label: "TDS", icon: "\u{1F4C4}", color: "bg-blue-50 text-blue-700 border-blue-200", desc: "Technical Data Sheets" },
-  { id: "BLUESIGN", label: "Bluesign", icon: "\u{1F535}", color: "bg-sky-50 text-sky-700 border-sky-200", desc: "Bluesign\u{00AE} System Partner Certificates" },
-  { id: "ZDHC", label: "ZDHC 3.1", icon: "\u{1F3C5}", color: "bg-emerald-50 text-emerald-700 border-emerald-200", desc: "ZDHC MRSL Conformance Level 3.1" },
-  { id: "OEKO_TEX", label: "Oeko-Tex", icon: "\u{1F33F}", color: "bg-green-50 text-green-700 border-green-200", desc: "Oeko-Tex\u{00AE} Standard 100 & ECO PASSPORT Declarations" },
-  { id: "GOTS", label: "GOTS", icon: "\u{1F331}", color: "bg-lime-50 text-lime-700 border-lime-200", desc: "Global Organic Textile Standard Declarations" },
-  { id: "EPA", label: "EPA", icon: "\u{1F3DB}\uFE0F", color: "bg-teal-50 text-teal-700 border-teal-200", desc: "EPA Registrations & Compliance Documents" },
-  { id: "REACH", label: "REACH", icon: "\u{1F30D}", color: "bg-indigo-50 text-indigo-700 border-indigo-200", desc: "EU REACH Registration & SVHC Compliance" },
-  { id: "COA", label: "CoA", icon: "\u{1F52C}", color: "bg-violet-50 text-violet-700 border-violet-200", desc: "Certificates of Analysis" },
-  { id: "COC", label: "CoC", icon: "\u{2705}", color: "bg-amber-50 text-amber-700 border-amber-200", desc: "Certificates of Conformity / Compliance" },
-  { id: "ISO", label: "ISO", icon: "\u{1F4CB}", color: "bg-cyan-50 text-cyan-700 border-cyan-200", desc: "ISO Certifications (9001, 14001, etc.)" },
-  { id: "IMPORT_EXPORT", label: "Import / Export", icon: "\u{1F6A2}", color: "bg-orange-50 text-orange-700 border-orange-200", desc: "Import/Export Declarations, HTS, Customs Documents" },
-  { id: "OTHER", label: "Other", icon: "\u{1F4C1}", color: "bg-slate-50 text-slate-700 border-slate-200", desc: "Additional compliance & certification documents" },
+/* ── BUILT-IN CATEGORIES (data — labels/desc come from i18n) ── */
+const BUILT_IN_CATEGORIES: { id: string; icon: string; color: string; labelKey: string; descKey: string }[] = [
+  { id: "SDS_MSDS", labelKey: "catSDS", descKey: "catSDSDesc", icon: "\u{1F9EA}", color: "bg-red-50 text-red-700 border-red-200" },
+  { id: "TDS", labelKey: "catTDS", descKey: "catTDSDesc", icon: "\u{1F4C4}", color: "bg-blue-50 text-blue-700 border-blue-200" },
+  { id: "BLUESIGN", labelKey: "catBluesign", descKey: "catBluesignDesc", icon: "\u{1F535}", color: "bg-sky-50 text-sky-700 border-sky-200" },
+  { id: "ZDHC", labelKey: "catZDHC", descKey: "catZDHCDesc", icon: "\u{1F3C5}", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  { id: "OEKO_TEX", labelKey: "catOekoTex", descKey: "catOekoTexDesc", icon: "\u{1F33F}", color: "bg-green-50 text-green-700 border-green-200" },
+  { id: "GOTS", labelKey: "catGOTS", descKey: "catGOTSDesc", icon: "\u{1F331}", color: "bg-lime-50 text-lime-700 border-lime-200" },
+  { id: "EPA", labelKey: "catEPA", descKey: "catEPADesc", icon: "\u{1F3DB}️", color: "bg-teal-50 text-teal-700 border-teal-200" },
+  { id: "REACH", labelKey: "catREACH", descKey: "catREACHDesc", icon: "\u{1F30D}", color: "bg-indigo-50 text-indigo-700 border-indigo-200" },
+  { id: "COA", labelKey: "catCoA", descKey: "catCoADesc", icon: "\u{1F52C}", color: "bg-violet-50 text-violet-700 border-violet-200" },
+  { id: "COC", labelKey: "catCoC", descKey: "catCoCDesc", icon: "\u{2705}", color: "bg-amber-50 text-amber-700 border-amber-200" },
+  { id: "ISO", labelKey: "catISO", descKey: "catISODesc", icon: "\u{1F4CB}", color: "bg-cyan-50 text-cyan-700 border-cyan-200" },
+  { id: "IMPORT_EXPORT", labelKey: "catImportExport", descKey: "catImportExportDesc", icon: "\u{1F6A2}", color: "bg-orange-50 text-orange-700 border-orange-200" },
+  { id: "OTHER", labelKey: "catOther", descKey: "catOtherDesc", icon: "\u{1F4C1}", color: "bg-slate-50 text-slate-700 border-slate-200" },
 ];
 
-const ALL_ROLES = [
-  { id: "ADMIN", label: "Admin" },
-  { id: "EMPLOYEE", label: "Employee" },
-  { id: "SALES_MANAGER", label: "Sales Manager" },
-  { id: "SALES_REP", label: "Sales Rep" },
-  { id: "FABRIC_MANAGER", label: "Fabric Manager" },
-  { id: "TESTING_MANAGER", label: "Testing Manager" },
-  { id: "FACTORY_MANAGER", label: "Factory Manager" },
-  { id: "FACTORY_USER", label: "Factory" },
-  { id: "BRAND_USER", label: "Brand" },
-  { id: "DISTRIBUTOR_USER", label: "Distributor" },
+const ALL_ROLE_KEYS = [
+  { id: "ADMIN", labelKey: "roleAdmin" },
+  { id: "EMPLOYEE", labelKey: "roleEmployee" },
+  { id: "SALES_MANAGER", labelKey: "roleSalesManager" },
+  { id: "SALES_REP", labelKey: "roleSalesRep" },
+  { id: "FABRIC_MANAGER", labelKey: "roleFabricManager" },
+  { id: "TESTING_MANAGER", labelKey: "roleTestingManager" },
+  { id: "FACTORY_MANAGER", labelKey: "roleFactoryManager" },
+  { id: "FACTORY_USER", labelKey: "roleFactory" },
+  { id: "BRAND_USER", labelKey: "roleBrand" },
+  { id: "DISTRIBUTOR_USER", labelKey: "roleDistributor" },
 ];
-
-function getCategoryMeta(catId: string) {
-  return BUILT_IN_CATEGORIES.find((c) => c.id === catId) || {
-    id: catId,
-    label: catId.replace(/_/g, " "),
-    icon: "\u{1F3F7}\uFE0F",
-    color: "bg-purple-50 text-purple-700 border-purple-200",
-    desc: `Custom category: ${catId.replace(/_/g, " ")}`,
-  };
-}
 
 export default function ComplianceLibraryPage() {
+  const { t } = useI18n();
+  const T = t.complianceLibrary;
   const { user } = useAuth();
   const toast = useToast();
+
+  function getCategoryMeta(catId: string) {
+    const builtIn = BUILT_IN_CATEGORIES.find((c) => c.id === catId);
+    if (builtIn) {
+      return {
+        id: catId,
+        label: (T as any)[builtIn.labelKey] || catId.replace(/_/g, " "),
+        icon: builtIn.icon,
+        color: builtIn.color,
+        desc: (T as any)[builtIn.descKey] || "",
+      };
+    }
+    return {
+      id: catId,
+      label: catId.replace(/_/g, " "),
+      icon: "\u{1F3F7}️",
+      color: "bg-purple-50 text-purple-700 border-purple-200",
+      desc: T.customCategoryDescTemplate.replace("{name}", catId.replace(/_/g, " ")),
+    };
+  }
   const [docs, setDocs] = useState<ComplianceDoc[]>([]);
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -107,7 +120,7 @@ export default function ComplianceLibraryPage() {
     const builtInIds = new Set(BUILT_IN_CATEGORIES.map((c) => c.id));
     const customIds = Object.keys(categoryCounts).filter((id) => !builtInIds.has(id));
     return [
-      ...BUILT_IN_CATEGORIES,
+      ...BUILT_IN_CATEGORIES.map((c) => getCategoryMeta(c.id)),
       ...customIds.map((id) => getCategoryMeta(id)),
     ];
   })();
@@ -122,7 +135,7 @@ export default function ComplianceLibraryPage() {
           if (!activeCategory) setCategoryCounts(d.categories || {});
         }
       })
-      .catch(() => toast.error("Failed to load documents"))
+      .catch(() => toast.error(T.toastLoadFailed))
       .finally(() => setLoading(false));
   };
 
@@ -145,7 +158,7 @@ export default function ComplianceLibraryPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 500 * 1024 * 1024) {
-      toast.error("File too large. Maximum 500MB.");
+      toast.error(T.toastFileTooLarge);
       return;
     }
     setSelectedFile(file);
@@ -156,7 +169,7 @@ export default function ComplianceLibraryPage() {
 
   const processDroppedFile = (file: File) => {
     if (file.size > 500 * 1024 * 1024) {
-      toast.error("File too large. Maximum 500MB.");
+      toast.error(T.toastFileTooLarge);
       return;
     }
     setSelectedFile(file);
@@ -249,7 +262,7 @@ export default function ComplianceLibraryPage() {
 
       // If a file is selected, upload directly to S3 via presigned URL
       if (selectedFile) {
-        setUploadProgress("Preparing upload...");
+        setUploadProgress(T.uploadPreparing);
 
         // Step 1: Get presigned upload URL from our API
         const urlRes = await fetch("/api/compliance-docs/upload-url", {
@@ -263,11 +276,11 @@ export default function ComplianceLibraryPage() {
         const urlData = await urlRes.json();
 
         if (!urlData.ok) {
-          throw new Error(urlData.error || "Failed to prepare upload");
+          throw new Error(urlData.error || T.uploadPrepareFailed);
         }
 
         // Step 2: Upload file directly to S3 (bypasses Vercel size limits)
-        setUploadProgress(`Uploading ${formatFileSize(selectedFile.size)}...`);
+        setUploadProgress(T.uploadUploading.replace("{size}", formatFileSize(selectedFile.size)));
         const s3Res = await fetch(urlData.uploadUrl, {
           method: "PUT",
           headers: { "Content-Type": selectedFile.type || "application/octet-stream" },
@@ -275,11 +288,11 @@ export default function ComplianceLibraryPage() {
         });
 
         if (!s3Res.ok) {
-          throw new Error("Upload to storage failed — please try again");
+          throw new Error(T.uploadStorageFailed);
         }
 
         s3Key = urlData.s3Key;
-        setUploadProgress("Saving record...");
+        setUploadProgress(T.uploadSavingRecord);
       }
 
       // Step 3: Create the compliance document record
@@ -307,7 +320,7 @@ export default function ComplianceLibraryPage() {
       const d = await res.json();
 
       if (d.ok) {
-        toast.success("Document uploaded");
+        toast.success(T.toastUploaded);
         setShowUpload(false);
         resetForm();
         load();
@@ -316,10 +329,10 @@ export default function ComplianceLibraryPage() {
           .then((r) => r.json())
           .then((d) => { if (d.ok) setCategoryCounts(d.categories || {}); });
       } else {
-        toast.error(d.error || "Upload failed");
+        toast.error(d.error || T.toastUploadFailed);
       }
     } catch (err: any) {
-      toast.error(err.message || "Upload failed");
+      toast.error(err.message || T.toastUploadFailed);
     } finally {
       setSaving(false);
       setUploadProgress(null);
@@ -362,7 +375,7 @@ export default function ComplianceLibraryPage() {
       });
       const d = await res.json();
       if (d.ok) {
-        toast.success("Document updated");
+        toast.success(T.toastUpdated);
         setEditingDoc(null);
         resetForm();
         load();
@@ -371,10 +384,10 @@ export default function ComplianceLibraryPage() {
           .then((r) => r.json())
           .then((d) => { if (d.ok) setCategoryCounts(d.categories || {}); });
       } else {
-        toast.error(d.error || "Update failed");
+        toast.error(d.error || T.toastUpdateFailed);
       }
     } catch {
-      toast.error("Update failed");
+      toast.error(T.toastUpdateFailed);
     } finally {
       setSaving(false);
     }
@@ -385,16 +398,16 @@ export default function ComplianceLibraryPage() {
       const res = await fetch(`/api/compliance-docs/${id}`, { method: "DELETE" });
       const d = await res.json();
       if (d.ok) {
-        toast.success("Document deleted");
+        toast.success(T.toastDeleted);
         load();
         fetch("/api/compliance-docs")
           .then((r) => r.json())
           .then((d) => { if (d.ok) setCategoryCounts(d.categories || {}); });
       } else {
-        toast.error(d.error || "Delete failed");
+        toast.error(d.error || T.toastDeleteFailed);
       }
     } catch {
-      toast.error("Delete failed");
+      toast.error(T.toastDeleteFailed);
     }
   };
 
@@ -410,7 +423,8 @@ export default function ComplianceLibraryPage() {
       });
       const d = await res.json();
       if (d.ok) {
-        toast.success(`Renamed category — ${d.updated} document${d.updated !== 1 ? "s" : ""} updated`);
+        const label = d.updated !== 1 ? T.docPluralShort : T.docSingularShort;
+        toast.success(T.toastRenamed.replace("{count}", String(d.updated)).replace("{label}", label));
         setManagingCategory(null);
         setCategoryAction(null);
         setRenameTo("");
@@ -418,9 +432,9 @@ export default function ComplianceLibraryPage() {
         load();
         fetch("/api/compliance-docs").then((r) => r.json()).then((d) => { if (d.ok) setCategoryCounts(d.categories || {}); });
       } else {
-        toast.error(d.error || "Rename failed");
+        toast.error(d.error || T.toastRenameFailed);
       }
-    } catch { toast.error("Rename failed"); }
+    } catch { toast.error(T.toastRenameFailed); }
     finally { setCatSaving(false); }
   };
 
@@ -435,16 +449,17 @@ export default function ComplianceLibraryPage() {
       });
       const d = await res.json();
       if (d.ok) {
-        toast.success(`Category deleted — ${d.moved} document${d.moved !== 1 ? "s" : ""} moved to ${getCategoryMeta(d.to).label}`);
+        const label = d.moved !== 1 ? T.docPluralShort : T.docSingularShort;
+        toast.success(T.toastCategoryDeleted.replace("{count}", String(d.moved)).replace("{label}", label).replace("{target}", getCategoryMeta(d.to).label));
         setManagingCategory(null);
         setCategoryAction(null);
         if (activeCategory === managingCategory) setActiveCategory(null);
         load();
         fetch("/api/compliance-docs").then((r) => r.json()).then((d) => { if (d.ok) setCategoryCounts(d.categories || {}); });
       } else {
-        toast.error(d.error || "Delete failed");
+        toast.error(d.error || T.toastCategoryDeleteFailed);
       }
-    } catch { toast.error("Delete failed"); }
+    } catch { toast.error(T.toastCategoryDeleteFailed); }
     finally { setCatSaving(false); }
   };
 
@@ -457,15 +472,15 @@ export default function ComplianceLibraryPage() {
       });
       const d = await res.json();
       if (d.ok) {
-        toast.success(`Moved to ${getCategoryMeta(targetCategory).label}`);
+        toast.success(T.toastMoved.replace("{target}", getCategoryMeta(targetCategory).label));
         setMovingDoc(null);
         setMoveTarget("");
         load();
         fetch("/api/compliance-docs").then((r) => r.json()).then((d) => { if (d.ok) setCategoryCounts(d.categories || {}); });
       } else {
-        toast.error(d.error || "Move failed");
+        toast.error(d.error || T.toastMoveFailed);
       }
-    } catch { toast.error("Move failed"); }
+    } catch { toast.error(T.toastMoveFailed); }
   };
 
   const downloadDoc = (doc: ComplianceDoc) => {
@@ -493,9 +508,7 @@ export default function ComplianceLibraryPage() {
   };
 
   const totalDocs = Object.values(categoryCounts).reduce((s, n) => s + n, 0);
-
-  // How many category cards to show in the grid
-  const visibleCatCount = allCategories.length;
+  const managingCount = managingCategory ? (categoryCounts[managingCategory] || 0) : 0;
 
   return (
     <div
@@ -509,8 +522,8 @@ export default function ComplianceLibraryPage() {
         <div className="fixed inset-0 z-[90] bg-[#00b4c3]/10 backdrop-blur-sm flex items-center justify-center pointer-events-none">
           <div className="bg-white rounded-2xl shadow-2xl px-12 py-10 border-2 border-dashed border-[#00b4c3] text-center">
             <p className="text-4xl mb-3">{"\u{1F4E4}"}</p>
-            <p className="text-lg font-semibold text-slate-800">Drop file to upload</p>
-            <p className="text-sm text-slate-500 mt-1">Release to add a document</p>
+            <p className="text-lg font-semibold text-slate-800">{T.dropToUploadTitle}</p>
+            <p className="text-sm text-slate-500 mt-1">{T.dropToUploadDesc}</p>
           </div>
         </div>
       )}
@@ -518,9 +531,9 @@ export default function ComplianceLibraryPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Document Center</h1>
+          <h1 className="text-2xl font-bold text-slate-900">{T.pageTitle}</h1>
           <p className="text-slate-500 text-sm mt-0.5">
-            Compliance, certifications & shipping documents — {totalDocs} document{totalDocs !== 1 ? "s" : ""}
+            {T.pageSubtitleTemplate.replace("{count}", String(totalDocs)).replace("{label}", totalDocs !== 1 ? T.docPlural : T.docSingular)}
           </p>
         </div>
         {isAdmin && (
@@ -528,7 +541,7 @@ export default function ComplianceLibraryPage() {
             onClick={() => { resetForm(); setShowUpload(true); }}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa] font-medium text-sm"
           >
-            + Upload Document
+            {T.uploadDocument}
           </button>
         )}
       </div>
@@ -544,7 +557,7 @@ export default function ComplianceLibraryPage() {
           }`}
         >
           <span className="text-lg">{"\u{1F4DA}"}</span>
-          <p className="text-xs font-semibold text-slate-800 mt-1">All</p>
+          <p className="text-xs font-semibold text-slate-800 mt-1">{T.catAll}</p>
           <p className="text-lg font-bold text-slate-900">{totalDocs}</p>
         </button>
         {allCategories.map((cat) => (
@@ -565,9 +578,9 @@ export default function ComplianceLibraryPage() {
               <button
                 onClick={(e) => { e.stopPropagation(); setManagingCategory(cat.id); setCategoryAction(null); setRenameTo(cat.label); setDeleteMoveTo("OTHER"); }}
                 className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600"
-                title="Manage category"
+                title={T.manageCategoryTooltip}
               >
-                {"\u2699"}
+                {"⚙"}
               </button>
             )}
           </div>
@@ -591,8 +604,8 @@ export default function ComplianceLibraryPage() {
       ) : docs.length === 0 ? (
         <div className="text-center py-16 text-slate-400">
           <p className="text-4xl mb-3">{"\u{1F4CB}"}</p>
-          <p>{activeCategory ? "No documents in this category." : "No compliance documents uploaded yet."}</p>
-          {isAdmin && <p className="text-sm mt-1">Click &ldquo;Upload Document&rdquo; to get started.</p>}
+          <p>{activeCategory ? T.noDocsThisCategory : T.noDocsYet}</p>
+          {isAdmin && <p className="text-sm mt-1">{T.getStartedHint}</p>}
         </div>
       ) : (
         <div className="bg-white rounded-xl border overflow-hidden">
@@ -600,13 +613,13 @@ export default function ComplianceLibraryPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-slate-50 text-left text-xs text-slate-400 uppercase">
-                  <th className="py-2.5 px-4">Document</th>
-                  <th className="py-2.5 px-4">Category</th>
-                  <th className="py-2.5 px-4">Version</th>
-                  <th className="py-2.5 px-4">Size</th>
-                  <th className="py-2.5 px-4">Uploaded</th>
-                  <th className="py-2.5 px-4">Visibility</th>
-                  <th className="py-2.5 px-4 text-right">Actions</th>
+                  <th className="py-2.5 px-4">{T.colDocument}</th>
+                  <th className="py-2.5 px-4">{T.colCategory}</th>
+                  <th className="py-2.5 px-4">{T.colVersion}</th>
+                  <th className="py-2.5 px-4">{T.colSize}</th>
+                  <th className="py-2.5 px-4">{T.colUploaded}</th>
+                  <th className="py-2.5 px-4">{T.colVisibility}</th>
+                  <th className="py-2.5 px-4 text-right">{T.colActions}</th>
                 </tr>
               </thead>
               <tbody>
@@ -633,7 +646,7 @@ export default function ComplianceLibraryPage() {
                           {cat.label}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-slate-600">{doc.version || "\u2014"}</td>
+                      <td className="py-3 px-4 text-slate-600">{doc.version || "—"}</td>
                       <td className="py-3 px-4 text-slate-500 text-xs">{formatFileSize(doc.sizeBytes)}</td>
                       <td className="py-3 px-4">
                         <p className="text-xs text-slate-500">{new Date(doc.createdAt).toLocaleDateString()}</p>
@@ -662,7 +675,7 @@ export default function ComplianceLibraryPage() {
                               onClick={() => downloadDoc(doc)}
                               className="text-xs text-blue-600 hover:text-blue-800 font-medium"
                             >
-                              Download
+                              {T.downloadAction}
                             </button>
                           )}
                           {isAdmin && (
@@ -675,7 +688,7 @@ export default function ComplianceLibraryPage() {
                                     className="text-xs border border-slate-300 rounded px-1.5 py-0.5 max-w-[120px]"
                                     autoFocus
                                   >
-                                    <option value="">Move to...</option>
+                                    <option value="">{T.moveToPlaceholder}</option>
                                     {allCategories.filter((c) => c.id !== doc.category).map((c) => (
                                       <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
                                     ))}
@@ -685,22 +698,22 @@ export default function ComplianceLibraryPage() {
                                     disabled={!moveTarget}
                                     className="text-[10px] text-green-600 hover:text-green-800 font-bold disabled:opacity-30"
                                   >
-                                    {"\u2713"}
+                                    {"✓"}
                                   </button>
                                   <button
                                     onClick={() => { setMovingDoc(null); setMoveTarget(""); }}
                                     className="text-[10px] text-slate-400 hover:text-slate-600 font-bold"
                                   >
-                                    {"\u2717"}
+                                    {"✗"}
                                   </button>
                                 </div>
                               ) : (
                                 <button
                                   onClick={() => { setMovingDoc(doc.id); setMoveTarget(""); }}
                                   className="text-xs text-slate-500 hover:text-slate-700 font-medium"
-                                  title="Move to another category"
+                                  title={T.moveToTooltip}
                                 >
-                                  Move
+                                  {T.moveAction}
                                 </button>
                               )}
                             </div>
@@ -710,7 +723,7 @@ export default function ComplianceLibraryPage() {
                               onClick={() => startEdit(doc)}
                               className="text-xs text-[#00b4c3] hover:text-[#009aaa] font-medium"
                             >
-                              Edit
+                              {T.editAction}
                             </button>
                           )}
                           {canDelete && (
@@ -718,7 +731,7 @@ export default function ComplianceLibraryPage() {
                               onClick={() => setDeleteConfirm(doc.id)}
                               className="text-xs text-red-500 hover:text-red-700 font-medium"
                             >
-                              Delete
+                              {T.deleteAction}
                             </button>
                           )}
                         </div>
@@ -739,7 +752,7 @@ export default function ComplianceLibraryPage() {
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
               <h2 className="text-lg font-bold text-slate-900">
-                {editingDoc ? "Edit Document" : "Upload Document"}
+                {editingDoc ? T.editTitle : T.uploadTitle}
               </h2>
               <button onClick={() => { setShowUpload(false); setEditingDoc(null); resetForm(); }} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
             </div>
@@ -747,7 +760,7 @@ export default function ComplianceLibraryPage() {
               {/* File upload with drag-and-drop (only for new) */}
               {!editingDoc && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">File</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.fileLabel}</label>
                   <div
                     onDragOver={handleDropZoneDragOver}
                     onDragLeave={handleDropZoneDragLeave}
@@ -764,40 +777,40 @@ export default function ComplianceLibraryPage() {
                           <p className="text-sm font-medium text-slate-800">{selectedFile.name}</p>
                           <p className="text-xs text-slate-500">{formatFileSize(selectedFile.size)}</p>
                         </div>
-                        <button onClick={() => setSelectedFile(null)} className="text-red-500 text-sm hover:text-red-700">Remove</button>
+                        <button onClick={() => setSelectedFile(null)} className="text-red-500 text-sm hover:text-red-700">{T.removeFile}</button>
                       </div>
                     ) : (
                       <label className="cursor-pointer block">
                         <p className="text-2xl mb-2">{isDragging ? "\u{1F4E5}" : "\u{1F4C2}"}</p>
                         <p className="text-sm font-medium text-slate-700">
-                          {isDragging ? "Drop file here" : "Drag & drop a file here"}
+                          {isDragging ? T.dropHere : T.dragDropHere}
                         </p>
-                        <p className="text-xs text-slate-400 mt-1">or click to browse (PDF, DOC, video, images, ZIP — up to 500MB)</p>
+                        <p className="text-xs text-slate-400 mt-1">{T.dragDropHelper}</p>
                         <input type="file" className="hidden" onChange={handleFileSelect}
                           accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.xlsx,.xls,.csv,.txt,.zip,.mp4,.mov,.avi,.wmv,.webm,.mp3,.wav,.pptx,.ppt,.svg,.webp,.tiff,.bmp" />
                       </label>
                     )}
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">Or provide a URL below instead of uploading a file</p>
+                  <p className="text-xs text-slate-400 mt-1">{T.orUrl}</p>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Title *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.titleLabel}</label>
                 <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="e.g. FUZE SDS v4.2" />
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder={T.titlePlaceholder} />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.descriptionLabel}</label>
                 <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" rows={2}
-                  placeholder="Brief description of document contents..." />
+                  placeholder={T.descriptionPlaceholder} />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.categoryLabel}</label>
                   <select
                     value={form.category}
                     onChange={(e) => setForm({ ...form, category: e.target.value, customCategory: "" })}
@@ -806,7 +819,7 @@ export default function ComplianceLibraryPage() {
                     {allCategories.map((c) => (
                       <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
                     ))}
-                    <option value="__CUSTOM__">{"\u{2795}"} Custom Category...</option>
+                    <option value="__CUSTOM__">{"\u{2795}"} {T.customCategoryOption}</option>
                   </select>
                   {form.category === "__CUSTOM__" && (
                     <input
@@ -814,29 +827,29 @@ export default function ComplianceLibraryPage() {
                       value={form.customCategory}
                       onChange={(e) => setForm({ ...form, customCategory: e.target.value })}
                       className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                      placeholder="e.g. WRAP, BCI, Higg Index"
+                      placeholder={T.customCategoryPlaceholder}
                     />
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Version</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.versionLabel}</label>
                   <input type="text" value={form.version} onChange={(e) => setForm({ ...form, version: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="e.g. v4.2, Rev. 3" />
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder={T.versionPlaceholder} />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">External URL (optional)</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.externalUrlLabel}</label>
                 <input type="url" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                  placeholder="https://..." />
+                  placeholder={T.urlPlaceholder} />
               </div>
 
               {/* Role visibility */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Visible to Roles</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">{T.visibleToRoles}</label>
                 <div className="flex flex-wrap gap-2">
-                  {ALL_ROLES.map((role) => (
+                  {ALL_ROLE_KEYS.map((role) => (
                     <button
                       key={role.id}
                       type="button"
@@ -847,7 +860,7 @@ export default function ComplianceLibraryPage() {
                           : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
                       }`}
                     >
-                      {role.label}
+                      {(T as any)[role.labelKey]}
                     </button>
                   ))}
                 </div>
@@ -865,11 +878,11 @@ export default function ComplianceLibraryPage() {
             <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end sticky bottom-0 bg-white">
               <button onClick={() => { setShowUpload(false); setEditingDoc(null); resetForm(); }}
                 className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">
-                Cancel
+                {T.cancel}
               </button>
               <button onClick={editingDoc ? saveEdit : handleUpload} disabled={saving || !form.title}
                 className="px-5 py-2 text-sm font-semibold bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa] disabled:opacity-50">
-                {saving ? "Saving..." : editingDoc ? "Save Changes" : "Upload Document"}
+                {saving ? T.saving : editingDoc ? T.saveChanges : T.uploadTitle}
               </button>
             </div>
           </div>
@@ -879,9 +892,9 @@ export default function ComplianceLibraryPage() {
       {/* Delete Confirmation */}
       <ConfirmDialog
         open={!!deleteConfirm}
-        title="Delete Document?"
-        message="This will permanently remove this compliance document from the library. This action cannot be undone."
-        confirmLabel="Delete Document"
+        title={T.deleteDocConfirmTitle}
+        message={T.deleteDocConfirmMsg}
+        confirmLabel={T.deleteDocConfirmBtn}
         variant="danger"
         onConfirm={() => {
           if (deleteConfirm) deleteDoc(deleteConfirm);
@@ -897,13 +910,13 @@ export default function ComplianceLibraryPage() {
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
               <h2 className="text-lg font-bold text-slate-900">
-                Manage: {getCategoryMeta(managingCategory).icon} {getCategoryMeta(managingCategory).label}
+                {T.manageHeaderTemplate.replace("{icon}", getCategoryMeta(managingCategory).icon).replace("{label}", getCategoryMeta(managingCategory).label)}
               </h2>
               <button onClick={() => { setManagingCategory(null); setCategoryAction(null); }} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
             </div>
             <div className="px-6 py-5">
               <p className="text-sm text-slate-500 mb-4">
-                {categoryCounts[managingCategory] || 0} document{(categoryCounts[managingCategory] || 0) !== 1 ? "s" : ""} in this category
+                {T.inCategoryCount.replace("{count}", String(managingCount)).replace("{label}", managingCount !== 1 ? T.docPlural : T.docSingular)}
               </p>
 
               {!categoryAction && (
@@ -912,14 +925,14 @@ export default function ComplianceLibraryPage() {
                     onClick={() => setCategoryAction("rename")}
                     className="flex-1 px-4 py-3 bg-[#00b4c3]/10 text-[#00b4c3] rounded-xl hover:bg-[#00b4c3]/20 font-medium text-sm transition-colors"
                   >
-                    {"\u270F\uFE0F"} Rename Category
+                    {"✏️"} {T.renameCategoryBtn}
                   </button>
                   {canDelete && (
                     <button
                       onClick={() => setCategoryAction("delete")}
                       className="flex-1 px-4 py-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 font-medium text-sm transition-colors"
                     >
-                      {"\u{1F5D1}"} Delete Category
+                      {"\u{1F5D1}"} {T.deleteCategoryBtn}
                     </button>
                   )}
                 </div>
@@ -928,17 +941,17 @@ export default function ComplianceLibraryPage() {
               {categoryAction === "rename" && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">New category name</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{T.renameNewName}</label>
                     <input
                       type="text"
                       value={renameTo}
                       onChange={(e) => setRenameTo(e.target.value)}
                       className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3]/30 focus:border-[#00b4c3]"
-                      placeholder="e.g. Certificates of Analysis"
+                      placeholder={T.renameNewNamePlaceholder}
                       autoFocus
                     />
                     <p className="text-xs text-slate-400 mt-1">
-                      Will be stored as: {renameTo.trim().toUpperCase().replace(/[\s-]+/g, "_") || "..."}
+                      {T.renameStoredAs.replace("{name}", renameTo.trim().toUpperCase().replace(/[\s-]+/g, "_") || "...")}
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -947,10 +960,10 @@ export default function ComplianceLibraryPage() {
                       disabled={catSaving || !renameTo.trim()}
                       className="flex-1 px-4 py-2 bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa] font-medium text-sm disabled:opacity-50 transition-colors"
                     >
-                      {catSaving ? "Renaming..." : `Rename ${categoryCounts[managingCategory] || 0} doc${(categoryCounts[managingCategory] || 0) !== 1 ? "s" : ""}`}
+                      {catSaving ? T.renaming : T.renameCount.replace("{count}", String(managingCount)).replace("{label}", managingCount !== 1 ? T.docPluralShort : T.docSingularShort)}
                     </button>
                     <button onClick={() => setCategoryAction(null)} className="px-4 py-2 text-slate-500 hover:text-slate-700 text-sm font-medium">
-                      Back
+                      {T.back}
                     </button>
                   </div>
                 </div>
@@ -960,11 +973,11 @@ export default function ComplianceLibraryPage() {
                 <div className="space-y-3">
                   <div className="px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
                     <p className="text-xs text-amber-700">
-                      All {categoryCounts[managingCategory] || 0} document{(categoryCounts[managingCategory] || 0) !== 1 ? "s" : ""} will be moved to the category you select below.
+                      {T.deleteCategoryWarning.replace("{count}", String(managingCount)).replace("{label}", managingCount !== 1 ? T.docPlural : T.docSingular)}
                     </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Move documents to</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{T.moveDocsTo}</label>
                     <select
                       value={deleteMoveTo}
                       onChange={(e) => setDeleteMoveTo(e.target.value)}
@@ -981,10 +994,10 @@ export default function ComplianceLibraryPage() {
                       disabled={catSaving || !deleteMoveTo}
                       className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm disabled:opacity-50 transition-colors"
                     >
-                      {catSaving ? "Deleting..." : "Delete Category & Move Docs"}
+                      {catSaving ? T.deleting : T.deleteCategoryConfirm}
                     </button>
                     <button onClick={() => setCategoryAction(null)} className="px-4 py-2 text-slate-500 hover:text-slate-700 text-sm font-medium">
-                      Back
+                      {T.back}
                     </button>
                   </div>
                 </div>
