@@ -6036,6 +6036,38 @@ const hi: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "परीक्षण कैटलॉग और मूल्य",
+    subtitle: "परीक्षण प्रकार, मूल्य, टर्नअराउंड समय, और नमूना आवश्यकताओं को प्रबंधित करें। कारखाना परीक्षण अनुरोध फ़ॉर्म पर परिवर्तन तुरंत दिखाई देते हैं।",
+    sourcePrefix: "स्रोत:",
+    sourceDb: "डेटाबेस (एडमिन-प्रबंधित)",
+    sourceStatic: "स्थिर डिफ़ॉल्ट",
+    successMsg: "परीक्षण सफलतापूर्वक अपडेट किया गया",
+    failedSave: "सहेजने में विफल",
+    networkErr: "नेटवर्क त्रुटि",
+    colTestName: "परीक्षण नाम",
+    colCategory: "श्रेणी",
+    colPrice: "मूल्य (USD)",
+    colTurnaround: "टर्नअराउंड",
+    colMinSample: "न्यूनतम नमूना",
+    colControl: "नियंत्रण?",
+    colActive: "सक्रिय",
+    colActions: "क्रियाएं",
+    daysSuffix: "दिन",
+    metersSuffix: "m",
+    yes: "हां",
+    no: "नहीं",
+    saveBtn: "सहेजें",
+    savingDots: "...",
+    cancelBtn: "रद्द करें",
+    editBtn: "संपादित करें",
+    catRecipeBuild: "रेसिपी बिल्ड",
+    catPerformance: "प्रदर्शन",
+    catQuality: "गुणवत्ता",
+    catCertification: "प्रमाणन",
+    lastUpdatedTpl: "{when} पर {who} द्वारा अंतिम अपडेट",
+  },
+
 };
 
 export default hi;
