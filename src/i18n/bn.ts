@@ -6825,6 +6825,26 @@ const bn: Translations = {
     emptyState: "এখনও কোনো ক্রেডিট নেই।",
   },
 
+  bdFunnel: {
+    loading: "লোড হচ্ছে…",
+    crumbSalesPipeline: "সেলস ও পাইপলাইন",
+    crumbBdFunnel: "BD ফানেল",
+    title: "পাইপলাইন ফানেল",
+    subtitle: "গত ৩০ / ৬০ / ৯০ দিনে ইনফ্লো / আউটফ্লো, প্লাস স্টেজ-টু-স্টেজ কনভার্সন রেট। প্রতিটি Brand.pipelineStage ফ্লিপে লেখা BrandStageTransition সারি থেকে সোর্সকৃত।",
+    colStage: "স্টেজ",
+    colCurrent: "বর্তমান",
+    colIn30: "ইন ৩০ দিন",
+    colIn60: "ইন ৬০ দিন",
+    colIn90: "ইন ৯০ দিন",
+    colOut30: "আউট ৩০ দিন",
+    colOut60: "আউট ৬০ দিন",
+    colOut90: "আউট ৯০ দিন",
+    colAvgDwell: "গড় ডোয়েল",
+    colToNext: "→ পরবর্তী",
+    footerHint: "কনভার্সন = ক্যানোনিকাল পরবর্তী স্টেজে অবতরণ করা এক্সিট / গত ৯০ দিনে পর্যবেক্ষিত মোট এক্সিট। উইন্ডোতে কোনো এক্সিট নেই এমন স্টেজ n=০ দেখায় — এগুলি ধীর বা স্থিতিশীল, খারাপ নয়।",
+    errLoadFailed: "ফানেল লোড করতে ব্যর্থ",
+  },
+
 };
 
 export default bn;
