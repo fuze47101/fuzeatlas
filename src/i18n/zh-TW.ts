@@ -4850,6 +4850,49 @@ const zhTW: Translations = {
     sowEmptyNothingStuck: "無停滯項目。",
   },
 
+  ordersAdmin: {
+    pageTitle: "訂單管理",
+    pageSubtitle: "檢視、核准並追蹤所有 FUZE 訂單",
+    myAccountsOnly: "僅限我的客戶",
+    awaitingApprovalTemplate: "{n} 筆訂單等待核准",
+
+    statTotal: "總計",
+    statPending: "待處理",
+    statApproved: "已核准",
+    statProcessing: "處理中",
+    statShipped: "已出貨",
+    statDelivered: "已送達",
+    statRevenue: "營收",
+
+    filterAll: "全部",
+    filterAllTypes: "所有類型",
+
+    emptyMessage: "無符合篩選條件的訂單",
+
+    colOrder: "訂單",
+    colFactory: "工廠",
+    colType: "類型",
+    colVolume: "體積",
+    colBrand: "品牌",
+    colTotal: "總計",
+    colFulfillment: "履行",
+    colStatus: "狀態",
+    colDate: "日期",
+
+    statusDraft: "草稿",
+    statusQuoted: "已報價",
+    statusPendingApproval: "待核准",
+    statusApproved: "已核准",
+    statusConfirmed: "已確認",
+    statusProcessing: "處理中",
+    statusShipped: "已出貨",
+    statusDelivered: "已送達",
+    statusCancelled: "已取消",
+
+    directUsaLabel: "美國直送",
+    tagsSuffix: "個標籤",
+  },
+
 };
 
 export default zhTW;
