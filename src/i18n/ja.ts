@@ -5731,6 +5731,55 @@ const ja: Translations = {
     statusComplete: "完了",
   },
 
+  brandFabricsAdmin: {
+    loading: "生地ポートフォリオを読み込み中…",
+    errorTitle: "生地ポートフォリオを読み込めませんでした",
+    errorUnknown: "不明なエラー",
+    errorFailedLoad: "読み込みに失敗しました",
+    errorSave: "保存に失敗しました",
+    btnTryAgain: "再試行",
+
+    crumbPartners: "ブランドパートナー",
+    crumbHere: "生地ポートフォリオ",
+    titleSuffix: "— 生地ポートフォリオ",
+    subtitle: "このブランドの全ミル横断の全生地。{total} 件中 {shown} 件を表示中。",
+    btnExportCsv: "⬇ CSVエクスポート",
+
+    searchPlaceholder: "生地番号、顧客コード、組成を検索…",
+    filterAllMills: "すべてのミル",
+    filterAllTypes: "すべてのタイプ",
+    typeDevelopment: "開発",
+    typeActualBulk: "実績（バルク）",
+    typeForecast: "予測",
+    typeRd: "R&D",
+    filterAllStatuses: "すべてのステータス",
+
+    emptyFabric: "🧵",
+    emptyTitle: "フィルターに一致する生地はありません。",
+    emptySub: "上のフィルターを調整するか、検索をクリアして全ポートフォリオを表示してください。",
+    fabricSingular: "件の生地",
+    fabricPlural: "件の生地",
+    openFactory: "工場を開く →",
+
+    colFuze: "FUZE番号",
+    colMillFabric: "ミル生地番号",
+    colType: "タイプ",
+    colContent: "組成",
+    colGsm: "GSM",
+    colCustomerCode: "顧客コード",
+    colTrial: "トライアル",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "ICP値",
+    colTestDate: "テスト日",
+    colStatus: "ステータス",
+
+    unassigned: "未割当",
+    typeBulkProduction: "バルク生産",
+    notSet: "— 未設定 —",
+    titleOpenFabric: "生地詳細を開く",
+  },
+
 };
 
 export default ja;
