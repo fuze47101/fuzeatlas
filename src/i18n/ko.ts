@@ -7963,6 +7963,24 @@ const ko: Translations = {
     websiteLabel: "웹사이트",
   },
 
+  reportSharePage: {
+    unavailableTitle: "보고서 사용 불가",
+    unavailableBodyPrefix: "장기 접근을 위해 다음에서 로그인하십시오:",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "그리고 내 보고서에서 보고서를 찾거나, 이 이메일이 발송된 곳에 답장하십시오.",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · 도포 및 검증 보고서",
+    heading: "FUZE 처리 레시피 및 검증",
+    issuedLabel: "발행일",
+    linkValidUntil: "· 이 직접 링크는 다음까지 유효합니다:",
+    preparedForTitle: "수신자",
+    execSummaryTitle: "요약",
+    recipeTitle: "권장 레시피",
+    fuzeRequiredTitle: "필요한 FUZE (생산 배스 크기)",
+    labIcpTitle: "독립 랩 ICP 검증",
+    accessLaterTitle: "나중에 이 보고서에 접근하기",
+  },
+
 };
 
 export default ko;
