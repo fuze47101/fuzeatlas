@@ -7206,6 +7206,28 @@ const hi: Translations = {
     errNetwork: "नेटवर्क त्रुटि",
   },
 
+  notificationsPage: {
+    loading: "सूचनाएं लोड हो रही हैं...",
+    title: "सूचनाएं",
+    unreadLabel: "अपठित",
+    allCaughtUp: "सब अद्यतन",
+    totalLabel: "कुल",
+    markAllRead: "सभी को पढ़ा हुआ चिह्नित करें",
+    filterAll: "सभी",
+    filterUnread: "अपठित",
+    allTypes: "सभी प्रकार",
+    emptyUnreadTitle: "कोई अपठित सूचना नहीं",
+    emptyAllTitle: "अभी कोई सूचना नहीं",
+    emptyUnreadBody: "आप सब अद्यतन हैं!",
+    emptyAllBody: "जब आपके खाते पर गतिविधि होगी तो सूचनाएं यहां दिखाई देंगी।",
+    viewDetails: "विवरण देखें →",
+    markAsRead: "पढ़ा हुआ चिह्नित करें",
+    justNow: "अभी",
+    minSuffix: "m पहले",
+    hourSuffix: "h पहले",
+    daySuffix: "d पहले",
+  },
+
 };
 
 export default hi;
