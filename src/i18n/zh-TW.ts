@@ -7127,6 +7127,29 @@ const zhTW: Translations = {
     errLoadFailed: "載入分析失敗",
   },
 
+  orderQrLabel: {
+    orderNotFound: "找不到訂單。",
+    headerKicker: "QR 標籤",
+    previewPublicLink: "預覽公開頁面 →",
+    brandLine: "FUZE Biotech",
+    brandLocation: "美國猶他州鹽湖城",
+    orderLabel: "訂單",
+    scanToVerifyTitle: "掃描以驗證",
+    scanToVerifyBody: "使用手機相機掃描此標籤，即可載入出貨狀態、生命週期、SDS 及 COA。",
+    tierLabel: "等級",
+    volumeLabel: "容量",
+    bottlesSuffix: "瓶",
+    methodLabel: "方法",
+    typeLabel: "類型",
+    shipToLabel: "寄送至",
+    forBrandLabel: "品牌",
+    viaDistributorLabel: "經銷商",
+    fabricLabel: "面料",
+    trackingLabel: "追蹤",
+    footerTagline: "FUZE F1–F4 · metamaterial 抗菌處理 · 不含 PFAS",
+    printedPrefix: "列印於",
+  },
+
 };
 
 export default zhTW;
