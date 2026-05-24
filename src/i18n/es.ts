@@ -8039,6 +8039,24 @@ const es: Translations = {
     footerVerifiedBy: "Verificado por FUZE Atlas",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "Resúmenes ESG — FUZE Atlas",
+    metaDescPrefix: "Informes trimestrales de impacto ESG para",
+    metaDescSuffix: "certificado por FUZE Atlas.",
+    backArrowPrefix: "←",
+    headingSuffix: "— Impacto ESG",
+    heroSubtitle: "Resúmenes trimestrales de tejidos certificados con FUZE y resultados de pruebas antimicrobianas.",
+    emptyBody: "Aún no hay resúmenes publicados. Los informes trimestrales se publican al comienzo del siguiente trimestre.",
+    statFabricsCertified: "Tejidos certificados",
+    statTestsPassed: "Pruebas aprobadas",
+    statFuzeLiters: "Litros de FUZE",
+    statFactories: "Fábricas",
+    passRateLabel: "Tasa de aprobación:",
+    downloadPdf: "Descargar PDF →",
+    footerCertifiedBy: "Certificado por FUZE Atlas",
+  },
+
 };
 
 export default es;
