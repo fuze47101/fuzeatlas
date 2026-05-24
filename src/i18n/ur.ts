@@ -7873,6 +7873,19 @@ const ur: Translations = {
     questionsPrefix: "· سوالات؟",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "پلے بکس",
+    heading: "BD پلے بکس",
+    subtitle: "زمرہ-ٹیگ شدہ آؤٹ ریچ رہنمائی۔ جو آپ استعمال کرتے ہیں ان کو پسندیدہ بنائیں؛ برانڈز Brand.textileCategory کی بنیاد پر تجویز کردہ پلے بک دکھاتے ہیں۔",
+    failedFallback: "ناکام",
+    emptyBody: "اس زمرے کے لیے ابھی تک کوئی پلے بک نہیں۔",
+    emptySeedHint: "تین ابتدائی پلے بکس داخل کرنے کے لیے fzcron کے ذریعے",
+    emptySeedHintSuffix: "ٹرگر کریں۔",
+    removeFavoriteTitle: "پسندیدہ ہٹائیں",
+    addFavoriteTitle: "پسندیدہ شامل کریں",
+  },
+
 };
 
 export default ur;
