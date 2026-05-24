@@ -8063,6 +8063,24 @@ const ko: Translations = {
     footerVerifiedBy: "FUZE Atlas 검증",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "ESG 스냅샷 — FUZE Atlas",
+    metaDescPrefix: "다음에 대한 분기별 ESG 영향 보고서:",
+    metaDescSuffix: "FUZE Atlas 인증.",
+    backArrowPrefix: "←",
+    headingSuffix: "— ESG 영향",
+    heroSubtitle: "FUZE 인증 원단 및 항균 시험 결과의 분기별 스냅샷.",
+    emptyBody: "아직 게시된 스냅샷이 없습니다. 분기별 보고서는 다음 분기 시작 시 게시됩니다.",
+    statFabricsCertified: "인증된 원단",
+    statTestsPassed: "통과한 시험",
+    statFuzeLiters: "FUZE 리터",
+    statFactories: "공장",
+    passRateLabel: "통과율:",
+    downloadPdf: "PDF 다운로드 →",
+    footerCertifiedBy: "FUZE Atlas 인증",
+  },
+
 };
 
 export default ko;
