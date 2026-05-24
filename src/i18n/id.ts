@@ -4823,6 +4823,58 @@ const id: Translations = {
     fallbackBrand: "brand",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← Pengaturan",
+    pageTitle: "Template Email",
+    pageSubtitle: "Scaffold email yang dapat digunakan ulang untuk outreach. Gunakan {firstName}, {company}, dll. untuk personalisasi langsung.",
+    btnNew: "+ Template Baru",
+    errorRequired: "Judul, subjek, dan body wajib diisi.",
+    errorLoadUser: "Gagal memuat pengguna",
+    errorLoadTemplates: "Gagal memuat template",
+    confirmArchive: "Arsipkan \"{title}\"? Tidak akan muncul lagi di picker.",
+
+    formHeadingEdit: "Edit template",
+    formHeadingNew: "Template baru",
+    labelTitle: "Judul",
+    placeholderTitle: "mis. Intro first-touch (apparel atletik)",
+    labelCategory: "Kategori",
+    placeholderCategory: "mis. intro, re-engage, icp-request",
+    labelScope: "Scope",
+    scopePrivate: "Privat (hanya saya)",
+    scopeShared: "Dibagikan (seluruh tim)",
+    scopeGlobal: "Global (default org)",
+    labelSubject: "Subjek",
+    placeholderSubject: "Hi {firstName} — intro FUZE singkat untuk {company}",
+    labelBody: "Body",
+    btnSaving: "Menyimpan…",
+    btnSaveChanges: "Simpan perubahan",
+    btnCreate: "Buat template",
+    btnCancel: "Batal",
+
+    previewHeading: "Pratinjau",
+    previewHelp: "Edit nilai sampel di bawah untuk melihat bagaimana token Anda di-render.",
+    previewSubjectLabel: "Subjek",
+    previewBodyLabel: "Body",
+
+    slotsHeading: "Slot quick-pick BD Wizard",
+    slotsHelp: "Sematkan hingga 10 template Anda ke slot bernomor. Pada step Draft wizard, Anda akan melihat strip tombol 1–10 yang mengisi subjek dan body dengan satu klik.",
+    openBdWizard: "Buka BD Wizard →",
+    slotEmptyTitle: "Slot kosong — tetapkan di bawah.",
+    slotEmpty: "kosong",
+
+    loadingTemplates: "Memuat template…",
+    groupPrivate: "Template Anda",
+    groupShared: "Dibagikan dengan tim",
+    groupGlobal: "Default org",
+    usedSuffix: "digunakan",
+    byPrefix: "oleh",
+    bdSlot: "Slot BD",
+    edit: "Edit",
+    archive: "Arsipkan",
+
+    emptyTpl: "Belum ada template. Klik + Template Baru untuk membuat yang pertama.",
+  },
+
 };
 
 export default id;
