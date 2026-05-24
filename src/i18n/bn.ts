@@ -7230,6 +7230,32 @@ const bn: Translations = {
     daySuffix: "d আগে",
   },
 
+  resetPassword: {
+    tagline: "একটি নতুন পাসওয়ার্ড তৈরি করুন",
+    formTitle: "পাসওয়ার্ড রিসেট করুন",
+    newPasswordLabel: "নতুন পাসওয়ার্ড",
+    newPasswordPlaceholder: "নতুন পাসওয়ার্ড লিখুন",
+    confirmPasswordLabel: "পাসওয়ার্ড নিশ্চিত করুন",
+    confirmPasswordPlaceholder: "পাসওয়ার্ড নিশ্চিত করুন",
+    resetBtn: "পাসওয়ার্ড রিসেট করুন",
+    resettingBtn: "রিসেট করা হচ্ছে...",
+    backToSignIn: "সাইন ইন-এ ফিরে যান",
+    successTitle: "পাসওয়ার্ড রিসেট সফল",
+    successBody: "আপনার পাসওয়ার্ড সফলভাবে রিসেট হয়েছে। আপনি এখন আপনার নতুন পাসওয়ার্ড দিয়ে সাইন ইন করতে পারেন।",
+    signInBtn: "সাইন ইন",
+    invalidLinkTitle: "অবৈধ রিসেট লিঙ্ক",
+    invalidLinkBody: "রিসেট লিঙ্কটি অবৈধ বা মেয়াদ উত্তীর্ণ। অনুগ্রহ করে নতুন একটি অনুরোধ করুন।",
+    requestNewLinkBtn: "নতুন লিঙ্ক অনুরোধ করুন",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "লোড হচ্ছে...",
+    errInvalidToken: "অবৈধ বা অনুপস্থিত রিসেট টোকেন",
+    errInvalidTokenShort: "অবৈধ রিসেট টোকেন",
+    errMinLength: "পাসওয়ার্ড কমপক্ষে 6 অক্ষরের হতে হবে",
+    errMismatch: "পাসওয়ার্ড মেলে না",
+    errResetFailed: "পাসওয়ার্ড রিসেট করতে ব্যর্থ",
+    errNetwork: "নেটওয়ার্ক ত্রুটি",
+  },
+
 };
 
 export default bn;
