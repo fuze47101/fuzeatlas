@@ -7815,6 +7815,37 @@ const zhCN: Translations = {
     lastCalculatedLabel: "最近计算时间：",
   },
 
+  fabricReportSend: {
+    backLink: "← 返回报告",
+    heading: "向客户发送报告",
+    subtitlePrefix: "正在发送 FUZE 应用与验证报告：",
+    fabricNotFound: "未找到该面料。",
+    recipientRequiredError: "请填写收件人邮箱。",
+    sendFailedError: "发送失败",
+    sentSuccessPrefix: "✓ 报告已发送至",
+    directUrlLabel: "直接下载网址：",
+    sentSuccessBody: "客户登录 FUZE Atlas 后也可在「我的报告」中查看。",
+    recipientEmailLabel: "收件人邮箱",
+    recipientNameLabel: "收件人姓名",
+    optionalSuffix: "（可选）",
+    personalNoteLabel: "个性化留言",
+    personalNoteHint: "（可选，显示在报告卡片上方）",
+    ccLabel: "抄送",
+    ccHint: "（可选，逗号分隔）",
+    ttlLabel: "直链有效期",
+    ttl30Days: "30 天",
+    ttl90Days: "90 天（默认）",
+    ttl180Days: "180 天",
+    ttl1Year: "1 年",
+    sendingBtn: "正在发送…",
+    sendBtn: "发送报告",
+    previouslySentTitle: "历史发送记录",
+    sentPrefix: "已发送",
+    viewedPrefix: "已查看",
+    notOpenedYet: "尚未打开",
+    openSameLink: "打开同一链接 →",
+  },
+
 };
 
 export default zhCN;
