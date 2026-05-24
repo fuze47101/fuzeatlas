@@ -7837,6 +7837,29 @@ const km: Translations = {
     footerGenerated: "Form generated",
   },
 
+  educationStory: {
+    backLink: "← ត្រឡប់ to FUZE Basics",
+    kicker: "The FUZE Story",
+    heroTitle: "ពី recycled electronics to permanent antimicrobial",
+    heroBody: "FUZE metamaterial is produced via liquid laser ablation: a 30-amp laser, a 1m² production table, and a feedstock of recycled electronics. The entire production cell can be powered by solar. We're not just antimicrobial — we're an e-waste upcycling operation that ends in your fabric.",
+    card1Title: "Recycled feedstock",
+    card1Body: "Every gram of FUZE active agent originates from elemental precious metal recovered from end-of-life electronics. We don't mine. We don't refine virgin material. We pull metal that would otherwise sit in a landfill or get incinerated.",
+    card2Title: "Liquid laser ablation",
+    card2Body: "A 30-amp laser pulse vaporizes the metal feedstock submerged in 99.998% ultrapure 18-megaohm DI water. What condenses out is FUZE metamaterial — a high-density elemental allotrope, 20 ppm in the delivered stock concentration. ទេ solvents. ទេ precursor chemistry. ទេ surfactants.",
+    card3Title: "Solar-capable production",
+    card3Body: "The 1m² production cell runs on roughly the electricity a residential solar array produces in a sunny day. ម៉ាក committing to FUZE are committing to an antimicrobial supply chain that can be net-zero at the production step — something no silver-ion / zinc / QAC competitor can claim.",
+    esgTitle: "What this means in your របាយការណ៍ ESG",
+    esgBullet1: "✓ Circular feedstock claim — FUZE is produced from end-of-life electronics, supporting your circular-economy commitments.",
+    esgBullet2: "✓ Net-zero-capable production — the production cell is solar-compatible. Pair with renewable supply contracts and the antimicrobial step contributes zero scope-2 emissions.",
+    esgBullet3: "✓ Zero virgin-mining contribution — no coordination required with conflict-mineral or mining-derived supply chains.",
+    esgBullet4: "✓ PFAS-free, formaldehyde-free, binder-free, curing-oven-free — every petrochemical input that competitors require, FUZE eliminates.",
+    esgBullet5: "✓ ឯកសារed water cleanliness — FUZE leaches nothing into wash water. Your downstream contribution to municipal water treatment burden = 0.",
+    differentTitle: "A different kind of antimicrobial company",
+    differentBody: "Most antimicrobial textile companies are chemical companies. They blend, dilute, formulate, and ship drums of synthesized chemistry to mills. We're a materials-science operation: we ablate metal in water and ship the result. The simplicity is the differentiator. Less chemistry on the fabric. Less chemistry in the wash water. Less chemistry in the production line. Less chemistry in your របាយការណ៍ ESG.",
+    backBasicsBtn: "ត្រឡប់ to FUZE Basics",
+    seeSustainabilityBtn: "See sustainability impact",
+  },
+
 };
 
 export default km;
