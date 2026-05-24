@@ -7151,6 +7151,29 @@ const es: Translations = {
     printedPrefix: "Impreso",
   },
 
+  pressKitAdmin: {
+    title: "Kit de prensa",
+    subtitle: "Gestiona lo que aparece en la página pública /press. Desactivar oculta una fila sin eliminarla.",
+    addItemTitle: "Añadir elemento",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "leyenda",
+    addItemBtn: "Añadir elemento",
+    savingBtn: "Guardando…",
+    allFilter: "todos",
+    colType: "Tipo",
+    colCaption: "Leyenda",
+    colUrl: "URL",
+    colReleased: "Publicado",
+    colActive: "Activo",
+    activeLabel: "Activo",
+    hiddenLabel: "Oculto",
+    deleteBtn: "Eliminar",
+    deleteConfirmPrefix: "Eliminar elemento del kit de prensa",
+    emptyState: "Aún no hay elementos en el kit de prensa.",
+    errUrlRequired: "URL requerida",
+    errAddFailed: "Error al añadir",
+  },
+
 };
 
 export default es;
