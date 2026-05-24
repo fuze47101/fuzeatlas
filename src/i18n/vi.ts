@@ -7659,6 +7659,32 @@ const vi: Translations = {
     errSendFailed: "Không gửi được email xác minh",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "Tài liệu công khai",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "Tài liệu tham khảo công khai cho dòng sản phẩm FUZE",
+    headerLeadAfter: ". Đối với tài liệu riêng (TDS/SDS đầy đủ, giá nội bộ, hướng dẫn áp dụng), đăng nhập vào cổng FUZE Atlas cho vai trò của bạn.",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "Độc tính học",
+    catPricing: "Giá cả",
+    catSustainability: "Bền vững",
+    catEducation: "Đào tạo",
+    catClaimsCompliance: "Tuyên bố & Tuân thủ",
+    catApplicationGuide: "Hướng dẫn áp dụng",
+    catCaseStudy: "Nghiên cứu điển hình",
+    loading: "Đang tải…",
+    emptyBefore: "Chưa có tài liệu công khai nào cho",
+    emptyAfter: ". Liên hệ FUZE để có thư viện riêng.",
+    loginCta: "Đăng nhập Atlas →",
+    versionPrefix: "Phiên bản",
+    downloadBtn: "↓ Tải xuống",
+    unknownLineTitle: "Dòng sản phẩm không xác định",
+    unknownLineBody: "FUZE có bốn hạng: F1, F2, F3, F4. Hãy thử một trong số đó.",
+    errLoadFailed: "Không tải được",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default vi;
