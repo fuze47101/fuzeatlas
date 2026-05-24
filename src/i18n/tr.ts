@@ -7684,6 +7684,35 @@ const tr: Translations = {
     errGeneric: "Parola değiştirilemedi",
   },
 
+  claimsLandingPage: {
+    heroTitle: "İddialar, sertifikalar ve metodoloji",
+    heroSubtitle: "FUZE nasıl çalışır, neye sertifikalıdır ve neden bu şekilde test ediyoruz.",
+    techTitle: "FUZE teknolojisi",
+    techBody1: "FUZE, FUZE metamateryali etrafında inşa edilmiş tescilli bir antimikrobiyal tekstil işlemidir — Salt Lake City tesisimizde geri dönüştürülmüş elektronikten sıvı lazer ablasyonu ile üretilir. İşlem, standart tekstil terbiyesi (çektirme, pad-dry-cure veya sprey uygulaması) sırasında elyaflara kalıcı olarak bağlanır; kumaşın tutuşunu, boyasını, dökümünü veya nefes alabilirliğini değiştirmez.",
+    techBody2: "FUZE tasarımı gereği sızdırma yapmaz. Bakteriyel azalma, bakteri hücreleri ile elyaf yüzeyindeki bağlı FUZE metamateryali arasındaki doğrudan fiziksel temas yoluyla gerçekleşir — yıkama suyuna salınan kimya yok, PFAS yok, bağlayıcı yok, kürleme kimyası yok. Bu duruş, FUZE'yi her düzenleyici rüzgârın (Teksas Başsavcısı PFAS soruşturmaları, California SB-707) doğru tarafına yerleştirir.",
+    techBody3: "İşlem kademeleri: F1 Tam Spektrum (1.0 mg/kg, 100 yıkama doğrulanmış) · F2 İleri (0.75 mg/kg, 75 yıkama) · F3 Çekirdek (0.5 mg/kg, 50 yıkama) · F4 Temel (0.25 mg/kg, 25 yıkama). Yıkama sayıları bağımsız laboratuvar AATCC 100 + ISO 20743 testleriyle belgelenir, talep üzerine yayımlanır.",
+    certsTitle: "Sertifikalar",
+    certEpaTitle: "EPA kayıtlı (federal)",
+    certEpaBody: "FUZE kimyası, ABD Çevre Koruma Ajansı'na antimikrobiyal pestisit olarak kayıtlıdır.",
+    certCaEpaTitle: "California EPA onaylı (2026 Ç1)",
+    certCaEpaBody: "California'nın daha katı rejimi altında aktif giyim, bebek/çocuk tekstilleri ve sağlık kullanım senaryoları için onaylanmıştır.",
+    certOekoTitle: "OEKO-TEX Standard 100 Class I",
+    certOekoBody: "Doğrudan cilt teması için güvenli olarak sertifikalanmıştır — bebek ve iç giyim dahil.",
+    certBluesignTitle: "bluesign® onaylı",
+    certBluesignBody: "Kimya, bluesign kriterleri altında çalışanlar, tüketiciler ve çevre için güvenli olarak doğrulanmıştır.",
+    certPfasTitle: "PFAS içermez",
+    certPfasBody: "Formülasyonun hiçbir yerinde per- ve poliflorlu alkil madde yoktur. Bağlayıcı yok, kürleme yardımcısı yok.",
+    certStandardsTitle: "Standartlara göre doğrulanmış",
+    certStandardsBody: "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — üçüncü taraf raporları talep üzerine.",
+    standardsTitle: "Test standartları",
+    standardsBody: "Tekstiller için antimikrobiyal performans tek bir sayı değildir — testi hangi standartta çalıştırdığınıza ve o standardın kimyaya uygun olup olmadığına büyük ölçüde bağlıdır. FUZE'nin yöntemlere nasıl uyduğunu burada bulabilirsiniz.",
+    jabTitle: "Neden ASTM E2149 ile öne çıkıyoruz",
+    jabBody: "ASTM E2149 ile test ediyoruz çünkü sızdırma yapmayan antimikrobiyaller için tasarlanmış test budur. AATCC 100'e güvenen rakip kimyalar bunu yapar çünkü AATCC 100'ün katmanlı geometrisi, sızdıran iyonların katmanlar arası alanı doyurmasına yardımcı olur — test, yapısı gereği sızdırmayı tercih eder. FUZE tasarımı gereği sızdırma yapmaz. Bizi doğru testte karşılayın.",
+    jabFootnote: "(Rakip atfı: katmanlı test uyarısı FUZE için değil, klasik rakip kimyalar gibi iyon salınımına dayalı işlemlere uygulanır.)",
+    documentsTitle: "Belgeler",
+    pressKitLink: "Basın kiti",
+  },
+
 };
 
 export default tr;
