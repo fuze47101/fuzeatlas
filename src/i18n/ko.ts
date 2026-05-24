@@ -7805,6 +7805,23 @@ const ko: Translations = {
     fieldChangedPlural: "필드 변경됨",
   },
 
+  adminLanding: {
+    loadingLabel: "관리자 로드 중",
+    crumb: "관리자",
+    heading: "관리자",
+    subtitle: "FUZE-Ops 제어 표면. 모듈을 선택하여 들어가거나, 전체 탐색은 사이드바를 사용하십시오.",
+    openPrefix: "열기",
+    fastPathLabel: "빠른 경로",
+    dataEntryHubTitle: "데이터 입력 허브",
+    dataEntryHubBody: "브랜드 사양, 가격 등급, 공급망 연결, 랩 가격을 한 페이지에서 모두 설정.",
+    liveStateLabel: "라이브 상태",
+    commandCenterTitle: "커맨드 센터",
+    commandCenterBody: "6개의 지표 타일, 브랜드 × 공장 주기 매트릭스, 최근 활동, 대기열.",
+    weeklyLabel: "주간",
+    mondayReviewTitle: "월요일 검토 대기열",
+    mondayReviewBody: "AI 플래그된 시험 런 + 브랜드 거부. 일요일 22:00 UTC 이메일로 안건을 시드합니다.",
+  },
+
 };
 
 export default ko;
