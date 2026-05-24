@@ -2589,6 +2589,37 @@ const id: Translations = {
     factoryLabel: "Pabrik:",
   },
 
+  verifySku: {
+    errorTitle: "Tidak dapat memverifikasi kode ini",
+    errorBlurb:
+      "Kami mengalami masalah saat mengakses basis data verifikasi. Coba lagi sebentar.",
+    notCertifiedTitle: "Bukan SKU bersertifikat FUZE",
+    notCertifiedBlurbPrefix: "Kode",
+    notCertifiedBlurbSuffix:
+      "tidak ada di basis data verifikasi kami. Jika ini berasal dari hangtag FUZE, harap hubungi brand secara langsung.",
+    whatIsFuze: "Apa itu FUZE? →",
+    fuzeVerified: "Terverifikasi FUZE",
+    pageTitle: "Kain ini diolah dengan FUZE",
+    pageSubtitle: "Perlakuan antibakteri tekstil — divalidasi pihak ketiga.",
+    brandLabel: "Brand",
+    millLabel: "Mill",
+    fuzeTierLabel: "Tier FUZE",
+    fuzeNumberLabel: "Nomor FUZE",
+    washClaimSuffix: "klaim pencucian",
+    recentValidation: "Validasi lab terbaru",
+    testPassed: "lulus",
+    testTypeSuffix: "uji —",
+    validatedByPrefix: "Divalidasi oleh",
+    validatedByGeneric: "Divalidasi oleh laboratorium pihak ketiga",
+    validatedOn: "pada",
+    reportRefPrefix: "Ref laporan:",
+    certifications: "Sertifikasi FUZE",
+    aboutBody:
+      "FUZE adalah perlakuan antibakteri tekstil milik FUZE Biotech. Menggunakan kimia metamaterial yang berikatan dengan serat selama proses finishing tekstil standar — tanpa PFAS, tanpa binder, tanpa oven curing.",
+    learnMore: "Pelajari lebih lanjut tentang FUZE →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default id;
