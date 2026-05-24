@@ -4833,6 +4833,48 @@ const ko: Translations = {
     sanityRangesHeader: "타당성 검증 범위",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "주간 임원 검토",
+    weekOfTemplate: "주차:",
+    coveringPrefix: "범위",
+    daysWindowSuffix: "일 윈도우",
+    ownerLabel: "담당자:",
+    generatedLabel: "생성됨",
+    enterPresent: "시작 현재",
+    exitPresent: "종료 현재",
+    refreshing: "새로고침 중…",
+    refreshSnapshot: "스냅샷 새로고침",
+
+    execSummaryTitle: "임원 요약",
+    execSummaryPlaceholder: "이사회용 핵심 요약. 포커스 해제 시 저장됩니다.",
+    saving: "저장 중…",
+
+    salesDistributionTitle: "판매 및 유통",
+    bookedDollars: "예약 $",
+    shippedDollars: "발송 $",
+    bookedLiters: "예약 L",
+    shippedLiters: "발송 L",
+    ordersSuffix: "주문",
+    shipmentsSuffix: "배송",
+    kgShippedSuffix: "kg 발송",
+    byOrderTypeLabel: "주문 유형별",
+
+    sowProgressTitle: "SOW 진행",
+    sowDraft: "초안",
+    sowSent: "발송됨",
+    sowSigned: "서명됨",
+    sowActive: "활성",
+    sowComplete: "완료",
+    sowSignedThisWindow: "이번 윈도우에 서명됨",
+    sowNewlyOpened: "새로 열림",
+    sowActiveTitle: "활성",
+    sowStale: "정체 (30일 이상 움직임 없음)",
+    sowEmptyNoSignatures: "이번 윈도우에 새 서명이 없습니다.",
+    sowEmptyNoOpened: "이번 윈도우에 열린 SOW가 없습니다.",
+    sowEmptyNoActive: "활성 SOW가 없습니다.",
+    sowEmptyNothingStuck: "정체된 항목이 없습니다.",
+  },
+
 };
 
 export default ko;
