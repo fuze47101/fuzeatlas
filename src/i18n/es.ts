@@ -7174,6 +7174,29 @@ const es: Translations = {
     errAddFailed: "Error al añadir",
   },
 
+  accountsAdmin: {
+    title: "Cuentas",
+    subtitleBefore: "Marcas que han superado la etapa de Lead — han recibido una presentación, están en pruebas, produciendo o ya son clientes. Para nuevos prospectos, ve a",
+    brandPipelineLink: "Pipeline de marcas",
+    allFilter: "Todos",
+    stagePresentation: "Presentación",
+    stageBrandTesting: "Pruebas de marca",
+    stageFactoryOnboarding: "Onboarding de fábrica",
+    stageFactoryTesting: "Pruebas de fábrica",
+    stageProduction: "Producción",
+    stageReConnect: "Reconectar",
+    stageCustomerWon: "Cliente ganado",
+    searchPlaceholder: "Buscar cuentas por nombre o contacto...",
+    emptyTitle: "Aún no hay cuentas en esta vista",
+    emptyBody: "Las cuentas aparecen cuando las marcas pasan de LEAD a PRESENTATION o posterior.",
+    goToPipelineBtn: "Ir al pipeline de marcas",
+    highRelevanceBadge: "🔥 Alta relevancia",
+    amPrefix: "AM:",
+    contactsLabel: "contactos",
+    enrichedSuffix: "enriquecidos",
+    backToLeadOption: "← Volver a Lead",
+  },
+
 };
 
 export default es;
