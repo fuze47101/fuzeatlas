@@ -7152,6 +7152,33 @@ const km: Translations = {
     contactLink: "ទំនាក់ទំនង",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "ម៉ាក",
+    crumb: "QR Hangtag",
+    heading: "QR Hangtag tokens",
+    subtitlePrefix: "Each token resolves to a public verification page at",
+    subtitleSuffix: "Scan count + first / last scan timestamps tracked per row.",
+    mintTokensTitle: "Mint tokens",
+    countPlaceholder: "count",
+    fabricIdPlaceholder: "fabricId (optional)",
+    skuPlaceholder: "product SKU",
+    batchPlaceholder: "batch code",
+    mintBtn: "Mint",
+    mintingBusy: "Minting…",
+    mintFootnote: "Max 500 per mint. បោះពុម្ព the resulting tokens as កូដ QR on hangtags using your QR generator of choice (each URL is exactly the verify-page URL).",
+    mintFailedError: "Mint failed",
+    tokenSingular: "token",
+    tokenPlural: "tokens",
+    exportCsvBtn: "Export CSV",
+    colToken: "ទៅken",
+    colSkuBatch: "SKU / Batch",
+    colFabric: "ក្រណាត់",
+    colScans: "Scans",
+    colLastScan: "Last scan",
+    colVerifyUrl: "Verify URL",
+    emptyState: "ទេ tokens yet — mint your first batch above.",
+  },
+
 };
 
 export default km;
