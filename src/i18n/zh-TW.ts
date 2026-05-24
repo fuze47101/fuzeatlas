@@ -7687,6 +7687,23 @@ const zhTW: Translations = {
     whatYouCanClaimBtn: "您可宣告哪些內容 →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ 經 FUZE Atlas 認證",
+    statFabricsCertified: "已認證面料",
+    statTestsPassed: "通過測試（12 個月）",
+    statCountries: "出貨國家",
+    activeTiersTitle: "啟用中的 FUZE 等級",
+    activeTiersBody: "目前在已認證廠房中生產的處理級別。",
+    lastPassedLabel: "最近通過",
+    aboutSummaryTitle: "關於 FUZE 技術",
+    verifyCtaTitle: "驗證特定產品",
+    verifyCtaBody: "每件認證產品都附有唯一 QR 碼，連結至其生產批次與測試紀錄。",
+    verifyCtaBtn: "查詢產品 →",
+    footerCertifiedBy: "由 FUZE Atlas 認證",
+    brandSiteLink: "品牌官網 →",
+    contactLink: "聯絡",
+  },
+
 };
 
 export default zhTW;
