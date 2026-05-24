@@ -5196,6 +5196,69 @@ const km: Translations = {
     emailSentLabel: "អ៊ីមែល sent",
   },
 
+  sampleTrials: {
+    crumbDashboard: "ផ្ទាំងបញ្ជា",
+    crumbHere: "គំរូ Trials",
+    pageTitle: "គំរូ Trial Management",
+    pageSubtitle: "Review, approve, ship, and track all factory sample trial requests",
+
+    statTotal: "សរុប",
+    statNeedsAction: "Needs Action",
+
+    searchPlaceholder: "ស្វែងរក fabric, factory, brand, contact...",
+    filterAllStatuses: "ទាំងអស់ ស្ថានភាពes",
+    filterAllFactories: "ទាំងអស់ រោងចក្រ",
+
+    errorFailedLoad: "បរាជ័យ to load trials",
+    errorUpdate: "Update failed",
+    errorNetwork: "Network error",
+
+    quickActionPrefix: "Quick Action —",
+    trialFallback: "Trial",
+    labelStatus: "ស្ថានភាព",
+    labelTracking: "Tracking លេខ",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "នាយក កំណត់ត្រា",
+    placeholderAdminNotes: "Internal notes...",
+    labelRejectReason: "បដិសេធion Reason",
+    btnSave: "រក្សាទុក Changes",
+    btnSaving: "Saving...",
+    btnCancel: "បោះបង់",
+
+    emptyFiltered: "ទេ trials match your filters",
+    emptyDefault: "ទេ sample trials yet",
+
+    colFabric: "ក្រណាត់",
+    colFactory: "រោងចក្រ",
+    colPurpose: "Purpose",
+    colStatus: "ស្ថានភាព",
+    colDetails: "ព័ត៌មានលម្អិត",
+    colIcpLab: "ICP មន្ទីរពិសោធន៍",
+    colDate: "កាលបរិច្ឆេទ",
+    colActions: "Actions",
+
+    purposeBrand: "ម៉ាក",
+    purposeSelfDev: "Self-Dev",
+    trialLab: "មន្ទីរពិសោធន៍",
+    trialProduction: "ផលិតកម្ម",
+    detailsTierPrefix: "កម្រិត:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "By:",
+    actionAction: "Action",
+    actionView: "មើល",
+
+    statusSubmitted: "បានដាក់ស្នើ",
+    statusUnderReview: "Under Review",
+    statusApproved: "បានអនុម័ត",
+    statusRejected: "បានបដិសេធ",
+    statusShipped: "Shipped",
+    statusReceived: "បានទទួល",
+    statusInProgress: "In Progress",
+    statusIcpPending: "ICP កំពុងរង់ចាំ",
+    statusIcpSubmitted: "ICP បានដាក់ស្នើ",
+    statusComplete: "Complete",
+  },
+
 };
 
 export default km;
