@@ -4847,6 +4847,48 @@ const tr: Translations = {
     sanityRangesHeader: "Mantık Kontrolü Aralıkları",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "Haftalık Yönetici İncelemesi",
+    weekOfTemplate: "Hafta",
+    coveringPrefix: "Kapsayan",
+    daysWindowSuffix: "-gün penceresi",
+    ownerLabel: "Sahip:",
+    generatedLabel: "Oluşturuldu",
+    enterPresent: "Şu An",
+    exitPresent: "Çıkış",
+    refreshing: "Yenileniyor…",
+    refreshSnapshot: "Anlık görüntüyü yenile",
+
+    execSummaryTitle: "Yönetici özeti",
+    execSummaryPlaceholder: "Yönetim kurulu için ana çıkarım. Odaktan çıkıldığında kaydedilir.",
+    saving: "Kaydediliyor…",
+
+    salesDistributionTitle: "Satış ve dağıtım",
+    bookedDollars: "Rezerve Edilen $",
+    shippedDollars: "Sevk Edilen $",
+    bookedLiters: "Rezerve Edilen L",
+    shippedLiters: "Sevk Edilen L",
+    ordersSuffix: "sipariş",
+    shipmentsSuffix: "sevkiyat",
+    kgShippedSuffix: "kg sevk edildi",
+    byOrderTypeLabel: "Sipariş türüne göre",
+
+    sowProgressTitle: "SOW ilerlemesi",
+    sowDraft: "taslak",
+    sowSent: "gönderildi",
+    sowSigned: "imzalandı",
+    sowActive: "aktif",
+    sowComplete: "tamamlandı",
+    sowSignedThisWindow: "Bu pencerede imzalandı",
+    sowNewlyOpened: "Yeni açılan",
+    sowActiveTitle: "Aktif",
+    sowStale: "Hareketsiz (>30g hareketsiz)",
+    sowEmptyNoSignatures: "Bu pencerede yeni imza yok.",
+    sowEmptyNoOpened: "Bu pencerede açılan SOW yok.",
+    sowEmptyNoActive: "Aktif SOW yok.",
+    sowEmptyNothingStuck: "Takılan bir şey yok.",
+  },
+
 };
 
 export default tr;
