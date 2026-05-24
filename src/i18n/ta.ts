@@ -7844,6 +7844,19 @@ const ta: Translations = {
     questionsPrefix: "· கேள்விகள்?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "Playbooks",
+    heading: "BD playbooks",
+    subtitle: "Category-tagged outreach வழிகாட்டுதல். நீங்கள் பயன்படுத்துபவற்றை Favorite செய்யவும்; Brands Brand.textileCategory அடிப்படையில் ஒரு பரிந்துரைக்கப்பட்ட playbook-ஐ காட்டுகின்றன.",
+    failedFallback: "தோல்வி",
+    emptyBody: "இந்த வகைக்கு இன்னும் playbooks இல்லை.",
+    emptySeedHint: "Trigger",
+    emptySeedHintSuffix: "மூன்று starter playbooks-ஐ drop in செய்ய fzcron வழியாக.",
+    removeFavoriteTitle: "Favorite-ஐ அகற்று",
+    addFavoriteTitle: "Favorite-ஐ சேர்",
+  },
+
 };
 
 export default ta;
