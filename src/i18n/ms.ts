@@ -4793,6 +4793,48 @@ const ms: Translations = {
     sanityRangesHeader: "Julat Pemeriksaan Kewarasan",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "Tinjauan Eksekutif Mingguan",
+    weekOfTemplate: "Minggu",
+    coveringPrefix: "Meliputi",
+    daysWindowSuffix: "-hari tetingkap",
+    ownerLabel: "Pemilik:",
+    generatedLabel: "Dijana",
+    enterPresent: "Sekarang",
+    exitPresent: "Keluar Sekarang",
+    refreshing: "Menyegar semula…",
+    refreshSnapshot: "Segarkan snapshot",
+
+    execSummaryTitle: "Ringkasan eksekutif",
+    execSummaryPlaceholder: "Pengajaran utama untuk lembaga. Disimpan apabila kabur.",
+    saving: "Menyimpan…",
+
+    salesDistributionTitle: "Jualan & pengedaran",
+    bookedDollars: "$ Ditempah",
+    shippedDollars: "$ Dihantar",
+    bookedLiters: "L Ditempah",
+    shippedLiters: "L Dihantar",
+    ordersSuffix: "pesanan",
+    shipmentsSuffix: "penghantaran",
+    kgShippedSuffix: "kg dihantar",
+    byOrderTypeLabel: "Mengikut jenis pesanan",
+
+    sowProgressTitle: "Kemajuan SOW",
+    sowDraft: "draf",
+    sowSent: "dihantar",
+    sowSigned: "ditandatangani",
+    sowActive: "aktif",
+    sowComplete: "selesai",
+    sowSignedThisWindow: "Ditandatangani dalam tetingkap ini",
+    sowNewlyOpened: "Baru dibuka",
+    sowActiveTitle: "Aktif",
+    sowStale: "Lapuk (>30h tiada pergerakan)",
+    sowEmptyNoSignatures: "Tiada tandatangan baharu dalam tetingkap ini.",
+    sowEmptyNoOpened: "Tiada SOW dibuka dalam tetingkap ini.",
+    sowEmptyNoActive: "Tiada SOW aktif.",
+    sowEmptyNothingStuck: "Tiada yang tersangkut.",
+  },
+
 };
 
 export default ms;
