@@ -8148,6 +8148,26 @@ const ko: Translations = {
     footnote: "고객 대상 카피는 \"FUZE 잔량\"을 사용합니다 — 랩의 ICP 보고서에서의 메타머티리얼 측정. 고객 산출물에는 항상 FUZE / 메타머티리얼로 라벨링됩니다 (CLAUDE.md 브랜드 보이스 규칙).",
   },
 
+  engagementDebug: {
+    crumb: "참여 디버그",
+    engagementSuffix: "참여",
+    calculatedLabel: "계산됨",
+    overallScoreLabel: "전체 점수",
+    outOf100: "100점 만점",
+    inputsLabel: "입력",
+    daysSinceContact: "마지막 접촉 후 일수",
+    tests30d: "시험 (30일)",
+    tests90d: "시험 (90일)",
+    avgPayDays: "평균 결제 일수",
+    overdueInvoices: "기한 초과 송장",
+    factorBreakdownTitle: "요소 분석",
+    weightLabel: "가중치",
+    contributesLabel: "기여",
+    ptsLabel: "점",
+    loading: "로드 중…",
+    failedToLoad: "로드 실패",
+  },
+
 };
 
 export default ko;
