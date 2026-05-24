@@ -4527,6 +4527,16 @@ const ur: Translations = {
     sanityCheckHeader: "Sanity چیک (CTLA کو کیا رپورٹ کرنا چاہیے)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "ڈسٹریبیوٹر نیٹ ورک",
+    pageSubtitle: "اپنے عالمی تقسیم کے شراکت داروں، انوینٹری، اور کوریج کا انتظام کریں",
+    inventoryCta: "📊 انوینٹری اور برن ریٹ",
+    worldwideCta: "🌍 عالمی انوینٹری",
+    newDistributorCta: "+ نیا ڈسٹریبیوٹر",
+    newDistributorModalTitle: "نیا ڈسٹریبیوٹر",
+    nameRequiredError: "نام درکار ہے",
+  },
+
 };
 
 export default ur;
