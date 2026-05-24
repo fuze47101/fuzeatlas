@@ -8052,6 +8052,24 @@ const zhCN: Translations = {
     footerCertifiedBy: "由 FUZE Atlas 认证",
   },
 
+  forgotPassword: {
+    brandSubtitle: "重置您的密码",
+    cardTitle: "忘记密码?",
+    cardBody: "输入您的邮箱地址,我们将向您发送密码重置链接。",
+    emailLabel: "邮箱地址",
+    emailPlaceholder: "you@801inc.com",
+    sendBtn: "发送重置链接",
+    sendingBusy: "发送中…",
+    rememberPrefix: "想起密码了?",
+    signInLink: "登录",
+    failedFallback: "处理请求失败",
+    networkError: "网络错误",
+    checkEmailTitle: "请查看您的邮箱",
+    checkEmailBody: "如果该邮箱存在对应账户,您将很快收到密码重置链接。",
+    backToSignIn: "返回登录",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default zhCN;
