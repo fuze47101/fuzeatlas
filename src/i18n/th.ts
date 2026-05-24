@@ -2589,6 +2589,37 @@ const th: Translations = {
     factoryLabel: "โรงงาน:",
   },
 
+  verifySku: {
+    errorTitle: "ไม่สามารถยืนยันรหัสนี้ได้",
+    errorBlurb:
+      "เกิดปัญหาในการเข้าถึงฐานข้อมูลการยืนยัน กรุณาลองอีกครั้งในอีกสักครู่",
+    notCertifiedTitle: "ไม่ใช่ SKU ที่ได้รับการรับรองจาก FUZE",
+    notCertifiedBlurbPrefix: "รหัส",
+    notCertifiedBlurbSuffix:
+      "ไม่อยู่ในฐานข้อมูลการยืนยันของเรา หากรหัสนี้มาจากแฮงแท็ก FUZE กรุณาติดต่อแบรนด์โดยตรง",
+    whatIsFuze: "FUZE คืออะไร? →",
+    fuzeVerified: "FUZE ยืนยันแล้ว",
+    pageTitle: "ผ้าผืนนี้ผ่านการบำบัดด้วย FUZE",
+    pageSubtitle: "การบำบัดสิ่งทอต้านจุลชีพ — ตรวจสอบโดยห้องปฏิบัติการบุคคลที่สาม",
+    brandLabel: "แบรนด์",
+    millLabel: "โรงปั่น/ทอ",
+    fuzeTierLabel: "ระดับ FUZE",
+    fuzeNumberLabel: "หมายเลข FUZE",
+    washClaimSuffix: "ครั้งซัก",
+    recentValidation: "การตรวจสอบล่าสุดจากห้องปฏิบัติการ",
+    testPassed: "ผ่าน",
+    testTypeSuffix: "การทดสอบ —",
+    validatedByPrefix: "ตรวจสอบโดย",
+    validatedByGeneric: "ตรวจสอบโดยห้องปฏิบัติการบุคคลที่สาม",
+    validatedOn: "เมื่อ",
+    reportRefPrefix: "อ้างอิงรายงาน:",
+    certifications: "การรับรอง FUZE",
+    aboutBody:
+      "FUZE เป็นการบำบัดสิ่งทอต้านจุลชีพเฉพาะของ FUZE Biotech ใช้เคมีเมตาวัสดุที่จับกับเส้นใยระหว่างกระบวนการตกแต่งสิ่งทอมาตรฐาน — ไม่มี PFAS ไม่มีสารยึดเกาะ ไม่ต้องใช้เตาอบ",
+    learnMore: "เรียนรู้เพิ่มเติมเกี่ยวกับ FUZE →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default th;
