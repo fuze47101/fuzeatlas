@@ -6721,6 +6721,44 @@ const th: Translations = {
     truncatedNotice: "แสดง 100 แบรนด์แรกจาก {total} ใช้ตัวกรองเพื่อจำกัด",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "ไม่พบการจัดส่ง",
+    notFoundBodyTpl: "เราไม่พบคำสั่งซื้อ {order}",
+    notFoundFooter: "หากคุณได้รับ QR code นี้บนการจัดส่ง FUZE ติดต่อ andrew@fuze47.com",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "การยืนยันการจัดส่ง",
+
+    sectionShipment: "รายละเอียดการจัดส่ง",
+    fieldFuzeVolume: "ปริมาตร FUZE",
+    bottlesSuffix: "ขวด",
+    baseFuzePrefix: "พื้นฐาน",
+    wastageSuffix: "wastage",
+    fieldTier: "ระดับ",
+    fieldMethod: "วิธีการบำบัด",
+    fieldFactory: "โรงงาน",
+    fieldForBrand: "สำหรับแบรนด์",
+    fieldFabric: "ผ้า",
+    fieldFulfillment: "การจัดส่ง",
+    directUsa: "ตรงจาก USA",
+    distributorFallback: "ผู้จัดจำหน่าย",
+    fieldTracking: "การติดตาม",
+
+    sectionDocs: "เอกสารผลิตภัณฑ์",
+    sdsLabel: "เอกสารข้อมูลความปลอดภัย (SDS)",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "ใบรับรองการวิเคราะห์ (COA)",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "เปิดห้องสมุดการปฏิบัติตาม",
+
+    sectionTimeline: "ไทม์ไลน์วงจรชีวิต",
+    viewDocument: "ดูเอกสาร →",
+    timelineEmpty: "ยังไม่มีการบันทึกเหตุการณ์วงจรชีวิต ไทม์ไลน์จะเติมขณะการจัดส่งเคลื่อนไหว",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "มีคำถาม?",
+  },
+
 };
 
 export default th;
