@@ -6121,6 +6121,54 @@ const tr: Translations = {
     btnCreating: "Oluşturuluyor...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "FUZE Kumaş Kütüphanesi",
+    pageSubtitle: "Küresel ağımızda FUZE ile işlenmiş kumaşları ve doğrulanmış test sonuçlarını inceleyin. Tüm veriler anonimleştirilmiştir — fabrika ve marka kimlikleri gizlidir.",
+
+    statFabrics: "Test Edilen Kumaşlar",
+    statTests: "Toplam Test",
+    statIcp: "ICP Analizleri",
+    statAb: "Antimikrobiyal Testler",
+
+    searchPlaceholder: "Konstrüksiyon, iplik, son kullanım, FUZE numarası ile ara...",
+    filterAllTypes: "Tüm Test Tipleri",
+    filterIcp: "ICP Analizi",
+    filterAntibacterial: "Antibakteriyel",
+    filterFungal: "Antifungal",
+    filterOdor: "Koku Kontrolü",
+    passOnly: "Yalnızca geçti",
+
+    emptyTitle: "Kriterlerinize uyan kumaş yok",
+    emptyClear: "Tüm filtreleri temizle",
+    errorFailedLoad: "Kumaş kütüphanesi yüklenemedi",
+    errorFailedDefault: "Yüklenemedi",
+
+    testsSuffix: "test",
+    testSuffix: "test",
+    propConstruction: "Konstrüksiyon:",
+    propWeight: "Gramaj:",
+    propWidth: "Genişlik:",
+    propYarn: "İplik:",
+    propCategory: "Kategori:",
+    propEndUse: "Son Kullanım:",
+    propWeave: "Dokuma:",
+    propColor: "Renk:",
+
+    colTest: "Test",
+    colMethod: "Yöntem",
+    colWashes: "Yıkamalar",
+    colResult: "Sonuç",
+    colStatus: "Durum",
+    pass: "Geçti",
+    fail: "Başarısız",
+    passBadge: "GEÇTİ",
+    failBadge: "BAŞARISIZ",
+
+    paginationPrev: "Önceki",
+    paginationNext: "Sonraki",
+    paginationLabel: "Sayfa {page} / {pages}",
+  },
+
 };
 
 export default tr;
