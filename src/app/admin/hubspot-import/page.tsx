@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation";
 import HubSpotCSVImport from "@/components/HubSpotCSVImport";
 import HubSpotDuplicateAudit from "@/components/HubSpotDuplicateAudit";
 import BrandDuplicateAudit from "@/components/BrandDuplicateAudit";
+import { useI18n } from "@/i18n";
 
 interface BatchResult {
   ok: boolean;
@@ -75,6 +76,8 @@ const initialPhase: PhaseState = {
 export default function HubSpotImportPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
+  const T = t.hubspotImport;
   const [auth, setAuth] = useState<{ ok: boolean; error?: string } | null>(
     null,
   );
@@ -159,7 +162,7 @@ export default function HubSpotImportPage() {
       setState({
         ...state,
         running: false,
-        error: e?.message || "Network error",
+        error: e?.message || T.errorNetwork,
       });
     }
   }
@@ -211,17 +214,14 @@ export default function HubSpotImportPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/admin" className="hover:text-[#00b4c3]">
-            Admin
+            {T.crumbAdmin}
           </Link>
           <span>/</span>
-          <span>HubSpot Import</span>
+          <span>{T.crumbCurrent}</span>
         </div>
-        <h1 className="text-3xl font-black text-slate-900">HubSpot → Atlas Migration</h1>
+        <h1 className="text-3xl font-black text-slate-900">{T.title}</h1>
         <p className="text-slate-600 mt-1 max-w-2xl">
-          Day 1 — pull every Company and Contact from your HubSpot account
-          into Atlas. Idempotent: re-running picks up where it left off and
-          updates existing rows instead of duplicating. Day 2 will add
-          Notes + Engagements.
+          {T.intro}
         </p>
       </div>
 
@@ -229,22 +229,18 @@ export default function HubSpotImportPage() {
       <div className="mb-6">
         {auth == null ? (
           <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600">
-            Checking HubSpot connection…
+            {T.authChecking}
           </div>
         ) : auth.ok ? (
           <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-800">
-            ✓ HubSpot key works. Ready to import.
+            {T.authReady}
           </div>
         ) : (
           <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
-            <p className="font-bold">HubSpot connection failed:</p>
+            <p className="font-bold">{T.authFailed}</p>
             <p className="mt-1">{auth.error}</p>
             <p className="mt-2 text-xs text-red-700">
-              Set <code className="bg-white px-1 rounded">HUBSPOT_API_KEY</code> in
-              Vercel Settings → Environment Variables (Production scope).
-              The token is a Private App access token (Settings →
-              Integrations → Private Apps in HubSpot). After adding,
-              redeploy or hard-refresh.
+              {T.authHint}
             </p>
           </div>
         )}
@@ -256,21 +252,21 @@ export default function HubSpotImportPage() {
       {auth?.ok && (
         <div className="mb-6 bg-white border border-slate-200 rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-bold text-slate-900">Source preview</h2>
+            <h2 className="font-bold text-slate-900">{T.previewTitle}</h2>
             <button
               onClick={loadPreview}
               disabled={previewLoading}
               className="text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded font-semibold disabled:opacity-50"
             >
-              {previewLoading ? "Refreshing…" : "↻ Refresh"}
+              {previewLoading ? T.previewRefreshing : T.previewRefresh}
             </button>
           </div>
 
           {!preview ? (
-            <p className="text-sm text-slate-500">Loading…</p>
+            <p className="text-sm text-slate-500">{T.previewLoading}</p>
           ) : !preview.ok ? (
             <div className="text-sm text-red-700">
-              {preview.error || "Preview failed"}
+              {preview.error || T.previewFailed}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -278,7 +274,7 @@ export default function HubSpotImportPage() {
               <div>
                 <div className="flex items-baseline justify-between mb-2">
                   <p className="text-xs uppercase tracking-wide font-bold text-slate-600">
-                    Contacts in HubSpot
+                    {T.previewContactsLabel}
                   </p>
                   <p className="text-2xl font-black text-cyan-700">
                     {preview.contacts.total.toLocaleString()}
@@ -289,11 +285,11 @@ export default function HubSpotImportPage() {
                     {preview.contacts.error}
                   </p>
                 ) : preview.contacts.sample.length === 0 ? (
-                  <p className="text-xs text-slate-400">No contacts</p>
+                  <p className="text-xs text-slate-400">{T.previewNoContacts}</p>
                 ) : (
                   <ul className="text-xs space-y-1 bg-slate-50 rounded p-2 border border-slate-200">
                     <p className="text-[10px] uppercase font-bold text-slate-500 mb-1">
-                      Most-recent 5
+                      {T.previewMostRecent}
                     </p>
                     {preview.contacts.sample.map((c: any) => (
                       <li
@@ -301,7 +297,7 @@ export default function HubSpotImportPage() {
                         className="flex justify-between gap-2 truncate"
                       >
                         <span className="truncate">
-                          <strong>{c.name || "(no name)"}</strong>
+                          <strong>{c.name || T.previewNoName}</strong>
                           {c.email && (
                             <span className="text-slate-500"> · {c.email}</span>
                           )}
@@ -322,7 +318,7 @@ export default function HubSpotImportPage() {
               <div>
                 <div className="flex items-baseline justify-between mb-2">
                   <p className="text-xs uppercase tracking-wide font-bold text-slate-600">
-                    Companies in HubSpot
+                    {T.previewCompaniesLabel}
                   </p>
                   <p className="text-2xl font-black text-cyan-700">
                     {preview.companies.total.toLocaleString()}
@@ -333,11 +329,11 @@ export default function HubSpotImportPage() {
                     {preview.companies.error}
                   </p>
                 ) : preview.companies.sample.length === 0 ? (
-                  <p className="text-xs text-slate-400">No companies</p>
+                  <p className="text-xs text-slate-400">{T.previewNoCompanies}</p>
                 ) : (
                   <ul className="text-xs space-y-1 bg-slate-50 rounded p-2 border border-slate-200">
                     <p className="text-[10px] uppercase font-bold text-slate-500 mb-1">
-                      Most-recent 5
+                      {T.previewMostRecent}
                     </p>
                     {preview.companies.sample.map((c: any) => (
                       <li
@@ -345,7 +341,7 @@ export default function HubSpotImportPage() {
                         className="flex justify-between gap-2 truncate"
                       >
                         <span className="truncate">
-                          <strong>{c.name || "(no name)"}</strong>
+                          <strong>{c.name || T.previewNoName}</strong>
                           {c.domain && (
                             <span className="text-slate-500">
                               {" "}
@@ -368,10 +364,7 @@ export default function HubSpotImportPage() {
           )}
 
           <p className="mt-3 text-[11px] text-slate-500">
-            These are the totals you should expect to land in Atlas after
-            running both phases below. Sample rows are the 5 most-recently
-            modified — useful to spot field drift (missing emails, junk
-            domains, stale form-submission contacts).
+            {T.previewFooter}
           </p>
         </div>
       )}
@@ -405,57 +398,53 @@ export default function HubSpotImportPage() {
 
       <div className="mb-3 mt-8 pt-6 border-t border-slate-200">
         <p className="text-xs uppercase tracking-wide font-bold text-slate-500">
-          API path (legacy — needs working HubSpot token)
+          {T.apiPathLabel}
         </p>
         <p className="text-xs text-slate-500 mt-0.5">
-          Use this if you have a Private App access token in
-          HUBSPOT_API_KEY. Falls through to CSV path above if auth
-          fails.
+          {T.apiPathHint}
         </p>
       </div>
 
       {/* Step 1: Companies */}
       <PhaseCard
-        title="1. Pull Companies → Brands"
-        description="Runs first. HubSpot Companies become Atlas Brand rows in LEAD stage. Matched by hubspotId → website domain → name. Subsequent contacts will link to brands via this match."
+        title={T.step1Title}
+        description={T.step1Description}
         state={companies}
         onRunBatch={() => runOneBatch("companies", companies, setCompanies)}
         onRunAll={() => runUntilDone("companies", companies, setCompanies)}
-        primaryLabel="Pull next 50"
-        autoLabel="Pull until done"
+        primaryLabel={T.pullNext50}
+        autoLabel={T.pullUntilDone}
         disabled={!auth?.ok}
-        terminologyMap={{ totalCreated: "Brands created", totalUpdated: "Brands updated" }}
+        terminologyMap={{ totalCreated: T.statBrandsCreated, totalUpdated: T.statBrandsUpdated }}
       />
 
       {/* Step 2: Contacts */}
       <PhaseCard
-        title="2. Pull Contacts"
-        description="Runs after companies so each contact can link to its Brand via the HubSpot company association. Matched by hubspotId → email. Contacts whose company hasn't been imported will land unlinked — re-run companies then contacts to fix."
+        title={T.step2Title}
+        description={T.step2Description}
         state={contacts}
         onRunBatch={() => runOneBatch("contacts", contacts, setContacts)}
         onRunAll={() => runUntilDone("contacts", contacts, setContacts)}
-        primaryLabel="Pull next 50"
-        autoLabel="Pull until done"
+        primaryLabel={T.pullNext50}
+        autoLabel={T.pullUntilDone}
         disabled={!auth?.ok || (!companies.done && companies.totalPulled === 0)}
         disabledReason={
           !companies.done && companies.totalPulled === 0
-            ? "Pull companies first so contacts can link to their brand."
+            ? T.requireCompaniesFirst
             : undefined
         }
         terminologyMap={{
-          totalCreated: "Contacts created",
-          totalUpdated: "Contacts updated",
-          totalLinkedToBrand: "Linked to brand",
-          totalUnlinked: "Unlinked (no company match)",
+          totalCreated: T.statContactsCreated,
+          totalUpdated: T.statContactsUpdated,
+          totalLinkedToBrand: T.statLinkedToBrand,
+          totalUnlinked: T.statUnlinked,
         }}
       />
 
       {/* Day 2 placeholder */}
       <div className="mt-6 p-4 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
         <p className="text-sm text-slate-700">
-          <strong>Day 2 (next ship):</strong> Notes + Engagements (calls,
-          emails, meetings) → become Atlas Note rows on the right brandId
-          with original author + timestamp preserved.
+          {T.day2Note}
         </p>
       </div>
     </div>
@@ -485,6 +474,8 @@ function PhaseCard({
   disabledReason?: string;
   terminologyMap: Record<string, string>;
 }) {
+  const { t } = useI18n();
+  const T = t.hubspotImport;
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4">
       <h2 className="text-lg font-black text-slate-900">{title}</h2>
@@ -494,13 +485,13 @@ function PhaseCard({
       {state.totalPulled > 0 && (
         <div className="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-2">
           <Stat
-            label="Pulled"
+            label={T.statPulled}
             value={state.totalPulled}
           />
           {Object.entries(terminologyMap).map(([key, label]) => (
             <Stat key={key} label={label} value={(state as any)[key] || 0} />
           ))}
-          <Stat label="Batches" value={state.batches} />
+          <Stat label={T.statBatches} value={state.batches} />
         </div>
       )}
 
@@ -518,9 +509,9 @@ function PhaseCard({
           className="px-4 py-2 bg-cyan-600 text-white rounded-lg text-sm font-bold hover:bg-cyan-700 disabled:opacity-50"
         >
           {state.running
-            ? "⏳ Pulling…"
+            ? T.pullingState
             : state.done
-              ? "✓ Complete"
+              ? T.completeBtn
               : primaryLabel}
         </button>
         <button
@@ -528,16 +519,16 @@ function PhaseCard({
           disabled={disabled || state.running || state.done}
           className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-slate-700 disabled:opacity-50"
         >
-          {state.running ? "⏳ Auto-pulling…" : autoLabel}
+          {state.running ? T.autoPulling : autoLabel}
         </button>
         {state.done && (
           <span className="text-sm text-emerald-700 font-semibold">
-            ✓ All HubSpot rows pulled
+            {T.allPulled}
           </span>
         )}
         {state.cursor && !state.done && !state.running && (
           <span className="text-xs text-slate-500">
-            Resume cursor saved — next click continues from where you left off.
+            {T.resumeNote}
           </span>
         )}
       </div>
