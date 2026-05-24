@@ -8090,6 +8090,31 @@ const vi: Translations = {
     accessLaterTitle: "Truy cập báo cáo này sau",
   },
 
+  settingsAuditLog: {
+    title: "Nhật ký kiểm toán",
+    subtitle: "Theo dõi tất cả thay đổi hệ thống và hành động người dùng",
+    actionLabel: "Hành động",
+    allActionsOption: "Tất cả hành động",
+    entityTypeLabel: "Loại thực thể",
+    allEntitiesOption: "Tất cả thực thể",
+    fromDateLabel: "Từ ngày",
+    toDateLabel: "Đến ngày",
+    loadingText: "Đang tải...",
+    emptyText: "Không tìm thấy nhật ký kiểm toán",
+    colTimestamp: "Dấu thời gian",
+    colUser: "Người dùng",
+    colAction: "Hành động",
+    colEntity: "Thực thể",
+    colDescription: "Mô tả",
+    systemUserFallback: "Hệ thống",
+    showingPrefix: "Đang hiển thị",
+    showingTo: "đến",
+    showingOf: "trên",
+    showingSuffix: "nhật ký",
+    prevBtn: "Trước",
+    nextBtn: "Tiếp",
+  },
+
 };
 
 export default vi;
