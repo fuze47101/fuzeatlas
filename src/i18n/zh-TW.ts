@@ -7196,6 +7196,34 @@ const zhTW: Translations = {
     backToLeadOption: "← 退回 Lead",
   },
 
+  commandCenterGlobe: {
+    loading: "載入地球儀…",
+    title: "供應鏈地球儀",
+    emptyTitle: "尚無已地理編碼的實體",
+    emptyHint: "執行地理編碼器，依據每個實體的城市與國家填入經緯度：",
+    emptyFooter: "Nominatim 每秒限制 1 次請求 — 完整跑一次需要數分鐘。重跑會跳過已有座標的列。",
+    factoriesLabel: "工廠",
+    brandsLabel: "品牌",
+    labsLabel: "實驗室",
+    distributorsLabel: "經銷商",
+    shipmentsLabel: "出貨（90 天）",
+    searchPlaceholder: "搜尋實體…",
+    legendFactory: "工廠",
+    legendPulseHint: "（脈動 = 30 天內活躍）",
+    legendBrand: "品牌總部",
+    legendFuzeLab: "FUZE 自有實驗室",
+    legendPartnerLab: "合作實驗室",
+    legendDistributor: "經銷商",
+    kindFactory: "工廠",
+    kindBrand: "品牌",
+    kindLab: "實驗室",
+    kindDistributor: "經銷商",
+    stageLabel: "階段：",
+    activeBadge: "⚡ 活躍（30 天）",
+    openDetailBtn: "開啟詳細資料 →",
+    errLoadFailed: "載入地球儀失敗",
+  },
+
 };
 
 export default zhTW;
