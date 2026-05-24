@@ -1,47 +1,53 @@
 import BulkImportWizard from "@/components/BulkImportWizard";
+import { getServerTranslations } from "@/i18n/server";
 
-export default function BulkImportFactoriesPage() {
+export default async function BulkImportFactoriesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ lang?: string }>;
+}) {
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).importFactories;
   return (
     <BulkImportWizard
       config={{
-        title: "Bulk import — Factories",
-        subtitle:
-          "Paste or upload a CSV of factories. We'll upsert by name (natural key), link to a distributor if you give one, and stamp SupplyChainLink rows for each brand that already exists in Atlas. Brands that don't exist yet are reported as 'missing' so you can run a brand import first.",
+        title: T.title,
+        subtitle: T.subtitle,
         apiPath: "/api/admin/import/factories",
         backHref: "/factories",
-        backLabel: "Factories",
+        backLabel: T.backLabel,
         fields: [
           {
             key: "name",
-            label: "Factory name",
+            label: T.factoryNameLabel,
             required: true,
-            hint: "(natural key — upsert is keyed here)",
+            hint: T.factoryNameHint,
           },
           {
             key: "country",
-            label: "Country",
+            label: T.countryLabel,
             required: true,
           },
           {
             key: "distributor",
-            label: "Distributor",
+            label: T.distributorLabel,
             required: false,
-            hint: "case-insensitive match on Distributor.name; skipped if not found",
+            hint: T.distributorHint,
           },
           {
             key: "brands",
-            label: "Brands",
+            label: T.brandsLabel,
             required: false,
-            hint: "comma-separated; each name must exist as a Brand",
+            hint: T.brandsHint,
           },
           {
             key: "city",
-            label: "City",
+            label: T.cityLabel,
             required: false,
           },
           {
             key: "website",
-            label: "Website",
+            label: T.websiteLabel,
             required: false,
           },
         ],
