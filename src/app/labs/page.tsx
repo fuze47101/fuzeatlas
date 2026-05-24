@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import AddCompanyModal from "@/components/AddCompanyModal";
+import { useI18n } from "@/i18n";
 
 interface LabService {
   id?: string;
@@ -112,6 +113,8 @@ const EMPTY_SERVICE: LabService = {
 const PREFERRED_NOTES = ["Best Price", "Best Accuracy", "Fastest Turnaround", "FUZE Recommended"];
 
 export default function LabDirectoryPage() {
+  const { t } = useI18n();
+  const T = t.labsDirectory;
   const [labs, setLabs] = useState<Lab[]>([]);
   const [countries, setCountries] = useState<CountryOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -228,11 +231,11 @@ export default function LabDirectoryPage() {
         setShowAdd(false);
         setForm({ ...EMPTY_FORM });
         setServices([]);
-        setSuccess("Lab added successfully");
+        setSuccess(T.labAdded);
         setTimeout(() => setSuccess(""), 3000);
         loadLabs(filterCountry, filterCapability, search);
       } else {
-        setError(d.error || "Failed to add lab");
+        setError(d.error || T.failedAdd);
       }
     } catch (e: any) {
       setError(e.message);
@@ -257,11 +260,11 @@ export default function LabDirectoryPage() {
         setEditingLabId(null);
         setForm({ ...EMPTY_FORM });
         setServices([]);
-        setSuccess("Lab updated successfully");
+        setSuccess(T.labUpdated);
         setTimeout(() => setSuccess(""), 3000);
         loadLabs(filterCountry, filterCapability, search);
       } else {
-        setError(d.error || "Failed to update lab");
+        setError(d.error || T.failedUpdate);
       }
     } catch (e: any) {
       setError(e.message);
@@ -299,7 +302,7 @@ export default function LabDirectoryPage() {
       const d = await res.json();
       if (d.ok) {
         await loadLabDetail(labId);
-        setSuccess(`Uploaded ${file.name}`);
+        setSuccess(T.uploadedToast.replace("{name}", file.name));
         setTimeout(() => setSuccess(""), 3000);
       }
     } catch (e: any) {
@@ -310,16 +313,16 @@ export default function LabDirectoryPage() {
   };
 
   const handleDocDelete = async (labId: string, docId: string, filename: string) => {
-    if (!confirm(`Delete "${filename}"?`)) return;
+    if (!confirm(T.deletePrompt.replace("{name}", filename))) return;
     try {
       const res = await fetch(`/api/labs/${labId}/documents?docId=${docId}`, { method: "DELETE" });
       const d = await res.json();
       if (d.ok) {
         await loadLabDetail(labId);
-        setSuccess(`Deleted ${filename}`);
+        setSuccess(T.deletedToast.replace("{name}", filename));
         setTimeout(() => setSuccess(""), 3000);
       } else {
-        setError(d.error || "Delete failed");
+        setError(d.error || T.deleteFailed);
       }
     } catch (e: any) {
       setError(e.message);
@@ -338,60 +341,60 @@ export default function LabDirectoryPage() {
     <div
       className={`${isAdd ? "mb-6 bg-white border border-slate-200 rounded-xl p-6 shadow-sm" : ""}`}
     >
-      {isAdd && <h3 className="font-bold text-slate-900 mb-4">Add New Lab</h3>}
+      {isAdd && <h3 className="font-bold text-slate-900 mb-4">{T.addNewLab}</h3>}
 
       {/* Core fields */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <div>
           <label className="block text-xs font-semibold text-slate-600 mb-1">
-            Lab Name <span className="text-red-500">*</span>
+            {T.labName} <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="e.g. ITS Taiwan (Intertek)"
+            placeholder={T.labNamePlaceholder}
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">City</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">{T.city}</label>
           <input
             type="text"
             value={form.city}
             onChange={(e) => setForm({ ...form, city: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="e.g. Taipei"
+            placeholder={T.cityPlaceholder}
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Country</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">{T.country}</label>
           <input
             type="text"
             value={form.country}
             onChange={(e) => setForm({ ...form, country: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="e.g. Taiwan"
+            placeholder={T.countryPlaceholder}
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Region</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">{T.region}</label>
           <select
             value={form.region}
             onChange={(e) => setForm({ ...form, region: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="">Select region...</option>
-            <option value="Asia Pacific">Asia Pacific</option>
-            <option value="North America">North America</option>
-            <option value="Europe">Europe</option>
-            <option value="South America">South America</option>
-            <option value="Middle East">Middle East</option>
-            <option value="Africa">Africa</option>
+            <option value="">{T.selectRegion}</option>
+            <option value="Asia Pacific">{T.regionAP}</option>
+            <option value="North America">{T.regionNA}</option>
+            <option value="Europe">{T.regionEU}</option>
+            <option value="South America">{T.regionSA}</option>
+            <option value="Middle East">{T.regionME}</option>
+            <option value="Africa">{T.regionAF}</option>
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Website</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">{T.website}</label>
           <input
             type="text"
             value={form.website}
@@ -401,17 +404,17 @@ export default function LabDirectoryPage() {
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Email</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">{T.email}</label>
           <input
             type="email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="lab@example.com"
+            placeholder={T.emailPlaceholder}
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Phone</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">{T.phone}</label>
           <input
             type="text"
             value={form.phone}
@@ -421,24 +424,24 @@ export default function LabDirectoryPage() {
         </div>
         <div>
           <label className="block text-xs font-semibold text-slate-600 mb-1">
-            Customer / Account #
+            {T.customerNumber}
           </label>
           <input
             type="text"
             value={form.customerNumber}
             onChange={(e) => setForm({ ...form, customerNumber: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Your account # at this lab"
+            placeholder={T.customerNumberPlaceholder}
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Accreditations</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">{T.accreditations}</label>
           <input
             type="text"
             value={form.accreditations}
             onChange={(e) => setForm({ ...form, accreditations: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="e.g. ISO 17025, TAF, CNAS"
+            placeholder={T.accreditationsPlaceholder}
           />
         </div>
       </div>
@@ -446,7 +449,7 @@ export default function LabDirectoryPage() {
       {/* Capability checkboxes */}
       <div className="mb-4">
         <label className="block text-xs font-semibold text-slate-600 mb-2">
-          Approved Test Types
+          {T.approvedTestTypes}
         </label>
         <div className="flex flex-wrap gap-4">
           {[
@@ -473,31 +476,31 @@ export default function LabDirectoryPage() {
       </div>
 
       <div className="mb-4">
-        <label className="block text-xs font-semibold text-slate-600 mb-1">Notes</label>
+        <label className="block text-xs font-semibold text-slate-600 mb-1">{T.notes}</label>
         <textarea
           value={form.notes}
           onChange={(e) => setForm({ ...form, notes: e.target.value })}
           className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows={2}
-          placeholder="Additional notes..."
+          placeholder={T.notesPlaceholder}
         />
       </div>
 
       {/* ═══ TEST SERVICES & PRICING ═══ */}
       <div className="border-t border-slate-200 pt-4 mt-4">
         <div className="flex items-center justify-between mb-3">
-          <h4 className="font-bold text-slate-800 text-sm">Test Services & Pricing</h4>
+          <h4 className="font-bold text-slate-800 text-sm">{T.testServicesPricing}</h4>
           <button
             onClick={addService}
             className="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50"
           >
-            + Add Service
+            {T.addService}
           </button>
         </div>
 
         {services.length === 0 ? (
           <p className="text-sm text-slate-400 italic">
-            No services added yet. Add test types and their pricing.
+            {T.noServices}
           </p>
         ) : (
           <div className="space-y-3">
@@ -507,7 +510,7 @@ export default function LabDirectoryPage() {
                   <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <label className="block text-[10px] font-semibold text-slate-500 mb-1">
-                        Test Type
+                        {T.testType}
                       </label>
                       <select
                         value={svc.testType}
@@ -523,25 +526,25 @@ export default function LabDirectoryPage() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-slate-500 mb-1">
-                        Test Method
+                        {T.testMethod}
                       </label>
                       <select
                         value={svc.testMethod}
                         onChange={(e) => updateService(idx, { testMethod: e.target.value })}
                         className="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-sm"
                       >
-                        <option value="">Select method...</option>
+                        <option value="">{T.selectMethod}</option>
                         {(COMMON_METHODS[svc.testType] || []).map((m) => (
                           <option key={m} value={m}>
                             {m}
                           </option>
                         ))}
-                        <option value="__custom">Custom...</option>
+                        <option value="__custom">{T.custom}</option>
                       </select>
                       {svc.testMethod === "__custom" && (
                         <input
                           type="text"
-                          placeholder="Enter method..."
+                          placeholder={T.enterMethod}
                           className="w-full mt-1 px-2 py-1.5 border border-slate-300 rounded-lg text-sm"
                           onChange={(e) => updateService(idx, { testMethod: e.target.value })}
                         />
@@ -549,14 +552,14 @@ export default function LabDirectoryPage() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-slate-500 mb-1">
-                        Description
+                        {T.description}
                       </label>
                       <input
                         type="text"
                         value={svc.description}
                         onChange={(e) => updateService(idx, { description: e.target.value })}
                         className="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-sm"
-                        placeholder="e.g. S. aureus + K. pneumoniae"
+                        placeholder={T.descriptionPlaceholder}
                       />
                     </div>
                   </div>
@@ -571,7 +574,7 @@ export default function LabDirectoryPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                   <div>
                     <label className="block text-[10px] font-semibold text-slate-500 mb-1">
-                      Our Price ($)
+                      {T.ourPrice}
                     </label>
                     <input
                       type="number"
@@ -588,7 +591,7 @@ export default function LabDirectoryPage() {
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-slate-500 mb-1">
-                      List Price ($)
+                      {T.listPrice}
                     </label>
                     <input
                       type="number"
@@ -605,7 +608,7 @@ export default function LabDirectoryPage() {
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-slate-500 mb-1">
-                      Turnaround (days)
+                      {T.turnaroundDays}
                     </label>
                     <input
                       type="number"
@@ -621,7 +624,7 @@ export default function LabDirectoryPage() {
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-slate-500 mb-1">
-                      Rush Price ($)
+                      {T.rushPrice}
                     </label>
                     <input
                       type="number"
@@ -638,7 +641,7 @@ export default function LabDirectoryPage() {
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-slate-500 mb-1">
-                      Rush (days)
+                      {T.rushDays}
                     </label>
                     <input
                       type="number"
@@ -656,8 +659,7 @@ export default function LabDirectoryPage() {
 
                 {svc.priceUSD && svc.listPriceUSD && svc.listPriceUSD > svc.priceUSD && (
                   <div className="mt-2 text-xs text-emerald-600 font-medium">
-                    Discount: {((1 - svc.priceUSD / svc.listPriceUSD) * 100).toFixed(0)}% off list
-                    price
+                    {T.discountOff.replace("{pct}", ((1 - svc.priceUSD / svc.listPriceUSD) * 100).toFixed(0))}
                   </div>
                 )}
 
@@ -673,7 +675,7 @@ export default function LabDirectoryPage() {
                     <span
                       className={`font-semibold text-xs ${svc.preferred ? "text-[#00b4c3]" : "text-slate-500"}`}
                     >
-                      FUZE Preferred
+                      {T.fuzePreferred}
                     </span>
                   </label>
                   {svc.preferred && (
@@ -682,7 +684,7 @@ export default function LabDirectoryPage() {
                       onChange={(e) => updateService(idx, { preferredNote: e.target.value })}
                       className="flex-1 px-2 py-1 border border-[#00b4c3]/30 rounded-lg text-xs text-[#00b4c3] bg-[#00b4c3]/5"
                     >
-                      <option value="">Select reason...</option>
+                      <option value="">{T.selectReason}</option>
                       {PREFERRED_NOTES.map((n) => (
                         <option key={n} value={n}>
                           {n}
@@ -698,7 +700,7 @@ export default function LabDirectoryPage() {
                     value={svc.notes}
                     onChange={(e) => updateService(idx, { notes: e.target.value })}
                     className="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs text-slate-500"
-                    placeholder="Notes (min qty, special conditions...)"
+                    placeholder={T.serviceNotesPlaceholder}
                   />
                 </div>
               </div>
@@ -714,7 +716,7 @@ export default function LabDirectoryPage() {
           disabled={saving || !form.name.trim()}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50"
         >
-          {saving ? "Saving..." : isAdd ? "Add Lab" : "Save Changes"}
+          {saving ? T.saving : isAdd ? T.addLab : T.saveChanges}
         </button>
         <button
           onClick={
@@ -727,7 +729,7 @@ export default function LabDirectoryPage() {
           }
           className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
         >
-          Cancel
+          {T.cancel}
         </button>
       </div>
     </div>
@@ -746,18 +748,18 @@ export default function LabDirectoryPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">Lab Directory</h1>
+          <h1 className="text-2xl font-black text-slate-900">{T.pageTitle}</h1>
           <p className="text-sm text-slate-500 mt-1">
-            {labs.length} approved testing labs across {countries.length} countries
+            {T.subtitle.replace("{count}", String(labs.length)).replace("{countries}", String(countries.length))}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setAddCompanyOpen(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 whitespace-nowrap"
-            title="Add brand, factory, lab, or distributor"
+            title={T.addCompanyTitle}
           >
-            + Add Company
+            {T.addCompany}
           </button>
           <button
             onClick={() => {
@@ -768,7 +770,7 @@ export default function LabDirectoryPage() {
             }}
             className="px-3 py-2 border border-slate-300 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 whitespace-nowrap"
           >
-            + Lab (detailed)
+            {T.addLabDetailed}
           </button>
         </div>
       </div>
@@ -799,7 +801,7 @@ export default function LabDirectoryPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search labs by name, city, or country..."
+          placeholder={T.searchPlaceholder}
           className="flex-1 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <select
@@ -807,7 +809,7 @@ export default function LabDirectoryPage() {
           onChange={(e) => setFilterCountry(e.target.value)}
           className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">All Countries</option>
+          <option value="">{T.allCountries}</option>
           {countries.map((c) => (
             <option key={c.name} value={c.name}>
               {c.name} ({c.count})
@@ -819,12 +821,12 @@ export default function LabDirectoryPage() {
           onChange={(e) => setFilterCapability(e.target.value)}
           className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">All Test Types</option>
-          <option value="icp">ICP Approved</option>
-          <option value="ab">Antibacterial Approved</option>
-          <option value="fungal">Fungal Approved</option>
-          <option value="odor">Odor Approved</option>
-          <option value="uv">UV Approved</option>
+          <option value="">{T.allTestTypes}</option>
+          <option value="icp">{T.icpApproved}</option>
+          <option value="ab">{T.abApproved}</option>
+          <option value="fungal">{T.fungalApproved}</option>
+          <option value="odor">{T.odorApproved}</option>
+          <option value="uv">{T.uvApproved}</option>
         </select>
       </div>
 
@@ -833,8 +835,8 @@ export default function LabDirectoryPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
           <p className="text-slate-400">
             {search || filterCountry || filterCapability
-              ? "No labs match your filters"
-              : "No labs in the directory yet"}
+              ? T.noLabsFilter
+              : T.noLabsYet}
           </p>
         </div>
       ) : (
@@ -863,17 +865,17 @@ export default function LabDirectoryPage() {
                       <h3 className="font-bold text-slate-900 truncate">{lab.name}</h3>
                       {hasPreferred && (
                         <span className="flex-shrink-0 px-2 py-0.5 bg-[#00b4c3]/10 text-[#00b4c3] text-xs rounded-full font-bold">
-                          FUZE Preferred
+                          {T.fuzePreferred}
                         </span>
                       )}
                       {lab._count.testRuns > 0 && (
                         <span className="flex-shrink-0 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full font-medium">
-                          {lab._count.testRuns} tests
+                          {T.testsCount.replace("{n}", String(lab._count.testRuns))}
                         </span>
                       )}
                       {(lab as any).customerNumber && (
                         <span className="flex-shrink-0 px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-full font-medium">
-                          Acct: {(lab as any).customerNumber}
+                          {T.acctLabel.replace("{num}", String((lab as any).customerNumber))}
                         </span>
                       )}
                     </div>
@@ -924,7 +926,7 @@ export default function LabDirectoryPage() {
                         }}
                         className="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50"
                       >
-                        Edit Lab
+                        {T.editLab}
                       </button>
                     </div>
 
@@ -932,11 +934,11 @@ export default function LabDirectoryPage() {
                       {/* Contact Info */}
                       <div className="space-y-3">
                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                          Contact
+                          {T.contact}
                         </h4>
                         {lab.website && (
                           <div>
-                            <p className="text-xs text-slate-500">Website</p>
+                            <p className="text-xs text-slate-500">{T.website}</p>
                             <a
                               href={
                                 lab.website.startsWith("http")
@@ -953,7 +955,7 @@ export default function LabDirectoryPage() {
                         )}
                         {lab.email && (
                           <div>
-                            <p className="text-xs text-slate-500">Email</p>
+                            <p className="text-xs text-slate-500">{T.email}</p>
                             <a
                               href={`mailto:${lab.email}`}
                               className="text-sm text-blue-600 hover:underline"
@@ -964,13 +966,13 @@ export default function LabDirectoryPage() {
                         )}
                         {lab.phone && (
                           <div>
-                            <p className="text-xs text-slate-500">Phone</p>
+                            <p className="text-xs text-slate-500">{T.phone}</p>
                             <p className="text-sm text-slate-900">{lab.phone}</p>
                           </div>
                         )}
                         {(lab as any).customerNumber && (
                           <div>
-                            <p className="text-xs text-slate-500">Account Number</p>
+                            <p className="text-xs text-slate-500">{T.accountNumber}</p>
                             <p className="text-sm font-mono text-slate-900">
                               {(lab as any).customerNumber}
                             </p>
@@ -981,7 +983,7 @@ export default function LabDirectoryPage() {
                       {/* Accreditations & Capabilities */}
                       <div className="space-y-3">
                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                          Accreditations
+                          {T.accreditations}
                         </h4>
                         {lab.accreditations ? (
                           <div className="flex flex-wrap gap-1.5">
@@ -995,10 +997,10 @@ export default function LabDirectoryPage() {
                             ))}
                           </div>
                         ) : (
-                          <p className="text-sm text-slate-400">None listed</p>
+                          <p className="text-sm text-slate-400">{T.noneListed}</p>
                         )}
                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide mt-4">
-                          Approved Tests
+                          {T.approvedTests}
                         </h4>
                         <div className="flex flex-wrap gap-1.5">
                           {CAPABILITY_BADGES.map(({ key, label, bg, text }) => (
@@ -1015,22 +1017,22 @@ export default function LabDirectoryPage() {
                       {/* Stats */}
                       <div className="space-y-3">
                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                          Stats
+                          {T.stats}
                         </h4>
                         <div>
-                          <p className="text-xs text-slate-500">Tests Completed</p>
+                          <p className="text-xs text-slate-500">{T.testsCompleted}</p>
                           <p className="text-lg font-bold text-slate-900">{lab._count.testRuns}</p>
                         </div>
                         {capCount(lab) > 0 && (
                           <div>
-                            <p className="text-xs text-slate-500">Capabilities</p>
-                            <p className="text-lg font-bold text-slate-900">{capCount(lab)} of 5</p>
+                            <p className="text-xs text-slate-500">{T.capabilities}</p>
+                            <p className="text-lg font-bold text-slate-900">{T.capabilitiesOf.replace("{n}", String(capCount(lab)))}</p>
                           </div>
                         )}
                         {lab.notes && (
                           <div>
                             <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide mt-4">
-                              Notes
+                              {T.notes}
                             </h4>
                             <p className="text-sm text-slate-600">{lab.notes}</p>
                           </div>
@@ -1042,35 +1044,35 @@ export default function LabDirectoryPage() {
                     {lab.services && lab.services.length > 0 && (
                       <div className="mt-6 border-t border-slate-200 pt-4">
                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">
-                          Test Services & Pricing
+                          {T.testServicesPricing}
                         </h4>
                         <div className="overflow-x-auto">
                           <table className="w-full text-xs">
                             <thead>
                               <tr className="border-b border-slate-200 text-left">
                                 <th className="py-2 pr-3 font-semibold text-slate-500">
-                                  Test Type
+                                  {T.testType}
                                 </th>
-                                <th className="py-2 pr-3 font-semibold text-slate-500">Method</th>
+                                <th className="py-2 pr-3 font-semibold text-slate-500">{T.method}</th>
                                 <th className="py-2 pr-3 font-semibold text-slate-500">
-                                  Description
+                                  {T.description}
                                 </th>
                                 <th className="py-2 pr-3 font-semibold text-slate-500 text-right">
-                                  Our Price
+                                  {T.ourPrice}
                                 </th>
                                 <th className="py-2 pr-3 font-semibold text-slate-500 text-right">
-                                  List Price
+                                  {T.listPrice}
                                 </th>
                                 <th className="py-2 pr-3 font-semibold text-slate-500 text-right">
-                                  Discount
+                                  {T.discount}
                                 </th>
                                 <th className="py-2 pr-3 font-semibold text-slate-500 text-center">
-                                  Days
+                                  {T.days}
                                 </th>
                                 <th className="py-2 pr-3 font-semibold text-slate-500 text-right">
-                                  Rush
+                                  {T.rush}
                                 </th>
-                                <th className="py-2 font-semibold text-slate-500">Notes</th>
+                                <th className="py-2 font-semibold text-slate-500">{T.notes}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -1108,9 +1110,9 @@ export default function LabDirectoryPage() {
                                         {svc.preferred && (
                                           <span
                                             className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-[#00b4c3]/10 text-[#00b4c3]"
-                                            title={svc.preferredNote || "FUZE Preferred"}
+                                            title={svc.preferredNote || T.fuzePreferred}
                                           >
-                                            ★ {svc.preferredNote || "Preferred"}
+                                            ★ {svc.preferredNote || T.preferredLabel}
                                           </span>
                                         )}
                                       </div>
@@ -1151,10 +1153,10 @@ export default function LabDirectoryPage() {
                     <div className="mt-6 border-t border-slate-200 pt-4">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                          Submission Forms & Documents
+                          {T.submissionForms}
                         </h4>
                         <label className="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 cursor-pointer">
-                          {uploadingDoc ? "Uploading..." : "Upload PDF"}
+                          {uploadingDoc ? T.uploading : T.upload}
                           <input
                             type="file"
                             accept=".pdf,.doc,.docx,.xls,.xlsx"
@@ -1211,7 +1213,7 @@ export default function LabDirectoryPage() {
                                   rel="noopener noreferrer"
                                   className="text-xs text-blue-600 hover:text-blue-800 font-medium"
                                 >
-                                  Download
+                                  {T.download}
                                 </a>
                                 <button
                                   onClick={(e) => {
@@ -1220,7 +1222,7 @@ export default function LabDirectoryPage() {
                                   }}
                                   className="text-xs text-red-400 hover:text-red-600 font-medium"
                                 >
-                                  Delete
+                                  {T.deleteBtn}
                                 </button>
                               </div>
                             </div>
@@ -1228,7 +1230,7 @@ export default function LabDirectoryPage() {
                         </div>
                       ) : (
                         <p className="text-sm text-slate-400 italic">
-                          No submission forms uploaded yet.
+                          {T.noForms}
                         </p>
                       )}
                     </div>
@@ -1240,7 +1242,7 @@ export default function LabDirectoryPage() {
                   <div className="border-t border-slate-200 px-5 py-4 bg-blue-50/30">
                     <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
                       <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                      Editing: {lab.name}
+                      {T.editing.replace("{name}", lab.name)}
                     </h3>
                     {renderForm(false)}
                   </div>
