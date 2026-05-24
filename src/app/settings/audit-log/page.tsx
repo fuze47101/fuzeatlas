@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 const ACTION_COLORS: Record<string, string> = {
   CREATE: "bg-emerald-100 text-emerald-800",
@@ -14,6 +15,8 @@ const ACTION_COLORS: Record<string, string> = {
 };
 
 export default function AuditLogPage() {
+  const { t } = useI18n();
+  const T = t.settingsAuditLog;
   const [logs, setLogs] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -70,9 +73,9 @@ export default function AuditLogPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Audit Log</h1>
+          <h1 className="text-3xl font-bold text-slate-900">{T.title}</h1>
           <p className="text-slate-600 mt-1">
-            Track all system changes and user actions
+            {T.subtitle}
           </p>
         </div>
 
@@ -81,14 +84,14 @@ export default function AuditLogPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Action
+                {T.actionLabel}
               </label>
               <select
                 value={filterAction}
                 onChange={(e) => setFilterAction(e.target.value)}
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
               >
-                <option value="">All Actions</option>
+                <option value="">{T.allActionsOption}</option>
                 {actions.map((a) => (
                   <option key={a} value={a}>
                     {a}
@@ -99,14 +102,14 @@ export default function AuditLogPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Entity Type
+                {T.entityTypeLabel}
               </label>
               <select
                 value={filterEntity}
                 onChange={(e) => setFilterEntity(e.target.value)}
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
               >
-                <option value="">All Entities</option>
+                <option value="">{T.allEntitiesOption}</option>
                 {entities.map((e) => (
                   <option key={e} value={e}>
                     {e}
@@ -117,7 +120,7 @@ export default function AuditLogPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                From Date
+                {T.fromDateLabel}
               </label>
               <input
                 type="date"
@@ -129,7 +132,7 @@ export default function AuditLogPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                To Date
+                {T.toDateLabel}
               </label>
               <input
                 type="date"
@@ -144,10 +147,10 @@ export default function AuditLogPage() {
         {/* Table */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-slate-600">Loading...</div>
+            <div className="p-8 text-center text-slate-600">{T.loadingText}</div>
           ) : logs.length === 0 ? (
             <div className="p-8 text-center text-slate-600">
-              No audit logs found
+              {T.emptyText}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -155,19 +158,19 @@ export default function AuditLogPage() {
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
                     <th className="px-6 py-3 text-left font-semibold text-slate-700">
-                      Timestamp
+                      {T.colTimestamp}
                     </th>
                     <th className="px-6 py-3 text-left font-semibold text-slate-700">
-                      User
+                      {T.colUser}
                     </th>
                     <th className="px-6 py-3 text-left font-semibold text-slate-700">
-                      Action
+                      {T.colAction}
                     </th>
                     <th className="px-6 py-3 text-left font-semibold text-slate-700">
-                      Entity
+                      {T.colEntity}
                     </th>
                     <th className="px-6 py-3 text-left font-semibold text-slate-700">
-                      Description
+                      {T.colDescription}
                     </th>
                   </tr>
                 </thead>
@@ -184,7 +187,7 @@ export default function AuditLogPage() {
                           {log.user?.name || "-"}
                         </div>
                         <div className="text-xs text-slate-500">
-                          {log.user?.email || "System"}
+                          {log.user?.email || T.systemUserFallback}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -220,7 +223,7 @@ export default function AuditLogPage() {
           {!loading && logs.length > 0 && (
             <div className="px-6 py-4 border-t border-slate-200 flex justify-between items-center">
               <div className="text-sm text-slate-600">
-                Showing {(page - 1) * 50 + 1} to {Math.min(page * 50, total)} of {total} logs
+                {T.showingPrefix} {(page - 1) * 50 + 1} {T.showingTo} {Math.min(page * 50, total)} {T.showingOf} {total} {T.showingSuffix}
               </div>
               <div className="flex gap-2">
                 <button
@@ -228,14 +231,14 @@ export default function AuditLogPage() {
                   disabled={page === 1}
                   className="px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Previous
+                  {T.prevBtn}
                 </button>
                 <button
                   onClick={() => fetchLogs(page + 1)}
                   disabled={page * 50 >= total}
                   className="px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next
+                  {T.nextBtn}
                 </button>
               </div>
             </div>
