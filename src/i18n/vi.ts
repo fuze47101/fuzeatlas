@@ -8208,6 +8208,30 @@ const vi: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "Đang tải lời mời…",
+    notFoundTitle: "Không tìm thấy lời mời",
+    notFoundFallback: "Liên kết lời mời này có thể đã hết hạn hoặc đã được sử dụng.",
+    chipLabel: "Lời mời FUZE Atlas",
+    headingMiddle: "đã mời",
+    headingSuffix: "vào chuỗi cung ứng FUZE của họ",
+    heroSubtitleFallbackPrefix: "sử dụng FUZE Atlas để phối hợp các chương trình dệt may kháng khuẩn trên toàn chuỗi cung ứng của họ.",
+    heroSubtitleFallbackSuffix: "Tham gia cho phép nhà máy nộp vải để thử nghiệm, đặt đơn FUZE và theo dõi kết quả ICP — tất cả liên kết trực tiếp với thương hiệu.",
+    notePrefix: "Ghi chú từ",
+    closedPrefix: "Lời mời này đã",
+    closedReachOutPrefix: "Liên hệ",
+    closedTeamFallbackPrefix: "đội ngũ",
+    closedTeamFallbackSuffix: "",
+    closedFreshLink: "nếu bạn cần liên kết mới.",
+    signUpCta: "Đăng ký",
+    signUpSubPrefix: "Tạo tài khoản",
+    signUpSubSuffix: "mới trên Atlas",
+    alreadyInCta: "Chúng tôi đã có trong Atlas",
+    alreadyInSub: "Đăng nhập và liên kết nhà máy hiện có của bạn",
+    sentPrefix: "Lời mời đã gửi",
+    questionsPrefix: "· Câu hỏi?",
+  },
+
 };
 
 export default vi;
