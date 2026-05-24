@@ -7345,6 +7345,27 @@ const th: Translations = {
     seeSustainabilityBtn: "ดูผลกระทบความยั่งยืน",
   },
 
+  pressLanding: {
+    heroTitle: "ชุดสื่อ",
+    heroSubtitle: "โลโก้ ภาพ ข่าวประชาสัมพันธ์ และข้อมูลพื้นฐานของบริษัทสำหรับ FUZE Biotech",
+    aboutTitle: "เกี่ยวกับ FUZE Biotech",
+    aboutBody1: "FUZE Biotech มีสำนักงานใหญ่อยู่ที่ Salt Lake City, Utah พัฒนาการบำบัดสิ่งทอต้านจุลชีพเฉพาะที่สร้างรอบเมตาวัสดุ FUZE การบำบัดยึดเกาะถาวรกับเส้นใยระหว่างการตกแต่งสิ่งทอมาตรฐาน — ไม่มี PFAS ไม่มีสารยึดเกาะ ไม่มีการเปลี่ยนแปลงเคมีต่อสัมผัสหรือการระบายอากาศของผ้า",
+    aboutBody2: "ผลิตภัณฑ์ EPA registered (federal), California EPA approved (Q1 2026), OEKO-TEX Standard 100 Class I และ bluesign® approved ประสิทธิภาพได้รับการตรวจสอบตาม ASTM E2149, AATCC 100, AATCC 30, ISO 18184 และ ISO 20743 โดยห้องปฏิบัติการบุคคลที่สามอิสระ",
+    foundedLabel: "ก่อตั้ง",
+    foundedValue: "Salt Lake City, UT",
+    addressLabel: "ที่อยู่",
+    pressContactLabel: "ผู้ติดต่อสื่อ",
+    logosSection: "โลโก้",
+    logoAltFallback: "โลโก้ FUZE",
+    downloadLabel: "ดาวน์โหลด →",
+    imagerySection: "ภาพ",
+    imageAltFallback: "ภาพ FUZE",
+    releasesSection: "ข่าวประชาสัมพันธ์",
+    releaseFallback: "ข่าวประชาสัมพันธ์",
+    newsSection: "ในข่าว",
+    claimsLink: "การอ้าง",
+  },
+
 };
 
 export default th;
