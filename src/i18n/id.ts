@@ -4224,6 +4224,33 @@ const id: Translations = {
     paginationLabel: "Halaman {page} dari {pages}",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ Terverifikasi diolah FUZE",
+    tierPrefix: "Tier FUZE",
+    productSectionTitle: "Produk",
+    skuLabel: "SKU",
+    batchLabel: "Batch",
+    fuzeNumberLabel: "FUZE #",
+    constructionLabel: "Construction",
+    weightLabel: "Berat",
+    weightUnit: "GSM",
+    mostRecentValidation: "Validasi terbaru",
+    testedPrefix: "Diuji",
+    afterWashesPrefix: "setelah",
+    afterWashesSuffix: "cucian",
+    whatDoesThisMean: "Apa artinya ini?",
+    explainerP1: "FUZE adalah perlakuan antibakteri tekstil milik sendiri. Metamaterial FUZE berikatan permanen dengan permukaan serat selama finishing tekstil standar — tanpa pelepasan, tanpa PFAS, tanpa perubahan kimia pada hand atau breathability kain.",
+    explainerP2: "Reduksi bakteri terjadi melalui kontak langsung dengan metamaterial yang terikat — itulah mengapa FUZE memimpin dengan ASTM E2149 (uji contact-kill yang dirancang untuk antibakteri non-leaching), bersama AATCC 100 untuk validasi geometri berlapis.",
+    certificationsLabel: "Sertifikasi:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I, bluesign® approved, terdaftar EPA, disetujui California EPA (Q1 2026), bebas PFAS.",
+    sustainabilityTitle: "Keberlanjutan",
+    sustainabilityBody: "FUZE yang dikonsumsi pada kain ini hingga saat ini.",
+    seeMorePrefix: "Lihat lebih banyak",
+    seeMoreSuffix: "produk tersertifikasi →",
+    learnMoreLink: "Pelajari lebih lanjut tentang teknologi FUZE →",
+    footerVerifiedBy: "Diverifikasi oleh FUZE Atlas",
+  },
+
 };
 
 export default id;
