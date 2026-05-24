@@ -2954,6 +2954,32 @@ const id: Translations = {
     errGeneric: "Gagal mengubah password",
   },
 
+  resetPassword: {
+    tagline: "Buat password baru",
+    formTitle: "Reset Password",
+    newPasswordLabel: "Password Baru",
+    newPasswordPlaceholder: "Masukkan password baru",
+    confirmPasswordLabel: "Konfirmasi Password",
+    confirmPasswordPlaceholder: "Konfirmasi password",
+    resetBtn: "Reset Password",
+    resettingBtn: "Mereset...",
+    backToSignIn: "Kembali ke Login",
+    successTitle: "Reset Password Berhasil",
+    successBody: "Password Anda telah berhasil direset. Anda sekarang dapat login dengan password baru Anda.",
+    signInBtn: "Login",
+    invalidLinkTitle: "Tautan Reset Tidak Valid",
+    invalidLinkBody: "Tautan reset tidak valid atau telah kedaluwarsa. Harap minta yang baru.",
+    requestNewLinkBtn: "Minta Tautan Baru",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "Memuat...",
+    errInvalidToken: "Token reset tidak valid atau hilang",
+    errInvalidTokenShort: "Token reset tidak valid",
+    errMinLength: "Password harus minimal 6 karakter",
+    errMismatch: "Password tidak cocok",
+    errResetFailed: "Gagal mereset password",
+    errNetwork: "Kesalahan jaringan",
+  },
+
 };
 
 export default id;
