@@ -8124,6 +8124,26 @@ const es: Translations = {
     footnote: "El texto orientado al cliente usa \"residual FUZE\" — la medición del metamaterial del informe ICP del laboratorio. Siempre etiquetado FUZE / metamaterial en los entregables al cliente (regla de voz de marca CLAUDE.md).",
   },
 
+  engagementDebug: {
+    crumb: "Depuración de engagement",
+    engagementSuffix: "engagement",
+    calculatedLabel: "Calculado",
+    overallScoreLabel: "Puntuación global",
+    outOf100: "de 100",
+    inputsLabel: "Entradas",
+    daysSinceContact: "Días desde el último contacto",
+    tests30d: "Pruebas (30d)",
+    tests90d: "Pruebas (90d)",
+    avgPayDays: "Promedio de días de pago",
+    overdueInvoices: "Facturas vencidas",
+    factorBreakdownTitle: "Desglose por factor",
+    weightLabel: "peso",
+    contributesLabel: "contribuye",
+    ptsLabel: "pts",
+    loading: "Cargando…",
+    failedToLoad: "Error al cargar",
+  },
+
 };
 
 export default es;
