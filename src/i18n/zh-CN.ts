@@ -6971,6 +6971,44 @@ const zhCN: Translations = {
     truncatedNotice: "显示 {total} 个品牌中的前 100 个。使用过滤器缩小范围。",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "未找到货运",
+    notFoundBodyTpl: "我们找不到订单 {order}。",
+    notFoundFooter: "如果您在 FUZE 货运上收到此二维码,请联系 andrew@fuze47.com。",
+
+    headerBadge: "FUZE Biotech · 盐湖城",
+    headerSubtitle: "货运验证",
+
+    sectionShipment: "货运详情",
+    fieldFuzeVolume: "FUZE 容量",
+    bottlesSuffix: "瓶",
+    baseFuzePrefix: "基础",
+    wastageSuffix: "损耗",
+    fieldTier: "层级",
+    fieldMethod: "处理方法",
+    fieldFactory: "工厂",
+    fieldForBrand: "对应品牌",
+    fieldFabric: "面料",
+    fieldFulfillment: "履行方式",
+    directUsa: "直接来自美国",
+    distributorFallback: "分销商",
+    fieldTracking: "跟踪",
+
+    sectionDocs: "产品文档",
+    sdsLabel: "安全数据表 (SDS)",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "分析证书 (COA)",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "打开合规库",
+
+    sectionTimeline: "生命周期时间线",
+    viewDocument: "查看文档 →",
+    timelineEmpty: "尚未记录生命周期事件。货运移动时,时间线将填充。",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "有问题？",
+  },
+
 };
 
 export default zhCN;
