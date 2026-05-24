@@ -4791,6 +4791,23 @@ const zhTW: Translations = {
     nameRequiredError: "名稱為必填",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← 返回計算器",
+    printButton: "🖨 列印 / 另存 PDF",
+    eyebrow: "FUZE Biotech · 實驗室 SOP",
+    pageTitle: "台架測試程序",
+    pageSubtitle: "FUZE 配方計算器 — Pad-Dry-Cure 帶液率與稀釋",
+    docLabel: "文件:SOP-FUZE-LAB-001",
+    revLabel: "版次:1.0 ·",
+    purposeHeader: "目的",
+    equipmentHeader: "設備",
+    chemistryRefHeader: "FUZE 化學參考資料",
+    criticalRulesHeader: "⚠ 關鍵協定規則",
+    procedureHeader: "程序",
+    formulasHeader: "公式(供 QC 核對)",
+    sanityRangesHeader: "合理性檢查範圍",
+  },
+
 };
 
 export default zhTW;
