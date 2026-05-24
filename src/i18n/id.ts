@@ -4875,6 +4875,61 @@ const id: Translations = {
     emptyTpl: "Belum ada template. Klik + Template Baru untuk membuat yang pertama.",
   },
 
+  brandDiscovery: {
+    crumbHome: "Beranda",
+    crumbWizard: "BD Wizard",
+    crumbHere: "Penemuan Brand",
+    pageTitle: "🌎 Penemuan Brand Dunia",
+    pageSubtitle: "Mesin multi-AI — menemukan + memvalidasi brand tekstil di Anthropic, OpenAI, dan Grok, lalu otomatis melampirkan kontak Apollo ke setiap brand baru sehingga BD Wizard dapat menggunakannya segera.",
+
+    statTotalLabel: "Total Brand di DB",
+    backToWizard: "← Kembali ke Wizard",
+    backToWizardTitle: "Round-trip kembali ke wizard setelah brand baru masuk",
+
+    statsErrorContext: "Muat statistik discovery",
+    statsErrorFallback: "Tidak dapat memuat statistik discovery",
+    statsNetworkError: "Kesalahan jaringan saat memuat statistik discovery.",
+
+    autoEnrichTitle: "Auto-enrichment aktif",
+    autoEnrichBody: "Setiap brand baru yang dibuat di sini mendapat hingga 8 kontak senior (founder / C-suite / VP / head / director) yang dilampirkan via Apollo people-search berdasarkan domain. Filter BD Wizard membiarkan brand ini lewat segera — tidak diperlukan pass enrichment terpisah.",
+
+    settingsHeading: "Pengaturan Discovery",
+    labelCategory: "Kategori",
+    labelRegion: "Wilayah",
+    labelTargetCount: "Target Jumlah",
+    btnDiscovering: "🔍 Menemukan...",
+    btnRunDiscovery: "🚀 Jalankan Discovery",
+    btnRunning: "Berjalan...",
+    btnAllCategories: "🌍 Semua Kategori",
+
+    runningBanner: "⏳ Menjalankan discovery multi-AI di Anthropic + OpenAI + Grok... Ini memerlukan 30-60 detik per kategori.",
+    errorPrefix: "❌",
+    errorDefault: "Discovery gagal",
+
+    resultsHeadingPrefix: "Hasil Discovery —",
+    chipAiSources: "Sumber AI:",
+    chipFound: "Ditemukan:",
+    chipAfterDedup: "Setelah Dedup:",
+    chipCreated: "Dibuat:",
+    chipContactsAttached: "📇 Kontak dilampirkan:",
+
+    colBrand: "Brand",
+    colSegment: "Segmen",
+    colPriority: "Prioritas",
+    colValidation: "Validasi",
+    colContacts: "Kontak",
+    colAiSources: "Sumber AI",
+    colActions: "Aksi",
+    tierPrefix: "Tier",
+    aisConfirmed: "AI dikonfirmasi",
+    aiConfirmed: "AI dikonfirmasi",
+    viewResearch: "Lihat & Riset",
+
+    historyHeading: "Riwayat Discovery (Sesi Ini)",
+    historyFoundLabel: "Ditemukan:",
+    historyCreatedLabel: "Dibuat:",
+  },
+
 };
 
 export default id;
