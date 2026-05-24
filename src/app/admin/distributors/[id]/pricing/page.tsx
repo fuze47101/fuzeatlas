@@ -4,6 +4,7 @@
 import { use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useToast } from "@/components/Toast";
+import { useI18n } from "@/i18n";
 
 interface PricingTier {
   id: string;
@@ -61,6 +62,8 @@ const EMPTY_NEW = {
 export default function DistributorPricingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: distributorId } = use(params);
   const toast = useToast();
+  const { t } = useI18n();
+  const T = t.distributorPricingAdmin;
 
   const [loading, setLoading] = useState(true);
   const [tiers, setTiers] = useState<PricingTier[]>([]);
@@ -82,7 +85,7 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
       const res = await fetch(`/api/distributor-portal/pricing?distributorId=${distributorId}`);
       const j = await res.json();
       if (!j.ok) {
-        setError(j.error || "Failed to load pricing");
+        setError(j.error || T.errorLoad);
         return;
       }
       setTiers(j.pricing || []);
@@ -106,7 +109,7 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
 
   async function handleCreate() {
     if (!form.pricePerLiter) {
-      toast.error("Price per liter is required");
+      toast.error(T.errorPriceRequired);
       return;
     }
     setSaving(true);
@@ -128,17 +131,17 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
       else if (form.scope === "REGION") payload.region = form.region.trim() || null;
 
       if (form.scope === "FACTORY" && !payload.factoryId) {
-        toast.error("Factory is required for factory-scoped pricing");
+        toast.error(T.errorFactoryRequired);
         setSaving(false);
         return;
       }
       if (form.scope === "COUNTRY" && !payload.country) {
-        toast.error("Country is required for country-scoped pricing");
+        toast.error(T.errorCountryRequired);
         setSaving(false);
         return;
       }
       if (form.scope === "REGION" && !payload.region) {
-        toast.error("Region is required for region-scoped pricing");
+        toast.error(T.errorRegionRequired);
         setSaving(false);
         return;
       }
@@ -150,10 +153,10 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
       });
       const j = await res.json();
       if (!j.ok) {
-        toast.error(j.error || "Failed to create tier");
+        toast.error(j.error || T.errorCreateTier);
         return;
       }
-      toast.success("Pricing tier created");
+      toast.success(T.toastTierCreated);
       setShowAdd(false);
       setForm({ ...EMPTY_NEW });
       load();
@@ -194,10 +197,10 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
       });
       const j = await res.json();
       if (!j.ok) {
-        toast.error(j.error || "Failed to update");
+        toast.error(j.error || T.errorUpdateTier);
         return;
       }
-      toast.success("Tier updated");
+      toast.success(T.toastTierUpdated);
       setEditingId(null);
       load();
     } catch (e: any) {
@@ -207,19 +210,19 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
     }
   }
 
-  async function handleDelete(t: PricingTier) {
-    if (!confirm(`Delete ${describeScope(t)} pricing tier? This cannot be undone.`)) return;
+  async function handleDelete(tier: PricingTier) {
+    if (!confirm(T.confirmDelete.replace("{scope}", describeScope(tier, T)))) return;
     try {
       const res = await fetch(
-        `/api/distributor-portal/pricing?tierId=${encodeURIComponent(t.id)}`,
+        `/api/distributor-portal/pricing?tierId=${encodeURIComponent(tier.id)}`,
         { method: "DELETE" },
       );
       const j = await res.json();
       if (!j.ok) {
-        toast.error(j.error || "Failed to delete");
+        toast.error(j.error || T.errorDeleteTier);
         return;
       }
-      toast.success("Tier deleted");
+      toast.success(T.toastTierDeleted);
       load();
     } catch (e: any) {
       toast.error(e.message);
@@ -236,7 +239,7 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 text-slate-400">Loading pricing…</div>
+      <div className="flex items-center justify-center h-64 text-slate-400">{T.loading}</div>
     );
   }
 
@@ -246,22 +249,22 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
       <div className="flex items-start justify-between">
         <div>
           <Link href="/admin/distributors" className="text-sm text-cyan-700 hover:underline">
-            ← Distributors
+            {T.crumbDistributors}
           </Link>
           <h1 className="text-2xl font-black text-slate-900 mt-2">
-            {distributor?.name || "Distributor"} — Pricing Tiers
+            {distributor?.name || T.pageTitleDistributor} {T.pageTitleSuffix}
           </h1>
           <p className="text-sm text-slate-500 mt-1">
             {distributor?.country || "—"}
-            {coverage.length > 0 && <> · Coverage: {coverage.join(", ")}</>}
-            {distributor?.localCurrency && <> · Local currency: {distributor.localCurrency}</>}
+            {coverage.length > 0 && <> · {T.coveragePrefix} {coverage.join(", ")}</>}
+            {distributor?.localCurrency && <> · {T.localCurrencyPrefix} {distributor.localCurrency}</>}
           </p>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
           className="px-4 py-2 bg-cyan-600 text-white rounded-lg text-sm font-bold hover:bg-cyan-700"
         >
-          {showAdd ? "Cancel" : "+ Add Pricing Tier"}
+          {showAdd ? T.btnCancel : T.btnAddTier}
         </button>
       </div>
 
@@ -274,16 +277,16 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
       {/* Add form */}
       {showAdd && (
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
-          <h2 className="text-sm font-bold text-slate-900">New Pricing Tier</h2>
+          <h2 className="text-sm font-bold text-slate-900">{T.formHeading}</h2>
 
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-2">Scope</label>
+            <label className="text-xs font-semibold text-slate-700 block mb-2">{T.fieldScope}</label>
             <div className="grid grid-cols-4 gap-2">
               {[
-                { v: "DEFAULT", label: "Default", desc: "Fallback for all" },
-                { v: "FACTORY", label: "Factory", desc: "Single mill" },
-                { v: "COUNTRY", label: "Country", desc: "Territory per-country" },
-                { v: "REGION", label: "Region", desc: "APAC / EMEA / etc." },
+                { v: "DEFAULT", label: T.scopeDefaultLabel, desc: T.scopeDefaultDesc },
+                { v: "FACTORY", label: T.scopeFactoryLabel, desc: T.scopeFactoryDesc },
+                { v: "COUNTRY", label: T.scopeCountryLabel, desc: T.scopeCountryDesc },
+                { v: "REGION", label: T.scopeRegionLabel, desc: T.scopeRegionDesc },
               ].map((s) => (
                 <button
                   key={s.v}
@@ -304,15 +307,15 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
 
           {form.scope === "FACTORY" && (
             <label className="block">
-              <span className="text-xs font-semibold text-slate-700 block mb-1">Factory *</span>
+              <span className="text-xs font-semibold text-slate-700 block mb-1">{T.fieldFactoryRequired}</span>
               <select
                 value={form.factoryId}
                 onChange={(e) => setForm({ ...form, factoryId: e.target.value })}
                 className="w-full px-3 py-1.5 border border-slate-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white"
               >
-                <option value="">— Select factory —</option>
+                <option value="">{T.placeholderSelectFactory}</option>
                 {factoriesByBucket.assigned.length > 0 && (
-                  <optgroup label="Your Factories">
+                  <optgroup label={T.optgroupYourFactories}>
                     {factoriesByBucket.assigned.map((f) => (
                       <option key={f.id} value={f.id}>
                         {f.name}
@@ -322,7 +325,7 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
                   </optgroup>
                 )}
                 {factoriesByBucket.coverage.length > 0 && (
-                  <optgroup label="In Territory">
+                  <optgroup label={T.optgroupInTerritory}>
                     {factoriesByBucket.coverage.map((f) => (
                       <option key={f.id} value={f.id}>
                         {f.name}
@@ -332,7 +335,7 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
                   </optgroup>
                 )}
                 {factoriesByBucket.other.length > 0 && (
-                  <optgroup label="Other">
+                  <optgroup label={T.optgroupOther}>
                     {factoriesByBucket.other.map((f) => (
                       <option key={f.id} value={f.id}>
                         {f.name}
@@ -347,11 +350,11 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
 
           {form.scope === "COUNTRY" && (
             <label className="block">
-              <span className="text-xs font-semibold text-slate-700 block mb-1">Country *</span>
+              <span className="text-xs font-semibold text-slate-700 block mb-1">{T.fieldCountryRequired}</span>
               <input
                 value={form.country}
                 onChange={(e) => setForm({ ...form, country: e.target.value })}
-                placeholder="e.g. India"
+                placeholder={T.placeholderCountry}
                 className="w-full px-3 py-1.5 border border-slate-200 rounded text-sm"
               />
               {coverage.length > 0 && (
@@ -373,13 +376,13 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
 
           {form.scope === "REGION" && (
             <label className="block">
-              <span className="text-xs font-semibold text-slate-700 block mb-1">Region *</span>
+              <span className="text-xs font-semibold text-slate-700 block mb-1">{T.fieldRegionRequired}</span>
               <select
                 value={form.region}
                 onChange={(e) => setForm({ ...form, region: e.target.value })}
                 className="w-full px-3 py-1.5 border border-slate-200 rounded text-sm bg-white"
               >
-                <option value="">— Select region —</option>
+                <option value="">{T.placeholderSelectRegion}</option>
                 {[
                   "APAC",
                   "EMEA",
@@ -402,7 +405,7 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
           <div className="grid grid-cols-3 gap-3">
             <label className="block">
               <span className="text-xs font-semibold text-slate-700 block mb-1">
-                Price / Liter *
+                {T.fieldPricePerLiter}
               </span>
               <input
                 type="number"
@@ -413,7 +416,7 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
               />
             </label>
             <label className="block">
-              <span className="text-xs font-semibold text-slate-700 block mb-1">Currency</span>
+              <span className="text-xs font-semibold text-slate-700 block mb-1">{T.fieldCurrency}</span>
               <select
                 value={form.currency}
                 onChange={(e) => setForm({ ...form, currency: e.target.value })}
@@ -427,7 +430,7 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
               </select>
             </label>
             <label className="block">
-              <span className="text-xs font-semibold text-slate-700 block mb-1">Min Order (L)</span>
+              <span className="text-xs font-semibold text-slate-700 block mb-1">{T.fieldMinOrder}</span>
               <input
                 type="number"
                 value={form.minOrderLiters}
@@ -440,7 +443,7 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
           <div className="grid grid-cols-3 gap-3">
             <label className="block">
               <span className="text-xs font-semibold text-slate-700 block mb-1">
-                Lead time (days)
+                {T.fieldLeadDays}
               </span>
               <input
                 type="number"
@@ -451,7 +454,7 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
             </label>
             <label className="block">
               <span className="text-xs font-semibold text-slate-700 block mb-1">
-                Hangtag $ / unit
+                {T.fieldHangtagPrice}
               </span>
               <input
                 type="number"
@@ -463,7 +466,7 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
             </label>
             <label className="block">
               <span className="text-xs font-semibold text-slate-700 block mb-1">
-                Hangtag min order
+                {T.fieldHangtagMin}
               </span>
               <input
                 type="number"
@@ -475,13 +478,13 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
           </div>
 
           <label className="block">
-            <span className="text-xs font-semibold text-slate-700 block mb-1">Notes</span>
+            <span className="text-xs font-semibold text-slate-700 block mb-1">{T.fieldNotes}</span>
             <textarea
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
               rows={2}
               className="w-full px-3 py-1.5 border border-slate-200 rounded text-sm"
-              placeholder="Payment terms, notes, special conditions…"
+              placeholder={T.notesPlaceholder}
             />
           </label>
 
@@ -494,14 +497,14 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
               disabled={saving}
               className="px-3 py-1.5 border border-slate-200 rounded text-sm hover:bg-slate-50"
             >
-              Cancel
+              {T.btnCancel}
             </button>
             <button
               onClick={handleCreate}
               disabled={saving || !form.pricePerLiter}
               className="px-4 py-1.5 rounded-lg text-sm font-bold bg-cyan-600 text-white hover:bg-cyan-700 disabled:opacity-40"
             >
-              {saving ? "Creating…" : "Create Tier"}
+              {saving ? T.btnCreating : T.btnCreate}
             </button>
           </div>
         </div>
@@ -512,27 +515,27 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-slate-600 text-xs uppercase tracking-wide">
             <tr>
-              <th className="px-4 py-2 text-left">Scope</th>
-              <th className="px-4 py-2 text-right">Price / L</th>
-              <th className="px-4 py-2 text-right">Min Order</th>
-              <th className="px-4 py-2 text-right">Lead (d)</th>
-              <th className="px-4 py-2 text-right">Hangtag</th>
-              <th className="px-4 py-2 text-center">Active</th>
-              <th className="px-4 py-2 text-right">Actions</th>
+              <th className="px-4 py-2 text-left">{T.colScope}</th>
+              <th className="px-4 py-2 text-right">{T.colPriceL}</th>
+              <th className="px-4 py-2 text-right">{T.colMinOrder}</th>
+              <th className="px-4 py-2 text-right">{T.colLead}</th>
+              <th className="px-4 py-2 text-right">{T.colHangtag}</th>
+              <th className="px-4 py-2 text-center">{T.colActive}</th>
+              <th className="px-4 py-2 text-right">{T.colActions}</th>
             </tr>
           </thead>
           <tbody>
             {tiers.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-4 py-8 text-center text-slate-400 text-sm">
-                  No pricing tiers yet. Click{" "}
+                  {T.emptyPrefix}{" "}
                   <button
                     onClick={() => setShowAdd(true)}
                     className="text-cyan-700 hover:underline"
                   >
-                    + Add Pricing Tier
+                    {T.emptyAddLink}
                   </button>{" "}
-                  to start.
+                  {T.emptySuffix}
                 </td>
               </tr>
             )}
@@ -544,10 +547,10 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
                     <div className="flex items-center gap-2">
                       {t.isDefault && (
                         <span className="px-1.5 py-0.5 bg-cyan-100 text-cyan-800 text-[10px] rounded font-bold">
-                          DEFAULT
+                          {T.badgeDefault}
                         </span>
                       )}
-                      <span className="font-medium text-slate-900">{describeScope(t)}</span>
+                      <span className="font-medium text-slate-900">{describeScope(t, T)}</span>
                     </div>
                     {t.notes && <div className="text-xs text-slate-500 mt-1">{t.notes}</div>}
                   </td>
@@ -623,13 +626,13 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
                           disabled={saving}
                           className="px-2 py-1 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700"
                         >
-                          Save
+                          {T.rowSave}
                         </button>
                         <button
                           onClick={() => setEditingId(null)}
                           className="px-2 py-1 text-xs border border-slate-200 rounded hover:bg-slate-50"
                         >
-                          Cancel
+                          {T.btnCancel}
                         </button>
                       </td>
                     </>
@@ -661,13 +664,13 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
                           onClick={() => startEdit(t)}
                           className="px-2 py-1 text-xs border border-slate-200 rounded hover:bg-slate-50"
                         >
-                          Edit
+                          {T.rowEdit}
                         </button>
                         <button
                           onClick={() => handleDelete(t)}
                           className="px-2 py-1 text-xs text-red-600 border border-red-200 rounded hover:bg-red-50"
                         >
-                          Delete
+                          {T.rowDelete}
                         </button>
                       </td>
                     </>
@@ -680,19 +683,19 @@ export default function DistributorPricingPage({ params }: { params: Promise<{ i
       </div>
 
       <div className="text-xs text-slate-500">
-        Pricing resolution order when a distributor creates an order: <b>Factory-scoped</b> →{" "}
-        <b>Country-scoped</b> → <b>Region-scoped</b> → <b>Default</b>.
+        {T.resolutionOrder} <b>{T.resolutionFactory}</b> →{" "}
+        <b>{T.resolutionCountry}</b> → <b>{T.resolutionRegion}</b> → <b>{T.resolutionDefault}</b>.
       </div>
     </div>
   );
 }
 
-function describeScope(t: PricingTier) {
+function describeScope(t: PricingTier, T?: any) {
   if (t.factoryId && t.factory) {
     return `🏭 ${t.factory.name}${t.factory.country ? ` (${t.factory.country})` : ""}`;
   }
   if (t.country) return `🌐 ${t.country}`;
   if (t.region) return `🗺️ ${t.region}`;
-  if (t.isDefault) return "Default";
+  if (t.isDefault) return T?.scopeFallback || "Default";
   return "—";
 }
