@@ -1,8 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import { formatCurrency, CURRENCIES } from "@/lib/currency";
+import { useI18n } from "@/i18n";
 
 export default function ExchangeRatesPage() {
+  const { t } = useI18n();
+  const T = t.settingsExchangeRates;
   const [rates, setRates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -91,23 +94,23 @@ export default function ExchangeRatesPage() {
         {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Exchange Rates</h1>
+            <h1 className="text-3xl font-bold text-slate-900">{T.title}</h1>
             <p className="text-slate-600 mt-1">
-              Manage currency conversion rates
+              {T.subtitle}
             </p>
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
             className="bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white px-4 py-2.5 rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all"
           >
-            {showForm ? "Cancel" : "Add Rate"}
+            {showForm ? T.cancelBtn : T.addRateBtn}
           </button>
         </div>
 
         {/* Create Form */}
         {showForm && (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">Add Exchange Rate</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">{T.addFormTitle}</h3>
             <form onSubmit={handleCreateRate} className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <select
                 value={newRate.fromCurrency}
@@ -139,7 +142,7 @@ export default function ExchangeRatesPage() {
 
               <input
                 type="number"
-                placeholder="Rate"
+                placeholder={T.ratePlaceholder}
                 step="0.001"
                 value={newRate.rate}
                 onChange={(e) => setNewRate({ ...newRate, rate: e.target.value })}
@@ -151,7 +154,7 @@ export default function ExchangeRatesPage() {
                 type="submit"
                 className="col-span-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-2 rounded-lg font-medium text-sm hover:shadow-lg transition-all"
               >
-                Add Rate
+                {T.submitAddBtn}
               </button>
             </form>
           </div>
@@ -161,12 +164,12 @@ export default function ExchangeRatesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
             <h3 className="text-lg font-bold text-slate-900 mb-4">
-              Currency Converter
+              {T.converterTitle}
             </h3>
             <div className="flex gap-4 mb-4">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  From
+                  {T.fromLabel}
                 </label>
                 <select
                   value={convertFrom}
@@ -183,7 +186,7 @@ export default function ExchangeRatesPage() {
 
               <div className="flex-1">
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  To
+                  {T.toLabel}
                 </label>
                 <select
                   value={convertTo}
@@ -200,7 +203,7 @@ export default function ExchangeRatesPage() {
 
               <div className="flex-1">
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Amount
+                  {T.amountLabel}
                 </label>
                 <input
                   type="number"
@@ -215,7 +218,7 @@ export default function ExchangeRatesPage() {
               onClick={handleConvert}
               className="w-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-2 rounded-lg font-medium text-sm hover:shadow-lg transition-all"
             >
-              Convert
+              {T.convertBtn}
             </button>
 
             {convertResult && (
@@ -230,7 +233,7 @@ export default function ExchangeRatesPage() {
                   </span>
                 </p>
                 <p className="text-xs text-emerald-700 mt-1">
-                  Rate: 1 {convertResult.from} = {convertResult.rate}{" "}
+                  {T.rateResultPrefix} 1 {convertResult.from} = {convertResult.rate}{" "}
                   {convertResult.to}
                 </p>
               </div>
@@ -239,14 +242,14 @@ export default function ExchangeRatesPage() {
 
           {/* Summary Card */}
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl shadow-sm p-6 text-white">
-            <h4 className="font-semibold mb-4">Quick Stats</h4>
+            <h4 className="font-semibold mb-4">{T.quickStatsTitle}</h4>
             <div className="space-y-3 text-sm">
               <div>
-                <p className="text-slate-400">Total Currencies</p>
+                <p className="text-slate-400">{T.totalCurrenciesLabel}</p>
                 <p className="text-2xl font-bold">{CURRENCIES.length}</p>
               </div>
               <div>
-                <p className="text-slate-400">Active Rates</p>
+                <p className="text-slate-400">{T.activeRatesLabel}</p>
                 <p className="text-2xl font-bold">{rates.length}</p>
               </div>
             </div>
@@ -257,15 +260,15 @@ export default function ExchangeRatesPage() {
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="p-6 border-b border-slate-200">
             <h3 className="text-lg font-bold text-slate-900">
-              Current Rates (Base: USD)
+              {T.currentRatesTitle}
             </h3>
           </div>
 
           {loading ? (
-            <div className="p-8 text-center text-slate-600">Loading...</div>
+            <div className="p-8 text-center text-slate-600">{T.loading}</div>
           ) : rates.length === 0 ? (
             <div className="p-8 text-center text-slate-600">
-              No exchange rates configured
+              {T.emptyState}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -273,16 +276,16 @@ export default function ExchangeRatesPage() {
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
                     <th className="px-6 py-3 text-left font-semibold text-slate-700">
-                      Currency Pair
+                      {T.colCurrencyPair}
                     </th>
                     <th className="px-6 py-3 text-left font-semibold text-slate-700">
-                      Rate
+                      {T.colRate}
                     </th>
                     <th className="px-6 py-3 text-left font-semibold text-slate-700">
-                      Effective Date
+                      {T.colEffectiveDate}
                     </th>
                     <th className="px-6 py-3 text-left font-semibold text-slate-700">
-                      Source
+                      {T.colSource}
                     </th>
                   </tr>
                 </thead>
