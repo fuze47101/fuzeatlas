@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useToast } from "@/components/Toast";
+import { useI18n } from "@/i18n";
 
 interface BrandLite {
   id: string;
@@ -30,6 +31,8 @@ interface LabLite {
 }
 
 export default function DataEntryHubPage() {
+  const { t } = useI18n();
+  const T = t.dataEntryAdmin;
   const { success, error: toastErr } = useToast();
   const [brands, setBrands] = useState<BrandLite[]>([]);
   const [factories, setFactories] = useState<FactoryLite[]>([]);
@@ -60,23 +63,22 @@ export default function DataEntryHubPage() {
     <div className="max-w-5xl mx-auto p-4 sm:p-6">
       <Breadcrumbs
         className="mb-2"
-        items={[{ label: "Admin" }, { label: "Data entry" }]}
+        items={[{ label: T.crumbAdmin }, { label: T.crumbCurrent }]}
       />
-      <h1 className="text-2xl font-black text-slate-900">Data entry hub</h1>
+      <h1 className="text-2xl font-black text-slate-900">{T.title}</h1>
       <p className="text-sm text-slate-600 mt-1 mb-6">
-        Quick mini-forms for the common setup tasks. Each one is the
-        fast path; richer editing lives on the per-entity page.
+        {T.subtitle}
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BrandSpecCard brands={brands} onDone={(name) => success(`Spec saved for ${name}`)} onError={(m) => toastErr(m)} />
-        <PricingTierCard brands={brands} onDone={(label) => success(`Pricing tier "${label}" saved`)} onError={(m) => toastErr(m)} />
-        <SupplyChainLinkCard brands={brands} factories={factories} onDone={(b, f) => success(`Linked ${b} → ${f}`)} onError={(m) => toastErr(m)} />
-        <LabTestCatalogCard labs={labs} onDone={(t) => success(`Catalog row for ${t} saved`)} onError={(m) => toastErr(m)} />
+        <BrandSpecCard brands={brands} onDone={(name) => success(T.toastSpecSavedTpl.replace("{name}", name))} onError={(m) => toastErr(m)} />
+        <PricingTierCard brands={brands} onDone={(label) => success(T.toastPricingSavedTpl.replace("{label}", label))} onError={(m) => toastErr(m)} />
+        <SupplyChainLinkCard brands={brands} factories={factories} onDone={(b, f) => success(T.toastLinkedTpl.replace("{brand}", b).replace("{factory}", f))} onError={(m) => toastErr(m)} />
+        <LabTestCatalogCard labs={labs} onDone={(test) => success(T.toastCatalogSavedTpl.replace("{test}", test))} onError={(m) => toastErr(m)} />
       </div>
 
       <div className="mt-8 text-xs text-slate-500">
-        <p className="font-bold mb-1">Or use the CLI for bulk seeding:</p>
+        <p className="font-bold mb-1">{T.cliHeader}</p>
         <pre className="bg-slate-900 text-slate-200 p-3 rounded text-[11px] overflow-x-auto">
 {`npm run seed:brand-spec        -- --brand "KUIU" --tier F2 --cadence-batches 5
 npm run seed:pricing-tier      -- --brand "KUIU" --threshold 1000 --discount 5 --label Bronze
@@ -116,6 +118,8 @@ function BrandSpecCard({
   onDone: (name: string) => void;
   onError: (msg: string) => void;
 }) {
+  const { t } = useI18n();
+  const T = t.dataEntryAdmin;
   const [brandId, setBrandId] = useState("");
   const [tier, setTier] = useState("F2");
   const [cadenceBatches, setCadenceBatches] = useState("");
@@ -136,8 +140,8 @@ function BrandSpecCard({
         }),
       });
       const j = await res.json();
-      if (!j.ok) throw new Error(j.error || "Save failed");
-      onDone(brands.find((b) => b.id === brandId)?.name || "brand");
+      if (!j.ok) throw new Error(j.error || T.errSave);
+      onDone(brands.find((b) => b.id === brandId)?.name || T.fallbackBrand);
     } catch (e: any) {
       onError(e.message);
     } finally {
@@ -147,8 +151,8 @@ function BrandSpecCard({
 
   return (
     <Section
-      title="Set brand spec"
-      hint="Tier + ICP cadence + protocol doc. Triggers cadence cron + supply chain dashboard."
+      title={T.secSpecTitle}
+      hint={T.secSpecHint}
     >
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
         <select
@@ -156,7 +160,7 @@ function BrandSpecCard({
           onChange={(e) => setBrandId(e.target.value)}
           className="sm:col-span-2 px-3 py-2 border border-slate-300 rounded text-sm"
         >
-          <option value="">— pick brand —</option>
+          <option value="">{T.pickBrand}</option>
           {brands.map((b) => (
             <option key={b.id} value={b.id}>{b.name}</option>
           ))}
@@ -173,14 +177,14 @@ function BrandSpecCard({
         </select>
         <input
           type="number"
-          placeholder="cadence (batches)"
+          placeholder={T.cadenceBatchesPlaceholder}
           value={cadenceBatches}
           onChange={(e) => setCadenceBatches(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded text-sm"
         />
         <input
           type="url"
-          placeholder="protocol doc URL"
+          placeholder={T.protocolDocUrlPlaceholder}
           value={protocolUrl}
           onChange={(e) => setProtocolUrl(e.target.value)}
           className="sm:col-span-3 px-3 py-2 border border-slate-300 rounded text-sm"
@@ -190,11 +194,11 @@ function BrandSpecCard({
           disabled={saving || !brandId}
           className="px-3 py-2 bg-[#00b4c3] text-white rounded text-sm font-bold disabled:opacity-50 focus-ring"
         >
-          {saving ? "…" : "Save"}
+          {saving ? T.savingDots : T.saveBtn}
         </button>
       </div>
       <p className="text-[11px] text-slate-500 mt-2">
-        Or go deep: <Link href="/brand-portal/spec" className="text-[#00b4c3] hover:underline">/brand-portal/spec</Link>
+        {T.secSpecDeepLinkPrefix}<Link href="/brand-portal/spec" className="text-[#00b4c3] hover:underline">/brand-portal/spec</Link>
       </p>
     </Section>
   );
@@ -209,6 +213,8 @@ function PricingTierCard({
   onDone: (label: string) => void;
   onError: (msg: string) => void;
 }) {
+  const { t } = useI18n();
+  const T = t.dataEntryAdmin;
   const [brandId, setBrandId] = useState("");
   const [threshold, setThreshold] = useState("");
   const [discount, setDiscount] = useState("");
@@ -231,7 +237,7 @@ function PricingTierCard({
         }),
       });
       const j = await res.json();
-      if (!j.ok) throw new Error(j.error || "Save failed");
+      if (!j.ok) throw new Error(j.error || T.errSave);
       onDone(label);
     } catch (e: any) {
       onError(e.message);
@@ -241,35 +247,35 @@ function PricingTierCard({
   }
 
   return (
-    <Section title="Add pricing tier" hint="One rung of a brand's discount ladder.">
+    <Section title={T.secPricingTitle} hint={T.secPricingHint}>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
         <select
           value={brandId}
           onChange={(e) => setBrandId(e.target.value)}
           className="sm:col-span-2 px-3 py-2 border border-slate-300 rounded text-sm"
         >
-          <option value="">— pick brand —</option>
+          <option value="">{T.pickBrand}</option>
           {brands.map((b) => (
             <option key={b.id} value={b.id}>{b.name}</option>
           ))}
         </select>
         <input
           type="number"
-          placeholder="threshold L"
+          placeholder={T.thresholdPlaceholder}
           value={threshold}
           onChange={(e) => setThreshold(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded text-sm"
         />
         <input
           type="number"
-          placeholder="discount %"
+          placeholder={T.discountPlaceholder}
           value={discount}
           onChange={(e) => setDiscount(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded text-sm"
         />
         <input
           type="text"
-          placeholder="label (Bronze / Silver / Gold)"
+          placeholder={T.pricingLabelPlaceholder}
           value={label}
           onChange={(e) => setLabel(e.target.value)}
           className="sm:col-span-3 px-3 py-2 border border-slate-300 rounded text-sm"
@@ -279,7 +285,7 @@ function PricingTierCard({
           disabled={saving}
           className="px-3 py-2 bg-[#00b4c3] text-white rounded text-sm font-bold disabled:opacity-50 focus-ring"
         >
-          {saving ? "…" : "Save"}
+          {saving ? T.savingDots : T.saveBtn}
         </button>
       </div>
     </Section>
@@ -297,6 +303,8 @@ function SupplyChainLinkCard({
   onDone: (b: string, f: string) => void;
   onError: (msg: string) => void;
 }) {
+  const { t } = useI18n();
+  const T = t.dataEntryAdmin;
   const [brandId, setBrandId] = useState("");
   const [factoryId, setFactoryId] = useState("");
   const [saving, setSaving] = useState(false);
@@ -317,9 +325,9 @@ function SupplyChainLinkCard({
         }),
       });
       const j = await res.json();
-      if (!j.ok) throw new Error(j.error || "Save failed");
-      const b = brands.find((x) => x.id === brandId)?.name || "brand";
-      const f = factories.find((x) => x.id === factoryId)?.name || "factory";
+      if (!j.ok) throw new Error(j.error || T.errSave);
+      const b = brands.find((x) => x.id === brandId)?.name || T.fallbackBrand;
+      const f = factories.find((x) => x.id === factoryId)?.name || T.fallbackFactory;
       onDone(b, f);
     } catch (e: any) {
       onError(e.message);
@@ -329,14 +337,14 @@ function SupplyChainLinkCard({
   }
 
   return (
-    <Section title="Link a brand to a factory" hint="Adds a SupplyChainLink — brand sees this factory in their supply chain dashboard.">
+    <Section title={T.secLinkTitle} hint={T.secLinkHint}>
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
         <select
           value={brandId}
           onChange={(e) => setBrandId(e.target.value)}
           className="sm:col-span-2 px-3 py-2 border border-slate-300 rounded text-sm"
         >
-          <option value="">— brand —</option>
+          <option value="">{T.pickBrandShort}</option>
           {brands.map((b) => (
             <option key={b.id} value={b.id}>{b.name}</option>
           ))}
@@ -346,7 +354,7 @@ function SupplyChainLinkCard({
           onChange={(e) => setFactoryId(e.target.value)}
           className="sm:col-span-2 px-3 py-2 border border-slate-300 rounded text-sm"
         >
-          <option value="">— factory —</option>
+          <option value="">{T.pickFactory}</option>
           {factories.map((f) => (
             <option key={f.id} value={f.id}>{f.name}</option>
           ))}
@@ -356,7 +364,7 @@ function SupplyChainLinkCard({
           disabled={saving}
           className="px-3 py-2 bg-[#00b4c3] text-white rounded text-sm font-bold disabled:opacity-50 focus-ring"
         >
-          {saving ? "…" : "Link"}
+          {saving ? T.savingDots : T.linkBtn}
         </button>
       </div>
     </Section>
@@ -372,6 +380,8 @@ function LabTestCatalogCard({
   onDone: (testType: string) => void;
   onError: (msg: string) => void;
 }) {
+  const { t } = useI18n();
+  const T = t.dataEntryAdmin;
   const [labId, setLabId] = useState("");
   const [testType, setTestType] = useState("AATCC_100");
   const [protocolName, setProtocolName] = useState("");
@@ -395,7 +405,7 @@ function LabTestCatalogCard({
         }),
       });
       const j = await res.json();
-      if (!j.ok) throw new Error(j.error || "Save failed");
+      if (!j.ok) throw new Error(j.error || T.errSave);
       onDone(testType);
     } catch (e: any) {
       onError(e.message);
@@ -405,14 +415,14 @@ function LabTestCatalogCard({
   }
 
   return (
-    <Section title="Set lab test pricing" hint="One per-protocol row with FUZE cost + published price.">
+    <Section title={T.secLabTitle} hint={T.secLabHint}>
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
         <select
           value={labId}
           onChange={(e) => setLabId(e.target.value)}
           className="sm:col-span-2 px-3 py-2 border border-slate-300 rounded text-sm"
         >
-          <option value="">— lab —</option>
+          <option value="">{T.pickLab}</option>
           {labs.map((l) => (
             <option key={l.id} value={l.id}>{l.name}</option>
           ))}
@@ -431,7 +441,7 @@ function LabTestCatalogCard({
         </select>
         <input
           type="text"
-          placeholder="protocol name"
+          placeholder={T.protocolNamePlaceholder}
           value={protocolName}
           onChange={(e) => setProtocolName(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded text-sm"
@@ -441,18 +451,18 @@ function LabTestCatalogCard({
           disabled={saving}
           className="px-3 py-2 bg-[#00b4c3] text-white rounded text-sm font-bold disabled:opacity-50 focus-ring"
         >
-          {saving ? "…" : "Save"}
+          {saving ? T.savingDots : T.saveBtn}
         </button>
         <input
           type="number"
-          placeholder="FUZE cost $"
+          placeholder={T.fuzeCostPlaceholder}
           value={fuzeCost}
           onChange={(e) => setFuzeCost(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded text-sm"
         />
         <input
           type="number"
-          placeholder="published $"
+          placeholder={T.publishedPricePlaceholder}
           value={published}
           onChange={(e) => setPublished(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded text-sm"
