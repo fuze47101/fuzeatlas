@@ -7463,6 +7463,28 @@ const es: Translations = {
     errNetwork: "Error de red",
   },
 
+  notificationsPage: {
+    loading: "Cargando notificaciones...",
+    title: "Notificaciones",
+    unreadLabel: "sin leer",
+    allCaughtUp: "Todo al día",
+    totalLabel: "total",
+    markAllRead: "Marcar todas como leídas",
+    filterAll: "Todas",
+    filterUnread: "Sin leer",
+    allTypes: "Todos los tipos",
+    emptyUnreadTitle: "No hay notificaciones sin leer",
+    emptyAllTitle: "Aún no hay notificaciones",
+    emptyUnreadBody: "¡Estás al día!",
+    emptyAllBody: "Las notificaciones aparecerán aquí cuando haya actividad en tu cuenta.",
+    viewDetails: "Ver detalles →",
+    markAsRead: "Marcar como leída",
+    justNow: "Justo ahora",
+    minSuffix: "m atrás",
+    hourSuffix: "h atrás",
+    daySuffix: "d atrás",
+  },
+
 };
 
 export default es;
