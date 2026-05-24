@@ -8124,6 +8124,26 @@ const ja: Translations = {
     footnote: "お客様向けの表記では「FUZE 残留量」を用います — ラボの ICP レポートから得られるメタマテリアル測定値です。お客様向け成果物では常に FUZE / メタマテリアルとして表記しています (CLAUDE.md ブランドボイス規則)。",
   },
 
+  engagementDebug: {
+    crumb: "エンゲージメントデバッグ",
+    engagementSuffix: "エンゲージメント",
+    calculatedLabel: "算出日時",
+    overallScoreLabel: "総合スコア",
+    outOf100: "/ 100",
+    inputsLabel: "入力値",
+    daysSinceContact: "最終連絡からの日数",
+    tests30d: "試験数 (30 日)",
+    tests90d: "試験数 (90 日)",
+    avgPayDays: "平均支払日数",
+    overdueInvoices: "未払い請求書",
+    factorBreakdownTitle: "要因の内訳",
+    weightLabel: "重み",
+    contributesLabel: "寄与",
+    ptsLabel: "ポイント",
+    loading: "読み込み中…",
+    failedToLoad: "読み込みに失敗しました",
+  },
+
 };
 
 export default ja;
