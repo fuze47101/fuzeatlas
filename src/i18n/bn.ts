@@ -5656,6 +5656,82 @@ const bn: Translations = {
     btnCreatePo: "PO তৈরি করুন এবং প্রিন্টযোগ্য প্যাকেট খুলুন →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "অ্যাডমিন",
+    crumbHere: "যোগাযোগ পরিচ্ছন্নতা",
+    pageTitle: "যোগাযোগ পরিচ্ছন্নতা",
+    pageSubtitle: "প্লেসহোল্ডার, রোল-মেইলবক্স এবং ত্রুটিপূর্ণ যোগাযোগ ফ্ল্যাগ করে যাতে রেপরা Jane Doe-এর উপর আউটরিচ নষ্ট না করে। বিপরীতযোগ্য — উইজার্ডে একটি যোগাযোগ ফিরিয়ে আনতে আন-হাইড করুন।",
+
+    btnPreviewScan: "🔍 প্রিভিউ স্ক্যান",
+    btnAutoHide: "🙈 স্ক্যান + স্বয়ংক্রিয় লুকান",
+    btnScanning: "স্ক্যান হচ্ছে…",
+    btnHiding: "লুকানো হচ্ছে…",
+    titlePreviewScan: "প্রতিটি যোগাযোগে পরিচ্ছন্নতা স্ন্যাপশট পুনরায় চালান, দৃশ্যমানতা পরিবর্তন না করে",
+    titleAutoHide: "BD উইজার্ড থেকে প্লেসহোল্ডার যোগাযোগ স্ক্যান + স্বয়ংক্রিয় লুকান",
+    confirmAutoHide: "স্বয়ংক্রিয় লুকান প্রতিটি যোগাযোগের জন্য hiddenFromWizard = true ফ্লিপ করবে যা স্ক্যান প্লেসহোল্ডার বা অবৈধ-ইমেল হিসাবে চিহ্নিত করে। এটি বিপরীতযোগ্য কিন্তু প্রতিটি রেপের BD উইজার্ডকে অবিলম্বে প্রভাবিত করে। চালিয়ে যাবেন?",
+    promptHide: "BD উইজার্ড থেকে এই যোগাযোগ লুকাবেন? কারণ (ঐচ্ছিক):",
+    promptUnhide: "এই যোগাযোগ আন-হাইড করবেন? কারণ (ঐচ্ছিক, তাদের নোটে লেখা হবে):",
+    failedPrefix: "ব্যর্থ:",
+    networkErrPrefix: "নেটওয়ার্ক ত্রুটি:",
+    scanFailedPrefix: "স্ক্যান ব্যর্থ:",
+
+    summaryScanned: "স্ক্যান করা হয়েছে",
+    summaryContacts: "যোগাযোগ · প্লেসহোল্ডার",
+    summarySuspicious: "· সন্দেহজনক",
+    summaryRole: "· রোল",
+    summaryReal: "· প্রকৃত",
+    summaryHiddenSuffix: "নতুন",
+    summaryHiddenPrefix: "· লুকানো",
+
+    statPlaceholder: "প্লেসহোল্ডার",
+    statSuspicious: "সন্দেহজনক",
+    statRole: "রোল মেইলবক্স",
+    statReal: "প্রকৃত",
+    statUnscanned: "অস্ক্যানড",
+    statHidden: "লুকানো",
+
+    filterVerdict: "রায়",
+    filterVisibility: "দৃশ্যমানতা",
+    filterAllScanned: "সমস্ত স্ক্যান করা",
+    filterPlaceholder: "প্লেসহোল্ডার",
+    filterSuspicious: "সন্দেহজনক",
+    filterRoleMailbox: "রোল মেইলবক্স",
+    filterReal: "প্রকৃত",
+    filterUnscanned: "অস্ক্যানড",
+    filterAllVisibility: "সমস্ত দৃশ্যমানতা",
+    filterHiddenOnly: "শুধুমাত্র লুকানো",
+    filterVisibleOnly: "শুধুমাত্র দৃশ্যমান",
+    searchPlaceholder: "নাম বা ইমেল অনুসন্ধান করুন…",
+
+    emptyTitle: "বর্তমান ফিল্টারের সাথে কোনো যোগাযোগ মিলছে না।",
+    emptyUnscannedTpl: "{n} যোগাযোগ কখনও স্ক্যান করা হয়নি — পপুলেট করতে \"প্রিভিউ স্ক্যান\" চাপুন।",
+
+    colContact: "যোগাযোগ",
+    colBrandFactory: "ব্র্যান্ড / কারখানা",
+    colVerdict: "রায়",
+    colEmail: "ইমেল",
+    colLinkedin: "LinkedIn",
+    colScore: "স্কোর",
+    colFlags: "ফ্ল্যাগ",
+    colActions: "ক্রিয়া",
+
+    unnamed: "(নামহীন)",
+    noEmail: "কোনো ইমেল নেই",
+    hiddenLabel: "লুকানো",
+    flagsMore: "আরও",
+    flagsClean: "পরিষ্কার",
+    actionHide: "লুকান",
+    actionUnhide: "আন-হাইড",
+
+    helpFooter: "স্ক্যান প্রতিটি যোগাযোগে যায় এবং রায় + ফ্ল্যাগ সারিতে স্ন্যাপশট করে। প্রিভিউ শুধুমাত্র রায় রেকর্ড করে; স্ক্যান + স্বয়ংক্রিয় লুকান প্লেসহোল্ডার এবং অবৈধ-ইমেল যোগাযোগের জন্য hiddenFromWizard ফ্লিপ করে। উভয়ই বিপরীতযোগ্য — পুনরুদ্ধার করতে \"আন-হাইড\" ক্লিক করুন।",
+
+    verdictReal: "প্রকৃত",
+    verdictSuspect: "সন্দেহ",
+    verdictPlaceholder: "প্লেসহোল্ডার",
+    verdictRoleMbx: "রোল mbx",
+    verdictUnscanned: "অস্ক্যানড",
+  },
+
 };
 
 export default bn;
