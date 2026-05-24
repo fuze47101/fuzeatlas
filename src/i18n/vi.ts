@@ -6399,6 +6399,31 @@ const vi: Translations = {
     footerNote: "Sắp xếp: tồn kho thấp trước, sau đó không hoạt động, rồi theo số ngày tồn kho còn tăng dần. \"Tiêu hao hàng ngày\" = trung bình cuộn 90 ngày của số lít đã gửi đến nhà máy. \"Số ngày còn\" = tồn kho hiện tại ÷ tiêu hao hàng ngày. \"Không hoạt động\" = không có đơn nhà máy trong 90 ngày qua. \"Không có giá\" nghĩa là tỷ lệ bán buôn FUZE chưa được đặt; nhà phân phối không thể đặt đơn nhập kho. Chỉnh sửa trên trang theo nhà phân phối.",
   },
 
+  conversionTracking: {
+    crumbDashboard: "Bảng điều khiển",
+    crumbCurrent: "Mẫu → Sản xuất",
+    title: "Chuyển đổi Mẫu → Sản xuất",
+    subtitle: "Theo dõi nhà máy nào đã nhận mẫu và chuyển đổi thành đơn sản xuất",
+    cardFactoriesSampled: "Nhà máy đã lấy mẫu",
+    cardConverted: "Đã chuyển đổi",
+    cardConversionRate: "Tỷ lệ chuyển đổi",
+    cardAvgDays: "Số ngày trung bình để chuyển đổi",
+    cardProdVolume: "Khối lượng sản xuất",
+    cardProdRevenue: "Doanh thu sản xuất",
+    tabAll: "Tất cả",
+    tabConverted: "Đã chuyển đổi",
+    tabPending: "Đang chờ",
+    emptyText: "Chưa tìm thấy đơn mẫu nào",
+    badgeConverted: "ĐÃ CHUYỂN ĐỔI",
+    badgePending: "ĐANG CHỜ",
+    sectionSamples: "Đơn mẫu",
+    sectionTrials: "Yêu cầu thử nghiệm",
+    sectionProduction: "Đơn sản xuất",
+    productionLabel: "Sản xuất",
+    daysToConvertSuffix: "ngày để chuyển đổi",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default vi;
