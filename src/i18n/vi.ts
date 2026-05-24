@@ -8057,6 +8057,21 @@ const vi: Translations = {
     titleHint: 'ví dụ "Ông", "Tiến sĩ"',
   },
 
+  importFactories: {
+    title: "Nhập hàng loạt — Nhà máy",
+    subtitle: "Dán hoặc tải lên CSV các nhà máy. Chúng tôi sẽ upsert theo tên (khóa tự nhiên), liên kết với nhà phân phối nếu bạn cung cấp, và đóng dấu các hàng SupplyChainLink cho mỗi thương hiệu đã tồn tại trong Atlas. Các thương hiệu chưa tồn tại được báo cáo là 'thiếu' để bạn có thể chạy nhập thương hiệu trước.",
+    backLabel: "Nhà máy",
+    factoryNameLabel: "Tên nhà máy",
+    factoryNameHint: "(khóa tự nhiên — upsert được khóa ở đây)",
+    countryLabel: "Quốc gia",
+    distributorLabel: "Nhà phân phối",
+    distributorHint: "khớp không phân biệt hoa thường trên Distributor.name; bỏ qua nếu không tìm thấy",
+    brandsLabel: "Thương hiệu",
+    brandsHint: "phân cách bằng dấu phẩy; mỗi tên phải tồn tại là một Brand",
+    cityLabel: "Thành phố",
+    websiteLabel: "Trang web",
+  },
+
 };
 
 export default vi;
