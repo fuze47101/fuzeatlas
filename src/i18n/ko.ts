@@ -6227,6 +6227,35 @@ const ko: Translations = {
     noData: "데이터 없음",
   },
 
+  educationApplication: {
+    pageMetaTitle: "도포 방법",
+    backLink: "← FUZE 기초로 돌아가기",
+    kicker: "도포 방법",
+    heroTitle: "FUZE는 귀사의 기존 마감 라인에서 작동합니다",
+    heroBody: "FUZE를 도포하기 위해 새 탱크, 새 오븐, 새 장비가 필요하지 않습니다. 세 가지 도포 경로가 오늘날 가동 중인 모든 텍스타일 생산 설정을 다룹니다. F4 필수 보호는 많은 기재에서 큐어링 오븐이 전혀 필요하지 않습니다.",
+    methodExhaustName: "익소스트 (염색조)",
+    methodExhaustDesc: "FUZE를 염색조에 추가하십시오. 메타머티리얼이 기존 염색 익소스트 공정 중 결합합니다. 새 탱크, 새 용기, 새 라인이 필요하지 않습니다.",
+    methodExhaustWhen: "대량 연속 염색에 가장 적합. 메타머티리얼이 염색 고정 단계와 통합됩니다.",
+    methodPdcName: "패드-건조-큐어",
+    methodPdcDesc: "희석된 FUZE 배스를 채운 표준 패더를 통해 원단을 통과시키십시오. 평소처럼 압착, 건조, 큐어링하십시오. 큐어링 온도 150-170°C.",
+    methodPdcWhen: "가장 일반적인 도포 경로. 오늘날 가동 중인 모든 텍스타일 마감 라인과 호환.",
+    methodSprayName: "스프레이 (헤드 간격)",
+    methodSprayDesc: "6인치 헤드 간격, 15 m/분 라인 속도. 희석된 FUZE를 원단 표면에 분무한 후 건조/큐어링. 완성된 의류 또는 부직포 기재에 이상적.",
+    methodSprayWhen: "이미 절단/봉제된 의류, 또는 익소스트/PDC가 적용되지 않는 특수 기재.",
+    whenToUseLabel: "사용 시기",
+    operatorTitle: "이것이 공장 운영자에게 중요한 이유",
+    operatorBullet1: "✓ 새 자본 장비 필요 없음. FUZE는 귀사의 기존 패드/염색/스프레이 라인에 통합됩니다.",
+    operatorBullet2: "✓ 바인더, 가교제, 포름알데히드 없음. 관리할 재고 감소, 발암 물질 취급 프로토콜 없음.",
+    operatorBullet3: "✓ F4에서 큐어링 오븐 종속성 없음. 하위 등급 도포는 공기 건조 가능; F1-F3은 표준 PDC 마감과 동일한 150-170°C 범위 사용.",
+    operatorBullet4: "✓ 저장된 FUZE의 유통기한 없음. 드럼과 카보이는 마감실에 무기한 보관 가능하며 열화되지 않습니다.",
+    operatorBullet5: "✓ 표준 19L 카보이가 최소 주문 단위. 정확한 매치가 필요할 때 사용자 지정 부피 (47L, 285L, 1300L) 주문 가능.",
+    runNumbersTitle: "수치 계산하기",
+    runNumbersBody: "도포 계산기는 선택한 등급에서 원단 제곱미터당 필요한 정확한 FUZE 부피를 계산합니다. 원단 중량 (gsm), 폭, 목표 등급을 입력하면 — FUZE 배스 리터, 스톡 농축액 mL, 리니어미터당 달러를 받습니다.",
+    runNumbersCta: "도포 계산기 열기 →",
+    backBasicsBtn: "FUZE 기초로 돌아가기",
+    seePricingBtn: "가격 및 등급 보기",
+  },
+
 };
 
 export default ko;
