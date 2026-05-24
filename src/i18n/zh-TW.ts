@@ -7484,6 +7484,32 @@ const zhTW: Translations = {
     daySuffix: "天前",
   },
 
+  resetPassword: {
+    tagline: "建立新密碼",
+    formTitle: "重設密碼",
+    newPasswordLabel: "新密碼",
+    newPasswordPlaceholder: "輸入新密碼",
+    confirmPasswordLabel: "確認密碼",
+    confirmPasswordPlaceholder: "再次輸入密碼",
+    resetBtn: "重設密碼",
+    resettingBtn: "重設中…",
+    backToSignIn: "返回登入",
+    successTitle: "密碼重設成功",
+    successBody: "您的密碼已成功重設。現在可以使用新密碼登入。",
+    signInBtn: "登入",
+    invalidLinkTitle: "重設連結無效",
+    invalidLinkBody: "此重設連結無效或已過期，請重新申請。",
+    requestNewLinkBtn: "申請新連結",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "載入中…",
+    errInvalidToken: "重設權杖無效或遺失",
+    errInvalidTokenShort: "重設權杖無效",
+    errMinLength: "密碼至少需 6 個字元",
+    errMismatch: "密碼不一致",
+    errResetFailed: "重設密碼失敗",
+    errNetwork: "網路錯誤",
+  },
+
 };
 
 export default zhTW;
