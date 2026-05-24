@@ -2664,6 +2664,18 @@ const id: Translations = {
     nameRequiredError: "Nama wajib diisi",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — Pratinjau Dokumen",
+    printSavePdf: "Cetak / Simpan PDF",
+    close: "Tutup",
+    documentNotFound: "Dokumen tidak ditemukan",
+    loadingError: "Gagal memuat dokumen",
+    networkError: "Kesalahan jaringan",
+    docNumberLabel: "Dokumen #:",
+    confidentialFooter: "FUZE Biotech Inc. — Rahasia",
+    generatedTemplate: "Dibuat:",
+  },
+
 };
 
 export default id;
