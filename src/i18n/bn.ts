@@ -7345,6 +7345,27 @@ const bn: Translations = {
     seeSustainabilityBtn: "টেকসইতার প্রভাব দেখুন",
   },
 
+  pressLanding: {
+    heroTitle: "প্রেস কিট",
+    heroSubtitle: "FUZE Biotech-এর জন্য লোগো, ইমেজারি, রিলিজ, এবং কোম্পানি ব্যাকগ্রাউন্ড।",
+    aboutTitle: "FUZE Biotech সম্পর্কে",
+    aboutBody1: "FUZE Biotech, Salt Lake City, Utah-এ সদর দফতরযুক্ত, FUZE metamaterial-এর চারপাশে নির্মিত একটি মালিকানাধীন অ্যান্টিমাইক্রোবিয়াল টেক্সটাইল ট্রিটমেন্ট তৈরি করে। ট্রিটমেন্টটি স্ট্যান্ডার্ড টেক্সটাইল ফিনিশিংয়ের সময় ফাইবারের সাথে স্থায়ীভাবে বন্ধন করে — কোনো PFAS নেই, কোনো বাইন্ডার নেই, ফ্যাব্রিকের হ্যান্ড বা শ্বাসপ্রশ্বাসে কোনো কেমিস্ট্রি পরিবর্তন নেই।",
+    aboutBody2: "প্রোডাক্টটি EPA-নিবন্ধিত (ফেডারেল), California EPA-অনুমোদিত (Q1 2026), OEKO-TEX Standard 100 Class I, এবং bluesign®-অনুমোদিত। পারফরম্যান্স স্বাধীন তৃতীয়-পক্ষ ল্যাব দ্বারা ASTM E2149, AATCC 100, AATCC 30, ISO 18184, এবং ISO 20743 অনুযায়ী যাচাইকৃত।",
+    foundedLabel: "প্রতিষ্ঠিত",
+    foundedValue: "Salt Lake City, UT",
+    addressLabel: "ঠিকানা",
+    pressContactLabel: "প্রেস কন্টাক্ট",
+    logosSection: "লোগো",
+    logoAltFallback: "FUZE লোগো",
+    downloadLabel: "ডাউনলোড →",
+    imagerySection: "ইমেজারি",
+    imageAltFallback: "FUZE ইমেজারি",
+    releasesSection: "প্রেস রিলিজ",
+    releaseFallback: "রিলিজ",
+    newsSection: "সংবাদে",
+    claimsLink: "ক্লেইম",
+  },
+
 };
 
 export default bn;
