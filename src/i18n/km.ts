@@ -6673,6 +6673,29 @@ const km: Translations = {
     errAddFailed: "បន្ថែម failed",
   },
 
+  accountsAdmin: {
+    title: "គណនី",
+    subtitleBefore: "ម៉ាក past the Lead stage — received a presentation, in testing, producing, or already customers. For new prospects, go to",
+    brandPipelineLink: "ម៉ាក Pipeline",
+    allFilter: "ទាំងអស់",
+    stagePresentation: "Presentation",
+    stageBrandTesting: "ម៉ាក ការសាកល្បងing",
+    stageFactoryOnboarding: "រោងចក្រ Onboarding",
+    stageFactoryTesting: "រោងចក្រ ការសាកល្បងing",
+    stageProduction: "ផលិតកម្ម",
+    stageReConnect: "Re-Connect",
+    stageCustomerWon: "Customer Won",
+    searchPlaceholder: "ស្វែងរក accounts by name or contact...",
+    emptyTitle: "ទេ accounts yet in this view",
+    emptyBody: "គណនី appear when brands move from LEAD to PRESENTATION or later.",
+    goToPipelineBtn: "Go to ម៉ាក Pipeline",
+    highRelevanceBadge: "🔥 ខ្ពស់ relevance",
+    amPrefix: "AM:",
+    contactsLabel: "contacts",
+    enrichedSuffix: "enriched",
+    backToLeadOption: "← ត្រឡប់ to Lead",
+  },
+
 };
 
 export default km;
