@@ -2859,6 +2859,40 @@ const ms: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "Log Masuk Atlas Diperlukan",
+    authBatchPrefix: "Kelompok",
+    authBlurb:
+      "butiran — termasuk COA, TDS, SDS — hanya tersedia kepada pengguna Atlas.",
+    loginCta: "Log masuk ke Atlas →",
+    noAccountQuestion: "Tiada akaun? Hubungi",
+    notFoundTitle: "Kelompok Tidak Dijumpai",
+    notFoundBlurb: "Kami tidak menemui kelompok",
+    returnHome: "Kembali ke Atlas →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "Pengesahan Kelompok",
+    qcPassed: "✓ QC Lulus",
+    qcFailed: "⚠ QC Gagal",
+    produced: "Dihasilkan",
+    batchDetails: "Butiran Kelompok",
+    volumeProduced: "Isi Padu Dihasilkan",
+    bottlesFilled: "Botol Diisi",
+    concentration: "Kepekatan",
+    productionDate: "Tarikh Pengeluaran",
+    fuzeMetamaterial: "mg/L FUZE metamaterial",
+    batchNotes: "Nota Kelompok",
+    documents: "Dokumen",
+    coaTitle: "Sijil Analisis (COA)",
+    coaDescPrefix: "Pengesahan spesifikasi kelompok ini · Dimuat naik",
+    coaPending: "COA Menunggu",
+    coaPendingBlurb: "Sijil Analisis belum dimuat naik untuk kelompok ini.",
+    view: "Lihat →",
+    docsEmpty: "TDS / SDS belum dimuat naik. Pentadbir boleh menambahnya dalam Dokumen Produk.",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Soalan?",
+    footerReturnAtlas: "Kembali ke Atlas",
+  },
+
 };
 
 export default ms;
