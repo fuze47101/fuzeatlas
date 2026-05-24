@@ -7506,6 +7506,32 @@ const ur: Translations = {
     emptyState: "ابھی تک کوئی ٹوکن نہیں — اوپر اپنا پہلا بیچ بنائیں۔",
   },
 
+  bookMeetingPage: {
+    heading: "میٹنگ شیڈول کریں",
+    subtitle: "ہماری ٹیم کے ساتھ اپنی میٹنگ بک کرنے کے لیے دستیاب تاریخ اور وقت منتخب کریں۔",
+    selectDateTitle: "تاریخ منتخب کریں",
+    availableTimesPrefix: "اس دن دستیاب اوقات",
+    loadingSlots: "سلاٹس لوڈ ہو رہے ہیں...",
+    noSlotsBody: "اس تاریخ کے لیے کوئی دستیاب سلاٹ نہیں",
+    detailsTitle: "میٹنگ کی تفصیلات",
+    selectDateTimeHint: "جاری رکھنے کے لیے تاریخ اور وقت منتخب کریں",
+    dateTimeLabel: "تاریخ اور وقت",
+    meetingTitleLabel: "میٹنگ کا عنوان",
+    defaultTitle: "FUZE میٹنگ",
+    descriptionLabel: "تفصیل (اختیاری)",
+    descriptionPlaceholder: "کوئی اضافی تفصیلات...",
+    confirmBtn: "بکنگ کی تصدیق کریں",
+    bookingBusy: "بکنگ ہو رہی ہے...",
+    bookFailedError: "میٹنگ بک کرنے میں ناکامی",
+    networkError: "نیٹ ورک کی خرابی",
+    bookedTitle: "میٹنگ بک ہو گئی!",
+    titleColLabel: "عنوان",
+    timeColLabel: "وقت",
+    meetingLinkLabel: "میٹنگ لنک",
+    openInTeams: "Teams میں کھولیں",
+    bookAnotherBtn: "دوسری میٹنگ بک کریں",
+  },
+
 };
 
 export default ur;
