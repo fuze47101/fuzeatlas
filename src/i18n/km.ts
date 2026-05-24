@@ -7179,6 +7179,32 @@ const km: Translations = {
     emptyState: "ទេ tokens yet — mint your first batch above.",
   },
 
+  bookMeetingPage: {
+    heading: "Schedule a Meeting",
+    subtitle: "Select an available date and time to book your meeting with our team.",
+    selectDateTitle: "Select កាលបរិច្ឆេទ",
+    availableTimesPrefix: "មាន Times on",
+    loadingSlots: "កំពុងផ្ទុក slots...",
+    noSlotsBody: "ទេ available slots for this date",
+    detailsTitle: "Meeting ព័ត៌មានលម្អិត",
+    selectDateTimeHint: "Select a date and time to continue",
+    dateTimeLabel: "កាលបរិច្ឆេទ & Time",
+    meetingTitleLabel: "Meeting ចំណងជើង",
+    defaultTitle: "FUZE Meeting",
+    descriptionLabel: "ការពិពណ៌នា (optional)",
+    descriptionPlaceholder: "Any additional details...",
+    confirmBtn: "បញ្ជាក់ Booking",
+    bookingBusy: "Booking...",
+    bookFailedError: "បរាជ័យ to book meeting",
+    networkError: "Network error",
+    bookedTitle: "Meeting Booked!",
+    titleColLabel: "ចំណងជើង",
+    timeColLabel: "Time",
+    meetingLinkLabel: "Meeting Link",
+    openInTeams: "បើក in Teams",
+    bookAnotherBtn: "Book Another Meeting",
+  },
+
 };
 
 export default km;
