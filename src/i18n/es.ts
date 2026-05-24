@@ -6039,6 +6039,50 @@ const es: Translations = {
     emptyTpl: "Aún no hay plantillas. Haz clic en + Nueva plantilla para crear la primera.",
   },
 
+  pipelineUserPage: {
+    loading: "Cargando pipeline...",
+    pageTitle: "Pipeline de ingresos",
+    pageSubtitle: "Sigue las oportunidades desde desarrollo hasta producción",
+    btnNewDeal: "+ Nueva oportunidad",
+
+    kpiTotalPipeline: "Pipeline total",
+    kpiTotalPipelineSubTpl: "{n} oportunidades",
+    kpiWeighted: "Pronóstico ponderado",
+    kpiWeightedSub: "Ajustado por probabilidad",
+    kpiActual: "Ingresos reales",
+    kpiActualSub: "Facturado y cobrado",
+    kpiConversion: "Conversión",
+    kpiConversionSub: "Real / Pipeline",
+
+    cardProdPrefix: "Prod:",
+    emptyDeals: "Sin oportunidades",
+    weightedPrefix: "· pond:",
+
+    editTitlePrefix: "Editar proyecto:",
+    fieldName: "Nombre del proyecto",
+    fieldStage: "Etapa",
+    keepCurrent: "Mantener actual",
+    fieldBrand: "Marca",
+    fieldNone: "Ninguno",
+    fieldProjectedValue: "Valor proyectado ($)",
+    fieldProbability: "Probabilidad (%)",
+    fieldFuzeTier: "Tier FUZE",
+    fieldAnnualVolume: "Volumen anual (m)",
+    fieldFactory: "Fábrica",
+    fieldDistributor: "Distribuidor",
+    autoFromFactory: "Automático desde la fábrica",
+    fieldExpectedProd: "Producción prevista",
+    fieldActualProd: "Producción real",
+    btnSaveChanges: "Guardar cambios",
+    btnSaving: "Guardando...",
+    btnCancel: "Cancelar",
+
+    newDealTitle: "Nueva oportunidad",
+    newDealPlaceholder: "Nombre del proyecto / oportunidad...",
+    btnCreate: "Crear",
+    btnCreating: "Creando...",
+  },
+
 };
 
 export default es;
