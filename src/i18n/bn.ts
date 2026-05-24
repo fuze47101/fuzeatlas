@@ -7366,6 +7366,31 @@ const bn: Translations = {
     claimsLink: "ক্লেইম",
   },
 
+  changePassword: {
+    titleDefault: "পাসওয়ার্ড পরিবর্তন করুন",
+    titleForced: "আপনার নতুন পাসওয়ার্ড সেট করুন",
+    forcedBanner: "আপনাকে একটি অস্থায়ী পাসওয়ার্ড দেওয়া হয়েছিল। চালিয়ে যেতে অনুগ্রহ করে একটি সুরক্ষিত পাসওয়ার্ড তৈরি করুন।",
+    currentPasswordLabel: "বর্তমান পাসওয়ার্ড",
+    newPasswordLabel: "নতুন পাসওয়ার্ড",
+    newPasswordPlaceholder: "ন্যূনতম 8 অক্ষর, 1 বড় হাতের অক্ষর, 1 সংখ্যা",
+    confirmPasswordLabel: "নতুন পাসওয়ার্ড নিশ্চিত করুন",
+    reqMinChars: "কমপক্ষে 8 অক্ষর",
+    reqUppercase: "একটি বড় হাতের অক্ষর",
+    reqNumber: "একটি সংখ্যা",
+    reqMatch: "পাসওয়ার্ড মেলে",
+    updateBtn: "পাসওয়ার্ড আপডেট করুন",
+    setAndContinueBtn: "পাসওয়ার্ড সেট ও চালিয়ে যান",
+    updatingBtn: "আপডেট করা হচ্ছে...",
+    cancelBtn: "বাতিল",
+    passwordUpdatedTitle: "পাসওয়ার্ড আপডেট হয়েছে",
+    redirecting: "এখনই রিডাইরেক্ট করা হচ্ছে...",
+    errPasswordsDoNotMatch: "পাসওয়ার্ড মেলে না",
+    errMinLength: "পাসওয়ার্ড কমপক্ষে 8 অক্ষরের হতে হবে",
+    errNeedUppercase: "পাসওয়ার্ডে কমপক্ষে একটি বড় হাতের অক্ষর থাকতে হবে",
+    errNeedNumber: "পাসওয়ার্ডে কমপক্ষে একটি সংখ্যা থাকতে হবে",
+    errGeneric: "পাসওয়ার্ড পরিবর্তন করতে ব্যর্থ",
+  },
+
 };
 
 export default bn;
