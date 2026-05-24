@@ -7469,6 +7469,37 @@ const vi: Translations = {
     footerHint: "Trì trệ = 14+ ngày không có hoạt động trong khi vẫn ở DRAFT/SENT/SIGNED/ACTIVE. Đã ký không có tiến độ = SIGNED hoặc ACTIVE trong 30+ ngày với các cột mốc đã định nhưng không có cột mốc nào hoàn thành. Hoạt động cuối là gần đây nhất của chỉnh sửa SOW, hoàn thành cột mốc, hoặc gửi yêu cầu thử nghiệm.",
   },
 
+  acmTasks: {
+    title: "🗓️ Tác vụ ACM",
+    subtitle: "Nhắc nhở trước tuần + trước ngày được gửi tự động qua chuông + email lúc 8 giờ sáng Taipei.",
+    tabOpen: "Mở",
+    tabCompleted: "Đã hoàn thành",
+    onlyMine: "Chỉ của tôi",
+    loading: "Đang tải…",
+    overdueTitle: "Quá hạn",
+    overdueSubtitle: "Đã quá hạn — xử lý ngay",
+    dueWeekTitle: "Đến hạn tuần này",
+    dueWeekSubtitle: "7 ngày tới",
+    upcomingTitle: "Sắp tới",
+    upcomingSubtitle: "Sau 7 ngày",
+    completedTitle: "Đã hoàn thành",
+    completedSubtitle: "200 gần nhất",
+    nothingHere: "Không có gì ở đây.",
+    markDoneTitle: "Đánh dấu hoàn thành",
+    cancelTaskTitle: "Hủy tác vụ",
+    reopenTitle: "Mở lại",
+    highPriorityBadge: "CAO",
+    overdueRowPrefix: "Quá hạn — ",
+    duePrefix: "Đến hạn",
+    ownerLabel: "Chủ sở hữu:",
+    relToday: "hôm nay",
+    relTomorrow: "ngày mai",
+    relYesterday: "hôm qua",
+    relInPrefix: "trong",
+    relDaysSuffix: "ngày",
+    relDaysAgo: "ngày trước",
+  },
+
 };
 
 export default vi;
