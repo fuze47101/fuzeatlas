@@ -7605,6 +7605,31 @@ const ms: Translations = {
     claimsLink: "Tuntutan",
   },
 
+  changePassword: {
+    titleDefault: "Tukar Kata Laluan",
+    titleForced: "Tetapkan Kata Laluan Baharu Anda",
+    forcedBanner: "Anda telah ditugaskan kata laluan sementara. Sila cipta kata laluan selamat untuk meneruskan.",
+    currentPasswordLabel: "Kata Laluan Semasa",
+    newPasswordLabel: "Kata Laluan Baharu",
+    newPasswordPlaceholder: "Min 8 aksara, 1 huruf besar, 1 nombor",
+    confirmPasswordLabel: "Sahkan Kata Laluan Baharu",
+    reqMinChars: "Sekurang-kurangnya 8 aksara",
+    reqUppercase: "Satu huruf besar",
+    reqNumber: "Satu nombor",
+    reqMatch: "Kata laluan sepadan",
+    updateBtn: "Kemas Kini Kata Laluan",
+    setAndContinueBtn: "Tetapkan Kata Laluan & Teruskan",
+    updatingBtn: "Mengemas kini...",
+    cancelBtn: "Batal",
+    passwordUpdatedTitle: "Kata Laluan Dikemas Kini",
+    redirecting: "Mengalihkan anda sekarang...",
+    errPasswordsDoNotMatch: "Kata laluan tidak sepadan",
+    errMinLength: "Kata laluan mesti sekurang-kurangnya 8 aksara",
+    errNeedUppercase: "Kata laluan mesti mengandungi sekurang-kurangnya satu huruf besar",
+    errNeedNumber: "Kata laluan mesti mengandungi sekurang-kurangnya satu nombor",
+    errGeneric: "Gagal menukar kata laluan",
+  },
+
 };
 
 export default ms;
