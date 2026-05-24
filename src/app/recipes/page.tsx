@@ -2,8 +2,11 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { useI18n } from "@/i18n";
 
 export default function RecipesPage() {
+  const { t } = useI18n();
+  const T = t.recipesLibrary;
   const toast = useToast();
   const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -117,7 +120,7 @@ export default function RecipesPage() {
 
       const data = await res.json();
       if (data.ok) {
-        toast.success("Recipe created");
+        toast.success(T.recipeCreated);
         setShowCreateForm(false);
         setNewRecipe({
           name: "",
@@ -146,7 +149,7 @@ export default function RecipesPage() {
       }
     } catch (error) {
       console.error("Error creating recipe:", error);
-      toast.error("Failed to create recipe");
+      toast.error(T.failedCreate);
     }
   };
 
@@ -193,14 +196,14 @@ export default function RecipesPage() {
       });
       const data = await res.json();
       if (data.ok) {
-        toast.success("Recipe updated");
+        toast.success(T.recipeUpdated);
         setEditingRecipe(null);
         fetchRecipes();
       } else {
-        toast.error(data.error || "Failed to update recipe");
+        toast.error(data.error || T.failedUpdate);
       }
     } catch {
-      toast.error("Failed to update recipe");
+      toast.error(T.failedUpdate);
     }
   };
 
@@ -209,20 +212,20 @@ export default function RecipesPage() {
       const res = await fetch(`/api/recipes/${id}`, { method: "DELETE" });
       const data = await res.json();
       if (data.ok) {
-        toast.success("Recipe deleted");
+        toast.success(T.recipeDeleted);
         fetchRecipes();
       } else {
-        toast.error(data.error || "Failed to delete recipe");
+        toast.error(data.error || T.failedDelete);
       }
     } catch {
-      toast.error("Failed to delete recipe");
+      toast.error(T.failedDelete);
     }
   };
 
   const cloneRecipe = async (recipe: any) => {
     try {
       const { id, createdAt, updatedAt, matchScore, ...rest } = recipe;
-      const payload = { ...rest, name: `${recipe.name} (Copy)` };
+      const payload = { ...rest, name: `${recipe.name} ${T.copySuffix}` };
       const res = await fetch("/api/recipes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -230,13 +233,13 @@ export default function RecipesPage() {
       });
       const data = await res.json();
       if (data.ok) {
-        toast.success(`Recipe cloned as "${payload.name}"`);
+        toast.success(T.recipeCloned.replace("{name}", payload.name));
         fetchRecipes();
       } else {
-        toast.error(data.error || "Failed to clone recipe");
+        toast.error(data.error || T.failedClone);
       }
     } catch {
-      toast.error("Failed to clone recipe");
+      toast.error(T.failedClone);
     }
   };
 
@@ -246,30 +249,30 @@ export default function RecipesPage() {
         {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Recipe Library</h1>
+            <h1 className="text-3xl font-bold text-slate-900">{T.pageTitle}</h1>
             <p className="text-slate-600 mt-1">
-              Treatment parameters for fabric types and finishes
+              {T.pageSubtitle}
             </p>
           </div>
           <button
             onClick={() => setShowCreateForm(!showCreateForm)}
             className="bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white px-4 py-2.5 rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all"
           >
-            {showCreateForm ? "Cancel" : "Create Recipe"}
+            {showCreateForm ? T.cancel : T.createRecipe}
           </button>
         </div>
 
         {/* Create Form */}
         {showCreateForm && (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6 max-h-96 overflow-y-auto">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">New Recipe</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">{T.newRecipe}</h3>
             <form
               onSubmit={handleCreateRecipe}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
             >
               <input
                 type="text"
-                placeholder="Recipe Name *"
+                placeholder={T.recipeNamePlaceholder}
                 value={newRecipe.name}
                 onChange={(e) => setNewRecipe({ ...newRecipe, name: e.target.value })}
                 required
@@ -281,15 +284,15 @@ export default function RecipesPage() {
                 onChange={(e) => setNewRecipe({ ...newRecipe, fabricType: e.target.value })}
                 className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
               >
-                <option value="">Fabric Type</option>
-                <option value="Knit">Knit</option>
-                <option value="Woven">Woven</option>
-                <option value="Nonwoven">Nonwoven</option>
+                <option value="">{T.fabricType}</option>
+                <option value="Knit">{T.knit}</option>
+                <option value="Woven">{T.woven}</option>
+                <option value="Nonwoven">{T.nonwoven}</option>
               </select>
 
               <input
                 type="text"
-                placeholder="Fiber Content"
+                placeholder={T.fiberContentPlaceholder}
                 value={newRecipe.fiberContent}
                 onChange={(e) => setNewRecipe({ ...newRecipe, fiberContent: e.target.value })}
                 className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
@@ -300,7 +303,7 @@ export default function RecipesPage() {
                 onChange={(e) => setNewRecipe({ ...newRecipe, fuzeTier: e.target.value })}
                 className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
               >
-                <option value="">FUZE Tier</option>
+                <option value="">{T.fuzeTier}</option>
                 <option value="F1">F1</option>
                 <option value="F2">F2</option>
                 <option value="F3">F3</option>
@@ -312,16 +315,16 @@ export default function RecipesPage() {
                 onChange={(e) => setNewRecipe({ ...newRecipe, applicationMethod: e.target.value })}
                 className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
               >
-                <option value="">Application Method</option>
-                <option value="Pad">Pad</option>
-                <option value="Exhaust">Exhaust</option>
-                <option value="Spray">Spray</option>
-                <option value="Foam">Foam</option>
+                <option value="">{T.applicationMethod}</option>
+                <option value="Pad">{T.pad}</option>
+                <option value="Exhaust">{T.exhaust}</option>
+                <option value="Spray">{T.spray}</option>
+                <option value="Foam">{T.foam}</option>
               </select>
 
               <input
                 type="number"
-                placeholder="Avg ICP Ag (ppm)"
+                placeholder={T.avgIcpAgPlaceholder}
                 value={newRecipe.avgIcpAg}
                 onChange={(e) => setNewRecipe({ ...newRecipe, avgIcpAg: e.target.value })}
                 className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
@@ -329,7 +332,7 @@ export default function RecipesPage() {
 
               <input
                 type="number"
-                placeholder="Avg Reduction (%)"
+                placeholder={T.avgReductionPlaceholder}
                 value={newRecipe.avgReduction}
                 onChange={(e) => setNewRecipe({ ...newRecipe, avgReduction: e.target.value })}
                 className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
@@ -337,14 +340,14 @@ export default function RecipesPage() {
 
               <input
                 type="number"
-                placeholder="Pass Rate (%)"
+                placeholder={T.passRatePlaceholder}
                 value={newRecipe.passRate}
                 onChange={(e) => setNewRecipe({ ...newRecipe, passRate: e.target.value })}
                 className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
               />
 
               <textarea
-                placeholder="Notes"
+                placeholder={T.notesPlaceholder}
                 value={newRecipe.notes}
                 onChange={(e) => setNewRecipe({ ...newRecipe, notes: e.target.value })}
                 className="col-span-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
@@ -355,7 +358,7 @@ export default function RecipesPage() {
                 type="submit"
                 className="col-span-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-2 rounded-lg font-medium text-sm hover:shadow-lg transition-all"
               >
-                Create Recipe
+                {T.createRecipeBtn}
               </button>
             </form>
           </div>
@@ -372,7 +375,7 @@ export default function RecipesPage() {
                   : "bg-slate-100 text-slate-700"
               }`}
             >
-              Browse
+              {T.browse}
             </button>
             <button
               onClick={() => setMatchMode(!matchMode)}
@@ -382,7 +385,7 @@ export default function RecipesPage() {
                   : "bg-slate-100 text-slate-700"
               }`}
             >
-              Find Similar
+              {T.findSimilar}
             </button>
           </div>
 
@@ -391,21 +394,21 @@ export default function RecipesPage() {
               <>
                 <input
                   type="number"
-                  placeholder="GSM"
+                  placeholder={T.gsmPlaceholder}
                   value={matchGsm}
                   onChange={(e) => setMatchGsm(e.target.value)}
                   className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
                 />
                 <input
                   type="text"
-                  placeholder="Fiber Content (e.g., Cotton)"
+                  placeholder={T.fiberMatchPlaceholder}
                   value={matchFiber}
                   onChange={(e) => setMatchFiber(e.target.value)}
                   className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
                 />
                 <input
                   type="text"
-                  placeholder="Yarn Type"
+                  placeholder={T.yarnTypePlaceholder}
                   value={matchYarn}
                   onChange={(e) => setMatchYarn(e.target.value)}
                   className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
@@ -418,10 +421,10 @@ export default function RecipesPage() {
                   onChange={(e) => setFilterFabricType(e.target.value)}
                   className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
                 >
-                  <option value="">All Fabric Types</option>
-                  <option value="Knit">Knit</option>
-                  <option value="Woven">Woven</option>
-                  <option value="Nonwoven">Nonwoven</option>
+                  <option value="">{T.allFabricTypes}</option>
+                  <option value="Knit">{T.knit}</option>
+                  <option value="Woven">{T.woven}</option>
+                  <option value="Nonwoven">{T.nonwoven}</option>
                 </select>
 
                 <select
@@ -429,7 +432,7 @@ export default function RecipesPage() {
                   onChange={(e) => setFilterFuzeTier(e.target.value)}
                   className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
                 >
-                  <option value="">All FUZE Tiers</option>
+                  <option value="">{T.allFuzeTiers}</option>
                   <option value="F1">F1</option>
                   <option value="F2">F2</option>
                   <option value="F3">F3</option>
@@ -441,11 +444,11 @@ export default function RecipesPage() {
                   onChange={(e) => setFilterAppMethod(e.target.value)}
                   className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
                 >
-                  <option value="">All Methods</option>
-                  <option value="Pad">Pad</option>
-                  <option value="Exhaust">Exhaust</option>
-                  <option value="Spray">Spray</option>
-                  <option value="Foam">Foam</option>
+                  <option value="">{T.allMethods}</option>
+                  <option value="Pad">{T.pad}</option>
+                  <option value="Exhaust">{T.exhaust}</option>
+                  <option value="Spray">{T.spray}</option>
+                  <option value="Foam">{T.foam}</option>
                 </select>
               </>
             )}
@@ -454,10 +457,10 @@ export default function RecipesPage() {
 
         {/* Recipes Grid */}
         {loading ? (
-          <div className="text-center py-12 text-slate-600">Loading...</div>
+          <div className="text-center py-12 text-slate-600">{T.loading}</div>
         ) : recipes.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-            <p className="text-slate-600">No recipes found</p>
+            <p className="text-slate-600">{T.noRecipes}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -493,7 +496,7 @@ export default function RecipesPage() {
                   {recipe.matchScore && (
                     <div className="mb-4 p-2 bg-emerald-50 border border-emerald-200 rounded-lg">
                       <p className="text-xs text-emerald-800 font-medium">
-                        Match Score: {recipe.matchScore}%
+                        {T.matchScore.replace("{n}", String(recipe.matchScore))}
                       </p>
                     </div>
                   )}
@@ -501,7 +504,7 @@ export default function RecipesPage() {
                   <div className="space-y-2 text-sm">
                     {recipe.fiberContent && (
                       <div className="flex justify-between text-slate-600">
-                        <span>Fiber:</span>
+                        <span>{T.fiber}</span>
                         <span className="font-medium text-slate-900">
                           {recipe.fiberContent}
                         </span>
@@ -509,7 +512,7 @@ export default function RecipesPage() {
                     )}
                     {recipe.avgIcpAg && (
                       <div className="flex justify-between text-slate-600">
-                        <span>Avg ICP Ag:</span>
+                        <span>{T.avgIcpAg}</span>
                         <span className="font-medium text-slate-900">
                           {recipe.avgIcpAg} ppm
                         </span>
@@ -517,7 +520,7 @@ export default function RecipesPage() {
                     )}
                     {recipe.avgReduction && (
                       <div className="flex justify-between text-slate-600">
-                        <span>Avg Reduction:</span>
+                        <span>{T.avgReduction}</span>
                         <span className="font-medium text-slate-900">
                           {recipe.avgReduction}%
                         </span>
@@ -525,7 +528,7 @@ export default function RecipesPage() {
                     )}
                     {recipe.passRate && (
                       <div className="flex justify-between text-slate-600">
-                        <span>Pass Rate:</span>
+                        <span>{T.passRate}</span>
                         <span className="font-medium text-slate-900">
                           {recipe.passRate}%
                         </span>
@@ -543,15 +546,15 @@ export default function RecipesPage() {
                   <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100">
                     <button onClick={() => startEdit(recipe)}
                       className="flex-1 px-2 py-1.5 text-xs font-medium text-[#00b4c3] border border-[#00b4c3]/30 rounded-lg hover:bg-[#00b4c3]/5 transition-colors">
-                      Edit
+                      {T.edit}
                     </button>
                     <button onClick={() => cloneRecipe(recipe)}
                       className="flex-1 px-2 py-1.5 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors">
-                      Clone
+                      {T.clone}
                     </button>
                     <button onClick={() => setDeleteConfirm(recipe.id)}
                       className="flex-1 px-2 py-1.5 text-xs font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
-                      Delete
+                      {T.deleteBtn}
                     </button>
                   </div>
                 </div>
@@ -567,38 +570,38 @@ export default function RecipesPage() {
           <div className="absolute inset-0 bg-black/50" onClick={() => setEditingRecipe(null)} />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
-              <h2 className="text-lg font-bold text-slate-900">Edit Recipe</h2>
+              <h2 className="text-lg font-bold text-slate-900">{T.editRecipeTitle}</h2>
               <button onClick={() => setEditingRecipe(null)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
             </div>
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Recipe Name</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.recipeName}</label>
                 <input type="text" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Fabric Type</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.fabricType}</label>
                   <select value={editForm.fabricType} onChange={(e) => setEditForm({ ...editForm, fabricType: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                    <option value="">Select...</option>
-                    <option value="Knit">Knit</option>
-                    <option value="Woven">Woven</option>
-                    <option value="Nonwoven">Nonwoven</option>
+                    <option value="">{T.selectPlaceholder}</option>
+                    <option value="Knit">{T.knit}</option>
+                    <option value="Woven">{T.woven}</option>
+                    <option value="Nonwoven">{T.nonwoven}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Fiber Content</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.fiberContent}</label>
                   <input type="text" value={editForm.fiberContent} onChange={(e) => setEditForm({ ...editForm, fiberContent: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">FUZE Tier</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.fuzeTier}</label>
                   <select value={editForm.fuzeTier} onChange={(e) => setEditForm({ ...editForm, fuzeTier: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                    <option value="">Select...</option>
+                    <option value="">{T.selectPlaceholder}</option>
                     <option value="F1">F1</option>
                     <option value="F2">F2</option>
                     <option value="F3">F3</option>
@@ -606,46 +609,46 @@ export default function RecipesPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Application Method</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.applicationMethod}</label>
                   <select value={editForm.applicationMethod} onChange={(e) => setEditForm({ ...editForm, applicationMethod: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                    <option value="">Select...</option>
-                    <option value="Pad">Pad</option>
-                    <option value="Exhaust">Exhaust</option>
-                    <option value="Spray">Spray</option>
-                    <option value="Foam">Foam</option>
+                    <option value="">{T.selectPlaceholder}</option>
+                    <option value="Pad">{T.pad}</option>
+                    <option value="Exhaust">{T.exhaust}</option>
+                    <option value="Spray">{T.spray}</option>
+                    <option value="Foam">{T.foam}</option>
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Avg ICP Ag (ppm)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.avgIcpAgLabel}</label>
                   <input type="number" value={editForm.avgIcpAg} onChange={(e) => setEditForm({ ...editForm, avgIcpAg: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Avg Reduction (%)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.avgReductionLabel}</label>
                   <input type="number" value={editForm.avgReduction} onChange={(e) => setEditForm({ ...editForm, avgReduction: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Pass Rate (%)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.passRateLabel}</label>
                   <input type="number" value={editForm.passRate} onChange={(e) => setEditForm({ ...editForm, passRate: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Notes</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.notes}</label>
                 <textarea value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" rows={3} />
               </div>
             </div>
             <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end sticky bottom-0 bg-white">
               <button onClick={() => setEditingRecipe(null)} className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">
-                Cancel
+                {T.cancel}
               </button>
               <button onClick={saveEdit} className="px-5 py-2 text-sm font-semibold bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa]">
-                Save Changes
+                {T.saveChanges}
               </button>
             </div>
           </div>
@@ -655,9 +658,9 @@ export default function RecipesPage() {
       {/* Delete Confirmation */}
       <ConfirmDialog
         open={!!deleteConfirm}
-        title="Delete Recipe?"
-        message="This will permanently delete this recipe from the library. This action cannot be undone."
-        confirmLabel="Delete Recipe"
+        title={T.deleteRecipeTitle}
+        message={T.deleteRecipeMsg}
+        confirmLabel={T.deleteRecipeConfirm}
         variant="danger"
         onConfirm={() => {
           if (deleteConfirm) deleteRecipe(deleteConfirm);
