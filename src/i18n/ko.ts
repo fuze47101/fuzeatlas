@@ -7948,6 +7948,21 @@ const ko: Translations = {
     titleHint: '예: \"Mr.\", \"Dr.\"',
   },
 
+  importFactories: {
+    title: "대량 가져오기 — 공장",
+    subtitle: "공장 CSV를 붙여넣거나 업로드하십시오. 이름으로 업서트하고 (자연 키), 제공하시면 디스트리뷰터에 연결하고, Atlas에 이미 존재하는 각 브랜드에 대해 SupplyChainLink 행을 스탬프합니다. 아직 존재하지 않는 브랜드는 '누락'으로 보고되므로 먼저 브랜드 가져오기를 실행할 수 있습니다.",
+    backLabel: "공장",
+    factoryNameLabel: "공장 이름",
+    factoryNameHint: "(자연 키 — 업서트는 여기서 키됨)",
+    countryLabel: "국가",
+    distributorLabel: "디스트리뷰터",
+    distributorHint: "Distributor.name에 대한 대소문자 구분 없음 매치; 찾을 수 없으면 건너뜀",
+    brandsLabel: "브랜드",
+    brandsHint: "쉼표로 구분; 각 이름은 브랜드로 존재해야 함",
+    cityLabel: "도시",
+    websiteLabel: "웹사이트",
+  },
+
 };
 
 export default ko;
