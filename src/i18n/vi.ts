@@ -7233,6 +7233,34 @@ const vi: Translations = {
     errLoadFailed: "Không tải được phễu",
   },
 
+  bdSequenceAnalytics: {
+    loading: "Đang tải…",
+    crumbBdSequences: "BD Sequences",
+    crumbAnalytics: "Phân tích",
+    modeSequence: "Sequence",
+    modeCadence: "Cadence",
+    title: "Phân tích phễu",
+    aggregatedAcross: "Tổng hợp trên",
+    sequenceSingular: "sequence",
+    sequencePlural: "sequences",
+    onCadenceLabel: "trên cadence",
+    emptyBefore: "Chưa có hoạt động gửi nào trên",
+    stepLabel: "Bước",
+    sentSuffix: "đã gửi",
+    mSent: "Đã gửi",
+    mOpens: "Mở",
+    mClicks: "Click",
+    mReplies: "Phản hồi",
+    mMeetings: "Cuộc họp",
+    mAvgDaysReply: "Số ngày TB → phản hồi",
+    subjectVariantsTitle: "Biến thể chủ đề",
+    colSubject: "Chủ đề",
+    colSent: "Đã gửi",
+    colOpens: "Mở",
+    colOpenRate: "Tỷ lệ mở",
+    errLoadFailed: "Không tải được phân tích",
+  },
+
 };
 
 export default vi;
