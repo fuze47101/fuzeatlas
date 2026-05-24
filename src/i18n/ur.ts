@@ -7555,6 +7555,23 @@ const ur: Translations = {
     fieldChangedPlural: "فیلڈز تبدیل ہوئے",
   },
 
+  adminLanding: {
+    loadingLabel: "ایڈمن لوڈ ہو رہا ہے",
+    crumb: "ایڈمن",
+    heading: "ایڈمن",
+    subtitle: "FUZE-Ops کنٹرول سرفیس۔ غوطہ لگانے کے لیے ماڈیول منتخب کریں، یا مکمل نیویگیشن کے لیے سائڈ بار استعمال کریں۔",
+    openPrefix: "کھولیں",
+    fastPathLabel: "تیز راستہ",
+    dataEntryHubTitle: "ڈیٹا اندراج ہب",
+    dataEntryHubBody: "برانڈ سپیک، پرائسنگ ٹیئر، سپلائی-چین لنک، لیب پرائسنگ سیٹ کریں — سب ایک صفحے میں۔",
+    liveStateLabel: "لائیو حالت",
+    commandCenterTitle: "کمانڈ سینٹر",
+    commandCenterBody: "چھ میٹرک ٹائلز، برانڈ × فیکٹری تال میٹرکس، حالیہ سرگرمی، قطاریں۔",
+    weeklyLabel: "ہفتہ وار",
+    mondayReviewTitle: "پیر کا جائزہ قطار",
+    mondayReviewBody: "AI-فلیگڈ ٹیسٹ رنز + برانڈ مستردگیاں۔ اتوار 22:00 UTC ای میل ایجنڈا فراہم کرتی ہے۔",
+  },
+
 };
 
 export default ur;
