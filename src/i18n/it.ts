@@ -6825,6 +6825,26 @@ const it: Translations = {
     emptyState: "Nessun credito finora.",
   },
 
+  bdFunnel: {
+    loading: "Caricamento…",
+    crumbSalesPipeline: "Vendite e Pipeline",
+    crumbBdFunnel: "Funnel BD",
+    title: "Funnel della pipeline",
+    subtitle: "Flusso in entrata / uscita negli ultimi 30 / 60 / 90 giorni, più il tasso di conversione stage-to-stage. Originato dalle righe BrandStageTransition scritte ad ogni cambio di Brand.pipelineStage.",
+    colStage: "Stage",
+    colCurrent: "Attuale",
+    colIn30: "In 30g",
+    colIn60: "In 60g",
+    colIn90: "In 90g",
+    colOut30: "Out 30g",
+    colOut60: "Out 60g",
+    colOut90: "Out 90g",
+    colAvgDwell: "Permanenza media",
+    colToNext: "→ successivo",
+    footerHint: "Conversione = uscite che sono atterrate sullo stage successivo canonico / totale uscite osservate negli ultimi 90 giorni. Gli stage senza uscite nella finestra mostrano n=0 — sono lenti o stabili, non cattivi.",
+    errLoadFailed: "Impossibile caricare il funnel",
+  },
+
 };
 
 export default it;
