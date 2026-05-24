@@ -4755,6 +4755,18 @@ const ko: Translations = {
     nextButton: "다음 →",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — 문서 미리보기",
+    printSavePdf: "인쇄 / PDF 저장",
+    close: "닫기",
+    documentNotFound: "문서를 찾을 수 없습니다",
+    loadingError: "문서 로드 실패",
+    networkError: "네트워크 오류",
+    docNumberLabel: "문서 번호:",
+    confidentialFooter: "FUZE Biotech Inc. — 기밀",
+    generatedTemplate: "생성됨:",
+  },
+
 };
 
 export default ko;
