@@ -8012,6 +8012,33 @@ const es: Translations = {
     resumeBtn: "Reanudar",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ Tratado con FUZE verificado",
+    tierPrefix: "Nivel FUZE",
+    productSectionTitle: "Producto",
+    skuLabel: "SKU",
+    batchLabel: "Lote",
+    fuzeNumberLabel: "FUZE #",
+    constructionLabel: "Construcción",
+    weightLabel: "Peso",
+    weightUnit: "GSM",
+    mostRecentValidation: "Validación más reciente",
+    testedPrefix: "Probado",
+    afterWashesPrefix: "tras",
+    afterWashesSuffix: "lavados",
+    whatDoesThisMean: "¿Qué significa esto?",
+    explainerP1: "FUZE es un tratamiento antimicrobiano textil propietario. El metamaterial FUZE se une permanentemente a la superficie de la fibra durante el acabado textil estándar — sin lixiviación, sin PFAS, sin cambios químicos en el tacto ni la transpirabilidad del tejido.",
+    explainerP2: "La reducción bacteriana ocurre por contacto directo con el metamaterial unido — por eso FUZE lidera con ASTM E2149 (la prueba de contacto-muerte diseñada para antimicrobianos no lixiviantes), junto con AATCC 100 para la validación de geometría en capas.",
+    certificationsLabel: "Certificaciones:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I, aprobado por bluesign®, registrado por EPA, aprobado por California EPA (Q1 2026), libre de PFAS.",
+    sustainabilityTitle: "Sostenibilidad",
+    sustainabilityBody: "FUZE consumido en este tejido hasta la fecha.",
+    seeMorePrefix: "Ver más",
+    seeMoreSuffix: "productos certificados →",
+    learnMoreLink: "Más información sobre la tecnología FUZE →",
+    footerVerifiedBy: "Verificado por FUZE Atlas",
+  },
+
 };
 
 export default es;
