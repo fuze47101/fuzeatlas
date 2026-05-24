@@ -6845,6 +6845,34 @@ const hi: Translations = {
     errLoadFailed: "फनल लोड करने में विफल",
   },
 
+  bdSequenceAnalytics: {
+    loading: "लोड हो रहा है…",
+    crumbBdSequences: "BD सीक्वेंस",
+    crumbAnalytics: "एनालिटिक्स",
+    modeSequence: "सीक्वेंस",
+    modeCadence: "कैडेंस",
+    title: "फनल एनालिटिक्स",
+    aggregatedAcross: "में समेकित",
+    sequenceSingular: "सीक्वेंस",
+    sequencePlural: "सीक्वेंस",
+    onCadenceLabel: "कैडेंस पर",
+    emptyBefore: "इस पर अभी कोई भेजने की गतिविधि नहीं",
+    stepLabel: "चरण",
+    sentSuffix: "भेजा",
+    mSent: "भेजे गए",
+    mOpens: "खुले",
+    mClicks: "क्लिक",
+    mReplies: "उत्तर",
+    mMeetings: "बैठकें",
+    mAvgDaysReply: "औसत दिन → उत्तर",
+    subjectVariantsTitle: "विषय रूपांतर",
+    colSubject: "विषय",
+    colSent: "भेजा",
+    colOpens: "खुले",
+    colOpenRate: "खुलने की दर",
+    errLoadFailed: "एनालिटिक्स लोड करने में विफल",
+  },
+
 };
 
 export default hi;
