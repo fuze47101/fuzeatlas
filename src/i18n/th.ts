@@ -7802,6 +7802,24 @@ const th: Translations = {
     footerCertifiedBy: "ได้รับการรับรองโดย FUZE Atlas",
   },
 
+  forgotPassword: {
+    brandSubtitle: "รีเซ็ตรหัสผ่านของคุณ",
+    cardTitle: "ลืมรหัสผ่าน?",
+    cardBody: "ป้อนที่อยู่อีเมลของคุณและเราจะส่งลิงก์รีเซ็ตรหัสผ่านให้คุณ",
+    emailLabel: "ที่อยู่อีเมล",
+    emailPlaceholder: "you@801inc.com",
+    sendBtn: "ส่งลิงก์รีเซ็ต",
+    sendingBusy: "กำลังส่ง...",
+    rememberPrefix: "จำรหัสผ่านได้แล้ว?",
+    signInLink: "เข้าสู่ระบบ",
+    failedFallback: "ไม่สามารถดำเนินการคำขอได้",
+    networkError: "ข้อผิดพลาดเครือข่าย",
+    checkEmailTitle: "ตรวจสอบอีเมลของคุณ",
+    checkEmailBody: "หากบัญชีมีอยู่กับอีเมลนั้น คุณจะได้รับลิงก์รีเซ็ตรหัสผ่านในไม่ช้า",
+    backToSignIn: "กลับไปยังหน้าเข้าสู่ระบบ",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default th;
