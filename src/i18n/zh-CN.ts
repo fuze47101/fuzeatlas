@@ -4569,6 +4569,32 @@ const zhCN: Translations = {
     sanityRangesHeader: "合理性检查范围",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← 返回 ICP 样品制备",
+    printButton: "🖨 打印 / 保存为 PDF",
+    eyebrow: "FUZE Biotech · 实验室 SOP",
+    pageTitle: "ICP-MS 样品制备",
+    pageSubtitle: "裁切 → 称重 → 切碎 → 装袋 → 寄至 CTLA(犹他州)进行 ICP-MS 验证",
+    docLabel: "文档:SOP-FUZE-LAB-002",
+    revLabel: "版本:1.0 ·",
+
+    purposeHeader: "目的",
+    equipmentHeader: "设备",
+    massTargetsHeader: "质量目标(关键)",
+    shipToLabel: "寄至 CTLA",
+    digestPerRunLabel: "每次消解",
+    cutterGeometryLabel: "切割器几何",
+
+    criticalRulesHeader: "⚠ 关键制备规则",
+    procedureHeader: "操作步骤",
+    shippingAddressHeader: "寄送地址(由向导自动填入)",
+    shipToHeader: "寄至",
+    returnAddressHeader: "回址 + 报告",
+    reportToLabel: "报告对象:",
+    preShipChecklistHeader: "✅ 寄前检查清单(向导会打印在包装单上)",
+    sanityCheckHeader: "合理性检查(CTLA 应报告的内容)",
+  },
+
 };
 
 export default zhCN;
