@@ -7433,6 +7433,23 @@ const it: Translations = {
     whatYouCanClaimBtn: "Cosa puoi dichiarare →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ Certificato da FUZE Atlas",
+    statFabricsCertified: "Tessuti certificati",
+    statTestsPassed: "Test superati (12 mesi)",
+    statCountries: "Paesi di spedizione",
+    activeTiersTitle: "Tier FUZE attivi",
+    activeTiersBody: "Livelli di trattamento attualmente in produzione presso strutture certificate.",
+    lastPassedLabel: "Ultimo superato",
+    aboutSummaryTitle: "Sulla tecnologia FUZE",
+    verifyCtaTitle: "Verifica un prodotto specifico",
+    verifyCtaBody: "Ogni prodotto certificato porta un codice QR univoco collegato al suo lotto di produzione e alla cronologia dei test.",
+    verifyCtaBtn: "Cerca un prodotto →",
+    footerCertifiedBy: "Certificato da FUZE Atlas",
+    brandSiteLink: "Sito del marchio →",
+    contactLink: "Contatto",
+  },
+
 };
 
 export default it;
