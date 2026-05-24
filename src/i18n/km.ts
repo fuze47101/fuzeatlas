@@ -7522,6 +7522,30 @@ const km: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "កំពុងផ្ទុក invitation…",
+    notFoundTitle: "ការអញ្ជើញ not found",
+    notFoundFallback: "This invitation link may have expired or already been used.",
+    chipLabel: "FUZE Atlas invitation",
+    headingMiddle: "invited",
+    headingSuffix: "to their FUZE supply chain",
+    heroSubtitleFallbackPrefix: "uses FUZE Atlas to coordinate antimicrobial textile programs across their supply chain.",
+    heroSubtitleFallbackSuffix: "Joining lets the factory submit fabrics for testing, place FUZE orders, and track ICP results — all directly tied to the brand.",
+    notePrefix: "ទេte from",
+    closedPrefix: "This invitation has already been",
+    closedReachOutPrefix: "Reach out to",
+    closedTeamFallbackPrefix: "the",
+    closedTeamFallbackSuffix: "team",
+    closedFreshLink: "if you need a fresh link.",
+    signUpCta: "ចុះឈ្មោះ",
+    signUpSubPrefix: "Create a new",
+    signUpSubSuffix: "account on Atlas",
+    alreadyInCta: "We're already in Atlas",
+    alreadyInSub: "ចូល and link your existing factory",
+    sentPrefix: "ការអញ្ជើញ sent",
+    questionsPrefix: "· Questions?",
+  },
+
 };
 
 export default km;
