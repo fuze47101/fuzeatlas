@@ -7905,6 +7905,24 @@ const zhTW: Translations = {
     websiteLabel: "網站",
   },
 
+  importContacts: {
+    title: "批次匯入 — 聯絡人",
+    subtitle: "貼上或上傳聯絡人 CSV。電子郵件為自然鍵——有電子郵件時依電子郵件 upsert。沒有電子郵件但有 LinkedIn 網址的列會以「缺少電子郵件」匯入，讓現有的 Apollo 補強任務追蹤。兩者皆無的列會被拒絕。",
+    backLabel: "潛在客戶管理",
+    firstNameLabel: "名字",
+    lastNameLabel: "姓氏",
+    emailLabel: "電子郵件",
+    emailHint: "若無 LinkedIn 網址則為必填",
+    linkedinLabel: "LinkedIn 網址",
+    linkedinHint: "電子郵件缺少時的替代識別碼",
+    brandNameLabel: "品牌名稱",
+    brandNameHint: "不分大小寫比對 Brand.name；找不到時不連結",
+    jobTitleLabel: "職稱",
+    phoneLabel: "電話",
+    titleLabel: "尊稱（敬稱）",
+    titleHint: "例如「先生」、「博士」",
+  },
+
 };
 
 export default zhTW;
