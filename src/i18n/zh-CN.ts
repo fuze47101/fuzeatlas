@@ -7846,6 +7846,24 @@ const zhCN: Translations = {
     openSameLink: "打开同一链接 →",
   },
 
+  apiDocs: {
+    heading: "API 文档",
+    subtitle: "FUZE Atlas API 参考",
+    authStrong: "身份认证：",
+    authBodyPrefix: "除以下端点外",
+    authBodySuffix: "，所有端点均需有效的 JWT 会话 Cookie。",
+    searchPlaceholder: "按路径或描述搜索端点…",
+    allMethodsBtn: "所有方法",
+    showingPrefix: "显示",
+    showingOf: "/",
+    endpointsLabel: "个端点",
+    collapseAllBtn: "全部折叠",
+    expandAllBtn: "全部展开",
+    noResults: "未找到匹配的端点。",
+    clearFiltersBtn: "清除筛选",
+    footerPrefix: "FUZE Atlas API 文档 - 最近更新于",
+  },
+
 };
 
 export default zhCN;
