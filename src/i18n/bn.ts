@@ -6873,6 +6873,29 @@ const bn: Translations = {
     errLoadFailed: "অ্যানালিটিক্স লোড করতে ব্যর্থ",
   },
 
+  orderQrLabel: {
+    orderNotFound: "অর্ডার পাওয়া যায়নি।",
+    headerKicker: "QR লেবেল",
+    previewPublicLink: "পাবলিক পেজ প্রিভিউ →",
+    brandLine: "FUZE Biotech",
+    brandLocation: "Salt Lake City, Utah USA",
+    orderLabel: "অর্ডার",
+    scanToVerifyTitle: "যাচাই করতে স্ক্যান করুন",
+    scanToVerifyBody: "শিপমেন্ট স্ট্যাটাস, লাইফসাইকেল, SDS, এবং COA লোড করতে এই লেবেলটি ফোন ক্যামেরায় খুলুন।",
+    tierLabel: "টায়ার",
+    volumeLabel: "ভলিউম",
+    bottlesSuffix: "বোতল",
+    methodLabel: "পদ্ধতি",
+    typeLabel: "টাইপ",
+    shipToLabel: "শিপ টু",
+    forBrandLabel: "ব্র্যান্ডের জন্য",
+    viaDistributorLabel: "ডিস্ট্রিবিউটরের মাধ্যমে",
+    fabricLabel: "ফেব্রিক",
+    trackingLabel: "ট্র্যাকিং",
+    footerTagline: "FUZE F1–F4 · metamaterial অ্যান্টিমাইক্রোবিয়াল ট্রিটমেন্ট · PFAS-মুক্ত",
+    printedPrefix: "প্রিন্ট",
+  },
+
 };
 
 export default bn;
