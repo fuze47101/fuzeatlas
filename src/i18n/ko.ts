@@ -4875,6 +4875,49 @@ const ko: Translations = {
     sowEmptyNothingStuck: "정체된 항목이 없습니다.",
   },
 
+  ordersAdmin: {
+    pageTitle: "주문 관리",
+    pageSubtitle: "모든 FUZE 주문 검토, 승인 및 추적",
+    myAccountsOnly: "내 계정만",
+    awaitingApprovalTemplate: "{n}개 주문이 승인 대기 중",
+
+    statTotal: "전체",
+    statPending: "대기 중",
+    statApproved: "승인됨",
+    statProcessing: "처리 중",
+    statShipped: "발송됨",
+    statDelivered: "배송 완료",
+    statRevenue: "매출",
+
+    filterAll: "전체",
+    filterAllTypes: "모든 유형",
+
+    emptyMessage: "필터와 일치하는 주문이 없습니다",
+
+    colOrder: "주문",
+    colFactory: "공장",
+    colType: "유형",
+    colVolume: "수량",
+    colBrand: "브랜드",
+    colTotal: "총액",
+    colFulfillment: "이행",
+    colStatus: "상태",
+    colDate: "날짜",
+
+    statusDraft: "초안",
+    statusQuoted: "견적 완료",
+    statusPendingApproval: "승인 대기 중",
+    statusApproved: "승인됨",
+    statusConfirmed: "확정됨",
+    statusProcessing: "처리 중",
+    statusShipped: "발송됨",
+    statusDelivered: "배송 완료",
+    statusCancelled: "취소됨",
+
+    directUsaLabel: "직접 USA",
+    tagsSuffix: "태그",
+  },
+
 };
 
 export default ko;
