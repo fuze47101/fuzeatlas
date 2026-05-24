@@ -7480,6 +7480,32 @@ const zhCN: Translations = {
     daySuffix: "天前",
   },
 
+  resetPassword: {
+    tagline: "创建新密码",
+    formTitle: "重置密码",
+    newPasswordLabel: "新密码",
+    newPasswordPlaceholder: "请输入新密码",
+    confirmPasswordLabel: "确认密码",
+    confirmPasswordPlaceholder: "确认密码",
+    resetBtn: "重置密码",
+    resettingBtn: "正在重置…",
+    backToSignIn: "返回登录",
+    successTitle: "密码重置成功",
+    successBody: "您的密码已成功重置。现在可以使用新密码登录。",
+    signInBtn: "登录",
+    invalidLinkTitle: "重置链接无效",
+    invalidLinkBody: "重置链接无效或已过期。请重新申请。",
+    requestNewLinkBtn: "申请新链接",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "正在加载…",
+    errInvalidToken: "重置令牌无效或缺失",
+    errInvalidTokenShort: "重置令牌无效",
+    errMinLength: "密码至少 6 个字符",
+    errMismatch: "两次输入的密码不一致",
+    errResetFailed: "密码重置失败",
+    errNetwork: "网络错误",
+  },
+
 };
 
 export default zhCN;
