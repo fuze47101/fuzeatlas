@@ -7366,6 +7366,31 @@ const ta: Translations = {
     claimsLink: "உரிமைகோரல்கள்",
   },
 
+  changePassword: {
+    titleDefault: "கடவுச்சொல்லை மாற்று",
+    titleForced: "உங்கள் புதிய கடவுச்சொல்லை அமை",
+    forcedBanner: "உங்களுக்கு ஒரு தற்காலிக கடவுச்சொல் ஒதுக்கப்பட்டது. தொடர பாதுகாப்பான கடவுச்சொல்லை உருவாக்கவும்.",
+    currentPasswordLabel: "தற்போதைய கடவுச்சொல்",
+    newPasswordLabel: "புதிய கடவுச்சொல்",
+    newPasswordPlaceholder: "குறை. 8 எழுத்துக்கள், 1 பெரிய எழுத்து, 1 எண்",
+    confirmPasswordLabel: "புதிய கடவுச்சொல்லை உறுதிப்படுத்து",
+    reqMinChars: "குறைந்தபட்சம் 8 எழுத்துக்கள்",
+    reqUppercase: "ஒரு பெரிய எழுத்து",
+    reqNumber: "ஒரு எண்",
+    reqMatch: "கடவுச்சொற்கள் பொருந்துகின்றன",
+    updateBtn: "கடவுச்சொல்லை புதுப்பி",
+    setAndContinueBtn: "கடவுச்சொல்லை அமை & தொடர்",
+    updatingBtn: "புதுப்பிக்கிறது...",
+    cancelBtn: "ரத்து",
+    passwordUpdatedTitle: "கடவுச்சொல் புதுப்பிக்கப்பட்டது",
+    redirecting: "உங்களை இப்போது redirect செய்கிறது...",
+    errPasswordsDoNotMatch: "கடவுச்சொற்கள் பொருந்தவில்லை",
+    errMinLength: "கடவுச்சொல் குறைந்தபட்சம் 8 எழுத்துக்கள் இருக்க வேண்டும்",
+    errNeedUppercase: "கடவுச்சொல்லில் குறைந்தபட்சம் ஒரு பெரிய எழுத்து இருக்க வேண்டும்",
+    errNeedNumber: "கடவுச்சொல்லில் குறைந்தபட்சம் ஒரு எண் இருக்க வேண்டும்",
+    errGeneric: "கடவுச்சொல்லை மாற்ற முடியவில்லை",
+  },
+
 };
 
 export default ta;
