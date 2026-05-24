@@ -7271,6 +7271,32 @@ const ta: Translations = {
     errSendFailed: "சரிபார்ப்பு மின்னஞ்சலை அனுப்ப முடியவில்லை",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "பொது ஆவணங்கள்",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "FUZE",
+    headerLeadAfter: "தயாரிப்பு வரிசைக்கான பொது குறிப்பு ஆவணங்கள். தனிப்பட்ட ஆவணங்களுக்கு (முழு TDS/SDS, உள்ளக விலை, application guides), உங்கள் பாத்திரத்திற்கான FUZE Atlas portal-இல் உள்நுழையவும்.",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "நச்சுயியல்",
+    catPricing: "விலை",
+    catSustainability: "நிலைத்தன்மை",
+    catEducation: "கல்வி",
+    catClaimsCompliance: "உரிமைகோரல்கள் & இணக்கம்",
+    catApplicationGuide: "Application Guide",
+    catCaseStudy: "Case Study",
+    loading: "ஏற்றுகிறது…",
+    emptyBefore: "இதற்கு பொது ஆவணங்கள் இல்லை",
+    emptyAfter: "இன்னும். தனிப்பட்ட நூலகத்திற்கு FUZE-ஐ தொடர்பு கொள்ளவும்.",
+    loginCta: "Atlas-இல் உள்நுழை →",
+    versionPrefix: "பதிப்பு",
+    downloadBtn: "↓ பதிவிறக்கம்",
+    unknownLineTitle: "தெரியாத தயாரிப்பு வரிசை",
+    unknownLineBody: "FUZE-க்கு நான்கு டியர்கள் உள்ளன: F1, F2, F3, F4. அவற்றில் ஒன்றை முயற்சிக்கவும்.",
+    errLoadFailed: "ஏற்ற முடியவில்லை",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default ta;
