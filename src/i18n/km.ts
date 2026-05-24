@@ -6984,6 +6984,32 @@ const km: Translations = {
     daySuffix: "d ago",
   },
 
+  resetPassword: {
+    tagline: "Create a new password",
+    formTitle: "Reset ពាក្យសម្ងាត់",
+    newPasswordLabel: "ថ្មី ពាក្យសម្ងាត់",
+    newPasswordPlaceholder: "Enter new password",
+    confirmPasswordLabel: "បញ្ជាក់ ពាក្យសម្ងាត់",
+    confirmPasswordPlaceholder: "បញ្ជាក់ password",
+    resetBtn: "Reset ពាក្យសម្ងាត់",
+    resettingBtn: "Resetting...",
+    backToSignIn: "ត្រឡប់ to Sign In",
+    successTitle: "ពាក្យសម្ងាត់ Reset ជោគជ័យful",
+    successBody: "Your password has been reset successfully. You can now sign in with your new password.",
+    signInBtn: "Sign In",
+    invalidLinkTitle: "Invalid Reset Link",
+    invalidLinkBody: "The reset link is invalid or has expired. Please request a new one.",
+    requestNewLinkBtn: "Request ថ្មី Link",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "កំពុងផ្ទុក…",
+    errInvalidToken: "Invalid or missing reset token",
+    errInvalidTokenShort: "Invalid reset token",
+    errMinLength: "ពាក្យសម្ងាត់ must be at least 6 characters",
+    errMismatch: "ពាក្យសម្ងាត់s do not match",
+    errResetFailed: "បរាជ័យ to reset password",
+    errNetwork: "Network error",
+  },
+
 };
 
 export default km;
