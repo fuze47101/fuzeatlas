@@ -4476,6 +4476,18 @@ const ta: Translations = {
     nextButton: "அடுத்தது →",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — ஆவண முன்னோட்டம்",
+    printSavePdf: "PDF அச்சிடு / சேமி",
+    close: "மூடு",
+    documentNotFound: "ஆவணம் கிடைக்கவில்லை",
+    loadingError: "ஆவணத்தை ஏற்ற முடியவில்லை",
+    networkError: "நெட்வொர்க் பிழை",
+    docNumberLabel: "ஆவண #:",
+    confidentialFooter: "FUZE Biotech Inc. — ரகசியம்",
+    generatedTemplate: "உருவாக்கப்பட்டது:",
+  },
+
 };
 
 export default ta;
