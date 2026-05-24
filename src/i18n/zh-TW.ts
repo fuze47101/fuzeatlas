@@ -7079,6 +7079,26 @@ const zhTW: Translations = {
     emptyState: "尚無額度。",
   },
 
+  bdFunnel: {
+    loading: "載入中…",
+    crumbSalesPipeline: "銷售與管線",
+    crumbBdFunnel: "BD 漏斗",
+    title: "管線漏斗",
+    subtitle: "過去 30 / 60 / 90 天的流入 / 流出，以及階段間的轉換率。資料來源為每次 Brand.pipelineStage 變更時寫入的 BrandStageTransition 紀錄。",
+    colStage: "階段",
+    colCurrent: "目前",
+    colIn30: "30 天流入",
+    colIn60: "60 天流入",
+    colIn90: "90 天流入",
+    colOut30: "30 天流出",
+    colOut60: "60 天流出",
+    colOut90: "90 天流出",
+    colAvgDwell: "平均停留",
+    colToNext: "→ 下一個",
+    footerHint: "轉換率 = 進入規範下一階段的流出 / 過去 90 天觀察到的總流出。視窗期間無流出的階段顯示 n=0 — 代表進度緩慢或穩定，並非不佳。",
+    errLoadFailed: "載入漏斗失敗",
+  },
+
 };
 
 export default zhTW;
