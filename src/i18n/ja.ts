@@ -7906,6 +7906,24 @@ const ja: Translations = {
     websiteLabel: "ウェブサイト",
   },
 
+  importContacts: {
+    title: "一括インポート — コンタクト",
+    subtitle: "コンタクトの CSV を貼り付けるか、アップロードしてください。メールアドレスを自然キーとし、メールアドレスがあれば upsert します。メールアドレスはなくても LinkedIn URL がある行は「メール未登録」としてインポートし、既存の Apollo エンリッチメントジョブが後追いできるようにします。どちらもない行は拒否されます。",
+    backLabel: "リード管理",
+    firstNameLabel: "名",
+    lastNameLabel: "姓",
+    emailLabel: "メールアドレス",
+    emailHint: "LinkedIn URL がない場合は必須",
+    linkedinLabel: "LinkedIn URL",
+    linkedinHint: "メールアドレスがない場合のフォールバック識別子",
+    brandNameLabel: "ブランド名",
+    brandNameHint: "Brand.name に対する大文字小文字を区別しない一致。見つからない場合はリンクされません",
+    jobTitleLabel: "役職",
+    phoneLabel: "電話番号",
+    titleLabel: "敬称",
+    titleHint: '例 "Mr."、"Dr."',
+  },
+
 };
 
 export default ja;
