@@ -5732,6 +5732,58 @@ const hi: Translations = {
     verdictUnscanned: "अनस्कैन्ड",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← सेटिंग्स",
+    pageTitle: "ईमेल टेम्पलेट",
+    pageSubtitle: "आउटरीच के लिए पुन: उपयोग योग्य ईमेल स्कैफोल्ड। तुरंत वैयक्तिकृत करने के लिए {firstName}, {company}, आदि का उपयोग करें।",
+    btnNew: "+ नया टेम्पलेट",
+    errorRequired: "शीर्षक, विषय, और बॉडी आवश्यक हैं।",
+    errorLoadUser: "उपयोगकर्ता लोड करने में विफल",
+    errorLoadTemplates: "टेम्पलेट लोड करने में विफल",
+    confirmArchive: "\"{title}\" संग्रहित करें? यह पिकर में नहीं दिखेगा।",
+
+    formHeadingEdit: "टेम्पलेट संपादित करें",
+    formHeadingNew: "नया टेम्पलेट",
+    labelTitle: "शीर्षक",
+    placeholderTitle: "जैसे पहला-स्पर्श परिचय (एथलेटिक परिधान)",
+    labelCategory: "श्रेणी",
+    placeholderCategory: "जैसे intro, re-engage, icp-request",
+    labelScope: "दायरा",
+    scopePrivate: "निजी (केवल मैं)",
+    scopeShared: "साझा (पूरी टीम)",
+    scopeGlobal: "वैश्विक (संगठन डिफ़ॉल्ट)",
+    labelSubject: "विषय",
+    placeholderSubject: "नमस्ते {firstName} — {company} के लिए त्वरित FUZE परिचय",
+    labelBody: "बॉडी",
+    btnSaving: "सहेज रहे हैं…",
+    btnSaveChanges: "परिवर्तन सहेजें",
+    btnCreate: "टेम्पलेट बनाएं",
+    btnCancel: "रद्द करें",
+
+    previewHeading: "पूर्वावलोकन",
+    previewHelp: "अपने टोकन कैसे रेंडर होते हैं देखने के लिए नीचे नमूना मानों को संपादित करें।",
+    previewSubjectLabel: "विषय",
+    previewBodyLabel: "बॉडी",
+
+    slotsHeading: "BD Wizard त्वरित-चयन स्लॉट",
+    slotsHelp: "अपने 10 तक टेम्पलेट क्रमांकित स्लॉट पर पिन करें। विज़ार्ड ड्राफ्ट चरण पर, आपको 1-10 बटन स्ट्रिप दिखेगी जो एक-क्लिक से विषय और बॉडी भरती है।",
+    openBdWizard: "BD Wizard खोलें →",
+    slotEmptyTitle: "खाली स्लॉट — नीचे असाइन करें।",
+    slotEmpty: "खाली",
+
+    loadingTemplates: "टेम्पलेट लोड हो रहे हैं…",
+    groupPrivate: "आपके टेम्पलेट",
+    groupShared: "टीम के साथ साझा",
+    groupGlobal: "संगठन-व्यापी डिफ़ॉल्ट",
+    usedSuffix: "उपयोग",
+    byPrefix: "द्वारा",
+    bdSlot: "BD स्लॉट",
+    edit: "संपादित करें",
+    archive: "संग्रहित करें",
+
+    emptyTpl: "अभी कोई टेम्पलेट नहीं। अपना पहला बनाने के लिए + नया टेम्पलेट क्लिक करें।",
+  },
+
 };
 
 export default hi;
