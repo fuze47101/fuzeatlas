@@ -2874,6 +2874,40 @@ const zhTW: Translations = {
     footerAddress: "FUZE Biotech · 美國猶他州鹽湖城 · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "需要 Atlas 登入",
+    authBatchPrefix: "批次",
+    authBlurb:
+      "詳情 — 包括 COA、TDS、SDS — 僅開放 Atlas 使用者查看。",
+    loginCta: "登入 Atlas →",
+    noAccountQuestion: "尚未開通帳號?請聯絡",
+    notFoundTitle: "找不到此批次",
+    notFoundBlurb: "我們找不到批次",
+    returnHome: "返回 Atlas →",
+    productionLocation: "FUZE Biotech · 美國鹽湖城",
+    batchVerification: "批次驗證",
+    qcPassed: "✓ QC 通過",
+    qcFailed: "⚠ QC 未通過",
+    produced: "生產日期",
+    batchDetails: "批次明細",
+    volumeProduced: "生產體積",
+    bottlesFilled: "充填瓶數",
+    concentration: "濃度",
+    productionDate: "生產日期",
+    fuzeMetamaterial: "mg/L FUZE 元材料",
+    batchNotes: "批次備註",
+    documents: "文件",
+    coaTitle: "分析證明書 (COA)",
+    coaDescPrefix: "本批次規格驗證 · 上傳日期",
+    coaPending: "COA 待上傳",
+    coaPendingBlurb: "本批次的分析證明書尚未上傳。",
+    view: "檢視 →",
+    docsEmpty: "TDS / SDS 尚未上傳。管理員可於「產品文件」中新增。",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "有問題嗎?",
+    footerReturnAtlas: "返回 Atlas",
+  },
+
 };
 
 export default zhTW;
