@@ -7099,6 +7099,34 @@ const zhTW: Translations = {
     errLoadFailed: "載入漏斗失敗",
   },
 
+  bdSequenceAnalytics: {
+    loading: "載入中…",
+    crumbBdSequences: "BD 序列",
+    crumbAnalytics: "分析",
+    modeSequence: "序列",
+    modeCadence: "節奏",
+    title: "漏斗分析",
+    aggregatedAcross: "彙總自",
+    sequenceSingular: "個序列",
+    sequencePlural: "個序列",
+    onCadenceLabel: "依節奏",
+    emptyBefore: "尚無此項目的發送活動",
+    stepLabel: "步驟",
+    sentSuffix: "已發送",
+    mSent: "已發送",
+    mOpens: "開信",
+    mClicks: "點擊",
+    mReplies: "回覆",
+    mMeetings: "會議",
+    mAvgDaysReply: "平均天數 → 回覆",
+    subjectVariantsTitle: "主旨變體",
+    colSubject: "主旨",
+    colSent: "已發送",
+    colOpens: "開信",
+    colOpenRate: "開信率",
+    errLoadFailed: "載入分析失敗",
+  },
+
 };
 
 export default zhTW;
