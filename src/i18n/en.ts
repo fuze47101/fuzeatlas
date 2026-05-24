@@ -6438,6 +6438,53 @@ const en = {
     btnCreate: "Create",
     btnCreating: "Creating...",
   },
+  fabricLibraryPage: {
+    pageTitle: "FUZE Fabric Library",
+    pageSubtitle: "Browse FUZE-treated fabrics and verified test results across our global network. All data is anonymized — factory and brand identities are confidential.",
+
+    statFabrics: "Fabrics Tested",
+    statTests: "Total Tests",
+    statIcp: "ICP Analyses",
+    statAb: "Antimicrobial Tests",
+
+    searchPlaceholder: "Search by construction, yarn, end use, FUZE number...",
+    filterAllTypes: "All Test Types",
+    filterIcp: "ICP Analysis",
+    filterAntibacterial: "Antibacterial",
+    filterFungal: "Antifungal",
+    filterOdor: "Odor Control",
+    passOnly: "Pass only",
+
+    emptyTitle: "No fabrics match your criteria",
+    emptyClear: "Clear all filters",
+    errorFailedLoad: "Failed to load fabric library",
+    errorFailedDefault: "Failed to load",
+
+    testsSuffix: "tests",
+    testSuffix: "test",
+    propConstruction: "Construction:",
+    propWeight: "Weight:",
+    propWidth: "Width:",
+    propYarn: "Yarn:",
+    propCategory: "Category:",
+    propEndUse: "End Use:",
+    propWeave: "Weave:",
+    propColor: "Color:",
+
+    colTest: "Test",
+    colMethod: "Method",
+    colWashes: "Washes",
+    colResult: "Result",
+    colStatus: "Status",
+    pass: "Pass",
+    fail: "Fail",
+    passBadge: "PASS",
+    failBadge: "FAIL",
+
+    paginationPrev: "Previous",
+    paginationNext: "Next",
+    paginationLabel: "Page {page} of {pages}",
+  },
 };
 
 export default en;

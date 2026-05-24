@@ -3,6 +3,7 @@
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
+import { useI18n } from "@/i18n";
 
 interface TestResult {
   testType: string;
@@ -40,14 +41,6 @@ interface Stats {
   totalAb: number;
 }
 
-const TEST_TYPE_LABELS: Record<string, string> = {
-  ICP: "ICP Analysis",
-  ANTIBACTERIAL: "Antibacterial",
-  FUNGAL: "Antifungal",
-  ODOR: "Odor Control",
-  UV: "UV Resistance",
-  MOISTURE: "Moisture",
-};
 
 const TEST_TYPE_COLORS: Record<string, string> = {
   ICP: "bg-violet-100 text-violet-800 border-violet-200",
@@ -59,6 +52,16 @@ const TEST_TYPE_COLORS: Record<string, string> = {
 };
 
 export default function FabricLibraryPage() {
+  const { t } = useI18n();
+  const T = t.fabricLibraryPage;
+  const TEST_TYPE_LABELS: Record<string, string> = {
+    ICP: T.filterIcp,
+    ANTIBACTERIAL: T.filterAntibacterial,
+    FUNGAL: T.filterFungal,
+    ODOR: T.filterOdor,
+    UV: "UV Resistance",
+    MOISTURE: "Moisture",
+  };
   const { user } = useAuth();
   const router = useRouter();
   const [catalog, setCatalog] = useState<CatalogFabric[]>([]);
@@ -97,10 +100,10 @@ export default function FabricLibraryPage() {
         setStats(data.stats);
         setTotalPages(data.pagination.totalPages);
       } else {
-        setError(data.error || "Failed to load");
+        setError(data.error || T.errorFailedDefault);
       }
     } catch {
-      setError("Failed to load fabric library");
+      setError(T.errorFailedLoad);
     } finally {
       setLoading(false);
     }
@@ -125,29 +128,28 @@ export default function FabricLibraryPage() {
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-900 mb-2">FUZE Fabric Library</h1>
+        <h1 className="text-3xl font-black text-slate-900 mb-2">{T.pageTitle}</h1>
         <p className="text-slate-600 max-w-2xl">
-          Browse FUZE-treated fabrics and verified test results across our global network.
-          All data is anonymized — factory and brand identities are confidential.
+          {T.pageSubtitle}
         </p>
       </div>
 
       {/* Stats Banner */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         <div className="bg-gradient-to-br from-[#00b4c3] to-[#009ba8] rounded-xl p-4 text-white">
-          <p className="text-xs text-white/70 uppercase tracking-wider font-semibold">Fabrics Tested</p>
+          <p className="text-xs text-white/70 uppercase tracking-wider font-semibold">{T.statFabrics}</p>
           <p className="text-3xl font-black mt-1">{stats.totalFabrics.toLocaleString()}</p>
         </div>
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 text-white">
-          <p className="text-xs text-white/70 uppercase tracking-wider font-semibold">Total Tests</p>
+          <p className="text-xs text-white/70 uppercase tracking-wider font-semibold">{T.statTests}</p>
           <p className="text-3xl font-black mt-1">{stats.totalTests.toLocaleString()}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-xl p-4">
-          <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">ICP Analyses</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">{T.statIcp}</p>
           <p className="text-3xl font-black text-violet-700 mt-1">{stats.totalIcp.toLocaleString()}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-xl p-4">
-          <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Antimicrobial Tests</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">{T.statAb}</p>
           <p className="text-3xl font-black text-emerald-700 mt-1">{stats.totalAb.toLocaleString()}</p>
         </div>
       </div>
@@ -162,7 +164,7 @@ export default function FabricLibraryPage() {
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search by construction, yarn, end use, FUZE number..."
+            placeholder={T.searchPlaceholder}
             className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
           />
         </div>
@@ -171,11 +173,11 @@ export default function FabricLibraryPage() {
           onChange={(e) => { setTestTypeFilter(e.target.value); setPage(1); }}
           className="border border-slate-300 rounded-lg px-3 py-2.5 text-sm bg-white min-w-[160px] focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
         >
-          <option value="">All Test Types</option>
-          <option value="ICP">ICP Analysis</option>
-          <option value="ANTIBACTERIAL">Antibacterial</option>
-          <option value="FUNGAL">Antifungal</option>
-          <option value="ODOR">Odor Control</option>
+          <option value="">{T.filterAllTypes}</option>
+          <option value="ICP">{T.filterIcp}</option>
+          <option value="ANTIBACTERIAL">{T.filterAntibacterial}</option>
+          <option value="FUNGAL">{T.filterFungal}</option>
+          <option value="ODOR">{T.filterOdor}</option>
         </select>
         <label className="flex items-center gap-2 px-3 py-2.5 border border-slate-300 rounded-lg text-sm bg-white cursor-pointer hover:bg-slate-50 whitespace-nowrap">
           <input
@@ -184,7 +186,7 @@ export default function FabricLibraryPage() {
             onChange={(e) => { setPassOnly(e.target.checked); setPage(1); }}
             className="rounded text-[#00b4c3] focus:ring-[#00b4c3]"
           />
-          Pass only
+          {T.passOnly}
         </label>
       </div>
 
@@ -198,12 +200,12 @@ export default function FabricLibraryPage() {
         </div>
       ) : catalog.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
-          <p className="text-slate-500 mb-2">No fabrics match your criteria</p>
+          <p className="text-slate-500 mb-2">{T.emptyTitle}</p>
           <button
             onClick={() => { setSearchInput(""); setSearch(""); setTestTypeFilter(""); setPassOnly(false); }}
             className="text-[#00b4c3] hover:underline font-medium text-sm"
           >
-            Clear all filters
+            {T.emptyClear}
           </button>
         </div>
       ) : (
@@ -245,7 +247,7 @@ export default function FabricLibraryPage() {
                       ))}
                     </div>
                     <span className="text-xs text-slate-400 whitespace-nowrap">
-                      {fabric.testCount} test{fabric.testCount !== 1 ? "s" : ""}
+                      {fabric.testCount} {fabric.testCount !== 1 ? T.testsSuffix : T.testSuffix}
                     </span>
                     <svg
                       className={`w-4 h-4 text-slate-400 transition-transform ${expandedFabric === fabric.fuzeNumber ? "rotate-180" : ""}`}
@@ -262,28 +264,28 @@ export default function FabricLibraryPage() {
                     {/* Fabric Properties */}
                     <div className="flex flex-wrap gap-x-6 gap-y-2 mb-4 text-sm">
                       {fabric.construction && (
-                        <div><span className="text-slate-500">Construction:</span> <span className="font-medium text-slate-800">{fabric.construction}</span></div>
+                        <div><span className="text-slate-500">{T.propConstruction}</span> <span className="font-medium text-slate-800">{fabric.construction}</span></div>
                       )}
                       {fabric.weightGsm && (
-                        <div><span className="text-slate-500">Weight:</span> <span className="font-medium text-slate-800">{fabric.weightGsm} GSM</span></div>
+                        <div><span className="text-slate-500">{T.propWeight}</span> <span className="font-medium text-slate-800">{fabric.weightGsm} GSM</span></div>
                       )}
                       {fabric.widthInches && (
-                        <div><span className="text-slate-500">Width:</span> <span className="font-medium text-slate-800">{fabric.widthInches}&quot;</span></div>
+                        <div><span className="text-slate-500">{T.propWidth}</span> <span className="font-medium text-slate-800">{fabric.widthInches}&quot;</span></div>
                       )}
                       {fabric.yarnType && (
-                        <div><span className="text-slate-500">Yarn:</span> <span className="font-medium text-slate-800">{fabric.yarnType}</span></div>
+                        <div><span className="text-slate-500">{T.propYarn}</span> <span className="font-medium text-slate-800">{fabric.yarnType}</span></div>
                       )}
                       {fabric.fabricCategory && (
-                        <div><span className="text-slate-500">Category:</span> <span className="font-medium text-slate-800 capitalize">{fabric.fabricCategory}</span></div>
+                        <div><span className="text-slate-500">{T.propCategory}</span> <span className="font-medium text-slate-800 capitalize">{fabric.fabricCategory}</span></div>
                       )}
                       {fabric.endUse && (
-                        <div><span className="text-slate-500">End Use:</span> <span className="font-medium text-slate-800">{fabric.endUse}</span></div>
+                        <div><span className="text-slate-500">{T.propEndUse}</span> <span className="font-medium text-slate-800">{fabric.endUse}</span></div>
                       )}
                       {fabric.weavePattern && (
-                        <div><span className="text-slate-500">Weave:</span> <span className="font-medium text-slate-800">{fabric.weavePattern}</span></div>
+                        <div><span className="text-slate-500">{T.propWeave}</span> <span className="font-medium text-slate-800">{fabric.weavePattern}</span></div>
                       )}
                       {fabric.color && (
-                        <div><span className="text-slate-500">Color:</span> <span className="font-medium text-slate-800">{fabric.color}</span></div>
+                        <div><span className="text-slate-500">{T.propColor}</span> <span className="font-medium text-slate-800">{fabric.color}</span></div>
                       )}
                     </div>
 
@@ -293,11 +295,11 @@ export default function FabricLibraryPage() {
                         <table className="w-full text-sm">
                           <thead className="bg-slate-100 border-b border-slate-200">
                             <tr>
-                              <th className="text-left px-3 py-2 font-semibold text-slate-700">Test</th>
-                              <th className="text-left px-3 py-2 font-semibold text-slate-700">Method</th>
-                              <th className="text-left px-3 py-2 font-semibold text-slate-700 hidden sm:table-cell">Washes</th>
-                              <th className="text-left px-3 py-2 font-semibold text-slate-700">Result</th>
-                              <th className="text-left px-3 py-2 font-semibold text-slate-700">Status</th>
+                              <th className="text-left px-3 py-2 font-semibold text-slate-700">{T.colTest}</th>
+                              <th className="text-left px-3 py-2 font-semibold text-slate-700">{T.colMethod}</th>
+                              <th className="text-left px-3 py-2 font-semibold text-slate-700 hidden sm:table-cell">{T.colWashes}</th>
+                              <th className="text-left px-3 py-2 font-semibold text-slate-700">{T.colResult}</th>
+                              <th className="text-left px-3 py-2 font-semibold text-slate-700">{T.colStatus}</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100">
@@ -319,8 +321,8 @@ export default function FabricLibraryPage() {
                                   {test.testType === "ANTIBACTERIAL" && (
                                     <span>{formatReduction(test.percentReduction)}{test.organism ? <span className="text-xs text-slate-400 ml-1">({test.organism})</span> : ""}</span>
                                   )}
-                                  {test.testType === "FUNGAL" && (test.fungalPass != null ? (test.fungalPass ? "Pass" : "Fail") : "—")}
-                                  {test.testType === "ODOR" && (test.odorPass != null ? (test.odorPass ? "Pass" : "Fail") : "—")}
+                                  {test.testType === "FUNGAL" && (test.fungalPass != null ? (test.fungalPass ? T.pass : T.fail) : "—")}
+                                  {test.testType === "ODOR" && (test.odorPass != null ? (test.odorPass ? T.pass : T.fail) : "—")}
                                   {!["ICP", "ANTIBACTERIAL", "FUNGAL", "ODOR"].includes(test.testType) && "—"}
                                 </td>
                                 <td className="px-3 py-2">
@@ -331,8 +333,8 @@ export default function FabricLibraryPage() {
                                     else if (test.testType === "FUNGAL") pass = test.fungalPass ?? null;
                                     else if (test.testType === "ODOR") pass = test.odorPass ?? null;
 
-                                    if (pass === true) return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">PASS</span>;
-                                    if (pass === false) return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700">FAIL</span>;
+                                    if (pass === true) return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">{T.passBadge}</span>;
+                                    if (pass === false) return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700">{T.failBadge}</span>;
                                     return <span className="text-slate-400 text-xs">—</span>;
                                   })()}
                                 </td>
@@ -356,17 +358,17 @@ export default function FabricLibraryPage() {
                 disabled={page === 1}
                 className="px-3 py-2 border border-slate-300 rounded-lg text-sm disabled:opacity-40 hover:bg-slate-50"
               >
-                Previous
+                {T.paginationPrev}
               </button>
               <span className="text-sm text-slate-600 px-4">
-                Page {page} of {totalPages}
+                {T.paginationLabel.replace("{page}", String(page)).replace("{pages}", String(totalPages))}
               </span>
               <button
                 onClick={() => setPage(Math.min(totalPages, page + 1))}
                 disabled={page === totalPages}
                 className="px-3 py-2 border border-slate-300 rounded-lg text-sm disabled:opacity-40 hover:bg-slate-50"
               >
-                Next
+                {T.paginationNext}
               </button>
             </div>
           )}
