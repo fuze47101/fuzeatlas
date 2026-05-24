@@ -4554,6 +4554,48 @@ const th: Translations = {
     sanityRangesHeader: "ช่วงตรวจสอบความสมเหตุสมผล",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "รีวิวผู้บริหารรายสัปดาห์",
+    weekOfTemplate: "สัปดาห์ของ",
+    coveringPrefix: "ครอบคลุม",
+    daysWindowSuffix: "-วันหน้าต่าง",
+    ownerLabel: "เจ้าของ:",
+    generatedLabel: "สร้างเมื่อ",
+    enterPresent: "นำเสนอ",
+    exitPresent: "ออกการนำเสนอ",
+    refreshing: "กำลังรีเฟรช…",
+    refreshSnapshot: "รีเฟรช snapshot",
+
+    execSummaryTitle: "สรุปผู้บริหาร",
+    execSummaryPlaceholder: "ข้อสรุปหลักสำหรับบอร์ด บันทึกอัตโนมัติเมื่อเลื่อนออก",
+    saving: "กำลังบันทึก…",
+
+    salesDistributionTitle: "ขาย & การจัดจำหน่าย",
+    bookedDollars: "จองแล้ว $",
+    shippedDollars: "ส่งแล้ว $",
+    bookedLiters: "จองแล้ว L",
+    shippedLiters: "ส่งแล้ว L",
+    ordersSuffix: "คำสั่งซื้อ",
+    shipmentsSuffix: "การจัดส่ง",
+    kgShippedSuffix: "kg ที่ส่ง",
+    byOrderTypeLabel: "ตามประเภทคำสั่งซื้อ",
+
+    sowProgressTitle: "ความคืบหน้า SOW",
+    sowDraft: "ร่าง",
+    sowSent: "ส่งแล้ว",
+    sowSigned: "ลงนามแล้ว",
+    sowActive: "ใช้งานอยู่",
+    sowComplete: "เสร็จสิ้น",
+    sowSignedThisWindow: "ลงนามในหน้าต่างนี้",
+    sowNewlyOpened: "เปิดใหม่",
+    sowActiveTitle: "ใช้งานอยู่",
+    sowStale: "ค้าง (>30วัน ไม่มีความคืบหน้า)",
+    sowEmptyNoSignatures: "ไม่มีการลงนามใหม่ในหน้าต่างนี้",
+    sowEmptyNoOpened: "ไม่มี SOW เปิดในหน้าต่างนี้",
+    sowEmptyNoActive: "ไม่มี SOW ที่ใช้งานอยู่",
+    sowEmptyNothingStuck: "ไม่มีอะไรค้าง",
+  },
+
 };
 
 export default th;
