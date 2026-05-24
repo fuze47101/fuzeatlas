@@ -7095,6 +7095,34 @@ const zhCN: Translations = {
     errLoadFailed: "加载漏斗失败",
   },
 
+  bdSequenceAnalytics: {
+    loading: "加载中……",
+    crumbBdSequences: "BD 序列",
+    crumbAnalytics: "分析",
+    modeSequence: "序列",
+    modeCadence: "节奏",
+    title: "漏斗分析",
+    aggregatedAcross: "聚合自",
+    sequenceSingular: "个序列",
+    sequencePlural: "个序列",
+    onCadenceLabel: "按节奏",
+    emptyBefore: "此",
+    stepLabel: "步骤",
+    sentSuffix: "已发送",
+    mSent: "已发送",
+    mOpens: "打开",
+    mClicks: "点击",
+    mReplies: "回复",
+    mMeetings: "会议",
+    mAvgDaysReply: "平均天数 → 回复",
+    subjectVariantsTitle: "主题变体",
+    colSubject: "主题",
+    colSent: "已发送",
+    colOpens: "打开",
+    colOpenRate: "打开率",
+    errLoadFailed: "加载分析失败",
+  },
+
 };
 
 export default zhCN;
