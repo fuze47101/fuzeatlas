@@ -4537,6 +4537,23 @@ const ur: Translations = {
     nameRequiredError: "نام درکار ہے",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← کیلکولیٹر پر واپس",
+    printButton: "🖨 پرنٹ / PDF کے طور پر محفوظ کریں",
+    eyebrow: "FUZE Biotech · لیب SOP",
+    pageTitle: "بینچ ٹیسٹ کا طریقہ کار",
+    pageSubtitle: "FUZE ریسپی کیلکولیٹر — Pad-Dry-Cure پک اپ ریٹ اور ڈائلیوشن",
+    docLabel: "دستاویز: SOP-FUZE-LAB-001",
+    revLabel: "نظرثانی: 1.0 ·",
+    purposeHeader: "مقصد",
+    equipmentHeader: "آلات",
+    chemistryRefHeader: "FUZE کیمسٹری حوالہ",
+    criticalRulesHeader: "⚠ اہم پروٹوکول قواعد",
+    procedureHeader: "طریقہ کار",
+    formulasHeader: "فارمولے (QC کراس چیک کے لیے)",
+    sanityRangesHeader: "Sanity چیک کی حدود",
+  },
+
 };
 
 export default ur;
