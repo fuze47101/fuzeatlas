@@ -7526,6 +7526,23 @@ const bn: Translations = {
     fieldChangedPlural: "ফিল্ড পরিবর্তিত",
   },
 
+  adminLanding: {
+    loadingLabel: "অ্যাডমিন লোড হচ্ছে",
+    crumb: "অ্যাডমিন",
+    heading: "অ্যাডমিন",
+    subtitle: "FUZE-Ops কন্ট্রোল সারফেস। ডুব দিতে একটি মডিউল বেছে নিন, বা সম্পূর্ণ নেভের জন্য সাইডবার ব্যবহার করুন।",
+    openPrefix: "খুলুন",
+    fastPathLabel: "ফাস্ট পাথ",
+    dataEntryHubTitle: "ডেটা এন্ট্রি হাব",
+    dataEntryHubBody: "একটি পেজে ব্র্যান্ড স্পেক, প্রাইসিং টিয়ার, সাপ্লাই-চেইন লিঙ্ক, ল্যাব প্রাইসিং সেট করুন।",
+    liveStateLabel: "লাইভ স্টেট",
+    commandCenterTitle: "কমান্ড সেন্টার",
+    commandCenterBody: "ছয়টি মেট্রিক টাইল, ব্র্যান্ড × ফ্যাক্টরি কেডেন্স ম্যাট্রিক্স, সাম্প্রতিক কার্যকলাপ, কিউ।",
+    weeklyLabel: "সাপ্তাহিক",
+    mondayReviewTitle: "সোমবার রিভিউ কিউ",
+    mondayReviewBody: "AI-ফ্ল্যাগড টেস্ট রান + ব্র্যান্ড প্রত্যাখ্যান। Sunday 22:00 UTC ইমেল এজেন্ডা সিড করে।",
+  },
+
 };
 
 export default bn;
