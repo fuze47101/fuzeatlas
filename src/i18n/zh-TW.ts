@@ -7551,6 +7551,31 @@ const zhTW: Translations = {
     footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
   },
 
+  signupInvitation: {
+    appKicker: "FUZE Atlas",
+    joinPrefix: "加入",
+    invitedSuffix: "已邀請",
+    youWereInvited: "您已獲得邀請",
+    asLabel: "身分為",
+    emailLabel: "電子郵件",
+    yourNameLabel: "您的姓名",
+    fullNamePlaceholder: "全名",
+    passwordLabel: "密碼",
+    passwordPlaceholder: "至少 8 個字元",
+    confirmPasswordLabel: "確認密碼",
+    confirmPasswordPlaceholder: "再次輸入密碼",
+    creatingBtn: "建立帳號中…",
+    acceptBtn: "接受邀請並登入",
+    expiresPrefix: "邀請過期時間",
+    problemTitle: "邀請發生問題",
+    problemDefault: "無法載入此邀請。",
+    goToSignIn: "前往登入",
+    errPasswordTooShort: "密碼至少需 8 個字元。",
+    errPasswordsMismatch: "密碼不一致。",
+    errNetwork: "網路錯誤",
+    errServerUnreachable: "無法連線至伺服器",
+  },
+
 };
 
 export default zhTW;
