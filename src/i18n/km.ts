@@ -7122,6 +7122,19 @@ const km: Translations = {
     errGeneric: "បរាជ័យ to change password",
   },
 
+  educationCompliance: {
+    backLink: "← ត្រឡប់ to FUZE Basics",
+    kicker: "ការអនុលោម & Certifications",
+    heroTitle: "Every certification stack a brand asks for",
+    heroBody: "One screenshot for your vendor questionnaire. EPA federal + California, OEKO-TEX Standard 100 Class I, bluesign® approved, PFAS-free, formaldehyde-free, ZDHC-aligned. Antibacterial / antiviral / antifungal test data across the four tiers — reports available on request.",
+    activeBadge: "សកម្ម ✓",
+    docCopiesTitle: "Need actual document copies?",
+    docCopiesBody: "The ឯកសារ Center holds the live PDF copies of every certification, SDS, TDS, and COA. ការអនុលោម teams can download them directly for vendor questionnaires.",
+    docCenterCta: "បើក ឯកសារ Center →",
+    backBasicsBtn: "ត្រឡប់ to FUZE Basics",
+    whatYouCanClaimBtn: "What you can claim →",
+  },
+
 };
 
 export default km;
