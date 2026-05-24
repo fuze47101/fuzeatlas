@@ -3313,6 +3313,34 @@ const id: Translations = {
     colSource: "Sumber",
   },
 
+  bdSequenceAnalytics: {
+    loading: "Memuat…",
+    crumbBdSequences: "BD Sequences",
+    crumbAnalytics: "Analitik",
+    modeSequence: "Sequence",
+    modeCadence: "Cadence",
+    title: "Analitik funnel",
+    aggregatedAcross: "Diagregasi di",
+    sequenceSingular: "sequence",
+    sequencePlural: "sequence",
+    onCadenceLabel: "di cadence",
+    emptyBefore: "Belum ada aktivitas pengiriman pada",
+    stepLabel: "Step",
+    sentSuffix: "terkirim",
+    mSent: "Terkirim",
+    mOpens: "Dibuka",
+    mClicks: "Klik",
+    mReplies: "Balasan",
+    mMeetings: "Meeting",
+    mAvgDaysReply: "Rata-rata hari → balas",
+    subjectVariantsTitle: "Varian subjek",
+    colSubject: "Subjek",
+    colSent: "Terkirim",
+    colOpens: "Dibuka",
+    colOpenRate: "Tingkat buka",
+    errLoadFailed: "Gagal memuat analitik",
+  },
+
 };
 
 export default id;
