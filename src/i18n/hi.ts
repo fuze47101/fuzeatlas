@@ -5047,6 +5047,61 @@ const hi: Translations = {
     scopeFallback: "डिफ़ॉल्ट",
   },
 
+  brandDiscovery: {
+    crumbHome: "होम",
+    crumbWizard: "BD Wizard",
+    crumbHere: "ब्रांड खोज",
+    pageTitle: "🌎 विश्वव्यापी ब्रांड खोज",
+    pageSubtitle: "मल्टी-AI इंजन — Anthropic, OpenAI, और Grok में टेक्सटाइल ब्रांडों को ढूंढता और सत्यापित करता है, फिर हर नए ब्रांड में Apollo संपर्क स्वतः-संलग्न करता है ताकि BD Wizard उन्हें तुरंत उपयोग कर सके।",
+
+    statTotalLabel: "DB में कुल ब्रांड",
+    backToWizard: "← Wizard पर वापस",
+    backToWizardTitle: "जब नए ब्रांड लैंड हों तो Wizard पर वापस राउंड-ट्रिप",
+
+    statsErrorContext: "खोज आंकड़े लोड करें",
+    statsErrorFallback: "खोज आंकड़े लोड नहीं हो सके",
+    statsNetworkError: "खोज आंकड़े लोड करते समय नेटवर्क त्रुटि।",
+
+    autoEnrichTitle: "ऑटो-संवर्धन चालू है",
+    autoEnrichBody: "यहां बनाए गए हर नए ब्रांड को डोमेन द्वारा Apollo पीपल-सर्च के माध्यम से 8 तक वरिष्ठ संपर्क (founder / C-suite / VP / head / director) संलग्न मिलते हैं। BD Wizard का फ़िल्टर इन ब्रांडों को तुरंत अनुमति देता है — कोई अलग संवर्धन पास आवश्यक नहीं।",
+
+    settingsHeading: "खोज सेटिंग्स",
+    labelCategory: "श्रेणी",
+    labelRegion: "क्षेत्र",
+    labelTargetCount: "लक्ष्य संख्या",
+    btnDiscovering: "🔍 खोज रहे हैं...",
+    btnRunDiscovery: "🚀 खोज चलाएं",
+    btnRunning: "चल रहा है...",
+    btnAllCategories: "🌍 सभी श्रेणियां",
+
+    runningBanner: "⏳ Anthropic + OpenAI + Grok में मल्टी-AI खोज चल रही है... यह प्रति श्रेणी 30-60 सेकंड लेता है।",
+    errorPrefix: "❌",
+    errorDefault: "खोज विफल",
+
+    resultsHeadingPrefix: "खोज परिणाम —",
+    chipAiSources: "AI स्रोत:",
+    chipFound: "मिले:",
+    chipAfterDedup: "Dedup के बाद:",
+    chipCreated: "बनाए गए:",
+    chipContactsAttached: "📇 संलग्न संपर्क:",
+
+    colBrand: "ब्रांड",
+    colSegment: "सेगमेंट",
+    colPriority: "प्राथमिकता",
+    colValidation: "सत्यापन",
+    colContacts: "संपर्क",
+    colAiSources: "AI स्रोत",
+    colActions: "क्रियाएं",
+    tierPrefix: "टियर",
+    aisConfirmed: "AI पुष्टि की",
+    aiConfirmed: "AI पुष्टि",
+    viewResearch: "देखें और शोध करें",
+
+    historyHeading: "खोज इतिहास (यह सत्र)",
+    historyFoundLabel: "मिले:",
+    historyCreatedLabel: "बनाए गए:",
+  },
+
 };
 
 export default hi;
