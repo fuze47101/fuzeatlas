@@ -4661,6 +4661,69 @@ const id: Translations = {
     unknownAuthor: "?",
   },
 
+  sampleTrials: {
+    crumbDashboard: "Dashboard",
+    crumbHere: "Uji Coba Sampel",
+    pageTitle: "Manajemen Uji Coba Sampel",
+    pageSubtitle: "Tinjau, setujui, kirim, dan lacak semua permintaan uji coba sampel pabrik",
+
+    statTotal: "Total",
+    statNeedsAction: "Perlu Aksi",
+
+    searchPlaceholder: "Cari kain, pabrik, brand, kontak...",
+    filterAllStatuses: "Semua Status",
+    filterAllFactories: "Semua Pabrik",
+
+    errorFailedLoad: "Gagal memuat uji coba",
+    errorUpdate: "Pembaruan gagal",
+    errorNetwork: "Kesalahan jaringan",
+
+    quickActionPrefix: "Aksi Cepat —",
+    trialFallback: "Uji Coba",
+    labelStatus: "Status",
+    labelTracking: "Nomor Pelacakan",
+    placeholderTracking: "No. FedEx/DHL/UPS",
+    labelAdminNotes: "Catatan Admin",
+    placeholderAdminNotes: "Catatan internal...",
+    labelRejectReason: "Alasan Penolakan",
+    btnSave: "Simpan Perubahan",
+    btnSaving: "Menyimpan...",
+    btnCancel: "Batal",
+
+    emptyFiltered: "Tidak ada uji coba yang cocok dengan filter Anda",
+    emptyDefault: "Belum ada uji coba sampel",
+
+    colFabric: "Kain",
+    colFactory: "Pabrik",
+    colPurpose: "Tujuan",
+    colStatus: "Status",
+    colDetails: "Detail",
+    colIcpLab: "Lab ICP",
+    colDate: "Tanggal",
+    colActions: "Aksi",
+
+    purposeBrand: "Brand",
+    purposeSelfDev: "Pengembangan Sendiri",
+    trialLab: "Lab",
+    trialProduction: "Produksi",
+    detailsTierPrefix: "Tier:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "Oleh:",
+    actionAction: "Aksi",
+    actionView: "Lihat",
+
+    statusSubmitted: "Diajukan",
+    statusUnderReview: "Dalam Tinjauan",
+    statusApproved: "Disetujui",
+    statusRejected: "Ditolak",
+    statusShipped: "Dikirim",
+    statusReceived: "Diterima",
+    statusInProgress: "Sedang Berjalan",
+    statusIcpPending: "ICP Menunggu",
+    statusIcpSubmitted: "ICP Diajukan",
+    statusComplete: "Selesai",
+  },
+
 };
 
 export default id;
