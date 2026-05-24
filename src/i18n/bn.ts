@@ -7596,6 +7596,24 @@ const bn: Translations = {
     openSameLink: "একই লিঙ্ক খুলুন →",
   },
 
+  apiDocs: {
+    heading: "API ডকুমেন্টেশন",
+    subtitle: "FUZE Atlas API রেফারেন্স",
+    authStrong: "প্রমাণীকরণ:",
+    authBodyPrefix: "এই এন্ডপয়েন্ট ব্যতীত সকল",
+    authBodySuffix: "একটি বৈধ JWT সেশন কুকি প্রয়োজন।",
+    searchPlaceholder: "পাথ বা বিবরণ দিয়ে এন্ডপয়েন্ট খুঁজুন...",
+    allMethodsBtn: "সকল মেথড",
+    showingPrefix: "দেখানো হচ্ছে",
+    showingOf: "এর মধ্যে",
+    endpointsLabel: "এন্ডপয়েন্ট",
+    collapseAllBtn: "সব সংকুচিত করুন",
+    expandAllBtn: "সব প্রসারিত করুন",
+    noResults: "আপনার অনুসন্ধানের সাথে কোন এন্ডপয়েন্ট মিল পাওয়া যায়নি।",
+    clearFiltersBtn: "ফিল্টার পরিষ্কার করুন",
+    footerPrefix: "FUZE Atlas API ডকুমেন্টেশন - সর্বশেষ আপডেট",
+  },
+
 };
 
 export default bn;
