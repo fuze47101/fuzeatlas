@@ -7844,6 +7844,37 @@ const ko: Translations = {
     lastCalculatedLabel: "마지막 계산:",
   },
 
+  fabricReportSend: {
+    backLink: "← 보고서로 돌아가기",
+    heading: "고객에게 보고서 이메일 발송",
+    subtitlePrefix: "FUZE 도포 및 검증 보고서 발송 대상:",
+    fabricNotFound: "원단을 찾을 수 없습니다.",
+    recipientRequiredError: "수신자 이메일이 필요합니다.",
+    sendFailedError: "발송 실패",
+    sentSuccessPrefix: "✓ 보고서가 다음에게 발송됨:",
+    directUrlLabel: "직접 다운로드 URL:",
+    sentSuccessBody: "고객은 FUZE Atlas에 로그인한 후 내 보고서에서도 이를 확인할 수 있습니다.",
+    recipientEmailLabel: "수신자 이메일",
+    recipientNameLabel: "수신자 이름",
+    optionalSuffix: "(선택)",
+    personalNoteLabel: "개인 노트",
+    personalNoteHint: "(선택, 보고서 카드 위에 표시됨)",
+    ccLabel: "CC",
+    ccHint: "(선택, 쉼표로 구분)",
+    ttlLabel: "직접 링크 유효 기간",
+    ttl30Days: "30일",
+    ttl90Days: "90일 (기본값)",
+    ttl180Days: "180일",
+    ttl1Year: "1년",
+    sendingBtn: "발송 중...",
+    sendBtn: "보고서 발송",
+    previouslySentTitle: "이전 발송",
+    sentPrefix: "발송됨",
+    viewedPrefix: "조회됨",
+    notOpenedYet: "아직 열리지 않음",
+    openSameLink: "동일한 링크 열기 →",
+  },
+
 };
 
 export default ko;
