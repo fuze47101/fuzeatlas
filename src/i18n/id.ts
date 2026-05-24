@@ -3173,6 +3173,23 @@ const id: Translations = {
     footerCertifiedBy: "Disertifikasi oleh FUZE Atlas",
   },
 
+  adminLanding: {
+    loadingLabel: "Memuat admin",
+    crumb: "Admin",
+    heading: "Admin",
+    subtitle: "Permukaan kontrol FUZE-Ops. Pilih modul untuk masuk, atau gunakan sidebar untuk nav lengkap.",
+    openPrefix: "Buka",
+    fastPathLabel: "Jalan cepat",
+    dataEntryHubTitle: "Hub entri data",
+    dataEntryHubBody: "Atur spec brand, tier harga, supply-chain link, harga lab — semua dalam satu halaman.",
+    liveStateLabel: "Status live",
+    commandCenterTitle: "Command Center",
+    commandCenterBody: "Enam tile metrik, matriks cadence brand × pabrik, aktivitas terbaru, antrian.",
+    weeklyLabel: "Mingguan",
+    mondayReviewTitle: "Antrian review Senin",
+    mondayReviewBody: "Test run yang ditandai AI + penolakan brand. Email Minggu 22:00 UTC menyiapkan agenda.",
+  },
+
 };
 
 export default id;
