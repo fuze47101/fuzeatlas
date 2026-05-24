@@ -8108,6 +8108,26 @@ const ms: Translations = {
     footnote: "Salinan menghadap pelanggan menggunakan \"sisa FUZE\" — ukuran metamaterial daripada laporan ICP makmal. Sentiasa dilabelkan FUZE / metamaterial dalam penghantaran pelanggan (peraturan suara jenama CLAUDE.md).",
   },
 
+  engagementDebug: {
+    crumb: "Debug penglibatan",
+    engagementSuffix: "penglibatan",
+    calculatedLabel: "Dikira",
+    overallScoreLabel: "Skor keseluruhan",
+    outOf100: "daripada 100",
+    inputsLabel: "Input",
+    daysSinceContact: "Hari sejak kenalan",
+    tests30d: "Ujian (30h)",
+    tests90d: "Ujian (90h)",
+    avgPayDays: "Purata hari bayar",
+    overdueInvoices: "Invois tertunggak",
+    factorBreakdownTitle: "Pecahan faktor",
+    weightLabel: "berat",
+    contributesLabel: "menyumbang",
+    ptsLabel: "mata",
+    loading: "Memuatkan…",
+    failedToLoad: "Gagal memuatkan",
+  },
+
 };
 
 export default ms;
