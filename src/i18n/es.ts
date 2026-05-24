@@ -6291,6 +6291,38 @@ const es: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "Catálogo de pruebas y precios",
+    subtitle: "Gestiona tipos de prueba, precios, tiempos de respuesta y requisitos de muestra. Los cambios se reflejan inmediatamente en el formulario de solicitud de prueba de fábrica.",
+    sourcePrefix: "Fuente:",
+    sourceDb: "Base de datos (gestionada por admin)",
+    sourceStatic: "Predeterminados estáticos",
+    successMsg: "Prueba actualizada correctamente",
+    failedSave: "Error al guardar",
+    networkErr: "Error de red",
+    colTestName: "Nombre de la prueba",
+    colCategory: "Categoría",
+    colPrice: "Precio (USD)",
+    colTurnaround: "Tiempo de respuesta",
+    colMinSample: "Muestra mín.",
+    colControl: "¿Control?",
+    colActive: "Activa",
+    colActions: "Acciones",
+    daysSuffix: "días",
+    metersSuffix: "m",
+    yes: "Sí",
+    no: "No",
+    saveBtn: "Guardar",
+    savingDots: "...",
+    cancelBtn: "Cancelar",
+    editBtn: "Editar",
+    catRecipeBuild: "Construcción de receta",
+    catPerformance: "Rendimiento",
+    catQuality: "Calidad",
+    catCertification: "Certificación",
+    lastUpdatedTpl: "Última actualización por {who} el {when}",
+  },
+
 };
 
 export default es;
