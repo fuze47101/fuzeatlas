@@ -7135,6 +7135,29 @@ const ms: Translations = {
     printedPrefix: "Dicetak",
   },
 
+  pressKitAdmin: {
+    title: "Kit akhbar",
+    subtitle: "Urus apa yang dipaparkan di halaman /press awam. Menukar aktif menyembunyikan baris tanpa memadamnya.",
+    addItemTitle: "Tambah item",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "kapsyen",
+    addItemBtn: "Tambah item",
+    savingBtn: "Menyimpan…",
+    allFilter: "semua",
+    colType: "Jenis",
+    colCaption: "Kapsyen",
+    colUrl: "URL",
+    colReleased: "Dikeluarkan",
+    colActive: "Aktif",
+    activeLabel: "Aktif",
+    hiddenLabel: "Disembunyikan",
+    deleteBtn: "Padam",
+    deleteConfirmPrefix: "Padam item kit akhbar",
+    emptyState: "Belum ada item kit akhbar.",
+    errUrlRequired: "URL diperlukan",
+    errAddFailed: "Tambah gagal",
+  },
+
 };
 
 export default ms;
