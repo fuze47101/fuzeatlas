@@ -2828,6 +2828,37 @@ const ms: Translations = {
     factoryLabel: "Kilang:",
   },
 
+  verifySku: {
+    errorTitle: "Tidak dapat mengesahkan kod ini",
+    errorBlurb:
+      "Kami menghadapi masalah untuk mencapai pangkalan data pengesahan. Sila cuba lagi sebentar.",
+    notCertifiedTitle: "Bukan SKU yang disahkan FUZE",
+    notCertifiedBlurbPrefix: "Kod",
+    notCertifiedBlurbSuffix:
+      "tiada dalam pangkalan data pengesahan kami. Jika ini datang dari hangtag FUZE, sila hubungi jenama secara langsung.",
+    whatIsFuze: "Apakah itu FUZE? →",
+    fuzeVerified: "Disahkan FUZE",
+    pageTitle: "Fabrik ini dirawat dengan FUZE",
+    pageSubtitle: "Rawatan tekstil antimikrob — disahkan oleh pihak ketiga.",
+    brandLabel: "Jenama",
+    millLabel: "Kilang",
+    fuzeTierLabel: "Tier FUZE",
+    fuzeNumberLabel: "Nombor FUZE",
+    washClaimSuffix: "tuntutan basuh",
+    recentValidation: "Pengesahan makmal terkini",
+    testPassed: "lulus",
+    testTypeSuffix: "ujian —",
+    validatedByPrefix: "Disahkan oleh",
+    validatedByGeneric: "Disahkan oleh makmal pihak ketiga",
+    validatedOn: "pada",
+    reportRefPrefix: "Ruj. laporan:",
+    certifications: "Pensijilan FUZE",
+    aboutBody:
+      "FUZE ialah rawatan tekstil antimikrob proprietari oleh FUZE Biotech. Ia menggunakan kimia metamaterial yang berikat dengan gentian semasa kemasan tekstil standard — tiada PFAS, tiada pengikat, tiada relau pengawetan diperlukan.",
+    learnMore: "Ketahui lebih lanjut tentang FUZE →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default ms;
