@@ -24,6 +24,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useI18n } from "@/i18n";
 import { EmailTemplatePicker } from "@/components/EmailTemplatePicker";
 import BulkEnrichButton from "@/components/BulkEnrichButton";
 import { renderTemplate } from "@/lib/email-template-vars";
@@ -955,16 +956,18 @@ function Header({
   onSkip: () => void;
   currentBrandId?: string;
 }) {
+  const { t } = useI18n();
+  const T = t.bdWizard;
   return (
     <div className="flex items-start justify-between mb-6">
       <div>
         <Link href="/home" className="text-xs text-slate-500 hover:text-slate-700">
-          ← Home
+          {T.homeLink}
         </Link>
-        <h1 className="text-2xl font-bold text-slate-900 mt-1">BD Wizard</h1>
+        <h1 className="text-2xl font-bold text-slate-900 mt-1">{T.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Guided outbound. Next highest-confidence brand auto-picked for you.
-          {queueDepth > 0 && <span className="ml-2 text-slate-400">({queueDepth} in queue)</span>}
+          {T.pageSubtitle}
+          {queueDepth > 0 && <span className="ml-2 text-slate-400">{T.inQueueTemplate.replace("{n}", String(queueDepth))}</span>}
         </p>
       </div>
       {currentBrandId && (
@@ -972,7 +975,7 @@ function Header({
           onClick={onSkip}
           className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 text-slate-600 hover:bg-white"
         >
-          Skip this brand →
+          {T.skipBrand}
         </button>
       )}
     </div>
@@ -980,20 +983,21 @@ function Header({
 }
 
 function ProfileWarning({ current }: { current: string | null }) {
+  const { t } = useI18n();
+  const T = t.bdWizard;
   return (
     <div className="mb-5 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
       <div className="text-2xl">⚠️</div>
       <div className="flex-1">
         <div className="text-sm font-semibold text-amber-900">
-          Set your outbound From: address before sending
+          {T.setFromAddressHeader}
         </div>
         <div className="text-xs text-amber-700 mt-1">
-          Without this, outbound ships from the generic FUZE Atlas notification address and replies
-          won't land in your inbox.
+          {T.setFromAddressBody}
           {current ? (
             <>
               {" "}
-              Currently: <span className="font-mono">{current}</span>
+              {T.currentlyLabel} <span className="font-mono">{current}</span>
             </>
           ) : null}
         </div>
@@ -1002,7 +1006,7 @@ function ProfileWarning({ current }: { current: string | null }) {
         href="/settings/profile"
         className="px-3 py-1.5 text-xs rounded-lg bg-amber-600 text-white hover:bg-amber-700"
       >
-        Open Profile
+        {T.openProfile}
       </Link>
     </div>
   );
