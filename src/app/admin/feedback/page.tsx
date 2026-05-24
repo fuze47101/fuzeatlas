@@ -10,6 +10,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 type Status =
   | "NEW"
@@ -43,15 +44,17 @@ const STATUS_STYLE: Record<Status, string> = {
   CLOSED: "bg-slate-100 text-slate-500 border-slate-200",
 };
 
-const CATEGORY_LABELS: Record<string, { label: string; icon: string }> = {
-  PROBLEM: { label: "Broken", icon: "💥" },
-  ERROR: { label: "Error", icon: "⚠️" },
-  BROKEN_LINK: { label: "Broken link", icon: "🔗" },
-  CONFUSING: { label: "Confusing", icon: "❓" },
-  MISSING: { label: "Missing", icon: "🧩" },
-  SUGGESTION: { label: "Suggestion", icon: "💡" },
-  OTHER: { label: "Other", icon: "💬" },
-};
+function getCategoryLabels(T: any): Record<string, { label: string; icon: string }> {
+  return {
+    PROBLEM: { label: T.catBroken, icon: "💥" },
+    ERROR: { label: T.catError, icon: "⚠️" },
+    BROKEN_LINK: { label: T.catBrokenLink, icon: "🔗" },
+    CONFUSING: { label: T.catConfusing, icon: "❓" },
+    MISSING: { label: T.catMissing, icon: "🧩" },
+    SUGGESTION: { label: T.catSuggestion, icon: "💡" },
+    OTHER: { label: T.catOther, icon: "💬" },
+  };
+}
 
 interface FeedbackReport {
   id: string;
@@ -77,6 +80,9 @@ interface FeedbackReport {
 }
 
 export default function AdminFeedbackPage() {
+  const { t } = useI18n();
+  const T = t.feedbackTriagePage;
+  const CATEGORY_LABELS = getCategoryLabels(T);
   const [reports, setReports] = useState<FeedbackReport[]>([]);
   const [byStatus, setByStatus] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -121,13 +127,13 @@ export default function AdminFeedbackPage() {
         setReports((prev) => prev.map((r) => (r.id === id ? { ...r, ...j.report } : r)));
         if (j.notified) {
           // inline flash
-          window.alert("Fixed ✅ — email sent to the requester.");
+          window.alert(T.fixedAlert);
         }
       } else {
-        window.alert("Failed: " + (j.error || "unknown"));
+        window.alert(T.failedPrefix + (j.error || T.failedUnknown));
       }
     } catch (err: any) {
-      window.alert("Failed: " + err.message);
+      window.alert(T.failedPrefix + err.message);
     } finally {
       setSaving(null);
     }
@@ -154,23 +160,26 @@ export default function AdminFeedbackPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
           <Link href="/admin" className="hover:text-[#00b4c3]">
-            Admin
+            {T.crumbAdmin}
           </Link>
           <span>/</span>
-          <span>Feedback</span>
+          <span>{T.crumbCurrent}</span>
         </div>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black text-slate-900">🐛 User Feedback</h1>
+            <h1 className="text-2xl font-black text-slate-900">{T.title}</h1>
             <p className="text-xs text-slate-500 mt-0.5">
-              {openCount} open · {byStatus.FIXED || 0} fixed · {reports.length} shown
+              {T.statsTpl
+                .replace("{open}", String(openCount))
+                .replace("{fixed}", String(byStatus.FIXED || 0))
+                .replace("{shown}", String(reports.length))}
             </p>
           </div>
           <button
             onClick={load}
             className="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-black"
           >
-            ↻ Refresh
+            {T.refresh}
           </button>
         </div>
       </div>
@@ -185,7 +194,7 @@ export default function AdminFeedbackPage() {
               : "bg-white text-slate-600 border-slate-300 hover:bg-slate-50"
           }`}
         >
-          All ({reports.length})
+          {T.allCountTpl.replace("{count}", String(reports.length))}
         </button>
         {statusChips.map((c) => (
           <button
@@ -212,7 +221,7 @@ export default function AdminFeedbackPage() {
               : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
           }`}
         >
-          All categories
+          {T.allCategories}
         </button>
         {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
           <button
@@ -231,11 +240,11 @@ export default function AdminFeedbackPage() {
 
       {/* List */}
       {loading ? (
-        <div className="text-slate-400 text-center py-16">Loading…</div>
+        <div className="text-slate-400 text-center py-16">{T.loading}</div>
       ) : reports.length === 0 ? (
         <div className="text-center py-16 bg-slate-50 rounded-xl border border-dashed border-slate-300">
-          <div className="text-4xl mb-2">🎉</div>
-          <p className="text-slate-500">Nothing matches this filter.</p>
+          <div className="text-4xl mb-2">{T.emptyEmoji}</div>
+          <p className="text-slate-500">{T.emptyText}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -271,7 +280,7 @@ export default function AdminFeedbackPage() {
                         {r.title}
                       </p>
                       <p className="text-[11px] text-slate-500 mt-0.5">
-                        {r.userName || r.userEmail || "Anonymous"}
+                        {r.userName || r.userEmail || T.anonymous}
                         {r.userRole ? ` · ${r.userRole}` : ""} ·{" "}
                         {new Date(r.createdAt).toLocaleString()}
                       </p>
@@ -285,7 +294,7 @@ export default function AdminFeedbackPage() {
                       disabled={saving === r.id}
                       className="shrink-0 px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 disabled:opacity-50"
                     >
-                      Resolve
+                      {T.resolveBtn}
                     </button>
                   )}
                 </div>
@@ -296,7 +305,7 @@ export default function AdminFeedbackPage() {
                     {/* Description */}
                     <div>
                       <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">
-                        What they said
+                        {T.expandWhatSaid}
                       </p>
                       <p className="text-sm text-slate-800 whitespace-pre-wrap bg-white border border-slate-200 rounded-lg p-3">
                         {r.description}
@@ -306,11 +315,11 @@ export default function AdminFeedbackPage() {
                     {/* Context */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                       <div className="bg-white border border-slate-200 rounded-lg p-2.5">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase">Page URL</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase">{T.ctxPageUrl}</p>
                         <p className="text-slate-700 break-all mt-0.5">{r.url || "—"}</p>
                       </div>
                       <div className="bg-white border border-slate-200 rounded-lg p-2.5">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase">Reporter</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase">{T.ctxReporter}</p>
                         <p className="text-slate-700 mt-0.5">
                           {r.userName || "—"}
                           {r.userEmail ? ` · ${r.userEmail}` : ""}
@@ -319,7 +328,7 @@ export default function AdminFeedbackPage() {
                       </div>
                       <div className="bg-white border border-slate-200 rounded-lg p-2.5">
                         <p className="text-[10px] font-bold text-slate-400 uppercase">
-                          Viewport / Browser
+                          {T.ctxViewport}
                         </p>
                         <p className="text-slate-700 mt-0.5 truncate">
                           {r.viewport || "—"}
@@ -328,12 +337,12 @@ export default function AdminFeedbackPage() {
                       </div>
                       <div className="bg-white border border-slate-200 rounded-lg p-2.5">
                         <p className="text-[10px] font-bold text-slate-400 uppercase">
-                          Notified requester
+                          {T.ctxNotified}
                         </p>
                         <p className="text-slate-700 mt-0.5">
                           {r.notifiedAt
                             ? `✅ ${new Date(r.notifiedAt).toLocaleString()}`
-                            : "Not yet"}
+                            : T.notifiedNo}
                         </p>
                       </div>
                     </div>
@@ -345,7 +354,7 @@ export default function AdminFeedbackPage() {
                     {r.screenshotUrl && (
                       <div>
                         <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">
-                          Screenshot
+                          {T.screenshotLabel}
                         </p>
                         <a
                           href={`/api/admin/feedback/${r.id}/screenshot`}
@@ -354,7 +363,7 @@ export default function AdminFeedbackPage() {
                         >
                           <img
                             src={`/api/admin/feedback/${r.id}/screenshot`}
-                            alt="Report screenshot"
+                            alt={T.screenshotAlt}
                             className="max-h-80 rounded-lg border border-slate-200 bg-white"
                           />
                         </a>
@@ -364,7 +373,7 @@ export default function AdminFeedbackPage() {
                     {/* Triage notes */}
                     <div>
                       <label className="text-[10px] font-bold text-slate-500 uppercase">
-                        Triage notes (internal)
+                        {T.triageNotesLabel}
                       </label>
                       <textarea
                         defaultValue={r.triageNotes || ""}
@@ -376,14 +385,14 @@ export default function AdminFeedbackPage() {
                         }}
                         rows={2}
                         className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg text-xs"
-                        placeholder="Internal only — why this is valid / what to do / who owns it"
+                        placeholder={T.triageNotesPlaceholder}
                       />
                     </div>
 
                     {/* Resolution (shown to user on FIXED) */}
                     <div>
                       <label className="text-[10px] font-bold text-emerald-700 uppercase">
-                        Resolution (shown to user in the notification email)
+                        {T.resolutionLabel}
                       </label>
                       <textarea
                         defaultValue={r.resolution || ""}
@@ -395,14 +404,14 @@ export default function AdminFeedbackPage() {
                         }}
                         rows={2}
                         className="w-full mt-1 px-3 py-2 border border-emerald-300 bg-emerald-50/40 rounded-lg text-xs"
-                        placeholder='E.g. "Factory dropdown now shows all approved factories. Try again on the same page."'
+                        placeholder={T.resolutionPlaceholder}
                       />
                     </div>
 
                     {/* Status actions */}
                     <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200">
                       <span className="text-[10px] font-bold text-slate-500 uppercase">
-                        Change status →
+                        {T.changeStatusLabel}
                       </span>
                       {STATUS_ORDER.filter((s) => s !== r.status).map((s) => {
                         const isFix = s === "FIXED";
@@ -412,7 +421,7 @@ export default function AdminFeedbackPage() {
                             onClick={() => {
                               if (isFix && !r.resolution) {
                                 const note = window.prompt(
-                                  "Add a one-line resolution note (shown to the user in the email):",
+                                  T.fixPromptMessage,
                                 );
                                 if (note === null) return;
                                 updateReport(r.id, {
@@ -468,6 +477,8 @@ function ResolveModal({
   onResolved: (patch: any) => Promise<void> | void;
   saving: boolean;
 }) {
+  const { t } = useI18n();
+  const T = t.feedbackTriagePage;
   const [status, setStatus] = useState<Status>("FIXED");
   const [resolution, setResolution] = useState<string>(report.resolution || "");
   const [notify, setNotify] = useState(true);
@@ -487,11 +498,11 @@ function ResolveModal({
       >
         <div className="p-5 border-b border-slate-200">
           <p className="text-[10px] uppercase tracking-widest text-slate-500">
-            Resolve feedback
+            {T.modalKicker}
           </p>
           <p className="text-sm font-bold text-slate-900 mt-1 line-clamp-2">{report.title}</p>
           <p className="text-[11px] text-slate-500 mt-0.5">
-            {report.userName || report.userEmail || "Anonymous"} ·{" "}
+            {report.userName || report.userEmail || T.anonymous} ·{" "}
             {new Date(report.createdAt).toLocaleString()}
           </p>
         </div>
@@ -499,7 +510,7 @@ function ResolveModal({
         <div className="p-5 space-y-4">
           <div>
             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Status
+              {T.modalStatusLabel}
             </label>
             <select
               value={status}
@@ -507,25 +518,25 @@ function ResolveModal({
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
               disabled={saving}
             >
-              <option value="FIXED">FIXED — shipped a fix</option>
-              <option value="REJECTED">REJECTED — won't fix</option>
-              <option value="DUPLICATE">DUPLICATE — already tracked</option>
-              <option value="CLOSED">CLOSED — no longer relevant</option>
-              <option value="TRIAGED">TRIAGED — needs more input</option>
-              <option value="ACCEPTED">ACCEPTED — taking it on</option>
-              <option value="IN_PROGRESS">IN_PROGRESS — actively working</option>
+              <option value="FIXED">{T.modalStatusFixed}</option>
+              <option value="REJECTED">{T.modalStatusRejected}</option>
+              <option value="DUPLICATE">{T.modalStatusDuplicate}</option>
+              <option value="CLOSED">{T.modalStatusClosed}</option>
+              <option value="TRIAGED">{T.modalStatusTriaged}</option>
+              <option value="ACCEPTED">{T.modalStatusAccepted}</option>
+              <option value="IN_PROGRESS">{T.modalStatusInProgress}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-1">
-              Resolution note (shown to reporter on FIXED)
+              {T.modalResolutionLabel}
             </label>
             <textarea
               value={resolution}
               onChange={(e) => setResolution(e.target.value)}
               rows={4}
-              placeholder='E.g. "Factory dropdown now shows all approved factories. Try again on the same page."'
+              placeholder={T.resolutionPlaceholder}
               className="w-full px-3 py-2 border border-emerald-300 bg-emerald-50/40 rounded-lg text-sm"
               disabled={saving}
             />
@@ -540,15 +551,15 @@ function ResolveModal({
               className="w-4 h-4"
             />
             <span>
-              Notify reporter
+              {T.notifyReporter}
               {!willEmail && (
                 <span className="text-[11px] text-slate-400 ml-2">
                   {report.notifiedAt
-                    ? "(already notified)"
+                    ? T.notifyAlreadyNotified
                     : !report.userEmail
-                      ? "(no email on file)"
+                      ? T.notifyNoEmail
                       : status !== "FIXED"
-                        ? "(only sends on FIXED)"
+                        ? T.notifyOnlyOnFixed
                         : ""}
                 </span>
               )}
@@ -562,7 +573,7 @@ function ResolveModal({
             disabled={saving}
             className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg disabled:opacity-50"
           >
-            Cancel
+            {T.modalCancel}
           </button>
           <button
             onClick={() =>
@@ -575,7 +586,7 @@ function ResolveModal({
             disabled={saving}
             className="px-5 py-2 bg-emerald-600 text-white text-sm font-bold rounded-lg hover:bg-emerald-700 disabled:opacity-50"
           >
-            {saving ? "Resolving…" : "Resolve"}
+            {saving ? T.modalSaving : T.resolveBtn}
           </button>
         </div>
       </div>
