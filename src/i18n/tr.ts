@@ -6304,6 +6304,31 @@ const tr: Translations = {
     footerNote: "Sıralama: önce düşük stok, sonra atıl, sonra kalan stok günü artan. \"Günlük tüketim\" = fabrikalara sevk edilen litrelerin 90 günlük yuvarlanan ortalaması. \"Kalan gün\" = mevcut stok ÷ günlük tüketim. \"Atıl\" = son 90 günde fabrika siparişi yok. \"Fiyat yok\" FUZE toptan fiyatının ayarlanmadığı anlamına gelir; distribütör yeniden stoklama siparişi veremez. Distribütör başına sayfada düzenleyin.",
   },
 
+  conversionTracking: {
+    crumbDashboard: "Gösterge Paneli",
+    crumbCurrent: "Numune → Üretim",
+    title: "Numune → Üretim Dönüşümü",
+    subtitle: "Hangi fabrikaların numune aldığını ve üretim siparişlerine dönüştüğünü takip edin",
+    cardFactoriesSampled: "Numune Alan Fabrikalar",
+    cardConverted: "Dönüştü",
+    cardConversionRate: "Dönüşüm Oranı",
+    cardAvgDays: "Ort Dönüşüm Günü",
+    cardProdVolume: "Üretim Hacmi",
+    cardProdRevenue: "Üretim Geliri",
+    tabAll: "Tümü",
+    tabConverted: "Dönüştü",
+    tabPending: "Bekleyen",
+    emptyText: "Henüz numune siparişi bulunamadı",
+    badgeConverted: "DÖNÜŞTÜ",
+    badgePending: "BEKLEMEDE",
+    sectionSamples: "Numune Siparişleri",
+    sectionTrials: "Deneme Talepleri",
+    sectionProduction: "Üretim Siparişleri",
+    productionLabel: "Üretim",
+    daysToConvertSuffix: "günde dönüştü",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default tr;
