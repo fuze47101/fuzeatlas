@@ -7838,6 +7838,33 @@ const vi: Translations = {
     contactLink: "Liên hệ",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "Thương hiệu",
+    crumb: "QR Hangtag",
+    heading: "Token QR Hangtag",
+    subtitlePrefix: "Mỗi token phân giải đến trang xác minh công khai tại",
+    subtitleSuffix: "Số lượt quét + dấu thời gian quét đầu tiên / cuối cùng được theo dõi theo từng hàng.",
+    mintTokensTitle: "Tạo token",
+    countPlaceholder: "số lượng",
+    fabricIdPlaceholder: "fabricId (tùy chọn)",
+    skuPlaceholder: "SKU sản phẩm",
+    batchPlaceholder: "mã lô",
+    mintBtn: "Tạo",
+    mintingBusy: "Đang tạo…",
+    mintFootnote: "Tối đa 500 mỗi lần tạo. In các token kết quả dưới dạng mã QR trên hangtag bằng trình tạo QR bạn chọn (mỗi URL chính xác là URL trang xác minh).",
+    mintFailedError: "Tạo thất bại",
+    tokenSingular: "token",
+    tokenPlural: "token",
+    exportCsvBtn: "Xuất CSV",
+    colToken: "Token",
+    colSkuBatch: "SKU / Lô",
+    colFabric: "Vải",
+    colScans: "Lượt quét",
+    colLastScan: "Lần quét cuối",
+    colVerifyUrl: "URL xác minh",
+    emptyState: "Chưa có token nào — tạo lô đầu tiên ở trên.",
+  },
+
 };
 
 export default vi;
