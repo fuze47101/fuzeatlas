@@ -7150,6 +7150,29 @@ const zhTW: Translations = {
     printedPrefix: "列印於",
   },
 
+  pressKitAdmin: {
+    title: "媒體資料包",
+    subtitle: "管理公開 /press 頁面顯示的內容。停用會隱藏列而不會刪除。",
+    addItemTitle: "新增項目",
+    urlPlaceholder: "網址",
+    captionPlaceholder: "說明文字",
+    addItemBtn: "新增項目",
+    savingBtn: "儲存中…",
+    allFilter: "全部",
+    colType: "類型",
+    colCaption: "說明",
+    colUrl: "網址",
+    colReleased: "發布",
+    colActive: "啟用",
+    activeLabel: "啟用",
+    hiddenLabel: "已隱藏",
+    deleteBtn: "刪除",
+    deleteConfirmPrefix: "刪除媒體資料項目",
+    emptyState: "尚無媒體資料項目。",
+    errUrlRequired: "需要網址",
+    errAddFailed: "新增失敗",
+  },
+
 };
 
 export default zhTW;
