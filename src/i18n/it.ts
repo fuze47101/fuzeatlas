@@ -4488,6 +4488,19 @@ const it: Translations = {
     generatedTemplate: "Generato:",
   },
 
+  bdWizard: {
+    homeLink: "← Home",
+    pageTitle: "BD Wizard",
+    pageSubtitle: "Outbound guidato. Il prossimo brand a maggiore fiducia viene selezionato automaticamente per te.",
+    inQueueTemplate: "({n} in coda)",
+    skipBrand: "Salta questo brand →",
+
+    setFromAddressHeader: "Imposta il tuo indirizzo From: in uscita prima di inviare",
+    setFromAddressBody: "Senza questo, l'outbound viene spedito dall'indirizzo di notifica generico FUZE Atlas e le risposte non arriveranno nella tua casella.",
+    currentlyLabel: "Attualmente:",
+    openProfile: "Apri profilo",
+  },
+
 };
 
 export default it;
