@@ -4702,6 +4702,18 @@ const ja: Translations = {
     nextButton: "次へ →",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — ドキュメントプレビュー",
+    printSavePdf: "印刷 / PDFとして保存",
+    close: "閉じる",
+    documentNotFound: "ドキュメントが見つかりません",
+    loadingError: "ドキュメントの読み込みに失敗しました",
+    networkError: "ネットワークエラー",
+    docNumberLabel: "ドキュメント番号:",
+    confidentialFooter: "FUZE Biotech Inc. — 機密情報",
+    generatedTemplate: "生成日時:",
+  },
+
 };
 
 export default ja;
