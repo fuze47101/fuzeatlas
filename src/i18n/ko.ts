@@ -7699,6 +7699,19 @@ const ko: Translations = {
     pressKitLink: "프레스 키트",
   },
 
+  educationCompliance: {
+    backLink: "← FUZE 기초로 돌아가기",
+    kicker: "컴플라이언스 및 인증",
+    heroTitle: "브랜드가 요구하는 모든 인증 스택",
+    heroBody: "공급자 설문지를 위한 단일 스크린샷. EPA 연방 + California, OEKO-TEX Standard 100 Class I, bluesign® 승인, PFAS-free, 포름알데히드 free, ZDHC 정렬. 4개 등급 전반의 항균 / 항바이러스 / 항진균 시험 데이터 — 보고서는 요청 시 제공.",
+    activeBadge: "활성 ✓",
+    docCopiesTitle: "실제 문서 사본이 필요하신가요?",
+    docCopiesBody: "문서 센터는 모든 인증, SDS, TDS 및 COA의 라이브 PDF 사본을 보관합니다. 컴플라이언스 팀은 공급자 설문지를 위해 직접 다운로드할 수 있습니다.",
+    docCenterCta: "문서 센터 열기 →",
+    backBasicsBtn: "FUZE 기초로 돌아가기",
+    whatYouCanClaimBtn: "주장할 수 있는 것 →",
+  },
+
 };
 
 export default ko;
