@@ -4403,6 +4403,19 @@ const km: Translations = {
     generatedTemplate: "Generated:",
   },
 
+  bdWizard: {
+    homeLink: "← Home",
+    pageTitle: "BD Wizard",
+    pageSubtitle: "Guided outbound. បន្ទាប់ highest-confidence brand auto-picked for you.",
+    inQueueTemplate: "({n} in queue)",
+    skipBrand: "Skip this brand →",
+
+    setFromAddressHeader: "Set your outbound ពី: address before sending",
+    setFromAddressBody: "Without this, outbound ships from the generic FUZE Atlas notification address and replies won't land in your inbox.",
+    currentlyLabel: "Currently:",
+    openProfile: "បើក ប្រវត្តិរូប",
+  },
+
 };
 
 export default km;
