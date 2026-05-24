@@ -7059,6 +7059,26 @@ const zhTW: Translations = {
     emptyBias: "尚無偏差資料。",
   },
 
+  labCreditsAdmin: {
+    loading: "載入中…",
+    crumbLabs: "實驗室",
+    crumbCredits: "額度",
+    creditsSuffix: "額度",
+    balanceLabel: "與此實驗室的 FUZE 餘額",
+    balanceHint: "自動從此實驗室的未來 FUZE 付款測試中扣除。",
+    addCreditTitle: "新增額度",
+    amountPlaceholder: "$ 金額",
+    sourceNotePlaceholder: "來源備註",
+    addCreditBtn: "新增額度",
+    colCreated: "建立",
+    colAmount: "金額",
+    colSource: "來源",
+    colNote: "備註",
+    colSpent: "已花費",
+    availableLabel: "可用",
+    emptyState: "尚無額度。",
+  },
+
 };
 
 export default zhTW;
