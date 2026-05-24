@@ -6036,6 +6036,38 @@ const ta: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "சோதனை பட்டியல் & விலை",
+    subtitle: "சோதனை வகைகள், விலை, turnaround நேரங்கள், மற்றும் மாதிரி தேவைகளை நிர்வகி. மாற்றங்கள் தொழிற்சாலை சோதனை கோரிக்கை படிவத்தில் உடனடியாக பிரதிபலிக்கப்படுகின்றன.",
+    sourcePrefix: "மூலம்:",
+    sourceDb: "தரவுத்தளம் (நிர்வாக-நிர்வகிக்கப்பட்டது)",
+    sourceStatic: "Static இயல்புநிலைகள்",
+    successMsg: "சோதனை வெற்றிகரமாக புதுப்பிக்கப்பட்டது",
+    failedSave: "சேமிக்க முடியவில்லை",
+    networkErr: "நெட்வொர்க் பிழை",
+    colTestName: "சோதனைப் பெயர்",
+    colCategory: "வகை",
+    colPrice: "விலை (USD)",
+    colTurnaround: "Turnaround",
+    colMinSample: "குறைந்தபட்ச மாதிரி",
+    colControl: "Control?",
+    colActive: "செயலில்",
+    colActions: "செயல்கள்",
+    daysSuffix: "நாட்கள்",
+    metersSuffix: "m",
+    yes: "ஆம்",
+    no: "இல்லை",
+    saveBtn: "சேமி",
+    savingDots: "...",
+    cancelBtn: "ரத்து",
+    editBtn: "திருத்து",
+    catRecipeBuild: "Recipe Build",
+    catPerformance: "செயல்திறன்",
+    catQuality: "தரம்",
+    catCertification: "சான்றிதழ்",
+    lastUpdatedTpl: "{when} அன்று {who}-ஆல் கடைசியாக புதுப்பிக்கப்பட்டது",
+  },
+
 };
 
 export default ta;
