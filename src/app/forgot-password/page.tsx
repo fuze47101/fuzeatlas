@@ -2,9 +2,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
+  const { t } = useI18n();
+  const T = t.forgotPassword;
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -27,10 +30,10 @@ export default function ForgotPasswordPage() {
       if (data.ok) {
         setSubmitted(true);
       } else {
-        setError(data.error || "Failed to process request");
+        setError(data.error || T.failedFallback);
       }
     } catch {
-      setError("Network error");
+      setError(T.networkError);
     }
 
     setLoading(false);
@@ -50,7 +53,7 @@ export default function ForgotPasswordPage() {
             </span>
           </div>
           <p className="text-slate-400 text-sm">
-            Reset your password
+            {T.brandSubtitle}
           </p>
         </div>
 
@@ -59,10 +62,10 @@ export default function ForgotPasswordPage() {
           {!submitted ? (
             <>
               <h2 className="text-xl font-bold text-slate-900 mb-2">
-                Forgot Your Password?
+                {T.cardTitle}
               </h2>
               <p className="text-sm text-slate-600 mb-6">
-                Enter your email address and we'll send you a link to reset your password.
+                {T.cardBody}
               </p>
 
               {error && (
@@ -74,14 +77,14 @@ export default function ForgotPasswordPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Email Address
+                    {T.emailLabel}
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="you@801inc.com"
+                    placeholder={T.emailPlaceholder}
                     required
                     autoFocus
                   />
@@ -92,15 +95,15 @@ export default function ForgotPasswordPage() {
                   disabled={loading}
                   className="w-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-2.5 rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? "Sending..." : "Send Reset Link"}
+                  {loading ? T.sendingBusy : T.sendBtn}
                 </button>
               </form>
 
               <div className="mt-6 pt-6 border-t border-slate-100 text-center">
                 <p className="text-sm text-slate-600">
-                  Remember your password?{" "}
+                  {T.rememberPrefix}{" "}
                   <Link href="/login" className="text-[#00b4c3] hover:underline font-medium">
-                    Sign in
+                    {T.signInLink}
                   </Link>
                 </p>
               </div>
@@ -123,23 +126,23 @@ export default function ForgotPasswordPage() {
                 </svg>
               </div>
               <h3 className="text-lg font-bold text-slate-900 mb-2">
-                Check Your Email
+                {T.checkEmailTitle}
               </h3>
               <p className="text-sm text-slate-600 mb-6">
-                If an account exists with that email, you'll receive a password reset link shortly.
+                {T.checkEmailBody}
               </p>
               <Link
                 href="/login"
                 className="inline-block bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white px-6 py-2.5 rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all"
               >
-                Back to Sign In
+                {T.backToSignIn}
               </Link>
             </div>
           )}
         </div>
 
         <p className="text-center mt-6 text-xs text-slate-500">
-          FUZE Biotech Inc. &middot; v0.5.0
+          {T.footerCompany} &middot; v0.5.0
         </p>
       </div>
     </div>
