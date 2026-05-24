@@ -7501,6 +7501,29 @@ const hi: Translations = {
     bookAnotherBtn: "एक और बैठक बुक करें",
   },
 
+  adminAuditLog: {
+    adminCrumb: "एडमिन",
+    crumb: "ऑडिट लॉग",
+    heading: "ऑडिट लॉग",
+    subtitle: "हर इकाई में पूर्ण ऑडिट ट्रेल। क्रिया, इकाई, या तिथि द्वारा फ़िल्टर करें। 90-दिन प्रतिधारण।",
+    errorContext: "ऑडिट लॉग लोड करें",
+    couldntLoadPrefix: "ऑडिट लॉग लोड नहीं हो सका",
+    networkError: "ऑडिट लॉग लोड करते समय नेटवर्क त्रुटि।",
+    actionLabel: "क्रिया",
+    allActionsOption: "सभी क्रियाएं",
+    entityLabel: "इकाई",
+    allEntitiesOption: "सभी इकाइयां",
+    sinceLabel: "से",
+    resetBtn: "रीसेट",
+    rowsSuffix: "पंक्तियां",
+    loadingState: "ऑडिट लॉग लोड हो रहा है…",
+    emptyState: "इन फ़िल्टर से कोई ऑडिट पंक्ति मेल नहीं खाती।",
+    byPrefix: "द्वारा",
+    systemActor: "सिस्टम",
+    fieldChangedSingular: "फ़ील्ड बदला",
+    fieldChangedPlural: "फ़ील्ड बदले",
+  },
+
 };
 
 export default hi;
