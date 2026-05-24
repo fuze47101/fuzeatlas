@@ -7503,6 +7503,29 @@ const bn: Translations = {
     bookAnotherBtn: "আরেকটি মিটিং বুক করুন",
   },
 
+  adminAuditLog: {
+    adminCrumb: "অ্যাডমিন",
+    crumb: "অডিট লগ",
+    heading: "অডিট লগ",
+    subtitle: "প্রতিটি এন্টিটি জুড়ে সম্পূর্ণ অডিট ট্রেইল। অ্যাকশন, এন্টিটি, বা তারিখ দ্বারা ফিল্টার করুন। 90-দিনের রিটেনশন।",
+    errorContext: "অডিট লগ লোড করুন",
+    couldntLoadPrefix: "অডিট লগ লোড করা যায়নি",
+    networkError: "অডিট লগ লোড করার সময় নেটওয়ার্ক ত্রুটি।",
+    actionLabel: "অ্যাকশন",
+    allActionsOption: "সব অ্যাকশন",
+    entityLabel: "এন্টিটি",
+    allEntitiesOption: "সব এন্টিটি",
+    sinceLabel: "তারিখ থেকে",
+    resetBtn: "রিসেট",
+    rowsSuffix: "সারি",
+    loadingState: "অডিট লগ লোড হচ্ছে…",
+    emptyState: "এই ফিল্টারের সাথে কোনো অডিট সারি মেলে না।",
+    byPrefix: "দ্বারা",
+    systemActor: "সিস্টেম",
+    fieldChangedSingular: "ফিল্ড পরিবর্তিত",
+    fieldChangedPlural: "ফিল্ড পরিবর্তিত",
+  },
+
 };
 
 export default bn;
