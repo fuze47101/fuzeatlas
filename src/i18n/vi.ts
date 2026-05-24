@@ -4889,6 +4889,32 @@ const vi: Translations = {
     openProfile: "Mở hồ sơ",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← Quay lại Chuẩn bị mẫu ICP",
+    printButton: "🖨 In / Lưu thành PDF",
+    eyebrow: "FUZE Biotech · SOP Phòng lab",
+    pageTitle: "Chuẩn bị mẫu ICP-MS",
+    pageSubtitle: "Cắt → cân → phân mảnh → đóng túi → gửi đến CTLA (Utah) để xác minh ICP-MS",
+    docLabel: "Tài liệu: SOP-FUZE-LAB-002",
+    revLabel: "Bản sửa đổi: 1.0 ·",
+
+    purposeHeader: "Mục đích",
+    equipmentHeader: "Thiết bị",
+    massTargetsHeader: "Mục tiêu khối lượng (quan trọng)",
+    shipToLabel: "Gửi đến CTLA",
+    digestPerRunLabel: "Phân tích trên mỗi lần chạy",
+    cutterGeometryLabel: "Hình học khuôn cắt",
+
+    criticalRulesHeader: "⚠ Quy tắc chuẩn bị quan trọng",
+    procedureHeader: "Quy trình",
+    shippingAddressHeader: "Địa chỉ vận chuyển (tự động điền bởi wizard)",
+    shipToHeader: "Gửi đến",
+    returnAddressHeader: "Địa chỉ trả về + báo cáo",
+    reportToLabel: "Báo cáo đến:",
+    preShipChecklistHeader: "✅ Danh sách kiểm tra trước khi gửi (wizard sẽ in trên gói)",
+    sanityCheckHeader: "Kiểm tra hợp lý (CTLA sẽ báo cáo gì)",
+  },
+
 };
 
 export default vi;
