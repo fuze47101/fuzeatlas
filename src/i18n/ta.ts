@@ -7420,6 +7420,19 @@ const ta: Translations = {
     pressKitLink: "Press kit",
   },
 
+  educationCompliance: {
+    backLink: "← FUZE அடிப்படைகளுக்குத் திரும்பு",
+    kicker: "இணக்கம் & சான்றிதழ்கள்",
+    heroTitle: "ஒரு brand கேட்கும் ஒவ்வொரு சான்றிதழ் அடுக்கும்",
+    heroBody: "உங்கள் vendor questionnaire-க்கு ஒரு screenshot. EPA கூட்டாட்சி + California, OEKO-TEX Standard 100 Class I, bluesign® அங்கீகரிக்கப்பட்டது, PFAS இல்லாதது, formaldehyde இல்லாதது, ZDHC-aligned. நான்கு டியர்களிலும் Antibacterial / antiviral / antifungal சோதனை தரவு — அறிக்கைகள் கோரிக்கையில் கிடைக்கின்றன.",
+    activeBadge: "செயலில் ✓",
+    docCopiesTitle: "உண்மையான ஆவண நகல்கள் தேவையா?",
+    docCopiesBody: "ஆவண மையம் ஒவ்வொரு சான்றிதழ், SDS, TDS, மற்றும் COA-வின் live PDF நகல்களை வைத்திருக்கிறது. இணக்க குழுக்கள் vendor questionnaires-க்காக அவற்றை நேரடியாக பதிவிறக்கலாம்.",
+    docCenterCta: "ஆவண மையத்தைத் திற →",
+    backBasicsBtn: "FUZE அடிப்படைகளுக்குத் திரும்பு",
+    whatYouCanClaimBtn: "நீங்கள் என்ன உரிமைகோர முடியும் →",
+  },
+
 };
 
 export default ta;
