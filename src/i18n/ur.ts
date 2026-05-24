@@ -4501,6 +4501,32 @@ const ur: Translations = {
     openProfile: "پروفائل کھولیں",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← ICP سیمپل پریپ پر واپس",
+    printButton: "🖨 پرنٹ / PDF کے طور پر محفوظ کریں",
+    eyebrow: "FUZE Biotech · لیب SOP",
+    pageTitle: "ICP-MS سیمپل کی تیاری",
+    pageSubtitle: "کاٹیں → وزن کریں → ٹکڑے کریں → بیگ میں ڈالیں → ICP-MS تصدیق کے لیے CTLA (یوٹاہ) کو بھیجیں",
+    docLabel: "دستاویز: SOP-FUZE-LAB-002",
+    revLabel: "نظرثانی: 1.0 ·",
+
+    purposeHeader: "مقصد",
+    equipmentHeader: "آلات",
+    massTargetsHeader: "ماس اہداف (اہم)",
+    shipToLabel: "CTLA کو بھیجیں",
+    digestPerRunLabel: "فی رن ڈائجسٹ",
+    cutterGeometryLabel: "کٹر جیومیٹری",
+
+    criticalRulesHeader: "⚠ اہم تیاری کے قواعد",
+    procedureHeader: "طریقہ کار",
+    shippingAddressHeader: "شپنگ ایڈریس (وزرڈ کے ذریعے خودکار طور پر بھرا گیا)",
+    shipToHeader: "بھیجیں",
+    returnAddressHeader: "واپسی کا پتہ + رپورٹنگ",
+    reportToLabel: "رپورٹ کریں:",
+    preShipChecklistHeader: "✅ پری شپ چیک لسٹ (وزرڈ یہ پیکٹ پر پرنٹ کرتا ہے)",
+    sanityCheckHeader: "Sanity چیک (CTLA کو کیا رپورٹ کرنا چاہیے)",
+  },
+
 };
 
 export default ur;
