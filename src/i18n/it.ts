@@ -6919,6 +6919,29 @@ const it: Translations = {
     errAddFailed: "Aggiunta fallita",
   },
 
+  accountsAdmin: {
+    title: "Account",
+    subtitleBefore: "Marchi oltre la fase Lead — hanno ricevuto una presentazione, sono in test, in produzione, o già clienti. Per nuovi prospect, vai a",
+    brandPipelineLink: "Pipeline marchi",
+    allFilter: "Tutti",
+    stagePresentation: "Presentazione",
+    stageBrandTesting: "Test marchio",
+    stageFactoryOnboarding: "Onboarding fabbrica",
+    stageFactoryTesting: "Test fabbrica",
+    stageProduction: "Produzione",
+    stageReConnect: "Riconnetti",
+    stageCustomerWon: "Cliente acquisito",
+    searchPlaceholder: "Cerca account per nome o contatto...",
+    emptyTitle: "Nessun account ancora in questa vista",
+    emptyBody: "Gli account appaiono quando i marchi passano da LEAD a PRESENTATION o oltre.",
+    goToPipelineBtn: "Vai alla Pipeline marchi",
+    highRelevanceBadge: "🔥 Alta rilevanza",
+    amPrefix: "AM:",
+    contactsLabel: "contatti",
+    enrichedSuffix: "arricchiti",
+    backToLeadOption: "← Torna a Lead",
+  },
+
 };
 
 export default it;
