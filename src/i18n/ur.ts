@@ -4488,6 +4488,19 @@ const ur: Translations = {
     generatedTemplate: "تیار شدہ:",
   },
 
+  bdWizard: {
+    homeLink: "← گھر",
+    pageTitle: "BD وزرڈ",
+    pageSubtitle: "رہنمائی شدہ آؤٹ باؤنڈ۔ آپ کے لیے اگلا سب سے زیادہ اعتماد والا برانڈ خودکار طور پر منتخب کیا گیا ہے۔",
+    inQueueTemplate: "({n} قطار میں)",
+    skipBrand: "یہ برانڈ چھوڑیں →",
+
+    setFromAddressHeader: "بھیجنے سے پہلے اپنا آؤٹ باؤنڈ From: ایڈریس مقرر کریں",
+    setFromAddressBody: "اس کے بغیر، آؤٹ باؤنڈ عمومی FUZE Atlas نوٹیفکیشن ایڈریس سے جائے گا اور جوابات آپ کے ان باکس میں نہیں پہنچیں گے۔",
+    currentlyLabel: "فی الحال:",
+    openProfile: "پروفائل کھولیں",
+  },
+
 };
 
 export default ur;
