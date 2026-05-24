@@ -6011,6 +6011,31 @@ const th: Translations = {
     footerNote: "เรียง: สต็อกต่ำก่อน จากนั้นไม่มีกิจกรรม จากนั้นตามวันคงเหลือจากน้อยไปมาก \"การใช้รายวัน\" = ค่าเฉลี่ย 90 วันของลิตรที่จัดส่งให้โรงงาน \"วันคงเหลือ\" = สต็อกปัจจุบัน ÷ การใช้รายวัน \"ไม่มีกิจกรรม\" = ไม่มีคำสั่งซื้อจากโรงงานใน 90 วันที่ผ่านมา \"ไม่มีราคา\" หมายถึงอัตราขายส่ง FUZE ยังไม่ได้ตั้ง ผู้จัดจำหน่ายไม่สามารถสั่งซื้อเติมสต็อกได้ แก้ไขในหน้าผู้จัดจำหน่ายต่อราย",
   },
 
+  conversionTracking: {
+    crumbDashboard: "แดชบอร์ด",
+    crumbCurrent: "ตัวอย่าง → การผลิต",
+    title: "การแปลงตัวอย่าง → การผลิต",
+    subtitle: "ติดตามว่าโรงงานใดได้รับตัวอย่างและแปลงเป็นคำสั่งซื้อการผลิต",
+    cardFactoriesSampled: "โรงงานที่ทดลอง",
+    cardConverted: "แปลงแล้ว",
+    cardConversionRate: "อัตราการแปลง",
+    cardAvgDays: "วันเฉลี่ยในการแปลง",
+    cardProdVolume: "ปริมาณการผลิต",
+    cardProdRevenue: "รายได้การผลิต",
+    tabAll: "ทั้งหมด",
+    tabConverted: "แปลงแล้ว",
+    tabPending: "รอดำเนินการ",
+    emptyText: "ยังไม่พบคำสั่งซื้อตัวอย่าง",
+    badgeConverted: "แปลงแล้ว",
+    badgePending: "รอดำเนินการ",
+    sectionSamples: "คำสั่งซื้อตัวอย่าง",
+    sectionTrials: "คำขอทดลอง",
+    sectionProduction: "คำสั่งซื้อการผลิต",
+    productionLabel: "การผลิต",
+    daysToConvertSuffix: "วันในการแปลง",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default th;
