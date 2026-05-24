@@ -7780,6 +7780,23 @@ const zhTW: Translations = {
     fieldChangedPlural: "個欄位已變更",
   },
 
+  adminLanding: {
+    loadingLabel: "正在載入管理介面",
+    crumb: "管理員",
+    heading: "管理員",
+    subtitle: "FUZE-Ops 控制面板。挑選模組即可深入查看，或使用側邊欄查看完整導覽。",
+    openPrefix: "開啟",
+    fastPathLabel: "快速通道",
+    dataEntryHubTitle: "資料輸入中樞",
+    dataEntryHubBody: "在同一頁面設定品牌規格、定價層級、供應鏈連結、實驗室定價。",
+    liveStateLabel: "即時狀態",
+    commandCenterTitle: "指揮中心",
+    commandCenterBody: "六個指標磚塊、品牌 × 工廠節奏矩陣、最近活動、佇列。",
+    weeklyLabel: "每週",
+    mondayReviewTitle: "週一審查佇列",
+    mondayReviewBody: "AI 標記的測試批次 + 品牌退回。週日 22:00 UTC 寄出議程預告郵件。",
+  },
+
 };
 
 export default zhTW;
