@@ -5273,6 +5273,61 @@ const ja: Translations = {
     scopeFallback: "デフォルト",
   },
 
+  brandDiscovery: {
+    crumbHome: "ホーム",
+    crumbWizard: "BDウィザード",
+    crumbHere: "ブランド発見",
+    pageTitle: "🌎 世界規模のブランド発見",
+    pageSubtitle: "マルチAIエンジン — Anthropic、OpenAI、Grok を横断してテキスタイルブランドを発見・検証し、新規ブランドにApolloコンタクトを自動付与します。BDウィザードからすぐに使用可能です。",
+
+    statTotalLabel: "DB内総ブランド数",
+    backToWizard: "← ウィザードに戻る",
+    backToWizardTitle: "新規ブランド登録後にウィザードへ往復",
+
+    statsErrorContext: "発見統計を読み込み",
+    statsErrorFallback: "発見統計を読み込めませんでした",
+    statsNetworkError: "発見統計の読み込み中にネットワークエラーが発生しました。",
+
+    autoEnrichTitle: "自動エンリッチメントが有効です",
+    autoEnrichBody: "ここで作成された新規ブランドには、ドメインによるApollo people-search 経由でシニアコンタクト（創業者 / Cレベル / VP / 部門責任者 / ディレクター）が最大8件付与されます。BDウィザードのフィルターはこれらのブランドを即座に通過させ、個別のエンリッチメントは不要です。",
+
+    settingsHeading: "発見設定",
+    labelCategory: "カテゴリ",
+    labelRegion: "地域",
+    labelTargetCount: "目標件数",
+    btnDiscovering: "🔍 発見中...",
+    btnRunDiscovery: "🚀 発見を実行",
+    btnRunning: "実行中...",
+    btnAllCategories: "🌍 全カテゴリ",
+
+    runningBanner: "⏳ Anthropic + OpenAI + Grok を横断してマルチAI発見を実行中... カテゴリごとに30〜60秒かかります。",
+    errorPrefix: "❌",
+    errorDefault: "発見に失敗しました",
+
+    resultsHeadingPrefix: "発見結果 —",
+    chipAiSources: "AIソース:",
+    chipFound: "発見:",
+    chipAfterDedup: "重複削除後:",
+    chipCreated: "作成済み:",
+    chipContactsAttached: "📇 付与されたコンタクト:",
+
+    colBrand: "ブランド",
+    colSegment: "セグメント",
+    colPriority: "優先度",
+    colValidation: "検証",
+    colContacts: "コンタクト",
+    colAiSources: "AIソース",
+    colActions: "アクション",
+    tierPrefix: "ティア",
+    aisConfirmed: "AIs 確認済み",
+    aiConfirmed: "AI 確認済み",
+    viewResearch: "閲覧・リサーチ",
+
+    historyHeading: "発見履歴（このセッション）",
+    historyFoundLabel: "発見:",
+    historyCreatedLabel: "作成済み:",
+  },
+
 };
 
 export default ja;
