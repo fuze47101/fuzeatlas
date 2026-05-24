@@ -7124,6 +7124,34 @@ const ko: Translations = {
     errLoadFailed: "퍼널 로드 실패",
   },
 
+  bdSequenceAnalytics: {
+    loading: "로드 중…",
+    crumbBdSequences: "BD 시퀀스",
+    crumbAnalytics: "분석",
+    modeSequence: "시퀀스",
+    modeCadence: "주기",
+    title: "퍼널 분석",
+    aggregatedAcross: "다음에 걸쳐 집계됨:",
+    sequenceSingular: "시퀀스",
+    sequencePlural: "시퀀스",
+    onCadenceLabel: "주기 진행 중",
+    emptyBefore: "이것에 아직 발송 활동이 없습니다:",
+    stepLabel: "단계",
+    sentSuffix: "발송됨",
+    mSent: "발송",
+    mOpens: "열람",
+    mClicks: "클릭",
+    mReplies: "답장",
+    mMeetings: "미팅",
+    mAvgDaysReply: "평균 일수 → 답장",
+    subjectVariantsTitle: "주제 변형",
+    colSubject: "주제",
+    colSent: "발송",
+    colOpens: "열람",
+    colOpenRate: "열람률",
+    errLoadFailed: "분석 로드 실패",
+  },
+
 };
 
 export default ko;
