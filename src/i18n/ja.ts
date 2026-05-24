@@ -4727,6 +4727,42 @@ const ja: Translations = {
     openProfile: "プロフィールを開く",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← ICPサンプル準備に戻る",
+    printButton: "🖨 印刷 / PDFとして保存",
+    eyebrow: "FUZE Biotech · ラボSOP",
+    pageTitle: "ICP-MS サンプル準備",
+    pageSubtitle: "裁断 → 計量 → 分割 → 袋詰め → CTLA（ユタ）へ発送し、ICP-MS検証を実施",
+    docLabel: "ドキュメント: SOP-FUZE-LAB-002",
+    revLabel: "改訂: 1.0 ·",
+
+    purposeHeader: "目的",
+    equipmentHeader: "機器",
+    massTargetsHeader: "質量目標（重要）",
+    shipToLabel: "CTLAへ発送",
+    digestPerRunLabel: "1回あたりの分解量",
+    cutterGeometryLabel: "カッター形状",
+
+    criticalRulesHeader: "⚠ 重要な準備ルール",
+    procedureHeader: "手順",
+    shippingAddressHeader: "発送先住所（ウィザードで自動入力）",
+    shipToHeader: "発送先",
+    returnAddressHeader: "返送先住所 + レポート送付先",
+    reportToLabel: "レポート送付先:",
+    preShipChecklistHeader: "✅ 発送前チェックリスト（ウィザードがパケットに印刷します）",
+    sanityCheckHeader: "妥当性チェック（CTLAが報告する内容）",
+  },
+
+  distributorsAdmin: {
+    pageTitle: "ディストリビューターネットワーク",
+    pageSubtitle: "グローバルな販売パートナー、在庫、カバレッジを管理します",
+    inventoryCta: "📊 在庫・消費レート",
+    worldwideCta: "🌍 世界在庫",
+    newDistributorCta: "+ 新規ディストリビューター",
+    newDistributorModalTitle: "新規ディストリビューター",
+    nameRequiredError: "名前は必須です",
+  },
+
 };
 
 export default ja;
