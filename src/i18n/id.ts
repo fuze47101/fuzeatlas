@@ -4335,6 +4335,31 @@ const id: Translations = {
     titleOpenFabric: "Buka detail kain",
   },
 
+  educationMain: {
+    kicker: "Dasar FUZE",
+    pageTitle: "Cara FUZE benar-benar bekerja — dan kenapa berbeda",
+    pageIntro: "Primer empat-bagian tentang apa yang FUZE letakkan pada kain, bagaimana ia membunuh bakteri, uji mana yang mengukurnya dengan benar, dan apa artinya saat brand memilih antara kami dan kompetitor ion logam / zinc / QAC.",
+    forBrands: "Untuk brand",
+    forFactories: "Untuk pabrik",
+    forDistributors: "Untuk distributor",
+    forSalesReps: "Untuk sales rep",
+    segmentKicker: "Pitch per segmen",
+    segmentTitle: "FUZE untuk industri spesifik Anda",
+    segmentIntro: "Sains di atas universal. Setiap segmen di bawah memiliki tangga tier FUZE yang direkomendasikan, stack uji, checkmark regulasi, dan outreach hook yang disesuaikan dengan audiens tersebut.",
+    openSegment: "Buka halaman segmen →",
+    dosageKicker: "Bagian 1 — Footprint",
+    mechanismKicker: "Bagian 2 — Mekanisme",
+    mechanismTitle: "Ion leaching vs contact-kill non-ionik",
+    performanceKicker: "Bagian 3 — Stack Kinerja (F1 → F4)",
+    performanceTitle: "Setiap tier permanen. Setiap langkah menambah lapisan FUZE baru.",
+    testsKicker: "Bagian 4 — Lima uji",
+    testsTitle: "Lima uji di pasar — hanya satu yang dirancang untuk mekanisme FUZE",
+    synthesisKicker: "Bagian 5 — Apa artinya untuk brand Anda",
+    synthesisTitle: "Tiga hal untuk dibawa ke setiap meeting supply-chain",
+    ctaPricing: "Lihat biaya vs kompetitor spesifik",
+    ctaSustainability: "Lihat dampak keberlanjutan",
+  },
+
 };
 
 export default id;
