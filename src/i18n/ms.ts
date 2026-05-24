@@ -8096,6 +8096,18 @@ const ms: Translations = {
     addFavoriteTitle: "Tambah kegemaran",
   },
 
+  icpCorrelation: {
+    adminCrumb: "Pentadbir",
+    crumb: "Korelasi ICP",
+    heading: "Korelasi ICP × AB",
+    subtitle: "Carta yang Joseph (KUIU) tanyakan. Sisa FUZE pada fabrik (diukur ICP) diplotkan terhadap kadar pembunuhan antibakteria merentas setiap larian ujian yang boleh dilihat jenama dalam Atlas. Garis padanan terbaik + R² ditindih.",
+    errorContext: "Muatkan korelasi ICP",
+    couldntLoadPrefix: "Tidak dapat memuatkan data korelasi",
+    networkError: "Ralat rangkaian.",
+    loadingState: "Memuatkan data korelasi…",
+    footnote: "Salinan menghadap pelanggan menggunakan \"sisa FUZE\" — ukuran metamaterial daripada laporan ICP makmal. Sentiasa dilabelkan FUZE / metamaterial dalam penghantaran pelanggan (peraturan suara jenama CLAUDE.md).",
+  },
+
 };
 
 export default ms;
