@@ -6023,6 +6023,50 @@ const ms: Translations = {
     emptyTpl: "Belum ada templat. Klik + Templat Baharu untuk mencipta yang pertama.",
   },
 
+  pipelineUserPage: {
+    loading: "Memuatkan saluran paip...",
+    pageTitle: "Saluran Paip Hasil",
+    pageSubtitle: "Jejak perjanjian daripada pembangunan hingga pengeluaran",
+    btnNewDeal: "+ Perjanjian Baharu",
+
+    kpiTotalPipeline: "Jumlah Saluran Paip",
+    kpiTotalPipelineSubTpl: "{n} perjanjian",
+    kpiWeighted: "Ramalan Diberat",
+    kpiWeightedSub: "Diselaraskan dengan kebarangkalian",
+    kpiActual: "Hasil Sebenar",
+    kpiActualSub: "Diinvois & dibayar",
+    kpiConversion: "Penukaran",
+    kpiConversionSub: "Sebenar / Saluran Paip",
+
+    cardProdPrefix: "Pengeluaran:",
+    emptyDeals: "Tiada perjanjian",
+    weightedPrefix: "· berat:",
+
+    editTitlePrefix: "Sunting Projek:",
+    fieldName: "Nama Projek",
+    fieldStage: "Peringkat",
+    keepCurrent: "Kekalkan semasa",
+    fieldBrand: "Jenama",
+    fieldNone: "Tiada",
+    fieldProjectedValue: "Nilai Diunjurkan ($)",
+    fieldProbability: "Kebarangkalian (%)",
+    fieldFuzeTier: "Tier FUZE",
+    fieldAnnualVolume: "Volum Tahunan (m)",
+    fieldFactory: "Kilang",
+    fieldDistributor: "Pengedar",
+    autoFromFactory: "Auto daripada kilang",
+    fieldExpectedProd: "Pengeluaran Dijangka",
+    fieldActualProd: "Pengeluaran Sebenar",
+    btnSaveChanges: "Simpan Perubahan",
+    btnSaving: "Menyimpan...",
+    btnCancel: "Batal",
+
+    newDealTitle: "Perjanjian Baharu",
+    newDealPlaceholder: "Nama Projek / Perjanjian...",
+    btnCreate: "Cipta",
+    btnCreating: "Mencipta...",
+  },
+
 };
 
 export default ms;
