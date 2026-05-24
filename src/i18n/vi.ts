@@ -6336,6 +6336,35 @@ const vi: Translations = {
     noData: "Không có dữ liệu",
   },
 
+  educationApplication: {
+    pageMetaTitle: "Phương pháp áp dụng",
+    backLink: "← Quay lại FUZE cơ bản",
+    kicker: "Phương pháp áp dụng",
+    heroTitle: "FUZE hoạt động trong dây chuyền hoàn tất hiện tại của bạn",
+    heroBody: "Bạn không cần bể mới, lò mới, hoặc thiết bị mới để áp dụng FUZE. Ba phương pháp áp dụng bao gồm mọi cài đặt sản xuất dệt may đang hoạt động ngày nay. F4 Bảo vệ thiết yếu không yêu cầu lò lưu hóa nào trên nhiều chất nền.",
+    methodExhaustName: "Exhaust (dyebath)",
+    methodExhaustDesc: "Thêm FUZE vào dyebath. Metamaterial liên kết trong quá trình exhaust nhuộm hiện tại. Không bể mới, không bình mới, không dây chuyền mới.",
+    methodExhaustWhen: "Tốt nhất cho nhuộm liên tục khối lượng lớn. Metamaterial tích hợp với bước cố định nhuộm.",
+    methodPdcName: "Pad-Dry-Cure",
+    methodPdcDesc: "Chạy vải qua padder tiêu chuẩn đã nạp bể tắm FUZE pha loãng. Ép, sấy, lưu hóa như bình thường. Nhiệt độ lưu hóa 150-170°C.",
+    methodPdcWhen: "Phương pháp áp dụng phổ biến nhất. Tương thích với mọi dây chuyền hoàn tất dệt may đang hoạt động ngày nay.",
+    methodSprayName: "Phun (đầu cách)",
+    methodSprayDesc: "Khoảng cách đầu 6-inch, tốc độ dây chuyền 15 m/phút. Phun FUZE pha loãng lên bề mặt vải, sau đó sấy/lưu hóa. Lý tưởng cho hàng may hoàn thiện hoặc chất nền không dệt.",
+    methodSprayWhen: "Hàng may đã cắt/may sẵn, hoặc chất nền đặc biệt nơi exhaust/PDC không áp dụng được.",
+    whenToUseLabel: "Khi nào sử dụng",
+    operatorTitle: "Vì sao điều này quan trọng với người vận hành nhà máy",
+    operatorBullet1: "✓ Không cần thiết bị vốn mới. FUZE tích hợp vào dây chuyền pad/nhuộm/phun hiện tại của bạn.",
+    operatorBullet2: "✓ Không chất kết dính, không chất liên kết chéo, không formaldehyde. Ít tồn kho cần quản lý, không có quy trình xử lý chất gây ung thư.",
+    operatorBullet3: "✓ Không phụ thuộc vào lò lưu hóa ở F4. Các hạng thấp hơn có thể sấy khô không khí; F1-F3 dùng 150-170°C, cùng dải nhiệt với hoàn tất PDC tiêu chuẩn.",
+    operatorBullet4: "✓ Không có hạn sử dụng cho FUZE lưu trữ. Thùng và bình chứa có thể để trong phòng hoàn tất của bạn vô thời hạn mà không suy giảm.",
+    operatorBullet5: "✓ Bình chứa 19L tiêu chuẩn là đơn vị đặt hàng nhỏ nhất. Đặt khối lượng tùy chỉnh (47L, 285L, 1300L) khi bạn cần khớp chính xác.",
+    runNumbersTitle: "Tính toán số liệu của bạn",
+    runNumbersBody: "Máy tính áp dụng tính chính xác thể tích FUZE cần cho mỗi mét vuông vải ở hạng bạn chọn. Nhập trọng lượng vải (gsm), khổ vải và hạng mục tiêu — nhận về số lít bể tắm FUZE, mL nồng độ stock, và đô la mỗi mét dài.",
+    runNumbersCta: "Mở máy tính áp dụng →",
+    backBasicsBtn: "Quay lại FUZE cơ bản",
+    seePricingBtn: "Xem giá & hạng",
+  },
+
 };
 
 export default vi;
