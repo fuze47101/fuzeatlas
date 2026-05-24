@@ -6873,6 +6873,29 @@ const th: Translations = {
     errLoadFailed: "ไม่สามารถโหลด analytics ได้",
   },
 
+  orderQrLabel: {
+    orderNotFound: "ไม่พบคำสั่งซื้อ",
+    headerKicker: "ป้าย QR",
+    previewPublicLink: "ดูตัวอย่างหน้าสาธารณะ →",
+    brandLine: "FUZE Biotech",
+    brandLocation: "Salt Lake City, Utah USA",
+    orderLabel: "คำสั่งซื้อ",
+    scanToVerifyTitle: "สแกนเพื่อยืนยัน",
+    scanToVerifyBody: "เปิดป้ายนี้บนกล้องโทรศัพท์เพื่อโหลดสถานะการจัดส่ง วงจรชีวิต SDS และ COA",
+    tierLabel: "ระดับ",
+    volumeLabel: "ปริมาตร",
+    bottlesSuffix: "ขวด",
+    methodLabel: "วิธีการ",
+    typeLabel: "ประเภท",
+    shipToLabel: "ส่งถึง",
+    forBrandLabel: "สำหรับแบรนด์",
+    viaDistributorLabel: "ผ่านผู้จัดจำหน่าย",
+    fabricLabel: "ผ้า",
+    trackingLabel: "การติดตาม",
+    footerTagline: "FUZE F1–F4 · การบำบัดต้านจุลชีพเมตาวัสดุ · ปลอด PFAS",
+    printedPrefix: "พิมพ์เมื่อ",
+  },
+
 };
 
 export default th;
