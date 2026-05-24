@@ -4527,6 +4527,16 @@ const hi: Translations = {
     sanityCheckHeader: "सैनिटी चेक (CTLA को क्या रिपोर्ट करना चाहिए)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "वितरक नेटवर्क",
+    pageSubtitle: "अपने वैश्विक वितरण भागीदारों, स्टॉक, और कवरेज का प्रबंधन करें",
+    inventoryCta: "📊 स्टॉक और बर्न दर",
+    worldwideCta: "🌍 विश्वव्यापी स्टॉक",
+    newDistributorCta: "+ नया वितरक",
+    newDistributorModalTitle: "नया वितरक",
+    nameRequiredError: "नाम आवश्यक है",
+  },
+
 };
 
 export default hi;
