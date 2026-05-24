@@ -4781,6 +4781,19 @@ const tr: Translations = {
     generatedTemplate: "Oluşturuldu:",
   },
 
+  bdWizard: {
+    homeLink: "← Ana Sayfa",
+    pageTitle: "BD Sihirbazı",
+    pageSubtitle: "Rehberli giden. Sizin için otomatik seçilen, en yüksek güvenli marka.",
+    inQueueTemplate: "({n} sırada)",
+    skipBrand: "Bu markayı atla →",
+
+    setFromAddressHeader: "Göndermeden önce giden Kimden: adresinizi ayarlayın",
+    setFromAddressBody: "Bu yapılmadan, giden e-posta jenerik FUZE Atlas bildirim adresinden gönderilir ve yanıtlar gelen kutunuza gelmez.",
+    currentlyLabel: "Şu anda:",
+    openProfile: "Profili Aç",
+  },
+
 };
 
 export default tr;
