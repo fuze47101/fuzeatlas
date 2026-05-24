@@ -7924,6 +7924,21 @@ const ja: Translations = {
     titleHint: '例 "Mr."、"Dr."',
   },
 
+  importFactories: {
+    title: "一括インポート — 工場",
+    subtitle: "工場の CSV を貼り付けるか、アップロードしてください。名前を自然キーとして upsert し、ディストリビュータを指定すればリンクし、Atlas に既存のブランドそれぞれに SupplyChainLink 行をスタンプします。まだ存在しないブランドは「missing」として報告されますので、先にブランドのインポートを実行してください。",
+    backLabel: "工場",
+    factoryNameLabel: "工場名",
+    factoryNameHint: "(自然キー — このキーで upsert します)",
+    countryLabel: "国",
+    distributorLabel: "ディストリビュータ",
+    distributorHint: "Distributor.name に対する大文字小文字を区別しない一致。見つからない場合はスキップされます",
+    brandsLabel: "ブランド",
+    brandsHint: "カンマ区切り。各名称は既存の Brand に存在している必要があります",
+    cityLabel: "市区町村",
+    websiteLabel: "ウェブサイト",
+  },
+
 };
 
 export default ja;
