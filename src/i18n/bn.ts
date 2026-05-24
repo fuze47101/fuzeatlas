@@ -7477,6 +7477,32 @@ const bn: Translations = {
     emptyState: "এখনও কোনো টোকেন নেই — উপরে আপনার প্রথম ব্যাচ মিন্ট করুন।",
   },
 
+  bookMeetingPage: {
+    heading: "একটি মিটিং নির্ধারণ করুন",
+    subtitle: "আমাদের দলের সাথে আপনার মিটিং বুক করতে একটি উপলব্ধ তারিখ ও সময় নির্বাচন করুন।",
+    selectDateTitle: "তারিখ নির্বাচন করুন",
+    availableTimesPrefix: "উপলব্ধ সময়",
+    loadingSlots: "স্লট লোড হচ্ছে...",
+    noSlotsBody: "এই তারিখের জন্য কোনো উপলব্ধ স্লট নেই",
+    detailsTitle: "মিটিং বিস্তারিত",
+    selectDateTimeHint: "চালিয়ে যেতে একটি তারিখ ও সময় নির্বাচন করুন",
+    dateTimeLabel: "তারিখ ও সময়",
+    meetingTitleLabel: "মিটিং শিরোনাম",
+    defaultTitle: "FUZE মিটিং",
+    descriptionLabel: "বিবরণ (ঐচ্ছিক)",
+    descriptionPlaceholder: "কোনো অতিরিক্ত বিস্তারিত...",
+    confirmBtn: "বুকিং নিশ্চিত করুন",
+    bookingBusy: "বুকিং করা হচ্ছে...",
+    bookFailedError: "মিটিং বুক করতে ব্যর্থ",
+    networkError: "নেটওয়ার্ক ত্রুটি",
+    bookedTitle: "মিটিং বুক করা হয়েছে!",
+    titleColLabel: "শিরোনাম",
+    timeColLabel: "সময়",
+    meetingLinkLabel: "মিটিং লিঙ্ক",
+    openInTeams: "Teams-এ খুলুন",
+    bookAnotherBtn: "আরেকটি মিটিং বুক করুন",
+  },
+
 };
 
 export default bn;
