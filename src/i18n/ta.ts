@@ -6919,6 +6919,29 @@ const ta: Translations = {
     errAddFailed: "சேர்த்தல் தோல்வியடைந்தது",
   },
 
+  accountsAdmin: {
+    title: "கணக்குகள்",
+    subtitleBefore: "Lead கட்டத்தை கடந்த brands — விளக்கக்காட்சி பெற்றது, சோதனையில், உற்பத்தி செய்கிறது, அல்லது ஏற்கனவே வாடிக்கையாளர்கள். புதிய prospects-க்கு இங்கே செல்லவும்",
+    brandPipelineLink: "Brand Pipeline",
+    allFilter: "அனைத்தும்",
+    stagePresentation: "விளக்கக்காட்சி",
+    stageBrandTesting: "பிராண்ட் சோதனை",
+    stageFactoryOnboarding: "தொழிற்சாலை Onboarding",
+    stageFactoryTesting: "தொழிற்சாலை சோதனை",
+    stageProduction: "உற்பத்தி",
+    stageReConnect: "மீள்-இணை",
+    stageCustomerWon: "வாடிக்கையாளர் வெற்றி",
+    searchPlaceholder: "பெயர் அல்லது தொடர்பு மூலம் கணக்குகளைத் தேடவும்...",
+    emptyTitle: "இந்த பார்வையில் இன்னும் கணக்குகள் இல்லை",
+    emptyBody: "Brands LEAD-இலிருந்து PRESENTATION அல்லது பின்னர் நகர்ந்தால் கணக்குகள் தோன்றும்.",
+    goToPipelineBtn: "Brand Pipeline-க்குச் செல்",
+    highRelevanceBadge: "🔥 உயர் relevance",
+    amPrefix: "AM:",
+    contactsLabel: "தொடர்புகள்",
+    enrichedSuffix: "வளப்படுத்தப்பட்டது",
+    backToLeadOption: "← Lead-க்குத் திரும்பு",
+  },
+
 };
 
 export default ta;
