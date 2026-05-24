@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface AccessRequest {
   id: string;
@@ -51,6 +52,8 @@ interface CompanyOption {
 }
 
 export default function AccessRequestsPage() {
+  const { t } = useI18n();
+  const T = t.settingsAccessRequests;
   const [requests, setRequests] = useState<AccessRequest[]>([]);
   const [stats, setStats] = useState<Stats>({ pending: 0, approved: 0, denied: 0 });
   const [loading, setLoading] = useState(true);
@@ -96,7 +99,7 @@ export default function AccessRequestsPage() {
         setStats(d.stats);
       }
     } catch (e) {
-      setError("Failed to load requests");
+      setError(T.failedLoadRequests);
     } finally {
       setLoading(false);
     }
@@ -234,14 +237,14 @@ export default function AccessRequestsPage() {
         setError(d.error);
       }
     } catch {
-      setError("Failed to process request");
+      setError(T.failedProcessRequest);
     } finally {
       setProcessing(null);
     }
   };
 
   const handleDeny = async (id: string) => {
-    const reason = prompt("Reason for denial (optional):");
+    const reason = prompt(T.denyPrompt);
     setProcessing(id);
     setError("");
     try {
@@ -259,7 +262,7 @@ export default function AccessRequestsPage() {
         setError(d.error);
       }
     } catch {
-      setError("Failed to process request");
+      setError(T.failedProcessRequest);
     } finally {
       setProcessing(null);
     }
@@ -299,10 +302,10 @@ export default function AccessRequestsPage() {
             password: d.tempPassword,
           });
         }
-        setError(d.error || "Failed to resend email");
+        setError(d.error || T.failedResendEmail);
       }
     } catch {
-      setError("Failed to resend email");
+      setError(T.failedResendEmail);
     } finally {
       setResending(null);
     }
@@ -329,14 +332,14 @@ export default function AccessRequestsPage() {
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
             <Link href="/dashboard" className="hover:text-[#00b4c3]">
-              Dashboard
+              {T.breadcrumbDashboard}
             </Link>
             <span>/</span>
-            <span className="text-slate-800 font-medium">Access Requests</span>
+            <span className="text-slate-800 font-medium">{T.breadcrumbCurrent}</span>
           </div>
-          <h1 className="text-2xl font-black text-slate-900">Portal Access Requests</h1>
+          <h1 className="text-2xl font-black text-slate-900">{T.pageTitle}</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Review and approve brand and factory portal access requests
+            {T.pageSubtitle}
           </p>
         </div>
       </div>
@@ -354,10 +357,10 @@ export default function AccessRequestsPage() {
             }`}
           >
             {tab === "ALL"
-              ? "All Requests"
+              ? T.tabAll
               : tab === "BRAND"
-                ? "Brand Requests"
-                : "Factory Requests"}
+                ? T.tabBrand
+                : T.tabFactory}
           </button>
         ))}
       </div>
@@ -369,21 +372,21 @@ export default function AccessRequestsPage() {
           className={`p-4 rounded-xl border-2 transition-all ${statusFilter === "PENDING" ? "border-amber-400 bg-amber-50" : "border-slate-200 bg-white hover:border-slate-300"}`}
         >
           <div className="text-2xl font-black text-amber-600">{stats.pending}</div>
-          <div className="text-xs font-medium text-slate-500">Pending Review</div>
+          <div className="text-xs font-medium text-slate-500">{T.statPending}</div>
         </button>
         <button
           onClick={() => setStatusFilter("APPROVED")}
           className={`p-4 rounded-xl border-2 transition-all ${statusFilter === "APPROVED" ? "border-emerald-400 bg-emerald-50" : "border-slate-200 bg-white hover:border-slate-300"}`}
         >
           <div className="text-2xl font-black text-emerald-600">{stats.approved}</div>
-          <div className="text-xs font-medium text-slate-500">Approved</div>
+          <div className="text-xs font-medium text-slate-500">{T.statApproved}</div>
         </button>
         <button
           onClick={() => setStatusFilter("DENIED")}
           className={`p-4 rounded-xl border-2 transition-all ${statusFilter === "DENIED" ? "border-red-400 bg-red-50" : "border-slate-200 bg-white hover:border-slate-300"}`}
         >
           <div className="text-2xl font-black text-red-600">{stats.denied}</div>
-          <div className="text-xs font-medium text-slate-500">Denied</div>
+          <div className="text-xs font-medium text-slate-500">{T.statDenied}</div>
         </button>
       </div>
 
@@ -405,33 +408,33 @@ export default function AccessRequestsPage() {
             <span className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">
               !
             </span>
-            <h3 className="font-bold text-emerald-800">Account Created — Send These Credentials</h3>
+            <h3 className="font-bold text-emerald-800">{T.bannerAccountCreated}</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
             <div>
-              <span className="text-slate-500 text-xs">Name:</span>
+              <span className="text-slate-500 text-xs">{T.bannerName}</span>
               <p className="font-medium text-slate-800">{lastApproval.name}</p>
             </div>
             <div>
-              <span className="text-slate-500 text-xs">Email:</span>
+              <span className="text-slate-500 text-xs">{T.bannerEmail}</span>
               <p className="font-medium text-slate-800">{lastApproval.email}</p>
             </div>
             <div>
-              <span className="text-slate-500 text-xs">Temporary Password:</span>
+              <span className="text-slate-500 text-xs">{T.bannerTempPassword}</span>
               <p className="font-mono font-bold text-emerald-700 text-lg">
                 {lastApproval.password}
               </p>
             </div>
           </div>
           <p className="text-xs text-slate-500 mt-2">
-            Send these credentials to the brand contact. They can log in at{" "}
-            <span className="font-mono text-[#00b4c3]">fuzeatlas.com/login</span>
+            {T.bannerLoginHint}{" "}
+            <span className="font-mono text-[#00b4c3]">{T.bannerLoginUrl}</span>
           </p>
           <button
             onClick={() => setLastApproval(null)}
             className="mt-2 text-xs text-slate-400 hover:text-slate-600"
           >
-            Dismiss
+            {T.bannerDismiss}
           </button>
         </div>
       )}
@@ -439,7 +442,7 @@ export default function AccessRequestsPage() {
       {/* Request List */}
       {requests.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
-          <p className="text-slate-400">No {typeTab.toLowerCase()} access requests</p>
+          <p className="text-slate-400">{T.noRequestsTemplate.replace("{type}", typeTab.toLowerCase())}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -479,12 +482,12 @@ export default function AccessRequestsPage() {
                           }`}
                         >
                           {req.requestType === "FACTORY"
-                            ? "🏭 Factory"
+                            ? T.factoryTag
                             : req.requestType === "LAB"
-                              ? "🔬 Lab"
+                              ? T.labTag
                               : req.requestType === "DISTRIBUTOR"
-                                ? "🌍 Distributor"
-                                : "🏢 Brand"}
+                                ? T.distributorTag
+                                : T.brandTag}
                         </span>
                       )}
                     </div>
@@ -526,16 +529,16 @@ export default function AccessRequestsPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-4">
                       <div className="space-y-3">
                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                          Contact
+                          {T.detailContact}
                         </h4>
                         <div>
-                          <p className="text-xs text-slate-500">Full Name</p>
+                          <p className="text-xs text-slate-500">{T.detailFullName}</p>
                           <p className="text-sm font-medium text-slate-800">
                             {req.firstName} {req.lastName}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-slate-500">Email</p>
+                          <p className="text-xs text-slate-500">{T.detailEmail}</p>
                           <a
                             href={`mailto:${req.email}`}
                             className="text-sm text-blue-600 hover:underline"
@@ -545,13 +548,13 @@ export default function AccessRequestsPage() {
                         </div>
                         {req.phone && (
                           <div>
-                            <p className="text-xs text-slate-500">Phone</p>
+                            <p className="text-xs text-slate-500">{T.detailPhone}</p>
                             <p className="text-sm text-slate-800">{req.phone}</p>
                           </div>
                         )}
                         {req.jobTitle && (
                           <div>
-                            <p className="text-xs text-slate-500">Title</p>
+                            <p className="text-xs text-slate-500">{T.detailTitle}</p>
                             <p className="text-sm text-slate-800">{req.jobTitle}</p>
                           </div>
                         )}
@@ -559,17 +562,17 @@ export default function AccessRequestsPage() {
 
                       <div className="space-y-3">
                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                          {req.requestType === "FACTORY" ? "Factory" : "Company"}
+                          {req.requestType === "FACTORY" ? T.detailFactory : T.detailCompany}
                         </h4>
                         <div>
                           <p className="text-xs text-slate-500">
-                            {req.requestType === "FACTORY" ? "Factory Name" : "Company Name"}
+                            {req.requestType === "FACTORY" ? T.detailFactoryName : T.detailCompanyName}
                           </p>
                           <p className="text-sm font-medium text-slate-800">{req.company}</p>
                         </div>
                         {req.website && (
                           <div>
-                            <p className="text-xs text-slate-500">Website</p>
+                            <p className="text-xs text-slate-500">{T.detailWebsite}</p>
                             <a
                               href={
                                 req.website.startsWith("http")
@@ -586,25 +589,25 @@ export default function AccessRequestsPage() {
                         )}
                         {req.requestType === "FACTORY" && req.factoryLocation && (
                           <div>
-                            <p className="text-xs text-slate-500">Location</p>
+                            <p className="text-xs text-slate-500">{T.detailLocation}</p>
                             <p className="text-sm text-slate-800">{req.factoryLocation}</p>
                           </div>
                         )}
                         {req.requestType === "FACTORY" && req.monthlyCapacity && (
                           <div>
-                            <p className="text-xs text-slate-500">Monthly Capacity</p>
+                            <p className="text-xs text-slate-500">{T.detailMonthlyCapacity}</p>
                             <p className="text-sm text-slate-800">{req.monthlyCapacity}</p>
                           </div>
                         )}
                         {req.requestType === "BRAND" && req.annualVolume && (
                           <div>
-                            <p className="text-xs text-slate-500">Annual Volume</p>
+                            <p className="text-xs text-slate-500">{T.detailAnnualVolume}</p>
                             <p className="text-sm text-slate-800">{req.annualVolume}</p>
                           </div>
                         )}
                         {req.requestType === "BRAND" && req.timeline && (
                           <div>
-                            <p className="text-xs text-slate-500">Timeline</p>
+                            <p className="text-xs text-slate-500">{T.detailTimeline}</p>
                             <p className="text-sm text-slate-800">{req.timeline}</p>
                           </div>
                         )}
@@ -612,41 +615,41 @@ export default function AccessRequestsPage() {
 
                       <div className="space-y-3">
                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                          {req.requestType === "FACTORY" ? "Details" : "Program Interest"}
+                          {req.requestType === "FACTORY" ? T.detailDetails : T.detailProgramInterest}
                         </h4>
                         {req.requestType === "FACTORY" && req.capabilities && (
                           <div>
-                            <p className="text-xs text-slate-500">Capabilities</p>
+                            <p className="text-xs text-slate-500">{T.detailCapabilities}</p>
                             <p className="text-sm text-slate-800">{req.capabilities}</p>
                           </div>
                         )}
                         {req.requestType === "FACTORY" && req.certifications && (
                           <div>
-                            <p className="text-xs text-slate-500">Certifications</p>
+                            <p className="text-xs text-slate-500">{T.detailCertifications}</p>
                             <p className="text-sm text-slate-800">{req.certifications}</p>
                           </div>
                         )}
                         {req.requestType === "FACTORY" && req.productTypes && (
                           <div>
-                            <p className="text-xs text-slate-500">Product Types</p>
+                            <p className="text-xs text-slate-500">{T.detailProductTypes}</p>
                             <p className="text-sm text-slate-800">{req.productTypes}</p>
                           </div>
                         )}
                         {req.requestType === "FACTORY" && req.fuzeApplicationMethod && (
                           <div>
-                            <p className="text-xs text-slate-500">FUZE Application Interest</p>
+                            <p className="text-xs text-slate-500">{T.detailFuzeAppInterest}</p>
                             <p className="text-sm text-slate-800">{req.fuzeApplicationMethod}</p>
                           </div>
                         )}
                         {req.requestType === "BRAND" && req.fabricTypes && (
                           <div>
-                            <p className="text-xs text-slate-500">Fabric Types</p>
+                            <p className="text-xs text-slate-500">{T.detailFabricTypes}</p>
                             <p className="text-sm text-slate-800">{req.fabricTypes}</p>
                           </div>
                         )}
                         {req.requestType === "BRAND" && req.currentAntimicrobial && (
                           <div>
-                            <p className="text-xs text-slate-500">Current Antimicrobial</p>
+                            <p className="text-xs text-slate-500">{T.detailCurrentAntimicrobial}</p>
                             <p className="text-sm text-slate-800 font-medium">
                               {req.currentAntimicrobial}
                             </p>
@@ -654,12 +657,12 @@ export default function AccessRequestsPage() {
                         )}
                         {req.notes && (
                           <div>
-                            <p className="text-xs text-slate-500">Additional Notes</p>
+                            <p className="text-xs text-slate-500">{T.detailNotes}</p>
                             <p className="text-sm text-slate-800">{req.notes}</p>
                           </div>
                         )}
                         <div>
-                          <p className="text-xs text-slate-500">Submitted</p>
+                          <p className="text-xs text-slate-500">{T.detailSubmitted}</p>
                           <p className="text-sm text-slate-800">
                             {new Date(req.createdAt).toLocaleString()}
                           </p>
@@ -673,11 +676,11 @@ export default function AccessRequestsPage() {
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="text-xs font-semibold text-emerald-700 mb-1">
-                              Account Created
+                              {T.accountCreatedHeader}
                             </p>
                             <p className="text-sm text-slate-700">
-                              User: <span className="font-medium">{req.user.name}</span> · Email:{" "}
-                              <span className="font-mono">{req.user.email}</span> · Role:{" "}
+                              {T.accountCreatedLineUser} <span className="font-medium">{req.user.name}</span> {T.accountCreatedLineEmail}{" "}
+                              <span className="font-mono">{req.user.email}</span> {T.accountCreatedLineRole}{" "}
                               <span className="font-medium">{req.user.role}</span>
                             </p>
                           </div>
@@ -706,7 +709,7 @@ export default function AccessRequestsPage() {
                                 />
                               </svg>
                             )}
-                            Resend Email
+                            {T.resendEmailBtn}
                           </button>
                         </div>
                       </div>
@@ -715,7 +718,7 @@ export default function AccessRequestsPage() {
                     {/* Denied reason */}
                     {req.deniedReason && (
                       <div className="p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
-                        <p className="text-xs font-semibold text-red-700 mb-1">Reason for Denial</p>
+                        <p className="text-xs font-semibold text-red-700 mb-1">{T.deniedReasonHeader}</p>
                         <p className="text-sm text-slate-700">{req.deniedReason}</p>
                       </div>
                     )}
@@ -741,14 +744,14 @@ export default function AccessRequestsPage() {
                               d="M5 13l4 4L19 7"
                             />
                           </svg>
-                          Approve & Link Company
+                          {T.approveBtn}
                         </button>
                         <button
                           onClick={() => handleDeny(req.id)}
                           disabled={processing === req.id}
                           className="px-5 py-2.5 border border-red-300 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-50 disabled:opacity-50"
                         >
-                          Deny
+                          {T.denyBtn}
                         </button>
                       </div>
                     )}
@@ -852,12 +855,11 @@ export default function AccessRequestsPage() {
               >
                 {/* Modal Header */}
                 <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
-                  <h3 className="text-lg font-bold text-slate-900">Approve Access Request</h3>
+                  <h3 className="text-lg font-bold text-slate-900">{T.modalTitle}</h3>
                   <p className="text-sm text-slate-500 mt-0.5">
                     <span className="font-medium">
                       {req.firstName} {req.lastName}
-                    </span>{" "}
-                    from <span className="font-medium text-slate-700">{req.company}</span>
+                    </span>{T.modalFromTemplate}<span className="font-medium text-slate-700">{req.company}</span>
                   </p>
                 </div>
 
@@ -869,20 +871,20 @@ export default function AccessRequestsPage() {
                   <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg space-y-2">
                     <div>
                       <p className="text-xs font-semibold text-amber-700 mb-1">
-                        Company name they provided:
+                        {T.modalProvidedLabel}
                       </p>
                       <p className="text-sm font-bold text-slate-800">{req.company}</p>
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-amber-700 mb-1">
-                        Save as (edit if needed — e.g. add city "BV Xiaoxing"):
+                        {T.modalSaveAsLabel}
                       </label>
                       <input
                         type="text"
                         value={editedCompanyName}
                         onChange={(e) => setEditedCompanyName(e.target.value)}
                         className="w-full px-2.5 py-1.5 bg-white border border-amber-300 rounded text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                        placeholder="Canonical company name"
+                        placeholder={T.modalCanonicalPlaceholder}
                       />
                       {editedCompanyName.trim() !== req.company &&
                         editedCompanyName.trim().length > 0 && (
@@ -894,11 +896,10 @@ export default function AccessRequestsPage() {
                         )}
                     </div>
                     <p className="text-xs text-amber-600 pt-1 border-t border-amber-200">
-                      {entityIcon} {entityLabel.charAt(0).toUpperCase() + entityLabel.slice(1)}{" "}
-                      request
+                      {entityIcon} {entityLabel.charAt(0).toUpperCase() + entityLabel.slice(1)}{T.modalRequestSuffix}
                       {typeChanged && (
                         <span className="ml-2 text-red-600 font-semibold">
-                          (was {req.requestType} — you changed it)
+                          {T.modalTypeChangedTemplate.replace("{type}", req.requestType || "")}
                         </span>
                       )}
                     </p>
@@ -907,9 +908,9 @@ export default function AccessRequestsPage() {
                   {/* Type picker — lets admin correct a misfiled signup */}
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Entity type{" "}
+                      {T.modalEntityTypeLabel}{" "}
                       <span className="text-xs font-normal text-slate-500">
-                        (override if signer picked wrong)
+                        {T.modalEntityTypeHint}
                       </span>
                     </label>
                     <div className="grid grid-cols-4 gap-2">
@@ -949,28 +950,28 @@ export default function AccessRequestsPage() {
                   {/* SALES_REP / EMPLOYEE and skip the brand linking entirely. */}
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      User role{" "}
+                      {T.modalUserRoleLabel}{" "}
                       <span className="text-xs font-normal text-slate-500">
-                        (what they can do once logged in)
+                        {T.modalUserRoleHint}
                       </span>
                     </label>
                     <div className="grid grid-cols-2 gap-2 mb-2">
                       <p className="col-span-2 text-[11px] uppercase font-bold text-slate-400 tracking-wide">
-                        External
+                        {T.modalExternalGroup}
                       </p>
                       {[
-                        { v: "BRAND_USER", label: "Brand User", icon: "🏢", color: "purple" },
-                        { v: "FACTORY_USER", label: "Factory User", icon: "🏭", color: "blue" },
+                        { v: "BRAND_USER", label: T.modalRoleBrandUser, icon: "🏢", color: "purple" },
+                        { v: "FACTORY_USER", label: T.modalRoleFactoryUser, icon: "🏭", color: "blue" },
                         {
                           v: "FACTORY_MANAGER",
-                          label: "Factory Manager",
+                          label: T.modalRoleFactoryManager,
                           icon: "🏭",
                           color: "blue",
                         },
-                        { v: "LAB_USER", label: "Lab User", icon: "🔬", color: "amber" },
+                        { v: "LAB_USER", label: T.modalRoleLabUser, icon: "🔬", color: "amber" },
                         {
                           v: "DISTRIBUTOR_USER",
-                          label: "Distributor User",
+                          label: T.modalRoleDistributorUser,
                           icon: "🌍",
                           color: "emerald",
                         },
@@ -1001,13 +1002,13 @@ export default function AccessRequestsPage() {
                         );
                       })}
                       <p className="col-span-2 mt-2 text-[11px] uppercase font-bold text-slate-400 tracking-wide">
-                        Internal (FUZE staff — no company link)
+                        {T.modalInternalGroup}
                       </p>
                       {[
-                        { v: "SALES_REP", label: "Sales Rep", icon: "💼" },
-                        { v: "SALES_MANAGER", label: "Sales Manager", icon: "💼" },
-                        { v: "EMPLOYEE", label: "Employee", icon: "👤" },
-                        { v: "ADMIN", label: "Admin", icon: "⚙️" },
+                        { v: "SALES_REP", label: T.modalRoleSalesRep, icon: "💼" },
+                        { v: "SALES_MANAGER", label: T.modalRoleSalesManager, icon: "💼" },
+                        { v: "EMPLOYEE", label: T.modalRoleEmployee, icon: "👤" },
+                        { v: "ADMIN", label: T.modalRoleAdmin, icon: "⚙️" },
                       ].map((opt) => {
                         const active = overrideRole === opt.v;
                         return (
@@ -1033,7 +1034,7 @@ export default function AccessRequestsPage() {
                     </div>
                     {["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"].includes(overrideRole) && (
                       <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-2">
-                        ✓ Internal user — won't create or link any brand/factory/lab/distributor.
+                        {T.modalInternalNote}
                       </p>
                     )}
                   </div>
@@ -1043,11 +1044,11 @@ export default function AccessRequestsPage() {
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-2">
-                          Link to existing {entityLabel}:
+                          {T.modalLinkExisting.replace("{entity}", entityLabel)}
                         </label>
                         <input
                           type="text"
-                          placeholder={`Search ${entityLabel === "factory" ? "factories" : entityLabel + "s"}...`}
+                          placeholder={T.modalSearchPlaceholder.replace("{entities}", entityLabel === "factory" ? T.factoriesPlural : entityLabel + T.entityPluralSuffix)}
                           value={companySearch}
                           onChange={(e) => {
                             setCompanySearch(e.target.value);
@@ -1060,8 +1061,7 @@ export default function AccessRequestsPage() {
                         <div className="mt-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg">
                           {relevantCompanies.length === 0 ? (
                             <div className="p-3 text-center text-sm text-slate-400">
-                              No matching{" "}
-                              {entityLabel === "factory" ? "factories" : entityLabel + "s"} found
+                              {T.modalNoMatching.replace("{entities}", entityLabel === "factory" ? T.factoriesPlural : entityLabel + T.entityPluralSuffix)}
                             </div>
                           ) : (
                             relevantCompanies.map((c) => (
@@ -1094,7 +1094,7 @@ export default function AccessRequestsPage() {
                         {crossTypeMatches.length > 0 && (
                           <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                             <p className="text-xs font-semibold text-blue-800 mb-2">
-                              💡 Found matches in other entity types — did you mean one of these?
+                              {T.modalCrossTypeHeader}
                             </p>
                             <div className="space-y-1">
                               {crossTypeMatches.map((c) => {
@@ -1119,7 +1119,7 @@ export default function AccessRequestsPage() {
                                       </span>
                                     )}
                                     <span className="float-right text-[11px] text-blue-700 font-semibold uppercase">
-                                      switch to {badge.label}
+                                      {T.modalSwitchToTemplate.replace("{type}", badge.label)}
                                     </span>
                                   </button>
                                 );
@@ -1141,7 +1141,7 @@ export default function AccessRequestsPage() {
                             : "border-dashed border-slate-300 text-slate-500 hover:border-slate-400"
                         }`}
                       >
-                        + Create new {entityLabel}:{" "}
+                        {T.modalCreateNew.replace("{entity}", entityLabel)}{" "}
                         <span className="font-bold">
                           "{editedCompanyName.trim() || req.company}"
                         </span>
@@ -1150,7 +1150,7 @@ export default function AccessRequestsPage() {
 
                       {!selectedCompanyId && !createNewCompany && (
                         <p className="text-xs text-amber-600">
-                          Please select an existing {entityLabel} or choose to create a new one
+                          {T.modalSelectOrCreate.replace("{entity}", entityLabel)}
                         </p>
                       )}
                     </div>
@@ -1165,7 +1165,7 @@ export default function AccessRequestsPage() {
                     onClick={() => setApproveModal(null)}
                     className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900"
                   >
-                    Cancel
+                    {T.modalCancelBtn}
                   </button>
                   <button
                     onClick={handleApproveWithCompany}
@@ -1197,10 +1197,10 @@ export default function AccessRequestsPage() {
                       </svg>
                     )}
                     {["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"].includes(overrideRole)
-                      ? `Approve as ${overrideRole}`
+                      ? T.modalApproveAsTemplate.replace("{role}", overrideRole)
                       : selectedCompanyId && !createNewCompany
-                        ? `Approve & Link to ${companies.find((c) => c.id === selectedCompanyId)?.name || "Company"}`
-                        : `Approve & Create "${editedCompanyName.trim() || req.company}"`}
+                        ? T.modalApproveLinkTemplate.replace("{name}", companies.find((c) => c.id === selectedCompanyId)?.name || T.modalApproveCreateFallback)
+                        : T.modalApproveCreateTemplate.replace("{name}", editedCompanyName.trim() || req.company)}
                   </button>
                 </div>
               </div>
