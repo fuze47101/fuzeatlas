@@ -7546,6 +7546,19 @@ const km: Translations = {
     questionsPrefix: "· Questions?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "Playbooks",
+    heading: "BD playbooks",
+    subtitle: "ប្រភេទ-tagged outreach guidance. Favorite the ones you use; brands show a suggested playbook based on ម៉ាក.textileប្រភេទ.",
+    failedFallback: "បរាជ័យ",
+    emptyBody: "ទេ playbooks yet for this category.",
+    emptySeedHint: "Trigger",
+    emptySeedHintSuffix: "via fzcron to drop in the three starter playbooks.",
+    removeFavoriteTitle: "លុបចេញ favorite",
+    addFavoriteTitle: "បន្ថែម favorite",
+  },
+
 };
 
 export default km;
