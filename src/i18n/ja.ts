@@ -6985,6 +6985,32 @@ const ja: Translations = {
     footerQuestions: "ご質問は？",
   },
 
+  settingsExchangeRates: {
+    title: "為替レート",
+    subtitle: "通貨換算レートを管理",
+    addRateBtn: "レートを追加",
+    cancelBtn: "キャンセル",
+    addFormTitle: "為替レートを追加",
+    ratePlaceholder: "レート",
+    submitAddBtn: "レートを追加",
+    converterTitle: "通貨コンバーター",
+    fromLabel: "送金元",
+    toLabel: "送金先",
+    amountLabel: "金額",
+    convertBtn: "換算",
+    rateResultPrefix: "レート：",
+    quickStatsTitle: "クイック統計",
+    totalCurrenciesLabel: "通貨合計",
+    activeRatesLabel: "有効レート",
+    currentRatesTitle: "現在のレート（基準：USD）",
+    loading: "読み込み中...",
+    emptyState: "為替レートは構成されていません",
+    colCurrencyPair: "通貨ペア",
+    colRate: "レート",
+    colEffectiveDate: "発効日",
+    colSource: "ソース",
+  },
+
 };
 
 export default ja;
