@@ -3532,6 +3532,32 @@ const id: Translations = {
     emptyBias: "Belum ada data bias.",
   },
 
+  bookMeetingPage: {
+    heading: "Jadwalkan Meeting",
+    subtitle: "Pilih tanggal dan waktu yang tersedia untuk memesan meeting dengan tim kami.",
+    selectDateTitle: "Pilih Tanggal",
+    availableTimesPrefix: "Waktu Tersedia pada",
+    loadingSlots: "Memuat slot...",
+    noSlotsBody: "Tidak ada slot tersedia untuk tanggal ini",
+    detailsTitle: "Detail Meeting",
+    selectDateTimeHint: "Pilih tanggal dan waktu untuk melanjutkan",
+    dateTimeLabel: "Tanggal & Waktu",
+    meetingTitleLabel: "Judul Meeting",
+    defaultTitle: "Meeting FUZE",
+    descriptionLabel: "Deskripsi (opsional)",
+    descriptionPlaceholder: "Detail tambahan...",
+    confirmBtn: "Konfirmasi Pemesanan",
+    bookingBusy: "Memesan...",
+    bookFailedError: "Gagal memesan meeting",
+    networkError: "Kesalahan jaringan",
+    bookedTitle: "Meeting Dipesan!",
+    titleColLabel: "Judul",
+    timeColLabel: "Waktu",
+    meetingLinkLabel: "Tautan Meeting",
+    openInTeams: "Buka di Teams",
+    bookAnotherBtn: "Pesan Meeting Lain",
+  },
+
 };
 
 export default id;
