@@ -7297,6 +7297,31 @@ const ta: Translations = {
     footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
   },
 
+  signupInvitation: {
+    appKicker: "FUZE Atlas",
+    joinPrefix: "Join",
+    invitedSuffix: "invited",
+    youWereInvited: "உங்களை அழைத்தனர்",
+    asLabel: "ஆக",
+    emailLabel: "மின்னஞ்சல்",
+    yourNameLabel: "உங்கள் பெயர்",
+    fullNamePlaceholder: "முழுப் பெயர்",
+    passwordLabel: "கடவுச்சொல்",
+    passwordPlaceholder: "குறைந்தபட்சம் 8 எழுத்துக்கள்",
+    confirmPasswordLabel: "கடவுச்சொல்லை உறுதிப்படுத்து",
+    confirmPasswordPlaceholder: "கடவுச்சொல்லை மீண்டும் உள்ளிடவும்",
+    creatingBtn: "கணக்கு உருவாக்குகிறது…",
+    acceptBtn: "அழைப்பை ஏற்று & sign in",
+    expiresPrefix: "அழைப்பு காலாவதி",
+    problemTitle: "அழைப்பு சிக்கல்",
+    problemDefault: "இந்த அழைப்பை ஏற்ற முடியவில்லை.",
+    goToSignIn: "Sign-in-க்குச் செல்",
+    errPasswordTooShort: "கடவுச்சொல் குறைந்தபட்சம் 8 எழுத்துக்கள் இருக்க வேண்டும்.",
+    errPasswordsMismatch: "கடவுச்சொற்கள் பொருந்தவில்லை.",
+    errNetwork: "நெட்வொர்க் பிழை",
+    errServerUnreachable: "Server-ஐ அடைய முடியவில்லை",
+  },
+
 };
 
 export default ta;
