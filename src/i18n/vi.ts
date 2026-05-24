@@ -8002,6 +8002,25 @@ const vi: Translations = {
     footerPrefix: "Tài liệu API FUZE Atlas - Cập nhật lần cuối",
   },
 
+  recipeSearch: {
+    heading: "Tìm kiếm công thức",
+    subtitle: "Thư viện công thức FUZE toàn mạng lưới. Tìm kiếm trên mọi loại vải đã xác thực trong Atlas — khớp những gì bạn đang làm với một công thức đã được chứng minh, ngay cả khi vải không phải của bạn. Các hàng ngoài phạm vi được ẩn danh nhưng các thông số vật lý công thức vẫn hiển thị.",
+    keywordPlaceholder: "Từ khóa (cotton, jersey, twill...)",
+    anyCategory: "Bất kỳ danh mục nào",
+    knit: "Dệt kim",
+    woven: "Dệt thoi",
+    nonwoven: "Không dệt",
+    fiberPlaceholder: "Sợi (cotton, poly...)",
+    gsmMinPlaceholder: "GSM tối thiểu",
+    gsmMaxPlaceholder: "GSM tối đa",
+    anyTier: "Bất kỳ hạng nào",
+    onlyValidatedLabel: "Chỉ hiển thị vải có pickup đo được (thử nghiệm bench đã xác thực)",
+    searchingBtn: "Đang tìm kiếm...",
+    searchBtn: "Tìm kiếm",
+    emptyTitle: "Chưa có công thức nào khớp.",
+    emptyBody: "Hãy thử mở rộng bộ lọc — hoặc bỏ bộ lọc \"thử nghiệm bench đã xác thực\" nếu bạn muốn xem các vải đang trong quá trình phát triển.",
+  },
+
 };
 
 export default vi;
