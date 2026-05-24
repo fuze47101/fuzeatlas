@@ -8099,6 +8099,30 @@ const ko: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "초대 로드 중…",
+    notFoundTitle: "초대를 찾을 수 없습니다",
+    notFoundFallback: "이 초대 링크는 만료되었거나 이미 사용되었을 수 있습니다.",
+    chipLabel: "FUZE Atlas 초대",
+    headingMiddle: "초대됨",
+    headingSuffix: "FUZE 공급망에",
+    heroSubtitleFallbackPrefix: "는 공급망 전반에 걸쳐 항균 텍스타일 프로그램을 조정하기 위해 FUZE Atlas를 사용합니다.",
+    heroSubtitleFallbackSuffix: "참여하면 공장이 시험용 원단을 제출하고, FUZE 주문을 하고, ICP 결과를 추적할 수 있습니다 — 모두 브랜드와 직접 연결됩니다.",
+    notePrefix: "노트:",
+    closedPrefix: "이 초대는 이미",
+    closedReachOutPrefix: "다음에 문의하십시오:",
+    closedTeamFallbackPrefix: "",
+    closedTeamFallbackSuffix: "팀",
+    closedFreshLink: "새 링크가 필요한 경우.",
+    signUpCta: "회원 가입",
+    signUpSubPrefix: "새",
+    signUpSubSuffix: "Atlas 계정 생성",
+    alreadyInCta: "이미 Atlas에 있습니다",
+    alreadyInSub: "로그인하여 기존 공장 연결",
+    sentPrefix: "초대 발송됨",
+    questionsPrefix: "· 문의?",
+  },
+
 };
 
 export default ko;
