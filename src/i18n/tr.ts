@@ -7726,6 +7726,23 @@ const tr: Translations = {
     whatYouCanClaimBtn: "Neyi iddia edebilirsiniz →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ FUZE Atlas tarafından sertifikalı",
+    statFabricsCertified: "Sertifikalı kumaşlar",
+    statTestsPassed: "Geçilen testler (12 ay)",
+    statCountries: "Sevkiyat yapılan ülkeler",
+    activeTiersTitle: "Aktif FUZE kademeleri",
+    activeTiersBody: "Sertifikalı tesislerde şu anda üretimde olan işlem seviyeleri.",
+    lastPassedLabel: "Son geçilen",
+    aboutSummaryTitle: "FUZE teknolojisi hakkında",
+    verifyCtaTitle: "Belirli bir ürünü doğrula",
+    verifyCtaBody: "Her sertifikalı ürün, üretim partisine ve test geçmişine bağlı benzersiz bir QR kodu taşır.",
+    verifyCtaBtn: "Ürünü ara →",
+    footerCertifiedBy: "FUZE Atlas tarafından sertifikalı",
+    brandSiteLink: "Marka sitesi →",
+    contactLink: "İletişim",
+  },
+
 };
 
 export default tr;
