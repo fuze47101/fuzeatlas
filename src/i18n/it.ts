@@ -7477,6 +7477,32 @@ const it: Translations = {
     emptyState: "Nessun token ancora — genera il tuo primo lotto sopra.",
   },
 
+  bookMeetingPage: {
+    heading: "Programma una riunione",
+    subtitle: "Seleziona una data e un'ora disponibili per prenotare la tua riunione con il nostro team.",
+    selectDateTitle: "Seleziona data",
+    availableTimesPrefix: "Orari disponibili il",
+    loadingSlots: "Caricamento slot...",
+    noSlotsBody: "Nessuno slot disponibile per questa data",
+    detailsTitle: "Dettagli riunione",
+    selectDateTimeHint: "Seleziona una data e un'ora per continuare",
+    dateTimeLabel: "Data e ora",
+    meetingTitleLabel: "Titolo riunione",
+    defaultTitle: "Riunione FUZE",
+    descriptionLabel: "Descrizione (opzionale)",
+    descriptionPlaceholder: "Altri dettagli...",
+    confirmBtn: "Conferma prenotazione",
+    bookingBusy: "Prenotazione...",
+    bookFailedError: "Prenotazione riunione fallita",
+    networkError: "Errore di rete",
+    bookedTitle: "Riunione prenotata!",
+    titleColLabel: "Titolo",
+    timeColLabel: "Ora",
+    meetingLinkLabel: "Link riunione",
+    openInTeams: "Apri in Teams",
+    bookAnotherBtn: "Prenota un'altra riunione",
+  },
+
 };
 
 export default it;
