@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import PrintButton from "./PrintButton";
+import { getServerTranslations } from "@/i18n/server";
 
 /**
  * TRACK 3 — Print-friendly QR label for a FUZE shipment.
@@ -20,14 +21,19 @@ const ALLOWED_ROLES = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"
 
 export default async function QRLabelPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (!ALLOWED_ROLES.has(user.role)) redirect("/home");
 
   const { id } = await params;
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).orderQrLabel;
+
   const order = await prisma.fuzeOrder.findUnique({
     where: { id },
     select: {
@@ -55,7 +61,7 @@ export default async function QRLabelPage({
   if (!order) {
     return (
       <div className="p-8">
-        <p className="text-slate-500">Order not found.</p>
+        <p className="text-slate-500">{T.orderNotFound}</p>
       </div>
     );
   }
@@ -79,9 +85,9 @@ export default async function QRLabelPage({
 
       <div className="no-print bg-slate-100 px-6 py-3 flex items-center justify-between border-b border-slate-200">
         <div className="text-sm text-slate-600">
-          QR Label · {order.orderNumber} ·{" "}
+          {T.headerKicker} · {order.orderNumber} ·{" "}
           <a href={shipmentUrl} target="_blank" rel="noopener noreferrer" className="text-[#00b4c3] hover:underline">
-            preview public page →
+            {T.previewPublicLink}
           </a>
         </div>
         <PrintButton />
@@ -95,13 +101,13 @@ export default async function QRLabelPage({
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-[#00b4c3] flex items-center justify-center text-white text-2xl font-black">F</div>
                 <div>
-                  <p className="text-xs uppercase tracking-widest text-slate-500">FUZE Biotech</p>
-                  <p className="text-sm font-bold text-slate-700">Salt Lake City, Utah USA</p>
+                  <p className="text-xs uppercase tracking-widest text-slate-500">{T.brandLine}</p>
+                  <p className="text-sm font-bold text-slate-700">{T.brandLocation}</p>
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-xs uppercase tracking-widest text-slate-500">Order</p>
+              <p className="text-xs uppercase tracking-widest text-slate-500">{T.orderLabel}</p>
               <p className="text-xl font-black text-slate-900">{order.orderNumber}</p>
             </div>
           </div>
@@ -115,43 +121,43 @@ export default async function QRLabelPage({
             </div>
             <div className="flex-1 space-y-4 text-sm">
               <div>
-                <p className="text-xs uppercase tracking-widest text-slate-500">Scan to verify</p>
+                <p className="text-xs uppercase tracking-widest text-slate-500">{T.scanToVerifyTitle}</p>
                 <p className="text-slate-700 mt-1">
-                  Open this label on a phone camera to load shipment status, lifecycle, SDS, and COA.
+                  {T.scanToVerifyBody}
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 pt-4 border-t border-slate-200">
                 {order.fuzeTier && (
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-slate-500">Tier</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">{T.tierLabel}</p>
                     <p className="font-bold text-slate-900">{order.fuzeTier}</p>
                   </div>
                 )}
                 {order.volumeLiters != null && (
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-slate-500">Volume</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">{T.volumeLabel}</p>
                     <p className="font-bold text-slate-900">
                       {order.volumeLiters}L
-                      {order.bottles ? ` · ${order.bottles} bottles` : ""}
+                      {order.bottles ? ` · ${order.bottles} ${T.bottlesSuffix}` : ""}
                     </p>
                   </div>
                 )}
                 {order.treatmentMethod && (
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-slate-500">Method</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">{T.methodLabel}</p>
                     <p className="font-bold text-slate-900">{order.treatmentMethod.replace(/_/g, "-")}</p>
                   </div>
                 )}
                 {order.orderType && (
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-slate-500">Type</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">{T.typeLabel}</p>
                     <p className="font-bold text-slate-900">{order.orderType}</p>
                   </div>
                 )}
                 {order.factory?.name && (
                   <div className="col-span-2">
-                    <p className="text-xs uppercase tracking-widest text-slate-500">Ship To</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">{T.shipToLabel}</p>
                     <p className="font-bold text-slate-900">{order.factory.name}</p>
                     {(order.factory.city || order.factory.country) && (
                       <p className="text-xs text-slate-500">
@@ -162,25 +168,25 @@ export default async function QRLabelPage({
                 )}
                 {order.brand?.name && (
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-slate-500">For Brand</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">{T.forBrandLabel}</p>
                     <p className="font-bold text-slate-900">{order.brand.name}</p>
                   </div>
                 )}
                 {order.distributor?.name && (
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-slate-500">Via Distributor</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">{T.viaDistributorLabel}</p>
                     <p className="font-bold text-slate-900">{order.distributor.name}</p>
                   </div>
                 )}
                 {order.fabric?.fuzeNumber != null && (
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-slate-500">Fabric</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">{T.fabricLabel}</p>
                     <p className="font-bold text-slate-900">FUZE-{order.fabric.fuzeNumber}</p>
                   </div>
                 )}
                 {order.trackingNumber && (
                   <div className="col-span-2">
-                    <p className="text-xs uppercase tracking-widest text-slate-500">Tracking</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-500">{T.trackingLabel}</p>
                     <p className="font-bold text-slate-900">
                       {order.trackingNumber}
                       {order.carrier ? ` · ${order.carrier}` : ""}
@@ -193,8 +199,8 @@ export default async function QRLabelPage({
 
           {/* Footer */}
           <div className="mt-6 pt-4 border-t-2 border-slate-900 flex items-center justify-between text-xs text-slate-600">
-            <p className="font-semibold">FUZE F1–F4 · metamaterial antimicrobial treatment · PFAS-free</p>
-            <p>Printed {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+            <p className="font-semibold">{T.footerTagline}</p>
+            <p>{T.printedPrefix} {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
           </div>
         </div>
       </div>
