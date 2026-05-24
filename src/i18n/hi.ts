@@ -6942,6 +6942,34 @@ const hi: Translations = {
     backToLeadOption: "← Lead पर वापस",
   },
 
+  commandCenterGlobe: {
+    loading: "ग्लोब लोड हो रहा है…",
+    title: "सप्लाई-चेन ग्लोब",
+    emptyTitle: "अभी कोई जियो-कोडेड इकाई नहीं",
+    emptyHint: "प्रत्येक इकाई के शहर + देश से lat/lng भरने के लिए जियो-कोडर चलाएं:",
+    emptyFooter: "Nominatim की 1 req/sec दर सीमा है — एक पूर्ण पास कुछ मिनट लेता है। पुनः-चालन उन पंक्तियों को छोड़ देता है जिनके पास पहले से निर्देशांक हैं।",
+    factoriesLabel: "कारखाने",
+    brandsLabel: "ब्रांड",
+    labsLabel: "लैब",
+    distributorsLabel: "वितरक",
+    shipmentsLabel: "शिपमेंट (90d)",
+    searchPlaceholder: "इकाई खोजें…",
+    legendFactory: "कारखाना",
+    legendPulseHint: "(पल्स = सक्रिय 30d)",
+    legendBrand: "ब्रांड मुख्यालय",
+    legendFuzeLab: "FUZE-स्वामित्व लैब",
+    legendPartnerLab: "पार्टनर लैब",
+    legendDistributor: "वितरक",
+    kindFactory: "कारखाना",
+    kindBrand: "ब्रांड",
+    kindLab: "लैब",
+    kindDistributor: "वितरक",
+    stageLabel: "चरण:",
+    activeBadge: "⚡ सक्रिय (30d)",
+    openDetailBtn: "विवरण खोलें →",
+    errLoadFailed: "ग्लोब लोड करने में विफल",
+  },
+
 };
 
 export default hi;
