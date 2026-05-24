@@ -6750,6 +6750,44 @@ const ur: Translations = {
     truncatedNotice: "کل {total} میں سے پہلے 100 برانڈز دکھائے جا رہے ہیں۔ تنگ کرنے کے لیے فلٹرز استعمال کریں۔",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "شپمنٹ نہیں ملی",
+    notFoundBodyTpl: "ہمیں آرڈر {order} نہیں مل سکا۔",
+    notFoundFooter: "اگر آپ کو یہ QR کوڈ FUZE شپمنٹ پر ملا، تو andrew@fuze47.com سے رابطہ کریں۔",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "شپمنٹ کی تصدیق",
+
+    sectionShipment: "شپمنٹ کی تفصیلات",
+    fieldFuzeVolume: "FUZE حجم",
+    bottlesSuffix: "بوتلیں",
+    baseFuzePrefix: "بیس",
+    wastageSuffix: "ضیاع",
+    fieldTier: "ٹیئر",
+    fieldMethod: "علاج کا طریقہ",
+    fieldFactory: "فیکٹری",
+    fieldForBrand: "برانڈ کے لیے",
+    fieldFabric: "فیبرک",
+    fieldFulfillment: "تکمیل",
+    directUsa: "USA سے براہ راست",
+    distributorFallback: "ڈسٹری بیوٹر",
+    fieldTracking: "ٹریکنگ",
+
+    sectionDocs: "پروڈکٹ دستاویزات",
+    sdsLabel: "سیفٹی ڈیٹا شیٹ (SDS)",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "تجزیہ کا سرٹیفکیٹ (COA)",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "تعمیل لائبریری کھولیں",
+
+    sectionTimeline: "لائف سائیکل ٹائم لائن",
+    viewDocument: "دستاویز دیکھیں ←",
+    timelineEmpty: "ابھی تک کوئی لائف سائیکل ایونٹس لاگ نہیں ہوئے۔ شپمنٹ کے حرکت کرنے پر ٹائم لائن بھر جائے گی۔",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "سوالات؟",
+  },
+
 };
 
 export default ur;
