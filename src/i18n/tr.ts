@@ -8095,6 +8095,24 @@ const tr: Translations = {
     footerCertifiedBy: "FUZE Atlas tarafından sertifikalı",
   },
 
+  forgotPassword: {
+    brandSubtitle: "Şifrenizi sıfırlayın",
+    cardTitle: "Şifrenizi mi unuttunuz?",
+    cardBody: "E-posta adresinizi girin, size şifrenizi sıfırlamanız için bir bağlantı gönderelim.",
+    emailLabel: "E-posta Adresi",
+    emailPlaceholder: "siz@801inc.com",
+    sendBtn: "Sıfırlama Bağlantısı Gönder",
+    sendingBusy: "Gönderiliyor...",
+    rememberPrefix: "Şifrenizi hatırladınız mı?",
+    signInLink: "Giriş yap",
+    failedFallback: "İstek işlenemedi",
+    networkError: "Ağ hatası",
+    checkEmailTitle: "E-postanızı Kontrol Edin",
+    checkEmailBody: "Bu e-posta ile bir hesap varsa, kısa süre içinde şifre sıfırlama bağlantısı alacaksınız.",
+    backToSignIn: "Girişe Dön",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default tr;
