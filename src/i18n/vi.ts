@@ -7865,6 +7865,32 @@ const vi: Translations = {
     emptyState: "Chưa có token nào — tạo lô đầu tiên ở trên.",
   },
 
+  bookMeetingPage: {
+    heading: "Đặt lịch họp",
+    subtitle: "Chọn ngày và giờ khả dụng để đặt lịch họp với đội ngũ của chúng tôi.",
+    selectDateTitle: "Chọn ngày",
+    availableTimesPrefix: "Giờ khả dụng vào",
+    loadingSlots: "Đang tải khung giờ...",
+    noSlotsBody: "Không có khung giờ khả dụng cho ngày này",
+    detailsTitle: "Chi tiết cuộc họp",
+    selectDateTimeHint: "Chọn ngày và giờ để tiếp tục",
+    dateTimeLabel: "Ngày & Giờ",
+    meetingTitleLabel: "Tiêu đề cuộc họp",
+    defaultTitle: "Cuộc họp FUZE",
+    descriptionLabel: "Mô tả (tùy chọn)",
+    descriptionPlaceholder: "Bất kỳ chi tiết bổ sung nào...",
+    confirmBtn: "Xác nhận đặt lịch",
+    bookingBusy: "Đang đặt lịch...",
+    bookFailedError: "Không đặt lịch được cuộc họp",
+    networkError: "Lỗi mạng",
+    bookedTitle: "Đã đặt lịch cuộc họp!",
+    titleColLabel: "Tiêu đề",
+    timeColLabel: "Thời gian",
+    meetingLinkLabel: "Liên kết cuộc họp",
+    openInTeams: "Mở trong Teams",
+    bookAnotherBtn: "Đặt cuộc họp khác",
+  },
+
 };
 
 export default vi;
