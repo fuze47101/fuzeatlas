@@ -4816,6 +4816,23 @@ const ko: Translations = {
     nameRequiredError: "이름이 필요합니다",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← 계산기로 돌아가기",
+    printButton: "🖨 인쇄 / PDF로 저장",
+    eyebrow: "FUZE Biotech · 랩 SOP",
+    pageTitle: "벤치 시험 절차",
+    pageSubtitle: "FUZE 레시피 계산기 — 패드-건조-큐어 픽업률 및 희석",
+    docLabel: "문서: SOP-FUZE-LAB-001",
+    revLabel: "개정: 1.0 ·",
+    purposeHeader: "목적",
+    equipmentHeader: "장비",
+    chemistryRefHeader: "FUZE 화학 참조",
+    criticalRulesHeader: "⚠ 중요 프로토콜 규칙",
+    procedureHeader: "절차",
+    formulasHeader: "공식 (QC 교차 확인용)",
+    sanityRangesHeader: "타당성 검증 범위",
+  },
+
 };
 
 export default ko;
