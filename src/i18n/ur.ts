@@ -6971,6 +6971,34 @@ const ur: Translations = {
     backToLeadOption: "← لیڈ کی طرف واپس",
   },
 
+  commandCenterGlobe: {
+    loading: "گلوب لوڈ ہو رہا ہے…",
+    title: "سپلائی چین گلوب",
+    emptyTitle: "ابھی تک کوئی جیو کوڈڈ ادارہ نہیں",
+    emptyHint: "ہر ادارے کے شہر + ملک سے lat/lng بھرنے کے لیے جیو کوڈر چلائیں:",
+    emptyFooter: "Nominatim کی شرح حد 1 درخواست/سیکنڈ ہے — مکمل گزرنے میں چند منٹ لگتے ہیں۔ دوبارہ چلانے پر وہ قطاریں چھوڑ دی جاتی ہیں جن کے پاس پہلے سے کوآرڈینیٹس ہیں۔",
+    factoriesLabel: "فیکٹریاں",
+    brandsLabel: "برانڈز",
+    labsLabel: "لیبز",
+    distributorsLabel: "ڈسٹری بیوٹرز",
+    shipmentsLabel: "شپمنٹس (90 دن)",
+    searchPlaceholder: "ادارہ تلاش کریں…",
+    legendFactory: "فیکٹری",
+    legendPulseHint: "(پلس = فعال 30 دن)",
+    legendBrand: "برانڈ ہیڈکوارٹر",
+    legendFuzeLab: "FUZE کی ملکیتی لیب",
+    legendPartnerLab: "پارٹنر لیب",
+    legendDistributor: "ڈسٹری بیوٹر",
+    kindFactory: "فیکٹری",
+    kindBrand: "برانڈ",
+    kindLab: "لیب",
+    kindDistributor: "ڈسٹری بیوٹر",
+    stageLabel: "مرحلہ:",
+    activeBadge: "⚡ فعال (30 دن)",
+    openDetailBtn: "تفصیل کھولیں ←",
+    errLoadFailed: "گلوب لوڈ کرنے میں ناکامی",
+  },
+
 };
 
 export default ur;
