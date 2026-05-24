@@ -3414,6 +3414,31 @@ const id: Translations = {
     whatYouCanClaimBtn: "Apa yang dapat Anda klaim →",
   },
 
+  conversionTracking: {
+    crumbDashboard: "Dashboard",
+    crumbCurrent: "Sampel → Produksi",
+    title: "Konversi Sampel → Produksi",
+    subtitle: "Lacak pabrik mana yang menerima sampel dan berkonversi menjadi pesanan produksi",
+    cardFactoriesSampled: "Pabrik Disampel",
+    cardConverted: "Dikonversi",
+    cardConversionRate: "Tingkat Konversi",
+    cardAvgDays: "Rata-rata Hari Konversi",
+    cardProdVolume: "Volume Produksi",
+    cardProdRevenue: "Pendapatan Produksi",
+    tabAll: "Semua",
+    tabConverted: "Dikonversi",
+    tabPending: "Menunggu",
+    emptyText: "Belum ada pesanan sampel ditemukan",
+    badgeConverted: "DIKONVERSI",
+    badgePending: "MENUNGGU",
+    sectionSamples: "Pesanan Sampel",
+    sectionTrials: "Permintaan Uji Coba",
+    sectionProduction: "Pesanan Produksi",
+    productionLabel: "Produksi",
+    daysToConvertSuffix: "hari untuk konversi",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default id;
