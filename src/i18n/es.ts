@@ -2819,6 +2819,37 @@ const es: Translations = {
     factoryLabel: "Fábrica:",
   },
 
+  verifySku: {
+    errorTitle: "No pudimos verificar este código",
+    errorBlurb:
+      "Tuvimos problemas para acceder a la base de datos de verificación. Vuelva a intentarlo en un momento.",
+    notCertifiedTitle: "No es un SKU certificado por FUZE",
+    notCertifiedBlurbPrefix: "El código",
+    notCertifiedBlurbSuffix:
+      "no se encuentra en nuestra base de datos de verificación. Si proviene de una etiqueta FUZE, contacte directamente con la marca.",
+    whatIsFuze: "¿Qué es FUZE? →",
+    fuzeVerified: "Verificado por FUZE",
+    pageTitle: "Este tejido está tratado con FUZE",
+    pageSubtitle: "Tratamiento antimicrobiano textil — validado por terceros.",
+    brandLabel: "Marca",
+    millLabel: "Fábrica",
+    fuzeTierLabel: "Nivel FUZE",
+    fuzeNumberLabel: "Número FUZE",
+    washClaimSuffix: "lavados declarados",
+    recentValidation: "Validación de laboratorio más reciente",
+    testPassed: "aprobado",
+    testTypeSuffix: "prueba —",
+    validatedByPrefix: "Validado por",
+    validatedByGeneric: "Validado por un laboratorio externo",
+    validatedOn: "el",
+    reportRefPrefix: "Ref. del informe:",
+    certifications: "Certificaciones FUZE",
+    aboutBody:
+      "FUZE es un tratamiento antimicrobiano textil propietario de FUZE Biotech. Utiliza química metamaterial que se adhiere a las fibras durante el acabado textil estándar — sin PFAS, sin aglutinantes, sin horno de curado.",
+    learnMore: "Más información sobre FUZE →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default es;
