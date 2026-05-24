@@ -5259,6 +5259,55 @@ const km: Translations = {
     statusComplete: "Complete",
   },
 
+  brandFabricsAdmin: {
+    loading: "កំពុងផ្ទុក fabric portfolio…",
+    errorTitle: "Couldn't load fabric portfolio",
+    errorUnknown: "មិនស្គាល់ error",
+    errorFailedLoad: "បរាជ័យ to load",
+    errorSave: "រក្សាទុក failed",
+    btnTryAgain: "ព្យាយាមម្តងទៀត",
+
+    crumbPartners: "ម៉ាក Partners",
+    crumbHere: "ក្រណាត់ Portfolio",
+    titleSuffix: "— ក្រណាត់ Portfolio",
+    subtitle: "ទាំងអស់ fabrics across all mills for this brand. {shown} of {total} fabrics shown.",
+    btnExportCsv: "⬇ Export CSV",
+
+    searchPlaceholder: "ស្វែងរក fabric #, customer code, content…",
+    filterAllMills: "ទាំងអស់ mills",
+    filterAllTypes: "ទាំងអស់ types",
+    typeDevelopment: "Development",
+    typeActualBulk: "Actual (Bulk)",
+    typeForecast: "Forecast",
+    typeRd: "R&D",
+    filterAllStatuses: "ទាំងអស់ statuses",
+
+    emptyFabric: "🧵",
+    emptyTitle: "ទេ fabrics match your filters.",
+    emptySub: "Adjust the filters above or clear the search to see the full portfolio.",
+    fabricSingular: "fabric",
+    fabricPlural: "fabrics",
+    openFactory: "បើក factory →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "Mill ក្រណាត់ #",
+    colType: "ប្រភេទ",
+    colContent: "Content",
+    colGsm: "GSM",
+    colCustomerCode: "Customer កូដ",
+    colTrial: "Trial",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "ICP Value",
+    colTestDate: "ការសាកល្បង កាលបរិច្ឆេទ",
+    colStatus: "ស្ថានភាព",
+
+    unassigned: "unassigned",
+    typeBulkProduction: "Bulk ផលិតកម្ម",
+    notSet: "— ទេt set —",
+    titleOpenFabric: "បើក fabric detail",
+  },
+
 };
 
 export default km;
