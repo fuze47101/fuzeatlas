@@ -6896,6 +6896,29 @@ const ta: Translations = {
     printedPrefix: "அச்சிடப்பட்டது",
   },
 
+  pressKitAdmin: {
+    title: "Press kit",
+    subtitle: "பொது /press பக்கத்தில் என்ன தோன்றுகிறது என்பதை நிர்வகி. Active toggle ஒரு வரிசையை நீக்காமல் மறைக்கிறது.",
+    addItemTitle: "உருப்படி சேர்",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "caption",
+    addItemBtn: "உருப்படி சேர்",
+    savingBtn: "சேமிக்கிறது…",
+    allFilter: "அனைத்தும்",
+    colType: "வகை",
+    colCaption: "Caption",
+    colUrl: "URL",
+    colReleased: "வெளியிடப்பட்டது",
+    colActive: "செயலில்",
+    activeLabel: "செயலில்",
+    hiddenLabel: "மறைக்கப்பட்டது",
+    deleteBtn: "நீக்கு",
+    deleteConfirmPrefix: "Press kit உருப்படியை நீக்கு",
+    emptyState: "இன்னும் press kit உருப்படிகள் இல்லை.",
+    errUrlRequired: "URL தேவை",
+    errAddFailed: "சேர்த்தல் தோல்வியடைந்தது",
+  },
+
 };
 
 export default ta;
