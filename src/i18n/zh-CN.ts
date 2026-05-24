@@ -7793,6 +7793,28 @@ const zhCN: Translations = {
     mondayReviewBody: "AI 标记的测试运行与品牌拒收。周日 22:00 UTC 邮件预填议程。",
   },
 
+  brandEngagement: {
+    heading: "品牌健康度",
+    subtitle: "监控所有品牌的活跃度与健康指标",
+    recalculatingBtn: "正在重新计算…",
+    recalculateBtn: "全部重新计算",
+    allFilter: "全部",
+    loadingText: "正在加载…",
+    noBrandsText: "未找到品牌",
+    scoreBreakdownTitle: "评分明细",
+    communicationLabel: "沟通",
+    testingVelocityLabel: "测试速度",
+    pipelineVelocityLabel: "管线推进速度",
+    paymentScoreLabel: "付款评分",
+    rawMetricsTitle: "原始指标",
+    daysSinceContact: "距上次联系（天）",
+    testsLast30d: "测试数（近 30 天）",
+    testsLast90d: "测试数（近 90 天）",
+    avgInvoicePayDays: "平均回款天数",
+    overdueInvoices: "逾期发票",
+    lastCalculatedLabel: "最近计算时间：",
+  },
+
 };
 
 export default zhCN;
