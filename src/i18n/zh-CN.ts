@@ -5297,6 +5297,61 @@ const zhCN: Translations = {
     scopeFallback: "默认",
   },
 
+  brandDiscovery: {
+    crumbHome: "首页",
+    crumbWizard: "BD 向导",
+    crumbHere: "品牌发现",
+    pageTitle: "🌎 全球品牌发现",
+    pageSubtitle: "多 AI 引擎 — 跨 Anthropic、OpenAI 和 Grok 寻找并验证纺织品牌,自动为每个新品牌附加 Apollo 联系人,以便 BD 向导立即使用。",
+
+    statTotalLabel: "数据库中品牌总数",
+    backToWizard: "← 返回向导",
+    backToWizardTitle: "新品牌落库后回到向导",
+
+    statsErrorContext: "加载发现统计",
+    statsErrorFallback: "无法加载发现统计",
+    statsNetworkError: "加载发现统计时发生网络错误。",
+
+    autoEnrichTitle: "自动补全已开启",
+    autoEnrichBody: "此处创建的每个新品牌将通过 Apollo 按域名搜索附加最多 8 位高级联系人(创始人/C 级/副总裁/部门负责人/总监)。BD 向导的筛选器会立即放行这些品牌 — 无需另行补全。",
+
+    settingsHeading: "发现设置",
+    labelCategory: "类别",
+    labelRegion: "区域",
+    labelTargetCount: "目标数量",
+    btnDiscovering: "🔍 发现中...",
+    btnRunDiscovery: "🚀 运行发现",
+    btnRunning: "运行中...",
+    btnAllCategories: "🌍 所有类别",
+
+    runningBanner: "⏳ 正在跨 Anthropic + OpenAI + Grok 运行多 AI 发现... 每个类别需要 30-60 秒。",
+    errorPrefix: "❌",
+    errorDefault: "发现失败",
+
+    resultsHeadingPrefix: "发现结果 —",
+    chipAiSources: "AI 来源:",
+    chipFound: "已发现:",
+    chipAfterDedup: "去重后:",
+    chipCreated: "已创建:",
+    chipContactsAttached: "📇 已附加联系人:",
+
+    colBrand: "品牌",
+    colSegment: "细分",
+    colPriority: "优先级",
+    colValidation: "验证",
+    colContacts: "联系人",
+    colAiSources: "AI 来源",
+    colActions: "操作",
+    tierPrefix: "等级",
+    aisConfirmed: "个 AI 确认",
+    aiConfirmed: "AI 已确认",
+    viewResearch: "查看与调研",
+
+    historyHeading: "发现历史(本次会话)",
+    historyFoundLabel: "已发现:",
+    historyCreatedLabel: "已创建:",
+  },
+
 };
 
 export default zhCN;
