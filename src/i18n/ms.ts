@@ -7782,6 +7782,28 @@ const ms: Translations = {
     mondayReviewBody: "Larian ujian + penolakan jenama yang ditanda AI. E-mel Ahad 22:00 UTC menyemai agenda.",
   },
 
+  brandEngagement: {
+    heading: "Kesihatan Jenama",
+    subtitle: "Pantau metrik penglibatan dan kesihatan untuk semua jenama",
+    recalculatingBtn: "Mengira semula...",
+    recalculateBtn: "Kira Semula Semua",
+    allFilter: "Semua",
+    loadingText: "Memuatkan...",
+    noBrandsText: "Tiada jenama dijumpai",
+    scoreBreakdownTitle: "Pecahan Skor",
+    communicationLabel: "Komunikasi",
+    testingVelocityLabel: "Halaju Ujian",
+    pipelineVelocityLabel: "Halaju Saluran Paip",
+    paymentScoreLabel: "Skor Pembayaran",
+    rawMetricsTitle: "Metrik Mentah",
+    daysSinceContact: "Hari Sejak Kenalan",
+    testsLast30d: "Ujian (30h Lepas)",
+    testsLast90d: "Ujian (90h Lepas)",
+    avgInvoicePayDays: "Purata Hari Bayar Invois",
+    overdueInvoices: "Invois Tertunggak",
+    lastCalculatedLabel: "Terakhir dikira:",
+  },
+
 };
 
 export default ms;
