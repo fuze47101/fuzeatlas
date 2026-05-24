@@ -5906,6 +5906,82 @@ const zhCN: Translations = {
     btnCreatePo: "创建 PO 并打开可打印包件 →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "管理",
+    crumbHere: "联系人清洁",
+    pageTitle: "联系人清洁",
+    pageSubtitle: "标记占位、角色邮箱和格式错误的联系人，避免销售在 Jane Doe 上浪费触达。可逆——取消隐藏即可将联系人重新带回向导。",
+
+    btnPreviewScan: "🔍 预览扫描",
+    btnAutoHide: "🙈 扫描并自动隐藏",
+    btnScanning: "扫描中……",
+    btnHiding: "隐藏中……",
+    titlePreviewScan: "在每个联系人上重新运行清洁快照，不改变可见性",
+    titleAutoHide: "扫描并自动从 BD 向导中隐藏占位联系人",
+    confirmAutoHide: "自动隐藏会将扫描标记为占位或无效邮箱的每个联系人的 hiddenFromWizard 翻为 true。此操作可逆（您可以从本页取消隐藏），但会立即影响每位销售的 BD 向导。继续？",
+    promptHide: "从 BD 向导中隐藏此联系人？原因（可选）：",
+    promptUnhide: "取消隐藏此联系人？原因（可选，将写入其备注）：",
+    failedPrefix: "失败：",
+    networkErrPrefix: "网络错误：",
+    scanFailedPrefix: "扫描失败：",
+
+    summaryScanned: "已扫描",
+    summaryContacts: "联系人 · 占位",
+    summarySuspicious: "· 可疑",
+    summaryRole: "· 角色",
+    summaryReal: "· 真实",
+    summaryHiddenSuffix: "新",
+    summaryHiddenPrefix: "· 已隐藏",
+
+    statPlaceholder: "占位",
+    statSuspicious: "可疑",
+    statRole: "角色邮箱",
+    statReal: "真实",
+    statUnscanned: "未扫描",
+    statHidden: "已隐藏",
+
+    filterVerdict: "判定",
+    filterVisibility: "可见性",
+    filterAllScanned: "所有已扫描",
+    filterPlaceholder: "占位",
+    filterSuspicious: "可疑",
+    filterRoleMailbox: "角色邮箱",
+    filterReal: "真实",
+    filterUnscanned: "未扫描",
+    filterAllVisibility: "所有可见性",
+    filterHiddenOnly: "仅已隐藏",
+    filterVisibleOnly: "仅可见",
+    searchPlaceholder: "搜索姓名或邮箱……",
+
+    emptyTitle: "当前筛选条件下没有匹配的联系人。",
+    emptyUnscannedTpl: "{n} 位联系人从未被扫描——点击「预览扫描」以填充。",
+
+    colContact: "联系人",
+    colBrandFactory: "品牌 / 工厂",
+    colVerdict: "判定",
+    colEmail: "邮箱",
+    colLinkedin: "LinkedIn",
+    colScore: "分数",
+    colFlags: "标记",
+    colActions: "操作",
+
+    unnamed: "（未命名）",
+    noEmail: "无邮箱",
+    hiddenLabel: "已隐藏",
+    flagsMore: "更多",
+    flagsClean: "干净",
+    actionHide: "隐藏",
+    actionUnhide: "取消隐藏",
+
+    helpFooter: "扫描会遍历每个联系人，将判定+标记快照到该行。预览仅记录判定；扫描+自动隐藏还会为占位和无效邮箱联系人翻转 hiddenFromWizard。两者均可逆——点击「取消隐藏」即可恢复联系人，这也会重新运行快照以防数据已修复。",
+
+    verdictReal: "真实",
+    verdictSuspect: "可疑",
+    verdictPlaceholder: "占位",
+    verdictRoleMbx: "角色邮箱",
+    verdictUnscanned: "未扫描",
+  },
+
 };
 
 export default zhCN;
