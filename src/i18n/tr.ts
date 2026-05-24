@@ -8113,6 +8113,30 @@ const tr: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "Davet yükleniyor…",
+    notFoundTitle: "Davet bulunamadı",
+    notFoundFallback: "Bu davet bağlantısının süresi dolmuş veya daha önce kullanılmış olabilir.",
+    chipLabel: "FUZE Atlas daveti",
+    headingMiddle: "sizi davet etti",
+    headingSuffix: "FUZE tedarik zincirine",
+    heroSubtitleFallbackPrefix: "tedarik zinciri genelinde antimikrobiyal tekstil programlarını koordine etmek için FUZE Atlas kullanır.",
+    heroSubtitleFallbackSuffix: "Katılmak, fabrikanın test için kumaş göndermesine, FUZE siparişi vermesine ve ICP sonuçlarını takip etmesine olanak tanır — hepsi doğrudan markaya bağlı.",
+    notePrefix: "Not —",
+    closedPrefix: "Bu davet zaten",
+    closedReachOutPrefix: "Ulaşın —",
+    closedTeamFallbackPrefix: "—",
+    closedTeamFallbackSuffix: "ekibi",
+    closedFreshLink: "yeni bir bağlantıya ihtiyacınız varsa.",
+    signUpCta: "Kaydol",
+    signUpSubPrefix: "Yeni bir",
+    signUpSubSuffix: "Atlas hesabı oluşturun",
+    alreadyInCta: "Zaten Atlas'tayız",
+    alreadyInSub: "Giriş yapın ve mevcut fabrikanızı bağlayın",
+    sentPrefix: "Davet gönderildi",
+    questionsPrefix: "· Sorularınız mı var?",
+  },
+
 };
 
 export default tr;
