@@ -7138,6 +7138,34 @@ const tr: Translations = {
     errLoadFailed: "Huni yüklenemedi",
   },
 
+  bdSequenceAnalytics: {
+    loading: "Yükleniyor…",
+    crumbBdSequences: "BD Sekansları",
+    crumbAnalytics: "Analitik",
+    modeSequence: "Sekans",
+    modeCadence: "Kadans",
+    title: "Huni analitiği",
+    aggregatedAcross: "Toplandı",
+    sequenceSingular: "sekans",
+    sequencePlural: "sekans",
+    onCadenceLabel: "kadansta",
+    emptyBefore: "Bu öğede henüz gönderim etkinliği yok",
+    stepLabel: "Adım",
+    sentSuffix: "gönderildi",
+    mSent: "Gönderildi",
+    mOpens: "Açılma",
+    mClicks: "Tıklama",
+    mReplies: "Yanıt",
+    mMeetings: "Toplantı",
+    mAvgDaysReply: "Ort. gün → yanıt",
+    subjectVariantsTitle: "Konu varyantları",
+    colSubject: "Konu",
+    colSent: "Gönderildi",
+    colOpens: "Açılma",
+    colOpenRate: "Açılma oranı",
+    errLoadFailed: "Analitik yüklenemedi",
+  },
+
 };
 
 export default tr;
