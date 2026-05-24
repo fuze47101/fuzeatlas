@@ -5505,6 +5505,55 @@ const ta: Translations = {
     statusComplete: "முடிக்கப்பட்டது",
   },
 
+  brandFabricsAdmin: {
+    loading: "ஃபேப்ரிக் portfolio ஏற்றுகிறது…",
+    errorTitle: "ஃபேப்ரிக் portfolio-ஐ ஏற்ற முடியவில்லை",
+    errorUnknown: "தெரியாத பிழை",
+    errorFailedLoad: "ஏற்ற முடியவில்லை",
+    errorSave: "சேமிப்பு தோல்வியடைந்தது",
+    btnTryAgain: "மீண்டும் முயற்சி",
+
+    crumbPartners: "Brand Partners",
+    crumbHere: "ஃபேப்ரிக் Portfolio",
+    titleSuffix: "— ஃபேப்ரிக் Portfolio",
+    subtitle: "இந்த பிராண்டுக்கு அனைத்து mills-இலும் உள்ள அனைத்து ஃபேப்ரிக்குகள். மொத்தம் {total}-இல் {shown} ஃபேப்ரிக்குகள் காட்டப்படுகின்றன.",
+    btnExportCsv: "⬇ CSV ஏற்றுமதி",
+
+    searchPlaceholder: "ஃபேப்ரிக் #, customer code, content-ஐ தேடவும்…",
+    filterAllMills: "அனைத்து mills",
+    filterAllTypes: "அனைத்து வகைகள்",
+    typeDevelopment: "மேம்பாடு",
+    typeActualBulk: "உண்மையானது (Bulk)",
+    typeForecast: "முன்னறிவிப்பு",
+    typeRd: "R&D",
+    filterAllStatuses: "அனைத்து நிலைகள்",
+
+    emptyFabric: "🧵",
+    emptyTitle: "உங்கள் வடிகட்டிகளுக்கு பொருந்தும் ஃபேப்ரிக்குகள் இல்லை.",
+    emptySub: "மேலே உள்ள வடிகட்டிகளை சரிசெய்யவும் அல்லது முழு portfolio-ஐப் பார்க்க தேடலை அழிக்கவும்.",
+    fabricSingular: "ஃபேப்ரிக்",
+    fabricPlural: "ஃபேப்ரிக்குகள்",
+    openFactory: "தொழிற்சாலையைத் திற →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "Mill ஃபேப்ரிக் #",
+    colType: "வகை",
+    colContent: "உள்ளடக்கம்",
+    colGsm: "GSM",
+    colCustomerCode: "Customer Code",
+    colTrial: "Trial",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "ICP மதிப்பு",
+    colTestDate: "சோதனை தேதி",
+    colStatus: "நிலை",
+
+    unassigned: "ஒதுக்கப்படவில்லை",
+    typeBulkProduction: "Bulk உற்பத்தி",
+    notSet: "— அமைக்கப்படவில்லை —",
+    titleOpenFabric: "ஃபேப்ரிக் விவரத்தைத் திற",
+  },
+
 };
 
 export default ta;
