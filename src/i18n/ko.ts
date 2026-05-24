@@ -4780,6 +4780,32 @@ const ko: Translations = {
     openProfile: "프로필 열기",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← ICP 샘플 준비로 돌아가기",
+    printButton: "🖨 인쇄 / PDF로 저장",
+    eyebrow: "FUZE Biotech · 랩 SOP",
+    pageTitle: "ICP-MS 샘플 준비",
+    pageSubtitle: "절단 → 중량 측정 → 단편화 → 포장 → ICP-MS 검증을 위해 CTLA (Utah)로 발송",
+    docLabel: "문서: SOP-FUZE-LAB-002",
+    revLabel: "개정: 1.0 ·",
+
+    purposeHeader: "목적",
+    equipmentHeader: "장비",
+    massTargetsHeader: "질량 목표 (중요)",
+    shipToLabel: "CTLA로 발송",
+    digestPerRunLabel: "런당 분해량",
+    cutterGeometryLabel: "커터 기하구조",
+
+    criticalRulesHeader: "⚠ 중요 준비 규칙",
+    procedureHeader: "절차",
+    shippingAddressHeader: "배송 주소 (마법사로 자동 입력)",
+    shipToHeader: "배송지",
+    returnAddressHeader: "반송 주소 + 보고",
+    reportToLabel: "보고 대상:",
+    preShipChecklistHeader: "✅ 발송 전 체크리스트 (마법사가 패킷에 인쇄)",
+    sanityCheckHeader: "타당성 검증 (CTLA가 보고해야 하는 사항)",
+  },
+
 };
 
 export default ko;
