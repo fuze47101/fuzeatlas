@@ -6825,6 +6825,26 @@ const ta: Translations = {
     emptyState: "இன்னும் credits இல்லை.",
   },
 
+  bdFunnel: {
+    loading: "ஏற்றுகிறது…",
+    crumbSalesPipeline: "விற்பனை & Pipeline",
+    crumbBdFunnel: "BD funnel",
+    title: "Pipeline funnel",
+    subtitle: "கடைசி 30 / 60 / 90 நாட்களில் Inflow / outflow, மற்றும் stage-to-stage மாற்ற விகிதம். ஒவ்வொரு Brand.pipelineStage flip-இல் எழுதப்படும் BrandStageTransition வரிசைகளிலிருந்து பெறப்பட்டது.",
+    colStage: "கட்டம்",
+    colCurrent: "தற்போதைய",
+    colIn30: "In 30நா",
+    colIn60: "In 60நா",
+    colIn90: "In 90நா",
+    colOut30: "Out 30நா",
+    colOut60: "Out 60நா",
+    colOut90: "Out 90நா",
+    colAvgDwell: "சராசரி dwell",
+    colToNext: "→ அடுத்த",
+    footerHint: "Conversion = canonical அடுத்த கட்டத்தில் வந்த exits / கடைசி 90 நாட்களில் பார்க்கப்பட்ட மொத்த exits. Window-இல் exits இல்லாத கட்டங்கள் n=0 காட்டுகின்றன — அவை மெதுவான அல்லது நிலையானவை, மோசமானவை அல்ல.",
+    errLoadFailed: "Funnel-ஐ ஏற்ற முடியவில்லை",
+  },
+
 };
 
 export default ta;
