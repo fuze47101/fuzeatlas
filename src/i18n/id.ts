@@ -3341,6 +3341,28 @@ const id: Translations = {
     errLoadFailed: "Gagal memuat analitik",
   },
 
+  brandEngagement: {
+    heading: "Kesehatan Brand",
+    subtitle: "Monitor engagement dan metrik kesehatan untuk semua brand",
+    recalculatingBtn: "Menghitung ulang...",
+    recalculateBtn: "Hitung Ulang Semua",
+    allFilter: "Semua",
+    loadingText: "Memuat...",
+    noBrandsText: "Tidak ada brand ditemukan",
+    scoreBreakdownTitle: "Rincian Skor",
+    communicationLabel: "Komunikasi",
+    testingVelocityLabel: "Velocity Pengujian",
+    pipelineVelocityLabel: "Velocity Pipeline",
+    paymentScoreLabel: "Skor Pembayaran",
+    rawMetricsTitle: "Metrik Mentah",
+    daysSinceContact: "Hari Sejak Kontak",
+    testsLast30d: "Uji (30h Terakhir)",
+    testsLast90d: "Uji (90h Terakhir)",
+    avgInvoicePayDays: "Rata-rata Hari Bayar Faktur",
+    overdueInvoices: "Faktur Jatuh Tempo",
+    lastCalculatedLabel: "Terakhir dihitung:",
+  },
+
 };
 
 export default id;
