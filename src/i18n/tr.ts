@@ -7052,6 +7052,32 @@ const tr: Translations = {
     footerQuestions: "Sorular?",
   },
 
+  settingsExchangeRates: {
+    title: "Döviz Kurları",
+    subtitle: "Döviz dönüşüm oranlarını yönetin",
+    addRateBtn: "Kur Ekle",
+    cancelBtn: "İptal",
+    addFormTitle: "Döviz Kuru Ekle",
+    ratePlaceholder: "Kur",
+    submitAddBtn: "Kur Ekle",
+    converterTitle: "Döviz Dönüştürücü",
+    fromLabel: "Kaynak",
+    toLabel: "Hedef",
+    amountLabel: "Tutar",
+    convertBtn: "Dönüştür",
+    rateResultPrefix: "Kur:",
+    quickStatsTitle: "Hızlı İstatistikler",
+    totalCurrenciesLabel: "Toplam Para Birimi",
+    activeRatesLabel: "Aktif Kurlar",
+    currentRatesTitle: "Güncel Kurlar (Baz: USD)",
+    loading: "Yükleniyor...",
+    emptyState: "Yapılandırılmış döviz kuru yok",
+    colCurrencyPair: "Para Çifti",
+    colRate: "Kur",
+    colEffectiveDate: "Yürürlük Tarihi",
+    colSource: "Kaynak",
+  },
+
 };
 
 export default tr;
