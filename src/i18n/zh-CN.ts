@@ -7169,6 +7169,29 @@ const zhCN: Translations = {
     errAddFailed: "添加失败",
   },
 
+  accountsAdmin: {
+    title: "客户",
+    subtitleBefore: "超过 Lead 阶段的品牌 — 已接收演示、正在测试、生产中或已是客户。新潜在客户请前往",
+    brandPipelineLink: "品牌管道",
+    allFilter: "全部",
+    stagePresentation: "演示",
+    stageBrandTesting: "品牌测试",
+    stageFactoryOnboarding: "工厂入驻",
+    stageFactoryTesting: "工厂测试",
+    stageProduction: "生产",
+    stageReConnect: "重新连接",
+    stageCustomerWon: "已赢得客户",
+    searchPlaceholder: "按名称或联系人搜索客户……",
+    emptyTitle: "此视图中尚无客户",
+    emptyBody: "当品牌从 LEAD 移至 PRESENTATION 或更高阶段时,客户将出现。",
+    goToPipelineBtn: "前往品牌管道",
+    highRelevanceBadge: "🔥 高相关性",
+    amPrefix: "AM：",
+    contactsLabel: "个联系人",
+    enrichedSuffix: "已富化",
+    backToLeadOption: "← 返回 Lead",
+  },
+
 };
 
 export default zhCN;
