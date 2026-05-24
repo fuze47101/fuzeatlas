@@ -7912,6 +7912,24 @@ const ko: Translations = {
     emptyBody: "필터를 넓혀 보십시오 — 또는 개발 중인 원단을 보려면 \"검증된 벤치 시험\" 필터를 제거하십시오.",
   },
 
+  importBrands: {
+    title: "대량 가져오기 — 브랜드",
+    subtitle: "전시회, 목록 또는 조사 덤프에서 브랜드 후보 CSV를 붙여넣거나 업로드하십시오. 열을 매핑하고, 검증을 미리보고, CLI가 사용하는 동일한 시드 브랜드 헬퍼를 통해 멱등적으로 기록합니다.",
+    backLabel: "브랜드 파이프라인",
+    brandNameLabel: "브랜드 이름",
+    brandNameHint: "(자연 키 — 업서트는 여기서 키됨)",
+    domainLabel: "이메일 도메인",
+    domainHint: '예: \"rhone.com\"',
+    repEmailLabel: "주 AM 이메일",
+    repEmailHint: "Atlas 사용자로 이미 존재해야 함",
+    tierLabel: "필수 FUZE 등급",
+    tierHint: "F1 / F2 / F3 / F4 — 기본값 F2",
+    cadenceLabel: "ICP 주기 (N배치마다)",
+    cadenceHint: "기본값 5",
+    countryLabel: "국가",
+    websiteLabel: "웹사이트",
+  },
+
 };
 
 export default ko;
