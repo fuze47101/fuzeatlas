@@ -6721,6 +6721,44 @@ const bn: Translations = {
     truncatedNotice: "{total} ব্র্যান্ডের মধ্যে প্রথম ১০০ দেখানো হচ্ছে। সংকুচিত করতে ফিল্টার ব্যবহার করুন।",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "শিপমেন্ট পাওয়া যায়নি",
+    notFoundBodyTpl: "আমরা অর্ডার {order} খুঁজে পাইনি।",
+    notFoundFooter: "যদি আপনি FUZE শিপমেন্টে এই QR কোডটি পেয়ে থাকেন, andrew@fuze47.com-এ যোগাযোগ করুন।",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "শিপমেন্ট ভেরিফিকেশন",
+
+    sectionShipment: "শিপমেন্ট বিবরণ",
+    fieldFuzeVolume: "FUZE ভলিউম",
+    bottlesSuffix: "বোতল",
+    baseFuzePrefix: "বেস",
+    wastageSuffix: "অপচয়",
+    fieldTier: "টায়ার",
+    fieldMethod: "ট্রিটমেন্ট পদ্ধতি",
+    fieldFactory: "ফ্যাক্টরি",
+    fieldForBrand: "ব্র্যান্ডের জন্য",
+    fieldFabric: "ফেব্রিক",
+    fieldFulfillment: "ফুলফিলমেন্ট",
+    directUsa: "USA থেকে সরাসরি",
+    distributorFallback: "ডিস্ট্রিবিউটর",
+    fieldTracking: "ট্র্যাকিং",
+
+    sectionDocs: "প্রোডাক্ট ডকুমেন্ট",
+    sdsLabel: "সেফটি ডেটা শিট (SDS)",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "সার্টিফিকেট অফ অ্যানালাইসিস (COA)",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "কমপ্লায়েন্স লাইব্রেরি খুলুন",
+
+    sectionTimeline: "লাইফসাইকেল টাইমলাইন",
+    viewDocument: "ডকুমেন্ট দেখুন →",
+    timelineEmpty: "এখনও কোনো লাইফসাইকেল ইভেন্ট লগ করা হয়নি। শিপমেন্ট সরানোর সাথে সাথে টাইমলাইন পপুলেট হবে।",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "প্রশ্ন?",
+  },
+
 };
 
 export default bn;
