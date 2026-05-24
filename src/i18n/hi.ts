@@ -7475,6 +7475,32 @@ const hi: Translations = {
     emptyState: "अभी कोई टोकन नहीं — ऊपर अपना पहला बैच मिंट करें।",
   },
 
+  bookMeetingPage: {
+    heading: "बैठक शेड्यूल करें",
+    subtitle: "हमारी टीम के साथ अपनी बैठक बुक करने के लिए एक उपलब्ध तिथि और समय चुनें।",
+    selectDateTitle: "तिथि चुनें",
+    availableTimesPrefix: "उपलब्ध समय",
+    loadingSlots: "स्लॉट लोड हो रहे हैं...",
+    noSlotsBody: "इस तिथि के लिए कोई उपलब्ध स्लॉट नहीं",
+    detailsTitle: "बैठक विवरण",
+    selectDateTimeHint: "जारी रखने के लिए एक तिथि और समय चुनें",
+    dateTimeLabel: "तिथि और समय",
+    meetingTitleLabel: "बैठक का शीर्षक",
+    defaultTitle: "FUZE बैठक",
+    descriptionLabel: "विवरण (वैकल्पिक)",
+    descriptionPlaceholder: "कोई अतिरिक्त विवरण...",
+    confirmBtn: "बुकिंग की पुष्टि करें",
+    bookingBusy: "बुकिंग हो रही है...",
+    bookFailedError: "बैठक बुक करने में विफल",
+    networkError: "नेटवर्क त्रुटि",
+    bookedTitle: "बैठक बुक!",
+    titleColLabel: "शीर्षक",
+    timeColLabel: "समय",
+    meetingLinkLabel: "बैठक लिंक",
+    openInTeams: "Teams में खोलें",
+    bookAnotherBtn: "एक और बैठक बुक करें",
+  },
+
 };
 
 export default hi;
