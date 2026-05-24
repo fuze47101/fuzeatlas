@@ -6919,6 +6919,29 @@ const bn: Translations = {
     errAddFailed: "যোগ করতে ব্যর্থ",
   },
 
+  accountsAdmin: {
+    title: "অ্যাকাউন্ট",
+    subtitleBefore: "লিড স্টেজ পার করা ব্র্যান্ড — প্রেজেন্টেশন পেয়েছে, টেস্টিং-এ আছে, প্রোডাকশনে আছে, বা ইতিমধ্যে গ্রাহক। নতুন প্রসপেক্টদের জন্য, যান",
+    brandPipelineLink: "ব্র্যান্ড পাইপলাইন",
+    allFilter: "সব",
+    stagePresentation: "প্রেজেন্টেশন",
+    stageBrandTesting: "ব্র্যান্ড টেস্টিং",
+    stageFactoryOnboarding: "ফ্যাক্টরি অনবোর্ডিং",
+    stageFactoryTesting: "ফ্যাক্টরি টেস্টিং",
+    stageProduction: "প্রোডাকশন",
+    stageReConnect: "পুনঃসংযোগ",
+    stageCustomerWon: "গ্রাহক জিতেছি",
+    searchPlaceholder: "নাম বা কন্টাক্ট দিয়ে অ্যাকাউন্ট খুঁজুন...",
+    emptyTitle: "এই ভিউতে এখনও কোনো অ্যাকাউন্ট নেই",
+    emptyBody: "ব্র্যান্ডগুলি LEAD থেকে PRESENTATION বা পরবর্তী স্টেজে গেলে অ্যাকাউন্ট এখানে দেখাবে।",
+    goToPipelineBtn: "ব্র্যান্ড পাইপলাইনে যান",
+    highRelevanceBadge: "🔥 উচ্চ প্রাসঙ্গিকতা",
+    amPrefix: "AM:",
+    contactsLabel: "কন্টাক্ট",
+    enrichedSuffix: "সমৃদ্ধ",
+    backToLeadOption: "← লিডে ফিরে যান",
+  },
+
 };
 
 export default bn;
