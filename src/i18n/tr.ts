@@ -7995,6 +7995,31 @@ const tr: Translations = {
     accessLaterTitle: "Bu Rapora Daha Sonra Erişim",
   },
 
+  settingsAuditLog: {
+    title: "Denetim Günlüğü",
+    subtitle: "Tüm sistem değişikliklerini ve kullanıcı eylemlerini izleyin",
+    actionLabel: "Eylem",
+    allActionsOption: "Tüm Eylemler",
+    entityTypeLabel: "Varlık Türü",
+    allEntitiesOption: "Tüm Varlıklar",
+    fromDateLabel: "Başlangıç Tarihi",
+    toDateLabel: "Bitiş Tarihi",
+    loadingText: "Yükleniyor...",
+    emptyText: "Denetim günlüğü bulunamadı",
+    colTimestamp: "Zaman damgası",
+    colUser: "Kullanıcı",
+    colAction: "Eylem",
+    colEntity: "Varlık",
+    colDescription: "Açıklama",
+    systemUserFallback: "Sistem",
+    showingPrefix: "Gösteriliyor:",
+    showingTo: "-",
+    showingOf: "/",
+    showingSuffix: "günlük",
+    prevBtn: "Önceki",
+    nextBtn: "Sonraki",
+  },
+
 };
 
 export default tr;
