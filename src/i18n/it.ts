@@ -7633,6 +7633,24 @@ const it: Translations = {
     emptyBody: "Prova ad ampliare i filtri — oppure rimuovi il filtro \"test di laboratorio convalidato\" se vuoi vedere anche i tessuti ancora in fase di sviluppo.",
   },
 
+  importBrands: {
+    title: "Importazione in blocco — Brand",
+    subtitle: "Incolla o carica un CSV di brand candidati da una fiera, un elenco o una ricerca. Mapperemo le colonne, mostreremo un'anteprima della convalida e scriveremo in modo idempotente tramite lo stesso helper di seed-brand utilizzato dalla CLI.",
+    backLabel: "Pipeline brand",
+    brandNameLabel: "Nome del brand",
+    brandNameHint: "(chiave naturale — l'upsert è basato qui)",
+    domainLabel: "Dominio email",
+    domainHint: 'es. "rhone.com"',
+    repEmailLabel: "Email AM principale",
+    repEmailHint: "deve già esistere come utente Atlas",
+    tierLabel: "Tier FUZE richiesto",
+    tierHint: "F1 / F2 / F3 / F4 — predefinito F2",
+    cadenceLabel: "Cadenza ICP (ogni N batch)",
+    cadenceHint: "predefinito 5",
+    countryLabel: "Paese",
+    websiteLabel: "Sito web",
+  },
+
 };
 
 export default it;
