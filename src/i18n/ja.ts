@@ -6947,6 +6947,44 @@ const ja: Translations = {
     truncatedNotice: "{total}件のブランドのうち最初の100件を表示しています。フィルターを使用して絞り込んでください。",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "出荷が見つかりません",
+    notFoundBodyTpl: "注文{order}が見つかりませんでした。",
+    notFoundFooter: "FUZE出荷でこのQRコードを受け取った場合は、andrew@fuze47.comまでご連絡ください。",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "出荷の検証",
+
+    sectionShipment: "出荷詳細",
+    fieldFuzeVolume: "FUZE容量",
+    bottlesSuffix: "本",
+    baseFuzePrefix: "ベース",
+    wastageSuffix: "ロス",
+    fieldTier: "ティア",
+    fieldMethod: "処理方法",
+    fieldFactory: "ファクトリー",
+    fieldForBrand: "対象ブランド",
+    fieldFabric: "ファブリック",
+    fieldFulfillment: "フルフィルメント",
+    directUsa: "米国から直送",
+    distributorFallback: "ディストリビューター",
+    fieldTracking: "追跡",
+
+    sectionDocs: "製品ドキュメント",
+    sdsLabel: "安全データシート（SDS）",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "分析証明書（COA）",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "コンプライアンスライブラリを開く",
+
+    sectionTimeline: "ライフサイクルタイムライン",
+    viewDocument: "ドキュメントを表示 →",
+    timelineEmpty: "ライフサイクルイベントはまだ記録されていません。出荷が進むにつれてタイムラインが表示されます。",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "ご質問は？",
+  },
+
 };
 
 export default ja;
