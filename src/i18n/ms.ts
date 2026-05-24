@@ -7510,6 +7510,32 @@ const ms: Translations = {
     errSendFailed: "Gagal menghantar e-mel pengesahan",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "Dokumen Awam",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "Dokumen rujukan awam untuk barisan produk FUZE",
+    headerLeadAfter: ". Untuk dokumen peribadi (TDS/SDS penuh, harga dalaman, panduan aplikasi), log masuk ke portal FUZE Atlas untuk peranan anda.",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "Toksikologi",
+    catPricing: "Harga",
+    catSustainability: "Kemampanan",
+    catEducation: "Pendidikan",
+    catClaimsCompliance: "Tuntutan & Pematuhan",
+    catApplicationGuide: "Panduan Aplikasi",
+    catCaseStudy: "Kajian Kes",
+    loading: "Memuatkan…",
+    emptyBefore: "Belum ada dokumen awam tersedia untuk",
+    emptyAfter: ". Hubungi FUZE untuk perpustakaan peribadi.",
+    loginCta: "Log masuk ke Atlas →",
+    versionPrefix: "Versi",
+    downloadBtn: "↓ Muat Turun",
+    unknownLineTitle: "Barisan produk tidak diketahui",
+    unknownLineBody: "FUZE mempunyai empat tier: F1, F2, F3, F4. Cuba salah satu daripadanya.",
+    errLoadFailed: "Gagal memuatkan",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default ms;
