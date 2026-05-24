@@ -7526,6 +7526,23 @@ const ta: Translations = {
     fieldChangedPlural: "fields மாற்றப்பட்டன",
   },
 
+  adminLanding: {
+    loadingLabel: "நிர்வாகம் ஏற்றுகிறது",
+    crumb: "நிர்வாகம்",
+    heading: "நிர்வாகம்",
+    subtitle: "FUZE-Ops control surfaces. Dive in செய்ய ஒரு module-ஐ தேர்ந்தெடு, அல்லது முழு nav-க்கு sidebar-ஐப் பயன்படுத்தவும்.",
+    openPrefix: "திற",
+    fastPathLabel: "வேகமான பாதை",
+    dataEntryHubTitle: "தரவு உள்ளீட்டு மையம்",
+    dataEntryHubBody: "Brand spec, pricing tier, supply-chain link, lab pricing அமை — அனைத்தும் ஒரு பக்கத்தில்.",
+    liveStateLabel: "Live நிலை",
+    commandCenterTitle: "Command Center",
+    commandCenterBody: "ஆறு metric tiles, brand × factory cadence matrix, சமீபத்திய செயல்பாடு, queues.",
+    weeklyLabel: "வாராந்திர",
+    mondayReviewTitle: "திங்கட்கிழமை மதிப்பாய்வு வரிசை",
+    mondayReviewBody: "AI-flagged test runs + brand rejections. Sunday 22:00 UTC மின்னஞ்சல் நிகழ்ச்சி நிரலை seed செய்கிறது.",
+  },
+
 };
 
 export default ta;
