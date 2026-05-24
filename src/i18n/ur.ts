@@ -7532,6 +7532,29 @@ const ur: Translations = {
     bookAnotherBtn: "دوسری میٹنگ بک کریں",
   },
 
+  adminAuditLog: {
+    adminCrumb: "ایڈمن",
+    crumb: "آڈٹ لاگ",
+    heading: "آڈٹ لاگ",
+    subtitle: "ہر ادارے میں مکمل آڈٹ ٹریل۔ ایکشن، ادارہ، یا تاریخ کے لحاظ سے فلٹر کریں۔ 90-دن کا ریٹینشن۔",
+    errorContext: "آڈٹ لاگ لوڈ کریں",
+    couldntLoadPrefix: "آڈٹ لاگ لوڈ نہیں ہو سکا",
+    networkError: "آڈٹ لاگ لوڈ کرتے وقت نیٹ ورک کی خرابی۔",
+    actionLabel: "ایکشن",
+    allActionsOption: "تمام ایکشنز",
+    entityLabel: "ادارہ",
+    allEntitiesOption: "تمام ادارے",
+    sinceLabel: "سے",
+    resetBtn: "ری سیٹ",
+    rowsSuffix: "قطاریں",
+    loadingState: "آڈٹ لاگ لوڈ ہو رہا ہے…",
+    emptyState: "کوئی آڈٹ قطار ان فلٹرز سے میل نہیں کھاتی۔",
+    byPrefix: "بطور",
+    systemActor: "نظام",
+    fieldChangedSingular: "فیلڈ تبدیل ہوا",
+    fieldChangedPlural: "فیلڈز تبدیل ہوئے",
+  },
+
 };
 
 export default ur;
