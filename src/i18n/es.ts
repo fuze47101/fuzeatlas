@@ -7957,6 +7957,31 @@ const es: Translations = {
     accessLaterTitle: "Acceder a este informe más tarde",
   },
 
+  settingsAuditLog: {
+    title: "Registro de auditoría",
+    subtitle: "Rastrea todos los cambios del sistema y las acciones de usuario",
+    actionLabel: "Acción",
+    allActionsOption: "Todas las acciones",
+    entityTypeLabel: "Tipo de entidad",
+    allEntitiesOption: "Todas las entidades",
+    fromDateLabel: "Fecha desde",
+    toDateLabel: "Fecha hasta",
+    loadingText: "Cargando...",
+    emptyText: "No se encontraron registros de auditoría",
+    colTimestamp: "Marca de tiempo",
+    colUser: "Usuario",
+    colAction: "Acción",
+    colEntity: "Entidad",
+    colDescription: "Descripción",
+    systemUserFallback: "Sistema",
+    showingPrefix: "Mostrando",
+    showingTo: "a",
+    showingOf: "de",
+    showingSuffix: "registros",
+    prevBtn: "Anterior",
+    nextBtn: "Siguiente",
+  },
+
 };
 
 export default es;
