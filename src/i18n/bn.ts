@@ -7651,6 +7651,24 @@ const bn: Translations = {
     websiteLabel: "ওয়েবসাইট",
   },
 
+  importContacts: {
+    title: "বাল্ক ইম্পোর্ট — কন্টাক্ট",
+    subtitle: "কন্টাক্টদের একটি CSV পেস্ট বা আপলোড করুন। ইমেল প্রাকৃতিক কী — উপস্থিত থাকলে আমরা ইমেল দিয়ে upsert করি। যাদের ইমেল নেই কিন্তু LinkedIn URL আছে এমন সারিগুলো 'email missing' হিসেবে ইম্পোর্ট হয় যাতে বিদ্যমান Apollo এনরিচমেন্ট জব তাদের অনুসরণ করতে পারে। যাদের কোনটিই নেই তাদের প্রত্যাখ্যান করা হয়।",
+    backLabel: "Lead ব্যবস্থাপনা",
+    firstNameLabel: "নামের প্রথম অংশ",
+    lastNameLabel: "নামের শেষ অংশ",
+    emailLabel: "ইমেল",
+    emailHint: "LinkedIn URL না থাকলে প্রয়োজন",
+    linkedinLabel: "LinkedIn URL",
+    linkedinHint: "ইমেল না থাকলে ফলব্যাক পরিচায়ক",
+    brandNameLabel: "ব্র্যান্ডের নাম",
+    brandNameHint: "Brand.name-এ কেস-অসংবেদনশীল মিল; না পাওয়া গেলে অসংযুক্ত",
+    jobTitleLabel: "পদবী",
+    phoneLabel: "ফোন",
+    titleLabel: "শিরোনাম (সম্মানসূচক)",
+    titleHint: 'যেমন "Mr.", "Dr."',
+  },
+
 };
 
 export default bn;
