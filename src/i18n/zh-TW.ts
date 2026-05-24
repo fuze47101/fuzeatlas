@@ -5910,6 +5910,82 @@ const zhTW: Translations = {
     btnCreatePo: "建立 PO 並開啟可列印包裝 →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "管理",
+    crumbHere: "聯絡人清理",
+    pageTitle: "聯絡人清理",
+    pageSubtitle: "標記預留位置、角色信箱與格式錯誤的聯絡人,避免業務浪費精力在 Jane Doe 之類的假聯絡人上。可還原 — 取消隱藏即可讓聯絡人回到精靈中。",
+
+    btnPreviewScan: "🔍 預覽掃描",
+    btnAutoHide: "🙈 掃描 + 自動隱藏",
+    btnScanning: "掃描中…",
+    btnHiding: "隱藏中…",
+    titlePreviewScan: "重新對每位聯絡人執行清理快照,不變更可見性",
+    titleAutoHide: "掃描並自動於 BD 精靈中隱藏預留位置聯絡人",
+    confirmAutoHide: "自動隱藏會將掃描標記為預留位置或無效信箱的每位聯絡人之 hiddenFromWizard 設為 true。此動作可還原(您可從本頁取消隱藏),但會立即影響每位業務的 BD 精靈。是否繼續?",
+    promptHide: "從 BD 精靈隱藏此聯絡人?原因(選填):",
+    promptUnhide: "取消隱藏此聯絡人?原因(選填,將寫入其備註):",
+    failedPrefix: "失敗:",
+    networkErrPrefix: "網路錯誤:",
+    scanFailedPrefix: "掃描失敗:",
+
+    summaryScanned: "已掃描",
+    summaryContacts: "位聯絡人 · 預留位置",
+    summarySuspicious: "· 可疑",
+    summaryRole: "· 角色",
+    summaryReal: "· 真實",
+    summaryHiddenSuffix: "個新增",
+    summaryHiddenPrefix: "· 已隱藏",
+
+    statPlaceholder: "預留位置",
+    statSuspicious: "可疑",
+    statRole: "角色信箱",
+    statReal: "真實",
+    statUnscanned: "未掃描",
+    statHidden: "已隱藏",
+
+    filterVerdict: "判定",
+    filterVisibility: "可見性",
+    filterAllScanned: "所有已掃描",
+    filterPlaceholder: "預留位置",
+    filterSuspicious: "可疑",
+    filterRoleMailbox: "角色信箱",
+    filterReal: "真實",
+    filterUnscanned: "未掃描",
+    filterAllVisibility: "所有可見性",
+    filterHiddenOnly: "僅顯示已隱藏",
+    filterVisibleOnly: "僅顯示可見",
+    searchPlaceholder: "搜尋姓名或電子郵件…",
+
+    emptyTitle: "無符合目前篩選的聯絡人。",
+    emptyUnscannedTpl: "{n} 位聯絡人從未掃描 — 按下「預覽掃描」以填入資料。",
+
+    colContact: "聯絡人",
+    colBrandFactory: "品牌 / 工廠",
+    colVerdict: "判定",
+    colEmail: "電子郵件",
+    colLinkedin: "LinkedIn",
+    colScore: "分數",
+    colFlags: "標記",
+    colActions: "操作",
+
+    unnamed: "(未命名)",
+    noEmail: "無電子郵件",
+    hiddenLabel: "已隱藏",
+    flagsMore: "更多",
+    flagsClean: "乾淨",
+    actionHide: "隱藏",
+    actionUnhide: "取消隱藏",
+
+    helpFooter: "掃描將走訪每位聯絡人,將判定與標記快照寫入該列。預覽僅紀錄判定;掃描 + 自動隱藏還會為預留位置與無效信箱聯絡人翻轉 hiddenFromWizard。兩者皆可還原 — 點選「取消隱藏」即可恢復聯絡人,並重新執行快照,以防資料已修正。",
+
+    verdictReal: "真實",
+    verdictSuspect: "可疑",
+    verdictPlaceholder: "預留位置",
+    verdictRoleMbx: "角色信箱",
+    verdictUnscanned: "未掃描",
+  },
+
 };
 
 export default zhTW;
