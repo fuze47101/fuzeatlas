@@ -7659,6 +7659,19 @@ const ms: Translations = {
     pressKitLink: "Kit akhbar",
   },
 
+  educationCompliance: {
+    backLink: "← Kembali ke Asas FUZE",
+    kicker: "Pematuhan & Pensijilan",
+    heroTitle: "Setiap susunan pensijilan yang diminta oleh jenama",
+    heroBody: "Satu tangkapan skrin untuk soal selidik vendor anda. EPA persekutuan + California, OEKO-TEX Standard 100 Class I, bluesign® diluluskan, PFAS-free, bebas formaldehid, sejajar ZDHC. Data ujian antibakteria / antivirus / antifungus merentas empat tier — laporan tersedia atas permintaan.",
+    activeBadge: "Aktif ✓",
+    docCopiesTitle: "Perlukan salinan dokumen sebenar?",
+    docCopiesBody: "Pusat Dokumen menyimpan salinan PDF langsung setiap pensijilan, SDS, TDS, dan COA. Pasukan pematuhan boleh memuat turunnya secara langsung untuk soal selidik vendor.",
+    docCenterCta: "Buka Pusat Dokumen →",
+    backBasicsBtn: "Kembali ke Asas FUZE",
+    whatYouCanClaimBtn: "Apa yang anda boleh tuntut →",
+  },
+
 };
 
 export default ms;
