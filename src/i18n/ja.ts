@@ -4865,6 +4865,92 @@ const ja: Translations = {
     tagsSuffix: "件のタグ",
   },
 
+  leadManagement: {
+    pageTitle: "リード管理・アウトリーチ",
+    pageSubtitle: "コンタクトを管理、Apollo経由でエンリッチ、SMS/メールアウトリーチを送信",
+
+    loadErrorContext: "リードパイプラインを読み込み",
+    loadErrorFallback: "リード管理データを読み込めませんでした",
+    networkError: "リード読み込み中にネットワークエラーが発生しました。",
+    loading: "リード読み込み中...",
+
+    statTotalContacts: "総コンタクト数",
+    statWithEmail: "メールあり",
+    statWithPhone: "電話あり",
+    statEnriched: "エンリッチ済み",
+    statNotContacted: "未接触",
+    statContacted: "接触済み",
+
+    searchPlaceholder: "ブランドまたはコンタクトを検索...",
+    filterAllPipelineStages: "すべてのパイプラインステージ",
+    stageLead: "リード",
+    stagePresentation: "プレゼンテーション",
+    stageBrandTesting: "ブランドテスト",
+    stageFactoryOnboarding: "工場オンボーディング",
+    stageProduction: "本生産",
+    stageArchive: "アーカイブ",
+
+    filterAllVerticals: "すべての業種",
+    verticalApparel: "アパレル",
+    verticalHospitality: "ホスピタリティ",
+    verticalWorkwear: "ワークウェア",
+    verticalHomeTextiles: "ホームテキスタイル",
+
+    filterAllOutreachStatus: "すべてのアウトリーチステータス",
+    outreachNotContacted: "未接触",
+    outreachContacted: "接触済み",
+    outreachResponded: "返信あり",
+    outreachMeetingBooked: "ミーティング予約済み",
+    outreachNotInterested: "関心なし",
+
+    filterAllEmailStatus: "すべてのメールステータス",
+    emailVerified: "検証済み",
+    emailExtrapolated: "推定",
+    emailUnavailable: "利用不可",
+
+    colBrand: "ブランド",
+    colContact: "コンタクト",
+    colTitle: "役職",
+    colEmail: "メール",
+    colPhone: "電話",
+    colLI: "LI",
+    colEmailed: "送信済み",
+    colOutreach: "アウトリーチ",
+    colActions: "アクション",
+
+    inProfile: "プロフィール内",
+    enrichedLabel: "エンリッチ済み",
+    noContactsNeedsEnrichment: "コンタクトなし — エンリッチが必要",
+    msgsSuffix: "件のメッセージ",
+    markLinkedinReached: "LinkedIn接触済みとマーク",
+    markEmailed: "送信済みとマーク",
+
+    actionSms: "SMS",
+    actionEmail: "メール",
+    actionEnrich: "エンリッチ",
+    titleSendSms: "SMSを送信",
+    titleSendEmail: "メールを送信",
+    titleEnrichApollo: "Apolloでエンリッチ",
+
+    paginationLabel: "ページ {page} / {pages}（{total}件のブランド）",
+    paginationPrev: "前へ",
+    paginationNext: "次へ",
+
+    modalSendSmsTo: "SMS送信先",
+    modalSendEmailTo: "メール送信先",
+    fieldTemplate: "テンプレート",
+    fieldToPrefix: "宛先:",
+    fieldSubject: "件名",
+    fieldMessage: "メッセージ",
+    charsSuffix: "文字",
+    sendSms: "SMSを送信",
+    sendEmail: "メールを送信",
+    sendingButton: "送信中...",
+    cancelButton: "キャンセル",
+    sendSuccess: "メッセージを正常に送信しました！",
+    sendErrorPrefix: "エラー:",
+  },
+
 };
 
 export default ja;
