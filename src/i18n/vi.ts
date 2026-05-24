@@ -7733,6 +7733,27 @@ const vi: Translations = {
     seeSustainabilityBtn: "Xem tác động bền vững",
   },
 
+  pressLanding: {
+    heroTitle: "Bộ tài liệu báo chí",
+    heroSubtitle: "Logo, hình ảnh, thông cáo và bối cảnh công ty cho FUZE Biotech.",
+    aboutTitle: "Giới thiệu FUZE Biotech",
+    aboutBody1: "FUZE Biotech, trụ sở chính tại Salt Lake City, Utah, phát triển phương pháp xử lý kháng khuẩn vải dệt độc quyền dựa trên metamaterial FUZE. Phương pháp xử lý liên kết vĩnh viễn với sợi trong quá trình hoàn tất vải dệt tiêu chuẩn — không PFAS, không chất kết dính, không thay đổi hóa học đối với cảm giác hoặc độ thoáng khí của vải.",
+    aboutBody2: "Sản phẩm được đăng ký EPA (liên bang), California EPA phê duyệt (Q1 2026), OEKO-TEX Standard 100 Class I, và bluesign® phê duyệt. Hiệu suất được xác thực theo ASTM E2149, AATCC 100, AATCC 30, ISO 18184 và ISO 20743 bởi các phòng lab bên thứ ba độc lập.",
+    foundedLabel: "Thành lập",
+    foundedValue: "Salt Lake City, UT",
+    addressLabel: "Địa chỉ",
+    pressContactLabel: "Liên hệ báo chí",
+    logosSection: "Logo",
+    logoAltFallback: "Logo FUZE",
+    downloadLabel: "Tải xuống →",
+    imagerySection: "Hình ảnh",
+    imageAltFallback: "Hình ảnh FUZE",
+    releasesSection: "Thông cáo báo chí",
+    releaseFallback: "Thông cáo",
+    newsSection: "Trên báo chí",
+    claimsLink: "Tuyên bố",
+  },
+
 };
 
 export default vi;
