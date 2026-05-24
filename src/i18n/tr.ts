@@ -7962,6 +7962,21 @@ const tr: Translations = {
     titleHint: 'örn. "Mr.", "Dr."',
   },
 
+  importFactories: {
+    title: "Toplu içe aktarma — Fabrikalar",
+    subtitle: "Fabrikaların CSV dosyasını yapıştırın veya yükleyin. İsme göre upsert yaparız (doğal anahtar), eğer verilmişse bir distribütöre bağlarız ve Atlas'ta zaten var olan her marka için SupplyChainLink satırlarını damgalarız. Henüz var olmayan markalar 'eksik' olarak raporlanır; önce bir marka içe aktarımı çalıştırabilirsiniz.",
+    backLabel: "Fabrikalar",
+    factoryNameLabel: "Fabrika adı",
+    factoryNameHint: "(doğal anahtar — upsert burada anahtarlanır)",
+    countryLabel: "Ülke",
+    distributorLabel: "Distribütör",
+    distributorHint: "Distributor.name'de büyük/küçük harfe duyarsız eşleşme; bulunmazsa atlanır",
+    brandsLabel: "Markalar",
+    brandsHint: "virgülle ayrılmış; her isim bir Marka olarak var olmalıdır",
+    cityLabel: "Şehir",
+    websiteLabel: "Web sitesi",
+  },
+
 };
 
 export default tr;
