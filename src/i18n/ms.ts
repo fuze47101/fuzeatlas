@@ -7765,6 +7765,23 @@ const ms: Translations = {
     fieldChangedPlural: "medan diubah",
   },
 
+  adminLanding: {
+    loadingLabel: "Memuatkan pentadbir",
+    crumb: "Pentadbir",
+    heading: "Pentadbir",
+    subtitle: "Permukaan kawalan FUZE-Ops. Pilih modul untuk meneruskan, atau gunakan bar sisi untuk navigasi penuh.",
+    openPrefix: "Buka",
+    fastPathLabel: "Laluan pantas",
+    dataEntryHubTitle: "Hab kemasukan data",
+    dataEntryHubBody: "Tetapkan spesifikasi jenama, tier harga, pautan rantaian bekalan, harga makmal — semua dalam satu halaman.",
+    liveStateLabel: "Keadaan langsung",
+    commandCenterTitle: "Command Center",
+    commandCenterBody: "Enam jubin metrik, matriks irama jenama × kilang, aktiviti terkini, baris menunggu.",
+    weeklyLabel: "Mingguan",
+    mondayReviewTitle: "Baris semakan Isnin",
+    mondayReviewBody: "Larian ujian + penolakan jenama yang ditanda AI. E-mel Ahad 22:00 UTC menyemai agenda.",
+  },
+
 };
 
 export default ms;
