@@ -7469,6 +7469,32 @@ const ms: Translations = {
     daySuffix: "h lalu",
   },
 
+  resetPassword: {
+    tagline: "Cipta kata laluan baharu",
+    formTitle: "Set Semula Kata Laluan",
+    newPasswordLabel: "Kata Laluan Baharu",
+    newPasswordPlaceholder: "Masukkan kata laluan baharu",
+    confirmPasswordLabel: "Sahkan Kata Laluan",
+    confirmPasswordPlaceholder: "Sahkan kata laluan",
+    resetBtn: "Set Semula Kata Laluan",
+    resettingBtn: "Menetapkan semula...",
+    backToSignIn: "Kembali ke Log Masuk",
+    successTitle: "Set Semula Kata Laluan Berjaya",
+    successBody: "Kata laluan anda telah berjaya ditetapkan semula. Anda kini boleh log masuk dengan kata laluan baharu anda.",
+    signInBtn: "Log Masuk",
+    invalidLinkTitle: "Pautan Set Semula Tidak Sah",
+    invalidLinkBody: "Pautan set semula tidak sah atau telah tamat tempoh. Sila minta yang baharu.",
+    requestNewLinkBtn: "Minta Pautan Baharu",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "Memuatkan...",
+    errInvalidToken: "Token set semula tidak sah atau hilang",
+    errInvalidTokenShort: "Token set semula tidak sah",
+    errMinLength: "Kata laluan mesti sekurang-kurangnya 6 aksara",
+    errMismatch: "Kata laluan tidak sepadan",
+    errResetFailed: "Gagal menetapkan semula kata laluan",
+    errNetwork: "Ralat rangkaian",
+  },
+
 };
 
 export default ms;
