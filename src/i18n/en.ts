@@ -6395,6 +6395,49 @@ const en = {
 
     emptyTpl: "No templates yet. Click + New Template to create your first one.",
   },
+  pipelineUserPage: {
+    loading: "Loading pipeline...",
+    pageTitle: "Revenue Pipeline",
+    pageSubtitle: "Track deals from development to production",
+    btnNewDeal: "+ New Deal",
+
+    kpiTotalPipeline: "Total Pipeline",
+    kpiTotalPipelineSubTpl: "{n} deals",
+    kpiWeighted: "Weighted Forecast",
+    kpiWeightedSub: "Probability-adjusted",
+    kpiActual: "Actual Revenue",
+    kpiActualSub: "Invoiced & paid",
+    kpiConversion: "Conversion",
+    kpiConversionSub: "Actual / Pipeline",
+
+    cardProdPrefix: "Prod:",
+    emptyDeals: "No deals",
+    weightedPrefix: "· wt:",
+
+    editTitlePrefix: "Edit Project:",
+    fieldName: "Project Name",
+    fieldStage: "Stage",
+    keepCurrent: "Keep current",
+    fieldBrand: "Brand",
+    fieldNone: "None",
+    fieldProjectedValue: "Projected Value ($)",
+    fieldProbability: "Probability (%)",
+    fieldFuzeTier: "FUZE Tier",
+    fieldAnnualVolume: "Annual Volume (m)",
+    fieldFactory: "Factory",
+    fieldDistributor: "Distributor",
+    autoFromFactory: "Auto from factory",
+    fieldExpectedProd: "Expected Production",
+    fieldActualProd: "Actual Production",
+    btnSaveChanges: "Save Changes",
+    btnSaving: "Saving...",
+    btnCancel: "Cancel",
+
+    newDealTitle: "New Deal",
+    newDealPlaceholder: "Project / Deal name...",
+    btnCreate: "Create",
+    btnCreating: "Creating...",
+  },
 };
 
 export default en;

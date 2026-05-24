@@ -7,6 +7,7 @@ import {
   FUZE_TIERS_COMMERCIAL,
   formatMoney,
 } from "@/lib/revenue-calc";
+import { useI18n } from "@/i18n";
 
 type Project = {
   id: string;
@@ -51,7 +52,7 @@ const PROB_COLORS = (p: number) =>
   p >= 70 ? "bg-emerald-500" : p >= 40 ? "bg-amber-400" : "bg-red-400";
 
 /* ── Deal Card ────────────────────────── */
-function DealCard({ project, onEdit }: { project: Project; onEdit: (p: Project) => void }) {
+function DealCard({ project, onEdit, T }: { project: Project; onEdit: (p: Project) => void; T: any }) {
   return (
     <div
       onClick={() => onEdit(project)}
@@ -103,7 +104,7 @@ function DealCard({ project, onEdit }: { project: Project; onEdit: (p: Project) 
 
       {project.expectedProductionDate && (
         <p className="text-[10px] text-slate-400 mt-1">
-          Prod: {new Date(project.expectedProductionDate).toLocaleDateString()}
+          {T.cardProdPrefix} {new Date(project.expectedProductionDate).toLocaleDateString()}
         </p>
       )}
     </div>
@@ -118,6 +119,7 @@ function EditModal({
   distributors,
   onClose,
   onSave,
+  T,
 }: {
   project: Project;
   brands: { id: string; name: string }[];
@@ -125,6 +127,7 @@ function EditModal({
   distributors: { id: string; name: string }[];
   onClose: () => void;
   onSave: () => void;
+  T: any;
 }) {
   const [form, setForm] = useState({
     name: project.name,
@@ -164,84 +167,84 @@ function EditModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 m-4" onClick={(e) => e.stopPropagation()}>
-        <h3 className="text-lg font-bold text-slate-900 mb-4">Edit Project: {project.name}</h3>
+        <h3 className="text-lg font-bold text-slate-900 mb-4">{T.editTitlePrefix} {project.name}</h3>
 
         <div className="grid grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto">
           <div className="col-span-2">
-            <label className="text-xs font-medium text-slate-500">Project Name</label>
+            <label className="text-xs font-medium text-slate-500">{T.fieldName}</label>
             <input className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.name} onChange={(e) => set("name", e.target.value)} />
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-500">Stage</label>
+            <label className="text-xs font-medium text-slate-500">{T.fieldStage}</label>
             <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.stage} onChange={(e) => set("stage", e.target.value)}>
-              <option value="">Keep current</option>
+              <option value="">{T.keepCurrent}</option>
               {PROJECT_STAGES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
             </select>
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-500">Brand</label>
+            <label className="text-xs font-medium text-slate-500">{T.fieldBrand}</label>
             <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.brandId} onChange={(e) => set("brandId", e.target.value)}>
-              <option value="">None</option>
+              <option value="">{T.fieldNone}</option>
               {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
             </select>
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-500">Projected Value ($)</label>
+            <label className="text-xs font-medium text-slate-500">{T.fieldProjectedValue}</label>
             <input type="number" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.projectedValue} onChange={(e) => set("projectedValue", e.target.value)} />
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-500">Probability (%)</label>
+            <label className="text-xs font-medium text-slate-500">{T.fieldProbability}</label>
             <input type="number" min="0" max="100" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.probability} onChange={(e) => set("probability", e.target.value)} />
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-500">FUZE Tier</label>
+            <label className="text-xs font-medium text-slate-500">{T.fieldFuzeTier}</label>
             <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.fuzeTier} onChange={(e) => set("fuzeTier", e.target.value)}>
-              <option value="">None</option>
+              <option value="">{T.fieldNone}</option>
               {Object.values(FUZE_TIERS_COMMERCIAL).map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
             </select>
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-500">Annual Volume (m)</label>
+            <label className="text-xs font-medium text-slate-500">{T.fieldAnnualVolume}</label>
             <input type="number" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.annualVolumeMeters} onChange={(e) => set("annualVolumeMeters", e.target.value)} />
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-500">Factory</label>
+            <label className="text-xs font-medium text-slate-500">{T.fieldFactory}</label>
             <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.factoryId} onChange={(e) => set("factoryId", e.target.value)}>
-              <option value="">None</option>
+              <option value="">{T.fieldNone}</option>
               {factories.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
             </select>
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-500">Distributor</label>
+            <label className="text-xs font-medium text-slate-500">{T.fieldDistributor}</label>
             <select className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.distributorId} onChange={(e) => set("distributorId", e.target.value)}>
-              <option value="">Auto from factory</option>
+              <option value="">{T.autoFromFactory}</option>
               {distributors.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-500">Expected Production</label>
+            <label className="text-xs font-medium text-slate-500">{T.fieldExpectedProd}</label>
             <input type="date" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.expectedProductionDate} onChange={(e) => set("expectedProductionDate", e.target.value)} />
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-500">Actual Production</label>
+            <label className="text-xs font-medium text-slate-500">{T.fieldActualProd}</label>
             <input type="date" className="w-full mt-0.5 px-2.5 py-1.5 border rounded-lg text-sm" value={form.actualProductionDate} onChange={(e) => set("actualProductionDate", e.target.value)} />
           </div>
         </div>
 
         <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
-          <button onClick={onClose} className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800">Cancel</button>
+          <button onClick={onClose} className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800">{T.btnCancel}</button>
           <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50">
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? T.btnSaving : T.btnSaveChanges}
           </button>
         </div>
       </div>
@@ -251,6 +254,8 @@ function EditModal({
 
 /* ── Main Pipeline Page ────────────────────────── */
 export default function PipelinePage() {
+  const { t } = useI18n();
+  const T = t.pipelineUserPage;
   const router = useRouter();
   const { user } = useAuth();
   const [pipeline, setPipeline] = useState<PipelineStage[]>([]);
@@ -306,7 +311,7 @@ export default function PipelinePage() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64 text-slate-400">Loading pipeline...</div>;
+    return <div className="flex items-center justify-center h-64 text-slate-400">{T.loading}</div>;
   }
 
   return (
@@ -314,14 +319,14 @@ export default function PipelinePage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Revenue Pipeline</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Track deals from development to production</p>
+          <h1 className="text-2xl font-bold text-slate-900">{T.pageTitle}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{T.pageSubtitle}</p>
         </div>
         <button
           onClick={() => setShowCreate(true)}
           className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
         >
-          + New Deal
+          {T.btnNewDeal}
         </button>
       </div>
 
@@ -329,28 +334,28 @@ export default function PipelinePage() {
       {summary && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-xs font-medium text-slate-500 uppercase">Total Pipeline</p>
+            <p className="text-xs font-medium text-slate-500 uppercase">{T.kpiTotalPipeline}</p>
             <p className="text-2xl font-bold text-slate-900">{formatMoney(summary.totalPipeline)}</p>
-            <p className="text-xs text-slate-400">{summary.totalProjects} deals</p>
+            <p className="text-xs text-slate-400">{T.kpiTotalPipelineSubTpl.replace("{n}", String(summary.totalProjects))}</p>
           </div>
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-xs font-medium text-slate-500 uppercase">Weighted Forecast</p>
+            <p className="text-xs font-medium text-slate-500 uppercase">{T.kpiWeighted}</p>
             <p className="text-2xl font-bold text-emerald-600">{formatMoney(summary.weightedForecast)}</p>
-            <p className="text-xs text-slate-400">Probability-adjusted</p>
+            <p className="text-xs text-slate-400">{T.kpiWeightedSub}</p>
           </div>
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-xs font-medium text-slate-500 uppercase">Actual Revenue</p>
+            <p className="text-xs font-medium text-slate-500 uppercase">{T.kpiActual}</p>
             <p className="text-2xl font-bold text-blue-600">{formatMoney(summary.actualRevenue)}</p>
-            <p className="text-xs text-slate-400">Invoiced & paid</p>
+            <p className="text-xs text-slate-400">{T.kpiActualSub}</p>
           </div>
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-xs font-medium text-slate-500 uppercase">Conversion</p>
+            <p className="text-xs font-medium text-slate-500 uppercase">{T.kpiConversion}</p>
             <p className="text-2xl font-bold text-amber-600">
               {summary.totalPipeline > 0
                 ? `${Math.round((summary.actualRevenue / summary.totalPipeline) * 100)}%`
                 : "—"}
             </p>
-            <p className="text-xs text-slate-400">Actual / Pipeline</p>
+            <p className="text-xs text-slate-400">{T.kpiConversionSub}</p>
           </div>
         </div>
       )}
@@ -376,7 +381,7 @@ export default function PipelinePage() {
                   {stage.totalValue > 0 && (
                     <div className="mt-1 text-xs text-slate-600">
                       <span className="font-semibold">{formatMoney(stage.totalValue)}</span>
-                      <span className="text-slate-400"> · wt: {formatMoney(stage.weightedForecast)}</span>
+                      <span className="text-slate-400"> {T.weightedPrefix} {formatMoney(stage.weightedForecast)}</span>
                     </div>
                   )}
                 </div>
@@ -384,10 +389,10 @@ export default function PipelinePage() {
                 {/* Cards */}
                 <div className="p-2 space-y-2 max-h-[60vh] overflow-y-auto">
                   {stage.projects.length === 0 && (
-                    <p className="text-xs text-slate-400 text-center py-4">No deals</p>
+                    <p className="text-xs text-slate-400 text-center py-4">{T.emptyDeals}</p>
                   )}
                   {stage.projects.map((p) => (
-                    <DealCard key={p.id} project={p} onEdit={setEditProject} />
+                    <DealCard key={p.id} project={p} onEdit={setEditProject} T={T} />
                   ))}
                 </div>
               </div>
@@ -405,6 +410,7 @@ export default function PipelinePage() {
           distributors={distributors}
           onClose={() => setEditProject(null)}
           onSave={load}
+          T={T}
         />
       )}
 
@@ -412,19 +418,19 @@ export default function PipelinePage() {
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowCreate(false)}>
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 m-4" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-slate-900 mb-3">New Deal</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-3">{T.newDealTitle}</h3>
             <input
               className="w-full px-3 py-2 border rounded-lg text-sm mb-3"
-              placeholder="Project / Deal name..."
+              placeholder={T.newDealPlaceholder}
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreate()}
               autoFocus
             />
             <div className="flex justify-end gap-2">
-              <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-slate-600">Cancel</button>
+              <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-slate-600">{T.btnCancel}</button>
               <button onClick={handleCreate} disabled={creating || !newName.trim()} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50">
-                {creating ? "Creating..." : "Create"}
+                {creating ? T.btnCreating : T.btnCreate}
               </button>
             </div>
           </div>
