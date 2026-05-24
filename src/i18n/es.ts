@@ -4851,6 +4851,49 @@ const es: Translations = {
     sowEmptyNothingStuck: "Nada estancado.",
   },
 
+  ordersAdmin: {
+    pageTitle: "Gestión de pedidos",
+    pageSubtitle: "Revise, apruebe y siga todos los pedidos FUZE",
+    myAccountsOnly: "Solo mis cuentas",
+    awaitingApprovalTemplate: "{n} pedido{s} esperando aprobación",
+
+    statTotal: "Total",
+    statPending: "Pendientes",
+    statApproved: "Aprobados",
+    statProcessing: "En proceso",
+    statShipped: "Enviados",
+    statDelivered: "Entregados",
+    statRevenue: "Ingresos",
+
+    filterAll: "Todos",
+    filterAllTypes: "Todos los tipos",
+
+    emptyMessage: "No hay pedidos que coincidan con los filtros",
+
+    colOrder: "Pedido",
+    colFactory: "Fábrica",
+    colType: "Tipo",
+    colVolume: "Volumen",
+    colBrand: "Marca",
+    colTotal: "Total",
+    colFulfillment: "Cumplimiento",
+    colStatus: "Estado",
+    colDate: "Fecha",
+
+    statusDraft: "Borrador",
+    statusQuoted: "Cotizado",
+    statusPendingApproval: "Pendiente de aprobación",
+    statusApproved: "Aprobado",
+    statusConfirmed: "Confirmado",
+    statusProcessing: "En proceso",
+    statusShipped: "Enviado",
+    statusDelivered: "Entregado",
+    statusCancelled: "Cancelado",
+
+    directUsaLabel: "USA directo",
+    tagsSuffix: "etiquetas",
+  },
+
 };
 
 export default es;
