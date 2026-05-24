@@ -7550,6 +7550,32 @@ const ko: Translations = {
     errSendFailed: "확인 이메일 전송 실패",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "공개 문서",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "FUZE 제품 라인에 대한 공개 참조 문서.",
+    headerLeadAfter: "제품 라인. 비공개 문서 (전체 TDS/SDS, 내부 가격, 도포 가이드)는 귀하의 역할에 맞는 FUZE Atlas 포털에 로그인하십시오.",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "독성학",
+    catPricing: "가격",
+    catSustainability: "지속 가능성",
+    catEducation: "교육",
+    catClaimsCompliance: "클레임 및 컴플라이언스",
+    catApplicationGuide: "도포 가이드",
+    catCaseStudy: "사례 연구",
+    loading: "로드 중…",
+    emptyBefore: "다음에 대한 공개 문서가 없습니다:",
+    emptyAfter: "아직. 비공개 라이브러리를 위해 FUZE에 문의하십시오.",
+    loginCta: "Atlas 로그인 →",
+    versionPrefix: "버전",
+    downloadBtn: "↓ 다운로드",
+    unknownLineTitle: "알 수 없는 제품 라인",
+    unknownLineBody: "FUZE에는 4개 등급이 있습니다: F1, F2, F3, F4. 그 중 하나를 시도하십시오.",
+    errLoadFailed: "로드 실패",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default ko;
