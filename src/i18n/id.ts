@@ -3138,6 +3138,23 @@ const id: Translations = {
     nextBtn: "Selanjutnya",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ Disertifikasi oleh FUZE Atlas",
+    statFabricsCertified: "Kain disertifikasi",
+    statTestsPassed: "Uji lulus (12 bulan)",
+    statCountries: "Negara pengiriman",
+    activeTiersTitle: "Tier FUZE aktif",
+    activeTiersBody: "Tingkat perlakuan yang saat ini sedang produksi di fasilitas tersertifikasi.",
+    lastPassedLabel: "Terakhir lulus",
+    aboutSummaryTitle: "Tentang teknologi FUZE",
+    verifyCtaTitle: "Verifikasi produk tertentu",
+    verifyCtaBody: "Setiap produk tersertifikasi membawa kode QR unik yang terhubung dengan batch produksi dan riwayat uji.",
+    verifyCtaBtn: "Cari produk →",
+    footerCertifiedBy: "Disertifikasi oleh FUZE Atlas",
+    brandSiteLink: "Situs brand →",
+    contactLink: "Kontak",
+  },
+
 };
 
 export default id;
