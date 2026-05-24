@@ -7732,6 +7732,32 @@ const ja: Translations = {
     emptyState: "トークンはまだありません — 上記から最初のバッチを発行してください。",
   },
 
+  bookMeetingPage: {
+    heading: "ミーティングを予約",
+    subtitle: "ご都合の良い日時を選択して、当チームとのミーティングをご予約ください。",
+    selectDateTitle: "日付を選択",
+    availableTimesPrefix: "選択日の予約可能な時間:",
+    loadingSlots: "枠を読み込み中...",
+    noSlotsBody: "この日の予約可能な枠はありません",
+    detailsTitle: "ミーティングの詳細",
+    selectDateTimeHint: "続行するには日付と時間を選択してください",
+    dateTimeLabel: "日時",
+    meetingTitleLabel: "ミーティング名",
+    defaultTitle: "FUZE ミーティング",
+    descriptionLabel: "説明 (任意)",
+    descriptionPlaceholder: "追加の詳細があればご入力ください...",
+    confirmBtn: "予約を確定",
+    bookingBusy: "予約中...",
+    bookFailedError: "ミーティングの予約に失敗しました",
+    networkError: "ネットワークエラー",
+    bookedTitle: "ミーティングを予約しました！",
+    titleColLabel: "タイトル",
+    timeColLabel: "時間",
+    meetingLinkLabel: "ミーティングリンク",
+    openInTeams: "Teams で開く",
+    bookAnotherBtn: "別のミーティングを予約",
+  },
+
 };
 
 export default ja;
