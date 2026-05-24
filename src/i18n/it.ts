@@ -4554,6 +4554,48 @@ const it: Translations = {
     sanityRangesHeader: "Intervalli di verifica di coerenza",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "Revisione esecutiva settimanale",
+    weekOfTemplate: "Settimana del",
+    coveringPrefix: "Copertura",
+    daysWindowSuffix: "-finestra di giorni",
+    ownerLabel: "Proprietario:",
+    generatedLabel: "Generato",
+    enterPresent: "Presente",
+    exitPresent: "Esci da presente",
+    refreshing: "Aggiornamento…",
+    refreshSnapshot: "Aggiorna snapshot",
+
+    execSummaryTitle: "Sintesi esecutiva",
+    execSummaryPlaceholder: "Punti chiave per il consiglio. Salvati al blur.",
+    saving: "Salvataggio…",
+
+    salesDistributionTitle: "Vendite e distribuzione",
+    bookedDollars: "$ prenotati",
+    shippedDollars: "$ spediti",
+    bookedLiters: "L prenotati",
+    shippedLiters: "L spediti",
+    ordersSuffix: "ordini",
+    shipmentsSuffix: "spedizioni",
+    kgShippedSuffix: "kg spediti",
+    byOrderTypeLabel: "Per tipo di ordine",
+
+    sowProgressTitle: "Avanzamento SOW",
+    sowDraft: "bozza",
+    sowSent: "inviati",
+    sowSigned: "firmati",
+    sowActive: "attivi",
+    sowComplete: "completi",
+    sowSignedThisWindow: "Firmati in questa finestra",
+    sowNewlyOpened: "Appena aperti",
+    sowActiveTitle: "Attivi",
+    sowStale: "Stagnanti (>30g senza movimento)",
+    sowEmptyNoSignatures: "Nessuna nuova firma in questa finestra.",
+    sowEmptyNoOpened: "Nessuno SOW aperto in questa finestra.",
+    sowEmptyNoActive: "Nessuno SOW attivo.",
+    sowEmptyNothingStuck: "Niente di bloccato.",
+  },
+
 };
 
 export default it;
