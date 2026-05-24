@@ -3176,6 +3176,31 @@ const ms: Translations = {
     deleteFailed: "Pemadaman gagal",
   },
 
+  educationMain: {
+    kicker: "Asas FUZE",
+    pageTitle: "Bagaimana FUZE sebenarnya berfungsi — dan mengapa ia berbeza",
+    pageIntro: "Pengenalan empat bahagian mengenai apa yang FUZE letakkan pada fabrik, bagaimana ia membunuh bakteria, ujian mana yang mengukurnya dengan tepat, dan apa maknanya apabila jenama memilih antara kami dengan pesaing kimia ion logam / zink / QAC.",
+    forBrands: "Untuk jenama",
+    forFactories: "Untuk kilang",
+    forDistributors: "Untuk pengedar",
+    forSalesReps: "Untuk wakil jualan",
+    segmentKicker: "Tawaran mengikut segmen",
+    segmentTitle: "FUZE untuk industri khusus anda",
+    segmentIntro: "Sains di atas adalah universal. Setiap segmen di bawah mempunyai tangga tier FUZE yang disyorkan, susunan ujian, tanda regulatori, dan cangkuk jangkauan yang disesuaikan dengan audiens itu.",
+    openSegment: "Buka halaman segmen →",
+    dosageKicker: "Bahagian 1 — Jejak",
+    mechanismKicker: "Bahagian 2 — Mekanisme",
+    mechanismTitle: "Ion meresap berbanding pembunuhan kontak bukan-ionik",
+    performanceKicker: "Bahagian 3 — Susunan Prestasi (F1 → F4)",
+    performanceTitle: "Setiap tier adalah kekal. Setiap langkah menambah lapisan FUZE baharu.",
+    testsKicker: "Bahagian 4 — Lima ujian",
+    testsTitle: "Lima ujian di pasaran — hanya satu direka untuk mekanisme FUZE",
+    synthesisKicker: "Bahagian 5 — Apa ini bermakna untuk jenama anda",
+    synthesisTitle: "Tiga perkara untuk dibawa ke setiap mesyuarat rantaian bekalan",
+    ctaPricing: "Lihat kos berbanding pesaing tertentu",
+    ctaSustainability: "Lihat impak kemampanan",
+  },
+
 };
 
 export default ms;
