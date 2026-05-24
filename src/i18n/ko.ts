@@ -2899,6 +2899,40 @@ const ko: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "Atlas 로그인 필요",
+    authBatchPrefix: "배치",
+    authBlurb:
+      "세부 정보 — COA, TDS, SDS 포함 — 는 Atlas 사용자에게만 제공됩니다.",
+    loginCta: "Atlas 로그인 →",
+    noAccountQuestion: "계정이 없으신가요? 문의처:",
+    notFoundTitle: "배치를 찾을 수 없습니다",
+    notFoundBlurb: "다음 배치를 찾을 수 없습니다:",
+    returnHome: "Atlas로 돌아가기 →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "배치 확인",
+    qcPassed: "✓ QC 통과",
+    qcFailed: "⚠ QC 실패",
+    produced: "생산일",
+    batchDetails: "배치 세부 정보",
+    volumeProduced: "생산량",
+    bottlesFilled: "충전 병 수",
+    concentration: "농도",
+    productionDate: "생산일",
+    fuzeMetamaterial: "mg/L FUZE 메타머티리얼",
+    batchNotes: "배치 노트",
+    documents: "문서",
+    coaTitle: "분석 증명서 (COA)",
+    coaDescPrefix: "이 배치의 사양 검증 · 업로드일",
+    coaPending: "COA 대기 중",
+    coaPendingBlurb: "이 배치에 대한 분석 증명서가 아직 업로드되지 않았습니다.",
+    view: "보기 →",
+    docsEmpty: "TDS / SDS가 아직 업로드되지 않았습니다. 관리자는 제품 문서에서 추가할 수 있습니다.",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "문의처:",
+    footerReturnAtlas: "Atlas로 돌아가기",
+  },
+
 };
 
 export default ko;
