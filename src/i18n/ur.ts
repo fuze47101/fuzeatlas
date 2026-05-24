@@ -5656,6 +5656,82 @@ const ur: Translations = {
     btnCreatePo: "PO بنائیں اور قابل پرنٹ پیکٹ کھولیں →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "ایڈمن",
+    crumbHere: "کانٹیکٹ ہائجین",
+    pageTitle: "کانٹیکٹ ہائجین",
+    pageSubtitle: "پلیس ہولڈر، رول-میل باکس، اور ناقص شکل والے رابطوں کو فلیگ کرتا ہے تاکہ نمائندے Jane Doe پر آؤٹ ریچ ضائع کرنا چھوڑ دیں۔ ریورس ایبل — رابطے کو واپس وزرڈ میں لانے کے لیے un-hide کریں۔",
+
+    btnPreviewScan: "🔍 پیش نظارہ اسکین",
+    btnAutoHide: "🙈 اسکین + خودکار چھپائیں",
+    btnScanning: "اسکین ہو رہا ہے…",
+    btnHiding: "چھپایا جا رہا ہے…",
+    titlePreviewScan: "ہر رابطے پر ہائجین اسنیپ شاٹ دوبارہ چلائیں، نمائش تبدیل کیے بغیر",
+    titleAutoHide: "اسکین + BD وزرڈ سے پلیس ہولڈر رابطوں کو خودکار چھپائیں",
+    confirmAutoHide: "آٹو ہائیڈ ہر اس رابطے کے لیے hiddenFromWizard = true فلپ کر دے گا جسے اسکین پلیس ہولڈر یا غلط ای میل کے طور پر فلیگ کرتا ہے۔ یہ ریورس ایبل ہے (آپ اس صفحہ سے un-hide کر سکتے ہیں) لیکن ہر نمائندے کے BD وزرڈ پر فوری اثر ڈالتا ہے۔ جاری رکھیں؟",
+    promptHide: "اس رابطے کو BD وزرڈ سے چھپائیں؟ وجہ (اختیاری):",
+    promptUnhide: "اس رابطے کو un-hide کریں؟ وجہ (اختیاری، ان کے نوٹس میں لکھی جائے گی):",
+    failedPrefix: "ناکام:",
+    networkErrPrefix: "نیٹ ورک کی خرابی:",
+    scanFailedPrefix: "اسکین ناکام:",
+
+    summaryScanned: "اسکین شدہ",
+    summaryContacts: "رابطے · پلیس ہولڈر",
+    summarySuspicious: "· مشکوک",
+    summaryRole: "· رول",
+    summaryReal: "· حقیقی",
+    summaryHiddenSuffix: "نئے",
+    summaryHiddenPrefix: "· چھپائے گئے",
+
+    statPlaceholder: "پلیس ہولڈر",
+    statSuspicious: "مشکوک",
+    statRole: "رول میل باکس",
+    statReal: "حقیقی",
+    statUnscanned: "غیر اسکین شدہ",
+    statHidden: "چھپائے گئے",
+
+    filterVerdict: "فیصلہ",
+    filterVisibility: "نمائش",
+    filterAllScanned: "تمام اسکین شدہ",
+    filterPlaceholder: "پلیس ہولڈر",
+    filterSuspicious: "مشکوک",
+    filterRoleMailbox: "رول میل باکس",
+    filterReal: "حقیقی",
+    filterUnscanned: "غیر اسکین شدہ",
+    filterAllVisibility: "تمام نمائش",
+    filterHiddenOnly: "صرف چھپائے گئے",
+    filterVisibleOnly: "صرف نمایاں",
+    searchPlaceholder: "نام یا ای میل تلاش کریں…",
+
+    emptyTitle: "موجودہ فلٹر سے کوئی رابطے میل نہیں کھاتے۔",
+    emptyUnscannedTpl: "{n} رابطے کبھی اسکین نہیں ہوئے — پاپولیٹ کرنے کے لیے \"پیش نظارہ اسکین\" دبائیں۔",
+
+    colContact: "رابطہ",
+    colBrandFactory: "برانڈ / فیکٹری",
+    colVerdict: "فیصلہ",
+    colEmail: "ای میل",
+    colLinkedin: "LinkedIn",
+    colScore: "اسکور",
+    colFlags: "فلیگز",
+    colActions: "اعمال",
+
+    unnamed: "(بے نام)",
+    noEmail: "کوئی ای میل نہیں",
+    hiddenLabel: "چھپایا گیا",
+    flagsMore: "مزید",
+    flagsClean: "صاف",
+    actionHide: "چھپائیں",
+    actionUnhide: "Un-hide",
+
+    helpFooter: "اسکین ہر رابطے پر چلتا ہے اور قطار پر فیصلہ + فلیگز کا اسنیپ شاٹ لیتا ہے۔ Preview صرف فیصلہ ریکارڈ کرتا ہے؛ Scan + auto-hide پلیس ہولڈرز اور غلط ای میل رابطوں کے لیے hiddenFromWizard بھی فلپ کرتا ہے۔ دونوں ریورس ایبل ہیں — رابطے کو بحال کرنے کے لیے \"Un-hide\" کلک کریں، جو اسنیپ شاٹ کو بھی دوبارہ چلاتا ہے اگر ڈیٹا ٹھیک ہو گیا ہو۔",
+
+    verdictReal: "حقیقی",
+    verdictSuspect: "مشکوک",
+    verdictPlaceholder: "پلیس ہولڈر",
+    verdictRoleMbx: "role mbx",
+    verdictUnscanned: "غیر اسکین شدہ",
+  },
+
 };
 
 export default ur;
