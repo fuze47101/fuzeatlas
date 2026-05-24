@@ -7014,6 +7014,44 @@ const tr: Translations = {
     truncatedNotice: "{total} markanın ilk 100 tanesi gösteriliyor. Daraltmak için filtreleri kullanın.",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "Sevkiyat Bulunamadı",
+    notFoundBodyTpl: "{order} siparişini bulamadık.",
+    notFoundFooter: "Bu QR kodunu bir FUZE sevkiyatında aldıysanız, andrew@fuze47.com ile iletişime geçin.",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "Sevkiyat Doğrulama",
+
+    sectionShipment: "Sevkiyat Ayrıntıları",
+    fieldFuzeVolume: "FUZE Hacmi",
+    bottlesSuffix: "şişe",
+    baseFuzePrefix: "taban",
+    wastageSuffix: "fire",
+    fieldTier: "Kademe",
+    fieldMethod: "Uygulama Yöntemi",
+    fieldFactory: "Fabrika",
+    fieldForBrand: "Marka İçin",
+    fieldFabric: "Kumaş",
+    fieldFulfillment: "Sevkiyat Kaynağı",
+    directUsa: "ABD'den doğrudan",
+    distributorFallback: "Distribütör",
+    fieldTracking: "Takip",
+
+    sectionDocs: "Ürün Belgeleri",
+    sdsLabel: "Güvenlik Bilgi Föyü (SDS)",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "Analiz Sertifikası (COA)",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "Uyum kitaplığını aç",
+
+    sectionTimeline: "Yaşam Döngüsü Zaman Çizelgesi",
+    viewDocument: "Belgeyi görüntüle →",
+    timelineEmpty: "Henüz yaşam döngüsü olayı kaydedilmedi. Sevkiyat ilerledikçe zaman çizelgesi dolacaktır.",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Sorular?",
+  },
+
 };
 
 export default tr;
