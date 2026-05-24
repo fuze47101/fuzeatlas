@@ -7953,6 +7953,37 @@ const vi: Translations = {
     lastCalculatedLabel: "Tính lần cuối:",
   },
 
+  fabricReportSend: {
+    backLink: "← Quay lại báo cáo",
+    heading: "Gửi email báo cáo cho khách hàng",
+    subtitlePrefix: "Đang gửi Báo cáo áp dụng & xác thực FUZE cho",
+    fabricNotFound: "Không tìm thấy vải.",
+    recipientRequiredError: "Yêu cầu email người nhận.",
+    sendFailedError: "Gửi thất bại",
+    sentSuccessPrefix: "✓ Báo cáo đã gửi đến",
+    directUrlLabel: "URL tải xuống trực tiếp:",
+    sentSuccessBody: "Khách hàng cũng có thể truy cập mục này dưới Báo cáo của tôi sau khi đăng nhập vào FUZE Atlas.",
+    recipientEmailLabel: "Email người nhận",
+    recipientNameLabel: "Tên người nhận",
+    optionalSuffix: "(tùy chọn)",
+    personalNoteLabel: "Ghi chú cá nhân",
+    personalNoteHint: "(tùy chọn, hiển thị phía trên thẻ báo cáo)",
+    ccLabel: "CC",
+    ccHint: "(tùy chọn, phân cách bằng dấu phẩy)",
+    ttlLabel: "Liên kết trực tiếp có hiệu lực trong",
+    ttl30Days: "30 ngày",
+    ttl90Days: "90 ngày (mặc định)",
+    ttl180Days: "180 ngày",
+    ttl1Year: "1 năm",
+    sendingBtn: "Đang gửi...",
+    sendBtn: "Gửi báo cáo",
+    previouslySentTitle: "Đã gửi trước đó",
+    sentPrefix: "Đã gửi",
+    viewedPrefix: "đã xem",
+    notOpenedYet: "chưa mở",
+    openSameLink: "Mở cùng liên kết →",
+  },
+
 };
 
 export default vi;
