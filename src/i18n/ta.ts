@@ -7345,6 +7345,27 @@ const ta: Translations = {
     seeSustainabilityBtn: "நிலைத்தன்மை தாக்கத்தைப் பார்",
   },
 
+  pressLanding: {
+    heroTitle: "Press kit",
+    heroSubtitle: "FUZE Biotech-க்கான Logos, imagery, releases, மற்றும் நிறுவன பின்னணி.",
+    aboutTitle: "FUZE Biotech பற்றி",
+    aboutBody1: "Salt Lake City, Utah-இல் தலைமையகம் கொண்ட FUZE Biotech, FUZE மெட்டா-மெட்டீரியலைச் சுற்றி கட்டப்பட்ட ஒரு தனிப்பட்ட ஆன்டிமைக்ரோபியல் ஃபேப்ரிக் சிகிச்சையை உருவாக்குகிறது. நிலையான ஃபேப்ரிக் ஃபினிஷிங்கின் போது சிகிச்சை இழைகளுடன் நிரந்தரமாக பிணைகிறது — PFAS இல்லை, binders இல்லை, ஃபேப்ரிக்கின் hand அல்லது breathability-க்கு வேதியியல் மாற்றம் இல்லை.",
+    aboutBody2: "தயாரிப்பு EPA பதிவு செய்யப்பட்டது (கூட்டாட்சி), California EPA அங்கீகரிக்கப்பட்டது (Q1 2026), OEKO-TEX Standard 100 Class I, மற்றும் bluesign® அங்கீகரிக்கப்பட்டது. செயல்திறன் சுயாதீன மூன்றாம்-தரப்பு ஆய்வகங்களால் ASTM E2149, AATCC 100, AATCC 30, ISO 18184, மற்றும் ISO 20743-க்கு சரிபார்க்கப்பட்டது.",
+    foundedLabel: "நிறுவப்பட்டது",
+    foundedValue: "Salt Lake City, UT",
+    addressLabel: "முகவரி",
+    pressContactLabel: "பத்திரிகை தொடர்பு",
+    logosSection: "Logos",
+    logoAltFallback: "FUZE logo",
+    downloadLabel: "பதிவிறக்கம் →",
+    imagerySection: "Imagery",
+    imageAltFallback: "FUZE imagery",
+    releasesSection: "பத்திரிகை வெளியீடுகள்",
+    releaseFallback: "வெளியீடு",
+    newsSection: "செய்தியில்",
+    claimsLink: "உரிமைகோரல்கள்",
+  },
+
 };
 
 export default ta;
