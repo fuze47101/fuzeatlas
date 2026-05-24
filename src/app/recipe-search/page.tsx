@@ -17,6 +17,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 
 interface Result {
   inScope: boolean;
@@ -56,6 +57,8 @@ const FUZE_CYAN = "#00b4c3";
 
 export default function RecipeSearchPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const T = t.recipeSearch;
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
   const [scope, setScope] = useState<any>(null);
@@ -99,12 +102,9 @@ export default function RecipeSearchPage() {
   return (
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-black text-slate-900">Recipe Search</h1>
+        <h1 className="text-3xl font-black text-slate-900">{T.heading}</h1>
         <p className="text-slate-600 mt-1">
-          Network-wide FUZE recipe library. Search across every validated
-          fabric in Atlas — match what you're working on to a proven
-          recipe, even when the fabric isn't yours. Out-of-scope rows
-          are anonymized but the recipe physics are visible.
+          {T.subtitle}
         </p>
       </div>
 
@@ -114,7 +114,7 @@ export default function RecipeSearchPage() {
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Keyword (cotton, jersey, twill...)"
+          placeholder={T.keywordPlaceholder}
           className="lg:col-span-2 px-3 py-2 border border-slate-300 rounded-lg text-sm"
         />
         <select
@@ -122,16 +122,16 @@ export default function RecipeSearchPage() {
           onChange={(e) => setCategory(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white"
         >
-          <option value="">Any category</option>
-          <option value="knit">Knit</option>
-          <option value="woven">Woven</option>
-          <option value="nonwoven">Nonwoven</option>
+          <option value="">{T.anyCategory}</option>
+          <option value="knit">{T.knit}</option>
+          <option value="woven">{T.woven}</option>
+          <option value="nonwoven">{T.nonwoven}</option>
         </select>
         <input
           type="text"
           value={fiber}
           onChange={(e) => setFiber(e.target.value)}
-          placeholder="Fiber (cotton, poly...)"
+          placeholder={T.fiberPlaceholder}
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
         />
         <div className="flex items-center gap-1">
@@ -139,14 +139,14 @@ export default function RecipeSearchPage() {
             type="number"
             value={gsmMin}
             onChange={(e) => setGsmMin(e.target.value)}
-            placeholder="GSM min"
+            placeholder={T.gsmMinPlaceholder}
             className="w-1/2 px-2 py-2 border border-slate-300 rounded-lg text-sm"
           />
           <input
             type="number"
             value={gsmMax}
             onChange={(e) => setGsmMax(e.target.value)}
-            placeholder="GSM max"
+            placeholder={T.gsmMaxPlaceholder}
             className="w-1/2 px-2 py-2 border border-slate-300 rounded-lg text-sm"
           />
         </div>
@@ -155,7 +155,7 @@ export default function RecipeSearchPage() {
           onChange={(e) => setTier(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white"
         >
-          <option value="">Any tier</option>
+          <option value="">{T.anyTier}</option>
           <option value="F1">F1 (1.0 mg/kg)</option>
           <option value="F2">F2 (0.75)</option>
           <option value="F3">F3 (0.5)</option>
@@ -168,7 +168,7 @@ export default function RecipeSearchPage() {
             checked={onlyValidated}
             onChange={(e) => setOnlyValidated(e.target.checked)}
           />
-          Only show fabrics with measured pickup (validated bench test)
+          {T.onlyValidatedLabel}
         </label>
 
         <button
@@ -176,7 +176,7 @@ export default function RecipeSearchPage() {
           className="lg:col-span-3 px-4 py-2 bg-[#00b4c3] text-white rounded-lg text-sm font-bold hover:bg-[#009ba8]"
           disabled={loading}
         >
-          {loading ? "Searching..." : "Search"}
+          {loading ? T.searchingBtn : T.searchBtn}
         </button>
       </div>
 
@@ -198,12 +198,10 @@ export default function RecipeSearchPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
           <span className="text-4xl mb-3 block">🔍</span>
           <p className="text-slate-600 font-semibold mb-1">
-            No matching recipes yet.
+            {T.emptyTitle}
           </p>
           <p className="text-slate-500 text-sm">
-            Try widening the filters — or remove the "validated bench
-            test" filter if you want to see fabrics that are still
-            mid-development.
+            {T.emptyBody}
           </p>
         </div>
       ) : (
