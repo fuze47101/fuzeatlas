@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 export default function RequestFactoryAccessPage() {
+  const { t } = useI18n();
+  const T = t.requestFactoryAccessPage;
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -51,10 +54,10 @@ export default function RequestFactoryAccessPage() {
       if (data.ok) {
         setSubmitted(true);
       } else {
-        setError(data.error || "Something went wrong. Please try again.");
+        setError(data.error || T.errorGeneric);
       }
     } catch {
-      setError("Network error. Please check your connection and try again.");
+      setError(T.errorNetwork);
     } finally {
       setLoading(false);
     }
@@ -80,7 +83,7 @@ export default function RequestFactoryAccessPage() {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00b4c3] to-[#009ba8] flex items-center justify-center text-white font-black text-lg shadow-lg">
               F
             </div>
-            <span className="text-2xl font-bold text-white tracking-tight">FUZE Atlas</span>
+            <span className="text-2xl font-bold text-white tracking-tight">{T.brandTitle}</span>
           </div>
 
           <div className="bg-white rounded-2xl shadow-2xl p-8">
@@ -89,13 +92,13 @@ export default function RequestFactoryAccessPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Request Submitted</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-2">{T.submittedTitle}</h2>
             <p className="text-sm text-slate-500 mb-6">
-              Thank you for your interest in becoming a FUZE partner factory. Our team will review your application and reach out within 2-3 business days.
+              {T.submittedBlurb}
             </p>
             <div className="text-xs text-slate-400">
-              Already have an account?{" "}
-              <Link href="/login" className="text-[#00b4c3] hover:underline font-medium">Sign in</Link>
+              {T.alreadyHaveAccount}{" "}
+              <Link href="/login" className="text-[#00b4c3] hover:underline font-medium">{T.signIn}</Link>
             </div>
           </div>
         </div>
@@ -112,16 +115,16 @@ export default function RequestFactoryAccessPage() {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00b4c3] to-[#009ba8] flex items-center justify-center text-white font-black text-lg shadow-lg">
               F
             </div>
-            <span className="text-2xl font-bold text-white tracking-tight">FUZE Atlas</span>
+            <span className="text-2xl font-bold text-white tracking-tight">{T.brandTitle}</span>
           </div>
-          <p className="text-slate-400 text-sm">Factory Portal Access Request</p>
+          <p className="text-slate-400 text-sm">{T.pageEyebrow}</p>
         </div>
 
         {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <h2 className="text-xl font-bold text-slate-900 mb-1">Request Portal Access</h2>
+          <h2 className="text-xl font-bold text-slate-900 mb-1">{T.cardTitle}</h2>
           <p className="text-sm text-slate-500 mb-6">
-            Fill out the form below to request access to the FUZE Factory Portal. Manage fabric submissions, track FUZE treatments, and collaborate with brands.
+            {T.cardBlurb}
           </p>
 
           {error && (
@@ -133,38 +136,38 @@ export default function RequestFactoryAccessPage() {
             <div>
               <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-[#00b4c3] text-white text-xs font-bold flex items-center justify-center">1</span>
-                Your Information
+                {T.section1Title}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">First Name <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.firstNameLabel} <span className="text-red-500">*</span></label>
                   <input type="text" required value={form.firstName} onChange={e => update("firstName", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="John" />
+                    placeholder={T.firstNamePlaceholder} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Last Name <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.lastNameLabel} <span className="text-red-500">*</span></label>
                   <input type="text" required value={form.lastName} onChange={e => update("lastName", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="Smith" />
+                    placeholder={T.lastNamePlaceholder} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Work Email <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.workEmailLabel} <span className="text-red-500">*</span></label>
                   <input type="email" required value={form.email} onChange={e => update("email", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="john@factory.com" />
+                    placeholder={T.emailPlaceholder} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Phone</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.phoneLabel}</label>
                   <input type="tel" value={form.phone} onChange={e => update("phone", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="+86-10-1234-5678" />
+                    placeholder={T.phonePlaceholder} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Job Title</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.jobTitleLabel}</label>
                   <input type="text" value={form.jobTitle} onChange={e => update("jobTitle", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="Production Manager" />
+                    placeholder={T.jobTitlePlaceholder} />
                 </div>
               </div>
             </div>
@@ -173,57 +176,57 @@ export default function RequestFactoryAccessPage() {
             <div>
               <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-[#00b4c3] text-white text-xs font-bold flex items-center justify-center">2</span>
-                Factory Details
+                {T.section2Title}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 space-y-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Factory / Mill Name <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.factoryNameLabel} <span className="text-red-500">*</span></label>
                   <input type="text" required value={form.company} onChange={e => update("company", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="XYZ Textile Mill" />
+                    placeholder={T.factoryNamePlaceholder} />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Address Line 1 <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.address1Label} <span className="text-red-500">*</span></label>
                   <input type="text" required value={form.addressLine1} onChange={e => update("addressLine1", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="Street address" />
+                    placeholder={T.address1Placeholder} />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Address Line 2</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.address2Label}</label>
                   <input type="text" value={form.addressLine2} onChange={e => update("addressLine2", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="Suite, building, floor, etc." />
+                    placeholder={T.address2Placeholder} />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">City <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.cityLabel} <span className="text-red-500">*</span></label>
                   <input type="text" required value={form.city} onChange={e => update("city", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="e.g., Shanghai" />
+                    placeholder={T.cityPlaceholder} />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">State / Province / Region</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.stateLabel}</label>
                   <input type="text" value={form.stateProvince} onChange={e => update("stateProvince", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="e.g., Zhejiang" />
+                    placeholder={T.statePlaceholder} />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Postal Code</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.postalLabel}</label>
                   <input type="text" value={form.postalCode} onChange={e => update("postalCode", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="e.g., 200000" />
+                    placeholder={T.postalPlaceholder} />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Country <span className="text-red-500">*</span></label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.countryLabel} <span className="text-red-500">*</span></label>
                   <select required value={form.country} onChange={e => update("country", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none">
-                    <option value="">Select country...</option>
-                    <optgroup label="Major Manufacturing Countries">
+                    <option value="">{T.selectCountry}</option>
+                    <optgroup label={T.optgroupManufacturing}>
                       <option value="China">China</option>
                       <option value="Taiwan">Taiwan</option>
                       <option value="Vietnam">Vietnam</option>
@@ -241,31 +244,31 @@ export default function RequestFactoryAccessPage() {
                       <option value="Philippines">Philippines</option>
                       <option value="Malaysia">Malaysia</option>
                     </optgroup>
-                    <optgroup label="Americas">
+                    <optgroup label={T.optgroupAmericas}>
                       <option value="Mexico">Mexico</option>
                       <option value="Honduras">Honduras</option>
                       <option value="Guatemala">Guatemala</option>
                       <option value="El Salvador">El Salvador</option>
                       <option value="United States">United States</option>
                     </optgroup>
-                    <optgroup label="Other">
+                    <optgroup label={T.optgroupOther}>
                       <option value="Other">Other</option>
                     </optgroup>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Website</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.websiteLabel}</label>
                   <input type="text" value={form.website} onChange={e => update("website", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="https://factory.com" />
+                    placeholder={T.websitePlaceholder} />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Monthly Production Capacity</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.capacityLabel}</label>
                   <select value={form.monthlyCapacity} onChange={e => update("monthlyCapacity", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none">
-                    <option value="">Select...</option>
+                    <option value="">{T.selectCapacity}</option>
                     <option value="Under 100k meters">Under 100k meters</option>
                     <option value="100k-500k meters">100k-500k meters</option>
                     <option value="500k-1M meters">500k-1M meters</option>
@@ -279,7 +282,7 @@ export default function RequestFactoryAccessPage() {
             <div>
               <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-[#00b4c3] text-white text-xs font-bold flex items-center justify-center">3</span>
-                Factory Capabilities
+                {T.section3Title}
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {["Knitting", "Weaving", "Dyeing", "Finishing", "Printing", "Garment Assembly"].map((cap) => (
@@ -300,7 +303,7 @@ export default function RequestFactoryAccessPage() {
             <div>
               <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-[#00b4c3] text-white text-xs font-bold flex items-center justify-center">4</span>
-                Certifications
+                {T.section4Title}
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {["ISO 9001", "ISO 14001", "OEKO-TEX", "GOTS", "BSCI", "WRAP"].map((cert) => (
@@ -321,17 +324,17 @@ export default function RequestFactoryAccessPage() {
             <div>
               <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-[#00b4c3] text-white text-xs font-bold flex items-center justify-center">5</span>
-                Products & FUZE Interest
+                {T.section5Title}
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Product Types</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.productTypesLabel}</label>
                   <input type="text" value={form.productTypes} onChange={e => update("productTypes", e.target.value)}
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="e.g., Athletic wear, Denim, Medical textiles" />
+                    placeholder={T.productTypesPlaceholder} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-2">FUZE Application Methods of Interest</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-2">{T.methodsLabel}</label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {["Pad/Exhaust", "Spray", "Jeanologia", "Wash Cycle", "Yarn Dye"].map((method) => (
                       <label key={method} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
@@ -351,29 +354,29 @@ export default function RequestFactoryAccessPage() {
 
             {/* Notes */}
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Additional Notes</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{T.notesLabel}</label>
               <textarea value={form.notes} onChange={e => update("notes", e.target.value)}
                 className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                rows={3} placeholder="Tell us about your factory and why you're interested in partnering with FUZE..." />
+                rows={3} placeholder={T.notesPlaceholder} />
             </div>
 
             {/* Submit */}
             <button type="submit" disabled={loading}
               className="w-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-3 rounded-lg font-semibold text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all disabled:opacity-50">
-              {loading ? "Submitting..." : "Submit Access Request"}
+              {loading ? T.submittingBtn : T.submitBtn}
             </button>
           </form>
 
           <div className="mt-6 pt-4 border-t border-slate-100 text-center">
             <p className="text-xs text-slate-400">
-              Already have an account?{" "}
-              <Link href="/login" className="text-[#00b4c3] hover:underline font-medium">Sign in</Link>
+              {T.alreadyHaveAccount}{" "}
+              <Link href="/login" className="text-[#00b4c3] hover:underline font-medium">{T.signIn}</Link>
             </p>
           </div>
         </div>
 
         <p className="text-center mt-6 text-xs text-slate-500">
-          FUZE Biotech Inc. &middot; Textile Intelligence Platform
+          {T.pageFooter}
         </p>
       </div>
     </div>
