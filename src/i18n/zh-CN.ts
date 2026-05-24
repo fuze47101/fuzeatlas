@@ -7075,6 +7075,26 @@ const zhCN: Translations = {
     emptyState: "尚无积分。",
   },
 
+  bdFunnel: {
+    loading: "加载中……",
+    crumbSalesPipeline: "销售与管道",
+    crumbBdFunnel: "BD 漏斗",
+    title: "管道漏斗",
+    subtitle: "过去 30 / 60 / 90 天的流入 / 流出,以及阶段到阶段的转化率。来源于每次 Brand.pipelineStage 翻转时写入的 BrandStageTransition 行。",
+    colStage: "阶段",
+    colCurrent: "当前",
+    colIn30: "30 天内进入",
+    colIn60: "60 天内进入",
+    colIn90: "90 天内进入",
+    colOut30: "30 天内退出",
+    colOut60: "60 天内退出",
+    colOut90: "90 天内退出",
+    colAvgDwell: "平均停留",
+    colToNext: "→ 下一步",
+    footerHint: "转化 = 在过去 90 天内,落在规范的下一阶段的退出数 / 观察到的退出总数。在时间段内没有退出的阶段显示为 n=0 — 它们速度慢或稳定,而非不好。",
+    errLoadFailed: "加载漏斗失败",
+  },
+
 };
 
 export default zhCN;
