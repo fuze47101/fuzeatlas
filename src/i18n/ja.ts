@@ -7675,6 +7675,19 @@ const ja: Translations = {
     pressKitLink: "プレスキット",
   },
 
+  educationCompliance: {
+    backLink: "← FUZE の基本に戻る",
+    kicker: "コンプライアンスと認証",
+    heroTitle: "ブランドが求めるすべての認証を網羅",
+    heroBody: "ベンダーアンケート用に 1 枚のスクリーンショットで完結します。EPA 連邦登録 + カリフォルニア州、OEKO-TEX Standard 100 Class I、bluesign® 認証、PFAS フリー、ホルムアルデヒドフリー、ZDHC 準拠。4 つのティアに対応した抗菌・抗ウイルス・抗真菌試験データ — レポートはご要望に応じて公開します。",
+    activeBadge: "有効 ✓",
+    docCopiesTitle: "実際のドキュメントが必要ですか？",
+    docCopiesBody: "ドキュメントセンターには、すべての認証、SDS、TDS、COA の最新 PDF 版が格納されています。コンプライアンス部門の担当者は、ベンダーアンケート用に直接ダウンロードできます。",
+    docCenterCta: "ドキュメントセンターを開く →",
+    backBasicsBtn: "FUZE の基本に戻る",
+    whatYouCanClaimBtn: "謳える内容を見る →",
+  },
+
 };
 
 export default ja;
