@@ -2654,6 +2654,16 @@ const id: Translations = {
     footerReturnAtlas: "Kembali ke Atlas",
   },
 
+  distributorsAdmin: {
+    pageTitle: "Jaringan Distributor",
+    pageSubtitle: "Kelola mitra distribusi global, inventaris, dan cakupan Anda",
+    inventoryCta: "📊 Inventaris & Burn Rate",
+    worldwideCta: "🌍 Inventaris Global",
+    newDistributorCta: "+ Distributor Baru",
+    newDistributorModalTitle: "Distributor baru",
+    nameRequiredError: "Nama wajib diisi",
+  },
+
 };
 
 export default id;
