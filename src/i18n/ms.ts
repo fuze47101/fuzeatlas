@@ -7835,6 +7835,24 @@ const ms: Translations = {
     openSameLink: "Buka pautan yang sama →",
   },
 
+  apiDocs: {
+    heading: "Dokumentasi API",
+    subtitle: "Rujukan API FUZE Atlas",
+    authStrong: "Pengesahan:",
+    authBodyPrefix: "Semua titik akhir kecuali",
+    authBodySuffix: "memerlukan cookie sesi JWT yang sah.",
+    searchPlaceholder: "Cari titik akhir mengikut laluan atau penerangan...",
+    allMethodsBtn: "Semua Kaedah",
+    showingPrefix: "Menunjukkan",
+    showingOf: "daripada",
+    endpointsLabel: "titik akhir",
+    collapseAllBtn: "Runtuhkan Semua",
+    expandAllBtn: "Kembangkan Semua",
+    noResults: "Tiada titik akhir dijumpai sepadan dengan carian anda.",
+    clearFiltersBtn: "Kosongkan penapis",
+    footerPrefix: "Dokumentasi API FUZE Atlas - Terakhir dikemas kini",
+  },
+
 };
 
 export default ms;
