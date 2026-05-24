@@ -4155,6 +4155,27 @@ const id: Translations = {
     footerHint: "Stale = 14+ hari tanpa aktivitas saat masih di DRAFT/SENT/SIGNED/ACTIVE. Signed-no-progress = SIGNED atau ACTIVE selama 30+ hari dengan milestone didefinisikan tetapi tidak ada yang selesai. Aktivitas terakhir adalah yang paling baru dari edit SOW, penyelesaian milestone, atau pengajuan permintaan uji.",
   },
 
+  educationClaims: {
+    backLink: "← Kembali ke Dasar FUZE",
+    eyebrow: "Apa yang dapat Anda klaim",
+    pageTitle: "Klaim brand yang defensible untuk kain yang diolah FUZE",
+    pageIntro: "Referensi untuk tim compliance, marketing brand, dan salinan hangtag. Tiga kategori: klaim produk, klaim keberlanjutan, dan klaim sertifikasi. Setiap baris dinilai",
+    introCiteFreely: "kutip bebas",
+    introWithData: "kutip dengan data spesifik tier",
+    introAvoid: "hindari",
+    introTail: "— dengan alasan dalam bahasa sederhana.",
+    productClaimsTitle: "Klaim produk / efikasi",
+    sustainabilityClaimsTitle: "Klaim keberlanjutan",
+    certClaimsTitle: "Klaim sertifikasi",
+    badgeCiteFreely: "Kutip bebas",
+    badgeWithData: "Dengan data",
+    badgeAvoid: "Hindari",
+    fifraTitle: "Catatan tentang FIFRA",
+    fifraBody: "FIFRA (Federal Insecticide, Fungicide, and Rodenticide Act) mengatur klaim antibakteri di Amerika Serikat. Pengecualian treated-article mengizinkan klaim deskriptif seperti \"diolah antibakteri\" tanpa registrasi EPA tingkat produk terpisah, tetapi klaim patogen spesifik (\"membunuh 99,9% E. coli\") memerlukan data uji pendukung yang terkait dengan registrasi bahan aktif. Halaman ini adalah panduan, bukan nasihat hukum — tinjau salinan marketing yang diusulkan dengan tim compliance internal Anda sebelum diluncurkan.",
+    backToBasics: "Kembali ke Dasar FUZE",
+    seeCerts: "Lihat stack sertifikasi",
+  },
+
 };
 
 export default id;
