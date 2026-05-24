@@ -1,6 +1,7 @@
 // @ts-nocheck
 "use client";
 import { useState, useEffect } from "react";
+import { useI18n } from "@/i18n";
 
 interface CatalogItem {
   id: string;
@@ -20,14 +21,15 @@ interface CatalogItem {
   updatedBy: string | null;
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  recipe_build: "Recipe Build",
-  performance: "Performance",
-  quality: "Quality",
-  certification: "Certification",
-};
-
 export default function TestCatalogPage() {
+  const { t } = useI18n();
+  const T = t.testCatalogAdmin;
+  const CATEGORY_LABELS: Record<string, string> = {
+    recipe_build: T.catRecipeBuild,
+    performance: T.catPerformance,
+    quality: T.catQuality,
+    certification: T.catCertification,
+  };
   const [items, setItems] = useState<CatalogItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -89,15 +91,15 @@ export default function TestCatalogPage() {
       });
       const d = await res.json();
       if (d.ok) {
-        setMessage({ type: "success", text: "Test updated successfully" });
+        setMessage({ type: "success", text: T.successMsg });
         setEditingId(null);
         setEditForm({});
         fetchCatalog();
       } else {
-        setMessage({ type: "error", text: d.error || "Failed to save" });
+        setMessage({ type: "error", text: d.error || T.failedSave });
       }
     } catch {
-      setMessage({ type: "error", text: "Network error" });
+      setMessage({ type: "error", text: T.networkErr });
     } finally {
       setSaving(false);
     }
@@ -115,14 +117,13 @@ export default function TestCatalogPage() {
     <div className="p-4 sm:p-8 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 mb-1">Test Catalog & Pricing</h1>
+        <h1 className="text-2xl font-bold text-slate-900 mb-1">{T.title}</h1>
         <p className="text-slate-500 text-sm">
-          Manage test types, pricing, turnaround times, and sample requirements. Changes are reflected
-          immediately on the factory test request form.
+          {T.subtitle}
         </p>
         {source && (
           <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 bg-slate-100 rounded text-xs text-slate-500">
-            Source: <span className="font-medium">{source === "database" ? "Database (admin-managed)" : "Static defaults"}</span>
+            {T.sourcePrefix} <span className="font-medium">{source === "database" ? T.sourceDb : T.sourceStatic}</span>
           </div>
         )}
       </div>
@@ -142,14 +143,14 @@ export default function TestCatalogPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="text-left px-4 py-3 font-semibold text-slate-700">Test Name</th>
-                <th className="text-left px-4 py-3 font-semibold text-slate-700">Category</th>
-                <th className="text-right px-4 py-3 font-semibold text-slate-700">Price (USD)</th>
-                <th className="text-right px-4 py-3 font-semibold text-slate-700">Turnaround</th>
-                <th className="text-right px-4 py-3 font-semibold text-slate-700">Min. Sample</th>
-                <th className="text-center px-4 py-3 font-semibold text-slate-700">Control?</th>
-                <th className="text-center px-4 py-3 font-semibold text-slate-700">Active</th>
-                <th className="text-center px-4 py-3 font-semibold text-slate-700">Actions</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-700">{T.colTestName}</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-700">{T.colCategory}</th>
+                <th className="text-right px-4 py-3 font-semibold text-slate-700">{T.colPrice}</th>
+                <th className="text-right px-4 py-3 font-semibold text-slate-700">{T.colTurnaround}</th>
+                <th className="text-right px-4 py-3 font-semibold text-slate-700">{T.colMinSample}</th>
+                <th className="text-center px-4 py-3 font-semibold text-slate-700">{T.colControl}</th>
+                <th className="text-center px-4 py-3 font-semibold text-slate-700">{T.colActive}</th>
+                <th className="text-center px-4 py-3 font-semibold text-slate-700">{T.colActions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -194,7 +195,7 @@ export default function TestCatalogPage() {
                             onChange={(e) => setEditForm({ ...editForm, turnaroundDays: Number(e.target.value) })}
                             className="w-16 px-2 py-1 border border-slate-300 rounded text-sm text-right"
                           />
-                          <span className="text-xs text-slate-400">days</span>
+                          <span className="text-xs text-slate-400">{T.daysSuffix}</span>
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -206,7 +207,7 @@ export default function TestCatalogPage() {
                             onChange={(e) => setEditForm({ ...editForm, moqMeters: Number(e.target.value) })}
                             className="w-16 px-2 py-1 border border-slate-300 rounded text-sm text-right"
                           />
-                          <span className="text-xs text-slate-400">m</span>
+                          <span className="text-xs text-slate-400">{T.metersSuffix}</span>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -232,13 +233,13 @@ export default function TestCatalogPage() {
                             disabled={saving}
                             className="px-3 py-1 bg-[#00b4c3] text-white text-xs font-medium rounded hover:bg-[#009aa8] disabled:opacity-50"
                           >
-                            {saving ? "..." : "Save"}
+                            {saving ? T.savingDots : T.saveBtn}
                           </button>
                           <button
                             onClick={cancelEdit}
                             className="px-3 py-1 bg-slate-200 text-slate-600 text-xs font-medium rounded hover:bg-slate-300"
                           >
-                            Cancel
+                            {T.cancelBtn}
                           </button>
                         </div>
                       </td>
@@ -265,16 +266,16 @@ export default function TestCatalogPage() {
                         {item.estimatedCostUsd ? `$${item.estimatedCostUsd.toLocaleString()}` : <span className="text-slate-300">—</span>}
                       </td>
                       <td className="px-4 py-3 text-right text-slate-600">
-                        {item.turnaroundDays} days
+                        {item.turnaroundDays} {T.daysSuffix}
                       </td>
                       <td className="px-4 py-3 text-right text-slate-600">
-                        {item.moqMeters}m
+                        {item.moqMeters}{T.metersSuffix}
                       </td>
                       <td className="px-4 py-3 text-center">
                         {item.controlRequired ? (
-                          <span className="text-orange-500 font-bold">Yes</span>
+                          <span className="text-orange-500 font-bold">{T.yes}</span>
                         ) : (
-                          <span className="text-slate-300">No</span>
+                          <span className="text-slate-300">{T.no}</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -289,7 +290,7 @@ export default function TestCatalogPage() {
                           onClick={() => startEdit(item)}
                           className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded hover:bg-slate-200"
                         >
-                          Edit
+                          {T.editBtn}
                         </button>
                       </td>
                     </>
@@ -303,8 +304,9 @@ export default function TestCatalogPage() {
         {/* Footer with last updated info */}
         {items.some((i) => i.updatedBy) && (
           <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-400">
-            Last updated by {items.find((i) => i.updatedBy)?.updatedBy} on{" "}
-            {items.find((i) => i.updatedAt) ? new Date(items.find((i) => i.updatedAt)!.updatedAt!).toLocaleDateString() : "—"}
+            {T.lastUpdatedTpl
+              .replace("{who}", items.find((i) => i.updatedBy)?.updatedBy ?? "—")
+              .replace("{when}", items.find((i) => i.updatedAt) ? new Date(items.find((i) => i.updatedAt)!.updatedAt!).toLocaleDateString() : "—")}
           </div>
         )}
       </div>
