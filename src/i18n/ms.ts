@@ -5895,6 +5895,82 @@ const ms: Translations = {
     btnCreatePo: "Cipta PO & Buka Pakej Boleh Cetak →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "Pentadbir",
+    crumbHere: "Kebersihan Kenalan",
+    pageTitle: "Kebersihan Kenalan",
+    pageSubtitle: "Menanda kenalan placeholder, peti mel peranan, dan tidak terbentuk supaya wakil berhenti membazirkan jangkauan pada Jane Doe. Boleh diundur — nyahsembunyikan untuk membawa kenalan kembali ke wizard.",
+
+    btnPreviewScan: "🔍 Pratonton imbasan",
+    btnAutoHide: "🙈 Imbas + auto-sembunyikan",
+    btnScanning: "Mengimbas…",
+    btnHiding: "Menyembunyikan…",
+    titlePreviewScan: "Jalankan semula snapshot kebersihan pada setiap kenalan, tanpa mengubah keterlihatan",
+    titleAutoHide: "Imbas + auto-sembunyikan kenalan placeholder daripada BD Wizard",
+    confirmAutoHide: "Auto-sembunyikan akan menukar hiddenFromWizard = true untuk setiap kenalan yang diimbas sebagai placeholder atau e-mel tidak sah. Ini boleh diundur (anda boleh nyahsembunyikan dari halaman ini) tetapi mempengaruhi BD Wizard setiap wakil dengan serta-merta. Teruskan?",
+    promptHide: "Sembunyikan kenalan ini dari BD Wizard? Sebab (pilihan):",
+    promptUnhide: "Nyahsembunyikan kenalan ini? Sebab (pilihan, ditulis pada nota mereka):",
+    failedPrefix: "Gagal:",
+    networkErrPrefix: "Ralat rangkaian:",
+    scanFailedPrefix: "Imbasan gagal:",
+
+    summaryScanned: "Diimbas",
+    summaryContacts: "kenalan · placeholder",
+    summarySuspicious: "· mencurigakan",
+    summaryRole: "· peranan",
+    summaryReal: "· sebenar",
+    summaryHiddenSuffix: "baharu",
+    summaryHiddenPrefix: "· disembunyikan",
+
+    statPlaceholder: "Placeholder",
+    statSuspicious: "Mencurigakan",
+    statRole: "Peti mel peranan",
+    statReal: "Sebenar",
+    statUnscanned: "Belum diimbas",
+    statHidden: "Disembunyikan",
+
+    filterVerdict: "Keputusan",
+    filterVisibility: "Keterlihatan",
+    filterAllScanned: "Semua diimbas",
+    filterPlaceholder: "Placeholder",
+    filterSuspicious: "Mencurigakan",
+    filterRoleMailbox: "Peti mel peranan",
+    filterReal: "Sebenar",
+    filterUnscanned: "Belum diimbas",
+    filterAllVisibility: "Semua keterlihatan",
+    filterHiddenOnly: "Disembunyikan sahaja",
+    filterVisibleOnly: "Boleh dilihat sahaja",
+    searchPlaceholder: "Cari nama atau e-mel…",
+
+    emptyTitle: "Tiada kenalan sepadan dengan penapis semasa.",
+    emptyUnscannedTpl: "{n} kenalan belum pernah diimbas — klik \"Pratonton imbasan\" untuk mengisi.",
+
+    colContact: "Kenalan",
+    colBrandFactory: "Jenama / Kilang",
+    colVerdict: "Keputusan",
+    colEmail: "E-mel",
+    colLinkedin: "LinkedIn",
+    colScore: "Skor",
+    colFlags: "Bendera",
+    colActions: "Tindakan",
+
+    unnamed: "(tanpa nama)",
+    noEmail: "tiada e-mel",
+    hiddenLabel: "Disembunyikan",
+    flagsMore: "lagi",
+    flagsClean: "bersih",
+    actionHide: "Sembunyikan",
+    actionUnhide: "Nyahsembunyikan",
+
+    helpFooter: "Imbas berjalan melalui setiap kenalan dan snapshot keputusan + bendera pada baris. Pratonton hanya merekod keputusan; Imbas + auto-sembunyikan juga menukar hiddenFromWizard untuk placeholder dan kenalan e-mel tidak sah. Kedua-duanya boleh diundur — klik \"Nyahsembunyikan\" untuk memulihkan kenalan, yang juga menjalankan semula snapshot sekiranya data telah dibetulkan.",
+
+    verdictReal: "sebenar",
+    verdictSuspect: "mencurigakan",
+    verdictPlaceholder: "placeholder",
+    verdictRoleMbx: "peti peranan",
+    verdictUnscanned: "belum diimbas",
+  },
+
 };
 
 export default ms;
