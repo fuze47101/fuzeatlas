@@ -7080,6 +7080,26 @@ const es: Translations = {
     emptyState: "Aún no hay créditos.",
   },
 
+  bdFunnel: {
+    loading: "Cargando…",
+    crumbSalesPipeline: "Ventas y pipeline",
+    crumbBdFunnel: "Embudo BD",
+    title: "Embudo del pipeline",
+    subtitle: "Entradas / salidas en los últimos 30 / 60 / 90 días, más la tasa de conversión entre etapas. Procedente de las filas de BrandStageTransition registradas en cada cambio de Brand.pipelineStage.",
+    colStage: "Etapa",
+    colCurrent: "Actual",
+    colIn30: "En 30d",
+    colIn60: "En 60d",
+    colIn90: "En 90d",
+    colOut30: "Fuera 30d",
+    colOut60: "Fuera 60d",
+    colOut90: "Fuera 90d",
+    colAvgDwell: "Permanencia media",
+    colToNext: "→ siguiente",
+    footerHint: "Conversión = salidas que llegaron a la siguiente etapa canónica / total de salidas observadas en los últimos 90 días. Las etapas sin salidas en la ventana muestran n=0 — son lentas o estables, no malas.",
+    errLoadFailed: "Error al cargar el embudo",
+  },
+
 };
 
 export default es;
