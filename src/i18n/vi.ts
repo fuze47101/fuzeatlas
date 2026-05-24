@@ -8021,6 +8021,24 @@ const vi: Translations = {
     emptyBody: "Hãy thử mở rộng bộ lọc — hoặc bỏ bộ lọc \"thử nghiệm bench đã xác thực\" nếu bạn muốn xem các vải đang trong quá trình phát triển.",
   },
 
+  importBrands: {
+    title: "Nhập hàng loạt — Thương hiệu",
+    subtitle: "Dán hoặc tải lên CSV các thương hiệu tiềm năng từ triển lãm thương mại, danh sách, hoặc dump nghiên cứu. Chúng tôi sẽ ánh xạ các cột, xem trước xác thực, và ghi idempotent qua cùng một helper seed-brand mà CLI sử dụng.",
+    backLabel: "Pipeline thương hiệu",
+    brandNameLabel: "Tên thương hiệu",
+    brandNameHint: "(khóa tự nhiên — upsert được khóa ở đây)",
+    domainLabel: "Tên miền email",
+    domainHint: 'ví dụ "rhone.com"',
+    repEmailLabel: "Email AM chính",
+    repEmailHint: "phải đã tồn tại với tư cách người dùng Atlas",
+    tierLabel: "Hạng FUZE yêu cầu",
+    tierHint: "F1 / F2 / F3 / F4 — mặc định F2",
+    cadenceLabel: "Nhịp ICP (mỗi N lô)",
+    cadenceHint: "mặc định 5",
+    countryLabel: "Quốc gia",
+    websiteLabel: "Trang web",
+  },
+
 };
 
 export default vi;
