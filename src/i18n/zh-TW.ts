@@ -8098,6 +8098,19 @@ const zhTW: Translations = {
     questionsPrefix: "· 有問題嗎？",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "劇本",
+    heading: "BD 劇本",
+    subtitle: "依類別標記的外展指引。將您常用的加入收藏；品牌會根據 Brand.textileCategory 顯示建議劇本。",
+    failedFallback: "失敗",
+    emptyBody: "此類別尚無劇本。",
+    emptySeedHint: "觸發",
+    emptySeedHintSuffix: "透過 fzcron 即可載入三個起始劇本。",
+    removeFavoriteTitle: "移除收藏",
+    addFavoriteTitle: "加入收藏",
+  },
+
 };
 
 export default zhTW;
