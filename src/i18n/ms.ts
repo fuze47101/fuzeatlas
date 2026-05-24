@@ -8023,6 +8023,24 @@ const ms: Translations = {
     footerVerifiedBy: "Disahkan oleh FUZE Atlas",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "Snapshot ESG — FUZE Atlas",
+    metaDescPrefix: "Laporan impak ESG suku tahunan untuk",
+    metaDescSuffix: "disahkan oleh FUZE Atlas.",
+    backArrowPrefix: "←",
+    headingSuffix: "— Impak ESG",
+    heroSubtitle: "Snapshot suku tahunan fabrik disahkan FUZE dan hasil ujian antimikrob.",
+    emptyBody: "Belum ada snapshot diterbitkan. Laporan suku tahunan diterbitkan pada permulaan suku berikutnya.",
+    statFabricsCertified: "Fabrik disahkan",
+    statTestsPassed: "Ujian lulus",
+    statFuzeLiters: "Liter FUZE",
+    statFactories: "Kilang",
+    passRateLabel: "Kadar lulus:",
+    downloadPdf: "Muat Turun PDF →",
+    footerCertifiedBy: "Disahkan oleh FUZE Atlas",
+  },
+
 };
 
 export default ms;
