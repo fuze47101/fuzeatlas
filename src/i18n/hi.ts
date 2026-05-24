@@ -7867,6 +7867,26 @@ const hi: Translations = {
     footnote: "ग्राहक-सामना कॉपी \"FUZE अवशेष\" का उपयोग करती है — लैब की ICP रिपोर्ट से मेटामटीरियल माप। ग्राहक डिलीवरेबल्स में हमेशा FUZE / मेटामटीरियल के रूप में लेबल किया गया (CLAUDE.md ब्रांड-वॉइस नियम)।",
   },
 
+  engagementDebug: {
+    crumb: "एंगेजमेंट डिबग",
+    engagementSuffix: "एंगेजमेंट",
+    calculatedLabel: "गणना",
+    overallScoreLabel: "समग्र स्कोर",
+    outOf100: "100 में से",
+    inputsLabel: "इनपुट",
+    daysSinceContact: "संपर्क के बाद दिन",
+    tests30d: "परीक्षण (30d)",
+    tests90d: "परीक्षण (90d)",
+    avgPayDays: "औसत भुगतान दिन",
+    overdueInvoices: "देरी चालान",
+    factorBreakdownTitle: "कारक ब्रेकडाउन",
+    weightLabel: "भार",
+    contributesLabel: "योगदान",
+    ptsLabel: "अंक",
+    loading: "लोड हो रहा है…",
+    failedToLoad: "लोड करने में विफल",
+  },
+
 };
 
 export default hi;
