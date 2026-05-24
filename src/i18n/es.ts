@@ -7646,6 +7646,35 @@ const es: Translations = {
     errGeneric: "Error al cambiar la contraseña",
   },
 
+  claimsLandingPage: {
+    heroTitle: "Declaraciones, certificaciones y metodología",
+    heroSubtitle: "Cómo funciona FUZE, qué certificaciones tiene y por qué lo probamos como lo hacemos.",
+    techTitle: "Tecnología FUZE",
+    techBody1: "FUZE es un tratamiento antimicrobiano textil propietario construido en torno al metamaterial FUZE — producido mediante ablación láser líquida a partir de electrónicos reciclados en nuestra instalación de Salt Lake City. El tratamiento se adhiere permanentemente a las fibras durante el acabado textil estándar (agotamiento, pad-dry-cure o aplicación por pulverización) sin cambiar el tacto, el teñido, la caída ni la transpirabilidad de la tela.",
+    techBody2: "FUZE es no lixiviante por diseño. La reducción bacteriana ocurre mediante contacto físico directo entre las células bacterianas y el metamaterial FUZE adherido a la superficie de la fibra — no se libera química al agua de lavado, sin PFAS, sin aglutinantes, sin química de curado. La postura sitúa a FUZE en el lado correcto de cada viento regulatorio favorable (investigaciones de la AG de Texas sobre PFAS, SB-707 de California).",
+    techBody3: "Niveles de tratamiento: F1 Full Spectrum (1,0 mg/kg, 100 lavados validados) · F2 Advanced (0,75 mg/kg, 75 lavados) · F3 Core (0,5 mg/kg, 50 lavados) · F4 Foundation (0,25 mg/kg, 25 lavados). Los recuentos de lavado están documentados mediante pruebas AATCC 100 + ISO 20743 en laboratorios independientes, publicadas bajo solicitud.",
+    certsTitle: "Certificaciones",
+    certEpaTitle: "Registrado por la EPA (federal)",
+    certEpaBody: "La química FUZE está registrada ante la Agencia de Protección Ambiental de EE. UU. como pesticida antimicrobiano.",
+    certCaEpaTitle: "Aprobado por la EPA de California (Q1 2026)",
+    certCaEpaBody: "Autorizado para ropa deportiva, textiles para bebés/niños y casos de uso sanitario bajo el régimen más estricto de California.",
+    certOekoTitle: "OEKO-TEX Standard 100 Class I",
+    certOekoBody: "Certificado seguro para contacto directo con la piel — incluyendo bebés y prendas íntimas.",
+    certBluesignTitle: "Aprobado por bluesign®",
+    certBluesignBody: "Química verificada como segura para trabajadores, consumidores y el medio ambiente bajo los criterios bluesign.",
+    certPfasTitle: "Libre de PFAS",
+    certPfasBody: "Cero sustancias per- y polifluoroalquílicas en cualquier parte de la formulación. Sin aglutinantes, sin auxiliares de curado.",
+    certStandardsTitle: "Estándares validados",
+    certStandardsBody: "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — informes de terceros disponibles bajo solicitud.",
+    standardsTitle: "Estándares de prueba",
+    standardsBody: "El rendimiento antimicrobiano para textiles no es un único número — depende en gran medida del estándar bajo el que se realizó la prueba y de si ese estándar se ajusta a la química. Así se relaciona FUZE con los métodos.",
+    jabTitle: "Por qué lideramos con ASTM E2149",
+    jabBody: "Probamos con ASTM E2149 porque es la prueba diseñada para antimicrobianos no lixiviantes. Las químicas competidoras que dependen de AATCC 100 lo hacen porque la geometría de capas apiladas de AATCC 100 ayuda a que los iones lixiviantes saturen el espacio entre capas — la prueba favorece el lixiviado por construcción. FUZE no lixivia, por diseño. Encuéntranos en la prueba correcta.",
+    jabFootnote: "(Atribución a competidores: la advertencia sobre la prueba de capas se aplica a acabados a base de iones metálicos, cloruro y compuestos cuaternarios — no a FUZE.)",
+    documentsTitle: "Documentos",
+    pressKitLink: "Kit de prensa",
+  },
+
 };
 
 export default es;
