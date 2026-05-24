@@ -4537,6 +4537,23 @@ const th: Translations = {
     nameRequiredError: "ต้องระบุชื่อ",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← กลับไปยังเครื่องคำนวณ",
+    printButton: "🖨 พิมพ์ / บันทึก PDF",
+    eyebrow: "FUZE Biotech · SOP ห้องปฏิบัติการ",
+    pageTitle: "ขั้นตอน Bench Test",
+    pageSubtitle: "FUZE Recipe Calculator — อัตรา Pickup Pad-Dry-Cure & การเจือจาง",
+    docLabel: "Doc: SOP-FUZE-LAB-001",
+    revLabel: "Rev: 1.0 ·",
+    purposeHeader: "วัตถุประสงค์",
+    equipmentHeader: "อุปกรณ์",
+    chemistryRefHeader: "อ้างอิงเคมี FUZE",
+    criticalRulesHeader: "⚠ กฎโปรโตคอลสำคัญ",
+    procedureHeader: "ขั้นตอน",
+    formulasHeader: "สูตร (สำหรับ QC cross-check)",
+    sanityRangesHeader: "ช่วงตรวจสอบความสมเหตุสมผล",
+  },
+
 };
 
 export default th;
