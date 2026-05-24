@@ -7851,6 +7851,24 @@ const es: Translations = {
     openSameLink: "Abrir el mismo enlace →",
   },
 
+  apiDocs: {
+    heading: "Documentación de la API",
+    subtitle: "Referencia de la API de FUZE Atlas",
+    authStrong: "Autenticación:",
+    authBodyPrefix: "Todos los endpoints excepto",
+    authBodySuffix: "requieren una cookie de sesión JWT válida.",
+    searchPlaceholder: "Buscar endpoints por ruta o descripción...",
+    allMethodsBtn: "Todos los métodos",
+    showingPrefix: "Mostrando",
+    showingOf: "de",
+    endpointsLabel: "endpoints",
+    collapseAllBtn: "Contraer todo",
+    expandAllBtn: "Expandir todo",
+    noResults: "No se encontraron endpoints que coincidan con tu búsqueda.",
+    clearFiltersBtn: "Limpiar filtros",
+    footerPrefix: "Documentación de la API de FUZE Atlas - Última actualización",
+  },
+
 };
 
 export default es;
