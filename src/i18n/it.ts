@@ -2937,6 +2937,31 @@ const it: Translations = {
     deleteFailed: "Eliminazione non riuscita",
   },
 
+  educationMain: {
+    kicker: "Basi FUZE",
+    pageTitle: "Come funziona davvero FUZE — e perché è diverso",
+    pageIntro: "Un primer in quattro sezioni su cosa applica FUZE al tessuto, come uccide i batteri, quali test lo misurano correttamente e cosa significa quando un brand sceglie tra noi e un concorrente silver-ion / zinco / QAC.",
+    forBrands: "Per i brand",
+    forFactories: "Per gli stabilimenti",
+    forDistributors: "Per i distributori",
+    forSalesReps: "Per i rappresentanti commerciali",
+    segmentKicker: "Pitch per segmento",
+    segmentTitle: "FUZE per il tuo settore specifico",
+    segmentIntro: "La scienza esposta sopra è universale. Ogni segmento qui sotto ha la scala dei livelli FUZE consigliata, il pacchetto di test, i checkmark normativi e un gancio di outreach adattato a quel pubblico.",
+    openSegment: "Apri pagina segmento →",
+    dosageKicker: "Sezione 1 — Footprint",
+    mechanismKicker: "Sezione 2 — Meccanismo",
+    mechanismTitle: "Rilascio ionico vs contatto-uccisione non ionico",
+    performanceKicker: "Sezione 3 — Performance Stack (F1 → F4)",
+    performanceTitle: "Ogni livello è permanente. Ogni step aggiunge un nuovo strato di FUZE.",
+    testsKicker: "Sezione 4 — I cinque test",
+    testsTitle: "Cinque test sul mercato — solo uno è progettato per il meccanismo di FUZE",
+    synthesisKicker: "Sezione 5 — Cosa significa per il tuo brand",
+    synthesisTitle: "Tre cose da portare in ogni riunione con la supply chain",
+    ctaPricing: "Vedi costo rispetto a un concorrente specifico",
+    ctaSustainability: "Vedi impatto sulla sostenibilità",
+  },
+
 };
 
 export default it;
