@@ -7742,6 +7742,29 @@ const ms: Translations = {
     bookAnotherBtn: "Tempah Mesyuarat Lain",
   },
 
+  adminAuditLog: {
+    adminCrumb: "Pentadbir",
+    crumb: "Log audit",
+    heading: "Log audit",
+    subtitle: "Jejak audit penuh merentas setiap entiti. Tapis mengikut tindakan, entiti, atau tarikh. Pengekalan 90-hari.",
+    errorContext: "Muatkan log audit",
+    couldntLoadPrefix: "Tidak dapat memuatkan log audit",
+    networkError: "Ralat rangkaian semasa memuatkan log audit.",
+    actionLabel: "Tindakan",
+    allActionsOption: "Semua tindakan",
+    entityLabel: "Entiti",
+    allEntitiesOption: "Semua entiti",
+    sinceLabel: "Sejak",
+    resetBtn: "Set Semula",
+    rowsSuffix: "baris",
+    loadingState: "Memuatkan log audit…",
+    emptyState: "Tiada baris audit sepadan dengan penapis ini.",
+    byPrefix: "oleh",
+    systemActor: "Sistem",
+    fieldChangedSingular: "medan diubah",
+    fieldChangedPlural: "medan diubah",
+  },
+
 };
 
 export default ms;
