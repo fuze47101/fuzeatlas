@@ -6054,6 +6054,54 @@ const ja: Translations = {
     btnCreating: "作成中...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "FUZE生地ライブラリ",
+    pageSubtitle: "グローバルネットワーク全体でFUZE処理済み生地と検証済みテスト結果を閲覧できます。すべてのデータは匿名化されており、工場とブランドの身元は機密扱いです。",
+
+    statFabrics: "テスト済み生地",
+    statTests: "総テスト数",
+    statIcp: "ICP分析",
+    statAb: "抗菌テスト",
+
+    searchPlaceholder: "構造、糸、用途、FUZE番号で検索...",
+    filterAllTypes: "すべてのテストタイプ",
+    filterIcp: "ICP分析",
+    filterAntibacterial: "抗菌",
+    filterFungal: "抗カビ",
+    filterOdor: "防臭",
+    passOnly: "合格のみ",
+
+    emptyTitle: "条件に一致する生地はありません",
+    emptyClear: "すべてのフィルターをクリア",
+    errorFailedLoad: "生地ライブラリの読み込みに失敗しました",
+    errorFailedDefault: "読み込みに失敗しました",
+
+    testsSuffix: "件のテスト",
+    testSuffix: "件のテスト",
+    propConstruction: "構造:",
+    propWeight: "重量:",
+    propWidth: "幅:",
+    propYarn: "糸:",
+    propCategory: "カテゴリ:",
+    propEndUse: "用途:",
+    propWeave: "織り:",
+    propColor: "色:",
+
+    colTest: "テスト",
+    colMethod: "方法",
+    colWashes: "洗濯回数",
+    colResult: "結果",
+    colStatus: "ステータス",
+    pass: "合格",
+    fail: "不合格",
+    passBadge: "合格",
+    failBadge: "不合格",
+
+    paginationPrev: "前へ",
+    paginationNext: "次へ",
+    paginationLabel: "ページ {page} / {pages}",
+  },
+
 };
 
 export default ja;
