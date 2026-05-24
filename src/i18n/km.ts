@@ -7135,6 +7135,23 @@ const km: Translations = {
     whatYouCanClaimBtn: "What you can claim →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ Certified by FUZE Atlas",
+    statFabricsCertified: "ក្រណាត់ certified",
+    statTestsPassed: "ការសាកល្បង passed (12 months)",
+    statCountries: "Countries shipping",
+    activeTiersTitle: "សកម្ម កម្រិត FUZEs",
+    activeTiersBody: "Treatment levels currently in production at certified facilities.",
+    lastPassedLabel: "Last passed",
+    aboutSummaryTitle: "About FUZE technology",
+    verifyCtaTitle: "Verify a specific product",
+    verifyCtaBody: "Every certified product carries a unique កូដ QR linked to its production batch and test history.",
+    verifyCtaBtn: "Look up a product →",
+    footerCertifiedBy: "Certified by FUZE Atlas",
+    brandSiteLink: "ម៉ាក site →",
+    contactLink: "ទំនាក់ទំនង",
+  },
+
 };
 
 export default km;
