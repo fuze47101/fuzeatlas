@@ -7842,6 +7842,19 @@ const hi: Translations = {
     questionsPrefix: "· प्रश्न?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "प्लेबुक",
+    heading: "BD प्लेबुक",
+    subtitle: "श्रेणी-टैग्ड आउटरीच मार्गदर्शन। आप जिनका उपयोग करते हैं उन्हें पसंदीदा करें; ब्रांड Brand.textileCategory के आधार पर एक सुझाई गई प्लेबुक दिखाते हैं।",
+    failedFallback: "विफल",
+    emptyBody: "इस श्रेणी के लिए अभी कोई प्लेबुक नहीं।",
+    emptySeedHint: "ट्रिगर",
+    emptySeedHintSuffix: "तीन स्टार्टर प्लेबुक छोड़ने के लिए fzcron के माध्यम से।",
+    removeFavoriteTitle: "पसंदीदा हटाएं",
+    addFavoriteTitle: "पसंदीदा जोड़ें",
+  },
+
 };
 
 export default hi;
