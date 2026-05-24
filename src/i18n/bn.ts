@@ -7450,6 +7450,33 @@ const bn: Translations = {
     contactLink: "যোগাযোগ",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "ব্র্যান্ড",
+    crumb: "হ্যাংট্যাগ QR",
+    heading: "হ্যাংট্যাগ QR টোকেন",
+    subtitlePrefix: "প্রতিটি টোকেন একটি পাবলিক ভেরিফিকেশন পেজে রিসলভ করে",
+    subtitleSuffix: "স্ক্যান গণনা + প্রথম / শেষ স্ক্যান টাইমস্ট্যাম্প প্রতি সারিতে ট্র্যাক করা।",
+    mintTokensTitle: "টোকেন মিন্ট করুন",
+    countPlaceholder: "গণনা",
+    fabricIdPlaceholder: "fabricId (ঐচ্ছিক)",
+    skuPlaceholder: "প্রোডাক্ট SKU",
+    batchPlaceholder: "ব্যাচ কোড",
+    mintBtn: "মিন্ট",
+    mintingBusy: "মিন্ট করা হচ্ছে…",
+    mintFootnote: "প্রতি মিন্টে সর্বোচ্চ 500। আপনার পছন্দের QR জেনারেটর ব্যবহার করে হ্যাংট্যাগে QR কোড হিসেবে ফলস্বরূপ টোকেনগুলি প্রিন্ট করুন (প্রতিটি URL হল ঠিক ভেরিফাই-পেজ URL)।",
+    mintFailedError: "মিন্ট ব্যর্থ",
+    tokenSingular: "টোকেন",
+    tokenPlural: "টোকেন",
+    exportCsvBtn: "CSV এক্সপোর্ট",
+    colToken: "টোকেন",
+    colSkuBatch: "SKU / ব্যাচ",
+    colFabric: "ফ্যাব্রিক",
+    colScans: "স্ক্যান",
+    colLastScan: "শেষ স্ক্যান",
+    colVerifyUrl: "ভেরিফাই URL",
+    emptyState: "এখনও কোনো টোকেন নেই — উপরে আপনার প্রথম ব্যাচ মিন্ট করুন।",
+  },
+
 };
 
 export default bn;
