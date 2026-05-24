@@ -7712,6 +7712,23 @@ const ko: Translations = {
     whatYouCanClaimBtn: "주장할 수 있는 것 →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ FUZE Atlas 인증",
+    statFabricsCertified: "인증된 원단",
+    statTestsPassed: "통과한 시험 (12개월)",
+    statCountries: "배송 국가",
+    activeTiersTitle: "활성 FUZE 등급",
+    activeTiersBody: "인증된 시설에서 현재 생산 중인 처리 수준.",
+    lastPassedLabel: "최근 통과",
+    aboutSummaryTitle: "FUZE 기술 소개",
+    verifyCtaTitle: "특정 제품 확인",
+    verifyCtaBody: "모든 인증된 제품에는 생산 배치 및 시험 이력에 연결된 고유 QR 코드가 있습니다.",
+    verifyCtaBtn: "제품 조회 →",
+    footerCertifiedBy: "FUZE Atlas 인증",
+    brandSiteLink: "브랜드 사이트 →",
+    contactLink: "연락처",
+  },
+
 };
 
 export default ko;
