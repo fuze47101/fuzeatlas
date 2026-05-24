@@ -4525,6 +4525,27 @@ const ko: Translations = {
     exportReportTemplate: "{product} vs FUZE 보고서 내보내기",
   },
 
+  educationClaims: {
+    backLink: "← FUZE 기초로 돌아가기",
+    eyebrow: "주장할 수 있는 것",
+    pageTitle: "FUZE 처리 원단에 대한 방어 가능한 브랜드 클레임",
+    pageIntro: "컴플라이언스 팀, 브랜드 마케팅 및 행택 카피를 위한 참조. 세 가지 카테고리: 제품 클레임, 지속 가능성 클레임, 인증 클레임. 각 행은 다음으로 평가됩니다",
+    introCiteFreely: "자유롭게 인용",
+    introWithData: "등급별 데이터와 함께 인용",
+    introAvoid: "회피",
+    introTail: "— 명확한 영어로 된 이유와 함께.",
+    productClaimsTitle: "제품 / 효능 클레임",
+    sustainabilityClaimsTitle: "지속 가능성 클레임",
+    certClaimsTitle: "인증 클레임",
+    badgeCiteFreely: "자유롭게 인용",
+    badgeWithData: "데이터와 함께",
+    badgeAvoid: "회피",
+    fifraTitle: "FIFRA에 관한 참고 사항",
+    fifraBody: "FIFRA (연방 살충제, 살균제 및 살서제법)는 미국 내 항균 클레임을 규율합니다. 처리 물품 예외는 별도의 제품 수준 EPA 등록 없이 \"항균 처리됨\"과 같은 설명 클레임을 허용하지만, 특정 병원체 클레임 (\"E. coli의 99.9% 사멸\")은 활성 성분의 등록과 연결된 뒷받침 시험 데이터를 필요로 합니다. 이 페이지는 안내이며 법적 자문이 아닙니다 — 마케팅 카피를 출시하기 전에 사내 컴플라이언스 팀과 함께 검토하십시오.",
+    backToBasics: "FUZE 기초로 돌아가기",
+    seeCerts: "인증 스택 보기",
+  },
+
 };
 
 export default ko;
