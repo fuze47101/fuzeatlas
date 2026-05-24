@@ -3,8 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 
 export default function FabricEnrichmentPage() {
+  const { t } = useI18n();
+  const T = t.fabricsEnrich;
   const router = useRouter();
   const { user } = useAuth();
   const [scan, setScan] = useState<any>(null);
@@ -15,7 +18,7 @@ export default function FabricEnrichmentPage() {
   const [loading, setLoading] = useState("");
 
   if (user && user.role !== "ADMIN") {
-    return <div className="max-w-4xl mx-auto p-8 text-center text-red-500 font-bold">Super admin access required</div>;
+    return <div className="max-w-4xl mx-auto p-8 text-center text-red-500 font-bold">{T.accessDenied}</div>;
   }
 
   const runScan = async () => {
@@ -33,7 +36,7 @@ export default function FabricEnrichmentPage() {
   };
 
   const applyEnrichment = async () => {
-    if (!confirm("This will update fabric records with FI-estimated data. Continue?")) return;
+    if (!confirm(T.confirmEnrichApply)) return;
     setLoading("apply");
     const res = await fetch("/api/fabrics/enrich", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dryRun: false }) });
     setApplyResult(await res.json());
@@ -48,7 +51,7 @@ export default function FabricEnrichmentPage() {
   };
 
   const applyIcp = async () => {
-    if (!confirm("This will create FI-estimated ICP test profiles for fabrics without ICP data. Continue?")) return;
+    if (!confirm(T.confirmIcpApply)) return;
     setLoading("icpApply");
     const res = await fetch("/api/fabrics/enrich/icp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dryRun: false }) });
     setIcpApplyResult(await res.json());
@@ -68,23 +71,23 @@ export default function FabricEnrichmentPage() {
     <div className="max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <button onClick={() => router.push("/fabrics")} className="text-sm text-blue-600 hover:underline mb-1">&larr; Fabrics</button>
-          <h1 className="text-2xl font-black text-slate-900">FUZE Input (FI) Data Enrichment</h1>
-          <p className="text-sm text-slate-500 mt-1">Scan, extrapolate, and generate missing fabric data with probability-based heuristics</p>
+          <button onClick={() => router.push("/fabrics")} className="text-sm text-blue-600 hover:underline mb-1">{T.backLink}</button>
+          <h1 className="text-2xl font-black text-slate-900">{T.pageTitle}</h1>
+          <p className="text-sm text-slate-500 mt-1">{T.pageSubtitle}</p>
         </div>
       </div>
 
       {/* Step 1: Data Completeness Scan */}
       <div className="bg-white rounded-xl border shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-slate-900">Step 1: Data Completeness Scan</h2>
+          <h2 className="text-lg font-bold text-slate-900">{T.step1Title}</h2>
           <button onClick={runScan} disabled={loading === "scan"} className="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-semibold hover:bg-slate-900 disabled:opacity-50">
-            {loading === "scan" ? "Scanning..." : "Run Scan"}
+            {loading === "scan" ? T.scanning : T.runScan}
           </button>
         </div>
         {scan && scan.ok && (
           <div className="space-y-3">
-            <p className="text-sm text-slate-600 font-semibold">{scan.total} total fabrics</p>
+            <p className="text-sm text-slate-600 font-semibold">{T.totalFabricsTemplate.replace("{n}", String(scan.total))}</p>
             <div className="grid grid-cols-2 gap-4">
               {Object.entries(scan.completeness).map(([field, data]: [string, any]) => (
                 <div key={field}>
@@ -104,23 +107,23 @@ export default function FabricEnrichmentPage() {
       <div className="bg-white rounded-xl border shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Step 2: FI Field Enrichment</h2>
-            <p className="text-xs text-slate-500">Extrapolate construction, weight, width, yarn, blend from raw CSV data + heuristics</p>
+            <h2 className="text-lg font-bold text-slate-900">{T.step2Title}</h2>
+            <p className="text-xs text-slate-500">{T.step2Subtitle}</p>
           </div>
           <div className="flex gap-2">
             <button onClick={runDryRun} disabled={!!loading} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50">
-              {loading === "dryRun" ? "Analyzing..." : "Preview (Dry Run)"}
+              {loading === "dryRun" ? T.analyzing : T.previewDryRun}
             </button>
             {dryRun && dryRun.ok && dryRun.enriched > 0 && (
               <button onClick={applyEnrichment} disabled={!!loading} className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 disabled:opacity-50">
-                {loading === "apply" ? "Applying..." : `Apply to ${dryRun.enriched} Fabrics`}
+                {loading === "apply" ? T.applying : T.applyToTemplate.replace("{n}", String(dryRun.enriched))}
               </button>
             )}
           </div>
         </div>
         {applyResult && applyResult.ok && (
           <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm font-semibold">
-            Successfully enriched {applyResult.enriched} fabrics!
+            {T.enrichmentSuccessTemplate.replace("{n}", String(applyResult.enriched))}
           </div>
         )}
         {(dryRun || applyResult) && (() => {
@@ -129,14 +132,14 @@ export default function FabricEnrichmentPage() {
           return (
             <div>
               <div className="grid grid-cols-4 gap-3 mb-4">
-                <div className="p-3 bg-slate-50 rounded-lg text-center"><p className="text-2xl font-black">{data.totalFabrics}</p><p className="text-[10px] text-slate-500 uppercase">Total</p></div>
-                <div className="p-3 bg-blue-50 rounded-lg text-center"><p className="text-2xl font-black text-blue-700">{data.enriched}</p><p className="text-[10px] text-blue-500 uppercase">Enrichable</p></div>
-                <div className="p-3 bg-slate-50 rounded-lg text-center"><p className="text-2xl font-black">{data.skipped}</p><p className="text-[10px] text-slate-500 uppercase">No Data</p></div>
-                <div className="p-3 bg-green-50 rounded-lg text-center"><p className="text-2xl font-black text-green-700">{data.totalFabrics - data.enriched - data.skipped}</p><p className="text-[10px] text-green-500 uppercase">Already Complete</p></div>
+                <div className="p-3 bg-slate-50 rounded-lg text-center"><p className="text-2xl font-black">{data.totalFabrics}</p><p className="text-[10px] text-slate-500 uppercase">{T.statTotal}</p></div>
+                <div className="p-3 bg-blue-50 rounded-lg text-center"><p className="text-2xl font-black text-blue-700">{data.enriched}</p><p className="text-[10px] text-blue-500 uppercase">{T.statEnrichable}</p></div>
+                <div className="p-3 bg-slate-50 rounded-lg text-center"><p className="text-2xl font-black">{data.skipped}</p><p className="text-[10px] text-slate-500 uppercase">{T.statNoData}</p></div>
+                <div className="p-3 bg-green-50 rounded-lg text-center"><p className="text-2xl font-black text-green-700">{data.totalFabrics - data.enriched - data.skipped}</p><p className="text-[10px] text-green-500 uppercase">{T.statAlreadyComplete}</p></div>
               </div>
               {data.fieldBreakdown && Object.keys(data.fieldBreakdown).length > 0 && (
                 <div className="mb-4">
-                  <h3 className="text-sm font-bold text-slate-700 mb-2">Fields to Enrich</h3>
+                  <h3 className="text-sm font-bold text-slate-700 mb-2">{T.fieldsToEnrich}</h3>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(data.fieldBreakdown).sort(([,a]: any, [,b]: any) => b - a).map(([field, count]: [string, any]) => (
                       <span key={field} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">{field}: {count}</span>
@@ -146,14 +149,14 @@ export default function FabricEnrichmentPage() {
               )}
               {data.results && data.results.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-bold text-slate-700 mb-2">Preview (first {data.results.length})</h3>
+                  <h3 className="text-sm font-bold text-slate-700 mb-2">{T.previewFirstTemplate.replace("{n}", String(data.results.length))}</h3>
                   <div className="max-h-64 overflow-y-auto border rounded-lg">
                     <table className="w-full text-xs">
                       <thead className="bg-slate-50 sticky top-0"><tr>
-                        <th className="p-2 text-left">FUZE #</th>
-                        <th className="p-2 text-left">Fields</th>
-                        <th className="p-2 text-left">Content Added</th>
-                        <th className="p-2 text-left">Reasons</th>
+                        <th className="p-2 text-left">{T.colFuzeNumber}</th>
+                        <th className="p-2 text-left">{T.colFields}</th>
+                        <th className="p-2 text-left">{T.colContentAdded}</th>
+                        <th className="p-2 text-left">{T.colReasons}</th>
                       </tr></thead>
                       <tbody>
                         {data.results.map((r: any) => (
@@ -178,23 +181,23 @@ export default function FabricEnrichmentPage() {
       <div className="bg-white rounded-xl border shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Step 3: ICP Test Profile Generation</h2>
-            <p className="text-xs text-slate-500">Generate probable ICP antimicrobial test results + corroborating antibacterial estimates</p>
+            <h2 className="text-lg font-bold text-slate-900">{T.step3Title}</h2>
+            <p className="text-xs text-slate-500">{T.step3Subtitle}</p>
           </div>
           <div className="flex gap-2">
             <button onClick={runIcpDryRun} disabled={!!loading} className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-semibold hover:bg-purple-700 disabled:opacity-50">
-              {loading === "icpDry" ? "Analyzing..." : "Preview ICP Profiles"}
+              {loading === "icpDry" ? T.analyzing : T.previewIcp}
             </button>
             {icpDryRun && icpDryRun.ok && icpDryRun.profilesGenerated > 0 && (
               <button onClick={applyIcp} disabled={!!loading} className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 disabled:opacity-50">
-                {loading === "icpApply" ? "Creating..." : `Generate ${icpDryRun.profilesGenerated} ICP Profiles`}
+                {loading === "icpApply" ? T.creating : T.generateIcpTemplate.replace("{n}", String(icpDryRun.profilesGenerated))}
               </button>
             )}
           </div>
         </div>
         {icpApplyResult && icpApplyResult.ok && (
           <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm font-semibold">
-            Created {icpApplyResult.profilesGenerated} ICP test profiles!
+            {T.icpSuccessTemplate.replace("{n}", String(icpApplyResult.profilesGenerated))}
           </div>
         )}
         {(icpDryRun || icpApplyResult) && (() => {
@@ -203,10 +206,10 @@ export default function FabricEnrichmentPage() {
           return (
             <div>
               <div className="grid grid-cols-4 gap-3 mb-2">
-                <div className="p-3 bg-slate-50 rounded-lg text-center"><p className="text-2xl font-black">{data.totalWithoutIcp}</p><p className="text-[10px] text-slate-500 uppercase">Without ICP</p></div>
-                <div className="p-3 bg-purple-50 rounded-lg text-center"><p className="text-2xl font-black text-purple-700">{data.profilesGenerated}</p><p className="text-[10px] text-purple-500 uppercase">Profiles</p></div>
-                <div className="p-3 bg-green-50 rounded-lg text-center"><p className="text-2xl font-black text-green-700">{data.summary?.astm2149PassRate || "—"}</p><p className="text-[10px] text-green-500 uppercase">ASTM Pass</p></div>
-                <div className="p-3 bg-blue-50 rounded-lg text-center"><p className="text-2xl font-black text-blue-700">{data.summary?.aatcc100PassRate || "—"}</p><p className="text-[10px] text-blue-500 uppercase">AATCC Pass</p></div>
+                <div className="p-3 bg-slate-50 rounded-lg text-center"><p className="text-2xl font-black">{data.totalWithoutIcp}</p><p className="text-[10px] text-slate-500 uppercase">{T.statWithoutIcp}</p></div>
+                <div className="p-3 bg-purple-50 rounded-lg text-center"><p className="text-2xl font-black text-purple-700">{data.profilesGenerated}</p><p className="text-[10px] text-purple-500 uppercase">{T.statProfiles}</p></div>
+                <div className="p-3 bg-green-50 rounded-lg text-center"><p className="text-2xl font-black text-green-700">{data.summary?.astm2149PassRate || "—"}</p><p className="text-[10px] text-green-500 uppercase">{T.statAstmPass}</p></div>
+                <div className="p-3 bg-blue-50 rounded-lg text-center"><p className="text-2xl font-black text-blue-700">{data.summary?.aatcc100PassRate || "—"}</p><p className="text-[10px] text-blue-500 uppercase">{T.statAatccPass}</p></div>
               </div>
               {data.summary?.tierDistribution && (
                 <div className="grid grid-cols-4 gap-3 mb-4">
@@ -218,23 +221,23 @@ export default function FabricEnrichmentPage() {
               )}
               {data.results && data.results.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-bold text-slate-700 mb-2">ICP Profile Preview (first {data.results.length})</h3>
+                  <h3 className="text-sm font-bold text-slate-700 mb-2">{T.icpPreviewTemplate.replace("{n}", String(data.results.length))}</h3>
                   {data.summary && (
                     <div className="grid grid-cols-4 gap-3 mb-3">
                       <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center">
-                        <p className="text-xs text-purple-600">ASTM E2149 Pass</p>
+                        <p className="text-xs text-purple-600">{T.astmPassCard}</p>
                         <p className="text-lg font-black text-purple-700">{data.summary.astm2149PassRate}</p>
                       </div>
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
-                        <p className="text-xs text-blue-600">AATCC 100 Pass</p>
+                        <p className="text-xs text-blue-600">{T.aatccPassCard}</p>
                         <p className="text-lg font-black text-blue-700">{data.summary.aatcc100PassRate}</p>
                       </div>
                       <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
-                        <p className="text-xs text-slate-600">Ag Range</p>
+                        <p className="text-xs text-slate-600">{T.agRangeCard}</p>
                         <p className="text-lg font-black text-slate-700">{data.summary.agRange}</p>
                       </div>
                       <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center">
-                        <p className="text-xs text-emerald-600">Model</p>
+                        <p className="text-xs text-emerald-600">{T.modelCard}</p>
                         <p className="text-lg font-black text-emerald-700">{data.summary.model}</p>
                       </div>
                     </div>
@@ -242,13 +245,13 @@ export default function FabricEnrichmentPage() {
                   <div className="max-h-80 overflow-y-auto border rounded-lg">
                     <table className="w-full text-xs">
                       <thead className="bg-slate-50 sticky top-0"><tr>
-                        <th className="p-2 text-left">FUZE #</th>
-                        <th className="p-2 text-left">Fiber</th>
-                        <th className="p-2 text-center">Tier</th>
-                        <th className="p-2 text-right">Ag (mg/kg)</th>
-                        <th className="p-2 text-center">Conf.</th>
-                        <th className="p-2 text-center">ASTM E2149</th>
-                        <th className="p-2 text-center">AATCC 100</th>
+                        <th className="p-2 text-left">{T.colFuzeNumber}</th>
+                        <th className="p-2 text-left">{T.colFiber}</th>
+                        <th className="p-2 text-center">{T.colTier}</th>
+                        <th className="p-2 text-right">{T.colAgMgKg}</th>
+                        <th className="p-2 text-center">{T.colConf}</th>
+                        <th className="p-2 text-center">{T.colAstm}</th>
+                        <th className="p-2 text-center">{T.colAatcc}</th>
                       </tr></thead>
                       <tbody>
                         {data.results.map((r: any) => (
@@ -281,8 +284,7 @@ export default function FabricEnrichmentPage() {
       </div>
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
-        <strong>Note:</strong> All auto-generated data is tagged with <code className="bg-amber-100 px-1 rounded">[FI]</code> (FUZE Input) markers
-        and should be reviewed before use in customer-facing reports. Enrichment is reversible — filter by "[FI]" in notes to find all auto-populated records.
+        <strong>{T.noteHeader}</strong>{T.noteBody}<code className="bg-amber-100 px-1 rounded">{T.noteCodeMarker}</code>{T.noteAfterCode}
       </div>
     </div>
   );
