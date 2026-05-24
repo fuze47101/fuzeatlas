@@ -7307,6 +7307,29 @@ const vi: Translations = {
     errAddFailed: "Thêm thất bại",
   },
 
+  accountsAdmin: {
+    title: "Tài khoản",
+    subtitleBefore: "Các thương hiệu đã qua giai đoạn Lead — đã nhận trình bày, đang thử nghiệm, đang sản xuất, hoặc đã là khách hàng. Đối với khách hàng tiềm năng mới, hãy đi đến",
+    brandPipelineLink: "Pipeline thương hiệu",
+    allFilter: "Tất cả",
+    stagePresentation: "Trình bày",
+    stageBrandTesting: "Thử nghiệm thương hiệu",
+    stageFactoryOnboarding: "Onboarding nhà máy",
+    stageFactoryTesting: "Thử nghiệm nhà máy",
+    stageProduction: "Sản xuất",
+    stageReConnect: "Kết nối lại",
+    stageCustomerWon: "Đã thắng khách hàng",
+    searchPlaceholder: "Tìm tài khoản theo tên hoặc liên hệ...",
+    emptyTitle: "Chưa có tài khoản nào trong góc nhìn này",
+    emptyBody: "Tài khoản xuất hiện khi thương hiệu chuyển từ LEAD sang PRESENTATION hoặc muộn hơn.",
+    goToPipelineBtn: "Đi đến Pipeline thương hiệu",
+    highRelevanceBadge: "🔥 Liên quan cao",
+    amPrefix: "AM:",
+    contactsLabel: "liên hệ",
+    enrichedSuffix: "đã làm giàu",
+    backToLeadOption: "← Quay lại Lead",
+  },
+
 };
 
 export default vi;
