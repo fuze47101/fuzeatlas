@@ -2815,6 +2815,37 @@ const ja: Translations = {
     factoryLabel: "工場:",
   },
 
+  verifySku: {
+    errorTitle: "このコードを検証できませんでした",
+    errorBlurb:
+      "検証データベースへの接続に問題が発生しました。しばらくしてからもう一度お試しください。",
+    notCertifiedTitle: "FUZE認証SKUではありません",
+    notCertifiedBlurbPrefix: "コード",
+    notCertifiedBlurbSuffix:
+      "は当社の検証データベースにございません。FUZEハングタグからの場合は、ブランドに直接ご連絡ください。",
+    whatIsFuze: "FUZEとは? →",
+    fuzeVerified: "FUZE 認証済み",
+    pageTitle: "この生地はFUZEで処理されています",
+    pageSubtitle: "抗菌繊維処理 — 第三者機関により検証済み。",
+    brandLabel: "ブランド",
+    millLabel: "工場",
+    fuzeTierLabel: "FUZE ティア",
+    fuzeNumberLabel: "FUZE 番号",
+    washClaimSuffix: "回洗濯耐性",
+    recentValidation: "直近の試験所検証",
+    testPassed: "合格",
+    testTypeSuffix: "試験 —",
+    validatedByPrefix: "検証機関:",
+    validatedByGeneric: "第三者試験機関により検証済み",
+    validatedOn: "検証日:",
+    reportRefPrefix: "報告書 ref:",
+    certifications: "FUZE 認証",
+    aboutBody:
+      "FUZE は FUZE Biotech 社による独自の抗菌繊維処理剤です。標準的な繊維仕上げ工程で繊維に結合するメタマテリアル化学を採用 — PFAS、バインダー、キュアリングオーブン不要。",
+    learnMore: "FUZEについて詳しく →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default ja;
