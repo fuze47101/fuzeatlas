@@ -7875,6 +7875,24 @@ const ko: Translations = {
     openSameLink: "동일한 링크 열기 →",
   },
 
+  apiDocs: {
+    heading: "API 문서",
+    subtitle: "FUZE Atlas API 참조",
+    authStrong: "인증:",
+    authBodyPrefix: "다음을 제외한 모든 엔드포인트는",
+    authBodySuffix: "유효한 JWT 세션 쿠키가 필요합니다.",
+    searchPlaceholder: "경로 또는 설명으로 엔드포인트 검색...",
+    allMethodsBtn: "모든 메서드",
+    showingPrefix: "표시 중:",
+    showingOf: "/",
+    endpointsLabel: "엔드포인트",
+    collapseAllBtn: "모두 접기",
+    expandAllBtn: "모두 펼치기",
+    noResults: "검색과 일치하는 엔드포인트가 없습니다.",
+    clearFiltersBtn: "필터 지우기",
+    footerPrefix: "FUZE Atlas API 문서 - 마지막 업데이트",
+  },
+
 };
 
 export default ko;
