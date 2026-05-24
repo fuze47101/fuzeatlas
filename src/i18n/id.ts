@@ -2929,6 +2929,31 @@ const id: Translations = {
     sanityCheckHeader: "Sanity Check (apa yang seharusnya dilaporkan CTLA)",
   },
 
+  changePassword: {
+    titleDefault: "Ubah Password",
+    titleForced: "Atur Password Baru Anda",
+    forcedBanner: "Anda telah diberikan password sementara. Harap buat password yang aman untuk melanjutkan.",
+    currentPasswordLabel: "Password Saat Ini",
+    newPasswordLabel: "Password Baru",
+    newPasswordPlaceholder: "Min 8 karakter, 1 huruf besar, 1 angka",
+    confirmPasswordLabel: "Konfirmasi Password Baru",
+    reqMinChars: "Minimal 8 karakter",
+    reqUppercase: "Satu huruf besar",
+    reqNumber: "Satu angka",
+    reqMatch: "Password cocok",
+    updateBtn: "Perbarui Password",
+    setAndContinueBtn: "Atur Password & Lanjutkan",
+    updatingBtn: "Memperbarui...",
+    cancelBtn: "Batal",
+    passwordUpdatedTitle: "Password Diperbarui",
+    redirecting: "Mengarahkan Anda sekarang...",
+    errPasswordsDoNotMatch: "Password tidak cocok",
+    errMinLength: "Password harus minimal 8 karakter",
+    errNeedUppercase: "Password harus mengandung minimal satu huruf besar",
+    errNeedNumber: "Password harus mengandung minimal satu angka",
+    errGeneric: "Gagal mengubah password",
+  },
+
 };
 
 export default id;
