@@ -3187,6 +3187,31 @@ const zhCN: Translations = {
     deleteFailed: "删除失败",
   },
 
+  educationMain: {
+    kicker: "FUZE 基础",
+    pageTitle: "FUZE 的真实工作原理 —— 以及它为何与众不同",
+    pageIntro: "四大板块,深入讲解 FUZE 涂覆在面料上的物质、杀菌机制、正确的测试方法,以及品牌方在 FUZE 与传统抗菌竞品之间做选择时所应考虑的要点。",
+    forBrands: "面向品牌",
+    forFactories: "面向工厂",
+    forDistributors: "面向经销商",
+    forSalesReps: "面向销售代表",
+    segmentKicker: "按细分市场的话术",
+    segmentTitle: "FUZE 在您所在行业的应用",
+    segmentIntro: "上述科学原理通用于各行业。下方每个细分市场均配有推荐的 FUZE 等级阶梯、测试组合、法规核对清单,以及为该受众量身定制的外联切入点。",
+    openSegment: "打开细分市场页面 →",
+    dosageKicker: "第 1 节 —— 用量",
+    mechanismKicker: "第 2 节 —— 机理",
+    mechanismTitle: "释放性离子 vs 非离子接触杀菌",
+    performanceKicker: "第 3 节 —— 性能阶梯 (F1 → F4)",
+    performanceTitle: "每个等级均为永久性。每一步都叠加一层新的 FUZE。",
+    testsKicker: "第 4 节 —— 五项测试",
+    testsTitle: "市面上有五项测试 —— 只有一项是针对 FUZE 机理设计的",
+    synthesisKicker: "第 5 节 —— 这对您的品牌意味着什么",
+    synthesisTitle: "走进每一次供应链会议前,带上这三点",
+    ctaPricing: "查看与具体竞品的成本对比",
+    ctaSustainability: "查看可持续性影响",
+  },
+
 };
 
 export default zhCN;
