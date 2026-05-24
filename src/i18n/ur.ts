@@ -6874,6 +6874,34 @@ const ur: Translations = {
     errLoadFailed: "فنل لوڈ کرنے میں ناکام",
   },
 
+  bdSequenceAnalytics: {
+    loading: "لوڈ ہو رہا ہے…",
+    crumbBdSequences: "BD سیکوئنسز",
+    crumbAnalytics: "تجزیات",
+    modeSequence: "سیکوئنس",
+    modeCadence: "کیڈینس",
+    title: "فنل تجزیات",
+    aggregatedAcross: "اکٹھا کیا گیا",
+    sequenceSingular: "سیکوئنس",
+    sequencePlural: "سیکوئنسز",
+    onCadenceLabel: "کیڈینس پر",
+    emptyBefore: "اس پر ابھی تک کوئی بھیجنے کی سرگرمی نہیں",
+    stepLabel: "مرحلہ",
+    sentSuffix: "بھیجا گیا",
+    mSent: "بھیجا گیا",
+    mOpens: "اوپنز",
+    mClicks: "کلکس",
+    mReplies: "جوابات",
+    mMeetings: "میٹنگز",
+    mAvgDaysReply: "اوسط دن ← جواب",
+    subjectVariantsTitle: "سبجیکٹ ویریئنٹس",
+    colSubject: "سبجیکٹ",
+    colSent: "بھیجا گیا",
+    colOpens: "اوپنز",
+    colOpenRate: "اوپن کی شرح",
+    errLoadFailed: "تجزیات لوڈ کرنے میں ناکام",
+  },
+
 };
 
 export default ur;
