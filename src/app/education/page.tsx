@@ -18,25 +18,27 @@
 
 import Link from "next/link";
 import { listSegments } from "@/lib/education-segments";
+import { useI18n } from "@/i18n";
 
 // ─────────────────────────────────────────────────────────────
 //  Segment picker — quick links to /education/[segment] pitch pages
 // ─────────────────────────────────────────────────────────────
 
 function SegmentPicker() {
+  const { t } = useI18n();
+  const T = t.educationMain;
   const segments = listSegments();
   return (
     <section className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8">
       <div className="mb-4">
         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
-          Pitch by segment
+          {T.segmentKicker}
         </div>
         <h2 className="text-2xl md:text-3xl font-black text-slate-900">
-          FUZE for your specific industry
+          {T.segmentTitle}
         </h2>
         <p className="text-sm text-slate-600 mt-2 max-w-3xl">
-          The science above is universal. Each segment below has the recommended FUZE tier ladder,
-          test stack, regulatory checkmarks, and an outreach hook tailored to that audience.
+          {T.segmentIntro}
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -53,7 +55,7 @@ function SegmentPicker() {
               {s.audience}
             </p>
             <div className="text-[11px] text-emerald-700 font-semibold mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              Open segment page →
+              {T.openSegment}
             </div>
           </Link>
         ))}
@@ -125,6 +127,8 @@ const DOSAGE_ROWS: DosageRow[] = [
 ];
 
 function DosageHero() {
+  const { t } = useI18n();
+  const T = t.educationMain;
   // For the bar chart, total chemical mass = active + binder*1000 (mg).
   // Scale so the heaviest row fills 100% of the bar.
   const maxMass = Math.max(...DOSAGE_ROWS.map((r) => r.activeMgPerKg + r.binderGPerKg * 1000));
@@ -132,7 +136,7 @@ function DosageHero() {
   return (
     <section id="dosage" className="bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl p-6 md:p-8 scroll-mt-24">
       <div className="mb-5">
-        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Section 1 — Footprint</div>
+        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">{T.dosageKicker}</div>
         <h2 className="text-2xl md:text-3xl font-black text-slate-900">
           FUZE puts a fraction of a milligram of <span className="text-emerald-700">metamaterial</span> on your fabric.
           Competitors pile on grams of <span className="text-red-700">chemistry</span>.
@@ -206,11 +210,13 @@ function DosageHero() {
 // ─────────────────────────────────────────────────────────────
 
 function MechanismCompare() {
+  const { t } = useI18n();
+  const T = t.educationMain;
   return (
     <section id="mechanism" className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 scroll-mt-24">
       <div className="mb-5">
-        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Section 2 — Mechanism</div>
-        <h2 className="text-2xl md:text-3xl font-black text-slate-900">Leaching ions vs non-ionic contact-kill</h2>
+        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">{T.mechanismKicker}</div>
+        <h2 className="text-2xl md:text-3xl font-black text-slate-900">{T.mechanismTitle}</h2>
         <p className="text-sm text-slate-600 mt-2 max-w-3xl">
           The animations below loop in real time. They show what physically happens to the antimicrobial across the wash life of a garment.
         </p>
@@ -479,11 +485,13 @@ const STACK_TIERS: StackTier[] = [
 ];
 
 function PerformanceStack() {
+  const { t } = useI18n();
+  const T = t.educationMain;
   return (
     <section id="performance-stack" className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 scroll-mt-24">
       <div className="mb-5">
-        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Section 3 — Performance Stack (F1 → F4)</div>
-        <h2 className="text-2xl md:text-3xl font-black text-slate-900">Every tier is permanent. Each step adds a new layer of FUZE.</h2>
+        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">{T.performanceKicker}</div>
+        <h2 className="text-2xl md:text-3xl font-black text-slate-900">{T.performanceTitle}</h2>
         <p className="text-sm text-slate-600 mt-2 max-w-3xl">
           FUZE&apos;s tier ladder isn&apos;t a wash-count ladder — it&apos;s a benefit-stack ladder. F4 dominates
           natural fibers at the lowest dose. F3 adds active fabric performance. F2 adds color & UV. F1 stacks
@@ -734,11 +742,13 @@ function TestDiagram({ kind }: { kind: TestCard["diagram"] }) {
 }
 
 function TestMethodologies() {
+  const { t } = useI18n();
+  const T = t.educationMain;
   return (
     <section id="testing" className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 scroll-mt-24">
       <div className="mb-5">
-        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Section 4 — The five tests</div>
-        <h2 className="text-2xl md:text-3xl font-black text-slate-900">Five tests on the market — only one is designed for FUZE&apos;s mechanism</h2>
+        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">{T.testsKicker}</div>
+        <h2 className="text-2xl md:text-3xl font-black text-slate-900">{T.testsTitle}</h2>
         <p className="text-sm text-slate-600 mt-2 max-w-3xl">
           Most antimicrobial textile tests in widespread use were designed in the 1960s-1990s around <em>leaching</em> chemistries
           (silver-ion, AgCl, QAC, zinc). The test geometry rewards diffusion and ion-release. ASTM E2149 is the modern
@@ -807,11 +817,13 @@ function TestMethodologies() {
 // ─────────────────────────────────────────────────────────────
 
 function Synthesis() {
+  const { t } = useI18n();
+  const T = t.educationMain;
   return (
     <section className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 text-white rounded-2xl p-6 md:p-8">
       <div className="mb-5">
-        <div className="text-xs font-bold uppercase tracking-wider text-emerald-200 mb-1">Section 5 — What this means for your brand</div>
-        <h2 className="text-2xl md:text-3xl font-black">Three things to walk into every supply-chain meeting with</h2>
+        <div className="text-xs font-bold uppercase tracking-wider text-emerald-200 mb-1">{T.synthesisKicker}</div>
+        <h2 className="text-2xl md:text-3xl font-black">{T.synthesisTitle}</h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white/10 rounded-xl p-4 border border-white/20">
@@ -849,13 +861,13 @@ function Synthesis() {
           href="/pricing"
           className="inline-flex items-center px-4 py-2.5 rounded-lg bg-white text-emerald-800 text-sm font-bold hover:bg-emerald-50 shadow"
         >
-          See cost vs a specific competitor
+          {T.ctaPricing}
         </Link>
         <Link
           href="/sustainability"
           className="inline-flex items-center px-4 py-2.5 rounded-lg bg-emerald-900/40 text-white text-sm font-bold hover:bg-emerald-900/60 border border-white/20"
         >
-          See sustainability impact
+          {T.ctaSustainability}
         </Link>
       </div>
     </section>
@@ -867,21 +879,22 @@ function Synthesis() {
 // ─────────────────────────────────────────────────────────────
 
 export default function EducationPage() {
+  const { t } = useI18n();
+  const T = t.educationMain;
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
       {/* Page header */}
       <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 md:p-8">
-        <div className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-2">FUZE Basics</div>
-        <h1 className="text-3xl md:text-4xl font-black tracking-tight">How FUZE actually works — and why it&apos;s different</h1>
+        <div className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-2">{T.kicker}</div>
+        <h1 className="text-3xl md:text-4xl font-black tracking-tight">{T.pageTitle}</h1>
         <p className="mt-3 text-sm md:text-base text-slate-300 max-w-3xl">
-          A four-section primer on what FUZE puts on a fabric, how it kills bacteria, which tests measure it correctly,
-          and what that means when a brand is choosing between us and a silver-ion / zinc / QAC competitor.
+          {T.pageIntro}
         </p>
         <div className="mt-4 flex flex-wrap gap-2 text-xs">
-          <span className="inline-block px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200">For brands</span>
-          <span className="inline-block px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200">For factories</span>
-          <span className="inline-block px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200">For distributors</span>
-          <span className="inline-block px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200">For sales reps</span>
+          <span className="inline-block px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200">{T.forBrands}</span>
+          <span className="inline-block px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200">{T.forFactories}</span>
+          <span className="inline-block px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200">{T.forDistributors}</span>
+          <span className="inline-block px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200">{T.forSalesReps}</span>
         </div>
       </div>
 

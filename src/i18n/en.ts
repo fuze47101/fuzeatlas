@@ -3582,6 +3582,32 @@ const en = {
     failedUpdate: "Failed to update lab",
     deleteFailed: "Delete failed",
   },
+
+  // ─── EDUCATION MAIN PAGE (FUZE Basics — brand-facing) ───
+  educationMain: {
+    kicker: "FUZE Basics",
+    pageTitle: "How FUZE actually works — and why it's different",
+    pageIntro: "A four-section primer on what FUZE puts on a fabric, how it kills bacteria, which tests measure it correctly, and what that means when a brand is choosing between us and a silver-ion / zinc / QAC competitor.",
+    forBrands: "For brands",
+    forFactories: "For factories",
+    forDistributors: "For distributors",
+    forSalesReps: "For sales reps",
+    segmentKicker: "Pitch by segment",
+    segmentTitle: "FUZE for your specific industry",
+    segmentIntro: "The science above is universal. Each segment below has the recommended FUZE tier ladder, test stack, regulatory checkmarks, and an outreach hook tailored to that audience.",
+    openSegment: "Open segment page →",
+    dosageKicker: "Section 1 — Footprint",
+    mechanismKicker: "Section 2 — Mechanism",
+    mechanismTitle: "Leaching ions vs non-ionic contact-kill",
+    performanceKicker: "Section 3 — Performance Stack (F1 → F4)",
+    performanceTitle: "Every tier is permanent. Each step adds a new layer of FUZE.",
+    testsKicker: "Section 4 — The five tests",
+    testsTitle: "Five tests on the market — only one is designed for FUZE's mechanism",
+    synthesisKicker: "Section 5 — What this means for your brand",
+    synthesisTitle: "Three things to walk into every supply-chain meeting with",
+    ctaPricing: "See cost vs a specific competitor",
+    ctaSustainability: "See sustainability impact",
+  },
 };
 
 export default en;
