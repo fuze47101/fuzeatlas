@@ -7084,6 +7084,26 @@ const ko: Translations = {
     emptyBias: "아직 편향 데이터가 없습니다.",
   },
 
+  labCreditsAdmin: {
+    loading: "로드 중…",
+    crumbLabs: "랩",
+    crumbCredits: "크레딧",
+    creditsSuffix: "크레딧",
+    balanceLabel: "이 랩에서의 FUZE 잔액",
+    balanceHint: "이 랩에서 향후 FUZE 지불 시험에서 자동 차감됩니다.",
+    addCreditTitle: "크레딧 추가",
+    amountPlaceholder: "$ 금액",
+    sourceNotePlaceholder: "출처 노트",
+    addCreditBtn: "크레딧 추가",
+    colCreated: "생성일",
+    colAmount: "금액",
+    colSource: "출처",
+    colNote: "노트",
+    colSpent: "사용",
+    availableLabel: "사용 가능",
+    emptyState: "아직 크레딧이 없습니다.",
+  },
+
 };
 
 export default ko;
