@@ -5828,6 +5828,54 @@ const bn: Translations = {
     btnCreating: "তৈরি হচ্ছে...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "FUZE ফ্যাব্রিক লাইব্রেরি",
+    pageSubtitle: "আমাদের বৈশ্বিক নেটওয়ার্ক জুড়ে FUZE-চিকিৎসিত ফ্যাব্রিক এবং যাচাইকৃত পরীক্ষার ফলাফল ব্রাউজ করুন। সমস্ত ডেটা নামহীন — কারখানা এবং ব্র্যান্ডের পরিচয় গোপনীয়।",
+
+    statFabrics: "পরীক্ষিত ফ্যাব্রিক",
+    statTests: "মোট পরীক্ষা",
+    statIcp: "ICP বিশ্লেষণ",
+    statAb: "অ্যান্টিমাইক্রোবিয়াল পরীক্ষা",
+
+    searchPlaceholder: "নির্মাণ, সুতা, শেষ ব্যবহার, FUZE নম্বর দ্বারা অনুসন্ধান করুন...",
+    filterAllTypes: "সমস্ত পরীক্ষার ধরন",
+    filterIcp: "ICP বিশ্লেষণ",
+    filterAntibacterial: "অ্যান্টিব্যাকটেরিয়াল",
+    filterFungal: "অ্যান্টিফাঙ্গাল",
+    filterOdor: "গন্ধ নিয়ন্ত্রণ",
+    passOnly: "শুধুমাত্র পাস",
+
+    emptyTitle: "আপনার মানদণ্ডের সাথে কোনো ফ্যাব্রিক মিলছে না",
+    emptyClear: "সমস্ত ফিল্টার সাফ করুন",
+    errorFailedLoad: "ফ্যাব্রিক লাইব্রেরি লোড করতে ব্যর্থ",
+    errorFailedDefault: "লোড করতে ব্যর্থ",
+
+    testsSuffix: "পরীক্ষা",
+    testSuffix: "পরীক্ষা",
+    propConstruction: "নির্মাণ:",
+    propWeight: "ওজন:",
+    propWidth: "প্রস্থ:",
+    propYarn: "সুতা:",
+    propCategory: "বিভাগ:",
+    propEndUse: "শেষ ব্যবহার:",
+    propWeave: "বুনন:",
+    propColor: "রঙ:",
+
+    colTest: "পরীক্ষা",
+    colMethod: "পদ্ধতি",
+    colWashes: "ধোয়া",
+    colResult: "ফলাফল",
+    colStatus: "অবস্থা",
+    pass: "পাস",
+    fail: "ফেইল",
+    passBadge: "পাস",
+    failBadge: "ফেইল",
+
+    paginationPrev: "পূর্ববর্তী",
+    paginationNext: "পরবর্তী",
+    paginationLabel: "{pages}-এর মধ্যে পৃষ্ঠা {page}",
+  },
+
 };
 
 export default bn;
