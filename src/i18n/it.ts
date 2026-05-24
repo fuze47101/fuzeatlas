@@ -7684,6 +7684,24 @@ const it: Translations = {
     websiteLabel: "Sito web",
   },
 
+  reportSharePage: {
+    unavailableTitle: "Report non disponibile",
+    unavailableBodyPrefix: "Per un accesso a lungo termine, accedi a",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "e trova il report in I miei report, oppure rispondi all'email da cui proviene.",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · Report di applicazione e convalida",
+    heading: "Ricetta di trattamento FUZE e convalida",
+    issuedLabel: "Emesso",
+    linkValidUntil: "· Questo link diretto è valido fino al",
+    preparedForTitle: "Preparato per",
+    execSummaryTitle: "Sintesi esecutiva",
+    recipeTitle: "Ricetta consigliata",
+    fuzeRequiredTitle: "FUZE richiesto (dimensioni del bagno di produzione)",
+    labIcpTitle: "Verifica ICP da laboratorio indipendente",
+    accessLaterTitle: "Accedere a questo report in seguito",
+  },
+
 };
 
 export default it;
