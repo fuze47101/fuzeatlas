@@ -8077,6 +8077,24 @@ const tr: Translations = {
     footerVerifiedBy: "FUZE Atlas tarafından doğrulandı",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "ESG anlık görünümleri — FUZE Atlas",
+    metaDescPrefix: "Üç aylık ESG etki raporları —",
+    metaDescSuffix: "FUZE Atlas tarafından sertifikalı.",
+    backArrowPrefix: "←",
+    headingSuffix: "— ESG etkisi",
+    heroSubtitle: "FUZE sertifikalı kumaş ve antimikrobiyal test sonuçlarının üç aylık anlık görünümleri.",
+    emptyBody: "Henüz yayımlanmış anlık görünüm yok. Üç aylık raporlar bir sonraki çeyreğin başında yayımlanır.",
+    statFabricsCertified: "Sertifikalı kumaşlar",
+    statTestsPassed: "Başarılı testler",
+    statFuzeLiters: "FUZE litre",
+    statFactories: "Fabrikalar",
+    passRateLabel: "Başarı oranı:",
+    downloadPdf: "PDF indir →",
+    footerCertifiedBy: "FUZE Atlas tarafından sertifikalı",
+  },
+
 };
 
 export default tr;
