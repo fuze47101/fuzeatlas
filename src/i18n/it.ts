@@ -7450,6 +7450,33 @@ const it: Translations = {
     contactLink: "Contatto",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "Marchio",
+    crumb: "QR hangtag",
+    heading: "Token QR hangtag",
+    subtitlePrefix: "Ogni token risolve a una pagina pubblica di verifica su",
+    subtitleSuffix: "Numero di scansioni + timestamp prima/ultima scansione tracciati per riga.",
+    mintTokensTitle: "Genera token",
+    countPlaceholder: "numero",
+    fabricIdPlaceholder: "fabricId (opzionale)",
+    skuPlaceholder: "SKU prodotto",
+    batchPlaceholder: "codice lotto",
+    mintBtn: "Genera",
+    mintingBusy: "Generazione…",
+    mintFootnote: "Massimo 500 per generazione. Stampa i token risultanti come codici QR su hangtag utilizzando il generatore QR di tua scelta (ogni URL è esattamente l'URL della pagina di verifica).",
+    mintFailedError: "Generazione fallita",
+    tokenSingular: "token",
+    tokenPlural: "token",
+    exportCsvBtn: "Esporta CSV",
+    colToken: "Token",
+    colSkuBatch: "SKU / Lotto",
+    colFabric: "Tessuto",
+    colScans: "Scansioni",
+    colLastScan: "Ultima scansione",
+    colVerifyUrl: "URL verifica",
+    emptyState: "Nessun token ancora — genera il tuo primo lotto sopra.",
+  },
+
 };
 
 export default it;
