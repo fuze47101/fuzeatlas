@@ -4792,6 +4792,23 @@ const es: Translations = {
     nameRequiredError: "El nombre es obligatorio",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← Volver a la calculadora",
+    printButton: "🖨 Imprimir / Guardar como PDF",
+    eyebrow: "FUZE Biotech · SOP de laboratorio",
+    pageTitle: "Procedimiento de prueba de laboratorio",
+    pageSubtitle: "Calculadora de receta FUZE — Tasa de pickup y dilución pad-dry-cure",
+    docLabel: "Doc: SOP-FUZE-LAB-001",
+    revLabel: "Rev: 1.0 ·",
+    purposeHeader: "Propósito",
+    equipmentHeader: "Equipamiento",
+    chemistryRefHeader: "Referencia de química FUZE",
+    criticalRulesHeader: "⚠ Reglas críticas de protocolo",
+    procedureHeader: "Procedimiento",
+    formulasHeader: "Fórmulas (para verificación cruzada de QC)",
+    sanityRangesHeader: "Rangos de verificación",
+  },
+
 };
 
 export default es;
