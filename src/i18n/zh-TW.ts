@@ -7462,6 +7462,28 @@ const zhTW: Translations = {
     errNetwork: "網路錯誤",
   },
 
+  notificationsPage: {
+    loading: "載入通知中…",
+    title: "通知",
+    unreadLabel: "未讀",
+    allCaughtUp: "全部已處理完畢",
+    totalLabel: "總計",
+    markAllRead: "全部標記為已讀",
+    filterAll: "全部",
+    filterUnread: "未讀",
+    allTypes: "所有類型",
+    emptyUnreadTitle: "沒有未讀通知",
+    emptyAllTitle: "尚無通知",
+    emptyUnreadBody: "您已全部處理完畢！",
+    emptyAllBody: "當帳號有活動時，通知會顯示於此。",
+    viewDetails: "查看詳細資料 →",
+    markAsRead: "標記為已讀",
+    justNow: "剛剛",
+    minSuffix: "分鐘前",
+    hourSuffix: "小時前",
+    daySuffix: "天前",
+  },
+
 };
 
 export default zhTW;
