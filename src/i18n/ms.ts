@@ -7024,6 +7024,26 @@ const ms: Translations = {
     colSource: "Sumber",
   },
 
+  interLabVariance: {
+    loadingLabel: "Memuatkan varians antara-makmal",
+    crumbQualityLabs: "Kualiti & Makmal",
+    crumbInterLabVariance: "Varians antara-makmal",
+    title: "Varians antara-makmal",
+    subtitleBefore: "Di mana fabrik yang sama diuji oleh ≥2 makmal dalam",
+    subtitleAfter: "hari terakhir. Diisih mengikut julat (maks − min) menurun.",
+    colFabric: "Fabrik",
+    colMethod: "Kaedah",
+    colRange: "Julat",
+    colMeanSigma: "Purata ± σ",
+    colPerLab: "Keputusan per-makmal",
+    emptyTitle: "Belum ada fabrik multi-makmal",
+    emptyBodyBefore: "Varians antara-makmal membandingkan fabrik yang diuji oleh ≥2 makmal dalam",
+    emptyBodyAfter: "hari terakhir. Sebaik sahaja anda mempunyai fabrik yang sama diuji di makmal rakan kongsi DAN di FUZE USA (atau mana-mana pasangan 2-makmal), ia akan dipaparkan di sini.",
+    biasTitle: "Bias kalibrasi per-makmal",
+    biasHint: "Purata (keputusan makmal ini − purata kumpulan) merentas setiap fabrik dikongsi. Positif = berjalan lebih tinggi daripada makmal rakan; negatif = berjalan lebih rendah.",
+    emptyBias: "Belum ada data bias.",
+  },
+
 };
 
 export default ms;
