@@ -7688,6 +7688,23 @@ const ja: Translations = {
     whatYouCanClaimBtn: "謳える内容を見る →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ FUZE Atlas 認証",
+    statFabricsCertified: "認証済みファブリック数",
+    statTestsPassed: "合格試験数 (過去 12 か月)",
+    statCountries: "出荷対応国数",
+    activeTiersTitle: "稼働中の FUZE ティア",
+    activeTiersBody: "認証施設で現在生産されている処理レベルです。",
+    lastPassedLabel: "最新の合格日",
+    aboutSummaryTitle: "FUZE テクノロジーについて",
+    verifyCtaTitle: "特定の製品を検証する",
+    verifyCtaBody: "認証済みの各製品には、生産バッチと試験履歴に紐づく一意の QR コードが付与されています。",
+    verifyCtaBtn: "製品を検索する →",
+    footerCertifiedBy: "FUZE Atlas 認証",
+    brandSiteLink: "ブランドサイト →",
+    contactLink: "お問い合わせ",
+  },
+
 };
 
 export default ja;
