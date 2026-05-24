@@ -7844,6 +7844,19 @@ const it: Translations = {
     questionsPrefix: "· Domande?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "Playbook",
+    heading: "Playbook BD",
+    subtitle: "Guida all'outreach taggata per categoria. Aggiungi ai preferiti quelli che usi; i brand mostrano un playbook suggerito in base a Brand.textileCategory.",
+    failedFallback: "Non riuscito",
+    emptyBody: "Nessun playbook al momento per questa categoria.",
+    emptySeedHint: "Attiva",
+    emptySeedHintSuffix: "tramite fzcron per inserire i tre playbook iniziali.",
+    removeFavoriteTitle: "Rimuovi dai preferiti",
+    addFavoriteTitle: "Aggiungi ai preferiti",
+  },
+
 };
 
 export default it;
