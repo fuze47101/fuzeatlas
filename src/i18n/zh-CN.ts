@@ -7919,6 +7919,21 @@ const zhCN: Translations = {
     titleHint: "例如「先生」「博士」",
   },
 
+  importFactories: {
+    title: "批量导入 — 工厂",
+    subtitle: "粘贴或上传工厂 CSV。按名称（自然主键）upsert，若提供经销商则关联，并为每个已存在于 Atlas 的品牌生成 SupplyChainLink 行。尚不存在的品牌将报为「缺失」，请先运行品牌导入。",
+    backLabel: "工厂",
+    factoryNameLabel: "工厂名称",
+    factoryNameHint: "（自然主键 — 以此进行 upsert）",
+    countryLabel: "国家 / 地区",
+    distributorLabel: "经销商",
+    distributorHint: "不区分大小写匹配 Distributor.name；未找到则跳过",
+    brandsLabel: "品牌",
+    brandsHint: "逗号分隔；每个名称必须已存在为 Brand",
+    cityLabel: "城市",
+    websiteLabel: "网站",
+  },
+
 };
 
 export default zhCN;
