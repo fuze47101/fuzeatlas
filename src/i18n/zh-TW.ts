@@ -7704,6 +7704,33 @@ const zhTW: Translations = {
     contactLink: "聯絡",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "品牌",
+    crumb: "吊牌 QR",
+    heading: "吊牌 QR 權杖",
+    subtitlePrefix: "每個權杖會解析至公開驗證頁面：",
+    subtitleSuffix: "每列皆追蹤掃描次數以及首次／最近掃描的時間戳記。",
+    mintTokensTitle: "鑄造權杖",
+    countPlaceholder: "數量",
+    fabricIdPlaceholder: "fabricId（選填）",
+    skuPlaceholder: "產品 SKU",
+    batchPlaceholder: "批次代碼",
+    mintBtn: "鑄造",
+    mintingBusy: "鑄造中…",
+    mintFootnote: "每次鑄造上限 500 個。請使用您慣用的 QR 產生器，將產生出的權杖以 QR 碼形式印在吊牌上（每個網址即為驗證頁面網址）。",
+    mintFailedError: "鑄造失敗",
+    tokenSingular: "個權杖",
+    tokenPlural: "個權杖",
+    exportCsvBtn: "匯出 CSV",
+    colToken: "權杖",
+    colSkuBatch: "SKU / 批次",
+    colFabric: "面料",
+    colScans: "掃描次數",
+    colLastScan: "最近掃描",
+    colVerifyUrl: "驗證網址",
+    emptyState: "尚無權杖 — 請於上方鑄造第一批。",
+  },
+
 };
 
 export default zhTW;
