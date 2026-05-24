@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 /**
  * FZ-500 · Solaris IR Heat Deflection Protocol — wizard
@@ -19,14 +20,6 @@ import { useSearchParams, useRouter } from "next/navigation";
  */
 
 const TIERS = ["F1", "F2", "F3", "F4"];
-
-const STEPS = [
-  { n: 1, title: "Fabric + Tier", desc: "What's being tested" },
-  { n: 2, title: "Device Setup", desc: "Bulb, plate, ambient" },
-  { n: 3, title: "Baseline Run", desc: "Untreated control" },
-  { n: 4, title: "Treated Run", desc: "FUZE applied fabric" },
-  { n: 5, title: "Results + Save", desc: "Deltas + Nike spec" },
-];
 
 function parseSeries(text: string) {
   // Accepts CSV: "t_sec,plateA,plateB,air,humidity" with or without header,
@@ -75,6 +68,15 @@ function seriesMetrics(series: any[]) {
 }
 
 export default function SolarisWizardPage() {
+  const { t } = useI18n();
+  const T = t.solarisTest;
+  const STEPS = [
+    { n: 1, title: T.step1Title, desc: T.step1Desc },
+    { n: 2, title: T.step2Title, desc: T.step2Desc },
+    { n: 3, title: T.step3Title, desc: T.step3Desc },
+    { n: 4, title: T.step4Title, desc: T.step4Desc },
+    { n: 5, title: T.step5Title, desc: T.step5Desc },
+  ];
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialFabricId = searchParams.get("fabricId") || "";
@@ -181,10 +183,10 @@ export default function SolarisWizardPage() {
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#00b4c3]">FZ-500 · Solaris IR Heat Deflection Protocol</p>
-            <h1 className="text-2xl font-black text-slate-900">Solaris Test Wizard</h1>
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#00b4c3]">{T.badge}</p>
+            <h1 className="text-2xl font-black text-slate-900">{T.pageTitle}</h1>
           </div>
-          <a href="/admin/solaris-test/list" className="text-sm text-[#00b4c3] font-semibold">View all tests →</a>
+          <a href="/admin/solaris-test/list" className="text-sm text-[#00b4c3] font-semibold">{T.viewAllTests}</a>
         </div>
 
         {/* Stepper */}
@@ -195,7 +197,7 @@ export default function SolarisWizardPage() {
               onClick={() => setStep(s.n)}
               className={`flex-1 p-3 rounded-lg border-2 text-left transition-all ${step === s.n ? "bg-[#00b4c3] text-white border-[#00b4c3]" : step > s.n ? "bg-white border-emerald-300 text-slate-700" : "bg-white border-slate-200 text-slate-500"}`}
             >
-              <div className="text-[10px] font-bold opacity-80">STEP {s.n}</div>
+              <div className="text-[10px] font-bold opacity-80">{T.stepPrefix} {s.n}</div>
               <div className="text-sm font-bold">{s.title}</div>
               <div className="text-[10px] opacity-70">{s.desc}</div>
             </button>
@@ -206,11 +208,11 @@ export default function SolarisWizardPage() {
           {/* STEP 1 — Fabric + Tier */}
           {step === 1 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-slate-900">1. What are we testing?</h2>
+              <h2 className="text-lg font-bold text-slate-900">{T.step1Heading}</h2>
               <div>
-                <label className="text-xs font-semibold text-slate-600">Fabric</label>
+                <label className="text-xs font-semibold text-slate-600">{T.fabricLabel}</label>
                 <select value={form.fabricId} onChange={(e) => set("fabricId", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg">
-                  <option value="">— unlinked / free-text label —</option>
+                  <option value="">{T.fabricUnlinked}</option>
                   {fabrics.map((f: any) => (
                     <option key={f.id} value={f.id}>{f.fuzeNumber || f.customerCode || f.id} · {f.color || ""} · {f.weightGsm || "—"} gsm</option>
                   ))}
@@ -218,39 +220,39 @@ export default function SolarisWizardPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Fabric label (for report)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.fabricReportLabel}</label>
                   <input value={form.fabricLabel} onChange={(e) => set("fabricLabel", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Color (critical for IR)</label>
-                  <input value={form.fabricColor} onChange={(e) => set("fabricColor", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="e.g. Black, Navy, White" />
+                  <label className="text-xs font-semibold text-slate-600">{T.fabricColorLabel}</label>
+                  <input value={form.fabricColor} onChange={(e) => set("fabricColor", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder={T.fabricColorPlaceholder} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Fabric type</label>
-                  <input value={form.fabricType} onChange={(e) => set("fabricType", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="Knit, Woven, Nonwoven" />
+                  <label className="text-xs font-semibold text-slate-600">{T.fabricTypeLabel}</label>
+                  <input value={form.fabricType} onChange={(e) => set("fabricType", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder={T.fabricTypePlaceholder} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">GSM</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.gsmLabel}</label>
                   <input type="number" value={form.fabricWeightGsm} onChange={(e) => set("fabricWeightGsm", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-600">Fiber content</label>
-                <input value={form.fiberContent} onChange={(e) => set("fiberContent", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="100% Polyester, 65/35 Poly-Cotton, etc." />
+                <label className="text-xs font-semibold text-slate-600">{T.fiberContentLabel}</label>
+                <input value={form.fiberContent} onChange={(e) => set("fiberContent", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder={T.fiberContentPlaceholder} />
               </div>
               <div className="p-3 bg-slate-100 rounded-lg">
-                <p className="text-xs font-semibold text-slate-600 mb-2">Treatment tier being validated</p>
+                <p className="text-xs font-semibold text-slate-600 mb-2">{T.treatmentTierLabel}</p>
                 <div className="flex gap-2">
-                  {TIERS.map((t) => (
-                    <button key={t} onClick={() => set("treatedAtTier", t)} className={`px-4 py-2 rounded-lg border-2 font-bold ${form.treatedAtTier === t ? "bg-[#00b4c3] text-white border-[#00b4c3]" : "bg-white border-slate-300 text-slate-600"}`}>{t}</button>
+                  {TIERS.map((tier) => (
+                    <button key={tier} onClick={() => set("treatedAtTier", tier)} className={`px-4 py-2 rounded-lg border-2 font-bold ${form.treatedAtTier === tier ? "bg-[#00b4c3] text-white border-[#00b4c3]" : "bg-white border-slate-300 text-slate-600"}`}>{tier}</button>
                   ))}
                 </div>
               </div>
               {benchTests.length > 0 && (
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Link to bench test (optional)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.linkBenchTestLabel}</label>
                   <select value={form.benchTestId} onChange={(e) => set("benchTestId", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg">
-                    <option value="">— none —</option>
+                    <option value="">{T.linkNone}</option>
                     {benchTests.map((t: any) => (
                       <option key={t.id} value={t.id}>{t.testNumber} · {new Date(t.testDate).toLocaleDateString()}</option>
                     ))}
@@ -263,63 +265,63 @@ export default function SolarisWizardPage() {
           {/* STEP 2 — Device Setup */}
           {step === 2 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-slate-900">2. Device setup snapshot</h2>
-              <p className="text-xs text-slate-500">These measurements are captured with the test so we can reproduce or compare across units. Defaults are from the standard Solaris bench.</p>
+              <h2 className="text-lg font-bold text-slate-900">{T.step2Heading}</h2>
+              <p className="text-xs text-slate-500">{T.step2Help}</p>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Device name</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.deviceNameLabel}</label>
                   <input value={form.deviceName} onChange={(e) => set("deviceName", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Bulb wattage (W)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.bulbWattsLabel}</label>
                   <input type="number" value={form.bulbWattage} onChange={(e) => set("bulbWattage", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Bulb type</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.bulbTypeLabel}</label>
                   <input value={form.bulbType} onChange={(e) => set("bulbType", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Bulb → fabric (mm)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.bulbToFabricLabel}</label>
                   <input type="number" value={form.bulbToFabricMm} onChange={(e) => set("bulbToFabricMm", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Fabric → plate (mm)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.fabricToPlateLabel}</label>
                   <input type="number" value={form.fabricToPlateMm} onChange={(e) => set("fabricToPlateMm", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Hoop diameter (mm)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.hoopDiameterLabel}</label>
                   <input type="number" value={form.hoopDiameterMm} onChange={(e) => set("hoopDiameterMm", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Hoop thickness (mm)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.hoopThicknessLabel}</label>
                   <input type="number" value={form.hoopThicknessMm} onChange={(e) => set("hoopThicknessMm", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Plate width (mm)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.plateWidthLabel}</label>
                   <input type="number" value={form.plateWidthMm} onChange={(e) => set("plateWidthMm", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Plate height (mm)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.plateHeightLabel}</label>
                   <input type="number" value={form.plateHeightMm} onChange={(e) => set("plateHeightMm", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Plate material</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.plateMaterialLabel}</label>
                   <input value={form.plateMaterial} onChange={(e) => set("plateMaterial", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Ambient temp (°C)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.ambientTempLabel}</label>
                   <input type="number" step="0.1" value={form.ambientTempC} onChange={(e) => set("ambientTempC", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Ambient humidity (%)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.ambientHumidityLabel}</label>
                   <input type="number" step="0.1" value={form.ambientHumidityPct} onChange={(e) => set("ambientHumidityPct", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Run duration (sec)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.runDurationLabel}</label>
                   <input type="number" value={form.runDurationSec} onChange={(e) => set("runDurationSec", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Sample interval (ms)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.sampleIntervalLabel}</label>
                   <input type="number" value={form.sampleIntervalMs} onChange={(e) => set("sampleIntervalMs", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                 </div>
               </div>
@@ -329,57 +331,59 @@ export default function SolarisWizardPage() {
           {/* STEP 3 — Baseline Run */}
           {step === 3 && (
             <RunStep
-              title="3. Baseline run (untreated control)"
-              help="Run the device with an UNTREATED fabric of the same construction/color or no fabric at all. This is our comparison line."
+              title={T.step3Heading}
+              help={T.step3Help}
               csv={baselineCsv}
               setCsv={setBaselineCsv}
               metrics={baseM}
               fmt={fmt}
+              T={T}
             />
           )}
 
           {/* STEP 4 — Treated Run */}
           {step === 4 && (
             <RunStep
-              title="4. Treated run (FUZE applied)"
-              help="Run the device with the FUZE-treated fabric at the selected tier. Series format matches the baseline."
+              title={T.step4Heading}
+              help={T.step4Help}
               csv={treatedCsv}
               setCsv={setTreatedCsv}
               metrics={trM}
               fmt={fmt}
+              T={T}
             />
           )}
 
           {/* STEP 5 — Results + Save */}
           {step === 5 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-slate-900">5. Results</h2>
+              <h2 className="text-lg font-bold text-slate-900">{T.step5Heading}</h2>
               <div className="grid grid-cols-3 gap-3">
-                <Metric label="Baseline · max plate temp" value={fmt(baseM.maxPlate, 1) + " °C"} />
-                <Metric label="Treated · max plate temp" value={fmt(trM.maxPlate, 1) + " °C"} />
-                <Metric label="Δ plate temp" value={fmt(deltaPlate, 1) + " °C"} highlight={deltaPlate != null && deltaPlate < 0 ? "good" : deltaPlate != null ? "bad" : undefined} />
-                <Metric label="IR deflection" value={fmt(deflectionPct, 1) + " %"} highlight={deflectionPct != null && deflectionPct > 0 ? "good" : undefined} />
-                <Metric label="Baseline ramp (°C/s first 60s)" value={fmt(baseM.ramp, 3)} />
-                <Metric label="Treated ramp (°C/s first 60s)" value={fmt(trM.ramp, 3)} />
+                <Metric label={T.metricBaselineMaxPlate} value={fmt(baseM.maxPlate, 1) + " °C"} />
+                <Metric label={T.metricTreatedMaxPlate} value={fmt(trM.maxPlate, 1) + " °C"} />
+                <Metric label={T.metricDeltaPlate} value={fmt(deltaPlate, 1) + " °C"} highlight={deltaPlate != null && deltaPlate < 0 ? "good" : deltaPlate != null ? "bad" : undefined} />
+                <Metric label={T.metricIrDeflection} value={fmt(deflectionPct, 1) + " %"} highlight={deflectionPct != null && deflectionPct > 0 ? "good" : undefined} />
+                <Metric label={T.metricBaselineRamp} value={fmt(baseM.ramp, 3)} />
+                <Metric label={T.metricTreatedRamp} value={fmt(trM.ramp, 3)} />
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-600">Nike spec · max allowed Δ plate °C (optional)</label>
-                <input type="number" step="0.1" value={form.nikeSpecMaxDeltaC} onChange={(e) => set("nikeSpecMaxDeltaC", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="e.g. -5 (treated must be ≥5°C cooler)" />
+                <label className="text-xs font-semibold text-slate-600">{T.nikeSpecLabel}</label>
+                <input type="number" step="0.1" value={form.nikeSpecMaxDeltaC} onChange={(e) => set("nikeSpecMaxDeltaC", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder={T.nikeSpecPlaceholder} />
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-600">Notes</label>
+                <label className="text-xs font-semibold text-slate-600">{T.notesLabel}</label>
                 <textarea rows={3} value={form.notes} onChange={(e) => set("notes", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
               </div>
               {!savedTest ? (
                 <button onClick={save} disabled={saving} className="w-full px-6 py-3 bg-[#00b4c3] text-white font-black rounded-lg disabled:opacity-50">
-                  {saving ? "Saving…" : "💾 Save Solaris Test"}
+                  {saving ? T.savingButton : T.saveButton}
                 </button>
               ) : (
                 <div className="p-4 bg-emerald-50 border-2 border-emerald-300 rounded-lg">
-                  <p className="font-black text-emerald-900">✓ Saved as {savedTest.testNumber}</p>
+                  <p className="font-black text-emerald-900">{T.savedPrefix} {savedTest.testNumber}</p>
                   <div className="flex gap-2 mt-2">
-                    <a href={`/admin/solaris-test/${savedTest.id}/report`} target="_blank" className="px-4 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg">📄 View Report</a>
-                    <button onClick={() => { setSavedTest(null); setStep(1); setBaselineCsv(""); setTreatedCsv(""); }} className="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-bold rounded-lg">+ New Test</button>
+                    <a href={`/admin/solaris-test/${savedTest.id}/report`} target="_blank" className="px-4 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg">{T.viewReport}</a>
+                    <button onClick={() => { setSavedTest(null); setStep(1); setBaselineCsv(""); setTreatedCsv(""); }} className="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-bold rounded-lg">{T.newTest}</button>
                   </div>
                 </div>
               )}
@@ -389,8 +393,8 @@ export default function SolarisWizardPage() {
           {/* Nav */}
           {!savedTest && (
             <div className="flex justify-between mt-6 pt-4 border-t border-slate-200">
-              <button disabled={step === 1} onClick={() => setStep(step - 1)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg disabled:opacity-50">← Back</button>
-              {step < 5 && <button onClick={() => setStep(step + 1)} className="px-6 py-2 bg-[#00b4c3] text-white font-bold rounded-lg">Next →</button>}
+              <button disabled={step === 1} onClick={() => setStep(step - 1)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg disabled:opacity-50">{T.navBack}</button>
+              {step < 5 && <button onClick={() => setStep(step + 1)} className="px-6 py-2 bg-[#00b4c3] text-white font-bold rounded-lg">{T.navNext}</button>}
             </div>
           )}
         </div>
@@ -399,15 +403,15 @@ export default function SolarisWizardPage() {
   );
 }
 
-function RunStep({ title, help, csv, setCsv, metrics, fmt }: any) {
+function RunStep({ title, help, csv, setCsv, metrics, fmt, T }: any) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-bold text-slate-900">{title}</h2>
       <div className="p-3 bg-sky-50 border border-sky-200 rounded-lg text-xs text-slate-700">
         <p className="mb-1">{help}</p>
-        <p className="mt-2 font-semibold">Paste CSV from the Pi OR enter manually. Format:</p>
-        <code className="block bg-white px-2 py-1 mt-1 text-[10px] rounded border">t_sec, plateA_C, plateB_C, air_C, humidity_pct</code>
-        <p className="mt-1 text-[11px] text-slate-500">Header row optional. Pi sampling at 1 Hz for 10 min = 600 rows.</p>
+        <p className="mt-2 font-semibold">{T.csvFormatLine}</p>
+        <code className="block bg-white px-2 py-1 mt-1 text-[10px] rounded border">{T.csvFormatExample}</code>
+        <p className="mt-1 text-[11px] text-slate-500">{T.csvFormatHint}</p>
       </div>
       <textarea
         value={csv}
@@ -417,10 +421,10 @@ function RunStep({ title, help, csv, setCsv, metrics, fmt }: any) {
         className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-xs"
       />
       <div className="grid grid-cols-4 gap-3">
-        <Metric label="Max plate (avg A/B)" value={fmt(metrics.maxPlate, 1) + " °C"} />
-        <Metric label="Max air" value={fmt(metrics.maxAir, 1) + " °C"} />
-        <Metric label="Time → 50 °C" value={fmt(metrics.tTo50, 0) + " s"} />
-        <Metric label="Time → 60 °C" value={fmt(metrics.tTo60, 0) + " s"} />
+        <Metric label={T.runMaxPlate} value={fmt(metrics.maxPlate, 1) + " °C"} />
+        <Metric label={T.runMaxAir} value={fmt(metrics.maxAir, 1) + " °C"} />
+        <Metric label={T.runTimeTo50} value={fmt(metrics.tTo50, 0) + " s"} />
+        <Metric label={T.runTimeTo60} value={fmt(metrics.tTo60, 0) + " s"} />
       </div>
     </div>
   );
