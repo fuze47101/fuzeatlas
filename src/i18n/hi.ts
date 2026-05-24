@@ -4891,6 +4891,81 @@ const hi: Translations = {
     docTypeOther: "अन्य",
   },
 
+  consumptionAdmin: {
+    loading: "खपत डेटा लोड हो रहा है...",
+    pageTitle: "खपत और पुनः ऑर्डर",
+    pageSubtitle: "कारखाना FUZE उपयोग, अनुमानित रन-आउट तिथियां, और स्वचालित पुनः ऑर्डर ट्रिगर ट्रैक करें",
+
+    btnNewOrder: "+ नया ऑर्डर",
+    btnLogUsage: "+ उपयोग लॉग करें",
+
+    kpiActiveFactories: "सक्रिय कारखाने",
+    kpiOfTotal: "{n} कुल में से",
+    kpiTotalOrdered: "कुल ऑर्डर किया गया",
+    kpiPending: "{n} लंबित",
+    kpiTotalConsumed: "कुल खपत",
+    kpiAcrossAll: "सभी कारखानों में",
+    kpiReorderAlerts: "पुनः ऑर्डर अलर्ट",
+    kpiAlertsSplit: "{c} गंभीर, {w} चेतावनी",
+
+    annualDemandLabel: "वार्षिक अनुमानित मांग",
+    annualDemandUnit: "लीटर",
+    annualDemandBottles: "~{n} बोतलें",
+    annualDemandRevenue: "~${n} राजस्व",
+
+    sectionFactoryInventory: "कारखाना स्टॉक स्थिति",
+    emptyTitle: "अभी कोई FUZE-सक्षम कारखाना नहीं।",
+    emptySub: "fuzeEnabled = true वाले कारखाने यहां दिखाई देंगे।",
+
+    cellRemaining: "शेष",
+    cellBurn: "बर्न/दिन",
+    cellRunOut: "रन-आउट",
+    daysSuffix: "d",
+    daysWord: "दिन",
+    fabricsSuffix: "फैब्रिक्स",
+    fabricSuffix: "फैब्रिक",
+    activeOrdersSuffix: "सक्रिय ऑर्डर",
+    activeOrderSuffix: "सक्रिय ऑर्डर",
+
+    colFactory: "कारखाना",
+    colCountry: "देश",
+    colOrdered: "ऑर्डर किया गया",
+    colConsumed: "खपत",
+    colRemaining: "शेष",
+    colBurnDay: "बर्न/दिन",
+    colRunOut: "रन-आउट",
+    colStatus: "स्थिति",
+
+    modalOrderTitle: "नया FUZE ऑर्डर",
+    modalUsageTitle: "FUZE उपयोग लॉग करें",
+    fieldFactory: "कारखाना",
+    placeholderFactory: "कारखाना चुनें...",
+    fieldVolumeL: "मात्रा (लीटर)",
+    fieldTier: "टियर",
+    fieldNotes: "नोट्स",
+    fieldLitersUsed: "उपयोग किए गए लीटर",
+    fieldMetersProcessed: "प्रोसेस किए गए मीटर",
+    placeholderOptional: "वैकल्पिक",
+    fieldMethod: "विधि",
+    placeholderSelect: "चुनें...",
+    methodExhaust: "एग्जॉस्ट (डाईबाथ)",
+    methodPad: "पैड-ड्राई-क्योर",
+    methodSpray: "स्प्रे",
+
+    summaryBottles: "बोतलें (प्रत्येक 19L):",
+    summaryEstTotal: "अनुमानित कुल:",
+
+    btnCancel: "रद्द करें",
+    btnCreating: "बना रहे हैं...",
+    btnCreateOrder: "ऑर्डर बनाएं",
+    btnLogging: "लॉग हो रहा है...",
+    btnLogUsageSubmit: "उपयोग लॉग करें",
+
+    errorCreateOrder: "ऑर्डर बनाने में विफल",
+    errorLogUsage: "खपत लॉग करने में विफल",
+    errorNetwork: "नेटवर्क त्रुटि",
+  },
+
 };
 
 export default hi;
