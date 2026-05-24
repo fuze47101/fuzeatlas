@@ -7618,6 +7618,32 @@ const vi: Translations = {
     daySuffix: "ngày trước",
   },
 
+  resetPassword: {
+    tagline: "Tạo mật khẩu mới",
+    formTitle: "Đặt lại mật khẩu",
+    newPasswordLabel: "Mật khẩu mới",
+    newPasswordPlaceholder: "Nhập mật khẩu mới",
+    confirmPasswordLabel: "Xác nhận mật khẩu",
+    confirmPasswordPlaceholder: "Xác nhận mật khẩu",
+    resetBtn: "Đặt lại mật khẩu",
+    resettingBtn: "Đang đặt lại...",
+    backToSignIn: "Quay lại đăng nhập",
+    successTitle: "Đặt lại mật khẩu thành công",
+    successBody: "Mật khẩu của bạn đã được đặt lại thành công. Giờ bạn có thể đăng nhập với mật khẩu mới.",
+    signInBtn: "Đăng nhập",
+    invalidLinkTitle: "Liên kết đặt lại không hợp lệ",
+    invalidLinkBody: "Liên kết đặt lại không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu một liên kết mới.",
+    requestNewLinkBtn: "Yêu cầu liên kết mới",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "Đang tải...",
+    errInvalidToken: "Token đặt lại không hợp lệ hoặc thiếu",
+    errInvalidTokenShort: "Token đặt lại không hợp lệ",
+    errMinLength: "Mật khẩu phải có ít nhất 6 ký tự",
+    errMismatch: "Mật khẩu không khớp",
+    errResetFailed: "Không đặt lại được mật khẩu",
+    errNetwork: "Lỗi mạng",
+  },
+
 };
 
 export default vi;
