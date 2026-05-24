@@ -7615,6 +7615,29 @@ const tr: Translations = {
     errServerUnreachable: "Sunucuya ulaşılamadı",
   },
 
+  educationStory: {
+    backLink: "← FUZE Temellerine Dön",
+    kicker: "FUZE Hikâyesi",
+    heroTitle: "Geri dönüştürülmüş elektronikten kalıcı antimikrobiyale",
+    heroBody: "FUZE metamateryali sıvı lazer ablasyonuyla üretilir: 30 amperlik lazer, 1m² üretim masası ve geri dönüştürülmüş elektronikten oluşan hammadde. Tüm üretim hücresi güneş enerjisiyle çalışabilir. Sadece antimikrobiyal değiliz — kumaşınızda son bulan bir e-atık geri kazanım operasyonuyuz.",
+    card1Title: "Geri dönüştürülmüş hammadde",
+    card1Body: "FUZE aktif maddesinin her gramı, ömrünü tamamlamış elektroniklerden geri kazanılan elementer değerli metalden gelir. Madencilik yapmıyoruz. Birincil malzeme rafine etmiyoruz. Aksi takdirde çöplükte duracak veya yakılacak metali çekiyoruz.",
+    card2Title: "Sıvı lazer ablasyonu",
+    card2Body: "30 amperlik bir lazer atımı, %99,998 ultra saf 18 megaohm DI suya batırılmış metal hammaddeyi buharlaştırır. Yoğuşan şey FUZE metamateryalidir — yüksek yoğunluklu elementer alotrop, teslim edilen stok konsantrasyonunda 20 ppm. Çözücü yok. Öncül kimya yok. Yüzey aktif madde yok.",
+    card3Title: "Güneş enerjisiyle çalışabilen üretim",
+    card3Body: "1m² üretim hücresi, kabaca güneşli bir günde bir konut güneş panelinin ürettiği elektrikle çalışır. FUZE'ye bağlanan markalar, üretim adımında net-sıfır olabilen bir antimikrobiyal tedarik zincirine bağlanıyor — hiçbir rakip kimyasal bunu iddia edemez.",
+    esgTitle: "Bunun ESG raporunuzdaki anlamı",
+    esgBullet1: "✓ Döngüsel hammadde iddiası — FUZE, ömrünü tamamlamış elektronikten üretilir, döngüsel ekonomi taahhütlerinizi destekler.",
+    esgBullet2: "✓ Net-sıfır kapasiteli üretim — üretim hücresi güneş uyumludur. Yenilenebilir enerji sözleşmeleriyle eşleştirildiğinde, antimikrobiyal adım sıfır kapsam-2 emisyona katkı sağlar.",
+    esgBullet3: "✓ Birincil madencilik katkısı sıfır — çatışma mineralleri veya madencilik kaynaklı tedarik zincirleriyle koordinasyon gerektirmez.",
+    esgBullet4: "✓ PFAS içermez, formaldehit içermez, bağlayıcı içermez, kürleme fırını gerektirmez — rakiplerin gerektirdiği her petrokimyasal girdiyi FUZE ortadan kaldırır.",
+    esgBullet5: "✓ Belgelenmiş su temizliği — FUZE yıkama suyuna hiçbir şey salmaz. Belediye su arıtma yüküne aşağı akış katkınız = 0.",
+    differentTitle: "Farklı türde bir antimikrobiyal şirket",
+    differentBody: "Çoğu antimikrobiyal tekstil şirketi bir kimya şirketidir. Karıştırırlar, seyreltirler, formüle ederler ve sentezlenmiş kimya varilleri sevk ederler. Biz bir malzeme bilimi operasyonuyuz: suda metal ablate eder ve sonucu sevk ederiz. Sadelik, farkımızdır. Kumaşta daha az kimya. Yıkama suyunda daha az kimya. Üretim hattında daha az kimya. ESG raporunuzda daha az kimya.",
+    backBasicsBtn: "FUZE Temellerine Dön",
+    seeSustainabilityBtn: "Sürdürülebilirlik etkisini gör",
+  },
+
 };
 
 export default tr;
