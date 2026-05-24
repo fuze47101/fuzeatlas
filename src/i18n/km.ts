@@ -7429,6 +7429,36 @@ const km: Translations = {
     nextBtn: "បន្ទាប់",
   },
 
+  bdSequencesList: {
+    kicker: "BD Wizard",
+    heading: "Sequences",
+    subtitlePrefix: "Long-funnel outbound. Cron advances steps hourly. Ready steps park on",
+    subtitleSuffix: "for your review — nothing auto-sends.",
+    openWizardBtn: "បើក BD Wizard →",
+    stepAwaitingSingular: "step awaiting your review",
+    stepsAwaitingPlural: "steps awaiting your review",
+    showAllRepsLabel: "បង្ហាញទាំងអស់ reps",
+    loadingState: "កំពុងផ្ទុក sequences…",
+    emptyHeadPrefix: "ទេ",
+    emptyHeadSuffix: "sequences",
+    emptyBodyPrefix: "Kick one off by sending your first email through the",
+    emptyBodyLink: "BD Wizard",
+    emptyBodySuffix: ". Every first send spins up a 6-step cadence automatically.",
+    colBrandContact: "ម៉ាក / ទំនាក់ទំនង",
+    colProgress: "Progress",
+    colNext: "បន្ទាប់",
+    colRep: "Rep",
+    colStatus: "ស្ថានភាព",
+    colActions: "Actions",
+    readyChipSuffix: "ready",
+    reviewSendBtn: "Review & send",
+    openBtn: "បើក",
+    viewBtn: "មើល",
+    pauseBtn: "Pause",
+    exitBtn: "Exit",
+    resumeBtn: "Resume",
+  },
+
 };
 
 export default km;
