@@ -4639,6 +4639,92 @@ const bn: Translations = {
     tagsSuffix: "ট্যাগ",
   },
 
+  leadManagement: {
+    pageTitle: "Lead ব্যবস্থাপনা ও আউটরিচ",
+    pageSubtitle: "যোগাযোগ পরিচালনা, Apollo-এর মাধ্যমে সমৃদ্ধ, SMS/ইমেল আউটরিচ পাঠান",
+
+    loadErrorContext: "Lead পাইপলাইন লোড",
+    loadErrorFallback: "Lead ব্যবস্থাপনা ডেটা লোড করা যায়নি",
+    networkError: "Lead লোড করার সময় নেটওয়ার্ক ত্রুটি।",
+    loading: "Lead লোড হচ্ছে...",
+
+    statTotalContacts: "মোট যোগাযোগ",
+    statWithEmail: "ইমেল সহ",
+    statWithPhone: "ফোন সহ",
+    statEnriched: "সমৃদ্ধ",
+    statNotContacted: "যোগাযোগ করা হয়নি",
+    statContacted: "যোগাযোগ করা",
+
+    searchPlaceholder: "ব্র্যান্ড বা যোগাযোগ খুঁজুন...",
+    filterAllPipelineStages: "সব পাইপলাইন পর্যায়",
+    stageLead: "Lead",
+    stagePresentation: "উপস্থাপনা",
+    stageBrandTesting: "ব্র্যান্ড পরীক্ষা",
+    stageFactoryOnboarding: "কারখানা অনবোর্ডিং",
+    stageProduction: "উৎপাদন",
+    stageArchive: "আর্কাইভ",
+
+    filterAllVerticals: "সব ভার্টিক্যাল",
+    verticalApparel: "পোশাক",
+    verticalHospitality: "হসপিটালিটি",
+    verticalWorkwear: "ওয়ার্কওয়্যার",
+    verticalHomeTextiles: "হোম টেক্সটাইল",
+
+    filterAllOutreachStatus: "সব আউটরিচ অবস্থা",
+    outreachNotContacted: "যোগাযোগ করা হয়নি",
+    outreachContacted: "যোগাযোগ করা",
+    outreachResponded: "সাড়া দিয়েছে",
+    outreachMeetingBooked: "মিটিং বুক",
+    outreachNotInterested: "আগ্রহী নয়",
+
+    filterAllEmailStatus: "সব ইমেল অবস্থা",
+    emailVerified: "যাচাইকৃত",
+    emailExtrapolated: "এক্সট্রাপোলেটেড",
+    emailUnavailable: "অনুপলব্ধ",
+
+    colBrand: "ব্র্যান্ড",
+    colContact: "যোগাযোগ",
+    colTitle: "পদ",
+    colEmail: "ইমেল",
+    colPhone: "ফোন",
+    colLI: "LI",
+    colEmailed: "ইমেল করা",
+    colOutreach: "আউটরিচ",
+    colActions: "কাজ",
+
+    inProfile: "প্রোফাইলে",
+    enrichedLabel: "সমৃদ্ধ",
+    noContactsNeedsEnrichment: "কোনো যোগাযোগ নেই — সমৃদ্ধকরণ প্রয়োজন",
+    msgsSuffix: "বার্তা",
+    markLinkedinReached: "LinkedIn-এ পৌঁছেছেন চিহ্নিত করুন",
+    markEmailed: "ইমেল করা চিহ্নিত করুন",
+
+    actionSms: "SMS",
+    actionEmail: "ইমেল",
+    actionEnrich: "সমৃদ্ধ",
+    titleSendSms: "SMS পাঠান",
+    titleSendEmail: "ইমেল পাঠান",
+    titleEnrichApollo: "Apollo-এর মাধ্যমে সমৃদ্ধ",
+
+    paginationLabel: "{pages} পৃষ্ঠার {page} ({total} ব্র্যান্ড)",
+    paginationPrev: "পূর্ববর্তী",
+    paginationNext: "পরবর্তী",
+
+    modalSendSmsTo: "SMS পাঠান",
+    modalSendEmailTo: "ইমেল পাঠান",
+    fieldTemplate: "টেমপ্লেট",
+    fieldToPrefix: "প্রাপক:",
+    fieldSubject: "বিষয়",
+    fieldMessage: "বার্তা",
+    charsSuffix: "অক্ষর",
+    sendSms: "SMS পাঠান",
+    sendEmail: "ইমেল পাঠান",
+    sendingButton: "পাঠানো হচ্ছে...",
+    cancelButton: "বাতিল",
+    sendSuccess: "বার্তা সফলভাবে পাঠানো হয়েছে!",
+    sendErrorPrefix: "ত্রুটি:",
+  },
+
 };
 
 export default bn;
