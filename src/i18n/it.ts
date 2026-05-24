@@ -7503,6 +7503,29 @@ const it: Translations = {
     bookAnotherBtn: "Prenota un'altra riunione",
   },
 
+  adminAuditLog: {
+    adminCrumb: "Admin",
+    crumb: "Log di audit",
+    heading: "Log di audit",
+    subtitle: "Tracciamento completo di audit su ogni entità. Filtra per azione, entità o data. Conservazione 90 giorni.",
+    errorContext: "Caricamento log di audit",
+    couldntLoadPrefix: "Impossibile caricare il log di audit",
+    networkError: "Errore di rete durante il caricamento del log di audit.",
+    actionLabel: "Azione",
+    allActionsOption: "Tutte le azioni",
+    entityLabel: "Entità",
+    allEntitiesOption: "Tutte le entità",
+    sinceLabel: "Dal",
+    resetBtn: "Reimposta",
+    rowsSuffix: "righe",
+    loadingState: "Caricamento log di audit…",
+    emptyState: "Nessuna riga di audit corrisponde a questi filtri.",
+    byPrefix: "da",
+    systemActor: "Sistema",
+    fieldChangedSingular: "campo modificato",
+    fieldChangedPlural: "campi modificati",
+  },
+
 };
 
 export default it;
