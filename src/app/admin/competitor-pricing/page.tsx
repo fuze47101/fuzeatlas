@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { COMPETITORS, type Competitor } from "@/lib/competitors";
+import { useI18n } from "@/i18n";
 
 type Override = {
   id?: string;
@@ -64,6 +65,8 @@ function overrideToRow(o: Override): EditingRow {
 }
 
 export default function CompetitorPricingAdmin() {
+  const { t } = useI18n();
+  const T = t.competitorPricing;
   const [overrides, setOverrides] = useState<Override[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
@@ -132,11 +135,11 @@ export default function CompetitorPricingAdmin() {
       });
       const data = await res.json();
       if (data.ok) {
-        setFlash({ type: "ok", msg: `Saved pricing for ${editRow.competitorId}` });
+        setFlash({ type: "ok", msg: T.flashSavedTpl.replace("{id}", editRow.competitorId) });
         await fetchOverrides();
         cancelEdit();
       } else {
-        setFlash({ type: "err", msg: data.error || "Failed to save" });
+        setFlash({ type: "err", msg: data.error || T.flashErrFailed });
       }
     } catch (err: any) {
       setFlash({ type: "err", msg: err.message });
@@ -146,12 +149,12 @@ export default function CompetitorPricingAdmin() {
   }
 
   async function deleteOverride(competitorId: string) {
-    if (!confirm(`Remove custom pricing for ${competitorId}? It will revert to estimates.`)) return;
+    if (!confirm(T.confirmRevertTpl.replace("{id}", competitorId))) return;
     try {
       const res = await fetch(`/api/admin/competitor-pricing?competitorId=${competitorId}`, { method: "DELETE" });
       const data = await res.json();
       if (data.ok) {
-        setFlash({ type: "ok", msg: `Reverted ${competitorId} to estimates` });
+        setFlash({ type: "ok", msg: T.flashRevertedTpl.replace("{id}", competitorId) });
         await fetchOverrides();
       }
     } catch {
@@ -186,10 +189,10 @@ export default function CompetitorPricingAdmin() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
-            <h1 className="text-2xl font-bold text-slate-900">Market Landscape</h1>
+            <h1 className="text-2xl font-bold text-slate-900">{T.title}</h1>
           </div>
           <p className="text-sm text-slate-500">
-            Antimicrobial textile treatment market — pricing, chemistry, and product comparison across providers.
+            {T.subtitle}
           </p>
         </div>
       </div>
@@ -207,15 +210,15 @@ export default function CompetitorPricingAdmin() {
       {/* Legend */}
       <div className="mb-6 flex gap-6 text-xs text-slate-500">
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Verified data
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> {T.legendVerified}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Estimated
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> {T.legendEstimated}
         </span>
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-slate-400">Loading...</div>
+        <div className="text-center py-12 text-slate-400">{T.loading}</div>
       ) : (
         <div className="space-y-3">
           {COMPETITORS.map((comp) => {
@@ -239,7 +242,7 @@ export default function CompetitorPricingAdmin() {
                         {comp.company} — {comp.chemistryLabel}
                         {comp.epaRegNumber && (
                           <span className="ml-2 text-slate-400">
-                            EPA: {comp.epaRegNumber}
+                            {T.epaPrefix} {comp.epaRegNumber}
                             {comp.epaRegYear && <span className="text-amber-600"> ({comp.epaRegYear})</span>}
                           </span>
                         )}
@@ -249,19 +252,19 @@ export default function CompetitorPricingAdmin() {
 
                   <div className="flex items-center gap-6 text-sm">
                     <div className="text-right">
-                      <span className="text-xs text-slate-400 block">Chemical $/kg</span>
+                      <span className="text-xs text-slate-400 block">{T.colChemicalPerKg}</span>
                       <span className={`font-mono font-bold ${hasOverride ? "text-emerald-600" : "text-amber-600"}`}>
                         ${(ov?.chemicalPricePerKg ?? comp.chemicalPricePerKg).toFixed(0)}
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs text-slate-400 block">Binder $/kg</span>
+                      <span className="text-xs text-slate-400 block">{T.colBinderPerKg}</span>
                       <span className={`font-mono font-bold ${hasOverride && ov?.binderPricePerKg ? "text-emerald-600" : "text-amber-600"}`}>
                         ${(ov?.binderPricePerKg ?? comp.binderPricePerKg).toFixed(2)}
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs text-slate-400 block">Typical $/m</span>
+                      <span className="text-xs text-slate-400 block">{T.colTypicalPerMeter}</span>
                       <span className={`font-mono font-bold ${hasOverride && ov?.estimatedCostPerMeterTypical ? "text-emerald-600" : "text-amber-600"}`}>
                         ${(ov?.estimatedCostPerMeterTypical ?? comp.estimatedCostPerMeterTypical).toFixed(3)}
                       </span>
@@ -269,7 +272,7 @@ export default function CompetitorPricingAdmin() {
 
                     {hasOverride && ov?.updatedAt && (
                       <div className="text-right">
-                        <span className="text-xs text-slate-400 block">Updated</span>
+                        <span className="text-xs text-slate-400 block">{T.colUpdated}</span>
                         <span className="text-xs text-slate-600">
                           {new Date(ov.updatedAt).toLocaleDateString()}
                         </span>
@@ -282,7 +285,7 @@ export default function CompetitorPricingAdmin() {
                           onClick={() => startEdit(comp)}
                           className="px-3 py-1.5 bg-[#00b4c3] text-white text-xs font-medium rounded-lg hover:bg-[#00a0b0] transition-colors"
                         >
-                          {hasOverride ? "Edit" : "Add Data"}
+                          {hasOverride ? T.editBtn : T.addDataBtn}
                         </button>
                       )}
                       {hasOverride && !isEditing && (
@@ -290,7 +293,7 @@ export default function CompetitorPricingAdmin() {
                           onClick={() => deleteOverride(comp.id)}
                           className="px-3 py-1.5 bg-red-50 text-red-500 text-xs font-medium rounded-lg hover:bg-red-100 border border-red-200 transition-colors"
                         >
-                          Revert
+                          {T.revertBtn}
                         </button>
                       )}
                     </div>
@@ -300,7 +303,7 @@ export default function CompetitorPricingAdmin() {
                 {/* Source line */}
                 <div className="px-5 pb-3 -mt-1">
                   <p className="text-xs text-slate-400 italic truncate">
-                    Source: {ov?.chemicalPriceSource ?? comp.chemicalPriceSource}
+                    {T.sourcePrefix} {ov?.chemicalPriceSource ?? comp.chemicalPriceSource}
                   </p>
                 </div>
 
@@ -308,36 +311,36 @@ export default function CompetitorPricingAdmin() {
                 {isEditing && editRow && (
                   <div className="border-t border-slate-200 px-5 py-5 bg-slate-50 rounded-b-xl space-y-5">
                     <div className="text-xs font-medium text-[#00b4c3] uppercase tracking-wider mb-3">
-                      Update Market Data
+                      {T.panelKicker}
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {field("Chemical Price ($/kg)", "chemicalPricePerKg", "number", comp.chemicalPricePerKg.toString())}
-                      {field("Source / Contact", "chemicalPriceSource", "text", "Distributor, agent name...")}
-                      {field("Price Date", "chemicalPriceDate", "date")}
-                      {field("Binder Price ($/kg)", "binderPricePerKg", "number", comp.binderPricePerKg.toString())}
+                      {field(T.fieldChemicalPrice, "chemicalPricePerKg", "number", comp.chemicalPricePerKg.toString())}
+                      {field(T.fieldSource, "chemicalPriceSource", "text", T.fieldSourcePlaceholder)}
+                      {field(T.fieldPriceDate, "chemicalPriceDate", "date")}
+                      {field(T.fieldBinderPrice, "binderPricePerKg", "number", comp.binderPricePerKg.toString())}
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {field("Cost/m Low ($)", "estimatedCostPerMeterLow", "number", comp.estimatedCostPerMeterLow.toString())}
-                      {field("Cost/m High ($)", "estimatedCostPerMeterHigh", "number", comp.estimatedCostPerMeterHigh.toString())}
-                      {field("Cost/m Typical ($)", "estimatedCostPerMeterTypical", "number", comp.estimatedCostPerMeterTypical.toString())}
-                      {field("Re-treatment Multiplier", "retreatmentCostMultiplier", "number", comp.retreatmentCostMultiplier.toString())}
+                      {field(T.fieldCostLow, "estimatedCostPerMeterLow", "number", comp.estimatedCostPerMeterLow.toString())}
+                      {field(T.fieldCostHigh, "estimatedCostPerMeterHigh", "number", comp.estimatedCostPerMeterHigh.toString())}
+                      {field(T.fieldCostTypical, "estimatedCostPerMeterTypical", "number", comp.estimatedCostPerMeterTypical.toString())}
+                      {field(T.fieldRetreatMultiplier, "retreatmentCostMultiplier", "number", comp.retreatmentCostMultiplier.toString())}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-slate-500 mb-1">Notes</label>
+                      <label className="block text-xs font-medium text-slate-500 mb-1">{T.fieldNotesLabel}</label>
                       <textarea
                         value={editRow.notes}
                         onChange={(e) => setEditRow({ ...editRow, notes: e.target.value })}
-                        placeholder="Confidence level, market conditions, additional context..."
+                        placeholder={T.fieldNotesPlaceholder}
                         rows={2}
                         className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:border-[#00b4c3] focus:ring-1 focus:ring-[#00b4c3] outline-none resize-none"
                       />
                     </div>
 
                     <div className="p-3 bg-white rounded-lg border border-slate-200">
-                      <p className="text-xs text-slate-500 mb-1 font-medium">Current estimates (for reference):</p>
+                      <p className="text-xs text-slate-500 mb-1 font-medium">{T.referenceTitle}</p>
                       <div className="grid grid-cols-4 gap-2 text-xs text-slate-400">
                         <span>Chemical: ${comp.chemicalPricePerKg}/kg</span>
                         <span>Binder: ${comp.binderPricePerKg}/kg</span>
@@ -352,13 +355,13 @@ export default function CompetitorPricingAdmin() {
                         disabled={saving === editRow.competitorId}
                         className="px-5 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 disabled:opacity-50 transition-colors"
                       >
-                        {saving === editRow.competitorId ? "Saving..." : "Save Data"}
+                        {saving === editRow.competitorId ? T.savingBtn : T.saveBtn}
                       </button>
                       <button
                         onClick={cancelEdit}
                         className="px-5 py-2 text-slate-500 text-sm hover:text-slate-700 transition-colors"
                       >
-                        Cancel
+                        {T.cancelBtn}
                       </button>
                     </div>
                   </div>
@@ -373,15 +376,15 @@ export default function CompetitorPricingAdmin() {
       <div className="mt-8 grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
           <p className="text-2xl font-bold text-emerald-600">{overrides.length}</p>
-          <p className="text-xs text-slate-500 mt-1">Verified Entries</p>
+          <p className="text-xs text-slate-500 mt-1">{T.statVerifiedLabel}</p>
         </div>
         <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
           <p className="text-2xl font-bold text-amber-500">{COMPETITORS.length - overrides.length}</p>
-          <p className="text-xs text-slate-500 mt-1">Estimated</p>
+          <p className="text-xs text-slate-500 mt-1">{T.statEstimatedLabel}</p>
         </div>
         <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
           <p className="text-2xl font-bold text-slate-800">{COMPETITORS.length}</p>
-          <p className="text-xs text-slate-500 mt-1">Total Products Tracked</p>
+          <p className="text-xs text-slate-500 mt-1">{T.statTotalLabel}</p>
         </div>
       </div>
     </div>
