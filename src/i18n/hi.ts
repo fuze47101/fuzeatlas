@@ -7594,6 +7594,24 @@ const hi: Translations = {
     openSameLink: "वही लिंक खोलें →",
   },
 
+  apiDocs: {
+    heading: "API दस्तावेज़ीकरण",
+    subtitle: "FUZE Atlas API संदर्भ",
+    authStrong: "प्रमाणीकरण:",
+    authBodyPrefix: "सिवाय सभी एंडपॉइंट के",
+    authBodySuffix: "एक मान्य JWT सत्र कुकी की आवश्यकता है।",
+    searchPlaceholder: "पथ या विवरण द्वारा एंडपॉइंट खोजें...",
+    allMethodsBtn: "सभी विधियां",
+    showingPrefix: "दिखा रहे हैं",
+    showingOf: "का",
+    endpointsLabel: "एंडपॉइंट",
+    collapseAllBtn: "सभी संक्षिप्त करें",
+    expandAllBtn: "सभी विस्तारित करें",
+    noResults: "आपकी खोज से मेल खाते कोई एंडपॉइंट नहीं मिले।",
+    clearFiltersBtn: "फ़िल्टर साफ़ करें",
+    footerPrefix: "FUZE Atlas API दस्तावेज़ीकरण - अंतिम अपडेट",
+  },
+
 };
 
 export default hi;
