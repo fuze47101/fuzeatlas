@@ -8099,6 +8099,19 @@ const es: Translations = {
     questionsPrefix: "· ¿Preguntas?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "Playbooks",
+    heading: "Playbooks de BD",
+    subtitle: "Guía de outreach etiquetada por categoría. Marca como favoritos los que uses; las marcas muestran un playbook sugerido según Brand.textileCategory.",
+    failedFallback: "Error",
+    emptyBody: "Aún no hay playbooks para esta categoría.",
+    emptySeedHint: "Dispara",
+    emptySeedHintSuffix: "vía fzcron para crear los tres playbooks iniciales.",
+    removeFavoriteTitle: "Quitar de favoritos",
+    addFavoriteTitle: "Añadir a favoritos",
+  },
+
 };
 
 export default es;
