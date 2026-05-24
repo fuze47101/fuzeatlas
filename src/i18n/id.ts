@@ -4002,6 +4002,44 @@ const id: Translations = {
     sowEmptyNothingStuck: "Tidak ada yang macet.",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "Pengiriman Tidak Ditemukan",
+    notFoundBodyTpl: "Kami tidak dapat menemukan pesanan {order}.",
+    notFoundFooter: "Jika Anda menerima kode QR ini pada pengiriman FUZE, hubungi andrew@fuze47.com.",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "Verifikasi Pengiriman",
+
+    sectionShipment: "Detail Pengiriman",
+    fieldFuzeVolume: "Volume FUZE",
+    bottlesSuffix: "botol",
+    baseFuzePrefix: "basis",
+    wastageSuffix: "wastage",
+    fieldTier: "Tier",
+    fieldMethod: "Metode Perlakuan",
+    fieldFactory: "Pabrik",
+    fieldForBrand: "Untuk Brand",
+    fieldFabric: "Kain",
+    fieldFulfillment: "Pemenuhan",
+    directUsa: "Langsung dari USA",
+    distributorFallback: "Distributor",
+    fieldTracking: "Pelacakan",
+
+    sectionDocs: "Dokumen Produk",
+    sdsLabel: "Safety Data Sheet (SDS)",
+    sdsTitleFallback: "SDS FUZE",
+    coaLabel: "Sertifikat Analisis (COA)",
+    coaTitleFallback: "COA FUZE",
+    openCompliance: "Buka perpustakaan kepatuhan",
+
+    sectionTimeline: "Linimasa Siklus Hidup",
+    viewDocument: "Lihat dokumen →",
+    timelineEmpty: "Belum ada peristiwa siklus hidup dicatat. Linimasa akan terisi saat pengiriman bergerak.",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Pertanyaan?",
+  },
+
 };
 
 export default id;
