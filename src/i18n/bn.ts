@@ -7684,6 +7684,24 @@ const bn: Translations = {
     websiteLabel: "ওয়েবসাইট",
   },
 
+  reportSharePage: {
+    unavailableTitle: "রিপোর্ট উপলব্ধ নয়",
+    unavailableBodyPrefix: "দীর্ঘমেয়াদী অ্যাক্সেসের জন্য, সাইন ইন করুন",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "এ এবং My Reports-এর অধীনে রিপোর্ট খুঁজুন, অথবা যে ইমেল থেকে এটি এসেছে তার উত্তর দিন।",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · অ্যাপ্লিকেশন ও ভ্যালিডেশন রিপোর্ট",
+    heading: "FUZE ট্রিটমেন্ট রেসিপি ও ভ্যালিডেশন",
+    issuedLabel: "ইস্যু করা হয়েছে",
+    linkValidUntil: "· এই সরাসরি লিঙ্ক বৈধ পর্যন্ত",
+    preparedForTitle: "প্রস্তুত করা হয়েছে",
+    execSummaryTitle: "নির্বাহী সারাংশ",
+    recipeTitle: "প্রস্তাবিত রেসিপি",
+    fuzeRequiredTitle: "FUZE প্রয়োজন (প্রোডাকশন বাথ আকার)",
+    labIcpTitle: "স্বাধীন ল্যাব ICP যাচাইকরণ",
+    accessLaterTitle: "এই রিপোর্ট পরে অ্যাক্সেস করা",
+  },
+
 };
 
 export default bn;
