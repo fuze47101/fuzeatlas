@@ -7743,6 +7743,33 @@ const tr: Translations = {
     contactLink: "İletişim",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "Marka",
+    crumb: "Etiket QR",
+    heading: "Etiket QR belirteçleri",
+    subtitlePrefix: "Her belirteç, şu adresteki bir genel doğrulama sayfasına yönlendirir:",
+    subtitleSuffix: "Tarama sayısı + ilk / son tarama zaman damgaları satır başına izlenir.",
+    mintTokensTitle: "Belirteç oluştur",
+    countPlaceholder: "adet",
+    fabricIdPlaceholder: "fabricId (opsiyonel)",
+    skuPlaceholder: "ürün SKU",
+    batchPlaceholder: "parti kodu",
+    mintBtn: "Oluştur",
+    mintingBusy: "Oluşturuluyor…",
+    mintFootnote: "Her seferde en fazla 500. Oluşan belirteçleri tercih ettiğiniz QR üreticisi ile etiketlerde QR kod olarak yazdırın (her URL tam olarak doğrulama sayfası URL'sidir).",
+    mintFailedError: "Oluşturma başarısız",
+    tokenSingular: "belirteç",
+    tokenPlural: "belirteç",
+    exportCsvBtn: "CSV dışa aktar",
+    colToken: "Belirteç",
+    colSkuBatch: "SKU / Parti",
+    colFabric: "Kumaş",
+    colScans: "Tarama",
+    colLastScan: "Son tarama",
+    colVerifyUrl: "Doğrulama URL",
+    emptyState: "Henüz belirteç yok — yukarıdan ilk partinizi oluşturun.",
+  },
+
 };
 
 export default tr;
