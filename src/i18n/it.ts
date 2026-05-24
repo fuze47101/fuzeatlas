@@ -6036,6 +6036,38 @@ const it: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "Catalogo Test e Prezzi",
+    subtitle: "Gestisci tipi di test, prezzi, tempi di consegna e requisiti dei campioni. Le modifiche si riflettono immediatamente nel modulo di richiesta test dello stabilimento.",
+    sourcePrefix: "Origine:",
+    sourceDb: "Database (gestito dall'admin)",
+    sourceStatic: "Valori predefiniti statici",
+    successMsg: "Test aggiornato con successo",
+    failedSave: "Salvataggio fallito",
+    networkErr: "Errore di rete",
+    colTestName: "Nome Test",
+    colCategory: "Categoria",
+    colPrice: "Prezzo (USD)",
+    colTurnaround: "Tempo di Consegna",
+    colMinSample: "Campione Min.",
+    colControl: "Controllo?",
+    colActive: "Attivo",
+    colActions: "Azioni",
+    daysSuffix: "giorni",
+    metersSuffix: "m",
+    yes: "Sì",
+    no: "No",
+    saveBtn: "Salva",
+    savingDots: "...",
+    cancelBtn: "Annulla",
+    editBtn: "Modifica",
+    catRecipeBuild: "Costruzione Ricetta",
+    catPerformance: "Prestazioni",
+    catQuality: "Qualità",
+    catCertification: "Certificazione",
+    lastUpdatedTpl: "Ultimo aggiornamento da {who} il {when}",
+  },
+
 };
 
 export default it;
