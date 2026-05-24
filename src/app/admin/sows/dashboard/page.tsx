@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface SOW {
   id: string;
@@ -64,6 +65,8 @@ const STATUS_BADGE: Record<string, string> = {
 export default function SOWDashboardPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
+  const T = t.sowsDashboard;
   const [sows, setSows] = useState<SOW[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -119,51 +122,49 @@ export default function SOWDashboardPage() {
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
             <Link href="/admin" className="hover:text-[#00b4c3]">
-              Admin
+              {T.crumbAdmin}
             </Link>
             <span>/</span>
-            <span>SOWs</span>
+            <span>{T.crumbSOWs}</span>
             <span>/</span>
-            <span>Dashboard</span>
+            <span>{T.crumbDashboard}</span>
           </div>
-          <h1 className="text-3xl font-black text-slate-900">SOW Dashboard</h1>
+          <h1 className="text-3xl font-black text-slate-900">{T.title}</h1>
           <p className="text-slate-600 mt-1 max-w-2xl">
-            Every active SOW across the customer portfolio. Stale and
-            signed-but-no-progress engagements bubble to the top so they
-            don't slip. Click into a brand to act.
+            {T.subtitle}
           </p>
         </div>
       </div>
 
       {summary && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-          <Card label="Total SOWs" value={summary.total} icon="📄" />
+          <Card label={T.cardTotal} value={summary.total} icon="📄" />
           <Card
-            label="Stale 14+d"
+            label={T.cardStale}
             value={summary.stale}
             icon="⚠"
             warn={summary.stale > 0}
           />
           <Card
-            label="Signed, no progress"
+            label={T.cardSignedNoProgress}
             value={summary.signedNoProgress}
             icon="🐢"
             warn={summary.signedNoProgress > 0}
           />
           <Card
-            label="Overdue milestones"
+            label={T.cardOverdue}
             value={summary.overdueMilestones}
             icon="⏰"
             warn={summary.overdueMilestones > 0}
           />
-          <Card label="Active" value={summary.byStatus.ACTIVE || 0} icon="✅" />
-          <Card label="Signed" value={summary.byStatus.SIGNED || 0} icon="✍" />
+          <Card label={T.cardActive} value={summary.byStatus.ACTIVE || 0} icon="✅" />
+          <Card label={T.cardSigned} value={summary.byStatus.SIGNED || 0} icon="✍" />
         </div>
       )}
 
       <div className="bg-white border border-slate-200 rounded-xl p-3 mb-4 flex flex-wrap items-center gap-2">
         <span className="text-xs text-slate-500 uppercase font-bold">
-          Status:
+          {T.statusLabel}
         </span>
         {["", "DRAFT", "SENT", "SIGNED", "ACTIVE", "COMPLETE", "CANCELLED"].map(
           (s) => (
@@ -176,7 +177,7 @@ export default function SOWDashboardPage() {
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              {s || "All"}
+              {s || T.allBtn}
             </button>
           ),
         )}
@@ -187,37 +188,37 @@ export default function SOWDashboardPage() {
             checked={staleOnly}
             onChange={(e) => setStaleOnly(e.target.checked)}
           />
-          Stale + signed-no-progress only
+          {T.staleOnlyToggle}
         </label>
       </div>
 
       {sows.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
           <span className="text-4xl mb-3 block">📄</span>
-          <p className="text-slate-600">No SOWs match these filters.</p>
+          <p className="text-slate-600">{T.emptyState}</p>
         </div>
       ) : (
         <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
           <table className="w-full text-sm min-w-[1100px]">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase tracking-wide">
               <tr>
-                <th className="text-left px-4 py-3">Brand · Title</th>
-                <th className="text-left px-3 py-3">Status</th>
-                <th className="text-right px-3 py-3">Milestones</th>
-                <th className="text-left px-3 py-3">Next milestone</th>
-                <th className="text-left px-3 py-3">AM</th>
-                <th className="text-right px-3 py-3">Last activity</th>
-                <th className="text-left px-4 py-3">Flags</th>
+                <th className="text-left px-4 py-3">{T.colBrandTitle}</th>
+                <th className="text-left px-3 py-3">{T.colStatus}</th>
+                <th className="text-right px-3 py-3">{T.colMilestones}</th>
+                <th className="text-left px-3 py-3">{T.colNextMilestone}</th>
+                <th className="text-left px-3 py-3">{T.colAm}</th>
+                <th className="text-right px-3 py-3">{T.colLastActivity}</th>
+                <th className="text-left px-4 py-3">{T.colFlags}</th>
               </tr>
             </thead>
             <tbody>
               {sows.map((s, idx) => {
                 const flags: string[] = [];
-                if (s.isStale) flags.push(`STALE ${s.daysSinceActivity}d`);
+                if (s.isStale) flags.push(`${T.flagStale} ${s.daysSinceActivity}d`);
                 if (s.signedNoProgress)
-                  flags.push(`NO PROGRESS ${s.ageDays}d`);
+                  flags.push(`${T.flagNoProgress} ${s.ageDays}d`);
                 if (s.overdueMilestones > 0)
-                  flags.push(`${s.overdueMilestones} OVERDUE`);
+                  flags.push(`${s.overdueMilestones} ${T.flagOverdue}`);
                 const flaggedRow = flags.length > 0;
 
                 return (
@@ -239,7 +240,7 @@ export default function SOWDashboardPage() {
                         {s.brand.name}
                       </Link>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        {s.title || "(untitled)"}
+                        {s.title || T.untitled}
                         {s.signatoryEmail && (
                           <> · {s.signatoryEmail}</>
                         )}
@@ -254,7 +255,7 @@ export default function SOWDashboardPage() {
                     </td>
                     <td className="px-3 py-3 text-right tabular-nums text-xs">
                       {s.milestonesTotal === 0 ? (
-                        <span className="text-slate-400">none</span>
+                        <span className="text-slate-400">{T.noneLabel}</span>
                       ) : (
                         <>
                           <span className="font-semibold">
@@ -286,7 +287,7 @@ export default function SOWDashboardPage() {
                                   : "text-slate-500"
                               }
                             >
-                              due {fmtDate(s.nextMilestone.dueDate)}
+                              {T.duePrefix} {fmtDate(s.nextMilestone.dueDate)}
                             </p>
                           )}
                         </>
@@ -308,7 +309,7 @@ export default function SOWDashboardPage() {
                             : "text-slate-400"
                         }
                       >
-                        {s.daysSinceActivity}d ago
+                        {s.daysSinceActivity}{T.daysAgoSuffix}
                       </p>
                     </td>
                     <td className="px-4 py-3">
@@ -325,7 +326,7 @@ export default function SOWDashboardPage() {
                         </div>
                       ) : (
                         <span className="text-emerald-600 text-xs font-bold">
-                          ✓ healthy
+                          {T.healthyLabel}
                         </span>
                       )}
                     </td>
@@ -338,10 +339,7 @@ export default function SOWDashboardPage() {
       )}
 
       <p className="text-xs text-slate-500 mt-3">
-        Stale = 14+ days no activity while still in DRAFT/SENT/SIGNED/ACTIVE.
-        Signed-no-progress = SIGNED or ACTIVE for 30+ days with milestones
-        defined but none completed. Last activity is the most recent of
-        SOW edit, milestone completion, or test request submission.
+        {T.footerHint}
       </p>
     </div>
   );
