@@ -8072,6 +8072,24 @@ const vi: Translations = {
     websiteLabel: "Trang web",
   },
 
+  reportSharePage: {
+    unavailableTitle: "Báo cáo không khả dụng",
+    unavailableBodyPrefix: "Để truy cập lâu dài, đăng nhập tại",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "và tìm báo cáo dưới Báo cáo của tôi, hoặc trả lời email mà cái này đến.",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · Báo cáo áp dụng & xác thực",
+    heading: "Công thức xử lý & Xác thực FUZE",
+    issuedLabel: "Đã phát hành",
+    linkValidUntil: "· Liên kết trực tiếp này có hiệu lực đến",
+    preparedForTitle: "Chuẩn bị cho",
+    execSummaryTitle: "Tóm tắt điều hành",
+    recipeTitle: "Công thức được khuyến nghị",
+    fuzeRequiredTitle: "FUZE cần (Kích thước bể tắm sản xuất)",
+    labIcpTitle: "Xác minh ICP phòng lab độc lập",
+    accessLaterTitle: "Truy cập báo cáo này sau",
+  },
+
 };
 
 export default vi;
