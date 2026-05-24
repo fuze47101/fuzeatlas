@@ -7907,6 +7907,25 @@ const tr: Translations = {
     footerPrefix: "FUZE Atlas API Dokümantasyonu - Son güncelleme",
   },
 
+  recipeSearch: {
+    heading: "Reçete Arama",
+    subtitle: "Ağ genelinde FUZE reçete kütüphanesi. Atlas'taki her doğrulanmış kumaşta arama yapın — kumaş size ait olmasa bile üzerinde çalıştığınız şeyi kanıtlanmış bir reçeteyle eşleştirin. Kapsam dışı satırlar anonimleştirilir ancak reçete fiziği görünürdür.",
+    keywordPlaceholder: "Anahtar kelime (pamuk, jersey, dimi...)",
+    anyCategory: "Herhangi bir kategori",
+    knit: "Örme",
+    woven: "Dokuma",
+    nonwoven: "Dokusuz",
+    fiberPlaceholder: "Elyaf (pamuk, polyester...)",
+    gsmMinPlaceholder: "GSM min",
+    gsmMaxPlaceholder: "GSM maks",
+    anyTier: "Herhangi bir kademe",
+    onlyValidatedLabel: "Yalnızca ölçülen pickup'lı kumaşları göster (doğrulanmış tezgah testi)",
+    searchingBtn: "Aranıyor...",
+    searchBtn: "Ara",
+    emptyTitle: "Henüz eşleşen reçete yok.",
+    emptyBody: "Filtreleri genişletmeyi deneyin — veya gelişim aşamasındaki kumaşları görmek isterseniz \"doğrulanmış tezgah testi\" filtresini kaldırın.",
+  },
+
 };
 
 export default tr;
