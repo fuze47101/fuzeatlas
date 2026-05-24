@@ -3091,6 +3091,28 @@ const id: Translations = {
     claimsLink: "Klaim",
   },
 
+  notificationsPage: {
+    loading: "Memuat notifikasi...",
+    title: "Notifikasi",
+    unreadLabel: "belum dibaca",
+    allCaughtUp: "Semua sudah terbaca",
+    totalLabel: "total",
+    markAllRead: "Tandai semua sudah dibaca",
+    filterAll: "Semua",
+    filterUnread: "Belum dibaca",
+    allTypes: "Semua Tipe",
+    emptyUnreadTitle: "Tidak ada notifikasi yang belum dibaca",
+    emptyAllTitle: "Belum ada notifikasi",
+    emptyUnreadBody: "Anda sudah membaca semuanya!",
+    emptyAllBody: "Notifikasi akan muncul di sini saat ada aktivitas pada akun Anda.",
+    viewDetails: "Lihat detail →",
+    markAsRead: "Tandai sudah dibaca",
+    justNow: "Baru saja",
+    minSuffix: " menit lalu",
+    hourSuffix: " jam lalu",
+    daySuffix: " hari lalu",
+  },
+
 };
 
 export default id;
