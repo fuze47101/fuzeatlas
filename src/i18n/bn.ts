@@ -6845,6 +6845,34 @@ const bn: Translations = {
     errLoadFailed: "ফানেল লোড করতে ব্যর্থ",
   },
 
+  bdSequenceAnalytics: {
+    loading: "লোড হচ্ছে…",
+    crumbBdSequences: "BD সিকোয়েন্স",
+    crumbAnalytics: "অ্যানালিটিক্স",
+    modeSequence: "সিকোয়েন্স",
+    modeCadence: "কেডেন্স",
+    title: "ফানেল অ্যানালিটিক্স",
+    aggregatedAcross: "সমষ্টি জুড়ে",
+    sequenceSingular: "সিকোয়েন্স",
+    sequencePlural: "সিকোয়েন্স",
+    onCadenceLabel: "কেডেন্সে",
+    emptyBefore: "এই-তে এখনও কোনো সেন্ড কার্যকলাপ নেই",
+    stepLabel: "স্টেপ",
+    sentSuffix: "পাঠানো হয়েছে",
+    mSent: "পাঠানো",
+    mOpens: "ওপেন",
+    mClicks: "ক্লিক",
+    mReplies: "রিপ্লাই",
+    mMeetings: "মিটিং",
+    mAvgDaysReply: "গড় দিন → রিপ্লাই",
+    subjectVariantsTitle: "সাবজেক্ট ভ্যারিয়েন্ট",
+    colSubject: "সাবজেক্ট",
+    colSent: "পাঠানো",
+    colOpens: "ওপেন",
+    colOpenRate: "ওপেন রেট",
+    errLoadFailed: "অ্যানালিটিক্স লোড করতে ব্যর্থ",
+  },
+
 };
 
 export default bn;
