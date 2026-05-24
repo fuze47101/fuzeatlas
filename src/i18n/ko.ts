@@ -7487,6 +7487,28 @@ const ko: Translations = {
     errNetwork: "네트워크 오류",
   },
 
+  notificationsPage: {
+    loading: "알림 로드 중...",
+    title: "알림",
+    unreadLabel: "읽지 않음",
+    allCaughtUp: "모두 따라잡음",
+    totalLabel: "전체",
+    markAllRead: "모두 읽음으로 표시",
+    filterAll: "전체",
+    filterUnread: "읽지 않음",
+    allTypes: "모든 유형",
+    emptyUnreadTitle: "읽지 않은 알림이 없습니다",
+    emptyAllTitle: "아직 알림이 없습니다",
+    emptyUnreadBody: "모두 따라잡았습니다!",
+    emptyAllBody: "계정에 활동이 있으면 여기에 알림이 표시됩니다.",
+    viewDetails: "세부 정보 보기 →",
+    markAsRead: "읽음으로 표시",
+    justNow: "방금",
+    minSuffix: "분 전",
+    hourSuffix: "시간 전",
+    daySuffix: "일 전",
+  },
+
 };
 
 export default ko;
