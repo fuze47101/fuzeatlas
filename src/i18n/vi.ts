@@ -8145,6 +8145,33 @@ const vi: Translations = {
     resumeBtn: "Tiếp tục",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ Đã xác minh xử lý FUZE",
+    tierPrefix: "Hạng FUZE",
+    productSectionTitle: "Sản phẩm",
+    skuLabel: "SKU",
+    batchLabel: "Lô",
+    fuzeNumberLabel: "FUZE #",
+    constructionLabel: "Cấu trúc",
+    weightLabel: "Trọng lượng",
+    weightUnit: "GSM",
+    mostRecentValidation: "Xác thực gần nhất",
+    testedPrefix: "Đã thử nghiệm",
+    afterWashesPrefix: "sau",
+    afterWashesSuffix: "lần giặt",
+    whatDoesThisMean: "Điều này có ý nghĩa gì?",
+    explainerP1: "FUZE là phương pháp xử lý kháng khuẩn vải dệt độc quyền. Metamaterial FUZE liên kết vĩnh viễn với bề mặt sợi trong quá trình hoàn tất vải dệt tiêu chuẩn — không rò rỉ, không PFAS, không thay đổi hóa học đối với cảm giác hoặc độ thoáng khí của vải.",
+    explainerP2: "Việc giảm vi khuẩn xảy ra qua tiếp xúc trực tiếp với metamaterial đã liên kết — đó là lý do FUZE dẫn đầu với ASTM E2149 (thử nghiệm tiếp xúc-diệt được thiết kế cho các chất kháng khuẩn không rò rỉ), cùng với AATCC 100 cho xác thực hình học xếp lớp.",
+    certificationsLabel: "Chứng nhận:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I, bluesign® được phê duyệt, đăng ký EPA, California EPA được phê duyệt (Q1 2026), không PFAS.",
+    sustainabilityTitle: "Bền vững",
+    sustainabilityBody: "FUZE đã tiêu thụ trên vải này đến nay.",
+    seeMorePrefix: "Xem thêm",
+    seeMoreSuffix: "sản phẩm đã chứng nhận →",
+    learnMoreLink: "Tìm hiểu thêm về công nghệ FUZE →",
+    footerVerifiedBy: "Được FUZE Atlas xác minh",
+  },
+
 };
 
 export default vi;
