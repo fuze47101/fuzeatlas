@@ -6011,6 +6011,31 @@ const hi: Translations = {
     footerNote: "क्रमबद्ध: पहले कम-स्टॉक, फिर निष्क्रिय, फिर शेष-दिनों के आधार पर बढ़ते क्रम में। \"दैनिक बर्न\" = कारखानों को भेजे गए लीटर का रोलिंग 90-दिन का औसत। \"शेष दिन\" = वर्तमान स्टॉक ÷ दैनिक बर्न। \"निष्क्रिय\" = पिछले 90 दिनों में कोई कारखाना ऑर्डर नहीं। \"कोई मूल्य नहीं\" का अर्थ है FUZE होलसेल दर अनसेट है; वितरक रिस्टॉक ऑर्डर नहीं दे सकता। प्रति-वितरक पृष्ठ पर संपादित करें।",
   },
 
+  conversionTracking: {
+    crumbDashboard: "डैशबोर्ड",
+    crumbCurrent: "नमूना → उत्पादन",
+    title: "नमूना → उत्पादन रूपांतरण",
+    subtitle: "ट्रैक करें कि कौन से कारखानों को नमूने मिले और उत्पादन ऑर्डर में बदले",
+    cardFactoriesSampled: "नमूना भेजे कारखाने",
+    cardConverted: "रूपांतरित",
+    cardConversionRate: "रूपांतरण दर",
+    cardAvgDays: "रूपांतरण का औसत दिन",
+    cardProdVolume: "उत्पादन मात्रा",
+    cardProdRevenue: "उत्पादन राजस्व",
+    tabAll: "सभी",
+    tabConverted: "रूपांतरित",
+    tabPending: "लंबित",
+    emptyText: "अभी कोई नमूना ऑर्डर नहीं मिला",
+    badgeConverted: "रूपांतरित",
+    badgePending: "लंबित",
+    sectionSamples: "नमूना ऑर्डर",
+    sectionTrials: "ट्रायल अनुरोध",
+    sectionProduction: "उत्पादन ऑर्डर",
+    productionLabel: "उत्पादन",
+    daysToConvertSuffix: "रूपांतरण के दिन",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default hi;
