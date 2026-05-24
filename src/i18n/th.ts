@@ -6919,6 +6919,29 @@ const th: Translations = {
     errAddFailed: "การเพิ่มล้มเหลว",
   },
 
+  accountsAdmin: {
+    title: "บัญชี",
+    subtitleBefore: "แบรนด์ที่ผ่านขั้น Lead — ได้รับการนำเสนอ อยู่ในการทดสอบ การผลิต หรือเป็นลูกค้าแล้ว สำหรับผู้มุ่งหวังใหม่ ไปที่",
+    brandPipelineLink: "Pipeline แบรนด์",
+    allFilter: "ทั้งหมด",
+    stagePresentation: "การนำเสนอ",
+    stageBrandTesting: "การทดสอบแบรนด์",
+    stageFactoryOnboarding: "Onboarding โรงงาน",
+    stageFactoryTesting: "การทดสอบโรงงาน",
+    stageProduction: "การผลิต",
+    stageReConnect: "เชื่อมต่อใหม่",
+    stageCustomerWon: "ชนะลูกค้า",
+    searchPlaceholder: "ค้นหาบัญชีตามชื่อหรือผู้ติดต่อ...",
+    emptyTitle: "ยังไม่มีบัญชีในมุมมองนี้",
+    emptyBody: "บัญชีปรากฏเมื่อแบรนด์เคลื่อนจาก LEAD ไปยัง PRESENTATION หรือหลังจากนั้น",
+    goToPipelineBtn: "ไปที่ Pipeline แบรนด์",
+    highRelevanceBadge: "🔥 ความเกี่ยวข้องสูง",
+    amPrefix: "AM:",
+    contactsLabel: "ผู้ติดต่อ",
+    enrichedSuffix: "เสริมข้อมูลแล้ว",
+    backToLeadOption: "← กลับไปยัง Lead",
+  },
+
 };
 
 export default th;
