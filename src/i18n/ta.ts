@@ -4554,6 +4554,48 @@ const ta: Translations = {
     sanityRangesHeader: "Sanity Check வரம்புகள்",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "வாராந்திர நிர்வாக மதிப்பாய்வு",
+    weekOfTemplate: "வாரம்",
+    coveringPrefix: "உள்ளடக்கம்",
+    daysWindowSuffix: "-நாள் சாளரம்",
+    ownerLabel: "உரிமையாளர்:",
+    generatedLabel: "உருவாக்கப்பட்டது",
+    enterPresent: "சமர்ப்பி",
+    exitPresent: "Exit Present",
+    refreshing: "புதுப்பிக்கிறது…",
+    refreshSnapshot: "snapshot புதுப்பி",
+
+    execSummaryTitle: "நிர்வாக சுருக்கம்",
+    execSummaryPlaceholder: "வாரியத்திற்கான முதன்மை எடுத்துக்காட்டு. Blur-இல் சேமிக்கப்படுகிறது.",
+    saving: "சேமிக்கிறது…",
+
+    salesDistributionTitle: "விற்பனை & விநியோகம்",
+    bookedDollars: "Booked $",
+    shippedDollars: "Shipped $",
+    bookedLiters: "Booked L",
+    shippedLiters: "Shipped L",
+    ordersSuffix: "ஆர்டர்கள்",
+    shipmentsSuffix: "அனுப்புதல்கள்",
+    kgShippedSuffix: "kg அனுப்பப்பட்டது",
+    byOrderTypeLabel: "ஆர்டர் வகையால்",
+
+    sowProgressTitle: "SOW முன்னேற்றம்",
+    sowDraft: "வரைவு",
+    sowSent: "அனுப்பப்பட்டது",
+    sowSigned: "கையெழுத்திடப்பட்டது",
+    sowActive: "செயலில்",
+    sowComplete: "முடிக்கப்பட்டது",
+    sowSignedThisWindow: "இந்த சாளரத்தில் கையெழுத்திடப்பட்டது",
+    sowNewlyOpened: "புதிதாக திறக்கப்பட்டது",
+    sowActiveTitle: "செயலில்",
+    sowStale: "Stale (>30 நாள் இயக்கம் இல்லை)",
+    sowEmptyNoSignatures: "இந்த சாளரத்தில் புதிய கையெழுத்துகள் இல்லை.",
+    sowEmptyNoOpened: "இந்த சாளரத்தில் SOW-கள் திறக்கப்படவில்லை.",
+    sowEmptyNoActive: "செயலில் SOW-கள் இல்லை.",
+    sowEmptyNothingStuck: "எதுவும் சிக்கவில்லை.",
+  },
+
 };
 
 export default ta;
