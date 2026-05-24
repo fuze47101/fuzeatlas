@@ -7035,6 +7035,26 @@ const zhCN: Translations = {
     colSource: "来源",
   },
 
+  interLabVariance: {
+    loadingLabel: "正在加载实验室间差异",
+    crumbQualityLabs: "质量与实验室",
+    crumbInterLabVariance: "实验室间差异",
+    title: "实验室间差异",
+    subtitleBefore: "同一面料在过去",
+    subtitleAfter: "天内被 ≥2 个实验室测试。按范围（最大值 − 最小值）降序排列。",
+    colFabric: "面料",
+    colMethod: "方法",
+    colRange: "范围",
+    colMeanSigma: "均值 ± σ",
+    colPerLab: "各实验室结果",
+    emptyTitle: "尚无多实验室面料",
+    emptyBodyBefore: "实验室间差异比较过去",
+    emptyBodyAfter: "天内被 ≥2 个实验室测试的面料。一旦您在合作伙伴实验室和 FUZE 美国（或任何 2 个实验室对）测试了相同的面料,它将显示在这里。",
+    biasTitle: "各实验室校准偏差",
+    biasHint: "（此实验室的结果 − 组平均值）在每个共享面料上的平均值。正值 = 比同级实验室运行得更高；负值 = 运行得更低。",
+    emptyBias: "尚无偏差数据。",
+  },
+
 };
 
 export default zhCN;
