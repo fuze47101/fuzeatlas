@@ -7595,6 +7595,27 @@ const zhCN: Translations = {
     seeSustainabilityBtn: "查看可持续发展影响",
   },
 
+  pressLanding: {
+    heroTitle: "媒体资料包",
+    heroSubtitle: "FUZE Biotech 的标识、图像、新闻稿与公司背景。",
+    aboutTitle: "关于 FUZE Biotech",
+    aboutBody1: "FUZE Biotech 总部位于美国犹他州盐湖城，研发以 FUZE 元材料为核心的专利抗菌纺织品处理工艺。该处理在标准纺织后整理过程中与纤维永久结合——不含 PFAS、不含粘合剂，亦不改变面料手感或透气性。",
+    aboutBody2: "产品已获得美国联邦 EPA 注册、加州 EPA 认证（2026 年第一季度）、OEKO-TEX Standard 100 Class I 以及 bluesign® 认证。性能由独立第三方实验室依据 ASTM E2149、AATCC 100、AATCC 30、ISO 18184 和 ISO 20743 进行验证。",
+    foundedLabel: "成立地",
+    foundedValue: "犹他州盐湖城",
+    addressLabel: "地址",
+    pressContactLabel: "媒体联系",
+    logosSection: "标识",
+    logoAltFallback: "FUZE 标识",
+    downloadLabel: "下载 →",
+    imagerySection: "图像素材",
+    imageAltFallback: "FUZE 图像素材",
+    releasesSection: "新闻稿",
+    releaseFallback: "新闻稿",
+    newsSection: "媒体报道",
+    claimsLink: "声明",
+  },
+
 };
 
 export default zhCN;
