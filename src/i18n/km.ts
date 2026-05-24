@@ -4416,6 +4416,32 @@ const km: Translations = {
     openProfile: "បើក ប្រវត្តិរូប",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← ត្រឡប់ to ICP គំរូ Prep",
+    printButton: "🖨 បោះពុម្ព / រក្សាទុក as PDF",
+    eyebrow: "FUZE Biotech · មន្ទីរពិសោធន៍ SOP",
+    pageTitle: "ICP-MS គំរូ Preparation",
+    pageSubtitle: "Cut → weigh → fragment → bag → ship to CTLA (Utah) for ICP-MS verification",
+    docLabel: "Doc: SOP-FUZE-LAB-002",
+    revLabel: "Rev: 1.0 ·",
+
+    purposeHeader: "Purpose",
+    equipmentHeader: "Equipment",
+    massTargetsHeader: "Mass Targets (critical)",
+    shipToLabel: "Ship to CTLA",
+    digestPerRunLabel: "Digest per run",
+    cutterGeometryLabel: "Cutter geometry",
+
+    criticalRulesHeader: "⚠ សំខាន់ Prep Rules",
+    procedureHeader: "Procedure",
+    shippingAddressHeader: "Shipping បន្ថែមress (auto-filled by wizard)",
+    shipToHeader: "Ship to",
+    returnAddressHeader: "Return address + reporting",
+    reportToLabel: "របាយការណ៍ to:",
+    preShipChecklistHeader: "✅ Pre-Ship Checklist (the wizard prints this on the packet)",
+    sanityCheckHeader: "Sanity Check (what CTLA should report)",
+  },
+
 };
 
 export default km;
