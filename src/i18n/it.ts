@@ -5732,6 +5732,58 @@ const it: Translations = {
     verdictUnscanned: "non scansionato",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← Impostazioni",
+    pageTitle: "Modelli email",
+    pageSubtitle: "Scheletri email riutilizzabili per outreach. Usa {firstName}, {company}, ecc. per personalizzare al volo.",
+    btnNew: "+ Nuovo modello",
+    errorRequired: "Titolo, oggetto e corpo sono obbligatori.",
+    errorLoadUser: "Caricamento utente non riuscito",
+    errorLoadTemplates: "Caricamento modelli non riuscito",
+    confirmArchive: "Archiviare \"{title}\"? Non apparirà più nel selettore.",
+
+    formHeadingEdit: "Modifica modello",
+    formHeadingNew: "Nuovo modello",
+    labelTitle: "Titolo",
+    placeholderTitle: "es. Introduzione primo contatto (abbigliamento sportivo)",
+    labelCategory: "Categoria",
+    placeholderCategory: "es. intro, re-engage, icp-request",
+    labelScope: "Ambito",
+    scopePrivate: "Privato (solo io)",
+    scopeShared: "Condiviso (intero team)",
+    scopeGlobal: "Globale (predefinito dell'organizzazione)",
+    labelSubject: "Oggetto",
+    placeholderSubject: "Ciao {firstName} — breve introduzione FUZE per {company}",
+    labelBody: "Corpo",
+    btnSaving: "Salvataggio…",
+    btnSaveChanges: "Salva modifiche",
+    btnCreate: "Crea modello",
+    btnCancel: "Annulla",
+
+    previewHeading: "Anteprima",
+    previewHelp: "Modifica i valori di esempio sotto per vedere come vengono renderizzati i tuoi token.",
+    previewSubjectLabel: "Oggetto",
+    previewBodyLabel: "Corpo",
+
+    slotsHeading: "Slot di selezione rapida BD Wizard",
+    slotsHelp: "Fissa fino a 10 dei tuoi modelli in slot numerati. Nello step Bozza del wizard vedrai una barra di pulsanti 1–10 che riempie con un clic l'oggetto e il corpo.",
+    openBdWizard: "Apri BD Wizard →",
+    slotEmptyTitle: "Slot vuoto — assegna sotto.",
+    slotEmpty: "vuoto",
+
+    loadingTemplates: "Caricamento modelli…",
+    groupPrivate: "I tuoi modelli",
+    groupShared: "Condivisi con il team",
+    groupGlobal: "Predefiniti a livello di organizzazione",
+    usedSuffix: "utilizzati",
+    byPrefix: "da",
+    bdSlot: "Slot BD",
+    edit: "Modifica",
+    archive: "Archivia",
+
+    emptyTpl: "Nessun modello ancora. Clicca + Nuovo modello per crearne uno.",
+  },
+
 };
 
 export default it;
