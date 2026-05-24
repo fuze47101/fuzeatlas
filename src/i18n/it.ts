@@ -6873,6 +6873,29 @@ const it: Translations = {
     errLoadFailed: "Impossibile caricare le analytics",
   },
 
+  orderQrLabel: {
+    orderNotFound: "Ordine non trovato.",
+    headerKicker: "Etichetta QR",
+    previewPublicLink: "anteprima pagina pubblica →",
+    brandLine: "FUZE Biotech",
+    brandLocation: "Salt Lake City, Utah USA",
+    orderLabel: "Ordine",
+    scanToVerifyTitle: "Scansiona per verificare",
+    scanToVerifyBody: "Apri questa etichetta con la fotocamera del telefono per caricare stato della spedizione, ciclo di vita, SDS e COA.",
+    tierLabel: "Tier",
+    volumeLabel: "Volume",
+    bottlesSuffix: "bottiglie",
+    methodLabel: "Metodo",
+    typeLabel: "Tipo",
+    shipToLabel: "Spedisci a",
+    forBrandLabel: "Per il marchio",
+    viaDistributorLabel: "Tramite distributore",
+    fabricLabel: "Tessuto",
+    trackingLabel: "Tracking",
+    footerTagline: "FUZE F1–F4 · trattamento antimicrobico metamateriale · senza PFAS",
+    printedPrefix: "Stampato",
+  },
+
 };
 
 export default it;
