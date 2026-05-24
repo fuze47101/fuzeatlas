@@ -6814,6 +6814,26 @@ const ur: Translations = {
     colSource: "ذریعہ",
   },
 
+  interLabVariance: {
+    loadingLabel: "انٹر لیب تغیر لوڈ ہو رہا ہے",
+    crumbQualityLabs: "معیار اور لیبز",
+    crumbInterLabVariance: "انٹر لیب تغیر",
+    title: "انٹر لیب تغیر",
+    subtitleBefore: "جہاں ایک ہی فیبرک کو پچھلے",
+    subtitleAfter: "دنوں میں ≥2 لیبز نے ٹیسٹ کیا۔ رینج (max − min) کے لحاظ سے نزولی ترتیب۔",
+    colFabric: "فیبرک",
+    colMethod: "طریقہ",
+    colRange: "رینج",
+    colMeanSigma: "اوسط ± σ",
+    colPerLab: "فی لیب نتائج",
+    emptyTitle: "ابھی تک کوئی ملٹی لیب فیبرکس نہیں",
+    emptyBodyBefore: "انٹر لیب تغیر ان فیبرکس کا موازنہ کرتا ہے جنہیں پچھلے",
+    emptyBodyAfter: "دنوں میں ≥2 لیبز نے ٹیسٹ کیا۔ ایک بار جب آپ کے پاس وہی فیبرک پارٹنر لیب اور FUZE USA (یا کسی 2 لیب جوڑے) میں ٹیسٹ ہو، یہ یہاں ظاہر ہو گا۔",
+    biasTitle: "فی لیب کیلیبریشن تعصب",
+    biasHint: "ہر شیئر کردہ فیبرک پر (اس لیب کا نتیجہ − گروپ اوسط) کی اوسط۔ مثبت = ہم منصب لیبز سے زیادہ چلتا ہے؛ منفی = کم چلتا ہے۔",
+    emptyBias: "ابھی تک کوئی تعصب کا ڈیٹا نہیں۔",
+  },
+
 };
 
 export default ur;
