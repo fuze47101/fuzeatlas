@@ -5784,6 +5784,50 @@ const ta: Translations = {
     emptyTpl: "இன்னும் வார்ப்புருக்கள் இல்லை. உங்கள் முதலாவதை உருவாக்க + New Template கிளிக் செய்யவும்.",
   },
 
+  pipelineUserPage: {
+    loading: "Pipeline ஏற்றுகிறது...",
+    pageTitle: "வருவாய் Pipeline",
+    pageSubtitle: "Development-இலிருந்து உற்பத்தி வரை deals-ஐ கண்காணி",
+    btnNewDeal: "+ புதிய Deal",
+
+    kpiTotalPipeline: "மொத்த Pipeline",
+    kpiTotalPipelineSubTpl: "{n} deals",
+    kpiWeighted: "Weighted முன்னறிவிப்பு",
+    kpiWeightedSub: "Probability-adjusted",
+    kpiActual: "உண்மையான வருவாய்",
+    kpiActualSub: "Invoiced & செலுத்தப்பட்டது",
+    kpiConversion: "மாற்றம்",
+    kpiConversionSub: "Actual / Pipeline",
+
+    cardProdPrefix: "Prod:",
+    emptyDeals: "Deals இல்லை",
+    weightedPrefix: "· wt:",
+
+    editTitlePrefix: "Project திருத்து:",
+    fieldName: "Project பெயர்",
+    fieldStage: "கட்டம்",
+    keepCurrent: "தற்போதையதை வைத்திரு",
+    fieldBrand: "பிராண்ட்",
+    fieldNone: "எதுவுமில்லை",
+    fieldProjectedValue: "கணிக்கப்பட்ட மதிப்பு ($)",
+    fieldProbability: "Probability (%)",
+    fieldFuzeTier: "FUZE டியர்",
+    fieldAnnualVolume: "ஆண்டு அளவு (m)",
+    fieldFactory: "தொழிற்சாலை",
+    fieldDistributor: "விநியோகஸ்தர்",
+    autoFromFactory: "தொழிற்சாலையிலிருந்து auto",
+    fieldExpectedProd: "எதிர்பார்க்கப்பட்ட உற்பத்தி",
+    fieldActualProd: "உண்மையான உற்பத்தி",
+    btnSaveChanges: "மாற்றங்களைச் சேமி",
+    btnSaving: "சேமிக்கிறது...",
+    btnCancel: "ரத்து",
+
+    newDealTitle: "புதிய Deal",
+    newDealPlaceholder: "Project / Deal பெயர்...",
+    btnCreate: "உருவாக்கு",
+    btnCreating: "உருவாக்குகிறது...",
+  },
+
 };
 
 export default ta;
