@@ -7700,6 +7700,33 @@ const zhCN: Translations = {
     contactLink: "联系我们",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "品牌",
+    crumb: "吊牌二维码",
+    heading: "吊牌二维码令牌",
+    subtitlePrefix: "每个令牌都会跳转到公开核验页面：",
+    subtitleSuffix: "按行记录扫描次数 + 首次 / 最近扫描时间。",
+    mintTokensTitle: "生成令牌",
+    countPlaceholder: "数量",
+    fabricIdPlaceholder: "fabricId（可选）",
+    skuPlaceholder: "产品 SKU",
+    batchPlaceholder: "批次代码",
+    mintBtn: "生成",
+    mintingBusy: "正在生成…",
+    mintFootnote: "每次最多 500 个。使用您选择的二维码生成器将令牌作为二维码打印到吊牌上（每个网址即为核验页面网址）。",
+    mintFailedError: "生成失败",
+    tokenSingular: "个令牌",
+    tokenPlural: "个令牌",
+    exportCsvBtn: "导出 CSV",
+    colToken: "令牌",
+    colSkuBatch: "SKU / 批次",
+    colFabric: "面料",
+    colScans: "扫描次数",
+    colLastScan: "最近扫描",
+    colVerifyUrl: "核验网址",
+    emptyState: "暂无令牌——请先在上方生成首批。",
+  },
+
 };
 
 export default zhCN;
