@@ -5326,6 +5326,61 @@ const ko: Translations = {
     scopeFallback: "기본",
   },
 
+  brandDiscovery: {
+    crumbHome: "홈",
+    crumbWizard: "BD Wizard",
+    crumbHere: "브랜드 발견",
+    pageTitle: "🌎 전 세계 브랜드 발견",
+    pageSubtitle: "멀티 AI 엔진 — Anthropic, OpenAI 및 Grok에서 텍스타일 브랜드를 발견 및 검증한 후, BD Wizard가 즉시 사용할 수 있도록 모든 새 브랜드에 Apollo 연락처를 자동으로 연결합니다.",
+
+    statTotalLabel: "DB 내 총 브랜드",
+    backToWizard: "← 마법사로 돌아가기",
+    backToWizardTitle: "새 브랜드가 도착하면 마법사로 라운드트립",
+
+    statsErrorContext: "발견 통계 로드",
+    statsErrorFallback: "발견 통계를 로드할 수 없습니다",
+    statsNetworkError: "발견 통계 로드 중 네트워크 오류 발생.",
+
+    autoEnrichTitle: "자동 보강이 켜져 있습니다",
+    autoEnrichBody: "여기서 생성된 모든 새 브랜드는 도메인별로 Apollo 인물 검색을 통해 최대 8명의 시니어 연락처 (창업자 / C-suite / VP / 헤드 / 디렉터)가 연결됩니다. BD Wizard의 필터는 이 브랜드들을 즉시 통과시킵니다 — 별도의 보강 패스가 필요하지 않습니다.",
+
+    settingsHeading: "발견 설정",
+    labelCategory: "카테고리",
+    labelRegion: "지역",
+    labelTargetCount: "목표 수",
+    btnDiscovering: "🔍 발견 중...",
+    btnRunDiscovery: "🚀 발견 실행",
+    btnRunning: "실행 중...",
+    btnAllCategories: "🌍 모든 카테고리",
+
+    runningBanner: "⏳ Anthropic + OpenAI + Grok에서 멀티 AI 발견을 실행 중입니다... 카테고리당 30-60초 소요됩니다.",
+    errorPrefix: "❌",
+    errorDefault: "발견 실패",
+
+    resultsHeadingPrefix: "발견 결과 —",
+    chipAiSources: "AI 출처:",
+    chipFound: "발견:",
+    chipAfterDedup: "중복 제거 후:",
+    chipCreated: "생성됨:",
+    chipContactsAttached: "📇 연결된 연락처:",
+
+    colBrand: "브랜드",
+    colSegment: "세그먼트",
+    colPriority: "우선순위",
+    colValidation: "검증",
+    colContacts: "연락처",
+    colAiSources: "AI 출처",
+    colActions: "작업",
+    tierPrefix: "등급",
+    aisConfirmed: "AI 확인",
+    aiConfirmed: "AI 확인",
+    viewResearch: "보기 및 조사",
+
+    historyHeading: "발견 기록 (이 세션)",
+    historyFoundLabel: "발견:",
+    historyCreatedLabel: "생성됨:",
+  },
+
 };
 
 export default ko;
