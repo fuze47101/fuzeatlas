@@ -8012,6 +8012,33 @@ const ja: Translations = {
     resumeBtn: "再開",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ FUZE 処理済み (検証済み)",
+    tierPrefix: "FUZE ティア",
+    productSectionTitle: "製品",
+    skuLabel: "SKU",
+    batchLabel: "バッチ",
+    fuzeNumberLabel: "FUZE 番号",
+    constructionLabel: "組織構造",
+    weightLabel: "重量",
+    weightUnit: "GSM",
+    mostRecentValidation: "最新の検証",
+    testedPrefix: "試験日",
+    afterWashesPrefix: "洗濯",
+    afterWashesSuffix: "回後",
+    whatDoesThisMean: "これはどういう意味ですか？",
+    explainerP1: "FUZE は独自の抗菌繊維処理です。FUZE メタマテリアルは標準的な繊維仕上げ工程で繊維表面に永続的に結合し、浸出も、PFAS も、ファブリックの風合いや通気性への変化もありません。",
+    explainerP2: "細菌の減少は、結合したメタマテリアルとの直接接触によって発生します。だからこそ FUZE は ASTM E2149 (非浸出型抗菌剤向けに設計された接触殺菌試験) を主軸に、AATCC 100 による積層構造での検証を併用しています。",
+    certificationsLabel: "認証:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I、bluesign® 認証、EPA 登録、カリフォルニア EPA 承認 (2026 年第 1 四半期)、PFAS フリー。",
+    sustainabilityTitle: "サステナビリティ",
+    sustainabilityBody: "本ファブリックでこれまでに消費された FUZE の累計量です。",
+    seeMorePrefix: "さらに見る",
+    seeMoreSuffix: "認証済み製品 →",
+    learnMoreLink: "FUZE テクノロジーについて詳しく見る →",
+    footerVerifiedBy: "FUZE Atlas による検証",
+  },
+
 };
 
 export default ja;
