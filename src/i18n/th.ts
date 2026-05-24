@@ -7256,6 +7256,21 @@ const th: Translations = {
     errNetwork: "ข้อผิดพลาดเครือข่าย",
   },
 
+  verifyEmail: {
+    verifyingTitle: "กำลังตรวจสอบอีเมลของคุณ...",
+    successTitle: "ตรวจสอบอีเมลแล้ว",
+    welcomePrefix: "ยินดีต้อนรับ",
+    successBody: "อีเมลของคุณได้รับการตรวจสอบแล้ว กำลังเปลี่ยนเส้นทางไปยังการเข้าสู่ระบบ...",
+    failedTitle: "การตรวจสอบล้มเหลว",
+    resendVerificationBtn: "ส่งอีเมลตรวจสอบใหม่",
+    checkEmailTitle: "ตรวจสอบอีเมลของคุณ",
+    checkEmailBody: "ลิงก์ตรวจสอบถูกส่งไปยังที่อยู่อีเมลของคุณ คลิกลิงก์เพื่อตรวจสอบบัญชี",
+    resendEmailBtn: "ส่งอีเมลใหม่",
+    sendingBtn: "กำลังส่ง...",
+    errVerifyFailed: "ไม่สามารถตรวจสอบอีเมลได้",
+    errSendFailed: "ไม่สามารถส่งอีเมลตรวจสอบได้",
+  },
+
 };
 
 export default th;
