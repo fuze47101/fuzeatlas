@@ -6067,6 +6067,54 @@ const ms: Translations = {
     btnCreating: "Mencipta...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "Perpustakaan Fabrik FUZE",
+    pageSubtitle: "Lihat fabrik dirawat FUZE dan keputusan ujian yang disahkan merentas rangkaian global kami. Semua data tanpa nama — identiti kilang dan jenama adalah sulit.",
+
+    statFabrics: "Fabrik Diuji",
+    statTests: "Jumlah Ujian",
+    statIcp: "Analisis ICP",
+    statAb: "Ujian Antimikrob",
+
+    searchPlaceholder: "Cari mengikut pembinaan, benang, kegunaan akhir, nombor FUZE...",
+    filterAllTypes: "Semua Jenis Ujian",
+    filterIcp: "Analisis ICP",
+    filterAntibacterial: "Antibakteria",
+    filterFungal: "Antifungus",
+    filterOdor: "Kawalan Bau",
+    passOnly: "Lulus sahaja",
+
+    emptyTitle: "Tiada fabrik sepadan dengan kriteria anda",
+    emptyClear: "Kosongkan semua penapis",
+    errorFailedLoad: "Gagal memuatkan perpustakaan fabrik",
+    errorFailedDefault: "Gagal memuatkan",
+
+    testsSuffix: "ujian",
+    testSuffix: "ujian",
+    propConstruction: "Pembinaan:",
+    propWeight: "Berat:",
+    propWidth: "Lebar:",
+    propYarn: "Benang:",
+    propCategory: "Kategori:",
+    propEndUse: "Kegunaan Akhir:",
+    propWeave: "Anyaman:",
+    propColor: "Warna:",
+
+    colTest: "Ujian",
+    colMethod: "Kaedah",
+    colWashes: "Basuh",
+    colResult: "Keputusan",
+    colStatus: "Status",
+    pass: "Lulus",
+    fail: "Gagal",
+    passBadge: "LULUS",
+    failBadge: "GAGAL",
+
+    paginationPrev: "Sebelumnya",
+    paginationNext: "Seterusnya",
+    paginationLabel: "Halaman {page} daripada {pages}",
+  },
+
 };
 
 export default ms;
