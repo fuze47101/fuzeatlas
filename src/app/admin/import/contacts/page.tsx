@@ -1,59 +1,65 @@
 import BulkImportWizard from "@/components/BulkImportWizard";
+import { getServerTranslations } from "@/i18n/server";
 
-export default function BulkImportContactsPage() {
+export default async function BulkImportContactsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ lang?: string }>;
+}) {
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).importContacts;
   return (
     <BulkImportWizard
       config={{
-        title: "Bulk import — Contacts",
-        subtitle:
-          "Paste or upload a CSV of contacts. Email is the natural key — we upsert by email when present. Rows with no email but a LinkedIn URL are imported as 'email missing' so the existing Apollo enrichment job can chase them. Rows with neither are rejected.",
+        title: T.title,
+        subtitle: T.subtitle,
         apiPath: "/api/admin/import/contacts",
         backHref: "/admin/lead-management",
-        backLabel: "Lead Management",
+        backLabel: T.backLabel,
         fields: [
           {
             key: "firstName",
-            label: "First name",
+            label: T.firstNameLabel,
             required: true,
           },
           {
             key: "lastName",
-            label: "Last name",
+            label: T.lastNameLabel,
             required: true,
           },
           {
             key: "email",
-            label: "Email",
+            label: T.emailLabel,
             required: false,
-            hint: "required if no LinkedIn URL",
+            hint: T.emailHint,
           },
           {
             key: "linkedinUrl",
-            label: "LinkedIn URL",
+            label: T.linkedinLabel,
             required: false,
-            hint: "fallback identifier when email missing",
+            hint: T.linkedinHint,
           },
           {
             key: "brandName",
-            label: "Brand name",
+            label: T.brandNameLabel,
             required: false,
-            hint: "case-insensitive match on Brand.name; unlinked if not found",
+            hint: T.brandNameHint,
           },
           {
             key: "jobTitle",
-            label: "Job title",
+            label: T.jobTitleLabel,
             required: false,
           },
           {
             key: "phone",
-            label: "Phone",
+            label: T.phoneLabel,
             required: false,
           },
           {
             key: "title",
-            label: "Title (honorific)",
+            label: T.titleLabel,
             required: false,
-            hint: 'e.g. "Mr.", "Dr."',
+            hint: T.titleHint,
           },
         ],
         csvSample: `firstName,lastName,email,brandName,jobTitle,linkedinUrl
