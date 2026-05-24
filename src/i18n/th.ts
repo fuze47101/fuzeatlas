@@ -7614,6 +7614,25 @@ const th: Translations = {
     footerPrefix: "เอกสาร FUZE Atlas API - อัปเดตล่าสุด",
   },
 
+  recipeSearch: {
+    heading: "ค้นหาสูตร",
+    subtitle: "ห้องสมุดสูตร FUZE ทั่วเครือข่าย ค้นหาในผ้าที่ตรวจสอบทุกรายการใน Atlas — จับคู่สิ่งที่คุณทำงานกับสูตรที่พิสูจน์แล้ว แม้ว่าผ้าจะไม่ใช่ของคุณ แถวที่อยู่นอกขอบเขตถูกทำให้ไม่ระบุชื่อ แต่ฟิสิกส์สูตรมองเห็นได้",
+    keywordPlaceholder: "คีย์เวิร์ด (cotton, jersey, twill...)",
+    anyCategory: "ทุกหมวดหมู่",
+    knit: "ถัก",
+    woven: "ทอ",
+    nonwoven: "ไม่ถักไม่ทอ",
+    fiberPlaceholder: "เส้นใย (cotton, poly...)",
+    gsmMinPlaceholder: "GSM ต่ำสุด",
+    gsmMaxPlaceholder: "GSM สูงสุด",
+    anyTier: "ทุกระดับ",
+    onlyValidatedLabel: "แสดงเฉพาะผ้าที่มี pickup ที่วัด (bench test ตรวจสอบแล้ว)",
+    searchingBtn: "กำลังค้นหา...",
+    searchBtn: "ค้นหา",
+    emptyTitle: "ยังไม่มีสูตรที่ตรงกัน",
+    emptyBody: "ลองขยายตัวกรอง — หรือลบตัวกรอง \"bench test ที่ตรวจสอบ\" หากต้องการดูผ้าที่ยังอยู่กลางการพัฒนา",
+  },
+
 };
 
 export default th;
