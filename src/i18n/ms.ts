@@ -7630,6 +7630,35 @@ const ms: Translations = {
     errGeneric: "Gagal menukar kata laluan",
   },
 
+  claimsLandingPage: {
+    heroTitle: "Tuntutan, pensijilan & metodologi",
+    heroSubtitle: "Bagaimana FUZE berfungsi, untuk apa ia disahkan, dan mengapa kami mengujinya seperti yang kami buat.",
+    techTitle: "Teknologi FUZE",
+    techBody1: "FUZE ialah rawatan tekstil antimikrob proprietari yang dibina di sekitar FUZE metamaterial — dihasilkan melalui ablasi laser cecair daripada elektronik kitar semula di kemudahan kami di Salt Lake City. Rawatan berikat secara kekal kepada gentian semasa kemasan tekstil standard (eksaus, pad-keringkan-awet, atau aplikasi semburan) tanpa mengubah tangan, pencelup, drape, atau kebolehbernafasan fabrik.",
+    techBody2: "FUZE adalah tidak meresap mengikut reka bentuk. Pengurangan bakteria berlaku melalui kontak fizikal langsung antara sel bakteria dan FUZE metamaterial terikat pada permukaan gentian — tiada kimia dilepaskan ke dalam air basuh, tiada PFAS, tiada pengikat, tiada kimia pengawetan. Postur ini meletakkan FUZE di sisi yang betul dalam setiap tren regulatori (siasatan PFAS Texas AG, California SB-707).",
+    techBody3: "Tier rawatan: F1 Full Spectrum (1.0 mg/kg, 100 basuh disahkan) · F2 Advanced (0.75 mg/kg, 75 basuh) · F3 Core (0.5 mg/kg, 50 basuh) · F4 Foundation (0.25 mg/kg, 25 basuh). Kiraan basuh didokumenkan melalui ujian AATCC 100 + ISO 20743 makmal bebas, diterbitkan atas permintaan.",
+    certsTitle: "Pensijilan",
+    certEpaTitle: "Berdaftar EPA (persekutuan)",
+    certEpaBody: "Kimia FUZE didaftarkan dengan U.S. Environmental Protection Agency sebagai racun perosak antimikrob.",
+    certCaEpaTitle: "Diluluskan California EPA (Q1 2026)",
+    certCaEpaBody: "Diluluskan untuk pakaian aktif, tekstil bayi/kanak-kanak, dan kes penggunaan penjagaan kesihatan di bawah rejim California yang lebih ketat.",
+    certOekoTitle: "OEKO-TEX Standard 100 Class I",
+    certOekoBody: "Disahkan selamat untuk kontak kulit langsung — termasuk pakaian bayi dan dalaman.",
+    certBluesignTitle: "bluesign® diluluskan",
+    certBluesignBody: "Kimia disahkan selamat untuk pekerja, pengguna, dan persekitaran di bawah kriteria bluesign.",
+    certPfasTitle: "PFAS-free",
+    certPfasBody: "Sifar bahan per- dan polifluoroalkil di mana-mana dalam formulasi. Tiada pengikat, tiada bantuan pengawetan.",
+    certStandardsTitle: "Standard disahkan",
+    certStandardsBody: "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — laporan pihak ketiga tersedia atas permintaan.",
+    standardsTitle: "Standard ujian",
+    standardsBody: "Prestasi antimikrob untuk tekstil bukan satu nombor — ia bergantung pada standard mana anda menjalankan ujian, dan sama ada standard itu sesuai dengan kimia. Inilah cara FUZE memetakan kepada kaedah.",
+    jabTitle: "Mengapa kami memimpin dengan ASTM E2149",
+    jabBody: "Kami menguji pada ASTM E2149 kerana ia adalah ujian yang direka untuk antimikrob bukan-meresap. Kimia pesaing yang bergantung pada AATCC 100 melakukannya kerana geometri lapisan-bertindan AATCC 100 membantu ion peresap menepu ruang antara-lapisan — ujian memihak peresapan mengikut binaan. FUZE tidak meresap, mengikut reka bentuk. Temui kami pada ujian yang betul.",
+    jabFootnote: "(Atribusi pesaing: amaran ujian-berlapis terpakai kepada kemasan berasaskan ion logam dan ammonium kuaterner — bukan kepada FUZE.)",
+    documentsTitle: "Dokumen",
+    pressKitLink: "Kit akhbar",
+  },
+
 };
 
 export default ms;
