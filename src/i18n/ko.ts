@@ -6063,6 +6063,50 @@ const ko: Translations = {
     emptyTpl: "아직 템플릿이 없습니다. + 새 템플릿을 클릭하여 첫 번째 템플릿을 생성하십시오.",
   },
 
+  pipelineUserPage: {
+    loading: "파이프라인 로드 중...",
+    pageTitle: "매출 파이프라인",
+    pageSubtitle: "개발부터 생산까지 거래 추적",
+    btnNewDeal: "+ 새 거래",
+
+    kpiTotalPipeline: "총 파이프라인",
+    kpiTotalPipelineSubTpl: "거래 {n}건",
+    kpiWeighted: "가중 예측",
+    kpiWeightedSub: "확률 조정",
+    kpiActual: "실제 매출",
+    kpiActualSub: "송장 및 결제 완료",
+    kpiConversion: "전환",
+    kpiConversionSub: "실제 / 파이프라인",
+
+    cardProdPrefix: "생산:",
+    emptyDeals: "거래 없음",
+    weightedPrefix: "· 가중치:",
+
+    editTitlePrefix: "프로젝트 편집:",
+    fieldName: "프로젝트 이름",
+    fieldStage: "단계",
+    keepCurrent: "현재 유지",
+    fieldBrand: "브랜드",
+    fieldNone: "없음",
+    fieldProjectedValue: "예상 가치 ($)",
+    fieldProbability: "확률 (%)",
+    fieldFuzeTier: "FUZE 등급",
+    fieldAnnualVolume: "연간 수량 (m)",
+    fieldFactory: "공장",
+    fieldDistributor: "디스트리뷰터",
+    autoFromFactory: "공장에서 자동",
+    fieldExpectedProd: "예상 생산",
+    fieldActualProd: "실제 생산",
+    btnSaveChanges: "변경사항 저장",
+    btnSaving: "저장 중...",
+    btnCancel: "취소",
+
+    newDealTitle: "새 거래",
+    newDealPlaceholder: "프로젝트 / 거래 이름...",
+    btnCreate: "생성",
+    btnCreating: "생성 중...",
+  },
+
 };
 
 export default ko;
