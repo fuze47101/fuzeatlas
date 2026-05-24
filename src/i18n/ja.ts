@@ -7168,6 +7168,34 @@ const ja: Translations = {
     backToLeadOption: "← Leadに戻る",
   },
 
+  commandCenterGlobe: {
+    loading: "グローブを読み込み中…",
+    title: "サプライチェーングローブ",
+    emptyTitle: "ジオコード化されたエンティティはまだありません",
+    emptyHint: "各エンティティの市と国から緯度/経度を入力するには、ジオコーダーを実行してください：",
+    emptyFooter: "Nominatimには1秒あたり1リクエストのレート制限があります — 完全なパスには数分かかります。再実行では座標が既にある行はスキップされます。",
+    factoriesLabel: "ファクトリー",
+    brandsLabel: "ブランド",
+    labsLabel: "ラボ",
+    distributorsLabel: "ディストリビューター",
+    shipmentsLabel: "出荷（90日）",
+    searchPlaceholder: "エンティティを検索…",
+    legendFactory: "ファクトリー",
+    legendPulseHint: "（パルス=30日以内にアクティブ）",
+    legendBrand: "ブランド本社",
+    legendFuzeLab: "FUZE所有ラボ",
+    legendPartnerLab: "パートナーラボ",
+    legendDistributor: "ディストリビューター",
+    kindFactory: "ファクトリー",
+    kindBrand: "ブランド",
+    kindLab: "ラボ",
+    kindDistributor: "ディストリビューター",
+    stageLabel: "ステージ：",
+    activeBadge: "⚡ アクティブ（30日）",
+    openDetailBtn: "詳細を開く →",
+    errLoadFailed: "グローブの読み込みに失敗しました",
+  },
+
 };
 
 export default ja;
