@@ -7689,6 +7689,33 @@ const ms: Translations = {
     contactLink: "Kenalan",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "Jenama",
+    crumb: "Hangtag QR",
+    heading: "Token QR hangtag",
+    subtitlePrefix: "Setiap token diselesaikan ke halaman pengesahan awam di",
+    subtitleSuffix: "Bilangan imbasan + cap masa imbasan pertama / terakhir dijejak setiap baris.",
+    mintTokensTitle: "Cipta token",
+    countPlaceholder: "bilangan",
+    fabricIdPlaceholder: "fabricId (pilihan)",
+    skuPlaceholder: "SKU produk",
+    batchPlaceholder: "kod kelompok",
+    mintBtn: "Cipta",
+    mintingBusy: "Mencipta…",
+    mintFootnote: "Maks 500 per cipta. Cetak token yang dihasilkan sebagai kod QR pada hangtag menggunakan penjana QR pilihan anda (setiap URL adalah tepat URL halaman pengesahan).",
+    mintFailedError: "Penciptaan gagal",
+    tokenSingular: "token",
+    tokenPlural: "token",
+    exportCsvBtn: "Eksport CSV",
+    colToken: "Token",
+    colSkuBatch: "SKU / Kelompok",
+    colFabric: "Fabrik",
+    colScans: "Imbasan",
+    colLastScan: "Imbasan terakhir",
+    colVerifyUrl: "URL Pengesahan",
+    emptyState: "Belum ada token — cipta kelompok pertama anda di atas.",
+  },
+
 };
 
 export default ms;
