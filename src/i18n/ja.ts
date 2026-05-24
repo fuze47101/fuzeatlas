@@ -7592,6 +7592,31 @@ const ja: Translations = {
     claimsLink: "クレーム表示",
   },
 
+  changePassword: {
+    titleDefault: "パスワード変更",
+    titleForced: "新しいパスワードを設定してください",
+    forcedBanner: "仮パスワードが付与されています。安全なパスワードを設定して続行してください。",
+    currentPasswordLabel: "現在のパスワード",
+    newPasswordLabel: "新しいパスワード",
+    newPasswordPlaceholder: "8 文字以上、大文字 1 つ、数字 1 つを含む",
+    confirmPasswordLabel: "新しいパスワード (確認)",
+    reqMinChars: "8 文字以上",
+    reqUppercase: "大文字を 1 文字以上",
+    reqNumber: "数字を 1 つ以上",
+    reqMatch: "パスワードが一致",
+    updateBtn: "パスワードを更新",
+    setAndContinueBtn: "パスワードを設定して続行",
+    updatingBtn: "更新中...",
+    cancelBtn: "キャンセル",
+    passwordUpdatedTitle: "パスワードが更新されました",
+    redirecting: "リダイレクトしています...",
+    errPasswordsDoNotMatch: "パスワードが一致しません",
+    errMinLength: "パスワードは 8 文字以上である必要があります",
+    errNeedUppercase: "パスワードには大文字を 1 文字以上含めてください",
+    errNeedNumber: "パスワードには数字を 1 つ以上含めてください",
+    errGeneric: "パスワードの変更に失敗しました",
+  },
+
 };
 
 export default ja;
