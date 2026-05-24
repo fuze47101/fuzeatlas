@@ -7819,6 +7819,23 @@ const tr: Translations = {
     fieldChangedPlural: "alan değişti",
   },
 
+  adminLanding: {
+    loadingLabel: "Yönetici yükleniyor",
+    crumb: "Yönetici",
+    heading: "Yönetici",
+    subtitle: "FUZE-Ops kontrol yüzeyleri. Detaya inmek için bir modül seçin veya tam gezinme için kenar çubuğunu kullanın.",
+    openPrefix: "Aç:",
+    fastPathLabel: "Hızlı yol",
+    dataEntryHubTitle: "Veri giriş merkezi",
+    dataEntryHubBody: "Marka spesifikasyonu, fiyatlandırma kademesi, tedarik zinciri bağlantısı, laboratuvar fiyatlandırması — hepsi tek sayfada.",
+    liveStateLabel: "Canlı durum",
+    commandCenterTitle: "Komuta Merkezi",
+    commandCenterBody: "Altı metrik kutusu, marka × fabrika kadans matrisi, son etkinlik, kuyruklar.",
+    weeklyLabel: "Haftalık",
+    mondayReviewTitle: "Pazartesi inceleme kuyruğu",
+    mondayReviewBody: "AI tarafından işaretlenen test çalıştırmaları + marka redleri. Pazar 22:00 UTC e-postası gündemi besler.",
+  },
+
 };
 
 export default tr;
