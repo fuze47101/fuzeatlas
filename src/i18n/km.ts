@@ -7486,6 +7486,24 @@ const km: Translations = {
     footerVerifiedBy: "Verified by FUZE Atlas",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "ESG snapshots — FUZE Atlas",
+    metaDescPrefix: "Quarterly ESG impact reports for",
+    metaDescSuffix: "certified by FUZE Atlas.",
+    backArrowPrefix: "←",
+    headingSuffix: "— ESG impact",
+    heroSubtitle: "Quarterly snapshots of FUZE-certified fabric and antimicrobial test outcomes.",
+    emptyBody: "ទេ published snapshots yet. Quarterly reports publish at the start of the next quarter.",
+    statFabricsCertified: "ក្រណាត់ certified",
+    statTestsPassed: "ការសាកល្បង passed",
+    statFuzeLiters: "FUZE liters",
+    statFactories: "រោងចក្រ",
+    passRateLabel: "Pass rate:",
+    downloadPdf: "ទាញយក PDF →",
+    footerCertifiedBy: "Certified by FUZE Atlas",
+  },
+
 };
 
 export default km;
