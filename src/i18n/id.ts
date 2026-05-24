@@ -3558,6 +3558,33 @@ const id: Translations = {
     bookAnotherBtn: "Pesan Meeting Lain",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "Brand",
+    crumb: "QR Hangtag",
+    heading: "Token QR hangtag",
+    subtitlePrefix: "Setiap token mengarah ke halaman verifikasi publik di",
+    subtitleSuffix: "Jumlah pemindaian + timestamp pemindaian pertama / terakhir dilacak per baris.",
+    mintTokensTitle: "Mint token",
+    countPlaceholder: "jumlah",
+    fabricIdPlaceholder: "fabricId (opsional)",
+    skuPlaceholder: "SKU produk",
+    batchPlaceholder: "kode batch",
+    mintBtn: "Mint",
+    mintingBusy: "Mint…",
+    mintFootnote: "Maks 500 per mint. Cetak token yang dihasilkan sebagai kode QR pada hangtag menggunakan generator QR pilihan Anda (setiap URL persis URL halaman verify).",
+    mintFailedError: "Mint gagal",
+    tokenSingular: "token",
+    tokenPlural: "token",
+    exportCsvBtn: "Ekspor CSV",
+    colToken: "Token",
+    colSkuBatch: "SKU / Batch",
+    colFabric: "Kain",
+    colScans: "Pemindaian",
+    colLastScan: "Pemindaian terakhir",
+    colVerifyUrl: "URL Verifikasi",
+    emptyState: "Belum ada token — mint batch pertama Anda di atas.",
+  },
+
 };
 
 export default id;
