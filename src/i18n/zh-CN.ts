@@ -4552,6 +4552,23 @@ const zhCN: Translations = {
     nameRequiredError: "名称为必填项",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← 返回计算器",
+    printButton: "🖨 打印 / 保存为 PDF",
+    eyebrow: "FUZE Biotech · 实验室 SOP",
+    pageTitle: "台架测试规程",
+    pageSubtitle: "FUZE 配方计算器 —— 轧-烘-焙 上染率与稀释",
+    docLabel: "文档:SOP-FUZE-LAB-001",
+    revLabel: "版本:1.0 ·",
+    purposeHeader: "目的",
+    equipmentHeader: "设备",
+    chemistryRefHeader: "FUZE 化学品参考",
+    criticalRulesHeader: "⚠ 关键规程规则",
+    procedureHeader: "操作步骤",
+    formulasHeader: "公式(用于 QC 复核)",
+    sanityRangesHeader: "合理性检查范围",
+  },
+
 };
 
 export default zhCN;
