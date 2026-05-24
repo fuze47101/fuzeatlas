@@ -6559,6 +6559,26 @@ const km: Translations = {
     emptyBias: "ទេ bias data yet.",
   },
 
+  labCreditsAdmin: {
+    loading: "កំពុងផ្ទុក…",
+    crumbLabs: "មន្ទីរពិសោធន៍",
+    crumbCredits: "Credits",
+    creditsSuffix: "credits",
+    balanceLabel: "FUZE balance with this lab",
+    balanceHint: "Auto-deducts from future FUZE-paid testing at this lab.",
+    addCreditTitle: "បន្ថែម credit",
+    amountPlaceholder: "$ amount",
+    sourceNotePlaceholder: "source note",
+    addCreditBtn: "បន្ថែម credit",
+    colCreated: "បានបង្កើត",
+    colAmount: "Amount",
+    colSource: "Source",
+    colNote: "ទេte",
+    colSpent: "Spent",
+    availableLabel: "available",
+    emptyState: "ទេ credits yet.",
+  },
+
 };
 
 export default km;
