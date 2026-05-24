@@ -7952,6 +7952,31 @@ const zhCN: Translations = {
     accessLaterTitle: "后续访问本报告",
   },
 
+  settingsAuditLog: {
+    title: "审计日志",
+    subtitle: "追踪所有系统变更和用户操作",
+    actionLabel: "操作",
+    allActionsOption: "全部操作",
+    entityTypeLabel: "实体类型",
+    allEntitiesOption: "全部实体",
+    fromDateLabel: "起始日期",
+    toDateLabel: "截止日期",
+    loadingText: "正在加载…",
+    emptyText: "未找到审计日志",
+    colTimestamp: "时间戳",
+    colUser: "用户",
+    colAction: "操作",
+    colEntity: "实体",
+    colDescription: "描述",
+    systemUserFallback: "系统",
+    showingPrefix: "显示",
+    showingTo: "至",
+    showingOf: "/",
+    showingSuffix: "条日志",
+    prevBtn: "上一页",
+    nextBtn: "下一页",
+  },
+
 };
 
 export default zhCN;
