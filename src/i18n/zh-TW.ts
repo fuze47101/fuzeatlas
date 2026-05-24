@@ -4755,6 +4755,32 @@ const zhTW: Translations = {
     openProfile: "開啟個人檔案",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← 返回 ICP 樣品製備",
+    printButton: "🖨 列印 / 另存 PDF",
+    eyebrow: "FUZE Biotech · 實驗室 SOP",
+    pageTitle: "ICP-MS 樣品製備",
+    pageSubtitle: "裁切 → 秤重 → 分塊 → 裝袋 → 寄送至 CTLA(猶他州)進行 ICP-MS 驗證",
+    docLabel: "文件:SOP-FUZE-LAB-002",
+    revLabel: "版次:1.0 ·",
+
+    purposeHeader: "目的",
+    equipmentHeader: "設備",
+    massTargetsHeader: "重量目標(關鍵)",
+    shipToLabel: "寄送至 CTLA",
+    digestPerRunLabel: "每次消解",
+    cutterGeometryLabel: "裁切器幾何",
+
+    criticalRulesHeader: "⚠ 關鍵製備規則",
+    procedureHeader: "程序",
+    shippingAddressHeader: "寄送地址(由精靈自動填入)",
+    shipToHeader: "寄送至",
+    returnAddressHeader: "回件地址與報告寄送",
+    reportToLabel: "報告寄送至:",
+    preShipChecklistHeader: "✅ 寄送前檢查清單(精靈會列印於包裝上)",
+    sanityCheckHeader: "合理性檢查(CTLA 應回報之數值範圍)",
+  },
+
 };
 
 export default zhTW;
