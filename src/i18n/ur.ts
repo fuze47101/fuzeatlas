@@ -7479,6 +7479,33 @@ const ur: Translations = {
     contactLink: "رابطہ",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "برانڈ",
+    crumb: "ہینگ ٹیگ QR",
+    heading: "ہینگ ٹیگ QR ٹوکنز",
+    subtitlePrefix: "ہر ٹوکن یہاں عوامی تصدیقی صفحے پر حل ہوتا ہے",
+    subtitleSuffix: "اسکین کی تعداد + پہلی / آخری اسکین کے وقت ہر قطار پر ٹریک کیے گئے۔",
+    mintTokensTitle: "ٹوکنز بنائیں",
+    countPlaceholder: "تعداد",
+    fabricIdPlaceholder: "fabricId (اختیاری)",
+    skuPlaceholder: "پروڈکٹ SKU",
+    batchPlaceholder: "بیچ کوڈ",
+    mintBtn: "بنائیں",
+    mintingBusy: "بنایا جا رہا ہے…",
+    mintFootnote: "زیادہ سے زیادہ 500 فی منٹ۔ نتیجے میں آنے والے ٹوکنز کو اپنے پسندیدہ QR جنریٹر کا استعمال کرتے ہوئے ہینگ ٹیگز پر QR کوڈز کے طور پر پرنٹ کریں (ہر URL بالکل وہ verify-page URL ہے)۔",
+    mintFailedError: "بنانا ناکام",
+    tokenSingular: "ٹوکن",
+    tokenPlural: "ٹوکنز",
+    exportCsvBtn: "CSV ایکسپورٹ کریں",
+    colToken: "ٹوکن",
+    colSkuBatch: "SKU / بیچ",
+    colFabric: "فیبرک",
+    colScans: "اسکینز",
+    colLastScan: "آخری اسکین",
+    colVerifyUrl: "تصدیقی URL",
+    emptyState: "ابھی تک کوئی ٹوکن نہیں — اوپر اپنا پہلا بیچ بنائیں۔",
+  },
+
 };
 
 export default ur;
