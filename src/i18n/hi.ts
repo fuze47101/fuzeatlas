@@ -7343,6 +7343,27 @@ const hi: Translations = {
     seeSustainabilityBtn: "स्थिरता प्रभाव देखें",
   },
 
+  pressLanding: {
+    heroTitle: "प्रेस किट",
+    heroSubtitle: "FUZE Biotech के लिए लोगो, इमेजरी, रिलीज़, और कंपनी पृष्ठभूमि।",
+    aboutTitle: "FUZE Biotech के बारे में",
+    aboutBody1: "FUZE Biotech, जिसका मुख्यालय Salt Lake City, Utah में है, FUZE मेटामटीरियल के चारों ओर निर्मित एक स्वामित्व वाला एंटीमाइक्रोबियल टेक्सटाइल ट्रीटमेंट विकसित करता है। ट्रीटमेंट मानक टेक्सटाइल फिनिशिंग के दौरान फाइबर से स्थायी रूप से बंधता है — कोई PFAS नहीं, कोई बाइंडर नहीं, फैब्रिक की hand या सांस लेने की क्षमता में कोई केमिस्ट्री परिवर्तन नहीं।",
+    aboutBody2: "उत्पाद EPA पंजीकृत (संघीय), California EPA अनुमोदित (Q1 2026), OEKO-TEX Standard 100 Class I, और bluesign® अनुमोदित है। प्रदर्शन स्वतंत्र तृतीय-पक्ष लैब द्वारा ASTM E2149, AATCC 100, AATCC 30, ISO 18184, और ISO 20743 के लिए सत्यापित है।",
+    foundedLabel: "स्थापित",
+    foundedValue: "Salt Lake City, UT",
+    addressLabel: "पता",
+    pressContactLabel: "प्रेस संपर्क",
+    logosSection: "लोगो",
+    logoAltFallback: "FUZE लोगो",
+    downloadLabel: "डाउनलोड →",
+    imagerySection: "इमेजरी",
+    imageAltFallback: "FUZE इमेजरी",
+    releasesSection: "प्रेस रिलीज़",
+    releaseFallback: "रिलीज़",
+    newsSection: "खबरों में",
+    claimsLink: "दावे",
+  },
+
 };
 
 export default hi;
