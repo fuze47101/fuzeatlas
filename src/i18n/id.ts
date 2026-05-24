@@ -3645,6 +3645,36 @@ const id: Translations = {
     errLoadFailed: "Gagal memuat globe",
   },
 
+  bdSequencesList: {
+    kicker: "BD Wizard",
+    heading: "Sequences",
+    subtitlePrefix: "Outbound funnel panjang. Cron memajukan step setiap jam. Step yang siap diparkir di",
+    subtitleSuffix: "untuk tinjauan Anda — tidak ada yang dikirim otomatis.",
+    openWizardBtn: "Buka BD Wizard →",
+    stepAwaitingSingular: "step menunggu tinjauan Anda",
+    stepsAwaitingPlural: "step menunggu tinjauan Anda",
+    showAllRepsLabel: "Tampilkan semua rep",
+    loadingState: "Memuat sequences…",
+    emptyHeadPrefix: "Tidak ada",
+    emptyHeadSuffix: "sequence",
+    emptyBodyPrefix: "Mulai dengan mengirim email pertama Anda melalui",
+    emptyBodyLink: "BD Wizard",
+    emptyBodySuffix: ". Setiap pengiriman pertama otomatis memulai cadence 6-step.",
+    colBrandContact: "Brand / Kontak",
+    colProgress: "Progres",
+    colNext: "Berikutnya",
+    colRep: "Rep",
+    colStatus: "Status",
+    colActions: "Aksi",
+    readyChipSuffix: "siap",
+    reviewSendBtn: "Tinjau & kirim",
+    openBtn: "Buka",
+    viewBtn: "Lihat",
+    pauseBtn: "Jeda",
+    exitBtn: "Keluar",
+    resumeBtn: "Lanjutkan",
+  },
+
 };
 
 export default id;
