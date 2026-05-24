@@ -7051,6 +7051,31 @@ const km: Translations = {
     footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
   },
 
+  signupInvitation: {
+    appKicker: "FUZE Atlas",
+    joinPrefix: "Join",
+    invitedSuffix: "invited",
+    youWereInvited: "You were invited",
+    asLabel: "as",
+    emailLabel: "អ៊ីមែល",
+    yourNameLabel: "Your name",
+    fullNamePlaceholder: "ឈ្មោះពេញ",
+    passwordLabel: "ពាក្យសម្ងាត់",
+    passwordPlaceholder: "At least 8 characters",
+    confirmPasswordLabel: "បញ្ជាក់ password",
+    confirmPasswordPlaceholder: "Re-enter password",
+    creatingBtn: "Creating account…",
+    acceptBtn: "Accept invitation & sign in",
+    expiresPrefix: "ការអញ្ជើញ expires",
+    problemTitle: "ការអញ្ជើញ problem",
+    problemDefault: "Couldn't load this invitation.",
+    goToSignIn: "Go to sign-in",
+    errPasswordTooShort: "ពាក្យសម្ងាត់ must be at least 8 characters.",
+    errPasswordsMismatch: "ពាក្យសម្ងាត់s don't match.",
+    errNetwork: "Network error",
+    errServerUnreachable: "Couldn't reach the server",
+  },
+
 };
 
 export default km;
