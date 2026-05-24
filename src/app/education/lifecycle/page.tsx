@@ -15,6 +15,7 @@
  */
 
 import Link from "next/link";
+import { getServerTranslations } from "@/i18n/server";
 
 export const metadata = {
   title: "FUZE Life Cycle Analysis",
@@ -180,36 +181,34 @@ const COMPARE: CompareRow[] = [
   },
 ];
 
-export default function FuzeLifecyclePage() {
+export default async function FuzeLifecyclePage({ searchParams }: { searchParams?: Promise<{ lang?: string }> }) {
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).educationLifecycle;
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
       {/* ── Hero ───────────────────────────────────────────────── */}
       <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 text-white rounded-2xl p-6 md:p-8">
         <Link href="/education" className="text-xs text-emerald-300 hover:text-emerald-200">
-          ← Back to FUZE Basics
+          {T.backLink}
         </Link>
         <div className="text-xs font-bold uppercase tracking-wider text-emerald-300 mt-2 mb-1">
-          Life Cycle Analysis
+          {T.heroEyebrow}
         </div>
         <h1 className="text-3xl md:text-4xl font-black tracking-tight">
-          FUZE — Cradle to Grave
+          {T.heroTitle}
         </h1>
         <p className="mt-3 text-sm md:text-base text-slate-300 max-w-3xl leading-relaxed">
-          A structured five-stage environmental profile of the FUZE antimicrobial
-          treatment, following the <strong className="text-white">ISO 14040 / 14044</strong> LCA
-          framework. Functional unit: one square meter of F1-treated knit fabric
-          (200 g/m², 100 industrial wash cycles). System boundary: cradle-to-grave,
-          no exclusions.
+          {T.heroBlurbPrefix} <strong className="text-white">{T.heroBlurbStandard}</strong>{T.heroBlurbSuffix}
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
           <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 text-xs font-bold border border-emerald-400/30">
-            For brand sustainability teams
+            {T.badgeBrandTeams}
           </span>
           <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 text-xs font-bold border border-emerald-400/30">
-            ISO 14040 / 14044 framework
+            {T.badgeFramework}
           </span>
           <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 text-xs font-bold border border-emerald-400/30">
-            Cradle-to-grave
+            {T.badgeCradle}
           </span>
         </div>
       </div>
@@ -218,10 +217,10 @@ export default function FuzeLifecyclePage() {
       <section className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8">
         <div className="mb-5">
           <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
-            At a glance
+            {T.atAGlanceLabel}
           </div>
           <h2 className="text-2xl md:text-3xl font-black text-slate-900">
-            Five stages, one functional unit
+            {T.fiveStagesTitle}
           </h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -261,7 +260,7 @@ export default function FuzeLifecyclePage() {
             </div>
             <div className="flex-1">
               <div className="text-[11px] font-bold uppercase tracking-widest text-[#00b4c3] mb-1">
-                Stage {idx + 1} of 5 — {s.label}
+                {T.stageOfTemplate.replace("{n}", String(idx + 1)).replace("{label}", s.label)}
               </div>
               <h2 className="text-xl md:text-2xl font-black text-slate-900">
                 {s.headline}
@@ -284,14 +283,13 @@ export default function FuzeLifecyclePage() {
       <section className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8">
         <div className="mb-5">
           <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
-            Comparative analysis
+            {T.compareEyebrow}
           </div>
           <h2 className="text-2xl md:text-3xl font-black text-slate-900">
-            FUZE vs. incumbent antimicrobial chemistries
+            {T.compareTitle}
           </h2>
           <p className="text-sm text-slate-600 mt-2 max-w-3xl leading-relaxed">
-            Side-by-side comparison against the three most common incumbent
-            chemistries used in apparel and home-textile finishing.
+            {T.compareBlurb}
           </p>
         </div>
         <div className="overflow-x-auto -mx-2">
@@ -299,19 +297,19 @@ export default function FuzeLifecyclePage() {
             <thead>
               <tr className="bg-slate-900 text-white">
                 <th className="text-left px-3 py-3 font-bold border-b-2 border-[#00b4c3]">
-                  Attribute
+                  {T.compareColAttribute}
                 </th>
                 <th className="text-left px-3 py-3 font-bold border-b-2 border-[#00b4c3] bg-emerald-700">
-                  FUZE
+                  {T.compareColFUZE}
                 </th>
                 <th className="text-left px-3 py-3 font-bold border-b-2 border-[#00b4c3]">
-                  Silvadur
+                  {T.compareColSilvadur}
                 </th>
                 <th className="text-left px-3 py-3 font-bold border-b-2 border-[#00b4c3]">
-                  Polygiene
+                  {T.compareColPolygiene}
                 </th>
                 <th className="text-left px-3 py-3 font-bold border-b-2 border-[#00b4c3]">
-                  QAC
+                  {T.compareColQAC}
                 </th>
               </tr>
             </thead>
@@ -342,11 +340,7 @@ export default function FuzeLifecyclePage() {
           </table>
         </div>
         <p className="mt-4 text-xs text-slate-500 italic leading-relaxed">
-          The most material distinction is the active loading on fabric. FUZE
-          achieves equivalent or superior antimicrobial performance at 50–500×
-          lower active loading than incumbent leaching chemistries — the
-          fundamental driver of FUZE&apos;s environmental profile across every
-          downstream life-cycle stage.
+          {T.compareFooter}
         </p>
       </section>
 
@@ -355,26 +349,20 @@ export default function FuzeLifecyclePage() {
         <div className="grid md:grid-cols-3 gap-6 items-center">
           <div className="md:col-span-2">
             <div className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-2">
-              The headline
+              {T.headlineEyebrow}
             </div>
             <p className="text-2xl md:text-3xl font-black leading-tight">
-              <span className="text-emerald-300">50–500×</span> lower active
-              loading on fabric at{" "}
-              <span className="text-emerald-300">equivalent or superior</span>{" "}
-              antimicrobial performance
+              <span className="text-emerald-300">{T.headlineNumber}</span>{T.headlineMid}<span className="text-emerald-300">{T.headlineEquivalent}</span>{T.headlineSuffix}
             </p>
             <p className="mt-3 text-sm text-slate-300 leading-relaxed">
-              vs. incumbent silver-ion, silver-chloride, and quaternary
-              ammonium finishes. Less active means less feedstock, less wash
-              effluent, less wastewater treatment load, and less downstream
-              environmental release at every subsequent life-cycle stage.
+              {T.headlineBlurb}
             </p>
           </div>
           <div className="space-y-2">
-            <ComplianceBadge label="OEKO-TEX Std 100 · Class I" />
-            <ComplianceBadge label="bluesign® approved" />
-            <ComplianceBadge label="EPA federally registered" />
-            <ComplianceBadge label="PFAS-free" />
+            <ComplianceBadge label={T.badgeOekoTex} />
+            <ComplianceBadge label={T.badgeBluesign} />
+            <ComplianceBadge label={T.badgeEPA} />
+            <ComplianceBadge label={T.badgePFASfree} />
           </div>
         </div>
       </section>
@@ -382,53 +370,43 @@ export default function FuzeLifecyclePage() {
       {/* ── ESG framing ────────────────────────────────────────── */}
       <section className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 md:p-8">
         <h2 className="text-xl md:text-2xl font-black text-emerald-900 mb-3">
-          What this means in your ESG / sustainability report
+          {T.esgTitle}
         </h2>
         <ul className="space-y-2.5 text-sm text-emerald-900">
           <li className="flex gap-2.5">
             <span className="text-emerald-700 font-black shrink-0">✓</span>
             <span>
-              <strong>Circular feedstock claim</strong> — FUZE is produced from
-              end-of-life electronics, supporting your circular-economy
-              commitments.
+              <strong>{T.esgBullet1Title}</strong>{T.esgBullet1Text}
             </span>
           </li>
           <li className="flex gap-2.5">
             <span className="text-emerald-700 font-black shrink-0">✓</span>
             <span>
-              <strong>Net-zero-capable production</strong> — the production cell
-              is solar-compatible, supporting renewable-energy commitments
-              upstream of your supply chain.
+              <strong>{T.esgBullet2Title}</strong>{T.esgBullet2Text}
             </span>
           </li>
           <li className="flex gap-2.5">
             <span className="text-emerald-700 font-black shrink-0">✓</span>
             <span>
-              <strong>Zero wash-effluent metallic release</strong> — FUZE is
-              non-leaching by design. Your downstream contribution to municipal
-              water-treatment burden from this finish = 0.
+              <strong>{T.esgBullet3Title}</strong>{T.esgBullet3Text}
             </span>
           </li>
           <li className="flex gap-2.5">
             <span className="text-emerald-700 font-black shrink-0">✓</span>
             <span>
-              <strong>PFAS-free, formaldehyde-free, binder-free</strong> —
-              every petrochemical input incumbents require, FUZE eliminates.
+              <strong>{T.esgBullet4Title}</strong>{T.esgBullet4Text}
             </span>
           </li>
           <li className="flex gap-2.5">
             <span className="text-emerald-700 font-black shrink-0">✓</span>
             <span>
-              <strong>Mechanical and chemical recycling compatible</strong> —
-              treated articles can re-enter your circularity programs without
-              contaminating recovered fiber streams.
+              <strong>{T.esgBullet5Title}</strong>{T.esgBullet5Text}
             </span>
           </li>
           <li className="flex gap-2.5">
             <span className="text-emerald-700 font-black shrink-0">✓</span>
             <span>
-              <strong>ZDHC MRSL compatible</strong> — no flagged substances.
-              Compatible with ZDHC Conformance Level 3.
+              <strong>{T.esgBullet6Title}</strong>{T.esgBullet6Text}
             </span>
           </li>
         </ul>
@@ -437,34 +415,19 @@ export default function FuzeLifecyclePage() {
       {/* ── Methodology note ───────────────────────────────────── */}
       <section className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8">
         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
-          Methodology note
+          {T.methodologyEyebrow}
         </div>
         <h2 className="text-xl md:text-2xl font-black text-slate-900 mb-3">
-          Why ASTM E2149 is FUZE&apos;s primary efficacy test
+          {T.methodologyTitle}
         </h2>
         <p className="text-sm text-slate-700 leading-relaxed mb-3">
-          Brand sustainability teams often ask why FUZE primary efficacy
-          testing is reported under ASTM E2149 rather than AATCC 100 at F3 and
-          F4. The short answer: ASTM E2149 is the dynamic-contact test
-          designed for non-leaching contact-kill chemistry. It rewards direct
-          physical contact between the bacterial cell and the
-          metamaterial-bonded fiber surface — which is exactly FUZE&apos;s
-          mechanism.
+          {T.methodologyPara1}
         </p>
         <p className="text-sm text-slate-700 leading-relaxed mb-3">
-          AATCC 100 stacks fabric layers around an inoculated coupon and
-          measures surviving colony-forming units. It was designed for{" "}
-          <em>leaching</em> antimicrobials — chemistries that release ions
-          into the surrounding moisture and kill bacteria via that ion field.
-          The layered geometry helps leaching chemistries; released ions
-          saturate the inter-layer space.
+          {T.methodologyPara2Lead}<em>{T.methodologyPara2Em}</em>{T.methodologyPara2Suffix}
         </p>
         <p className="text-sm text-slate-700 leading-relaxed">
-          FUZE passes AATCC 100 at the higher tiers (F1 and F2) where
-          metamaterial density is sufficient to overcome the test geometry.
-          For F3 and F4, the appropriate primary efficacy test is ASTM E2149.
-          Brand audits receive ASTM E2149 across all four tiers with AATCC 100
-          alongside at F1 and F2 as a complementary view.
+          {T.methodologyPara3}
         </p>
       </section>
 
@@ -474,25 +437,25 @@ export default function FuzeLifecyclePage() {
           href="/education"
           className="px-4 py-2.5 rounded-lg bg-slate-900 text-white text-sm font-bold hover:bg-slate-800"
         >
-          ← Back to FUZE Basics
+          {T.ctaBack}
         </Link>
         <Link
           href="/education/story"
           className="px-4 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700"
         >
-          The FUZE Story →
+          {T.ctaStory}
         </Link>
         <Link
           href="/education/application"
           className="px-4 py-2.5 rounded-lg bg-[#00b4c3] text-white text-sm font-bold hover:bg-[#009ba8]"
         >
-          Application methods →
+          {T.ctaApplication}
         </Link>
         <Link
           href="/sustainability"
           className="px-4 py-2.5 rounded-lg bg-white border border-slate-300 text-slate-700 text-sm font-bold hover:bg-slate-50"
         >
-          Sustainability dashboard →
+          {T.ctaSustainability}
         </Link>
       </div>
     </div>
