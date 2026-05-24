@@ -7645,6 +7645,31 @@ const ko: Translations = {
     claimsLink: "클레임",
   },
 
+  changePassword: {
+    titleDefault: "비밀번호 변경",
+    titleForced: "새 비밀번호 설정",
+    forcedBanner: "임시 비밀번호가 할당되었습니다. 계속하려면 안전한 비밀번호를 생성하십시오.",
+    currentPasswordLabel: "현재 비밀번호",
+    newPasswordLabel: "새 비밀번호",
+    newPasswordPlaceholder: "최소 8자, 대문자 1개, 숫자 1개",
+    confirmPasswordLabel: "새 비밀번호 확인",
+    reqMinChars: "최소 8자",
+    reqUppercase: "대문자 1개",
+    reqNumber: "숫자 1개",
+    reqMatch: "비밀번호 일치",
+    updateBtn: "비밀번호 업데이트",
+    setAndContinueBtn: "비밀번호 설정 및 계속",
+    updatingBtn: "업데이트 중...",
+    cancelBtn: "취소",
+    passwordUpdatedTitle: "비밀번호 업데이트됨",
+    redirecting: "리디렉션 중...",
+    errPasswordsDoNotMatch: "비밀번호가 일치하지 않습니다",
+    errMinLength: "비밀번호는 최소 8자 이상이어야 합니다",
+    errNeedUppercase: "비밀번호에 대문자가 최소 1개 포함되어야 합니다",
+    errNeedNumber: "비밀번호에 숫자가 최소 1개 포함되어야 합니다",
+    errGeneric: "비밀번호 변경 실패",
+  },
+
 };
 
 export default ko;
