@@ -6011,6 +6011,31 @@ const it: Translations = {
     footerNote: "Ordinato: prima stock basso, poi inattivi, poi per giorni di stock rimanenti in ordine crescente. \"Consumo giornaliero\" = media mobile a 90 giorni dei litri spediti agli stabilimenti. \"Giorni rimanenti\" = stock attuale ÷ consumo giornaliero. \"Inattivo\" = nessun ordine da stabilimenti negli ultimi 90 giorni. \"Nessun prezzo\" significa che la tariffa all'ingrosso FUZE non è impostata; il distributore non può effettuare ordini di rifornimento. Modifica nella pagina per-distributore.",
   },
 
+  conversionTracking: {
+    crumbDashboard: "Dashboard",
+    crumbCurrent: "Campione → Produzione",
+    title: "Conversione Campione → Produzione",
+    subtitle: "Traccia quali stabilimenti hanno ricevuto campioni e sono passati a ordini di produzione",
+    cardFactoriesSampled: "Stabilimenti Campionati",
+    cardConverted: "Convertiti",
+    cardConversionRate: "Tasso di Conversione",
+    cardAvgDays: "Giorni Medi per Convertire",
+    cardProdVolume: "Volume di Produzione",
+    cardProdRevenue: "Ricavi di Produzione",
+    tabAll: "Tutti",
+    tabConverted: "Convertiti",
+    tabPending: "In Attesa",
+    emptyText: "Nessun ordine campione trovato finora",
+    badgeConverted: "CONVERTITO",
+    badgePending: "IN ATTESA",
+    sectionSamples: "Ordini Campione",
+    sectionTrials: "Richieste di Prova",
+    sectionProduction: "Ordini di Produzione",
+    productionLabel: "Produzione",
+    daysToConvertSuffix: "giorni per convertire",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default it;
