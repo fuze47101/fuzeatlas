@@ -7659,6 +7659,31 @@ const tr: Translations = {
     claimsLink: "İddialar",
   },
 
+  changePassword: {
+    titleDefault: "Parolayı Değiştir",
+    titleForced: "Yeni Parolanızı Belirleyin",
+    forcedBanner: "Size geçici bir parola atandı. Devam etmek için lütfen güvenli bir parola oluşturun.",
+    currentPasswordLabel: "Mevcut Parola",
+    newPasswordLabel: "Yeni Parola",
+    newPasswordPlaceholder: "Min. 8 karakter, 1 büyük harf, 1 rakam",
+    confirmPasswordLabel: "Yeni Parolayı Doğrula",
+    reqMinChars: "En az 8 karakter",
+    reqUppercase: "Bir büyük harf",
+    reqNumber: "Bir rakam",
+    reqMatch: "Parolalar eşleşiyor",
+    updateBtn: "Parolayı Güncelle",
+    setAndContinueBtn: "Parolayı Belirle ve Devam Et",
+    updatingBtn: "Güncelleniyor...",
+    cancelBtn: "İptal",
+    passwordUpdatedTitle: "Parola Güncellendi",
+    redirecting: "Şimdi yönlendiriliyorsunuz...",
+    errPasswordsDoNotMatch: "Parolalar eşleşmiyor",
+    errMinLength: "Parola en az 8 karakter olmalı",
+    errNeedUppercase: "Parola en az bir büyük harf içermeli",
+    errNeedNumber: "Parola en az bir rakam içermeli",
+    errGeneric: "Parola değiştirilemedi",
+  },
+
 };
 
 export default tr;
