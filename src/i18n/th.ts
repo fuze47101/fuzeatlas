@@ -5047,6 +5047,61 @@ const th: Translations = {
     scopeFallback: "ค่าเริ่มต้น",
   },
 
+  brandDiscovery: {
+    crumbHome: "หน้าหลัก",
+    crumbWizard: "BD Wizard",
+    crumbHere: "Brand Discovery",
+    pageTitle: "🌎 Brand Discovery ทั่วโลก",
+    pageSubtitle: "เครื่องมือ multi-AI — ค้นหา + ตรวจสอบแบรนด์สิ่งทอผ่าน Anthropic, OpenAI และ Grok จากนั้นแนบผู้ติดต่อ Apollo อัตโนมัติให้กับทุกแบรนด์ใหม่เพื่อให้ BD Wizard ใช้ได้ทันที",
+
+    statTotalLabel: "แบรนด์ทั้งหมดใน DB",
+    backToWizard: "← กลับไปยัง Wizard",
+    backToWizardTitle: "ย้อนกลับไปยัง wizard เมื่อแบรนด์ใหม่ลง",
+
+    statsErrorContext: "โหลดสถิติ discovery",
+    statsErrorFallback: "ไม่สามารถโหลดสถิติ discovery ได้",
+    statsNetworkError: "ข้อผิดพลาดเครือข่ายขณะโหลดสถิติ discovery",
+
+    autoEnrichTitle: "Auto-enrichment เปิดอยู่",
+    autoEnrichBody: "ทุกแบรนด์ใหม่ที่สร้างที่นี่ได้รับผู้ติดต่อระดับสูงสูงสุด 8 รายการ (founder / C-suite / VP / head / director) แนบผ่าน Apollo people-search ตามโดเมน ตัวกรองของ BD Wizard อนุญาตให้แบรนด์เหล่านี้ผ่านทันที — ไม่ต้องการรอบ enrichment แยก",
+
+    settingsHeading: "การตั้งค่า Discovery",
+    labelCategory: "หมวดหมู่",
+    labelRegion: "ภูมิภาค",
+    labelTargetCount: "จำนวนเป้าหมาย",
+    btnDiscovering: "🔍 กำลังค้นหา...",
+    btnRunDiscovery: "🚀 รัน Discovery",
+    btnRunning: "กำลังรัน...",
+    btnAllCategories: "🌍 ทุกหมวดหมู่",
+
+    runningBanner: "⏳ กำลังรัน multi-AI discovery ผ่าน Anthropic + OpenAI + Grok... ใช้เวลา 30-60 วินาทีต่อหมวดหมู่",
+    errorPrefix: "❌",
+    errorDefault: "Discovery ล้มเหลว",
+
+    resultsHeadingPrefix: "ผล Discovery —",
+    chipAiSources: "แหล่ง AI:",
+    chipFound: "พบ:",
+    chipAfterDedup: "หลัง Dedup:",
+    chipCreated: "สร้าง:",
+    chipContactsAttached: "📇 ผู้ติดต่อที่แนบ:",
+
+    colBrand: "แบรนด์",
+    colSegment: "กลุ่ม",
+    colPriority: "ลำดับความสำคัญ",
+    colValidation: "การตรวจสอบ",
+    colContacts: "ผู้ติดต่อ",
+    colAiSources: "แหล่ง AI",
+    colActions: "การกระทำ",
+    tierPrefix: "ระดับ",
+    aisConfirmed: "AI ยืนยันแล้ว",
+    aiConfirmed: "AI ยืนยันแล้ว",
+    viewResearch: "ดู & วิจัย",
+
+    historyHeading: "ประวัติ Discovery (เซสชันนี้)",
+    historyFoundLabel: "พบ:",
+    historyCreatedLabel: "สร้าง:",
+  },
+
 };
 
 export default th;
