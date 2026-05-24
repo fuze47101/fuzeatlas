@@ -6539,6 +6539,26 @@ const km: Translations = {
     colSource: "Source",
   },
 
+  interLabVariance: {
+    loadingLabel: "កំពុងផ្ទុក inter-lab variance",
+    crumbQualityLabs: "Quality & មន្ទីរពិសោធន៍",
+    crumbInterLabVariance: "ភាពខុសគ្នារវាងមន្ទីរពិសោធន៍",
+    title: "ភាពខុសគ្នារវាងមន្ទីរពិសោធន៍",
+    subtitleBefore: "Where the same fabric was tested by ≥2 labs in the last",
+    subtitleAfter: "days. Sorted by range (max − min) descending.",
+    colFabric: "ក្រណាត់",
+    colMethod: "Method",
+    colRange: "Range",
+    colMeanSigma: "Mean ± σ",
+    colPerLab: "Per-lab results",
+    emptyTitle: "ទេ multi-lab fabrics yet",
+    emptyBodyBefore: "ភាពខុសគ្នារវាងមន្ទីរពិសោធន៍ compares fabrics tested by ≥2 labs in the last",
+    emptyBodyAfter: "days. Once you have the same fabric tested at a partner lab AND at FUZE USA (or any 2-lab pair), it'll show up here.",
+    biasTitle: "Per-lab calibration bias",
+    biasHint: "Mean of (this lab's result − group mean) across every shared fabric. Positive = runs higher than peer labs; negative = runs lower.",
+    emptyBias: "ទេ bias data yet.",
+  },
+
 };
 
 export default km;
