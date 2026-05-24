@@ -3960,6 +3960,48 @@ const id: Translations = {
     savingBtn: "Menyimpan...",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "Tinjauan Eksekutif Mingguan",
+    weekOfTemplate: "Minggu",
+    coveringPrefix: "Mencakup",
+    daysWindowSuffix: "-hari window",
+    ownerLabel: "Pemilik:",
+    generatedLabel: "Dibuat",
+    enterPresent: "Hadir",
+    exitPresent: "Keluar Hadir",
+    refreshing: "Menyegarkan…",
+    refreshSnapshot: "Segarkan snapshot",
+
+    execSummaryTitle: "Ringkasan eksekutif",
+    execSummaryPlaceholder: "Takeaway utama untuk board. Disimpan saat blur.",
+    saving: "Menyimpan…",
+
+    salesDistributionTitle: "Penjualan & distribusi",
+    bookedDollars: "$ Dipesan",
+    shippedDollars: "$ Dikirim",
+    bookedLiters: "L Dipesan",
+    shippedLiters: "L Dikirim",
+    ordersSuffix: "pesanan",
+    shipmentsSuffix: "pengiriman",
+    kgShippedSuffix: "kg dikirim",
+    byOrderTypeLabel: "Berdasarkan tipe pesanan",
+
+    sowProgressTitle: "Progres SOW",
+    sowDraft: "draft",
+    sowSent: "terkirim",
+    sowSigned: "ditandatangani",
+    sowActive: "aktif",
+    sowComplete: "selesai",
+    sowSignedThisWindow: "Ditandatangani di window ini",
+    sowNewlyOpened: "Baru dibuka",
+    sowActiveTitle: "Aktif",
+    sowStale: "Stale (>30h tanpa pergerakan)",
+    sowEmptyNoSignatures: "Tidak ada tanda tangan baru di window ini.",
+    sowEmptyNoOpened: "Tidak ada SOW dibuka di window ini.",
+    sowEmptyNoActive: "Tidak ada SOW aktif.",
+    sowEmptyNothingStuck: "Tidak ada yang macet.",
+  },
+
 };
 
 export default id;
