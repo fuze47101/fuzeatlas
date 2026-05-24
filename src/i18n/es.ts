@@ -4743,6 +4743,19 @@ const es: Translations = {
     generatedTemplate: "Generado:",
   },
 
+  bdWizard: {
+    homeLink: "← Inicio",
+    pageTitle: "Asistente BD",
+    pageSubtitle: "Outbound guiado. La marca de mayor confianza siguiente se selecciona automáticamente para usted.",
+    inQueueTemplate: "({n} en cola)",
+    skipBrand: "Omitir esta marca →",
+
+    setFromAddressHeader: "Configure su dirección \"De:\" saliente antes de enviar",
+    setFromAddressBody: "Sin esto, los envíos salen desde la dirección genérica de notificaciones de FUZE Atlas y las respuestas no llegarán a su bandeja de entrada.",
+    currentlyLabel: "Actualmente:",
+    openProfile: "Abrir perfil",
+  },
+
 };
 
 export default es;
