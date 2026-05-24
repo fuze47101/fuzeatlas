@@ -3190,6 +3190,29 @@ const id: Translations = {
     mondayReviewBody: "Test run yang ditandai AI + penolakan brand. Email Minggu 22:00 UTC menyiapkan agenda.",
   },
 
+  adminAuditLog: {
+    adminCrumb: "Admin",
+    crumb: "Log audit",
+    heading: "Log audit",
+    subtitle: "Jejak audit lengkap di setiap entitas. Filter berdasarkan aksi, entitas, atau tanggal. Retensi 90 hari.",
+    errorContext: "Muat log audit",
+    couldntLoadPrefix: "Tidak dapat memuat log audit",
+    networkError: "Kesalahan jaringan saat memuat log audit.",
+    actionLabel: "Aksi",
+    allActionsOption: "Semua aksi",
+    entityLabel: "Entitas",
+    allEntitiesOption: "Semua entitas",
+    sinceLabel: "Sejak",
+    resetBtn: "Reset",
+    rowsSuffix: "baris",
+    loadingState: "Memuat log audit…",
+    emptyState: "Tidak ada baris audit yang cocok dengan filter ini.",
+    byPrefix: "oleh",
+    systemActor: "Sistem",
+    fieldChangedSingular: "field diubah",
+    fieldChangedPlural: "field diubah",
+  },
+
 };
 
 export default id;
