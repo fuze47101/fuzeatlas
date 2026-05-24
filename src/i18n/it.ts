@@ -7565,6 +7565,37 @@ const it: Translations = {
     lastCalculatedLabel: "Ultimo calcolo:",
   },
 
+  fabricReportSend: {
+    backLink: "← Torna al report",
+    heading: "Invia il report al cliente via email",
+    subtitlePrefix: "Invio del report di applicazione e convalida FUZE per",
+    fabricNotFound: "Tessuto non trovato.",
+    recipientRequiredError: "Email del destinatario obbligatoria.",
+    sendFailedError: "Invio non riuscito",
+    sentSuccessPrefix: "✓ Report inviato a",
+    directUrlLabel: "URL di download diretto:",
+    sentSuccessBody: "Il cliente può accedervi anche da I miei report dopo aver effettuato l'accesso a FUZE Atlas.",
+    recipientEmailLabel: "Email del destinatario",
+    recipientNameLabel: "Nome del destinatario",
+    optionalSuffix: "(facoltativo)",
+    personalNoteLabel: "Nota personale",
+    personalNoteHint: "(facoltativo, mostrata sopra la scheda del report)",
+    ccLabel: "CC",
+    ccHint: "(facoltativo, separato da virgole)",
+    ttlLabel: "Link diretto valido per",
+    ttl30Days: "30 giorni",
+    ttl90Days: "90 giorni (predefinito)",
+    ttl180Days: "180 giorni",
+    ttl1Year: "1 anno",
+    sendingBtn: "Invio in corso...",
+    sendBtn: "Invia report",
+    previouslySentTitle: "Inviato in precedenza",
+    sentPrefix: "Inviato",
+    viewedPrefix: "visualizzato",
+    notOpenedYet: "non ancora aperto",
+    openSameLink: "Apri lo stesso link →",
+  },
+
 };
 
 export default it;
