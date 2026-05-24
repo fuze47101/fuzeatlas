@@ -4891,6 +4891,81 @@ const bn: Translations = {
     docTypeOther: "অন্যান্য",
   },
 
+  consumptionAdmin: {
+    loading: "ব্যবহার ডেটা লোড হচ্ছে...",
+    pageTitle: "ব্যবহার ও রিঅর্ডার",
+    pageSubtitle: "কারখানা FUZE ব্যবহার, প্রক্ষিপ্ত রান-আউট তারিখ, এবং স্বয়ংক্রিয় রিঅর্ডার ট্রিগার ট্র্যাক করুন",
+
+    btnNewOrder: "+ নতুন অর্ডার",
+    btnLogUsage: "+ ব্যবহার লগ",
+
+    kpiActiveFactories: "সক্রিয় কারখানা",
+    kpiOfTotal: "{n}-এর মধ্যে মোট",
+    kpiTotalOrdered: "মোট অর্ডারকৃত",
+    kpiPending: "{n}টি অপেক্ষমাণ",
+    kpiTotalConsumed: "মোট ব্যবহৃত",
+    kpiAcrossAll: "সব কারখানা জুড়ে",
+    kpiReorderAlerts: "রিঅর্ডার সতর্কতা",
+    kpiAlertsSplit: "{c}টি গুরুত্বপূর্ণ, {w}টি সতর্কতা",
+
+    annualDemandLabel: "বার্ষিক প্রক্ষিপ্ত চাহিদা",
+    annualDemandUnit: "লিটার",
+    annualDemandBottles: "~{n}টি বোতল",
+    annualDemandRevenue: "~${n} রাজস্ব",
+
+    sectionFactoryInventory: "কারখানা স্টক অবস্থা",
+    emptyTitle: "এখনো কোনো FUZE-সক্ষম কারখানা নেই।",
+    emptySub: "fuzeEnabled = true সহ কারখানা এখানে দেখাবে।",
+
+    cellRemaining: "অবশিষ্ট",
+    cellBurn: "পোড়া/দিন",
+    cellRunOut: "রান-আউট",
+    daysSuffix: "দিন",
+    daysWord: "দিন",
+    fabricsSuffix: "কাপড়",
+    fabricSuffix: "কাপড়",
+    activeOrdersSuffix: "সক্রিয় অর্ডার",
+    activeOrderSuffix: "সক্রিয় অর্ডার",
+
+    colFactory: "কারখানা",
+    colCountry: "দেশ",
+    colOrdered: "অর্ডারকৃত",
+    colConsumed: "ব্যবহৃত",
+    colRemaining: "অবশিষ্ট",
+    colBurnDay: "পোড়া/দিন",
+    colRunOut: "রান-আউট",
+    colStatus: "অবস্থা",
+
+    modalOrderTitle: "নতুন FUZE অর্ডার",
+    modalUsageTitle: "FUZE ব্যবহার লগ",
+    fieldFactory: "কারখানা",
+    placeholderFactory: "কারখানা নির্বাচন...",
+    fieldVolumeL: "পরিমাণ (লিটার)",
+    fieldTier: "টিয়ার",
+    fieldNotes: "নোট",
+    fieldLitersUsed: "ব্যবহৃত লিটার",
+    fieldMetersProcessed: "প্রক্রিয়াকৃত মিটার",
+    placeholderOptional: "ঐচ্ছিক",
+    fieldMethod: "পদ্ধতি",
+    placeholderSelect: "নির্বাচন...",
+    methodExhaust: "এক্সহস্ট (ডাইবাথ)",
+    methodPad: "প্যাড-ড্রাই-কিউর",
+    methodSpray: "স্প্রে",
+
+    summaryBottles: "বোতল (প্রতি ১৯L):",
+    summaryEstTotal: "আনুমানিক মোট:",
+
+    btnCancel: "বাতিল",
+    btnCreating: "তৈরি হচ্ছে...",
+    btnCreateOrder: "অর্ডার তৈরি",
+    btnLogging: "লগ হচ্ছে...",
+    btnLogUsageSubmit: "ব্যবহার লগ",
+
+    errorCreateOrder: "অর্ডার তৈরি ব্যর্থ",
+    errorLogUsage: "ব্যবহার লগ ব্যর্থ",
+    errorNetwork: "নেটওয়ার্ক ত্রুটি",
+  },
+
 };
 
 export default bn;
