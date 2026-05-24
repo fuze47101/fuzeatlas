@@ -5784,6 +5784,50 @@ const th: Translations = {
     emptyTpl: "ยังไม่มีเทมเพลต คลิก + เทมเพลตใหม่ เพื่อสร้างอันแรก",
   },
 
+  pipelineUserPage: {
+    loading: "กำลังโหลด pipeline...",
+    pageTitle: "Pipeline รายได้",
+    pageSubtitle: "ติดตามดีลจากการพัฒนาไปยังการผลิต",
+    btnNewDeal: "+ ดีลใหม่",
+
+    kpiTotalPipeline: "Pipeline ทั้งหมด",
+    kpiTotalPipelineSubTpl: "{n} ดีล",
+    kpiWeighted: "การคาดการณ์แบบถ่วงน้ำหนัก",
+    kpiWeightedSub: "ปรับตามความน่าจะเป็น",
+    kpiActual: "รายได้จริง",
+    kpiActualSub: "ออกบิล & ชำระแล้ว",
+    kpiConversion: "การแปลง",
+    kpiConversionSub: "จริง / Pipeline",
+
+    cardProdPrefix: "การผลิต:",
+    emptyDeals: "ไม่มีดีล",
+    weightedPrefix: "· wt:",
+
+    editTitlePrefix: "แก้ไขโครงการ:",
+    fieldName: "ชื่อโครงการ",
+    fieldStage: "ขั้น",
+    keepCurrent: "เก็บปัจจุบัน",
+    fieldBrand: "แบรนด์",
+    fieldNone: "ไม่มี",
+    fieldProjectedValue: "มูลค่าคาดการณ์ ($)",
+    fieldProbability: "ความน่าจะเป็น (%)",
+    fieldFuzeTier: "ระดับ FUZE",
+    fieldAnnualVolume: "ปริมาณรายปี (ม.)",
+    fieldFactory: "โรงงาน",
+    fieldDistributor: "ผู้จัดจำหน่าย",
+    autoFromFactory: "อัตโนมัติจากโรงงาน",
+    fieldExpectedProd: "การผลิตที่คาดหวัง",
+    fieldActualProd: "การผลิตจริง",
+    btnSaveChanges: "บันทึกการเปลี่ยนแปลง",
+    btnSaving: "กำลังบันทึก...",
+    btnCancel: "ยกเลิก",
+
+    newDealTitle: "ดีลใหม่",
+    newDealPlaceholder: "ชื่อโครงการ / ดีล...",
+    btnCreate: "สร้าง",
+    btnCreating: "กำลังสร้าง...",
+  },
+
 };
 
 export default th;
