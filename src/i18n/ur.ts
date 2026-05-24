@@ -7300,6 +7300,32 @@ const ur: Translations = {
     errSendFailed: "تصدیقی ای میل بھیجنے میں ناکامی",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "عوامی دستاویزات",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "FUZE کے لیے عوامی حوالہ دستاویزات",
+    headerLeadAfter: "پروڈکٹ لائن۔ نجی دستاویزات (مکمل TDS/SDS، اندرونی پرائسنگ، ایپلیکیشن گائیڈز) کے لیے، اپنے کردار کے لیے FUZE Atlas پورٹل میں لاگ ان کریں۔",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "زہریات",
+    catPricing: "پرائسنگ",
+    catSustainability: "پائیداری",
+    catEducation: "تعلیم",
+    catClaimsCompliance: "دعوے اور تعمیل",
+    catApplicationGuide: "ایپلیکیشن گائیڈ",
+    catCaseStudy: "کیس اسٹڈی",
+    loading: "لوڈ ہو رہا ہے…",
+    emptyBefore: "کے لیے کوئی عوامی دستاویز دستیاب نہیں",
+    emptyAfter: "ابھی۔ نجی لائبریری کے لیے FUZE سے رابطہ کریں۔",
+    loginCta: "Atlas میں لاگ ان ←",
+    versionPrefix: "ورژن",
+    downloadBtn: "↓ ڈاؤن لوڈ",
+    unknownLineTitle: "نامعلوم پروڈکٹ لائن",
+    unknownLineBody: "FUZE کے چار ٹیئرز ہیں: F1، F2، F3، F4۔ ان میں سے کوئی آزمائیں۔",
+    errLoadFailed: "لوڈ کرنے میں ناکامی",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default ur;
