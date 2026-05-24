@@ -7565,6 +7565,37 @@ const ta: Translations = {
     lastCalculatedLabel: "கடைசியாக கணக்கிடப்பட்டது:",
   },
 
+  fabricReportSend: {
+    backLink: "← Report-க்குத் திரும்பு",
+    heading: "Report-ஐ வாடிக்கையாளருக்கு மின்னஞ்சல்",
+    subtitlePrefix: "FUZE Application & Validation Report-ஐ அனுப்புகிறது",
+    fabricNotFound: "ஃபேப்ரிக் கிடைக்கவில்லை.",
+    recipientRequiredError: "பெறுநர் மின்னஞ்சல் தேவை.",
+    sendFailedError: "அனுப்புதல் தோல்வியடைந்தது",
+    sentSuccessPrefix: "✓ Report அனுப்பப்பட்டது",
+    directUrlLabel: "நேரடி பதிவிறக்க URL:",
+    sentSuccessBody: "FUZE Atlas-இல் sign in செய்த பிறகு வாடிக்கையாளர் My Reports-இன் கீழ் இதையும் அணுகலாம்.",
+    recipientEmailLabel: "பெறுநர் மின்னஞ்சல்",
+    recipientNameLabel: "பெறுநர் பெயர்",
+    optionalSuffix: "(விருப்பம்)",
+    personalNoteLabel: "தனிப்பட்ட குறிப்பு",
+    personalNoteHint: "(விருப்பம், report card-க்கு மேலே காட்டப்படும்)",
+    ccLabel: "CC",
+    ccHint: "(விருப்பம், comma-separated)",
+    ttlLabel: "நேரடி link செல்லத்தக்கது",
+    ttl30Days: "30 நாட்கள்",
+    ttl90Days: "90 நாட்கள் (இயல்புநிலை)",
+    ttl180Days: "180 நாட்கள்",
+    ttl1Year: "1 ஆண்டு",
+    sendingBtn: "அனுப்புகிறது...",
+    sendBtn: "Report அனுப்பு",
+    previouslySentTitle: "முன்பு அனுப்பப்பட்டது",
+    sentPrefix: "அனுப்பப்பட்டது",
+    viewedPrefix: "பார்க்கப்பட்டது",
+    notOpenedYet: "இன்னும் திறக்கப்படவில்லை",
+    openSameLink: "அதே link-ஐ திற →",
+  },
+
 };
 
 export default ta;
