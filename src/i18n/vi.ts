@@ -6424,6 +6424,38 @@ const vi: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "Danh mục thử nghiệm & Báo giá",
+    subtitle: "Quản lý loại thử nghiệm, giá, thời gian xử lý và yêu cầu mẫu. Thay đổi được phản ánh ngay trên biểu mẫu yêu cầu thử nghiệm của nhà máy.",
+    sourcePrefix: "Nguồn:",
+    sourceDb: "Cơ sở dữ liệu (do quản trị viên quản lý)",
+    sourceStatic: "Mặc định tĩnh",
+    successMsg: "Đã cập nhật thử nghiệm thành công",
+    failedSave: "Lưu thất bại",
+    networkErr: "Lỗi mạng",
+    colTestName: "Tên thử nghiệm",
+    colCategory: "Danh mục",
+    colPrice: "Giá (USD)",
+    colTurnaround: "Thời gian xử lý",
+    colMinSample: "Mẫu tối thiểu",
+    colControl: "Đối chứng?",
+    colActive: "Hoạt động",
+    colActions: "Hành động",
+    daysSuffix: "ngày",
+    metersSuffix: "m",
+    yes: "Có",
+    no: "Không",
+    saveBtn: "Lưu",
+    savingDots: "...",
+    cancelBtn: "Hủy",
+    editBtn: "Chỉnh sửa",
+    catRecipeBuild: "Tạo công thức",
+    catPerformance: "Hiệu suất",
+    catQuality: "Chất lượng",
+    catCertification: "Chứng nhận",
+    lastUpdatedTpl: "Cập nhật lần cuối bởi {who} vào {when}",
+  },
+
 };
 
 export default vi;
