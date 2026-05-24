@@ -7181,6 +7181,34 @@ const ms: Translations = {
     backToLeadOption: "← Kembali ke Lead",
   },
 
+  commandCenterGlobe: {
+    loading: "Memuatkan globe…",
+    title: "Globe rantaian bekalan",
+    emptyTitle: "Belum ada entiti dengan koordinat geo",
+    emptyHint: "Jalankan geocoder untuk mengisi lat/lng daripada bandar + negara setiap entiti:",
+    emptyFooter: "Nominatim mempunyai had kadar 1 req/saat — laluan penuh mengambil masa beberapa minit. Larian semula melangkau baris yang sudah mempunyai koordinat.",
+    factoriesLabel: "kilang",
+    brandsLabel: "jenama",
+    labsLabel: "makmal",
+    distributorsLabel: "pengedar",
+    shipmentsLabel: "penghantaran (90h)",
+    searchPlaceholder: "Cari entiti…",
+    legendFactory: "Kilang",
+    legendPulseHint: "(denyut = aktif 30h)",
+    legendBrand: "Ibu pejabat jenama",
+    legendFuzeLab: "Makmal milik FUZE",
+    legendPartnerLab: "Makmal rakan kongsi",
+    legendDistributor: "Pengedar",
+    kindFactory: "Kilang",
+    kindBrand: "Jenama",
+    kindLab: "Makmal",
+    kindDistributor: "Pengedar",
+    stageLabel: "Peringkat:",
+    activeBadge: "⚡ Aktif (30h)",
+    openDetailBtn: "Buka butiran →",
+    errLoadFailed: "Gagal memuatkan globe",
+  },
+
 };
 
 export default ms;
