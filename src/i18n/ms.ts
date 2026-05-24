@@ -7804,6 +7804,37 @@ const ms: Translations = {
     lastCalculatedLabel: "Terakhir dikira:",
   },
 
+  fabricReportSend: {
+    backLink: "← Kembali ke Laporan",
+    heading: "E-mel Laporan kepada Pelanggan",
+    subtitlePrefix: "Menghantar Laporan Aplikasi & Pengesahan FUZE untuk",
+    fabricNotFound: "Fabrik tidak dijumpai.",
+    recipientRequiredError: "E-mel penerima diperlukan.",
+    sendFailedError: "Penghantaran gagal",
+    sentSuccessPrefix: "✓ Laporan dihantar kepada",
+    directUrlLabel: "URL muat turun langsung:",
+    sentSuccessBody: "Pelanggan juga boleh mengakses ini di bawah Laporan Saya selepas log masuk ke FUZE Atlas.",
+    recipientEmailLabel: "E-mel penerima",
+    recipientNameLabel: "Nama penerima",
+    optionalSuffix: "(pilihan)",
+    personalNoteLabel: "Nota peribadi",
+    personalNoteHint: "(pilihan, dipaparkan di atas kad laporan)",
+    ccLabel: "CC",
+    ccHint: "(pilihan, dipisahkan koma)",
+    ttlLabel: "Pautan langsung sah selama",
+    ttl30Days: "30 hari",
+    ttl90Days: "90 hari (lalai)",
+    ttl180Days: "180 hari",
+    ttl1Year: "1 tahun",
+    sendingBtn: "Menghantar...",
+    sendBtn: "Hantar Laporan",
+    previouslySentTitle: "Dihantar sebelum ini",
+    sentPrefix: "Dihantar",
+    viewedPrefix: "dilihat",
+    notOpenedYet: "belum dibuka",
+    openSameLink: "Buka pautan yang sama →",
+  },
+
 };
 
 export default ms;
