@@ -8094,6 +8094,19 @@ const zhCN: Translations = {
     questionsPrefix: "· 有问题?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "操作手册",
+    heading: "BD 操作手册",
+    subtitle: "按类别标记的外联指南。收藏您常用的;品牌会根据 Brand.textileCategory 显示推荐操作手册。",
+    failedFallback: "失败",
+    emptyBody: "该类别下暂无操作手册。",
+    emptySeedHint: "触发",
+    emptySeedHintSuffix: "通过 fzcron 来载入三份入门操作手册。",
+    removeFavoriteTitle: "取消收藏",
+    addFavoriteTitle: "添加收藏",
+  },
+
 };
 
 export default zhCN;
