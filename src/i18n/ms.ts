@@ -5971,6 +5971,58 @@ const ms: Translations = {
     verdictUnscanned: "belum diimbas",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← Tetapan",
+    pageTitle: "Templat E-mel",
+    pageSubtitle: "Rangka e-mel boleh guna semula untuk jangkauan. Gunakan {firstName}, {company}, dll. untuk peribadikan secara serta-merta.",
+    btnNew: "+ Templat Baharu",
+    errorRequired: "Tajuk, subjek, dan badan diperlukan.",
+    errorLoadUser: "Gagal memuatkan pengguna",
+    errorLoadTemplates: "Gagal memuatkan templat",
+    confirmArchive: "Arkibkan \"{title}\"? Ia tidak akan dipaparkan dalam pemilih lagi.",
+
+    formHeadingEdit: "Sunting templat",
+    formHeadingNew: "Templat baharu",
+    labelTitle: "Tajuk",
+    placeholderTitle: "cth. Pengenalan sentuhan pertama (pakaian atletik)",
+    labelCategory: "Kategori",
+    placeholderCategory: "cth. pengenalan, libat-semula, icp-permintaan",
+    labelScope: "Skop",
+    scopePrivate: "Peribadi (saya sahaja)",
+    scopeShared: "Dikongsi (seluruh pasukan)",
+    scopeGlobal: "Global (lalai organisasi)",
+    labelSubject: "Subjek",
+    placeholderSubject: "Hai {firstName} — pengenalan FUZE ringkas untuk {company}",
+    labelBody: "Badan",
+    btnSaving: "Menyimpan…",
+    btnSaveChanges: "Simpan perubahan",
+    btnCreate: "Cipta templat",
+    btnCancel: "Batal",
+
+    previewHeading: "Pratonton",
+    previewHelp: "Sunting nilai sampel di bawah untuk melihat bagaimana token anda dipaparkan.",
+    previewSubjectLabel: "Subjek",
+    previewBodyLabel: "Badan",
+
+    slotsHeading: "Slot pilih-pantas BD Wizard",
+    slotsHelp: "Pin sehingga 10 templat anda ke slot bernombor. Pada langkah Draf wizard, anda akan melihat jalur butang 1–10 yang mengisi subjek dan badan dengan satu klik.",
+    openBdWizard: "Buka BD Wizard →",
+    slotEmptyTitle: "Slot kosong — tugaskan di bawah.",
+    slotEmpty: "kosong",
+
+    loadingTemplates: "Memuatkan templat…",
+    groupPrivate: "Templat anda",
+    groupShared: "Dikongsi dengan pasukan",
+    groupGlobal: "Lalai seluruh organisasi",
+    usedSuffix: "digunakan",
+    byPrefix: "oleh",
+    bdSlot: "Slot BD",
+    edit: "Sunting",
+    archive: "Arkib",
+
+    emptyTpl: "Belum ada templat. Klik + Templat Baharu untuk mencipta yang pertama.",
+  },
+
 };
 
 export default ms;
