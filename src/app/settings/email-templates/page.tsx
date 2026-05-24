@@ -16,6 +16,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { renderTemplate } from "@/lib/email-template-vars";
+import { useI18n } from "@/i18n";
 
 interface Template {
   id: string;
@@ -50,6 +51,8 @@ const EMPTY_FORM = {
 };
 
 export default function EmailTemplatesSettings() {
+  const { t } = useI18n();
+  const T = t.settingsEmailTemplates;
   const [me, setMe] = useState<Me | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,8 +83,8 @@ export default function EmailTemplatesSettings() {
       ]);
       const meJ = await meRes.json();
       const tplJ = await tplRes.json();
-      if (!meJ.ok) throw new Error(meJ.error || "Failed to load user");
-      if (!tplJ.ok) throw new Error(tplJ.error || "Failed to load templates");
+      if (!meJ.ok) throw new Error(meJ.error || T.errorLoadUser);
+      if (!tplJ.ok) throw new Error(tplJ.error || T.errorLoadTemplates);
       setMe(meJ.user);
       setTemplates(tplJ.templates || []);
     } catch (e: any) {
@@ -116,7 +119,7 @@ export default function EmailTemplatesSettings() {
 
   const handleSave = async () => {
     if (!form.title.trim() || !form.subject.trim() || !form.body.trim()) {
-      setError("Title, subject, and body are required.");
+      setError(T.errorRequired);
       return;
     }
     setSaving(true);
@@ -141,7 +144,7 @@ export default function EmailTemplatesSettings() {
   };
 
   const handleArchive = async (tpl: Template) => {
-    if (!confirm(`Archive "${tpl.title}"? It won't show up in the picker anymore.`)) return;
+    if (!confirm(T.confirmArchive.replace("{title}", tpl.title))) return;
     try {
       const res = await fetch(`/api/email-templates/${tpl.id}`, { method: "DELETE" });
       const j = await res.json();
@@ -206,12 +209,11 @@ export default function EmailTemplatesSettings() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <Link href="/settings" className="text-xs text-slate-500 hover:text-slate-700">
-            ← Settings
+            {T.backToSettings}
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900 mt-1">Email Templates</h1>
+          <h1 className="text-2xl font-bold text-slate-900 mt-1">{T.pageTitle}</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Reusable email scaffolds for outreach. Use {"{firstName}"}, {"{company}"}, etc. to
-            personalize on the fly.
+            {T.pageSubtitle}
           </p>
         </div>
         {!showAdd && !editingId && (
@@ -223,7 +225,7 @@ export default function EmailTemplatesSettings() {
             }}
             className="px-4 py-2 bg-sky-600 text-white rounded-lg text-sm font-semibold hover:bg-sky-700"
           >
-            + New Template
+            {T.btnNew}
           </button>
         )}
       </div>
@@ -239,32 +241,32 @@ export default function EmailTemplatesSettings() {
           {/* Editor */}
           <div className="bg-white border border-slate-200 rounded-xl p-5">
             <h2 className="font-semibold text-slate-900 mb-4">
-              {editingId ? "Edit template" : "New template"}
+              {editingId ? T.formHeadingEdit : T.formHeadingNew}
             </h2>
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Title</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">{T.labelTitle}</label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                  placeholder="e.g. First-touch intro (athletic apparel)"
+                  placeholder={T.placeholderTitle}
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Category</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.labelCategory}</label>
                   <input
                     type="text"
                     value={form.category}
                     onChange={(e) => setForm({ ...form, category: e.target.value })}
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                    placeholder="e.g. intro, re-engage, icp-request"
+                    placeholder={T.placeholderCategory}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Scope</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{T.labelScope}</label>
                   <select
                     value={form.scope}
                     onChange={(e) =>
@@ -272,24 +274,24 @@ export default function EmailTemplatesSettings() {
                     }
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm bg-white"
                   >
-                    <option value="PRIVATE">Private (just me)</option>
-                    <option value="SHARED">Shared (whole team)</option>
-                    {isAdmin && <option value="GLOBAL">Global (org default)</option>}
+                    <option value="PRIVATE">{T.scopePrivate}</option>
+                    <option value="SHARED">{T.scopeShared}</option>
+                    {isAdmin && <option value="GLOBAL">{T.scopeGlobal}</option>}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Subject</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">{T.labelSubject}</label>
                 <input
                   type="text"
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
                   className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                  placeholder="Hi {firstName} — quick FUZE intro for {company}"
+                  placeholder={T.placeholderSubject}
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Body</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">{T.labelBody}</label>
                 <textarea
                   value={form.body}
                   onChange={(e) => setForm({ ...form, body: e.target.value })}
@@ -304,13 +306,13 @@ export default function EmailTemplatesSettings() {
                   disabled={saving}
                   className="px-4 py-2 bg-sky-600 text-white rounded-lg text-sm font-semibold hover:bg-sky-700 disabled:opacity-50"
                 >
-                  {saving ? "Saving…" : editingId ? "Save changes" : "Create template"}
+                  {saving ? T.btnSaving : editingId ? T.btnSaveChanges : T.btnCreate}
                 </button>
                 <button
                   onClick={cancelEdit}
                   className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg text-sm hover:bg-slate-50"
                 >
-                  Cancel
+                  {T.btnCancel}
                 </button>
               </div>
             </div>
@@ -318,9 +320,9 @@ export default function EmailTemplatesSettings() {
 
           {/* Live preview */}
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
-            <h2 className="font-semibold text-slate-900 mb-2">Preview</h2>
+            <h2 className="font-semibold text-slate-900 mb-2">{T.previewHeading}</h2>
             <p className="text-xs text-slate-500 mb-3">
-              Edit the sample values below to see how your tokens render.
+              {T.previewHelp}
             </p>
             <div className="grid grid-cols-2 gap-2 mb-4">
               {(["firstName", "lastName", "company", "title"] as const).map((k) => (
@@ -335,11 +337,11 @@ export default function EmailTemplatesSettings() {
               ))}
             </div>
             <div className="bg-white border border-slate-200 rounded-lg p-3">
-              <div className="text-[10px] uppercase tracking-wide text-slate-400 mb-1">Subject</div>
+              <div className="text-[10px] uppercase tracking-wide text-slate-400 mb-1">{T.previewSubjectLabel}</div>
               <div className="text-sm font-semibold text-slate-900 mb-3">
                 {preview.subject || <span className="text-slate-400">—</span>}
               </div>
-              <div className="text-[10px] uppercase tracking-wide text-slate-400 mb-1">Body</div>
+              <div className="text-[10px] uppercase tracking-wide text-slate-400 mb-1">{T.previewBodyLabel}</div>
               <pre className="text-sm text-slate-700 whitespace-pre-wrap font-sans">
                 {preview.body || <span className="text-slate-400">—</span>}
               </pre>
@@ -359,17 +361,16 @@ export default function EmailTemplatesSettings() {
         <div className="mb-6 bg-sky-50 border border-sky-200 rounded-xl p-5">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <h2 className="font-semibold text-slate-900">BD Wizard quick-pick slots</h2>
+              <h2 className="font-semibold text-slate-900">{T.slotsHeading}</h2>
               <p className="text-xs text-slate-600 mt-0.5">
-                Pin up to 10 of your templates to numbered slots. On the wizard Draft step,
-                you&apos;ll see a 1–10 button strip that one-click-fills the subject and body.
+                {T.slotsHelp}
               </p>
             </div>
             <Link
               href="/admin/bd/wizard"
               className="text-xs text-sky-700 hover:underline whitespace-nowrap"
             >
-              Open BD Wizard →
+              {T.openBdWizard}
             </Link>
           </div>
           <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
@@ -383,11 +384,11 @@ export default function EmailTemplatesSettings() {
                       ? "bg-white border-sky-300 shadow-sm"
                       : "bg-white/50 border-dashed border-slate-300"
                   }`}
-                  title={tpl ? `${tpl.title}\n${tpl.subject}` : "Empty slot — assign below."}
+                  title={tpl ? `${tpl.title}\n${tpl.subject}` : T.slotEmptyTitle}
                 >
                   <div className="text-[10px] font-bold text-sky-700">{slot}</div>
                   <div className="text-[11px] text-slate-800 leading-tight truncate mt-0.5">
-                    {tpl ? tpl.title : <span className="text-slate-400">empty</span>}
+                    {tpl ? tpl.title : <span className="text-slate-400">{T.slotEmpty}</span>}
                   </div>
                 </div>
               );
@@ -397,7 +398,7 @@ export default function EmailTemplatesSettings() {
       )}
 
       {loading ? (
-        <div className="text-slate-500 text-sm">Loading templates…</div>
+        <div className="text-slate-500 text-sm">{T.loadingTemplates}</div>
       ) : (
         (["GLOBAL", "SHARED", "PRIVATE"] as const).map((scope) => {
           const list = grouped[scope];
@@ -406,10 +407,10 @@ export default function EmailTemplatesSettings() {
             <div key={scope} className="mb-6">
               <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
                 {scope === "PRIVATE"
-                  ? "Your templates"
+                  ? T.groupPrivate
                   : scope === "SHARED"
-                    ? "Shared with team"
-                    : "Org-wide defaults"}
+                    ? T.groupShared
+                    : T.groupGlobal}
                 <span className="ml-2 text-slate-400 font-normal normal-case">({list.length})</span>
               </h2>
               <div className="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
@@ -424,12 +425,12 @@ export default function EmailTemplatesSettings() {
                           </span>
                         )}
                         {tpl.useCount > 0 && (
-                          <span className="text-[10px] text-slate-400">used {tpl.useCount}×</span>
+                          <span className="text-[10px] text-slate-400">{T.usedSuffix} {tpl.useCount}×</span>
                         )}
                       </div>
                       <div className="text-xs text-slate-600 mt-1 truncate">{tpl.subject}</div>
                       {tpl.owner && tpl.scope !== "PRIVATE" && (
-                        <div className="text-[10px] text-slate-400 mt-1">by {tpl.owner.name}</div>
+                        <div className="text-[10px] text-slate-400 mt-1">{T.byPrefix} {tpl.owner.name}</div>
                       )}
                     </div>
                     <div className="flex items-center gap-3">
@@ -440,7 +441,7 @@ export default function EmailTemplatesSettings() {
                          re-pin transaction. */}
                       {tpl.scope === "PRIVATE" && tpl.ownerId === me?.id && (
                         <label className="flex items-center gap-1 text-[11px] text-slate-600">
-                          BD slot
+                          {T.bdSlot}
                           <select
                             value={tpl.bdSlot || ""}
                             onChange={(e) =>
@@ -466,13 +467,13 @@ export default function EmailTemplatesSettings() {
                             onClick={() => startEdit(tpl)}
                             className="text-xs text-sky-600 hover:underline"
                           >
-                            Edit
+                            {T.edit}
                           </button>
                           <button
                             onClick={() => handleArchive(tpl)}
                             className="text-xs text-red-500 hover:underline"
                           >
-                            Archive
+                            {T.archive}
                           </button>
                         </div>
                       )}
@@ -487,7 +488,7 @@ export default function EmailTemplatesSettings() {
 
       {!loading && templates.length === 0 && (
         <div className="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500">
-          No templates yet. Click <strong>+ New Template</strong> to create your first one.
+          {T.emptyTpl}
         </div>
       )}
     </div>
