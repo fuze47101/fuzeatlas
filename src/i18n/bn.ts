@@ -4537,6 +4537,23 @@ const bn: Translations = {
     nameRequiredError: "নাম প্রয়োজন",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← ক্যালকুলেটরে ফিরুন",
+    printButton: "🖨 প্রিন্ট / PDF হিসেবে সংরক্ষণ",
+    eyebrow: "FUZE Biotech · ল্যাব SOP",
+    pageTitle: "বেঞ্চ পরীক্ষা পদ্ধতি",
+    pageSubtitle: "FUZE রেসিপি ক্যালকুলেটর — প্যাড-ড্রাই-কিউর পিকআপ রেট ও ডাইলিউশন",
+    docLabel: "ডক: SOP-FUZE-LAB-001",
+    revLabel: "Rev: 1.0 ·",
+    purposeHeader: "উদ্দেশ্য",
+    equipmentHeader: "সরঞ্জাম",
+    chemistryRefHeader: "FUZE রসায়ন রেফারেন্স",
+    criticalRulesHeader: "⚠ গুরুত্বপূর্ণ প্রোটোকল নিয়ম",
+    procedureHeader: "পদ্ধতি",
+    formulasHeader: "সূত্র (QC ক্রস-চেকের জন্য)",
+    sanityRangesHeader: "স্যানিটি চেক পরিসর",
+  },
+
 };
 
 export default bn;
