@@ -7757,6 +7757,33 @@ const bn: Translations = {
     resumeBtn: "পুনরায় শুরু",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ যাচাইকৃত FUZE-ট্রিটেড",
+    tierPrefix: "FUZE টিয়ার",
+    productSectionTitle: "পণ্য",
+    skuLabel: "SKU",
+    batchLabel: "ব্যাচ",
+    fuzeNumberLabel: "FUZE #",
+    constructionLabel: "নির্মাণ",
+    weightLabel: "ওজন",
+    weightUnit: "GSM",
+    mostRecentValidation: "সাম্প্রতিকতম যাচাইকরণ",
+    testedPrefix: "পরীক্ষিত",
+    afterWashesPrefix: "পরে",
+    afterWashesSuffix: "ওয়াশ",
+    whatDoesThisMean: "এর অর্থ কী?",
+    explainerP1: "FUZE একটি স্বত্বাধিকারী অ্যান্টিমাইক্রোবিয়াল টেক্সটাইল ট্রিটমেন্ট। FUZE metamaterial স্ট্যান্ডার্ড টেক্সটাইল ফিনিশিং চলাকালে ফাইবার পৃষ্ঠের সাথে স্থায়ীভাবে আবদ্ধ হয় — কোন লিচিং নেই, কোন PFAS নেই, কাপড়ের হাত বা শ্বাসপ্রশ্বাসযোগ্যতার রসায়ন পরিবর্তন নেই।",
+    explainerP2: "আবদ্ধ metamaterial-এর সাথে সরাসরি যোগাযোগের মাধ্যমে ব্যাকটেরিয়াল হ্রাস ঘটে — সেজন্যই FUZE ASTM E2149 (নন-লিচিং অ্যান্টিমাইক্রোবিয়ালের জন্য ডিজাইন করা যোগাযোগ-হত্যা পরীক্ষা) দিয়ে নেতৃত্ব দেয়, স্তরযুক্ত জ্যামিতি যাচাইকরণের জন্য AATCC 100-এর পাশাপাশি।",
+    certificationsLabel: "সার্টিফিকেশন:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I, bluesign® approved, EPA registered, California EPA approved (Q1 2026), PFAS-free।",
+    sustainabilityTitle: "স্থায়িত্ব",
+    sustainabilityBody: "এই কাপড়ে এখন পর্যন্ত FUZE ব্যবহৃত হয়েছে।",
+    seeMorePrefix: "আরও দেখুন",
+    seeMoreSuffix: "সার্টিফাইড পণ্য →",
+    learnMoreLink: "FUZE প্রযুক্তি সম্পর্কে আরও জানুন →",
+    footerVerifiedBy: "FUZE Atlas দ্বারা যাচাইকৃত",
+  },
+
 };
 
 export default bn;
