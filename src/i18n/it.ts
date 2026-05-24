@@ -7614,6 +7614,25 @@ const it: Translations = {
     footerPrefix: "Documentazione API di FUZE Atlas — Ultimo aggiornamento",
   },
 
+  recipeSearch: {
+    heading: "Ricerca ricette",
+    subtitle: "Libreria di ricette FUZE a livello di rete. Cerca tra ogni tessuto convalidato in Atlas — abbina ciò su cui stai lavorando a una ricetta comprovata, anche quando il tessuto non è tuo. Le righe fuori dal tuo perimetro sono anonimizzate, ma la fisica della ricetta resta visibile.",
+    keywordPlaceholder: "Parola chiave (cotone, jersey, twill...)",
+    anyCategory: "Qualsiasi categoria",
+    knit: "Maglia",
+    woven: "Tessuto a navetta",
+    nonwoven: "Tessuto non tessuto",
+    fiberPlaceholder: "Fibra (cotone, poliestere...)",
+    gsmMinPlaceholder: "GSM min",
+    gsmMaxPlaceholder: "GSM max",
+    anyTier: "Qualsiasi tier",
+    onlyValidatedLabel: "Mostra solo tessuti con pickup misurato (test di laboratorio convalidato)",
+    searchingBtn: "Ricerca in corso...",
+    searchBtn: "Cerca",
+    emptyTitle: "Nessuna ricetta corrispondente al momento.",
+    emptyBody: "Prova ad ampliare i filtri — oppure rimuovi il filtro \"test di laboratorio convalidato\" se vuoi vedere anche i tessuti ancora in fase di sviluppo.",
+  },
+
 };
 
 export default it;
