@@ -7212,6 +7212,29 @@ const tr: Translations = {
     errAddFailed: "Ekleme başarısız",
   },
 
+  accountsAdmin: {
+    title: "Hesaplar",
+    subtitleBefore: "Lead aşamasını geçmiş markalar — sunum almış, test aşamasında, üretimde veya zaten müşteri olanlar. Yeni müşteri adayları için şu sayfaya gidin:",
+    brandPipelineLink: "Marka Pipeline'ı",
+    allFilter: "Tümü",
+    stagePresentation: "Sunum",
+    stageBrandTesting: "Marka Testi",
+    stageFactoryOnboarding: "Fabrika Dahil Etme",
+    stageFactoryTesting: "Fabrika Testi",
+    stageProduction: "Üretim",
+    stageReConnect: "Yeniden Bağlan",
+    stageCustomerWon: "Kazanılan Müşteri",
+    searchPlaceholder: "Hesapları ada veya kişiye göre ara...",
+    emptyTitle: "Bu görünümde henüz hesap yok",
+    emptyBody: "Hesaplar, markalar LEAD'den PRESENTATION'a veya sonrasına geçtiğinde görünür.",
+    goToPipelineBtn: "Marka Pipeline'ına Git",
+    highRelevanceBadge: "🔥 Yüksek uygunluk",
+    amPrefix: "AM:",
+    contactsLabel: "kişi",
+    enrichedSuffix: "zenginleştirildi",
+    backToLeadOption: "← Lead'e geri dön",
+  },
+
 };
 
 export default tr;
