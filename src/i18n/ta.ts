@@ -4501,6 +4501,32 @@ const ta: Translations = {
     openProfile: "சுயவிவரத்தைத் திற",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← ICP Sample Prep-க்குத் திரும்பு",
+    printButton: "🖨 அச்சிடு / PDF-ஆக சேமி",
+    eyebrow: "FUZE Biotech · Lab SOP",
+    pageTitle: "ICP-MS மாதிரி தயாரிப்பு",
+    pageSubtitle: "வெட்டு → எடை → துண்டாக்கு → பை → ICP-MS சரிபார்ப்புக்கு CTLA (Utah)-க்கு அனுப்பு",
+    docLabel: "Doc: SOP-FUZE-LAB-002",
+    revLabel: "Rev: 1.0 ·",
+
+    purposeHeader: "நோக்கம்",
+    equipmentHeader: "உபகரணம்",
+    massTargetsHeader: "நிறை இலக்குகள் (முக்கியம்)",
+    shipToLabel: "CTLA-க்கு அனுப்பு",
+    digestPerRunLabel: "ஒரு run-க்கு Digest",
+    cutterGeometryLabel: "Cutter வடிவியல்",
+
+    criticalRulesHeader: "⚠ முக்கியமான Prep விதிகள்",
+    procedureHeader: "செயல்முறை",
+    shippingAddressHeader: "அனுப்புதல் முகவரி (wizard-ஆல் தானாக நிரப்பப்படுகிறது)",
+    shipToHeader: "அனுப்ப",
+    returnAddressHeader: "திரும்பும் முகவரி + அறிக்கையிடுதல்",
+    reportToLabel: "அறிக்கையிட:",
+    preShipChecklistHeader: "✅ Pre-Ship Checklist (wizard packet-இல் அச்சிடுகிறது)",
+    sanityCheckHeader: "Sanity Check (CTLA என்ன அறிக்கையிட வேண்டும்)",
+  },
+
 };
 
 export default ta;
