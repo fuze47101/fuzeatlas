@@ -6286,6 +6286,38 @@ const zhCN: Translations = {
     amPrefix: "AM：",
   },
 
+  testCatalogAdmin: {
+    title: "测试目录与定价",
+    subtitle: "管理测试类型、定价、周转时间和样品要求。更改会立即反映在工厂测试申请表单上。",
+    sourcePrefix: "来源：",
+    sourceDb: "数据库（管理员维护）",
+    sourceStatic: "静态默认值",
+    successMsg: "测试更新成功",
+    failedSave: "保存失败",
+    networkErr: "网络错误",
+    colTestName: "测试名称",
+    colCategory: "类别",
+    colPrice: "价格（USD）",
+    colTurnaround: "周转时间",
+    colMinSample: "最少样品",
+    colControl: "对照？",
+    colActive: "启用",
+    colActions: "操作",
+    daysSuffix: "天",
+    metersSuffix: "m",
+    yes: "是",
+    no: "否",
+    saveBtn: "保存",
+    savingDots: "……",
+    cancelBtn: "取消",
+    editBtn: "编辑",
+    catRecipeBuild: "配方构建",
+    catPerformance: "性能",
+    catQuality: "质量",
+    catCertification: "认证",
+    lastUpdatedTpl: "由 {who} 在 {when} 最后更新",
+  },
+
 };
 
 export default zhCN;
