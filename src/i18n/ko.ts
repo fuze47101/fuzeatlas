@@ -8036,6 +8036,33 @@ const ko: Translations = {
     resumeBtn: "재개",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ 검증된 FUZE 처리",
+    tierPrefix: "FUZE 등급",
+    productSectionTitle: "제품",
+    skuLabel: "SKU",
+    batchLabel: "배치",
+    fuzeNumberLabel: "FUZE 번호",
+    constructionLabel: "구성",
+    weightLabel: "중량",
+    weightUnit: "GSM",
+    mostRecentValidation: "최근 검증",
+    testedPrefix: "시험됨",
+    afterWashesPrefix: "후속",
+    afterWashesSuffix: "회 세탁",
+    whatDoesThisMean: "이것이 무엇을 의미하나요?",
+    explainerP1: "FUZE는 독점 항균 텍스타일 가공입니다. FUZE 메타머티리얼은 표준 텍스타일 마감 중 섬유 표면에 영구적으로 결합합니다 — 용출 없음, PFAS 없음, 원단의 촉감이나 통기성에 화학적 변화 없음.",
+    explainerP2: "박테리아 감소는 결합된 메타머티리얼과의 직접 접촉을 통해 발생합니다 — 그래서 FUZE는 ASTM E2149 (비용출형 항균제용으로 설계된 접촉 사멸 시험)를 선도하며, 적층 형상 검증을 위해 AATCC 100을 함께 사용합니다.",
+    certificationsLabel: "인증:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I, bluesign® 승인, EPA 등록, California EPA 승인 (2026년 1분기), PFAS-free.",
+    sustainabilityTitle: "지속 가능성",
+    sustainabilityBody: "현재까지 이 원단에 소비된 FUZE.",
+    seeMorePrefix: "더 보기",
+    seeMoreSuffix: "인증 제품 →",
+    learnMoreLink: "FUZE 기술에 대해 더 알아보기 →",
+    footerVerifiedBy: "FUZE Atlas 검증",
+  },
+
 };
 
 export default ko;
