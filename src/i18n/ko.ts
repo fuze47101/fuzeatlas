@@ -7624,6 +7624,27 @@ const ko: Translations = {
     seeSustainabilityBtn: "지속 가능성 영향 보기",
   },
 
+  pressLanding: {
+    heroTitle: "프레스 키트",
+    heroSubtitle: "FUZE Biotech의 로고, 이미지, 보도 자료 및 회사 배경.",
+    aboutTitle: "FUZE Biotech 소개",
+    aboutBody1: "FUZE Biotech은 미국 Utah주 Salt Lake City에 본사를 두고 있으며, FUZE 메타머티리얼을 중심으로 구축된 독점 항균 텍스타일 가공을 개발합니다. 이 처리는 표준 텍스타일 마감 중 섬유에 영구적으로 결합합니다 — PFAS 없음, 바인더 없음, 원단의 촉감이나 통기성에 화학적 변화 없음.",
+    aboutBody2: "제품은 EPA 등록 (연방), California EPA 승인 (2026년 1분기), OEKO-TEX Standard 100 Class I 및 bluesign® 승인을 받았습니다. 성능은 독립 제3자 랩에 의해 ASTM E2149, AATCC 100, AATCC 30, ISO 18184 및 ISO 20743에 검증되었습니다.",
+    foundedLabel: "설립",
+    foundedValue: "Salt Lake City, UT",
+    addressLabel: "주소",
+    pressContactLabel: "프레스 연락처",
+    logosSection: "로고",
+    logoAltFallback: "FUZE 로고",
+    downloadLabel: "다운로드 →",
+    imagerySection: "이미지",
+    imageAltFallback: "FUZE 이미지",
+    releasesSection: "보도 자료",
+    releaseFallback: "보도 자료",
+    newsSection: "뉴스",
+    claimsLink: "클레임",
+  },
+
 };
 
 export default ko;
