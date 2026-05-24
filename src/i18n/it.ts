@@ -4891,6 +4891,81 @@ const it: Translations = {
     docTypeOther: "Altro",
   },
 
+  consumptionAdmin: {
+    loading: "Caricamento dati di consumo...",
+    pageTitle: "Consumo e riordino",
+    pageSubtitle: "Traccia l'uso FUZE degli stabilimenti, le date proiettate di esaurimento e i trigger di riordino automatico",
+
+    btnNewOrder: "+ Nuovo ordine",
+    btnLogUsage: "+ Registra utilizzo",
+
+    kpiActiveFactories: "Stabilimenti attivi",
+    kpiOfTotal: "di {n} totali",
+    kpiTotalOrdered: "Totale ordinato",
+    kpiPending: "{n} in attesa",
+    kpiTotalConsumed: "Totale consumato",
+    kpiAcrossAll: "su tutti gli stabilimenti",
+    kpiReorderAlerts: "Allerte riordino",
+    kpiAlertsSplit: "{c} critic{i}, {w} avvis{i}",
+
+    annualDemandLabel: "Domanda annuale proiettata",
+    annualDemandUnit: "litri",
+    annualDemandBottles: "~{n} bottiglie",
+    annualDemandRevenue: "~${n} fatturato",
+
+    sectionFactoryInventory: "Stato inventario stabilimenti",
+    emptyTitle: "Nessuno stabilimento abilitato FUZE ancora.",
+    emptySub: "Gli stabilimenti con fuzeEnabled = true appariranno qui.",
+
+    cellRemaining: "Rimanente",
+    cellBurn: "Consumo/giorno",
+    cellRunOut: "Esaurimento",
+    daysSuffix: "g",
+    daysWord: "giorni",
+    fabricsSuffix: "tessuti",
+    fabricSuffix: "tessuto",
+    activeOrdersSuffix: "ordini attivi",
+    activeOrderSuffix: "ordine attivo",
+
+    colFactory: "Stabilimento",
+    colCountry: "Paese",
+    colOrdered: "Ordinato",
+    colConsumed: "Consumato",
+    colRemaining: "Rimanente",
+    colBurnDay: "Consumo/giorno",
+    colRunOut: "Esaurimento",
+    colStatus: "Stato",
+
+    modalOrderTitle: "Nuovo ordine FUZE",
+    modalUsageTitle: "Registra utilizzo FUZE",
+    fieldFactory: "Stabilimento",
+    placeholderFactory: "Seleziona stabilimento...",
+    fieldVolumeL: "Volume (litri)",
+    fieldTier: "Livello",
+    fieldNotes: "Note",
+    fieldLitersUsed: "Litri utilizzati",
+    fieldMetersProcessed: "Metri elaborati",
+    placeholderOptional: "Opzionale",
+    fieldMethod: "Metodo",
+    placeholderSelect: "Seleziona...",
+    methodExhaust: "Esaurimento (bagno tintura)",
+    methodPad: "Pad-Dry-Cure",
+    methodSpray: "Spray",
+
+    summaryBottles: "Bottiglie (19L ciascuna):",
+    summaryEstTotal: "Totale stimato:",
+
+    btnCancel: "Annulla",
+    btnCreating: "Creazione in corso...",
+    btnCreateOrder: "Crea ordine",
+    btnLogging: "Registrazione in corso...",
+    btnLogUsageSubmit: "Registra utilizzo",
+
+    errorCreateOrder: "Impossibile creare l'ordine",
+    errorLogUsage: "Impossibile registrare il consumo",
+    errorNetwork: "Errore di rete",
+  },
+
 };
 
 export default it;
