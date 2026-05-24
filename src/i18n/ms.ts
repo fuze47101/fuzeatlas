@@ -7495,6 +7495,21 @@ const ms: Translations = {
     errNetwork: "Ralat rangkaian",
   },
 
+  verifyEmail: {
+    verifyingTitle: "Mengesahkan e-mel anda...",
+    successTitle: "E-mel Disahkan",
+    welcomePrefix: "Selamat datang",
+    successBody: "E-mel anda telah disahkan. Mengalihkan ke log masuk...",
+    failedTitle: "Pengesahan Gagal",
+    resendVerificationBtn: "Hantar Semula E-mel Pengesahan",
+    checkEmailTitle: "Semak E-mel Anda",
+    checkEmailBody: "Pautan pengesahan telah dihantar ke alamat e-mel anda. Klik pautan untuk mengesahkan akaun anda.",
+    resendEmailBtn: "Hantar Semula E-mel",
+    sendingBtn: "Menghantar...",
+    errVerifyFailed: "Gagal mengesahkan e-mel",
+    errSendFailed: "Gagal menghantar e-mel pengesahan",
+  },
+
 };
 
 export default ms;
