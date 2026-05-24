@@ -4808,6 +4808,48 @@ const zhTW: Translations = {
     sanityRangesHeader: "合理性檢查範圍",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "每週主管檢視",
+    weekOfTemplate: "週次",
+    coveringPrefix: "涵蓋",
+    daysWindowSuffix: " 天區間",
+    ownerLabel: "負責人:",
+    generatedLabel: "產生時間",
+    enterPresent: "進入簡報模式",
+    exitPresent: "退出簡報模式",
+    refreshing: "重新整理中…",
+    refreshSnapshot: "重新整理快照",
+
+    execSummaryTitle: "主管摘要",
+    execSummaryPlaceholder: "提供董事會的重點摘要。失焦時自動儲存。",
+    saving: "儲存中…",
+
+    salesDistributionTitle: "銷售與分銷",
+    bookedDollars: "已預訂金額 $",
+    shippedDollars: "已出貨金額 $",
+    bookedLiters: "已預訂公升",
+    shippedLiters: "已出貨公升",
+    ordersSuffix: "筆訂單",
+    shipmentsSuffix: "筆出貨",
+    kgShippedSuffix: "公斤已出貨",
+    byOrderTypeLabel: "依訂單類型",
+
+    sowProgressTitle: "SOW 進度",
+    sowDraft: "草稿",
+    sowSent: "已寄出",
+    sowSigned: "已簽署",
+    sowActive: "進行中",
+    sowComplete: "已完成",
+    sowSignedThisWindow: "本區間已簽署",
+    sowNewlyOpened: "新開啟",
+    sowActiveTitle: "進行中",
+    sowStale: "停滯(>30 天無進展)",
+    sowEmptyNoSignatures: "本區間尚無新簽署。",
+    sowEmptyNoOpened: "本區間尚未開啟任何 SOW。",
+    sowEmptyNoActive: "目前無進行中的 SOW。",
+    sowEmptyNothingStuck: "無停滯項目。",
+  },
+
 };
 
 export default zhTW;
