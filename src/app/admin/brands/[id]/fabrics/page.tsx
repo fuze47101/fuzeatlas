@@ -14,6 +14,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 import {
   FABRIC_DEV_STATUSES,
   FABRIC_DEV_STATUS_LABEL,
@@ -58,6 +59,8 @@ interface ApiResponse {
 }
 
 export default function BrandFabricsPage() {
+  const { t } = useI18n();
+  const T = t.brandFabricsAdmin;
   const params = useParams<{ id: string }>();
   const brandId = params.id;
 
@@ -81,10 +84,10 @@ export default function BrandFabricsPage() {
       setError(null);
       const r = await fetch(`/api/admin/brands/${brandId}/fabrics`);
       const j = await r.json();
-      if (!r.ok || !j.ok) throw new Error(j.error || "Failed to load");
+      if (!r.ok || !j.ok) throw new Error(j.error || T.errorFailedLoad);
       setData(j);
     } catch (e: any) {
-      setError(e?.message || "Failed to load");
+      setError(e?.message || T.errorFailedLoad);
     } finally {
       setLoading(false);
     }
@@ -105,7 +108,7 @@ export default function BrandFabricsPage() {
         body: JSON.stringify({ status: newStatus }),
       });
       const j = await r.json();
-      if (!r.ok || !j.ok) throw new Error(j.error || "Save failed");
+      if (!r.ok || !j.ok) throw new Error(j.error || T.errorSave);
       // Optimistic update locally
       if (data) {
         setData({
@@ -122,7 +125,7 @@ export default function BrandFabricsPage() {
         });
       }
     } catch (e: any) {
-      setSaveError(e?.message || "Save failed");
+      setSaveError(e?.message || T.errorSave);
     } finally {
       setSavingFabricId(null);
     }
@@ -220,7 +223,7 @@ export default function BrandFabricsPage() {
   if (loading) {
     return (
       <div className="p-8">
-        <div className="text-sm text-slate-500">Loading fabric portfolio…</div>
+        <div className="text-sm text-slate-500">{T.loading}</div>
       </div>
     );
   }
@@ -229,13 +232,13 @@ export default function BrandFabricsPage() {
     return (
       <div className="p-8 max-w-3xl">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800 text-sm">
-          <div className="font-bold mb-1">Couldn&apos;t load fabric portfolio</div>
-          <div>{error || "Unknown error"}</div>
+          <div className="font-bold mb-1">{T.errorTitle}</div>
+          <div>{error || T.errorUnknown}</div>
           <button
             onClick={load}
             className="mt-3 px-3 py-1.5 rounded bg-red-600 text-white text-xs font-bold hover:bg-red-700"
           >
-            Try again
+            {T.btnTryAgain}
           </button>
         </div>
       </div>
@@ -248,26 +251,26 @@ export default function BrandFabricsPage() {
     <div className="max-w-[1800px] mx-auto p-4 md:p-6">
       {/* Breadcrumb + header */}
       <div className="text-xs text-slate-500 mb-2">
-        <Link href="/brands" className="hover:text-slate-700">Brand Partners</Link>{" "}
+        <Link href="/brands" className="hover:text-slate-700">{T.crumbPartners}</Link>{" "}
         <span className="mx-1">›</span>{" "}
         <Link href={`/brands/${data.brand.id}`} className="hover:text-slate-700">{data.brand.name}</Link>{" "}
         <span className="mx-1">›</span>{" "}
-        <span className="text-slate-700 font-medium">Fabric Portfolio</span>
+        <span className="text-slate-700 font-medium">{T.crumbHere}</span>
       </div>
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-slate-900">
-            {data.brand.name} — Fabric Portfolio
+            {data.brand.name} {T.titleSuffix}
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            All fabrics across all mills for this brand. {filteredTotal} of {data.total} fabrics shown.
+            {T.subtitle.replace("{shown}", String(filteredTotal)).replace("{total}", String(data.total))}
           </p>
         </div>
         <button
           onClick={downloadCsv}
           className="shrink-0 px-3 py-2 rounded-lg bg-slate-900 text-white text-sm font-bold hover:bg-slate-800"
         >
-          ⬇ Export CSV
+          {T.btnExportCsv}
         </button>
       </div>
 
@@ -277,7 +280,7 @@ export default function BrandFabricsPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search fabric #, customer code, content…"
+          placeholder={T.searchPlaceholder}
           className="flex-1 min-w-[200px] px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <select
@@ -285,7 +288,7 @@ export default function BrandFabricsPage() {
           onChange={(e) => setFactoryFilter(e.target.value)}
           className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm bg-white"
         >
-          <option value="ALL">All mills</option>
+          <option value="ALL">{T.filterAllMills}</option>
           {allFactories.map((f) => (
             <option key={f.id || "_none"} value={f.id || "_none"}>
               {f.name}
@@ -297,18 +300,18 @@ export default function BrandFabricsPage() {
           onChange={(e) => setTypeFilter(e.target.value)}
           className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm bg-white"
         >
-          <option value="ALL">All types</option>
-          <option value="DEVELOPMENT">Development</option>
-          <option value="ACTUAL">Actual (Bulk)</option>
-          <option value="FORECAST">Forecast</option>
-          <option value="RD">R&amp;D</option>
+          <option value="ALL">{T.filterAllTypes}</option>
+          <option value="DEVELOPMENT">{T.typeDevelopment}</option>
+          <option value="ACTUAL">{T.typeActualBulk}</option>
+          <option value="FORECAST">{T.typeForecast}</option>
+          <option value="RD">{T.typeRd}</option>
         </select>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm bg-white"
         >
-          <option value="ALL">All statuses</option>
+          <option value="ALL">{T.filterAllStatuses}</option>
           {FABRIC_DEV_STATUSES.map((s) => (
             <option key={s} value={s}>
               {FABRIC_DEV_STATUS_LABEL[s]}
@@ -325,10 +328,10 @@ export default function BrandFabricsPage() {
       {/* Tables grouped by factory */}
       {filteredGroups.length === 0 && (
         <div className="bg-white border border-slate-200 rounded-xl p-8 text-center">
-          <div className="text-3xl mb-3">🧵</div>
-          <div className="text-sm font-bold text-slate-700">No fabrics match your filters.</div>
+          <div className="text-3xl mb-3">{T.emptyFabric}</div>
+          <div className="text-sm font-bold text-slate-700">{T.emptyTitle}</div>
           <div className="text-xs text-slate-500 mt-1">
-            Adjust the filters above or clear the search to see the full portfolio.
+            {T.emptySub}
           </div>
         </div>
       )}
@@ -342,7 +345,7 @@ export default function BrandFabricsPage() {
             <div className="flex items-center gap-3">
               <div className="text-sm font-black text-slate-900">{g.factory.name}</div>
               <span className="text-xs px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-bold">
-                {g.rows.length} {g.rows.length === 1 ? "fabric" : "fabrics"}
+                {g.rows.length} {g.rows.length === 1 ? T.fabricSingular : T.fabricPlural}
               </span>
             </div>
             {g.factory.id && (
@@ -350,7 +353,7 @@ export default function BrandFabricsPage() {
                 href={`/factories/${g.factory.id}`}
                 className="text-xs text-blue-700 hover:text-blue-900 font-semibold"
               >
-                Open factory →
+                {T.openFactory}
               </Link>
             )}
           </div>
@@ -358,18 +361,18 @@ export default function BrandFabricsPage() {
             <table className="w-full text-xs">
               <thead className="bg-slate-50 text-slate-600">
                 <tr>
-                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">FUZE #</th>
-                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">Mill Fabric #</th>
-                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">Type</th>
-                  <th className="text-left px-3 py-2 font-bold">Content</th>
-                  <th className="text-right px-3 py-2 font-bold whitespace-nowrap">GSM</th>
-                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">Customer Code</th>
-                  <th className="text-center px-3 py-2 font-bold whitespace-nowrap">Trial</th>
-                  <th className="text-center px-3 py-2 font-bold whitespace-nowrap">ICP</th>
-                  <th className="text-center px-3 py-2 font-bold whitespace-nowrap">AM</th>
-                  <th className="text-right px-3 py-2 font-bold whitespace-nowrap">ICP Value</th>
-                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">Test Date</th>
-                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">Status</th>
+                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">{T.colFuze}</th>
+                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">{T.colMillFabric}</th>
+                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">{T.colType}</th>
+                  <th className="text-left px-3 py-2 font-bold">{T.colContent}</th>
+                  <th className="text-right px-3 py-2 font-bold whitespace-nowrap">{T.colGsm}</th>
+                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">{T.colCustomerCode}</th>
+                  <th className="text-center px-3 py-2 font-bold whitespace-nowrap">{T.colTrial}</th>
+                  <th className="text-center px-3 py-2 font-bold whitespace-nowrap">{T.colICP}</th>
+                  <th className="text-center px-3 py-2 font-bold whitespace-nowrap">{T.colAM}</th>
+                  <th className="text-right px-3 py-2 font-bold whitespace-nowrap">{T.colICPValue}</th>
+                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">{T.colTestDate}</th>
+                  <th className="text-left px-3 py-2 font-bold whitespace-nowrap">{T.colStatus}</th>
                   <th className="px-2 py-2"></th>
                 </tr>
               </thead>
@@ -389,7 +392,7 @@ export default function BrandFabricsPage() {
                             FUZE-{r.fuzeNumber}
                           </Link>
                         ) : (
-                          <span className="text-slate-400 italic text-[10px]">unassigned</span>
+                          <span className="text-slate-400 italic text-[10px]">{T.unassigned}</span>
                         )}
                       </td>
                       <td className="px-3 py-2 font-mono text-slate-700">
@@ -403,13 +406,13 @@ export default function BrandFabricsPage() {
                       </td>
                       <td className="px-3 py-2 text-slate-700">
                         {r.type === "ACTUAL"
-                          ? "Bulk Production"
+                          ? T.typeBulkProduction
                           : r.type === "DEVELOPMENT"
-                            ? "Development"
+                            ? T.typeDevelopment
                             : r.type === "FORECAST"
-                              ? "Forecast"
+                              ? T.typeForecast
                               : r.type === "RD"
-                                ? "R&D"
+                                ? T.typeRd
                                 : r.type || "—"}
                       </td>
                       <td className="px-3 py-2 text-slate-700 max-w-[280px]">
@@ -453,7 +456,7 @@ export default function BrandFabricsPage() {
                               : "bg-white text-slate-500 border-slate-300"
                           } cursor-pointer`}
                         >
-                          <option value="">— Not set —</option>
+                          <option value="">{T.notSet}</option>
                           {FABRIC_DEV_STATUSES.map((s) => (
                             <option key={s} value={s}>
                               {FABRIC_DEV_STATUS_LABEL[s]}
@@ -465,7 +468,7 @@ export default function BrandFabricsPage() {
                         <Link
                           href={`/fabrics/${r.id}`}
                           className="text-blue-700 hover:text-blue-900 text-xs font-bold"
-                          title="Open fabric detail"
+                          title={T.titleOpenFabric}
                         >
                           →
                         </Link>
