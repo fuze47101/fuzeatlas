@@ -7705,6 +7705,33 @@ const es: Translations = {
     contactLink: "Contacto",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "Marca",
+    crumb: "QR de etiqueta colgante",
+    heading: "Tokens QR de etiquetas colgantes",
+    subtitlePrefix: "Cada token resuelve a una página pública de verificación en",
+    subtitleSuffix: "Recuento de escaneos + marcas de tiempo del primer / último escaneo registradas por fila.",
+    mintTokensTitle: "Generar tokens",
+    countPlaceholder: "cantidad",
+    fabricIdPlaceholder: "fabricId (opcional)",
+    skuPlaceholder: "SKU del producto",
+    batchPlaceholder: "código de lote",
+    mintBtn: "Generar",
+    mintingBusy: "Generando…",
+    mintFootnote: "Máximo 500 por generación. Imprime los tokens resultantes como códigos QR en las etiquetas colgantes con tu generador de QR preferido (cada URL es exactamente la URL de la página de verificación).",
+    mintFailedError: "Error al generar",
+    tokenSingular: "token",
+    tokenPlural: "tokens",
+    exportCsvBtn: "Exportar CSV",
+    colToken: "Token",
+    colSkuBatch: "SKU / Lote",
+    colFabric: "Tejido",
+    colScans: "Escaneos",
+    colLastScan: "Último escaneo",
+    colVerifyUrl: "URL de verificación",
+    emptyState: "Aún no hay tokens — genera tu primer lote arriba.",
+  },
+
 };
 
 export default es;
