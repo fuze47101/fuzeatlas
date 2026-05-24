@@ -6721,6 +6721,44 @@ const ta: Translations = {
     truncatedNotice: "மொத்தம் {total} brands-இல் முதல் 100 காட்டப்படுகிறது. சுருக்க வடிகட்டிகளைப் பயன்படுத்தவும்.",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "Shipment கிடைக்கவில்லை",
+    notFoundBodyTpl: "ஆர்டர் {order}-ஐ கண்டுபிடிக்க முடியவில்லை.",
+    notFoundFooter: "ஒரு FUZE shipment-இல் இந்த QR code-ஐப் பெற்றிருந்தால், andrew@fuze47.com-ஐ தொடர்பு கொள்ளவும்.",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "Shipment சரிபார்ப்பு",
+
+    sectionShipment: "Shipment விவரங்கள்",
+    fieldFuzeVolume: "FUZE அளவு",
+    bottlesSuffix: "பாட்டில்கள்",
+    baseFuzePrefix: "base",
+    wastageSuffix: "wastage",
+    fieldTier: "டியர்",
+    fieldMethod: "சிகிச்சை முறை",
+    fieldFactory: "தொழிற்சாலை",
+    fieldForBrand: "பிராண்டிற்காக",
+    fieldFabric: "ஃபேப்ரிக்",
+    fieldFulfillment: "நிறைவேற்றம்",
+    directUsa: "USA-இல் இருந்து நேரடியாக",
+    distributorFallback: "விநியோகஸ்தர்",
+    fieldTracking: "Tracking",
+
+    sectionDocs: "தயாரிப்பு ஆவணங்கள்",
+    sdsLabel: "Safety Data Sheet (SDS)",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "Certificate of Analysis (COA)",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "இணக்க நூலகத்தைத் திற",
+
+    sectionTimeline: "Lifecycle Timeline",
+    viewDocument: "ஆவணத்தைப் பார் →",
+    timelineEmpty: "இன்னும் lifecycle நிகழ்வுகள் log செய்யப்படவில்லை. Shipment நகரும்போது timeline நிரப்பப்படும்.",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "கேள்விகள்?",
+  },
+
 };
 
 export default ta;
