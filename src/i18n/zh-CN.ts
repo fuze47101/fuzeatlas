@@ -7776,6 +7776,23 @@ const zhCN: Translations = {
     fieldChangedPlural: "项字段已变更",
   },
 
+  adminLanding: {
+    loadingLabel: "正在加载管理",
+    crumb: "管理",
+    heading: "管理",
+    subtitle: "FUZE-Ops 控制面板。选择一个模块进入，或使用侧边栏查看完整导航。",
+    openPrefix: "打开",
+    fastPathLabel: "快速通道",
+    dataEntryHubTitle: "数据录入中心",
+    dataEntryHubBody: "在同一页面设置品牌规格、价格等级、供应链关联和实验室价格。",
+    liveStateLabel: "实时状态",
+    commandCenterTitle: "指挥中心",
+    commandCenterBody: "六个指标卡片、品牌 × 工厂节奏矩阵、近期动态和队列。",
+    weeklyLabel: "每周",
+    mondayReviewTitle: "周一评审队列",
+    mondayReviewBody: "AI 标记的测试运行与品牌拒收。周日 22:00 UTC 邮件预填议程。",
+  },
+
 };
 
 export default zhCN;
