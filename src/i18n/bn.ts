@@ -6896,6 +6896,29 @@ const bn: Translations = {
     printedPrefix: "প্রিন্ট",
   },
 
+  pressKitAdmin: {
+    title: "প্রেস কিট",
+    subtitle: "পাবলিক /press পেজে কী আবির্ভূত হয় তা পরিচালনা করুন। অ্যাক্টিভ টগল করা একটি সারিকে মুছে না ফেলেই লুকিয়ে রাখে।",
+    addItemTitle: "আইটেম যোগ করুন",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "ক্যাপশন",
+    addItemBtn: "আইটেম যোগ করুন",
+    savingBtn: "সংরক্ষণ করা হচ্ছে…",
+    allFilter: "সব",
+    colType: "টাইপ",
+    colCaption: "ক্যাপশন",
+    colUrl: "URL",
+    colReleased: "প্রকাশিত",
+    colActive: "অ্যাক্টিভ",
+    activeLabel: "অ্যাক্টিভ",
+    hiddenLabel: "লুকানো",
+    deleteBtn: "মুছুন",
+    deleteConfirmPrefix: "প্রেস কিট আইটেম মুছবেন",
+    emptyState: "এখনও কোনো প্রেস কিট আইটেম নেই।",
+    errUrlRequired: "URL প্রয়োজন",
+    errAddFailed: "যোগ করতে ব্যর্থ",
+  },
+
 };
 
 export default bn;
