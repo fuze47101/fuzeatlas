@@ -19,6 +19,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface TierRow {
   tierIndex: number;
@@ -46,6 +47,8 @@ export default function DistributorTiersPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { t } = useI18n();
+  const T = t.distributorTiersAdmin;
 
   const [distributor, setDistributor] = useState<any>(null);
   const [tiers, setTiers] = useState<TierRow[]>([]);
@@ -62,7 +65,7 @@ export default function DistributorTiersPage({
     try {
       const res = await fetch(`/api/admin/distributor-tiers/${id}`);
       const json = await res.json();
-      if (!json.ok) throw new Error(json.error || "load failed");
+      if (!json.ok) throw new Error(json.error || T.errLoadFailed);
       setDistributor(json.distributor);
       setTiers(json.tiers);
       setFactories(json.factories);
@@ -96,8 +99,8 @@ export default function DistributorTiersPage({
         body: JSON.stringify({ tiers }),
       });
       const json = await res.json();
-      if (!json.ok) throw new Error(json.error || "save failed");
-      setSavedMsg("Saved.");
+      if (!json.ok) throw new Error(json.error || T.errSaveFailed);
+      setSavedMsg(T.savedMsg);
       load();
     } catch (e: any) {
       setErr(e.message);
@@ -115,7 +118,7 @@ export default function DistributorTiersPage({
         body: JSON.stringify({ distributorTierIndex: tierIndex }),
       });
       const json = await res.json();
-      if (!json.ok) throw new Error(json.error || "factory save failed");
+      if (!json.ok) throw new Error(json.error || T.errFactorySaveFailed);
       // Optimistic in-place update
       setFactories((fs) =>
         fs.map((f) =>
@@ -137,7 +140,7 @@ export default function DistributorTiersPage({
     );
   }
   if (!distributor) {
-    return <div className="p-8 text-red-600">Distributor not found.</div>;
+    return <div className="p-8 text-red-600">{T.distributorNotFound}</div>;
   }
 
   return (
@@ -145,32 +148,27 @@ export default function DistributorTiersPage({
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/admin/distributors" className="hover:text-[#00b4c3]">
-            Admin
+            {T.crumbAdmin}
           </Link>
           <span>/</span>
           <Link href="/admin/distributors" className="hover:text-[#00b4c3]">
-            Distributors
+            {T.crumbDistributors}
           </Link>
           <span>/</span>
           <span>{distributor.name}</span>
           <span>/</span>
-          <span>Tiers</span>
+          <span>{T.crumbTiers}</span>
         </div>
         <h1 className="text-3xl font-black text-slate-900">
-          Pricing Tiers — {distributor.name}
+          {T.headerPrefix} {distributor.name}
         </h1>
         <p className="text-slate-600 mt-1 max-w-3xl">
-          Set up to 5 pricing tiers for this distributor. Tiers are
-          generic by name (Tier 1…Tier 5); the distributor decides what
-          each tier means — geography, shipping/tariff bands, end-use
-          margin, position in the chain. Factories assigned to this
-          distributor get placed into a tier below.
+          {T.subtitle}
         </p>
         {distributor.parentDistributor && (
           <p className="text-sm text-slate-500 mt-2">
-            Note: this distributor is a sub of{" "}
-            <strong>{distributor.parentDistributor.name}</strong>. Their
-            restocks order from the master, not from FUZE.
+            {T.subDistNoteBefore}{" "}
+            <strong>{distributor.parentDistributor.name}</strong>. {T.subDistNoteAfter}
           </p>
         )}
       </div>
@@ -191,15 +189,15 @@ export default function DistributorTiersPage({
         <table className="w-full text-sm min-w-[1000px]">
           <thead className="bg-slate-50 text-slate-600 text-xs uppercase tracking-wide">
             <tr>
-              <th className="text-left px-3 py-3 w-16">Tier</th>
-              <th className="text-left px-3 py-3">Name</th>
-              <th className="text-right px-3 py-3 w-32">$/L</th>
-              <th className="text-left px-3 py-3 w-24">Currency</th>
-              <th className="text-right px-3 py-3 w-28">Min order (L)</th>
-              <th className="text-right px-3 py-3 w-24">Lead (days)</th>
-              <th className="text-right px-3 py-3 w-28">Hangtag $/unit</th>
-              <th className="text-left px-3 py-3">Notes</th>
-              <th className="text-right px-3 py-3 w-20">Factories</th>
+              <th className="text-left px-3 py-3 w-16">{T.colTier}</th>
+              <th className="text-left px-3 py-3">{T.colName}</th>
+              <th className="text-right px-3 py-3 w-32">{T.colPricePerL}</th>
+              <th className="text-left px-3 py-3 w-24">{T.colCurrency}</th>
+              <th className="text-right px-3 py-3 w-28">{T.colMinOrder}</th>
+              <th className="text-right px-3 py-3 w-24">{T.colLead}</th>
+              <th className="text-right px-3 py-3 w-28">{T.colHangtagPrice}</th>
+              <th className="text-left px-3 py-3">{T.colNotes}</th>
+              <th className="text-right px-3 py-3 w-20">{T.colFactories}</th>
             </tr>
           </thead>
           <tbody>
@@ -298,7 +296,7 @@ export default function DistributorTiersPage({
                     onChange={(e) =>
                       setTier(t.tierIndex, { notes: e.target.value })
                     }
-                    placeholder="optional"
+                    placeholder={T.optionalPlaceholder}
                     className="w-full px-2 py-1 border border-slate-300 rounded text-sm"
                   />
                 </td>
@@ -317,22 +315,21 @@ export default function DistributorTiersPage({
           disabled={saving}
           className="px-5 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 disabled:opacity-50"
         >
-          {saving ? "Saving..." : "💾 Save Tier Table"}
+          {saving ? T.savingBtn : T.saveBtn}
         </button>
         <span className="text-xs text-slate-500">
-          Empty $/L clears that tier. Factories assigned to a cleared
-          tier will fall back to the default pricing row.
+          {T.saveHint}
         </span>
       </div>
 
       {/* ─── Factory assignment ──────────────────────────── */}
       <h2 className="text-xl font-black text-slate-900 mb-2">
-        Assign Factories to Tiers
+        {T.assignTitle}
       </h2>
       <p className="text-sm text-slate-600 mb-3">
         {factories.length === 0
-          ? "No factories are linked to this distributor yet — assign them on the factory edit page."
-          : `${factories.length} factor${factories.length === 1 ? "y is" : "ies are"} linked to ${distributor.name}. Pick a tier for each.`}
+          ? T.noFactoriesLinked
+          : `${factories.length} ${factories.length === 1 ? T.factorySingularPart : T.factoryPluralPart} ${T.linkedToPrefix} ${distributor.name}. ${T.pickTierEachSuffix}`}
       </p>
 
       {factories.length > 0 && (
@@ -340,9 +337,9 @@ export default function DistributorTiersPage({
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-slate-600 text-xs uppercase tracking-wide">
               <tr>
-                <th className="text-left px-3 py-3">Factory</th>
-                <th className="text-left px-3 py-3 w-32">Country</th>
-                <th className="text-left px-3 py-3 w-40">Tier</th>
+                <th className="text-left px-3 py-3">{T.factoryColFactory}</th>
+                <th className="text-left px-3 py-3 w-32">{T.factoryColCountry}</th>
+                <th className="text-left px-3 py-3 w-40">{T.factoryColTier}</th>
               </tr>
             </thead>
             <tbody>
@@ -372,17 +369,17 @@ export default function DistributorTiersPage({
                       }
                       className="w-full px-2 py-1 border border-slate-300 rounded text-sm bg-white"
                     >
-                      <option value="">(default — no tier)</option>
+                      <option value="">{T.defaultNoTierOption}</option>
                       {tiers.map((t) => (
                         <option
                           key={t.tierIndex}
                           value={t.tierIndex}
                           disabled={t.pricePerLiter == null || t.pricePerLiter === ""}
                         >
-                          Tier {t.tierIndex} —{" "}
+                          {T.tierLabel} {t.tierIndex} —{" "}
                           {t.pricePerLiter != null && t.pricePerLiter !== ""
                             ? `${t.tierName} (${t.currency} ${Number(t.pricePerLiter).toFixed(2)}/L)`
-                            : `${t.tierName} — not configured`}
+                            : `${t.tierName} — ${T.notConfigured}`}
                         </option>
                       ))}
                     </select>
