@@ -7044,6 +7044,26 @@ const ms: Translations = {
     emptyBias: "Belum ada data bias.",
   },
 
+  labCreditsAdmin: {
+    loading: "Memuatkan…",
+    crumbLabs: "Makmal",
+    crumbCredits: "Kredit",
+    creditsSuffix: "kredit",
+    balanceLabel: "Baki FUZE dengan makmal ini",
+    balanceHint: "Auto-tolak daripada ujian dibayar FUZE pada masa depan di makmal ini.",
+    addCreditTitle: "Tambah kredit",
+    amountPlaceholder: "$ jumlah",
+    sourceNotePlaceholder: "nota sumber",
+    addCreditBtn: "Tambah kredit",
+    colCreated: "Dicipta",
+    colAmount: "Jumlah",
+    colSource: "Sumber",
+    colNote: "Nota",
+    colSpent: "Dibelanja",
+    availableLabel: "tersedia",
+    emptyState: "Belum ada kredit.",
+  },
+
 };
 
 export default ms;
