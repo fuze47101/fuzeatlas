@@ -7822,6 +7822,28 @@ const ko: Translations = {
     mondayReviewBody: "AI 플래그된 시험 런 + 브랜드 거부. 일요일 22:00 UTC 이메일로 안건을 시드합니다.",
   },
 
+  brandEngagement: {
+    heading: "브랜드 건강",
+    subtitle: "모든 브랜드의 참여 및 건강 지표 모니터링",
+    recalculatingBtn: "재계산 중...",
+    recalculateBtn: "모두 재계산",
+    allFilter: "전체",
+    loadingText: "로드 중...",
+    noBrandsText: "브랜드를 찾을 수 없습니다",
+    scoreBreakdownTitle: "점수 분석",
+    communicationLabel: "커뮤니케이션",
+    testingVelocityLabel: "시험 속도",
+    pipelineVelocityLabel: "파이프라인 속도",
+    paymentScoreLabel: "결제 점수",
+    rawMetricsTitle: "원시 지표",
+    daysSinceContact: "마지막 접촉 후 일수",
+    testsLast30d: "시험 (최근 30일)",
+    testsLast90d: "시험 (최근 90일)",
+    avgInvoicePayDays: "평균 송장 결제 일수",
+    overdueInvoices: "기한 초과 송장",
+    lastCalculatedLabel: "마지막 계산:",
+  },
+
 };
 
 export default ko;
