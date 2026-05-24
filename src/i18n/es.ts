@@ -7906,6 +7906,24 @@ const es: Translations = {
     websiteLabel: "Sitio web",
   },
 
+  importContacts: {
+    title: "Importación masiva — Contactos",
+    subtitle: "Pega o sube un CSV de contactos. El correo es la clave natural — hacemos upsert por correo cuando está presente. Las filas sin correo pero con URL de LinkedIn se importan como 'correo faltante' para que el job de enriquecimiento de Apollo existente pueda perseguirlas. Las filas sin ninguno se rechazan.",
+    backLabel: "Gestión de leads",
+    firstNameLabel: "Nombre",
+    lastNameLabel: "Apellido",
+    emailLabel: "Correo",
+    emailHint: "obligatorio si no hay URL de LinkedIn",
+    linkedinLabel: "URL de LinkedIn",
+    linkedinHint: "identificador alternativo cuando falta el correo",
+    brandNameLabel: "Nombre de la marca",
+    brandNameHint: "coincidencia insensible a mayúsculas con Brand.name; sin vincular si no se encuentra",
+    jobTitleLabel: "Puesto",
+    phoneLabel: "Teléfono",
+    titleLabel: "Tratamiento (honorífico)",
+    titleHint: 'p. ej. "Sr.", "Dra."',
+  },
+
 };
 
 export default es;
