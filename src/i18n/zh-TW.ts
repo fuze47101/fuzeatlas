@@ -6975,6 +6975,44 @@ const zhTW: Translations = {
     truncatedNotice: "顯示 {total} 個品牌中的前 100 個。請使用篩選器縮小範圍。",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "找不到出貨",
+    notFoundBodyTpl: "我們找不到訂單 {order}。",
+    notFoundFooter: "如果您在 FUZE 出貨上收到此 QR 碼,請聯絡 andrew@fuze47.com。",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "出貨驗證",
+
+    sectionShipment: "出貨詳細資訊",
+    fieldFuzeVolume: "FUZE 體積",
+    bottlesSuffix: "瓶",
+    baseFuzePrefix: "基礎",
+    wastageSuffix: "損耗",
+    fieldTier: "層級",
+    fieldMethod: "處理方法",
+    fieldFactory: "工廠",
+    fieldForBrand: "供應品牌",
+    fieldFabric: "面料",
+    fieldFulfillment: "履行方式",
+    directUsa: "美國直送",
+    distributorFallback: "分銷商",
+    fieldTracking: "追蹤",
+
+    sectionDocs: "產品文件",
+    sdsLabel: "安全資料表 (SDS)",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "分析證書 (COA)",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "開啟合規資料庫",
+
+    sectionTimeline: "生命週期時間軸",
+    viewDocument: "檢視文件 →",
+    timelineEmpty: "尚未記錄生命週期事件。出貨移動時時間軸將會填入。",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "有問題嗎?",
+  },
+
 };
 
 export default zhTW;
