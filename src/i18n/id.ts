@@ -2722,6 +2722,26 @@ const id: Translations = {
     emptyState: "Belum ada kredit.",
   },
 
+  engagementDebug: {
+    crumb: "Debug engagement",
+    engagementSuffix: "engagement",
+    calculatedLabel: "Dihitung",
+    overallScoreLabel: "Skor keseluruhan",
+    outOf100: "dari 100",
+    inputsLabel: "Input",
+    daysSinceContact: "Hari sejak kontak",
+    tests30d: "Uji (30h)",
+    tests90d: "Uji (90h)",
+    avgPayDays: "Rata-rata hari bayar",
+    overdueInvoices: "Faktur jatuh tempo",
+    factorBreakdownTitle: "Rincian faktor",
+    weightLabel: "bobot",
+    contributesLabel: "berkontribusi",
+    ptsLabel: "pts",
+    loading: "Memuat…",
+    failedToLoad: "Gagal memuat",
+  },
+
 };
 
 export default id;
