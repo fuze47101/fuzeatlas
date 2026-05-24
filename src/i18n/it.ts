@@ -5442,6 +5442,69 @@ const it: Translations = {
     footerGenerated: "Modulo generato",
   },
 
+  sampleTrials: {
+    crumbDashboard: "Dashboard",
+    crumbHere: "Trial dei campioni",
+    pageTitle: "Gestione trial dei campioni",
+    pageSubtitle: "Esamina, approva, spedisci e traccia tutte le richieste di trial campione dello stabilimento",
+
+    statTotal: "Totale",
+    statNeedsAction: "Richiede azione",
+
+    searchPlaceholder: "Cerca tessuto, stabilimento, brand, contatto...",
+    filterAllStatuses: "Tutti gli stati",
+    filterAllFactories: "Tutti gli stabilimenti",
+
+    errorFailedLoad: "Caricamento dei trial non riuscito",
+    errorUpdate: "Aggiornamento non riuscito",
+    errorNetwork: "Errore di rete",
+
+    quickActionPrefix: "Azione rapida —",
+    trialFallback: "Trial",
+    labelStatus: "Stato",
+    labelTracking: "Numero di tracking",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "Note amministrative",
+    placeholderAdminNotes: "Note interne...",
+    labelRejectReason: "Motivo del rifiuto",
+    btnSave: "Salva modifiche",
+    btnSaving: "Salvataggio...",
+    btnCancel: "Annulla",
+
+    emptyFiltered: "Nessun trial corrisponde ai filtri",
+    emptyDefault: "Ancora nessun trial campione",
+
+    colFabric: "Tessuto",
+    colFactory: "Stabilimento",
+    colPurpose: "Scopo",
+    colStatus: "Stato",
+    colDetails: "Dettagli",
+    colIcpLab: "Lab ICP",
+    colDate: "Data",
+    colActions: "Azioni",
+
+    purposeBrand: "Brand",
+    purposeSelfDev: "Auto-sviluppo",
+    trialLab: "Laboratorio",
+    trialProduction: "Produzione",
+    detailsTierPrefix: "Tier:",
+    detailsIcpAgPrefix: "ICP FUZE:",
+    detailsByPrefix: "Da:",
+    actionAction: "Azione",
+    actionView: "Visualizza",
+
+    statusSubmitted: "Inviato",
+    statusUnderReview: "In revisione",
+    statusApproved: "Approvato",
+    statusRejected: "Rifiutato",
+    statusShipped: "Spedito",
+    statusReceived: "Ricevuto",
+    statusInProgress: "In corso",
+    statusIcpPending: "ICP in attesa",
+    statusIcpSubmitted: "ICP inviato",
+    statusComplete: "Completato",
+  },
+
 };
 
 export default it;
