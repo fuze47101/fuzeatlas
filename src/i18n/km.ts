@@ -5486,6 +5486,58 @@ const km: Translations = {
     verdictUnscanned: "unscanned",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← ការកំណត់",
+    pageTitle: "ទម្រង់អ៊ីមែល",
+    pageSubtitle: "Reusable email scaffolds for outreach. Use {firstName}, {company}, etc. to personalize on the fly.",
+    btnNew: "+ ថ្មី Template",
+    errorRequired: "ចំណងជើង, subject, and body are required.",
+    errorLoadUser: "បរាជ័យ to load user",
+    errorLoadTemplates: "បរាជ័យ to load templates",
+    confirmArchive: "Archive \"{title}\"? It won't show up in the picker anymore.",
+
+    formHeadingEdit: "កែសម្រួល template",
+    formHeadingNew: "ថ្មី template",
+    labelTitle: "ចំណងជើង",
+    placeholderTitle: "e.g. First-touch intro (athletic apparel)",
+    labelCategory: "ប្រភេទ",
+    placeholderCategory: "e.g. intro, re-engage, icp-request",
+    labelScope: "Scope",
+    scopePrivate: "Private (just me)",
+    scopeShared: "Shared (whole team)",
+    scopeGlobal: "Global (org default)",
+    labelSubject: "ប្រធានបទ",
+    placeholderSubject: "Hi {firstName} — quick FUZE intro for {company}",
+    labelBody: "Body",
+    btnSaving: "Saving…",
+    btnSaveChanges: "រក្សាទុកការផ្លាស់ប្ដូរ",
+    btnCreate: "Create template",
+    btnCancel: "បោះបង់",
+
+    previewHeading: "Preview",
+    previewHelp: "កែសម្រួល the sample values below to see how your tokens render.",
+    previewSubjectLabel: "ប្រធានបទ",
+    previewBodyLabel: "Body",
+
+    slotsHeading: "BD Wizard quick-pick slots",
+    slotsHelp: "Pin up to 10 of your templates to numbered slots. On the wizard ព្រាង step, you'll see a 1–10 button strip that one-click-fills the subject and body.",
+    openBdWizard: "បើក BD Wizard →",
+    slotEmptyTitle: "Empty slot — assign below.",
+    slotEmpty: "empty",
+
+    loadingTemplates: "កំពុងផ្ទុក templates…",
+    groupPrivate: "Your templates",
+    groupShared: "Shared with team",
+    groupGlobal: "Org-wide defaults",
+    usedSuffix: "used",
+    byPrefix: "by",
+    bdSlot: "BD slot",
+    edit: "កែសម្រួល",
+    archive: "Archive",
+
+    emptyTpl: "ទេ templates yet. Click + ថ្មី Template to create your first one.",
+  },
+
 };
 
 export default km;
