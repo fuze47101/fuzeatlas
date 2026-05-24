@@ -2819,6 +2819,37 @@ const tr: Translations = {
     factoryLabel: "Fabrika:",
   },
 
+  verifySku: {
+    errorTitle: "Bu kod doğrulanamadı",
+    errorBlurb:
+      "Doğrulama veritabanına erişirken sorun yaşadık. Lütfen bir süre sonra tekrar deneyin.",
+    notCertifiedTitle: "FUZE sertifikalı bir SKU değil",
+    notCertifiedBlurbPrefix: "Kod",
+    notCertifiedBlurbSuffix:
+      "doğrulama veritabanımızda bulunmuyor. Bu kod FUZE hangtag'ından geldiyse lütfen markaya doğrudan ulaşın.",
+    whatIsFuze: "FUZE nedir? →",
+    fuzeVerified: "FUZE Doğrulandı",
+    pageTitle: "Bu kumaş FUZE ile işlenmiştir",
+    pageSubtitle: "Antimikrobiyal tekstil işlemi — üçüncü taraf doğrulamalı.",
+    brandLabel: "Marka",
+    millLabel: "Fabrika",
+    fuzeTierLabel: "FUZE seviyesi",
+    fuzeNumberLabel: "FUZE numarası",
+    washClaimSuffix: "yıkama dayanımı",
+    recentValidation: "En son lab doğrulaması",
+    testPassed: "geçti",
+    testTypeSuffix: "test —",
+    validatedByPrefix: "Doğrulayan",
+    validatedByGeneric: "Üçüncü taraf laboratuvar tarafından doğrulandı",
+    validatedOn: "tarihinde",
+    reportRefPrefix: "Rapor ref:",
+    certifications: "FUZE sertifikaları",
+    aboutBody:
+      "FUZE, FUZE Biotech'in tescilli antimikrobiyal tekstil işlemidir. Standart tekstil finiş süreci sırasında liflere bağlanan metamateryal kimyası kullanır — PFAS yok, bağlayıcı yok, kürleme fırını gerekmez.",
+    learnMore: "FUZE hakkında daha fazla bilgi →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default tr;
