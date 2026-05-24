@@ -7485,6 +7485,32 @@ const es: Translations = {
     daySuffix: "d atrás",
   },
 
+  resetPassword: {
+    tagline: "Crea una nueva contraseña",
+    formTitle: "Restablecer contraseña",
+    newPasswordLabel: "Nueva contraseña",
+    newPasswordPlaceholder: "Introduce la nueva contraseña",
+    confirmPasswordLabel: "Confirmar contraseña",
+    confirmPasswordPlaceholder: "Confirma la contraseña",
+    resetBtn: "Restablecer contraseña",
+    resettingBtn: "Restableciendo...",
+    backToSignIn: "Volver al inicio de sesión",
+    successTitle: "Contraseña restablecida correctamente",
+    successBody: "Tu contraseña se ha restablecido con éxito. Ahora puedes iniciar sesión con tu nueva contraseña.",
+    signInBtn: "Iniciar sesión",
+    invalidLinkTitle: "Enlace de restablecimiento inválido",
+    invalidLinkBody: "El enlace de restablecimiento es inválido o ha caducado. Solicita uno nuevo.",
+    requestNewLinkBtn: "Solicitar nuevo enlace",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "Cargando...",
+    errInvalidToken: "Token de restablecimiento inválido o faltante",
+    errInvalidTokenShort: "Token de restablecimiento inválido",
+    errMinLength: "La contraseña debe tener al menos 6 caracteres",
+    errMismatch: "Las contraseñas no coinciden",
+    errResetFailed: "Error al restablecer la contraseña",
+    errNetwork: "Error de red",
+  },
+
 };
 
 export default es;
