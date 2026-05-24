@@ -7702,6 +7702,31 @@ const it: Translations = {
     accessLaterTitle: "Accedere a questo report in seguito",
   },
 
+  settingsAuditLog: {
+    title: "Log di audit",
+    subtitle: "Traccia tutte le modifiche di sistema e le azioni degli utenti",
+    actionLabel: "Azione",
+    allActionsOption: "Tutte le azioni",
+    entityTypeLabel: "Tipo di entità",
+    allEntitiesOption: "Tutte le entità",
+    fromDateLabel: "Dalla data",
+    toDateLabel: "Alla data",
+    loadingText: "Caricamento...",
+    emptyText: "Nessun log di audit trovato",
+    colTimestamp: "Timestamp",
+    colUser: "Utente",
+    colAction: "Azione",
+    colEntity: "Entità",
+    colDescription: "Descrizione",
+    systemUserFallback: "Sistema",
+    showingPrefix: "Visualizzati",
+    showingTo: "a",
+    showingOf: "di",
+    showingSuffix: "log",
+    prevBtn: "Precedente",
+    nextBtn: "Successivo",
+  },
+
 };
 
 export default it;
