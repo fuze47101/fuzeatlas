@@ -6011,6 +6011,31 @@ const ta: Translations = {
     footerNote: "வரிசைப்படுத்தப்பட்டது: low-stock முதலில், பின்னர் idle, பின்னர் days-of-stock-left ஏறுவரிசையில். \"தினசரி burn\" = தொழிற்சாலைகளுக்கு அனுப்பப்பட்ட லிட்டர்களின் rolling 90-நாள் சராசரி. \"மீதம் நாட்கள்\" = தற்போதைய stock ÷ தினசரி burn. \"Idle\" = கடந்த 90 நாட்களில் தொழிற்சாலை ஆர்டர்கள் இல்லை. \"No price\" என்பது FUZE wholesale rate அமைக்கப்படவில்லை; விநியோகஸ்தர் restock ஆர்டர்களை வைக்க முடியாது. ஒரு-விநியோகஸ்தர் பக்கத்தில் திருத்தவும்.",
   },
 
+  conversionTracking: {
+    crumbDashboard: "டாஷ்போர்டு",
+    crumbCurrent: "மாதிரி → உற்பத்தி",
+    title: "மாதிரி → உற்பத்தி மாற்றம்",
+    subtitle: "எந்த தொழிற்சாலைகள் மாதிரிகளைப் பெற்றன மற்றும் உற்பத்தி ஆர்டர்களாக மாறின என்பதை கண்காணி",
+    cardFactoriesSampled: "மாதிரி கொடுக்கப்பட்ட தொழிற்சாலைகள்",
+    cardConverted: "மாற்றப்பட்டது",
+    cardConversionRate: "மாற்ற விகிதம்",
+    cardAvgDays: "மாற்ற சராசரி நாட்கள்",
+    cardProdVolume: "உற்பத்தி அளவு",
+    cardProdRevenue: "உற்பத்தி வருவாய்",
+    tabAll: "அனைத்தும்",
+    tabConverted: "மாற்றப்பட்டது",
+    tabPending: "காத்திருக்கிறது",
+    emptyText: "இன்னும் மாதிரி ஆர்டர்கள் கிடைக்கவில்லை",
+    badgeConverted: "CONVERTED",
+    badgePending: "PENDING",
+    sectionSamples: "மாதிரி ஆர்டர்கள்",
+    sectionTrials: "Trial கோரிக்கைகள்",
+    sectionProduction: "உற்பத்தி ஆர்டர்கள்",
+    productionLabel: "உற்பத்தி",
+    daysToConvertSuffix: "மாற்ற நாட்கள்",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default ta;
