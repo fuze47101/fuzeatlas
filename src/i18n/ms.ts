@@ -7064,6 +7064,26 @@ const ms: Translations = {
     emptyState: "Belum ada kredit.",
   },
 
+  bdFunnel: {
+    loading: "Memuatkan…",
+    crumbSalesPipeline: "Jualan & Saluran Paip",
+    crumbBdFunnel: "Corong BD",
+    title: "Corong saluran paip",
+    subtitle: "Aliran masuk / keluar sepanjang 30 / 60 / 90 hari lepas, ditambah kadar penukaran peringkat-ke-peringkat. Bersumberkan baris BrandStageTransition yang ditulis pada setiap pertukaran Brand.pipelineStage.",
+    colStage: "Peringkat",
+    colCurrent: "Semasa",
+    colIn30: "Masuk 30h",
+    colIn60: "Masuk 60h",
+    colIn90: "Masuk 90h",
+    colOut30: "Keluar 30h",
+    colOut60: "Keluar 60h",
+    colOut90: "Keluar 90h",
+    colAvgDwell: "Purata duduk",
+    colToNext: "→ berikutnya",
+    footerHint: "Penukaran = keluar yang mendarat pada peringkat berikutnya kanonikal / jumlah keluar diperhatikan dalam 90 hari lepas. Peringkat tanpa keluar dalam tetingkap menunjukkan n=0 — mereka perlahan atau stabil, bukan teruk.",
+    errLoadFailed: "Gagal memuatkan corong",
+  },
+
 };
 
 export default ms;
