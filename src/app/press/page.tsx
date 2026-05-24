@@ -4,6 +4,7 @@
  */
 import Link from "next/link";
 import PublicPageBeacon from "@/components/PublicPageBeacon";
+import { getServerTranslations } from "@/i18n/server";
 
 const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://fuzeatlas.com";
@@ -40,7 +41,13 @@ async function loadPress(): Promise<Item[]> {
   }
 }
 
-export default async function PressKitPage() {
+export default async function PressKitPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ lang?: string }>;
+}) {
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).pressLanding;
   const items = await loadPress();
   const logos = items.filter((i) => i.type === "LOGO");
   const images = items.filter((i) => i.type === "IMAGE");
@@ -52,35 +59,28 @@ export default async function PressKitPage() {
       <PublicPageBeacon path="/press" />
       <section className="bg-gradient-to-br from-[#00b4c3] to-[#009ba8] text-white px-6 py-16">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl font-black">Press kit</h1>
+          <h1 className="text-4xl sm:text-5xl font-black">{T.heroTitle}</h1>
           <p className="mt-3 text-lg text-white/90">
-            Logos, imagery, releases, and company background for FUZE Biotech.
+            {T.heroSubtitle}
           </p>
         </div>
       </section>
 
       {/* About */}
       <section className="max-w-4xl mx-auto px-6 py-12">
-        <h2 className="text-2xl font-black text-slate-900 mb-3">About FUZE Biotech</h2>
+        <h2 className="text-2xl font-black text-slate-900 mb-3">{T.aboutTitle}</h2>
         <p className="text-slate-700">
-          FUZE Biotech, headquartered in Salt Lake City, Utah, develops a
-          proprietary antimicrobial textile treatment built around FUZE
-          metamaterial. The treatment bonds permanently to fibers during
-          standard textile finishing — no PFAS, no binders, no chemistry change
-          to the fabric's hand or breathability.
+          {T.aboutBody1}
         </p>
         <p className="text-slate-700 mt-3">
-          The product is EPA registered (federal), California EPA approved
-          (Q1 2026), OEKO-TEX Standard 100 Class I, and bluesign® approved.
-          Performance is validated to ASTM E2149, AATCC 100, AATCC 30, ISO 18184,
-          and ISO 20743 by independent third-party labs.
+          {T.aboutBody2}
         </p>
         <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">
-          <dt className="text-slate-500">Founded</dt>
-          <dd className="font-bold text-slate-900">Salt Lake City, UT</dd>
-          <dt className="text-slate-500">Address</dt>
+          <dt className="text-slate-500">{T.foundedLabel}</dt>
+          <dd className="font-bold text-slate-900">{T.foundedValue}</dd>
+          <dt className="text-slate-500">{T.addressLabel}</dt>
           <dd className="font-bold text-slate-900">1895 West 2100 South, SLC, UT 84119</dd>
-          <dt className="text-slate-500">Press contact</dt>
+          <dt className="text-slate-500">{T.pressContactLabel}</dt>
           <dd className="font-bold text-slate-900">
             <a href="mailto:andrew@fuze47.com" className="hover:underline">
               andrew@fuze47.com
@@ -90,7 +90,7 @@ export default async function PressKitPage() {
       </section>
 
       {logos.length > 0 && (
-        <Section title="Logos">
+        <Section title={T.logosSection}>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {logos.map((i) => (
               <a
@@ -103,11 +103,11 @@ export default async function PressKitPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={i.url}
-                  alt={i.caption || "FUZE logo"}
+                  alt={i.caption || T.logoAltFallback}
                   className="h-16 mx-auto object-contain"
                 />
                 {i.caption && <p className="text-xs text-slate-600 mt-2">{i.caption}</p>}
-                <p className="text-[10px] text-[#00b4c3] mt-1 font-bold">Download →</p>
+                <p className="text-[10px] text-[#00b4c3] mt-1 font-bold">{T.downloadLabel}</p>
               </a>
             ))}
           </div>
@@ -115,7 +115,7 @@ export default async function PressKitPage() {
       )}
 
       {images.length > 0 && (
-        <Section title="Imagery">
+        <Section title={T.imagerySection}>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {images.map((i) => (
               <a
@@ -128,7 +128,7 @@ export default async function PressKitPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={i.url}
-                  alt={i.caption || "FUZE imagery"}
+                  alt={i.caption || T.imageAltFallback}
                   className="w-full h-48 object-cover"
                 />
                 {i.caption && <p className="text-xs text-slate-700 p-3">{i.caption}</p>}
@@ -139,7 +139,7 @@ export default async function PressKitPage() {
       )}
 
       {releases.length > 0 && (
-        <Section title="Press releases">
+        <Section title={T.releasesSection}>
           <ul className="space-y-3">
             {releases.map((i) => (
               <li
@@ -152,7 +152,7 @@ export default async function PressKitPage() {
                   rel="noreferrer"
                   className="font-bold text-slate-900 hover:text-[#00b4c3]"
                 >
-                  {i.caption || "Release"}
+                  {i.caption || T.releaseFallback}
                 </a>
                 {i.releaseDate && (
                   <p className="text-xs text-slate-500 mt-1">
@@ -166,7 +166,7 @@ export default async function PressKitPage() {
       )}
 
       {newsLinks.length > 0 && (
-        <Section title="In the news">
+        <Section title={T.newsSection}>
           <ul className="space-y-2">
             {newsLinks.map((i) => (
               <li key={i.id}>
@@ -193,7 +193,7 @@ export default async function PressKitPage() {
         <p>
           FUZE Atlas ·{" "}
           <Link href="/claims" className="hover:underline">
-            Claims
+            {T.claimsLink}
           </Link>{" "}
           ·{" "}
           <a href="https://fuzeatlas.com" className="hover:underline">
