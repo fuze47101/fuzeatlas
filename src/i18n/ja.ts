@@ -7705,6 +7705,33 @@ const ja: Translations = {
     contactLink: "お問い合わせ",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "ブランド",
+    crumb: "ハングタグ QR",
+    heading: "ハングタグ QR トークン",
+    subtitlePrefix: "各トークンは以下の公開検証ページに解決されます:",
+    subtitleSuffix: "スキャン回数、初回および最終スキャンのタイムスタンプを行ごとに追跡します。",
+    mintTokensTitle: "トークンを発行",
+    countPlaceholder: "件数",
+    fabricIdPlaceholder: "fabricId (任意)",
+    skuPlaceholder: "製品 SKU",
+    batchPlaceholder: "バッチコード",
+    mintBtn: "発行",
+    mintingBusy: "発行中…",
+    mintFootnote: "1 回の発行につき最大 500 件まで。生成されたトークンは、お好みの QR ジェネレータを使ってハングタグに QR コードとして印刷してください (各 URL は検証ページの URL そのものです)。",
+    mintFailedError: "発行に失敗しました",
+    tokenSingular: "トークン",
+    tokenPlural: "トークン",
+    exportCsvBtn: "CSV エクスポート",
+    colToken: "トークン",
+    colSkuBatch: "SKU / バッチ",
+    colFabric: "ファブリック",
+    colScans: "スキャン",
+    colLastScan: "最終スキャン",
+    colVerifyUrl: "検証 URL",
+    emptyState: "トークンはまだありません — 上記から最初のバッチを発行してください。",
+  },
+
 };
 
 export default ja;
