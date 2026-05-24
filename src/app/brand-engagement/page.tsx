@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 const TREND_COLORS: Record<string, string> = {
   RISING: "bg-emerald-100 text-emerald-800",
@@ -17,6 +18,8 @@ const TREND_ICONS: Record<string, string> = {
 };
 
 export default function BrandEngagementPage() {
+  const { t } = useI18n();
+  const T = t.brandEngagement;
   const [engagements, setEngagements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterTrend, setFilterTrend] = useState("");
@@ -80,9 +83,9 @@ export default function BrandEngagementPage() {
         {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Brand Health</h1>
+            <h1 className="text-3xl font-bold text-slate-900">{T.heading}</h1>
             <p className="text-slate-600 mt-1">
-              Monitor engagement and health metrics for all brands
+              {T.subtitle}
             </p>
           </div>
           <button
@@ -90,7 +93,7 @@ export default function BrandEngagementPage() {
             disabled={recalculating}
             className="bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white px-4 py-2.5 rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {recalculating ? "Recalculating..." : "Recalculate All"}
+            {recalculating ? T.recalculatingBtn : T.recalculateBtn}
           </button>
         </div>
 
@@ -105,7 +108,7 @@ export default function BrandEngagementPage() {
                   : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
               }`}
             >
-              All
+              {T.allFilter}
             </button>
             {["RISING", "STABLE", "DECLINING", "AT_RISK"].map((trend) => (
               <button
@@ -125,10 +128,10 @@ export default function BrandEngagementPage() {
 
         {/* Engagements List */}
         {loading ? (
-          <div className="text-center py-12 text-slate-600">Loading...</div>
+          <div className="text-center py-12 text-slate-600">{T.loadingText}</div>
         ) : engagements.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-            <p className="text-slate-600">No brands found</p>
+            <p className="text-slate-600">{T.noBrandsText}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -204,12 +207,12 @@ export default function BrandEngagementPage() {
                     {/* Score Breakdown */}
                     <div className="mb-6">
                       <h4 className="font-medium text-slate-900 mb-4">
-                        Score Breakdown
+                        {T.scoreBreakdownTitle}
                       </h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="bg-white rounded-lg p-3">
                           <p className="text-xs text-slate-600 font-medium mb-1">
-                            Communication
+                            {T.communicationLabel}
                           </p>
                           <p className="text-lg font-bold text-slate-900">
                             {engagement.communicationScore}
@@ -226,7 +229,7 @@ export default function BrandEngagementPage() {
 
                         <div className="bg-white rounded-lg p-3">
                           <p className="text-xs text-slate-600 font-medium mb-1">
-                            Testing Velocity
+                            {T.testingVelocityLabel}
                           </p>
                           <p className="text-lg font-bold text-slate-900">
                             {engagement.testingVelocity}
@@ -243,7 +246,7 @@ export default function BrandEngagementPage() {
 
                         <div className="bg-white rounded-lg p-3">
                           <p className="text-xs text-slate-600 font-medium mb-1">
-                            Pipeline Velocity
+                            {T.pipelineVelocityLabel}
                           </p>
                           <p className="text-lg font-bold text-slate-900">
                             {engagement.pipelineVelocity}
@@ -260,7 +263,7 @@ export default function BrandEngagementPage() {
 
                         <div className="bg-white rounded-lg p-3">
                           <p className="text-xs text-slate-600 font-medium mb-1">
-                            Payment Score
+                            {T.paymentScoreLabel}
                           </p>
                           <p className="text-lg font-bold text-slate-900">
                             {engagement.paymentScore}
@@ -280,13 +283,13 @@ export default function BrandEngagementPage() {
                     {/* Raw Metrics */}
                     <div className="mb-6">
                       <h4 className="font-medium text-slate-900 mb-3">
-                        Raw Metrics
+                        {T.rawMetricsTitle}
                       </h4>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
                         {engagement.daysSinceLastContact !== null && (
                           <div className="bg-white rounded-lg p-3">
                             <p className="text-xs text-slate-600">
-                              Days Since Contact
+                              {T.daysSinceContact}
                             </p>
                             <p className="font-bold text-slate-900">
                               {engagement.daysSinceLastContact}
@@ -295,7 +298,7 @@ export default function BrandEngagementPage() {
                         )}
                         <div className="bg-white rounded-lg p-3">
                           <p className="text-xs text-slate-600">
-                            Tests (Last 30d)
+                            {T.testsLast30d}
                           </p>
                           <p className="font-bold text-slate-900">
                             {engagement.testsLast30Days}
@@ -303,7 +306,7 @@ export default function BrandEngagementPage() {
                         </div>
                         <div className="bg-white rounded-lg p-3">
                           <p className="text-xs text-slate-600">
-                            Tests (Last 90d)
+                            {T.testsLast90d}
                           </p>
                           <p className="font-bold text-slate-900">
                             {engagement.testsLast90Days}
@@ -312,7 +315,7 @@ export default function BrandEngagementPage() {
                         {engagement.avgInvoicePayDays && (
                           <div className="bg-white rounded-lg p-3">
                             <p className="text-xs text-slate-600">
-                              Avg Invoice Pay Days
+                              {T.avgInvoicePayDays}
                             </p>
                             <p className="font-bold text-slate-900">
                               {engagement.avgInvoicePayDays.toFixed(1)}
@@ -322,7 +325,7 @@ export default function BrandEngagementPage() {
                         {engagement.overdueInvoices > 0 && (
                           <div className="bg-white rounded-lg p-3">
                             <p className="text-xs text-slate-600">
-                              Overdue Invoices
+                              {T.overdueInvoices}
                             </p>
                             <p className="font-bold text-red-600">
                               {engagement.overdueInvoices}
@@ -334,7 +337,7 @@ export default function BrandEngagementPage() {
 
                     {/* Last Calculated */}
                     <p className="text-xs text-slate-500">
-                      Last calculated:{" "}
+                      {T.lastCalculatedLabel}{" "}
                       {new Date(engagement.lastCalculated).toLocaleString()}
                     </p>
                   </div>
