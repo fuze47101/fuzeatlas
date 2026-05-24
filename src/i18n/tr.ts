@@ -6241,6 +6241,35 @@ const tr: Translations = {
     noData: "Veri yok",
   },
 
+  educationApplication: {
+    pageMetaTitle: "Uygulama Yöntemleri",
+    backLink: "← FUZE Temellerine Geri Dön",
+    kicker: "Uygulama Yöntemleri",
+    heroTitle: "FUZE mevcut terbiye hattınızda çalışır",
+    heroBody: "FUZE'u uygulamak için yeni bir tank, yeni bir fırın veya yeni bir ekipmana ihtiyacınız yok. Üç uygulama yolu bugün faaliyette olan her tekstil üretim kurulumunu kapsar. F4 Essential Protection birçok substratta hiç fiksaj fırını gerektirmez.",
+    methodExhaustName: "Çektirme (boya banyosu)",
+    methodExhaustDesc: "Boya banyosuna FUZE ekleyin. Metamateryal mevcut boya çektirme süreci sırasında bağlanır. Yeni tank yok, yeni kazan yok, yeni hat yok.",
+    methodExhaustWhen: "Yüksek hacimli sürekli boyama için en uygun. Metamateryal boya fiksaj adımıyla entegre olur.",
+    methodPdcName: "Emdirme-Kurutma-Fiksaj",
+    methodPdcDesc: "Kumaşı, seyreltilmiş FUZE banyosu ile yüklenmiş standart bir fulardan geçirin. Her zamanki gibi sıkın, kurutun, fikse edin. Fiksaj sıcaklığı 150-170°C.",
+    methodPdcWhen: "En yaygın uygulama yolu. Bugün faaliyette olan her tekstil terbiye hattıyla uyumlu.",
+    methodSprayName: "Püskürtme (kafa boşluklu)",
+    methodSprayDesc: "6 inç kafa boşluğu, 15 m/dk hat hızı. Seyreltilmiş FUZE'u kumaş yüzeyine atomize eder, ardından kurut/fikse et. Tamamlanmış giysiler veya dokunmamış substratlar için idealdir.",
+    methodSprayWhen: "Zaten kesilmiş/dikilmiş giysiler veya çektirme/PDC'nin uygulanmadığı özel substratlar.",
+    whenToUseLabel: "Ne zaman kullanılır",
+    operatorTitle: "Bunun bir fabrika operatörü için neden önemli olduğu",
+    operatorBullet1: "✓ Yeni sermaye ekipmanı yok. FUZE mevcut emdirme/boyama/püskürtme hattınıza eklenir.",
+    operatorBullet2: "✓ Bağlayıcı yok, çapraz bağlayıcı yok, formaldehit yok. Yönetilecek daha az envanter, kanserojen-madde işleme protokolleri yok.",
+    operatorBullet3: "✓ F4'te fiksaj fırını bağımlılığı yok. Düşük kademeli uygulamalar havayla kuruyabilir; F1-F3 standart PDC terbiyesiyle aynı aralık olan 150-170°C kullanır.",
+    operatorBullet4: "✓ Saklanan FUZE'da raf ömrü yok. Variller ve karboylar bozulmadan terbiye odanızda süresiz olarak durabilir.",
+    operatorBullet5: "✓ Standart 19L karboy en küçük sipariş birimidir. Tam eşleşme gerektiğinde özel hacimler (47L, 285L, 1300L) sipariş edin.",
+    runNumbersTitle: "Sayılarınızı çalıştırın",
+    runNumbersBody: "Uygulama hesaplayıcı, seçtiğiniz kademede kumaşın metrekaresi başına ihtiyaç duyulan tam FUZE hacmini hesaplar. Kumaş ağırlığını (gsm), genişliği ve hedef kademeyi girin — FUZE banyosu litresini, stok konsantresinin mL'sini ve doğrusal metre başına dolarını alın.",
+    runNumbersCta: "Uygulama hesaplayıcıyı aç →",
+    backBasicsBtn: "FUZE Temellerine Geri Dön",
+    seePricingBtn: "Fiyatlandırma ve kademeleri gör",
+  },
+
 };
 
 export default tr;
