@@ -6107,6 +6107,54 @@ const ko: Translations = {
     btnCreating: "생성 중...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "FUZE 원단 라이브러리",
+    pageSubtitle: "FUZE 처리 원단과 글로벌 네트워크에 걸친 검증된 시험 결과를 탐색하십시오. 모든 데이터는 익명화됩니다 — 공장 및 브랜드 신원은 기밀입니다.",
+
+    statFabrics: "시험된 원단",
+    statTests: "총 시험",
+    statIcp: "ICP 분석",
+    statAb: "항균 시험",
+
+    searchPlaceholder: "구성, 원사, 최종 용도, FUZE 번호로 검색...",
+    filterAllTypes: "모든 시험 유형",
+    filterIcp: "ICP 분석",
+    filterAntibacterial: "항균",
+    filterFungal: "항진균",
+    filterOdor: "탈취",
+    passOnly: "통과만",
+
+    emptyTitle: "기준과 일치하는 원단이 없습니다",
+    emptyClear: "모든 필터 지우기",
+    errorFailedLoad: "원단 라이브러리 로드 실패",
+    errorFailedDefault: "로드 실패",
+
+    testsSuffix: "시험",
+    testSuffix: "시험",
+    propConstruction: "구성:",
+    propWeight: "중량:",
+    propWidth: "폭:",
+    propYarn: "원사:",
+    propCategory: "카테고리:",
+    propEndUse: "최종 용도:",
+    propWeave: "직조:",
+    propColor: "색상:",
+
+    colTest: "시험",
+    colMethod: "방법",
+    colWashes: "세탁 횟수",
+    colResult: "결과",
+    colStatus: "상태",
+    pass: "통과",
+    fail: "실패",
+    passBadge: "통과",
+    failBadge: "실패",
+
+    paginationPrev: "이전",
+    paginationNext: "다음",
+    paginationLabel: "{pages}페이지 중 {page}페이지",
+  },
+
 };
 
 export default ko;
