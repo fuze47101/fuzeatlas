@@ -5505,6 +5505,55 @@ const bn: Translations = {
     statusComplete: "সম্পূর্ণ",
   },
 
+  brandFabricsAdmin: {
+    loading: "ফ্যাব্রিক পোর্টফোলিও লোড হচ্ছে…",
+    errorTitle: "ফ্যাব্রিক পোর্টফোলিও লোড করা যায়নি",
+    errorUnknown: "অজানা ত্রুটি",
+    errorFailedLoad: "লোড করতে ব্যর্থ",
+    errorSave: "সংরক্ষণ ব্যর্থ",
+    btnTryAgain: "আবার চেষ্টা করুন",
+
+    crumbPartners: "ব্র্যান্ড অংশীদার",
+    crumbHere: "ফ্যাব্রিক পোর্টফোলিও",
+    titleSuffix: "— ফ্যাব্রিক পোর্টফোলিও",
+    subtitle: "এই ব্র্যান্ডের জন্য সমস্ত মিল জুড়ে সমস্ত ফ্যাব্রিক। {total}-এর মধ্যে {shown} ফ্যাব্রিক দেখানো হয়েছে।",
+    btnExportCsv: "⬇ CSV এক্সপোর্ট",
+
+    searchPlaceholder: "ফ্যাব্রিক #, গ্রাহক কোড, সামগ্রী অনুসন্ধান করুন…",
+    filterAllMills: "সমস্ত মিল",
+    filterAllTypes: "সমস্ত ধরন",
+    typeDevelopment: "উন্নয়ন",
+    typeActualBulk: "প্রকৃত (বাল্ক)",
+    typeForecast: "পূর্বাভাস",
+    typeRd: "R&D",
+    filterAllStatuses: "সমস্ত অবস্থা",
+
+    emptyFabric: "🧵",
+    emptyTitle: "আপনার ফিল্টারের সাথে কোনো ফ্যাব্রিক মিলছে না।",
+    emptySub: "উপরের ফিল্টার সামঞ্জস্য করুন বা সম্পূর্ণ পোর্টফোলিও দেখতে অনুসন্ধান সাফ করুন।",
+    fabricSingular: "ফ্যাব্রিক",
+    fabricPlural: "ফ্যাব্রিক",
+    openFactory: "কারখানা খুলুন →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "মিল ফ্যাব্রিক #",
+    colType: "ধরন",
+    colContent: "সামগ্রী",
+    colGsm: "GSM",
+    colCustomerCode: "গ্রাহক কোড",
+    colTrial: "ট্রায়াল",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "ICP মান",
+    colTestDate: "পরীক্ষার তারিখ",
+    colStatus: "অবস্থা",
+
+    unassigned: "নির্ধারিত নয়",
+    typeBulkProduction: "বাল্ক উৎপাদন",
+    notSet: "— সেট নয় —",
+    titleOpenFabric: "ফ্যাব্রিকের বিস্তারিত খুলুন",
+  },
+
 };
 
 export default bn;
