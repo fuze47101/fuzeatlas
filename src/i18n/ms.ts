@@ -7890,6 +7890,24 @@ const ms: Translations = {
     websiteLabel: "Laman web",
   },
 
+  importContacts: {
+    title: "Import pukal — Kenalan",
+    subtitle: "Tampal atau muat naik CSV kenalan. E-mel ialah kunci semula jadi — kami upsert mengikut e-mel apabila ada. Baris tanpa e-mel tetapi mempunyai URL LinkedIn diimport sebagai 'e-mel hilang' supaya kerja pengayaan Apollo sedia ada boleh mengejar mereka. Baris tanpa kedua-duanya ditolak.",
+    backLabel: "Pengurusan Lead",
+    firstNameLabel: "Nama pertama",
+    lastNameLabel: "Nama akhir",
+    emailLabel: "E-mel",
+    emailHint: "diperlukan jika tiada URL LinkedIn",
+    linkedinLabel: "URL LinkedIn",
+    linkedinHint: "pengenal pasti sandaran apabila e-mel hilang",
+    brandNameLabel: "Nama jenama",
+    brandNameHint: "padanan tidak sensitif huruf besar pada Brand.name; tidak dipautkan jika tidak dijumpai",
+    jobTitleLabel: "Jawatan",
+    phoneLabel: "Telefon",
+    titleLabel: "Gelaran (kehormat)",
+    titleHint: 'cth. "Encik", "Dr."',
+  },
+
 };
 
 export default ms;
