@@ -7977,6 +7977,24 @@ const tr: Translations = {
     websiteLabel: "Web sitesi",
   },
 
+  reportSharePage: {
+    unavailableTitle: "Rapor kullanılamıyor",
+    unavailableBodyPrefix: "Uzun vadeli erişim için şuraya giriş yapın:",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "ve raporu Raporlarım altında bulun veya geldiği e-postayı yanıtlayın.",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · Uygulama ve Doğrulama Raporu",
+    heading: "FUZE İşlem Reçetesi ve Doğrulama",
+    issuedLabel: "Yayımlandı",
+    linkValidUntil: "· Bu doğrudan bağlantı şu tarihe kadar geçerlidir",
+    preparedForTitle: "Hazırlayan",
+    execSummaryTitle: "Yönetici Özeti",
+    recipeTitle: "Önerilen Reçete",
+    fuzeRequiredTitle: "Gerekli FUZE (Üretim Banyo Boyutları)",
+    labIcpTitle: "Bağımsız Laboratuvar ICP Doğrulaması",
+    accessLaterTitle: "Bu Rapora Daha Sonra Erişim",
+  },
+
 };
 
 export default tr;
