@@ -7081,6 +7081,37 @@ const th: Translations = {
     footerHint: "ค้าง = 14+ วันไม่มีกิจกรรมในขณะที่ยังอยู่ใน DRAFT/SENT/SIGNED/ACTIVE ลงนาม-ไม่มีความคืบหน้า = SIGNED หรือ ACTIVE เป็นเวลา 30+ วันโดยมี milestones ที่กำหนดแต่ไม่มีรายการเสร็จสิ้น กิจกรรมล่าสุดคือล่าสุดของการแก้ไข SOW การเสร็จสิ้น milestone หรือการยื่นคำขอทดสอบ",
   },
 
+  acmTasks: {
+    title: "🗓️ งาน ACM",
+    subtitle: "การเตือนล่วงหน้าหนึ่งสัปดาห์ + หนึ่งวันส่งอัตโนมัติผ่านกระดิ่ง + อีเมล เวลา 8 AM Taipei",
+    tabOpen: "เปิด",
+    tabCompleted: "เสร็จสิ้น",
+    onlyMine: "เฉพาะของฉัน",
+    loading: "กำลังโหลด…",
+    overdueTitle: "เลยกำหนด",
+    overdueSubtitle: "เลยกำหนด — เอาออกจากรายการ",
+    dueWeekTitle: "ครบกำหนดสัปดาห์นี้",
+    dueWeekSubtitle: "7 วันถัดไป",
+    upcomingTitle: "กำลังจะมา",
+    upcomingSubtitle: "เกิน 7 วัน",
+    completedTitle: "เสร็จสิ้น",
+    completedSubtitle: "200 รายการล่าสุด",
+    nothingHere: "ไม่มีอะไรที่นี่",
+    markDoneTitle: "ทำเครื่องหมายเสร็จ",
+    cancelTaskTitle: "ยกเลิกงาน",
+    reopenTitle: "เปิดใหม่",
+    highPriorityBadge: "สูง",
+    overdueRowPrefix: "เลยกำหนด — ",
+    duePrefix: "ครบกำหนด",
+    ownerLabel: "เจ้าของ:",
+    relToday: "วันนี้",
+    relTomorrow: "พรุ่งนี้",
+    relYesterday: "เมื่อวาน",
+    relInPrefix: "ใน",
+    relDaysSuffix: "วัน",
+    relDaysAgo: "วันที่ผ่านมา",
+  },
+
 };
 
 export default th;
