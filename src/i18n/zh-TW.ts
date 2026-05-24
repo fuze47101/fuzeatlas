@@ -7819,6 +7819,37 @@ const zhTW: Translations = {
     lastCalculatedLabel: "上次計算：",
   },
 
+  fabricReportSend: {
+    backLink: "← 返回報告",
+    heading: "將報告以電子郵件寄送給客戶",
+    subtitlePrefix: "正在寄送 FUZE 應用與驗證報告：",
+    fabricNotFound: "找不到布料。",
+    recipientRequiredError: "必須填寫收件者電子郵件。",
+    sendFailedError: "寄送失敗",
+    sentSuccessPrefix: "✓ 報告已寄送至",
+    directUrlLabel: "直接下載網址：",
+    sentSuccessBody: "客戶登入 FUZE Atlas 後也可在「我的報告」中查閱。",
+    recipientEmailLabel: "收件者電子郵件",
+    recipientNameLabel: "收件者姓名",
+    optionalSuffix: "（選填）",
+    personalNoteLabel: "個人留言",
+    personalNoteHint: "（選填，會顯示在報告卡片上方）",
+    ccLabel: "副本（CC）",
+    ccHint: "（選填，以逗號分隔）",
+    ttlLabel: "直接連結有效期限",
+    ttl30Days: "30 天",
+    ttl90Days: "90 天（預設）",
+    ttl180Days: "180 天",
+    ttl1Year: "1 年",
+    sendingBtn: "寄送中...",
+    sendBtn: "寄送報告",
+    previouslySentTitle: "先前已寄送",
+    sentPrefix: "已寄送",
+    viewedPrefix: "已檢視",
+    notOpenedYet: "尚未開啟",
+    openSameLink: "開啟相同連結 →",
+  },
+
 };
 
 export default zhTW;
