@@ -2903,6 +2903,32 @@ const id: Translations = {
     footerGenerated: "Formulir dibuat",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← Kembali ke Penyiapan Sampel ICP",
+    printButton: "🖨 Cetak / Simpan sebagai PDF",
+    eyebrow: "FUZE Biotech · SOP Lab",
+    pageTitle: "Penyiapan Sampel ICP-MS",
+    pageSubtitle: "Potong → timbang → fragmen → kantongi → kirim ke CTLA (Utah) untuk verifikasi ICP-MS",
+    docLabel: "Doc: SOP-FUZE-LAB-002",
+    revLabel: "Rev: 1.0 ·",
+
+    purposeHeader: "Tujuan",
+    equipmentHeader: "Peralatan",
+    massTargetsHeader: "Target Massa (kritis)",
+    shipToLabel: "Kirim ke CTLA",
+    digestPerRunLabel: "Digest per run",
+    cutterGeometryLabel: "Geometri pemotong",
+
+    criticalRulesHeader: "⚠ Aturan Penyiapan Kritis",
+    procedureHeader: "Prosedur",
+    shippingAddressHeader: "Alamat Pengiriman (terisi otomatis oleh wizard)",
+    shipToHeader: "Kirim ke",
+    returnAddressHeader: "Alamat balik + pelaporan",
+    reportToLabel: "Laporkan ke:",
+    preShipChecklistHeader: "✅ Checklist Pra-Pengiriman (wizard mencetak ini pada packet)",
+    sanityCheckHeader: "Sanity Check (apa yang seharusnya dilaporkan CTLA)",
+  },
+
 };
 
 export default id;
