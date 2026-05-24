@@ -2620,6 +2620,40 @@ const km: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "តម្រូវការចូល Atlas",
+    authBatchPrefix: "Batch",
+    authBlurb:
+      "details — including COA, TDS, SDS — are available to Atlas users only.",
+    loginCta: "ចូល to Atlas →",
+    noAccountQuestion: "Don't have an account? ទំនាក់ទំនង",
+    notFoundTitle: "Batch ទេt Found",
+    notFoundBlurb: "We couldn't find batch",
+    returnHome: "Return to Atlas →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "Batch Verification",
+    qcPassed: "✓ QC Passed",
+    qcFailed: "⚠ QC បរាជ័យ",
+    produced: "Produced",
+    batchDetails: "Batch ព័ត៌មានលម្អិត",
+    volumeProduced: "បរិមាណ Produced",
+    bottlesFilled: "Bottles Filled",
+    concentration: "Concentration",
+    productionDate: "ផលិតកម្ម កាលបរិច្ឆេទ",
+    fuzeMetamaterial: "mg/L FUZE metamaterial",
+    batchNotes: "Batch កំណត់ត្រា",
+    documents: "ឯកសារ",
+    coaTitle: "Certificate of Analysis (COA)",
+    coaDescPrefix: "This batch's spec verification · បង្ហោះed",
+    coaPending: "COA កំពុងរង់ចាំ",
+    coaPendingBlurb: "Certificate of Analysis not yet uploaded for this batch.",
+    view: "មើល →",
+    docsEmpty: "TDS / SDS not yet uploaded. នាយក can add them in Product ឯកសារ.",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Questions?",
+    footerReturnAtlas: "Return to Atlas",
+  },
+
 };
 
 export default km;
