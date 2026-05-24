@@ -7000,6 +7000,44 @@ const ko: Translations = {
     truncatedNotice: "{total}개 브랜드 중 처음 100개 표시. 필터를 사용하여 좁히십시오.",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "배송을 찾을 수 없습니다",
+    notFoundBodyTpl: "{order} 주문을 찾을 수 없습니다.",
+    notFoundFooter: "FUZE 배송에서 이 QR 코드를 받으신 경우 andrew@fuze47.com으로 문의하십시오.",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "배송 검증",
+
+    sectionShipment: "배송 세부 정보",
+    fieldFuzeVolume: "FUZE 부피",
+    bottlesSuffix: "병",
+    baseFuzePrefix: "기본",
+    wastageSuffix: "손실",
+    fieldTier: "등급",
+    fieldMethod: "처리 방법",
+    fieldFactory: "공장",
+    fieldForBrand: "브랜드용",
+    fieldFabric: "원단",
+    fieldFulfillment: "이행",
+    directUsa: "USA에서 직접",
+    distributorFallback: "디스트리뷰터",
+    fieldTracking: "추적",
+
+    sectionDocs: "제품 문서",
+    sdsLabel: "안전 데이터 시트 (SDS)",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "분석 증명서 (COA)",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "컴플라이언스 라이브러리 열기",
+
+    sectionTimeline: "수명 주기 타임라인",
+    viewDocument: "문서 보기 →",
+    timelineEmpty: "아직 기록된 수명 주기 이벤트가 없습니다. 타임라인은 배송이 이동함에 따라 채워집니다.",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "문의처:",
+  },
+
 };
 
 export default ko;
