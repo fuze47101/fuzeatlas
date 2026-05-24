@@ -4500,6 +4500,27 @@ const zhTW: Translations = {
     exportReportTemplate: "匯出 {product} vs FUZE 報告",
   },
 
+  educationClaims: {
+    backLink: "← 返回 FUZE 基礎",
+    eyebrow: "你可以宣稱的內容",
+    pageTitle: "FUZE 處理布料可站得住腳的品牌訴求",
+    pageIntro: "供合規團隊、品牌行銷與吊牌文案參考。三大類:產品訴求、永續訴求與認證訴求。每一項皆評等為",
+    introCiteFreely: "可自由引用",
+    introWithData: "需搭配等級對應資料引用",
+    introAvoid: "避免使用",
+    introTail: "— 並以白話說明原因。",
+    productClaimsTitle: "產品 / 效能訴求",
+    sustainabilityClaimsTitle: "永續訴求",
+    certClaimsTitle: "認證訴求",
+    badgeCiteFreely: "可自由引用",
+    badgeWithData: "需搭配資料",
+    badgeAvoid: "避免",
+    fifraTitle: "關於 FIFRA",
+    fifraBody: "FIFRA(美國聯邦殺蟲劑、殺菌劑與滅鼠劑法)管制美國境內的抗菌訴求。處理物件豁免允許「經抗菌處理」等描述性訴求,無需另行進行產品層級的 EPA 註冊;但特定病原體訴求(如「殺滅 99.9% 大腸桿菌」)須有與活性成分註冊掛鉤的測試資料佐證。本頁為指引,非法律意見 — 任何擬訂的行銷文案上線前,請與貴司內部合規團隊一同檢視。",
+    backToBasics: "返回 FUZE 基礎",
+    seeCerts: "查看認證組合",
+  },
+
 };
 
 export default zhTW;
