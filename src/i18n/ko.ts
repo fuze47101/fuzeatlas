@@ -3216,6 +3216,31 @@ const ko: Translations = {
     deleteFailed: "삭제 실패",
   },
 
+  educationMain: {
+    kicker: "FUZE 기초",
+    pageTitle: "FUZE가 실제로 작동하는 방식 — 그리고 차별점",
+    pageIntro: "FUZE가 원단에 무엇을 도포하는지, 박테리아를 어떻게 사멸시키는지, 어떤 시험이 이를 올바르게 측정하는지, 그리고 브랜드가 금속 이온 / zinc / QAC 경쟁사와 당사 사이에서 선택할 때 이것이 어떤 의미를 갖는지에 관한 4개 섹션 입문서입니다.",
+    forBrands: "브랜드용",
+    forFactories: "공장용",
+    forDistributors: "디스트리뷰터용",
+    forSalesReps: "영업 담당자용",
+    segmentKicker: "세그먼트별 피치",
+    segmentTitle: "귀사 산업에 맞춘 FUZE",
+    segmentIntro: "위의 과학은 보편적으로 적용됩니다. 아래 각 세그먼트에는 권장 FUZE 등급 사다리, 시험 스택, 규제 체크 항목, 그리고 해당 대상에 맞춘 아웃리치 훅이 포함되어 있습니다.",
+    openSegment: "세그먼트 페이지 열기 →",
+    dosageKicker: "섹션 1 — 풋프린트",
+    mechanismKicker: "섹션 2 — 메커니즘",
+    mechanismTitle: "용출 이온 vs 비이온성 접촉 사멸",
+    performanceKicker: "섹션 3 — 성능 스택 (F1 → F4)",
+    performanceTitle: "모든 등급은 영구적입니다. 각 단계는 FUZE의 새로운 레이어를 추가합니다.",
+    testsKicker: "섹션 4 — 다섯 가지 시험",
+    testsTitle: "시장에 있는 다섯 가지 시험 — FUZE 메커니즘에 맞게 설계된 것은 단 하나뿐",
+    synthesisKicker: "섹션 5 — 귀사 브랜드에 미치는 의미",
+    synthesisTitle: "모든 공급망 회의에 가지고 들어갈 세 가지",
+    ctaPricing: "특정 경쟁사 대비 비용 보기",
+    ctaSustainability: "지속 가능성 영향 보기",
+  },
+
 };
 
 export default ko;
