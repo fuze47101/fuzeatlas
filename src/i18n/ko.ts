@@ -6315,6 +6315,38 @@ const ko: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "시험 카탈로그 및 가격",
+    subtitle: "시험 유형, 가격, 처리 시간 및 샘플 요구사항을 관리하십시오. 변경사항은 공장 시험 요청 양식에 즉시 반영됩니다.",
+    sourcePrefix: "출처:",
+    sourceDb: "데이터베이스 (관리자 관리)",
+    sourceStatic: "정적 기본값",
+    successMsg: "시험이 성공적으로 업데이트되었습니다",
+    failedSave: "저장 실패",
+    networkErr: "네트워크 오류",
+    colTestName: "시험 이름",
+    colCategory: "카테고리",
+    colPrice: "가격 (USD)",
+    colTurnaround: "처리 시간",
+    colMinSample: "최소 샘플",
+    colControl: "대조군?",
+    colActive: "활성",
+    colActions: "작업",
+    daysSuffix: "일",
+    metersSuffix: "m",
+    yes: "예",
+    no: "아니오",
+    saveBtn: "저장",
+    savingDots: "...",
+    cancelBtn: "취소",
+    editBtn: "편집",
+    catRecipeBuild: "레시피 구축",
+    catPerformance: "성능",
+    catQuality: "품질",
+    catCertification: "인증",
+    lastUpdatedTpl: "{who}이(가) {when}에 마지막 업데이트",
+  },
+
 };
 
 export default ko;
