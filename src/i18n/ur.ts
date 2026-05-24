@@ -7813,6 +7813,24 @@ const ur: Translations = {
     footerVerifiedBy: "FUZE Atlas کے ذریعہ تصدیق شدہ",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "ESG اسنیپ شاٹس — FUZE Atlas",
+    metaDescPrefix: "سہ ماہی ESG اثر رپورٹس برائے",
+    metaDescSuffix: "FUZE Atlas کے ذریعہ تصدیق شدہ۔",
+    backArrowPrefix: "←",
+    headingSuffix: "— ESG اثر",
+    heroSubtitle: "FUZE-تصدیق شدہ کپڑے اور antimicrobial ٹیسٹ نتائج کے سہ ماہی اسنیپ شاٹس۔",
+    emptyBody: "ابھی تک کوئی شائع شدہ اسنیپ شاٹس نہیں۔ سہ ماہی رپورٹس اگلی سہ ماہی کے آغاز پر شائع ہوتی ہیں۔",
+    statFabricsCertified: "تصدیق شدہ کپڑے",
+    statTestsPassed: "پاس شدہ ٹیسٹ",
+    statFuzeLiters: "FUZE لیٹرز",
+    statFactories: "فیکٹریاں",
+    passRateLabel: "پاس کی شرح:",
+    downloadPdf: "PDF ڈاؤن لوڈ کریں →",
+    footerCertifiedBy: "FUZE Atlas کے ذریعہ تصدیق شدہ",
+  },
+
 };
 
 export default ur;
