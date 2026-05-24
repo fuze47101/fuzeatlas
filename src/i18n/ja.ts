@@ -7051,6 +7051,26 @@ const ja: Translations = {
     emptyState: "クレジットはまだありません。",
   },
 
+  bdFunnel: {
+    loading: "読み込み中…",
+    crumbSalesPipeline: "営業 & パイプライン",
+    crumbBdFunnel: "BDファネル",
+    title: "パイプラインファネル",
+    subtitle: "過去30/60/90日間の流入/流出、およびステージ間のコンバージョン率。すべてのBrand.pipelineStageの変更時に書き込まれるBrandStageTransition行から取得されます。",
+    colStage: "ステージ",
+    colCurrent: "現在",
+    colIn30: "流入 30日",
+    colIn60: "流入 60日",
+    colIn90: "流入 90日",
+    colOut30: "流出 30日",
+    colOut60: "流出 60日",
+    colOut90: "流出 90日",
+    colAvgDwell: "平均滞在",
+    colToNext: "→ 次へ",
+    footerHint: "コンバージョン=正規の次のステージに到達した退出/過去90日間に観察された総退出数。期間内に退出がないステージはn=0と表示されます — 遅いか安定しているのであって、悪いわけではありません。",
+    errLoadFailed: "ファネルの読み込みに失敗しました",
+  },
+
 };
 
 export default ja;
