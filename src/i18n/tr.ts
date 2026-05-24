@@ -7564,6 +7564,32 @@ const tr: Translations = {
     errSendFailed: "Doğrulama e-postası gönderilemedi",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "Genel Belgeler",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "FUZE için genel referans belgeleri",
+    headerLeadAfter: "ürün hattı. Özel belgeler (tam TDS/SDS, dahili fiyatlandırma, uygulama kılavuzları) için rolünüze uygun FUZE Atlas portalında oturum açın.",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "Toksikoloji",
+    catPricing: "Fiyatlandırma",
+    catSustainability: "Sürdürülebilirlik",
+    catEducation: "Eğitim",
+    catClaimsCompliance: "İddialar ve Uyumluluk",
+    catApplicationGuide: "Uygulama Kılavuzu",
+    catCaseStudy: "Vaka Çalışması",
+    loading: "Yükleniyor…",
+    emptyBefore: "Henüz şunun için genel belge bulunmuyor:",
+    emptyAfter: "yakında. Özel kütüphane için FUZE ile iletişime geçin.",
+    loginCta: "Atlas'a giriş yap →",
+    versionPrefix: "Sürüm",
+    downloadBtn: "↓ İndir",
+    unknownLineTitle: "Bilinmeyen ürün hattı",
+    unknownLineBody: "FUZE'nin dört kademesi vardır: F1, F2, F3, F4. Bunlardan birini deneyin.",
+    errLoadFailed: "Yüklenemedi",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default tr;
