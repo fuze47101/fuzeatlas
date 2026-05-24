@@ -4781,6 +4781,16 @@ const zhTW: Translations = {
     sanityCheckHeader: "合理性檢查(CTLA 應回報之數值範圍)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "經銷商網絡",
+    pageSubtitle: "管理您的全球經銷夥伴、庫存與覆蓋範圍",
+    inventoryCta: "📊 庫存與消耗速率",
+    worldwideCta: "🌍 全球庫存",
+    newDistributorCta: "+ 新增經銷商",
+    newDistributorModalTitle: "新增經銷商",
+    nameRequiredError: "名稱為必填",
+  },
+
 };
 
 export default zhTW;
