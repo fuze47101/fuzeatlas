@@ -7081,6 +7081,37 @@ const it: Translations = {
     footerHint: "Fermo = 14+ giorni senza attività mentre ancora in DRAFT/SENT/SIGNED/ACTIVE. Firmato-senza-progresso = SIGNED o ACTIVE da 30+ giorni con milestone definite ma nessuna completata. L'ultima attività è la più recente tra modifica SOW, completamento milestone o invio richiesta test.",
   },
 
+  acmTasks: {
+    title: "🗓️ Attività ACM",
+    subtitle: "I promemoria di settimana-prima + giorno-prima vengono inviati automaticamente tramite bell + email alle 8 AM Taipei.",
+    tabOpen: "Aperte",
+    tabCompleted: "Completate",
+    onlyMine: "Solo le mie",
+    loading: "Caricamento…",
+    overdueTitle: "Scadute",
+    overdueSubtitle: "Oltre la scadenza — toglile dalla lista",
+    dueWeekTitle: "In scadenza questa settimana",
+    dueWeekSubtitle: "Prossimi 7 giorni",
+    upcomingTitle: "In arrivo",
+    upcomingSubtitle: "Oltre 7 giorni",
+    completedTitle: "Completate",
+    completedSubtitle: "Ultime 200",
+    nothingHere: "Niente qui.",
+    markDoneTitle: "Contrassegna come fatto",
+    cancelTaskTitle: "Annulla attività",
+    reopenTitle: "Riapri",
+    highPriorityBadge: "ALTA",
+    overdueRowPrefix: "Scaduta — ",
+    duePrefix: "Scade",
+    ownerLabel: "Owner:",
+    relToday: "oggi",
+    relTomorrow: "domani",
+    relYesterday: "ieri",
+    relInPrefix: "tra",
+    relDaysSuffix: "giorni",
+    relDaysAgo: "giorni fa",
+  },
+
 };
 
 export default it;
