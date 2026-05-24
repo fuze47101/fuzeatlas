@@ -7561,6 +7561,29 @@ const ms: Translations = {
     errServerUnreachable: "Tidak dapat mencapai pelayan",
   },
 
+  educationStory: {
+    backLink: "← Kembali ke Asas FUZE",
+    kicker: "Kisah FUZE",
+    heroTitle: "Daripada elektronik kitar semula kepada antimikrob kekal",
+    heroBody: "FUZE metamaterial dihasilkan melalui ablasi laser cecair: laser 30-amp, meja pengeluaran 1m², dan bahan suapan elektronik kitar semula. Keseluruhan sel pengeluaran boleh dikuasakan oleh solar. Kami bukan sahaja antimikrob — kami adalah operasi peningkatan kitar e-sisa yang berakhir dalam fabrik anda.",
+    card1Title: "Bahan suapan kitar semula",
+    card1Body: "Setiap gram agen aktif FUZE berasal daripada logam berharga elemen yang dipulihkan daripada elektronik akhir hayat. Kami tidak melombong. Kami tidak menapis bahan dara. Kami menarik logam yang sebaliknya akan duduk di tapak pelupusan atau dibakar.",
+    card2Title: "Ablasi laser cecair",
+    card2Body: "Denyutan laser 30-amp menyejat bahan suapan logam yang direndam dalam air DI 99.998% ultratulen 18-megaohm. Apa yang terpeluwap keluar ialah FUZE metamaterial — allotrope elemen ketumpatan tinggi, 20 ppm dalam kepekatan stok yang dihantar. Tiada pelarut. Tiada kimia pendahulu. Tiada surfaktan.",
+    card3Title: "Pengeluaran berkeupayaan solar",
+    card3Body: "Sel pengeluaran 1m² berjalan pada kira-kira elektrik yang dihasilkan oleh tatasusunan solar kediaman pada hari cerah. Jenama yang komited kepada FUZE adalah komited kepada rantaian bekalan antimikrob yang boleh mencapai sifar-bersih pada langkah pengeluaran — sesuatu yang tiada pesaing ion logam / zink / QAC boleh tuntut.",
+    esgTitle: "Apa ini bermakna dalam laporan ESG anda",
+    esgBullet1: "✓ Tuntutan bahan suapan kitaran — FUZE dihasilkan daripada elektronik akhir hayat, menyokong komitmen ekonomi kitaran anda.",
+    esgBullet2: "✓ Pengeluaran berkeupayaan sifar-bersih — sel pengeluaran serasi solar. Pasangkan dengan kontrak bekalan boleh diperbaharui dan langkah antimikrob menyumbang sifar pelepasan skop-2.",
+    esgBullet3: "✓ Sifar sumbangan perlombongan dara — tiada penyelarasan diperlukan dengan rantaian bekalan mineral konflik atau berasaskan perlombongan.",
+    esgBullet4: "✓ PFAS-free, bebas formaldehid, bebas pengikat, bebas relau pengawetan — setiap input petrokimia yang diperlukan oleh saingan, FUZE menghapuskannya.",
+    esgBullet5: "✓ Kebersihan air didokumenkan — FUZE meresap apa-apa ke dalam air basuh. Sumbangan hiliran anda kepada beban rawatan air perbandaran = 0.",
+    differentTitle: "Syarikat antimikrob yang berbeza",
+    differentBody: "Kebanyakan syarikat antimikrob tekstil adalah syarikat kimia. Mereka mencampur, mencairkan, memformulasi, dan menghantar drum kimia tersintesis ke kilang. Kami adalah operasi sains bahan: kami mengabasi logam dalam air dan menghantar hasilnya. Kesederhanaan adalah pembeza. Kurang kimia pada fabrik. Kurang kimia dalam air basuh. Kurang kimia dalam baris pengeluaran. Kurang kimia dalam laporan ESG anda.",
+    backBasicsBtn: "Kembali ke Asas FUZE",
+    seeSustainabilityBtn: "Lihat impak kemampanan",
+  },
+
 };
 
 export default ms;
