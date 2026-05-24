@@ -6290,6 +6290,38 @@ const zhTW: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "測試目錄與定價",
+    subtitle: "管理測試類型、定價、週轉時間與樣品要求。變更會立即反映在工廠測試請求表單上。",
+    sourcePrefix: "來源:",
+    sourceDb: "資料庫 (管理員維護)",
+    sourceStatic: "靜態預設值",
+    successMsg: "測試更新成功",
+    failedSave: "儲存失敗",
+    networkErr: "網路錯誤",
+    colTestName: "測試名稱",
+    colCategory: "類別",
+    colPrice: "價格 (USD)",
+    colTurnaround: "週轉時間",
+    colMinSample: "最小樣品量",
+    colControl: "控制組?",
+    colActive: "啟用",
+    colActions: "操作",
+    daysSuffix: "天",
+    metersSuffix: "m",
+    yes: "是",
+    no: "否",
+    saveBtn: "儲存",
+    savingDots: "...",
+    cancelBtn: "取消",
+    editBtn: "編輯",
+    catRecipeBuild: "配方建立",
+    catPerformance: "效能",
+    catQuality: "品質",
+    catCertification: "認證",
+    lastUpdatedTpl: "最後由 {who} 於 {when} 更新",
+  },
+
 };
 
 export default zhTW;
