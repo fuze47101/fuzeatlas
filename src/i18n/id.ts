@@ -2702,6 +2702,26 @@ const id: Translations = {
     openProfile: "Buka Profil",
   },
 
+  labCreditsAdmin: {
+    loading: "Memuat…",
+    crumbLabs: "Lab",
+    crumbCredits: "Kredit",
+    creditsSuffix: "kredit",
+    balanceLabel: "Saldo FUZE dengan lab ini",
+    balanceHint: "Otomatis dipotong dari pengujian berbayar FUZE di masa depan di lab ini.",
+    addCreditTitle: "Tambah kredit",
+    amountPlaceholder: "$ jumlah",
+    sourceNotePlaceholder: "catatan sumber",
+    addCreditBtn: "Tambah kredit",
+    colCreated: "Dibuat",
+    colAmount: "Jumlah",
+    colSource: "Sumber",
+    colNote: "Catatan",
+    colSpent: "Terpakai",
+    availableLabel: "tersedia",
+    emptyState: "Belum ada kredit.",
+  },
+
 };
 
 export default id;
