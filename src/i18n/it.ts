@@ -4537,6 +4537,23 @@ const it: Translations = {
     nameRequiredError: "Il nome è obbligatorio",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← Torna al calcolatore",
+    printButton: "🖨 Stampa / Salva come PDF",
+    eyebrow: "FUZE Biotech · SOP laboratorio",
+    pageTitle: "Procedura bench test",
+    pageSubtitle: "Calcolatore di ricette FUZE — Tasso di pickup pad-dry-cure e diluizione",
+    docLabel: "Doc: SOP-FUZE-LAB-001",
+    revLabel: "Rev: 1.0 ·",
+    purposeHeader: "Scopo",
+    equipmentHeader: "Attrezzatura",
+    chemistryRefHeader: "Riferimento chimica FUZE",
+    criticalRulesHeader: "⚠ Regole critiche di protocollo",
+    procedureHeader: "Procedura",
+    formulasHeader: "Formule (per verifica QC)",
+    sanityRangesHeader: "Intervalli di verifica di coerenza",
+  },
+
 };
 
 export default it;
