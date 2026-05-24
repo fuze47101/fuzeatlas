@@ -7503,6 +7503,29 @@ const ta: Translations = {
     bookAnotherBtn: "மற்றொரு சந்திப்பை பதிவு செய்",
   },
 
+  adminAuditLog: {
+    adminCrumb: "நிர்வாகம்",
+    crumb: "தணிக்கை பதிவு",
+    heading: "தணிக்கை பதிவு",
+    subtitle: "ஒவ்வொரு entity முழுவதும் முழு audit trail. Action, entity, அல்லது தேதி மூலம் வடிகட்டு. 90-நாள் retention.",
+    errorContext: "தணிக்கை பதிவை ஏற்று",
+    couldntLoadPrefix: "தணிக்கை பதிவை ஏற்ற முடியவில்லை",
+    networkError: "தணிக்கை பதிவை ஏற்றும்போது நெட்வொர்க் பிழை.",
+    actionLabel: "செயல்",
+    allActionsOption: "அனைத்து செயல்கள்",
+    entityLabel: "Entity",
+    allEntitiesOption: "அனைத்து entities",
+    sinceLabel: "இலிருந்து",
+    resetBtn: "மீட்டமை",
+    rowsSuffix: "வரிசைகள்",
+    loadingState: "தணிக்கை பதிவு ஏற்றுகிறது…",
+    emptyState: "இந்த வடிகட்டிகளுக்கு பொருந்தும் audit வரிசைகள் இல்லை.",
+    byPrefix: "by",
+    systemActor: "கணினி",
+    fieldChangedSingular: "field மாற்றப்பட்டது",
+    fieldChangedPlural: "fields மாற்றப்பட்டன",
+  },
+
 };
 
 export default ta;
