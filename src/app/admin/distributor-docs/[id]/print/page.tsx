@@ -2,6 +2,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface DistDoc {
   id: string;
@@ -39,6 +40,8 @@ interface DistDoc {
  * for C of A, BOL, Commercial Invoice, etc.
  * ───────────────────────────────────────────── */
 export default function PrintDocumentPage() {
+  const { t } = useI18n();
+  const T = t.distributorDocsPrint;
   const { id } = useParams();
   const [doc, setDoc] = useState<DistDoc | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,15 +53,15 @@ export default function PrintDocumentPage() {
         const res = await fetch(`/api/admin/distributor-docs/${id}`);
         const data = await res.json();
         if (data.ok) setDoc(data.document);
-        else setError(data.error || "Failed to load document");
+        else setError(data.error || T.loadingError);
       } catch {
-        setError("Network error");
+        setError(T.networkError);
       } finally {
         setLoading(false);
       }
     };
     load();
-  }, [id]);
+  }, [id, T.loadingError, T.networkError]);
 
   if (loading) {
     return (
@@ -71,7 +74,7 @@ export default function PrintDocumentPage() {
   if (!doc) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-red-500 font-bold">{error || "Document not found"}</p>
+        <p className="text-red-500 font-bold">{error || T.documentNotFound}</p>
       </div>
     );
   }
@@ -102,7 +105,7 @@ export default function PrintDocumentPage() {
       {/* Print controls — hidden when printing */}
       <div className="print:hidden fixed top-0 left-0 right-0 bg-slate-800 text-white px-6 py-3 flex items-center justify-between z-50">
         <div className="flex items-center gap-3">
-          <span className="font-bold text-sm">FUZE Atlas — Document Preview</span>
+          <span className="font-bold text-sm">{T.previewBanner}</span>
           <span className="text-slate-400 text-xs">{doc.title}</span>
         </div>
         <div className="flex gap-3">
@@ -110,13 +113,13 @@ export default function PrintDocumentPage() {
             onClick={() => window.print()}
             className="px-4 py-1.5 bg-[#00b4c3] text-white rounded-lg font-semibold text-sm hover:bg-[#009ba8]"
           >
-            Print / Save PDF
+            {T.printSavePdf}
           </button>
           <button
             onClick={() => window.close()}
             className="px-4 py-1.5 bg-slate-600 text-white rounded-lg text-sm hover:bg-slate-500"
           >
-            Close
+            {T.close}
           </button>
         </div>
       </div>

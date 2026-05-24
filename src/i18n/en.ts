@@ -5109,6 +5109,17 @@ const en = {
     backButton: "← Back",
     nextButton: "Next →",
   },
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — Document Preview",
+    printSavePdf: "Print / Save PDF",
+    close: "Close",
+    documentNotFound: "Document not found",
+    loadingError: "Failed to load document",
+    networkError: "Network error",
+    docNumberLabel: "Document #:",
+    confidentialFooter: "FUZE Biotech Inc. — Confidential",
+    generatedTemplate: "Generated:",
+  },
 };
 
 export default en;
