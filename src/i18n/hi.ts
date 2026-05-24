@@ -5784,6 +5784,50 @@ const hi: Translations = {
     emptyTpl: "अभी कोई टेम्पलेट नहीं। अपना पहला बनाने के लिए + नया टेम्पलेट क्लिक करें।",
   },
 
+  pipelineUserPage: {
+    loading: "पाइपलाइन लोड हो रही है...",
+    pageTitle: "राजस्व पाइपलाइन",
+    pageSubtitle: "विकास से उत्पादन तक डील ट्रैक करें",
+    btnNewDeal: "+ नया डील",
+
+    kpiTotalPipeline: "कुल पाइपलाइन",
+    kpiTotalPipelineSubTpl: "{n} डील",
+    kpiWeighted: "भारित पूर्वानुमान",
+    kpiWeightedSub: "संभावना-समायोजित",
+    kpiActual: "वास्तविक राजस्व",
+    kpiActualSub: "चालान और भुगतान",
+    kpiConversion: "रूपांतरण",
+    kpiConversionSub: "वास्तविक / पाइपलाइन",
+
+    cardProdPrefix: "उत्पादन:",
+    emptyDeals: "कोई डील नहीं",
+    weightedPrefix: "· भारित:",
+
+    editTitlePrefix: "प्रोजेक्ट संपादित करें:",
+    fieldName: "प्रोजेक्ट का नाम",
+    fieldStage: "चरण",
+    keepCurrent: "वर्तमान रखें",
+    fieldBrand: "ब्रांड",
+    fieldNone: "कोई नहीं",
+    fieldProjectedValue: "अनुमानित मूल्य ($)",
+    fieldProbability: "संभावना (%)",
+    fieldFuzeTier: "FUZE टियर",
+    fieldAnnualVolume: "वार्षिक मात्रा (m)",
+    fieldFactory: "कारखाना",
+    fieldDistributor: "वितरक",
+    autoFromFactory: "कारखाने से स्वतः",
+    fieldExpectedProd: "अपेक्षित उत्पादन",
+    fieldActualProd: "वास्तविक उत्पादन",
+    btnSaveChanges: "परिवर्तन सहेजें",
+    btnSaving: "सहेज रहे हैं...",
+    btnCancel: "रद्द करें",
+
+    newDealTitle: "नया डील",
+    newDealPlaceholder: "प्रोजेक्ट / डील नाम...",
+    btnCreate: "बनाएं",
+    btnCreating: "बना रहे हैं...",
+  },
+
 };
 
 export default hi;
