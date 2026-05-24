@@ -5141,6 +5141,81 @@ const zhCN: Translations = {
     docTypeOther: "其他",
   },
 
+  consumptionAdmin: {
+    loading: "正在加载消耗数据...",
+    pageTitle: "消耗与补货",
+    pageSubtitle: "跟踪工厂 FUZE 使用量、预计耗尽日期及自动补货触发",
+
+    btnNewOrder: "+ 新订单",
+    btnLogUsage: "+ 记录用量",
+
+    kpiActiveFactories: "活跃工厂",
+    kpiOfTotal: "共 {n} 家",
+    kpiTotalOrdered: "累计订购",
+    kpiPending: "待处理 {n}",
+    kpiTotalConsumed: "累计消耗",
+    kpiAcrossAll: "所有工厂",
+    kpiReorderAlerts: "补货警报",
+    kpiAlertsSplit: "{c} 严重,{w} 警告",
+
+    annualDemandLabel: "年度预计需求",
+    annualDemandUnit: "升",
+    annualDemandBottles: "约 {n} 瓶",
+    annualDemandRevenue: "约 ${n} 收入",
+
+    sectionFactoryInventory: "工厂库存状态",
+    emptyTitle: "暂无已启用 FUZE 的工厂。",
+    emptySub: "fuzeEnabled = true 的工厂将显示在此处。",
+
+    cellRemaining: "剩余",
+    cellBurn: "日耗",
+    cellRunOut: "耗尽",
+    daysSuffix: "天",
+    daysWord: "天",
+    fabricsSuffix: "种面料",
+    fabricSuffix: "种面料",
+    activeOrdersSuffix: "活跃订单",
+    activeOrderSuffix: "活跃订单",
+
+    colFactory: "工厂",
+    colCountry: "国家/地区",
+    colOrdered: "已订购",
+    colConsumed: "已消耗",
+    colRemaining: "剩余",
+    colBurnDay: "日耗量",
+    colRunOut: "耗尽",
+    colStatus: "状态",
+
+    modalOrderTitle: "新建 FUZE 订单",
+    modalUsageTitle: "记录 FUZE 用量",
+    fieldFactory: "工厂",
+    placeholderFactory: "选择工厂...",
+    fieldVolumeL: "体积(升)",
+    fieldTier: "等级",
+    fieldNotes: "备注",
+    fieldLitersUsed: "已用升数",
+    fieldMetersProcessed: "处理米数",
+    placeholderOptional: "可选",
+    fieldMethod: "方法",
+    placeholderSelect: "选择...",
+    methodExhaust: "浸染(染浴)",
+    methodPad: "轧染-烘干-焙烘",
+    methodSpray: "喷涂",
+
+    summaryBottles: "瓶数(每瓶 19L):",
+    summaryEstTotal: "估算总价:",
+
+    btnCancel: "取消",
+    btnCreating: "创建中...",
+    btnCreateOrder: "创建订单",
+    btnLogging: "记录中...",
+    btnLogUsageSubmit: "记录用量",
+
+    errorCreateOrder: "创建订单失败",
+    errorLogUsage: "记录消耗失败",
+    errorNetwork: "网络错误",
+  },
+
 };
 
 export default zhCN;
