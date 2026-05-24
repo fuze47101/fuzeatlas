@@ -7893,6 +7893,25 @@ const ko: Translations = {
     footerPrefix: "FUZE Atlas API 문서 - 마지막 업데이트",
   },
 
+  recipeSearch: {
+    heading: "레시피 검색",
+    subtitle: "네트워크 전반의 FUZE 레시피 라이브러리. Atlas의 모든 검증된 원단에서 검색하십시오 — 작업 중인 것과 검증된 레시피를 매칭하십시오, 원단이 귀사의 것이 아닐 때도. 범위 외 행은 익명화되지만 레시피 물리는 표시됩니다.",
+    keywordPlaceholder: "키워드 (면, 저지, 트윌...)",
+    anyCategory: "모든 카테고리",
+    knit: "편직",
+    woven: "직조",
+    nonwoven: "부직포",
+    fiberPlaceholder: "섬유 (면, 폴리...)",
+    gsmMinPlaceholder: "GSM 최소",
+    gsmMaxPlaceholder: "GSM 최대",
+    anyTier: "모든 등급",
+    onlyValidatedLabel: "측정된 픽업이 있는 원단만 표시 (검증된 벤치 시험)",
+    searchingBtn: "검색 중...",
+    searchBtn: "검색",
+    emptyTitle: "아직 일치하는 레시피가 없습니다.",
+    emptyBody: "필터를 넓혀 보십시오 — 또는 개발 중인 원단을 보려면 \"검증된 벤치 시험\" 필터를 제거하십시오.",
+  },
+
 };
 
 export default ko;
