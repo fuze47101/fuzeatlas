@@ -7146,6 +7146,29 @@ const zhCN: Translations = {
     printedPrefix: "打印于",
   },
 
+  pressKitAdmin: {
+    title: "新闻资料包",
+    subtitle: "管理公开 /press 页面上显示的内容。切换活跃状态会隐藏一行而不删除它。",
+    addItemTitle: "添加项目",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "标题",
+    addItemBtn: "添加项目",
+    savingBtn: "保存中……",
+    allFilter: "全部",
+    colType: "类型",
+    colCaption: "标题",
+    colUrl: "URL",
+    colReleased: "发布时间",
+    colActive: "活跃",
+    activeLabel: "活跃",
+    hiddenLabel: "已隐藏",
+    deleteBtn: "删除",
+    deleteConfirmPrefix: "删除新闻资料项",
+    emptyState: "尚无新闻资料项。",
+    errUrlRequired: "需要 URL",
+    errAddFailed: "添加失败",
+  },
+
 };
 
 export default zhCN;
