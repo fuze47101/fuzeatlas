@@ -3481,6 +3481,37 @@ const id: Translations = {
     backToLeadOption: "← Kembali ke Lead",
   },
 
+  acmTasks: {
+    title: "🗓️ Tugas ACM",
+    subtitle: "Pengingat seminggu sebelumnya + sehari sebelumnya dikirim otomatis via bel + email pukul 8 pagi Taipei.",
+    tabOpen: "Terbuka",
+    tabCompleted: "Selesai",
+    onlyMine: "Hanya milik saya",
+    loading: "Memuat…",
+    overdueTitle: "Terlambat",
+    overdueSubtitle: "Sudah lewat — keluarkan dari daftar",
+    dueWeekTitle: "Jatuh tempo minggu ini",
+    dueWeekSubtitle: "7 hari ke depan",
+    upcomingTitle: "Mendatang",
+    upcomingSubtitle: "Lebih dari 7 hari",
+    completedTitle: "Selesai",
+    completedSubtitle: "200 terakhir",
+    nothingHere: "Tidak ada di sini.",
+    markDoneTitle: "Tandai selesai",
+    cancelTaskTitle: "Batalkan tugas",
+    reopenTitle: "Buka kembali",
+    highPriorityBadge: "TINGGI",
+    overdueRowPrefix: "Terlambat — ",
+    duePrefix: "Jatuh tempo",
+    ownerLabel: "Pemilik:",
+    relToday: "hari ini",
+    relTomorrow: "besok",
+    relYesterday: "kemarin",
+    relInPrefix: "dalam",
+    relDaysSuffix: "hari",
+    relDaysAgo: "hari yang lalu",
+  },
+
 };
 
 export default id;
