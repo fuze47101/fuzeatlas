@@ -4476,6 +4476,18 @@ const th: Translations = {
     nextButton: "ถัดไป →",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — ตัวอย่างเอกสาร",
+    printSavePdf: "พิมพ์ / บันทึก PDF",
+    close: "ปิด",
+    documentNotFound: "ไม่พบเอกสาร",
+    loadingError: "ไม่สามารถโหลดเอกสารได้",
+    networkError: "ข้อผิดพลาดเครือข่าย",
+    docNumberLabel: "หมายเลขเอกสาร:",
+    confidentialFooter: "FUZE Biotech Inc. — ข้อมูลลับ",
+    generatedTemplate: "สร้างเมื่อ:",
+  },
+
 };
 
 export default th;
