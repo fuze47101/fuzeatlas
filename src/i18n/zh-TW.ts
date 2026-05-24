@@ -7525,6 +7525,32 @@ const zhTW: Translations = {
     errSendFailed: "傳送驗證信失敗",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "公開文件",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "FUZE 產品線之公開參考文件",
+    headerLeadAfter: "。若需私密文件（完整 TDS/SDS、內部定價、應用指引），請以您的角色登入 FUZE Atlas 入口網站。",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "毒理學",
+    catPricing: "定價",
+    catSustainability: "永續",
+    catEducation: "教育資料",
+    catClaimsCompliance: "聲明與法規",
+    catApplicationGuide: "應用指引",
+    catCaseStudy: "案例研究",
+    loading: "載入中…",
+    emptyBefore: "目前沒有公開文件可供",
+    emptyAfter: "使用。請聯繫 FUZE 取得私密資料庫權限。",
+    loginCta: "登入 Atlas →",
+    versionPrefix: "版本",
+    downloadBtn: "↓ 下載",
+    unknownLineTitle: "未知產品線",
+    unknownLineBody: "FUZE 有四個等級：F1、F2、F3、F4。請選擇其中之一。",
+    errLoadFailed: "載入失敗",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default zhTW;
