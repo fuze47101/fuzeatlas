@@ -7981,6 +7981,36 @@ const zhTW: Translations = {
     nextBtn: "下一頁",
   },
 
+  bdSequencesList: {
+    kicker: "BD 精靈",
+    heading: "序列",
+    subtitlePrefix: "長漏斗外展。定時排程每小時推進步驟。已就緒的步驟會暫存在",
+    subtitleSuffix: "供您審核——不會自動寄送。",
+    openWizardBtn: "開啟 BD 精靈 →",
+    stepAwaitingSingular: "個步驟等待您審核",
+    stepsAwaitingPlural: "個步驟等待您審核",
+    showAllRepsLabel: "顯示所有業務",
+    loadingState: "正在載入序列…",
+    emptyHeadPrefix: "沒有",
+    emptyHeadSuffix: "序列",
+    emptyBodyPrefix: "透過",
+    emptyBodyLink: "BD 精靈",
+    emptyBodySuffix: "寄出您的第一封電子郵件來啟動。每次首次寄送都會自動啟動 6 步節奏。",
+    colBrandContact: "品牌／聯絡人",
+    colProgress: "進度",
+    colNext: "下一步",
+    colRep: "業務",
+    colStatus: "狀態",
+    colActions: "動作",
+    readyChipSuffix: "個已就緒",
+    reviewSendBtn: "審核並寄送",
+    openBtn: "開啟",
+    viewBtn: "檢視",
+    pauseBtn: "暫停",
+    exitBtn: "退出",
+    resumeBtn: "恢復",
+  },
+
 };
 
 export default zhTW;
