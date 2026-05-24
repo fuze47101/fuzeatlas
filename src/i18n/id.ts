@@ -3383,6 +3383,24 @@ const id: Translations = {
     errLoadFailed: "Gagal memuat funnel",
   },
 
+  importContacts: {
+    title: "Bulk import — Kontak",
+    subtitle: "Tempel atau unggah CSV kontak. Email adalah natural key — kami upsert berdasarkan email jika ada. Baris tanpa email tetapi memiliki URL LinkedIn diimpor sebagai 'email missing' sehingga job enrichment Apollo yang ada dapat mengejarnya. Baris tanpa keduanya ditolak.",
+    backLabel: "Manajemen Lead",
+    firstNameLabel: "Nama depan",
+    lastNameLabel: "Nama belakang",
+    emailLabel: "Email",
+    emailHint: "wajib jika tidak ada URL LinkedIn",
+    linkedinLabel: "URL LinkedIn",
+    linkedinHint: "identifier fallback saat email tidak ada",
+    brandNameLabel: "Nama brand",
+    brandNameHint: "pencocokan case-insensitive pada Brand.name; tidak ditautkan jika tidak ditemukan",
+    jobTitleLabel: "Jabatan",
+    phoneLabel: "Telepon",
+    titleLabel: "Title (sapaan)",
+    titleHint: 'mis. "Bpk.", "Dr."',
+  },
+
 };
 
 export default id;
