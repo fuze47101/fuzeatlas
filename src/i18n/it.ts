@@ -6805,6 +6805,26 @@ const it: Translations = {
     emptyBias: "Nessun dato di bias finora.",
   },
 
+  labCreditsAdmin: {
+    loading: "Caricamento…",
+    crumbLabs: "Laboratori",
+    crumbCredits: "Crediti",
+    creditsSuffix: "crediti",
+    balanceLabel: "Saldo FUZE con questo laboratorio",
+    balanceHint: "Si detrae automaticamente dai futuri test pagati da FUZE in questo laboratorio.",
+    addCreditTitle: "Aggiungi credito",
+    amountPlaceholder: "$ importo",
+    sourceNotePlaceholder: "nota origine",
+    addCreditBtn: "Aggiungi credito",
+    colCreated: "Creato",
+    colAmount: "Importo",
+    colSource: "Origine",
+    colNote: "Nota",
+    colSpent: "Speso",
+    availableLabel: "disponibile",
+    emptyState: "Nessun credito finora.",
+  },
+
 };
 
 export default it;
