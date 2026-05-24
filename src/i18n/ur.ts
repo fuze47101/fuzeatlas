@@ -2589,6 +2589,37 @@ const ur: Translations = {
     factoryLabel: "فیکٹری:",
   },
 
+  verifySku: {
+    errorTitle: "اس کوڈ کی توثیق نہیں ہو سکی",
+    errorBlurb:
+      "ہمیں توثیق ڈیٹابیس تک رسائی میں مشکل پیش آئی۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔",
+    notCertifiedTitle: "FUZE سے تصدیق شدہ SKU نہیں",
+    notCertifiedBlurbPrefix: "کوڈ",
+    notCertifiedBlurbSuffix:
+      "ہماری توثیق ڈیٹابیس میں موجود نہیں ہے۔ اگر یہ کسی FUZE ہینگ ٹیگ سے آیا ہے تو براہ کرم براہ راست برانڈ سے رابطہ کریں۔",
+    whatIsFuze: "FUZE کیا ہے؟ →",
+    fuzeVerified: "FUZE تصدیق شدہ",
+    pageTitle: "اس کپڑے کا علاج FUZE سے کیا گیا ہے",
+    pageSubtitle: "اینٹی مائکروبیل ٹیکسٹائل ٹریٹمنٹ — تھرڈ پارٹی سے توثیق شدہ۔",
+    brandLabel: "برانڈ",
+    millLabel: "مل",
+    fuzeTierLabel: "FUZE ٹیئر",
+    fuzeNumberLabel: "FUZE نمبر",
+    washClaimSuffix: "دھلائی دعویٰ",
+    recentValidation: "حالیہ ترین لیب توثیق",
+    testPassed: "پاس ہوا",
+    testTypeSuffix: "ٹیسٹ —",
+    validatedByPrefix: "توثیق شدہ بذریعہ",
+    validatedByGeneric: "تھرڈ پارٹی لیب سے توثیق شدہ",
+    validatedOn: "بتاریخ",
+    reportRefPrefix: "رپورٹ حوالہ:",
+    certifications: "FUZE سرٹیفکیشنز",
+    aboutBody:
+      "FUZE، FUZE Biotech کا ملکیتی اینٹی مائکروبیل ٹیکسٹائل ٹریٹمنٹ ہے۔ یہ میٹا میٹیریل کیمسٹری استعمال کرتا ہے جو معیاری ٹیکسٹائل فنشنگ کے دوران ریشوں سے جڑ جاتی ہے — بغیر PFAS، بغیر بائنڈرز، بغیر کیورنگ اوون کے۔",
+    learnMore: "FUZE کے بارے میں مزید جانیں →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default ur;
