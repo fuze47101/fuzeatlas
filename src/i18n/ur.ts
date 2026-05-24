@@ -7731,6 +7731,31 @@ const ur: Translations = {
     accessLaterTitle: "بعد میں اس رپورٹ تک رسائی",
   },
 
+  settingsAuditLog: {
+    title: "آڈٹ لاگ",
+    subtitle: "تمام سسٹم تبدیلیوں اور صارف کے اعمال کا سراغ لگائیں",
+    actionLabel: "عمل",
+    allActionsOption: "تمام اعمال",
+    entityTypeLabel: "ادارے کی قسم",
+    allEntitiesOption: "تمام ادارے",
+    fromDateLabel: "تاریخ سے",
+    toDateLabel: "تاریخ تک",
+    loadingText: "لوڈ ہو رہا ہے...",
+    emptyText: "کوئی آڈٹ لاگ نہیں ملا",
+    colTimestamp: "ٹائم اسٹیمپ",
+    colUser: "صارف",
+    colAction: "عمل",
+    colEntity: "ادارہ",
+    colDescription: "تفصیل",
+    systemUserFallback: "سسٹم",
+    showingPrefix: "دکھایا جا رہا ہے",
+    showingTo: "سے",
+    showingOf: "میں سے",
+    showingSuffix: "لاگز",
+    prevBtn: "پچھلا",
+    nextBtn: "اگلا",
+  },
+
 };
 
 export default ur;
