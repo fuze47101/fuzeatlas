@@ -6759,6 +6759,32 @@ const th: Translations = {
     footerQuestions: "มีคำถาม?",
   },
 
+  settingsExchangeRates: {
+    title: "อัตราแลกเปลี่ยน",
+    subtitle: "จัดการอัตราการแปลงสกุล",
+    addRateBtn: "เพิ่มอัตรา",
+    cancelBtn: "ยกเลิก",
+    addFormTitle: "เพิ่มอัตราแลกเปลี่ยน",
+    ratePlaceholder: "อัตรา",
+    submitAddBtn: "เพิ่มอัตรา",
+    converterTitle: "ตัวแปลงสกุล",
+    fromLabel: "จาก",
+    toLabel: "ถึง",
+    amountLabel: "จำนวน",
+    convertBtn: "แปลง",
+    rateResultPrefix: "อัตรา:",
+    quickStatsTitle: "สถิติด่วน",
+    totalCurrenciesLabel: "Currencies ทั้งหมด",
+    activeRatesLabel: "อัตราที่ใช้งาน",
+    currentRatesTitle: "อัตราปัจจุบัน (Base: USD)",
+    loading: "กำลังโหลด...",
+    emptyState: "ไม่มีอัตราแลกเปลี่ยนที่กำหนดค่า",
+    colCurrencyPair: "Currency Pair",
+    colRate: "อัตรา",
+    colEffectiveDate: "วันที่มีผลใช้",
+    colSource: "แหล่ง",
+  },
+
 };
 
 export default th;
