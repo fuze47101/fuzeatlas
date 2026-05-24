@@ -4391,6 +4391,18 @@ const km: Translations = {
     nextButton: "បន្ទាប់ →",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — ឯកសារ Preview",
+    printSavePdf: "បោះពុម្ព / រក្សាទុក PDF",
+    close: "បិទ",
+    documentNotFound: "ឯកសារ not found",
+    loadingError: "បរាជ័យ to load document",
+    networkError: "Network error",
+    docNumberLabel: "ឯកសារ #:",
+    confidentialFooter: "FUZE Biotech Inc. — Confidential",
+    generatedTemplate: "Generated:",
+  },
+
 };
 
 export default km;
