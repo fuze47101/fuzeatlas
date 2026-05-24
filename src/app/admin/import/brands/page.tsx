@@ -1,54 +1,60 @@
 import BulkImportWizard from "@/components/BulkImportWizard";
+import { getServerTranslations } from "@/i18n/server";
 
-export default function BulkImportBrandsPage() {
+export default async function BulkImportBrandsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ lang?: string }>;
+}) {
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).importBrands;
   return (
     <BulkImportWizard
       config={{
-        title: "Bulk import — Brands",
-        subtitle:
-          "Paste or upload a CSV of brand candidates from a trade show, list, or research dump. We'll map the columns, preview validation, and write idempotently through the same seed-brand helper the CLI uses.",
+        title: T.title,
+        subtitle: T.subtitle,
         apiPath: "/api/admin/import/brands",
         backHref: "/admin/brand-pipeline",
-        backLabel: "Brand Pipeline",
+        backLabel: T.backLabel,
         fields: [
           {
             key: "name",
-            label: "Brand name",
+            label: T.brandNameLabel,
             required: true,
-            hint: "(natural key — upsert is keyed here)",
+            hint: T.brandNameHint,
           },
           {
             key: "domain",
-            label: "Email domain",
+            label: T.domainLabel,
             required: true,
-            hint: 'e.g. "rhone.com"',
+            hint: T.domainHint,
           },
           {
             key: "repEmail",
-            label: "Primary AM email",
+            label: T.repEmailLabel,
             required: true,
-            hint: "must already exist as an Atlas user",
+            hint: T.repEmailHint,
           },
           {
             key: "tier",
-            label: "Required FUZE tier",
+            label: T.tierLabel,
             required: false,
-            hint: "F1 / F2 / F3 / F4 — defaults F2",
+            hint: T.tierHint,
           },
           {
             key: "cadenceBatches",
-            label: "ICP cadence (every N batches)",
+            label: T.cadenceLabel,
             required: false,
-            hint: "defaults 5",
+            hint: T.cadenceHint,
           },
           {
             key: "country",
-            label: "Country",
+            label: T.countryLabel,
             required: false,
           },
           {
             key: "website",
-            label: "Website",
+            label: T.websiteLabel,
             required: false,
           },
         ],
