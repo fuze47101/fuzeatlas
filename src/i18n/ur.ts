@@ -5784,6 +5784,50 @@ const ur: Translations = {
     emptyTpl: "ابھی تک کوئی ٹیمپلیٹس نہیں۔ اپنا پہلا بنانے کے لیے + نیا ٹیمپلیٹ کلک کریں۔",
   },
 
+  pipelineUserPage: {
+    loading: "پائپ لائن لوڈ ہو رہی ہے...",
+    pageTitle: "ریونیو پائپ لائن",
+    pageSubtitle: "ترقی سے پروڈکشن تک ڈیلز ٹریک کریں",
+    btnNewDeal: "+ نیا ڈیل",
+
+    kpiTotalPipeline: "کل پائپ لائن",
+    kpiTotalPipelineSubTpl: "{n} ڈیلز",
+    kpiWeighted: "ویٹڈ فورکاسٹ",
+    kpiWeightedSub: "احتمال-ایڈجسٹڈ",
+    kpiActual: "حقیقی ریونیو",
+    kpiActualSub: "انوائسڈ اور ادا شدہ",
+    kpiConversion: "کنورژن",
+    kpiConversionSub: "حقیقی / پائپ لائن",
+
+    cardProdPrefix: "پروڈ:",
+    emptyDeals: "کوئی ڈیلز نہیں",
+    weightedPrefix: "· wt:",
+
+    editTitlePrefix: "پروجیکٹ میں ترمیم:",
+    fieldName: "پروجیکٹ کا نام",
+    fieldStage: "مرحلہ",
+    keepCurrent: "موجودہ رکھیں",
+    fieldBrand: "برانڈ",
+    fieldNone: "کوئی نہیں",
+    fieldProjectedValue: "متوقع قیمت ($)",
+    fieldProbability: "احتمال (%)",
+    fieldFuzeTier: "FUZE ٹیئر",
+    fieldAnnualVolume: "سالانہ حجم (m)",
+    fieldFactory: "فیکٹری",
+    fieldDistributor: "ڈسٹریبیوٹر",
+    autoFromFactory: "فیکٹری سے خودکار",
+    fieldExpectedProd: "متوقع پروڈکشن",
+    fieldActualProd: "حقیقی پروڈکشن",
+    btnSaveChanges: "تبدیلیاں محفوظ کریں",
+    btnSaving: "محفوظ ہو رہا ہے...",
+    btnCancel: "منسوخ کریں",
+
+    newDealTitle: "نیا ڈیل",
+    newDealPlaceholder: "پروجیکٹ / ڈیل کا نام...",
+    btnCreate: "بنائیں",
+    btnCreating: "بنایا جا رہا ہے...",
+  },
+
 };
 
 export default ur;
