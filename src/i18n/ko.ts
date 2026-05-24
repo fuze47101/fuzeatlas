@@ -7756,6 +7756,32 @@ const ko: Translations = {
     emptyState: "아직 토큰이 없습니다 — 위에서 첫 배치를 발행하십시오.",
   },
 
+  bookMeetingPage: {
+    heading: "미팅 예약",
+    subtitle: "팀과의 미팅을 예약하려면 가용한 날짜와 시간을 선택하십시오.",
+    selectDateTitle: "날짜 선택",
+    availableTimesPrefix: "다음 날짜의 가용 시간:",
+    loadingSlots: "슬롯 로드 중...",
+    noSlotsBody: "이 날짜에 가용한 슬롯이 없습니다",
+    detailsTitle: "미팅 세부 정보",
+    selectDateTimeHint: "계속하려면 날짜와 시간을 선택하십시오",
+    dateTimeLabel: "날짜 및 시간",
+    meetingTitleLabel: "미팅 제목",
+    defaultTitle: "FUZE 미팅",
+    descriptionLabel: "설명 (선택)",
+    descriptionPlaceholder: "추가 세부 정보...",
+    confirmBtn: "예약 확인",
+    bookingBusy: "예약 중...",
+    bookFailedError: "미팅 예약 실패",
+    networkError: "네트워크 오류",
+    bookedTitle: "미팅 예약 완료!",
+    titleColLabel: "제목",
+    timeColLabel: "시간",
+    meetingLinkLabel: "미팅 링크",
+    openInTeams: "Teams에서 열기",
+    bookAnotherBtn: "다른 미팅 예약",
+  },
+
 };
 
 export default ko;
