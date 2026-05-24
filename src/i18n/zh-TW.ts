@@ -2843,6 +2843,37 @@ const zhTW: Translations = {
     factoryLabel: "工廠:",
   },
 
+  verifySku: {
+    errorTitle: "無法驗證此代碼",
+    errorBlurb:
+      "連線至驗證資料庫時發生問題。請稍候再試。",
+    notCertifiedTitle: "非 FUZE 認證 SKU",
+    notCertifiedBlurbPrefix: "代碼",
+    notCertifiedBlurbSuffix:
+      "未登錄於我們的驗證資料庫。若此代碼來自 FUZE 吊牌,請直接聯絡該品牌。",
+    whatIsFuze: "什麼是 FUZE? →",
+    fuzeVerified: "FUZE 已驗證",
+    pageTitle: "本布料已採用 FUZE 處理",
+    pageSubtitle: "抗菌紡織品處理 — 經第三方實驗室驗證。",
+    brandLabel: "品牌",
+    millLabel: "織造廠",
+    fuzeTierLabel: "FUZE 等級",
+    fuzeNumberLabel: "FUZE 編號",
+    washClaimSuffix: "次水洗訴求",
+    recentValidation: "最近一次實驗室驗證",
+    testPassed: "通過",
+    testTypeSuffix: "測試 —",
+    validatedByPrefix: "驗證單位:",
+    validatedByGeneric: "由第三方實驗室驗證",
+    validatedOn: "驗證日期",
+    reportRefPrefix: "報告編號:",
+    certifications: "FUZE 認證",
+    aboutBody:
+      "FUZE 是 FUZE Biotech 開發的專利抗菌紡織品處理技術。其元材料化學於標準紡織後整理製程中與纖維結合 — 無 PFAS、無黏合劑、無需烘焙固化。",
+    learnMore: "進一步了解 FUZE →",
+    footerAddress: "FUZE Biotech · 美國猶他州鹽湖城 · fuzeatlas.com",
+  },
+
 };
 
 export default zhTW;
