@@ -4488,6 +4488,19 @@ const hi: Translations = {
     generatedTemplate: "उत्पन्न:",
   },
 
+  bdWizard: {
+    homeLink: "← होम",
+    pageTitle: "BD Wizard",
+    pageSubtitle: "गाइडेड आउटबाउंड। अगला उच्चतम-विश्वास ब्रांड आपके लिए स्वतः-चुना गया।",
+    inQueueTemplate: "(कतार में {n})",
+    skipBrand: "इस ब्रांड को छोड़ें →",
+
+    setFromAddressHeader: "भेजने से पहले अपना आउटबाउंड प्रेषक: पता सेट करें",
+    setFromAddressBody: "इसके बिना, आउटबाउंड सामान्य FUZE Atlas सूचना पते से भेजा जाता है और उत्तर आपके इनबॉक्स में नहीं आएंगे।",
+    currentlyLabel: "वर्तमान में:",
+    openProfile: "प्रोफ़ाइल खोलें",
+  },
+
 };
 
 export default hi;
