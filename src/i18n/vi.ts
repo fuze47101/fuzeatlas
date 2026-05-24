@@ -7261,6 +7261,29 @@ const vi: Translations = {
     errLoadFailed: "Không tải được phân tích",
   },
 
+  orderQrLabel: {
+    orderNotFound: "Không tìm thấy đơn hàng.",
+    headerKicker: "Nhãn QR",
+    previewPublicLink: "xem trước trang công khai →",
+    brandLine: "FUZE Biotech",
+    brandLocation: "Salt Lake City, Utah USA",
+    orderLabel: "Đơn hàng",
+    scanToVerifyTitle: "Quét để xác minh",
+    scanToVerifyBody: "Mở nhãn này trên camera điện thoại để tải trạng thái lô gửi, vòng đời, SDS và COA.",
+    tierLabel: "Hạng",
+    volumeLabel: "Khối lượng",
+    bottlesSuffix: "chai",
+    methodLabel: "Phương pháp",
+    typeLabel: "Loại",
+    shipToLabel: "Giao đến",
+    forBrandLabel: "Cho thương hiệu",
+    viaDistributorLabel: "Qua nhà phân phối",
+    fabricLabel: "Vải",
+    trackingLabel: "Tracking",
+    footerTagline: "FUZE F1–F4 · xử lý kháng khuẩn metamaterial · không PFAS",
+    printedPrefix: "In ngày",
+  },
+
 };
 
 export default vi;
