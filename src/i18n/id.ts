@@ -4077,6 +4077,50 @@ const id: Translations = {
     errUpdateFailed: "pembaruan gagal",
   },
 
+  pipelineUserPage: {
+    loading: "Memuat pipeline...",
+    pageTitle: "Pipeline Pendapatan",
+    pageSubtitle: "Lacak deal dari pengembangan hingga produksi",
+    btnNewDeal: "+ Deal Baru",
+
+    kpiTotalPipeline: "Total Pipeline",
+    kpiTotalPipelineSubTpl: "{n} deal",
+    kpiWeighted: "Forecast Tertimbang",
+    kpiWeightedSub: "Disesuaikan probabilitas",
+    kpiActual: "Pendapatan Aktual",
+    kpiActualSub: "Difakturkan & dibayar",
+    kpiConversion: "Konversi",
+    kpiConversionSub: "Aktual / Pipeline",
+
+    cardProdPrefix: "Prod:",
+    emptyDeals: "Tidak ada deal",
+    weightedPrefix: "· tw:",
+
+    editTitlePrefix: "Edit Proyek:",
+    fieldName: "Nama Proyek",
+    fieldStage: "Stage",
+    keepCurrent: "Pertahankan saat ini",
+    fieldBrand: "Brand",
+    fieldNone: "Tidak ada",
+    fieldProjectedValue: "Nilai Proyeksi ($)",
+    fieldProbability: "Probabilitas (%)",
+    fieldFuzeTier: "Tier FUZE",
+    fieldAnnualVolume: "Volume Tahunan (m)",
+    fieldFactory: "Pabrik",
+    fieldDistributor: "Distributor",
+    autoFromFactory: "Otomatis dari pabrik",
+    fieldExpectedProd: "Produksi Diharapkan",
+    fieldActualProd: "Produksi Aktual",
+    btnSaveChanges: "Simpan Perubahan",
+    btnSaving: "Menyimpan...",
+    btnCancel: "Batal",
+
+    newDealTitle: "Deal Baru",
+    newDealPlaceholder: "Nama proyek / deal...",
+    btnCreate: "Buat",
+    btnCreating: "Membuat...",
+  },
+
 };
 
 export default id;
