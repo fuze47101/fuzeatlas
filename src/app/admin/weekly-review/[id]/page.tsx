@@ -18,6 +18,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 type Tone = "good" | "warn" | "bad" | "neutral";
 
@@ -98,6 +99,8 @@ function fmtDateTime(iso: string): string {
 }
 
 export default function WeeklyReviewPage() {
+  const { t } = useI18n();
+  const T = t.weeklyReviewDetail;
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [report, setReport] = useState<ReportShape | null>(null);
@@ -189,17 +192,17 @@ export default function WeeklyReviewPage() {
         <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
           <div>
             <div className={`text-xs uppercase tracking-wide ${present ? "text-slate-400" : "text-slate-500"}`}>
-              Weekly Exec Review
+              {T.eyebrow}
             </div>
             <h1 className={`text-2xl font-bold ${present ? "text-white" : "text-slate-900"}`}>
-              Week of {fmtDate(report.weekOf, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+              {T.weekOfTemplate} {fmtDate(report.weekOf, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
             </h1>
             {period && (
               <div className={`text-sm mt-0.5 ${present ? "text-slate-400" : "text-slate-500"}`}>
-                Covering {fmtDate(period.start)} → {fmtDate(period.end)}
-                {period.days !== 7 && ` · ${period.days}-day window`}
-                {" · "}Owner: {report.ownedBy.name}
-                {" · "}Generated {fmtDateTime(report.generatedAt)}
+                {T.coveringPrefix} {fmtDate(period.start)} → {fmtDate(period.end)}
+                {period.days !== 7 && ` · ${period.days}${T.daysWindowSuffix}`}
+                {" · "}{T.ownerLabel} {report.ownedBy.name}
+                {" · "}{T.generatedLabel} {fmtDateTime(report.generatedAt)}
               </div>
             )}
           </div>
@@ -208,14 +211,14 @@ export default function WeeklyReviewPage() {
               onClick={() => setPresent((x) => !x)}
               className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
             >
-              {present ? "Exit Present" : "Present"}
+              {present ? T.exitPresent : T.enterPresent}
             </button>
             <button
               onClick={refresh}
               disabled={refreshing}
               className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             >
-              {refreshing ? "Refreshing…" : "Refresh snapshot"}
+              {refreshing ? T.refreshing : T.refreshSnapshot}
             </button>
             <ShareMenu reportId={id as string} shares={shares} onChange={load} />
           </div>
@@ -248,28 +251,28 @@ export default function WeeklyReviewPage() {
         </div>
 
         {/* ─── Exec Summary (owner-editable) ───────── */}
-        <Section title="Exec summary" present={present}>
+        <Section title={T.execSummaryTitle} present={present}>
           <textarea
             className={`w-full min-h-24 rounded-md border p-3 text-sm ${present ? "bg-slate-800 border-slate-700 text-slate-100" : "bg-white border-slate-200 text-slate-900"}`}
-            placeholder="Top-line takeaway for the board. Saved on blur."
+            placeholder={T.execSummaryPlaceholder}
             value={execNoteDraft}
             onChange={(e) => setExecNoteDraft(e.target.value)}
             onBlur={saveExecNote}
           />
-          {savingExec && <div className="text-xs text-slate-400 mt-1">Saving…</div>}
+          {savingExec && <div className="text-xs text-slate-400 mt-1">{T.saving}</div>}
         </Section>
 
         {/* ─── Sales & Distribution ────────────────── */}
-        <Section title="Sales & distribution" present={present}>
+        <Section title={T.salesDistributionTitle} present={present}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <MiniStat label="Booked $" value={fmtMoney(snap.sales.bookedDollars)} sub={`${snap.sales.newOrders} orders`} present={present} />
-            <MiniStat label="Shipped $" value={fmtMoney(snap.sales.shippedDollars)} sub={`${snap.sales.shippedOrders} shipments`} present={present} />
-            <MiniStat label="Booked L" value={fmtNumber(snap.sales.bookedLiters)} sub={`${fmtNumber(snap.sales.bookedKg)} kg`} present={present} />
-            <MiniStat label="Shipped L" value={fmtNumber(snap.sales.shippedLiters)} sub={`${fmtNumber(snap.sales.shippedKg)} kg shipped`} present={present} />
+            <MiniStat label={T.bookedDollars} value={fmtMoney(snap.sales.bookedDollars)} sub={`${snap.sales.newOrders} ${T.ordersSuffix}`} present={present} />
+            <MiniStat label={T.shippedDollars} value={fmtMoney(snap.sales.shippedDollars)} sub={`${snap.sales.shippedOrders} ${T.shipmentsSuffix}`} present={present} />
+            <MiniStat label={T.bookedLiters} value={fmtNumber(snap.sales.bookedLiters)} sub={`${fmtNumber(snap.sales.bookedKg)} kg`} present={present} />
+            <MiniStat label={T.shippedLiters} value={fmtNumber(snap.sales.shippedLiters)} sub={`${fmtNumber(snap.sales.shippedKg)} ${T.kgShippedSuffix}`} present={present} />
           </div>
           {Object.keys(snap.sales.byOrderType || {}).length > 0 && (
             <div className="mt-4">
-              <div className={`text-xs font-semibold uppercase tracking-wide mb-2 ${present ? "text-slate-400" : "text-slate-500"}`}>By order type</div>
+              <div className={`text-xs font-semibold uppercase tracking-wide mb-2 ${present ? "text-slate-400" : "text-slate-500"}`}>{T.byOrderTypeLabel}</div>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(snap.sales.byOrderType).map(([k, v]: any) => (
                   <span key={k} className={`rounded-full border px-3 py-1 text-xs ${present ? "border-slate-700 bg-slate-800 text-slate-200" : "border-slate-200 bg-white text-slate-700"}`}>
@@ -282,18 +285,18 @@ export default function WeeklyReviewPage() {
         </Section>
 
         {/* ─── SOW Progress ────────────────────────── */}
-        <Section title="SOW progress" present={present}
+        <Section title={T.sowProgressTitle} present={present}
           right={
             <span className={`text-xs ${present ? "text-slate-400" : "text-slate-500"}`}>
-              {snap.sows.counts.draft} draft · {snap.sows.counts.sent} sent · {snap.sows.counts.signed} signed · {snap.sows.counts.active} active · {snap.sows.counts.complete} complete
+              {snap.sows.counts.draft} {T.sowDraft} · {snap.sows.counts.sent} {T.sowSent} · {snap.sows.counts.signed} {T.sowSigned} · {snap.sows.counts.active} {T.sowActive} · {snap.sows.counts.complete} {T.sowComplete}
             </span>
           }
         >
           <div className="grid lg:grid-cols-2 gap-4">
-            <SowList title="Signed this window" rows={snap.sows.signed} present={present} emptyLabel="No new signatures this window." />
-            <SowList title="Newly opened" rows={snap.sows.new} present={present} emptyLabel="No SOWs opened this window." />
-            <SowList title="Active" rows={snap.sows.active} present={present} emptyLabel="No active SOWs." />
-            <SowList title="Stale (>30d no movement)" rows={snap.sows.stale} present={present} tone="warn" emptyLabel="Nothing stuck." />
+            <SowList title={T.sowSignedThisWindow} rows={snap.sows.signed} present={present} emptyLabel={T.sowEmptyNoSignatures} />
+            <SowList title={T.sowNewlyOpened} rows={snap.sows.new} present={present} emptyLabel={T.sowEmptyNoOpened} />
+            <SowList title={T.sowActiveTitle} rows={snap.sows.active} present={present} emptyLabel={T.sowEmptyNoActive} />
+            <SowList title={T.sowStale} rows={snap.sows.stale} present={present} tone="warn" emptyLabel={T.sowEmptyNothingStuck} />
           </div>
         </Section>
 
