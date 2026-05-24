@@ -6329,6 +6329,38 @@ const tr: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "Test Kataloğu ve Fiyatlandırma",
+    subtitle: "Test türlerini, fiyatlandırmayı, geri dönüş sürelerini ve numune gereksinimlerini yönetin. Değişiklikler fabrika test talebi formunda anında yansıtılır.",
+    sourcePrefix: "Kaynak:",
+    sourceDb: "Veritabanı (yönetici tarafından yönetilen)",
+    sourceStatic: "Statik varsayılanlar",
+    successMsg: "Test başarıyla güncellendi",
+    failedSave: "Kaydedilemedi",
+    networkErr: "Ağ hatası",
+    colTestName: "Test Adı",
+    colCategory: "Kategori",
+    colPrice: "Fiyat (USD)",
+    colTurnaround: "Geri Dönüş",
+    colMinSample: "Min. Numune",
+    colControl: "Kontrol?",
+    colActive: "Aktif",
+    colActions: "İşlemler",
+    daysSuffix: "gün",
+    metersSuffix: "m",
+    yes: "Evet",
+    no: "Hayır",
+    saveBtn: "Kaydet",
+    savingDots: "...",
+    cancelBtn: "İptal",
+    editBtn: "Düzenle",
+    catRecipeBuild: "Reçete Oluşturma",
+    catPerformance: "Performans",
+    catQuality: "Kalite",
+    catCertification: "Sertifikasyon",
+    lastUpdatedTpl: "Son güncelleyen {who}, tarih: {when}",
+  },
+
 };
 
 export default tr;
