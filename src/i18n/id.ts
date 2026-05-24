@@ -3228,6 +3228,24 @@ const id: Translations = {
     websiteLabel: "Website",
   },
 
+  importBrands: {
+    title: "Bulk import — Brand",
+    subtitle: "Tempel atau unggah CSV kandidat brand dari trade show, daftar, atau dump riset. Kami akan memetakan kolom, pratinjau validasi, dan menulis idempoten melalui helper seed-brand yang sama yang digunakan CLI.",
+    backLabel: "Pipeline Brand",
+    brandNameLabel: "Nama brand",
+    brandNameHint: "(natural key — upsert dikunci di sini)",
+    domainLabel: "Domain email",
+    domainHint: 'mis. "rhone.com"',
+    repEmailLabel: "Email AM utama",
+    repEmailHint: "harus sudah ada sebagai pengguna Atlas",
+    tierLabel: "Tier FUZE yang dibutuhkan",
+    tierHint: "F1 / F2 / F3 / F4 — default F2",
+    cadenceLabel: "Cadence ICP (setiap N batch)",
+    cadenceHint: "default 5",
+    countryLabel: "Negara",
+    websiteLabel: "Website",
+  },
+
 };
 
 export default id;
