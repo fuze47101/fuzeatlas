@@ -7727,6 +7727,36 @@ const th: Translations = {
     nextBtn: "ถัดไป",
   },
 
+  bdSequencesList: {
+    kicker: "BD Wizard",
+    heading: "Sequences",
+    subtitlePrefix: "Long-funnel outbound Cron เลื่อนขั้นรายชั่วโมง ขั้นที่พร้อมจอดอยู่บน",
+    subtitleSuffix: "สำหรับการตรวจสอบของคุณ — ไม่มีการส่งอัตโนมัติ",
+    openWizardBtn: "เปิด BD Wizard →",
+    stepAwaitingSingular: "ขั้นรอการตรวจสอบของคุณ",
+    stepsAwaitingPlural: "ขั้นรอการตรวจสอบของคุณ",
+    showAllRepsLabel: "แสดงตัวแทนทั้งหมด",
+    loadingState: "กำลังโหลด sequences…",
+    emptyHeadPrefix: "ไม่มี",
+    emptyHeadSuffix: "sequences",
+    emptyBodyPrefix: "เริ่มอันหนึ่งโดยส่งอีเมลแรกผ่าน",
+    emptyBodyLink: "BD Wizard",
+    emptyBodySuffix: ". ทุกการส่งครั้งแรกหมุน cadence 6 ขั้นโดยอัตโนมัติ",
+    colBrandContact: "แบรนด์ / ผู้ติดต่อ",
+    colProgress: "ความคืบหน้า",
+    colNext: "ถัดไป",
+    colRep: "ตัวแทน",
+    colStatus: "สถานะ",
+    colActions: "การกระทำ",
+    readyChipSuffix: "พร้อม",
+    reviewSendBtn: "ตรวจสอบ & ส่ง",
+    openBtn: "เปิด",
+    viewBtn: "ดู",
+    pauseBtn: "หยุดชั่วคราว",
+    exitBtn: "ออก",
+    resumeBtn: "ดำเนินต่อ",
+  },
+
 };
 
 export default th;
