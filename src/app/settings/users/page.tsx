@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, Fragment } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface UserRecord {
   id: string;
@@ -64,6 +65,8 @@ const NEEDS_DISTRIBUTOR = ["DISTRIBUTOR_USER"];
 const NEEDS_LAB = ["LAB_USER"];
 
 export default function UserManagementPage() {
+  const { t } = useI18n();
+  const T = t.settingsUsers;
   const { user: currentUser } = useAuth();
   const router = useRouter();
 
@@ -194,10 +197,10 @@ export default function UserManagementPage() {
         setNewLabId("");
         fetchUsers();
       } else {
-        setFormError(data.error || "Failed to create user");
+        setFormError(data.error || T.failedCreate);
       }
     } catch {
-      setFormError("Network error");
+      setFormError(T.networkError);
     }
     setSaving(false);
   };
@@ -259,10 +262,10 @@ export default function UserManagementPage() {
         setEditError(null);
         fetchUsers();
       } else {
-        setEditError(data.error || "Failed to update user");
+        setEditError(data.error || T.failedUpdate);
       }
     } catch (e: any) {
-      setEditError(e?.message || "Network error");
+      setEditError(e?.message || T.networkError);
     }
     setSaving(false);
   };
@@ -282,10 +285,10 @@ export default function UserManagementPage() {
         setActionDropdownOpen(null);
         fetchUsers();
       } else {
-        alert(data.error || "Failed to update BD claim permission");
+        alert(data.error || T.failedBDPermission);
       }
     } catch {
-      alert("Network error");
+      alert(T.networkError);
     }
   };
 
@@ -331,17 +334,17 @@ export default function UserManagementPage() {
           fetchUsers();
         }
       } else {
-        alert(data.error || "Action failed");
+        alert(data.error || T.actionFailed);
       }
     } catch (e: any) {
-      alert(e.message || "Network error");
+      alert(e.message || T.networkError);
     }
   };
 
   if (loading) {
     return (
       <div className="p-6 lg:p-10 flex items-center justify-center min-h-[50vh]">
-        <p className="text-slate-400 text-sm">Loading users...</p>
+        <p className="text-slate-400 text-sm">{T.loadingUsers}</p>
       </div>
     );
   }
@@ -351,16 +354,16 @@ export default function UserManagementPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6 gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">User Management</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{T.pageTitle}</h1>
           <p className="text-sm text-slate-500 mt-1">
-            {users.length} user{users.length !== 1 ? "s" : ""} registered
+            {T.usersRegisteredTemplate.replace("{count}", String(users.length)).replace("{label}", users.length !== 1 ? T.userPlural : T.userSingular)}
           </p>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
           className="px-4 py-2 bg-[#00b4c3] text-white text-sm font-medium rounded-lg hover:bg-[#009ba8] transition-colors"
         >
-          {showAdd ? "Cancel" : "+ Add User"}
+          {showAdd ? T.cancelBtn : T.addUserBtn}
         </button>
       </div>
 
@@ -384,13 +387,10 @@ export default function UserManagementPage() {
               <span className="text-xl shrink-0">⚠️</span>
               <div className="flex-1">
                 <h3 className="font-semibold text-amber-900 text-sm">
-                  {unassigned.length} active user{unassigned.length !== 1 ? "s" : ""} missing entity
-                  assignment
+                  {T.unassignedHeaderTemplate.replace("{count}", String(unassigned.length)).replace("{label}", unassigned.length !== 1 ? T.userPlural : T.userSingular)}
                 </h3>
                 <p className="text-xs text-amber-800 mt-0.5">
-                  These users have a role that requires a brand/factory/distributor/lab link, but
-                  none is set. They can sign in but their portal will be empty until you assign
-                  them.
+                  {T.unassignedBlurb}
                 </p>
                 <ul className="mt-2 space-y-1 text-xs text-amber-900">
                   {unassigned.map((u) => {
@@ -411,12 +411,12 @@ export default function UserManagementPage() {
                         <span className="px-1.5 py-0.5 bg-amber-200 rounded font-mono text-[10px]">
                           {ROLE_LABELS[u.role] || u.role}
                         </span>
-                        <span className="text-amber-700">— missing {needs}</span>
+                        <span className="text-amber-700">{T.missingLabel.replace("{entity}", needs)}</span>
                         <button
                           onClick={() => startEdit(u)}
                           className="ml-auto text-blue-700 hover:underline text-xs font-semibold"
                         >
-                          Fix →
+                          {T.fixBtn}
                         </button>
                       </li>
                     );
@@ -431,7 +431,7 @@ export default function UserManagementPage() {
       {/* Add User Form */}
       {showAdd && (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Add New User</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">{T.addFormTitle}</h3>
           {formError && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
               {formError}
@@ -439,7 +439,7 @@ export default function UserManagementPage() {
           )}
           <form onSubmit={handleAddUser} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{T.nameLabel}</label>
               <input
                 type="text"
                 value={newName}
@@ -449,7 +449,7 @@ export default function UserManagementPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{T.emailLabel}</label>
               <input
                 type="email"
                 value={newEmail}
@@ -459,19 +459,19 @@ export default function UserManagementPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{T.passwordLabel}</label>
               <input
                 type="text"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
-                placeholder="Minimum 6 characters"
+                placeholder={T.passwordPlaceholder}
                 required
                 minLength={6}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Role</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{T.roleLabel}</label>
               <select
                 value={newRole}
                 onChange={(e) => setNewRole(e.target.value)}
@@ -488,7 +488,7 @@ export default function UserManagementPage() {
             {NEEDS_BRAND.includes(newRole) && (
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Assign to Brand
+                  {T.assignBrand}
                 </label>
                 <select
                   value={newBrandId}
@@ -496,7 +496,7 @@ export default function UserManagementPage() {
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
                   required
                 >
-                  <option value="">— Select Brand —</option>
+                  <option value="">{T.selectBrand}</option>
                   {brands.map((b) => (
                     <option key={b.id} value={b.id}>
                       {b.name}
@@ -504,14 +504,14 @@ export default function UserManagementPage() {
                   ))}
                 </select>
                 <p className="text-xs text-slate-400 mt-1">
-                  Brand users can only see data for their assigned brand
+                  {T.brandHint}
                 </p>
               </div>
             )}
             {NEEDS_FACTORY.includes(newRole) && (
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Assign to Factory
+                  {T.assignFactory}
                 </label>
                 <select
                   value={newFactoryId}
@@ -519,7 +519,7 @@ export default function UserManagementPage() {
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
                   required
                 >
-                  <option value="">— Select Factory —</option>
+                  <option value="">{T.selectFactory}</option>
                   {factories.map((f) => (
                     <option key={f.id} value={f.id}>
                       {f.name}
@@ -531,7 +531,7 @@ export default function UserManagementPage() {
             {NEEDS_DISTRIBUTOR.includes(newRole) && (
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Assign to Distributor
+                  {T.assignDistributor}
                 </label>
                 <select
                   value={newDistributorId}
@@ -539,7 +539,7 @@ export default function UserManagementPage() {
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
                   required
                 >
-                  <option value="">— Select Distributor —</option>
+                  <option value="">{T.selectDistributor}</option>
                   {distributors.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.name}
@@ -551,7 +551,7 @@ export default function UserManagementPage() {
             {NEEDS_LAB.includes(newRole) && (
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Assign to Lab
+                  {T.assignLab}
                 </label>
                 <select
                   value={newLabId}
@@ -559,7 +559,7 @@ export default function UserManagementPage() {
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
                   required
                 >
-                  <option value="">— Select Lab —</option>
+                  <option value="">{T.selectLab}</option>
                   {labs.map((l) => (
                     <option key={l.id} value={l.id}>
                       {l.name}
@@ -567,7 +567,7 @@ export default function UserManagementPage() {
                   ))}
                 </select>
                 <p className="text-xs text-slate-400 mt-1">
-                  Lab users can upload test reports and view tests assigned to their lab
+                  {T.labHint}
                 </p>
               </div>
             )}
@@ -577,7 +577,7 @@ export default function UserManagementPage() {
                 disabled={saving}
                 className="px-6 py-2 bg-[#00b4c3] text-white text-sm font-medium rounded-lg hover:bg-[#009ba8] disabled:opacity-50"
               >
-                {saving ? "Creating..." : "Create User"}
+                {saving ? T.creating : T.createUser}
               </button>
             </div>
           </form>
@@ -599,15 +599,15 @@ export default function UserManagementPage() {
                     {u.name}
                     {u.id === currentUser?.id && (
                       <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded font-medium">
-                        You
+                        {T.youBadge}
                       </span>
                     )}
                     {u.canClaim && (
                       <span
-                        title="Can claim BD leads"
+                        title={T.bdBadgeTooltip}
                         className="text-[10px] px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold"
                       >
-                        BD
+                        {T.bdBadge}
                       </span>
                     )}
                   </div>
@@ -629,7 +629,7 @@ export default function UserManagementPage() {
                   onClick={() => setActionDropdownOpen(actionDropdownOpen === u.id ? null : u.id)}
                   className="text-xs px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 min-h-[32px]"
                 >
-                  Actions ▼
+                  {T.actionsBtn}
                 </button>
                 {actionDropdownOpen === u.id && (
                   <div className="absolute right-0 bottom-full mb-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg z-50">
@@ -640,45 +640,45 @@ export default function UserManagementPage() {
                       }}
                       className="block w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 border-b border-slate-100"
                     >
-                      Edit Role/Status
+                      {T.editRoleStatus}
                     </button>
                     <button
                       onClick={() => handleOpenActionModal("reset-password", u.id, u)}
                       className="block w-full text-left px-4 py-2.5 text-sm text-amber-600 hover:bg-amber-50 border-b border-slate-100"
                     >
-                      Reset Password
+                      {T.resetPassword}
                     </button>
                     <button
                       onClick={() => handleOpenActionModal("change-role", u.id, u)}
                       className="block w-full text-left px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 border-b border-slate-100"
                     >
-                      Change Role
+                      {T.changeRole}
                     </button>
                     {u.status !== "SUSPENDED" && (
                       <button
                         onClick={() => handleOpenActionModal("suspend", u.id, u)}
                         className="block w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 border-b border-slate-100"
                       >
-                        Suspend
+                        {T.suspendAction}
                       </button>
                     )}
                     <button
                       onClick={() => handleToggleCanClaim(u.id, !u.canClaim)}
                       className="block w-full text-left px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 border-b border-slate-100"
                     >
-                      {u.canClaim ? "Revoke BD Claim" : "Grant BD Claim"}
+                      {u.canClaim ? T.revokeBDClaim : T.grantBDClaim}
                     </button>
                     <button
                       onClick={() => handleOpenActionModal("remove", u.id, u)}
                       className="block w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 border-b border-slate-100"
                     >
-                      Deactivate
+                      {T.deactivateAction}
                     </button>
                     <button
                       onClick={() => handleOpenActionModal("delete", u.id, u)}
                       className="block w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-semibold"
                     >
-                      Delete Permanently
+                      {T.deletePermanently}
                     </button>
                   </div>
                 )}
@@ -689,7 +689,7 @@ export default function UserManagementPage() {
               <div className="mt-3 pt-3 border-t border-slate-200 space-y-2">
                 {/* Name + Email editable (typo correction for Jany Lu case 2026-05-22) */}
                 <div>
-                  <label className="text-xs text-slate-500">Name</label>
+                  <label className="text-xs text-slate-500">{T.nameLabel}</label>
                   <input
                     type="text"
                     value={editName}
@@ -698,7 +698,7 @@ export default function UserManagementPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-500">Email</label>
+                  <label className="text-xs text-slate-500">{T.emailLabel}</label>
                   <input
                     type="email"
                     value={editEmail}
@@ -707,7 +707,7 @@ export default function UserManagementPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-500">Role</label>
+                  <label className="text-xs text-slate-500">{T.roleLabel}</label>
                   <select
                     value={editRole}
                     onChange={(e) => setEditRole(e.target.value)}
@@ -721,15 +721,15 @@ export default function UserManagementPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-slate-500">Status</label>
+                  <label className="text-xs text-slate-500">{T.colStatus}</label>
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value)}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
                   >
-                    <option value="ACTIVE">Active</option>
-                    <option value="INACTIVE">Inactive</option>
-                    <option value="PENDING">Pending</option>
+                    <option value="ACTIVE">{T.statusActive}</option>
+                    <option value="INACTIVE">{T.statusInactive}</option>
+                    <option value="PENDING">{T.statusPending}</option>
                   </select>
                 </div>
 
@@ -743,7 +743,7 @@ export default function UserManagementPage() {
                       onChange={(e) => setEditBrandId(e.target.value)}
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
                     >
-                      <option value="">— pick a brand —</option>
+                      <option value="">{T.pickBrand}</option>
                       {brands.map((b) => (
                         <option key={b.id} value={b.id}>{b.name}</option>
                       ))}
@@ -758,7 +758,7 @@ export default function UserManagementPage() {
                       onChange={(e) => setEditFactoryId(e.target.value)}
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
                     >
-                      <option value="">— pick a factory —</option>
+                      <option value="">{T.pickFactory}</option>
                       {factories.map((f) => (
                         <option key={f.id} value={f.id}>{f.name}</option>
                       ))}
@@ -773,7 +773,7 @@ export default function UserManagementPage() {
                       onChange={(e) => setEditDistributorId(e.target.value)}
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
                     >
-                      <option value="">— pick a distributor —</option>
+                      <option value="">{T.pickDistributor}</option>
                       {distributors.map((d) => (
                         <option key={d.id} value={d.id}>{d.name}</option>
                       ))}
@@ -788,7 +788,7 @@ export default function UserManagementPage() {
                       onChange={(e) => setEditLabId(e.target.value)}
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mt-1"
                     >
-                      <option value="">— pick a lab —</option>
+                      <option value="">{T.pickLab}</option>
                       {labs.map((l) => (
                         <option key={l.id} value={l.id}>{l.name}</option>
                       ))}
@@ -808,13 +808,13 @@ export default function UserManagementPage() {
                     disabled={saving}
                     className="flex-1 text-sm px-3 py-2 bg-[#00b4c3] text-white rounded-lg hover:bg-[#009ba8]"
                   >
-                    Save
+                    {T.saveBtn}
                   </button>
                   <button
                     onClick={() => setEditingId(null)}
                     className="flex-1 text-sm px-3 py-2 bg-slate-200 text-slate-600 rounded-lg hover:bg-slate-300"
                   >
-                    Cancel
+                    {T.cancelBtn}
                   </button>
                 </div>
               </div>
@@ -830,19 +830,19 @@ export default function UserManagementPage() {
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">
-                  Name
+                  {T.colName}
                 </th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase hidden lg:table-cell">
-                  Email
+                  {T.colEmail}
                 </th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">
-                  Role
+                  {T.colRole}
                 </th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">
-                  Status
+                  {T.colStatus}
                 </th>
                 <th className="text-right px-4 py-3 text-xs font-semibold text-slate-500 uppercase">
-                  Actions
+                  {T.colActions}
                 </th>
               </tr>
             </thead>
@@ -859,15 +859,15 @@ export default function UserManagementPage() {
                         <span className="text-sm font-medium text-slate-900">{u.name}</span>
                         {u.id === currentUser?.id && (
                           <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded font-medium ml-1">
-                            You
+                            {T.youBadge}
                           </span>
                         )}
                         {u.canClaim && (
                           <span
-                            title="Can claim BD leads"
+                            title={T.bdBadgeTooltip}
                             className="text-[10px] px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold ml-1"
                           >
-                            BD
+                            {T.bdBadge}
                           </span>
                         )}
                         <div className="text-xs text-slate-400 lg:hidden truncate">{u.email}</div>
@@ -881,7 +881,7 @@ export default function UserManagementPage() {
                         value={editEmail}
                         onChange={(e) => setEditEmail(e.target.value)}
                         className="border border-slate-300 rounded px-2 py-1 text-xs w-full font-mono"
-                        placeholder="email@example.com"
+                        placeholder={T.inlineEmailPlaceholder}
                       />
                     ) : (
                       u.email
@@ -933,13 +933,13 @@ export default function UserManagementPage() {
                           disabled={saving}
                           className="text-xs px-3 py-1 bg-[#00b4c3] text-white rounded hover:bg-[#009ba8]"
                         >
-                          Save
+                          {T.saveBtn}
                         </button>
                         <button
                           onClick={() => setEditingId(null)}
                           className="text-xs px-3 py-1 bg-slate-200 text-slate-600 rounded hover:bg-slate-300"
                         >
-                          Cancel
+                          {T.cancelBtn}
                         </button>
                       </div>
                     ) : (
@@ -950,7 +950,7 @@ export default function UserManagementPage() {
                           }
                           className="text-xs px-3 py-1 bg-slate-100 text-slate-600 rounded hover:bg-slate-200"
                         >
-                          Actions ▼
+                          {T.actionsBtn}
                         </button>
                         {actionDropdownOpen === u.id && (
                           <div className="absolute right-0 mt-1 w-44 bg-white border border-slate-200 rounded-lg shadow-lg z-50">
@@ -961,26 +961,26 @@ export default function UserManagementPage() {
                               }}
                               className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 border-b border-slate-100"
                             >
-                              Edit Role/Status
+                              {T.editRoleStatus}
                             </button>
                             <button
                               onClick={() => handleOpenActionModal("reset-password", u.id, u)}
                               className="block w-full text-left px-4 py-2 text-xs text-amber-600 hover:bg-amber-50 border-b border-slate-100"
                             >
-                              Reset Password
+                              {T.resetPassword}
                             </button>
                             <button
                               onClick={() => handleOpenActionModal("change-role", u.id, u)}
                               className="block w-full text-left px-4 py-2 text-xs text-blue-600 hover:bg-blue-50 border-b border-slate-100"
                             >
-                              Change Role
+                              {T.changeRole}
                             </button>
                             {u.status !== "SUSPENDED" && (
                               <button
                                 onClick={() => handleOpenActionModal("suspend", u.id, u)}
                                 className="block w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 border-b border-slate-100"
                               >
-                                Suspend
+                                {T.suspendAction}
                               </button>
                             )}
                             {u.status === "SUSPENDED" && (
@@ -991,26 +991,26 @@ export default function UserManagementPage() {
                                 }}
                                 className="block w-full text-left px-4 py-2 text-xs text-green-600 hover:bg-green-50 border-b border-slate-100"
                               >
-                                Unsuspend (Activate)
+                                {T.unsuspendAction}
                               </button>
                             )}
                             <button
                               onClick={() => handleToggleCanClaim(u.id, !u.canClaim)}
                               className="block w-full text-left px-4 py-2 text-xs text-indigo-600 hover:bg-indigo-50 border-b border-slate-100"
                             >
-                              {u.canClaim ? "Revoke BD Claim" : "Grant BD Claim"}
+                              {u.canClaim ? T.revokeBDClaim : T.grantBDClaim}
                             </button>
                             <button
                               onClick={() => handleOpenActionModal("remove", u.id, u)}
                               className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 border-b border-slate-100"
                             >
-                              Deactivate
+                              {T.deactivateAction}
                             </button>
                             <button
                               onClick={() => handleOpenActionModal("delete", u.id, u)}
                               className="block w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 font-semibold"
                             >
-                              Delete Permanently
+                              {T.deletePermanently}
                             </button>
                           </div>
                         )}
@@ -1037,7 +1037,7 @@ export default function UserManagementPage() {
                               onChange={(e) => setEditBrandId(e.target.value)}
                               className="w-full border border-slate-300 rounded px-2 py-1 text-xs mt-1"
                             >
-                              <option value="">— pick a brand —</option>
+                              <option value="">{T.pickBrand}</option>
                               {brands.map((b) => (
                                 <option key={b.id} value={b.id}>{b.name}</option>
                               ))}
@@ -1052,7 +1052,7 @@ export default function UserManagementPage() {
                               onChange={(e) => setEditFactoryId(e.target.value)}
                               className="w-full border border-slate-300 rounded px-2 py-1 text-xs mt-1"
                             >
-                              <option value="">— pick a factory —</option>
+                              <option value="">{T.pickFactory}</option>
                               {factories.map((f) => (
                                 <option key={f.id} value={f.id}>{f.name}</option>
                               ))}
@@ -1067,7 +1067,7 @@ export default function UserManagementPage() {
                               onChange={(e) => setEditDistributorId(e.target.value)}
                               className="w-full border border-slate-300 rounded px-2 py-1 text-xs mt-1"
                             >
-                              <option value="">— pick a distributor —</option>
+                              <option value="">{T.pickDistributor}</option>
                               {distributors.map((d) => (
                                 <option key={d.id} value={d.id}>{d.name}</option>
                               ))}
@@ -1082,7 +1082,7 @@ export default function UserManagementPage() {
                               onChange={(e) => setEditLabId(e.target.value)}
                               className="w-full border border-slate-300 rounded px-2 py-1 text-xs mt-1"
                             >
-                              <option value="">— pick a lab —</option>
+                              <option value="">{T.pickLab}</option>
                               {labs.map((l) => (
                                 <option key={l.id} value={l.id}>{l.name}</option>
                               ))}
@@ -1112,25 +1112,25 @@ export default function UserManagementPage() {
             {/* Reset Password - Show Generated Password */}
             {modalType === "reset-password" && generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-slate-900 mb-4">Password Reset</h2>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">{T.pwResetTitle}</h2>
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
                   <p className="text-xs text-amber-700 uppercase font-semibold mb-2">
-                    New Password Generated
+                    {T.newPasswordGenerated}
                   </p>
                   <code className="block bg-white p-2 rounded border border-amber-200 text-sm font-mono text-slate-900 mb-3">
                     {generatedPassword}
                   </code>
                   <p className="text-xs text-amber-700 mb-2">
-                    Share this password with {modalUser.name}. They can change it after login.
+                    {T.sharePwHint.replace("{name}", modalUser.name)}
                   </p>
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(generatedPassword);
-                      alert("Password copied to clipboard");
+                      alert(T.pwCopied);
                     }}
                     className="text-xs px-3 py-1 bg-amber-100 text-amber-700 rounded hover:bg-amber-200 font-medium"
                   >
-                    Copy to Clipboard
+                    {T.copyToClipboard}
                   </button>
                 </div>
                 <button
@@ -1141,7 +1141,7 @@ export default function UserManagementPage() {
                   }}
                   className="w-full px-4 py-2 bg-[#00b4c3] text-white font-medium rounded-lg hover:bg-[#009ba8]"
                 >
-                  Done
+                  {T.doneBtn}
                 </button>
               </>
             )}
@@ -1149,9 +1149,9 @@ export default function UserManagementPage() {
             {/* Reset Password - Confirmation */}
             {modalType === "reset-password" && !generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-slate-900 mb-4">Reset Password</h2>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">{T.resetPwHeader}</h2>
                 <p className="text-sm text-slate-600 mb-6">
-                  Generate a new password for{" "}
+                  {T.resetPwConfirm}
                   <span className="font-semibold">{modalUser.name}</span>?
                 </p>
                 <div className="flex gap-2">
@@ -1159,13 +1159,13 @@ export default function UserManagementPage() {
                     onClick={() => setModalOpen(false)}
                     className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 font-medium rounded-lg hover:bg-slate-300"
                   >
-                    Cancel
+                    {T.cancelBtn}
                   </button>
                   <button
                     onClick={handleExecuteAction}
                     className="flex-1 px-4 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600"
                   >
-                    Reset
+                    {T.resetBtn}
                   </button>
                 </div>
               </>
@@ -1174,9 +1174,9 @@ export default function UserManagementPage() {
             {/* Change Role */}
             {modalType === "change-role" && !generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-slate-900 mb-4">Change Role</h2>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">{T.changeRoleHeader}</h2>
                 <p className="text-sm text-slate-600 mb-4">
-                  Current role:{" "}
+                  {T.currentRole}
                   <span className="font-semibold">
                     {ROLE_LABELS[modalUser.role] || modalUser.role}
                   </span>
@@ -1197,13 +1197,13 @@ export default function UserManagementPage() {
                     onClick={() => setModalOpen(false)}
                     className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 font-medium rounded-lg hover:bg-slate-300"
                   >
-                    Cancel
+                    {T.cancelBtn}
                   </button>
                   <button
                     onClick={handleExecuteAction}
                     className="flex-1 px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600"
                   >
-                    Change
+                    {T.changeBtn}
                   </button>
                 </div>
               </>
@@ -1212,23 +1212,22 @@ export default function UserManagementPage() {
             {/* Suspend */}
             {modalType === "suspend" && !generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-slate-900 mb-4">Suspend User</h2>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">{T.suspendHeader}</h2>
                 <p className="text-sm text-slate-600 mb-6">
-                  Suspend <span className="font-semibold">{modalUser.name}</span>? They will be
-                  unable to access the system.
+                  {T.suspendConfirmPre}<span className="font-semibold">{modalUser.name}</span>{T.suspendConfirmPost}
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setModalOpen(false)}
                     className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 font-medium rounded-lg hover:bg-slate-300"
                   >
-                    Cancel
+                    {T.cancelBtn}
                   </button>
                   <button
                     onClick={handleExecuteAction}
                     className="flex-1 px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600"
                   >
-                    Suspend
+                    {T.suspendAction}
                   </button>
                 </div>
               </>
@@ -1237,23 +1236,22 @@ export default function UserManagementPage() {
             {/* Remove/Deactivate */}
             {modalType === "remove" && !generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-slate-900 mb-4">Deactivate User</h2>
+                <h2 className="text-lg font-bold text-slate-900 mb-4">{T.deactivateHeader}</h2>
                 <p className="text-sm text-slate-600 mb-6">
-                  Deactivate <span className="font-semibold">{modalUser.name}</span>? They will be
-                  unable to access the system.
+                  {T.deactivateConfirmPre}<span className="font-semibold">{modalUser.name}</span>{T.deactivateConfirmPost}
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setModalOpen(false)}
                     className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 font-medium rounded-lg hover:bg-slate-300"
                   >
-                    Cancel
+                    {T.cancelBtn}
                   </button>
                   <button
                     onClick={handleExecuteAction}
                     className="flex-1 px-4 py-2 bg-slate-700 text-white font-medium rounded-lg hover:bg-slate-800"
                   >
-                    Deactivate
+                    {T.deactivateAction}
                   </button>
                 </div>
               </>
@@ -1261,28 +1259,26 @@ export default function UserManagementPage() {
 
             {modalType === "delete" && !generatedPassword && (
               <>
-                <h2 className="text-lg font-bold text-red-600 mb-4">Permanently Delete User</h2>
+                <h2 className="text-lg font-bold text-red-600 mb-4">{T.deleteHeader}</h2>
                 <p className="text-sm text-slate-600 mb-2">
-                  This will <span className="font-semibold text-red-600">permanently delete</span>{" "}
-                  <span className="font-semibold">{modalUser.name}</span> ({modalUser.email}) from
-                  the system.
+                  {T.deleteConfirmPre}<span className="font-semibold text-red-600">{T.deleteConfirmEm}</span>{" "}
+                  <span className="font-semibold">{modalUser.name}</span> ({modalUser.email}){T.deleteConfirmFromSystem}
                 </p>
                 <p className="text-sm text-red-500 mb-6">
-                  This action cannot be undone. All associated data (notifications, audit logs,
-                  notes) will also be removed.
+                  {T.deleteIrreversible}
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setModalOpen(false)}
                     className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 font-medium rounded-lg hover:bg-slate-300"
                   >
-                    Cancel
+                    {T.cancelBtn}
                   </button>
                   <button
                     onClick={handleExecuteAction}
                     className="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700"
                   >
-                    Delete Permanently
+                    {T.deletePermanently}
                   </button>
                 </div>
               </>
