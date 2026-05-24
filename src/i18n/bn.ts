@@ -5732,6 +5732,58 @@ const bn: Translations = {
     verdictUnscanned: "অস্ক্যানড",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← সেটিংস",
+    pageTitle: "ইমেল টেমপ্লেট",
+    pageSubtitle: "আউটরিচের জন্য পুনঃব্যবহারযোগ্য ইমেল স্ক্যাফোল্ড। তাৎক্ষণিকভাবে ব্যক্তিগতকরণের জন্য {firstName}, {company}, ইত্যাদি ব্যবহার করুন।",
+    btnNew: "+ নতুন টেমপ্লেট",
+    errorRequired: "শিরোনাম, বিষয় এবং বডি প্রয়োজন।",
+    errorLoadUser: "ব্যবহারকারী লোড করতে ব্যর্থ",
+    errorLoadTemplates: "টেমপ্লেট লোড করতে ব্যর্থ",
+    confirmArchive: "\"{title}\" আর্কাইভ করবেন? এটি আর পিকারে দেখাবে না।",
+
+    formHeadingEdit: "টেমপ্লেট সম্পাদনা",
+    formHeadingNew: "নতুন টেমপ্লেট",
+    labelTitle: "শিরোনাম",
+    placeholderTitle: "যেমন প্রথম-স্পর্শ পরিচয় (অ্যাথলেটিক অ্যাপারেল)",
+    labelCategory: "বিভাগ",
+    placeholderCategory: "যেমন intro, re-engage, icp-request",
+    labelScope: "স্কোপ",
+    scopePrivate: "ব্যক্তিগত (শুধু আমি)",
+    scopeShared: "ভাগ করা (পুরো দল)",
+    scopeGlobal: "গ্লোবাল (org ডিফল্ট)",
+    labelSubject: "বিষয়",
+    placeholderSubject: "হ্যালো {firstName} — {company}-এর জন্য দ্রুত FUZE পরিচয়",
+    labelBody: "বডি",
+    btnSaving: "সংরক্ষণ হচ্ছে…",
+    btnSaveChanges: "পরিবর্তন সংরক্ষণ করুন",
+    btnCreate: "টেমপ্লেট তৈরি করুন",
+    btnCancel: "বাতিল",
+
+    previewHeading: "প্রিভিউ",
+    previewHelp: "আপনার টোকেন কীভাবে রেন্ডার হয় তা দেখতে নিচের নমুনা মান সম্পাদনা করুন।",
+    previewSubjectLabel: "বিষয়",
+    previewBodyLabel: "বডি",
+
+    slotsHeading: "BD উইজার্ড দ্রুত-পিক স্লট",
+    slotsHelp: "আপনার 10টি পর্যন্ত টেমপ্লেট নম্বরযুক্ত স্লটে পিন করুন। উইজার্ডের ড্রাফট ধাপে, আপনি একটি 1–10 বোতাম স্ট্রিপ দেখবেন যা এক-ক্লিকে বিষয় এবং বডি পূরণ করে।",
+    openBdWizard: "BD উইজার্ড খুলুন →",
+    slotEmptyTitle: "খালি স্লট — নিচে বরাদ্দ করুন।",
+    slotEmpty: "খালি",
+
+    loadingTemplates: "টেমপ্লেট লোড হচ্ছে…",
+    groupPrivate: "আপনার টেমপ্লেট",
+    groupShared: "দলের সাথে ভাগ করা",
+    groupGlobal: "Org-ব্যাপী ডিফল্ট",
+    usedSuffix: "ব্যবহৃত",
+    byPrefix: "দ্বারা",
+    bdSlot: "BD স্লট",
+    edit: "সম্পাদনা",
+    archive: "আর্কাইভ",
+
+    emptyTpl: "এখনও কোনো টেমপ্লেট নেই। আপনার প্রথমটি তৈরি করতে + নতুন টেমপ্লেট ক্লিক করুন।",
+  },
+
 };
 
 export default bn;
