@@ -2998,6 +2998,31 @@ const id: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  signupInvitation: {
+    appKicker: "FUZE Atlas",
+    joinPrefix: "Bergabung",
+    invitedSuffix: "diundang",
+    youWereInvited: "Anda diundang",
+    asLabel: "sebagai",
+    emailLabel: "Email",
+    yourNameLabel: "Nama Anda",
+    fullNamePlaceholder: "Nama lengkap",
+    passwordLabel: "Password",
+    passwordPlaceholder: "Minimal 8 karakter",
+    confirmPasswordLabel: "Konfirmasi password",
+    confirmPasswordPlaceholder: "Masukkan ulang password",
+    creatingBtn: "Membuat akun…",
+    acceptBtn: "Terima undangan & login",
+    expiresPrefix: "Undangan kedaluwarsa",
+    problemTitle: "Masalah undangan",
+    problemDefault: "Tidak dapat memuat undangan ini.",
+    goToSignIn: "Buka login",
+    errPasswordTooShort: "Password harus minimal 8 karakter.",
+    errPasswordsMismatch: "Password tidak cocok.",
+    errNetwork: "Kesalahan jaringan",
+    errServerUnreachable: "Tidak dapat menghubungi server",
+  },
+
 };
 
 export default id;
