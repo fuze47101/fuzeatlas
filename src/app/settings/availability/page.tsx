@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface AvailabilityConfig {
   id: string;
@@ -14,19 +15,20 @@ interface AvailabilityConfig {
   maxBookingsPerDay: number;
 }
 
-const DAYS_OF_WEEK = [
-  { value: 0, label: "Sunday" },
-  { value: 1, label: "Monday" },
-  { value: 2, label: "Tuesday" },
-  { value: 3, label: "Wednesday" },
-  { value: 4, label: "Thursday" },
-  { value: 5, label: "Friday" },
-  { value: 6, label: "Saturday" },
-];
-
 const SLOT_DURATIONS = [30, 45, 60, 90];
 
 export default function AvailabilitySettingsPage() {
+  const { t } = useI18n();
+  const T = t.settingsAvailability;
+  const DAYS_OF_WEEK = [
+    { value: 0, label: T.sunday },
+    { value: 1, label: T.monday },
+    { value: 2, label: T.tuesday },
+    { value: 3, label: T.wednesday },
+    { value: 4, label: T.thursday },
+    { value: 5, label: T.friday },
+    { value: 6, label: T.saturday },
+  ];
   const { user } = useAuth();
   const router = useRouter();
 
@@ -134,7 +136,7 @@ export default function AvailabilitySettingsPage() {
   if (loading) {
     return (
       <div className="p-6 lg:p-10 flex items-center justify-center min-h-[50vh]">
-        <p className="text-slate-400 text-sm">Loading settings...</p>
+        <p className="text-slate-400 text-sm">{T.loading}</p>
       </div>
     );
   }
@@ -144,17 +146,17 @@ export default function AvailabilitySettingsPage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-slate-900 mb-2">
-          Availability Settings
+          {T.title}
         </h1>
         <p className="text-slate-600">
-          Configure your meeting booking availability and schedule.
+          {T.subtitle}
         </p>
       </div>
 
       {success && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
           <p className="text-sm text-green-700 font-medium">
-            Settings saved successfully!
+            {T.savedSuccess}
           </p>
         </div>
       )}
@@ -163,7 +165,7 @@ export default function AvailabilitySettingsPage() {
         {/* Available Days */}
         <div>
           <label className="block text-sm font-semibold text-slate-900 mb-3">
-            Available Days
+            {T.availableDaysLabel}
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {DAYS_OF_WEEK.map((day) => (
@@ -188,12 +190,12 @@ export default function AvailabilitySettingsPage() {
         {/* Business Hours */}
         <div>
           <h3 className="text-sm font-semibold text-slate-900 mb-3">
-            Business Hours
+            {T.businessHoursTitle}
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">
-                Start Hour
+                {T.startHourLabel}
               </label>
               <div className="flex items-center gap-2">
                 <input
@@ -209,7 +211,7 @@ export default function AvailabilitySettingsPage() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">
-                End Hour
+                {T.endHourLabel}
               </label>
               <div className="flex items-center gap-2">
                 <input
@@ -225,14 +227,14 @@ export default function AvailabilitySettingsPage() {
             </div>
           </div>
           <p className="text-xs text-slate-500 mt-2">
-            Hours are in 24-hour format (0-23). Slots available from {startHour}:00 to {endHour}:00.
+            {T.hoursHintTpl.replace("{start}", String(startHour)).replace("{end}", String(endHour))}
           </p>
         </div>
 
         {/* Slot Duration */}
         <div>
           <label className="block text-sm font-semibold text-slate-900 mb-3">
-            Time Slot Duration
+            {T.slotDurationLabel}
           </label>
           <div className="grid grid-cols-4 gap-2">
             {SLOT_DURATIONS.map((duration) => (
@@ -248,7 +250,7 @@ export default function AvailabilitySettingsPage() {
                   }
                 `}
               >
-                {duration} min
+                {duration} {T.minSuffix}
               </button>
             ))}
           </div>
@@ -257,13 +259,13 @@ export default function AvailabilitySettingsPage() {
         {/* Timezone */}
         <div>
           <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">
-            Timezone
+            {T.timezoneLabel}
           </label>
           <input
             type="text"
             value={timezone}
             onChange={(e) => setTimezone(e.target.value)}
-            placeholder="Asia/Taipei"
+            placeholder={T.timezonePlaceholder}
             className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
           />
         </div>
@@ -271,7 +273,7 @@ export default function AvailabilitySettingsPage() {
         {/* Max Bookings Per Day */}
         <div>
           <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">
-            Maximum Bookings Per Day
+            {T.maxBookingsLabel}
           </label>
           <input
             type="number"
@@ -285,7 +287,7 @@ export default function AvailabilitySettingsPage() {
         {/* Blocked Dates */}
         <div>
           <h3 className="text-sm font-semibold text-slate-900 mb-3">
-            Blocked Dates
+            {T.blockedDatesTitle}
           </h3>
           <div className="flex gap-2 mb-3">
             <input
@@ -298,12 +300,12 @@ export default function AvailabilitySettingsPage() {
               onClick={handleAddBlockedDate}
               className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800"
             >
-              Add
+              {T.addBtn}
             </button>
           </div>
 
           {blockedDates.length === 0 ? (
-            <p className="text-sm text-slate-500">No blocked dates</p>
+            <p className="text-sm text-slate-500">{T.noBlocked}</p>
           ) : (
             <div className="space-y-2">
               {blockedDates.map((date) => (
@@ -323,7 +325,7 @@ export default function AvailabilitySettingsPage() {
                     onClick={() => handleRemoveBlockedDate(date)}
                     className="text-xs px-2 py-1 text-red-600 hover:bg-red-50 rounded"
                   >
-                    Remove
+                    {T.removeBtn}
                   </button>
                 </div>
               ))}
@@ -333,20 +335,20 @@ export default function AvailabilitySettingsPage() {
 
         {/* Summary Preview */}
         <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-          <h3 className="text-sm font-semibold text-slate-900 mb-2">Summary</h3>
+          <h3 className="text-sm font-semibold text-slate-900 mb-2">{T.summaryTitle}</h3>
           <div className="text-xs text-slate-600 space-y-1">
             <p>
-              Available: {DAYS_OF_WEEK.filter((d) => availableDays.includes(d.value))
+              {T.summaryAvailablePrefix} {DAYS_OF_WEEK.filter((d) => availableDays.includes(d.value))
                 .map((d) => d.label)
                 .join(", ")}
             </p>
             <p>
-              Hours: {startHour}:00 - {endHour}:00
+              {T.summaryHoursPrefix} {startHour}:00 - {endHour}:00
             </p>
-            <p>Slot Duration: {slotDuration} minutes</p>
-            <p>Max Bookings Per Day: {maxBookingsPerDay}</p>
-            <p>Timezone: {timezone}</p>
-            <p>Blocked Dates: {blockedDates.length}</p>
+            <p>{T.summarySlotPrefix} {slotDuration} {T.minutesSuffix}</p>
+            <p>{T.summaryMaxPrefix} {maxBookingsPerDay}</p>
+            <p>{T.summaryTimezonePrefix} {timezone}</p>
+            <p>{T.summaryBlockedPrefix} {blockedDates.length}</p>
           </div>
         </div>
 
@@ -356,7 +358,7 @@ export default function AvailabilitySettingsPage() {
           disabled={saving}
           className="w-full px-6 py-3 bg-[#00b4c3] text-white font-medium rounded-lg hover:bg-[#009ba8] disabled:opacity-50 transition-colors"
         >
-          {saving ? "Saving..." : "Save Settings"}
+          {saving ? T.savingBtn : T.saveBtn}
         </button>
       </div>
     </div>
