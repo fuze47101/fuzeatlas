@@ -2,8 +2,11 @@
 
 import { useState, useMemo } from 'react';
 import { apiDocumentation, searchEndpoints, type ApiEndpoint } from '@/lib/api-docs';
+import { useI18n } from '@/i18n';
 
 export default function ApiDocsPage() {
+  const { t } = useI18n();
+  const T = t.apiDocs;
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
     new Set(apiDocumentation.map(g => g.group))
@@ -73,13 +76,13 @@ export default function ApiDocsPage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">API Documentation</h1>
-          <p className="text-lg text-gray-600">FUZE Atlas API Reference</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{T.heading}</h1>
+          <p className="text-lg text-gray-600">{T.subtitle}</p>
 
           {/* Auth Note */}
           <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-900">
-              <strong>Authentication:</strong> All endpoints except <code className="bg-blue-100 px-2 py-1 rounded">/api/auth/*</code> require a valid JWT session cookie.
+              <strong>{T.authStrong}</strong> {T.authBodyPrefix} <code className="bg-blue-100 px-2 py-1 rounded">/api/auth/*</code> {T.authBodySuffix}
             </p>
           </div>
         </div>
@@ -89,7 +92,7 @@ export default function ApiDocsPage() {
           <div>
             <input
               type="text"
-              placeholder="Search endpoints by path or description..."
+              placeholder={T.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
@@ -105,7 +108,7 @@ export default function ApiDocsPage() {
                   : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
               }`}
             >
-              All Methods
+              {T.allMethodsBtn}
             </button>
             {['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].map(method => (
               <button
@@ -124,14 +127,14 @@ export default function ApiDocsPage() {
 
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600">
-              Showing <strong>{filteredDocs.reduce((sum, g) => sum + g.endpoints.length, 0)}</strong> of{' '}
-              <strong>{allEndpoints.length}</strong> endpoints
+              {T.showingPrefix} <strong>{filteredDocs.reduce((sum, g) => sum + g.endpoints.length, 0)}</strong> {T.showingOf}{' '}
+              <strong>{allEndpoints.length}</strong> {T.endpointsLabel}
             </p>
             <button
               onClick={toggleAllGroups}
               className="text-sm text-blue-600 hover:text-blue-800 font-medium"
             >
-              {expandedGroups.size === filteredDocs.length ? 'Collapse All' : 'Expand All'}
+              {expandedGroups.size === filteredDocs.length ? T.collapseAllBtn : T.expandAllBtn}
             </button>
           </div>
         </div>
@@ -189,7 +192,7 @@ export default function ApiDocsPage() {
         {/* No Results Message */}
         {filteredDocs.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">No endpoints found matching your search.</p>
+            <p className="text-gray-600 text-lg">{T.noResults}</p>
             <button
               onClick={() => {
                 setSearchQuery('');
@@ -197,14 +200,14 @@ export default function ApiDocsPage() {
               }}
               className="text-blue-600 hover:text-blue-800 font-medium mt-4"
             >
-              Clear filters
+              {T.clearFiltersBtn}
             </button>
           </div>
         )}
 
         {/* Footer */}
         <div className="mt-16 pt-8 border-t border-gray-300 text-center text-gray-600 text-sm">
-          <p>FUZE Atlas API Documentation - Last updated {new Date().toLocaleDateString()}</p>
+          <p>{T.footerPrefix} {new Date().toLocaleDateString()}</p>
         </div>
       </div>
     </div>
