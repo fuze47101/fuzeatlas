@@ -7462,6 +7462,23 @@ const ur: Translations = {
     whatYouCanClaimBtn: "آپ کیا دعویٰ کر سکتے ہیں ←",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ FUZE Atlas سے سرٹیفائیڈ",
+    statFabricsCertified: "فیبرکس سرٹیفائیڈ",
+    statTestsPassed: "ٹیسٹ پاس (12 ماہ)",
+    statCountries: "ممالک جہاں بھیجتے ہیں",
+    activeTiersTitle: "فعال FUZE ٹیئرز",
+    activeTiersBody: "سرٹیفائیڈ سہولیات میں اس وقت پروڈکشن میں ٹریٹمنٹ سطحیں۔",
+    lastPassedLabel: "آخری پاس",
+    aboutSummaryTitle: "FUZE ٹیکنالوجی کے بارے میں",
+    verifyCtaTitle: "کسی مخصوص پروڈکٹ کی تصدیق کریں",
+    verifyCtaBody: "ہر سرٹیفائیڈ پروڈکٹ میں ایک منفرد QR کوڈ ہوتا ہے جو اس کے پروڈکشن بیچ اور ٹیسٹ ہسٹری سے جڑا ہوتا ہے۔",
+    verifyCtaBtn: "پروڈکٹ تلاش کریں ←",
+    footerCertifiedBy: "FUZE Atlas سے سرٹیفائیڈ",
+    brandSiteLink: "برانڈ سائٹ ←",
+    contactLink: "رابطہ",
+  },
+
 };
 
 export default ur;
