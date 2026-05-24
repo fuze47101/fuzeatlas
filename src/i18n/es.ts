@@ -7621,6 +7621,31 @@ const es: Translations = {
     claimsLink: "Declaraciones",
   },
 
+  changePassword: {
+    titleDefault: "Cambiar contraseña",
+    titleForced: "Establece tu nueva contraseña",
+    forcedBanner: "Se te asignó una contraseña temporal. Crea una contraseña segura para continuar.",
+    currentPasswordLabel: "Contraseña actual",
+    newPasswordLabel: "Nueva contraseña",
+    newPasswordPlaceholder: "Mín 8 caracteres, 1 mayúscula, 1 número",
+    confirmPasswordLabel: "Confirmar nueva contraseña",
+    reqMinChars: "Al menos 8 caracteres",
+    reqUppercase: "Una letra mayúscula",
+    reqNumber: "Un número",
+    reqMatch: "Las contraseñas coinciden",
+    updateBtn: "Actualizar contraseña",
+    setAndContinueBtn: "Establecer contraseña y continuar",
+    updatingBtn: "Actualizando...",
+    cancelBtn: "Cancelar",
+    passwordUpdatedTitle: "Contraseña actualizada",
+    redirecting: "Redirigiendo ahora...",
+    errPasswordsDoNotMatch: "Las contraseñas no coinciden",
+    errMinLength: "La contraseña debe tener al menos 8 caracteres",
+    errNeedUppercase: "La contraseña debe contener al menos una letra mayúscula",
+    errNeedNumber: "La contraseña debe contener al menos un número",
+    errGeneric: "Error al cambiar la contraseña",
+  },
+
 };
 
 export default es;
