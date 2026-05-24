@@ -6998,6 +6998,32 @@ const ms: Translations = {
     footerQuestions: "Soalan?",
   },
 
+  settingsExchangeRates: {
+    title: "Kadar Pertukaran",
+    subtitle: "Urus kadar penukaran mata wang",
+    addRateBtn: "Tambah Kadar",
+    cancelBtn: "Batal",
+    addFormTitle: "Tambah Kadar Pertukaran",
+    ratePlaceholder: "Kadar",
+    submitAddBtn: "Tambah Kadar",
+    converterTitle: "Penukar Mata Wang",
+    fromLabel: "Daripada",
+    toLabel: "Kepada",
+    amountLabel: "Jumlah",
+    convertBtn: "Tukar",
+    rateResultPrefix: "Kadar:",
+    quickStatsTitle: "Statistik Pantas",
+    totalCurrenciesLabel: "Jumlah Mata Wang",
+    activeRatesLabel: "Kadar Aktif",
+    currentRatesTitle: "Kadar Semasa (Asas: USD)",
+    loading: "Memuatkan...",
+    emptyState: "Tiada kadar pertukaran dikonfigurasikan",
+    colCurrencyPair: "Pasangan Mata Wang",
+    colRate: "Kadar",
+    colEffectiveDate: "Tarikh Berkuat Kuasa",
+    colSource: "Sumber",
+  },
+
 };
 
 export default ms;
