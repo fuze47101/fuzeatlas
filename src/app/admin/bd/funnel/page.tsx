@@ -13,6 +13,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { useI18n } from "@/i18n";
 
 interface StageRow {
   stage: string;
@@ -40,6 +41,8 @@ function days(n: number | null) {
 }
 
 export default function FunnelPage() {
+  const { t } = useI18n();
+  const T = t.bdFunnel;
   const [rows, setRows] = useState<StageRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,13 +52,13 @@ export default function FunnelPage() {
       .then((r) => r.json())
       .then((j) => {
         if (j.ok) setRows(j.stages);
-        else setError(j.error || "Failed to load funnel");
+        else setError(j.error || T.errLoadFailed);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [T.errLoadFailed]);
 
-  if (loading) return <div className="p-6 text-slate-600">Loading…</div>;
+  if (loading) return <div className="p-6 text-slate-600">{T.loading}</div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
 
   const maxCount = Math.max(1, ...rows.map((r) => r.currentCount));
@@ -66,15 +69,13 @@ export default function FunnelPage() {
         <Breadcrumbs
           className="mb-1"
           items={[
-            { label: "Sales & Pipeline" },
-            { label: "BD funnel" },
+            { label: T.crumbSalesPipeline },
+            { label: T.crumbBdFunnel },
           ]}
         />
-        <h1 className="text-2xl font-black text-slate-900">Pipeline funnel</h1>
+        <h1 className="text-2xl font-black text-slate-900">{T.title}</h1>
         <p className="text-sm text-slate-600 mt-1">
-          Inflow / outflow over the last 30 / 60 / 90 days, plus stage-to-stage
-          conversion rate. Sourced from BrandStageTransition rows written on every
-          Brand.pipelineStage flip.
+          {T.subtitle}
         </p>
       </div>
 
@@ -82,16 +83,16 @@ export default function FunnelPage() {
         <table className="w-full text-sm min-w-[960px]">
           <thead className="bg-slate-50 border-b text-xs uppercase tracking-wider text-slate-600">
             <tr>
-              <th className="text-left px-4 py-3">Stage</th>
-              <th className="text-right px-3 py-3">Current</th>
-              <th className="text-right px-3 py-3">In 30d</th>
-              <th className="text-right px-3 py-3">In 60d</th>
-              <th className="text-right px-3 py-3">In 90d</th>
-              <th className="text-right px-3 py-3">Out 30d</th>
-              <th className="text-right px-3 py-3">Out 60d</th>
-              <th className="text-right px-3 py-3">Out 90d</th>
-              <th className="text-right px-3 py-3">Avg dwell</th>
-              <th className="text-right px-4 py-3">→ next</th>
+              <th className="text-left px-4 py-3">{T.colStage}</th>
+              <th className="text-right px-3 py-3">{T.colCurrent}</th>
+              <th className="text-right px-3 py-3">{T.colIn30}</th>
+              <th className="text-right px-3 py-3">{T.colIn60}</th>
+              <th className="text-right px-3 py-3">{T.colIn90}</th>
+              <th className="text-right px-3 py-3">{T.colOut30}</th>
+              <th className="text-right px-3 py-3">{T.colOut60}</th>
+              <th className="text-right px-3 py-3">{T.colOut90}</th>
+              <th className="text-right px-3 py-3">{T.colAvgDwell}</th>
+              <th className="text-right px-4 py-3">{T.colToNext}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -161,9 +162,7 @@ export default function FunnelPage() {
       </div>
 
       <p className="text-xs text-slate-600 mt-3">
-        Conversion = exits that landed on the canonical next stage / total exits
-        observed in the last 90 days. Stages with no exits in the window show
-        n=0 — they're slow or stable, not bad.
+        {T.footerHint}
       </p>
     </div>
   );
