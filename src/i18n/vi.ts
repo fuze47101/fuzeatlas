@@ -7779,6 +7779,35 @@ const vi: Translations = {
     errGeneric: "Không đổi được mật khẩu",
   },
 
+  claimsLandingPage: {
+    heroTitle: "Tuyên bố, chứng nhận & phương pháp luận",
+    heroSubtitle: "Cách FUZE hoạt động, được chứng nhận cho điều gì, và vì sao chúng tôi thử nghiệm nó theo cách này.",
+    techTitle: "Công nghệ FUZE",
+    techBody1: "FUZE là phương pháp xử lý kháng khuẩn vải dệt độc quyền dựa trên metamaterial FUZE — được sản xuất qua ablation laser lỏng từ điện tử tái chế tại cơ sở của chúng tôi ở Salt Lake City. Phương pháp xử lý liên kết vĩnh viễn với sợi trong quá trình hoàn tất vải dệt tiêu chuẩn (exhaust, pad-dry-cure, hoặc áp dụng phun) mà không thay đổi cảm giác, nhuộm, độ rủ hoặc độ thoáng khí của vải.",
+    techBody2: "FUZE không rò rỉ theo thiết kế. Việc giảm vi khuẩn xảy ra qua sự tiếp xúc vật lý trực tiếp giữa tế bào vi khuẩn và metamaterial FUZE đã liên kết trên bề mặt sợi — không có hóa chất nào được giải phóng vào nước giặt, không PFAS, không chất kết dính, không hóa học lưu hóa. Vị thế đặt FUZE ở bên phải của mọi luồng quy định thuận lợi (điều tra PFAS của Texas AG, California SB-707).",
+    techBody3: "Hạng xử lý: F1 Phổ đầy đủ (1,0 mg/kg, 100 lần giặt được xác thực) · F2 Nâng cao (0,75 mg/kg, 75 lần giặt) · F3 Cốt lõi (0,5 mg/kg, 50 lần giặt) · F4 Nền tảng (0,25 mg/kg, 25 lần giặt). Số lần giặt được ghi nhận qua thử nghiệm AATCC 100 + ISO 20743 độc lập, công bố theo yêu cầu.",
+    certsTitle: "Chứng nhận",
+    certEpaTitle: "Đăng ký EPA (liên bang)",
+    certEpaBody: "Hóa học FUZE được đăng ký với Cục Bảo vệ Môi trường Hoa Kỳ như một thuốc trừ sâu kháng khuẩn.",
+    certCaEpaTitle: "California EPA phê duyệt (Q1 2026)",
+    certCaEpaBody: "Đã được cấp phép cho đồ thể thao, hàng dệt cho trẻ sơ sinh/trẻ em và các trường hợp sử dụng chăm sóc sức khỏe theo chế độ nghiêm ngặt hơn của California.",
+    certOekoTitle: "OEKO-TEX Standard 100 Class I",
+    certOekoBody: "Đã chứng nhận an toàn cho tiếp xúc trực tiếp với da — bao gồm đồ trẻ sơ sinh và đồ lót.",
+    certBluesignTitle: "bluesign® được phê duyệt",
+    certBluesignBody: "Hóa học được xác minh an toàn cho công nhân, người tiêu dùng và môi trường theo tiêu chí bluesign.",
+    certPfasTitle: "Không PFAS",
+    certPfasBody: "Không có chất per- và polyfluoroalkyl ở bất kỳ đâu trong công thức. Không chất kết dính, không hỗ trợ lưu hóa.",
+    certStandardsTitle: "Tiêu chuẩn đã được xác thực",
+    certStandardsBody: "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — báo cáo bên thứ ba có sẵn theo yêu cầu.",
+    standardsTitle: "Tiêu chuẩn thử nghiệm",
+    standardsBody: "Hiệu suất kháng khuẩn cho vải dệt không phải là một con số duy nhất — nó phụ thuộc nhiều vào tiêu chuẩn nào bạn chạy thử nghiệm, và liệu tiêu chuẩn đó có phù hợp với hóa học hay không. Đây là cách FUZE ánh xạ vào các phương pháp.",
+    jabTitle: "Vì sao chúng tôi dẫn đầu với ASTM E2149",
+    jabBody: "Chúng tôi thử nghiệm trên ASTM E2149 vì đây là thử nghiệm được thiết kế cho các chất kháng khuẩn không rò rỉ. Các hóa chất đối thủ dựa vào AATCC 100 vì hình học xếp lớp của AATCC 100 giúp ion rò rỉ bão hòa không gian giữa các lớp — thử nghiệm ưu ái rò rỉ về mặt cấu trúc. FUZE không rò rỉ, theo thiết kế. Hãy gặp chúng tôi ở thử nghiệm đúng.",
+    jabFootnote: "(Phân loại đối thủ: lưu ý về thử nghiệm xếp lớp áp dụng cho các finisher ion kim loại, chloride kim loại và dựa trên quat — không áp dụng cho FUZE.)",
+    documentsTitle: "Tài liệu",
+    pressKitLink: "Bộ tài liệu báo chí",
+  },
+
 };
 
 export default vi;
