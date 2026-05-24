@@ -7672,6 +7672,23 @@ const ms: Translations = {
     whatYouCanClaimBtn: "Apa yang anda boleh tuntut →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ Disahkan oleh FUZE Atlas",
+    statFabricsCertified: "Fabrik disahkan",
+    statTestsPassed: "Ujian lulus (12 bulan)",
+    statCountries: "Negara penghantaran",
+    activeTiersTitle: "Tier FUZE aktif",
+    activeTiersBody: "Tahap rawatan kini dalam pengeluaran di kemudahan disahkan.",
+    lastPassedLabel: "Lulus terakhir",
+    aboutSummaryTitle: "Tentang teknologi FUZE",
+    verifyCtaTitle: "Sahkan produk tertentu",
+    verifyCtaBody: "Setiap produk disahkan membawa kod QR unik yang dipautkan ke kelompok pengeluaran dan sejarah ujiannya.",
+    verifyCtaBtn: "Cari produk →",
+    footerCertifiedBy: "Disahkan oleh FUZE Atlas",
+    brandSiteLink: "Tapak jenama →",
+    contactLink: "Kenalan",
+  },
+
 };
 
 export default ms;
