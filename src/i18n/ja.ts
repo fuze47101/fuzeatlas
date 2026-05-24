@@ -6237,6 +6237,31 @@ const ja: Translations = {
     footerNote: "ソート順: 在庫僅少を最優先、次に休眠、その後は残日数の昇順。「日次消費」=工場への出荷リットル数の90日間移動平均。「残日数」=現在の在庫÷日次消費。「休眠」=過去90日間に工場からの注文なし。「価格未設定」はFUZE卸売価格が未設定であることを意味し、ディストリビューターは再発注ができません。各ディストリビューターのページで編集してください。",
   },
 
+  conversionTracking: {
+    crumbDashboard: "ダッシュボード",
+    crumbCurrent: "サンプル → 本生産",
+    title: "サンプル → 本生産コンバージョン",
+    subtitle: "どの工場がサンプルを受領し、本生産注文に転換したかを追跡します",
+    cardFactoriesSampled: "サンプル提供工場数",
+    cardConverted: "転換済み",
+    cardConversionRate: "コンバージョン率",
+    cardAvgDays: "転換までの平均日数",
+    cardProdVolume: "本生産量",
+    cardProdRevenue: "本生産売上",
+    tabAll: "すべて",
+    tabConverted: "転換済み",
+    tabPending: "保留中",
+    emptyText: "サンプル注文はまだ見つかりません",
+    badgeConverted: "転換済み",
+    badgePending: "保留中",
+    sectionSamples: "サンプル注文",
+    sectionTrials: "試験依頼",
+    sectionProduction: "本生産注文",
+    productionLabel: "本生産",
+    daysToConvertSuffix: "日で転換",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default ja;
