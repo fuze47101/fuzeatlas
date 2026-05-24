@@ -2980,6 +2980,24 @@ const id: Translations = {
     errNetwork: "Kesalahan jaringan",
   },
 
+  forgotPassword: {
+    brandSubtitle: "Reset password Anda",
+    cardTitle: "Lupa Password Anda?",
+    cardBody: "Masukkan alamat email Anda dan kami akan mengirim tautan untuk mereset password Anda.",
+    emailLabel: "Alamat Email",
+    emailPlaceholder: "anda@801inc.com",
+    sendBtn: "Kirim Tautan Reset",
+    sendingBusy: "Mengirim...",
+    rememberPrefix: "Ingat password Anda?",
+    signInLink: "Login",
+    failedFallback: "Gagal memproses permintaan",
+    networkError: "Kesalahan jaringan",
+    checkEmailTitle: "Periksa Email Anda",
+    checkEmailBody: "Jika akun ada dengan email tersebut, Anda akan menerima tautan reset password sebentar lagi.",
+    backToSignIn: "Kembali ke Login",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default id;
