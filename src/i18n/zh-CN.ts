@@ -7727,6 +7727,32 @@ const zhCN: Translations = {
     emptyState: "暂无令牌——请先在上方生成首批。",
   },
 
+  bookMeetingPage: {
+    heading: "预约会议",
+    subtitle: "请选择可用的日期和时间，与我们的团队预约会议。",
+    selectDateTitle: "选择日期",
+    availableTimesPrefix: "可用时段：",
+    loadingSlots: "正在加载时段…",
+    noSlotsBody: "该日期暂无可用时段",
+    detailsTitle: "会议详情",
+    selectDateTimeHint: "请选择日期和时间以继续",
+    dateTimeLabel: "日期与时间",
+    meetingTitleLabel: "会议标题",
+    defaultTitle: "FUZE 会议",
+    descriptionLabel: "描述（可选）",
+    descriptionPlaceholder: "其他补充信息…",
+    confirmBtn: "确认预约",
+    bookingBusy: "正在预约…",
+    bookFailedError: "预约失败",
+    networkError: "网络错误",
+    bookedTitle: "已成功预约！",
+    titleColLabel: "标题",
+    timeColLabel: "时间",
+    meetingLinkLabel: "会议链接",
+    openInTeams: "在 Teams 中打开",
+    bookAnotherBtn: "再预约一次",
+  },
+
 };
 
 export default zhCN;
