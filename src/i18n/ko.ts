@@ -6011,6 +6011,58 @@ const ko: Translations = {
     verdictUnscanned: "미스캔",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← 설정",
+    pageTitle: "이메일 템플릿",
+    pageSubtitle: "아웃리치용 재사용 가능한 이메일 스캐폴드. {firstName}, {company} 등을 사용하여 즉시 개인화하십시오.",
+    btnNew: "+ 새 템플릿",
+    errorRequired: "제목, 주제 및 본문이 필요합니다.",
+    errorLoadUser: "사용자 로드 실패",
+    errorLoadTemplates: "템플릿 로드 실패",
+    confirmArchive: "\"{title}\"을(를) 보관하시겠습니까? 더 이상 선택기에 표시되지 않습니다.",
+
+    formHeadingEdit: "템플릿 편집",
+    formHeadingNew: "새 템플릿",
+    labelTitle: "제목",
+    placeholderTitle: "예: 첫 인사 (운동복)",
+    labelCategory: "카테고리",
+    placeholderCategory: "예: 인사, 재참여, icp-요청",
+    labelScope: "범위",
+    scopePrivate: "비공개 (나만)",
+    scopeShared: "공유 (팀 전체)",
+    scopeGlobal: "글로벌 (조직 기본값)",
+    labelSubject: "주제",
+    placeholderSubject: "{firstName}님, {company}에 FUZE 빠른 소개",
+    labelBody: "본문",
+    btnSaving: "저장 중…",
+    btnSaveChanges: "변경사항 저장",
+    btnCreate: "템플릿 생성",
+    btnCancel: "취소",
+
+    previewHeading: "미리보기",
+    previewHelp: "아래 샘플 값을 편집하여 토큰이 어떻게 렌더링되는지 확인하십시오.",
+    previewSubjectLabel: "주제",
+    previewBodyLabel: "본문",
+
+    slotsHeading: "BD Wizard 빠른 선택 슬롯",
+    slotsHelp: "최대 10개의 템플릿을 번호 슬롯에 고정하십시오. 마법사 드래프트 단계에서 한 번 클릭으로 주제와 본문을 채우는 1~10 버튼 스트립을 볼 수 있습니다.",
+    openBdWizard: "BD Wizard 열기 →",
+    slotEmptyTitle: "빈 슬롯 — 아래에서 할당하십시오.",
+    slotEmpty: "비어 있음",
+
+    loadingTemplates: "템플릿 로드 중…",
+    groupPrivate: "내 템플릿",
+    groupShared: "팀과 공유됨",
+    groupGlobal: "조직 전체 기본값",
+    usedSuffix: "회 사용",
+    byPrefix: "작성자:",
+    bdSlot: "BD 슬롯",
+    edit: "편집",
+    archive: "보관",
+
+    emptyTpl: "아직 템플릿이 없습니다. + 새 템플릿을 클릭하여 첫 번째 템플릿을 생성하십시오.",
+  },
+
 };
 
 export default ko;
