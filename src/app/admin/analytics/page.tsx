@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 
 type AnalyticsData = {
   ok: boolean;
@@ -47,6 +48,8 @@ type AnalyticsData = {
 };
 
 export default function AnalyticsDashboard() {
+  const { t } = useI18n();
+  const T = t.analyticsAdmin;
   const [range, setRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -199,7 +202,7 @@ export default function AnalyticsDashboard() {
     return (
       <div style={containerStyle}>
         <div style={{ ...chartContainerStyle, borderColor: "#ef4444" }}>
-          <h2 style={{ ...chartTitleStyle, color: "#ef4444" }}>Error</h2>
+          <h2 style={{ ...chartTitleStyle, color: "#ef4444" }}>{T.errorTitle}</h2>
           <p style={{ color: "#ef4444" }}>{error}</p>
           <button
             onClick={() => fetchAnalytics()}
@@ -213,7 +216,7 @@ export default function AnalyticsDashboard() {
               cursor: "pointer",
             }}
           >
-            Retry
+            {T.retry}
           </button>
         </div>
       </div>
@@ -224,7 +227,7 @@ export default function AnalyticsDashboard() {
     <div style={containerStyle}>
       {/* HEADER */}
       <div style={headerStyle}>
-        <h1 style={titleStyle}>FUZE Analytics</h1>
+        <h1 style={titleStyle}>{T.title}</h1>
         <div style={rangeButtonContainerStyle}>
           {(["7d", "30d", "90d", "all"] as const).map((r) => (
             <button
@@ -234,12 +237,12 @@ export default function AnalyticsDashboard() {
               disabled={loading}
             >
               {r === "all"
-                ? "All Time"
+                ? T.rangeAll
                 : r === "90d"
-                  ? "90 Days"
+                  ? T.range90d
                   : r === "30d"
-                    ? "30 Days"
-                    : "7 Days"}
+                    ? T.range30d
+                    : T.range7d}
             </button>
           ))}
         </div>
@@ -250,7 +253,7 @@ export default function AnalyticsDashboard() {
         <div style={kpiGridStyle}>
           {[1, 2, 3, 4].map((i) => (
             <div key={i} style={{ ...kpiCardStyle, opacity: 0.6 }}>
-              <div style={kpiLabelStyle}>Loading...</div>
+              <div style={kpiLabelStyle}>{T.loading}</div>
               <div style={{ ...kpiValueStyle, background: "#e5e7eb", height: "2rem" }} />
             </div>
           ))}
@@ -261,16 +264,16 @@ export default function AnalyticsDashboard() {
             <div style={kpiGridStyle}>
               {/* Total Tests */}
               <div style={kpiCardStyle}>
-                <div style={kpiLabelStyle}>Total Tests</div>
+                <div style={kpiLabelStyle}>{T.kpiTotalTests}</div>
                 <div style={kpiValueStyle}>{data.overview.testsThisPeriod}</div>
                 <div style={kpiTrendStyle(trendPercentage >= 0)}>
-                  {trendPercentage >= 0 ? "▲" : "▼"} {Math.abs(trendPercentage)}% vs previous period
+                  {trendPercentage >= 0 ? "▲" : "▼"} {Math.abs(trendPercentage)}% {T.kpiVsPrev}
                 </div>
               </div>
 
               {/* Pass Rate */}
               <div style={kpiCardStyle}>
-                <div style={kpiLabelStyle}>Pass Rate</div>
+                <div style={kpiLabelStyle}>{T.kpiPassRate}</div>
                 <div style={kpiValueStyle}>
                   <span style={{ color: getPassRateColor(data.overview.passRate) }}>
                     {data.overview.passRate.toFixed(1)}%
@@ -278,22 +281,22 @@ export default function AnalyticsDashboard() {
                 </div>
                 <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
                   {((data.overview.testsThisPeriod * data.overview.passRate) / 100).toFixed(0)}{" "}
-                  passed
+                  {T.kpiPassedSuffix}
                 </div>
               </div>
 
               {/* Active Brands */}
               <div style={kpiCardStyle}>
-                <div style={kpiLabelStyle}>Active Brands</div>
+                <div style={kpiLabelStyle}>{T.kpiActiveBrands}</div>
                 <div style={kpiValueStyle}>{data.overview.activeBrands}</div>
-                <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>this period</div>
+                <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>{T.kpiThisPeriod}</div>
               </div>
 
               {/* Avg Turnaround */}
               <div style={kpiCardStyle}>
-                <div style={kpiLabelStyle}>Avg Turnaround</div>
-                <div style={kpiValueStyle}>{data.overview.avgTurnaround} days</div>
-                <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>submission to result</div>
+                <div style={kpiLabelStyle}>{T.kpiAvgTurnaround}</div>
+                <div style={kpiValueStyle}>{T.kpiTurnaroundUnitTpl.replace("{n}", String(data.overview.avgTurnaround))}</div>
+                <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>{T.kpiSubmissionToResult}</div>
               </div>
             </div>
 
@@ -301,7 +304,7 @@ export default function AnalyticsDashboard() {
             <div style={chartsGridStyle}>
               {/* Tests Over Time */}
               <div style={chartContainerStyle}>
-                <h3 style={chartTitleStyle}>Tests Over Time</h3>
+                <h3 style={chartTitleStyle}>{T.chartTestsOverTime}</h3>
                 <div
                   style={{ height: "250px", display: "flex", alignItems: "flex-end", gap: "2px" }}
                 >
@@ -334,13 +337,13 @@ export default function AnalyticsDashboard() {
                     textAlign: "center",
                   }}
                 >
-                  Last 20 periods
+                  {T.chartLast20}
                 </div>
               </div>
 
               {/* Tests by Type */}
               <div style={chartContainerStyle}>
-                <h3 style={chartTitleStyle}>Tests by Type</h3>
+                <h3 style={chartTitleStyle}>{T.chartTestsByType}</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                   {data.testsByType.slice(0, 6).map((item) => (
                     <div key={item.type}>
@@ -381,7 +384,7 @@ export default function AnalyticsDashboard() {
 
               {/* Pipeline Funnel */}
               <div style={chartContainerStyle}>
-                <h3 style={chartTitleStyle}>Pipeline Flow</h3>
+                <h3 style={chartTitleStyle}>{T.chartPipelineFlow}</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                   {data.pipelineFlow
                     .filter((p) => p.count > 0)
@@ -434,7 +437,7 @@ export default function AnalyticsDashboard() {
 
               {/* ICP Distribution */}
               <div style={chartContainerStyle}>
-                <h3 style={chartTitleStyle}>ICP Tier Distribution</h3>
+                <h3 style={chartTitleStyle}>{T.chartIcpTiers}</h3>
                 <div
                   style={{
                     display: "flex",
@@ -488,14 +491,14 @@ export default function AnalyticsDashboard() {
                       ))}
                     </div>
                   ) : (
-                    <div style={{ color: "#6b7280" }}>No ICP data</div>
+                    <div style={{ color: "#6b7280" }}>{T.chartNoIcp}</div>
                   )}
                 </div>
               </div>
 
               {/* Top Brands */}
               <div style={chartContainerStyle}>
-                <h3 style={chartTitleStyle}>Top Brands</h3>
+                <h3 style={chartTitleStyle}>{T.chartTopBrands}</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                   {data.topBrands.slice(0, 5).map((brand) => (
                     <div key={brand.name}>
@@ -508,7 +511,7 @@ export default function AnalyticsDashboard() {
                         }}
                       >
                         <span style={{ fontWeight: "600" }}>{brand.name}</span>
-                        <span style={{ color: "#6b7280" }}>{brand.tests} tests</span>
+                        <span style={{ color: "#6b7280" }}>{brand.tests} {T.testsSuffix}</span>
                       </div>
                       <div
                         style={{
@@ -533,7 +536,7 @@ export default function AnalyticsDashboard() {
                           color: "#6b7280",
                         }}
                       >
-                        {brand.passRate}% pass rate | {brand.stage.replace(/_/g, " ")}
+                        {T.passRateSuffixTpl.replace("{pct}", String(brand.passRate)).replace("{stage}", brand.stage.replace(/_/g, " "))}
                       </div>
                     </div>
                   ))}
@@ -542,7 +545,7 @@ export default function AnalyticsDashboard() {
 
               {/* Top Factories */}
               <div style={chartContainerStyle}>
-                <h3 style={chartTitleStyle}>Top Factories</h3>
+                <h3 style={chartTitleStyle}>{T.chartTopFactories}</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                   {data.topFactories.slice(0, 5).map((factory) => (
                     <div key={factory.name}>
@@ -555,7 +558,7 @@ export default function AnalyticsDashboard() {
                         }}
                       >
                         <span style={{ fontWeight: "600" }}>{factory.name} 🌍</span>
-                        <span style={{ color: "#6b7280" }}>{factory.tests} tests</span>
+                        <span style={{ color: "#6b7280" }}>{factory.tests} {T.testsSuffix}</span>
                       </div>
                       <div
                         style={{
@@ -580,7 +583,7 @@ export default function AnalyticsDashboard() {
                           color: "#6b7280",
                         }}
                       >
-                        {factory.passRate}% pass rate | {factory.country}
+                        {T.passRateSuffixTpl.replace("{pct}", String(factory.passRate)).replace("{stage}", factory.country)}
                       </div>
                     </div>
                   ))}
@@ -589,7 +592,7 @@ export default function AnalyticsDashboard() {
 
               {/* Lab Performance */}
               <div style={chartContainerStyle}>
-                <h3 style={chartTitleStyle}>Lab Performance</h3>
+                <h3 style={chartTitleStyle}>{T.chartLabPerformance}</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                   {data.labPerformance.slice(0, 6).map((lab) => (
                     <div key={lab.name}>
@@ -602,7 +605,7 @@ export default function AnalyticsDashboard() {
                         }}
                       >
                         <span style={{ fontWeight: "600" }}>{lab.name}</span>
-                        <span style={{ color: "#6b7280" }}>{lab.avgTurnaround}d</span>
+                        <span style={{ color: "#6b7280" }}>{lab.avgTurnaround}{T.daysSuffix}</span>
                       </div>
                       <div
                         style={{
@@ -628,7 +631,7 @@ export default function AnalyticsDashboard() {
 
               {/* Wash Durability */}
               <div style={chartContainerStyle}>
-                <h3 style={chartTitleStyle}>Wash Durability</h3>
+                <h3 style={chartTitleStyle}>{T.chartWashDurability}</h3>
                 {data.washDurability.length > 0 ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     {data.washDurability.slice(0, 8).map((item) => (
@@ -641,8 +644,8 @@ export default function AnalyticsDashboard() {
                             marginBottom: "0.25rem",
                           }}
                         >
-                          <span style={{ fontWeight: "600" }}>{item.washCount} washes</span>
-                          <span style={{ color: "#6b7280" }}>{item.avgRetention}% retention</span>
+                          <span style={{ fontWeight: "600" }}>{item.washCount} {T.washesSuffix}</span>
+                          <span style={{ color: "#6b7280" }}>{item.avgRetention}{T.retentionSuffix}</span>
                         </div>
                         <div
                           style={{
@@ -665,14 +668,14 @@ export default function AnalyticsDashboard() {
                   </div>
                 ) : (
                   <div style={{ color: "#6b7280", textAlign: "center", paddingTop: "2rem" }}>
-                    No durability data
+                    {T.chartNoDurability}
                   </div>
                 )}
               </div>
 
               {/* Compliance Standards */}
               <div style={chartContainerStyle}>
-                <h3 style={chartTitleStyle}>Compliance by Standard</h3>
+                <h3 style={chartTitleStyle}>{T.chartCompliance}</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                   {data.complianceOverview.slice(0, 6).map((item) => (
                     <div key={item.standard}>
@@ -721,7 +724,7 @@ export default function AnalyticsDashboard() {
 
             {/* Recent Activity */}
             <div style={chartContainerStyle}>
-              <h3 style={chartTitleStyle}>Recent Activity</h3>
+              <h3 style={chartTitleStyle}>{T.chartRecentActivity}</h3>
               <div
                 style={{
                   display: "flex",
