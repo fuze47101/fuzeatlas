@@ -8245,6 +8245,18 @@ const vi: Translations = {
     addFavoriteTitle: "Thêm yêu thích",
   },
 
+  icpCorrelation: {
+    adminCrumb: "Quản trị",
+    crumb: "Tương quan ICP",
+    heading: "Tương quan ICP × AB",
+    subtitle: "Biểu đồ Joseph (KUIU) đã hỏi về. FUZE còn dư trên vải (đo bằng ICP) được vẽ so với tỷ lệ diệt khuẩn trên mọi lần chạy thử nghiệm có thể nhìn thấy thương hiệu trong Atlas. Đường khớp tốt nhất + R² được phủ lên.",
+    errorContext: "Tải tương quan ICP",
+    couldntLoadPrefix: "Không tải được dữ liệu tương quan",
+    networkError: "Lỗi mạng.",
+    loadingState: "Đang tải dữ liệu tương quan…",
+    footnote: "Bản sao hướng khách hàng dùng \"FUZE còn dư\" — phép đo metamaterial từ báo cáo ICP của phòng lab. Luôn được dán nhãn FUZE / metamaterial trong sản phẩm gửi khách hàng (quy tắc giọng thương hiệu CLAUDE.md).",
+  },
+
 };
 
 export default vi;
