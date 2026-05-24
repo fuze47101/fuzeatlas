@@ -6948,6 +6948,29 @@ const ur: Translations = {
     errAddFailed: "شامل کرنا ناکام",
   },
 
+  accountsAdmin: {
+    title: "اکاؤنٹس",
+    subtitleBefore: "وہ برانڈز جو لیڈ مرحلے سے آگے ہیں — پریزنٹیشن وصول کی، ٹیسٹنگ میں، پروڈکشن میں، یا پہلے سے کسٹمر ہیں۔ نئے امکانات کے لیے، یہاں جائیں",
+    brandPipelineLink: "برانڈ پائپ لائن",
+    allFilter: "تمام",
+    stagePresentation: "پریزنٹیشن",
+    stageBrandTesting: "برانڈ ٹیسٹنگ",
+    stageFactoryOnboarding: "فیکٹری آن بورڈنگ",
+    stageFactoryTesting: "فیکٹری ٹیسٹنگ",
+    stageProduction: "پروڈکشن",
+    stageReConnect: "دوبارہ رابطہ",
+    stageCustomerWon: "کسٹمر جیتا گیا",
+    searchPlaceholder: "نام یا رابطہ کے ذریعے اکاؤنٹس تلاش کریں...",
+    emptyTitle: "اس منظر میں ابھی تک کوئی اکاؤنٹ نہیں ہے",
+    emptyBody: "اکاؤنٹس اس وقت ظاہر ہوتے ہیں جب برانڈز LEAD سے PRESENTATION یا بعد کی طرف منتقل ہوتے ہیں۔",
+    goToPipelineBtn: "برانڈ پائپ لائن پر جائیں",
+    highRelevanceBadge: "🔥 اعلیٰ مطابقت",
+    amPrefix: "AM:",
+    contactsLabel: "رابطے",
+    enrichedSuffix: "افزودہ",
+    backToLeadOption: "← لیڈ کی طرف واپس",
+  },
+
 };
 
 export default ur;
