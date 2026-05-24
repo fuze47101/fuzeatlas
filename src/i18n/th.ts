@@ -7757,6 +7757,33 @@ const th: Translations = {
     resumeBtn: "ดำเนินต่อ",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ ตรวจสอบแล้ว ผ่านการบำบัด FUZE",
+    tierPrefix: "ระดับ FUZE",
+    productSectionTitle: "ผลิตภัณฑ์",
+    skuLabel: "SKU",
+    batchLabel: "ชุด",
+    fuzeNumberLabel: "FUZE #",
+    constructionLabel: "การก่อสร้าง",
+    weightLabel: "น้ำหนัก",
+    weightUnit: "GSM",
+    mostRecentValidation: "การตรวจสอบล่าสุด",
+    testedPrefix: "ทดสอบ",
+    afterWashesPrefix: "หลัง",
+    afterWashesSuffix: "ครั้งซัก",
+    whatDoesThisMean: "นี่หมายความว่าอะไร?",
+    explainerP1: "FUZE เป็นการบำบัดสิ่งทอต้านจุลชีพเฉพาะ เมตาวัสดุ FUZE ยึดเกาะถาวรกับพื้นผิวเส้นใยระหว่างการตกแต่งสิ่งทอมาตรฐาน — ไม่มีการรั่วซึม ไม่มี PFAS ไม่มีการเปลี่ยนเคมีต่อสัมผัสหรือการระบายอากาศของผ้า",
+    explainerP2: "การลดแบคทีเรียเกิดผ่านการสัมผัสโดยตรงกับเมตาวัสดุที่ผูก — นั่นเป็นเหตุผลที่ FUZE นำด้วย ASTM E2149 (การทดสอบฆ่าด้วยการสัมผัสที่ออกแบบสำหรับต้านจุลชีพไม่รั่วซึม) ควบคู่กับ AATCC 100 สำหรับการตรวจสอบเรขาคณิตชั้น",
+    certificationsLabel: "การรับรอง:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I, bluesign® approved, EPA registered, California EPA approved (Q1 2026), ปลอด PFAS",
+    sustainabilityTitle: "ความยั่งยืน",
+    sustainabilityBody: "FUZE ที่บริโภคในผ้านี้จนถึงปัจจุบัน",
+    seeMorePrefix: "ดูเพิ่ม",
+    seeMoreSuffix: "ผลิตภัณฑ์ที่ได้รับการรับรอง →",
+    learnMoreLink: "เรียนรู้เพิ่มเติมเกี่ยวกับเทคโนโลยี FUZE →",
+    footerVerifiedBy: "ตรวจสอบโดย FUZE Atlas",
+  },
+
 };
 
 export default th;
