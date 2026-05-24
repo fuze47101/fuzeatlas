@@ -4537,6 +4537,23 @@ const ta: Translations = {
     nameRequiredError: "பெயர் தேவை",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← கால்குலேட்டருக்குத் திரும்பு",
+    printButton: "🖨 அச்சிடு / PDF-ஆக சேமி",
+    eyebrow: "FUZE Biotech · Lab SOP",
+    pageTitle: "பெஞ்ச் சோதனை செயல்முறை",
+    pageSubtitle: "FUZE Recipe Calculator — Pad-Dry-Cure Pickup Rate & Dilution",
+    docLabel: "Doc: SOP-FUZE-LAB-001",
+    revLabel: "Rev: 1.0 ·",
+    purposeHeader: "நோக்கம்",
+    equipmentHeader: "உபகரணம்",
+    chemistryRefHeader: "FUZE வேதியியல் குறிப்பு",
+    criticalRulesHeader: "⚠ முக்கியமான நெறிமுறை விதிகள்",
+    procedureHeader: "செயல்முறை",
+    formulasHeader: "சூத்திரங்கள் (QC cross-check-க்காக)",
+    sanityRangesHeader: "Sanity Check வரம்புகள்",
+  },
+
 };
 
 export default ta;
