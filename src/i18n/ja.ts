@@ -7982,6 +7982,36 @@ const ja: Translations = {
     nextBtn: "次へ",
   },
 
+  bdSequencesList: {
+    kicker: "BD ウィザード",
+    heading: "シーケンス",
+    subtitlePrefix: "長期型のアウトバウンド。ステップは cron が 1 時間ごとに進行させます。準備が整ったステップは次の場所に一時停止します:",
+    subtitleSuffix: "確認のために停止します。自動送信は行いません。",
+    openWizardBtn: "BD ウィザードを開く →",
+    stepAwaitingSingular: "件のステップが確認待ち",
+    stepsAwaitingPlural: "件のステップが確認待ち",
+    showAllRepsLabel: "すべての担当者を表示",
+    loadingState: "シーケンスを読み込み中…",
+    emptyHeadPrefix: "",
+    emptyHeadSuffix: "シーケンスはありません",
+    emptyBodyPrefix: "最初のメールを次から送信してスタートしてください:",
+    emptyBodyLink: "BD ウィザード",
+    emptyBodySuffix: "から最初のメールを送信して開始してください。最初の送信ごとに 6 ステップのケイデンスが自動的に作成されます。",
+    colBrandContact: "ブランド / コンタクト",
+    colProgress: "進捗",
+    colNext: "次のステップ",
+    colRep: "担当者",
+    colStatus: "ステータス",
+    colActions: "アクション",
+    readyChipSuffix: "準備完了",
+    reviewSendBtn: "確認して送信",
+    openBtn: "開く",
+    viewBtn: "表示",
+    pauseBtn: "一時停止",
+    exitBtn: "終了",
+    resumeBtn: "再開",
+  },
+
 };
 
 export default ja;
