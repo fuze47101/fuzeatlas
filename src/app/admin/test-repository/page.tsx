@@ -10,6 +10,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { useI18n } from "@/i18n";
 
 interface Row {
   id: string;
@@ -64,6 +65,8 @@ const TEST_TYPES = ["", "ICP", "ANTIBACTERIAL", "FUNGAL", "ODOR", "UV", "MICROFI
 const TIERS = ["", "F1", "F2", "F3", "F4"];
 
 export default function TestRepositoryPage() {
+  const { t } = useI18n();
+  const T = t.testRepository;
   const [filters, setFilters] = useState({
     testType: "",
     fuzeTier: "",
@@ -155,15 +158,15 @@ export default function TestRepositoryPage() {
       <Breadcrumbs
         className="mb-2"
         items={[
-          { label: "Quality & Labs" },
-          { label: "Test repository" },
+          { label: T.crumbQuality },
+          { label: T.crumbCurrent },
         ]}
       />
       <div className="mb-4 flex items-end justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">Test repository</h1>
+          <h1 className="text-2xl font-black text-slate-900">{T.title}</h1>
           <p className="text-sm text-slate-600">
-            Every TestRun queryable. Compare {selected.size} selected · Export CSV.
+            {T.subtitleTpl.replace("{n}", String(selected.size))}
           </p>
         </div>
         <div className="flex gap-2">
@@ -172,13 +175,13 @@ export default function TestRepositoryPage() {
             onClick={() => setShowCompare(!showCompare)}
             className="px-3 py-1.5 rounded border border-slate-300 text-sm hover:bg-slate-50 disabled:opacity-50"
           >
-            {showCompare ? "Close compare" : `Compare (${selected.size})`}
+            {showCompare ? T.closeCompare : T.compareTpl.replace("{n}", String(selected.size))}
           </button>
           <button
             onClick={exportCsv}
             className="px-3 py-1.5 rounded border border-slate-300 text-sm hover:bg-slate-50"
           >
-            Export CSV
+            {T.exportCsv}
           </button>
         </div>
       </div>
@@ -190,9 +193,9 @@ export default function TestRepositoryPage() {
           onChange={(e) => setFilters({ ...filters, testType: e.target.value })}
           className="px-2 py-1 border border-slate-300 rounded text-sm"
         >
-          {TEST_TYPES.map((t) => (
-            <option key={t} value={t}>
-              {t || "any type"}
+          {TEST_TYPES.map((tt) => (
+            <option key={tt} value={tt}>
+              {tt || T.anyType}
             </option>
           ))}
         </select>
@@ -201,9 +204,9 @@ export default function TestRepositoryPage() {
           onChange={(e) => setFilters({ ...filters, fuzeTier: e.target.value })}
           className="px-2 py-1 border border-slate-300 rounded text-sm"
         >
-          {TIERS.map((t) => (
-            <option key={t} value={t}>
-              {t || "any tier"}
+          {TIERS.map((tier) => (
+            <option key={tier} value={tier}>
+              {tier || T.anyTier}
             </option>
           ))}
         </select>
@@ -212,9 +215,9 @@ export default function TestRepositoryPage() {
           onChange={(e) => setFilters({ ...filters, passed: e.target.value })}
           className="px-2 py-1 border border-slate-300 rounded text-sm"
         >
-          <option value="">any result</option>
-          <option value="true">passed</option>
-          <option value="false">failed</option>
+          <option value="">{T.anyResult}</option>
+          <option value="true">{T.passedOpt}</option>
+          <option value="false">{T.failedOpt}</option>
         </select>
         <input
           type="date"
@@ -232,7 +235,7 @@ export default function TestRepositoryPage() {
           onClick={load}
           className="px-3 py-1 bg-[#00b4c3] text-white rounded text-sm font-bold hover:bg-[#009aa8]"
         >
-          {loading ? "…" : "Apply"}
+          {loading ? T.applyingDots : T.applyBtn}
         </button>
       </div>
 
@@ -240,19 +243,23 @@ export default function TestRepositoryPage() {
       {data?.aggregates && data.aggregates.count > 0 && (
         <div className="rounded-xl border border-slate-200 bg-indigo-50/40 p-4 mb-4 text-sm">
           <span className="font-bold text-indigo-900">
-            {data.aggregates.count} test{data.aggregates.count === 1 ? "" : "s"} match
+            {T.aggregateMatchTpl.replace("{n}", String(data.aggregates.count)).replace("{s}", data.aggregates.count === 1 ? "" : "s")}
           </span>
           <span className="ml-3 text-slate-600">
-            pass rate <b>{(data.aggregates.passRate * 100).toFixed(1)}%</b>
+            {T.aggregatePassRatePrefix} <b>{(data.aggregates.passRate * 100).toFixed(1)}%</b>
           </span>
           {data.aggregates.icpAg.mean != null && (
             <span className="ml-3 text-slate-600">
-              avg ICP Ag <b>{data.aggregates.icpAg.mean.toFixed(2)}</b> ppm (σ {data.aggregates.icpAg.std?.toFixed(2)})
+              {T.aggregateAvgIcpTpl
+                .replace("{mean}", data.aggregates.icpAg.mean.toFixed(2))
+                .replace("{std}", data.aggregates.icpAg.std?.toFixed(2) ?? "—")}
             </span>
           )}
           {data.aggregates.abReduction.mean != null && (
             <span className="ml-3 text-slate-600">
-              avg AB reduction <b>{data.aggregates.abReduction.mean.toFixed(2)}</b> log (σ {data.aggregates.abReduction.std?.toFixed(2)})
+              {T.aggregateAvgAbTpl
+                .replace("{mean}", data.aggregates.abReduction.mean.toFixed(2))
+                .replace("{std}", data.aggregates.abReduction.std?.toFixed(2) ?? "—")}
             </span>
           )}
         </div>
@@ -263,17 +270,17 @@ export default function TestRepositoryPage() {
           <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500 border-b">
             <tr>
               <th className="text-center px-2 py-2 w-10"></th>
-              <th className="text-left px-3 py-2">Date</th>
-              <th className="text-left px-3 py-2">Type</th>
-              <th className="text-left px-3 py-2">Brand</th>
-              <th className="text-left px-3 py-2">Factory</th>
-              <th className="text-left px-3 py-2">Fabric</th>
-              <th className="text-left px-3 py-2">Tier</th>
-              <th className="text-left px-3 py-2">Lab</th>
-              <th className="text-right px-3 py-2">Wash</th>
-              <th className="text-left px-3 py-2">Result</th>
-              <th className="text-left px-3 py-2">Approval</th>
-              <th className="text-left px-3 py-2">Narration</th>
+              <th className="text-left px-3 py-2">{T.colDate}</th>
+              <th className="text-left px-3 py-2">{T.colType}</th>
+              <th className="text-left px-3 py-2">{T.colBrand}</th>
+              <th className="text-left px-3 py-2">{T.colFactory}</th>
+              <th className="text-left px-3 py-2">{T.colFabric}</th>
+              <th className="text-left px-3 py-2">{T.colTier}</th>
+              <th className="text-left px-3 py-2">{T.colLab}</th>
+              <th className="text-right px-3 py-2">{T.colWash}</th>
+              <th className="text-left px-3 py-2">{T.colResult}</th>
+              <th className="text-left px-3 py-2">{T.colApproval}</th>
+              <th className="text-left px-3 py-2">{T.colNarration}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -285,12 +292,12 @@ export default function TestRepositoryPage() {
                     ? `${r.abResult.result1.toFixed(1)} log${r.abResult.result2 != null ? ` / ${r.abResult.result2.toFixed(1)}` : ""}`
                     : r.fungalResult?.pass !== undefined
                       ? r.fungalResult.pass
-                        ? "PASS"
-                        : "FAIL"
+                        ? T.passLabel
+                        : T.failLabel
                       : r.odorResult?.pass !== undefined
                         ? r.odorResult.pass
-                          ? "PASS"
-                          : "FAIL"
+                          ? T.passLabel
+                          : T.failLabel
                         : "—";
               const fuzeNum =
                 r.submission?.fuzeFabricNumber || r.submission?.fabric?.fuzeNumber || null;
@@ -366,10 +373,10 @@ export default function TestRepositoryPage() {
               <tr>
                 <td colSpan={12} className="px-4 py-10">
                   <div className="max-w-md mx-auto text-center">
-                    <p className="text-3xl mb-2" aria-hidden="true">🔎</p>
-                    <p className="font-bold text-slate-900">No tests match these filters</p>
+                    <p className="text-3xl mb-2" aria-hidden="true">{T.emptyEmoji}</p>
+                    <p className="font-bold text-slate-900">{T.emptyTitle}</p>
                     <p className="text-sm text-slate-600 mt-1">
-                      Try widening the date range, clearing the tier/passed filter, or removing the test-type constraint.
+                      {T.emptyBody}
                     </p>
                   </div>
                 </td>
@@ -381,7 +388,7 @@ export default function TestRepositoryPage() {
 
       {showCompare && selectedRows.length >= 2 && (
         <div className="mt-6 rounded-xl border-2 border-amber-300 bg-amber-50/40 p-4">
-          <h2 className="font-bold text-slate-900 mb-3">Compare</h2>
+          <h2 className="font-bold text-slate-900 mb-3">{T.compareHeader}</h2>
           <div className="overflow-x-auto">
             <table className="text-sm">
               <thead>
@@ -396,25 +403,25 @@ export default function TestRepositoryPage() {
               </thead>
               <tbody className="divide-y divide-amber-200">
                 {[
-                  ["Test type", (r: Row) => r.testType],
-                  ["Date", (r: Row) => (r.testDate ? new Date(r.testDate).toLocaleDateString() : "—")],
-                  ["Brand", (r: Row) => r.submission?.brand?.name || "—"],
-                  ["Factory", (r: Row) => r.submission?.factory?.name || "—"],
-                  ["Tier", (r: Row) => r.submission?.fabric?.targetFuzeTier || "—"],
-                  ["Wash count", (r: Row) => r.washCount ?? "—"],
-                  ["Lab", (r: Row) => r.lab?.name || "—"],
+                  [T.rowTestType, (r: Row) => r.testType],
+                  [T.rowDate, (r: Row) => (r.testDate ? new Date(r.testDate).toLocaleDateString() : "—")],
+                  [T.rowBrand, (r: Row) => r.submission?.brand?.name || "—"],
+                  [T.rowFactory, (r: Row) => r.submission?.factory?.name || "—"],
+                  [T.rowTier, (r: Row) => r.submission?.fabric?.targetFuzeTier || "—"],
+                  [T.rowWashCount, (r: Row) => r.washCount ?? "—"],
+                  [T.rowLab, (r: Row) => r.lab?.name || "—"],
                   [
-                    "ICP Ag",
+                    T.rowIcpAg,
                     (r: Row) =>
                       r.icpResult?.agValue != null ? `${r.icpResult.agValue.toFixed(2)} ppm` : "—",
                   ],
                   [
-                    "AB result 1",
+                    T.rowAbResult1,
                     (r: Row) =>
                       r.abResult?.result1 != null ? `${r.abResult.result1.toFixed(2)} log` : "—",
                   ],
                   [
-                    "Pass?",
+                    T.rowPass,
                     (r: Row) =>
                       r.abResult?.pass ?? r.fungalResult?.pass ?? r.odorResult?.pass ?? "—",
                   ],
@@ -446,6 +453,8 @@ export default function TestRepositoryPage() {
  * scratch).
  */
 function NarrationCell({ row, onRefresh }: { row: Row; onRefresh: () => void }) {
+  const { t } = useI18n();
+  const T = t.testRepository;
   const [expanded, setExpanded] = useState(false);
   const [working, setWorking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -458,10 +467,10 @@ function NarrationCell({ row, onRefresh }: { row: Row; onRefresh: () => void }) 
         method: "POST",
       });
       const j = await res.json();
-      if (!j.ok) setError(j.error || "Regenerate failed");
+      if (!j.ok) setError(j.error || T.narrationFailed);
       else onRefresh();
     } catch (e: any) {
-      setError(e?.message || "Regenerate failed");
+      setError(e?.message || T.narrationFailed);
     } finally {
       setWorking(false);
     }
@@ -473,9 +482,9 @@ function NarrationCell({ row, onRefresh }: { row: Row; onRefresh: () => void }) 
         {row.aiNarrationGenerationFailedAt ? (
           <span
             className="text-amber-700 cursor-help"
-            title={`Last attempt failed: ${new Date(row.aiNarrationGenerationFailedAt).toLocaleString()}`}
+            title={T.narrationRetryFailedTpl.replace("{when}", new Date(row.aiNarrationGenerationFailedAt).toLocaleString())}
           >
-            ⚠ retry pending
+            {T.narrationRetryPending}
           </span>
         ) : (
           <span className="text-slate-400">—</span>
@@ -485,7 +494,7 @@ function NarrationCell({ row, onRefresh }: { row: Row; onRefresh: () => void }) 
           disabled={working}
           className="text-[10px] px-2 py-0.5 bg-slate-900 text-white rounded font-semibold hover:bg-slate-700 disabled:opacity-50"
         >
-          {working ? "..." : row.aiNarrationGenerationFailedAt ? "Retry" : "Generate"}
+          {working ? "..." : row.aiNarrationGenerationFailedAt ? T.narrationRetry : T.narrationGenerate}
         </button>
         {error && <span className="text-red-600 text-[10px]">{error}</span>}
       </div>
@@ -507,14 +516,14 @@ function NarrationCell({ row, onRefresh }: { row: Row; onRefresh: () => void }) 
           onClick={() => setExpanded(!expanded)}
           className="text-[10px] text-[#00b4c3] font-semibold hover:underline"
         >
-          {expanded ? "Collapse" : "Expand"}
+          {expanded ? T.narrationCollapse : T.narrationExpand}
         </button>
         <button
           onClick={regen}
           disabled={working}
           className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-700 rounded font-semibold hover:bg-slate-200 disabled:opacity-50"
         >
-          {working ? "..." : "Regenerate"}
+          {working ? "..." : T.narrationRegenerate}
         </button>
         {row.aiNarrationModel && (
           <span className="text-[10px] text-slate-400">{row.aiNarrationModel}</span>
