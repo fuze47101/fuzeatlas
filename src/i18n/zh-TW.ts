@@ -7599,6 +7599,27 @@ const zhTW: Translations = {
     seeSustainabilityBtn: "查看永續影響",
   },
 
+  pressLanding: {
+    heroTitle: "媒體資料包",
+    heroSubtitle: "FUZE Biotech 的標誌、影像、新聞稿與公司背景資料。",
+    aboutTitle: "關於 FUZE Biotech",
+    aboutBody1: "FUZE Biotech 總部位於美國猶他州鹽湖城，以 FUZE metamaterial 為核心，開發專有抗菌紡織品處理技術。此處理在標準紡織品後加工過程中永久結合於纖維 — 不含 PFAS、無黏合劑、不會改變面料手感或透氣性。",
+    aboutBody2: "本產品已取得美國 EPA 聯邦登記、加州 EPA 核准（2026 Q1）、OEKO-TEX Standard 100 Class I、以及 bluesign® 認可。效能由獨立第三方實驗室依據 ASTM E2149、AATCC 100、AATCC 30、ISO 18184 及 ISO 20743 驗證。",
+    foundedLabel: "創立地",
+    foundedValue: "美國猶他州鹽湖城",
+    addressLabel: "地址",
+    pressContactLabel: "媒體聯絡人",
+    logosSection: "標誌",
+    logoAltFallback: "FUZE 標誌",
+    downloadLabel: "下載 →",
+    imagerySection: "影像素材",
+    imageAltFallback: "FUZE 影像",
+    releasesSection: "新聞稿",
+    releaseFallback: "新聞稿",
+    newsSection: "媒體報導",
+    claimsLink: "聲明",
+  },
+
 };
 
 export default zhTW;
