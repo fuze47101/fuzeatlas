@@ -7802,6 +7802,24 @@ const bn: Translations = {
     footerCertifiedBy: "FUZE Atlas দ্বারা সার্টিফাইড",
   },
 
+  forgotPassword: {
+    brandSubtitle: "আপনার পাসওয়ার্ড রিসেট করুন",
+    cardTitle: "পাসওয়ার্ড ভুলে গেছেন?",
+    cardBody: "আপনার ইমেল ঠিকানা লিখুন এবং আমরা আপনাকে পাসওয়ার্ড রিসেট করার একটি লিঙ্ক পাঠাব।",
+    emailLabel: "ইমেল ঠিকানা",
+    emailPlaceholder: "you@801inc.com",
+    sendBtn: "রিসেট লিঙ্ক পাঠান",
+    sendingBusy: "পাঠানো হচ্ছে...",
+    rememberPrefix: "আপনার পাসওয়ার্ড মনে আছে?",
+    signInLink: "সাইন ইন করুন",
+    failedFallback: "অনুরোধ প্রক্রিয়া করতে ব্যর্থ",
+    networkError: "নেটওয়ার্ক ত্রুটি",
+    checkEmailTitle: "আপনার ইমেল চেক করুন",
+    checkEmailBody: "যদি সেই ইমেল দিয়ে একটি অ্যাকাউন্ট থাকে, আপনি শীঘ্রই একটি পাসওয়ার্ড রিসেট লিঙ্ক পাবেন।",
+    backToSignIn: "সাইন ইন এ ফিরে যান",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default bn;
