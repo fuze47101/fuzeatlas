@@ -2792,6 +2792,29 @@ const id: Translations = {
     footerPrefix: "Dokumentasi API FUZE Atlas - Terakhir diperbarui",
   },
 
+  pressKitAdmin: {
+    title: "Kit pers",
+    subtitle: "Kelola apa yang muncul di halaman publik /press. Mengubah aktif menyembunyikan baris tanpa menghapusnya.",
+    addItemTitle: "Tambah item",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "caption",
+    addItemBtn: "Tambah item",
+    savingBtn: "Menyimpan…",
+    allFilter: "semua",
+    colType: "Tipe",
+    colCaption: "Caption",
+    colUrl: "URL",
+    colReleased: "Dirilis",
+    colActive: "Aktif",
+    activeLabel: "Aktif",
+    hiddenLabel: "Tersembunyi",
+    deleteBtn: "Hapus",
+    deleteConfirmPrefix: "Hapus item kit pers",
+    emptyState: "Belum ada item kit pers.",
+    errUrlRequired: "URL wajib diisi",
+    errAddFailed: "Gagal menambahkan",
+  },
+
 };
 
 export default id;
