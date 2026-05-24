@@ -16,6 +16,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import PrintButton from "@/components/PrintButton";
+import { getServerTranslations } from "@/i18n/server";
 
 const FUZE_CYAN = "#00b4c3";
 
@@ -70,10 +71,14 @@ function fiberSummary(fabric: any, benchTest: any): string {
 
 export default async function PublicReportPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ token: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 }) {
   const { token } = await params;
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).reportSharePage;
   const data = await getReport(token);
 
   if (data?.error) {
@@ -81,19 +86,18 @@ export default async function PublicReportPage({
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-lg w-full bg-white border border-slate-200 rounded-xl p-8 text-center">
           <p className="text-2xl font-black text-slate-900 mb-2">
-            Report unavailable
+            {T.unavailableTitle}
           </p>
           <p className="text-sm text-slate-600 mb-4">{data.error}</p>
           <p className="text-xs text-slate-500">
-            For long-term access, sign in at{" "}
+            {T.unavailableBodyPrefix}{" "}
             <a
               href={process.env.NEXT_PUBLIC_APP_URL || "https://fuzeatlas.com"}
               className="text-[#00b4c3] underline"
             >
-              FUZE Atlas
+              {T.fuzeAtlasLinkLabel}
             </a>{" "}
-            and find the report under <em>My Reports</em>, or reply to the
-            email this came from.
+            {T.unavailableBodySuffix}
           </p>
         </div>
       </div>
@@ -137,7 +141,7 @@ export default async function PublicReportPage({
           href={portalUrl}
           className="text-xs font-bold text-slate-600 hover:text-slate-900"
         >
-          ← FUZE Atlas
+          {T.backLink}
         </Link>
         <PrintButton />
       </div>
@@ -149,10 +153,10 @@ export default async function PublicReportPage({
             className="text-[10px] font-bold tracking-[0.25em] uppercase"
             style={{ color: FUZE_CYAN }}
           >
-            FUZE Biotech · Application & Validation Report
+            {T.kicker}
           </p>
           <h1 className="text-3xl font-black text-slate-900 mt-2 leading-tight">
-            FUZE Treatment Recipe & Validation
+            {T.heading}
           </h1>
           <h2 className="text-xl font-semibold text-slate-700 mt-1">
             {fabric.customerReference ||
@@ -160,12 +164,12 @@ export default async function PublicReportPage({
               `FUZE-${fabric.fuzeNumber}`}
           </h2>
           <p className="text-sm text-slate-500 mt-2">
-            Issued{" "}
+            {T.issuedLabel}{" "}
             {share?.sentAt ? fmtDate(share.sentAt) : fmtDate(new Date().toISOString())}
             {share?.expiresAt && (
               <>
                 {" "}
-                · This direct link is valid until{" "}
+                {T.linkValidUntil}{" "}
                 <strong>{fmtDate(share.expiresAt)}</strong>
               </>
             )}
@@ -178,7 +182,7 @@ export default async function PublicReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            Prepared For
+            {T.preparedForTitle}
           </h3>
           <div className="grid grid-cols-2 gap-4 border border-slate-300 rounded p-4 bg-slate-50">
             <div>
@@ -261,7 +265,7 @@ export default async function PublicReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            Executive Summary
+            {T.execSummaryTitle}
           </h3>
           <div className="border-l-4 border-slate-900 pl-4 py-2 text-[14px] leading-relaxed text-slate-800">
             <p>
@@ -311,7 +315,7 @@ export default async function PublicReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            Recommended Recipe
+            {T.recipeTitle}
           </h3>
           {benchTest && pickupPct && recBathMgPerL ? (
             <div
@@ -362,7 +366,7 @@ export default async function PublicReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            FUZE Required (Production Bath Sizes)
+            {T.fuzeRequiredTitle}
           </h3>
           {pickupPct && fuzeMatrix?.length ? (
             <>
@@ -460,7 +464,7 @@ export default async function PublicReportPage({
               className="text-[11px] font-black uppercase tracking-widest mb-3"
               style={{ color: FUZE_CYAN }}
             >
-              Independent Lab ICP Verification
+              {T.labIcpTitle}
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs border-collapse">
@@ -524,7 +528,7 @@ export default async function PublicReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            Accessing This Report Later
+            {T.accessLaterTitle}
           </h3>
           <div className="border border-slate-300 rounded p-4 bg-slate-50 text-sm text-slate-700 leading-relaxed">
             <p>
