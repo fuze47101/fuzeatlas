@@ -6925,6 +6925,29 @@ const ur: Translations = {
     printedPrefix: "پرنٹ کیا گیا",
   },
 
+  pressKitAdmin: {
+    title: "پریس کٹ",
+    subtitle: "اس کا انتظام کریں جو عوامی /press صفحے پر ظاہر ہوتا ہے۔ فعال کو ٹوگل کرنا قطار کو حذف کیے بغیر چھپا دیتا ہے۔",
+    addItemTitle: "آئٹم شامل کریں",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "کیپشن",
+    addItemBtn: "آئٹم شامل کریں",
+    savingBtn: "محفوظ کیا جا رہا ہے…",
+    allFilter: "تمام",
+    colType: "قسم",
+    colCaption: "کیپشن",
+    colUrl: "URL",
+    colReleased: "جاری کیا گیا",
+    colActive: "فعال",
+    activeLabel: "فعال",
+    hiddenLabel: "چھپا ہوا",
+    deleteBtn: "حذف کریں",
+    deleteConfirmPrefix: "پریس کٹ آئٹم حذف کریں",
+    emptyState: "ابھی تک کوئی پریس کٹ آئٹم نہیں ہے۔",
+    errUrlRequired: "URL درکار ہے",
+    errAddFailed: "شامل کرنا ناکام",
+  },
+
 };
 
 export default ur;
