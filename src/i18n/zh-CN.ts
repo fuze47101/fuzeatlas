@@ -4529,6 +4529,19 @@ const zhCN: Translations = {
     generatedTemplate: "生成时间:",
   },
 
+  bdWizard: {
+    homeLink: "← 首页",
+    pageTitle: "BD 向导",
+    pageSubtitle: "引导式外联。系统自动为您挑选下一个最高置信度品牌。",
+    inQueueTemplate: "(队列中 {n} 个)",
+    skipBrand: "跳过此品牌 →",
+
+    setFromAddressHeader: "发送前请设置您的发件人地址",
+    setFromAddressBody: "未设置时,邮件将从通用 FUZE Atlas 通知地址发出,回复也不会落入您的收件箱。",
+    currentlyLabel: "当前:",
+    openProfile: "打开个人资料",
+  },
+
 };
 
 export default zhCN;
