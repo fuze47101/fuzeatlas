@@ -5732,6 +5732,58 @@ const th: Translations = {
     verdictUnscanned: "ยังไม่สแกน",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← การตั้งค่า",
+    pageTitle: "เทมเพลตอีเมล",
+    pageSubtitle: "โครงร่างอีเมลที่ใช้ซ้ำได้สำหรับการติดต่อออก ใช้ {firstName}, {company} ฯลฯ เพื่อปรับแต่งให้เป็นส่วนตัวทันที",
+    btnNew: "+ เทมเพลตใหม่",
+    errorRequired: "ต้องระบุชื่อ เรื่อง และเนื้อความ",
+    errorLoadUser: "ไม่สามารถโหลดผู้ใช้ได้",
+    errorLoadTemplates: "ไม่สามารถโหลดเทมเพลตได้",
+    confirmArchive: "เก็บถาวร \"{title}\"? จะไม่ปรากฏใน picker อีกต่อไป",
+
+    formHeadingEdit: "แก้ไขเทมเพลต",
+    formHeadingNew: "เทมเพลตใหม่",
+    labelTitle: "ชื่อ",
+    placeholderTitle: "เช่น First-touch intro (athletic apparel)",
+    labelCategory: "หมวดหมู่",
+    placeholderCategory: "เช่น intro, re-engage, icp-request",
+    labelScope: "ขอบเขต",
+    scopePrivate: "ส่วนตัว (ฉันเท่านั้น)",
+    scopeShared: "แชร์ (ทั้งทีม)",
+    scopeGlobal: "Global (ค่าเริ่มต้นองค์กร)",
+    labelSubject: "เรื่อง",
+    placeholderSubject: "Hi {firstName} — quick FUZE intro for {company}",
+    labelBody: "เนื้อความ",
+    btnSaving: "กำลังบันทึก…",
+    btnSaveChanges: "บันทึกการเปลี่ยนแปลง",
+    btnCreate: "สร้างเทมเพลต",
+    btnCancel: "ยกเลิก",
+
+    previewHeading: "ตัวอย่าง",
+    previewHelp: "แก้ไขค่าตัวอย่างด้านล่างเพื่อดูว่าโทเค็นของคุณ render อย่างไร",
+    previewSubjectLabel: "เรื่อง",
+    previewBodyLabel: "เนื้อความ",
+
+    slotsHeading: "BD Wizard ช่องเลือกด่วน",
+    slotsHelp: "ปักหมุดเทมเพลตของคุณสูงสุด 10 รายการไปยังช่องที่มีหมายเลข บนขั้นร่าง wizard คุณจะเห็นแถบปุ่ม 1–10 ที่กรอกหัวเรื่องและเนื้อความในคลิกเดียว",
+    openBdWizard: "เปิด BD Wizard →",
+    slotEmptyTitle: "ช่องว่าง — กำหนดด้านล่าง",
+    slotEmpty: "ว่าง",
+
+    loadingTemplates: "กำลังโหลดเทมเพลต…",
+    groupPrivate: "เทมเพลตของคุณ",
+    groupShared: "แชร์กับทีม",
+    groupGlobal: "ค่าเริ่มต้นทั่วองค์กร",
+    usedSuffix: "ใช้แล้ว",
+    byPrefix: "โดย",
+    bdSlot: "BD slot",
+    edit: "แก้ไข",
+    archive: "เก็บถาวร",
+
+    emptyTpl: "ยังไม่มีเทมเพลต คลิก + เทมเพลตใหม่ เพื่อสร้างอันแรก",
+  },
+
 };
 
 export default th;
