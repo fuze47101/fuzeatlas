@@ -7040,6 +7040,26 @@ const es: Translations = {
     colSource: "Fuente",
   },
 
+  interLabVariance: {
+    loadingLabel: "Cargando varianza entre laboratorios",
+    crumbQualityLabs: "Calidad y laboratorios",
+    crumbInterLabVariance: "Varianza entre laboratorios",
+    title: "Varianza entre laboratorios",
+    subtitleBefore: "Donde la misma tela fue probada por ≥2 laboratorios en los últimos",
+    subtitleAfter: "días. Ordenado por rango (máx − mín) descendente.",
+    colFabric: "Tela",
+    colMethod: "Método",
+    colRange: "Rango",
+    colMeanSigma: "Media ± σ",
+    colPerLab: "Resultados por laboratorio",
+    emptyTitle: "Aún no hay telas con múltiples laboratorios",
+    emptyBodyBefore: "La varianza entre laboratorios compara telas probadas por ≥2 laboratorios en los últimos",
+    emptyBodyAfter: "días. Una vez que tengas la misma tela probada en un laboratorio asociado Y en FUZE USA (o cualquier par de 2 laboratorios), aparecerá aquí.",
+    biasTitle: "Sesgo de calibración por laboratorio",
+    biasHint: "Media de (resultado de este laboratorio − media del grupo) en cada tela compartida. Positivo = mide más alto que los laboratorios pares; negativo = mide más bajo.",
+    emptyBias: "Aún no hay datos de sesgo.",
+  },
+
 };
 
 export default es;
