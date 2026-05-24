@@ -7700,6 +7700,31 @@ const hi: Translations = {
     accessLaterTitle: "इस रिपोर्ट को बाद में एक्सेस करना",
   },
 
+  settingsAuditLog: {
+    title: "ऑडिट लॉग",
+    subtitle: "सभी सिस्टम परिवर्तन और उपयोगकर्ता क्रियाएं ट्रैक करें",
+    actionLabel: "क्रिया",
+    allActionsOption: "सभी क्रियाएं",
+    entityTypeLabel: "इकाई प्रकार",
+    allEntitiesOption: "सभी इकाइयां",
+    fromDateLabel: "तिथि से",
+    toDateLabel: "तिथि तक",
+    loadingText: "लोड हो रहा है...",
+    emptyText: "कोई ऑडिट लॉग नहीं मिला",
+    colTimestamp: "टाइमस्टैम्प",
+    colUser: "उपयोगकर्ता",
+    colAction: "क्रिया",
+    colEntity: "इकाई",
+    colDescription: "विवरण",
+    systemUserFallback: "सिस्टम",
+    showingPrefix: "दिखा रहे हैं",
+    showingTo: "से",
+    showingOf: "में से",
+    showingSuffix: "लॉग",
+    prevBtn: "पिछला",
+    nextBtn: "अगला",
+  },
+
 };
 
 export default hi;
