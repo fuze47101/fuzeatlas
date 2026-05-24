@@ -7147,6 +7147,32 @@ const vi: Translations = {
     footerQuestions: "Câu hỏi?",
   },
 
+  settingsExchangeRates: {
+    title: "Tỷ giá hối đoái",
+    subtitle: "Quản lý tỷ giá chuyển đổi tiền tệ",
+    addRateBtn: "Thêm tỷ giá",
+    cancelBtn: "Hủy",
+    addFormTitle: "Thêm tỷ giá hối đoái",
+    ratePlaceholder: "Tỷ giá",
+    submitAddBtn: "Thêm tỷ giá",
+    converterTitle: "Bộ chuyển đổi tiền tệ",
+    fromLabel: "Từ",
+    toLabel: "Đến",
+    amountLabel: "Số tiền",
+    convertBtn: "Chuyển đổi",
+    rateResultPrefix: "Tỷ giá:",
+    quickStatsTitle: "Thống kê nhanh",
+    totalCurrenciesLabel: "Tổng số tiền tệ",
+    activeRatesLabel: "Tỷ giá đang hoạt động",
+    currentRatesTitle: "Tỷ giá hiện tại (Cơ sở: USD)",
+    loading: "Đang tải...",
+    emptyState: "Chưa cấu hình tỷ giá hối đoái nào",
+    colCurrencyPair: "Cặp tiền tệ",
+    colRate: "Tỷ giá",
+    colEffectiveDate: "Ngày hiệu lực",
+    colSource: "Nguồn",
+  },
+
 };
 
 export default vi;
