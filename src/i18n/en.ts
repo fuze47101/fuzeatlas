@@ -7996,6 +7996,25 @@ const en = {
     backBasicsBtn: "Back to FUZE Basics",
     whatYouCanClaimBtn: "What you can claim →",
   },
+  engagementDebug: {
+    crumb: "Engagement debug",
+    engagementSuffix: "engagement",
+    calculatedLabel: "Calculated",
+    overallScoreLabel: "Overall score",
+    outOf100: "out of 100",
+    inputsLabel: "Inputs",
+    daysSinceContact: "Days since contact",
+    tests30d: "Tests (30d)",
+    tests90d: "Tests (90d)",
+    avgPayDays: "Avg pay days",
+    overdueInvoices: "Overdue invoices",
+    factorBreakdownTitle: "Factor breakdown",
+    weightLabel: "weight",
+    contributesLabel: "contributes",
+    ptsLabel: "pts",
+    loading: "Loading…",
+    failedToLoad: "Failed to load",
+  },
 };
 
 export default en;

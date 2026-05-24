@@ -8,6 +8,7 @@
  */
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface Factor {
   name: string;
@@ -47,6 +48,8 @@ export default function EngagementDebugPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { t } = useI18n();
+  const T = t.engagementDebug;
   const [data, setData] = useState<Explanation | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,13 +58,13 @@ export default function EngagementDebugPage({
       .then((r) => r.json())
       .then((j) => {
         if (j.ok) setData(j);
-        else setError(j.error || "Failed to load");
+        else setError(j.error || T.failedToLoad);
       })
       .catch((e) => setError(e.message));
-  }, [id]);
+  }, [id, T.failedToLoad]);
 
   if (error) return <div className="p-6 text-red-600">{error}</div>;
-  if (!data) return <div className="p-6 text-slate-500">Loading…</div>;
+  if (!data) return <div className="p-6 text-slate-500">{T.loading}</div>;
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6">
@@ -71,11 +74,11 @@ export default function EngagementDebugPage({
             {data.brandName}
           </Link>
           <span>·</span>
-          <span className="text-slate-800 font-medium">Engagement debug</span>
+          <span className="text-slate-800 font-medium">{T.crumb}</span>
         </div>
         <div className="flex items-center gap-4">
           <h1 className="text-2xl font-black text-slate-900">
-            {data.brandName} engagement
+            {data.brandName} {T.engagementSuffix}
           </h1>
           <span
             className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${TREND_COLORS[data.trend] || "bg-slate-100"}`}
@@ -84,36 +87,36 @@ export default function EngagementDebugPage({
           </span>
         </div>
         <p className="text-sm text-slate-500 mt-1">
-          Calculated {new Date(data.calculatedAt).toLocaleString()}
+          {T.calculatedLabel} {new Date(data.calculatedAt).toLocaleString()}
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div className="rounded-xl bg-gradient-to-br from-[#00b4c3] to-[#009ba8] text-white p-5">
-          <p className="text-xs uppercase tracking-wider text-white/80">Overall score</p>
+          <p className="text-xs uppercase tracking-wider text-white/80">{T.overallScoreLabel}</p>
           <p className="text-5xl font-black mt-1">{data.overallScore}</p>
-          <p className="text-xs text-white/80 mt-1">out of 100</p>
+          <p className="text-xs text-white/80 mt-1">{T.outOf100}</p>
         </div>
         <div className="rounded-xl bg-white border border-slate-200 p-5">
-          <p className="text-xs uppercase tracking-wider text-slate-500">Inputs</p>
+          <p className="text-xs uppercase tracking-wider text-slate-500">{T.inputsLabel}</p>
           <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
-            <dt className="text-slate-500">Days since contact</dt>
+            <dt className="text-slate-500">{T.daysSinceContact}</dt>
             <dd className="text-right font-mono tabular-nums">
               {data.inputs.daysSinceLastContact ?? "—"}
             </dd>
-            <dt className="text-slate-500">Tests (30d)</dt>
+            <dt className="text-slate-500">{T.tests30d}</dt>
             <dd className="text-right font-mono tabular-nums">
               {data.inputs.testsLast30Days}
             </dd>
-            <dt className="text-slate-500">Tests (90d)</dt>
+            <dt className="text-slate-500">{T.tests90d}</dt>
             <dd className="text-right font-mono tabular-nums">
               {data.inputs.testsLast90Days}
             </dd>
-            <dt className="text-slate-500">Avg pay days</dt>
+            <dt className="text-slate-500">{T.avgPayDays}</dt>
             <dd className="text-right font-mono tabular-nums">
               {data.inputs.avgInvoicePayDays?.toFixed(1) ?? "—"}
             </dd>
-            <dt className="text-slate-500">Overdue invoices</dt>
+            <dt className="text-slate-500">{T.overdueInvoices}</dt>
             <dd className="text-right font-mono tabular-nums">
               {data.inputs.overdueInvoices}
             </dd>
@@ -121,7 +124,7 @@ export default function EngagementDebugPage({
         </div>
       </div>
 
-      <h2 className="text-lg font-bold text-slate-900 mb-3">Factor breakdown</h2>
+      <h2 className="text-lg font-bold text-slate-900 mb-3">{T.factorBreakdownTitle}</h2>
       <div className="space-y-3">
         {data.factors.map((f) => (
           <div key={f.name} className="rounded-xl border border-slate-200 bg-white p-5">
@@ -133,7 +136,7 @@ export default function EngagementDebugPage({
                   <span className="text-sm font-normal text-slate-500">/100</span>
                 </div>
                 <p className="text-[11px] text-slate-500">
-                  weight {(f.weight * 100).toFixed(0)}% · contributes {f.contribution.toFixed(1)} pts
+                  {T.weightLabel} {(f.weight * 100).toFixed(0)}% · {T.contributesLabel} {f.contribution.toFixed(1)} {T.ptsLabel}
                 </p>
               </div>
             </div>
