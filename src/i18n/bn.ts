@@ -7633,6 +7633,24 @@ const bn: Translations = {
     emptyBody: "ফিল্টারগুলো বিস্তৃত করুন — অথবা \"যাচাইকৃত বেঞ্চ পরীক্ষা\" ফিল্টার সরান যদি আপনি এখনও মধ্য-উন্নয়নে থাকা কাপড় দেখতে চান।",
   },
 
+  importBrands: {
+    title: "বাল্ক ইম্পোর্ট — ব্র্যান্ড",
+    subtitle: "একটি ট্রেড শো, তালিকা, বা গবেষণা ডাম্প থেকে ব্র্যান্ড প্রার্থীদের একটি CSV পেস্ট বা আপলোড করুন। আমরা কলামগুলো ম্যাপ করব, যাচাইকরণ প্রিভিউ করব, এবং CLI যে একই seed-brand হেল্পার ব্যবহার করে তার মাধ্যমে আইডেমপোটেন্টভাবে লিখব।",
+    backLabel: "ব্র্যান্ড পাইপলাইন",
+    brandNameLabel: "ব্র্যান্ডের নাম",
+    brandNameHint: "(প্রাকৃতিক কী — upsert এখানে কী করা হয়)",
+    domainLabel: "ইমেল ডোমেইন",
+    domainHint: 'যেমন "rhone.com"',
+    repEmailLabel: "প্রাথমিক AM ইমেল",
+    repEmailHint: "Atlas ব্যবহারকারী হিসেবে ইতিমধ্যে বিদ্যমান থাকতে হবে",
+    tierLabel: "প্রয়োজনীয় FUZE টিয়ার",
+    tierHint: "F1 / F2 / F3 / F4 — ডিফল্ট F2",
+    cadenceLabel: "ICP কেডেন্স (প্রতি N ব্যাচ)",
+    cadenceHint: "ডিফল্ট 5",
+    countryLabel: "দেশ",
+    websiteLabel: "ওয়েবসাইট",
+  },
+
 };
 
 export default bn;
