@@ -8119,6 +8119,26 @@ const zhCN: Translations = {
     footnote: "面向客户的文案使用「FUZE residual」——来自实验室 ICP 报告的 metamaterial 测量值。在客户交付物中始终标注为 FUZE / metamaterial(CLAUDE.md 品牌语言规则)。",
   },
 
+  engagementDebug: {
+    crumb: "互动调试",
+    engagementSuffix: "互动度",
+    calculatedLabel: "计算时间",
+    overallScoreLabel: "综合评分",
+    outOf100: "满分 100",
+    inputsLabel: "输入数据",
+    daysSinceContact: "距上次联系天数",
+    tests30d: "测试 (30 天)",
+    tests90d: "测试 (90 天)",
+    avgPayDays: "平均付款天数",
+    overdueInvoices: "逾期发票",
+    factorBreakdownTitle: "因子分解",
+    weightLabel: "权重",
+    contributesLabel: "贡献",
+    ptsLabel: "分",
+    loading: "加载中…",
+    failedToLoad: "加载失败",
+  },
+
 };
 
 export default zhCN;
