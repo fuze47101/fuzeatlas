@@ -5301,6 +5301,61 @@ const zhTW: Translations = {
     scopeFallback: "預設",
   },
 
+  brandDiscovery: {
+    crumbHome: "首頁",
+    crumbWizard: "BD 精靈",
+    crumbHere: "品牌探索",
+    pageTitle: "🌎 全球品牌探索",
+    pageSubtitle: "多 AI 引擎 — 跨 Anthropic、OpenAI、Grok 尋找並驗證紡織品牌,並自動為每個新品牌附加 Apollo 聯絡人,BD 精靈即可立即使用。",
+
+    statTotalLabel: "資料庫品牌總數",
+    backToWizard: "← 返回精靈",
+    backToWizardTitle: "新品牌建立後直接回到精靈",
+
+    statsErrorContext: "載入探索統計",
+    statsErrorFallback: "無法載入探索統計",
+    statsNetworkError: "載入探索統計時發生網路錯誤。",
+
+    autoEnrichTitle: "自動補強已啟用",
+    autoEnrichBody: "於此建立的每個新品牌,皆透過 Apollo 依網域進行人員搜尋,最多附加 8 位資深聯絡人(創辦人 / C 級主管 / VP / 主管 / 總監)。BD 精靈的篩選器將立即放行這些品牌 — 無需另行補強。",
+
+    settingsHeading: "探索設定",
+    labelCategory: "類別",
+    labelRegion: "區域",
+    labelTargetCount: "目標數量",
+    btnDiscovering: "🔍 探索中...",
+    btnRunDiscovery: "🚀 執行探索",
+    btnRunning: "執行中...",
+    btnAllCategories: "🌍 所有類別",
+
+    runningBanner: "⏳ 正在跨 Anthropic + OpenAI + Grok 執行多 AI 探索... 每個類別約需 30-60 秒。",
+    errorPrefix: "❌",
+    errorDefault: "探索失敗",
+
+    resultsHeadingPrefix: "探索結果 —",
+    chipAiSources: "AI 來源:",
+    chipFound: "找到:",
+    chipAfterDedup: "去重後:",
+    chipCreated: "已建立:",
+    chipContactsAttached: "📇 已附加聯絡人:",
+
+    colBrand: "品牌",
+    colSegment: "區隔",
+    colPriority: "優先順序",
+    colValidation: "驗證",
+    colContacts: "聯絡人",
+    colAiSources: "AI 來源",
+    colActions: "操作",
+    tierPrefix: "階別",
+    aisConfirmed: "個 AI 確認",
+    aiConfirmed: "AI 已確認",
+    viewResearch: "檢視並研究",
+
+    historyHeading: "探索歷史(本次工作階段)",
+    historyFoundLabel: "找到:",
+    historyCreatedLabel: "已建立:",
+  },
+
 };
 
 export default zhTW;
