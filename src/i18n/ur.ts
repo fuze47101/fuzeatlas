@@ -7259,6 +7259,32 @@ const ur: Translations = {
     daySuffix: "د پہلے",
   },
 
+  resetPassword: {
+    tagline: "نیا پاس ورڈ بنائیں",
+    formTitle: "پاس ورڈ ری سیٹ کریں",
+    newPasswordLabel: "نیا پاس ورڈ",
+    newPasswordPlaceholder: "نیا پاس ورڈ درج کریں",
+    confirmPasswordLabel: "پاس ورڈ کی تصدیق کریں",
+    confirmPasswordPlaceholder: "پاس ورڈ کی تصدیق کریں",
+    resetBtn: "پاس ورڈ ری سیٹ کریں",
+    resettingBtn: "ری سیٹ ہو رہا ہے...",
+    backToSignIn: "سائن ان پر واپس جائیں",
+    successTitle: "پاس ورڈ ری سیٹ کامیاب",
+    successBody: "آپ کا پاس ورڈ کامیابی سے ری سیٹ ہو گیا ہے۔ اب آپ اپنے نئے پاس ورڈ سے سائن ان کر سکتے ہیں۔",
+    signInBtn: "سائن ان",
+    invalidLinkTitle: "غلط ری سیٹ لنک",
+    invalidLinkBody: "ری سیٹ لنک غلط ہے یا اس کی میعاد ختم ہو گئی ہے۔ براہ کرم نیا درخواست کریں۔",
+    requestNewLinkBtn: "نیا لنک درخواست کریں",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "لوڈ ہو رہا ہے...",
+    errInvalidToken: "غلط یا گمشدہ ری سیٹ ٹوکن",
+    errInvalidTokenShort: "غلط ری سیٹ ٹوکن",
+    errMinLength: "پاس ورڈ کم از کم 6 حروف کا ہونا چاہیے",
+    errMismatch: "پاس ورڈز میل نہیں کھاتے",
+    errResetFailed: "پاس ورڈ ری سیٹ کرنے میں ناکامی",
+    errNetwork: "نیٹ ورک کی خرابی",
+  },
+
 };
 
 export default ur;
