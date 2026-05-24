@@ -2,10 +2,13 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
+import { useI18n } from "@/i18n";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { t } = useI18n();
+  const T = t.verifyEmail;
   const [status, setStatus] = useState<"loading" | "success" | "error" | "resend">("loading");
   const [error, setError] = useState("");
   const [name, setName] = useState("");
@@ -32,17 +35,17 @@ function VerifyEmailContent() {
           setStatus("success");
           setTimeout(() => router.push("/login"), 3000);
         } else {
-          setError(data.error || "Verification failed");
+          setError(data.error || T.errVerifyFailed);
           setStatus("error");
         }
       } catch {
-        setError("Failed to verify email");
+        setError(T.errVerifyFailed);
         setStatus("error");
       }
     };
 
     verify();
-  }, [token, router]);
+  }, [token, router, T.errVerifyFailed]);
 
   const handleResend = async () => {
     setResending(true);
@@ -53,10 +56,10 @@ function VerifyEmailContent() {
         setError("");
         setStatus("resend");
       } else {
-        setError(data.error || "Failed to send verification email");
+        setError(data.error || T.errSendFailed);
       }
     } catch {
-      setError("Failed to send verification email");
+      setError(T.errSendFailed);
     } finally {
       setResending(false);
     }
@@ -68,7 +71,7 @@ function VerifyEmailContent() {
         {status === "loading" && (
           <>
             <div className="w-12 h-12 border-4 border-[#00b4c3] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-slate-900">Verifying your email...</h2>
+            <h2 className="text-xl font-bold text-slate-900">{T.verifyingTitle}</h2>
           </>
         )}
 
@@ -79,9 +82,9 @@ function VerifyEmailContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Email Verified</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-2">{T.successTitle}</h2>
             <p className="text-slate-500">
-              {name ? `Welcome, ${name}! ` : ""}Your email has been verified. Redirecting to login...
+              {name ? `${T.welcomePrefix}, ${name}! ` : ""}{T.successBody}
             </p>
           </>
         )}
@@ -93,14 +96,14 @@ function VerifyEmailContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Verification Failed</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-2">{T.failedTitle}</h2>
             <p className="text-slate-500 mb-4">{error}</p>
             <button
               onClick={handleResend}
               disabled={resending}
               className="px-4 py-2 bg-[#00b4c3] text-white rounded-lg text-sm font-semibold hover:bg-[#009ba8] disabled:opacity-50"
             >
-              {resending ? "Sending..." : "Resend Verification Email"}
+              {resending ? T.sendingBtn : T.resendVerificationBtn}
             </button>
           </>
         )}
@@ -112,16 +115,16 @@ function VerifyEmailContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Check Your Email</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-2">{T.checkEmailTitle}</h2>
             <p className="text-slate-500 mb-4">
-              A verification link has been sent to your email address. Click the link to verify your account.
+              {T.checkEmailBody}
             </p>
             <button
               onClick={handleResend}
               disabled={resending}
               className="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm font-semibold hover:bg-slate-50 disabled:opacity-50"
             >
-              {resending ? "Sending..." : "Resend Email"}
+              {resending ? T.sendingBtn : T.resendEmailBtn}
             </button>
           </>
         )}
