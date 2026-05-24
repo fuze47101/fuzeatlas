@@ -7577,6 +7577,29 @@ const es: Translations = {
     errServerUnreachable: "No se pudo contactar con el servidor",
   },
 
+  educationStory: {
+    backLink: "← Volver a Fundamentos de FUZE",
+    kicker: "La historia de FUZE",
+    heroTitle: "De electrónicos reciclados a antimicrobiano permanente",
+    heroBody: "El metamaterial FUZE se produce mediante ablación láser líquida: un láser de 30 amperios, una mesa de producción de 1 m² y materia prima de electrónicos reciclados. Toda la célula de producción puede alimentarse con energía solar. No solo somos antimicrobianos — somos una operación de revalorización de residuos electrónicos que termina en tu tela.",
+    card1Title: "Materia prima reciclada",
+    card1Body: "Cada gramo del agente activo de FUZE proviene de metal precioso elemental recuperado de electrónicos al final de su vida útil. No minamos. No refinamos material virgen. Recuperamos metal que de otro modo acabaría en un vertedero o sería incinerado.",
+    card2Title: "Ablación láser líquida",
+    card2Body: "Un pulso láser de 30 amperios vaporiza la materia prima metálica sumergida en agua DI ultrapura de 99,998% y 18 megaohmios. Lo que se condensa es el metamaterial FUZE — un alótropo elemental de alta densidad, 20 ppm en la concentración de stock entregada. Sin disolventes. Sin química precursora. Sin tensoactivos.",
+    card3Title: "Producción compatible con solar",
+    card3Body: "La célula de producción de 1 m² funciona aproximadamente con la electricidad que produce un sistema solar residencial en un día soleado. Las marcas que se comprometen con FUZE se comprometen con una cadena de suministro antimicrobiana que puede ser de cero emisiones netas en el paso de producción — algo que ningún competidor de iones metálicos / zinc / QAC puede afirmar.",
+    esgTitle: "Qué significa esto en tu informe ESG",
+    esgBullet1: "✓ Declaración de materia prima circular — FUZE se produce a partir de electrónicos al final de su vida útil, apoyando tus compromisos de economía circular.",
+    esgBullet2: "✓ Producción capaz de cero emisiones netas — la célula de producción es compatible con solar. Combínalo con contratos de suministro renovable y el paso antimicrobiano aporta cero emisiones de alcance 2.",
+    esgBullet3: "✓ Cero contribución a la minería virgen — no se requiere coordinación con cadenas de suministro de minerales en conflicto o derivadas de la minería.",
+    esgBullet4: "✓ Libre de PFAS, libre de formaldehído, libre de aglutinantes, libre de horno de curado — cada insumo petroquímico que los competidores requieren, FUZE lo elimina.",
+    esgBullet5: "✓ Limpieza del agua documentada — FUZE no lixivia nada en el agua de lavado. Tu contribución descendente a la carga de tratamiento de aguas municipales = 0.",
+    differentTitle: "Un tipo diferente de empresa antimicrobiana",
+    differentBody: "La mayoría de las empresas de antimicrobianos textiles son empresas químicas. Mezclan, diluyen, formulan y envían bidones de química sintetizada a las fábricas. Nosotros somos una operación de ciencia de materiales: realizamos ablación de metal en agua y enviamos el resultado. La simplicidad es el diferenciador. Menos química sobre la tela. Menos química en el agua de lavado. Menos química en la línea de producción. Menos química en tu informe ESG.",
+    backBasicsBtn: "Volver a Fundamentos de FUZE",
+    seeSustainabilityBtn: "Ver impacto de sostenibilidad",
+  },
+
 };
 
 export default es;
