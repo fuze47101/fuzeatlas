@@ -6942,6 +6942,34 @@ const it: Translations = {
     backToLeadOption: "← Torna a Lead",
   },
 
+  commandCenterGlobe: {
+    loading: "Caricamento globo…",
+    title: "Globo catena di fornitura",
+    emptyTitle: "Nessuna entità geocodificata ancora",
+    emptyHint: "Esegui il geocoder per popolare lat/lng da città + paese di ciascuna entità:",
+    emptyFooter: "Nominatim ha un limite di 1 req/sec — una passata completa richiede alcuni minuti. Le riesecuzioni saltano le righe che hanno già coordinate.",
+    factoriesLabel: "fabbriche",
+    brandsLabel: "marchi",
+    labsLabel: "laboratori",
+    distributorsLabel: "distributori",
+    shipmentsLabel: "spedizioni (90g)",
+    searchPlaceholder: "Cerca entità…",
+    legendFactory: "Fabbrica",
+    legendPulseHint: "(pulsazione = attivo 30g)",
+    legendBrand: "Sede marchio",
+    legendFuzeLab: "Laboratorio FUZE",
+    legendPartnerLab: "Laboratorio partner",
+    legendDistributor: "Distributore",
+    kindFactory: "Fabbrica",
+    kindBrand: "Marchio",
+    kindLab: "Laboratorio",
+    kindDistributor: "Distributore",
+    stageLabel: "Stage:",
+    activeBadge: "⚡ Attivo (30g)",
+    openDetailBtn: "Apri dettaglio →",
+    errLoadFailed: "Impossibile caricare il globo",
+  },
+
 };
 
 export default it;
