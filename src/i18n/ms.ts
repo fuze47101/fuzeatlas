@@ -7084,6 +7084,34 @@ const ms: Translations = {
     errLoadFailed: "Gagal memuatkan corong",
   },
 
+  bdSequenceAnalytics: {
+    loading: "Memuatkan…",
+    crumbBdSequences: "Urutan BD",
+    crumbAnalytics: "Analitik",
+    modeSequence: "Urutan",
+    modeCadence: "Irama",
+    title: "Analitik corong",
+    aggregatedAcross: "Diagregat merentas",
+    sequenceSingular: "urutan",
+    sequencePlural: "urutan",
+    onCadenceLabel: "pada irama",
+    emptyBefore: "Belum ada aktiviti penghantaran pada ini",
+    stepLabel: "Langkah",
+    sentSuffix: "dihantar",
+    mSent: "Dihantar",
+    mOpens: "Bukaan",
+    mClicks: "Klikan",
+    mReplies: "Balasan",
+    mMeetings: "Mesyuarat",
+    mAvgDaysReply: "Purata hari → balas",
+    subjectVariantsTitle: "Variasi subjek",
+    colSubject: "Subjek",
+    colSent: "Dihantar",
+    colOpens: "Bukaan",
+    colOpenRate: "Kadar buka",
+    errLoadFailed: "Gagal memuatkan analitik",
+  },
+
 };
 
 export default ms;
