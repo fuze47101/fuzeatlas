@@ -15,6 +15,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface Tier {
   id: string;
@@ -54,6 +55,8 @@ function fmtLiters(n: number) {
 }
 
 export default function AdminBrandPricingTiersPage() {
+  const { t } = useI18n();
+  const T = t.brandPricingTiers;
   const params = useParams<{ id: string }>();
   const brandId = params?.id;
 
@@ -80,13 +83,13 @@ export default function AdminBrandPricingTiersPage() {
         fetch(`/api/admin/brand-pricing-tiers?brandId=${brandId}`).then((r) => r.json()),
         fetch(`/api/brands/${brandId}`).then((r) => r.json()),
       ]);
-      if (!tiersRes.ok) throw new Error(tiersRes.error || "Failed to load tiers");
+      if (!tiersRes.ok) throw new Error(tiersRes.error || T.errLoad);
       setTiers(tiersRes.tiers || []);
       // Brand endpoint shape varies; tolerate either { brand } or top-level fields.
       const b = brandRes.brand || brandRes;
       if (b?.id) setBrand({ id: b.id, name: b.name || b.id });
     } catch (e: any) {
-      setError(e?.message || "Network error");
+      setError(e?.message || T.errNetwork);
     } finally {
       setLoading(false);
     }
@@ -121,11 +124,11 @@ export default function AdminBrandPricingTiersPage() {
     const threshold = parseFloat(form.thresholdLiters);
     const discount = parseFloat(form.discountPct);
     if (!Number.isFinite(threshold) || threshold < 0) {
-      setFlash({ kind: "error", msg: "Threshold liters must be ≥ 0" });
+      setFlash({ kind: "error", msg: T.errThresholdInvalid });
       return;
     }
     if (!Number.isFinite(discount) || discount < 0 || discount > 100) {
-      setFlash({ kind: "error", msg: "Discount % must be 0–100" });
+      setFlash({ kind: "error", msg: T.errDiscountInvalid });
       return;
     }
 
@@ -154,56 +157,56 @@ export default function AdminBrandPricingTiersPage() {
         ),
       });
       const j = await res.json();
-      if (!j.ok) throw new Error(j.error || "Save failed");
+      if (!j.ok) throw new Error(j.error || T.errSave);
       setFlash({
         kind: "ok",
-        msg: editingId ? "Tier updated." : "Tier added.",
+        msg: editingId ? T.flashUpdated : T.flashAdded,
       });
       cancelEdit();
       await loadAll();
     } catch (e: any) {
-      setFlash({ kind: "error", msg: e?.message || "Save failed" });
+      setFlash({ kind: "error", msg: e?.message || T.errSave });
     } finally {
       setSubmitting(false);
     }
   }
 
-  async function remove(t: Tier) {
-    if (!confirm(`Delete pricing level ${t.discountPct}% off at ${fmtLiters(t.thresholdLiters)}? This can't be undone.`)) {
+  async function remove(tier: Tier) {
+    if (!confirm(T.confirmDeleteTpl.replace("{pct}", String(tier.discountPct)).replace("{threshold}", fmtLiters(tier.thresholdLiters)))) {
       return;
     }
     setFlash(null);
     try {
-      const res = await fetch(`/api/admin/brand-pricing-tiers?id=${t.id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/brand-pricing-tiers?id=${tier.id}`, { method: "DELETE" });
       const j = await res.json();
-      if (!j.ok) throw new Error(j.error || "Delete failed");
-      setFlash({ kind: "ok", msg: "Pricing level deleted." });
+      if (!j.ok) throw new Error(j.error || T.errDelete);
+      setFlash({ kind: "ok", msg: T.flashDeleted });
       await loadAll();
     } catch (e: any) {
-      setFlash({ kind: "error", msg: e?.message || "Delete failed" });
+      setFlash({ kind: "error", msg: e?.message || T.errDelete });
     }
   }
 
-  async function toggleActive(t: Tier) {
+  async function toggleActive(tier: Tier) {
     setFlash(null);
     try {
       const res = await fetch("/api/admin/brand-pricing-tiers", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: t.id, active: !t.active }),
+        body: JSON.stringify({ id: tier.id, active: !tier.active }),
       });
       const j = await res.json();
-      if (!j.ok) throw new Error(j.error || "Update failed");
+      if (!j.ok) throw new Error(j.error || T.errUpdate);
       await loadAll();
     } catch (e: any) {
-      setFlash({ kind: "error", msg: e?.message || "Update failed" });
+      setFlash({ kind: "error", msg: e?.message || T.errUpdate });
     }
   }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64 text-slate-400">
-        Loading pricing tiers…
+        {T.loading}
       </div>
     );
   }
@@ -219,7 +222,7 @@ export default function AdminBrandPricingTiersPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
           <Link href="/home" className="hover:text-[#00b4c3]">
-            Home
+            {T.crumbHome}
           </Link>
           <span>›</span>
           {brand ? (
@@ -228,28 +231,26 @@ export default function AdminBrandPricingTiersPage() {
             </Link>
           ) : null}
           <span>›</span>
-          <span>Pricing</span>
+          <span>{T.crumbCurrent}</span>
         </div>
         {brand ? (
           <Link
             href={`/brands/${brand.id}`}
             className="inline-flex items-center gap-1 text-sm text-[#00b4c3] hover:underline mb-3"
           >
-            ← Back to {brand.name}
+            {T.backToBrandTpl.replace("{name}", brand.name)}
           </Link>
         ) : null}
         <h1 className="text-2xl font-black text-slate-900">
-          Volume Pricing
-          {brand?.name ? <span className="text-slate-400 font-normal"> — {brand.name}</span> : null}
+          {T.titlePrefix}
+          {brand?.name ? <span className="text-slate-400 font-normal">{T.titleBrandSuffixTpl.replace("{name}", brand.name)}</span> : null}
         </h1>
         <p className="text-sm text-slate-500 mt-1">
-          Cumulative consumption thresholds and the discount the brand qualifies for once they
-          cross each level. Surfaces on the brand&apos;s{" "}
+          {T.introPrefix}
           <Link href={`/brand-portal/pricing`} className="text-[#00b4c3] hover:underline">
-            /brand-portal/pricing
-          </Link>{" "}
-          dashboard. Pricing changes are contractual — only ADMIN / EMPLOYEE / SALES_MANAGER can
-          edit.
+            {T.introLink}
+          </Link>
+          {T.introSuffix}
         </p>
       </div>
 
@@ -259,53 +260,53 @@ export default function AdminBrandPricingTiersPage() {
         className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-6"
       >
         <h2 className="text-base font-bold text-slate-900 mb-4">
-          {editingId ? "Edit pricing level" : "Add a new pricing level"}
+          {editingId ? T.formEditTitle : T.formAddTitle}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Threshold liters
+              {T.fieldThresholdLabel}
             </label>
             <input
               type="number"
               min={0}
               step={1}
               required
-              placeholder="e.g. 1000"
+              placeholder={T.fieldThresholdPlaceholder}
               value={form.thresholdLiters}
               onChange={(e) => setForm({ ...form, thresholdLiters: e.target.value })}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
             />
-            <p className="text-xs text-slate-400 mt-1">Cumulative consumption to qualify.</p>
+            <p className="text-xs text-slate-400 mt-1">{T.fieldThresholdHint}</p>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Discount %</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">{T.fieldDiscountLabel}</label>
             <input
               type="number"
               min={0}
               max={100}
               step={0.5}
               required
-              placeholder="e.g. 5"
+              placeholder={T.fieldDiscountPlaceholder}
               value={form.discountPct}
               onChange={(e) => setForm({ ...form, discountPct: e.target.value })}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
             />
-            <p className="text-xs text-slate-400 mt-1">0–100. Off the list price per liter.</p>
+            <p className="text-xs text-slate-400 mt-1">{T.fieldDiscountHint}</p>
           </div>
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Label (optional)
+              {T.fieldLabelLabel}
             </label>
             <input
               type="text"
-              placeholder="Bronze / Silver / Gold"
+              placeholder={T.fieldLabelPlaceholder}
               value={form.label}
               onChange={(e) => setForm({ ...form, label: e.target.value })}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
             />
-            <p className="text-xs text-slate-400 mt-1">Shown as a chip beside the discount.</p>
+            <p className="text-xs text-slate-400 mt-1">{T.fieldLabelHint}</p>
           </div>
         </div>
 
@@ -318,7 +319,7 @@ export default function AdminBrandPricingTiersPage() {
             className="rounded border-slate-300 text-[#00b4c3] focus:ring-[#00b4c3]"
           />
           <label htmlFor="tier-active" className="text-sm text-slate-700">
-            Active — surface on the brand portal
+            {T.activeLabel}
           </label>
         </div>
 
@@ -341,7 +342,7 @@ export default function AdminBrandPricingTiersPage() {
               onClick={cancelEdit}
               className="rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 text-sm font-bold"
             >
-              Cancel
+              {T.cancel}
             </button>
           ) : null}
           <button
@@ -349,7 +350,7 @@ export default function AdminBrandPricingTiersPage() {
             disabled={submitting}
             className="rounded-lg bg-[#00b4c3] hover:bg-[#009ba8] disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2 text-sm font-bold transition-colors"
           >
-            {submitting ? "Saving…" : editingId ? "Save changes" : "Add tier"}
+            {submitting ? T.saving : editingId ? T.saveChanges : T.addTier}
           </button>
         </div>
       </form>
@@ -357,22 +358,20 @@ export default function AdminBrandPricingTiersPage() {
       {/* Existing pricing levels */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100 bg-slate-50">
-          <h2 className="font-bold text-slate-900">Configured pricing</h2>
+          <h2 className="font-bold text-slate-900">{T.configuredTitle}</h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Sorted by threshold ascending. Click <strong>Edit</strong> to load a row into the form
-            above.
+            {T.configuredHintPrefix}<strong>{T.configuredHintEdit}</strong>{T.configuredHintSuffix}
           </p>
         </div>
 
         {sortedTiers.length === 0 ? (
           <div className="p-10 text-center">
-            <div className="text-4xl mb-2">📊</div>
+            <div className="text-4xl mb-2">{T.emptyEmoji}</div>
             <div className="text-sm font-bold text-slate-900 mb-1">
-              No volume pricing configured yet
+              {T.emptyTitle}
             </div>
             <p className="text-xs text-slate-500 max-w-md mx-auto">
-              Add the first level above. Brands without any active pricing see a friendly
-              standard-pricing message on their pricing page.
+              {T.emptyBody}
             </p>
           </div>
         ) : (
@@ -380,52 +379,52 @@ export default function AdminBrandPricingTiersPage() {
           <table className="w-full text-sm min-w-[640px]">
             <thead className="text-xs text-slate-500 uppercase tracking-wider">
               <tr className="border-b border-slate-100">
-                <th className="text-left px-5 py-2 font-bold">Threshold</th>
-                <th className="text-right px-5 py-2 font-bold">Discount</th>
-                <th className="text-left px-5 py-2 font-bold">Label</th>
-                <th className="text-left px-5 py-2 font-bold">Status</th>
-                <th className="text-right px-5 py-2 font-bold">Actions</th>
+                <th className="text-left px-5 py-2 font-bold">{T.colThreshold}</th>
+                <th className="text-right px-5 py-2 font-bold">{T.colDiscount}</th>
+                <th className="text-left px-5 py-2 font-bold">{T.colLabel}</th>
+                <th className="text-left px-5 py-2 font-bold">{T.colStatus}</th>
+                <th className="text-right px-5 py-2 font-bold">{T.colActions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {sortedTiers.map((t) => (
+              {sortedTiers.map((tier) => (
                 <tr
-                  key={t.id}
-                  className={`hover:bg-slate-50 ${editingId === t.id ? "bg-amber-50" : ""}`}
+                  key={tier.id}
+                  className={`hover:bg-slate-50 ${editingId === tier.id ? "bg-amber-50" : ""}`}
                 >
                   <td className="px-5 py-3 font-mono text-slate-700">
-                    {fmtLiters(t.thresholdLiters)}
+                    {fmtLiters(tier.thresholdLiters)}
                   </td>
                   <td className="px-5 py-3 text-right font-bold text-[#00b4c3]">
-                    {t.discountPct}%
+                    {tier.discountPct}%
                   </td>
-                  <td className="px-5 py-3 text-slate-600">{t.label || "—"}</td>
+                  <td className="px-5 py-3 text-slate-600">{tier.label || "—"}</td>
                   <td className="px-5 py-3">
                     <button
-                      onClick={() => toggleActive(t)}
+                      onClick={() => toggleActive(tier)}
                       className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold ring-1 transition-colors ${
-                        t.active
+                        tier.active
                           ? "bg-emerald-50 text-emerald-700 ring-emerald-200 hover:bg-emerald-100"
                           : "bg-slate-100 text-slate-500 ring-slate-200 hover:bg-slate-200"
                       }`}
-                      title="Click to toggle"
+                      title={T.toggleTitle}
                     >
-                      {t.active ? "● Active" : "○ Inactive"}
+                      {tier.active ? T.statusActive : T.statusInactive}
                     </button>
                   </td>
                   <td className="px-5 py-3 text-right">
                     <div className="inline-flex gap-2">
                       <button
-                        onClick={() => startEdit(t)}
+                        onClick={() => startEdit(tier)}
                         className="text-xs font-semibold text-[#00b4c3] hover:underline"
                       >
-                        Edit
+                        {T.edit}
                       </button>
                       <button
-                        onClick={() => remove(t)}
+                        onClick={() => remove(tier)}
                         className="text-xs font-semibold text-red-600 hover:underline"
                       >
-                        Delete
+                        {T.deleteAction}
                       </button>
                     </div>
                   </td>
