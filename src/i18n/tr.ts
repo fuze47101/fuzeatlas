@@ -7549,6 +7549,21 @@ const tr: Translations = {
     errNetwork: "Ağ hatası",
   },
 
+  verifyEmail: {
+    verifyingTitle: "E-postanız doğrulanıyor...",
+    successTitle: "E-posta Doğrulandı",
+    welcomePrefix: "Hoş geldin",
+    successBody: "E-postanız doğrulandı. Girişe yönlendiriliyorsunuz...",
+    failedTitle: "Doğrulama Başarısız",
+    resendVerificationBtn: "Doğrulama E-postasını Yeniden Gönder",
+    checkEmailTitle: "E-postanızı Kontrol Edin",
+    checkEmailBody: "E-posta adresinize bir doğrulama bağlantısı gönderildi. Hesabınızı doğrulamak için bağlantıya tıklayın.",
+    resendEmailBtn: "E-postayı Yeniden Gönder",
+    sendingBtn: "Gönderiliyor...",
+    errVerifyFailed: "E-posta doğrulanamadı",
+    errSendFailed: "Doğrulama e-postası gönderilemedi",
+  },
+
 };
 
 export default tr;
