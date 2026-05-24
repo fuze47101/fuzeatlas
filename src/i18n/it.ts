@@ -6845,6 +6845,34 @@ const it: Translations = {
     errLoadFailed: "Impossibile caricare il funnel",
   },
 
+  bdSequenceAnalytics: {
+    loading: "Caricamento…",
+    crumbBdSequences: "Sequenze BD",
+    crumbAnalytics: "Analytics",
+    modeSequence: "Sequenza",
+    modeCadence: "Cadenza",
+    title: "Analytics del funnel",
+    aggregatedAcross: "Aggregato su",
+    sequenceSingular: "sequenza",
+    sequencePlural: "sequenze",
+    onCadenceLabel: "in cadenza",
+    emptyBefore: "Nessuna attività di invio ancora su questo",
+    stepLabel: "Passo",
+    sentSuffix: "inviati",
+    mSent: "Inviati",
+    mOpens: "Aperture",
+    mClicks: "Clic",
+    mReplies: "Risposte",
+    mMeetings: "Riunioni",
+    mAvgDaysReply: "Giorni medi → risposta",
+    subjectVariantsTitle: "Varianti oggetto",
+    colSubject: "Oggetto",
+    colSent: "Inviati",
+    colOpens: "Aperture",
+    colOpenRate: "Tasso di apertura",
+    errLoadFailed: "Impossibile caricare le analytics",
+  },
+
 };
 
 export default it;
