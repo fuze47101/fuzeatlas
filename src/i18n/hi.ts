@@ -6896,6 +6896,29 @@ const hi: Translations = {
     printedPrefix: "मुद्रित",
   },
 
+  pressKitAdmin: {
+    title: "प्रेस किट",
+    subtitle: "प्रबंधित करें कि सार्वजनिक /press पृष्ठ पर क्या दिखाई देता है। सक्रिय टॉगल करना पंक्ति को हटाए बिना छुपाता है।",
+    addItemTitle: "आइटम जोड़ें",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "कैप्शन",
+    addItemBtn: "आइटम जोड़ें",
+    savingBtn: "सहेज रहे हैं…",
+    allFilter: "सभी",
+    colType: "प्रकार",
+    colCaption: "कैप्शन",
+    colUrl: "URL",
+    colReleased: "जारी",
+    colActive: "सक्रिय",
+    activeLabel: "सक्रिय",
+    hiddenLabel: "छुपा",
+    deleteBtn: "हटाएं",
+    deleteConfirmPrefix: "प्रेस किट आइटम हटाएं",
+    emptyState: "अभी कोई प्रेस किट आइटम नहीं।",
+    errUrlRequired: "URL आवश्यक है",
+    errAddFailed: "जोड़ना विफल",
+  },
+
 };
 
 export default hi;
