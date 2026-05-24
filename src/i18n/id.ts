@@ -5541,6 +5541,92 @@ const id: Translations = {
     directUsa: "Langsung (USA)",
   },
 
+  leadManagement: {
+    pageTitle: "Manajemen Lead & Outreach",
+    pageSubtitle: "Kelola kontak, perkaya via Apollo, kirim outreach SMS/email",
+
+    loadErrorContext: "Muat pipeline lead",
+    loadErrorFallback: "Tidak dapat memuat data manajemen lead",
+    networkError: "Kesalahan jaringan saat memuat lead.",
+    loading: "Memuat lead...",
+
+    statTotalContacts: "Total Kontak",
+    statWithEmail: "Dengan Email",
+    statWithPhone: "Dengan Telepon",
+    statEnriched: "Diperkaya",
+    statNotContacted: "Belum Dihubungi",
+    statContacted: "Sudah Dihubungi",
+
+    searchPlaceholder: "Cari brand atau kontak...",
+    filterAllPipelineStages: "Semua Stage Pipeline",
+    stageLead: "Lead",
+    stagePresentation: "Presentasi",
+    stageBrandTesting: "Uji Brand",
+    stageFactoryOnboarding: "Onboarding Pabrik",
+    stageProduction: "Produksi",
+    stageArchive: "Arsip",
+
+    filterAllVerticals: "Semua Vertikal",
+    verticalApparel: "Apparel",
+    verticalHospitality: "Hospitality",
+    verticalWorkwear: "Workwear",
+    verticalHomeTextiles: "Tekstil Rumah",
+
+    filterAllOutreachStatus: "Semua Status Outreach",
+    outreachNotContacted: "Belum Dihubungi",
+    outreachContacted: "Sudah Dihubungi",
+    outreachResponded: "Merespon",
+    outreachMeetingBooked: "Meeting Dipesan",
+    outreachNotInterested: "Tidak Tertarik",
+
+    filterAllEmailStatus: "Semua Status Email",
+    emailVerified: "Terverifikasi",
+    emailExtrapolated: "Diekstrapolasi",
+    emailUnavailable: "Tidak Tersedia",
+
+    colBrand: "Brand",
+    colContact: "Kontak",
+    colTitle: "Title",
+    colEmail: "Email",
+    colPhone: "Telepon",
+    colLI: "LI",
+    colEmailed: "Diemail",
+    colOutreach: "Outreach",
+    colActions: "Aksi",
+
+    inProfile: "di Profil",
+    enrichedLabel: "diperkaya",
+    noContactsNeedsEnrichment: "Tidak ada kontak — perlu enrichment",
+    msgsSuffix: "pesan",
+    markLinkedinReached: "Tandai LinkedIn dijangkau",
+    markEmailed: "Tandai diemail",
+
+    actionSms: "SMS",
+    actionEmail: "Email",
+    actionEnrich: "Perkaya",
+    titleSendSms: "Kirim SMS",
+    titleSendEmail: "Kirim Email",
+    titleEnrichApollo: "Perkaya via Apollo",
+
+    paginationLabel: "Halaman {page} dari {pages} ({total} brand)",
+    paginationPrev: "Sebelumnya",
+    paginationNext: "Selanjutnya",
+
+    modalSendSmsTo: "Kirim SMS ke",
+    modalSendEmailTo: "Kirim Email ke",
+    fieldTemplate: "Template",
+    fieldToPrefix: "Kepada:",
+    fieldSubject: "Subjek",
+    fieldMessage: "Pesan",
+    charsSuffix: "karakter",
+    sendSms: "Kirim SMS",
+    sendEmail: "Kirim Email",
+    sendingButton: "Mengirim...",
+    cancelButton: "Batal",
+    sendSuccess: "Pesan berhasil terkirim!",
+    sendErrorPrefix: "Error:",
+  },
+
 };
 
 export default id;
