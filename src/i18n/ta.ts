@@ -6845,6 +6845,34 @@ const ta: Translations = {
     errLoadFailed: "Funnel-ஐ ஏற்ற முடியவில்லை",
   },
 
+  bdSequenceAnalytics: {
+    loading: "ஏற்றுகிறது…",
+    crumbBdSequences: "BD Sequences",
+    crumbAnalytics: "Analytics",
+    modeSequence: "Sequence",
+    modeCadence: "Cadence",
+    title: "Funnel analytics",
+    aggregatedAcross: "Aggregated across",
+    sequenceSingular: "sequence",
+    sequencePlural: "sequences",
+    onCadenceLabel: "on cadence",
+    emptyBefore: "இதில் இன்னும் send activity இல்லை",
+    stepLabel: "படி",
+    sentSuffix: "அனுப்பப்பட்டது",
+    mSent: "அனுப்பப்பட்டது",
+    mOpens: "Opens",
+    mClicks: "Clicks",
+    mReplies: "பதில்கள்",
+    mMeetings: "சந்திப்புகள்",
+    mAvgDaysReply: "சராசரி நாட்கள் → பதில்",
+    subjectVariantsTitle: "பொருள் variants",
+    colSubject: "பொருள்",
+    colSent: "அனுப்பப்பட்டது",
+    colOpens: "Opens",
+    colOpenRate: "Open rate",
+    errLoadFailed: "Analytics-ஐ ஏற்ற முடியவில்லை",
+  },
+
 };
 
 export default ta;
