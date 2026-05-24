@@ -3325,6 +3325,31 @@ const vi: Translations = {
     deleteFailed: "Xóa thất bại",
   },
 
+  educationMain: {
+    kicker: "Kiến thức FUZE cơ bản",
+    pageTitle: "FUZE thực sự hoạt động như thế nào — và tại sao nó khác biệt",
+    pageIntro: "Bài giới thiệu bốn phần về những gì FUZE phủ lên vải, cách tiêu diệt vi khuẩn, các thử nghiệm nào đo lường chính xác, và điều đó có ý nghĩa gì khi một thương hiệu chọn giữa chúng tôi và đối thủ cạnh tranh (công nghệ ion kim loại / kẽm / QAC).",
+    forBrands: "Cho thương hiệu",
+    forFactories: "Cho nhà máy",
+    forDistributors: "Cho nhà phân phối",
+    forSalesReps: "Cho đại diện bán hàng",
+    segmentKicker: "Bài thuyết trình theo phân khúc",
+    segmentTitle: "FUZE cho ngành công nghiệp cụ thể của bạn",
+    segmentIntro: "Kiến thức khoa học bên trên là phổ quát. Mỗi phân khúc bên dưới có thang hạng FUZE được đề xuất, bộ thử nghiệm, các tiêu chí pháp lý và móc tiếp cận được điều chỉnh cho từng đối tượng.",
+    openSegment: "Mở trang phân khúc →",
+    dosageKicker: "Phần 1 — Lượng phủ",
+    mechanismKicker: "Phần 2 — Cơ chế",
+    mechanismTitle: "Ion thôi ra so với cơ chế tiếp xúc không-ion",
+    performanceKicker: "Phần 3 — Bộ hiệu suất (F1 → F4)",
+    performanceTitle: "Mọi hạng đều bền vĩnh viễn. Mỗi bậc thêm một lớp FUZE mới.",
+    testsKicker: "Phần 4 — Năm thử nghiệm",
+    testsTitle: "Năm thử nghiệm trên thị trường — chỉ một được thiết kế cho cơ chế FUZE",
+    synthesisKicker: "Phần 5 — Điều này có ý nghĩa gì cho thương hiệu của bạn",
+    synthesisTitle: "Ba điều cần mang theo vào mọi cuộc họp chuỗi cung ứng",
+    ctaPricing: "Xem chi phí so với đối thủ cụ thể",
+    ctaSustainability: "Xem tác động bền vững",
+  },
+
 };
 
 export default vi;
