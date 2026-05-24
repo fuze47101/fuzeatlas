@@ -4639,6 +4639,92 @@ const ur: Translations = {
     tagsSuffix: "ٹیگز",
   },
 
+  leadManagement: {
+    pageTitle: "لیڈ مینجمنٹ اور آؤٹ ریچ",
+    pageSubtitle: "رابطوں کا انتظام کریں، Apollo کے ذریعے ای نرچ کریں، SMS/ای میل آؤٹ ریچ بھیجیں",
+
+    loadErrorContext: "لیڈ پائپ لائن لوڈ کریں",
+    loadErrorFallback: "لیڈ مینجمنٹ ڈیٹا لوڈ نہیں ہو سکا",
+    networkError: "لیڈز لوڈ کرتے وقت نیٹ ورک کی خرابی۔",
+    loading: "لیڈز لوڈ ہو رہے ہیں...",
+
+    statTotalContacts: "کل رابطے",
+    statWithEmail: "ای میل کے ساتھ",
+    statWithPhone: "فون کے ساتھ",
+    statEnriched: "ای نرچ شدہ",
+    statNotContacted: "غیر رابطہ شدہ",
+    statContacted: "رابطہ شدہ",
+
+    searchPlaceholder: "برانڈز یا رابطے تلاش کریں...",
+    filterAllPipelineStages: "تمام پائپ لائن مراحل",
+    stageLead: "لیڈ",
+    stagePresentation: "پریزنٹیشن",
+    stageBrandTesting: "برانڈ ٹیسٹنگ",
+    stageFactoryOnboarding: "فیکٹری آن بورڈنگ",
+    stageProduction: "پروڈکشن",
+    stageArchive: "آرکائیو",
+
+    filterAllVerticals: "تمام ورٹیکلز",
+    verticalApparel: "ملبوسات",
+    verticalHospitality: "مہمان نوازی",
+    verticalWorkwear: "ورک ویئر",
+    verticalHomeTextiles: "ہوم ٹیکسٹائلز",
+
+    filterAllOutreachStatus: "تمام آؤٹ ریچ اسٹیٹس",
+    outreachNotContacted: "غیر رابطہ شدہ",
+    outreachContacted: "رابطہ شدہ",
+    outreachResponded: "جواب دیا",
+    outreachMeetingBooked: "میٹنگ بک شدہ",
+    outreachNotInterested: "غیر دلچسپی",
+
+    filterAllEmailStatus: "تمام ای میل اسٹیٹس",
+    emailVerified: "تصدیق شدہ",
+    emailExtrapolated: "اخراج شدہ",
+    emailUnavailable: "دستیاب نہیں",
+
+    colBrand: "برانڈ",
+    colContact: "رابطہ",
+    colTitle: "عنوان",
+    colEmail: "ای میل",
+    colPhone: "فون",
+    colLI: "LI",
+    colEmailed: "ای میل بھیجی",
+    colOutreach: "آؤٹ ریچ",
+    colActions: "اعمال",
+
+    inProfile: "پروفائل میں",
+    enrichedLabel: "ای نرچ شدہ",
+    noContactsNeedsEnrichment: "کوئی رابطہ نہیں — ای نرچمنٹ کی ضرورت",
+    msgsSuffix: "پیغامات",
+    markLinkedinReached: "LinkedIn پر پہنچ گیا کے طور پر نشان زد کریں",
+    markEmailed: "ای میل شدہ کے طور پر نشان زد کریں",
+
+    actionSms: "SMS",
+    actionEmail: "ای میل",
+    actionEnrich: "ای نرچ",
+    titleSendSms: "SMS بھیجیں",
+    titleSendEmail: "ای میل بھیجیں",
+    titleEnrichApollo: "Apollo کے ذریعے ای نرچ کریں",
+
+    paginationLabel: "صفحہ {page} از {pages} ({total} برانڈز)",
+    paginationPrev: "پچھلا",
+    paginationNext: "اگلا",
+
+    modalSendSmsTo: "SMS بھیجیں بنام",
+    modalSendEmailTo: "ای میل بھیجیں بنام",
+    fieldTemplate: "ٹیمپلیٹ",
+    fieldToPrefix: "بنام:",
+    fieldSubject: "موضوع",
+    fieldMessage: "پیغام",
+    charsSuffix: "حروف",
+    sendSms: "SMS بھیجیں",
+    sendEmail: "ای میل بھیجیں",
+    sendingButton: "بھیجا جا رہا ہے...",
+    cancelButton: "منسوخ کریں",
+    sendSuccess: "پیغام کامیابی سے بھیج دیا گیا!",
+    sendErrorPrefix: "خرابی:",
+  },
+
 };
 
 export default ur;
