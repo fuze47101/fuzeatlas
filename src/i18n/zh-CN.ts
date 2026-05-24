@@ -7934,6 +7934,24 @@ const zhCN: Translations = {
     websiteLabel: "网站",
   },
 
+  reportSharePage: {
+    unavailableTitle: "报告不可用",
+    unavailableBodyPrefix: "如需长期访问，请登录",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "在「我的报告」中查找，或回复您收到的邮件。",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · 应用与验证报告",
+    heading: "FUZE 处理配方与验证",
+    issuedLabel: "签发日期",
+    linkValidUntil: "· 此直链有效期至",
+    preparedForTitle: "递交对象",
+    execSummaryTitle: "执行摘要",
+    recipeTitle: "推荐配方",
+    fuzeRequiredTitle: "FUZE 用量（量产浴液尺寸）",
+    labIcpTitle: "独立实验室 ICP 验证",
+    accessLaterTitle: "后续访问本报告",
+  },
+
 };
 
 export default zhCN;
