@@ -7307,6 +7307,37 @@ const ja: Translations = {
     footerHint: "停滞=DRAFT/SENT/SIGNED/ACTIVE中で14日以上アクティビティなし。署名済み進捗なし=SIGNEDまたはACTIVEで30日以上、マイルストーンが定義されているが完了していない。最終アクティビティはSOW編集、マイルストーン完了、またはテストリクエスト提出のうち最新のものです。",
   },
 
+  acmTasks: {
+    title: "🗓️ ACMタスク",
+    subtitle: "1週間前と前日のリマインダーが、台北時間午前8時にベル+メールで自動配信されます。",
+    tabOpen: "未対応",
+    tabCompleted: "完了",
+    onlyMine: "自分のみ",
+    loading: "読み込み中…",
+    overdueTitle: "期限超過",
+    overdueSubtitle: "期限超過 — リストから外しましょう",
+    dueWeekTitle: "今週期限",
+    dueWeekSubtitle: "次の7日間",
+    upcomingTitle: "今後の予定",
+    upcomingSubtitle: "7日以降",
+    completedTitle: "完了",
+    completedSubtitle: "最新200件",
+    nothingHere: "ここには何もありません。",
+    markDoneTitle: "完了にマーク",
+    cancelTaskTitle: "タスクをキャンセル",
+    reopenTitle: "再オープン",
+    highPriorityBadge: "高",
+    overdueRowPrefix: "期限超過 — ",
+    duePrefix: "期限",
+    ownerLabel: "オーナー：",
+    relToday: "今日",
+    relTomorrow: "明日",
+    relYesterday: "昨日",
+    relInPrefix: "あと",
+    relDaysSuffix: "日",
+    relDaysAgo: "日前",
+  },
+
 };
 
 export default ja;
