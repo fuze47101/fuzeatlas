@@ -5410,6 +5410,82 @@ const km: Translations = {
     btnCreatePo: "Create PO & បើក បោះពុម្ពable Packet →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "នាយក",
+    crumbHere: "ទំនាក់ទំនង Hygiene",
+    pageTitle: "ទំនាក់ទំនង Hygiene",
+    pageSubtitle: "Flags placeholder, role-mailbox, and malformed contacts so reps stop wasting outreach on Jane Doe. Reversible — un-hide to bring a contact back into the wizard.",
+
+    btnPreviewScan: "🔍 Preview scan",
+    btnAutoHide: "🙈 Scan + auto-hide",
+    btnScanning: "Scanning…",
+    btnHiding: "Hiding…",
+    titlePreviewScan: "Re-run the hygiene snapshot on every contact, without changing visibility",
+    titleAutoHide: "Scan + auto-hide placeholder contacts from the BD Wizard",
+    confirmAutoHide: "Auto-hide will flip hiddenពីWizard = true for every contact the scan flags as placeholder or invalid-email. This is reversible (you can un-hide from this page) but affects every rep's BD Wizard immediately. បន្ត?",
+    promptHide: "Hide this contact from the BD Wizard? Reason (optional):",
+    promptUnhide: "Un-hide this contact? Reason (optional, written to their notes):",
+    failedPrefix: "បរាជ័យ:",
+    networkErrPrefix: "Network error:",
+    scanFailedPrefix: "Scan failed:",
+
+    summaryScanned: "Scanned",
+    summaryContacts: "contacts · placeholder",
+    summarySuspicious: "· suspicious",
+    summaryRole: "· role",
+    summaryReal: "· real",
+    summaryHiddenSuffix: "new",
+    summaryHiddenPrefix: "· hidden",
+
+    statPlaceholder: "Placeholder",
+    statSuspicious: "Suspicious",
+    statRole: "តួនាទី mailbox",
+    statReal: "Real",
+    statUnscanned: "Unscanned",
+    statHidden: "Hidden",
+
+    filterVerdict: "Verdict",
+    filterVisibility: "Visibility",
+    filterAllScanned: "ទាំងអស់ scanned",
+    filterPlaceholder: "Placeholder",
+    filterSuspicious: "Suspicious",
+    filterRoleMailbox: "តួនាទី mailbox",
+    filterReal: "Real",
+    filterUnscanned: "Unscanned",
+    filterAllVisibility: "ទាំងអស់ visibility",
+    filterHiddenOnly: "Hidden only",
+    filterVisibleOnly: "Visible only",
+    searchPlaceholder: "ស្វែងរក name or email…",
+
+    emptyTitle: "ទេ contacts match the current filter.",
+    emptyUnscannedTpl: "{n} contacts have never been scanned — hit \"Preview scan\" to populate.",
+
+    colContact: "ទំនាក់ទំនង",
+    colBrandFactory: "ម៉ាក / រោងចក្រ",
+    colVerdict: "Verdict",
+    colEmail: "អ៊ីមែល",
+    colLinkedin: "LinkedIn",
+    colScore: "Score",
+    colFlags: "Flags",
+    colActions: "Actions",
+
+    unnamed: "(unnamed)",
+    noEmail: "no email",
+    hiddenLabel: "Hidden",
+    flagsMore: "more",
+    flagsClean: "clean",
+    actionHide: "Hide",
+    actionUnhide: "Un-hide",
+
+    helpFooter: "Scan walks every contact and snapshots verdict + flags onto the row. Preview only records the verdict; Scan + auto-hide also flips hiddenពីWizard for placeholders and invalid-email contacts. Both are reversible — click \"Un-hide\" to restore a contact, which also re-runs the snapshot in case the data has been fixed.",
+
+    verdictReal: "real",
+    verdictSuspect: "suspect",
+    verdictPlaceholder: "placeholder",
+    verdictRoleMbx: "role mbx",
+    verdictUnscanned: "unscanned",
+  },
+
 };
 
 export default km;
