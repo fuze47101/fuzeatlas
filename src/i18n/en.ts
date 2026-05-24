@@ -8388,6 +8388,18 @@ const en = {
     sentPrefix: "Invitation sent",
     questionsPrefix: "· Questions?",
   },
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "Playbooks",
+    heading: "BD playbooks",
+    subtitle: "Category-tagged outreach guidance. Favorite the ones you use; brands show a suggested playbook based on Brand.textileCategory.",
+    failedFallback: "Failed",
+    emptyBody: "No playbooks yet for this category.",
+    emptySeedHint: "Trigger",
+    emptySeedHintSuffix: "via fzcron to drop in the three starter playbooks.",
+    removeFavoriteTitle: "Remove favorite",
+    addFavoriteTitle: "Add favorite",
+  },
   engagementDebug: {
     crumb: "Engagement debug",
     engagementSuffix: "engagement",

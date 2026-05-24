@@ -11,6 +11,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 
 interface Playbook {
   id: string;
@@ -49,6 +50,8 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export default function PlaybooksPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const T = t.bdPlaybooks;
   const [playbooks, setPlaybooks] = useState<Playbook[]>([]);
   const [filter, setFilter] = useState("all");
   const [error, setError] = useState<string | null>(null);
@@ -63,7 +66,7 @@ export default function PlaybooksPage() {
       const res = await fetch("/api/admin/bd/playbooks");
       const j = await res.json();
       if (j.ok) setPlaybooks(j.playbooks);
-      else setError(j.error || "Failed");
+      else setError(j.error || T.failedFallback);
     } catch (e: any) {
       setError(e.message);
     }
@@ -88,14 +91,13 @@ export default function PlaybooksPage() {
       <div className="mb-6 flex items-end justify-between">
         <div>
           <div className="flex items-center gap-2 text-xs text-slate-600 mb-1">
-            <Link href="/admin/bd" className="hover:text-[#00b4c3]">BD</Link>
+            <Link href="/admin/bd" className="hover:text-[#00b4c3]">{T.bdCrumb}</Link>
             <span>·</span>
-            <span className="text-slate-800 font-medium">Playbooks</span>
+            <span className="text-slate-800 font-medium">{T.crumb}</span>
           </div>
-          <h1 className="text-2xl font-black text-slate-900">BD playbooks</h1>
+          <h1 className="text-2xl font-black text-slate-900">{T.heading}</h1>
           <p className="text-sm text-slate-600 mt-1">
-            Category-tagged outreach guidance. Favorite the ones you use; brands
-            show a suggested playbook based on Brand.textileCategory.
+            {T.subtitle}
           </p>
         </div>
       </div>
@@ -120,10 +122,10 @@ export default function PlaybooksPage() {
 
       {filtered.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-600">
-          No playbooks yet for this category.
+          {T.emptyBody}
           {isEditor && (
             <p className="text-xs mt-2">
-              Trigger <code className="font-mono bg-slate-100 px-1 rounded">/api/cron/seed-playbooks</code> via fzcron to drop in the three starter playbooks.
+              {T.emptySeedHint} <code className="font-mono bg-slate-100 px-1 rounded">/api/cron/seed-playbooks</code> {T.emptySeedHintSuffix}
             </p>
           )}
         </div>
@@ -147,7 +149,7 @@ export default function PlaybooksPage() {
                 </div>
                 <button
                   onClick={() => toggleFavorite(p)}
-                  title={p.isFavorite ? "Remove favorite" : "Add favorite"}
+                  title={p.isFavorite ? T.removeFavoriteTitle : T.addFavoriteTitle}
                   className="text-2xl leading-none"
                 >
                   {p.isFavorite ? "★" : "☆"}
