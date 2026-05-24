@@ -7891,6 +7891,29 @@ const vi: Translations = {
     bookAnotherBtn: "Đặt cuộc họp khác",
   },
 
+  adminAuditLog: {
+    adminCrumb: "Quản trị",
+    crumb: "Nhật ký kiểm toán",
+    heading: "Nhật ký kiểm toán",
+    subtitle: "Đường mòn kiểm toán đầy đủ trên mọi thực thể. Lọc theo hành động, thực thể, hoặc ngày. Lưu giữ 90 ngày.",
+    errorContext: "Tải nhật ký kiểm toán",
+    couldntLoadPrefix: "Không tải được nhật ký kiểm toán",
+    networkError: "Lỗi mạng khi tải nhật ký kiểm toán.",
+    actionLabel: "Hành động",
+    allActionsOption: "Tất cả hành động",
+    entityLabel: "Thực thể",
+    allEntitiesOption: "Tất cả thực thể",
+    sinceLabel: "Từ",
+    resetBtn: "Đặt lại",
+    rowsSuffix: "hàng",
+    loadingState: "Đang tải nhật ký kiểm toán…",
+    emptyState: "Không có hàng kiểm toán nào khớp các bộ lọc này.",
+    byPrefix: "bởi",
+    systemActor: "Hệ thống",
+    fieldChangedSingular: "trường đã thay đổi",
+    fieldChangedPlural: "trường đã thay đổi",
+  },
+
 };
 
 export default vi;
