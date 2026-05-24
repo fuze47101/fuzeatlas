@@ -4596,6 +4596,49 @@ const it: Translations = {
     sowEmptyNothingStuck: "Niente di bloccato.",
   },
 
+  ordersAdmin: {
+    pageTitle: "Gestione ordini",
+    pageSubtitle: "Esamina, approva e traccia tutti gli ordini FUZE",
+    myAccountsOnly: "Solo i miei account",
+    awaitingApprovalTemplate: "{n} ordin{s} in attesa di approvazione",
+
+    statTotal: "Totali",
+    statPending: "In attesa",
+    statApproved: "Approvati",
+    statProcessing: "In elaborazione",
+    statShipped: "Spediti",
+    statDelivered: "Consegnati",
+    statRevenue: "Fatturato",
+
+    filterAll: "Tutti",
+    filterAllTypes: "Tutti i tipi",
+
+    emptyMessage: "Nessun ordine corrisponde ai filtri",
+
+    colOrder: "Ordine",
+    colFactory: "Stabilimento",
+    colType: "Tipo",
+    colVolume: "Volume",
+    colBrand: "Brand",
+    colTotal: "Totale",
+    colFulfillment: "Evasione",
+    colStatus: "Stato",
+    colDate: "Data",
+
+    statusDraft: "Bozza",
+    statusQuoted: "Quotato",
+    statusPendingApproval: "In attesa di approvazione",
+    statusApproved: "Approvato",
+    statusConfirmed: "Confermato",
+    statusProcessing: "In elaborazione",
+    statusShipped: "Spedito",
+    statusDelivered: "Consegnato",
+    statusCancelled: "Annullato",
+
+    directUsaLabel: "Diretto USA",
+    tagsSuffix: "etichette",
+  },
+
 };
 
 export default it;
