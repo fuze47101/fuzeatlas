@@ -8011,6 +8011,33 @@ const zhTW: Translations = {
     resumeBtn: "恢復",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ 經驗證的 FUZE 處理",
+    tierPrefix: "FUZE 層級",
+    productSectionTitle: "產品",
+    skuLabel: "SKU",
+    batchLabel: "批次",
+    fuzeNumberLabel: "FUZE #",
+    constructionLabel: "結構",
+    weightLabel: "重量",
+    weightUnit: "GSM",
+    mostRecentValidation: "最近一次驗證",
+    testedPrefix: "測試於",
+    afterWashesPrefix: "經",
+    afterWashesSuffix: "次水洗後",
+    whatDoesThisMean: "這代表什麼？",
+    explainerP1: "FUZE 是專有的抗菌紡織品處理。FUZE 元材料在標準紡織品後處理過程中永久鍵結於纖維表面——無溶出、無 PFAS、不改變布料的手感或透氣性。",
+    explainerP2: "細菌減量透過與已鍵結之元材料的直接接觸發生——這也是 FUZE 以 ASTM E2149（為非溶出型抗菌劑設計的接觸式殺菌測試）為主要測試，並輔以 AATCC 100 進行層疊幾何驗證的原因。",
+    certificationsLabel: "認證：",
+    certificationsBody: "OEKO-TEX Standard 100 Class I、bluesign® approved、EPA 註冊、加州 EPA 核准（2026 Q1）、無 PFAS。",
+    sustainabilityTitle: "永續性",
+    sustainabilityBody: "至今應用在此布料上的 FUZE 用量。",
+    seeMorePrefix: "查看更多",
+    seeMoreSuffix: "經認證產品 →",
+    learnMoreLink: "深入了解 FUZE 技術 →",
+    footerVerifiedBy: "由 FUZE Atlas 驗證",
+  },
+
 };
 
 export default zhTW;
