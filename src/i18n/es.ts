@@ -7014,6 +7014,32 @@ const es: Translations = {
     footerQuestions: "¿Preguntas?",
   },
 
+  settingsExchangeRates: {
+    title: "Tipos de cambio",
+    subtitle: "Gestiona los tipos de conversión de divisas",
+    addRateBtn: "Añadir tipo",
+    cancelBtn: "Cancelar",
+    addFormTitle: "Añadir tipo de cambio",
+    ratePlaceholder: "Tipo",
+    submitAddBtn: "Añadir tipo",
+    converterTitle: "Conversor de divisas",
+    fromLabel: "De",
+    toLabel: "A",
+    amountLabel: "Importe",
+    convertBtn: "Convertir",
+    rateResultPrefix: "Tipo:",
+    quickStatsTitle: "Estadísticas rápidas",
+    totalCurrenciesLabel: "Total de divisas",
+    activeRatesLabel: "Tipos activos",
+    currentRatesTitle: "Tipos actuales (Base: USD)",
+    loading: "Cargando…",
+    emptyState: "No hay tipos de cambio configurados",
+    colCurrencyPair: "Par de divisas",
+    colRate: "Tipo",
+    colEffectiveDate: "Fecha efectiva",
+    colSource: "Fuente",
+  },
+
 };
 
 export default es;
