@@ -5184,6 +5184,81 @@ const tr: Translations = {
     docTypeOther: "Diğer",
   },
 
+  consumptionAdmin: {
+    loading: "Tüketim verileri yükleniyor...",
+    pageTitle: "Tüketim ve Yeniden Sipariş",
+    pageSubtitle: "Fabrika FUZE kullanımını, öngörülen tükenme tarihlerini ve otomatik yeniden sipariş tetikleyicilerini takip edin",
+
+    btnNewOrder: "+ Yeni Sipariş",
+    btnLogUsage: "+ Kullanım Kaydet",
+
+    kpiActiveFactories: "Aktif Fabrikalar",
+    kpiOfTotal: "toplam {n} içinden",
+    kpiTotalOrdered: "Toplam Sipariş Edilen",
+    kpiPending: "{n} beklemede",
+    kpiTotalConsumed: "Toplam Tüketilen",
+    kpiAcrossAll: "tüm fabrikalarda",
+    kpiReorderAlerts: "Yeniden Sipariş Uyarıları",
+    kpiAlertsSplit: "{c} kritik, {w} uyarı",
+
+    annualDemandLabel: "Yıllık Öngörülen Talep",
+    annualDemandUnit: "litre",
+    annualDemandBottles: "~{n} şişe",
+    annualDemandRevenue: "~${n} gelir",
+
+    sectionFactoryInventory: "Fabrika Envanter Durumu",
+    emptyTitle: "Henüz FUZE etkin fabrika yok.",
+    emptySub: "fuzeEnabled = true olan fabrikalar burada görünecektir.",
+
+    cellRemaining: "Kalan",
+    cellBurn: "Günlük tüketim",
+    cellRunOut: "Tükenme",
+    daysSuffix: "g",
+    daysWord: "gün",
+    fabricsSuffix: "kumaş",
+    fabricSuffix: "kumaş",
+    activeOrdersSuffix: "aktif sipariş",
+    activeOrderSuffix: "aktif sipariş",
+
+    colFactory: "Fabrika",
+    colCountry: "Ülke",
+    colOrdered: "Sipariş Edilen",
+    colConsumed: "Tüketilen",
+    colRemaining: "Kalan",
+    colBurnDay: "Günlük Tüketim",
+    colRunOut: "Tükenme",
+    colStatus: "Durum",
+
+    modalOrderTitle: "Yeni FUZE Siparişi",
+    modalUsageTitle: "FUZE Kullanımı Kaydet",
+    fieldFactory: "Fabrika",
+    placeholderFactory: "Fabrika seçin...",
+    fieldVolumeL: "Hacim (litre)",
+    fieldTier: "Kademe",
+    fieldNotes: "Notlar",
+    fieldLitersUsed: "Kullanılan Litre",
+    fieldMetersProcessed: "İşlenen Metre",
+    placeholderOptional: "İsteğe bağlı",
+    fieldMethod: "Yöntem",
+    placeholderSelect: "Seçin...",
+    methodExhaust: "Çektirme (Boya Banyosu)",
+    methodPad: "Emdirme-Kurutma-Fiksaj",
+    methodSpray: "Püskürtme",
+
+    summaryBottles: "Şişe (her biri 19L):",
+    summaryEstTotal: "Tahmini toplam:",
+
+    btnCancel: "İptal",
+    btnCreating: "Oluşturuluyor...",
+    btnCreateOrder: "Sipariş Oluştur",
+    btnLogging: "Kaydediliyor...",
+    btnLogUsageSubmit: "Kullanım Kaydet",
+
+    errorCreateOrder: "Sipariş oluşturulamadı",
+    errorLogUsage: "Tüketim kaydedilemedi",
+    errorNetwork: "Ağ hatası",
+  },
+
 };
 
 export default tr;
