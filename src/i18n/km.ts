@@ -5582,6 +5582,54 @@ const km: Translations = {
     btnCreating: "Creating...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "FUZE ក្រណាត់ Library",
+    pageSubtitle: "Browse FUZE-treated fabrics and verified test results across our global network. ទាំងអស់ data is anonymized — factory and brand identities are confidential.",
+
+    statFabrics: "ក្រណាត់ ការសាកល្បងed",
+    statTests: "សរុប ការសាកល្បង",
+    statIcp: "ICP Analyses",
+    statAb: "Antimicrobial ការសាកល្បង",
+
+    searchPlaceholder: "ស្វែងរក by construction, yarn, end use, លេខ FUZE...",
+    filterAllTypes: "ទាំងអស់ ការសាកល្បង ប្រភេទs",
+    filterIcp: "ICP Analysis",
+    filterAntibacterial: "Antibacterial",
+    filterFungal: "Antifungal",
+    filterOdor: "Odor Control",
+    passOnly: "Pass only",
+
+    emptyTitle: "ទេ fabrics match your criteria",
+    emptyClear: "Clear all filters",
+    errorFailedLoad: "បរាជ័យ to load fabric library",
+    errorFailedDefault: "បរាជ័យ to load",
+
+    testsSuffix: "tests",
+    testSuffix: "test",
+    propConstruction: "Construction:",
+    propWeight: "Weight:",
+    propWidth: "Width:",
+    propYarn: "Yarn:",
+    propCategory: "ប្រភេទ:",
+    propEndUse: "End Use:",
+    propWeave: "Weave:",
+    propColor: "Color:",
+
+    colTest: "ការសាកល្បង",
+    colMethod: "Method",
+    colWashes: "Washes",
+    colResult: "Result",
+    colStatus: "ស្ថានភាព",
+    pass: "Pass",
+    fail: "Fail",
+    passBadge: "PASS",
+    failBadge: "FAIL",
+
+    paginationPrev: "មុន",
+    paginationNext: "បន្ទាប់",
+    paginationLabel: "Page {page} of {pages}",
+  },
+
 };
 
 export default km;
