@@ -7395,6 +7395,31 @@ const ur: Translations = {
     claimsLink: "دعوے",
   },
 
+  changePassword: {
+    titleDefault: "پاس ورڈ تبدیل کریں",
+    titleForced: "اپنا نیا پاس ورڈ سیٹ کریں",
+    forcedBanner: "آپ کو ایک عارضی پاس ورڈ تفویض کیا گیا تھا۔ جاری رکھنے کے لیے براہ کرم محفوظ پاس ورڈ بنائیں۔",
+    currentPasswordLabel: "موجودہ پاس ورڈ",
+    newPasswordLabel: "نیا پاس ورڈ",
+    newPasswordPlaceholder: "کم از کم 8 حروف، 1 بڑا، 1 نمبر",
+    confirmPasswordLabel: "نئے پاس ورڈ کی تصدیق کریں",
+    reqMinChars: "کم از کم 8 حروف",
+    reqUppercase: "ایک بڑا حرف",
+    reqNumber: "ایک نمبر",
+    reqMatch: "پاس ورڈز میل کھاتے ہیں",
+    updateBtn: "پاس ورڈ اپ ڈیٹ کریں",
+    setAndContinueBtn: "پاس ورڈ سیٹ کریں اور جاری رکھیں",
+    updatingBtn: "اپ ڈیٹ ہو رہا ہے...",
+    cancelBtn: "منسوخ کریں",
+    passwordUpdatedTitle: "پاس ورڈ اپ ڈیٹ ہو گیا",
+    redirecting: "آپ کو ابھی بھیجا جا رہا ہے...",
+    errPasswordsDoNotMatch: "پاس ورڈز میل نہیں کھاتے",
+    errMinLength: "پاس ورڈ کم از کم 8 حروف کا ہونا چاہیے",
+    errNeedUppercase: "پاس ورڈ میں کم از کم ایک بڑا حرف ہونا چاہیے",
+    errNeedNumber: "پاس ورڈ میں کم از کم ایک نمبر ہونا چاہیے",
+    errGeneric: "پاس ورڈ تبدیل کرنے میں ناکامی",
+  },
+
 };
 
 export default ur;
