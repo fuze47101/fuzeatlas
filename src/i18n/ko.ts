@@ -5784,6 +5784,55 @@ const ko: Translations = {
     statusComplete: "완료",
   },
 
+  brandFabricsAdmin: {
+    loading: "원단 포트폴리오 로드 중…",
+    errorTitle: "원단 포트폴리오를 로드할 수 없습니다",
+    errorUnknown: "알 수 없는 오류",
+    errorFailedLoad: "로드 실패",
+    errorSave: "저장 실패",
+    btnTryAgain: "다시 시도",
+
+    crumbPartners: "브랜드 파트너",
+    crumbHere: "원단 포트폴리오",
+    titleSuffix: "— 원단 포트폴리오",
+    subtitle: "이 브랜드의 모든 방직 공장에 걸친 모든 원단. {total}개 원단 중 {shown}개 표시됨.",
+    btnExportCsv: "⬇ CSV 내보내기",
+
+    searchPlaceholder: "원단 번호, 고객 코드, 조성 검색…",
+    filterAllMills: "모든 방직 공장",
+    filterAllTypes: "모든 유형",
+    typeDevelopment: "개발",
+    typeActualBulk: "실제 (벌크)",
+    typeForecast: "예측",
+    typeRd: "R&D",
+    filterAllStatuses: "모든 상태",
+
+    emptyFabric: "🧵",
+    emptyTitle: "필터와 일치하는 원단이 없습니다.",
+    emptySub: "위의 필터를 조정하거나 검색을 지워 전체 포트폴리오를 확인하십시오.",
+    fabricSingular: "원단",
+    fabricPlural: "원단",
+    openFactory: "공장 열기 →",
+
+    colFuze: "FUZE 번호",
+    colMillFabric: "방직 원단 번호",
+    colType: "유형",
+    colContent: "조성",
+    colGsm: "GSM",
+    colCustomerCode: "고객 코드",
+    colTrial: "트라이얼",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "ICP 값",
+    colTestDate: "시험 날짜",
+    colStatus: "상태",
+
+    unassigned: "미배정",
+    typeBulkProduction: "벌크 생산",
+    notSet: "— 설정되지 않음 —",
+    titleOpenFabric: "원단 세부 정보 열기",
+  },
+
 };
 
 export default ko;
