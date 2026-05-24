@@ -7526,6 +7526,32 @@ const es: Translations = {
     errSendFailed: "Error al enviar el correo de verificación",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "Documentos públicos",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "Documentos públicos de referencia para la línea de productos FUZE",
+    headerLeadAfter: ". Para documentos privados (TDS/SDS completos, precios internos, guías de aplicación), inicia sesión en el portal FUZE Atlas según tu rol.",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "Toxicología",
+    catPricing: "Precios",
+    catSustainability: "Sostenibilidad",
+    catEducation: "Educación",
+    catClaimsCompliance: "Declaraciones y cumplimiento",
+    catApplicationGuide: "Guía de aplicación",
+    catCaseStudy: "Caso de estudio",
+    loading: "Cargando…",
+    emptyBefore: "No hay documentos públicos disponibles para",
+    emptyAfter: "todavía. Contacta con FUZE para acceder a la biblioteca privada.",
+    loginCta: "Iniciar sesión en Atlas →",
+    versionPrefix: "Versión",
+    downloadBtn: "↓ Descargar",
+    unknownLineTitle: "Línea de producto desconocida",
+    unknownLineBody: "FUZE tiene cuatro niveles: F1, F2, F3, F4. Prueba con uno de ellos.",
+    errLoadFailed: "Error al cargar",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default es;
