@@ -7039,6 +7039,26 @@ const zhTW: Translations = {
     colSource: "來源",
   },
 
+  interLabVariance: {
+    loadingLabel: "載入實驗室間變異中",
+    crumbQualityLabs: "品質與實驗室",
+    crumbInterLabVariance: "實驗室間變異",
+    title: "實驗室間變異",
+    subtitleBefore: "顯示在最近",
+    subtitleAfter: "天內由 ≥2 個實驗室測試過同一面料的情況。依範圍 (最大 − 最小) 遞減排序。",
+    colFabric: "面料",
+    colMethod: "方法",
+    colRange: "範圍",
+    colMeanSigma: "平均 ± σ",
+    colPerLab: "每實驗室結果",
+    emptyTitle: "尚無多實驗室面料",
+    emptyBodyBefore: "實驗室間變異比較在最近",
+    emptyBodyAfter: "天內由 ≥2 個實驗室測試過的面料。一旦您有同一面料在合作實驗室和 FUZE USA (或任意 2 個實驗室組合) 測試過,就會顯示於此。",
+    biasTitle: "每實驗室校準偏差",
+    biasHint: "在每個共享面料上的 (此實驗室結果 − 群組平均) 平均值。正值 = 高於同儕實驗室;負值 = 低於。",
+    emptyBias: "尚無偏差資料。",
+  },
+
 };
 
 export default zhTW;
