@@ -6599,6 +6599,34 @@ const km: Translations = {
     errLoadFailed: "បរាជ័យ to load funnel",
   },
 
+  bdSequenceAnalytics: {
+    loading: "កំពុងផ្ទុក…",
+    crumbBdSequences: "BD Sequences",
+    crumbAnalytics: "Analytics",
+    modeSequence: "Sequence",
+    modeCadence: "Cadence",
+    title: "Funnel analytics",
+    aggregatedAcross: "Aggregated across",
+    sequenceSingular: "sequence",
+    sequencePlural: "sequences",
+    onCadenceLabel: "on cadence",
+    emptyBefore: "ទេ send activity yet on this",
+    stepLabel: "Step",
+    sentSuffix: "sent",
+    mSent: "បានផ្ញើ",
+    mOpens: "បើកs",
+    mClicks: "Clicks",
+    mReplies: "Replies",
+    mMeetings: "Meetings",
+    mAvgDaysReply: "Avg days → reply",
+    subjectVariantsTitle: "ប្រធានបទ variants",
+    colSubject: "ប្រធានបទ",
+    colSent: "បានផ្ញើ",
+    colOpens: "បើកs",
+    colOpenRate: "បើក rate",
+    errLoadFailed: "បរាជ័យ to load analytics",
+  },
+
 };
 
 export default km;
