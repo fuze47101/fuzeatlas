@@ -4537,6 +4537,23 @@ const hi: Translations = {
     nameRequiredError: "नाम आवश्यक है",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← कैलकुलेटर पर वापस",
+    printButton: "🖨 प्रिंट करें / PDF के रूप में सहेजें",
+    eyebrow: "FUZE Biotech · लैब SOP",
+    pageTitle: "बेंच परीक्षण प्रक्रिया",
+    pageSubtitle: "FUZE रेसिपी कैलकुलेटर — पैड-ड्राई-क्योर पिकअप दर और तनुकरण",
+    docLabel: "दस्तावेज़: SOP-FUZE-LAB-001",
+    revLabel: "Rev: 1.0 ·",
+    purposeHeader: "उद्देश्य",
+    equipmentHeader: "उपकरण",
+    chemistryRefHeader: "FUZE केमिस्ट्री संदर्भ",
+    criticalRulesHeader: "⚠ महत्वपूर्ण प्रोटोकॉल नियम",
+    procedureHeader: "प्रक्रिया",
+    formulasHeader: "सूत्र (QC क्रॉस-चेक के लिए)",
+    sanityRangesHeader: "सैनिटी चेक रेंज",
+  },
+
 };
 
 export default hi;
