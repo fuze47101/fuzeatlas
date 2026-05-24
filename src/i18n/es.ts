@@ -7758,6 +7758,29 @@ const es: Translations = {
     bookAnotherBtn: "Reservar otra reunión",
   },
 
+  adminAuditLog: {
+    adminCrumb: "Administración",
+    crumb: "Registro de auditoría",
+    heading: "Registro de auditoría",
+    subtitle: "Pista de auditoría completa de todas las entidades. Filtra por acción, entidad o fecha. Retención de 90 días.",
+    errorContext: "Cargar registro de auditoría",
+    couldntLoadPrefix: "No se pudo cargar el registro de auditoría",
+    networkError: "Error de red al cargar el registro de auditoría.",
+    actionLabel: "Acción",
+    allActionsOption: "Todas las acciones",
+    entityLabel: "Entidad",
+    allEntitiesOption: "Todas las entidades",
+    sinceLabel: "Desde",
+    resetBtn: "Restablecer",
+    rowsSuffix: "filas",
+    loadingState: "Cargando registro de auditoría…",
+    emptyState: "No hay filas de auditoría que coincidan con estos filtros.",
+    byPrefix: "por",
+    systemActor: "Sistema",
+    fieldChangedSingular: "campo modificado",
+    fieldChangedPlural: "campos modificados",
+  },
+
 };
 
 export default es;
