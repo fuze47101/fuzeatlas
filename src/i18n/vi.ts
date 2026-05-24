@@ -7754,6 +7754,31 @@ const vi: Translations = {
     claimsLink: "Tuyên bố",
   },
 
+  changePassword: {
+    titleDefault: "Đổi mật khẩu",
+    titleForced: "Đặt mật khẩu mới của bạn",
+    forcedBanner: "Bạn đã được gán mật khẩu tạm thời. Vui lòng tạo mật khẩu an toàn để tiếp tục.",
+    currentPasswordLabel: "Mật khẩu hiện tại",
+    newPasswordLabel: "Mật khẩu mới",
+    newPasswordPlaceholder: "Tối thiểu 8 ký tự, 1 chữ hoa, 1 số",
+    confirmPasswordLabel: "Xác nhận mật khẩu mới",
+    reqMinChars: "Ít nhất 8 ký tự",
+    reqUppercase: "Một chữ hoa",
+    reqNumber: "Một số",
+    reqMatch: "Mật khẩu khớp",
+    updateBtn: "Cập nhật mật khẩu",
+    setAndContinueBtn: "Đặt mật khẩu & Tiếp tục",
+    updatingBtn: "Đang cập nhật...",
+    cancelBtn: "Hủy",
+    passwordUpdatedTitle: "Đã cập nhật mật khẩu",
+    redirecting: "Đang chuyển hướng bạn...",
+    errPasswordsDoNotMatch: "Mật khẩu không khớp",
+    errMinLength: "Mật khẩu phải có ít nhất 8 ký tự",
+    errNeedUppercase: "Mật khẩu phải chứa ít nhất một chữ hoa",
+    errNeedNumber: "Mật khẩu phải chứa ít nhất một số",
+    errGeneric: "Không đổi được mật khẩu",
+  },
+
 };
 
 export default vi;
