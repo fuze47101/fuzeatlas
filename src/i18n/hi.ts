@@ -7800,6 +7800,24 @@ const hi: Translations = {
     footerCertifiedBy: "FUZE Atlas द्वारा प्रमाणित",
   },
 
+  forgotPassword: {
+    brandSubtitle: "अपना पासवर्ड रीसेट करें",
+    cardTitle: "अपना पासवर्ड भूल गए?",
+    cardBody: "अपना ईमेल पता दर्ज करें और हम आपको पासवर्ड रीसेट करने का लिंक भेजेंगे।",
+    emailLabel: "ईमेल पता",
+    emailPlaceholder: "you@801inc.com",
+    sendBtn: "रीसेट लिंक भेजें",
+    sendingBusy: "भेज रहे हैं...",
+    rememberPrefix: "अपना पासवर्ड याद है?",
+    signInLink: "साइन इन करें",
+    failedFallback: "अनुरोध प्रसंस्करण विफल",
+    networkError: "नेटवर्क त्रुटि",
+    checkEmailTitle: "अपना ईमेल देखें",
+    checkEmailBody: "यदि उस ईमेल के साथ एक खाता मौजूद है, तो आपको शीघ्र ही एक पासवर्ड रीसेट लिंक प्राप्त होगा।",
+    backToSignIn: "साइन इन पर वापस",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default hi;
