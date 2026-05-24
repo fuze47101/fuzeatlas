@@ -1,6 +1,8 @@
 // @ts-nocheck
 "use client";
 
+import { useI18n } from "@/i18n";
+
 /**
  * FUZE Lab — Bench Test SOP (printable)
  *
@@ -9,6 +11,8 @@
  * letter/A4 page when set to Save as PDF.
  */
 export default function RecipeSOPPage() {
+  const { t } = useI18n();
+  const T = t.recipeCalculatorSop;
   return (
     <div className="min-h-screen bg-white p-8 print:p-0">
       <style>{`
@@ -21,9 +25,9 @@ export default function RecipeSOPPage() {
 
       {/* Print control (hidden on print) */}
       <div className="no-print max-w-4xl mx-auto mb-4 flex items-center justify-between">
-        <a href="/admin/recipe-calculator" className="text-sm text-[#00b4c3] font-semibold">← Back to calculator</a>
+        <a href="/admin/recipe-calculator" className="text-sm text-[#00b4c3] font-semibold">{T.backLink}</a>
         <button onClick={() => window.print()} className="px-5 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800">
-          🖨 Print / Save as PDF
+          {T.printButton}
         </button>
       </div>
 
@@ -31,20 +35,20 @@ export default function RecipeSOPPage() {
         {/* Header */}
         <header className="border-b-4 border-[#00b4c3] pb-4 mb-5 flex items-start justify-between">
           <div>
-            <p className="text-xs font-bold text-[#00b4c3] tracking-widest uppercase">FUZE Biotech · Lab SOP</p>
-            <h1 className="text-3xl font-black text-slate-900 mt-1">Bench Test Procedure</h1>
-            <p className="text-sm text-slate-600 mt-1">FUZE Recipe Calculator — Pad-Dry-Cure Pickup Rate & Dilution</p>
+            <p className="text-xs font-bold text-[#00b4c3] tracking-widest uppercase">{T.eyebrow}</p>
+            <h1 className="text-3xl font-black text-slate-900 mt-1">{T.pageTitle}</h1>
+            <p className="text-sm text-slate-600 mt-1">{T.pageSubtitle}</p>
           </div>
           <div className="text-right text-xs text-slate-500">
-            <p>Doc: SOP-FUZE-LAB-001</p>
-            <p>Rev: 1.0 · {new Date().toLocaleDateString()}</p>
+            <p>{T.docLabel}</p>
+            <p>{T.revLabel} {new Date().toLocaleDateString()}</p>
           </div>
         </header>
 
         {/* Purpose + Equipment */}
         <section className="mb-5 grid grid-cols-2 gap-4 text-sm">
           <div>
-            <h2 className="font-black text-slate-900 mb-1 text-sm uppercase tracking-wide">Purpose</h2>
+            <h2 className="font-black text-slate-900 mb-1 text-sm uppercase tracking-wide">{T.purposeHeader}</h2>
             <p className="text-slate-700 leading-snug">
               Determine the pad pickup rate of a fabric sample and compute the
               correct FUZE bath concentration and dilution for each of the four
@@ -52,7 +56,7 @@ export default function RecipeSOPPage() {
             </p>
           </div>
           <div>
-            <h2 className="font-black text-slate-900 mb-1 text-sm uppercase tracking-wide">Equipment</h2>
+            <h2 className="font-black text-slate-900 mb-1 text-sm uppercase tracking-wide">{T.equipmentHeader}</h2>
             <ul className="text-slate-700 leading-snug list-disc pl-4">
               <li>FUZE mini pad bath (HTAI P-B0) — <strong>4 bar squeeze (0.4 MPa)</strong>, 41 cm roller circumference</li>
               <li>VFD calibration: <strong>m/min ≈ Hz × 0.295</strong>, e.g. 10 Hz = ~3.0 m/min, 20 Hz = ~5.9 m/min</li>
@@ -67,7 +71,7 @@ export default function RecipeSOPPage() {
 
         {/* Key chemistry callout */}
         <section className="mb-5 bg-slate-50 border-l-4 border-[#00b4c3] px-4 py-3 text-xs">
-          <h2 className="font-black text-slate-900 mb-1 uppercase tracking-wide">FUZE Chemistry Reference</h2>
+          <h2 className="font-black text-slate-900 mb-1 uppercase tracking-wide">{T.chemistryRefHeader}</h2>
           <div className="grid grid-cols-4 gap-2">
             <div><strong>Stock concentration</strong><br />30 mg/L metamaterial</div>
             <div><strong>F1</strong>: 1.0 mg/kg OWF<br />(max performance)</div>
@@ -78,7 +82,7 @@ export default function RecipeSOPPage() {
 
         {/* Critical protocol rules */}
         <section className="mb-5 bg-amber-50 border-l-4 border-amber-500 px-4 py-3 text-xs">
-          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide">⚠ Critical Protocol Rules</h2>
+          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide">{T.criticalRulesHeader}</h2>
           <ol className="space-y-1 pl-5 list-decimal text-slate-700">
             <li><strong>Single pass, 4 bar, weigh within 10 seconds.</strong> Do NOT re-pad to lower the wet weight — that measures squeezer over-squeeze, not pickup.</li>
             <li><strong>Squeezer consistency check:</strong> if a 2nd pass drops mass by more than 5%, flag the squeezer — it isn't at equilibrium on the first pass.</li>
@@ -91,7 +95,7 @@ export default function RecipeSOPPage() {
 
         {/* Procedure */}
         <section className="mb-5">
-          <h2 className="font-black text-slate-900 mb-3 text-sm uppercase tracking-wide">Procedure</h2>
+          <h2 className="font-black text-slate-900 mb-3 text-sm uppercase tracking-wide">{T.procedureHeader}</h2>
           <ol className="space-y-3 text-sm">
             {[
               {
@@ -152,7 +156,7 @@ export default function RecipeSOPPage() {
 
         {/* Formulas reference card */}
         <section className="mb-4 border border-slate-300 rounded p-3 text-xs bg-slate-50">
-          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide">Formulas (for QC cross-check)</h2>
+          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide">{T.formulasHeader}</h2>
           <div className="grid grid-cols-2 gap-x-6 gap-y-1 font-mono">
             <span>Pickup % (dry-to-wet)</span>
             <span>= (W_wet − W_dry) / W_dry × 100</span>
@@ -171,7 +175,7 @@ export default function RecipeSOPPage() {
 
         {/* Acceptance criteria */}
         <section className="mb-4 text-xs">
-          <h2 className="font-black text-slate-900 mb-1 uppercase tracking-wide">Sanity Check Ranges</h2>
+          <h2 className="font-black text-slate-900 mb-1 uppercase tracking-wide">{T.sanityRangesHeader}</h2>
           <div className="grid grid-cols-2 gap-x-6 gap-y-0.5 text-slate-700">
             <span>Pickup for woven pad</span><span>50–80 %</span>
             <span>Pickup for knit pad</span><span>60–100 %</span>

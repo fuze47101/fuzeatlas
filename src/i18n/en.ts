@@ -5166,6 +5166,22 @@ const en = {
     newDistributorModalTitle: "New distributor",
     nameRequiredError: "Name is required",
   },
+  recipeCalculatorSop: {
+    backLink: "← Back to calculator",
+    printButton: "🖨 Print / Save as PDF",
+    eyebrow: "FUZE Biotech · Lab SOP",
+    pageTitle: "Bench Test Procedure",
+    pageSubtitle: "FUZE Recipe Calculator — Pad-Dry-Cure Pickup Rate & Dilution",
+    docLabel: "Doc: SOP-FUZE-LAB-001",
+    revLabel: "Rev: 1.0 ·",
+    purposeHeader: "Purpose",
+    equipmentHeader: "Equipment",
+    chemistryRefHeader: "FUZE Chemistry Reference",
+    criticalRulesHeader: "⚠ Critical Protocol Rules",
+    procedureHeader: "Procedure",
+    formulasHeader: "Formulas (for QC cross-check)",
+    sanityRangesHeader: "Sanity Check Ranges",
+  },
 };
 
 export default en;
