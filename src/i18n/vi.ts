@@ -4942,6 +4942,48 @@ const vi: Translations = {
     sanityRangesHeader: "Khoảng kiểm tra hợp lý",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "Đánh giá điều hành hàng tuần",
+    weekOfTemplate: "Tuần của",
+    coveringPrefix: "Bao gồm",
+    daysWindowSuffix: "-ngày",
+    ownerLabel: "Chủ sở hữu:",
+    generatedLabel: "Đã tạo",
+    enterPresent: "Hiện diện vào",
+    exitPresent: "Hiện diện ra",
+    refreshing: "Đang làm mới…",
+    refreshSnapshot: "Làm mới ảnh chụp",
+
+    execSummaryTitle: "Tóm tắt điều hành",
+    execSummaryPlaceholder: "Điểm chính cho ban điều hành. Được lưu khi mất focus.",
+    saving: "Đang lưu…",
+
+    salesDistributionTitle: "Bán hàng & phân phối",
+    bookedDollars: "Đã đặt $",
+    shippedDollars: "Đã giao $",
+    bookedLiters: "Đã đặt L",
+    shippedLiters: "Đã giao L",
+    ordersSuffix: "đơn hàng",
+    shipmentsSuffix: "lô gửi",
+    kgShippedSuffix: "kg đã giao",
+    byOrderTypeLabel: "Theo loại đơn",
+
+    sowProgressTitle: "Tiến độ SOW",
+    sowDraft: "bản nháp",
+    sowSent: "đã gửi",
+    sowSigned: "đã ký",
+    sowActive: "đang hoạt động",
+    sowComplete: "hoàn thành",
+    sowSignedThisWindow: "Đã ký trong cửa sổ này",
+    sowNewlyOpened: "Mới mở",
+    sowActiveTitle: "Đang hoạt động",
+    sowStale: "Trì trệ (>30 ngày không thay đổi)",
+    sowEmptyNoSignatures: "Không có chữ ký mới trong cửa sổ này.",
+    sowEmptyNoOpened: "Không có SOW mới mở trong cửa sổ này.",
+    sowEmptyNoActive: "Không có SOW đang hoạt động.",
+    sowEmptyNothingStuck: "Không có gì bị kẹt.",
+  },
+
 };
 
 export default vi;
