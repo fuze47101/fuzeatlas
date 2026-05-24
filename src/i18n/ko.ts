@@ -8136,6 +8136,18 @@ const ko: Translations = {
     addFavoriteTitle: "즐겨찾기 추가",
   },
 
+  icpCorrelation: {
+    adminCrumb: "관리자",
+    crumb: "ICP 상관",
+    heading: "ICP × AB 상관",
+    subtitle: "Joseph (KUIU)이 물어본 차트. Atlas의 모든 브랜드 표시 가능한 시험 런에 걸쳐 원단의 FUZE 잔량 (ICP 측정)을 항균 사멸률에 대해 플로팅. 최적 적합선 + R² 오버레이.",
+    errorContext: "ICP 상관 로드",
+    couldntLoadPrefix: "상관 데이터를 로드할 수 없습니다",
+    networkError: "네트워크 오류.",
+    loadingState: "상관 데이터 로드 중…",
+    footnote: "고객 대상 카피는 \"FUZE 잔량\"을 사용합니다 — 랩의 ICP 보고서에서의 메타머티리얼 측정. 고객 산출물에는 항상 FUZE / 메타머티리얼로 라벨링됩니다 (CLAUDE.md 브랜드 보이스 규칙).",
+  },
+
 };
 
 export default ko;
