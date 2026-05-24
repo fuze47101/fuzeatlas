@@ -7727,6 +7727,36 @@ const ta: Translations = {
     nextBtn: "அடுத்த",
   },
 
+  bdSequencesList: {
+    kicker: "BD Wizard",
+    heading: "Sequences",
+    subtitlePrefix: "Long-funnel outbound. Cron மணிநேரம் தோறும் steps-ஐ முன்னேற்றுகிறது. Ready steps இங்கே park செய்கின்றன",
+    subtitleSuffix: "உங்கள் மதிப்பாய்வுக்காக — எதுவும் auto-send செய்யாது.",
+    openWizardBtn: "BD Wizard-ஐ திற →",
+    stepAwaitingSingular: "step உங்கள் மதிப்பாய்வை எதிர்பார்க்கிறது",
+    stepsAwaitingPlural: "steps உங்கள் மதிப்பாய்வை எதிர்பார்க்கின்றன",
+    showAllRepsLabel: "அனைத்து reps-ஐயும் காட்டு",
+    loadingState: "Sequences ஏற்றுகிறது…",
+    emptyHeadPrefix: "இல்லை",
+    emptyHeadSuffix: "sequences",
+    emptyBodyPrefix: "உங்கள் முதல் மின்னஞ்சலை இது வழியாக அனுப்பி ஒன்றை kick off செய்யவும்",
+    emptyBodyLink: "BD Wizard",
+    emptyBodySuffix: ". ஒவ்வொரு முதல் send-ம் தானாக 6-step cadence-ஐ spin up செய்கிறது.",
+    colBrandContact: "Brand / Contact",
+    colProgress: "முன்னேற்றம்",
+    colNext: "அடுத்த",
+    colRep: "Rep",
+    colStatus: "நிலை",
+    colActions: "செயல்கள்",
+    readyChipSuffix: "தயார்",
+    reviewSendBtn: "மதிப்பாய்வு & அனுப்பு",
+    openBtn: "திற",
+    viewBtn: "பார்",
+    pauseBtn: "Pause",
+    exitBtn: "Exit",
+    resumeBtn: "மீள்-தொடங்கு",
+  },
+
 };
 
 export default ta;
