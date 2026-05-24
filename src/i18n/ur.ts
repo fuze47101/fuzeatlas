@@ -7449,6 +7449,19 @@ const ur: Translations = {
     pressKitLink: "پریس کٹ",
   },
 
+  educationCompliance: {
+    backLink: "← FUZE بنیادیات کی طرف واپس",
+    kicker: "تعمیل اور سرٹیفکیشنز",
+    heroTitle: "ہر سرٹیفکیشن اسٹیک جو برانڈ مانگتا ہے",
+    heroBody: "آپ کی وینڈر سوالنامہ کے لیے ایک اسکرین شاٹ۔ EPA وفاقی + کیلیفورنیا، OEKO-TEX Standard 100 Class I، bluesign® منظور شدہ، PFAS-free، فارملڈی ہائڈ-فری، ZDHC-ہم آہنگ۔ چار ٹیئرز پر اینٹی بیکٹیریل / اینٹی وائرل / اینٹی فنگل ٹیسٹ ڈیٹا — رپورٹس درخواست پر دستیاب۔",
+    activeBadge: "فعال ✓",
+    docCopiesTitle: "حقیقی دستاویز کی کاپیاں چاہیں؟",
+    docCopiesBody: "دستاویزی مرکز ہر سرٹیفکیشن، SDS، TDS، اور COA کی لائیو PDF کاپیاں رکھتا ہے۔ تعمیل ٹیمیں انہیں وینڈر سوالناموں کے لیے براہ راست ڈاؤن لوڈ کر سکتی ہیں۔",
+    docCenterCta: "دستاویزی مرکز کھولیں ←",
+    backBasicsBtn: "FUZE بنیادیات پر واپس",
+    whatYouCanClaimBtn: "آپ کیا دعویٰ کر سکتے ہیں ←",
+  },
+
 };
 
 export default ur;
