@@ -7716,6 +7716,32 @@ const ms: Translations = {
     emptyState: "Belum ada token — cipta kelompok pertama anda di atas.",
   },
 
+  bookMeetingPage: {
+    heading: "Jadualkan Mesyuarat",
+    subtitle: "Pilih tarikh dan masa yang tersedia untuk menempah mesyuarat anda dengan pasukan kami.",
+    selectDateTitle: "Pilih Tarikh",
+    availableTimesPrefix: "Masa Tersedia pada",
+    loadingSlots: "Memuatkan slot...",
+    noSlotsBody: "Tiada slot tersedia untuk tarikh ini",
+    detailsTitle: "Butiran Mesyuarat",
+    selectDateTimeHint: "Pilih tarikh dan masa untuk meneruskan",
+    dateTimeLabel: "Tarikh & Masa",
+    meetingTitleLabel: "Tajuk Mesyuarat",
+    defaultTitle: "Mesyuarat FUZE",
+    descriptionLabel: "Penerangan (pilihan)",
+    descriptionPlaceholder: "Sebarang butiran tambahan...",
+    confirmBtn: "Sahkan Tempahan",
+    bookingBusy: "Menempah...",
+    bookFailedError: "Gagal menempah mesyuarat",
+    networkError: "Ralat rangkaian",
+    bookedTitle: "Mesyuarat Ditempah!",
+    titleColLabel: "Tajuk",
+    timeColLabel: "Masa",
+    meetingLinkLabel: "Pautan Mesyuarat",
+    openInTeams: "Buka dalam Teams",
+    bookAnotherBtn: "Tempah Mesyuarat Lain",
+  },
+
 };
 
 export default ms;
