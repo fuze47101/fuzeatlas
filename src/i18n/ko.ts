@@ -5170,6 +5170,81 @@ const ko: Translations = {
     docTypeOther: "기타",
   },
 
+  consumptionAdmin: {
+    loading: "소비 데이터 로드 중...",
+    pageTitle: "소비 및 재주문",
+    pageSubtitle: "공장 FUZE 사용량, 예상 소진일 및 자동 재주문 트리거 추적",
+
+    btnNewOrder: "+ 새 주문",
+    btnLogUsage: "+ 사용량 기록",
+
+    kpiActiveFactories: "활성 공장",
+    kpiOfTotal: "총 {n}개 중",
+    kpiTotalOrdered: "총 주문량",
+    kpiPending: "{n}개 대기 중",
+    kpiTotalConsumed: "총 소비량",
+    kpiAcrossAll: "전체 공장에 걸쳐",
+    kpiReorderAlerts: "재주문 알림",
+    kpiAlertsSplit: "긴급 {c}, 경고 {w}",
+
+    annualDemandLabel: "연간 예상 수요",
+    annualDemandUnit: "리터",
+    annualDemandBottles: "약 {n}개 병",
+    annualDemandRevenue: "약 ${n} 매출",
+
+    sectionFactoryInventory: "공장 재고 상태",
+    emptyTitle: "아직 FUZE 활성화 공장이 없습니다.",
+    emptySub: "fuzeEnabled = true인 공장이 여기에 표시됩니다.",
+
+    cellRemaining: "잔여",
+    cellBurn: "일일 소진",
+    cellRunOut: "소진",
+    daysSuffix: "일",
+    daysWord: "일",
+    fabricsSuffix: "원단",
+    fabricSuffix: "원단",
+    activeOrdersSuffix: "활성 주문",
+    activeOrderSuffix: "활성 주문",
+
+    colFactory: "공장",
+    colCountry: "국가",
+    colOrdered: "주문",
+    colConsumed: "소비",
+    colRemaining: "잔여",
+    colBurnDay: "일일 소진",
+    colRunOut: "소진일",
+    colStatus: "상태",
+
+    modalOrderTitle: "새 FUZE 주문",
+    modalUsageTitle: "FUZE 사용량 기록",
+    fieldFactory: "공장",
+    placeholderFactory: "공장 선택...",
+    fieldVolumeL: "부피 (리터)",
+    fieldTier: "등급",
+    fieldNotes: "노트",
+    fieldLitersUsed: "사용된 리터",
+    fieldMetersProcessed: "처리된 미터",
+    placeholderOptional: "선택",
+    fieldMethod: "방법",
+    placeholderSelect: "선택...",
+    methodExhaust: "익소스트 (염색조)",
+    methodPad: "패드-건조-큐어",
+    methodSpray: "스프레이",
+
+    summaryBottles: "병 (각 19L):",
+    summaryEstTotal: "예상 총액:",
+
+    btnCancel: "취소",
+    btnCreating: "생성 중...",
+    btnCreateOrder: "주문 생성",
+    btnLogging: "기록 중...",
+    btnLogUsageSubmit: "사용량 기록",
+
+    errorCreateOrder: "주문 생성 실패",
+    errorLogUsage: "소비 기록 실패",
+    errorNetwork: "네트워크 오류",
+  },
+
 };
 
 export default ko;
