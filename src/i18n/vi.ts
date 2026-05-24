@@ -8257,6 +8257,26 @@ const vi: Translations = {
     footnote: "Bản sao hướng khách hàng dùng \"FUZE còn dư\" — phép đo metamaterial từ báo cáo ICP của phòng lab. Luôn được dán nhãn FUZE / metamaterial trong sản phẩm gửi khách hàng (quy tắc giọng thương hiệu CLAUDE.md).",
   },
 
+  engagementDebug: {
+    crumb: "Debug tương tác",
+    engagementSuffix: "tương tác",
+    calculatedLabel: "Đã tính",
+    overallScoreLabel: "Điểm tổng thể",
+    outOf100: "trên 100",
+    inputsLabel: "Đầu vào",
+    daysSinceContact: "Số ngày kể từ liên hệ",
+    tests30d: "Thử nghiệm (30 ngày)",
+    tests90d: "Thử nghiệm (90 ngày)",
+    avgPayDays: "Số ngày thanh toán TB",
+    overdueInvoices: "Hóa đơn quá hạn",
+    factorBreakdownTitle: "Phân tích yếu tố",
+    weightLabel: "trọng số",
+    contributesLabel: "đóng góp",
+    ptsLabel: "điểm",
+    loading: "Đang tải…",
+    failedToLoad: "Không tải được",
+  },
+
 };
 
 export default vi;
