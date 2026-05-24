@@ -7797,6 +7797,28 @@ const zhTW: Translations = {
     mondayReviewBody: "AI 標記的測試批次 + 品牌退回。週日 22:00 UTC 寄出議程預告郵件。",
   },
 
+  brandEngagement: {
+    heading: "品牌健康度",
+    subtitle: "監控所有品牌的互動與健康度指標",
+    recalculatingBtn: "重新計算中...",
+    recalculateBtn: "全部重新計算",
+    allFilter: "全部",
+    loadingText: "載入中...",
+    noBrandsText: "找不到品牌",
+    scoreBreakdownTitle: "分數拆解",
+    communicationLabel: "溝通",
+    testingVelocityLabel: "測試速度",
+    pipelineVelocityLabel: "業務流速度",
+    paymentScoreLabel: "付款分數",
+    rawMetricsTitle: "原始指標",
+    daysSinceContact: "距離上次聯絡天數",
+    testsLast30d: "測試次數（近 30 天）",
+    testsLast90d: "測試次數（近 90 天）",
+    avgInvoicePayDays: "平均發票付款天數",
+    overdueInvoices: "逾期發票",
+    lastCalculatedLabel: "上次計算：",
+  },
+
 };
 
 export default zhTW;
