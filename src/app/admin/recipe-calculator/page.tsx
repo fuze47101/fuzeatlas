@@ -4,6 +4,7 @@
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useI18n } from "@/i18n";
 
 /**
  * FUZE Lab Recipe Calculator — step-by-step wizard.
@@ -110,18 +111,21 @@ function validateStep(step: number, input: any, calc: any) {
   return w;
 }
 
-const STEPS = [
-  { n: 1, title: "Select Fabric", desc: "Link this test to a fabric in Atlas" },
-  { n: 2, title: "Cut & Weigh Dry", desc: "100 cm² cutter → weigh sample → auto GSM" },
-  { n: 3, title: "Set Method + VFD", desc: "Vertical pad, 4 bar, 10 Hz ≈ 3 m/min" },
-  { n: 4, title: "Dip → Pad → Weigh Wet", desc: "Triplicate runs → mean pickup" },
-  { n: 5, title: "Prepare Test Bath", desc: "Mix FUZE stock + water for the bench treatment" },
-  { n: 6, title: "Production Adjustment", desc: "Reference table for wet incoming fabric" },
-  { n: 7, title: "Production Scale (optional)", desc: "Total FUZE liters for a real run" },
-  { n: 8, title: "Review & Save → ICP", desc: "Confirm recipes, save, bag & tag for ICP" },
-];
+const STEP_KEYS = [
+  { n: 1, titleKey: "step1Title", descKey: "step1Desc" },
+  { n: 2, titleKey: "step2Title", descKey: "step2Desc" },
+  { n: 3, titleKey: "step3Title", descKey: "step3Desc" },
+  { n: 4, titleKey: "step4Title", descKey: "step4Desc" },
+  { n: 5, titleKey: "step5Title", descKey: "step5Desc" },
+  { n: 6, titleKey: "step6Title", descKey: "step6Desc" },
+  { n: 7, titleKey: "step7Title", descKey: "step7Desc" },
+  { n: 8, titleKey: "step8Title", descKey: "step8Desc" },
+] as const;
 
 export default function RecipeCalculatorPage() {
+  const { t } = useI18n();
+  const T = t.recipeCalculator;
+  const STEPS = STEP_KEYS.map((s) => ({ n: s.n, title: (T as any)[s.titleKey] as string, desc: (T as any)[s.descKey] as string }));
   const { user } = useAuth();
   const router = useRouter();
   const params = useSearchParams();
@@ -371,11 +375,11 @@ export default function RecipeCalculatorPage() {
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-black text-slate-900">Recipe Calculator</h1>
-          <p className="text-slate-600">Guided bench test — one step at a time.</p>
+          <h1 className="text-3xl font-black text-slate-900">{T.pageTitle}</h1>
+          <p className="text-slate-600">{T.pageSubtitle}</p>
         </div>
         <a href="/admin/recipe-calculator/sop" target="_blank" className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-800">
-          📋 Print SOP
+          {T.printSop}
         </a>
       </div>
 
@@ -404,7 +408,7 @@ export default function RecipeCalculatorPage() {
 
       {/* Current step header */}
       <div className="mb-4">
-        <p className="text-xs text-[#00b4c3] font-bold uppercase tracking-widest">Step {step} of {STEPS.length}</p>
+        <p className="text-xs text-[#00b4c3] font-bold uppercase tracking-widest">{T.stepLabel.replace("{n}", String(step)).replace("{total}", String(STEPS.length))}</p>
         <h2 className="text-2xl font-black text-slate-900">{STEPS[step - 1].title}</h2>
         <p className="text-sm text-slate-600">{STEPS[step - 1].desc}</p>
       </div>
@@ -416,9 +420,9 @@ export default function RecipeCalculatorPage() {
         {/* Step 1: Fabric */}
         {step === 1 && (
           <div className="space-y-4">
-            <p className="text-sm text-slate-700">Link this bench test to a fabric that's already in Atlas. If it's not here, enter a free-text label.</p>
+            <p className="text-sm text-slate-700">{T.step1Intro}</p>
             <div>
-              <label className="text-xs font-semibold text-slate-600">Linked fabric</label>
+              <label className="text-xs font-semibold text-slate-600">{T.linkedFabricLabel}</label>
               <select
                 value={form.fabricId}
                 onChange={(e) => {
@@ -444,19 +448,19 @@ export default function RecipeCalculatorPage() {
               </select>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-600">Or free-text label *</label>
-              <input value={form.fabricLabel} onChange={(e) => set("fabricLabel", e.target.value)} placeholder="e.g. 180 gsm French Terry · Cotton" className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+              <label className="text-xs font-semibold text-slate-600">{T.freeTextLabel}</label>
+              <input value={form.fabricLabel} onChange={(e) => set("fabricLabel", e.target.value)} placeholder={T.freeTextPlaceholder} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-slate-600">Fabric type</label>
+                <label className="text-xs font-semibold text-slate-600">{T.fabricTypeLabel}</label>
                 <select value={form.fabricType} onChange={(e) => set("fabricType", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg">
                   <option>Knit</option><option>Woven</option><option>Nonwoven</option>
                 </select>
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-600">Fiber content</label>
-                <input value={form.fiberContent} onChange={(e) => set("fiberContent", e.target.value)} placeholder="100% Cotton" className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                <label className="text-xs font-semibold text-slate-600">{T.fiberContentLabel}</label>
+                <input value={form.fiberContent} onChange={(e) => set("fiberContent", e.target.value)} placeholder={T.fiberContentPlaceholder} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
               </div>
             </div>
           </div>
@@ -470,18 +474,18 @@ export default function RecipeCalculatorPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-slate-600">Sample area (cm²)</label>
+                <label className="text-xs font-semibold text-slate-600">{T.sampleAreaLabel}</label>
                 <input type="number" value={form.sampleAreaCm2} onChange={(e) => set("sampleAreaCm2", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
                 <p className="text-[10px] text-slate-400 mt-0.5">Default 100 cm² (FUZE cutter)</p>
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-600">Dry sample weight (g) *</label>
-                <input type="number" step="0.001" value={form.drySampleWeight} onChange={(e) => set("drySampleWeight", e.target.value)} placeholder="e.g. 1.85" className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-lg font-bold" autoFocus />
+                <label className="text-xs font-semibold text-slate-600">{T.drySampleWeightLabel}</label>
+                <input type="number" step="0.001" value={form.drySampleWeight} onChange={(e) => set("drySampleWeight", e.target.value)} placeholder={T.drySamplePlaceholder} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-lg font-bold" autoFocus />
               </div>
             </div>
             {calc.computedGsm !== undefined && (
               <div className="p-4 bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg text-white">
-                <p className="text-xs font-bold uppercase tracking-wide text-white/60">Computed Fabric Weight</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-white/60">{T.computedGsmHeader}</p>
                 <p className="text-4xl font-black text-[#00b4c3] mt-1">{calc.computedGsm.toFixed(0)} <span className="text-lg font-medium text-white/60">g/m²</span></p>
                 <p className="text-xs text-white/50 mt-1">{form.drySampleWeight}g ÷ {form.sampleAreaCm2}cm² × 10,000 = {calc.computedGsm.toFixed(1)} GSM</p>
               </div>
@@ -493,7 +497,7 @@ export default function RecipeCalculatorPage() {
         {step === 3 && (
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-2 block">Application method</label>
+              <label className="text-xs font-semibold text-slate-600 mb-2 block">{T.applicationMethodLabel}</label>
               <div className="grid grid-cols-4 gap-2">
                 {[
                   { v: "PAD_DRY_CURE", label: "Pad-Dry-Cure" },
@@ -511,17 +515,17 @@ export default function RecipeCalculatorPage() {
               <>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="text-xs font-semibold text-slate-600">Squeeze pressure (bar)</label>
+                    <label className="text-xs font-semibold text-slate-600">{T.squeezePressureLabel}</label>
                     <input type="number" step="0.1" value={form.squeezePressure} onChange={(e) => set("squeezePressure", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
                     <p className="text-[10px] text-slate-400 mt-0.5">Standard: 4 bar (0.4 MPa)</p>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-600">VFD Frequency (Hz)</label>
+                    <label className="text-xs font-semibold text-slate-600">{T.vfdFrequencyLabel}</label>
                     <input type="number" step="0.5" value={form.vfdFrequencyHz} onChange={(e) => set("vfdFrequencyHz", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
                     <p className="text-[10px] text-slate-400 mt-0.5">Standard: 10 Hz</p>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-600">Line speed (computed)</label>
+                    <label className="text-xs font-semibold text-slate-600">{T.lineSpeedLabel}</label>
                     <div className="px-3 py-2 border-2 border-[#00b4c3] rounded-lg bg-cyan-50 font-mono font-bold text-[#00b4c3]">
                       {lineSpeed.toFixed(2)} m/min
                     </div>
@@ -530,19 +534,19 @@ export default function RecipeCalculatorPage() {
                 </div>
                 <div className="grid grid-cols-4 gap-3">
                   <div>
-                    <label className="text-xs font-semibold text-slate-600">Drying °C</label>
+                    <label className="text-xs font-semibold text-slate-600">{T.dryingTempLabel}</label>
                     <input type="number" value={form.dryingTemp} onChange={(e) => set("dryingTemp", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-600">Drying min</label>
+                    <label className="text-xs font-semibold text-slate-600">{T.dryingTimeLabel}</label>
                     <input type="number" step="0.1" value={form.dryingTime} onChange={(e) => set("dryingTime", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-600">Curing °C</label>
+                    <label className="text-xs font-semibold text-slate-600">{T.curingTempLabel}</label>
                     <input type="number" value={form.curingTemp} onChange={(e) => set("curingTemp", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-600">Curing min</label>
+                    <label className="text-xs font-semibold text-slate-600">{T.curingTimeLabel}</label>
                     <input type="number" step="0.1" value={form.curingTime} onChange={(e) => set("curingTime", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                   </div>
                 </div>
@@ -550,7 +554,7 @@ export default function RecipeCalculatorPage() {
             )}
             {form.applicationMethod === "EXHAUST" && (
               <div>
-                <label className="text-xs font-semibold text-slate-600">Liquor ratio</label>
+                <label className="text-xs font-semibold text-slate-600">{T.liquorRatioLabel}</label>
                 <input value={form.liquorRatio} onChange={(e) => set("liquorRatio", e.target.value)} placeholder="1:10" className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
               </div>
             )}
@@ -561,7 +565,7 @@ export default function RecipeCalculatorPage() {
         {step === 4 && (
           <div className="space-y-4">
             <div className="p-4 bg-cyan-50 border border-cyan-200 rounded-lg text-sm text-slate-700">
-              <p className="font-bold mb-2">💧 Dry-to-wet pickup — run in triplicate</p>
+              <p className="font-bold mb-2">{T.pickupHeader}</p>
               <p className="mb-2">Cut <strong>3 separate samples</strong> from the fabric. For each:</p>
               <ol className="space-y-1 pl-5 list-decimal">
                 <li>Weigh the dry sample</li>
@@ -620,13 +624,13 @@ export default function RecipeCalculatorPage() {
               <div className="p-4 bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg text-white">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-white/60">Mean pickup ({runStats.runCount} run{runStats.runCount > 1 ? "s" : ""})</p>
+                    <p className="text-xs font-bold uppercase tracking-wide text-white/60">{T.meanPickupTemplate.replace("{n}", String(runStats.runCount)).replace("{s}", runStats.runCount > 1 ? "s" : "")}</p>
                     <p className="text-5xl font-black text-[#00b4c3] mt-1">{runStats.meanPickup.toFixed(1)}<span className="text-2xl font-medium text-white/60">%</span></p>
-                    <p className="text-xs text-white/50 mt-1">Used for all bath recipe calculations</p>
+                    <p className="text-xs text-white/50 mt-1">{T.meanPickupNote}</p>
                   </div>
                   {runStats.runCount >= 2 && (
                     <div className="text-right">
-                      <p className="text-xs font-bold uppercase text-white/60">Max run deviation</p>
+                      <p className="text-xs font-bold uppercase text-white/60">{T.maxDeviationLabel}</p>
                       <p className={`text-xl font-mono font-bold ${runStats.maxDevPct > 10 ? "text-red-400" : "text-emerald-400"}`}>
                         {runStats.maxDevPct.toFixed(1)}%
                       </p>
@@ -636,7 +640,7 @@ export default function RecipeCalculatorPage() {
                 </div>
               </div>
             )}
-            <p className="text-xs text-slate-600">* Run 1 required. Runs 2 &amp; 3 strongly recommended — any run &gt;10% from the mean flags the sample.</p>
+            <p className="text-xs text-slate-600">{T.pickupRunHelp}</p>
           </div>
         )}
 
@@ -652,14 +656,14 @@ export default function RecipeCalculatorPage() {
           return (
             <div className="space-y-4">
               <div className="p-4 bg-violet-50 border border-violet-200 rounded-lg text-sm text-slate-700">
-                <p className="font-bold mb-2">🧪 Prepare the bench test bath</p>
+                <p className="font-bold mb-2">{T.bathPrepHeader}</p>
                 <p>The FUZE mini pad is a <strong>vertical padder</strong> — the fabric moves upward through a bath held in the reservoir between the two pads pressed together. Mix a small test bath at the target tier concentration, pour into the reservoir, then pad a fresh fabric sample through it.</p>
                 <p className="mt-2 text-xs text-slate-600">Typical bench test uses <strong>1 L</strong> for the reservoir. Smaller 0.5 L batches are fine if you're tight on sample material.</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-600 mb-1 block">Target tier</label>
+                  <label className="text-xs font-semibold text-slate-600 mb-1 block">{T.targetTierLabel}</label>
                   <div className="grid grid-cols-4 gap-1">
                     {["F1","F2","F3","F4"].map((t) => (
                       <button key={t} type="button" onClick={() => set("testedAtTier", t)} className={`p-2 rounded border text-xs font-bold ${tier === t ? "border-[#00b4c3] bg-[#00b4c3]/10 text-[#00b4c3]" : "border-slate-200 text-slate-600"}`}>
@@ -670,7 +674,7 @@ export default function RecipeCalculatorPage() {
                   <p className="text-[10px] text-slate-600 mt-1">{tier} = {TIER_MG_PER_KG[tier]} mg/kg OWF target</p>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600 mb-1 block">Bath volume (reservoir)</label>
+                  <label className="text-xs font-semibold text-slate-600 mb-1 block">{T.bathVolumeLabel}</label>
                   <div className="grid grid-cols-3 gap-1">
                     {["0.5","1","2"].map((v) => (
                       <button key={v} type="button" onClick={() => set("testBathVolumeL", v)} className={`p-2 rounded border text-xs font-bold ${String(form.testBathVolumeL) === v ? "border-[#00b4c3] bg-[#00b4c3]/10 text-[#00b4c3]" : "border-slate-200 text-slate-600"}`}>
@@ -684,7 +688,7 @@ export default function RecipeCalculatorPage() {
 
               {pickupUsed ? (
                 <div className="p-4 bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg text-white">
-                  <p className="text-xs font-bold uppercase tracking-wide text-[#00b4c3] mb-3">Recipe — measure these exactly</p>
+                  <p className="text-xs font-bold uppercase tracking-wide text-[#00b4c3] mb-3">{T.recipeMeasureLabel}</p>
                   <div className="grid grid-cols-3 gap-3 mb-3">
                     <div className="bg-white/5 rounded p-3">
                       <p className="text-[10px] text-white/60 uppercase">Bath concentration</p>
@@ -718,7 +722,7 @@ export default function RecipeCalculatorPage() {
         {step === 6 && (
           <div className="space-y-4">
             <div className="p-4 bg-sky-50 border border-sky-200 rounded-lg text-sm text-slate-700">
-              <p className="font-bold mb-2">🌊 Wet-on-wet production reference — no bench test needed</p>
+              <p className="font-bold mb-2">{T.wetOnWetHeader}</p>
               <p className="mb-2">FUZE is 99.998% DI water, so a bench-scale pre-wet + pad is mass-indistinguishable from a water dip + pad — the padder brings the fabric to the same equilibrium either way. <strong>There's no wet-to-wet pickup to measure.</strong></p>
               <p>Instead, we publish an adjustment table in the final recipe report: if the factory knows the residual moisture of their incoming fabric (typically 10%, 15%, or 20% off a prior process), they pick the matching row and run a <strong>more concentrated bath</strong> to compensate for the water already in the fabric.</p>
               <p className="mt-2 text-[11px] text-slate-600">Math: <strong>effective pickup = dry-to-wet pickup − residual moisture %</strong>. Then bath_conc = tier mg/kg ÷ (effective pickup / 100).</p>
@@ -772,7 +776,7 @@ export default function RecipeCalculatorPage() {
             {/* QUICK BATH VOLUME TABLE */}
             {pickupUsed && (
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">Quick bath reference — FUZE stock needed per bath size</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">{T.quickBathRefHeader}</p>
                 <div className="overflow-x-auto bg-slate-900 text-white rounded-lg">
                   <table className="w-full text-sm">
                     <thead>
@@ -807,21 +811,21 @@ export default function RecipeCalculatorPage() {
 
             {/* TARGET FABRIC MASS */}
             <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">Or by target fabric mass</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">{T.orByTargetMass}</p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Target fabric mass (kg)</label>
-                  <input type="number" step="1" value={form.targetProductionKg} onChange={(e) => set("targetProductionKg", e.target.value)} placeholder="e.g. 1000" className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
+                  <label className="text-xs font-semibold text-slate-600">{T.targetMassLabel}</label>
+                  <input type="number" step="1" value={form.targetProductionKg} onChange={(e) => set("targetProductionKg", e.target.value)} placeholder={T.targetMassPlaceholder} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">Stock FUZE (mg/L)</label>
+                  <label className="text-xs font-semibold text-slate-600">{T.stockFuzeLabel}</label>
                   <input type="number" step="0.1" value={form.stockMgPerL} onChange={(e) => set("stockMgPerL", e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono" />
                   <p className="text-[10px] text-slate-400 mt-0.5">Standard: 30 mg/L</p>
                 </div>
               </div>
               {calc.targetBathVolumeL && (
                 <div className="mt-3 p-4 bg-slate-900 rounded-lg text-white space-y-1">
-                  <div className="flex justify-between"><span className="text-white/70 text-sm">Total bath volume for {form.targetProductionKg} kg</span><span className="font-mono font-bold">{calc.targetBathVolumeL.toFixed(1)} L</span></div>
+                  <div className="flex justify-between"><span className="text-white/70 text-sm">{T.totalBathVolumeForTemplate.replace("{n}", String(form.targetProductionKg))}</span><span className="font-mono font-bold">{calc.targetBathVolumeL.toFixed(1)} L</span></div>
                   {["F1","F2","F3","F4"].map(t => (
                     <div key={t} className="flex justify-between text-sm">
                       <span className="text-white/70">{t} FUZE needed</span>
@@ -838,21 +842,21 @@ export default function RecipeCalculatorPage() {
         {step === 8 && (
           <div className="space-y-5">
             <div className="p-4 bg-slate-50 rounded-lg">
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">Test summary</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">{T.testSummaryHeader}</p>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                <span className="text-slate-600">Fabric</span><span className="font-semibold">{form.fabricLabel || "—"}</span>
-                <span className="text-slate-600">GSM (computed)</span><span className="font-semibold font-mono">{calc.computedGsm?.toFixed(0) || form.fabricWeightGsm || "—"} g/m²</span>
-                <span className="text-slate-600">Method</span><span className="font-semibold">{form.applicationMethod.replace(/_/g, "-")}</span>
-                <span className="text-slate-600">Pressure</span><span className="font-semibold font-mono">{form.squeezePressure} bar</span>
-                <span className="text-slate-600">VFD / Speed</span><span className="font-semibold font-mono">{form.vfdFrequencyHz} Hz · {lineSpeed.toFixed(2)} m/min</span>
-                <span className="text-slate-600">Dry weight</span><span className="font-semibold font-mono">{form.drySampleWeight} g</span>
-                <span className="text-slate-600">Wet weight</span><span className="font-semibold font-mono">{form.wetAfterBathWeight} g</span>
-                <span className="text-slate-600">Pickup used</span><span className="font-semibold font-mono text-[#00b4c3]">{fmt(pickupUsed, 1)}% (dry-to-wet)</span>
+                <span className="text-slate-600">{T.summaryFabric}</span><span className="font-semibold">{form.fabricLabel || "—"}</span>
+                <span className="text-slate-600">{T.summaryGsm}</span><span className="font-semibold font-mono">{calc.computedGsm?.toFixed(0) || form.fabricWeightGsm || "—"} g/m²</span>
+                <span className="text-slate-600">{T.summaryMethod}</span><span className="font-semibold">{form.applicationMethod.replace(/_/g, "-")}</span>
+                <span className="text-slate-600">{T.summaryPressure}</span><span className="font-semibold font-mono">{form.squeezePressure} bar</span>
+                <span className="text-slate-600">{T.summaryVfdSpeed}</span><span className="font-semibold font-mono">{form.vfdFrequencyHz} Hz · {lineSpeed.toFixed(2)} m/min</span>
+                <span className="text-slate-600">{T.summaryDryWeight}</span><span className="font-semibold font-mono">{form.drySampleWeight} g</span>
+                <span className="text-slate-600">{T.summaryWetWeight}</span><span className="font-semibold font-mono">{form.wetAfterBathWeight} g</span>
+                <span className="text-slate-600">{T.summaryPickupUsed}</span><span className="font-semibold font-mono text-[#00b4c3]">{fmt(pickupUsed, 1)}% (dry-to-wet)</span>
               </div>
             </div>
 
             <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">Four-tier bath recipe</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-600 mb-2">{T.fourTierRecipeHeader}</p>
               <div className="grid grid-cols-4 gap-2">
                 {["F1","F2","F3","F4"].map(t => (
                   <div key={t} className="border-2 border-[#00b4c3] rounded-lg p-3">
@@ -920,7 +924,7 @@ export default function RecipeCalculatorPage() {
 
             {!savedTestId ? (
               <button onClick={save} disabled={saving} className="w-full px-4 py-3 bg-[#00b4c3] text-white rounded-lg font-black text-lg hover:bg-[#009aa8] disabled:opacity-50">
-                {saving ? "Saving..." : "Save Bench Test"}
+                {saving ? T.saving : T.saveButton}
               </button>
             ) : (
               <div className="space-y-2">
@@ -932,7 +936,7 @@ export default function RecipeCalculatorPage() {
                   <a href={`/admin/recipe-calculator/${savedTestId}/print`} target="_blank" className="px-4 py-2 bg-slate-900 text-white font-semibold rounded-lg text-sm text-center hover:bg-slate-800">🖨 Quick Test Card</a>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <button onClick={graduate} className="px-4 py-2 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 text-sm">⭐ Graduate to FabricRecipe</button>
+                  <button onClick={graduate} className="px-4 py-2 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 text-sm">⭐ {T.graduateButton}</button>
                   <button onClick={() => { setSavedTestId(""); setSavedTestNumber(""); setStep(1); setRuns([{dry:"",wet:""},{dry:"",wet:""},{dry:"",wet:""}]); setForm((f: any) => ({ ...f, drySampleWeight: "", wetAfterBathWeight: "", preWetSampleWeight: "", wetAfterBathFromPreWet: "", targetProductionKg: "", notes: "" })); }} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg text-sm">+ New Test</button>
                 </div>
 
@@ -995,12 +999,12 @@ export default function RecipeCalculatorPage() {
       {!savedTestId && (
         <div className="mt-6 flex items-center justify-between">
           <button onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1} className="px-5 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg disabled:opacity-40">
-            ← Back
+            {T.backButton}
           </button>
           <span className="text-sm text-slate-600">Step {step} of {STEPS.length}</span>
           {step < STEPS.length && (
             <button onClick={() => setStep(step + 1)} disabled={!canAdvance()} className="px-5 py-2 bg-[#00b4c3] text-white font-semibold rounded-lg hover:bg-[#009aa8] disabled:opacity-40">
-              Next →
+              {T.nextButton}
             </button>
           )}
           {step === STEPS.length && <span />}
