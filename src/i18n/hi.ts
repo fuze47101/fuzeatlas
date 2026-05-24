@@ -7524,6 +7524,23 @@ const hi: Translations = {
     fieldChangedPlural: "फ़ील्ड बदले",
   },
 
+  adminLanding: {
+    loadingLabel: "एडमिन लोड हो रहा है",
+    crumb: "एडमिन",
+    heading: "एडमिन",
+    subtitle: "FUZE-Ops नियंत्रण सतह। डाइव इन करने के लिए एक मॉड्यूल चुनें, या पूर्ण नेव के लिए साइडबार का उपयोग करें।",
+    openPrefix: "खोलें",
+    fastPathLabel: "तेज़ पथ",
+    dataEntryHubTitle: "डेटा प्रविष्टि हब",
+    dataEntryHubBody: "ब्रांड विनिर्देश, मूल्य टियर, सप्लाई-चेन लिंक, लैब मूल्य सेट करें — सब एक पृष्ठ में।",
+    liveStateLabel: "लाइव स्थिति",
+    commandCenterTitle: "कमांड सेंटर",
+    commandCenterBody: "छह मेट्रिक टाइल, ब्रांड × कारखाना कैडेंस मैट्रिक्स, हाल की गतिविधि, कतारें।",
+    weeklyLabel: "साप्ताहिक",
+    mondayReviewTitle: "सोमवार समीक्षा कतार",
+    mondayReviewBody: "AI-फ़्लैग किए गए परीक्षण रन + ब्रांड अस्वीकृति। रविवार 22:00 UTC ईमेल एजेंडा को सीड करता है।",
+  },
+
 };
 
 export default hi;
