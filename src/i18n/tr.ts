@@ -7836,6 +7836,28 @@ const tr: Translations = {
     mondayReviewBody: "AI tarafından işaretlenen test çalıştırmaları + marka redleri. Pazar 22:00 UTC e-postası gündemi besler.",
   },
 
+  brandEngagement: {
+    heading: "Marka Sağlığı",
+    subtitle: "Tüm markalar için katılım ve sağlık metriklerini izleyin",
+    recalculatingBtn: "Yeniden hesaplanıyor...",
+    recalculateBtn: "Tümünü Yeniden Hesapla",
+    allFilter: "Tümü",
+    loadingText: "Yükleniyor...",
+    noBrandsText: "Marka bulunamadı",
+    scoreBreakdownTitle: "Puan Dağılımı",
+    communicationLabel: "İletişim",
+    testingVelocityLabel: "Test Hızı",
+    pipelineVelocityLabel: "Boru Hattı Hızı",
+    paymentScoreLabel: "Ödeme Puanı",
+    rawMetricsTitle: "Ham Metrikler",
+    daysSinceContact: "Son İletişimden Bu Yana Gün",
+    testsLast30d: "Testler (Son 30 gün)",
+    testsLast90d: "Testler (Son 90 gün)",
+    avgInvoicePayDays: "Ortalama Fatura Ödeme Günü",
+    overdueInvoices: "Vadesi Geçmiş Faturalar",
+    lastCalculatedLabel: "Son hesaplama:",
+  },
+
 };
 
 export default tr;
