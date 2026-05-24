@@ -7503,6 +7503,29 @@ const th: Translations = {
     bookAnotherBtn: "จองการประชุมอื่น",
   },
 
+  adminAuditLog: {
+    adminCrumb: "ผู้ดูแล",
+    crumb: "Audit log",
+    heading: "Audit log",
+    subtitle: "audit trail เต็มในทุกเอนทิตี กรองตามการกระทำ เอนทิตี หรือวันที่ เก็บ 90 วัน",
+    errorContext: "โหลด audit log",
+    couldntLoadPrefix: "ไม่สามารถโหลด audit log ได้",
+    networkError: "ข้อผิดพลาดเครือข่ายขณะโหลด audit log",
+    actionLabel: "การกระทำ",
+    allActionsOption: "ทุกการกระทำ",
+    entityLabel: "เอนทิตี",
+    allEntitiesOption: "ทุกเอนทิตี",
+    sinceLabel: "ตั้งแต่",
+    resetBtn: "รีเซ็ต",
+    rowsSuffix: "แถว",
+    loadingState: "กำลังโหลด audit log…",
+    emptyState: "ไม่มีแถว audit ที่ตรงกับตัวกรอง",
+    byPrefix: "โดย",
+    systemActor: "ระบบ",
+    fieldChangedSingular: "ฟิลด์เปลี่ยน",
+    fieldChangedPlural: "ฟิลด์เปลี่ยน",
+  },
+
 };
 
 export default th;
