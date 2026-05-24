@@ -7433,6 +7433,23 @@ const ta: Translations = {
     whatYouCanClaimBtn: "நீங்கள் என்ன உரிமைகோர முடியும் →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ FUZE Atlas-ஆல் சான்றளிக்கப்பட்டது",
+    statFabricsCertified: "சான்றளிக்கப்பட்ட ஃபேப்ரிக்குகள்",
+    statTestsPassed: "தேர்ச்சி பெற்ற சோதனைகள் (12 மாதங்கள்)",
+    statCountries: "Shipping நாடுகள்",
+    activeTiersTitle: "செயலில் உள்ள FUZE டியர்கள்",
+    activeTiersBody: "சான்றளிக்கப்பட்ட வசதிகளில் தற்போது உற்பத்தியில் உள்ள சிகிச்சை அளவுகள்.",
+    lastPassedLabel: "கடைசியாக தேர்ச்சி பெற்றது",
+    aboutSummaryTitle: "FUZE தொழில்நுட்பம் பற்றி",
+    verifyCtaTitle: "ஒரு குறிப்பிட்ட தயாரிப்பை சரிபார்",
+    verifyCtaBody: "ஒவ்வொரு சான்றளிக்கப்பட்ட தயாரிப்பும் அதன் உற்பத்தி batch மற்றும் சோதனை வரலாற்றுடன் இணைக்கப்பட்ட ஒரு தனித்துவமான QR code-ஐக் கொண்டுள்ளது.",
+    verifyCtaBtn: "ஒரு தயாரிப்பை தேடு →",
+    footerCertifiedBy: "FUZE Atlas-ஆல் சான்றளிக்கப்பட்டது",
+    brandSiteLink: "Brand site →",
+    contactLink: "தொடர்பு",
+  },
+
 };
 
 export default ta;
