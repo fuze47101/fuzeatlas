@@ -7977,6 +7977,36 @@ const zhCN: Translations = {
     nextBtn: "下一页",
   },
 
+  bdSequencesList: {
+    kicker: "BD 向导",
+    heading: "序列",
+    subtitlePrefix: "长漏斗外联。定时任务每小时推进步骤。准备就绪的步骤会停在",
+    subtitleSuffix: "等待您审核——不会自动发送。",
+    openWizardBtn: "打开 BD 向导 →",
+    stepAwaitingSingular: "个步骤等待您审核",
+    stepsAwaitingPlural: "个步骤等待您审核",
+    showAllRepsLabel: "显示所有业务代表",
+    loadingState: "正在加载序列…",
+    emptyHeadPrefix: "无",
+    emptyHeadSuffix: "序列",
+    emptyBodyPrefix: "通过",
+    emptyBodyLink: "BD 向导",
+    emptyBodySuffix: "发送您的第一封邮件即可启动。每次首发都会自动生成 6 步节奏。",
+    colBrandContact: "品牌 / 联系人",
+    colProgress: "进度",
+    colNext: "下一步",
+    colRep: "业务代表",
+    colStatus: "状态",
+    colActions: "操作",
+    readyChipSuffix: "就绪",
+    reviewSendBtn: "审核并发送",
+    openBtn: "打开",
+    viewBtn: "查看",
+    pauseBtn: "暂停",
+    exitBtn: "退出",
+    resumeBtn: "继续",
+  },
+
 };
 
 export default zhCN;
