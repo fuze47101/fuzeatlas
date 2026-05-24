@@ -7930,6 +7930,24 @@ const ko: Translations = {
     websiteLabel: "웹사이트",
   },
 
+  importContacts: {
+    title: "대량 가져오기 — 연락처",
+    subtitle: "연락처 CSV를 붙여넣거나 업로드하십시오. 이메일이 자연 키입니다 — 존재할 때 이메일로 업서트합니다. 이메일은 없지만 LinkedIn URL이 있는 행은 '이메일 누락'으로 가져와서 기존 Apollo 보강 작업이 추적할 수 있습니다. 둘 다 없는 행은 거부됩니다.",
+    backLabel: "리드 관리",
+    firstNameLabel: "이름",
+    lastNameLabel: "성",
+    emailLabel: "이메일",
+    emailHint: "LinkedIn URL이 없으면 필수",
+    linkedinLabel: "LinkedIn URL",
+    linkedinHint: "이메일이 없을 때 폴백 식별자",
+    brandNameLabel: "브랜드 이름",
+    brandNameHint: "Brand.name에 대한 대소문자 구분 없음 매치; 찾을 수 없으면 미연결",
+    jobTitleLabel: "직책",
+    phoneLabel: "전화번호",
+    titleLabel: "호칭 (존칭)",
+    titleHint: '예: \"Mr.\", \"Dr.\"',
+  },
+
 };
 
 export default ko;
