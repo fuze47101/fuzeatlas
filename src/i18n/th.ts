@@ -7820,6 +7820,30 @@ const th: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "กำลังโหลดคำเชิญ…",
+    notFoundTitle: "ไม่พบคำเชิญ",
+    notFoundFallback: "ลิงก์คำเชิญนี้อาจหมดอายุหรือใช้แล้ว",
+    chipLabel: "คำเชิญ FUZE Atlas",
+    headingMiddle: "เชิญ",
+    headingSuffix: "เข้าสู่ห่วงโซ่อุปทาน FUZE ของพวกเขา",
+    heroSubtitleFallbackPrefix: "ใช้ FUZE Atlas เพื่อประสานโปรแกรมสิ่งทอต้านจุลชีพในห่วงโซ่อุปทาน",
+    heroSubtitleFallbackSuffix: "การเข้าร่วมให้โรงงานยื่นผ้าเพื่อทดสอบ วางคำสั่งซื้อ FUZE และติดตามผล ICP — ทั้งหมดผูกตรงกับแบรนด์",
+    notePrefix: "หมายเหตุจาก",
+    closedPrefix: "คำเชิญนี้ถูก",
+    closedReachOutPrefix: "ติดต่อ",
+    closedTeamFallbackPrefix: "ทีม",
+    closedTeamFallbackSuffix: "",
+    closedFreshLink: "หากคุณต้องการลิงก์ใหม่",
+    signUpCta: "ลงทะเบียน",
+    signUpSubPrefix: "สร้าง",
+    signUpSubSuffix: "บัญชีใหม่บน Atlas",
+    alreadyInCta: "เราอยู่ใน Atlas อยู่แล้ว",
+    alreadyInSub: "เข้าสู่ระบบและเชื่อมโยงโรงงานที่มีอยู่ของคุณ",
+    sentPrefix: "ส่งคำเชิญเมื่อ",
+    questionsPrefix: "· มีคำถาม?",
+  },
+
 };
 
 export default th;
