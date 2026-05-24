@@ -6036,6 +6036,38 @@ const bn: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "পরীক্ষা ক্যাটালগ ও মূল্য",
+    subtitle: "পরীক্ষার ধরন, মূল্য, টার্নঅ্যারাউন্ড সময় এবং নমুনার প্রয়োজনীয়তা পরিচালনা করুন। পরিবর্তনগুলি অবিলম্বে কারখানা পরীক্ষার অনুরোধ ফর্মে প্রতিফলিত হয়।",
+    sourcePrefix: "উৎস:",
+    sourceDb: "ডাটাবেস (অ্যাডমিন-পরিচালিত)",
+    sourceStatic: "স্ট্যাটিক ডিফল্ট",
+    successMsg: "পরীক্ষা সফলভাবে আপডেট হয়েছে",
+    failedSave: "সংরক্ষণ ব্যর্থ",
+    networkErr: "নেটওয়ার্ক ত্রুটি",
+    colTestName: "পরীক্ষার নাম",
+    colCategory: "বিভাগ",
+    colPrice: "মূল্য (USD)",
+    colTurnaround: "টার্নঅ্যারাউন্ড",
+    colMinSample: "ন্যূনতম নমুনা",
+    colControl: "নিয়ন্ত্রণ?",
+    colActive: "সক্রিয়",
+    colActions: "ক্রিয়া",
+    daysSuffix: "দিন",
+    metersSuffix: "m",
+    yes: "হ্যাঁ",
+    no: "না",
+    saveBtn: "সংরক্ষণ",
+    savingDots: "...",
+    cancelBtn: "বাতিল",
+    editBtn: "সম্পাদনা",
+    catRecipeBuild: "রেসিপি বিল্ড",
+    catPerformance: "পারফরম্যান্স",
+    catQuality: "গুণমান",
+    catCertification: "সার্টিফিকেশন",
+    lastUpdatedTpl: "{when}-এ {who} দ্বারা সর্বশেষ আপডেট",
+  },
+
 };
 
 export default bn;
