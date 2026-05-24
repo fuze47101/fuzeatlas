@@ -3191,6 +3191,31 @@ const zhTW: Translations = {
     deleteFailed: "刪除失敗",
   },
 
+  educationMain: {
+    kicker: "FUZE 基礎",
+    pageTitle: "FUZE 的實際運作原理 — 以及與其他技術的差異",
+    pageIntro: "四節入門課:FUZE 在布料上的物質形態、如何殺菌、哪些測試能正確量測、以及品牌在 FUZE 與其他競品(銀離子/鋅/QAC)之間抉擇時的意義。",
+    forBrands: "品牌端",
+    forFactories: "工廠端",
+    forDistributors: "經銷商端",
+    forSalesReps: "業務代表端",
+    segmentKicker: "依產業別切入",
+    segmentTitle: "FUZE 對應你的產業",
+    segmentIntro: "上方科學原理為通用內容。下方各產業區段提供建議的 FUZE 等級階梯、測試組合、法規認證項目,以及針對該客群量身打造的開發切入點。",
+    openSegment: "開啟產業頁 →",
+    dosageKicker: "第 1 節 — 用量足跡",
+    mechanismKicker: "第 2 節 — 殺菌機制",
+    mechanismTitle: "離子釋出型 vs. 非離子接觸殺菌",
+    performanceKicker: "第 3 節 — 性能堆疊(F1 → F4)",
+    performanceTitle: "每一等級皆為永久結合。每往上一階,FUZE 的層次再加一層。",
+    testsKicker: "第 4 節 — 五大測試",
+    testsTitle: "市場上五大測試 — 僅有一項是為 FUZE 機制設計的",
+    synthesisKicker: "第 5 節 — 對你的品牌而言的意義",
+    synthesisTitle: "走進每一場供應鏈會議前該帶上的三件事",
+    ctaPricing: "查看與特定競品的成本比較",
+    ctaSustainability: "查看永續影響",
+  },
+
 };
 
 export default zhTW;
