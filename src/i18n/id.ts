@@ -3363,6 +3363,26 @@ const id: Translations = {
     lastCalculatedLabel: "Terakhir dihitung:",
   },
 
+  bdFunnel: {
+    loading: "Memuat…",
+    crumbSalesPipeline: "Penjualan & Pipeline",
+    crumbBdFunnel: "BD funnel",
+    title: "Funnel pipeline",
+    subtitle: "Inflow / outflow selama 30 / 60 / 90 hari terakhir, plus tingkat konversi stage-to-stage. Bersumber dari baris BrandStageTransition yang ditulis pada setiap flip Brand.pipelineStage.",
+    colStage: "Stage",
+    colCurrent: "Saat ini",
+    colIn30: "Masuk 30h",
+    colIn60: "Masuk 60h",
+    colIn90: "Masuk 90h",
+    colOut30: "Keluar 30h",
+    colOut60: "Keluar 60h",
+    colOut90: "Keluar 90h",
+    colAvgDwell: "Rata-rata dwell",
+    colToNext: "→ berikutnya",
+    footerHint: "Konversi = keluaran yang mendarat di stage berikutnya kanonik / total keluaran teramati dalam 90 hari terakhir. Stage tanpa keluaran di jendela menunjukkan n=0 — lambat atau stabil, bukan buruk.",
+    errLoadFailed: "Gagal memuat funnel",
+  },
+
 };
 
 export default id;
