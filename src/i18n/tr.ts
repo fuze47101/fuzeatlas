@@ -7926,6 +7926,24 @@ const tr: Translations = {
     emptyBody: "Filtreleri genişletmeyi deneyin — veya gelişim aşamasındaki kumaşları görmek isterseniz \"doğrulanmış tezgah testi\" filtresini kaldırın.",
   },
 
+  importBrands: {
+    title: "Toplu içe aktarma — Markalar",
+    subtitle: "Bir fuardan, listeden veya araştırma dökümünden marka adaylarının CSV dosyasını yapıştırın veya yükleyin. Sütunları eşleştireceğiz, doğrulama önizlemesi yapacağız ve CLI'nin kullandığı aynı seed-brand yardımcı işlevi üzerinden idempotent olarak yazacağız.",
+    backLabel: "Marka Boru Hattı",
+    brandNameLabel: "Marka adı",
+    brandNameHint: "(doğal anahtar — upsert burada anahtarlanır)",
+    domainLabel: "E-posta alan adı",
+    domainHint: 'örn. "rhone.com"',
+    repEmailLabel: "Birincil AM e-postası",
+    repEmailHint: "Atlas kullanıcısı olarak zaten var olmalıdır",
+    tierLabel: "Gerekli FUZE kademesi",
+    tierHint: "F1 / F2 / F3 / F4 — varsayılan F2",
+    cadenceLabel: "ICP kadansı (her N partide)",
+    cadenceHint: "varsayılan 5",
+    countryLabel: "Ülke",
+    websiteLabel: "Web sitesi",
+  },
+
 };
 
 export default tr;
