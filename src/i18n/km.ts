@@ -6627,6 +6627,29 @@ const km: Translations = {
     errLoadFailed: "បរាជ័យ to load analytics",
   },
 
+  orderQrLabel: {
+    orderNotFound: "ការបញ្ជាទិញ not found.",
+    headerKicker: "QR មន្ទីរពិសោធន៍el",
+    previewPublicLink: "preview public page →",
+    brandLine: "FUZE Biotech",
+    brandLocation: "Salt Lake City, Utah USA",
+    orderLabel: "ការបញ្ជាទិញ",
+    scanToVerifyTitle: "Scan to verify",
+    scanToVerifyBody: "បើក this label on a phone camera to load shipment status, lifecycle, SDS, and COA.",
+    tierLabel: "កម្រិត",
+    volumeLabel: "បរិមាណ",
+    bottlesSuffix: "bottles",
+    methodLabel: "Method",
+    typeLabel: "ប្រភេទ",
+    shipToLabel: "Ship ទៅ",
+    forBrandLabel: "For ម៉ាក",
+    viaDistributorLabel: "Via អ្នកចែកចាយ",
+    fabricLabel: "ក្រណាត់",
+    trackingLabel: "Tracking",
+    footerTagline: "FUZE F1–F4 · metamaterial antimicrobial treatment · PFAS-free",
+    printedPrefix: "បោះពុម្ពed",
+  },
+
 };
 
 export default km;
