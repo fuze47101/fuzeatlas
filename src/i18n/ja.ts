@@ -7820,6 +7820,37 @@ const ja: Translations = {
     lastCalculatedLabel: "最終計算日時:",
   },
 
+  fabricReportSend: {
+    backLink: "← レポートに戻る",
+    heading: "レポートをお客様にメール送信",
+    subtitlePrefix: "次のファブリックに対する FUZE 適用・検証レポートを送信しています:",
+    fabricNotFound: "ファブリックが見つかりません。",
+    recipientRequiredError: "宛先のメールアドレスを入力してください。",
+    sendFailedError: "送信に失敗しました",
+    sentSuccessPrefix: "✓ レポートを送信しました:",
+    directUrlLabel: "ダイレクトダウンロード URL:",
+    sentSuccessBody: "お客様は FUZE Atlas にサインイン後、「マイレポート」からもアクセスできます。",
+    recipientEmailLabel: "宛先メールアドレス",
+    recipientNameLabel: "宛先氏名",
+    optionalSuffix: "(任意)",
+    personalNoteLabel: "メッセージ",
+    personalNoteHint: "(任意、レポートカードの上に表示されます)",
+    ccLabel: "CC",
+    ccHint: "(任意、カンマ区切り)",
+    ttlLabel: "ダイレクトリンクの有効期間",
+    ttl30Days: "30 日",
+    ttl90Days: "90 日 (デフォルト)",
+    ttl180Days: "180 日",
+    ttl1Year: "1 年",
+    sendingBtn: "送信中...",
+    sendBtn: "レポートを送信",
+    previouslySentTitle: "過去の送信履歴",
+    sentPrefix: "送信日",
+    viewedPrefix: "閲覧済み",
+    notOpenedYet: "未開封",
+    openSameLink: "同じリンクを開く →",
+  },
+
 };
 
 export default ja;
