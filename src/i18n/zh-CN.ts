@@ -7753,6 +7753,29 @@ const zhCN: Translations = {
     bookAnotherBtn: "再预约一次",
   },
 
+  adminAuditLog: {
+    adminCrumb: "管理",
+    crumb: "审计日志",
+    heading: "审计日志",
+    subtitle: "覆盖每一个实体的完整审计追溯。可按操作、实体或日期筛选。保留 90 天。",
+    errorContext: "加载审计日志",
+    couldntLoadPrefix: "无法加载审计日志",
+    networkError: "加载审计日志时出现网络错误。",
+    actionLabel: "操作",
+    allActionsOption: "全部操作",
+    entityLabel: "实体",
+    allEntitiesOption: "全部实体",
+    sinceLabel: "起始日期",
+    resetBtn: "重置",
+    rowsSuffix: "行",
+    loadingState: "正在加载审计日志…",
+    emptyState: "没有符合筛选条件的审计记录。",
+    byPrefix: "操作人：",
+    systemActor: "系统",
+    fieldChangedSingular: "项字段已变更",
+    fieldChangedPlural: "项字段已变更",
+  },
+
 };
 
 export default zhCN;
