@@ -1,5 +1,6 @@
 // @ts-nocheck
 import Link from "next/link";
+import { getServerTranslations } from "@/i18n/server";
 
 /**
  * Public shipment verification page — QR destination.
@@ -53,15 +54,16 @@ export default async function PublicShipmentPage({
   params: Promise<{ orderNumber: string }>;
 }) {
   const { orderNumber } = await params;
+  const T = (await getServerTranslations()).shipmentTrackerPage;
   const data = await getShipment(orderNumber);
 
   if (!data || !data.ok) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-md text-center">
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Shipment Not Found</h1>
-          <p className="text-slate-600">We couldn't find order {orderNumber}.</p>
-          <p className="text-sm text-slate-500 mt-4">If you received this QR code on a FUZE shipment, contact andrew@fuze47.com.</p>
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">{T.notFoundTitle}</h1>
+          <p className="text-slate-600">{T.notFoundBodyTpl.replace("{order}", orderNumber)}</p>
+          <p className="text-sm text-slate-500 mt-4">{T.notFoundFooter}</p>
         </div>
       </div>
     );
@@ -79,8 +81,8 @@ export default async function PublicShipmentPage({
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-full bg-[#00b4c3] flex items-center justify-center text-xl font-black">F</div>
             <div>
-              <p className="text-xs text-white/60 uppercase tracking-wide">FUZE Biotech · Salt Lake City</p>
-              <p className="text-sm text-white/80">Shipment Verification</p>
+              <p className="text-xs text-white/60 uppercase tracking-wide">{T.headerBadge}</p>
+              <p className="text-sm text-white/80">{T.headerSubtitle}</p>
             </div>
           </div>
           <h1 className="text-3xl font-black mt-4">{order.orderNumber}</h1>
@@ -98,31 +100,31 @@ export default async function PublicShipmentPage({
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
         {/* Shipment Details */}
         <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="font-bold text-lg text-slate-900 mb-4">Shipment Details</h2>
+          <h2 className="font-bold text-lg text-slate-900 mb-4">{T.sectionShipment}</h2>
           <div className="grid grid-cols-2 gap-4 text-sm">
             {order.volumeLiters && (
               <div>
-                <p className="text-slate-500">FUZE Volume</p>
-                <p className="font-bold text-slate-900">{order.volumeLiters}L ({order.bottles || Math.ceil(order.volumeLiters / 19)} bottles)</p>
+                <p className="text-slate-500">{T.fieldFuzeVolume}</p>
+                <p className="font-bold text-slate-900">{order.volumeLiters}L ({order.bottles || Math.ceil(order.volumeLiters / 19)} {T.bottlesSuffix})</p>
                 {order.baseFuzeLiters && (
-                  <p className="text-xs text-slate-400">base {Number(order.baseFuzeLiters).toFixed(1)}L + {order.wastageFactorPct || 0}% wastage</p>
+                  <p className="text-xs text-slate-400">{T.baseFuzePrefix} {Number(order.baseFuzeLiters).toFixed(1)}L + {order.wastageFactorPct || 0}% {T.wastageSuffix}</p>
                 )}
               </div>
             )}
             {order.fuzeTier && (
               <div>
-                <p className="text-slate-500">Tier</p>
+                <p className="text-slate-500">{T.fieldTier}</p>
                 <p className="font-bold text-slate-900">{order.fuzeTier}</p>
               </div>
             )}
             {order.treatmentMethod && (
               <div>
-                <p className="text-slate-500">Treatment Method</p>
+                <p className="text-slate-500">{T.fieldMethod}</p>
                 <p className="font-bold text-slate-900">{order.treatmentMethod.replace(/_/g, "-")}</p>
               </div>
             )}
             <div>
-              <p className="text-slate-500">Factory</p>
+              <p className="text-slate-500">{T.fieldFactory}</p>
               <p className="font-bold text-slate-900">{order.factory?.name || "—"}</p>
               {order.factory?.country && (
                 <p className="text-xs text-slate-400">{order.factory.city ? `${order.factory.city}, ` : ""}{order.factory.country}</p>
@@ -130,27 +132,27 @@ export default async function PublicShipmentPage({
             </div>
             {order.brand?.name && (
               <div>
-                <p className="text-slate-500">For Brand</p>
+                <p className="text-slate-500">{T.fieldForBrand}</p>
                 <p className="font-bold text-slate-900">{order.brand.name}</p>
               </div>
             )}
             {order.fabric?.fuzeNumber && (
               <div>
-                <p className="text-slate-500">Fabric</p>
+                <p className="text-slate-500">{T.fieldFabric}</p>
                 <p className="font-bold text-slate-900">{order.fabric.fuzeNumber}</p>
               </div>
             )}
             {order.fulfillmentSource && (
               <div>
-                <p className="text-slate-500">Fulfillment</p>
+                <p className="text-slate-500">{T.fieldFulfillment}</p>
                 <p className="font-bold text-slate-900">
-                  {order.fulfillmentSource === "DIRECT_USA" ? "Direct from USA" : order.distributor?.name || "Distributor"}
+                  {order.fulfillmentSource === "DIRECT_USA" ? T.directUsa : order.distributor?.name || T.distributorFallback}
                 </p>
               </div>
             )}
             {order.trackingNumber && (
               <div className="col-span-2">
-                <p className="text-slate-500">Tracking</p>
+                <p className="text-slate-500">{T.fieldTracking}</p>
                 <p className="font-bold text-slate-900">{order.trackingNumber}{order.carrier ? ` · ${order.carrier}` : ""}</p>
               </div>
             )}
@@ -159,7 +161,7 @@ export default async function PublicShipmentPage({
 
         {/* Documents */}
         <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="font-bold text-lg text-slate-900 mb-4">Product Documents</h2>
+          <h2 className="font-bold text-lg text-slate-900 mb-4">{T.sectionDocs}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <a
               href={sds?.url || "/compliance-library"}
@@ -169,11 +171,11 @@ export default async function PublicShipmentPage({
             >
               <span className="text-2xl">📋</span>
               <div>
-                <p className="font-semibold text-slate-900 text-sm">Safety Data Sheet (SDS)</p>
+                <p className="font-semibold text-slate-900 text-sm">{T.sdsLabel}</p>
                 <p className="text-xs text-slate-500">
                   {sds
-                    ? `${sds.title || "FUZE SDS"}${sds.version ? ` · v${sds.version}` : ""}`
-                    : "Open the compliance library"}
+                    ? `${sds.title || T.sdsTitleFallback}${sds.version ? ` · v${sds.version}` : ""}`
+                    : T.openCompliance}
                 </p>
               </div>
             </a>
@@ -185,11 +187,11 @@ export default async function PublicShipmentPage({
             >
               <span className="text-2xl">📜</span>
               <div>
-                <p className="font-semibold text-slate-900 text-sm">Certificate of Analysis (COA)</p>
+                <p className="font-semibold text-slate-900 text-sm">{T.coaLabel}</p>
                 <p className="text-xs text-slate-500">
                   {coa
-                    ? `${coa.title || "FUZE COA"}${coa.version ? ` · v${coa.version}` : ""}`
-                    : "Open the compliance library"}
+                    ? `${coa.title || T.coaTitleFallback}${coa.version ? ` · v${coa.version}` : ""}`
+                    : T.openCompliance}
                 </p>
               </div>
             </a>
@@ -198,7 +200,7 @@ export default async function PublicShipmentPage({
 
         {/* Timeline */}
         <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="font-bold text-lg text-slate-900 mb-4">Lifecycle Timeline</h2>
+          <h2 className="font-bold text-lg text-slate-900 mb-4">{T.sectionTimeline}</h2>
           {events && events.length > 0 ? (
             <div className="relative">
               <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-slate-200" />
@@ -225,7 +227,7 @@ export default async function PublicShipmentPage({
                           rel="noopener noreferrer"
                           className="inline-block mt-1 text-xs text-[#00b4c3] font-semibold hover:underline"
                         >
-                          View document →
+                          {T.viewDocument}
                         </a>
                       )}
                     </div>
@@ -234,14 +236,14 @@ export default async function PublicShipmentPage({
               </div>
             </div>
           ) : (
-            <p className="text-sm text-slate-500">No lifecycle events logged yet. Timeline will populate as the shipment moves.</p>
+            <p className="text-sm text-slate-500">{T.timelineEmpty}</p>
           )}
         </div>
 
         {/* Footer */}
         <div className="text-center text-xs text-slate-400 py-4">
-          <p>FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA</p>
-          <p className="mt-1">Questions? <a href="mailto:andrew@fuze47.com" className="text-[#00b4c3]">andrew@fuze47.com</a></p>
+          <p>{T.footerCompany}</p>
+          <p className="mt-1">{T.footerQuestions} <a href="mailto:andrew@fuze47.com" className="text-[#00b4c3]">andrew@fuze47.com</a></p>
         </div>
       </div>
     </div>
