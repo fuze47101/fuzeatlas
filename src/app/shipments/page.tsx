@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { useI18n } from "@/i18n";
 
 const STATUS_COLORS: Record<string, string> = {
   PREPARING: "bg-slate-100 text-slate-800",
@@ -14,6 +15,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function ShipmentsPage() {
+  const { t } = useI18n();
+  const T = t.shipmentsPage;
   const [shipments, setShipments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("");
@@ -108,7 +111,7 @@ export default function ShipmentsPage() {
   const handleCreateShipment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.fabricId) {
-      toast.error("Pick a fabric from the search picker before submitting.");
+      toast.error(T.fabricRequired);
       return;
     }
     setSubmitting(true);
@@ -120,10 +123,10 @@ export default function ShipmentsPage() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data?.ok) {
-        toast.error(data?.error || `Failed to create shipment (HTTP ${res.status}).`);
+        toast.error(data?.error || T.failedCreate.replace("{code}", String(res.status)));
         return;
       }
-      toast.success("Shipment created.");
+      toast.success(T.shipmentCreated);
       setShowForm(false);
       setFormData({
         fabricId: "",
@@ -141,7 +144,7 @@ export default function ShipmentsPage() {
       fetchShipments();
     } catch (error: any) {
       console.error("Error creating shipment:", error);
-      toast.error(error?.message || "Network error while creating shipment.");
+      toast.error(error?.message || T.networkError);
     } finally {
       setSubmitting(false);
     }
@@ -164,12 +167,12 @@ export default function ShipmentsPage() {
       });
       const data = await res.json();
       if (data.ok) {
-        toast.success(`Shipment status updated to ${newStatus.replace(/_/g, " ")}`);
+        toast.success(T.statusUpdated.replace("{status}", newStatus.replace(/_/g, " ")));
         fetchShipments();
       }
     } catch (error) {
       console.error("Error updating shipment:", error);
-      toast.error("Failed to update shipment status");
+      toast.error(T.failedUpdateStatus);
     }
   };
 
@@ -194,14 +197,14 @@ export default function ShipmentsPage() {
       });
       const data = await res.json();
       if (data.ok) {
-        toast.success("Shipment updated");
+        toast.success(T.shipmentUpdated);
         setEditingShipment(null);
         fetchShipments();
       } else {
-        toast.error(data.error || "Failed to update shipment");
+        toast.error(data.error || T.failedUpdate);
       }
     } catch {
-      toast.error("Failed to update shipment");
+      toast.error(T.failedUpdate);
     }
   };
 
@@ -211,27 +214,27 @@ export default function ShipmentsPage() {
         {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Sample Shipments</h1>
+            <h1 className="text-3xl font-bold text-slate-900">{T.pageTitle}</h1>
             <p className="text-slate-600 mt-1">
-              Track fabric samples and test shipments
+              {T.pageSubtitle}
             </p>
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
             className="bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white px-4 py-2.5 rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all"
           >
-            {showForm ? "Cancel" : "Create Shipment"}
+            {showForm ? T.cancel : T.createShipment}
           </button>
         </div>
 
         {/* Create Form */}
         {showForm && (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">New Shipment</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">{T.newShipment}</h3>
             <form onSubmit={handleCreateShipment} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="md:col-span-2 lg:col-span-3 relative">
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Fabric <span className="text-red-500">*</span>
+                  {T.fabricLabel} <span className="text-red-500">*</span>
                 </label>
                 {selectedFabric ? (
                   <div className="flex items-center justify-between gap-3 px-3 py-2 border-2 border-[#00b4c3] bg-[#00b4c3]/5 rounded-lg">
@@ -264,14 +267,14 @@ export default function ShipmentsPage() {
                       }}
                       className="text-xs text-slate-500 hover:text-slate-800 underline"
                     >
-                      Change
+                      {T.change}
                     </button>
                   </div>
                 ) : (
                   <>
                     <input
                       type="text"
-                      placeholder="Search by FUZE number, customer code, factory code…"
+                      placeholder={T.fabricSearchPlaceholder}
                       value={fabricSearch}
                       onChange={(e) => setFabricSearch(e.target.value)}
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
@@ -279,10 +282,10 @@ export default function ShipmentsPage() {
                     {fabricSearch.trim() && (
                       <div className="absolute z-10 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-md max-h-64 overflow-y-auto">
                         {fabricLoading ? (
-                          <div className="px-3 py-2 text-xs text-slate-400">Searching…</div>
+                          <div className="px-3 py-2 text-xs text-slate-400">{T.searching}</div>
                         ) : fabricResults.length === 0 ? (
                           <div className="px-3 py-2 text-xs text-slate-400">
-                            No fabrics match.
+                            {T.noFabricsMatch}
                           </div>
                         ) : (
                           fabricResults.map((f: any) => (
@@ -321,13 +324,13 @@ export default function ShipmentsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Lab</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.labLabel}</label>
                 <select
                   value={formData.labId}
                   onChange={(e) => setFormData({ ...formData, labId: e.target.value })}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-[#00b4c3] outline-none"
                 >
-                  <option value="">— Choose a lab —</option>
+                  <option value="">{T.chooseLab}</option>
                   {labs.map((l: any) => (
                     <option key={l.id} value={l.id}>
                       {l.name}
@@ -339,14 +342,14 @@ export default function ShipmentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Carrier
+                  {T.carrierLabel}
                 </label>
                 <select
                   value={formData.carrier}
                   onChange={(e) => setFormData({ ...formData, carrier: e.target.value })}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
                 >
-                  <option value="">Select carrier</option>
+                  <option value="">{T.selectCarrier}</option>
                   <option value="FedEx">FedEx</option>
                   <option value="DHL">DHL</option>
                   <option value="UPS">UPS</option>
@@ -356,11 +359,11 @@ export default function ShipmentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Tracking Number
+                  {T.trackingNumberLabel}
                 </label>
                 <input
                   type="text"
-                  placeholder="Tracking #"
+                  placeholder={T.trackingNumberPlaceholder}
                   value={formData.trackingNumber}
                   onChange={(e) => setFormData({ ...formData, trackingNumber: e.target.value })}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
@@ -369,7 +372,7 @@ export default function ShipmentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Sample Count
+                  {T.sampleCountLabel}
                 </label>
                 <input
                   type="number"
@@ -382,17 +385,17 @@ export default function ShipmentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Sample Type
+                  {T.sampleTypeLabel}
                 </label>
                 <select
                   value={formData.sampleType}
                   onChange={(e) => setFormData({ ...formData, sampleType: e.target.value })}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
                 >
-                  <option value="">Select type</option>
-                  <option value="Fabric swatch">Fabric swatch</option>
-                  <option value="Treated sample">Treated sample</option>
-                  <option value="Washed sample">Washed sample</option>
+                  <option value="">{T.selectType}</option>
+                  <option value="Fabric swatch">{T.fabricSwatch}</option>
+                  <option value="Treated sample">{T.treatedSample}</option>
+                  <option value="Washed sample">{T.washedSample}</option>
                 </select>
               </div>
 
@@ -401,7 +404,7 @@ export default function ShipmentsPage() {
                 disabled={submitting || !formData.fabricId}
                 className="col-span-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-2 rounded-lg font-medium text-sm hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? "Creating…" : "Create Shipment"}
+                {submitting ? T.creating : T.createShipment}
               </button>
             </form>
           </div>
@@ -418,7 +421,7 @@ export default function ShipmentsPage() {
                   : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
               }`}
             >
-              All
+              {T.statusAll}
             </button>
             {["PREPARING", "SHIPPED", "IN_TRANSIT", "DELIVERED", "AT_LAB", "RETURNED"].map((status) => (
               <button
@@ -438,10 +441,10 @@ export default function ShipmentsPage() {
 
         {/* Shipments List */}
         {loading ? (
-          <div className="text-center py-12 text-slate-600">Loading...</div>
+          <div className="text-center py-12 text-slate-600">{T.loading}</div>
         ) : shipments.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-            <p className="text-slate-600">No shipments found</p>
+            <p className="text-slate-600">{T.noShipments}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -465,10 +468,10 @@ export default function ShipmentsPage() {
                       </span>
                       <div>
                         <p className="font-medium text-slate-900">
-                          {shipment.fabric?.fuzeNumber || shipment.trackingNumber || "Shipment"}
+                          {shipment.fabric?.fuzeNumber || shipment.trackingNumber || T.shipmentDefault}
                         </p>
                         <p className="text-sm text-slate-600">
-                          {shipment.lab?.name} • {shipment.sampleCount} samples
+                          {shipment.lab?.name} • {shipment.sampleCount} {T.samples}
                         </p>
                       </div>
                     </div>
@@ -505,19 +508,19 @@ export default function ShipmentsPage() {
                   <div className="bg-slate-50 border-t border-slate-200 px-6 py-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                       <div>
-                        <p className="text-xs text-slate-600 font-medium">Carrier</p>
+                        <p className="text-xs text-slate-600 font-medium">{T.carrierField}</p>
                         <p className="text-sm text-slate-900">{shipment.carrier || "-"}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-600 font-medium">Sample Type</p>
+                        <p className="text-xs text-slate-600 font-medium">{T.sampleType}</p>
                         <p className="text-sm text-slate-900">{shipment.sampleType || "-"}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-600 font-medium">Condition</p>
+                        <p className="text-xs text-slate-600 font-medium">{T.condition}</p>
                         <p className="text-sm text-slate-900">{shipment.sampleCondition || "-"}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-600 font-medium">Weight</p>
+                        <p className="text-xs text-slate-600 font-medium">{T.weight}</p>
                         <p className="text-sm text-slate-900">{shipment.weight ? `${shipment.weight} kg` : "-"}</p>
                       </div>
                     </div>
@@ -526,9 +529,9 @@ export default function ShipmentsPage() {
                     {shipment.eventCount > 0 && (
                       <div className="mb-4">
                         <p className="text-xs text-slate-600 font-medium mb-2">
-                          Events ({shipment.eventCount})
+                          {T.events} ({shipment.eventCount})
                         </p>
-                        <div className="text-xs text-slate-600">Chain of custody tracked with {shipment.eventCount} events</div>
+                        <div className="text-xs text-slate-600">{T.chainOfCustody.replace("{n}", String(shipment.eventCount))}</div>
                       </div>
                     )}
 
@@ -538,14 +541,14 @@ export default function ShipmentsPage() {
                         onClick={() => startEditShipment(shipment)}
                         className="px-3 py-1.5 bg-white text-[#00b4c3] border border-[#00b4c3]/30 rounded-lg text-xs font-medium hover:bg-[#00b4c3]/5"
                       >
-                        Edit Details
+                        {T.editDetails}
                       </button>
                       {shipment.status === "PREPARING" && (
                         <button
                           onClick={() => handleStatusUpdate(shipment.id, "SHIPPED")}
                           className="px-3 py-1.5 bg-blue-100 text-blue-800 rounded-lg text-xs font-medium hover:bg-blue-200"
                         >
-                          Mark Shipped
+                          {T.markShipped}
                         </button>
                       )}
                       {["SHIPPED", "IN_TRANSIT"].includes(shipment.status) && (
@@ -553,7 +556,7 @@ export default function ShipmentsPage() {
                           onClick={() => handleStatusUpdate(shipment.id, "IN_TRANSIT")}
                           className="px-3 py-1.5 bg-amber-100 text-amber-800 rounded-lg text-xs font-medium hover:bg-amber-200"
                         >
-                          In Transit
+                          {T.inTransit}
                         </button>
                       )}
                       {["IN_TRANSIT", "DELIVERED"].includes(shipment.status) && (
@@ -561,7 +564,7 @@ export default function ShipmentsPage() {
                           onClick={() => handleStatusUpdate(shipment.id, "DELIVERED")}
                           className="px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-lg text-xs font-medium hover:bg-emerald-200"
                         >
-                          Mark Delivered
+                          {T.markDelivered}
                         </button>
                       )}
                       {["DELIVERED", "AT_LAB"].includes(shipment.status) && (
@@ -569,7 +572,7 @@ export default function ShipmentsPage() {
                           onClick={() => handleStatusUpdate(shipment.id, "AT_LAB")}
                           className="px-3 py-1.5 bg-purple-100 text-purple-800 rounded-lg text-xs font-medium hover:bg-purple-200"
                         >
-                          At Lab
+                          {T.atLab}
                         </button>
                       )}
                     </div>
@@ -587,15 +590,15 @@ export default function ShipmentsPage() {
           <div className="absolute inset-0 bg-black/50" onClick={() => setEditingShipment(null)} />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto my-auto">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-900">Edit Shipment</h2>
+              <h2 className="text-lg font-bold text-slate-900">{T.editShipmentTitle}</h2>
               <button onClick={() => setEditingShipment(null)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
             </div>
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Carrier</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.carrierLabel}</label>
                 <select value={editForm.carrier} onChange={(e) => setEditForm({ ...editForm, carrier: e.target.value })}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none">
-                  <option value="">Select carrier</option>
+                  <option value="">{T.selectCarrier}</option>
                   <option value="FedEx">FedEx</option>
                   <option value="DHL">DHL</option>
                   <option value="UPS">UPS</option>
@@ -603,40 +606,40 @@ export default function ShipmentsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Tracking Number</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.trackingNumberLabel}</label>
                 <input type="text" value={editForm.trackingNumber} onChange={(e) => setEditForm({ ...editForm, trackingNumber: e.target.value })}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Sample Count</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.sampleCountLabel}</label>
                   <input type="number" min="1" value={editForm.sampleCount} onChange={(e) => setEditForm({ ...editForm, sampleCount: parseInt(e.target.value) })}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Sample Type</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.sampleTypeLabel}</label>
                   <select value={editForm.sampleType} onChange={(e) => setEditForm({ ...editForm, sampleType: e.target.value })}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none">
-                    <option value="">Select type</option>
-                    <option value="Fabric swatch">Fabric swatch</option>
-                    <option value="Treated sample">Treated sample</option>
-                    <option value="Washed sample">Washed sample</option>
+                    <option value="">{T.selectType}</option>
+                    <option value="Fabric swatch">{T.fabricSwatch}</option>
+                    <option value="Treated sample">{T.treatedSample}</option>
+                    <option value="Washed sample">{T.washedSample}</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Sample Condition</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.sampleConditionLabel}</label>
                 <input type="text" value={editForm.sampleCondition} onChange={(e) => setEditForm({ ...editForm, sampleCondition: e.target.value })}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00b4c3] outline-none"
-                  placeholder="Good, Damaged, etc." />
+                  placeholder={T.sampleConditionPlaceholder} />
               </div>
             </div>
             <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end">
               <button onClick={() => setEditingShipment(null)} className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">
-                Cancel
+                {T.cancel}
               </button>
               <button onClick={saveEditShipment} className="px-5 py-2 text-sm font-semibold bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa]">
-                Save Changes
+                {T.saveChanges}
               </button>
             </div>
           </div>
@@ -646,9 +649,9 @@ export default function ShipmentsPage() {
       {/* Confirm Status Change (F-026) */}
       <ConfirmDialog
         open={!!confirmStatus}
-        title={`Advance to ${confirmStatus?.status?.replace(/_/g, " ") || ""}?`}
-        message="This will update the shipment status and log a chain-of-custody event. This action can be reversed by an admin."
-        confirmLabel={`Update to ${confirmStatus?.status?.replace(/_/g, " ") || ""}`}
+        title={T.advanceTo.replace("{status}", confirmStatus?.status?.replace(/_/g, " ") || "")}
+        message={T.advanceMessage}
+        confirmLabel={T.updateTo.replace("{status}", confirmStatus?.status?.replace(/_/g, " ") || "")}
         variant="warning"
         onConfirm={() => {
           if (confirmStatus) doStatusUpdate(confirmStatus.id, confirmStatus.status);
