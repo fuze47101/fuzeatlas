@@ -5027,6 +5027,92 @@ const vi: Translations = {
     tagsSuffix: "thẻ",
   },
 
+  leadManagement: {
+    pageTitle: "Quản lý khách hàng tiềm năng & Tiếp cận",
+    pageSubtitle: "Quản lý liên hệ, làm giàu qua Apollo, gửi tiếp cận SMS/email",
+
+    loadErrorContext: "Tải pipeline khách hàng tiềm năng",
+    loadErrorFallback: "Không tải được dữ liệu quản lý khách hàng tiềm năng",
+    networkError: "Lỗi mạng khi tải khách hàng tiềm năng.",
+    loading: "Đang tải khách hàng tiềm năng...",
+
+    statTotalContacts: "Tổng số liên hệ",
+    statWithEmail: "Có email",
+    statWithPhone: "Có điện thoại",
+    statEnriched: "Đã làm giàu",
+    statNotContacted: "Chưa liên hệ",
+    statContacted: "Đã liên hệ",
+
+    searchPlaceholder: "Tìm thương hiệu hoặc liên hệ...",
+    filterAllPipelineStages: "Tất cả giai đoạn pipeline",
+    stageLead: "Khách hàng tiềm năng",
+    stagePresentation: "Trình bày",
+    stageBrandTesting: "Thử nghiệm thương hiệu",
+    stageFactoryOnboarding: "Onboarding nhà máy",
+    stageProduction: "Sản xuất",
+    stageArchive: "Lưu trữ",
+
+    filterAllVerticals: "Tất cả lĩnh vực",
+    verticalApparel: "May mặc",
+    verticalHospitality: "Khách sạn",
+    verticalWorkwear: "Đồng phục lao động",
+    verticalHomeTextiles: "Dệt may gia dụng",
+
+    filterAllOutreachStatus: "Tất cả trạng thái tiếp cận",
+    outreachNotContacted: "Chưa liên hệ",
+    outreachContacted: "Đã liên hệ",
+    outreachResponded: "Đã phản hồi",
+    outreachMeetingBooked: "Đã đặt lịch họp",
+    outreachNotInterested: "Không quan tâm",
+
+    filterAllEmailStatus: "Tất cả trạng thái email",
+    emailVerified: "Đã xác minh",
+    emailExtrapolated: "Ngoại suy",
+    emailUnavailable: "Không khả dụng",
+
+    colBrand: "Thương hiệu",
+    colContact: "Liên hệ",
+    colTitle: "Chức danh",
+    colEmail: "Email",
+    colPhone: "Điện thoại",
+    colLI: "LI",
+    colEmailed: "Đã email",
+    colOutreach: "Tiếp cận",
+    colActions: "Hành động",
+
+    inProfile: "trong hồ sơ",
+    enrichedLabel: "đã làm giàu",
+    noContactsNeedsEnrichment: "Không có liên hệ — cần làm giàu",
+    msgsSuffix: "tin nhắn",
+    markLinkedinReached: "Đánh dấu đã tiếp cận LinkedIn",
+    markEmailed: "Đánh dấu đã email",
+
+    actionSms: "SMS",
+    actionEmail: "Email",
+    actionEnrich: "Làm giàu",
+    titleSendSms: "Gửi SMS",
+    titleSendEmail: "Gửi email",
+    titleEnrichApollo: "Làm giàu qua Apollo",
+
+    paginationLabel: "Trang {page} trên {pages} ({total} thương hiệu)",
+    paginationPrev: "Trước",
+    paginationNext: "Tiếp",
+
+    modalSendSmsTo: "Gửi SMS đến",
+    modalSendEmailTo: "Gửi email đến",
+    fieldTemplate: "Mẫu",
+    fieldToPrefix: "Đến:",
+    fieldSubject: "Chủ đề",
+    fieldMessage: "Nội dung",
+    charsSuffix: "ký tự",
+    sendSms: "Gửi SMS",
+    sendEmail: "Gửi email",
+    sendingButton: "Đang gửi...",
+    cancelButton: "Hủy",
+    sendSuccess: "Đã gửi tin nhắn thành công!",
+    sendErrorPrefix: "Lỗi:",
+  },
+
 };
 
 export default vi;
