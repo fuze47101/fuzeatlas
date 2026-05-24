@@ -4918,6 +4918,92 @@ const ko: Translations = {
     tagsSuffix: "태그",
   },
 
+  leadManagement: {
+    pageTitle: "리드 관리 및 아웃리치",
+    pageSubtitle: "연락처 관리, Apollo를 통한 보강, SMS/이메일 아웃리치 발송",
+
+    loadErrorContext: "리드 파이프라인 로드",
+    loadErrorFallback: "리드 관리 데이터를 로드할 수 없습니다",
+    networkError: "리드 로드 중 네트워크 오류 발생.",
+    loading: "리드 로드 중...",
+
+    statTotalContacts: "총 연락처",
+    statWithEmail: "이메일 보유",
+    statWithPhone: "전화번호 보유",
+    statEnriched: "보강됨",
+    statNotContacted: "미접촉",
+    statContacted: "접촉됨",
+
+    searchPlaceholder: "브랜드 또는 연락처 검색...",
+    filterAllPipelineStages: "모든 파이프라인 단계",
+    stageLead: "리드",
+    stagePresentation: "프레젠테이션",
+    stageBrandTesting: "브랜드 시험",
+    stageFactoryOnboarding: "공장 온보딩",
+    stageProduction: "생산",
+    stageArchive: "보관",
+
+    filterAllVerticals: "모든 버티컬",
+    verticalApparel: "의류",
+    verticalHospitality: "호스피탈리티",
+    verticalWorkwear: "워크웨어",
+    verticalHomeTextiles: "홈텍스타일",
+
+    filterAllOutreachStatus: "모든 아웃리치 상태",
+    outreachNotContacted: "미접촉",
+    outreachContacted: "접촉됨",
+    outreachResponded: "응답함",
+    outreachMeetingBooked: "미팅 예약됨",
+    outreachNotInterested: "관심 없음",
+
+    filterAllEmailStatus: "모든 이메일 상태",
+    emailVerified: "확인됨",
+    emailExtrapolated: "외삽됨",
+    emailUnavailable: "사용 불가",
+
+    colBrand: "브랜드",
+    colContact: "연락처",
+    colTitle: "직책",
+    colEmail: "이메일",
+    colPhone: "전화번호",
+    colLI: "LI",
+    colEmailed: "이메일 발송됨",
+    colOutreach: "아웃리치",
+    colActions: "작업",
+
+    inProfile: "프로필에",
+    enrichedLabel: "보강됨",
+    noContactsNeedsEnrichment: "연락처 없음 — 보강 필요",
+    msgsSuffix: "메시지",
+    markLinkedinReached: "LinkedIn 접촉으로 표시",
+    markEmailed: "이메일 발송됨으로 표시",
+
+    actionSms: "SMS",
+    actionEmail: "이메일",
+    actionEnrich: "보강",
+    titleSendSms: "SMS 발송",
+    titleSendEmail: "이메일 발송",
+    titleEnrichApollo: "Apollo 통해 보강",
+
+    paginationLabel: "{pages}페이지 중 {page}페이지 (브랜드 {total}개)",
+    paginationPrev: "이전",
+    paginationNext: "다음",
+
+    modalSendSmsTo: "SMS 발송 대상",
+    modalSendEmailTo: "이메일 발송 대상",
+    fieldTemplate: "템플릿",
+    fieldToPrefix: "받는 사람:",
+    fieldSubject: "제목",
+    fieldMessage: "메시지",
+    charsSuffix: "자",
+    sendSms: "SMS 발송",
+    sendEmail: "이메일 발송",
+    sendingButton: "발송 중...",
+    cancelButton: "취소",
+    sendSuccess: "메시지가 성공적으로 발송되었습니다!",
+    sendErrorPrefix: "오류:",
+  },
+
 };
 
 export default ko;
