@@ -6,6 +6,7 @@
  */
 
 import Link from "next/link";
+import { getServerTranslations } from "@/i18n/server";
 
 export const metadata = {
   title: "Compliance & Certifications",
@@ -98,17 +99,22 @@ const CERTS = [
   },
 ];
 
-export default function CompliancePage() {
+export default async function CompliancePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ lang?: string }>;
+}) {
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).educationCompliance;
+
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
       <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 md:p-8">
-        <Link href="/education" className="text-xs text-emerald-300 hover:text-emerald-200">← Back to FUZE Basics</Link>
-        <div className="text-xs font-bold uppercase tracking-wider text-emerald-300 mt-2 mb-1">Compliance & Certifications</div>
-        <h1 className="text-3xl md:text-4xl font-black tracking-tight">Every certification stack a brand asks for</h1>
+        <Link href="/education" className="text-xs text-emerald-300 hover:text-emerald-200">{T.backLink}</Link>
+        <div className="text-xs font-bold uppercase tracking-wider text-emerald-300 mt-2 mb-1">{T.kicker}</div>
+        <h1 className="text-3xl md:text-4xl font-black tracking-tight">{T.heroTitle}</h1>
         <p className="mt-3 text-sm md:text-base text-slate-300 max-w-3xl">
-          One screenshot for your vendor questionnaire. EPA federal + California, OEKO-TEX Standard 100 Class I,
-          bluesign® approved, PFAS-free, formaldehyde-free, ZDHC-aligned. Antibacterial / antiviral / antifungal
-          test data across the four tiers — reports available on request.
+          {T.heroBody}
         </p>
       </div>
 
@@ -118,7 +124,7 @@ export default function CompliancePage() {
             <div className="flex items-baseline justify-between gap-2 mb-1">
               <h2 className="text-sm font-black text-slate-900">{c.label}</h2>
               <span className="shrink-0 inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-600 text-white">
-                Active ✓
+                {T.activeBadge}
               </span>
             </div>
             <div className="text-xs font-semibold text-slate-700 mb-2">{c.body}</div>
@@ -128,22 +134,21 @@ export default function CompliancePage() {
       </section>
 
       <section className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
-        <h2 className="text-xl font-black text-emerald-900 mb-2">Need actual document copies?</h2>
+        <h2 className="text-xl font-black text-emerald-900 mb-2">{T.docCopiesTitle}</h2>
         <p className="text-sm text-emerald-800 mb-4">
-          The Document Center holds the live PDF copies of every certification, SDS, TDS, and COA. Compliance teams
-          can download them directly for vendor questionnaires.
+          {T.docCopiesBody}
         </p>
         <Link
           href="/compliance-library"
           className="inline-flex items-center px-4 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700"
         >
-          Open Document Center →
+          {T.docCenterCta}
         </Link>
       </section>
 
       <div className="flex flex-wrap gap-3">
-        <Link href="/education" className="px-4 py-2.5 rounded-lg bg-slate-900 text-white text-sm font-bold hover:bg-slate-800">Back to FUZE Basics</Link>
-        <Link href="/education/claims" className="px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-bold hover:bg-blue-700">What you can claim →</Link>
+        <Link href="/education" className="px-4 py-2.5 rounded-lg bg-slate-900 text-white text-sm font-bold hover:bg-slate-800">{T.backBasicsBtn}</Link>
+        <Link href="/education/claims" className="px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-bold hover:bg-blue-700">{T.whatYouCanClaimBtn}</Link>
       </div>
     </div>
   );

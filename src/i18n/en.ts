@@ -7347,6 +7347,18 @@ const en = {
     footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
     footerQuestions: "Questions?",
   },
+  educationCompliance: {
+    backLink: "← Back to FUZE Basics",
+    kicker: "Compliance & Certifications",
+    heroTitle: "Every certification stack a brand asks for",
+    heroBody: "One screenshot for your vendor questionnaire. EPA federal + California, OEKO-TEX Standard 100 Class I, bluesign® approved, PFAS-free, formaldehyde-free, ZDHC-aligned. Antibacterial / antiviral / antifungal test data across the four tiers — reports available on request.",
+    activeBadge: "Active ✓",
+    docCopiesTitle: "Need actual document copies?",
+    docCopiesBody: "The Document Center holds the live PDF copies of every certification, SDS, TDS, and COA. Compliance teams can download them directly for vendor questionnaires.",
+    docCenterCta: "Open Document Center →",
+    backBasicsBtn: "Back to FUZE Basics",
+    whatYouCanClaimBtn: "What you can claim →",
+  },
 };
 
 export default en;
