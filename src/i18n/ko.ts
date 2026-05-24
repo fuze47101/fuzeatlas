@@ -8123,6 +8123,19 @@ const ko: Translations = {
     questionsPrefix: "· 문의?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "플레이북",
+    heading: "BD 플레이북",
+    subtitle: "카테고리 태그된 아웃리치 안내. 사용하는 것을 즐겨찾기에 추가하십시오; 브랜드는 Brand.textileCategory 기반의 권장 플레이북을 표시합니다.",
+    failedFallback: "실패",
+    emptyBody: "이 카테고리에 아직 플레이북이 없습니다.",
+    emptySeedHint: "트리거",
+    emptySeedHintSuffix: "fzcron을 통해 세 가지 스타터 플레이북을 추가하십시오.",
+    removeFavoriteTitle: "즐겨찾기 제거",
+    addFavoriteTitle: "즐겨찾기 추가",
+  },
+
 };
 
 export default ko;
