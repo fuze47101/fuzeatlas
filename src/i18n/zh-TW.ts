@@ -6202,6 +6202,35 @@ const zhTW: Translations = {
     noData: "無資料",
   },
 
+  educationApplication: {
+    pageMetaTitle: "施加方法",
+    backLink: "← 返回 FUZE 基礎知識",
+    kicker: "施加方法",
+    heroTitle: "FUZE 可在您現有的整理生產線上運作",
+    heroBody: "施加 FUZE 不需要新槽體、新烘箱或新設備。三種施加路徑涵蓋當今所有的紡織生產配置。F4 Essential Protection 在許多基材上完全無需固化烘箱。",
+    methodExhaustName: "浸軋法 (染浴)",
+    methodExhaustDesc: "將 FUZE 加入染浴中。元材料在現有的染料吸盡製程中鍵結。無需新槽體、新容器或新生產線。",
+    methodExhaustWhen: "最適合大量連續染色。元材料與染料固色步驟整合。",
+    methodPdcName: "浸軋-烘乾-固化",
+    methodPdcDesc: "將面料通過裝有稀釋 FUZE 浴的標準浸軋機。如同平常般擠壓、烘乾、固化。固化溫度為 150-170°C。",
+    methodPdcWhen: "最常見的施加路徑。相容於當今所有運作中的紡織整理生產線。",
+    methodSprayName: "噴塗法 (頭部間距)",
+    methodSprayDesc: "6 英吋頭部間距,15 m/min 線速。將稀釋的 FUZE 霧化噴灑於面料表面,然後烘乾/固化。適合成衣或非織造基材。",
+    methodSprayWhen: "已裁剪/縫製的成衣,或不適用浸軋/PDC 的特殊基材。",
+    whenToUseLabel: "適用時機",
+    operatorTitle: "為何這對工廠操作員至關重要",
+    operatorBullet1: "✓ 無需新資本設備。FUZE 可直接整合至您現有的浸軋/染色/噴塗生產線。",
+    operatorBullet2: "✓ 無黏合劑、無交聯劑、無甲醛。庫存管理更簡單,無需致癌物質處理程序。",
+    operatorBullet3: "✓ F4 無需固化烘箱。較低層級可空氣乾燥;F1-F3 使用 150-170°C,與標準 PDC 整理範圍相同。",
+    operatorBullet4: "✓ 儲存的 FUZE 無保存期限。整理車間中的桶裝與大瓶可無限期存放而不會劣化。",
+    operatorBullet5: "✓ 標準 19L 大瓶為最小訂購單位。需要精確匹配時可訂購自訂體積 (47L、285L、1300L)。",
+    runNumbersTitle: "計算您的數字",
+    runNumbersBody: "施加計算器可依您選擇的層級計算每平方米面料所需的精確 FUZE 體積。輸入面料克重 (gsm)、幅寬與目標層級 — 即可獲得 FUZE 浴公升數、原液毫升數,以及每線性米的成本。",
+    runNumbersCta: "開啟施加計算器 →",
+    backBasicsBtn: "返回 FUZE 基礎知識",
+    seePricingBtn: "查看定價與層級",
+  },
+
 };
 
 export default zhTW;
