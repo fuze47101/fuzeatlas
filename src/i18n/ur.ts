@@ -7713,6 +7713,24 @@ const ur: Translations = {
     websiteLabel: "ویب سائٹ",
   },
 
+  reportSharePage: {
+    unavailableTitle: "رپورٹ دستیاب نہیں",
+    unavailableBodyPrefix: "طویل مدتی رسائی کے لیے، یہاں سائن ان کریں",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "اور رپورٹ میری رپورٹس کے تحت تلاش کریں، یا جس ای میل سے یہ آئی ہے اس کا جواب دیں۔",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · اطلاق و توثیق رپورٹ",
+    heading: "FUZE علاج کی ریسپی اور توثیق",
+    issuedLabel: "جاری کیا گیا",
+    linkValidUntil: "· یہ براہ راست لنک اس تاریخ تک درست ہے",
+    preparedForTitle: "اس کے لیے تیار کیا گیا",
+    execSummaryTitle: "ایگزیکٹو خلاصہ",
+    recipeTitle: "تجویز کردہ ریسپی",
+    fuzeRequiredTitle: "FUZE درکار (پروڈکشن باتھ سائز)",
+    labIcpTitle: "آزاد لیب ICP تصدیق",
+    accessLaterTitle: "بعد میں اس رپورٹ تک رسائی",
+  },
+
 };
 
 export default ur;
