@@ -8172,6 +8172,24 @@ const vi: Translations = {
     footerVerifiedBy: "Được FUZE Atlas xác minh",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "Ảnh chụp ESG — FUZE Atlas",
+    metaDescPrefix: "Báo cáo tác động ESG hàng quý cho",
+    metaDescSuffix: "được FUZE Atlas chứng nhận.",
+    backArrowPrefix: "←",
+    headingSuffix: "— Tác động ESG",
+    heroSubtitle: "Ảnh chụp hàng quý của vải được chứng nhận FUZE và kết quả thử nghiệm kháng khuẩn.",
+    emptyBody: "Chưa có ảnh chụp nào được xuất bản. Báo cáo hàng quý xuất bản vào đầu quý tiếp theo.",
+    statFabricsCertified: "Vải đã chứng nhận",
+    statTestsPassed: "Thử nghiệm đạt",
+    statFuzeLiters: "Lít FUZE",
+    statFactories: "Nhà máy",
+    passRateLabel: "Tỷ lệ đạt:",
+    downloadPdf: "Tải xuống PDF →",
+    footerCertifiedBy: "Được FUZE Atlas chứng nhận",
+  },
+
 };
 
 export default vi;
