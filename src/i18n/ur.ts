@@ -7237,6 +7237,28 @@ const ur: Translations = {
     errNetwork: "نیٹ ورک کی خرابی",
   },
 
+  notificationsPage: {
+    loading: "اطلاعات لوڈ ہو رہی ہیں...",
+    title: "اطلاعات",
+    unreadLabel: "نا پڑھا",
+    allCaughtUp: "سب کچھ پکڑ لیا",
+    totalLabel: "کل",
+    markAllRead: "سب کو پڑھا ہوا نشان زد کریں",
+    filterAll: "تمام",
+    filterUnread: "نا پڑھا",
+    allTypes: "تمام اقسام",
+    emptyUnreadTitle: "کوئی نا پڑھی اطلاعات نہیں",
+    emptyAllTitle: "ابھی تک کوئی اطلاع نہیں",
+    emptyUnreadBody: "آپ سب پکڑ چکے ہیں!",
+    emptyAllBody: "جب آپ کے اکاؤنٹ پر سرگرمی ہو گی تو اطلاعات یہاں ظاہر ہوں گی۔",
+    viewDetails: "تفصیلات دیکھیں ←",
+    markAsRead: "پڑھا ہوا نشان زد کریں",
+    justNow: "ابھی",
+    minSuffix: "م پہلے",
+    hourSuffix: "گھ پہلے",
+    daySuffix: "د پہلے",
+  },
+
 };
 
 export default ur;
