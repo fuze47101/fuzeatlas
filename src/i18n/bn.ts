@@ -7614,6 +7614,25 @@ const bn: Translations = {
     footerPrefix: "FUZE Atlas API ডকুমেন্টেশন - সর্বশেষ আপডেট",
   },
 
+  recipeSearch: {
+    heading: "রেসিপি অনুসন্ধান",
+    subtitle: "নেটওয়ার্ক-ব্যাপী FUZE রেসিপি লাইব্রেরি। Atlas-এ প্রতিটি যাচাইকৃত কাপড়ের মধ্যে অনুসন্ধান করুন — আপনি যা নিয়ে কাজ করছেন তা একটি প্রমাণিত রেসিপির সাথে মেলান, এমনকি যখন কাপড়টি আপনার নয়। সুযোগের বাইরে সারিগুলো বেনামী, কিন্তু রেসিপি পদার্থবিদ্যা দৃশ্যমান।",
+    keywordPlaceholder: "কীওয়ার্ড (cotton, jersey, twill...)",
+    anyCategory: "যেকোনো ক্যাটাগরি",
+    knit: "নিট",
+    woven: "ওভেন",
+    nonwoven: "ননওভেন",
+    fiberPlaceholder: "ফাইবার (cotton, poly...)",
+    gsmMinPlaceholder: "সর্বনিম্ন GSM",
+    gsmMaxPlaceholder: "সর্বোচ্চ GSM",
+    anyTier: "যেকোনো টিয়ার",
+    onlyValidatedLabel: "শুধু পরিমাপকৃত পিকআপ সহ কাপড় দেখান (যাচাইকৃত বেঞ্চ পরীক্ষা)",
+    searchingBtn: "অনুসন্ধান করা হচ্ছে...",
+    searchBtn: "অনুসন্ধান",
+    emptyTitle: "এখনও কোন মিলে যাওয়া রেসিপি নেই।",
+    emptyBody: "ফিল্টারগুলো বিস্তৃত করুন — অথবা \"যাচাইকৃত বেঞ্চ পরীক্ষা\" ফিল্টার সরান যদি আপনি এখনও মধ্য-উন্নয়নে থাকা কাপড় দেখতে চান।",
+  },
+
 };
 
 export default bn;
