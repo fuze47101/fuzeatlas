@@ -4891,6 +4891,81 @@ const ur: Translations = {
     docTypeOther: "دیگر",
   },
 
+  consumptionAdmin: {
+    loading: "کنزمپشن ڈیٹا لوڈ ہو رہا ہے...",
+    pageTitle: "کنزمپشن اور ری آرڈر",
+    pageSubtitle: "فیکٹری FUZE استعمال، متوقع ختم ہونے کی تاریخیں، اور خودکار ری آرڈر ٹرگرز کو ٹریک کریں",
+
+    btnNewOrder: "+ نیا آرڈر",
+    btnLogUsage: "+ استعمال لاگ کریں",
+
+    kpiActiveFactories: "فعال فیکٹریاں",
+    kpiOfTotal: "{n} کل میں سے",
+    kpiTotalOrdered: "کل آرڈر شدہ",
+    kpiPending: "{n} زیر التواء",
+    kpiTotalConsumed: "کل استعمال شدہ",
+    kpiAcrossAll: "تمام فیکٹریوں میں",
+    kpiReorderAlerts: "ری آرڈر الرٹس",
+    kpiAlertsSplit: "{c} اہم، {w} انتباہ",
+
+    annualDemandLabel: "سالانہ متوقع طلب",
+    annualDemandUnit: "لیٹرز",
+    annualDemandBottles: "~{n} بوتلیں",
+    annualDemandRevenue: "~${n} ریونیو",
+
+    sectionFactoryInventory: "فیکٹری انوینٹری اسٹیٹس",
+    emptyTitle: "ابھی تک کوئی FUZE-فعال فیکٹریاں نہیں۔",
+    emptySub: "fuzeEnabled = true والی فیکٹریاں یہاں ظاہر ہوں گی۔",
+
+    cellRemaining: "باقی",
+    cellBurn: "برن/دن",
+    cellRunOut: "ختم ہونے کا وقت",
+    daysSuffix: "د",
+    daysWord: "دن",
+    fabricsSuffix: "فیبرکس",
+    fabricSuffix: "فیبرک",
+    activeOrdersSuffix: "فعال آرڈرز",
+    activeOrderSuffix: "فعال آرڈر",
+
+    colFactory: "فیکٹری",
+    colCountry: "ملک",
+    colOrdered: "آرڈر شدہ",
+    colConsumed: "استعمال شدہ",
+    colRemaining: "باقی",
+    colBurnDay: "برن/دن",
+    colRunOut: "ختم ہونے کا وقت",
+    colStatus: "اسٹیٹس",
+
+    modalOrderTitle: "نیا FUZE آرڈر",
+    modalUsageTitle: "FUZE استعمال لاگ کریں",
+    fieldFactory: "فیکٹری",
+    placeholderFactory: "فیکٹری منتخب کریں...",
+    fieldVolumeL: "حجم (لیٹرز)",
+    fieldTier: "ٹیئر",
+    fieldNotes: "نوٹس",
+    fieldLitersUsed: "استعمال شدہ لیٹرز",
+    fieldMetersProcessed: "پراسیس شدہ میٹرز",
+    placeholderOptional: "اختیاری",
+    fieldMethod: "طریقہ",
+    placeholderSelect: "منتخب کریں...",
+    methodExhaust: "Exhaust (Dyebath)",
+    methodPad: "Pad-Dry-Cure",
+    methodSpray: "Spray",
+
+    summaryBottles: "بوتلیں (ہر 19L):",
+    summaryEstTotal: "تخمینہ کل:",
+
+    btnCancel: "منسوخ کریں",
+    btnCreating: "بنایا جا رہا ہے...",
+    btnCreateOrder: "آرڈر بنائیں",
+    btnLogging: "لاگ کیا جا رہا ہے...",
+    btnLogUsageSubmit: "استعمال لاگ کریں",
+
+    errorCreateOrder: "آرڈر بنانے میں ناکامی",
+    errorLogUsage: "کنزمپشن لاگ کرنے میں ناکامی",
+    errorNetwork: "نیٹ ورک کی خرابی",
+  },
+
 };
 
 export default ur;
