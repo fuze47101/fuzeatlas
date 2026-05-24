@@ -1,5 +1,6 @@
 // @ts-nocheck
 import Link from "next/link";
+import { getServerTranslations } from "@/i18n/server";
 
 /**
  * /education/testing-protocol — FUZE Certified Testing Protocol
@@ -42,30 +43,28 @@ export const metadata = {
     "Required testing protocol for FUZE-treated fabric. ICP-first verification, UV-only sterilization, low-sulfur growth medium, ASTM E2149 as primary test.",
 };
 
-export default function TestingProtocolPage() {
+export default async function TestingProtocolPage({ searchParams }: { searchParams?: Promise<{ lang?: string }> }) {
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).educationTestingProtocol;
   return (
     <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-8">
       {/* Breadcrumb */}
       <nav className="text-xs text-slate-500 mb-3">
-        <Link href="/education" className="hover:text-slate-700">Education</Link>
+        <Link href="/education" className="hover:text-slate-700">{T.breadcrumbEducation}</Link>
         <span className="mx-1">›</span>
-        <span className="text-slate-700 font-medium">Certified Testing Protocol</span>
+        <span className="text-slate-700 font-medium">{T.breadcrumbCurrent}</span>
       </nav>
 
       {/* Hero */}
       <div className="mb-6">
         <div className="inline-block bg-red-100 text-red-800 text-[11px] font-black uppercase tracking-wider px-2 py-1 rounded mb-2">
-          Required reading
+          {T.requiredReadingBadge}
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-slate-900">
-          FUZE Certified Testing Protocol
+          {T.pageTitle}
         </h1>
         <p className="text-slate-600 mt-2 max-w-3xl">
-          This is the only test protocol FUZE Technologies will support. Any deviation —
-          different sterilization, different growth medium, different contact period,
-          or skipping ICP verification — voids the results and wastes everyone&apos;s time and
-          money. Read this page in full before requesting a test, applying for Atlas
-          access, or shipping samples to any lab.
+          {T.heroBlurb}
         </p>
       </div>
 
@@ -77,16 +76,16 @@ export default function TestingProtocolPage() {
           rules 5-8 to 4-7. */}
       <div className="bg-slate-900 text-white rounded-2xl p-6 mb-8">
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-          The seven rules
+          {T.sevenRulesLabel}
         </p>
         <ol className="space-y-1.5 text-sm">
-          <li><span className="font-black text-emerald-300">1.</span> ICP first. No antimicrobial test starts without ICP confirmation of fabric loading in mg/kg.</li>
-          <li><span className="font-black text-emerald-300">2.</span> Sterilization is UV ONLY. Autoclave at 120°C opens nylon, polyester, and synthetic blends — destroys the test.</li>
-          <li><span className="font-black text-emerald-300">3.</span> Growth medium is low-sulfur. Mueller Hinton Broth is preferred.</li>
-          <li><span className="font-black text-emerald-300">4.</span> ASTM E2149 contact time is 24 hours minimum. Use <em>E. coli</em> as the test organism.</li>
-          <li><span className="font-black text-emerald-300">5.</span> ASTM E2149 is the primary recommended test for every FUZE tier.</li>
-          <li><span className="font-black text-emerald-300">6.</span> AATCC 100, ISO 20743, and JIS L 1902 are supported ONLY at ICP ≥ 1.0 mg/kg (F1 Full Spectrum) with UV sterilization.</li>
-          <li><span className="font-black text-emerald-300">7.</span> Use the right test organism per method (see table in §4b). For anti-odor / activewear claims, run <em>Moraxella osloensis</em>.</li>
+          <li><span className="font-black text-emerald-300">1.</span> {T.rule1}</li>
+          <li><span className="font-black text-emerald-300">2.</span> {T.rule2}</li>
+          <li><span className="font-black text-emerald-300">3.</span> {T.rule3}</li>
+          <li><span className="font-black text-emerald-300">4.</span> {T.rule4}</li>
+          <li><span className="font-black text-emerald-300">5.</span> {T.rule5}</li>
+          <li><span className="font-black text-emerald-300">6.</span> {T.rule6}</li>
+          <li><span className="font-black text-emerald-300">7.</span> {T.rule7}</li>
         </ol>
       </div>
 
@@ -94,7 +93,7 @@ export default function TestingProtocolPage() {
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
           <span className="text-2xl font-black text-[#00b4c3]">1.</span>
-          <h2 className="text-2xl font-black text-slate-900">ICP First — No Exceptions</h2>
+          <h2 className="text-2xl font-black text-slate-900">{T.section1Title}</h2>
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
           Every test begins with ICP-MS (inductively coupled plasma mass spectrometry) on
@@ -127,7 +126,7 @@ export default function TestingProtocolPage() {
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
           <span className="text-2xl font-black text-[#00b4c3]">2.</span>
-          <h2 className="text-2xl font-black text-slate-900">Sterilization — UV Only</h2>
+          <h2 className="text-2xl font-black text-slate-900">{T.section2Title}</h2>
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
           Fabric samples must be sterilized via UV exposure before antimicrobial testing.
@@ -180,7 +179,7 @@ export default function TestingProtocolPage() {
 
         <div className="bg-white border border-slate-200 rounded-xl p-5 max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
-            Case study — BV Hong Kong validation, May 2026
+            {T.caseStudyLabel}
           </p>
           <p className="text-sm text-slate-700 mb-4">
             A recent customer testing case failed AATCC 100 and ASTM E2149 despite an
@@ -193,11 +192,11 @@ export default function TestingProtocolPage() {
             <table className="w-full text-xs">
               <thead className="bg-slate-50 text-slate-700">
                 <tr>
-                  <th className="text-left px-3 py-2 font-bold">Sample</th>
-                  <th className="text-right px-3 py-2 font-bold">UV (CFU log)</th>
-                  <th className="text-right px-3 py-2 font-bold">UV (% reduction)</th>
-                  <th className="text-right px-3 py-2 font-bold">Autoclave (CFU log)</th>
-                  <th className="text-right px-3 py-2 font-bold">Autoclave (% reduction)</th>
+                  <th className="text-left px-3 py-2 font-bold">{T.bvTableSample}</th>
+                  <th className="text-right px-3 py-2 font-bold">{T.bvTableUVLog}</th>
+                  <th className="text-right px-3 py-2 font-bold">{T.bvTableUVReduction}</th>
+                  <th className="text-right px-3 py-2 font-bold">{T.bvTableAutoclaveLog}</th>
+                  <th className="text-right px-3 py-2 font-bold">{T.bvTableAutoclaveReduction}</th>
                 </tr>
               </thead>
               <tbody className="text-slate-800">
@@ -242,7 +241,7 @@ export default function TestingProtocolPage() {
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
           <span className="text-2xl font-black text-[#00b4c3]">3.</span>
-          <h2 className="text-2xl font-black text-slate-900">Growth Medium — Low Sulfur</h2>
+          <h2 className="text-2xl font-black text-slate-900">{T.section3Title}</h2>
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
           The growth medium used to incubate the bacterial challenge must be low in
@@ -282,7 +281,7 @@ export default function TestingProtocolPage() {
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
           <span className="text-2xl font-black text-[#00b4c3]">4.</span>
-          <h2 className="text-2xl font-black text-slate-900">Contact Time — 24 Hours Minimum (ASTM E2149)</h2>
+          <h2 className="text-2xl font-black text-slate-900">{T.section4Title}</h2>
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
           ASTM E2149 is a dynamic-contact test — the fabric is shaken in a buffered
@@ -304,7 +303,7 @@ export default function TestingProtocolPage() {
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
           <span className="text-2xl font-black text-[#00b4c3]">4b.</span>
-          <h2 className="text-2xl font-black text-slate-900">Recommended Test Organisms</h2>
+          <h2 className="text-2xl font-black text-slate-900">{T.section4bTitle}</h2>
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
           The right test organism matters as much as the right test method. Choose
@@ -316,9 +315,9 @@ export default function TestingProtocolPage() {
           <table className="w-full text-sm">
             <thead className="bg-slate-100">
               <tr>
-                <th className="text-left px-4 py-3 font-bold text-slate-700">Test</th>
-                <th className="text-left px-4 py-3 font-bold text-slate-700">Recommended organism</th>
-                <th className="text-left px-4 py-3 font-bold text-slate-700">Why</th>
+                <th className="text-left px-4 py-3 font-bold text-slate-700">{T.organismsTableTest}</th>
+                <th className="text-left px-4 py-3 font-bold text-slate-700">{T.organismsTableOrganism}</th>
+                <th className="text-left px-4 py-3 font-bold text-slate-700">{T.organismsTableWhy}</th>
               </tr>
             </thead>
             <tbody>
@@ -406,7 +405,7 @@ export default function TestingProtocolPage() {
         {/* Moraxella deep-dive — biggest market lever on the page */}
         <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-300 rounded-2xl p-5 max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-widest text-amber-800 mb-2">
-            Anti-odor positioning — why Moraxella matters
+            {T.antiOdorBadge}
           </p>
           <p className="text-sm text-slate-800 mb-3">
             <em>Moraxella osloensis</em> is the bacteria the activewear and performance
@@ -435,7 +434,7 @@ export default function TestingProtocolPage() {
             after the second or third wear.
           </p>
           <p className="text-sm text-slate-800">
-            <strong>How to run it:</strong> request <em>Moraxella osloensis</em>
+            <strong>{T.runItLabel}</strong> request <em>Moraxella osloensis</em>
             (ATCC 19976) on either ISO 20743 or JIS L 1902 protocol. F1 + UV
             sterilization required, same as all other layered-coupon tests. Result
             should be reported as log reduction at 24h; ≥99% reduction is the standard
@@ -448,7 +447,7 @@ export default function TestingProtocolPage() {
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
           <span className="text-2xl font-black text-[#00b4c3]">5.</span>
-          <h2 className="text-2xl font-black text-slate-900">Tier × Test Compatibility</h2>
+          <h2 className="text-2xl font-black text-slate-900">{T.section5Title}</h2>
         </div>
         <p className="text-slate-700 mb-4 max-w-3xl">
           The right test depends on the FUZE tier applied. ASTM E2149 is the primary
@@ -464,10 +463,10 @@ export default function TestingProtocolPage() {
           <table className="w-full text-sm">
             <thead className="bg-slate-100">
               <tr>
-                <th className="text-left px-4 py-3 font-bold text-slate-700">Tier</th>
-                <th className="text-left px-4 py-3 font-bold text-slate-700">Loading (mg/kg)</th>
-                <th className="text-left px-4 py-3 font-bold text-slate-700">Required test</th>
-                <th className="text-left px-4 py-3 font-bold text-slate-700">Optional add-on tests</th>
+                <th className="text-left px-4 py-3 font-bold text-slate-700">{T.tierTableTier}</th>
+                <th className="text-left px-4 py-3 font-bold text-slate-700">{T.tierTableLoading}</th>
+                <th className="text-left px-4 py-3 font-bold text-slate-700">{T.tierTableRequired}</th>
+                <th className="text-left px-4 py-3 font-bold text-slate-700">{T.tierTableOptional}</th>
               </tr>
             </thead>
             <tbody>
@@ -516,7 +515,7 @@ export default function TestingProtocolPage() {
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
           <span className="text-2xl font-black text-[#00b4c3]">6.</span>
-          <h2 className="text-2xl font-black text-slate-900">Why the Protocol Matters</h2>
+          <h2 className="text-2xl font-black text-slate-900">{T.section6Title}</h2>
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
           FUZE is a <strong>non-leaching, contact-kill antimicrobial</strong>. The
@@ -556,7 +555,7 @@ export default function TestingProtocolPage() {
       <section className="mb-10">
         <div className="flex items-baseline gap-3 mb-3">
           <span className="text-2xl font-black text-[#00b4c3]">7.</span>
-          <h2 className="text-2xl font-black text-slate-900">Acknowledgment</h2>
+          <h2 className="text-2xl font-black text-slate-900">{T.section7Title}</h2>
         </div>
         <p className="text-slate-700 mb-3 max-w-3xl">
           By requesting Atlas access, submitting a test request, or shipping samples to
@@ -583,24 +582,21 @@ export default function TestingProtocolPage() {
 
       {/* Footer CTA */}
       <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
-        <p className="text-sm font-bold text-slate-900 mb-2">Questions about the protocol?</p>
+        <p className="text-sm font-bold text-slate-900 mb-2">{T.questionsCardTitle}</p>
         <p className="text-sm text-slate-600 mb-4 max-w-2xl mx-auto">
-          Ask in the FUZE AI FAQ chat — it has this protocol indexed and can answer
-          specific questions about ICP thresholds, lab selection, sample prep,
-          test sequencing, or how to ask your lab for the right conditions.
+          {T.questionsCardBlurb}
         </p>
         <Link
           href="/brand-portal/chat"
           className="inline-block px-5 py-2.5 bg-[#00b4c3] text-white text-sm font-bold rounded-lg hover:bg-[#0098a5]"
         >
-          Open FUZE AI FAQ →
+          {T.openFaqBtn}
         </Link>
       </div>
 
       {/* Tiny meta */}
       <p className="text-[10px] text-slate-400 text-center mt-6">
-        Protocol v1.0 · Published 2026-05-20 · Based on BV Hong Kong validation battery
-        (May 2026) and the CAI-Textile failure investigation. Updates published quarterly.
+        {T.versionFooter}
       </p>
     </div>
   );
