@@ -7456,6 +7456,32 @@ const ja: Translations = {
     daySuffix: "日前",
   },
 
+  resetPassword: {
+    tagline: "新しいパスワードを作成",
+    formTitle: "パスワードをリセット",
+    newPasswordLabel: "新しいパスワード",
+    newPasswordPlaceholder: "新しいパスワードを入力",
+    confirmPasswordLabel: "パスワードを確認",
+    confirmPasswordPlaceholder: "パスワードを確認",
+    resetBtn: "パスワードをリセット",
+    resettingBtn: "リセット中...",
+    backToSignIn: "サインインに戻る",
+    successTitle: "パスワードのリセットに成功",
+    successBody: "パスワードが正常にリセットされました。新しいパスワードでサインインできるようになりました。",
+    signInBtn: "サインイン",
+    invalidLinkTitle: "無効なリセットリンク",
+    invalidLinkBody: "リセットリンクは無効または期限切れです。新しいものをリクエストしてください。",
+    requestNewLinkBtn: "新しいリンクをリクエスト",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "読み込み中...",
+    errInvalidToken: "リセットトークンが無効または欠落しています",
+    errInvalidTokenShort: "無効なリセットトークン",
+    errMinLength: "パスワードは6文字以上である必要があります",
+    errMismatch: "パスワードが一致しません",
+    errResetFailed: "パスワードのリセットに失敗しました",
+    errNetwork: "ネットワークエラー",
+  },
+
 };
 
 export default ja;
