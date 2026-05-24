@@ -6942,6 +6942,34 @@ const ta: Translations = {
     backToLeadOption: "← Lead-க்குத் திரும்பு",
   },
 
+  commandCenterGlobe: {
+    loading: "Globe ஏற்றுகிறது…",
+    title: "Supply-chain globe",
+    emptyTitle: "இன்னும் geocoded entities இல்லை",
+    emptyHint: "ஒவ்வொரு entity-ன் city + country-இல் இருந்து lat/lng-ஐ நிரப்ப geocoder-ஐ இயக்கவும்:",
+    emptyFooter: "Nominatim-க்கு 1 req/sec rate limit உள்ளது — ஒரு முழு pass சில நிமிடங்கள் எடுக்கும். Re-runs ஏற்கனவே coordinates உள்ள வரிசைகளைத் தவிர்க்கின்றன.",
+    factoriesLabel: "தொழிற்சாலைகள்",
+    brandsLabel: "brands",
+    labsLabel: "ஆய்வகங்கள்",
+    distributorsLabel: "விநியோகஸ்தர்கள்",
+    shipmentsLabel: "shipments (90நா)",
+    searchPlaceholder: "Entity-ஐ தேடவும்…",
+    legendFactory: "தொழிற்சாலை",
+    legendPulseHint: "(pulse = செயலில் 30நா)",
+    legendBrand: "Brand HQ",
+    legendFuzeLab: "FUZE-owned ஆய்வகம்",
+    legendPartnerLab: "Partner ஆய்வகம்",
+    legendDistributor: "விநியோகஸ்தர்",
+    kindFactory: "தொழிற்சாலை",
+    kindBrand: "Brand",
+    kindLab: "ஆய்வகம்",
+    kindDistributor: "விநியோகஸ்தர்",
+    stageLabel: "கட்டம்:",
+    activeBadge: "⚡ செயலில் (30நா)",
+    openDetailBtn: "விவரத்தைத் திற →",
+    errLoadFailed: "Globe-ஐ ஏற்ற முடியவில்லை",
+  },
+
 };
 
 export default ta;
