@@ -6962,6 +6962,28 @@ const km: Translations = {
     errNetwork: "Network error",
   },
 
+  notificationsPage: {
+    loading: "កំពុងផ្ទុក notifications...",
+    title: "ការជូនដំណឹង",
+    unreadLabel: "unread",
+    allCaughtUp: "ទាំងអស់ caught up",
+    totalLabel: "total",
+    markAllRead: "Mark all as read",
+    filterAll: "ទាំងអស់",
+    filterUnread: "Unread",
+    allTypes: "ទាំងអស់ ប្រភេទs",
+    emptyUnreadTitle: "ទេ unread notifications",
+    emptyAllTitle: "ទេ notifications yet",
+    emptyUnreadBody: "You're all caught up!",
+    emptyAllBody: "ការជូនដំណឹង will appear here when there's activity on your account.",
+    viewDetails: "មើលព័ត៌មានលម្អិត →",
+    markAsRead: "Mark as read",
+    justNow: "Just now",
+    minSuffix: "m ago",
+    hourSuffix: "h ago",
+    daySuffix: "d ago",
+  },
+
 };
 
 export default km;
