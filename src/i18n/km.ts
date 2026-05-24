@@ -7267,6 +7267,37 @@ const km: Translations = {
     lastCalculatedLabel: "Last calculated:",
   },
 
+  fabricReportSend: {
+    backLink: "← ត្រឡប់ to របាយការណ៍",
+    heading: "អ៊ីមែល របាយការណ៍ to Customer",
+    subtitlePrefix: "ផ្ញើing the FUZE Application & Validation របាយការណ៍ for",
+    fabricNotFound: "ក្រណាត់ not found.",
+    recipientRequiredError: "Recipient email required.",
+    sendFailedError: "ផ្ញើ failed",
+    sentSuccessPrefix: "✓ របាយការណ៍ sent to",
+    directUrlLabel: "Direct download URL:",
+    sentSuccessBody: "Customer can also access this under My របាយការណ៍ after signing in to FUZE Atlas.",
+    recipientEmailLabel: "Recipient email",
+    recipientNameLabel: "Recipient name",
+    optionalSuffix: "(optional)",
+    personalNoteLabel: "Personal note",
+    personalNoteHint: "(optional, shown above the report card)",
+    ccLabel: "CC",
+    ccHint: "(optional, comma-separated)",
+    ttlLabel: "Direct link valid for",
+    ttl30Days: "30 days",
+    ttl90Days: "90 days (default)",
+    ttl180Days: "180 days",
+    ttl1Year: "1 year",
+    sendingBtn: "ផ្ញើing...",
+    sendBtn: "ផ្ញើ របាយការណ៍",
+    previouslySentTitle: "មុនly sent",
+    sentPrefix: "បានផ្ញើ",
+    viewedPrefix: "viewed",
+    notOpenedYet: "not yet opened",
+    openSameLink: "បើក the same link →",
+  },
+
 };
 
 export default km;
