@@ -4476,6 +4476,18 @@ const it: Translations = {
     nextButton: "Avanti →",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — Anteprima documento",
+    printSavePdf: "Stampa / Salva PDF",
+    close: "Chiudi",
+    documentNotFound: "Documento non trovato",
+    loadingError: "Impossibile caricare il documento",
+    networkError: "Errore di rete",
+    docNumberLabel: "N. documento:",
+    confidentialFooter: "FUZE Biotech Inc. — Confidenziale",
+    generatedTemplate: "Generato:",
+  },
+
 };
 
 export default it;
