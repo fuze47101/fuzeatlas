@@ -7710,6 +7710,29 @@ const vi: Translations = {
     errServerUnreachable: "Không thể tiếp cận máy chủ",
   },
 
+  educationStory: {
+    backLink: "← Quay lại FUZE cơ bản",
+    kicker: "Câu chuyện FUZE",
+    heroTitle: "Từ điện tử tái chế đến kháng khuẩn vĩnh viễn",
+    heroBody: "Metamaterial FUZE được sản xuất qua ablation laser lỏng: laser 30 amp, bàn sản xuất 1m², và nguyên liệu từ điện tử tái chế. Toàn bộ tế bào sản xuất có thể được cấp điện bằng năng lượng mặt trời. Chúng tôi không chỉ là kháng khuẩn — chúng tôi là một hoạt động tái sử dụng e-waste kết thúc trong vải của bạn.",
+    card1Title: "Nguyên liệu tái chế",
+    card1Body: "Mỗi gram hoạt chất FUZE bắt nguồn từ kim loại quý nguyên tố thu hồi từ điện tử cuối vòng đời. Chúng tôi không khai thác. Chúng tôi không tinh chế nguyên liệu mới. Chúng tôi kéo kim loại mà nếu không sẽ nằm trong bãi rác hoặc bị đốt.",
+    card2Title: "Ablation laser lỏng",
+    card2Body: "Một xung laser 30 amp hóa hơi nguyên liệu kim loại ngâm trong nước DI 18-megaohm cực tinh khiết 99,998%. Những gì ngưng tụ ra là metamaterial FUZE — một allotrope nguyên tố mật độ cao, 20 ppm trong nồng độ stock đã giao. Không dung môi. Không hóa học tiền chất. Không chất hoạt động bề mặt.",
+    card3Title: "Sản xuất tương thích năng lượng mặt trời",
+    card3Body: "Tế bào sản xuất 1m² chạy bằng khoảng lượng điện mà một mảng pin mặt trời gia đình sản xuất trong một ngày nắng. Các thương hiệu cam kết với FUZE đang cam kết với một chuỗi cung ứng kháng khuẩn có thể đạt net-zero ở bước sản xuất — điều mà không một đối thủ cạnh tranh (ion kim loại / kẽm / QAC) nào có thể tuyên bố.",
+    esgTitle: "Điều này có ý nghĩa gì trong báo cáo ESG của bạn",
+    esgBullet1: "✓ Tuyên bố nguyên liệu tuần hoàn — FUZE được sản xuất từ điện tử cuối vòng đời, hỗ trợ cam kết kinh tế tuần hoàn của bạn.",
+    esgBullet2: "✓ Sản xuất có khả năng net-zero — tế bào sản xuất tương thích năng lượng mặt trời. Kết hợp với hợp đồng cung cấp năng lượng tái tạo và bước kháng khuẩn đóng góp zero phát thải scope-2.",
+    esgBullet3: "✓ Không đóng góp khai thác mới — không cần phối hợp với chuỗi cung ứng khoáng sản xung đột hoặc nguồn cung từ khai thác.",
+    esgBullet4: "✓ Không PFAS, không formaldehyde, không chất kết dính, không lò lưu hóa — mọi đầu vào hóa dầu mà đối thủ yêu cầu, FUZE đều loại bỏ.",
+    esgBullet5: "✓ Sự sạch sẽ của nước được ghi nhận — FUZE không rò rỉ gì vào nước giặt. Đóng góp phía hạ nguồn của bạn vào gánh nặng xử lý nước đô thị = 0.",
+    differentTitle: "Một loại công ty kháng khuẩn khác",
+    differentBody: "Hầu hết các công ty kháng khuẩn vải dệt là công ty hóa chất. Họ pha trộn, pha loãng, công thức hóa và vận chuyển thùng hóa chất tổng hợp đến các nhà máy. Chúng tôi là một hoạt động khoa học vật liệu: chúng tôi ablate kim loại trong nước và vận chuyển kết quả. Sự đơn giản chính là yếu tố phân biệt. Ít hóa chất hơn trên vải. Ít hóa chất hơn trong nước giặt. Ít hóa chất hơn trong dây chuyền sản xuất. Ít hóa chất hơn trong báo cáo ESG của bạn.",
+    backBasicsBtn: "Quay lại FUZE cơ bản",
+    seeSustainabilityBtn: "Xem tác động bền vững",
+  },
+
 };
 
 export default vi;
