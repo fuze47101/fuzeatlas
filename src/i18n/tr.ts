@@ -4932,6 +4932,92 @@ const tr: Translations = {
     tagsSuffix: "etiket",
   },
 
+  leadManagement: {
+    pageTitle: "Potansiyel Müşteri Yönetimi ve Outreach",
+    pageSubtitle: "İletişimleri yönetin, Apollo ile zenginleştirin, SMS/e-posta outreach gönderin",
+
+    loadErrorContext: "Potansiyel müşteri hattını yükle",
+    loadErrorFallback: "Potansiyel müşteri yönetim verisi yüklenemedi",
+    networkError: "Potansiyel müşteriler yüklenirken ağ hatası.",
+    loading: "Potansiyel müşteriler yükleniyor...",
+
+    statTotalContacts: "Toplam İletişim",
+    statWithEmail: "E-postası Olan",
+    statWithPhone: "Telefonu Olan",
+    statEnriched: "Zenginleştirilmiş",
+    statNotContacted: "İletişim Kurulmamış",
+    statContacted: "İletişim Kuruldu",
+
+    searchPlaceholder: "Markaları veya iletişimleri ara...",
+    filterAllPipelineStages: "Tüm Hat Aşamaları",
+    stageLead: "Potansiyel Müşteri",
+    stagePresentation: "Sunum",
+    stageBrandTesting: "Marka Testi",
+    stageFactoryOnboarding: "Fabrika Onboarding",
+    stageProduction: "Üretim",
+    stageArchive: "Arşiv",
+
+    filterAllVerticals: "Tüm Sektörler",
+    verticalApparel: "Hazır Giyim",
+    verticalHospitality: "Hospitality",
+    verticalWorkwear: "İş Giyimi",
+    verticalHomeTextiles: "Ev Tekstili",
+
+    filterAllOutreachStatus: "Tüm Outreach Durumları",
+    outreachNotContacted: "İletişim Kurulmamış",
+    outreachContacted: "İletişim Kuruldu",
+    outreachResponded: "Yanıtladı",
+    outreachMeetingBooked: "Toplantı Planlandı",
+    outreachNotInterested: "İlgilenmiyor",
+
+    filterAllEmailStatus: "Tüm E-posta Durumları",
+    emailVerified: "Doğrulanmış",
+    emailExtrapolated: "Tahminlenen",
+    emailUnavailable: "Mevcut Değil",
+
+    colBrand: "Marka",
+    colContact: "İletişim",
+    colTitle: "Pozisyon",
+    colEmail: "E-posta",
+    colPhone: "Telefon",
+    colLI: "LI",
+    colEmailed: "E-postalandı",
+    colOutreach: "Outreach",
+    colActions: "İşlemler",
+
+    inProfile: "Profilde",
+    enrichedLabel: "zenginleştirildi",
+    noContactsNeedsEnrichment: "İletişim yok — zenginleştirme gerekli",
+    msgsSuffix: "mesaj",
+    markLinkedinReached: "LinkedIn'de ulaşıldı olarak işaretle",
+    markEmailed: "E-postalandı olarak işaretle",
+
+    actionSms: "SMS",
+    actionEmail: "E-posta",
+    actionEnrich: "Zenginleştir",
+    titleSendSms: "SMS Gönder",
+    titleSendEmail: "E-posta Gönder",
+    titleEnrichApollo: "Apollo ile Zenginleştir",
+
+    paginationLabel: "Sayfa {page} / {pages} ({total} marka)",
+    paginationPrev: "Önceki",
+    paginationNext: "Sonraki",
+
+    modalSendSmsTo: "Şuraya SMS gönder:",
+    modalSendEmailTo: "Şuraya E-posta gönder:",
+    fieldTemplate: "Şablon",
+    fieldToPrefix: "Kime:",
+    fieldSubject: "Konu",
+    fieldMessage: "Mesaj",
+    charsSuffix: "karakter",
+    sendSms: "SMS Gönder",
+    sendEmail: "E-posta Gönder",
+    sendingButton: "Gönderiliyor...",
+    cancelButton: "İptal",
+    sendSuccess: "Mesaj başarıyla gönderildi!",
+    sendErrorPrefix: "Hata:",
+  },
+
 };
 
 export default tr;
