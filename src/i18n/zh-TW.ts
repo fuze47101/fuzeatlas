@@ -7731,6 +7731,32 @@ const zhTW: Translations = {
     emptyState: "尚無權杖 — 請於上方鑄造第一批。",
   },
 
+  bookMeetingPage: {
+    heading: "預約會議",
+    subtitle: "選擇可預約的日期與時間，與我們的團隊安排會議。",
+    selectDateTitle: "選擇日期",
+    availableTimesPrefix: "可預約時段於",
+    loadingSlots: "載入時段中…",
+    noSlotsBody: "此日期無可預約時段",
+    detailsTitle: "會議詳細資料",
+    selectDateTimeHint: "請選擇日期與時間以繼續",
+    dateTimeLabel: "日期與時間",
+    meetingTitleLabel: "會議標題",
+    defaultTitle: "FUZE 會議",
+    descriptionLabel: "說明（選填）",
+    descriptionPlaceholder: "任何補充細節…",
+    confirmBtn: "確認預約",
+    bookingBusy: "預約中…",
+    bookFailedError: "預約會議失敗",
+    networkError: "網路錯誤",
+    bookedTitle: "會議已預約！",
+    titleColLabel: "標題",
+    timeColLabel: "時間",
+    meetingLinkLabel: "會議連結",
+    openInTeams: "在 Teams 開啟",
+    bookAnotherBtn: "預約另一場會議",
+  },
+
 };
 
 export default zhTW;
