@@ -4639,6 +4639,92 @@ const ta: Translations = {
     tagsSuffix: "டேக்குகள்",
   },
 
+  leadManagement: {
+    pageTitle: "Lead நிர்வாகம் & அவுட்ரீச்",
+    pageSubtitle: "தொடர்புகளை நிர்வகி, Apollo மூலம் வளப்படுத்து, SMS/மின்னஞ்சல் அவுட்ரீச் அனுப்பு",
+
+    loadErrorContext: "Lead pipeline ஏற்று",
+    loadErrorFallback: "Lead நிர்வாகத் தரவை ஏற்ற முடியவில்லை",
+    networkError: "Leads ஏற்றும்போது நெட்வொர்க் பிழை.",
+    loading: "Leads ஏற்றுகிறது...",
+
+    statTotalContacts: "மொத்த தொடர்புகள்",
+    statWithEmail: "மின்னஞ்சலுடன்",
+    statWithPhone: "தொலைபேசியுடன்",
+    statEnriched: "வளப்படுத்தப்பட்டது",
+    statNotContacted: "தொடர்பு கொள்ளப்படவில்லை",
+    statContacted: "தொடர்பு கொள்ளப்பட்டது",
+
+    searchPlaceholder: "பிராண்டுகள் அல்லது தொடர்புகளைத் தேடு...",
+    filterAllPipelineStages: "அனைத்து Pipeline கட்டங்களும்",
+    stageLead: "Lead",
+    stagePresentation: "விளக்கக்காட்சி",
+    stageBrandTesting: "பிராண்ட் சோதனை",
+    stageFactoryOnboarding: "தொழிற்சாலை ஆன்போர்டிங்",
+    stageProduction: "உற்பத்தி",
+    stageArchive: "காப்பகம்",
+
+    filterAllVerticals: "அனைத்து verticals",
+    verticalApparel: "Apparel",
+    verticalHospitality: "Hospitality",
+    verticalWorkwear: "Workwear",
+    verticalHomeTextiles: "Home Textiles",
+
+    filterAllOutreachStatus: "அனைத்து அவுட்ரீச் நிலையும்",
+    outreachNotContacted: "தொடர்பு கொள்ளப்படவில்லை",
+    outreachContacted: "தொடர்பு கொள்ளப்பட்டது",
+    outreachResponded: "பதிலளித்தது",
+    outreachMeetingBooked: "சந்திப்பு பதிவு செய்யப்பட்டது",
+    outreachNotInterested: "ஆர்வம் இல்லை",
+
+    filterAllEmailStatus: "அனைத்து மின்னஞ்சல் நிலையும்",
+    emailVerified: "சரிபார்க்கப்பட்டது",
+    emailExtrapolated: "Extrapolated",
+    emailUnavailable: "கிடைக்கவில்லை",
+
+    colBrand: "பிராண்ட்",
+    colContact: "தொடர்பு",
+    colTitle: "தலைப்பு",
+    colEmail: "மின்னஞ்சல்",
+    colPhone: "தொலைபேசி",
+    colLI: "LI",
+    colEmailed: "மின்னஞ்சல் அனுப்பப்பட்டது",
+    colOutreach: "அவுட்ரீச்",
+    colActions: "செயல்கள்",
+
+    inProfile: "சுயவிவரத்தில்",
+    enrichedLabel: "வளப்படுத்தப்பட்டது",
+    noContactsNeedsEnrichment: "தொடர்புகள் இல்லை — வளப்படுத்தல் தேவை",
+    msgsSuffix: "செய்திகள்",
+    markLinkedinReached: "LinkedIn reached என குறி",
+    markEmailed: "மின்னஞ்சல் அனுப்பப்பட்டதாக குறி",
+
+    actionSms: "SMS",
+    actionEmail: "மின்னஞ்சல்",
+    actionEnrich: "வளப்படுத்து",
+    titleSendSms: "SMS அனுப்பு",
+    titleSendEmail: "மின்னஞ்சல் அனுப்பு",
+    titleEnrichApollo: "Apollo மூலம் வளப்படுத்து",
+
+    paginationLabel: "பக்கம் {page} / {pages} ({total} பிராண்டுகள்)",
+    paginationPrev: "முந்தைய",
+    paginationNext: "அடுத்த",
+
+    modalSendSmsTo: "SMS அனுப்பு",
+    modalSendEmailTo: "மின்னஞ்சல் அனுப்பு",
+    fieldTemplate: "வார்ப்புரு",
+    fieldToPrefix: "பெறுநர்:",
+    fieldSubject: "பொருள்",
+    fieldMessage: "செய்தி",
+    charsSuffix: "எழுத்துக்கள்",
+    sendSms: "SMS அனுப்பு",
+    sendEmail: "மின்னஞ்சல் அனுப்பு",
+    sendingButton: "அனுப்புகிறது...",
+    cancelButton: "ரத்து",
+    sendSuccess: "செய்தி வெற்றிகரமாக அனுப்பப்பட்டது!",
+    sendErrorPrefix: "பிழை:",
+  },
+
 };
 
 export default ta;
