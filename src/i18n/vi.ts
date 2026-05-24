@@ -4876,6 +4876,19 @@ const vi: Translations = {
     generatedTemplate: "Đã tạo:",
   },
 
+  bdWizard: {
+    homeLink: "← Trang chủ",
+    pageTitle: "BD Wizard",
+    pageSubtitle: "Tiếp cận ra ngoài có hướng dẫn. Thương hiệu có độ tin cậy cao nhất tiếp theo được tự động chọn cho bạn.",
+    inQueueTemplate: "({n} trong hàng đợi)",
+    skipBrand: "Bỏ qua thương hiệu này →",
+
+    setFromAddressHeader: "Đặt địa chỉ Từ: gửi đi trước khi gửi",
+    setFromAddressBody: "Không có điều này, email đi từ địa chỉ thông báo FUZE Atlas chung và phản hồi sẽ không đến hộp thư của bạn.",
+    currentlyLabel: "Hiện tại:",
+    openProfile: "Mở hồ sơ",
+  },
+
 };
 
 export default vi;
