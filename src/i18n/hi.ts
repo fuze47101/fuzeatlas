@@ -7081,6 +7081,37 @@ const hi: Translations = {
     footerHint: "स्थगित = DRAFT/SENT/SIGNED/ACTIVE में रहते हुए 14+ दिन कोई गतिविधि नहीं। हस्ताक्षरित-कोई-प्रगति-नहीं = SIGNED या ACTIVE 30+ दिनों के लिए परिभाषित मील के पत्थरों के साथ लेकिन कोई पूर्ण नहीं। अंतिम गतिविधि SOW संपादन, मील का पत्थर पूर्णता, या परीक्षण अनुरोध जमा का सबसे हाल का है।",
   },
 
+  acmTasks: {
+    title: "🗓️ ACM कार्य",
+    subtitle: "सप्ताह-पहले + दिन-पहले अनुस्मारक बेल + ईमेल के माध्यम से Taipei सुबह 8 बजे स्वचालित रूप से जाते हैं।",
+    tabOpen: "खुले",
+    tabCompleted: "पूर्ण",
+    onlyMine: "केवल मेरे",
+    loading: "लोड हो रहा है…",
+    overdueTitle: "देरी",
+    overdueSubtitle: "देय पार — इन्हें सूची से हटाएं",
+    dueWeekTitle: "इस सप्ताह देय",
+    dueWeekSubtitle: "अगले 7 दिन",
+    upcomingTitle: "आगामी",
+    upcomingSubtitle: "7 दिन से परे",
+    completedTitle: "पूर्ण",
+    completedSubtitle: "पिछले 200",
+    nothingHere: "यहां कुछ नहीं।",
+    markDoneTitle: "पूर्ण चिह्नित करें",
+    cancelTaskTitle: "कार्य रद्द करें",
+    reopenTitle: "पुनः खोलें",
+    highPriorityBadge: "उच्च",
+    overdueRowPrefix: "देरी — ",
+    duePrefix: "देय",
+    ownerLabel: "स्वामी:",
+    relToday: "आज",
+    relTomorrow: "कल",
+    relYesterday: "बीता कल",
+    relInPrefix: "में",
+    relDaysSuffix: "दिन",
+    relDaysAgo: "दिन पहले",
+  },
+
 };
 
 export default hi;
