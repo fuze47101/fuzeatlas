@@ -4286,6 +4286,55 @@ const id: Translations = {
     footerTpl: "Window dimulai {date}. Segar setiap 5 menit. \"Email\" = setiap email outbound yang dikirim rep (wizard + halaman brand + halaman kontak). \"Sequences\" adalah subset yang menjalankan cadence multi-step. \"Kontak\" adalah jumlah manusia berbeda yang disentuh rep via email atau LinkedIn. \"Dikonversi\" = brand yang dipindahkan melewati tahap PRESENTATION di window. Hand-off ACM mempertahankan rep sumber sebagai account manager — atribusi komisi dipertahankan.",
   },
 
+  brandFabricsAdmin: {
+    loading: "Memuat portofolio kain…",
+    errorTitle: "Tidak dapat memuat portofolio kain",
+    errorUnknown: "Error tidak dikenal",
+    errorFailedLoad: "Gagal memuat",
+    errorSave: "Gagal menyimpan",
+    btnTryAgain: "Coba lagi",
+
+    crumbPartners: "Mitra Brand",
+    crumbHere: "Portofolio Kain",
+    titleSuffix: "— Portofolio Kain",
+    subtitle: "Semua kain di seluruh mill untuk brand ini. {shown} dari {total} kain ditampilkan.",
+    btnExportCsv: "⬇ Ekspor CSV",
+
+    searchPlaceholder: "Cari kain #, kode pelanggan, konten…",
+    filterAllMills: "Semua mill",
+    filterAllTypes: "Semua tipe",
+    typeDevelopment: "Pengembangan",
+    typeActualBulk: "Aktual (Bulk)",
+    typeForecast: "Forecast",
+    typeRd: "R&D",
+    filterAllStatuses: "Semua status",
+
+    emptyFabric: "🧵",
+    emptyTitle: "Tidak ada kain yang cocok dengan filter Anda.",
+    emptySub: "Sesuaikan filter di atas atau hapus pencarian untuk melihat portofolio penuh.",
+    fabricSingular: "kain",
+    fabricPlural: "kain",
+    openFactory: "Buka pabrik →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "Mill Fabric #",
+    colType: "Tipe",
+    colContent: "Konten",
+    colGsm: "GSM",
+    colCustomerCode: "Kode Pelanggan",
+    colTrial: "Trial",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "Nilai ICP",
+    colTestDate: "Tanggal Uji",
+    colStatus: "Status",
+
+    unassigned: "tidak ditetapkan",
+    typeBulkProduction: "Produksi Bulk",
+    notSet: "— Belum diatur —",
+    titleOpenFabric: "Buka detail kain",
+  },
+
 };
 
 export default id;
