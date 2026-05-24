@@ -4596,6 +4596,49 @@ const bn: Translations = {
     sowEmptyNothingStuck: "কিছুই আটকে নেই।",
   },
 
+  ordersAdmin: {
+    pageTitle: "অর্ডার ব্যবস্থাপনা",
+    pageSubtitle: "সব FUZE অর্ডার পর্যালোচনা, অনুমোদন ও ট্র্যাক করুন",
+    myAccountsOnly: "শুধু আমার অ্যাকাউন্ট",
+    awaitingApprovalTemplate: "{n}টি অর্ডার{s} অনুমোদনের অপেক্ষায়",
+
+    statTotal: "মোট",
+    statPending: "অপেক্ষমাণ",
+    statApproved: "অনুমোদিত",
+    statProcessing: "প্রক্রিয়াধীন",
+    statShipped: "শিপ",
+    statDelivered: "ডেলিভারি",
+    statRevenue: "রাজস্ব",
+
+    filterAll: "সব",
+    filterAllTypes: "সব ধরন",
+
+    emptyMessage: "ফিল্টারের সাথে কোনো অর্ডার মেলে না",
+
+    colOrder: "অর্ডার",
+    colFactory: "কারখানা",
+    colType: "ধরন",
+    colVolume: "পরিমাণ",
+    colBrand: "ব্র্যান্ড",
+    colTotal: "মোট",
+    colFulfillment: "ফুলফিলমেন্ট",
+    colStatus: "অবস্থা",
+    colDate: "তারিখ",
+
+    statusDraft: "খসড়া",
+    statusQuoted: "উদ্ধৃত",
+    statusPendingApproval: "অনুমোদন অপেক্ষমাণ",
+    statusApproved: "অনুমোদিত",
+    statusConfirmed: "নিশ্চিত",
+    statusProcessing: "প্রক্রিয়াধীন",
+    statusShipped: "শিপ",
+    statusDelivered: "ডেলিভারি",
+    statusCancelled: "বাতিল",
+
+    directUsaLabel: "USA সরাসরি",
+    tagsSuffix: "ট্যাগ",
+  },
+
 };
 
 export default bn;
