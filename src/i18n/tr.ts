@@ -7713,6 +7713,19 @@ const tr: Translations = {
     pressKitLink: "Basın kiti",
   },
 
+  educationCompliance: {
+    backLink: "← FUZE Temellerine Dön",
+    kicker: "Uyumluluk ve Sertifikalar",
+    heroTitle: "Bir markanın istediği her sertifika yığını",
+    heroBody: "Tedarikçi anketiniz için tek bir ekran görüntüsü. EPA federal + California, OEKO-TEX Standard 100 Class I, bluesign® onaylı, PFAS içermez, formaldehit içermez, ZDHC uyumlu. Dört kademede antibakteriyel / antiviral / antifungal test verileri — raporlar talep üzerine.",
+    activeBadge: "Aktif ✓",
+    docCopiesTitle: "Gerçek belge kopyaları gerekiyor mu?",
+    docCopiesBody: "Belge Merkezi, her sertifikanın, SDS, TDS ve COA'nın canlı PDF kopyalarını barındırır. Uyumluluk ekipleri, tedarikçi anketleri için bunları doğrudan indirebilir.",
+    docCenterCta: "Belge Merkezini Aç →",
+    backBasicsBtn: "FUZE Temellerine Dön",
+    whatYouCanClaimBtn: "Neyi iddia edebilirsiniz →",
+  },
+
 };
 
 export default tr;
