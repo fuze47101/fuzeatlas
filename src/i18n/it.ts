@@ -4246,6 +4246,27 @@ const it: Translations = {
     exportReportTemplate: "Esporta report {product} vs FUZE",
   },
 
+  educationClaims: {
+    backLink: "← Torna alle basi FUZE",
+    eyebrow: "Cosa puoi dichiarare",
+    pageTitle: "Dichiarazioni di brand difendibili per tessuto trattato FUZE",
+    pageIntro: "Un riferimento per team di conformità, marketing brand e copy di hangtag. Tre categorie: dichiarazioni di prodotto, dichiarazioni di sostenibilità e dichiarazioni di certificazione. Ogni riga è valutata",
+    introCiteFreely: "cita liberamente",
+    introWithData: "cita con dati specifici per livello",
+    introAvoid: "evita",
+    introTail: "— con la motivazione in linguaggio chiaro.",
+    productClaimsTitle: "Dichiarazioni di prodotto / efficacia",
+    sustainabilityClaimsTitle: "Dichiarazioni di sostenibilità",
+    certClaimsTitle: "Dichiarazioni di certificazione",
+    badgeCiteFreely: "Cita liberamente",
+    badgeWithData: "Con dati",
+    badgeAvoid: "Evita",
+    fifraTitle: "Una nota su FIFRA",
+    fifraBody: "FIFRA (Federal Insecticide, Fungicide, and Rodenticide Act) regola le dichiarazioni antimicrobiche negli Stati Uniti. L'esenzione per articolo trattato consente dichiarazioni descrittive come \"trattato antimicrobicamente\" senza registrazione EPA separata a livello di prodotto, ma le dichiarazioni specifiche di patogeni (\"uccide il 99,9% di E. coli\") richiedono dati di test a supporto legati alla registrazione del principio attivo. Questa pagina è una guida, non consulenza legale — esaminare con il proprio team interno di conformità i copy di marketing proposti prima della pubblicazione.",
+    backToBasics: "Torna alle basi FUZE",
+    seeCerts: "Vedi stack di certificazioni",
+  },
+
 };
 
 export default it;
