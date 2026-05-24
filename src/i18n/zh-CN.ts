@@ -4517,6 +4517,18 @@ const zhCN: Translations = {
     exportReportTemplate: "导出 {product} vs FUZE 报告",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas —— 文档预览",
+    printSavePdf: "打印 / 保存为 PDF",
+    close: "关闭",
+    documentNotFound: "未找到文档",
+    loadingError: "加载文档失败",
+    networkError: "网络错误",
+    docNumberLabel: "文档编号:",
+    confidentialFooter: "FUZE Biotech Inc. —— 保密",
+    generatedTemplate: "生成时间:",
+  },
+
 };
 
 export default zhCN;
