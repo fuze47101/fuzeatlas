@@ -2620,6 +2620,40 @@ const bn: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "Atlas লগইন প্রয়োজন",
+    authBatchPrefix: "ব্যাচ",
+    authBlurb:
+      "বিস্তারিত — COA, TDS, SDS সহ — কেবল Atlas ব্যবহারকারীদের জন্য উপলব্ধ।",
+    loginCta: "Atlas-এ লগ ইন →",
+    noAccountQuestion: "অ্যাকাউন্ট নেই? যোগাযোগ করুন",
+    notFoundTitle: "ব্যাচ পাওয়া যায়নি",
+    notFoundBlurb: "আমরা ব্যাচ খুঁজে পাইনি",
+    returnHome: "Atlas-এ ফিরুন →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "ব্যাচ যাচাইকরণ",
+    qcPassed: "✓ QC পাস",
+    qcFailed: "⚠ QC ব্যর্থ",
+    produced: "উৎপাদিত",
+    batchDetails: "ব্যাচের বিবরণ",
+    volumeProduced: "উৎপাদিত পরিমাণ",
+    bottlesFilled: "ভরা বোতল",
+    concentration: "ঘনত্ব",
+    productionDate: "উৎপাদন তারিখ",
+    fuzeMetamaterial: "mg/L FUZE মেটামেটেরিয়াল",
+    batchNotes: "ব্যাচ নোট",
+    documents: "ডকুমেন্ট",
+    coaTitle: "বিশ্লেষণ সার্টিফিকেট (COA)",
+    coaDescPrefix: "এই ব্যাচের স্পেক যাচাই · আপলোড",
+    coaPending: "COA অপেক্ষমাণ",
+    coaPendingBlurb: "এই ব্যাচের জন্য বিশ্লেষণ সার্টিফিকেট এখনো আপলোড করা হয়নি।",
+    view: "দেখুন →",
+    docsEmpty: "TDS / SDS এখনো আপলোড করা হয়নি। অ্যাডমিন পণ্য ডকুমেন্টে যোগ করতে পারেন।",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "প্রশ্ন আছে?",
+    footerReturnAtlas: "Atlas-এ ফিরুন",
+  },
+
 };
 
 export default bn;
