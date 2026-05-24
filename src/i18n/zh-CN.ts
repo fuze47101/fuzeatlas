@@ -6034,6 +6034,50 @@ const zhCN: Translations = {
     emptyTpl: "暂无模板。点击「+ 新建模板」以创建第一个。",
   },
 
+  pipelineUserPage: {
+    loading: "加载管道中……",
+    pageTitle: "营收管道",
+    pageSubtitle: "跟踪从开发到生产的交易",
+    btnNewDeal: "+ 新交易",
+
+    kpiTotalPipeline: "总管道",
+    kpiTotalPipelineSubTpl: "{n} 个交易",
+    kpiWeighted: "加权预测",
+    kpiWeightedSub: "按概率调整",
+    kpiActual: "实际营收",
+    kpiActualSub: "已开票并已收款",
+    kpiConversion: "转化率",
+    kpiConversionSub: "实际 / 管道",
+
+    cardProdPrefix: "生产：",
+    emptyDeals: "无交易",
+    weightedPrefix: "· 权重：",
+
+    editTitlePrefix: "编辑项目：",
+    fieldName: "项目名称",
+    fieldStage: "阶段",
+    keepCurrent: "保持当前",
+    fieldBrand: "品牌",
+    fieldNone: "无",
+    fieldProjectedValue: "预计价值（$）",
+    fieldProbability: "概率（%）",
+    fieldFuzeTier: "FUZE 等级",
+    fieldAnnualVolume: "年产量（m）",
+    fieldFactory: "工厂",
+    fieldDistributor: "经销商",
+    autoFromFactory: "从工厂自动获取",
+    fieldExpectedProd: "预期生产",
+    fieldActualProd: "实际生产",
+    btnSaveChanges: "保存更改",
+    btnSaving: "保存中……",
+    btnCancel: "取消",
+
+    newDealTitle: "新交易",
+    newDealPlaceholder: "项目 / 交易名称……",
+    btnCreate: "创建",
+    btnCreating: "创建中……",
+  },
+
 };
 
 export default zhCN;
