@@ -6077,6 +6077,50 @@ const tr: Translations = {
     emptyTpl: "Henüz şablon yok. İlkini oluşturmak için + Yeni Şablon'a tıklayın.",
   },
 
+  pipelineUserPage: {
+    loading: "Boru hattı yükleniyor...",
+    pageTitle: "Gelir Boru Hattı",
+    pageSubtitle: "Anlaşmaları geliştirmeden üretime kadar takip edin",
+    btnNewDeal: "+ Yeni Anlaşma",
+
+    kpiTotalPipeline: "Toplam Boru Hattı",
+    kpiTotalPipelineSubTpl: "{n} anlaşma",
+    kpiWeighted: "Ağırlıklı Tahmin",
+    kpiWeightedSub: "Olasılık ayarlı",
+    kpiActual: "Gerçek Gelir",
+    kpiActualSub: "Faturalandırıldı ve ödendi",
+    kpiConversion: "Dönüşüm",
+    kpiConversionSub: "Gerçek / Boru Hattı",
+
+    cardProdPrefix: "Üretim:",
+    emptyDeals: "Anlaşma yok",
+    weightedPrefix: "· ağr:",
+
+    editTitlePrefix: "Projeyi Düzenle:",
+    fieldName: "Proje Adı",
+    fieldStage: "Aşama",
+    keepCurrent: "Mevcudu koru",
+    fieldBrand: "Marka",
+    fieldNone: "Yok",
+    fieldProjectedValue: "Öngörülen Değer ($)",
+    fieldProbability: "Olasılık (%)",
+    fieldFuzeTier: "FUZE Kademesi",
+    fieldAnnualVolume: "Yıllık Hacim (m)",
+    fieldFactory: "Fabrika",
+    fieldDistributor: "Distribütör",
+    autoFromFactory: "Fabrikadan otomatik",
+    fieldExpectedProd: "Beklenen Üretim",
+    fieldActualProd: "Gerçek Üretim",
+    btnSaveChanges: "Değişiklikleri Kaydet",
+    btnSaving: "Kaydediliyor...",
+    btnCancel: "İptal",
+
+    newDealTitle: "Yeni Anlaşma",
+    newDealPlaceholder: "Proje / Anlaşma adı...",
+    btnCreate: "Oluştur",
+    btnCreating: "Oluşturuluyor...",
+  },
+
 };
 
 export default tr;
