@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useToast } from "@/components/Toast";
+import { useI18n } from "@/i18n";
 
 /* ── Default data for forms ── */
 const DEFAULT_FUZE_SENDER = {
@@ -24,14 +25,16 @@ const EMPTY_ADDRESS = {
 
 const EMPTY_LINE_ITEM = { activity: "", qty: 0, rate: 0, unit: "lt" };
 
-const DOC_TYPES = [
-  { id: "sales_contract", label: "Sales Contract", icon: "\u{1F4DD}", color: "bg-blue-50 text-blue-700 border-blue-200" },
-  { id: "invoice", label: "Invoice", icon: "\u{1F9FE}", color: "bg-green-50 text-green-700 border-green-200" },
-  { id: "packing_list", label: "Packing List", icon: "\u{1F4E6}", color: "bg-amber-50 text-amber-700 border-amber-200" },
-  { id: "cofa", label: "Certificate of Analysis", icon: "\u{1F52C}", color: "bg-violet-50 text-violet-700 border-violet-200" },
+const DOC_TYPE_KEYS = [
+  { id: "sales_contract", labelKey: "tabSalesContract", icon: "\u{1F4DD}", color: "bg-blue-50 text-blue-700 border-blue-200" },
+  { id: "invoice", labelKey: "tabInvoice", icon: "\u{1F9FE}", color: "bg-green-50 text-green-700 border-green-200" },
+  { id: "packing_list", labelKey: "tabPackingList", icon: "\u{1F4E6}", color: "bg-amber-50 text-amber-700 border-amber-200" },
+  { id: "cofa", labelKey: "tabCofa", icon: "\u{1F52C}", color: "bg-violet-50 text-violet-700 border-violet-200" },
 ];
 
 export default function ShippingDocsPage() {
+  const { t } = useI18n();
+  const T = t.shippingDocsPage;
   const { user } = useAuth();
   const toast = useToast();
   const [activeTab, setActiveTab] = useState("sales_contract");
@@ -89,7 +92,7 @@ export default function ShippingDocsPage() {
       let payload: any;
 
       if (activeTab === "cofa") {
-        if (!lotNumber) { toast.error("Lot number is required"); return; }
+        if (!lotNumber) { toast.error(T.toastLotRequired); return; }
         payload = {
           docType: "cofa",
           product,
@@ -109,8 +112,8 @@ export default function ShippingDocsPage() {
           otherNotes,
         };
       } else {
-        if (!invoiceNumber) { toast.error("Invoice number is required"); return; }
-        if (!billTo.company) { toast.error("Bill To company is required"); return; }
+        if (!invoiceNumber) { toast.error(T.toastInvoiceRequired); return; }
+        if (!billTo.company) { toast.error(T.toastBillToRequired); return; }
 
         const base = {
           invoiceNumber,
@@ -158,17 +161,17 @@ export default function ShippingDocsPage() {
       });
 
       if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: "Generation failed" }));
-        throw new Error(err.error || "Generation failed");
+        const err = await res.json().catch(() => ({ error: T.toastGenerationFailed }));
+        throw new Error(err.error || T.toastGenerationFailed);
       }
 
       // Open PDF in new tab
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       window.open(url, "_blank");
-      toast.success("Document generated — opening in new tab");
+      toast.success(T.toastDocGenerated);
     } catch (err: any) {
-      toast.error(err.message || "Failed to generate document");
+      toast.error(err.message || T.toastFailedGenerate);
     } finally {
       setGenerating(false);
     }
@@ -187,7 +190,7 @@ export default function ShippingDocsPage() {
     return (
       <div className="p-8 text-center text-slate-500">
         <p className="text-4xl mb-4">{"\u{1F512}"}</p>
-        <p>Shipping document generation is available to internal users only.</p>
+        <p>{T.lockedTitle}</p>
       </div>
     );
   }
@@ -196,13 +199,13 @@ export default function ShippingDocsPage() {
     <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Shipping Documents</h1>
-        <p className="text-slate-500 text-sm mt-0.5">Generate sales contracts, invoices, packing lists & certificates of analysis</p>
+        <h1 className="text-2xl font-bold text-slate-900">{T.pageTitle}</h1>
+        <p className="text-slate-500 text-sm mt-0.5">{T.pageSubtitle}</p>
       </div>
 
       {/* Document Type Tabs */}
       <div className="flex flex-wrap gap-2 mb-6">
-        {DOC_TYPES.map((dt) => (
+        {DOC_TYPE_KEYS.map((dt) => (
           <button
             key={dt.id}
             onClick={() => setActiveTab(dt.id)}
@@ -213,7 +216,7 @@ export default function ShippingDocsPage() {
             }`}
           >
             <span>{dt.icon}</span>
-            {dt.label}
+            {(T as any)[dt.labelKey]}
           </button>
         ))}
       </div>
@@ -226,60 +229,60 @@ export default function ShippingDocsPage() {
           {activeTab === "cofa" ? (
             <>
               <div className="grid grid-cols-2 gap-4">
-                <Field label="Product" value={product} onChange={setProduct} />
-                <Field label="Lot #" value={lotNumber} onChange={setLotNumber} placeholder="e.g. F1-133" required />
+                <Field label={T.productLabel} value={product} onChange={setProduct} />
+                <Field label={T.lotNumberLabel} value={lotNumber} onChange={setLotNumber} placeholder={T.lotPlaceholder} required />
               </div>
-              <Field label="Product Description" value={productDescription} onChange={setProductDescription} />
-              <Field label="Delivery Date" type="date" value={deliveryDate} onChange={setDeliveryDate} />
+              <Field label={T.productDescLabel} value={productDescription} onChange={setProductDescription} />
+              <Field label={T.deliveryDateLabel} type="date" value={deliveryDate} onChange={setDeliveryDate} />
 
               <div className="border-t pt-4">
-                <h3 className="text-sm font-semibold text-slate-700 mb-3">Physical Attributes</h3>
+                <h3 className="text-sm font-semibold text-slate-700 mb-3">{T.physicalAttributes}</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Concentration Result" value={concentration} onChange={setConcentration} placeholder="30 ppm" />
-                  <Field label="Concentration Range" value={concentrationRange} onChange={setConcentrationRange} placeholder="25-40 ppm" />
-                  <Field label="Size Result" value={particleSize} onChange={setParticleSize} placeholder="8 nm" />
-                  <Field label="Size Range" value={sizeRange} onChange={setSizeRange} placeholder="1-10 nm" />
+                  <Field label={T.concentrationResult} value={concentration} onChange={setConcentration} placeholder={T.concentrationResultPlaceholder} />
+                  <Field label={T.concentrationRangeLabel} value={concentrationRange} onChange={setConcentrationRange} placeholder={T.concentrationRangePlaceholder} />
+                  <Field label={T.sizeResultLabel} value={particleSize} onChange={setParticleSize} placeholder={T.sizeResultPlaceholder} />
+                  <Field label={T.sizeRangeLabel} value={sizeRange} onChange={setSizeRange} placeholder={T.sizeRangePlaceholder} />
                 </div>
               </div>
 
               <div className="border-t pt-4">
-                <h3 className="text-sm font-semibold text-slate-700 mb-3">Quality Results</h3>
+                <h3 className="text-sm font-semibold text-slate-700 mb-3">{T.qualityResults}</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Appearance" value={appearance} onChange={setAppearance} />
-                  <Field label="Antibacterial" value={antibacterial} onChange={setAntibacterial} />
-                  <Field label="Fungal" value={fungal} onChange={setFungal} />
+                  <Field label={T.appearanceLabel} value={appearance} onChange={setAppearance} />
+                  <Field label={T.antibacterialLabel} value={antibacterial} onChange={setAntibacterial} />
+                  <Field label={T.fungalLabel} value={fungal} onChange={setFungal} />
                 </div>
               </div>
 
               <div className="border-t pt-4">
-                <h3 className="text-sm font-semibold text-slate-700 mb-3">Expiration</h3>
+                <h3 className="text-sm font-semibold text-slate-700 mb-3">{T.expirationHeader}</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Retest By" value={retestBy} onChange={setRetestBy} placeholder="e.g. 06/30/27" />
-                  <Field label="Expiration Date" value={expiration} onChange={setExpiration} placeholder="e.g. 08/14/35" />
+                  <Field label={T.retestByLabel} value={retestBy} onChange={setRetestBy} placeholder={T.retestByPlaceholder} />
+                  <Field label={T.expirationDateLabel} value={expiration} onChange={setExpiration} placeholder={T.expirationDatePlaceholder} />
                 </div>
               </div>
 
-              <Field label="Other Notes" value={otherNotes} onChange={setOtherNotes} multiline />
+              <Field label={T.otherNotesLabel} value={otherNotes} onChange={setOtherNotes} multiline />
             </>
           ) : (
             <>
               {/* ── Shared fields for Contract / Invoice / Packing List ── */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <Field label="Invoice #" value={invoiceNumber} onChange={setInvoiceNumber} placeholder="e.g. 1406" required />
-                <Field label="Date" type="date" value={docDate} onChange={setDocDate} />
+                <Field label={T.invoiceNumberLabel} value={invoiceNumber} onChange={setInvoiceNumber} placeholder={T.invoiceNumberPlaceholder} required />
+                <Field label={T.dateLabel} type="date" value={docDate} onChange={setDocDate} />
                 {activeTab !== "packing_list" && (
                   <>
-                    <Field label="Due Date" type="date" value={dueDate} onChange={setDueDate} />
-                    <Field label="Currency" value={currency} onChange={setCurrency} />
+                    <Field label={T.dueDateLabel} type="date" value={dueDate} onChange={setDueDate} />
+                    <Field label={T.currencyLabel} value={currency} onChange={setCurrency} />
                   </>
                 )}
               </div>
 
               {activeTab !== "packing_list" && (
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Payment Terms" value={terms} onChange={setTerms} multiline rows={2} />
+                  <Field label={T.paymentTermsLabel} value={terms} onChange={setTerms} multiline rows={2} />
                   {activeTab === "sales_contract" && (
-                    <Field label="Incoterm" value={incoterm} onChange={setIncoterm} placeholder="CIF Shanghai" />
+                    <Field label={T.incotermLabel} value={incoterm} onChange={setIncoterm} placeholder={T.incotermPlaceholder} />
                   )}
                 </div>
               )}
@@ -288,35 +291,35 @@ export default function ShippingDocsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-sm font-semibold text-slate-700">Bill To</h3>
+                    <h3 className="text-sm font-semibold text-slate-700">{T.billToHeader}</h3>
                   </div>
                   <div className="space-y-2">
-                    <Field label="Company" value={billTo.company} onChange={(v) => setBillTo({ ...billTo, company: v })} placeholder="Company name" compact />
-                    <Field label="Address 1" value={billTo.address1} onChange={(v) => setBillTo({ ...billTo, address1: v })} compact />
-                    <Field label="Address 2" value={billTo.address2} onChange={(v) => setBillTo({ ...billTo, address2: v })} compact />
-                    <Field label="Address 3" value={billTo.address3} onChange={(v) => setBillTo({ ...billTo, address3: v })} compact />
+                    <Field label={T.companyLabel} value={billTo.company} onChange={(v) => setBillTo({ ...billTo, company: v })} placeholder={T.companyPlaceholder} compact />
+                    <Field label={T.address1Label} value={billTo.address1} onChange={(v) => setBillTo({ ...billTo, address1: v })} compact />
+                    <Field label={T.address2Label} value={billTo.address2} onChange={(v) => setBillTo({ ...billTo, address2: v })} compact />
+                    <Field label={T.address3Label} value={billTo.address3} onChange={(v) => setBillTo({ ...billTo, address3: v })} compact />
                     <div className="grid grid-cols-2 gap-2">
-                      <Field label="Postal Code" value={billTo.postalCode} onChange={(v) => setBillTo({ ...billTo, postalCode: v })} compact />
-                      <Field label="Country" value={billTo.country} onChange={(v) => setBillTo({ ...billTo, country: v })} compact />
+                      <Field label={T.postalCodeLabel} value={billTo.postalCode} onChange={(v) => setBillTo({ ...billTo, postalCode: v })} compact />
+                      <Field label={T.countryLabel} value={billTo.country} onChange={(v) => setBillTo({ ...billTo, country: v })} compact />
                     </div>
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-sm font-semibold text-slate-700">Ship To</h3>
+                    <h3 className="text-sm font-semibold text-slate-700">{T.shipToHeader}</h3>
                     <button onClick={copyBillToShip} className="text-xs text-[#00b4c3] hover:text-[#009aaa] font-medium">
-                      Copy from Bill To
+                      {T.copyFromBillTo}
                     </button>
                   </div>
                   <div className="space-y-2">
-                    <Field label="Company" value={shipTo.company} onChange={(v) => setShipTo({ ...shipTo, company: v })} placeholder="Company name" compact />
-                    <Field label="Address 1" value={shipTo.address1} onChange={(v) => setShipTo({ ...shipTo, address1: v })} compact />
-                    <Field label="Address 2" value={shipTo.address2} onChange={(v) => setShipTo({ ...shipTo, address2: v })} compact />
-                    <Field label="Address 3" value={shipTo.address3} onChange={(v) => setShipTo({ ...shipTo, address3: v })} compact />
+                    <Field label={T.companyLabel} value={shipTo.company} onChange={(v) => setShipTo({ ...shipTo, company: v })} placeholder={T.companyPlaceholder} compact />
+                    <Field label={T.address1Label} value={shipTo.address1} onChange={(v) => setShipTo({ ...shipTo, address1: v })} compact />
+                    <Field label={T.address2Label} value={shipTo.address2} onChange={(v) => setShipTo({ ...shipTo, address2: v })} compact />
+                    <Field label={T.address3Label} value={shipTo.address3} onChange={(v) => setShipTo({ ...shipTo, address3: v })} compact />
                     <div className="grid grid-cols-2 gap-2">
-                      <Field label="Postal Code" value={shipTo.postalCode} onChange={(v) => setShipTo({ ...shipTo, postalCode: v })} compact />
-                      <Field label="Country" value={shipTo.country} onChange={(v) => setShipTo({ ...shipTo, country: v })} compact />
+                      <Field label={T.postalCodeLabel} value={shipTo.postalCode} onChange={(v) => setShipTo({ ...shipTo, postalCode: v })} compact />
+                      <Field label={T.countryLabel} value={shipTo.country} onChange={(v) => setShipTo({ ...shipTo, country: v })} compact />
                     </div>
                   </div>
                 </div>
@@ -325,8 +328,8 @@ export default function ShippingDocsPage() {
               {/* Line Items */}
               <div className="border-t pt-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-slate-700">Line Items</h3>
-                  <button onClick={addLineItem} className="text-xs text-[#00b4c3] hover:text-[#009aaa] font-medium">+ Add Item</button>
+                  <h3 className="text-sm font-semibold text-slate-700">{T.lineItemsHeader}</h3>
+                  <button onClick={addLineItem} className="text-xs text-[#00b4c3] hover:text-[#009aaa] font-medium">{T.addItem}</button>
                 </div>
                 <div className="space-y-3">
                   {lineItems.map((item, idx) => (
@@ -337,7 +340,7 @@ export default function ShippingDocsPage() {
                           value={item.activity}
                           onChange={(e) => updateLineItem(idx, "activity", e.target.value)}
                           className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                          placeholder="Product / Activity"
+                          placeholder={T.productActivityPlaceholder}
                         />
                       </div>
                       <div className="w-24">
@@ -346,7 +349,7 @@ export default function ShippingDocsPage() {
                           value={item.qty || ""}
                           onChange={(e) => updateLineItem(idx, "qty", Number(e.target.value))}
                           className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                          placeholder="Qty"
+                          placeholder={T.qtyPlaceholder}
                         />
                       </div>
                       {activeTab !== "packing_list" && (
@@ -357,7 +360,7 @@ export default function ShippingDocsPage() {
                             value={item.rate || ""}
                             onChange={(e) => updateLineItem(idx, "rate", Number(e.target.value))}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                            placeholder="Rate"
+                            placeholder={T.ratePlaceholder}
                           />
                         </div>
                       )}
@@ -367,7 +370,7 @@ export default function ShippingDocsPage() {
                           value={item.unit || ""}
                           onChange={(e) => updateLineItem(idx, "unit", e.target.value)}
                           className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                          placeholder="Unit"
+                          placeholder={T.unitPlaceholder}
                         />
                       </div>
                       {lineItems.length > 1 && (
@@ -379,7 +382,7 @@ export default function ShippingDocsPage() {
 
                 {activeTab !== "packing_list" && (
                   <div className="mt-3 text-right">
-                    <span className="text-sm text-slate-500">Total: </span>
+                    <span className="text-sm text-slate-500">{T.totalLabel} </span>
                     <span className="text-lg font-bold text-slate-900">
                       {currency} {totalAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </span>
@@ -390,12 +393,12 @@ export default function ShippingDocsPage() {
               {/* Packing List extras */}
               {activeTab === "packing_list" && (
                 <div className="border-t pt-4">
-                  <h3 className="text-sm font-semibold text-slate-700 mb-3">Packaging Details</h3>
+                  <h3 className="text-sm font-semibold text-slate-700 mb-3">{T.packagingDetails}</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <Field label="Containers" value={containers} onChange={setContainers} placeholder="e.g. 20 Gaylords Each-" />
-                    <Field label="Dimensions" value={dimensions} onChange={setDimensions} placeholder="121.92 cm x 101.6 cm x 114.3 cm" />
-                    <Field label="Net Weight" value={netWeight} onChange={setNetWeight} placeholder="12,160.0 kgs" />
-                    <Field label="Gross Weight" value={grossWeight} onChange={setGrossWeight} placeholder="14,968.548 kgs" />
+                    <Field label={T.containersLabel} value={containers} onChange={setContainers} placeholder={T.containersPlaceholder} />
+                    <Field label={T.dimensionsLabel} value={dimensions} onChange={setDimensions} placeholder={T.dimensionsPlaceholder} />
+                    <Field label={T.netWeightLabel} value={netWeight} onChange={setNetWeight} placeholder={T.netWeightPlaceholder} />
+                    <Field label={T.grossWeightLabel} value={grossWeight} onChange={setGrossWeight} placeholder={T.grossWeightPlaceholder} />
                   </div>
                 </div>
               )}
@@ -403,7 +406,7 @@ export default function ShippingDocsPage() {
               {/* Sales Contract notes */}
               {activeTab === "sales_contract" && (
                 <div className="border-t pt-4">
-                  <Field label="Contract Notes" value={notes} onChange={setNotes} multiline rows={5} placeholder="Additional terms, tariff clauses, etc." />
+                  <Field label={T.contractNotesLabel} value={notes} onChange={setNotes} multiline rows={5} placeholder={T.contractNotesPlaceholder} />
                 </div>
               )}
             </>
@@ -412,7 +415,7 @@ export default function ShippingDocsPage() {
 
         {/* Generate button */}
         <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50 rounded-b-2xl">
-          <p className="text-xs text-slate-400">PDF will open in a new tab for download or printing</p>
+          <p className="text-xs text-slate-400">{T.pdfHintFooter}</p>
           <button
             onClick={handleGenerate}
             disabled={generating}
@@ -421,11 +424,11 @@ export default function ShippingDocsPage() {
             {generating ? (
               <>
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Generating...
+                {T.generatingLabel}
               </>
             ) : (
               <>
-                {"\u{1F4C4}"} Generate PDF
+                {"\u{1F4C4}"} {T.generatePdfBtn}
               </>
             )}
           </button>
