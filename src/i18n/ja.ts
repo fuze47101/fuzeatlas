@@ -7145,6 +7145,29 @@ const ja: Translations = {
     errAddFailed: "追加に失敗しました",
   },
 
+  accountsAdmin: {
+    title: "アカウント",
+    subtitleBefore: "Leadステージを過ぎたブランド — プレゼンテーション受領、テスト中、生産中、または既に顧客のもの。新規見込み客は、",
+    brandPipelineLink: "ブランドパイプライン",
+    allFilter: "すべて",
+    stagePresentation: "プレゼンテーション",
+    stageBrandTesting: "ブランドテスト",
+    stageFactoryOnboarding: "ファクトリーオンボーディング",
+    stageFactoryTesting: "ファクトリーテスト",
+    stageProduction: "生産",
+    stageReConnect: "再接続",
+    stageCustomerWon: "顧客獲得",
+    searchPlaceholder: "名前または連絡先でアカウントを検索...",
+    emptyTitle: "このビューにはまだアカウントがありません",
+    emptyBody: "ブランドがLEADからPRESENTATION以降に移動するとアカウントが表示されます。",
+    goToPipelineBtn: "ブランドパイプラインへ",
+    highRelevanceBadge: "🔥 高関連性",
+    amPrefix: "AM：",
+    contactsLabel: "連絡先",
+    enrichedSuffix: "エンリッチ済み",
+    backToLeadOption: "← Leadに戻る",
+  },
+
 };
 
 export default ja;
