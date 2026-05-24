@@ -6845,6 +6845,34 @@ const th: Translations = {
     errLoadFailed: "ไม่สามารถโหลด funnel ได้",
   },
 
+  bdSequenceAnalytics: {
+    loading: "กำลังโหลด…",
+    crumbBdSequences: "BD Sequences",
+    crumbAnalytics: "Analytics",
+    modeSequence: "Sequence",
+    modeCadence: "Cadence",
+    title: "Funnel analytics",
+    aggregatedAcross: "รวมใน",
+    sequenceSingular: "sequence",
+    sequencePlural: "sequence",
+    onCadenceLabel: "on cadence",
+    emptyBefore: "ยังไม่มีกิจกรรมการส่งบน",
+    stepLabel: "ขั้น",
+    sentSuffix: "ส่งแล้ว",
+    mSent: "ส่งแล้ว",
+    mOpens: "เปิด",
+    mClicks: "คลิก",
+    mReplies: "ตอบกลับ",
+    mMeetings: "ประชุม",
+    mAvgDaysReply: "วันเฉลี่ย → ตอบกลับ",
+    subjectVariantsTitle: "ตัวแปรเรื่อง",
+    colSubject: "เรื่อง",
+    colSent: "ส่งแล้ว",
+    colOpens: "เปิด",
+    colOpenRate: "อัตราเปิด",
+    errLoadFailed: "ไม่สามารถโหลด analytics ได้",
+  },
+
 };
 
 export default th;
