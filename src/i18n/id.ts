@@ -3439,6 +3439,25 @@ const id: Translations = {
     amPrefix: "AM:",
   },
 
+  recipeSearch: {
+    heading: "Pencarian Resep",
+    subtitle: "Perpustakaan resep FUZE lintas jaringan. Cari di setiap kain tervalidasi di Atlas — cocokkan yang sedang Anda kerjakan dengan resep terbukti, bahkan saat kain bukan milik Anda. Baris di luar scope dianonimkan tetapi fisika resepnya terlihat.",
+    keywordPlaceholder: "Kata kunci (cotton, jersey, twill...)",
+    anyCategory: "Kategori apa pun",
+    knit: "Rajut",
+    woven: "Tenun",
+    nonwoven: "Nonwoven",
+    fiberPlaceholder: "Serat (cotton, poly...)",
+    gsmMinPlaceholder: "GSM min",
+    gsmMaxPlaceholder: "GSM max",
+    anyTier: "Tier apa pun",
+    onlyValidatedLabel: "Hanya tampilkan kain dengan pickup terukur (bench test tervalidasi)",
+    searchingBtn: "Mencari...",
+    searchBtn: "Cari",
+    emptyTitle: "Belum ada resep yang cocok.",
+    emptyBody: "Coba lebarkan filter — atau hapus filter \"bench test tervalidasi\" jika Anda ingin melihat kain yang masih dalam pengembangan.",
+  },
+
 };
 
 export default id;
