@@ -7100,6 +7100,34 @@ const es: Translations = {
     errLoadFailed: "Error al cargar el embudo",
   },
 
+  bdSequenceAnalytics: {
+    loading: "Cargando…",
+    crumbBdSequences: "Secuencias BD",
+    crumbAnalytics: "Analítica",
+    modeSequence: "Secuencia",
+    modeCadence: "Cadencia",
+    title: "Analítica del embudo",
+    aggregatedAcross: "Agregado en",
+    sequenceSingular: "secuencia",
+    sequencePlural: "secuencias",
+    onCadenceLabel: "en cadencia",
+    emptyBefore: "Aún no hay actividad de envío en este",
+    stepLabel: "Paso",
+    sentSuffix: "enviado",
+    mSent: "Enviados",
+    mOpens: "Aperturas",
+    mClicks: "Clics",
+    mReplies: "Respuestas",
+    mMeetings: "Reuniones",
+    mAvgDaysReply: "Días medios → respuesta",
+    subjectVariantsTitle: "Variantes de asunto",
+    colSubject: "Asunto",
+    colSent: "Enviados",
+    colOpens: "Aperturas",
+    colOpenRate: "Tasa de apertura",
+    errLoadFailed: "Error al cargar analítica",
+  },
+
 };
 
 export default es;
