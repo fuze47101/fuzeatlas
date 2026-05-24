@@ -2977,6 +2977,37 @@ const vi: Translations = {
     factoryLabel: "Nhà máy:",
   },
 
+  verifySku: {
+    errorTitle: "Không thể xác minh mã này",
+    errorBlurb:
+      "Chúng tôi gặp sự cố khi truy cập cơ sở dữ liệu xác minh. Vui lòng thử lại sau giây lát.",
+    notCertifiedTitle: "Không phải SKU được FUZE chứng nhận",
+    notCertifiedBlurbPrefix: "Mã",
+    notCertifiedBlurbSuffix:
+      "không có trong cơ sở dữ liệu xác minh của chúng tôi. Nếu mã này đến từ hangtag FUZE, vui lòng liên hệ trực tiếp với thương hiệu.",
+    whatIsFuze: "FUZE là gì? →",
+    fuzeVerified: "FUZE đã xác minh",
+    pageTitle: "Vải này được xử lý bằng FUZE",
+    pageSubtitle: "Xử lý kháng khuẩn cho vải dệt — được xác thực bởi bên thứ ba.",
+    brandLabel: "Thương hiệu",
+    millLabel: "Nhà máy dệt",
+    fuzeTierLabel: "Hạng FUZE",
+    fuzeNumberLabel: "Số FUZE",
+    washClaimSuffix: "lần giặt được công bố",
+    recentValidation: "Lần xác thực phòng thí nghiệm gần nhất",
+    testPassed: "đạt",
+    testTypeSuffix: "thử nghiệm —",
+    validatedByPrefix: "Được xác thực bởi",
+    validatedByGeneric: "Được xác thực bởi phòng thí nghiệm bên thứ ba",
+    validatedOn: "vào",
+    reportRefPrefix: "Mã báo cáo:",
+    certifications: "Chứng nhận FUZE",
+    aboutBody:
+      "FUZE là phương pháp xử lý kháng khuẩn vải dệt độc quyền của FUZE Biotech. Sản phẩm sử dụng hóa học metamaterial liên kết với sợi vải trong quá trình hoàn tất vải tiêu chuẩn — không PFAS, không chất kết dính, không cần lò sấy lưu hóa.",
+    learnMore: "Tìm hiểu thêm về FUZE →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default vi;
