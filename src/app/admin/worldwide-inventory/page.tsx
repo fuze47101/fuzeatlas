@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useI18n } from "@/i18n";
 
 interface DistributorStock {
   distributorId: string;
@@ -64,6 +65,8 @@ interface WorldwideData {
 }
 
 export default function WorldwideInventoryDashboard() {
+  const { t } = useI18n();
+  const T = t.worldwideInventoryPage;
   const [data, setData] = useState<WorldwideData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -74,9 +77,9 @@ export default function WorldwideInventoryDashboard() {
       .then((r) => r.json())
       .then((res) => {
         if (res.ok) setData(res);
-        else setError(res.error || "Failed to load");
+        else setError(res.error || T.errorFailedLoad);
       })
-      .catch(() => setError("Network error"))
+      .catch(() => setError(T.errorNetwork))
       .finally(() => setLoading(false));
   }, []);
 
@@ -100,7 +103,7 @@ export default function WorldwideInventoryDashboard() {
     return (
       <div className="p-6 max-w-7xl mx-auto">
         <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-          <p className="text-red-600 font-medium">{error || "No data available"}</p>
+          <p className="text-red-600 font-medium">{error || T.errorNoData}</p>
         </div>
       </div>
     );
@@ -118,29 +121,29 @@ export default function WorldwideInventoryDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Worldwide Inventory</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{T.pageTitle}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Global FUZE stock levels, consumption trends, hangtag inventory, and shipment tracking — the CFO/dashboard view.
+            {T.pageSubtitle}
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            Looking to spot-check who's about to run out instead?{" "}
+            {T.sidelineLead}{" "}
             <a
               href="/admin/distributors/inventory"
               className="text-blue-600 hover:underline font-semibold"
             >
-              Open the burn-rate / days-of-stock view →
+              {T.sidelineLink}
             </a>
           </p>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-400">
-            Updated: {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            {T.updatedPrefix} {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
           </span>
           <button
             onClick={() => window.location.reload()}
             className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition"
           >
-            Refresh
+            {T.refresh}
           </button>
         </div>
       </div>
@@ -148,30 +151,30 @@ export default function WorldwideInventoryDashboard() {
       {/* ─── KPI Cards ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
-          label="Total Stock"
+          label={T.kpiTotalStock}
           value={`${ww.totalLiters.toLocaleString()} L`}
           sub={`${ww.totalKg.toLocaleString()} kg`}
           icon="🌍"
           color="bg-blue-50 border-blue-200"
         />
         <KPICard
-          label="Bottles Worldwide"
+          label={T.kpiBottlesWorldwide}
           value={ww.totalBottles.toLocaleString()}
-          sub={`${ww.locationsWithStock} locations active`}
+          sub={T.kpiBottlesSub.replace("{n}", String(ww.locationsWithStock))}
           icon="🧴"
           color="bg-green-50 border-green-200"
         />
         <KPICard
-          label="In Transit"
+          label={T.kpiInTransit}
           value={`${ww.inTransitLiters.toLocaleString()} L`}
-          sub={`${inTransit.length} shipments`}
+          sub={T.kpiInTransitSub.replace("{n}", String(inTransit.length))}
           icon="🚢"
           color="bg-purple-50 border-purple-200"
         />
         <KPICard
-          label="Low Stock Alerts"
+          label={T.kpiLowStock}
           value={ww.lowStockLocations.toString()}
-          sub={`of ${ww.distributorCount} distributors`}
+          sub={T.kpiLowStockSub.replace("{n}", String(ww.distributorCount))}
           icon="⚠️"
           color={ww.lowStockLocations > 0 ? "bg-red-50 border-red-300" : "bg-gray-50 border-gray-200"}
           alert={ww.lowStockLocations > 0}
@@ -181,9 +184,9 @@ export default function WorldwideInventoryDashboard() {
       {/* ─── View Tabs ─── */}
       <div className="flex gap-1 bg-gray-100 p-1 rounded-lg w-fit">
         {[
-          { key: "overview", label: "Distributor Breakdown" },
-          { key: "weekly", label: "Weekly Consumption" },
-          { key: "sources", label: "Shipment Sources" },
+          { key: "overview", label: T.tabDistributors },
+          { key: "weekly", label: T.tabWeekly },
+          { key: "sources", label: T.tabSources },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -207,21 +210,21 @@ export default function WorldwideInventoryDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 border-b text-left">
-                  <th className="px-4 py-3 font-semibold text-gray-600">Distributor</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600">Location</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 text-right">Stock (L)</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 text-right">Stock (kg)</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 text-right">Bottles</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 text-right">Hangtags</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600">Inventory Level</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600">Status</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600">{T.colDistributor}</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600">{T.colLocation}</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600 text-right">{T.colStockL}</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600 text-right">{T.colStockKg}</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600 text-right">{T.colBottles}</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600 text-right">{T.colHangtags}</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600">{T.colInventoryLevel}</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600">{T.colStatus}</th>
                 </tr>
               </thead>
               <tbody>
                 {distributors.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
-                      No distributors configured yet
+                      {T.emptyDistributors}
                     </td>
                   </tr>
                 ) : (
@@ -251,7 +254,7 @@ export default function WorldwideInventoryDashboard() {
                           </div>
                           {d.reorderThreshold && (
                             <span className="text-[10px] text-gray-400 whitespace-nowrap">
-                              Min: {d.reorderThreshold}L
+                              {T.minPrefix} {d.reorderThreshold}L
                             </span>
                           )}
                         </div>
@@ -260,16 +263,16 @@ export default function WorldwideInventoryDashboard() {
                         {d.belowThreshold ? (
                           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
                             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                            LOW
+                            {T.statusLow}
                           </span>
                         ) : d.stockLiters > 0 ? (
                           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                            OK
+                            {T.statusOk}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                            NO STOCK
+                            {T.statusNoStock}
                           </span>
                         )}
                       </td>
@@ -279,8 +282,8 @@ export default function WorldwideInventoryDashboard() {
                 {/* Totals row */}
                 {distributors.length > 0 && (
                   <tr className="bg-blue-50 border-t-2 border-blue-200 font-semibold">
-                    <td className="px-4 py-3 text-blue-900">WORLDWIDE TOTAL</td>
-                    <td className="px-4 py-3 text-blue-700">{ww.locationsWithStock} locations</td>
+                    <td className="px-4 py-3 text-blue-900">{T.rowWorldwideTotal}</td>
+                    <td className="px-4 py-3 text-blue-700">{ww.locationsWithStock} {T.locationsSuffix}</td>
                     <td className="px-4 py-3 text-right font-mono text-blue-900">
                       {ww.totalLiters.toLocaleString()}
                     </td>
@@ -304,22 +307,22 @@ export default function WorldwideInventoryDashboard() {
           <div className="md:hidden space-y-3">
             {/* Worldwide total card */}
             <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-              <div className="text-sm font-semibold text-blue-800 mb-2">WORLDWIDE TOTAL</div>
+              <div className="text-sm font-semibold text-blue-800 mb-2">{T.rowWorldwideTotal}</div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <div className="text-xs text-blue-600">Stock (L)</div>
+                  <div className="text-xs text-blue-600">{T.mobileStockL}</div>
                   <div className="text-lg font-bold text-blue-900">{ww.totalLiters.toLocaleString()}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-blue-600">Stock (kg)</div>
+                  <div className="text-xs text-blue-600">{T.mobileStockKg}</div>
                   <div className="text-lg font-bold text-blue-900">{ww.totalKg.toLocaleString()}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-blue-600">Bottles</div>
+                  <div className="text-xs text-blue-600">{T.mobileBottles}</div>
                   <div className="text-lg font-bold text-blue-900">{ww.totalBottles.toLocaleString()}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-blue-600">Locations</div>
+                  <div className="text-xs text-blue-600">{T.mobileLocations}</div>
                   <div className="text-lg font-bold text-blue-900">{ww.locationsWithStock}</div>
                 </div>
               </div>
@@ -335,25 +338,25 @@ export default function WorldwideInventoryDashboard() {
                 <div className="flex items-center justify-between mb-2">
                   <div className="font-medium text-gray-900">{d.name}</div>
                   {d.belowThreshold ? (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">LOW</span>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">{T.statusLow}</span>
                   ) : d.stockLiters > 0 ? (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">OK</span>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">{T.statusOk}</span>
                   ) : (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">EMPTY</span>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">{T.statusEmpty}</span>
                   )}
                 </div>
                 <div className="text-xs text-gray-500 mb-3">{d.location}</div>
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div>
-                    <div className="text-xs text-gray-500">Liters</div>
+                    <div className="text-xs text-gray-500">{T.mobileLiters}</div>
                     <div className="font-semibold">{d.stockLiters.toLocaleString()}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">kg</div>
+                    <div className="text-xs text-gray-500">{T.mobileKg}</div>
                     <div className="font-semibold">{d.stockKg.toLocaleString()}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">Bottles</div>
+                    <div className="text-xs text-gray-500">{T.mobileBottlesCol}</div>
                     <div className="font-semibold">{d.bottles}</div>
                   </div>
                 </div>
@@ -374,14 +377,14 @@ export default function WorldwideInventoryDashboard() {
       {view === "weekly" && (
         <div className="space-y-4">
           <div className="bg-white rounded-xl border p-4 md:p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">Weekly Consumption (Last 12 Weeks)</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">{T.weeklyHeading}</h2>
             <p className="text-sm text-gray-500 mb-6">
-              Liters shipped per week from delivered orders, reducing worldwide inventory
+              {T.weeklySubtitle}
             </p>
 
             {weeklyConsumption.length === 0 ? (
               <div className="py-12 text-center text-gray-400">
-                No delivered orders in the last 12 weeks
+                {T.weeklyEmpty}
               </div>
             ) : (
               <div className="space-y-3">
@@ -403,7 +406,7 @@ export default function WorldwideInventoryDashboard() {
                             </span>
                           </div>
                           <div className="w-16 text-right">
-                            <span className="text-xs text-gray-500">{week.orderCount} orders</span>
+                            <span className="text-xs text-gray-500">{week.orderCount} {T.weeklyOrders}</span>
                           </div>
                         </div>
                       </div>
@@ -415,7 +418,7 @@ export default function WorldwideInventoryDashboard() {
                           <span className="w-2 h-2 rounded-full bg-blue-300" />
                           <span>{src.name}</span>
                           <span className="font-mono">{src.liters} L</span>
-                          <span>({src.orders} orders)</span>
+                          <span>({src.orders} {T.weeklyOrders})</span>
                         </div>
                       ))}
                     </div>
@@ -424,7 +427,7 @@ export default function WorldwideInventoryDashboard() {
 
                 {/* Weekly average */}
                 <div className="border-t pt-3 mt-3 flex items-center gap-3">
-                  <div className="w-36 text-sm font-semibold text-gray-700">Weekly Average</div>
+                  <div className="w-36 text-sm font-semibold text-gray-700">{T.weeklyAverage}</div>
                   <div className="flex-1 flex items-center gap-2">
                     <div className="flex-1" />
                     <div className="w-24 text-right">
@@ -442,7 +445,7 @@ export default function WorldwideInventoryDashboard() {
                           weeklyConsumption.reduce((sum, w) => sum + w.orderCount, 0) /
                             Math.max(1, weeklyConsumption.length)
                         )}{" "}
-                        orders
+                        {T.weeklyOrders}
                       </span>
                     </div>
                   </div>
@@ -454,7 +457,7 @@ export default function WorldwideInventoryDashboard() {
           {/* Consumption total summary */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white rounded-xl border p-4">
-              <div className="text-sm text-gray-500 mb-1">12-Week Total</div>
+              <div className="text-sm text-gray-500 mb-1">{T.summary12wTotal}</div>
               <div className="text-2xl font-bold text-gray-900">
                 {weeklyConsumption.reduce((sum, w) => sum + w.totalLiters, 0).toLocaleString()} L
               </div>
@@ -463,14 +466,14 @@ export default function WorldwideInventoryDashboard() {
               </div>
             </div>
             <div className="bg-white rounded-xl border p-4">
-              <div className="text-sm text-gray-500 mb-1">Total Orders</div>
+              <div className="text-sm text-gray-500 mb-1">{T.summaryTotalOrders}</div>
               <div className="text-2xl font-bold text-gray-900">
                 {weeklyConsumption.reduce((sum, w) => sum + w.orderCount, 0)}
               </div>
-              <div className="text-xs text-gray-400 mt-1">Delivered in 12 weeks</div>
+              <div className="text-xs text-gray-400 mt-1">{T.summaryDelivered}</div>
             </div>
             <div className="bg-white rounded-xl border p-4">
-              <div className="text-sm text-gray-500 mb-1">Projected Monthly</div>
+              <div className="text-sm text-gray-500 mb-1">{T.summaryProjectedMonthly}</div>
               <div className="text-2xl font-bold text-gray-900">
                 {Math.round(
                   (weeklyConsumption.reduce((sum, w) => sum + w.totalLiters, 0) /
@@ -479,7 +482,7 @@ export default function WorldwideInventoryDashboard() {
                 ).toLocaleString()}{" "}
                 L
               </div>
-              <div className="text-xs text-gray-400 mt-1">Based on weekly average</div>
+              <div className="text-xs text-gray-400 mt-1">{T.summaryProjectedSub}</div>
             </div>
           </div>
         </div>
@@ -489,13 +492,13 @@ export default function WorldwideInventoryDashboard() {
       {view === "sources" && (
         <div className="space-y-4">
           <div className="bg-white rounded-xl border p-4 md:p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">Shipment Sources (All Time)</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">{T.sourcesHeading}</h2>
             <p className="text-sm text-gray-500 mb-6">
-              Where FUZE orders have shipped from — distributors and direct fulfillment
+              {T.sourcesSubtitle}
             </p>
 
             {shipmentSources.length === 0 ? (
-              <div className="py-12 text-center text-gray-400">No shipped orders yet</div>
+              <div className="py-12 text-center text-gray-400">{T.sourcesEmpty}</div>
             ) : (
               <div className="space-y-3">
                 {shipmentSources.map((src, i) => (
@@ -516,7 +519,7 @@ export default function WorldwideInventoryDashboard() {
                           <span className="font-mono font-semibold text-sm">{src.totalLiters.toLocaleString()} L</span>
                         </div>
                         <div className="w-20 text-right">
-                          <span className="text-xs text-gray-500">{src.orderCount} orders</span>
+                          <span className="text-xs text-gray-500">{src.orderCount} {T.sourcesOrders}</span>
                         </div>
                       </div>
                     </div>
@@ -529,9 +532,9 @@ export default function WorldwideInventoryDashboard() {
           {/* In Transit */}
           {inTransit.length > 0 && (
             <div className="bg-white rounded-xl border p-4 md:p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-1">Currently In Transit</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-1">{T.inTransitHeading}</h2>
               <p className="text-sm text-gray-500 mb-4">
-                Active shipments reducing distributor inventory
+                {T.inTransitSubtitle}
               </p>
 
               {/* Desktop */}
@@ -539,12 +542,12 @@ export default function WorldwideInventoryDashboard() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b text-left">
-                      <th className="px-3 py-2 font-semibold text-gray-600">Order</th>
-                      <th className="px-3 py-2 font-semibold text-gray-600">From</th>
-                      <th className="px-3 py-2 font-semibold text-gray-600">To</th>
-                      <th className="px-3 py-2 font-semibold text-gray-600 text-right">Volume</th>
-                      <th className="px-3 py-2 font-semibold text-gray-600">Status</th>
-                      <th className="px-3 py-2 font-semibold text-gray-600">Tracking</th>
+                      <th className="px-3 py-2 font-semibold text-gray-600">{T.colOrder}</th>
+                      <th className="px-3 py-2 font-semibold text-gray-600">{T.colFrom}</th>
+                      <th className="px-3 py-2 font-semibold text-gray-600">{T.colTo}</th>
+                      <th className="px-3 py-2 font-semibold text-gray-600 text-right">{T.colVolume}</th>
+                      <th className="px-3 py-2 font-semibold text-gray-600">{T.colStatus}</th>
+                      <th className="px-3 py-2 font-semibold text-gray-600">{T.colTracking}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -552,7 +555,7 @@ export default function WorldwideInventoryDashboard() {
                       <tr key={i} className="border-b hover:bg-gray-50">
                         <td className="px-3 py-2 font-mono text-xs">{order.orderNumber}</td>
                         <td className="px-3 py-2 text-gray-600">
-                          {order.distributor?.name || "Direct (USA)"}
+                          {order.distributor?.name || T.directUsa}
                         </td>
                         <td className="px-3 py-2 text-gray-600">
                           {order.factory?.name || "—"}{" "}
@@ -607,7 +610,7 @@ export default function WorldwideInventoryDashboard() {
                       </span>
                     </div>
                     <div className="text-sm">
-                      {order.distributor?.name || "Direct (USA)"} → {order.factory?.name || "—"}
+                      {order.distributor?.name || T.directUsa} → {order.factory?.name || "—"}
                     </div>
                     <div className="text-sm font-mono mt-1">{order.volumeLiters?.toLocaleString() || "—"} L</div>
                     {order.trackingNumber && (
