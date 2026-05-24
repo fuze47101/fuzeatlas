@@ -7858,6 +7858,37 @@ const tr: Translations = {
     lastCalculatedLabel: "Son hesaplama:",
   },
 
+  fabricReportSend: {
+    backLink: "← Rapora Dön",
+    heading: "Müşteriye Rapor E-postası Gönder",
+    subtitlePrefix: "Şunun için FUZE Uygulama ve Doğrulama Raporu gönderiliyor:",
+    fabricNotFound: "Kumaş bulunamadı.",
+    recipientRequiredError: "Alıcı e-postası gereklidir.",
+    sendFailedError: "Gönderim başarısız",
+    sentSuccessPrefix: "✓ Rapor şu adrese gönderildi:",
+    directUrlLabel: "Doğrudan indirme URL'si:",
+    sentSuccessBody: "Müşteri ayrıca FUZE Atlas'a giriş yaptıktan sonra Raporlarım altından buna erişebilir.",
+    recipientEmailLabel: "Alıcı e-postası",
+    recipientNameLabel: "Alıcı adı",
+    optionalSuffix: "(opsiyonel)",
+    personalNoteLabel: "Kişisel not",
+    personalNoteHint: "(opsiyonel, rapor kartının üzerinde gösterilir)",
+    ccLabel: "CC",
+    ccHint: "(opsiyonel, virgülle ayrılmış)",
+    ttlLabel: "Doğrudan bağlantının geçerlilik süresi",
+    ttl30Days: "30 gün",
+    ttl90Days: "90 gün (varsayılan)",
+    ttl180Days: "180 gün",
+    ttl1Year: "1 yıl",
+    sendingBtn: "Gönderiliyor...",
+    sendBtn: "Raporu Gönder",
+    previouslySentTitle: "Daha önce gönderildi",
+    sentPrefix: "Gönderildi",
+    viewedPrefix: "görüntülendi",
+    notOpenedYet: "henüz açılmadı",
+    openSameLink: "Aynı bağlantıyı aç →",
+  },
+
 };
 
 export default tr;
