@@ -4780,6 +4780,48 @@ const ja: Translations = {
     sanityRangesHeader: "妥当性チェック範囲",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "週次エグゼクティブレビュー",
+    weekOfTemplate: "週:",
+    coveringPrefix: "対象期間:",
+    daysWindowSuffix: "日間",
+    ownerLabel: "オーナー:",
+    generatedLabel: "生成日時",
+    enterPresent: "出席",
+    exitPresent: "退席",
+    refreshing: "更新中…",
+    refreshSnapshot: "スナップショットを更新",
+
+    execSummaryTitle: "エグゼクティブサマリー",
+    execSummaryPlaceholder: "経営陣向けの要点。フォーカスを外すと保存されます。",
+    saving: "保存中…",
+
+    salesDistributionTitle: "販売・流通",
+    bookedDollars: "受注額 $",
+    shippedDollars: "出荷額 $",
+    bookedLiters: "受注 L",
+    shippedLiters: "出荷 L",
+    ordersSuffix: "件の注文",
+    shipmentsSuffix: "件の出荷",
+    kgShippedSuffix: "kg 出荷",
+    byOrderTypeLabel: "注文タイプ別",
+
+    sowProgressTitle: "SOW進捗",
+    sowDraft: "下書き",
+    sowSent: "送付済み",
+    sowSigned: "署名済み",
+    sowActive: "進行中",
+    sowComplete: "完了",
+    sowSignedThisWindow: "この期間中に署名",
+    sowNewlyOpened: "新規開始",
+    sowActiveTitle: "進行中",
+    sowStale: "停滞中（30日以上動きなし）",
+    sowEmptyNoSignatures: "この期間中に新規署名はありません。",
+    sowEmptyNoOpened: "この期間中に開始されたSOWはありません。",
+    sowEmptyNoActive: "進行中のSOWはありません。",
+    sowEmptyNothingStuck: "停滞案件はありません。",
+  },
+
 };
 
 export default ja;
