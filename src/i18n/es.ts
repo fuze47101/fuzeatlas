@@ -6976,6 +6976,44 @@ const es: Translations = {
     truncatedNotice: "Mostrando las primeras 100 de {total} marcas. Usa filtros para acotar.",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "Envío no encontrado",
+    notFoundBodyTpl: "No pudimos encontrar el pedido {order}.",
+    notFoundFooter: "Si recibiste este código QR en un envío FUZE, contacta a andrew@fuze47.com.",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "Verificación de envío",
+
+    sectionShipment: "Detalles del envío",
+    fieldFuzeVolume: "Volumen FUZE",
+    bottlesSuffix: "botellas",
+    baseFuzePrefix: "base",
+    wastageSuffix: "desperdicio",
+    fieldTier: "Tier",
+    fieldMethod: "Método de tratamiento",
+    fieldFactory: "Fábrica",
+    fieldForBrand: "Para marca",
+    fieldFabric: "Tejido",
+    fieldFulfillment: "Cumplimiento",
+    directUsa: "Directo desde EE. UU.",
+    distributorFallback: "Distribuidor",
+    fieldTracking: "Seguimiento",
+
+    sectionDocs: "Documentos del producto",
+    sdsLabel: "Hoja de datos de seguridad (SDS)",
+    sdsTitleFallback: "SDS FUZE",
+    coaLabel: "Certificado de análisis (COA)",
+    coaTitleFallback: "COA FUZE",
+    openCompliance: "Abrir la biblioteca de cumplimiento",
+
+    sectionTimeline: "Cronología del ciclo de vida",
+    viewDocument: "Ver documento →",
+    timelineEmpty: "Aún no se han registrado eventos del ciclo de vida. La cronología se rellenará a medida que avance el envío.",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "¿Preguntas?",
+  },
+
 };
 
 export default es;
