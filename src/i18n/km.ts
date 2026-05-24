@@ -7335,6 +7335,24 @@ const km: Translations = {
     emptyBody: "Try widening the filters — or remove the \"validated bench test\" filter if you want to see fabrics that are still mid-development.",
   },
 
+  importBrands: {
+    title: "Bulk import — ម៉ាក",
+    subtitle: "Paste or upload a CSV of brand candidates from a trade show, list, or research dump. We'll map the columns, preview validation, and write idempotently through the same seed-brand helper the CLI uses.",
+    backLabel: "ម៉ាក Pipeline",
+    brandNameLabel: "ម៉ាក name",
+    brandNameHint: "(natural key — upsert is keyed here)",
+    domainLabel: "អ៊ីមែល domain",
+    domainHint: 'e.g. "rhone.com"',
+    repEmailLabel: "Primary AM email",
+    repEmailHint: "must already exist as an Atlas user",
+    tierLabel: "ត្រូវការ កម្រិត FUZE",
+    tierHint: "F1 / F2 / F3 / F4 — defaults F2",
+    cadenceLabel: "ICP cadence (every N batches)",
+    cadenceHint: "defaults 5",
+    countryLabel: "Country",
+    websiteLabel: "Website",
+  },
+
 };
 
 export default km;
