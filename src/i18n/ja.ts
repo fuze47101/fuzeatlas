@@ -7011,6 +7011,26 @@ const ja: Translations = {
     colSource: "ソース",
   },
 
+  interLabVariance: {
+    loadingLabel: "ラボ間ばらつきを読み込み中",
+    crumbQualityLabs: "品質 & ラボ",
+    crumbInterLabVariance: "ラボ間ばらつき",
+    title: "ラボ間ばらつき",
+    subtitleBefore: "過去",
+    subtitleAfter: "日間に同じファブリックが2つ以上のラボでテストされた場合。範囲（最大−最小）の降順でソート。",
+    colFabric: "ファブリック",
+    colMethod: "方法",
+    colRange: "範囲",
+    colMeanSigma: "平均 ± σ",
+    colPerLab: "ラボごとの結果",
+    emptyTitle: "複数ラボのファブリックはまだありません",
+    emptyBodyBefore: "ラボ間ばらつきは、過去",
+    emptyBodyAfter: "日間に2つ以上のラボでテストされたファブリックを比較します。同じファブリックがパートナーラボとFUZE USA（または任意の2ラボペア）でテストされると、ここに表示されます。",
+    biasTitle: "ラボごとの校正バイアス",
+    biasHint: "共有された各ファブリックにおける（このラボの結果 − グループ平均）の平均値。プラス=ピアラボより高い結果；マイナス=より低い結果。",
+    emptyBias: "バイアスデータはまだありません。",
+  },
+
 };
 
 export default ja;
