@@ -7786,6 +7786,33 @@ const ur: Translations = {
     resumeBtn: "دوبارہ شروع کریں",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ تصدیق شدہ FUZE-علاج شدہ",
+    tierPrefix: "FUZE درجہ",
+    productSectionTitle: "پروڈکٹ",
+    skuLabel: "SKU",
+    batchLabel: "بیچ",
+    fuzeNumberLabel: "FUZE #",
+    constructionLabel: "تعمیر",
+    weightLabel: "وزن",
+    weightUnit: "GSM",
+    mostRecentValidation: "حالیہ ترین توثیق",
+    testedPrefix: "ٹیسٹ کیا گیا",
+    afterWashesPrefix: "بعد از",
+    afterWashesSuffix: "دھلائیاں",
+    whatDoesThisMean: "اس کا کیا مطلب ہے؟",
+    explainerP1: "FUZE ایک ملکیتی antimicrobial ٹیکسٹائل ٹریٹمنٹ ہے۔ FUZE metamaterial معیاری ٹیکسٹائل فنشنگ کے دوران ریشے کی سطح سے مستقل طور پر بندھ جاتا ہے — کوئی leaching نہیں، کوئی PFAS نہیں، کپڑے کی hand یا breathability میں کوئی کیمیائی تبدیلی نہیں۔",
+    explainerP2: "بیکٹیریا کی کمی بندھے ہوئے metamaterial کے ساتھ براہ راست رابطے سے ہوتی ہے — اسی لیے FUZE ASTM E2149 (غیر-leaching antimicrobials کے لیے ڈیزائن کیا گیا رابطہ-قتل ٹیسٹ) کے ساتھ آگے بڑھتا ہے، layered geometry کی توثیق کے لیے AATCC 100 کے ساتھ۔",
+    certificationsLabel: "سرٹیفیکیشنز:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I، bluesign® approved، EPA registered، California EPA approved (Q1 2026)، PFAS-free۔",
+    sustainabilityTitle: "پائیداری",
+    sustainabilityBody: "اب تک اس کپڑے میں استعمال شدہ FUZE۔",
+    seeMorePrefix: "مزید دیکھیں",
+    seeMoreSuffix: "تصدیق شدہ مصنوعات →",
+    learnMoreLink: "FUZE ٹیکنالوجی کے بارے میں مزید جانیں →",
+    footerVerifiedBy: "FUZE Atlas کے ذریعہ تصدیق شدہ",
+  },
+
 };
 
 export default ur;
