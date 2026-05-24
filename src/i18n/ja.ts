@@ -5668,6 +5668,69 @@ const ja: Translations = {
     footerGenerated: "フォーム生成日時",
   },
 
+  sampleTrials: {
+    crumbDashboard: "ダッシュボード",
+    crumbHere: "サンプルトライアル",
+    pageTitle: "サンプルトライアル管理",
+    pageSubtitle: "工場のサンプルトライアル依頼を確認、承認、発送、追跡します",
+
+    statTotal: "合計",
+    statNeedsAction: "対応必要",
+
+    searchPlaceholder: "生地、工場、ブランド、コンタクトを検索...",
+    filterAllStatuses: "すべてのステータス",
+    filterAllFactories: "すべての工場",
+
+    errorFailedLoad: "トライアルの読み込みに失敗しました",
+    errorUpdate: "更新に失敗しました",
+    errorNetwork: "ネットワークエラー",
+
+    quickActionPrefix: "クイックアクション —",
+    trialFallback: "トライアル",
+    labelStatus: "ステータス",
+    labelTracking: "追跡番号",
+    placeholderTracking: "FedEx/DHL/UPS 番号",
+    labelAdminNotes: "管理メモ",
+    placeholderAdminNotes: "内部メモ...",
+    labelRejectReason: "却下理由",
+    btnSave: "変更を保存",
+    btnSaving: "保存中...",
+    btnCancel: "キャンセル",
+
+    emptyFiltered: "フィルターに一致するトライアルはありません",
+    emptyDefault: "サンプルトライアルはまだありません",
+
+    colFabric: "生地",
+    colFactory: "工場",
+    colPurpose: "目的",
+    colStatus: "ステータス",
+    colDetails: "詳細",
+    colIcpLab: "ICPラボ",
+    colDate: "日付",
+    colActions: "アクション",
+
+    purposeBrand: "ブランド",
+    purposeSelfDev: "自社開発",
+    trialLab: "ラボ",
+    trialProduction: "本生産",
+    detailsTierPrefix: "ティア:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "担当:",
+    actionAction: "アクション",
+    actionView: "表示",
+
+    statusSubmitted: "提出済み",
+    statusUnderReview: "確認中",
+    statusApproved: "承認済み",
+    statusRejected: "却下",
+    statusShipped: "出荷済み",
+    statusReceived: "受領済み",
+    statusInProgress: "進行中",
+    statusIcpPending: "ICP保留中",
+    statusIcpSubmitted: "ICP提出済み",
+    statusComplete: "完了",
+  },
+
 };
 
 export default ja;
