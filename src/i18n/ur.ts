@@ -7831,6 +7831,24 @@ const ur: Translations = {
     footerCertifiedBy: "FUZE Atlas کے ذریعہ تصدیق شدہ",
   },
 
+  forgotPassword: {
+    brandSubtitle: "اپنا پاس ورڈ ری سیٹ کریں",
+    cardTitle: "اپنا پاس ورڈ بھول گئے؟",
+    cardBody: "اپنا ای میل پتہ درج کریں اور ہم آپ کو پاس ورڈ ری سیٹ کرنے کا لنک بھیجیں گے۔",
+    emailLabel: "ای میل پتہ",
+    emailPlaceholder: "you@801inc.com",
+    sendBtn: "ری سیٹ لنک بھیجیں",
+    sendingBusy: "بھیجا جا رہا ہے...",
+    rememberPrefix: "اپنا پاس ورڈ یاد آ گیا؟",
+    signInLink: "سائن ان",
+    failedFallback: "درخواست پر کارروائی ناکام رہی",
+    networkError: "نیٹ ورک کی خرابی",
+    checkEmailTitle: "اپنا ای میل چیک کریں",
+    checkEmailBody: "اگر اس ای میل کے ساتھ کوئی اکاؤنٹ موجود ہے، تو آپ کو جلد ہی پاس ورڈ ری سیٹ لنک موصول ہوگا۔",
+    backToSignIn: "سائن ان پر واپس",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default ur;
