@@ -2868,6 +2868,37 @@ const ko: Translations = {
     factoryLabel: "공장:",
   },
 
+  verifySku: {
+    errorTitle: "이 코드를 확인할 수 없습니다",
+    errorBlurb:
+      "확인 데이터베이스에 접근하는 데 문제가 발생했습니다. 잠시 후 다시 시도해 주십시오.",
+    notCertifiedTitle: "FUZE 인증 SKU가 아닙니다",
+    notCertifiedBlurbPrefix: "코드",
+    notCertifiedBlurbSuffix:
+      "는 저희 확인 데이터베이스에 없습니다. 이 코드가 FUZE 행택에서 나온 것이라면 해당 브랜드에 직접 문의해 주십시오.",
+    whatIsFuze: "FUZE란? →",
+    fuzeVerified: "FUZE 인증 완료",
+    pageTitle: "이 원단은 FUZE로 가공되었습니다",
+    pageSubtitle: "항균 텍스타일 가공 — 제3자 검증 완료.",
+    brandLabel: "브랜드",
+    millLabel: "방직 공장",
+    fuzeTierLabel: "FUZE 등급",
+    fuzeNumberLabel: "FUZE 번호",
+    washClaimSuffix: "회 세탁 공인",
+    recentValidation: "최근 랩 검증",
+    testPassed: "통과",
+    testTypeSuffix: "시험 —",
+    validatedByPrefix: "검증 기관:",
+    validatedByGeneric: "제3자 랩에서 검증 완료",
+    validatedOn: "검증일:",
+    reportRefPrefix: "보고서 참조:",
+    certifications: "FUZE 인증",
+    aboutBody:
+      "FUZE는 FUZE Biotech의 독점 항균 텍스타일 가공입니다. 표준 텍스타일 마감 공정 중 섬유와 결합하는 메타머티리얼 화학을 사용합니다 — PFAS 없음, 바인더 없음, 큐어링 오븐 불필요.",
+    learnMore: "FUZE에 대해 더 알아보기 →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default ko;
