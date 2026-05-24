@@ -7931,6 +7931,28 @@ const vi: Translations = {
     mondayReviewBody: "Các lần chạy thử nghiệm và từ chối thương hiệu do AI gắn cờ. Email 22:00 UTC chủ nhật gieo chương trình.",
   },
 
+  brandEngagement: {
+    heading: "Tình trạng thương hiệu",
+    subtitle: "Giám sát các số liệu tương tác và tình trạng cho tất cả thương hiệu",
+    recalculatingBtn: "Đang tính lại...",
+    recalculateBtn: "Tính lại tất cả",
+    allFilter: "Tất cả",
+    loadingText: "Đang tải...",
+    noBrandsText: "Không tìm thấy thương hiệu",
+    scoreBreakdownTitle: "Phân tích điểm",
+    communicationLabel: "Giao tiếp",
+    testingVelocityLabel: "Vận tốc thử nghiệm",
+    pipelineVelocityLabel: "Vận tốc pipeline",
+    paymentScoreLabel: "Điểm thanh toán",
+    rawMetricsTitle: "Số liệu thô",
+    daysSinceContact: "Số ngày kể từ lần liên hệ",
+    testsLast30d: "Thử nghiệm (30 ngày qua)",
+    testsLast90d: "Thử nghiệm (90 ngày qua)",
+    avgInvoicePayDays: "Số ngày trung bình thanh toán hóa đơn",
+    overdueInvoices: "Hóa đơn quá hạn",
+    lastCalculatedLabel: "Tính lần cuối:",
+  },
+
 };
 
 export default vi;
