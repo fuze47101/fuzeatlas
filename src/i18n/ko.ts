@@ -5721,6 +5721,69 @@ const ko: Translations = {
     footerGenerated: "양식 생성됨",
   },
 
+  sampleTrials: {
+    crumbDashboard: "대시보드",
+    crumbHere: "샘플 트라이얼",
+    pageTitle: "샘플 트라이얼 관리",
+    pageSubtitle: "모든 공장 샘플 트라이얼 요청 검토, 승인, 발송 및 추적",
+
+    statTotal: "전체",
+    statNeedsAction: "조치 필요",
+
+    searchPlaceholder: "원단, 공장, 브랜드, 연락처 검색...",
+    filterAllStatuses: "모든 상태",
+    filterAllFactories: "모든 공장",
+
+    errorFailedLoad: "트라이얼 로드 실패",
+    errorUpdate: "업데이트 실패",
+    errorNetwork: "네트워크 오류",
+
+    quickActionPrefix: "빠른 작업 —",
+    trialFallback: "트라이얼",
+    labelStatus: "상태",
+    labelTracking: "추적 번호",
+    placeholderTracking: "FedEx/DHL/UPS 번호",
+    labelAdminNotes: "관리자 노트",
+    placeholderAdminNotes: "내부 노트...",
+    labelRejectReason: "거부 사유",
+    btnSave: "변경사항 저장",
+    btnSaving: "저장 중...",
+    btnCancel: "취소",
+
+    emptyFiltered: "필터와 일치하는 트라이얼이 없습니다",
+    emptyDefault: "아직 샘플 트라이얼이 없습니다",
+
+    colFabric: "원단",
+    colFactory: "공장",
+    colPurpose: "목적",
+    colStatus: "상태",
+    colDetails: "세부 정보",
+    colIcpLab: "ICP 랩",
+    colDate: "날짜",
+    colActions: "작업",
+
+    purposeBrand: "브랜드",
+    purposeSelfDev: "자체 개발",
+    trialLab: "랩",
+    trialProduction: "생산",
+    detailsTierPrefix: "등급:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "담당:",
+    actionAction: "작업",
+    actionView: "보기",
+
+    statusSubmitted: "제출됨",
+    statusUnderReview: "검토 중",
+    statusApproved: "승인됨",
+    statusRejected: "거부됨",
+    statusShipped: "발송됨",
+    statusReceived: "수령됨",
+    statusInProgress: "진행 중",
+    statusIcpPending: "ICP 대기 중",
+    statusIcpSubmitted: "ICP 제출됨",
+    statusComplete: "완료",
+  },
+
 };
 
 export default ko;
