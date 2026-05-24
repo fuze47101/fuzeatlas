@@ -2620,6 +2620,40 @@ const hi: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "Atlas लॉगिन आवश्यक",
+    authBatchPrefix: "बैच",
+    authBlurb:
+      "विवरण — COA, TDS, SDS सहित — केवल Atlas उपयोगकर्ताओं के लिए उपलब्ध हैं।",
+    loginCta: "Atlas में लॉग इन करें →",
+    noAccountQuestion: "खाता नहीं है? संपर्क करें",
+    notFoundTitle: "बैच नहीं मिला",
+    notFoundBlurb: "हम बैच नहीं ढूंढ सके",
+    returnHome: "Atlas पर वापस →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "बैच सत्यापन",
+    qcPassed: "✓ QC पास",
+    qcFailed: "⚠ QC विफल",
+    produced: "उत्पादित",
+    batchDetails: "बैच विवरण",
+    volumeProduced: "उत्पादित मात्रा",
+    bottlesFilled: "भरी हुई बोतलें",
+    concentration: "सांद्रता",
+    productionDate: "उत्पादन तिथि",
+    fuzeMetamaterial: "mg/L FUZE मेटामटीरियल",
+    batchNotes: "बैच नोट्स",
+    documents: "दस्तावेज़",
+    coaTitle: "विश्लेषण प्रमाणपत्र (COA)",
+    coaDescPrefix: "इस बैच का विनिर्देश सत्यापन · अपलोड किया गया",
+    coaPending: "COA प्रतीक्षित",
+    coaPendingBlurb: "इस बैच के लिए विश्लेषण प्रमाणपत्र अभी अपलोड नहीं किया गया।",
+    view: "देखें →",
+    docsEmpty: "TDS / SDS अभी अपलोड नहीं किए गए। एडमिन उन्हें उत्पाद दस्तावेज़ में जोड़ सकते हैं।",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "प्रश्न?",
+    footerReturnAtlas: "Atlas पर वापस",
+  },
+
 };
 
 export default hi;
