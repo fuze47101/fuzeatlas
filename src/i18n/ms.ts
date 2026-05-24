@@ -8059,6 +8059,30 @@ const ms: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "Memuatkan jemputan…",
+    notFoundTitle: "Jemputan tidak dijumpai",
+    notFoundFallback: "Pautan jemputan ini mungkin telah tamat tempoh atau sudah digunakan.",
+    chipLabel: "Jemputan FUZE Atlas",
+    headingMiddle: "menjemput",
+    headingSuffix: "ke rantaian bekalan FUZE mereka",
+    heroSubtitleFallbackPrefix: "menggunakan FUZE Atlas untuk menyelaraskan program tekstil antimikrob merentas rantaian bekalan mereka.",
+    heroSubtitleFallbackSuffix: "Menyertai membenarkan kilang menyerahkan fabrik untuk ujian, membuat pesanan FUZE, dan menjejak keputusan ICP — semua terikat secara langsung kepada jenama.",
+    notePrefix: "Nota daripada",
+    closedPrefix: "Jemputan ini sudah",
+    closedReachOutPrefix: "Hubungi",
+    closedTeamFallbackPrefix: "pasukan",
+    closedTeamFallbackSuffix: "",
+    closedFreshLink: "jika anda memerlukan pautan baharu.",
+    signUpCta: "Daftar",
+    signUpSubPrefix: "Cipta akaun",
+    signUpSubSuffix: "baharu pada Atlas",
+    alreadyInCta: "Kami sudah dalam Atlas",
+    alreadyInSub: "Log masuk dan pautkan kilang sedia ada anda",
+    sentPrefix: "Jemputan dihantar",
+    questionsPrefix: "· Soalan?",
+  },
+
 };
 
 export default ms;
