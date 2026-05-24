@@ -4485,6 +4485,27 @@ const ms: Translations = {
     exportReportTemplate: "Eksport Laporan {product} berbanding FUZE",
   },
 
+  educationClaims: {
+    backLink: "← Kembali ke Asas FUZE",
+    eyebrow: "Apa yang anda boleh tuntut",
+    pageTitle: "Tuntutan jenama yang boleh dipertahankan untuk fabrik dirawat FUZE",
+    pageIntro: "Rujukan untuk pasukan pematuhan, pemasaran jenama, dan teks hangtag. Tiga kategori: tuntutan produk, tuntutan kemampanan, dan tuntutan pensijilan. Setiap baris diberi penilaian",
+    introCiteFreely: "sebut dengan bebas",
+    introWithData: "sebut dengan data khusus tier",
+    introAvoid: "elakkan",
+    introTail: "— dengan sebab dalam bahasa mudah.",
+    productClaimsTitle: "Tuntutan produk / keberkesanan",
+    sustainabilityClaimsTitle: "Tuntutan kemampanan",
+    certClaimsTitle: "Tuntutan pensijilan",
+    badgeCiteFreely: "Sebut bebas",
+    badgeWithData: "Dengan data",
+    badgeAvoid: "Elakkan",
+    fifraTitle: "Nota mengenai FIFRA",
+    fifraBody: "FIFRA (Federal Insecticide, Fungicide, and Rodenticide Act) mentadbir tuntutan antimikrob di Amerika Syarikat. Pengecualian artikel-dirawat membenarkan tuntutan deskriptif seperti \"dirawat antimikrob\" tanpa pendaftaran EPA peringkat produk yang berasingan, tetapi tuntutan patogen khusus (\"membunuh 99.9% E. coli\") memerlukan data ujian yang menyokong yang terikat kepada pendaftaran bahan aktif. Halaman ini adalah panduan, bukan nasihat undang-undang — semak salinan pemasaran yang dicadangkan dengan pasukan pematuhan dalaman anda sebelum ia dihantar.",
+    backToBasics: "Kembali ke Asas FUZE",
+    seeCerts: "Lihat susunan pensijilan",
+  },
+
 };
 
 export default ms;
