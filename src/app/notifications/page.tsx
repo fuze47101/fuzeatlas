@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface Notification {
   id: string;
@@ -37,24 +38,26 @@ const TYPE_COLORS: Record<string, string> = {
   SYSTEM: "bg-slate-50 border-slate-200",
 };
 
-function timeAgo(dateStr: string): string {
-  const now = new Date();
-  const date = new Date(dateStr);
-  const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  if (diff < 60) return "Just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
-  return date.toLocaleDateString();
-}
-
 export default function NotificationsPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const T = t.notificationsPage;
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
+
+  function timeAgo(dateStr: string): string {
+    const now = new Date();
+    const date = new Date(dateStr);
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diff < 60) return T.justNow;
+    if (diff < 3600) return `${Math.floor(diff / 60)}${T.minSuffix}`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}${T.hourSuffix}`;
+    if (diff < 604800) return `${Math.floor(diff / 86400)}${T.daySuffix}`;
+    return date.toLocaleDateString();
+  }
 
   const fetchNotifications = useCallback(async () => {
     if (!user?.id) return;
@@ -117,7 +120,7 @@ export default function NotificationsPage() {
   if (loading) {
     return (
       <div className="p-4 sm:p-6 lg:p-10 flex items-center justify-center min-h-[50vh]">
-        <p className="text-slate-400 text-sm">Loading notifications...</p>
+        <p className="text-slate-400 text-sm">{T.loading}</p>
       </div>
     );
   }
@@ -127,9 +130,9 @@ export default function NotificationsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Notifications</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{T.title}</h1>
           <p className="text-sm text-slate-500 mt-1">
-            {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"} · {notifications.length} total
+            {unreadCount > 0 ? `${unreadCount} ${T.unreadLabel}` : T.allCaughtUp} · {notifications.length} {T.totalLabel}
           </p>
         </div>
         {unreadCount > 0 && (
@@ -137,7 +140,7 @@ export default function NotificationsPage() {
             onClick={handleMarkAllRead}
             className="px-4 py-2 text-sm font-medium text-[#00b4c3] bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors self-start"
           >
-            Mark all as read
+            {T.markAllRead}
           </button>
         )}
       </div>
@@ -151,7 +154,7 @@ export default function NotificationsPage() {
               filter === "all" ? "bg-[#00b4c3] text-white" : "text-slate-600 hover:bg-slate-50"
             }`}
           >
-            All
+            {T.filterAll}
           </button>
           <button
             onClick={() => setFilter("unread")}
@@ -159,7 +162,7 @@ export default function NotificationsPage() {
               filter === "unread" ? "bg-[#00b4c3] text-white" : "text-slate-600 hover:bg-slate-50"
             }`}
           >
-            Unread ({unreadCount})
+            {T.filterUnread} ({unreadCount})
           </button>
         </div>
         {types.length > 1 && (
@@ -168,7 +171,7 @@ export default function NotificationsPage() {
             onChange={(e) => setTypeFilter(e.target.value)}
             className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
           >
-            <option value="ALL">All Types</option>
+            <option value="ALL">{T.allTypes}</option>
             {types.map((t) => (
               <option key={t} value={t}>
                 {TYPE_ICONS[t] || "📌"} {t.replace(/_/g, " ")}
@@ -183,12 +186,12 @@ export default function NotificationsPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
           <div className="text-4xl mb-3">🔔</div>
           <p className="text-slate-500 font-medium">
-            {filter === "unread" ? "No unread notifications" : "No notifications yet"}
+            {filter === "unread" ? T.emptyUnreadTitle : T.emptyAllTitle}
           </p>
           <p className="text-sm text-slate-400 mt-1">
             {filter === "unread"
-              ? "You're all caught up!"
-              : "Notifications will appear here when there's activity on your account."}
+              ? T.emptyUnreadBody
+              : T.emptyAllBody}
           </p>
         </div>
       ) : (
@@ -225,7 +228,7 @@ export default function NotificationsPage() {
                         className="text-xs font-medium text-[#00b4c3] hover:underline"
                         onClick={() => !n.read && handleMarkAsRead([n.id])}
                       >
-                        View details →
+                        {T.viewDetails}
                       </Link>
                     )}
                     {!n.read && (
@@ -233,7 +236,7 @@ export default function NotificationsPage() {
                         onClick={() => handleMarkAsRead([n.id])}
                         className="text-xs text-slate-400 hover:text-slate-600"
                       >
-                        Mark as read
+                        {T.markAsRead}
                       </button>
                     )}
                     <span className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full">
