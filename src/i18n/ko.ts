@@ -7064,6 +7064,26 @@ const ko: Translations = {
     colSource: "출처",
   },
 
+  interLabVariance: {
+    loadingLabel: "랩 간 분산 로드 중",
+    crumbQualityLabs: "품질 및 랩",
+    crumbInterLabVariance: "랩 간 분산",
+    title: "랩 간 분산",
+    subtitleBefore: "동일한 원단을 최근 다음 기간 동안 2개 이상의 랩에서 시험한 경우:",
+    subtitleAfter: "일. 범위 (최대 − 최소) 내림차순 정렬.",
+    colFabric: "원단",
+    colMethod: "방법",
+    colRange: "범위",
+    colMeanSigma: "평균 ± σ",
+    colPerLab: "랩별 결과",
+    emptyTitle: "아직 다중 랩 원단이 없습니다",
+    emptyBodyBefore: "랩 간 분산은 최근 다음 기간 동안 2개 이상의 랩에서 시험된 원단을 비교합니다:",
+    emptyBodyAfter: "일. 동일한 원단이 파트너 랩과 FUZE USA (또는 임의의 2개 랩 쌍)에서 시험되면 여기에 표시됩니다.",
+    biasTitle: "랩별 보정 편향",
+    biasHint: "모든 공유 원단에 걸친 (이 랩 결과 − 그룹 평균)의 평균. 양수 = 동료 랩보다 높게 측정; 음수 = 낮게 측정.",
+    emptyBias: "아직 편향 데이터가 없습니다.",
+  },
+
 };
 
 export default ko;
