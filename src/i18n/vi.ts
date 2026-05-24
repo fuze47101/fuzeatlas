@@ -8039,6 +8039,24 @@ const vi: Translations = {
     websiteLabel: "Trang web",
   },
 
+  importContacts: {
+    title: "Nhập hàng loạt — Liên hệ",
+    subtitle: "Dán hoặc tải lên CSV các liên hệ. Email là khóa tự nhiên — chúng tôi upsert theo email khi có. Các hàng không có email nhưng có URL LinkedIn được nhập là 'thiếu email' để công việc làm giàu Apollo hiện có có thể theo đuổi. Các hàng không có cái nào bị từ chối.",
+    backLabel: "Quản lý khách hàng tiềm năng",
+    firstNameLabel: "Tên",
+    lastNameLabel: "Họ",
+    emailLabel: "Email",
+    emailHint: "bắt buộc nếu không có URL LinkedIn",
+    linkedinLabel: "URL LinkedIn",
+    linkedinHint: "định danh dự phòng khi thiếu email",
+    brandNameLabel: "Tên thương hiệu",
+    brandNameHint: "khớp không phân biệt hoa thường trên Brand.name; không liên kết nếu không tìm thấy",
+    jobTitleLabel: "Chức danh công việc",
+    phoneLabel: "Điện thoại",
+    titleLabel: "Tiêu đề (kính ngữ)",
+    titleHint: 'ví dụ "Ông", "Tiến sĩ"',
+  },
+
 };
 
 export default vi;
