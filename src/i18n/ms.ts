@@ -7966,6 +7966,36 @@ const ms: Translations = {
     nextBtn: "Seterusnya",
   },
 
+  bdSequencesList: {
+    kicker: "BD Wizard",
+    heading: "Urutan",
+    subtitlePrefix: "Outbound corong panjang. Cron memajukan langkah setiap jam. Langkah sedia berhenti pada",
+    subtitleSuffix: "untuk semakan anda — tiada auto-hantar.",
+    openWizardBtn: "Buka BD Wizard →",
+    stepAwaitingSingular: "langkah menunggu semakan anda",
+    stepsAwaitingPlural: "langkah menunggu semakan anda",
+    showAllRepsLabel: "Tunjukkan semua wakil",
+    loadingState: "Memuatkan urutan…",
+    emptyHeadPrefix: "Tiada",
+    emptyHeadSuffix: "urutan",
+    emptyBodyPrefix: "Mulakan dengan menghantar e-mel pertama anda melalui",
+    emptyBodyLink: "BD Wizard",
+    emptyBodySuffix: ". Setiap penghantaran pertama memulakan irama 6-langkah secara automatik.",
+    colBrandContact: "Jenama / Kenalan",
+    colProgress: "Kemajuan",
+    colNext: "Seterusnya",
+    colRep: "Wakil",
+    colStatus: "Status",
+    colActions: "Tindakan",
+    readyChipSuffix: "sedia",
+    reviewSendBtn: "Semak & hantar",
+    openBtn: "Buka",
+    viewBtn: "Lihat",
+    pauseBtn: "Jeda",
+    exitBtn: "Keluar",
+    resumeBtn: "Sambung Semula",
+  },
+
 };
 
 export default ms;
