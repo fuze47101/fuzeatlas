@@ -6058,6 +6058,68 @@ const en = {
     footerCompany: "FUZE Biotech · 1895 West 2100 South · Salt Lake City, UT 84119 USA",
     footerGenerated: "Form generated",
   },
+  sampleTrials: {
+    crumbDashboard: "Dashboard",
+    crumbHere: "Sample Trials",
+    pageTitle: "Sample Trial Management",
+    pageSubtitle: "Review, approve, ship, and track all factory sample trial requests",
+
+    statTotal: "Total",
+    statNeedsAction: "Needs Action",
+
+    searchPlaceholder: "Search fabric, factory, brand, contact...",
+    filterAllStatuses: "All Statuses",
+    filterAllFactories: "All Factories",
+
+    errorFailedLoad: "Failed to load trials",
+    errorUpdate: "Update failed",
+    errorNetwork: "Network error",
+
+    quickActionPrefix: "Quick Action —",
+    trialFallback: "Trial",
+    labelStatus: "Status",
+    labelTracking: "Tracking Number",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "Admin Notes",
+    placeholderAdminNotes: "Internal notes...",
+    labelRejectReason: "Rejection Reason",
+    btnSave: "Save Changes",
+    btnSaving: "Saving...",
+    btnCancel: "Cancel",
+
+    emptyFiltered: "No trials match your filters",
+    emptyDefault: "No sample trials yet",
+
+    colFabric: "Fabric",
+    colFactory: "Factory",
+    colPurpose: "Purpose",
+    colStatus: "Status",
+    colDetails: "Details",
+    colIcpLab: "ICP Lab",
+    colDate: "Date",
+    colActions: "Actions",
+
+    purposeBrand: "Brand",
+    purposeSelfDev: "Self-Dev",
+    trialLab: "Lab",
+    trialProduction: "Production",
+    detailsTierPrefix: "Tier:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "By:",
+    actionAction: "Action",
+    actionView: "View",
+
+    statusSubmitted: "Submitted",
+    statusUnderReview: "Under Review",
+    statusApproved: "Approved",
+    statusRejected: "Rejected",
+    statusShipped: "Shipped",
+    statusReceived: "Received",
+    statusInProgress: "In Progress",
+    statusIcpPending: "ICP Pending",
+    statusIcpSubmitted: "ICP Submitted",
+    statusComplete: "Complete",
+  },
 };
 
 export default en;

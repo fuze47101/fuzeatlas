@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface Trial {
   id: string;
@@ -43,17 +44,17 @@ const STATUS_COLORS: Record<string, string> = {
   COMPLETE: "bg-emerald-100 text-emerald-700",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  SUBMITTED: "Submitted",
-  UNDER_REVIEW: "Under Review",
-  APPROVED: "Approved",
-  REJECTED: "Rejected",
-  SAMPLE_SHIPPED: "Shipped",
-  SAMPLE_RECEIVED: "Received",
-  TRIAL_IN_PROGRESS: "In Progress",
-  ICP_PENDING: "ICP Pending",
-  ICP_SUBMITTED: "ICP Submitted",
-  COMPLETE: "Complete",
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  SUBMITTED: "statusSubmitted",
+  UNDER_REVIEW: "statusUnderReview",
+  APPROVED: "statusApproved",
+  REJECTED: "statusRejected",
+  SAMPLE_SHIPPED: "statusShipped",
+  SAMPLE_RECEIVED: "statusReceived",
+  TRIAL_IN_PROGRESS: "statusInProgress",
+  ICP_PENDING: "statusIcpPending",
+  ICP_SUBMITTED: "statusIcpSubmitted",
+  COMPLETE: "statusComplete",
 };
 
 const ALL_STATUSES = [
@@ -63,6 +64,11 @@ const ALL_STATUSES = [
 ];
 
 export default function AdminSampleTrialsPage() {
+  const { t } = useI18n();
+  const T = t.sampleTrials;
+  const STATUS_LABELS: Record<string, string> = Object.fromEntries(
+    Object.entries(STATUS_LABEL_KEYS).map(([k, v]) => [k, (T as any)[v]]),
+  );
   const { user } = useAuth();
   const router = useRouter();
   const [trials, setTrials] = useState<Trial[]>([]);
@@ -101,7 +107,7 @@ export default function AdminSampleTrialsPage() {
         setError(data.error);
       }
     } catch {
-      setError("Failed to load trials");
+      setError(T.errorFailedLoad);
     } finally {
       setLoading(false);
     }
@@ -149,10 +155,10 @@ export default function AdminSampleTrialsPage() {
         setActionTrialId(null);
         loadTrials();
       } else {
-        setError(data.error || "Update failed");
+        setError(data.error || T.errorUpdate);
       }
     } catch {
-      setError("Network error");
+      setError(T.errorNetwork);
     } finally {
       setSaving(false);
     }
@@ -166,24 +172,24 @@ export default function AdminSampleTrialsPage() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-          <Link href="/dashboard" className="hover:text-[#00b4c3]">Dashboard</Link>
+          <Link href="/dashboard" className="hover:text-[#00b4c3]">{T.crumbDashboard}</Link>
           <span>/</span>
-          <span className="text-slate-800 font-medium">Sample Trials</span>
+          <span className="text-slate-800 font-medium">{T.crumbHere}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">Sample Trial Management</h1>
-        <p className="text-sm text-slate-500 mt-1">Review, approve, ship, and track all factory sample trial requests</p>
+        <h1 className="text-2xl font-black text-slate-900">{T.pageTitle}</h1>
+        <p className="text-sm text-slate-500 mt-1">{T.pageSubtitle}</p>
       </div>
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
         <div className="bg-white border border-slate-200 rounded-xl p-4 text-center">
           <p className="text-2xl font-black text-slate-900">{totalTrials}</p>
-          <p className="text-[10px] text-slate-500 uppercase font-bold">Total</p>
+          <p className="text-[10px] text-slate-500 uppercase font-bold">{T.statTotal}</p>
         </div>
         {needsAttention > 0 && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
             <p className="text-2xl font-black text-amber-700">{needsAttention}</p>
-            <p className="text-[10px] text-amber-600 uppercase font-bold">Needs Action</p>
+            <p className="text-[10px] text-amber-600 uppercase font-bold">{T.statNeedsAction}</p>
           </div>
         )}
         {["APPROVED", "SAMPLE_SHIPPED", "TRIAL_IN_PROGRESS", "COMPLETE"].map(s => (
@@ -206,13 +212,13 @@ export default function AdminSampleTrialsPage() {
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search fabric, factory, brand, contact..."
+            placeholder={T.searchPlaceholder}
             className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
           />
         </div>
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
           className="border border-slate-300 rounded-lg px-3 py-2.5 text-sm bg-white min-w-[180px]">
-          <option value="">All Statuses</option>
+          <option value="">{T.filterAllStatuses}</option>
           {ALL_STATUSES.map(s => (
             <option key={s} value={s}>
               {STATUS_LABELS[s]} {statusCounts[s] ? `(${statusCounts[s]})` : ""}
@@ -221,7 +227,7 @@ export default function AdminSampleTrialsPage() {
         </select>
         <select value={factoryFilter} onChange={(e) => setFactoryFilter(e.target.value)}
           className="border border-slate-300 rounded-lg px-3 py-2.5 text-sm bg-white min-w-[180px]">
-          <option value="">All Factories</option>
+          <option value="">{T.filterAllFactories}</option>
           {factories.map(f => (
             <option key={f.id} value={f.id}>{f.name}{f.country ? ` (${f.country})` : ""}</option>
           ))}
@@ -233,34 +239,34 @@ export default function AdminSampleTrialsPage() {
       {/* Inline Action Panel */}
       {actionTrialId && (
         <div className="bg-slate-50 border border-slate-300 rounded-xl p-5 mb-6">
-          <h3 className="text-sm font-bold text-slate-700 mb-3">Quick Action — {trials.find(t => t.id === actionTrialId)?.fabric?.fuzeNumber ? `FUZE-${trials.find(t => t.id === actionTrialId)?.fabric?.fuzeNumber}` : "Trial"}</h3>
+          <h3 className="text-sm font-bold text-slate-700 mb-3">{T.quickActionPrefix} {trials.find(t => t.id === actionTrialId)?.fabric?.fuzeNumber ? `FUZE-${trials.find(t => t.id === actionTrialId)?.fabric?.fuzeNumber}` : T.trialFallback}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="text-xs font-semibold text-slate-500 mb-1 block">Status</label>
+              <label className="text-xs font-semibold text-slate-500 mb-1 block">{T.labelStatus}</label>
               <select value={actionStatus} onChange={(e) => setActionStatus(e.target.value)}
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
                 {ALL_STATUSES.map(s => (
                   <option key={s} value={s}>{STATUS_LABELS[s]}</option>
                 ))}
-                <option value="REJECTED">Rejected</option>
+                <option value="REJECTED">{T.statusRejected}</option>
               </select>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-500 mb-1 block">Tracking Number</label>
+              <label className="text-xs font-semibold text-slate-500 mb-1 block">{T.labelTracking}</label>
               <input type="text" value={actionTracking} onChange={(e) => setActionTracking(e.target.value)}
-                placeholder="FedEx/DHL/UPS #"
+                placeholder={T.placeholderTracking}
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-500 mb-1 block">Admin Notes</label>
+              <label className="text-xs font-semibold text-slate-500 mb-1 block">{T.labelAdminNotes}</label>
               <input type="text" value={actionNotes} onChange={(e) => setActionNotes(e.target.value)}
-                placeholder="Internal notes..."
+                placeholder={T.placeholderAdminNotes}
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
             </div>
           </div>
           {actionStatus === "REJECTED" && (
             <div className="mb-4">
-              <label className="text-xs font-semibold text-slate-500 mb-1 block">Rejection Reason</label>
+              <label className="text-xs font-semibold text-slate-500 mb-1 block">{T.labelRejectReason}</label>
               <textarea value={actionRejectReason} onChange={(e) => setActionRejectReason(e.target.value)}
                 rows={2} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
             </div>
@@ -268,11 +274,11 @@ export default function AdminSampleTrialsPage() {
           <div className="flex gap-2">
             <button onClick={saveAction} disabled={saving}
               className="px-5 py-2 bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white rounded-lg font-semibold text-sm hover:shadow-lg disabled:opacity-50">
-              {saving ? "Saving..." : "Save Changes"}
+              {saving ? T.btnSaving : T.btnSave}
             </button>
             <button onClick={() => setActionTrialId(null)}
               className="px-5 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm hover:bg-slate-50">
-              Cancel
+              {T.btnCancel}
             </button>
           </div>
         </div>
@@ -286,7 +292,7 @@ export default function AdminSampleTrialsPage() {
       ) : trials.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
           <p className="text-slate-500">
-            {statusFilter || factoryFilter || search ? "No trials match your filters" : "No sample trials yet"}
+            {statusFilter || factoryFilter || search ? T.emptyFiltered : T.emptyDefault}
           </p>
         </div>
       ) : (
@@ -295,14 +301,14 @@ export default function AdminSampleTrialsPage() {
             <table className="w-full text-sm">
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Fabric</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Factory</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden md:table-cell">Purpose</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Status</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden lg:table-cell">Details</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden xl:table-cell">ICP Lab</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Date</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 w-28">Actions</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700">{T.colFabric}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700">{T.colFactory}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden md:table-cell">{T.colPurpose}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700">{T.colStatus}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden lg:table-cell">{T.colDetails}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 hidden xl:table-cell">{T.colIcpLab}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700">{T.colDate}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 w-28">{T.colActions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -322,9 +328,9 @@ export default function AdminSampleTrialsPage() {
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell">
                       <div className="text-slate-700">
-                        {trial.purposeType === "BRAND_PARTNERSHIP" ? trial.brand?.name || "Brand" : "Self-Dev"}
+                        {trial.purposeType === "BRAND_PARTNERSHIP" ? trial.brand?.name || T.purposeBrand : T.purposeSelfDev}
                       </div>
-                      <div className="text-xs text-slate-400">{trial.trialType === "LAB_TRIAL" ? "Lab" : "Production"} · {trial.totalMeters} {trial.totalUnit}</div>
+                      <div className="text-xs text-slate-400">{trial.trialType === "LAB_TRIAL" ? T.trialLab : T.trialProduction} · {trial.totalMeters} {trial.totalUnit}</div>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${STATUS_COLORS[trial.status] || "bg-slate-100 text-slate-700"}`}>
@@ -336,11 +342,11 @@ export default function AdminSampleTrialsPage() {
                     </td>
                     <td className="px-4 py-3 hidden lg:table-cell">
                       <div className="text-xs text-slate-600 space-y-0.5">
-                        <div>Tier: <span className="font-medium">{trial.targetFuzeTier || "—"}</span> · {trial.sampleVolumeLiters || "—"}L</div>
+                        <div>{T.detailsTierPrefix} <span className="font-medium">{trial.targetFuzeTier || "—"}</span> · {trial.sampleVolumeLiters || "—"}L</div>
                         {trial.icpAgValue != null && (
-                          <div className="text-emerald-700 font-medium">ICP Ag: {trial.icpAgValue} ppm</div>
+                          <div className="text-emerald-700 font-medium">{T.detailsIcpAgPrefix} {trial.icpAgValue} ppm</div>
                         )}
-                        {trial.requestedBy && <div className="text-slate-400">By: {trial.requestedBy.name}</div>}
+                        {trial.requestedBy && <div className="text-slate-400">{T.detailsByPrefix} {trial.requestedBy.name}</div>}
                       </div>
                     </td>
                     <td className="px-4 py-3 hidden xl:table-cell text-xs text-slate-600">
@@ -358,11 +364,11 @@ export default function AdminSampleTrialsPage() {
                       <div className="flex gap-1.5">
                         <button onClick={() => openAction(trial)}
                           className="px-2.5 py-1.5 bg-[#00b4c3]/10 hover:bg-[#00b4c3]/20 text-[#009ba8] rounded-lg text-xs font-medium transition-colors">
-                          Action
+                          {T.actionAction}
                         </button>
                         <Link href={`/factory-portal/sample-trial/${trial.id}`} target="_blank"
                           className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors">
-                          View
+                          {T.actionView}
                         </Link>
                       </div>
                     </td>
