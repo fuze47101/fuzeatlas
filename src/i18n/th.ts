@@ -5442,6 +5442,69 @@ const th: Translations = {
     footerGenerated: "สร้างแบบฟอร์ม",
   },
 
+  sampleTrials: {
+    crumbDashboard: "แดชบอร์ด",
+    crumbHere: "การทดลองตัวอย่าง",
+    pageTitle: "การจัดการการทดลองตัวอย่าง",
+    pageSubtitle: "ตรวจสอบ อนุมัติ จัดส่ง และติดตามคำขอทดลองตัวอย่างของโรงงานทั้งหมด",
+
+    statTotal: "ทั้งหมด",
+    statNeedsAction: "ต้องดำเนินการ",
+
+    searchPlaceholder: "ค้นหาผ้า โรงงาน แบรนด์ ผู้ติดต่อ...",
+    filterAllStatuses: "ทุกสถานะ",
+    filterAllFactories: "ทุกโรงงาน",
+
+    errorFailedLoad: "ไม่สามารถโหลดการทดลองได้",
+    errorUpdate: "การอัปเดตล้มเหลว",
+    errorNetwork: "ข้อผิดพลาดเครือข่าย",
+
+    quickActionPrefix: "การกระทำด่วน —",
+    trialFallback: "การทดลอง",
+    labelStatus: "สถานะ",
+    labelTracking: "หมายเลขติดตาม",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "หมายเหตุผู้ดูแล",
+    placeholderAdminNotes: "หมายเหตุภายใน...",
+    labelRejectReason: "เหตุผลการปฏิเสธ",
+    btnSave: "บันทึกการเปลี่ยนแปลง",
+    btnSaving: "กำลังบันทึก...",
+    btnCancel: "ยกเลิก",
+
+    emptyFiltered: "ไม่มีการทดลองที่ตรงกับตัวกรอง",
+    emptyDefault: "ยังไม่มีการทดลองตัวอย่าง",
+
+    colFabric: "ผ้า",
+    colFactory: "โรงงาน",
+    colPurpose: "วัตถุประสงค์",
+    colStatus: "สถานะ",
+    colDetails: "รายละเอียด",
+    colIcpLab: "ห้องปฏิบัติการ ICP",
+    colDate: "วันที่",
+    colActions: "การกระทำ",
+
+    purposeBrand: "แบรนด์",
+    purposeSelfDev: "Self-Dev",
+    trialLab: "ห้องปฏิบัติการ",
+    trialProduction: "การผลิต",
+    detailsTierPrefix: "ระดับ:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "โดย:",
+    actionAction: "ดำเนินการ",
+    actionView: "ดู",
+
+    statusSubmitted: "ยื่นแล้ว",
+    statusUnderReview: "อยู่ระหว่างตรวจสอบ",
+    statusApproved: "อนุมัติแล้ว",
+    statusRejected: "ปฏิเสธ",
+    statusShipped: "จัดส่งแล้ว",
+    statusReceived: "ได้รับแล้ว",
+    statusInProgress: "กำลังดำเนินการ",
+    statusIcpPending: "ICP รอ",
+    statusIcpSubmitted: "ICP ยื่นแล้ว",
+    statusComplete: "เสร็จสิ้น",
+  },
+
 };
 
 export default th;
