@@ -7391,6 +7391,35 @@ const it: Translations = {
     errGeneric: "Cambio password fallito",
   },
 
+  claimsLandingPage: {
+    heroTitle: "Dichiarazioni, certificazioni e metodologia",
+    heroSubtitle: "Come funziona FUZE, per cosa è certificato e perché lo testiamo nel modo in cui lo facciamo.",
+    techTitle: "Tecnologia FUZE",
+    techBody1: "FUZE è un trattamento antimicrobico tessile proprietario costruito attorno al metamateriale FUZE — prodotto tramite ablazione laser liquida da elettronica riciclata nella nostra struttura di Salt Lake City. Il trattamento si lega permanentemente alle fibre durante la finitura tessile standard (applicazione exhaust, pad-dry-cure o spray) senza cambiare la mano, il colore, il drappeggio o la traspirabilità del tessuto.",
+    techBody2: "FUZE è non-leaching by design. La riduzione batterica avviene attraverso il contatto fisico diretto tra le cellule batteriche e il metamateriale FUZE legato sulla superficie della fibra — non c'è chimica rilasciata nell'acqua di lavaggio, niente PFAS, niente leganti, niente chimica di indurimento. Questa posizione colloca FUZE dal lato giusto di ogni venta normativa (indagini PFAS del Texas AG, California SB-707).",
+    techBody3: "Tier di trattamento: F1 Full Spectrum (1,0 mg/kg, 100 lavaggi validati) · F2 Advanced (0,75 mg/kg, 75 lavaggi) · F3 Core (0,5 mg/kg, 50 lavaggi) · F4 Foundation (0,25 mg/kg, 25 lavaggi). I conteggi dei lavaggi sono documentati tramite test AATCC 100 + ISO 20743 di laboratori indipendenti, pubblicati su richiesta.",
+    certsTitle: "Certificazioni",
+    certEpaTitle: "Registrato EPA (federale)",
+    certEpaBody: "La chimica FUZE è registrata presso l'U.S. Environmental Protection Agency come pesticida antimicrobico.",
+    certCaEpaTitle: "Approvato California EPA (Q1 2026)",
+    certCaEpaBody: "Approvato per casi d'uso activewear, tessili baby/bambini e sanitari secondo il regime più rigoroso della California.",
+    certOekoTitle: "OEKO-TEX Standard 100 Class I",
+    certOekoBody: "Certificato sicuro per il contatto diretto con la pelle — incluso abbigliamento per neonati e intimo.",
+    certBluesignTitle: "bluesign® approved",
+    certBluesignBody: "Chimica verificata sicura per lavoratori, consumatori e ambiente secondo i criteri bluesign.",
+    certPfasTitle: "Senza PFAS",
+    certPfasBody: "Zero sostanze per- e polifluoroalchiliche in qualsiasi parte della formulazione. Senza leganti, senza ausiliari di indurimento.",
+    certStandardsTitle: "Standard validati",
+    certStandardsBody: "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — report di terze parti disponibili su richiesta.",
+    standardsTitle: "Standard di test",
+    standardsBody: "Le prestazioni antimicrobiche per i tessili non sono un singolo numero — dipendono fortemente da quale standard hai eseguito il test, e se quello standard si adatta alla chimica. Ecco come FUZE si mappa sui metodi.",
+    jabTitle: "Perché guidiamo con ASTM E2149",
+    jabBody: "Testiamo su ASTM E2149 perché è il test progettato per antimicrobici non-leaching. Le chimiche concorrenti che si affidano ad AATCC 100 lo fanno perché la geometria a strati impilati di AATCC 100 aiuta gli ioni leaching a saturare lo spazio inter-strato — il test favorisce il leaching per costruzione. FUZE non rilascia, by design. Incontraci sul test giusto.",
+    jabFootnote: "(Attribuzione concorrenti: l'avvertenza sui test a strati si applica ai finitori a base ionica, cloruro e quat — non a FUZE.)",
+    documentsTitle: "Documenti",
+    pressKitLink: "Press kit",
+  },
+
 };
 
 export default it;
