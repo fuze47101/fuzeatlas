@@ -7535,6 +7535,21 @@ const ko: Translations = {
     errNetwork: "네트워크 오류",
   },
 
+  verifyEmail: {
+    verifyingTitle: "이메일 확인 중...",
+    successTitle: "이메일 확인됨",
+    welcomePrefix: "환영합니다",
+    successBody: "이메일이 확인되었습니다. 로그인으로 리디렉션 중...",
+    failedTitle: "확인 실패",
+    resendVerificationBtn: "확인 이메일 재전송",
+    checkEmailTitle: "이메일을 확인하십시오",
+    checkEmailBody: "확인 링크가 이메일 주소로 전송되었습니다. 계정을 확인하려면 링크를 클릭하십시오.",
+    resendEmailBtn: "이메일 재전송",
+    sendingBtn: "전송 중...",
+    errVerifyFailed: "이메일 확인 실패",
+    errSendFailed: "확인 이메일 전송 실패",
+  },
+
 };
 
 export default ko;
