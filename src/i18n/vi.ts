@@ -4925,6 +4925,23 @@ const vi: Translations = {
     nameRequiredError: "Tên là bắt buộc",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← Quay lại máy tính",
+    printButton: "🖨 In / Lưu thành PDF",
+    eyebrow: "FUZE Biotech · SOP Phòng lab",
+    pageTitle: "Quy trình thử nghiệm bench",
+    pageSubtitle: "Máy tính công thức FUZE — Tỷ lệ pickup & Pha loãng Pad-Dry-Cure",
+    docLabel: "Tài liệu: SOP-FUZE-LAB-001",
+    revLabel: "Bản sửa đổi: 1.0 ·",
+    purposeHeader: "Mục đích",
+    equipmentHeader: "Thiết bị",
+    chemistryRefHeader: "Tham chiếu hóa học FUZE",
+    criticalRulesHeader: "⚠ Quy tắc giao thức quan trọng",
+    procedureHeader: "Quy trình",
+    formulasHeader: "Công thức (đối chiếu QC)",
+    sanityRangesHeader: "Khoảng kiểm tra hợp lý",
+  },
+
 };
 
 export default vi;
