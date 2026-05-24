@@ -7205,6 +7205,29 @@ const km: Translations = {
     bookAnotherBtn: "Book Another Meeting",
   },
 
+  adminAuditLog: {
+    adminCrumb: "នាយក",
+    crumb: "កំណត់ហេតុសវនកម្ម",
+    heading: "កំណត់ហេតុសវនកម្ម",
+    subtitle: "Full audit trail across every entity. តម្រង by action, entity, or date. 90-day retention.",
+    errorContext: "Load audit log",
+    couldntLoadPrefix: "Couldn't load audit log",
+    networkError: "Network error while loading audit log.",
+    actionLabel: "Action",
+    allActionsOption: "ទាំងអស់ actions",
+    entityLabel: "Entity",
+    allEntitiesOption: "ទាំងអស់ entities",
+    sinceLabel: "Since",
+    resetBtn: "Reset",
+    rowsSuffix: "rows",
+    loadingState: "កំពុងផ្ទុក audit log…",
+    emptyState: "ទេ audit rows match these filters.",
+    byPrefix: "by",
+    systemActor: "System",
+    fieldChangedSingular: "field changed",
+    fieldChangedPlural: "fields changed",
+  },
+
 };
 
 export default km;
