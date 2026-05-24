@@ -8232,6 +8232,19 @@ const vi: Translations = {
     questionsPrefix: "· Câu hỏi?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "Playbook",
+    heading: "Playbook BD",
+    subtitle: "Hướng dẫn tiếp cận được gắn thẻ theo danh mục. Yêu thích những cái bạn dùng; các thương hiệu hiển thị playbook được đề xuất dựa trên Brand.textileCategory.",
+    failedFallback: "Thất bại",
+    emptyBody: "Chưa có playbook nào cho danh mục này.",
+    emptySeedHint: "Kích hoạt",
+    emptySeedHintSuffix: "qua fzcron để thả vào ba playbook khởi đầu.",
+    removeFavoriteTitle: "Xóa yêu thích",
+    addFavoriteTitle: "Thêm yêu thích",
+  },
+
 };
 
 export default vi;
