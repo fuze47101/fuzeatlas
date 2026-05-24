@@ -7616,6 +7616,31 @@ const zhCN: Translations = {
     claimsLink: "声明",
   },
 
+  changePassword: {
+    titleDefault: "修改密码",
+    titleForced: "设置您的新密码",
+    forcedBanner: "您当前使用的是临时密码。请创建一个安全密码以继续使用。",
+    currentPasswordLabel: "当前密码",
+    newPasswordLabel: "新密码",
+    newPasswordPlaceholder: "至少 8 个字符，包含 1 个大写字母和 1 个数字",
+    confirmPasswordLabel: "确认新密码",
+    reqMinChars: "至少 8 个字符",
+    reqUppercase: "1 个大写字母",
+    reqNumber: "1 个数字",
+    reqMatch: "两次密码一致",
+    updateBtn: "更新密码",
+    setAndContinueBtn: "设置密码并继续",
+    updatingBtn: "正在更新…",
+    cancelBtn: "取消",
+    passwordUpdatedTitle: "密码已更新",
+    redirecting: "正在跳转…",
+    errPasswordsDoNotMatch: "两次输入的密码不一致",
+    errMinLength: "密码至少 8 个字符",
+    errNeedUppercase: "密码至少需要 1 个大写字母",
+    errNeedNumber: "密码至少需要 1 个数字",
+    errGeneric: "密码修改失败",
+  },
+
 };
 
 export default zhCN;
