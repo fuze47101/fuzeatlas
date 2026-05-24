@@ -7420,6 +7420,19 @@ const it: Translations = {
     pressKitLink: "Press kit",
   },
 
+  educationCompliance: {
+    backLink: "← Torna a Basi FUZE",
+    kicker: "Conformità & Certificazioni",
+    heroTitle: "Ogni stack di certificazioni che un marchio richiede",
+    heroBody: "Uno screenshot per il tuo questionario vendor. EPA federale + California, OEKO-TEX Standard 100 Class I, bluesign® approved, senza PFAS, senza formaldeide, allineato ZDHC. Dati di test antibatterici / antivirali / antifungini sui quattro tier — report disponibili su richiesta.",
+    activeBadge: "Attivo ✓",
+    docCopiesTitle: "Servono copie effettive dei documenti?",
+    docCopiesBody: "Il Document Center contiene le copie PDF live di ogni certificazione, SDS, TDS e COA. I team di conformità possono scaricarle direttamente per i questionari vendor.",
+    docCenterCta: "Apri Document Center →",
+    backBasicsBtn: "Torna a Basi FUZE",
+    whatYouCanClaimBtn: "Cosa puoi dichiarare →",
+  },
+
 };
 
 export default it;
