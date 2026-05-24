@@ -4806,6 +4806,81 @@ const km: Translations = {
     docTypeOther: "ផ្សេងទៀត",
   },
 
+  consumptionAdmin: {
+    loading: "កំពុងផ្ទុក consumption data...",
+    pageTitle: "Consumption & Reorder",
+    pageSubtitle: "Track factory FUZE usage, projected run-out dates, and automated reorder triggers",
+
+    btnNewOrder: "+ ថ្មី ការបញ្ជាទិញ",
+    btnLogUsage: "+ Log Usage",
+
+    kpiActiveFactories: "សកម្ម រោងចក្រ",
+    kpiOfTotal: "of {n} total",
+    kpiTotalOrdered: "សរុប ការបញ្ជាទិញed",
+    kpiPending: "{n} pending",
+    kpiTotalConsumed: "សរុប Consumed",
+    kpiAcrossAll: "across all factories",
+    kpiReorderAlerts: "Reorder Alerts",
+    kpiAlertsSplit: "{c} critical, {w} warning",
+
+    annualDemandLabel: "Annual Projected Demand",
+    annualDemandUnit: "liters",
+    annualDemandBottles: "~{n} bottles",
+    annualDemandRevenue: "~${n} revenue",
+
+    sectionFactoryInventory: "រោងចក្រ Inventory ស្ថានភាព",
+    emptyTitle: "ទេ FUZE-enabled factories yet.",
+    emptySub: "រោងចក្រ with fuzeEnabled = true will appear here.",
+
+    cellRemaining: "Remaining",
+    cellBurn: "Burn/day",
+    cellRunOut: "Run-out",
+    daysSuffix: "d",
+    daysWord: "days",
+    fabricsSuffix: "fabrics",
+    fabricSuffix: "fabric",
+    activeOrdersSuffix: "active orders",
+    activeOrderSuffix: "active order",
+
+    colFactory: "រោងចក្រ",
+    colCountry: "Country",
+    colOrdered: "ការបញ្ជាទិញed",
+    colConsumed: "Consumed",
+    colRemaining: "Remaining",
+    colBurnDay: "Burn/Day",
+    colRunOut: "Run-Out",
+    colStatus: "ស្ថានភាព",
+
+    modalOrderTitle: "ថ្មី FUZE ការបញ្ជាទិញ",
+    modalUsageTitle: "Log FUZE Usage",
+    fieldFactory: "រោងចក្រ",
+    placeholderFactory: "Select factory...",
+    fieldVolumeL: "បរិមាណ (liters)",
+    fieldTier: "កម្រិត",
+    fieldNotes: "កំណត់ត្រា",
+    fieldLitersUsed: "Liters Used",
+    fieldMetersProcessed: "Meters Processed",
+    placeholderOptional: "ស្រេចចិត្ត",
+    fieldMethod: "Method",
+    placeholderSelect: "Select...",
+    methodExhaust: "Exhaust (Dyebath)",
+    methodPad: "Pad-Dry-Cure",
+    methodSpray: "Spray",
+
+    summaryBottles: "Bottles (19L each):",
+    summaryEstTotal: "Estimated total:",
+
+    btnCancel: "បោះបង់",
+    btnCreating: "Creating...",
+    btnCreateOrder: "Create ការបញ្ជាទិញ",
+    btnLogging: "Logging...",
+    btnLogUsageSubmit: "Log Usage",
+
+    errorCreateOrder: "បរាជ័យ to create order",
+    errorLogUsage: "បរាជ័យ to log consumption",
+    errorNetwork: "Network error",
+  },
+
 };
 
 export default km;
