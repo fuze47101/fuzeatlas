@@ -7594,6 +7594,37 @@ const ur: Translations = {
     lastCalculatedLabel: "آخری حساب لگایا گیا:",
   },
 
+  fabricReportSend: {
+    backLink: "← رپورٹ پر واپس",
+    heading: "صارف کو رپورٹ ای میل کریں",
+    subtitlePrefix: "اس کے لیے FUZE اطلاق و توثیق رپورٹ بھیج رہے ہیں",
+    fabricNotFound: "کپڑا نہیں ملا۔",
+    recipientRequiredError: "وصول کنندہ کی ای میل درکار ہے۔",
+    sendFailedError: "بھیجنا ناکام ہوا",
+    sentSuccessPrefix: "✓ رپورٹ بھیج دی گئی",
+    directUrlLabel: "براہ راست ڈاؤن لوڈ URL:",
+    sentSuccessBody: "صارف FUZE Atlas میں سائن ان کرنے کے بعد میری رپورٹس کے تحت بھی اس تک رسائی حاصل کر سکتا ہے۔",
+    recipientEmailLabel: "وصول کنندہ کی ای میل",
+    recipientNameLabel: "وصول کنندہ کا نام",
+    optionalSuffix: "(اختیاری)",
+    personalNoteLabel: "ذاتی نوٹ",
+    personalNoteHint: "(اختیاری، رپورٹ کارڈ کے اوپر دکھایا جائے گا)",
+    ccLabel: "CC",
+    ccHint: "(اختیاری، کاما سے الگ کیا گیا)",
+    ttlLabel: "براہ راست لنک کی میعاد",
+    ttl30Days: "30 دن",
+    ttl90Days: "90 دن (طے شدہ)",
+    ttl180Days: "180 دن",
+    ttl1Year: "1 سال",
+    sendingBtn: "بھیجا جا رہا ہے...",
+    sendBtn: "رپورٹ بھیجیں",
+    previouslySentTitle: "پہلے بھیجی گئی",
+    sentPrefix: "بھیجا گیا",
+    viewedPrefix: "دیکھا گیا",
+    notOpenedYet: "ابھی نہیں کھولا گیا",
+    openSameLink: "وہی لنک کھولیں →",
+  },
+
 };
 
 export default ur;
