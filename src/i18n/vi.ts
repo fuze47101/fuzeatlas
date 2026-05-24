@@ -7173,6 +7173,26 @@ const vi: Translations = {
     colSource: "Nguồn",
   },
 
+  interLabVariance: {
+    loadingLabel: "Đang tải phương sai liên phòng lab",
+    crumbQualityLabs: "Chất lượng & Phòng lab",
+    crumbInterLabVariance: "Phương sai liên phòng lab",
+    title: "Phương sai liên phòng lab",
+    subtitleBefore: "Nơi cùng một vải được thử nghiệm bởi ≥2 phòng lab trong",
+    subtitleAfter: "ngày gần nhất. Sắp xếp theo khoảng (tối đa − tối thiểu) giảm dần.",
+    colFabric: "Vải",
+    colMethod: "Phương pháp",
+    colRange: "Khoảng",
+    colMeanSigma: "Trung bình ± σ",
+    colPerLab: "Kết quả theo phòng lab",
+    emptyTitle: "Chưa có vải đa phòng lab nào",
+    emptyBodyBefore: "Phương sai liên phòng lab so sánh các vải được thử nghiệm bởi ≥2 phòng lab trong",
+    emptyBodyAfter: "ngày gần nhất. Khi bạn có cùng một vải được thử nghiệm tại phòng lab đối tác VÀ tại FUZE USA (hoặc bất kỳ cặp 2 phòng lab nào), nó sẽ hiển thị ở đây.",
+    biasTitle: "Sai lệch hiệu chuẩn theo phòng lab",
+    biasHint: "Trung bình của (kết quả của phòng lab này − trung bình nhóm) trên mọi vải được chia sẻ. Dương = chạy cao hơn các phòng lab đồng nghiệp; âm = chạy thấp hơn.",
+    emptyBias: "Chưa có dữ liệu sai lệch.",
+  },
+
 };
 
 export default vi;
