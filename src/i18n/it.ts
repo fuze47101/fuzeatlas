@@ -7208,6 +7208,28 @@ const it: Translations = {
     errNetwork: "Errore di rete",
   },
 
+  notificationsPage: {
+    loading: "Caricamento notifiche...",
+    title: "Notifiche",
+    unreadLabel: "non lette",
+    allCaughtUp: "Tutto a posto",
+    totalLabel: "totale",
+    markAllRead: "Contrassegna tutte come lette",
+    filterAll: "Tutte",
+    filterUnread: "Non lette",
+    allTypes: "Tutti i tipi",
+    emptyUnreadTitle: "Nessuna notifica non letta",
+    emptyAllTitle: "Nessuna notifica ancora",
+    emptyUnreadBody: "Sei in pari!",
+    emptyAllBody: "Le notifiche appariranno qui quando ci sarà attività sul tuo account.",
+    viewDetails: "Vedi dettagli →",
+    markAsRead: "Contrassegna come letta",
+    justNow: "Adesso",
+    minSuffix: "m fa",
+    hourSuffix: "h fa",
+    daySuffix: "g fa",
+  },
+
 };
 
 export default it;
