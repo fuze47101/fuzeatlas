@@ -5893,6 +5893,55 @@ const vi: Translations = {
     statusComplete: "Hoàn thành",
   },
 
+  brandFabricsAdmin: {
+    loading: "Đang tải danh mục vải…",
+    errorTitle: "Không tải được danh mục vải",
+    errorUnknown: "Lỗi không xác định",
+    errorFailedLoad: "Không tải được",
+    errorSave: "Lưu thất bại",
+    btnTryAgain: "Thử lại",
+
+    crumbPartners: "Đối tác thương hiệu",
+    crumbHere: "Danh mục vải",
+    titleSuffix: "— Danh mục vải",
+    subtitle: "Tất cả các loại vải trên tất cả nhà máy cho thương hiệu này. {shown} trên {total} vải được hiển thị.",
+    btnExportCsv: "⬇ Xuất CSV",
+
+    searchPlaceholder: "Tìm số vải, mã khách hàng, thành phần…",
+    filterAllMills: "Tất cả nhà máy",
+    filterAllTypes: "Tất cả loại",
+    typeDevelopment: "Phát triển",
+    typeActualBulk: "Thực tế (Bulk)",
+    typeForecast: "Dự báo",
+    typeRd: "R&D",
+    filterAllStatuses: "Tất cả trạng thái",
+
+    emptyFabric: "🧵",
+    emptyTitle: "Không có vải nào khớp bộ lọc.",
+    emptySub: "Điều chỉnh bộ lọc ở trên hoặc xóa tìm kiếm để xem toàn bộ danh mục.",
+    fabricSingular: "vải",
+    fabricPlural: "vải",
+    openFactory: "Mở nhà máy →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "Mill Fabric #",
+    colType: "Loại",
+    colContent: "Thành phần",
+    colGsm: "GSM",
+    colCustomerCode: "Mã khách hàng",
+    colTrial: "Thử nghiệm",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "Giá trị ICP",
+    colTestDate: "Ngày thử nghiệm",
+    colStatus: "Trạng thái",
+
+    unassigned: "chưa gán",
+    typeBulkProduction: "Sản xuất bulk",
+    notSet: "— Chưa đặt —",
+    titleOpenFabric: "Mở chi tiết vải",
+  },
+
 };
 
 export default vi;
