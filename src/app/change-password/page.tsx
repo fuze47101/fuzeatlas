@@ -3,10 +3,13 @@
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useI18n } from "@/i18n";
 
 export default function ChangePasswordPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
+  const T = t.changePassword;
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -45,22 +48,22 @@ export default function ChangePasswordPage() {
     setError("");
 
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(T.errPasswordsDoNotMatch);
       return;
     }
 
     if (newPassword.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError(T.errMinLength);
       return;
     }
 
     if (!/[A-Z]/.test(newPassword)) {
-      setError("Password must contain at least one uppercase letter");
+      setError(T.errNeedUppercase);
       return;
     }
 
     if (!/[0-9]/.test(newPassword)) {
-      setError("Password must contain at least one number");
+      setError(T.errNeedNumber);
       return;
     }
 
@@ -81,10 +84,10 @@ export default function ChangePasswordPage() {
           router.push(getDefaultRoute(user?.role));
         }, 2000);
       } else {
-        setError(data.error || "Failed to change password");
+        setError(data.error || T.errGeneric);
       }
     } catch {
-      setError("Failed to change password");
+      setError(T.errGeneric);
     } finally {
       setLoading(false);
     }
@@ -99,8 +102,8 @@ export default function ChangePasswordPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-slate-900 mb-2">Password Updated</h2>
-          <p className="text-slate-500">Redirecting you now...</p>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">{T.passwordUpdatedTitle}</h2>
+          <p className="text-slate-500">{T.redirecting}</p>
         </div>
       </div>
     );
@@ -117,11 +120,11 @@ export default function ChangePasswordPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-black text-slate-900">
-            {isForced ? "Set Your New Password" : "Change Password"}
+            {isForced ? T.titleForced : T.titleDefault}
           </h1>
           {isForced && (
             <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-              You were assigned a temporary password. Please create a secure password to continue.
+              {T.forcedBanner}
             </div>
           )}
         </div>
@@ -130,7 +133,7 @@ export default function ChangePasswordPage() {
           {/* Current password (only if not forced) */}
           {!isForced && (
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Current Password</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">{T.currentPasswordLabel}</label>
               <input
                 type="password"
                 value={currentPassword}
@@ -142,7 +145,7 @@ export default function ChangePasswordPage() {
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1">New Password</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">{T.newPasswordLabel}</label>
             <input
               type="password"
               value={newPassword}
@@ -150,12 +153,12 @@ export default function ChangePasswordPage() {
               required
               minLength={8}
               className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-              placeholder="Min 8 chars, 1 uppercase, 1 number"
+              placeholder={T.newPasswordPlaceholder}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1">Confirm New Password</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">{T.confirmPasswordLabel}</label>
             <input
               type="password"
               value={confirmPassword}
@@ -169,22 +172,22 @@ export default function ChangePasswordPage() {
           <div className="text-xs text-slate-500 space-y-1">
             <div className="flex items-center gap-2">
               <span className={newPassword.length >= 8 ? "text-emerald-600" : ""}>
-                {newPassword.length >= 8 ? "✓" : "○"} At least 8 characters
+                {newPassword.length >= 8 ? "✓" : "○"} {T.reqMinChars}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className={/[A-Z]/.test(newPassword) ? "text-emerald-600" : ""}>
-                {/[A-Z]/.test(newPassword) ? "✓" : "○"} One uppercase letter
+                {/[A-Z]/.test(newPassword) ? "✓" : "○"} {T.reqUppercase}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className={/[0-9]/.test(newPassword) ? "text-emerald-600" : ""}>
-                {/[0-9]/.test(newPassword) ? "✓" : "○"} One number
+                {/[0-9]/.test(newPassword) ? "✓" : "○"} {T.reqNumber}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className={newPassword && newPassword === confirmPassword ? "text-emerald-600" : ""}>
-                {newPassword && newPassword === confirmPassword ? "✓" : "○"} Passwords match
+                {newPassword && newPassword === confirmPassword ? "✓" : "○"} {T.reqMatch}
               </span>
             </div>
           </div>
@@ -198,7 +201,7 @@ export default function ChangePasswordPage() {
             disabled={loading}
             className="w-full py-3 bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white rounded-lg font-bold text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all disabled:opacity-50"
           >
-            {loading ? "Updating..." : isForced ? "Set Password & Continue" : "Update Password"}
+            {loading ? T.updatingBtn : isForced ? T.setAndContinueBtn : T.updateBtn}
           </button>
 
           {!isForced && (
@@ -207,7 +210,7 @@ export default function ChangePasswordPage() {
               onClick={() => router.back()}
               className="w-full py-2 text-slate-500 text-sm hover:text-slate-700"
             >
-              Cancel
+              {T.cancelBtn}
             </button>
           )}
         </form>
