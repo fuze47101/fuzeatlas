@@ -7189,6 +7189,29 @@ const tr: Translations = {
     printedPrefix: "Yazdırıldı",
   },
 
+  pressKitAdmin: {
+    title: "Basın kiti",
+    subtitle: "Genel /press sayfasında neyin görüneceğini yönetin. Aktifliği kapatmak bir satırı silmeden gizler.",
+    addItemTitle: "Öğe ekle",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "başlık",
+    addItemBtn: "Öğe ekle",
+    savingBtn: "Kaydediliyor…",
+    allFilter: "tümü",
+    colType: "Tip",
+    colCaption: "Başlık",
+    colUrl: "URL",
+    colReleased: "Yayımlandı",
+    colActive: "Aktif",
+    activeLabel: "Aktif",
+    hiddenLabel: "Gizli",
+    deleteBtn: "Sil",
+    deleteConfirmPrefix: "Basın kiti öğesi silinsin",
+    emptyState: "Henüz basın kiti öğesi yok.",
+    errUrlRequired: "URL gerekli",
+    errAddFailed: "Ekleme başarısız",
+  },
+
 };
 
 export default tr;
