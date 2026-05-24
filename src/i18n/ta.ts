@@ -6805,6 +6805,26 @@ const ta: Translations = {
     emptyBias: "இன்னும் bias தரவு இல்லை.",
   },
 
+  labCreditsAdmin: {
+    loading: "ஏற்றுகிறது…",
+    crumbLabs: "ஆய்வகங்கள்",
+    crumbCredits: "Credits",
+    creditsSuffix: "credits",
+    balanceLabel: "இந்த ஆய்வகத்துடன் FUZE balance",
+    balanceHint: "இந்த ஆய்வகத்தில் எதிர்கால FUZE-paid சோதனையில் இருந்து auto-deduct ஆகிறது.",
+    addCreditTitle: "Credit சேர்",
+    amountPlaceholder: "$ தொகை",
+    sourceNotePlaceholder: "மூல குறிப்பு",
+    addCreditBtn: "Credit சேர்",
+    colCreated: "உருவாக்கப்பட்டது",
+    colAmount: "தொகை",
+    colSource: "மூலம்",
+    colNote: "குறிப்பு",
+    colSpent: "Spent",
+    availableLabel: "கிடைக்கிறது",
+    emptyState: "இன்னும் credits இல்லை.",
+  },
+
 };
 
 export default ta;
