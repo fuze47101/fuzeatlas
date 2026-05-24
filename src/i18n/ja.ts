@@ -6010,6 +6010,50 @@ const ja: Translations = {
     emptyTpl: "テンプレートはまだありません。+ 新規テンプレート をクリックして最初のテンプレートを作成してください。",
   },
 
+  pipelineUserPage: {
+    loading: "パイプラインを読み込み中...",
+    pageTitle: "売上パイプライン",
+    pageSubtitle: "開発から本生産まで案件を追跡します",
+    btnNewDeal: "+ 新規案件",
+
+    kpiTotalPipeline: "総パイプライン",
+    kpiTotalPipelineSubTpl: "{n} 件の案件",
+    kpiWeighted: "加重予測",
+    kpiWeightedSub: "確率調整済み",
+    kpiActual: "実売上",
+    kpiActualSub: "請求済み・入金済み",
+    kpiConversion: "コンバージョン",
+    kpiConversionSub: "実績 / パイプライン",
+
+    cardProdPrefix: "本生産:",
+    emptyDeals: "案件なし",
+    weightedPrefix: "· 加重:",
+
+    editTitlePrefix: "プロジェクト編集:",
+    fieldName: "プロジェクト名",
+    fieldStage: "ステージ",
+    keepCurrent: "現状維持",
+    fieldBrand: "ブランド",
+    fieldNone: "なし",
+    fieldProjectedValue: "予測価値 ($)",
+    fieldProbability: "確率 (%)",
+    fieldFuzeTier: "FUZEティア",
+    fieldAnnualVolume: "年間数量 (m)",
+    fieldFactory: "工場",
+    fieldDistributor: "ディストリビューター",
+    autoFromFactory: "工場から自動",
+    fieldExpectedProd: "予定生産",
+    fieldActualProd: "実生産",
+    btnSaveChanges: "変更を保存",
+    btnSaving: "保存中...",
+    btnCancel: "キャンセル",
+
+    newDealTitle: "新規案件",
+    newDealPlaceholder: "プロジェクト / 案件名...",
+    btnCreate: "作成",
+    btnCreating: "作成中...",
+  },
+
 };
 
 export default ja;
