@@ -7112,6 +7112,29 @@ const ms: Translations = {
     errLoadFailed: "Gagal memuatkan analitik",
   },
 
+  orderQrLabel: {
+    orderNotFound: "Pesanan tidak dijumpai.",
+    headerKicker: "Label QR",
+    previewPublicLink: "pratonton halaman awam →",
+    brandLine: "FUZE Biotech",
+    brandLocation: "Salt Lake City, Utah USA",
+    orderLabel: "Pesanan",
+    scanToVerifyTitle: "Imbas untuk mengesahkan",
+    scanToVerifyBody: "Buka label ini pada kamera telefon untuk memuatkan status penghantaran, kitaran hidup, SDS, dan COA.",
+    tierLabel: "Tier",
+    volumeLabel: "Isi Padu",
+    bottlesSuffix: "botol",
+    methodLabel: "Kaedah",
+    typeLabel: "Jenis",
+    shipToLabel: "Hantar Kepada",
+    forBrandLabel: "Untuk Jenama",
+    viaDistributorLabel: "Melalui Pengedar",
+    fabricLabel: "Fabrik",
+    trackingLabel: "Penjejakan",
+    footerTagline: "FUZE F1–F4 · rawatan antimikrob metamaterial · PFAS-free",
+    printedPrefix: "Dicetak",
+  },
+
 };
 
 export default ms;
