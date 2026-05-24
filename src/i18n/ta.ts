@@ -7684,6 +7684,24 @@ const ta: Translations = {
     websiteLabel: "வலைத்தளம்",
   },
 
+  reportSharePage: {
+    unavailableTitle: "அறிக்கை கிடைக்கவில்லை",
+    unavailableBodyPrefix: "Long-term access-க்கு, இங்கே sign in செய்யவும்",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "மற்றும் My Reports-இன் கீழ் அறிக்கையைக் கண்டுபிடிக்கவும், அல்லது இது வந்த மின்னஞ்சலுக்கு பதிலளிக்கவும்.",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · Application & Validation Report",
+    heading: "FUZE சிகிச்சை Recipe & சரிபார்ப்பு",
+    issuedLabel: "வெளியிடப்பட்டது",
+    linkValidUntil: "· இந்த நேரடி link செல்லுபடியாகும்",
+    preparedForTitle: "தயாரிக்கப்பட்டது",
+    execSummaryTitle: "நிர்வாக சுருக்கம்",
+    recipeTitle: "பரிந்துரைக்கப்பட்ட Recipe",
+    fuzeRequiredTitle: "FUZE தேவை (உற்பத்தி Bath அளவுகள்)",
+    labIcpTitle: "சுயாதீன ஆய்வக ICP சரிபார்ப்பு",
+    accessLaterTitle: "பின்னர் இந்த அறிக்கையை அணுகுதல்",
+  },
+
 };
 
 export default ta;
