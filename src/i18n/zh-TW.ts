@@ -7868,6 +7868,25 @@ const zhTW: Translations = {
     footerPrefix: "FUZE Atlas API 文件 — 最後更新",
   },
 
+  recipeSearch: {
+    heading: "配方搜尋",
+    subtitle: "全網路 FUZE 配方資料庫。在 Atlas 中每一塊已驗證的布料中搜尋——將您手邊的布料對應到經驗證的配方，即使該布料不屬於您。範圍外的列已匿名化，但配方物性仍可見。",
+    keywordPlaceholder: "關鍵字（棉、針織、斜紋…）",
+    anyCategory: "任何類別",
+    knit: "針織",
+    woven: "梭織",
+    nonwoven: "不織布",
+    fiberPlaceholder: "纖維（棉、聚酯…）",
+    gsmMinPlaceholder: "最小克重",
+    gsmMaxPlaceholder: "最大克重",
+    anyTier: "任何層級",
+    onlyValidatedLabel: "僅顯示具實測吸附量的布料（已驗證實驗室測試）",
+    searchingBtn: "搜尋中...",
+    searchBtn: "搜尋",
+    emptyTitle: "目前沒有符合的配方。",
+    emptyBody: "請嘗試放寬篩選條件——或如果您想看到仍在開發中的布料，可移除「已驗證實驗室測試」篩選。",
+  },
+
 };
 
 export default zhTW;
