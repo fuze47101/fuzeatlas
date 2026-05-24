@@ -6805,6 +6805,26 @@ const hi: Translations = {
     emptyBias: "अभी कोई बायस डेटा नहीं।",
   },
 
+  labCreditsAdmin: {
+    loading: "लोड हो रहा है…",
+    crumbLabs: "लैब",
+    crumbCredits: "क्रेडिट",
+    creditsSuffix: "क्रेडिट",
+    balanceLabel: "इस लैब के साथ FUZE बैलेंस",
+    balanceHint: "इस लैब में भविष्य के FUZE-भुगतान परीक्षण से ऑटो-डिडक्ट।",
+    addCreditTitle: "क्रेडिट जोड़ें",
+    amountPlaceholder: "$ राशि",
+    sourceNotePlaceholder: "स्रोत नोट",
+    addCreditBtn: "क्रेडिट जोड़ें",
+    colCreated: "बनाया",
+    colAmount: "राशि",
+    colSource: "स्रोत",
+    colNote: "नोट",
+    colSpent: "खर्च",
+    availableLabel: "उपलब्ध",
+    emptyState: "अभी कोई क्रेडिट नहीं।",
+  },
+
 };
 
 export default hi;
