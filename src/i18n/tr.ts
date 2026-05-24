@@ -4820,6 +4820,16 @@ const tr: Translations = {
     sanityCheckHeader: "Mantık Kontrolü (CTLA'nın raporlaması gereken)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "Distribütör Ağı",
+    pageSubtitle: "Küresel dağıtım partnerlerinizi, envanterinizi ve kapsamınızı yönetin",
+    inventoryCta: "📊 Envanter ve Tüketim Hızı",
+    worldwideCta: "🌍 Dünya Çapında Envanter",
+    newDistributorCta: "+ Yeni Distribütör",
+    newDistributorModalTitle: "Yeni distribütör",
+    nameRequiredError: "Ad gereklidir",
+  },
+
 };
 
 export default tr;
