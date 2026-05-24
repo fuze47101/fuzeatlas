@@ -4554,6 +4554,48 @@ const ur: Translations = {
     sanityRangesHeader: "Sanity چیک کی حدود",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "ہفتہ وار ایگزیکٹو جائزہ",
+    weekOfTemplate: "ہفتہ",
+    coveringPrefix: "احاطہ",
+    daysWindowSuffix: "-دن کی ونڈو",
+    ownerLabel: "مالک:",
+    generatedLabel: "تیار شدہ",
+    enterPresent: "موجودہ",
+    exitPresent: "اخراج موجودہ",
+    refreshing: "تازہ کیا جا رہا ہے…",
+    refreshSnapshot: "اسنیپ شاٹ تازہ کریں",
+
+    execSummaryTitle: "ایگزیکٹو خلاصہ",
+    execSummaryPlaceholder: "بورڈ کے لیے ٹاپ لائن خلاصہ۔ blur پر محفوظ ہوگا۔",
+    saving: "محفوظ ہو رہا ہے…",
+
+    salesDistributionTitle: "فروخت اور تقسیم",
+    bookedDollars: "بک شدہ $",
+    shippedDollars: "بھیجی گئی $",
+    bookedLiters: "بک شدہ L",
+    shippedLiters: "بھیجی گئی L",
+    ordersSuffix: "آرڈرز",
+    shipmentsSuffix: "شپمنٹس",
+    kgShippedSuffix: "kg بھیجا گیا",
+    byOrderTypeLabel: "آرڈر کی قسم کے لحاظ سے",
+
+    sowProgressTitle: "SOW پیش رفت",
+    sowDraft: "مسودہ",
+    sowSent: "بھیجا گیا",
+    sowSigned: "دستخط شدہ",
+    sowActive: "فعال",
+    sowComplete: "مکمل",
+    sowSignedThisWindow: "اس ونڈو میں دستخط شدہ",
+    sowNewlyOpened: "نئے کھلے",
+    sowActiveTitle: "فعال",
+    sowStale: "پرانے (>30 دن بغیر حرکت)",
+    sowEmptyNoSignatures: "اس ونڈو میں کوئی نئے دستخط نہیں۔",
+    sowEmptyNoOpened: "اس ونڈو میں کوئی SOW نہیں کھلا۔",
+    sowEmptyNoActive: "کوئی فعال SOW نہیں۔",
+    sowEmptyNothingStuck: "کچھ بھی پھنسا ہوا نہیں۔",
+  },
+
 };
 
 export default ur;
