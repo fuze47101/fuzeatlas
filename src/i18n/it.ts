@@ -5656,6 +5656,82 @@ const it: Translations = {
     btnCreatePo: "Crea PO e apri pacchetto stampabile →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "Admin",
+    crumbHere: "Igiene contatti",
+    pageTitle: "Igiene contatti",
+    pageSubtitle: "Contrassegna contatti placeholder, caselle ruolo e contatti malformati per evitare che i rep sprechino outreach su Mario Rossi. Reversibile — ripristina per rimettere un contatto nel wizard.",
+
+    btnPreviewScan: "🔍 Anteprima scansione",
+    btnAutoHide: "🙈 Scansiona + nascondi automaticamente",
+    btnScanning: "Scansione…",
+    btnHiding: "Nascondendo…",
+    titlePreviewScan: "Riesegui lo snapshot di igiene su ogni contatto, senza modificare la visibilità",
+    titleAutoHide: "Scansiona + nascondi automaticamente i contatti placeholder dal BD Wizard",
+    confirmAutoHide: "Nascondi automaticamente imposterà hiddenFromWizard = true per ogni contatto contrassegnato dalla scansione come placeholder o con email non valida. Questo è reversibile (puoi ripristinare da questa pagina) ma influisce immediatamente sul BD Wizard di ogni rep. Continuare?",
+    promptHide: "Nascondere questo contatto dal BD Wizard? Motivo (opzionale):",
+    promptUnhide: "Ripristinare questo contatto? Motivo (opzionale, scritto nelle sue note):",
+    failedPrefix: "Non riuscito:",
+    networkErrPrefix: "Errore di rete:",
+    scanFailedPrefix: "Scansione non riuscita:",
+
+    summaryScanned: "Scansionati",
+    summaryContacts: "contatti · placeholder",
+    summarySuspicious: "· sospetti",
+    summaryRole: "· ruolo",
+    summaryReal: "· reali",
+    summaryHiddenSuffix: "nuovi",
+    summaryHiddenPrefix: "· nascosti",
+
+    statPlaceholder: "Placeholder",
+    statSuspicious: "Sospetti",
+    statRole: "Casella di ruolo",
+    statReal: "Reali",
+    statUnscanned: "Non scansionati",
+    statHidden: "Nascosti",
+
+    filterVerdict: "Verdetto",
+    filterVisibility: "Visibilità",
+    filterAllScanned: "Tutti gli scansionati",
+    filterPlaceholder: "Placeholder",
+    filterSuspicious: "Sospetti",
+    filterRoleMailbox: "Casella di ruolo",
+    filterReal: "Reali",
+    filterUnscanned: "Non scansionati",
+    filterAllVisibility: "Tutte le visibilità",
+    filterHiddenOnly: "Solo nascosti",
+    filterVisibleOnly: "Solo visibili",
+    searchPlaceholder: "Cerca nome o email…",
+
+    emptyTitle: "Nessun contatto corrisponde al filtro corrente.",
+    emptyUnscannedTpl: "{n} contatti non sono mai stati scansionati — premi \"Anteprima scansione\" per popolare.",
+
+    colContact: "Contatto",
+    colBrandFactory: "Brand / Stabilimento",
+    colVerdict: "Verdetto",
+    colEmail: "Email",
+    colLinkedin: "LinkedIn",
+    colScore: "Punteggio",
+    colFlags: "Flag",
+    colActions: "Azioni",
+
+    unnamed: "(senza nome)",
+    noEmail: "nessuna email",
+    hiddenLabel: "Nascosto",
+    flagsMore: "altri",
+    flagsClean: "pulito",
+    actionHide: "Nascondi",
+    actionUnhide: "Ripristina",
+
+    helpFooter: "La scansione percorre ogni contatto e registra verdetto + flag sulla riga. L'anteprima registra solo il verdetto; Scansiona + nascondi automaticamente imposta inoltre hiddenFromWizard per contatti placeholder e con email non valida. Entrambi reversibili — clicca \"Ripristina\" per riportare un contatto, che riesegue anche lo snapshot nel caso i dati siano stati corretti.",
+
+    verdictReal: "reale",
+    verdictSuspect: "sospetto",
+    verdictPlaceholder: "placeholder",
+    verdictRoleMbx: "casella ruolo",
+    verdictUnscanned: "non scansionato",
+  },
+
 };
 
 export default it;
