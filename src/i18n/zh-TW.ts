@@ -5145,6 +5145,81 @@ const zhTW: Translations = {
     docTypeOther: "其他",
   },
 
+  consumptionAdmin: {
+    loading: "正在載入耗用資料...",
+    pageTitle: "耗用與補貨",
+    pageSubtitle: "追蹤工廠 FUZE 用量、預估用罄日期,以及自動補貨觸發",
+
+    btnNewOrder: "+ 新增訂單",
+    btnLogUsage: "+ 紀錄用量",
+
+    kpiActiveFactories: "活躍工廠",
+    kpiOfTotal: "共 {n} 家",
+    kpiTotalOrdered: "總訂購量",
+    kpiPending: "{n} 待處理",
+    kpiTotalConsumed: "總耗用量",
+    kpiAcrossAll: "所有工廠合計",
+    kpiReorderAlerts: "補貨警示",
+    kpiAlertsSplit: "{c} 緊急、{w} 警告",
+
+    annualDemandLabel: "年度預估需求",
+    annualDemandUnit: "公升",
+    annualDemandBottles: "約 {n} 桶",
+    annualDemandRevenue: "約 ${n} 營收",
+
+    sectionFactoryInventory: "工廠庫存狀態",
+    emptyTitle: "尚無啟用 FUZE 的工廠。",
+    emptySub: "標記 fuzeEnabled = true 的工廠將顯示於此。",
+
+    cellRemaining: "剩餘",
+    cellBurn: "每日消耗",
+    cellRunOut: "用罄",
+    daysSuffix: "天",
+    daysWord: "天",
+    fabricsSuffix: "塊布料",
+    fabricSuffix: "塊布料",
+    activeOrdersSuffix: "筆進行中訂單",
+    activeOrderSuffix: "筆進行中訂單",
+
+    colFactory: "工廠",
+    colCountry: "國家",
+    colOrdered: "已訂購",
+    colConsumed: "已耗用",
+    colRemaining: "剩餘",
+    colBurnDay: "每日消耗",
+    colRunOut: "用罄",
+    colStatus: "狀態",
+
+    modalOrderTitle: "新增 FUZE 訂單",
+    modalUsageTitle: "紀錄 FUZE 用量",
+    fieldFactory: "工廠",
+    placeholderFactory: "選擇工廠...",
+    fieldVolumeL: "體積(公升)",
+    fieldTier: "階別",
+    fieldNotes: "備註",
+    fieldLitersUsed: "使用公升數",
+    fieldMetersProcessed: "處理公尺數",
+    placeholderOptional: "選填",
+    fieldMethod: "方法",
+    placeholderSelect: "選擇...",
+    methodExhaust: "浸染(染浴)",
+    methodPad: "Pad-Dry-Cure",
+    methodSpray: "噴塗",
+
+    summaryBottles: "桶數(每桶 19L):",
+    summaryEstTotal: "預估總計:",
+
+    btnCancel: "取消",
+    btnCreating: "建立中...",
+    btnCreateOrder: "建立訂單",
+    btnLogging: "紀錄中...",
+    btnLogUsageSubmit: "紀錄用量",
+
+    errorCreateOrder: "無法建立訂單",
+    errorLogUsage: "無法紀錄耗用",
+    errorNetwork: "網路錯誤",
+  },
+
 };
 
 export default zhTW;
