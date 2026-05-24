@@ -19,6 +19,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import AddTaskButton from "@/components/AddTaskButton";
+import { useI18n } from "@/i18n";
 
 type Task = {
   id: string;
@@ -37,6 +38,8 @@ type Task = {
 };
 
 export default function TasksPage() {
+  const { t } = useI18n();
+  const T = t.acmTasks;
   const [tab, setTab] = useState<"open" | "done">("open");
   const [mineOnly, setMineOnly] = useState(true);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -94,9 +97,9 @@ export default function TasksPage() {
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">🗓️ ACM Tasks</h1>
+          <h1 className="text-2xl font-black text-slate-900">{T.title}</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Week-before + day-before reminders go out automatically via bell + email at 8 AM Taipei.
+            {T.subtitle}
           </p>
         </div>
         <AddTaskButton onCreated={refresh} />
@@ -106,10 +109,10 @@ export default function TasksPage() {
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-200 gap-4 flex-wrap">
         <div className="flex items-center gap-2">
           <TabBtn active={tab === "open"} onClick={() => setTab("open")}>
-            Open
+            {T.tabOpen}
           </TabBtn>
           <TabBtn active={tab === "done"} onClick={() => setTab("done")}>
-            Completed
+            {T.tabCompleted}
           </TabBtn>
         </div>
         <label className="flex items-center gap-2 text-sm text-slate-600">
@@ -119,7 +122,7 @@ export default function TasksPage() {
             onChange={(e) => setMineOnly(e.target.checked)}
             className="rounded"
           />
-          Only mine
+          {T.onlyMine}
         </label>
       </div>
 
@@ -129,41 +132,45 @@ export default function TasksPage() {
         </div>
       )}
 
-      {loading && <p className="text-sm text-slate-400">Loading…</p>}
+      {loading && <p className="text-sm text-slate-400">{T.loading}</p>}
 
       {!loading && tab === "open" && (
         <div className="space-y-6">
           <Bucket
-            title="Overdue"
-            subtitle="Past due — get these off the list"
+            title={T.overdueTitle}
+            subtitle={T.overdueSubtitle}
             tone="red"
             tasks={bucketed.overdue}
             refresh={refresh}
+            T={T}
           />
           <Bucket
-            title="Due this week"
-            subtitle="Next 7 days"
+            title={T.dueWeekTitle}
+            subtitle={T.dueWeekSubtitle}
             tone="cyan"
             tasks={bucketed.week}
             refresh={refresh}
+            T={T}
           />
           <Bucket
-            title="Upcoming"
-            subtitle="Beyond 7 days"
+            title={T.upcomingTitle}
+            subtitle={T.upcomingSubtitle}
             tone="slate"
             tasks={bucketed.later}
             refresh={refresh}
+            T={T}
           />
         </div>
       )}
 
       {!loading && tab === "done" && (
         <Bucket
-          title="Completed"
-          subtitle="Last 200"
+          title={T.completedTitle}
+          subtitle={T.completedSubtitle}
           tone="green"
           tasks={tasks}
           refresh={refresh}
+          T={T}
         />
       )}
     </div>
@@ -199,12 +206,14 @@ function Bucket({
   tone,
   tasks,
   refresh,
+  T,
 }: {
   title: string;
   subtitle: string;
   tone: "red" | "cyan" | "slate" | "green";
   tasks: Task[];
   refresh: () => void;
+  T: any;
 }) {
   const toneMap = {
     red: "text-red-700",
@@ -219,12 +228,12 @@ function Bucket({
       <p className="text-[11px] text-slate-400 mb-2">{subtitle}</p>
       {tasks.length === 0 ? (
         <div className="p-4 border border-dashed border-slate-200 rounded-lg text-sm text-slate-400 italic">
-          Nothing here.
+          {T.nothingHere}
         </div>
       ) : (
         <ul className="space-y-2">
           {tasks.map((t) => (
-            <TaskRow key={t.id} task={t} refresh={refresh} />
+            <TaskRow key={t.id} task={t} refresh={refresh} T={T} />
           ))}
         </ul>
       )}
@@ -232,7 +241,7 @@ function Bucket({
   );
 }
 
-function TaskRow({ task, refresh }: { task: Task; refresh: () => void }) {
+function TaskRow({ task, refresh, T }: { task: Task; refresh: () => void; T: any }) {
   const [busy, setBusy] = useState(false);
 
   const doAction = async (action: "complete" | "reopen" | "cancel") => {
@@ -264,7 +273,7 @@ function TaskRow({ task, refresh }: { task: Task; refresh: () => void }) {
           onClick={() => doAction("complete")}
           disabled={busy}
           className="mt-1 w-5 h-5 border-2 border-slate-300 hover:border-[#00b4c3] hover:bg-cyan-50 rounded-sm flex items-center justify-center text-slate-300 hover:text-[#00b4c3]"
-          title="Mark done"
+          title={T.markDoneTitle}
         >
           ✓
         </button>
@@ -285,7 +294,7 @@ function TaskRow({ task, refresh }: { task: Task; refresh: () => void }) {
           </div>
           {task.priority === "HIGH" && (
             <span className="px-1.5 py-0.5 text-[10px] font-bold bg-rose-100 text-rose-700 rounded">
-              HIGH
+              {T.highPriorityBadge}
             </span>
           )}
           {task.brandName && (
@@ -300,9 +309,9 @@ function TaskRow({ task, refresh }: { task: Task; refresh: () => void }) {
 
         <div className="text-xs text-slate-500 mt-0.5">
           <span className={overdue ? "text-red-600 font-semibold" : ""}>
-            {overdue ? "Overdue — " : ""}Due {formatRelative(due)}
+            {overdue ? T.overdueRowPrefix : ""}{T.duePrefix} {formatRelative(due, T)}
           </span>
-          {task.ownerName ? ` · Owner: ${task.ownerName}` : ""}
+          {task.ownerName ? ` · ${T.ownerLabel} ${task.ownerName}` : ""}
         </div>
 
         {task.notes && (
@@ -316,7 +325,7 @@ function TaskRow({ task, refresh }: { task: Task; refresh: () => void }) {
             onClick={() => doAction("cancel")}
             disabled={busy}
             className="px-2 py-1 text-[11px] text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded"
-            title="Cancel task"
+            title={T.cancelTaskTitle}
           >
             ✕
           </button>
@@ -326,7 +335,7 @@ function TaskRow({ task, refresh }: { task: Task; refresh: () => void }) {
             onClick={() => doAction("reopen")}
             disabled={busy}
             className="px-2 py-1 text-[11px] text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded"
-            title="Reopen"
+            title={T.reopenTitle}
           >
             ↻
           </button>
@@ -336,7 +345,7 @@ function TaskRow({ task, refresh }: { task: Task; refresh: () => void }) {
   );
 }
 
-function formatRelative(d: Date) {
+function formatRelative(d: Date, T: any) {
   const now = Date.now();
   const diffMs = d.getTime() - now;
   const diffDays = Math.round(diffMs / (24 * 60 * 60 * 1000));
@@ -348,10 +357,10 @@ function formatRelative(d: Date) {
     minute: "2-digit",
   });
 
-  if (diffDays === 0) return `today, ${fmt.format(d)}`;
-  if (diffDays === 1) return `tomorrow, ${fmt.format(d)}`;
-  if (diffDays === -1) return `yesterday`;
-  if (diffDays > 0 && diffDays <= 7) return `in ${diffDays} days — ${fmt.format(d)}`;
-  if (diffDays < 0) return `${Math.abs(diffDays)} days ago`;
+  if (diffDays === 0) return `${T.relToday}, ${fmt.format(d)}`;
+  if (diffDays === 1) return `${T.relTomorrow}, ${fmt.format(d)}`;
+  if (diffDays === -1) return T.relYesterday;
+  if (diffDays > 0 && diffDays <= 7) return `${T.relInPrefix} ${diffDays} ${T.relDaysSuffix} — ${fmt.format(d)}`;
+  if (diffDays < 0) return `${Math.abs(diffDays)} ${T.relDaysAgo}`;
   return fmt.format(d);
 }
