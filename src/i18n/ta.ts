@@ -2620,6 +2620,40 @@ const ta: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "Atlas உள்நுழைவு தேவை",
+    authBatchPrefix: "தொகுதி",
+    authBlurb:
+      "விவரங்கள் — COA, TDS, SDS உட்பட — Atlas பயனர்களுக்கு மட்டுமே கிடைக்கின்றன.",
+    loginCta: "Atlas-இல் உள்நுழை →",
+    noAccountQuestion: "கணக்கு இல்லையா? தொடர்பு கொள்ள",
+    notFoundTitle: "தொகுதி கிடைக்கவில்லை",
+    notFoundBlurb: "எங்களால் தொகுதியைக் கண்டுபிடிக்க முடியவில்லை",
+    returnHome: "Atlas-க்குத் திரும்பு →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "தொகுதி சரிபார்ப்பு",
+    qcPassed: "✓ QC தேர்ச்சி",
+    qcFailed: "⚠ QC தோல்வி",
+    produced: "உற்பத்தி செய்யப்பட்டது",
+    batchDetails: "தொகுதி விவரங்கள்",
+    volumeProduced: "உற்பத்தி செய்யப்பட்ட அளவு",
+    bottlesFilled: "நிரப்பப்பட்ட பாட்டில்கள்",
+    concentration: "செறிவு",
+    productionDate: "உற்பத்தி தேதி",
+    fuzeMetamaterial: "mg/L FUZE மெட்டா-மெட்டீரியல்",
+    batchNotes: "தொகுதி குறிப்புகள்",
+    documents: "ஆவணங்கள்",
+    coaTitle: "பகுப்பாய்வு சான்றிதழ் (COA)",
+    coaDescPrefix: "இந்த தொகுதியின் விவரக்குறிப்பு சரிபார்ப்பு · பதிவேற்றப்பட்டது",
+    coaPending: "COA காத்திருக்கிறது",
+    coaPendingBlurb: "இந்த தொகுதிக்கான பகுப்பாய்வு சான்றிதழ் இன்னும் பதிவேற்றப்படவில்லை.",
+    view: "காண் →",
+    docsEmpty: "TDS / SDS இன்னும் பதிவேற்றப்படவில்லை. நிர்வாகி தயாரிப்பு ஆவணங்களில் சேர்க்கலாம்.",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "கேள்விகள்?",
+    footerReturnAtlas: "Atlas-க்குத் திரும்பு",
+  },
+
 };
 
 export default ta;
