@@ -6785,6 +6785,26 @@ const ta: Translations = {
     colSource: "மூலம்",
   },
 
+  interLabVariance: {
+    loadingLabel: "Inter-lab variance ஏற்றுகிறது",
+    crumbQualityLabs: "Quality & Labs",
+    crumbInterLabVariance: "Inter-lab variance",
+    title: "Inter-lab variance",
+    subtitleBefore: "கடைசி ≥2 ஆய்வகங்களால் அதே ஃபேப்ரிக் சோதிக்கப்பட்ட இடம்",
+    subtitleAfter: "நாட்கள். Range (max − min) இறங்குவரிசையில் வரிசைப்படுத்தப்பட்டது.",
+    colFabric: "ஃபேப்ரிக்",
+    colMethod: "முறை",
+    colRange: "Range",
+    colMeanSigma: "சராசரி ± σ",
+    colPerLab: "Per-lab முடிவுகள்",
+    emptyTitle: "இன்னும் multi-lab ஃபேப்ரிக்குகள் இல்லை",
+    emptyBodyBefore: "Inter-lab variance கடைசியில் ≥2 ஆய்வகங்களால் சோதிக்கப்பட்ட ஃபேப்ரிக்குகளை ஒப்பிடுகிறது",
+    emptyBodyAfter: "நாட்கள். ஒரு பங்குதாரர் ஆய்வகத்திலும் FUZE USA-விலும் (அல்லது எந்த 2-lab ஜோடியிலும்) அதே ஃபேப்ரிக் சோதிக்கப்பட்டவுடன், அது இங்கே தோன்றும்.",
+    biasTitle: "Per-lab calibration bias",
+    biasHint: "ஒவ்வொரு பகிரப்பட்ட ஃபேப்ரிக் முழுவதும் (இந்த ஆய்வகத்தின் முடிவு − group சராசரி)-இன் சராசரி. Positive = peer labs-ஐ விட அதிகமாக இயக்குகிறது; negative = குறைவாக இயக்குகிறது.",
+    emptyBias: "இன்னும் bias தரவு இல்லை.",
+  },
+
 };
 
 export default ta;
