@@ -7956,6 +7956,31 @@ const zhTW: Translations = {
     accessLaterTitle: "稍後存取此報告",
   },
 
+  settingsAuditLog: {
+    title: "稽核日誌",
+    subtitle: "追蹤所有系統變更與使用者動作",
+    actionLabel: "動作",
+    allActionsOption: "所有動作",
+    entityTypeLabel: "實體類型",
+    allEntitiesOption: "所有實體",
+    fromDateLabel: "起始日期",
+    toDateLabel: "結束日期",
+    loadingText: "載入中...",
+    emptyText: "找不到稽核日誌",
+    colTimestamp: "時間戳",
+    colUser: "使用者",
+    colAction: "動作",
+    colEntity: "實體",
+    colDescription: "描述",
+    systemUserFallback: "系統",
+    showingPrefix: "顯示",
+    showingTo: "至",
+    showingOf: "／共",
+    showingSuffix: "筆日誌",
+    prevBtn: "上一頁",
+    nextBtn: "下一頁",
+  },
+
 };
 
 export default zhTW;
