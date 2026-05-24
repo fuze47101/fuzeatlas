@@ -7576,6 +7576,31 @@ const ko: Translations = {
     footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
   },
 
+  signupInvitation: {
+    appKicker: "FUZE Atlas",
+    joinPrefix: "참여하기:",
+    invitedSuffix: "초대됨",
+    youWereInvited: "초대받으셨습니다",
+    asLabel: "역할:",
+    emailLabel: "이메일",
+    yourNameLabel: "이름",
+    fullNamePlaceholder: "전체 이름",
+    passwordLabel: "비밀번호",
+    passwordPlaceholder: "최소 8자",
+    confirmPasswordLabel: "비밀번호 확인",
+    confirmPasswordPlaceholder: "비밀번호 다시 입력",
+    creatingBtn: "계정 생성 중…",
+    acceptBtn: "초대 수락 및 로그인",
+    expiresPrefix: "초대 만료:",
+    problemTitle: "초대 문제",
+    problemDefault: "이 초대를 로드할 수 없습니다.",
+    goToSignIn: "로그인으로 이동",
+    errPasswordTooShort: "비밀번호는 최소 8자 이상이어야 합니다.",
+    errPasswordsMismatch: "비밀번호가 일치하지 않습니다.",
+    errNetwork: "네트워크 오류",
+    errServerUnreachable: "서버에 연결할 수 없습니다",
+  },
+
 };
 
 export default ko;
