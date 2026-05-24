@@ -5,23 +5,33 @@ import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
-const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  DRAFT: { bg: "bg-gray-100", text: "text-gray-700", label: "Draft" },
-  QUOTED: { bg: "bg-blue-100", text: "text-blue-700", label: "Quoted" },
-  PENDING_APPROVAL: { bg: "bg-yellow-100", text: "text-yellow-700", label: "Pending Approval" },
-  APPROVED: { bg: "bg-green-100", text: "text-green-700", label: "Approved" },
+const STATUS_COLORS_BASE: Record<string, { bg: string; text: string; labelKey: string }> = {
+  DRAFT: { bg: "bg-gray-100", text: "text-gray-700", labelKey: "statusDraft" },
+  QUOTED: { bg: "bg-blue-100", text: "text-blue-700", labelKey: "statusQuoted" },
+  PENDING_APPROVAL: { bg: "bg-yellow-100", text: "text-yellow-700", labelKey: "statusPendingApproval" },
+  APPROVED: { bg: "bg-green-100", text: "text-green-700", labelKey: "statusApproved" },
   // CONFIRMED — set by /api/consumption when a factory logs an order via
   // the consumption page. Lives between APPROVED and PROCESSING in
   // practice. Admin should be able to push it forward to PROCESSING.
-  CONFIRMED: { bg: "bg-teal-100", text: "text-teal-700", label: "Confirmed" },
-  PROCESSING: { bg: "bg-purple-100", text: "text-purple-700", label: "Processing" },
-  SHIPPED: { bg: "bg-indigo-100", text: "text-indigo-700", label: "Shipped" },
-  DELIVERED: { bg: "bg-emerald-100", text: "text-emerald-700", label: "Delivered" },
-  CANCELLED: { bg: "bg-red-100", text: "text-red-700", label: "Cancelled" },
+  CONFIRMED: { bg: "bg-teal-100", text: "text-teal-700", labelKey: "statusConfirmed" },
+  PROCESSING: { bg: "bg-purple-100", text: "text-purple-700", labelKey: "statusProcessing" },
+  SHIPPED: { bg: "bg-indigo-100", text: "text-indigo-700", labelKey: "statusShipped" },
+  DELIVERED: { bg: "bg-emerald-100", text: "text-emerald-700", labelKey: "statusDelivered" },
+  CANCELLED: { bg: "bg-red-100", text: "text-red-700", labelKey: "statusCancelled" },
 };
 
 export default function AdminOrdersPage() {
+  const { t } = useI18n();
+  const T = t.ordersAdmin;
+  const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = useMemo(() => {
+    const out: Record<string, { bg: string; text: string; label: string }> = {};
+    for (const [k, v] of Object.entries(STATUS_COLORS_BASE)) {
+      out[k] = { bg: v.bg, text: v.text, label: (T as any)[v.labelKey] };
+    }
+    return out;
+  }, [T]);
   const { user } = useAuth();
   const router = useRouter();
   const [orders, setOrders] = useState<any[]>([]);
@@ -126,8 +136,8 @@ export default function AdminOrdersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Order Management</h1>
-          <p className="text-slate-500 mt-1">Review, approve, and track all FUZE orders</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{T.pageTitle}</h1>
+          <p className="text-slate-500 mt-1">{T.pageSubtitle}</p>
         </div>
         <label className="flex items-center gap-2 text-sm">
           <input
@@ -136,7 +146,7 @@ export default function AdminOrdersPage() {
             onChange={(e) => setShowMineOnly(e.target.checked)}
             className="rounded"
           />
-          <span className="text-slate-600 font-medium">My accounts only</span>
+          <span className="text-slate-600 font-medium">{T.myAccountsOnly}</span>
         </label>
       </div>
 
@@ -156,7 +166,7 @@ export default function AdminOrdersPage() {
         <div className="mb-6 p-4 bg-yellow-50 border border-yellow-300 rounded-xl">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-xl animate-pulse">⚡</span>
-            <p className="font-bold text-yellow-800">{actionNeeded.length} order{actionNeeded.length > 1 ? "s" : ""} awaiting approval</p>
+            <p className="font-bold text-yellow-800">{T.awaitingApprovalTemplate.replace("{n}", String(actionNeeded.length)).replace("{s}", actionNeeded.length > 1 ? "s" : "")}</p>
           </div>
           <div className="space-y-1">
             {actionNeeded.slice(0, 5).map((o) => (
@@ -176,13 +186,13 @@ export default function AdminOrdersPage() {
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-8">
           {[
-            { label: "Total", value: stats.total, color: "" },
-            { label: "Pending", value: stats.pending, color: "text-yellow-600" },
-            { label: "Approved", value: stats.approved, color: "text-green-600" },
-            { label: "Processing", value: stats.processing, color: "text-purple-600" },
-            { label: "Shipped", value: stats.shipped, color: "text-indigo-600" },
-            { label: "Delivered", value: stats.delivered, color: "text-emerald-600" },
-            { label: "Revenue", value: formatCurrency(stats.totalRevenue || 0), color: "text-slate-900" },
+            { label: T.statTotal, value: stats.total, color: "" },
+            { label: T.statPending, value: stats.pending, color: "text-yellow-600" },
+            { label: T.statApproved, value: stats.approved, color: "text-green-600" },
+            { label: T.statProcessing, value: stats.processing, color: "text-purple-600" },
+            { label: T.statShipped, value: stats.shipped, color: "text-indigo-600" },
+            { label: T.statDelivered, value: stats.delivered, color: "text-emerald-600" },
+            { label: T.statRevenue, value: formatCurrency(stats.totalRevenue || 0), color: "text-slate-900" },
           ].map((s) => (
             <div key={s.label} className="bg-white rounded-xl border border-slate-200 p-3">
               <p className="text-[10px] text-slate-500 font-medium uppercase">{s.label}</p>
@@ -203,20 +213,20 @@ export default function AdminOrdersPage() {
                 filterStatus === s ? "bg-[#00b4c3] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              {s === "all" ? "All" : STATUS_COLORS[s]?.label || s}
+              {s === "all" ? T.filterAll : STATUS_COLORS[s]?.label || s}
             </button>
           ))}
         </div>
         <div className="flex gap-1 ml-auto">
-          {["all", "PRODUCTION", "SAMPLE", "HANGTAG"].map((t) => (
+          {["all", "PRODUCTION", "SAMPLE", "HANGTAG"].map((ty) => (
             <button
-              key={t}
-              onClick={() => setFilterType(t)}
+              key={ty}
+              onClick={() => setFilterType(ty)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                filterType === t ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                filterType === ty ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              {t === "all" ? "All Types" : t}
+              {ty === "all" ? T.filterAllTypes : ty}
             </button>
           ))}
         </div>
@@ -226,7 +236,7 @@ export default function AdminOrdersPage() {
       {filteredOrders.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
           <p className="text-4xl mb-3">📦</p>
-          <p className="text-slate-500">No orders matching filters</p>
+          <p className="text-slate-500">{T.emptyMessage}</p>
         </div>
       ) : (
         <>
@@ -236,15 +246,15 @@ export default function AdminOrdersPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200">
-                    <th className="px-4 py-3 text-left font-semibold text-slate-600">Order</th>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-600">Factory</th>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-600">Type</th>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-600">Volume</th>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-600">Brand</th>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-600">Total</th>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-600">Fulfillment</th>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-600">Status</th>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-600">Date</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-600">{T.colOrder}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-600">{T.colFactory}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-600">{T.colType}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-600">{T.colVolume}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-600">{T.colBrand}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-600">{T.colTotal}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-600">{T.colFulfillment}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-600">{T.colStatus}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-600">{T.colDate}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -265,7 +275,7 @@ export default function AdminOrdersPage() {
                           <span className="text-xs font-medium">{order.orderType}</span>
                         </td>
                         <td className="px-4 py-3 text-slate-700">
-                          {order.volumeLiters ? `${order.volumeLiters}L` : order.hangtagQty ? `${order.hangtagQty} tags` : "—"}
+                          {order.volumeLiters ? `${order.volumeLiters}L` : order.hangtagQty ? `${order.hangtagQty} ${T.tagsSuffix}` : "—"}
                         </td>
                         <td className="px-4 py-3 text-slate-700">
                           {order.brandAllocations?.length > 0 ? (
@@ -283,7 +293,7 @@ export default function AdminOrdersPage() {
                         </td>
                         <td className="px-4 py-3 font-semibold text-slate-900">{formatCurrency(order.totalPrice || 0, order.currency)}</td>
                         <td className="px-4 py-3 text-slate-600 text-xs">
-                          {order.fulfillmentSource === "DIRECT_USA" ? "Direct USA" : order.distributor?.name || "—"}
+                          {order.fulfillmentSource === "DIRECT_USA" ? T.directUsaLabel : order.distributor?.name || "—"}
                         </td>
                         <td className="px-4 py-3">
                           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.text}`}>
@@ -321,7 +331,7 @@ export default function AdminOrdersPage() {
                   <div className="text-sm text-slate-600 space-y-1">
                     <p>{order.factory?.name} — {order.orderType}</p>
                     <div className="flex justify-between">
-                      <span>{order.volumeLiters ? `${order.volumeLiters}L` : `${order.hangtagQty || 0} tags`}</span>
+                      <span>{order.volumeLiters ? `${order.volumeLiters}L` : `${order.hangtagQty || 0} ${T.tagsSuffix}`}</span>
                       <span className="font-bold text-slate-900">{formatCurrency(order.totalPrice || 0)}</span>
                     </div>
                   </div>

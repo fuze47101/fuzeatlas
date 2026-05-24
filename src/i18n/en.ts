@@ -5223,6 +5223,48 @@ const en = {
     sowEmptyNoActive: "No active SOWs.",
     sowEmptyNothingStuck: "Nothing stuck.",
   },
+  ordersAdmin: {
+    pageTitle: "Order Management",
+    pageSubtitle: "Review, approve, and track all FUZE orders",
+    myAccountsOnly: "My accounts only",
+    awaitingApprovalTemplate: "{n} order{s} awaiting approval",
+
+    statTotal: "Total",
+    statPending: "Pending",
+    statApproved: "Approved",
+    statProcessing: "Processing",
+    statShipped: "Shipped",
+    statDelivered: "Delivered",
+    statRevenue: "Revenue",
+
+    filterAll: "All",
+    filterAllTypes: "All Types",
+
+    emptyMessage: "No orders matching filters",
+
+    colOrder: "Order",
+    colFactory: "Factory",
+    colType: "Type",
+    colVolume: "Volume",
+    colBrand: "Brand",
+    colTotal: "Total",
+    colFulfillment: "Fulfillment",
+    colStatus: "Status",
+    colDate: "Date",
+
+    statusDraft: "Draft",
+    statusQuoted: "Quoted",
+    statusPendingApproval: "Pending Approval",
+    statusApproved: "Approved",
+    statusConfirmed: "Confirmed",
+    statusProcessing: "Processing",
+    statusShipped: "Shipped",
+    statusDelivered: "Delivered",
+    statusCancelled: "Cancelled",
+
+    directUsaLabel: "Direct USA",
+    tagsSuffix: "tags",
+  },
 };
 
 export default en;
