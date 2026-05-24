@@ -6759,6 +6759,32 @@ const ta: Translations = {
     footerQuestions: "கேள்விகள்?",
   },
 
+  settingsExchangeRates: {
+    title: "Exchange Rates",
+    subtitle: "Currency conversion rates-ஐ நிர்வகி",
+    addRateBtn: "Rate சேர்",
+    cancelBtn: "ரத்து",
+    addFormTitle: "Exchange Rate சேர்",
+    ratePlaceholder: "Rate",
+    submitAddBtn: "Rate சேர்",
+    converterTitle: "Currency Converter",
+    fromLabel: "இலிருந்து",
+    toLabel: "இற்கு",
+    amountLabel: "தொகை",
+    convertBtn: "மாற்று",
+    rateResultPrefix: "Rate:",
+    quickStatsTitle: "Quick Stats",
+    totalCurrenciesLabel: "மொத்த நாணயங்கள்",
+    activeRatesLabel: "செயலில் உள்ள Rates",
+    currentRatesTitle: "தற்போதைய Rates (Base: USD)",
+    loading: "ஏற்றுகிறது...",
+    emptyState: "Exchange rates கட்டமைக்கப்படவில்லை",
+    colCurrencyPair: "Currency Pair",
+    colRate: "Rate",
+    colEffectiveDate: "Effective Date",
+    colSource: "மூலம்",
+  },
+
 };
 
 export default ta;
