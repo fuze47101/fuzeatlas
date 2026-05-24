@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import BulkEnrichButton from "@/components/BulkEnrichButton";
+import { useI18n } from "@/i18n";
 
 // ── Types ──
 interface OutreachCheck {
@@ -59,15 +60,15 @@ interface BrandEntry {
 // workflow: a brand stalls post-presentation and goes here for
 // re-engagement before being pulled back into BRAND_TESTING. Andrew
 // 2026-05-18.
-const STAGES = [
-  { key: "LEAD", label: "Lead", color: "bg-indigo-500" },
-  { key: "PRESENTATION", label: "Presentation", color: "bg-purple-500" },
-  { key: "BRAND_EXPANSION", label: "Re-Connect", color: "bg-emerald-500" },
-  { key: "BRAND_TESTING", label: "Brand Testing", color: "bg-sky-500" },
-  { key: "FACTORY_ONBOARDING", label: "Factory Onboard", color: "bg-amber-500" },
-  { key: "FACTORY_TESTING", label: "Factory Testing", color: "bg-orange-500" },
-  { key: "PRODUCTION", label: "Production", color: "bg-green-500" },
-  { key: "CUSTOMER_WON", label: "Won", color: "bg-teal-600" },
+const STAGES_BASE = [
+  { key: "LEAD", labelKey: "stageLead", color: "bg-indigo-500" },
+  { key: "PRESENTATION", labelKey: "stagePresentation", color: "bg-purple-500" },
+  { key: "BRAND_EXPANSION", labelKey: "stageReConnect", color: "bg-emerald-500" },
+  { key: "BRAND_TESTING", labelKey: "stageBrandTesting", color: "bg-sky-500" },
+  { key: "FACTORY_ONBOARDING", labelKey: "stageFactoryOnboard", color: "bg-amber-500" },
+  { key: "FACTORY_TESTING", labelKey: "stageFactoryTesting", color: "bg-orange-500" },
+  { key: "PRODUCTION", labelKey: "stageProduction", color: "bg-green-500" },
+  { key: "CUSTOMER_WON", labelKey: "stageWon", color: "bg-teal-600" },
 ];
 
 const STAGE_COLORS: Record<string, string> = {
@@ -130,6 +131,9 @@ function othersChecked(checks: OutreachCheck[], type: string, userId: string): O
 }
 
 export default function BrandPipelinePage() {
+  const { t } = useI18n();
+  const T = t.brandPipelineAdmin;
+  const STAGES = STAGES_BASE.map(s => ({ key: s.key, label: (T as any)[s.labelKey], color: s.color }));
   const [loading, setLoading] = useState(true);
   const [pipeline, setPipeline] = useState<BrandEntry[]>([]);
   const [stageSummary, setStageSummary] = useState<Record<string, number>>({});
@@ -272,21 +276,20 @@ export default function BrandPipelinePage() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-black text-slate-800">
-            Leads{" "}
+            {T.pageTitle}{" "}
             <span className="text-slate-400 font-semibold text-lg">({stageSummary.LEAD || 0})</span>
           </h1>
           <p className="text-sm text-slate-500">
-            Brands in the{" "}
+            {T.pageDescriptionPart1}{" "}
             <span className="inline-block px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 text-xs font-bold">
-              LEAD
+              {T.pageDescriptionStage}
             </span>{" "}
-            stage. Once a lead is moved to{" "}
-            <span className="text-slate-700 font-semibold">Presentation</span> it becomes a Partner
-            — find those on the{" "}
+            {T.pageDescriptionPart2}{" "}
+            <span className="text-slate-700 font-semibold">{T.pageDescriptionPresentation}</span> {T.pageDescriptionPart3}{" "}
             <Link href="/admin/accounts" className="text-cyan-700 hover:underline font-semibold">
-              Accounts
+              {T.pageDescriptionAccounts}
             </Link>{" "}
-            page.
+            {T.pageDescriptionEnd}
           </p>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
@@ -295,13 +298,13 @@ export default function BrandPipelinePage() {
             href="/admin/brand-discovery"
             className="px-3 py-2 text-xs font-bold rounded-lg bg-cyan-100 text-cyan-700 hover:bg-cyan-200 transition"
           >
-            + Discover Brands
+            {T.btnDiscoverBrands}
           </Link>
           <Link
             href="/admin/brand-audit"
             className="px-3 py-2 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition"
           >
-            Audit & Cleanup
+            {T.btnAudit}
           </Link>
         </div>
       </div>
@@ -313,33 +316,33 @@ export default function BrandPipelinePage() {
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-4">
           <div className="bg-white border rounded-lg px-3 py-2 text-center">
             <p className="text-lg font-black text-slate-700">{stats.totalBrands}</p>
-            <p className="text-[9px] font-semibold text-slate-500 uppercase">Total</p>
+            <p className="text-[9px] font-semibold text-slate-500 uppercase">{T.statTotal}</p>
           </div>
           <div
             className="bg-cyan-50 border border-cyan-200 rounded-lg px-3 py-2 text-center cursor-pointer hover:shadow-md"
             onClick={() => setViewFilter("enriched")}
           >
             <p className="text-lg font-black text-cyan-700">{stats.enriched}</p>
-            <p className="text-[9px] font-semibold text-cyan-600 uppercase">Enriched</p>
+            <p className="text-[9px] font-semibold text-cyan-600 uppercase">{T.statEnriched}</p>
           </div>
           <div
             className="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-center cursor-pointer hover:shadow-md"
             onClick={() => setViewFilter("verified")}
           >
             <p className="text-lg font-black text-emerald-700">{stats.verified}</p>
-            <p className="text-[9px] font-semibold text-emerald-600 uppercase">Verified</p>
+            <p className="text-[9px] font-semibold text-emerald-600 uppercase">{T.statVerified}</p>
           </div>
           <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-center">
             <p className="text-lg font-black text-blue-700">{stats.contacted}</p>
-            <p className="text-[9px] font-semibold text-blue-500 uppercase">Contacted</p>
+            <p className="text-[9px] font-semibold text-blue-500 uppercase">{T.statContacted}</p>
           </div>
           <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-center">
             <p className="text-lg font-black text-amber-600">{stats.stale}</p>
-            <p className="text-[9px] font-semibold text-amber-500 uppercase">Stale (30d+)</p>
+            <p className="text-[9px] font-semibold text-amber-500 uppercase">{T.statStale}</p>
           </div>
           <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-center">
             <p className="text-lg font-black text-red-600">{stats.noActivity}</p>
-            <p className="text-[9px] font-semibold text-red-500 uppercase">No Activity</p>
+            <p className="text-[9px] font-semibold text-red-500 uppercase">{T.statNoActivity}</p>
           </div>
         </div>
       )}
@@ -348,7 +351,7 @@ export default function BrandPipelinePage() {
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <input
           type="text"
-          placeholder="Search brands or contacts..."
+          placeholder={T.searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
@@ -358,33 +361,33 @@ export default function BrandPipelinePage() {
           onChange={(e) => setRelevanceFilter(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
         >
-          <option value="all">All Relevance</option>
-          <option value="high">High FUZE Fit</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
+          <option value="all">{T.filterAllRelevance}</option>
+          <option value="high">{T.relevanceHigh}</option>
+          <option value="medium">{T.relevanceMedium}</option>
+          <option value="low">{T.relevanceLow}</option>
         </select>
         <select
           value={viewFilter}
           onChange={(e) => setViewFilter(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
         >
-          <option value="actionable">Actionable</option>
-          <option value="enriched">Enriched (with contacts)</option>
-          <option value="verified">Verified Only</option>
-          <option value="all">All Active</option>
-          <option value="everything">Everything</option>
+          <option value="actionable">{T.viewActionable}</option>
+          <option value="enriched">{T.viewEnriched}</option>
+          <option value="verified">{T.viewVerified}</option>
+          <option value="all">{T.viewAll}</option>
+          <option value="everything">{T.viewEverything}</option>
         </select>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as any)}
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
         >
-          <option value="relevance">Sort: Relevance</option>
-          <option value="potential">Sort: Potential $</option>
-          <option value="stage">Sort: Stage</option>
-          <option value="name">Sort: A-Z</option>
-          <option value="activity">Sort: Last Activity</option>
-          <option value="contacts">Sort: Most Contacts</option>
+          <option value="relevance">{T.sortRelevance}</option>
+          <option value="potential">{T.sortPotential}</option>
+          <option value="stage">{T.sortStage}</option>
+          <option value="name">{T.sortName}</option>
+          <option value="activity">{T.sortActivity}</option>
+          <option value="contacts">{T.sortContacts}</option>
         </select>
       </div>
 
@@ -392,7 +395,7 @@ export default function BrandPipelinePage() {
       <div className="space-y-1">
         {sorted.length === 0 ? (
           <div className="text-center py-16 bg-white border rounded-xl">
-            <p className="text-slate-400">No brands match your filters</p>
+            <p className="text-slate-400">{T.emptyBrands}</p>
           </div>
         ) : (
           sorted.map((b) => {
@@ -471,12 +474,12 @@ export default function BrandPipelinePage() {
                           className={`px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 ${potentialChipClass(b.predictedValueFactors?.stageProbability)}`}
                           title={potentialTooltip(b)}
                         >
-                          ${Math.round(b.predictedValueUSD / 1000)}k potential
+                          ${Math.round(b.predictedValueUSD / 1000)}{T.potentialChipSuffix}
                         </span>
                       )}
                     </div>
                     {b.salesRep && (
-                      <span className="text-[10px] text-slate-400">Rep: {b.salesRep}</span>
+                      <span className="text-[10px] text-slate-400">{T.repPrefix} {b.salesRep}</span>
                     )}
                   </div>
 
@@ -521,7 +524,7 @@ export default function BrandPipelinePage() {
                                 ? `You sent LI ${new Date(pcLI.sentAt).toLocaleDateString()}`
                                 : pcLIOthers.length > 0
                                   ? `${pcLIOthers[0].user.name} sent LI`
-                                  : "Mark LinkedIn sent"
+                                  : T.titleMarkLinkedInSent
                             }
                           >
                             {pcLI ? "✓" : pcLIOthers.length > 0 ? "·" : "LI"}
@@ -550,7 +553,7 @@ export default function BrandPipelinePage() {
                                 ? `You emailed ${new Date(pcEM.sentAt).toLocaleDateString()}`
                                 : pcEMOthers.length > 0
                                   ? `${pcEMOthers[0].user.name} emailed`
-                                  : "Mark email sent"
+                                  : T.titleMarkEmailSent
                             }
                           >
                             {pcEM ? "✓" : pcEMOthers.length > 0 ? "·" : "Em"}
@@ -558,7 +561,7 @@ export default function BrandPipelinePage() {
                         </div>
                       </>
                     ) : (
-                      <span className="text-[10px] text-slate-300 italic">No contacts</span>
+                      <span className="text-[10px] text-slate-300 italic">{T.noContacts}</span>
                     )}
                   </div>
 
@@ -566,13 +569,13 @@ export default function BrandPipelinePage() {
                   <div className="w-[80px] text-right shrink-0 hidden sm:block">
                     <p className={`text-xs font-bold ${activityColor}`}>
                       {b.daysSinceActivity === null
-                        ? "Never"
+                        ? T.activityNever
                         : b.daysSinceActivity === 0
-                          ? "Today"
-                          : `${b.daysSinceActivity}d ago`}
+                          ? T.activityToday
+                          : T.activityDaysAgo.replace("{n}", String(b.daysSinceActivity))}
                     </p>
                     <p className="text-[9px] text-slate-400">
-                      {b.contactCount} contact{b.contactCount !== 1 ? "s" : ""}
+                      {b.contactCount} {b.contactCount !== 1 ? T.contactsSuffix : T.contactSuffix}
                     </p>
                   </div>
 
@@ -584,22 +587,22 @@ export default function BrandPipelinePage() {
                         setNoteForm({ content: "", noteType: "NOTE" });
                       }}
                       className="px-2 py-1 text-[10px] font-bold rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
-                      title="Log activity"
+                      title={T.titleLogActivity}
                     >
-                      + Note
+                      {T.btnNote}
                     </button>
                     <select
                       value={b.stage}
                       onChange={(e) => handleStageChange(b.id, e.target.value)}
                       className="px-1 py-1 text-[10px] border border-slate-200 rounded bg-white"
-                      title="Change stage"
+                      title={T.titleChangeStage}
                     >
                       {STAGES.map((s) => (
                         <option key={s.key} value={s.key}>
                           {s.label}
                         </option>
                       ))}
-                      <option value="ARCHIVE">Archive</option>
+                      <option value="ARCHIVE">{T.btnArchive}</option>
                     </select>
                   </div>
                 </div>
@@ -613,11 +616,11 @@ export default function BrandPipelinePage() {
                         onChange={(e) => setNoteForm({ ...noteForm, noteType: e.target.value })}
                         className="px-2 py-1.5 border border-slate-300 rounded text-xs shrink-0"
                       >
-                        <option value="NOTE">Note</option>
-                        <option value="CALL">Call</option>
-                        <option value="EMAIL">Email</option>
-                        <option value="MEETING">Meeting</option>
-                        <option value="FOLLOW_UP">Follow-up</option>
+                        <option value="NOTE">{T.noteTypeNote}</option>
+                        <option value="CALL">{T.noteTypeCall}</option>
+                        <option value="EMAIL">{T.noteTypeEmail}</option>
+                        <option value="MEETING">{T.noteTypeMeeting}</option>
+                        <option value="FOLLOW_UP">{T.noteTypeFollowUp}</option>
                       </select>
                       <input
                         type="text"
@@ -626,7 +629,7 @@ export default function BrandPipelinePage() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter" && noteForm.content.trim()) handleQuickNote(b.id);
                         }}
-                        placeholder="Quick note... (Enter to save)"
+                        placeholder={T.quickNotePlaceholder}
                         className="flex-1 px-3 py-1.5 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         autoFocus
                       />
@@ -635,7 +638,7 @@ export default function BrandPipelinePage() {
                         disabled={noteSaving || !noteForm.content.trim()}
                         className="px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded hover:bg-blue-700 disabled:opacity-50"
                       >
-                        {noteSaving ? "..." : "Save"}
+                        {noteSaving ? "..." : T.noteSave}
                       </button>
                     </div>
                   </div>
@@ -648,16 +651,16 @@ export default function BrandPipelinePage() {
                       {/* Contacts with outreach checkmarks */}
                       <div>
                         <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">
-                          Contacts ({b.contactCount})
+                          {T.contactsLabel} ({b.contactCount})
                         </p>
                         {b.contacts.length === 0 ? (
                           <p className="text-xs text-slate-400 italic">
-                            No contacts —{" "}
+                            {T.noContactsRun}{" "}
                             <Link
                               href={`/brands/${b.id}`}
                               className="text-blue-600 hover:underline"
                             >
-                              run research
+                              {T.runResearch}
                             </Link>
                           </p>
                         ) : (
@@ -691,7 +694,7 @@ export default function BrandPipelinePage() {
                                         {c.name}
                                         {c.decisionMaker && (
                                           <span className="ml-1 text-[8px] bg-amber-100 text-amber-700 px-1 rounded">
-                                            DM
+                                            {T.badgeDM}
                                           </span>
                                         )}
                                       </p>
@@ -734,7 +737,7 @@ export default function BrandPipelinePage() {
                                             : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-blue-300 hover:text-blue-500"
                                       }`}
                                     >
-                                      {liMe ? "✓ " : ""}LinkedIn sent
+                                      {liMe ? "✓ " : ""}{T.linkedInSentLabel}
                                       {liOthers.length > 0 && !liMe && (
                                         <span className="text-[8px] ml-1">
                                           ({liOthers[0].user.name})
@@ -751,7 +754,7 @@ export default function BrandPipelinePage() {
                                             : "bg-slate-50 text-slate-400 border border-slate-200 hover:border-violet-300 hover:text-violet-500"
                                       }`}
                                     >
-                                      {emMe ? "✓ " : ""}Email sent
+                                      {emMe ? "✓ " : ""}{T.emailSentLabel}
                                       {emOthers.length > 0 && !emMe && (
                                         <span className="text-[8px] ml-1">
                                           ({emOthers[0].user.name})
@@ -778,7 +781,7 @@ export default function BrandPipelinePage() {
                       {/* Last Activity */}
                       <div>
                         <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">
-                          Last Activity
+                          {T.sectionLastActivity}
                         </p>
                         {b.lastNote ? (
                           <div className="p-2 bg-white rounded-lg">
@@ -811,7 +814,7 @@ export default function BrandPipelinePage() {
                           </div>
                         ) : (
                           <p className="text-xs text-slate-400 italic p-2">
-                            No activity logged yet
+                            {T.noActivityLogged}
                           </p>
                         )}
                       </div>
@@ -819,7 +822,7 @@ export default function BrandPipelinePage() {
                       {/* Quick Stats & Links */}
                       <div>
                         <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">
-                          Details
+                          {T.sectionDetails}
                         </p>
                         <div className="space-y-1 text-xs">
                           {b.website && (
@@ -836,36 +839,36 @@ export default function BrandPipelinePage() {
                           )}
                           {b.textileCategory && (
                             <p className="text-slate-600">
-                              Category: {b.textileCategory.replace(/_/g, " ")}
+                              {T.categoryLabel} {b.textileCategory.replace(/_/g, " ")}
                             </p>
                           )}
                           {b.validationStatus && (
-                            <p className="text-slate-600">Validation: {b.validationStatus}</p>
+                            <p className="text-slate-600">{T.validationLabel} {b.validationStatus}</p>
                           )}
                           <div className="flex flex-wrap gap-1 mt-2">
                             {b.counts.fabrics > 0 && (
                               <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">
-                                {b.counts.fabrics} fabrics
+                                {b.counts.fabrics} {T.fabricsSuffix}
                               </span>
                             )}
                             {b.counts.submissions > 0 && (
                               <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">
-                                {b.counts.submissions} submissions
+                                {b.counts.submissions} {T.submissionsSuffix}
                               </span>
                             )}
                             {b.counts.factories > 0 && (
                               <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">
-                                {b.counts.factories} factories
+                                {b.counts.factories} {T.factoriesSuffix}
                               </span>
                             )}
                             {b.counts.sows > 0 && (
                               <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] text-slate-600">
-                                {b.counts.sows} SOWs
+                                {b.counts.sows} {T.sowsSuffix}
                               </span>
                             )}
                             {b.counts.fuzeOrders > 0 && (
                               <span className="px-1.5 py-0.5 bg-emerald-100 rounded text-[9px] text-emerald-700">
-                                {b.counts.fuzeOrders} orders
+                                {b.counts.fuzeOrders} {T.ordersSuffix}
                               </span>
                             )}
                           </div>
@@ -874,13 +877,13 @@ export default function BrandPipelinePage() {
                               href={`/brands/${b.id}`}
                               className="px-2 py-1 bg-blue-600 text-white rounded text-[10px] font-bold hover:bg-blue-700"
                             >
-                              Open Brand
+                              {T.btnOpenBrand}
                             </Link>
                             <Link
                               href={`/brands/${b.id}#activity`}
                               className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold hover:bg-slate-200"
                             >
-                              Full CRM
+                              {T.btnFullCRM}
                             </Link>
                           </div>
                         </div>
@@ -896,7 +899,7 @@ export default function BrandPipelinePage() {
 
       {sorted.length > 0 && (
         <p className="text-xs text-slate-400 text-center mt-4">
-          Showing {sorted.length} brands · Use filters to narrow down
+          {T.showingFooterPrefix} {sorted.length} {T.showingFooterSuffix}
         </p>
       )}
     </div>
