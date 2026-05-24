@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 /**
  * Accounts — brands that have moved past the LEAD stage.
@@ -24,22 +25,24 @@ const STAGE_ORDER = [
   "CUSTOMER_WON",
 ];
 
-const STAGE_META: Record<string, { label: string; color: string; icon: string }> = {
-  PRESENTATION: { label: "Presentation", color: "bg-blue-100 text-blue-800 border-blue-200", icon: "📊" },
-  BRAND_TESTING: { label: "Brand Testing", color: "bg-indigo-100 text-indigo-800 border-indigo-200", icon: "🧪" },
-  FACTORY_ONBOARDING: { label: "Factory Onboarding", color: "bg-purple-100 text-purple-800 border-purple-200", icon: "🏭" },
-  FACTORY_TESTING: { label: "Factory Testing", color: "bg-violet-100 text-violet-800 border-violet-200", icon: "🔬" },
-  PRODUCTION: { label: "Production", color: "bg-emerald-100 text-emerald-800 border-emerald-200", icon: "✅" },
-  BRAND_EXPANSION: { label: "Re-Connect", color: "bg-teal-100 text-teal-800 border-teal-200", icon: "🔄" },
-  CUSTOMER_WON: { label: "Customer Won", color: "bg-amber-100 text-amber-800 border-amber-200", icon: "🏆" },
-};
-
 export default function AccountsPage() {
+  const { t } = useI18n();
+  const T = t.accountsAdmin;
   const [accounts, setAccounts] = useState<any[]>([]);
   const [stageSummary, setStageSummary] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
+
+  const STAGE_META: Record<string, { label: string; color: string; icon: string }> = {
+    PRESENTATION: { label: T.stagePresentation, color: "bg-blue-100 text-blue-800 border-blue-200", icon: "📊" },
+    BRAND_TESTING: { label: T.stageBrandTesting, color: "bg-indigo-100 text-indigo-800 border-indigo-200", icon: "🧪" },
+    FACTORY_ONBOARDING: { label: T.stageFactoryOnboarding, color: "bg-purple-100 text-purple-800 border-purple-200", icon: "🏭" },
+    FACTORY_TESTING: { label: T.stageFactoryTesting, color: "bg-violet-100 text-violet-800 border-violet-200", icon: "🔬" },
+    PRODUCTION: { label: T.stageProduction, color: "bg-emerald-100 text-emerald-800 border-emerald-200", icon: "✅" },
+    BRAND_EXPANSION: { label: T.stageReConnect, color: "bg-teal-100 text-teal-800 border-teal-200", icon: "🔄" },
+    CUSTOMER_WON: { label: T.stageCustomerWon, color: "bg-amber-100 text-amber-800 border-amber-200", icon: "🏆" },
+  };
 
   useEffect(() => { load(); }, [stageFilter, search]);
 
@@ -91,10 +94,9 @@ export default function AccountsPage() {
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-black text-slate-900 mb-1">Accounts</h1>
+        <h1 className="text-3xl font-black text-slate-900 mb-1">{T.title}</h1>
         <p className="text-slate-600">
-          Brands past the Lead stage — received a presentation, in testing, producing, or already customers.
-          For new prospects, go to <Link href="/admin/brand-pipeline" className="text-[#00b4c3] font-semibold">Brand Pipeline</Link>.
+          {T.subtitleBefore} <Link href="/admin/brand-pipeline" className="text-[#00b4c3] font-semibold">{T.brandPipelineLink}</Link>.
         </p>
       </div>
 
@@ -106,7 +108,7 @@ export default function AccountsPage() {
             stageFilter === "all" ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200 hover:border-slate-300"
           }`}
         >
-          <p className="text-[10px] font-bold uppercase tracking-wide opacity-80">All</p>
+          <p className="text-[10px] font-bold uppercase tracking-wide opacity-80">{T.allFilter}</p>
           <p className="text-2xl font-black">{totalAccounts}</p>
         </button>
         {STAGE_ORDER.map((s) => {
@@ -137,7 +139,7 @@ export default function AccountsPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search accounts by name or contact..."
+          placeholder={T.searchPlaceholder}
           className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#00b4c3] outline-none"
         />
       </div>
@@ -146,10 +148,10 @@ export default function AccountsPage() {
       {accounts.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
           <p className="text-4xl mb-3">⭐</p>
-          <h3 className="font-bold text-slate-900 text-lg mb-1">No accounts yet in this view</h3>
-          <p className="text-sm text-slate-500">Accounts appear when brands move from LEAD to PRESENTATION or later.</p>
+          <h3 className="font-bold text-slate-900 text-lg mb-1">{T.emptyTitle}</h3>
+          <p className="text-sm text-slate-500">{T.emptyBody}</p>
           <Link href="/admin/brand-pipeline" className="inline-block mt-4 px-4 py-2 bg-[#00b4c3] text-white rounded-lg text-sm font-semibold hover:bg-[#009aa8]">
-            Go to Brand Pipeline
+            {T.goToPipelineBtn}
           </Link>
         </div>
       ) : (
@@ -173,15 +175,15 @@ export default function AccountsPage() {
                       {meta.label}
                     </span>
                     {a.fuzeRelevance === "high" && (
-                      <span className="px-2 py-0.5 text-xs font-semibold bg-red-50 text-red-700 border border-red-200 rounded-full">🔥 High relevance</span>
+                      <span className="px-2 py-0.5 text-xs font-semibold bg-red-50 text-red-700 border border-red-200 rounded-full">{T.highRelevanceBadge}</span>
                     )}
                     {a.salesRep?.name && (
-                      <span className="text-xs text-slate-500">· AM: {a.salesRep.name}</span>
+                      <span className="text-xs text-slate-500">· {T.amPrefix} {a.salesRep.name}</span>
                     )}
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-slate-600 mt-1">
                     {a.textileCategory && <span>{a.textileCategory}</span>}
-                    {a.contacts?.length > 0 && <span>{a.contacts.length} contacts{enrichedCount > 0 ? ` (${enrichedCount} enriched)` : ""}</span>}
+                    {a.contacts?.length > 0 && <span>{a.contacts.length} {T.contactsLabel}{enrichedCount > 0 ? ` (${enrichedCount} ${T.enrichedSuffix})` : ""}</span>}
                     {a.website && <span className="truncate">{a.website}</span>}
                   </div>
                 </div>
@@ -198,7 +200,7 @@ export default function AccountsPage() {
                     {STAGE_ORDER.map((s) => (
                       <option key={s} value={s}>{STAGE_META[s].label}</option>
                     ))}
-                    <option value="LEAD">← Back to Lead</option>
+                    <option value="LEAD">{T.backToLeadOption}</option>
                   </select>
                   <span className="text-slate-400">→</span>
                 </div>
