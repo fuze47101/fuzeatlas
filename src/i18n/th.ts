@@ -7869,6 +7869,26 @@ const th: Translations = {
     footnote: "สำเนาสำหรับลูกค้าใช้ \"FUZE residual\" — การวัดเมตาวัสดุจากรายงาน ICP ของห้องปฏิบัติการ ติดป้าย FUZE / เมตาวัสดุเสมอในส่งมอบลูกค้า (กฎ brand-voice ของ CLAUDE.md)",
   },
 
+  engagementDebug: {
+    crumb: "Engagement debug",
+    engagementSuffix: "engagement",
+    calculatedLabel: "คำนวณแล้ว",
+    overallScoreLabel: "คะแนนรวม",
+    outOf100: "จาก 100",
+    inputsLabel: "Inputs",
+    daysSinceContact: "วันตั้งแต่ติดต่อ",
+    tests30d: "การทดสอบ (30 วัน)",
+    tests90d: "การทดสอบ (90 วัน)",
+    avgPayDays: "วันชำระเฉลี่ย",
+    overdueInvoices: "ใบแจ้งหนี้เลยกำหนด",
+    factorBreakdownTitle: "การแยกปัจจัย",
+    weightLabel: "น้ำหนัก",
+    contributesLabel: "มีส่วนร่วม",
+    ptsLabel: "pts",
+    loading: "กำลังโหลด…",
+    failedToLoad: "ไม่สามารถโหลดได้",
+  },
+
 };
 
 export default th;
