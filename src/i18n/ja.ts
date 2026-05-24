@@ -7482,6 +7482,21 @@ const ja: Translations = {
     errNetwork: "ネットワークエラー",
   },
 
+  verifyEmail: {
+    verifyingTitle: "メールアドレスを確認しています...",
+    successTitle: "メールアドレスを確認しました",
+    welcomePrefix: "ようこそ",
+    successBody: "メールアドレスが確認されました。ログインへリダイレクトしています...",
+    failedTitle: "確認に失敗しました",
+    resendVerificationBtn: "確認メールを再送信",
+    checkEmailTitle: "メールをご確認ください",
+    checkEmailBody: "ご登録のメールアドレスに確認リンクを送信しました。リンクをクリックしてアカウントを認証してください。",
+    resendEmailBtn: "メールを再送信",
+    sendingBtn: "送信中...",
+    errVerifyFailed: "メールアドレスの確認に失敗しました",
+    errSendFailed: "確認メールの送信に失敗しました",
+  },
+
 };
 
 export default ja;
