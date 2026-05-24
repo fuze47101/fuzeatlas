@@ -6174,6 +6174,35 @@ const ja: Translations = {
     noData: "データなし",
   },
 
+  educationApplication: {
+    pageMetaTitle: "塗布方法",
+    backLink: "← FUZE基礎に戻る",
+    kicker: "塗布方法",
+    heroTitle: "FUZEは既存の仕上げ加工ラインで使用できます",
+    heroBody: "FUZEを使用するために、新しいタンクや乾燥炉、専用の設備を導入する必要はありません。今日稼働しているあらゆる繊維生産設備を3つの塗布方法でカバーします。F4 Essential Protectionは、多くの基材で硬化炉を一切必要としません。",
+    methodExhaustName: "吸尽法 (染浴)",
+    methodExhaustDesc: "染浴にFUZEを添加します。既存の染料吸尽工程中にメタマテリアルが結合します。新しいタンクや容器、ラインの追加は不要です。",
+    methodExhaustWhen: "大量連続染色に最適です。メタマテリアルが染料固着工程と一体化します。",
+    methodPdcName: "パッドドライキュア法",
+    methodPdcDesc: "希釈したFUZE浴を入れた標準的なパダーに生地を通します。通常通り絞り、乾燥、硬化を行ってください。硬化温度は150〜170℃です。",
+    methodPdcWhen: "最も一般的な塗布方法です。今日稼働しているすべての繊維仕上げラインと互換性があります。",
+    methodSprayName: "スプレー法 (ヘッド間隔調整)",
+    methodSprayDesc: "ヘッド間隔6インチ、ライン速度15 m/分。希釈したFUZEを生地表面に噴霧した後、乾燥・硬化させます。縫製済みの衣料品や不織布基材に最適です。",
+    methodSprayWhen: "既に裁断・縫製された衣料品、または吸尽法やPDC法が適さない特殊基材に。",
+    whenToUseLabel: "適用場面",
+    operatorTitle: "工場オペレーターにとっての利点",
+    operatorBullet1: "✓ 新規設備投資は不要。FUZEは既存のパッド/染色/スプレーラインに組み込めます。",
+    operatorBullet2: "✓ バインダー、架橋剤、ホルムアルデヒドは不使用。在庫管理が簡素化され、発がん性物質の取扱いプロトコルも不要です。",
+    operatorBullet3: "✓ F4では硬化炉が不要。低ティア塗布は風乾が可能で、F1〜F3は標準的なPDC仕上げと同じ150〜170℃を使用します。",
+    operatorBullet4: "✓ 保管中のFUZEには使用期限がありません。ドラムやカーボイは仕上げ室に無期限に保管しても劣化しません。",
+    operatorBullet5: "✓ 標準19Lカーボイが最小発注単位です。正確な使用量に合わせて、カスタム容量 (47L、285L、1300L) でも発注可能です。",
+    runNumbersTitle: "数値を試算する",
+    runNumbersBody: "塗布計算機では、選択したティアでの生地1平方メートルあたりに必要なFUZE量を正確に算出します。生地重量 (gsm)、幅、目標ティアを入力すると、FUZE浴のリットル数、原液のmL数、メートルあたりの単価が表示されます。",
+    runNumbersCta: "塗布計算機を開く →",
+    backBasicsBtn: "FUZE基礎に戻る",
+    seePricingBtn: "価格とティアを見る",
+  },
+
 };
 
 export default ja;
