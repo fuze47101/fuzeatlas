@@ -7684,6 +7684,24 @@ const th: Translations = {
     websiteLabel: "เว็บไซต์",
   },
 
+  reportSharePage: {
+    unavailableTitle: "รายงานไม่พร้อมใช้งาน",
+    unavailableBodyPrefix: "สำหรับการเข้าถึงระยะยาว เข้าสู่ระบบที่",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "และค้นหารายงานใต้ My Reports หรือตอบกลับอีเมลที่นี่มา",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · รายงานการใช้งาน & การตรวจสอบ",
+    heading: "สูตรการบำบัด FUZE & การตรวจสอบ",
+    issuedLabel: "ออกเมื่อ",
+    linkValidUntil: "· ลิงก์ตรงนี้ใช้ได้จนถึง",
+    preparedForTitle: "จัดเตรียมสำหรับ",
+    execSummaryTitle: "บทสรุปผู้บริหาร",
+    recipeTitle: "สูตรที่แนะนำ",
+    fuzeRequiredTitle: "FUZE ที่ต้องการ (ขนาดอ่างการผลิต)",
+    labIcpTitle: "การยืนยัน ICP จากห้องปฏิบัติการอิสระ",
+    accessLaterTitle: "การเข้าถึงรายงานนี้ในภายหลัง",
+  },
+
 };
 
 export default th;
