@@ -7682,6 +7682,24 @@ const hi: Translations = {
     websiteLabel: "वेबसाइट",
   },
 
+  reportSharePage: {
+    unavailableTitle: "रिपोर्ट अनुपलब्ध",
+    unavailableBodyPrefix: "दीर्घकालिक एक्सेस के लिए, यहां साइन इन करें",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "और My Reports के तहत रिपोर्ट खोजें, या उस ईमेल का उत्तर दें जिससे यह आया।",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · अनुप्रयोग और सत्यापन रिपोर्ट",
+    heading: "FUZE ट्रीटमेंट रेसिपी और सत्यापन",
+    issuedLabel: "जारी",
+    linkValidUntil: "· यह सीधा लिंक तब तक मान्य है",
+    preparedForTitle: "के लिए तैयार",
+    execSummaryTitle: "कार्यकारी सारांश",
+    recipeTitle: "अनुशंसित रेसिपी",
+    fuzeRequiredTitle: "FUZE आवश्यक (उत्पादन बाथ आकार)",
+    labIcpTitle: "स्वतंत्र लैब ICP सत्यापन",
+    accessLaterTitle: "इस रिपोर्ट को बाद में एक्सेस करना",
+  },
+
 };
 
 export default hi;
