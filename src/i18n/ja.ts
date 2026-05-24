@@ -7851,6 +7851,24 @@ const ja: Translations = {
     openSameLink: "同じリンクを開く →",
   },
 
+  apiDocs: {
+    heading: "API ドキュメント",
+    subtitle: "FUZE Atlas API リファレンス",
+    authStrong: "認証:",
+    authBodyPrefix: "以下を除くすべてのエンドポイント",
+    authBodySuffix: "には有効な JWT セッションクッキーが必要です。",
+    searchPlaceholder: "エンドポイントをパスまたは説明で検索...",
+    allMethodsBtn: "すべてのメソッド",
+    showingPrefix: "表示中",
+    showingOf: "/ 全",
+    endpointsLabel: "件のエンドポイント",
+    collapseAllBtn: "すべて折りたたむ",
+    expandAllBtn: "すべて展開",
+    noResults: "検索条件に一致するエンドポイントは見つかりませんでした。",
+    clearFiltersBtn: "フィルタをクリア",
+    footerPrefix: "FUZE Atlas API ドキュメント - 最終更新",
+  },
+
 };
 
 export default ja;
