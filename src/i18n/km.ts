@@ -6475,6 +6475,44 @@ const km: Translations = {
     truncatedNotice: "Showing first 100 of {total} brands. Use filters to narrow down.",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "ការដឹកជញ្ជូន ទេt Found",
+    notFoundBodyTpl: "We couldn't find order {order}.",
+    notFoundFooter: "If you received this កូដ QR on a FUZE shipment, contact andrew@fuze47.com.",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "ការដឹកជញ្ជូន Verification",
+
+    sectionShipment: "ការដឹកជញ្ជូន ព័ត៌មានលម្អិត",
+    fieldFuzeVolume: "FUZE បរិមាណ",
+    bottlesSuffix: "bottles",
+    baseFuzePrefix: "base",
+    wastageSuffix: "wastage",
+    fieldTier: "កម្រិត",
+    fieldMethod: "Treatment Method",
+    fieldFactory: "រោងចក្រ",
+    fieldForBrand: "For ម៉ាក",
+    fieldFabric: "ក្រណាត់",
+    fieldFulfillment: "Fulfillment",
+    directUsa: "Direct from USA",
+    distributorFallback: "អ្នកចែកចាយ",
+    fieldTracking: "Tracking",
+
+    sectionDocs: "Product ឯកសារ",
+    sdsLabel: "Safety Data Sheet (SDS)",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "Certificate of Analysis (COA)",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "បើក the compliance library",
+
+    sectionTimeline: "Lifecycle Timeline",
+    viewDocument: "មើល document →",
+    timelineEmpty: "ទេ lifecycle events logged yet. Timeline will populate as the shipment moves.",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Questions?",
+  },
+
 };
 
 export default km;
