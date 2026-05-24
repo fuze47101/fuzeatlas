@@ -7078,6 +7078,26 @@ const tr: Translations = {
     colSource: "Kaynak",
   },
 
+  interLabVariance: {
+    loadingLabel: "Laboratuvarlar arası varyans yükleniyor",
+    crumbQualityLabs: "Kalite ve Laboratuvarlar",
+    crumbInterLabVariance: "Laboratuvarlar arası varyans",
+    title: "Laboratuvarlar arası varyans",
+    subtitleBefore: "Aynı kumaşın son",
+    subtitleAfter: "gün içinde ≥2 laboratuvar tarafından test edildiği yerler. Aralığa göre azalan (maks − min) sıralanır.",
+    colFabric: "Kumaş",
+    colMethod: "Yöntem",
+    colRange: "Aralık",
+    colMeanSigma: "Ortalama ± σ",
+    colPerLab: "Laboratuvar başına sonuçlar",
+    emptyTitle: "Henüz çoklu laboratuvar kumaşı yok",
+    emptyBodyBefore: "Laboratuvarlar arası varyans, son",
+    emptyBodyAfter: "gün içinde ≥2 laboratuvar tarafından test edilen kumaşları karşılaştırır. Aynı kumaş bir partner laboratuvarda VE FUZE USA'da (veya herhangi bir 2-laboratuvar çiftinde) test edildiğinde burada görünür.",
+    biasTitle: "Laboratuvar başına kalibrasyon sapması",
+    biasHint: "(bu laboratuvarın sonucu − grup ortalaması) tüm paylaşılan kumaşlarda ortalama. Pozitif = akran laboratuvarlardan daha yüksek; negatif = daha düşük.",
+    emptyBias: "Henüz sapma verisi yok.",
+  },
+
 };
 
 export default tr;
