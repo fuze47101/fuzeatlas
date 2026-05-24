@@ -7957,6 +7957,31 @@ const ja: Translations = {
     accessLaterTitle: "後でこのレポートにアクセスする",
   },
 
+  settingsAuditLog: {
+    title: "監査ログ",
+    subtitle: "システム変更とユーザーアクションをすべて追跡します",
+    actionLabel: "アクション",
+    allActionsOption: "すべてのアクション",
+    entityTypeLabel: "エンティティ種別",
+    allEntitiesOption: "すべてのエンティティ",
+    fromDateLabel: "開始日",
+    toDateLabel: "終了日",
+    loadingText: "読み込み中...",
+    emptyText: "監査ログが見つかりません",
+    colTimestamp: "タイムスタンプ",
+    colUser: "ユーザー",
+    colAction: "アクション",
+    colEntity: "エンティティ",
+    colDescription: "説明",
+    systemUserFallback: "システム",
+    showingPrefix: "表示中",
+    showingTo: "～",
+    showingOf: "/ 全",
+    showingSuffix: "件のログ",
+    prevBtn: "前へ",
+    nextBtn: "次へ",
+  },
+
 };
 
 export default ja;
