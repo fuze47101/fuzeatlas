@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { calcQuote, money, CURRENCIES, type WidthUnit, type CostAdder } from "@/lib/fuze-calc";
 import { COMPETITORS, FUZE, calcEnvironmentalScore, calcCostComparison, applyOverrides, type Competitor, type PriceOverride } from "@/lib/competitors";
+import { useI18n } from "@/i18n";
 
 // ─── Helpers ──────────────────────────────────
 function uid() { return Math.random().toString(16).slice(2); }
@@ -144,6 +145,8 @@ function Gradebadge({ grade, score }: { grade: string; score: number }) {
 
 // ─── Main Page ────────────────────────────────
 export default function PricingPage() {
+  const { t } = useI18n();
+  const T = t.pricingPage;
   // Admin price overrides (fetched from DB)
   const [priceOverrides, setPriceOverrides] = useState<PriceOverride[]>([]);
   const competitors = useMemo(() => applyOverrides([...COMPETITORS], priceOverrides), [priceOverrides]);
@@ -234,13 +237,13 @@ export default function PricingPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-          <Link href="/dashboard" className="hover:text-[#00b4c3]">Dashboard</Link>
+          <Link href="/dashboard" className="hover:text-[#00b4c3]">{T.crumbDashboard}</Link>
           <span>/</span>
-          <span className="text-slate-800 font-medium">Pricing & Environmental Comparison</span>
+          <span className="text-slate-800 font-medium">{T.crumbCurrent}</span>
         </div>
-        <h1 className="text-2xl font-bold text-slate-900">FUZE Pricing & Environmental Score</h1>
+        <h1 className="text-2xl font-bold text-slate-900">{T.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Calculate FUZE application cost, compare against competitors, and generate environmental impact scores.
+          {T.pageSubtitle}
         </p>
       </div>
 
@@ -248,12 +251,12 @@ export default function PricingPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Inputs */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-slate-800 mb-4">FUZE Quote Calculator</h2>
+          <h2 className="text-lg font-semibold text-slate-800 mb-4">{T.calculatorTitle}</h2>
 
           {/* Currency & Units */}
           <div className="flex flex-wrap gap-4 mb-6 p-4 bg-slate-50 rounded-xl">
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">Currency</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1">{T.currencyLabel}</label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
@@ -266,7 +269,7 @@ export default function PricingPage() {
             </div>
             {currency !== "USD" && (
               <div>
-                <label className="block text-xs font-medium text-slate-500 mb-1">1 USD =</label>
+                <label className="block text-xs font-medium text-slate-500 mb-1">{T.fxRateLabel}</label>
                 <input
                   type="number"
                   value={fxRate}
@@ -276,15 +279,15 @@ export default function PricingPage() {
               </div>
             )}
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">Width unit</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1">{T.widthUnitLabel}</label>
               <div className="flex gap-1">
                 <button onClick={() => setWidthUnit("in")}
                   className={`px-3 py-1.5 text-sm rounded-lg ${widthUnit === "in" ? "bg-slate-900 text-white" : "bg-white border border-slate-300 text-slate-600"}`}>
-                  Inches
+                  {T.widthUnitInches}
                 </button>
                 <button onClick={() => setWidthUnit("m")}
                   className={`px-3 py-1.5 text-sm rounded-lg ${widthUnit === "m" ? "bg-slate-900 text-white" : "bg-white border border-slate-300 text-slate-600"}`}>
-                  Meters
+                  {T.widthUnitMeters}
                 </button>
               </div>
             </div>
@@ -292,7 +295,7 @@ export default function PricingPage() {
 
           {/* FUZE Application Tier */}
           <div className="mb-5">
-            <label className="block text-xs font-medium text-slate-600 mb-2">FUZE Application Tier</label>
+            <label className="block text-xs font-medium text-slate-600 mb-2">{T.tierSectionLabel}</label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {FUZE_TIERS.map(tier => {
                 const selected = dose === tier.dose;
@@ -329,23 +332,23 @@ export default function PricingPage() {
           {/* Fabric Inputs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Fabric Weight (GSM)</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{T.fabricWeightLabel}</label>
               <input type="number" value={gsm} min={0} onChange={(e) => setGsm(e.target.value === "" ? "" : Number(e.target.value))}
                 onBlur={() => { if (gsm === "") setGsm(0); }}
                 className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Width ({widthUnit === "in" ? "inches" : "meters"})</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{widthUnit === "in" ? T.widthInchesLabel : T.widthMetersLabel}</label>
               <input type="number" value={width} min={0} step="0.01" onChange={(e) => setWidth(Number(e.target.value))}
                 className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">FUZE Price ($/L)</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{T.priceLabel}</label>
               <input type="number" value={pricePerLiter} min={0} step={0.01} onChange={(e) => setPricePerLiter(Number(e.target.value))}
                 className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Discount (%)</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{T.discountLabel}</label>
               <input type="number" value={discountPercent} min={0} max={100} step={0.5} onChange={(e) => setDiscountPercent(Number(e.target.value))}
                 className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
             </div>
@@ -353,8 +356,8 @@ export default function PricingPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Job Length (m)</label>
-              <input type="number" value={lengthMeters} min={0} placeholder="Optional"
+              <label className="block text-xs font-medium text-slate-600 mb-1">{T.jobLengthLabel}</label>
+              <input type="number" value={lengthMeters} min={0} placeholder={T.optionalPlaceholder}
                 onChange={(e) => setLengthMeters(e.target.value === "" ? "" : Number(e.target.value))}
                 className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm" />
             </div>
@@ -363,8 +366,8 @@ export default function PricingPage() {
           {/* Factory Adders */}
           <div className="border-t border-slate-100 pt-4 mt-4">
             <div className="flex justify-between items-center mb-3">
-              <div className="text-sm font-semibold text-slate-700">Factory Adders (¢/linear meter)</div>
-              <button onClick={addRow} className="text-xs text-[#00b4c3] hover:text-[#009ba8] font-medium">+ Add row</button>
+              <div className="text-sm font-semibold text-slate-700">{T.addersTitle}</div>
+              <button onClick={addRow} className="text-xs text-[#00b4c3] hover:text-[#009ba8] font-medium">{T.addRow}</button>
             </div>
             <div className="space-y-2">
               {adders.map(a => (
@@ -383,10 +386,10 @@ export default function PricingPage() {
 
         {/* Quote Output */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-slate-800 mb-1">FUZE Quote</h2>
-          <div className="text-xs text-slate-500 mb-4">{FUZE_TIERS.find(t => t.dose === dose)?.id || "Custom"} — {FUZE_TIERS.find(t => t.dose === dose)?.name || "Custom Tier"}</div>
+          <h2 className="text-lg font-semibold text-slate-800 mb-1">{T.quoteTitle}</h2>
+          <div className="text-xs text-slate-500 mb-4">{FUZE_TIERS.find(ti => ti.dose === dose)?.id || T.customTier} — {FUZE_TIERS.find(ti => ti.dose === dose)?.name || T.customTierName}</div>
           <div className="bg-gradient-to-br from-[#00b4c3]/5 to-[#009ba8]/5 rounded-xl border border-[#00b4c3]/20 p-5 mb-4">
-            <div className="text-xs text-slate-500 mb-1">Total Quoted Cost</div>
+            <div className="text-xs text-slate-500 mb-1">{T.totalCostLabel}</div>
             <div className="text-3xl font-bold text-slate-900">{money(outputs.totalCostPerLinearMeter, currency, fx)}<span className="text-sm font-normal text-slate-500"> /m</span></div>
             <div className="text-2xl font-semibold text-slate-700 mt-2">{money(outputs.costPerYard, currency, fx)}<span className="text-sm font-normal text-slate-500"> /yd</span></div>
             <div className="text-2xl font-semibold text-slate-700">{money(outputs.costPerKg, currency, fx)}<span className="text-sm font-normal text-slate-500"> /kg</span></div>
@@ -394,15 +397,15 @@ export default function PricingPage() {
           </div>
 
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between"><span className="text-slate-500">FUZE {FUZE_TIERS.find(t => t.dose === dose)?.id || ""} cost</span><span className="font-medium">{money(outputs.fuzeCostPerLinearMeter, currency, fx)}/m</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">Adders</span><span className="font-medium">{money(outputs.addersPerLinearMeter, currency, fx)}/m</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">Fabric weight</span><span className="font-medium">{num(outputs.kgPerLinearMeter, 4)} kg/m</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">Stock/meter</span><span className="font-medium">{num(outputs.litersStockPerLinearMeter, 6)} L</span></div>
+            <div className="flex justify-between"><span className="text-slate-500">FUZE {FUZE_TIERS.find(ti => ti.dose === dose)?.id || ""} {T.fuzeCostLabel}</span><span className="font-medium">{money(outputs.fuzeCostPerLinearMeter, currency, fx)}/m</span></div>
+            <div className="flex justify-between"><span className="text-slate-500">{T.addersLabel}</span><span className="font-medium">{money(outputs.addersPerLinearMeter, currency, fx)}/m</span></div>
+            <div className="flex justify-between"><span className="text-slate-500">{T.fabricWeightFieldLabel}</span><span className="font-medium">{num(outputs.kgPerLinearMeter, 4)} kg/m</span></div>
+            <div className="flex justify-between"><span className="text-slate-500">{T.stockPerMeterLabel}</span><span className="font-medium">{num(outputs.litersStockPerLinearMeter, 6)} L</span></div>
             {outputs.bottles19L !== undefined && (
               <>
                 <div className="border-t border-slate-100 pt-2 mt-2" />
-                <div className="flex justify-between"><span className="text-slate-500">Total F1 stock</span><span className="font-medium">{num(outputs.totalLitersStock!, 2)} L</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Bottles (19L)</span><span className="font-medium">{outputs.bottles19L}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{T.totalStockLabel}</span><span className="font-medium">{num(outputs.totalLitersStock!, 2)} L</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{T.bottlesLabel}</span><span className="font-medium">{outputs.bottles19L}</span></div>
               </>
             )}
           </div>
@@ -410,46 +413,46 @@ export default function PricingPage() {
           {/* Performance note */}
           <div className="mt-4 p-3 bg-slate-50 rounded-lg text-xs text-slate-500">
             {(() => {
-              const tier = FUZE_TIERS.find(t => t.dose === dose);
-              if (!tier) return <><span className="font-semibold text-slate-600">Custom tier</span></>;
+              const tier = FUZE_TIERS.find(ti => ti.dose === dose);
+              if (!tier) return <><span className="font-semibold text-slate-600">{T.customTierNote}</span></>;
               return <><span className={`font-semibold ${
                 tier.id === "F1" ? "text-emerald-600" : tier.id === "F2" ? "text-teal-600" : tier.id === "F3" ? "text-cyan-600" : "text-sky-600"
-              }`}>{tier.id} — {tier.name}:</span> {tier.desc} · Permanent attachment — applied once, lasts the life of the textile.</>;
+              }`}>{tier.id} — {tier.name}:</span> {tier.desc} · {T.permanentNote}</>;
             })()}
           </div>
 
-          <div className="mt-3 text-[10px] text-slate-400">FUZE stock concentration: 30 ppm · Bottle: 19 L</div>
+          <div className="mt-3 text-[10px] text-slate-400">{T.stockFooter}</div>
         </div>
       </div>
 
       {/* ═══ BOTTOM SECTION: Competitor Comparison ═══ */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
         <div className="flex items-center justify-between mb-1">
-          <h2 className="text-lg font-semibold text-slate-800">Competitor Displacement Analysis</h2>
+          <h2 className="text-lg font-semibold text-slate-800">{T.comparisonTitle}</h2>
           <Link href="/admin/competitor-pricing" className="text-xs text-[#00b4c3] hover:underline font-medium">
-            Edit Competitor Pricing →
+            {T.editCompetitorPricing}
           </Link>
         </div>
-        <p className="text-sm text-slate-500 mb-6">Select the antimicrobial your customer currently uses to see environmental and cost savings.{priceOverrides.length > 0 && <span className="ml-2 text-emerald-600 font-medium">({priceOverrides.length} with real intel)</span>}</p>
+        <p className="text-sm text-slate-500 mb-6">{T.comparisonSubtitle}{priceOverrides.length > 0 && <span className="ml-2 text-emerald-600 font-medium">{T.realIntelTemplate.replace("{n}", String(priceOverrides.length))}</span>}</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Current Competitor Product</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{T.competitorProductLabel}</label>
             <select
               value={competitorId}
               onChange={(e) => setCompetitorId(e.target.value)}
               className="w-full h-10 rounded-lg border border-slate-300 px-3 text-sm"
             >
-              <option value="">Select competitor...</option>
+              <option value="">{T.competitorSelectPlaceholder}</option>
               {competitors.map(c => (
                 <option key={c.id} value={c.id}>{c.company} — {c.product}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Competitor Comparison Benchmark</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{T.benchmarkLabel}</label>
             <div className="h-10 rounded-lg bg-slate-50 border border-slate-200 px-3 flex items-center text-sm font-medium text-slate-700">
-              FUZE {activeTier.id} — Permanent integration vs competitor re-application cycles
+              {T.benchmarkValueTemplate.replace("{id}", activeTier.id)}
             </div>
           </div>
         </div>
@@ -466,8 +469,8 @@ export default function PricingPage() {
                 This block tells that story before we get into the head-to-head. */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
               <div className="flex items-baseline justify-between mb-3">
-                <h3 className="text-base font-bold text-slate-800">FUZE tier ladder — every tier is permanent</h3>
-                <span className="text-[11px] text-slate-400">Each step adds another layer of FUZE performance on top of the antimicrobial baseline</span>
+                <h3 className="text-base font-bold text-slate-800">{T.tierLadderTitle}</h3>
+                <span className="text-[11px] text-slate-400">{T.tierLadderSubtitle}</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 {/* Show in lowest-to-highest order so the benefit stack reads as
@@ -494,7 +497,7 @@ export default function PricingPage() {
                       </div>
                       <div className="text-[11px] text-slate-600 leading-snug mb-2">{tier.desc}</div>
                       <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                        Validated by · <span className="text-slate-700">{tier.primaryTest}</span>
+                        {T.validatedByLabel} · <span className="text-slate-700">{tier.primaryTest}</span>
                       </div>
                       <ul className="space-y-1">
                         {tier.benefits.map((b, i) => (
@@ -506,7 +509,7 @@ export default function PricingPage() {
                       </ul>
                       {isActive && (
                         <div className="mt-2 inline-block text-[10px] font-bold text-emerald-700 bg-emerald-100 rounded px-1.5 py-0.5">
-                          Selected
+                          {T.selectedBadge}
                         </div>
                       )}
                     </button>
@@ -514,7 +517,7 @@ export default function PricingPage() {
                 })}
               </div>
               <p className="text-[11px] text-slate-500 mt-3 italic">
-                Click any tier to make it the active comparison below. Per-meter cost stays flat across the entire wash life of whichever tier you pick — there is no per-wash or per-cycle pricing on FUZE.
+                {T.tierLadderFooter}
               </p>
             </div>
 
@@ -532,11 +535,10 @@ export default function PricingPage() {
               return (
                 <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl border border-slate-200 p-6">
                   <h3 className="text-base font-bold text-slate-800 mb-1">
-                    FUZE {activeTier.id} {activeTier.name} vs {competitor.product}
+                    {T.activeTierVsTemplate.replace("{id}", activeTier.id).replace("{name}", activeTier.name).replace("{product}", competitor.product)}
                   </h3>
                   <p className="text-xs text-slate-500 mb-5">
-                    Both products are mill-applied. Neither can be reapplied to a garment that has shipped to a customer.
-                    What separates them is <span className="font-semibold">whether the wash claim is third-party validated</span>.
+                    {T.millAppliedNote} <span className="font-semibold">{T.millAppliedNoteEmphasis}</span>.
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -548,32 +550,32 @@ export default function PricingPage() {
                           {activeTier.id}
                         </span>
                         <div>
-                          <div className="text-sm font-bold text-emerald-800">FUZE {activeTier.id} — {activeTier.name}</div>
-                          <div className="text-[10px] text-emerald-700">Permanent · one mill application</div>
+                          <div className="text-sm font-bold text-emerald-800">{T.fuzeTierHeaderTemplate.replace("{id}", activeTier.id).replace("{name}", activeTier.name)}</div>
+                          <div className="text-[10px] text-emerald-700">{T.permanentSubtitle}</div>
                         </div>
                       </div>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between items-baseline">
-                          <span className="text-emerald-700">Cost per meter</span>
+                          <span className="text-emerald-700">{T.costPerMeterLabel}</span>
                           <span className="font-black text-2xl text-emerald-700">{money(cc.fuzeCostPerMeter, currency, fx)}</span>
                         </div>
                         <div className="flex justify-between items-baseline">
-                          <span className="text-emerald-700">Wash claim</span>
-                          <span className="font-bold text-emerald-700">{activeTier.washes} washes</span>
+                          <span className="text-emerald-700">{T.washClaimLabel}</span>
+                          <span className="font-bold text-emerald-700">{activeTier.washes} {T.washesUnit}</span>
                         </div>
 
                         {/* F4-only: cotton-dominance hero. This is the angle
                             that closes natural-fiber brands at the lowest dose. */}
                         {activeTier.id === "F4" && (
                           <div className="mt-3 -mx-1 px-3 py-2.5 rounded-lg bg-gradient-to-br from-emerald-600 to-teal-600 text-white">
-                            <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-100">Where FUZE dominates</div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-100">{T.dominanceHeader}</div>
                             <div className="text-sm font-black mt-0.5">Cotton & natural fibers — at this dose, FUZE outperforms every silver-ion / QAC / zinc / chitosan competitor on cellulose</div>
                           </div>
                         )}
 
                         {/* What this tier delivers — benefit stack */}
                         <div className="pt-2 border-t border-emerald-200">
-                          <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 mb-1.5">What this tier delivers</div>
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 mb-1.5">{T.whatThisTierDelivers}</div>
                           <ul className="space-y-1.5">
                             {activeTier.benefits.map((b, i) => (
                               <li key={i} className="flex items-start gap-2 text-[12px] text-emerald-800 leading-snug">
@@ -587,7 +589,7 @@ export default function PricingPage() {
                         {/* Test methodology — the "meet us on the right test" callout */}
                         <div className="pt-2 border-t border-emerald-200 space-y-1">
                           <div className="flex items-baseline justify-between">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Validated by</span>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">{T.validatedByLabel}</span>
                             <span className="text-[11px] font-bold text-emerald-800">{activeTier.primaryTest}</span>
                           </div>
                           <div className="text-[11px] text-emerald-700/80 leading-snug">{activeTier.testNote}</div>
@@ -609,12 +611,12 @@ export default function PricingPage() {
                       </div>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between items-baseline">
-                          <span className="text-red-700">Cost per meter</span>
+                          <span className="text-red-700">{T.costPerMeterLabel}</span>
                           <span className="font-black text-2xl text-red-700">{money(cc.competitorTotalCostPerMeter, currency, fx)}</span>
                         </div>
                         <div className="flex justify-between items-baseline">
-                          <span className="text-red-700">Wash claim</span>
-                          <span className="font-bold text-red-700">{competitor.maxWashClaim} washes</span>
+                          <span className="text-red-700">{T.washClaimLabel}</span>
+                          <span className="font-bold text-red-700">{competitor.maxWashClaim} {T.washesUnit}</span>
                         </div>
                         <div className="text-[11px] text-red-700/80 pt-2 border-t border-red-200">
                           {competitor.washClaimSource === "aatcc-100-third-party"
@@ -628,21 +630,21 @@ export default function PricingPage() {
 
                   {/* Cost delta strip */}
                   <div className="mt-4 flex items-center justify-center text-sm font-semibold gap-2">
-                    <span className="text-slate-500">Cost difference at FUZE {activeTier.id}:</span>
+                    <span className="text-slate-500">{T.costDifferenceLabel.replace("{id}", activeTier.id)}</span>
                     {fuzeLess && (
-                      <span className="text-emerald-600 font-black">{money(cc.competitorTotalCostPerMeter - cc.fuzeCostPerMeter, currency, fx)}/m cheaper than {competitor.product.split(" ")[0]}</span>
+                      <span className="text-emerald-600 font-black">{T.cheaperThanTemplate.replace("{delta}", money(cc.competitorTotalCostPerMeter - cc.fuzeCostPerMeter, currency, fx)).replace("{competitor}", competitor.product.split(" ")[0])}</span>
                     )}
                     {fuzeMore && (
-                      <span className="text-amber-600 font-black">+{money(cc.fuzeCostPerMeter - cc.competitorTotalCostPerMeter, currency, fx)}/m premium for {activeTier.washes}-wash third-party validation</span>
+                      <span className="text-amber-600 font-black">{T.premiumForTemplate.replace("{delta}", money(cc.fuzeCostPerMeter - cc.competitorTotalCostPerMeter, currency, fx)).replace("{washes}", String(activeTier.washes))}</span>
                     )}
                     {!fuzeMore && !fuzeLess && (
-                      <span className="text-slate-700 font-black">price match — pivot the conversation to chemistry, leaching, and validated wash data</span>
+                      <span className="text-slate-700 font-black">{T.priceMatchText}</span>
                     )}
                   </div>
 
                   {/* Explainer */}
                   <div className="mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-                    <div className="text-xs font-semibold text-emerald-800 mb-1.5">What you can actually defend in a brand conversation</div>
+                    <div className="text-xs font-semibold text-emerald-800 mb-1.5">{T.defendHeader}</div>
                     <p className="text-xs text-emerald-700 leading-relaxed">
                       <strong>EPA registers an active ingredient as a pesticide. EPA does NOT validate any wash count claim.</strong>
                       &nbsp;Every &ldquo;25 washes&rdquo; / &ldquo;50 washes&rdquo; / &ldquo;lifetime of garment&rdquo; number on a competitor data sheet
@@ -667,8 +669,8 @@ export default function PricingPage() {
                 also pass AATCC 100 by virtue of higher metamaterial density. */}
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6">
               <div className="flex items-baseline justify-between mb-3">
-                <h3 className="text-base font-bold text-white">Meet us on the right test</h3>
-                <span className="text-[11px] text-slate-400">ASTM E2149 vs AATCC 100 — why the test matters as much as the result</span>
+                <h3 className="text-base font-bold text-white">{T.meetUsTitle}</h3>
+                <span className="text-[11px] text-slate-400">{T.meetUsSubtitle}</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-emerald-900/40 border border-emerald-700/50 rounded-xl p-4">
@@ -722,60 +724,60 @@ export default function PricingPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-red-50/50 border border-red-200/50 rounded-xl p-4">
                     <div className="text-xs font-semibold text-red-800/60 uppercase tracking-wider mb-2">
-                      {competitor.product} — Requires Re-Application
+                      {T.requiresReapplicationTemplate.replace("{product}", competitor.product)}
                     </div>
                     <div className="space-y-1.5 text-sm">
-                      <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">{competitor.chemistryLabel}</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Est. chemical price</span><span className="font-medium text-slate-700">${competitor.chemicalPricePerKg}/kg</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Single app dosage</span><span className="font-medium text-slate-700">{competitor.dosageTypical} ppm</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Durability claim</span><span className="font-medium text-red-600">{competitor.maxWashClaim} wash cycles before re-treatment</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.chemistryLabel}</span><span className="font-medium text-slate-700">{competitor.chemistryLabel}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.estPriceLabel}</span><span className="font-medium text-slate-700">${competitor.chemicalPricePerKg}/kg</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.dosageLabel}</span><span className="font-medium text-slate-700">{competitor.dosageTypical} ppm</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.durabilityLabel}</span><span className="font-medium text-red-600">{T.durabilityTemplate.replace("{washes}", String(competitor.maxWashClaim))}</span></div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Applications needed</span>
-                        <span className="font-bold text-red-600">{cc?.competitorApplicationsNeeded || 1}× treatments</span>
+                        <span className="text-slate-500">{T.applicationsNeededLabel}</span>
+                        <span className="font-bold text-red-600">{T.treatmentsTemplate.replace("{n}", String(cc?.competitorApplicationsNeeded || 1))}</span>
                       </div>
                       <div className="border-t border-red-200/50 my-1 pt-1" />
-                      <div className="text-[10px] font-semibold text-red-700/60 uppercase tracking-wider">Binder Additive Required</div>
-                      <div className="flex justify-between"><span className="text-slate-500">Binder type</span><span className="font-medium text-red-600 text-xs">{competitor.binderType}</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Binder per treatment</span><span className="font-medium text-red-600">{competitor.binderGPerKg} g/kg fabric</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Total binder applied</span><span className="font-bold text-red-600">{num(cc?.competitorTotalBinderG || 0, 2)} g</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Binder leaches</span><span className="font-medium text-red-600">{competitor.binderLeachPctLifetime}% over lifetime</span></div>
+                      <div className="text-[10px] font-semibold text-red-700/60 uppercase tracking-wider">{T.binderRequired}</div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.binderType}</span><span className="font-medium text-red-600 text-xs">{competitor.binderType}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.binderPerTreatment}</span><span className="font-medium text-red-600">{competitor.binderGPerKg} {T.binderPerKgUnit}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.totalBinderLabel}</span><span className="font-bold text-red-600">{num(cc?.competitorTotalBinderG || 0, 2)} g</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.binderLeaches}</span><span className="font-medium text-red-600">{T.binderLeachTemplate.replace("{pct}", String(competitor.binderLeachPctLifetime))}</span></div>
                       {competitor.binderFormaldehyde && (
-                        <div className="flex justify-between"><span className="text-slate-500">Formaldehyde</span><span className="font-medium text-red-600">Contains crosslinker</span></div>
+                        <div className="flex justify-between"><span className="text-slate-500">{T.formaldehydeLabel}</span><span className="font-medium text-red-600">{T.formaldehydeYes}</span></div>
                       )}
                       {competitor.binderVOC && (
-                        <div className="flex justify-between"><span className="text-slate-500">VOC during curing</span><span className="font-medium text-red-600">Yes ({competitor.curingTempC}°C cure)</span></div>
+                        <div className="flex justify-between"><span className="text-slate-500">{T.vocLabel}</span><span className="font-medium text-red-600">{T.vocTemplate.replace("{temp}", String(competitor.curingTempC))}</span></div>
                       )}
                       <div className="border-t border-red-200/50 my-1 pt-1" />
-                      <div className="text-[10px] font-semibold text-red-700/60 uppercase tracking-wider">Total Environmental Discharge</div>
-                      <div className="flex justify-between"><span className="text-slate-500">Active agent leached</span><span className="font-bold text-red-600">{num(cc?.competitorTotalLeachMg || 0, 1)} mg</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Binder leached</span><span className="font-bold text-red-600">{num((cc?.competitorBinderLeachG || 0) * 1000, 0)} mg</span></div>
+                      <div className="text-[10px] font-semibold text-red-700/60 uppercase tracking-wider">{T.totalDischargeHeader}</div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.activeAgentLeached}</span><span className="font-bold text-red-600">{num(cc?.competitorTotalLeachMg || 0, 1)} mg</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.binderLeached}</span><span className="font-bold text-red-600">{num((cc?.competitorBinderLeachG || 0) * 1000, 0)} mg</span></div>
                       <div className="flex justify-between bg-red-100/50 -mx-1 px-1 rounded">
-                        <span className="text-slate-600 font-semibold">TOTAL to water</span>
+                        <span className="text-slate-600 font-semibold">{T.totalToWater}</span>
                         <span className="font-black text-red-700">{num(cc?.competitorTotalDischargeToWaterMg || 0, 0)} mg</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="bg-emerald-50/50 border border-emerald-200/50 rounded-xl p-4">
-                    <div className="text-xs font-semibold text-emerald-800/60 uppercase tracking-wider mb-2">FUZE {activeTier.id} — {activeTier.name}</div>
+                    <div className="text-xs font-semibold text-emerald-800/60 uppercase tracking-wider mb-2">{T.fuzeTierHeaderTemplate.replace("{id}", activeTier.id).replace("{name}", activeTier.name)}</div>
                     <div className="space-y-1.5 text-sm">
-                      <div className="flex justify-between"><span className="text-slate-500">Chemistry</span><span className="font-medium text-slate-700">High Density Allotrope (Non-ionic)</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Application</span><span className="font-medium text-emerald-600">Single permanent integration</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Attachment</span><span className="font-medium text-emerald-600">Permanent — EPA verified · Lasts life of textile</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Re-treatments needed</span><span className="font-bold text-emerald-600">None — applied once</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.chemistryLabel}</span><span className="font-medium text-slate-700">{T.chemistryValue}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.applicationLabel}</span><span className="font-medium text-emerald-600">{T.singlePermanentInt}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.attachmentLabel}</span><span className="font-medium text-emerald-600">{T.attachmentValue}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.retreatmentsLabel}</span><span className="font-bold text-emerald-600">{T.retreatmentsValue}</span></div>
                       <div className="border-t border-emerald-200/50 my-1 pt-1" />
-                      <div className="text-[10px] font-semibold text-emerald-700/60 uppercase tracking-wider">No Binder Required</div>
-                      <div className="flex justify-between"><span className="text-slate-500">Binder type</span><span className="font-medium text-emerald-600">None — No additive needed</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Binder applied</span><span className="font-medium text-emerald-600">0 g</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Formaldehyde</span><span className="font-medium text-emerald-600">None</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">VOC emissions</span><span className="font-medium text-emerald-600">None — No curing</span></div>
+                      <div className="text-[10px] font-semibold text-emerald-700/60 uppercase tracking-wider">{T.noBinderHeader}</div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.binderType}</span><span className="font-medium text-emerald-600">{T.noBinderType}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.binderAppliedLabel}</span><span className="font-medium text-emerald-600">{T.zeroGrams}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.formaldehydeLabel}</span><span className="font-medium text-emerald-600">{T.none}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.vocEmissions}</span><span className="font-medium text-emerald-600">{T.noneVoc}</span></div>
                       <div className="border-t border-emerald-200/50 my-1 pt-1" />
-                      <div className="text-[10px] font-semibold text-emerald-700/60 uppercase tracking-wider">Total Environmental Discharge</div>
-                      <div className="flex justify-between"><span className="text-slate-500">Active agent leached</span><span className="font-bold text-emerald-600">0 mg</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Binder leached</span><span className="font-bold text-emerald-600">0 mg</span></div>
+                      <div className="text-[10px] font-semibold text-emerald-700/60 uppercase tracking-wider">{T.totalDischargeHeader}</div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.activeAgentLeached}</span><span className="font-bold text-emerald-600">{T.zeroMg}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-500">{T.binderLeached}</span><span className="font-bold text-emerald-600">{T.zeroMg}</span></div>
                       <div className="flex justify-between bg-emerald-100/50 -mx-1 px-1 rounded">
-                        <span className="text-slate-600 font-semibold">TOTAL to water</span>
-                        <span className="font-black text-emerald-700">0 mg</span>
+                        <span className="text-slate-600 font-semibold">{T.totalToWater}</span>
+                        <span className="font-black text-emerald-700">{T.zeroMg}</span>
                       </div>
                     </div>
                   </div>
@@ -787,9 +789,9 @@ export default function PricingPage() {
             <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 text-white">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Environmental Impact Score</div>
-                  <div className="text-xl font-bold mt-1">FUZE vs {competitor.product}</div>
-                  <div className="text-sm text-slate-400 mt-0.5">Per linear meter of fabric · Full product lifecycle</div>
+                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{T.envImpactHeader}</div>
+                  <div className="text-xl font-bold mt-1">{T.fuzeVsTemplate.replace("{product}", competitor.product)}</div>
+                  <div className="text-sm text-slate-400 mt-0.5">{T.perLinearMeter}</div>
                 </div>
                 <Gradebadge grade={envScore.compositeGrade} score={envScore.compositeScore} />
               </div>
@@ -800,7 +802,7 @@ export default function PricingPage() {
                   return (<>
                     <div className="bg-white/10 rounded-xl p-4">
                       <div className="text-2xl font-bold text-emerald-400">{num(cc ? cc.competitorTotalChemistryMg - cc.fuzeChemistryMg : envScore.chemistrySavedMg, 1)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
-                      <div className="text-xs text-slate-400 mt-1">Active agent eliminated</div>
+                      <div className="text-xs text-slate-400 mt-1">{T.activeAgentEliminated}</div>
                       <div className="text-[10px] text-slate-500 mt-0.5">
                         {cc && cc.competitorApplicationsNeeded > 1
                           ? `Across ${cc.competitorApplicationsNeeded} competitor re-treatments`
@@ -809,7 +811,7 @@ export default function PricingPage() {
                     </div>
                     <div className="bg-white/10 rounded-xl p-4">
                       <div className="text-2xl font-bold text-amber-400">{num(cc ? cc.competitorTotalBinderG : envScore.binderSavedG, 2)}<span className="text-sm font-normal text-slate-400"> g</span></div>
-                      <div className="text-xs text-slate-400 mt-1">Binder eliminated</div>
+                      <div className="text-xs text-slate-400 mt-1">{T.binderEliminated}</div>
                       <div className="text-[10px] text-slate-500 mt-0.5">
                         {competitor.binderType}
                         {competitor.binderFormaldehyde ? " + formaldehyde" : ""}
@@ -817,17 +819,17 @@ export default function PricingPage() {
                     </div>
                     <div className="bg-white/10 rounded-xl p-4">
                       <div className="text-2xl font-bold text-blue-400">{num(cc ? cc.competitorTotalLeachMg : envScore.metalToWaterMg, 1)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
-                      <div className="text-xs text-slate-400 mt-1">Active agent kept from water</div>
+                      <div className="text-xs text-slate-400 mt-1">{T.keptFromWater}</div>
                       <div className="text-[10px] text-slate-500 mt-0.5">{competitor.heavyMetalReleased} not discharged</div>
                     </div>
                     <div className="bg-white/10 rounded-xl p-4">
                       <div className="text-2xl font-bold text-purple-400">{num((cc?.competitorBinderLeachG || 0) * 1000, 0)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
-                      <div className="text-xs text-slate-400 mt-1">Binder kept from water</div>
+                      <div className="text-xs text-slate-400 mt-1">{T.binderKeptFromWater}</div>
                       <div className="text-[10px] text-slate-500 mt-0.5">Petrochemical polymer microplastics not shed</div>
                     </div>
                     <div className="bg-red-500/20 rounded-xl p-4 border border-red-500/30">
                       <div className="text-2xl font-bold text-red-400">{num(cc?.competitorTotalDischargeToWaterMg || 0, 0)}<span className="text-sm font-normal text-slate-400"> mg</span></div>
-                      <div className="text-xs text-red-300 mt-1 font-semibold">Total discharge eliminated</div>
+                      <div className="text-xs text-red-300 mt-1 font-semibold">{T.totalDischargeEliminated}</div>
                       <div className="text-[10px] text-slate-500 mt-0.5">Active agent + binder combined — all kept from water</div>
                     </div>
                   </>);
@@ -837,11 +839,11 @@ export default function PricingPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="bg-white/10 rounded-xl p-4">
                   <div className="text-2xl font-bold text-green-400">{num(envScore.carbonReductionKg, 3)}<span className="text-sm font-normal text-slate-400"> kg CO₂</span></div>
-                  <div className="text-xs text-slate-400 mt-1">Estimated carbon footprint reduction</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">From eliminated binder production, curing energy, and reduced chemistry manufacturing</div>
+                  <div className="text-xs text-slate-400 mt-1">{T.carbonReductionLabel}</div>
+                  <div className="text-[10px] text-slate-500 mt-0.5">{T.carbonReductionNote}</div>
                 </div>
                 <div className="bg-white/10 rounded-xl p-4">
-                  <div className="text-xs text-slate-400 mb-2">Environmental Composite Score</div>
+                  <div className="text-xs text-slate-400 mb-2">{T.compositeScoreLabel}</div>
                   <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-300 transition-all duration-500"
@@ -858,7 +860,7 @@ export default function PricingPage() {
 
               {/* Toxicity notes */}
               <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mt-4">
-                <div className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">Competitor Aquatic & Environmental Toxicity</div>
+                <div className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">{T.competitorToxicityHeader}</div>
                 <p className="text-sm text-slate-300">{competitor.aquaticToxicityNote}</p>
                 <p className="text-sm text-slate-400 mt-2">{competitor.endOfLifeNote}</p>
               </div>
@@ -870,24 +872,24 @@ export default function PricingPage() {
               const apps = cc?.competitorApplicationsNeeded || 1;
               return (
                 <div className="bg-white rounded-xl border border-slate-200 p-6">
-                  <div className="text-sm font-semibold text-slate-700 mb-4">Wash Protection Timeline — {targetWashes} Washes</div>
+                  <div className="text-sm font-semibold text-slate-700 mb-4">{T.washTimelineTemplate.replace("{n}", String(targetWashes))}</div>
                   <div className="space-y-4">
                     {/* FUZE bar */}
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="font-medium text-emerald-600">FUZE {activeTier.id} — 1 Application</span>
-                        <span className="text-slate-500">{targetWashes}/{targetWashes} washes — {money(outputs.totalCostPerLinearMeter, currency, fx)}/m</span>
+                        <span className="font-medium text-emerald-600">{T.fuzeOneApplication.replace("{id}", activeTier.id)}</span>
+                        <span className="text-slate-500">{targetWashes}/{targetWashes} {T.washesUnit} — {money(outputs.totalCostPerLinearMeter, currency, fx)}/m</span>
                       </div>
                       <div className="w-full bg-slate-100 rounded-full h-7 overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full flex items-center justify-center" style={{ width: "100%" }}>
-                          <span className="text-[11px] font-bold text-white">Lifetime EPA Protection — Single Application</span>
+                          <span className="text-[11px] font-bold text-white">{T.lifetimeProtection}</span>
                         </div>
                       </div>
                     </div>
                     {/* Competitor bar — segmented by re-treatments */}
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="font-medium text-red-600">{competitor.product} — {apps} Application{apps > 1 ? "s" : ""} Required</span>
+                        <span className="font-medium text-red-600">{T.competitorAppsTemplate.replace("{product}", competitor.product).replace("{n}", String(apps)).replace("{s}", apps > 1 ? "s" : "")}</span>
                         <span className="text-slate-500">{money(cc?.competitorTotalCostPerMeter || 0, currency, fx)}/m total</span>
                       </div>
                       <div className="w-full bg-slate-100 rounded-full h-7 overflow-hidden flex">
@@ -902,7 +904,7 @@ export default function PricingPage() {
                               style={{ width: `${pct}%` }}
                             >
                               <span className="text-[9px] font-bold text-white whitespace-nowrap px-1">
-                                App {i + 1}{i > 0 ? ` (+${Math.round((competitor.retreatmentCostMultiplier - 1) * 100)}% cost)` : ""}
+                                {T.appLabel} {i + 1}{i > 0 ? ` (+${Math.round((competitor.retreatmentCostMultiplier - 1) * 100)}% cost)` : ""}
                               </span>
                             </div>
                           );
@@ -910,7 +912,7 @@ export default function PricingPage() {
                       </div>
                       {apps > 1 && (
                         <div className="text-[10px] text-red-500 mt-1 text-center">
-                          Each re-treatment requires stripping, re-applying chemistry + binder, and curing again — increasing factory cost, waste, and environmental discharge
+                          {T.retreatmentNote}
                         </div>
                       )}
                     </div>
@@ -927,8 +929,8 @@ export default function PricingPage() {
                   <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200 rounded-xl p-4">
                     <div className="text-emerald-700 font-semibold text-sm mb-2">
                       {cc && cc.fuzeSavingsPerMeter > 0
-                        ? `Save ${money(cc.fuzeSavingsPerMeter, currency, fx)}/m`
-                        : "True Cost Winner"}
+                        ? T.saveTemplate.replace("{amount}", money(cc.fuzeSavingsPerMeter, currency, fx))
+                        : T.trueCostWinner}
                     </div>
                     <p className="text-xs text-emerald-600/80">
                       {competitor.product} at {money(competitor.estimatedCostPerMeterTypical, currency, fx)}/m sounds cheap — but that&apos;s only {competitor.maxWashClaim} washes.
@@ -937,7 +939,7 @@ export default function PricingPage() {
                   </div>
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200 rounded-xl p-4">
                     <div className="text-blue-700 font-semibold text-sm mb-2">
-                      {cc ? `${num(cc.competitorTotalChemistryMg - cc.fuzeChemistryMg, 0)} mg` : `${(competitor.dosageTypical / dose).toFixed(0)}×`} Less Chemistry
+                      {cc ? `${num(cc.competitorTotalChemistryMg - cc.fuzeChemistryMg, 0)} mg` : `${(competitor.dosageTypical / dose).toFixed(0)}×`} {T.lessChemistry}
                     </div>
                     <p className="text-xs text-blue-600/80">
                       {cc && cc.competitorApplicationsNeeded > 1
@@ -947,7 +949,7 @@ export default function PricingPage() {
                   </div>
                   <div className="bg-gradient-to-br from-rose-50 to-rose-100/50 border border-rose-200 rounded-xl p-4">
                     <div className="text-rose-700 font-semibold text-sm mb-2">
-                      {cc ? `${num(cc.competitorTotalDischargeToWaterMg, 0)} mg` : ""} Total Discharge Eliminated
+                      {cc ? `${num(cc.competitorTotalDischargeToWaterMg, 0)} mg` : ""} {T.totalDischargeShortLabel}
                     </div>
                     <p className="text-xs text-rose-600/80">
                       {competitor.product} leaches {competitor.heavyMetalReleased.toLowerCase() !== "none" ? competitor.heavyMetalReleased.toLowerCase() : "toxic compounds"} plus
@@ -957,7 +959,7 @@ export default function PricingPage() {
                     </p>
                   </div>
                   <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200 rounded-xl p-4">
-                    <div className="text-amber-700 font-semibold text-sm mb-2">The Only Lifetime Approval</div>
+                    <div className="text-amber-700 font-semibold text-sm mb-2">{T.lifetimeApprovalLabel}</div>
                     <p className="text-xs text-amber-600/80">
                       {competitor.product} is limited to {competitor.maxWashClaim} washes — not EPA-approved beyond that.
                       Only FUZE has EPA-verified lifetime durability. One application. No re-treatment. No gaps in protection.
@@ -969,9 +971,9 @@ export default function PricingPage() {
 
             {/* ═══ EPA REGISTRATION COMPARISON ═══ */}
             <div className="bg-white rounded-2xl border border-slate-200 p-6">
-              <h3 className="text-base font-bold text-slate-800 mb-1">EPA Registration Comparison</h3>
+              <h3 className="text-base font-bold text-slate-800 mb-1">{T.epaComparisonTitle}</h3>
               <p className="text-xs text-slate-500 mb-4">
-                Many competitor products were registered decades ago under far less stringent efficacy and toxicity standards.
+                {T.epaComparisonSubtitle}
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -983,25 +985,25 @@ export default function PricingPage() {
                   </div>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-slate-500">EPA Reg #:</span>
+                      <span className="text-slate-500">{T.epaRegNumLabel}</span>
                       <span className="font-mono text-red-700 text-xs">{competitor.epaRegNumber}</span>
                     </div>
                     {competitor.epaRegYear && (
                       <div className="flex justify-between">
-                        <span className="text-slate-500">First registered:</span>
+                        <span className="text-slate-500">{T.epaFirstRegLabel}</span>
                         <span className="font-bold text-red-700">
                           {competitor.epaRegYear}
-                          <span className="text-slate-400 font-normal ml-1">({new Date().getFullYear() - competitor.epaRegYear} years ago)</span>
+                          <span className="text-slate-400 font-normal ml-1">{T.epaYearsAgoTemplate.replace("{n}", String(new Date().getFullYear() - competitor.epaRegYear))}</span>
                         </span>
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Chemistry:</span>
+                      <span className="text-slate-500">{T.epaChemistryLabel}</span>
                       <span className="text-slate-700">{competitor.chemistryLabel}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Max wash claim:</span>
-                      <span className="text-slate-700">{competitor.maxWashClaim} washes</span>
+                      <span className="text-slate-500">{T.epaMaxWashLabel}</span>
+                      <span className="text-slate-700">{competitor.maxWashClaim} {T.epaWashesUnit}</span>
                     </div>
                     <div className="mt-3 pt-3 border-t border-red-200 text-xs text-red-600/80">
                       {competitor.epaRegNote}
@@ -1013,7 +1015,7 @@ export default function PricingPage() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-800 font-medium mt-1"
                       >
-                        View EPA label / product page
+                        {T.viewEpaLabel}
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
@@ -1026,35 +1028,35 @@ export default function PricingPage() {
                 <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="w-3 h-3 rounded-full bg-emerald-500" />
-                    <span className="text-sm font-semibold text-emerald-800">FUZE Antimicrobial</span>
+                    <span className="text-sm font-semibold text-emerald-800">{T.fuzeEpaName}</span>
                   </div>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-slate-500">EPA Status:</span>
-                      <span className="font-bold text-emerald-700">EPA Lifetime Approval</span>
+                      <span className="text-slate-500">{T.epaStatusLabel}</span>
+                      <span className="font-bold text-emerald-700">{T.epaStatusValue}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Durability:</span>
-                      <span className="font-bold text-emerald-700">Lifetime (100+ washes)</span>
+                      <span className="text-slate-500">{T.durabilityFuzeLabel}</span>
+                      <span className="font-bold text-emerald-700">{T.durabilityFuzeValue}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Binder Required:</span>
-                      <span className="font-bold text-emerald-700">None</span>
+                      <span className="text-slate-500">{T.binderRequiredFuzeLabel}</span>
+                      <span className="font-bold text-emerald-700">{T.none}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Curing Required:</span>
-                      <span className="font-bold text-emerald-700">None</span>
+                      <span className="text-slate-500">{T.curingRequiredLabel}</span>
+                      <span className="font-bold text-emerald-700">{T.none}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Heavy Metal Leaching:</span>
-                      <span className="font-bold text-emerald-700">Zero</span>
+                      <span className="text-slate-500">{T.heavyMetalLeachLabel}</span>
+                      <span className="font-bold text-emerald-700">{T.zeroValue}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Formaldehyde:</span>
-                      <span className="font-bold text-emerald-700">None</span>
+                      <span className="text-slate-500">{T.formaldehydeLabel}</span>
+                      <span className="font-bold text-emerald-700">{T.none}</span>
                     </div>
                     <div className="mt-3 pt-3 border-t border-emerald-200 text-xs text-emerald-600/80">
-                      FUZE is the only antimicrobial textile treatment with EPA-verified lifetime durability. Single application, no binder, no curing, no environmental discharge.
+                      {T.fuzeEpaNote}
                     </div>
                   </div>
                 </div>
@@ -1063,7 +1065,7 @@ export default function PricingPage() {
               {/* Regulatory era context */}
               {competitor.epaRegYear && competitor.epaRegYear < 2000 && (
                 <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
-                  <div className="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-1">Regulatory Context</div>
+                  <div className="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-1">{T.regContextHeader}</div>
                   <p className="text-xs text-amber-600/80">
                     {competitor.product} was first EPA-registered in {competitor.epaRegYear} — {competitor.epaRegYear < 1990 ? "well before" : "before"} the EPA issued PRN 2000-1 in March 2000, which clarified the Treated Articles Exemption for antimicrobials.
                     Products registered in this era had significantly lower requirements for proving efficacy, toxicity testing, and environmental impact than modern standards require.
@@ -1075,19 +1077,19 @@ export default function PricingPage() {
 
             {/* ═══ ALL COMPETITORS EPA TABLE ═══ */}
             <div className="bg-white rounded-2xl border border-slate-200 p-6">
-              <h3 className="text-base font-bold text-slate-800 mb-1">Full Competitor EPA Registry</h3>
-              <p className="text-xs text-slate-500 mb-4">{competitors.length} competitor products tracked across all chemistry types.</p>
+              <h3 className="text-base font-bold text-slate-800 mb-1">{T.fullCompetitorTitle}</h3>
+              <p className="text-xs text-slate-500 mb-4">{T.competitorsTrackedTemplate.replace("{n}", String(competitors.length))}</p>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b border-slate-200 text-left">
-                      <th className="py-2 pr-3 font-semibold text-slate-500">Product</th>
-                      <th className="py-2 pr-3 font-semibold text-slate-500">Company</th>
-                      <th className="py-2 pr-3 font-semibold text-slate-500">Chemistry</th>
-                      <th className="py-2 pr-3 font-semibold text-slate-500">EPA Reg #</th>
-                      <th className="py-2 pr-3 font-semibold text-slate-500">Year</th>
-                      <th className="py-2 pr-3 font-semibold text-slate-500">Washes</th>
-                      <th className="py-2 font-semibold text-slate-500">Link</th>
+                      <th className="py-2 pr-3 font-semibold text-slate-500">{T.colProduct}</th>
+                      <th className="py-2 pr-3 font-semibold text-slate-500">{T.colCompany}</th>
+                      <th className="py-2 pr-3 font-semibold text-slate-500">{T.colChemistry}</th>
+                      <th className="py-2 pr-3 font-semibold text-slate-500">{T.colEpaReg}</th>
+                      <th className="py-2 pr-3 font-semibold text-slate-500">{T.colYear}</th>
+                      <th className="py-2 pr-3 font-semibold text-slate-500">{T.colWashes}</th>
+                      <th className="py-2 font-semibold text-slate-500">{T.colLink}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1110,7 +1112,7 @@ export default function PricingPage() {
                         <td className="py-2">
                           {c.epaLabelUrl ? (
                             <a href={c.epaLabelUrl} target="_blank" rel="noopener noreferrer" className="text-[#00b4c3] hover:underline">
-                              View
+                              {T.viewLink}
                             </a>
                           ) : (
                             <span className="text-slate-400">—</span>
@@ -1128,7 +1130,7 @@ export default function PricingPage() {
         {!competitor && (
           <div className="text-center py-12 text-slate-400">
             <div className="text-4xl mb-3">🧪</div>
-            <div className="text-sm">Select a competitor product above to generate the environmental displacement analysis</div>
+            <div className="text-sm">{T.selectCompetitorPlaceholder}</div>
           </div>
         )}
       </div>
