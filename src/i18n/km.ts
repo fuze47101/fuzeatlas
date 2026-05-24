@@ -6513,6 +6513,32 @@ const km: Translations = {
     footerQuestions: "Questions?",
   },
 
+  settingsExchangeRates: {
+    title: "Exchange Rates",
+    subtitle: "Manage currency conversion rates",
+    addRateBtn: "បន្ថែម Rate",
+    cancelBtn: "បោះបង់",
+    addFormTitle: "បន្ថែម Exchange Rate",
+    ratePlaceholder: "Rate",
+    submitAddBtn: "បន្ថែម Rate",
+    converterTitle: "Currency Converter",
+    fromLabel: "ពី",
+    toLabel: "ទៅ",
+    amountLabel: "Amount",
+    convertBtn: "Convert",
+    rateResultPrefix: "Rate:",
+    quickStatsTitle: "Quick Stats",
+    totalCurrenciesLabel: "សរុប Currencies",
+    activeRatesLabel: "សកម្ម Rates",
+    currentRatesTitle: "Current Rates (Base: USD)",
+    loading: "កំពុងផ្ទុក…",
+    emptyState: "ទេ exchange rates configured",
+    colCurrencyPair: "Currency Pair",
+    colRate: "Rate",
+    colEffectiveDate: "ចូលជាធរមាន កាលបរិច្ឆេទ",
+    colSource: "Source",
+  },
+
 };
 
 export default km;
