@@ -5656,6 +5656,82 @@ const hi: Translations = {
     btnCreatePo: "PO बनाएं और प्रिंट योग्य पैकेट खोलें →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "एडमिन",
+    crumbHere: "संपर्क स्वच्छता",
+    pageTitle: "संपर्क स्वच्छता",
+    pageSubtitle: "प्लेसहोल्डर, भूमिका-मेलबॉक्स, और विकृत संपर्कों को फ़्लैग करता है ताकि रेप Jane Doe पर आउटरीच बर्बाद करना बंद करें। प्रतिवर्ती — संपर्क को विज़ार्ड में वापस लाने के लिए un-hide करें।",
+
+    btnPreviewScan: "🔍 स्कैन पूर्वावलोकन",
+    btnAutoHide: "🙈 स्कैन + ऑटो-छुपाएं",
+    btnScanning: "स्कैन हो रहा है…",
+    btnHiding: "छुपा रहे हैं…",
+    titlePreviewScan: "दृश्यता बदले बिना हर संपर्क पर स्वच्छता स्नैपशॉट फिर से चलाएं",
+    titleAutoHide: "BD Wizard से प्लेसहोल्डर संपर्क स्कैन और ऑटो-छुपाएं",
+    confirmAutoHide: "ऑटो-छुपाएं हर उस संपर्क के लिए hiddenFromWizard = true पलट देगा जिसे स्कैन प्लेसहोल्डर या अमान्य-ईमेल के रूप में फ़्लैग करता है। यह प्रतिवर्ती है (आप इस पृष्ठ से un-hide कर सकते हैं) लेकिन हर रेप के BD Wizard को तुरंत प्रभावित करता है। जारी रखें?",
+    promptHide: "इस संपर्क को BD Wizard से छुपाएं? कारण (वैकल्पिक):",
+    promptUnhide: "इस संपर्क को un-hide करें? कारण (वैकल्पिक, उनके नोट्स में लिखा गया):",
+    failedPrefix: "विफल:",
+    networkErrPrefix: "नेटवर्क त्रुटि:",
+    scanFailedPrefix: "स्कैन विफल:",
+
+    summaryScanned: "स्कैन किया गया",
+    summaryContacts: "संपर्क · प्लेसहोल्डर",
+    summarySuspicious: "· संदिग्ध",
+    summaryRole: "· भूमिका",
+    summaryReal: "· वास्तविक",
+    summaryHiddenSuffix: "नया",
+    summaryHiddenPrefix: "· छुपा",
+
+    statPlaceholder: "प्लेसहोल्डर",
+    statSuspicious: "संदिग्ध",
+    statRole: "भूमिका मेलबॉक्स",
+    statReal: "वास्तविक",
+    statUnscanned: "अनस्कैन्ड",
+    statHidden: "छुपा",
+
+    filterVerdict: "फैसला",
+    filterVisibility: "दृश्यता",
+    filterAllScanned: "सभी स्कैन्ड",
+    filterPlaceholder: "प्लेसहोल्डर",
+    filterSuspicious: "संदिग्ध",
+    filterRoleMailbox: "भूमिका मेलबॉक्स",
+    filterReal: "वास्तविक",
+    filterUnscanned: "अनस्कैन्ड",
+    filterAllVisibility: "सभी दृश्यता",
+    filterHiddenOnly: "केवल छुपे",
+    filterVisibleOnly: "केवल दृश्य",
+    searchPlaceholder: "नाम या ईमेल खोजें…",
+
+    emptyTitle: "वर्तमान फ़िल्टर से कोई संपर्क मेल नहीं खाता।",
+    emptyUnscannedTpl: "{n} संपर्क कभी स्कैन नहीं किए गए — भरने के लिए \"स्कैन पूर्वावलोकन\" दबाएं।",
+
+    colContact: "संपर्क",
+    colBrandFactory: "ब्रांड / कारखाना",
+    colVerdict: "फैसला",
+    colEmail: "ईमेल",
+    colLinkedin: "LinkedIn",
+    colScore: "स्कोर",
+    colFlags: "फ़्लैग",
+    colActions: "क्रियाएं",
+
+    unnamed: "(बिना नाम)",
+    noEmail: "कोई ईमेल नहीं",
+    hiddenLabel: "छुपा",
+    flagsMore: "और",
+    flagsClean: "स्वच्छ",
+    actionHide: "छुपाएं",
+    actionUnhide: "अनहाइड करें",
+
+    helpFooter: "स्कैन हर संपर्क पर चलता है और पंक्ति पर फैसला + फ़्लैग स्नैपशॉट करता है। पूर्वावलोकन केवल फैसला रिकॉर्ड करता है; स्कैन + ऑटो-छुपाएं प्लेसहोल्डर और अमान्य-ईमेल संपर्कों के लिए hiddenFromWizard भी पलटता है। दोनों प्रतिवर्ती हैं — संपर्क को पुनर्स्थापित करने के लिए \"अनहाइड\" क्लिक करें, जो डेटा ठीक हो जाने पर स्नैपशॉट को भी फिर से चलाता है।",
+
+    verdictReal: "वास्तविक",
+    verdictSuspect: "संदिग्ध",
+    verdictPlaceholder: "प्लेसहोल्डर",
+    verdictRoleMbx: "भूमिका मेलबॉक्स",
+    verdictUnscanned: "अनस्कैन्ड",
+  },
+
 };
 
 export default hi;
