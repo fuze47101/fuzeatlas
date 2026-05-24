@@ -7725,6 +7725,36 @@ const hi: Translations = {
     nextBtn: "अगला",
   },
 
+  bdSequencesList: {
+    kicker: "BD Wizard",
+    heading: "सीक्वेंस",
+    subtitlePrefix: "लंबी-फनल आउटबाउंड। क्रॉन प्रति घंटे चरण आगे बढ़ाता है। तैयार चरण इस पर पार्क होते हैं",
+    subtitleSuffix: "आपकी समीक्षा के लिए — कुछ भी ऑटो-नहीं भेजता।",
+    openWizardBtn: "BD Wizard खोलें →",
+    stepAwaitingSingular: "चरण आपकी समीक्षा प्रतीक्षित",
+    stepsAwaitingPlural: "चरण आपकी समीक्षा प्रतीक्षित",
+    showAllRepsLabel: "सभी रेप दिखाएं",
+    loadingState: "सीक्वेंस लोड हो रहे हैं…",
+    emptyHeadPrefix: "कोई",
+    emptyHeadSuffix: "सीक्वेंस नहीं",
+    emptyBodyPrefix: "अपना पहला ईमेल भेजकर एक शुरू करें",
+    emptyBodyLink: "BD Wizard",
+    emptyBodySuffix: " के माध्यम से। प्रत्येक पहला भेजना स्वचालित रूप से एक 6-चरण कैडेंस शुरू करता है।",
+    colBrandContact: "ब्रांड / संपर्क",
+    colProgress: "प्रगति",
+    colNext: "अगला",
+    colRep: "रेप",
+    colStatus: "स्थिति",
+    colActions: "क्रियाएं",
+    readyChipSuffix: "तैयार",
+    reviewSendBtn: "समीक्षा और भेजें",
+    openBtn: "खोलें",
+    viewBtn: "देखें",
+    pauseBtn: "रोकें",
+    exitBtn: "बाहर निकलें",
+    resumeBtn: "फिर से शुरू करें",
+  },
+
 };
 
 export default hi;
