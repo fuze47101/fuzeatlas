@@ -7729,6 +7729,33 @@ const ko: Translations = {
     contactLink: "연락처",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "브랜드",
+    crumb: "행택 QR",
+    heading: "행택 QR 토큰",
+    subtitlePrefix: "각 토큰은 다음의 공개 검증 페이지로 해결됩니다:",
+    subtitleSuffix: "행별로 스캔 횟수 + 최초 / 최근 스캔 타임스탬프 추적.",
+    mintTokensTitle: "토큰 발행",
+    countPlaceholder: "개수",
+    fabricIdPlaceholder: "fabricId (선택)",
+    skuPlaceholder: "제품 SKU",
+    batchPlaceholder: "배치 코드",
+    mintBtn: "발행",
+    mintingBusy: "발행 중…",
+    mintFootnote: "발행당 최대 500개. 선택한 QR 생성기를 사용하여 결과 토큰을 행택에 QR 코드로 인쇄하십시오 (각 URL은 정확히 verify 페이지 URL입니다).",
+    mintFailedError: "발행 실패",
+    tokenSingular: "토큰",
+    tokenPlural: "토큰",
+    exportCsvBtn: "CSV 내보내기",
+    colToken: "토큰",
+    colSkuBatch: "SKU / 배치",
+    colFabric: "원단",
+    colScans: "스캔",
+    colLastScan: "최근 스캔",
+    colVerifyUrl: "검증 URL",
+    emptyState: "아직 토큰이 없습니다 — 위에서 첫 배치를 발행하십시오.",
+  },
+
 };
 
 export default ko;
