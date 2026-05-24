@@ -7782,6 +7782,29 @@ const ko: Translations = {
     bookAnotherBtn: "다른 미팅 예약",
   },
 
+  adminAuditLog: {
+    adminCrumb: "관리자",
+    crumb: "감사 로그",
+    heading: "감사 로그",
+    subtitle: "모든 엔티티에 걸친 전체 감사 추적. 작업, 엔티티 또는 날짜로 필터링. 90일 보존.",
+    errorContext: "감사 로그 로드",
+    couldntLoadPrefix: "감사 로그를 로드할 수 없습니다",
+    networkError: "감사 로그 로드 중 네트워크 오류 발생.",
+    actionLabel: "작업",
+    allActionsOption: "모든 작업",
+    entityLabel: "엔티티",
+    allEntitiesOption: "모든 엔티티",
+    sinceLabel: "이후",
+    resetBtn: "재설정",
+    rowsSuffix: "행",
+    loadingState: "감사 로그 로드 중…",
+    emptyState: "이 필터와 일치하는 감사 행이 없습니다.",
+    byPrefix: "담당:",
+    systemActor: "시스템",
+    fieldChangedSingular: "필드 변경됨",
+    fieldChangedPlural: "필드 변경됨",
+  },
+
 };
 
 export default ko;
