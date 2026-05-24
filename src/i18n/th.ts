@@ -4488,6 +4488,19 @@ const th: Translations = {
     generatedTemplate: "สร้างเมื่อ:",
   },
 
+  bdWizard: {
+    homeLink: "← หน้าหลัก",
+    pageTitle: "BD Wizard",
+    pageSubtitle: "การติดต่อภายนอกแบบมีคำแนะนำ แบรนด์ที่มีความเชื่อมั่นสูงสุดถัดไปจะถูกเลือกอัตโนมัติให้คุณ",
+    inQueueTemplate: "({n} ในคิว)",
+    skipBrand: "ข้ามแบรนด์นี้ →",
+
+    setFromAddressHeader: "ตั้งที่อยู่ From: ขาออกก่อนส่ง",
+    setFromAddressBody: "หากไม่มีสิ่งนี้ การส่งภายนอกจะส่งจากที่อยู่แจ้งเตือน FUZE Atlas ทั่วไปและการตอบกลับจะไม่ลงในกล่องจดหมายของคุณ",
+    currentlyLabel: "ปัจจุบัน:",
+    openProfile: "เปิดโปรไฟล์",
+  },
+
 };
 
 export default th;
