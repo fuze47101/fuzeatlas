@@ -7872,6 +7872,24 @@ const ms: Translations = {
     emptyBody: "Cuba luaskan penapis — atau buang penapis \"ujian bench disahkan\" jika anda mahu melihat fabrik yang masih dalam pertengahan pembangunan.",
   },
 
+  importBrands: {
+    title: "Import pukal — Jenama",
+    subtitle: "Tampal atau muat naik CSV calon jenama daripada pameran perdagangan, senarai, atau dump penyelidikan. Kami akan memetakan lajur, pratonton pengesahan, dan menulis idempoten melalui pembantu seed-brand yang sama yang digunakan CLI.",
+    backLabel: "Saluran Paip Jenama",
+    brandNameLabel: "Nama jenama",
+    brandNameHint: "(kunci semula jadi — upsert berkunci di sini)",
+    domainLabel: "Domain e-mel",
+    domainHint: 'cth. "rhone.com"',
+    repEmailLabel: "E-mel AM utama",
+    repEmailHint: "mesti sudah wujud sebagai pengguna Atlas",
+    tierLabel: "Tier FUZE diperlukan",
+    tierHint: "F1 / F2 / F3 / F4 — lalai F2",
+    cadenceLabel: "Irama ICP (setiap N kelompok)",
+    cadenceHint: "lalai 5",
+    countryLabel: "Negara",
+    websiteLabel: "Laman web",
+  },
+
 };
 
 export default ms;
