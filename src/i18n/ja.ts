@@ -8039,6 +8039,24 @@ const ja: Translations = {
     footerVerifiedBy: "FUZE Atlas による検証",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "ESG スナップショット — FUZE Atlas",
+    metaDescPrefix: "四半期 ESG インパクトレポート — 対象:",
+    metaDescSuffix: "FUZE Atlas により認証されています。",
+    backArrowPrefix: "←",
+    headingSuffix: "— ESG インパクト",
+    heroSubtitle: "FUZE 認証ファブリックと抗菌試験結果の四半期スナップショットです。",
+    emptyBody: "公開済みのスナップショットはまだありません。四半期レポートは翌四半期の開始時に公開されます。",
+    statFabricsCertified: "認証済みファブリック数",
+    statTestsPassed: "合格試験数",
+    statFuzeLiters: "FUZE 使用量 (L)",
+    statFactories: "工場数",
+    passRateLabel: "合格率:",
+    downloadPdf: "PDF をダウンロード →",
+    footerCertifiedBy: "FUZE Atlas 認証",
+  },
+
 };
 
 export default ja;
