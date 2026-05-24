@@ -5286,6 +5286,61 @@ const ms: Translations = {
     scopeFallback: "Lalai",
   },
 
+  brandDiscovery: {
+    crumbHome: "Laman Utama",
+    crumbWizard: "BD Wizard",
+    crumbHere: "Penemuan Jenama",
+    pageTitle: "🌎 Penemuan Jenama Seluruh Dunia",
+    pageSubtitle: "Enjin multi-AI — mencari + mengesahkan jenama tekstil merentas Anthropic, OpenAI, dan Grok, kemudian melampirkan kenalan Apollo secara automatik kepada setiap jenama baharu supaya BD Wizard boleh menggunakannya serta-merta.",
+
+    statTotalLabel: "Jumlah Jenama dalam DB",
+    backToWizard: "← Kembali ke Wizard",
+    backToWizardTitle: "Pulang ke wizard apabila jenama baharu mendarat",
+
+    statsErrorContext: "Muatkan statistik penemuan",
+    statsErrorFallback: "Tidak dapat memuatkan statistik penemuan",
+    statsNetworkError: "Ralat rangkaian semasa memuatkan statistik penemuan.",
+
+    autoEnrichTitle: "Auto-pengayaan aktif",
+    autoEnrichBody: "Setiap jenama baharu yang dicipta di sini mendapat sehingga 8 kenalan senior (pengasas / C-suite / VP / ketua / pengarah) yang dilampirkan melalui carian Apollo mengikut domain. Penapis BD Wizard membenarkan jenama ini melalui serta-merta — tiada laluan pengayaan berasingan diperlukan.",
+
+    settingsHeading: "Tetapan Penemuan",
+    labelCategory: "Kategori",
+    labelRegion: "Wilayah",
+    labelTargetCount: "Bilangan Sasaran",
+    btnDiscovering: "🔍 Mencari...",
+    btnRunDiscovery: "🚀 Jalankan Penemuan",
+    btnRunning: "Berjalan...",
+    btnAllCategories: "🌍 Semua Kategori",
+
+    runningBanner: "⏳ Menjalankan penemuan multi-AI merentas Anthropic + OpenAI + Grok... Ini mengambil 30-60 saat per kategori.",
+    errorPrefix: "❌",
+    errorDefault: "Penemuan gagal",
+
+    resultsHeadingPrefix: "Keputusan Penemuan —",
+    chipAiSources: "Sumber AI:",
+    chipFound: "Dijumpai:",
+    chipAfterDedup: "Selepas Dedup:",
+    chipCreated: "Dicipta:",
+    chipContactsAttached: "📇 Kenalan dilampirkan:",
+
+    colBrand: "Jenama",
+    colSegment: "Segmen",
+    colPriority: "Keutamaan",
+    colValidation: "Pengesahan",
+    colContacts: "Kenalan",
+    colAiSources: "Sumber AI",
+    colActions: "Tindakan",
+    tierPrefix: "Tier",
+    aisConfirmed: "AI mengesahkan",
+    aiConfirmed: "AI mengesahkan",
+    viewResearch: "Lihat & Selidik",
+
+    historyHeading: "Sejarah Penemuan (Sesi Ini)",
+    historyFoundLabel: "Dijumpai:",
+    historyCreatedLabel: "Dicipta:",
+  },
+
 };
 
 export default ms;
