@@ -5982,6 +5982,58 @@ const zhCN: Translations = {
     verdictUnscanned: "未扫描",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← 设置",
+    pageTitle: "邮件模板",
+    pageSubtitle: "可复用的触达邮件骨架。使用 {firstName}、{company} 等占位符即时个性化。",
+    btnNew: "+ 新建模板",
+    errorRequired: "标题、主题和正文为必填。",
+    errorLoadUser: "加载用户失败",
+    errorLoadTemplates: "加载模板失败",
+    confirmArchive: "归档「{title}」？它将不再出现在选择器中。",
+
+    formHeadingEdit: "编辑模板",
+    formHeadingNew: "新建模板",
+    labelTitle: "标题",
+    placeholderTitle: "例如：首次接触介绍（运动服）",
+    labelCategory: "类别",
+    placeholderCategory: "例如：intro、re-engage、icp-request",
+    labelScope: "范围",
+    scopePrivate: "私人（仅自己）",
+    scopeShared: "共享（整个团队）",
+    scopeGlobal: "全局（组织默认）",
+    labelSubject: "主题",
+    placeholderSubject: "Hi {firstName}——为 {company} 简要介绍 FUZE",
+    labelBody: "正文",
+    btnSaving: "保存中……",
+    btnSaveChanges: "保存更改",
+    btnCreate: "创建模板",
+    btnCancel: "取消",
+
+    previewHeading: "预览",
+    previewHelp: "编辑下方示例值以查看您的占位符如何渲染。",
+    previewSubjectLabel: "主题",
+    previewBodyLabel: "正文",
+
+    slotsHeading: "BD 向导快速选择槽位",
+    slotsHelp: "将最多 10 个您的模板固定到编号槽位。在向导的草稿步骤中，您将看到 1–10 按钮条，一键填充主题和正文。",
+    openBdWizard: "打开 BD 向导 →",
+    slotEmptyTitle: "空槽位——在下方分配。",
+    slotEmpty: "空",
+
+    loadingTemplates: "加载模板中……",
+    groupPrivate: "您的模板",
+    groupShared: "与团队共享",
+    groupGlobal: "全组织默认",
+    usedSuffix: "已使用",
+    byPrefix: "由",
+    bdSlot: "BD 槽位",
+    edit: "编辑",
+    archive: "归档",
+
+    emptyTpl: "暂无模板。点击「+ 新建模板」以创建第一个。",
+  },
+
 };
 
 export default zhCN;
