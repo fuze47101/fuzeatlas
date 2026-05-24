@@ -10,8 +10,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { useI18n } from "@/i18n";
 
 interface RepRow {
   rep: { id: string; name: string | null; email: string; role: string };
@@ -58,14 +58,15 @@ interface Scoreboard {
   };
 }
 
-const WINDOW_OPTIONS = [
-  { days: 7, label: "Last 7 days" },
-  { days: 30, label: "Last 30 days" },
-  { days: 90, label: "Last 90 days" },
-  { days: 365, label: "Last year" },
-];
-
 export default function BDScoreboardPage() {
+  const { t } = useI18n();
+  const T = t.bdScoreboard;
+  const WINDOW_OPTIONS = [
+    { days: 7, label: T.win7 },
+    { days: 30, label: T.win30 },
+    { days: 90, label: T.win90 },
+    { days: 365, label: T.winYear },
+  ];
   const { user } = useAuth();
   const router = useRouter();
   const [data, setData] = useState<Scoreboard | null>(null);
@@ -125,17 +126,17 @@ export default function BDScoreboardPage() {
           <Breadcrumbs
             className="mb-2"
             items={[
-              { label: "Sales & Pipeline" },
-              { label: "BD scoreboard" },
+              { label: T.crumbSales },
+              { label: T.crumbCurrent },
             ]}
           />
-          <h1 className="text-3xl font-black text-slate-900">BD Scoreboard</h1>
+          <h1 className="text-3xl font-black text-slate-900">{T.title}</h1>
           <p className="text-slate-600 mt-1">
-            Per-rep outreach &amp; conversion over the selected window.
+            {T.subtitle}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-sm text-slate-600">Window:</label>
+          <label className="text-sm text-slate-600">{T.windowLabel}</label>
           <select
             value={windowDays}
             onChange={(e) => setWindowDays(parseInt(e.target.value, 10))}
@@ -157,7 +158,7 @@ export default function BDScoreboardPage() {
       ) : !data || data.rows.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
           <span className="text-4xl mb-3 block">📊</span>
-          <p className="text-slate-600">No BD activity in the selected window.</p>
+          <p className="text-slate-600">{T.emptyText}</p>
         </div>
       ) : (
         <>
@@ -167,21 +168,21 @@ export default function BDScoreboardPage() {
               is the funnel outcome + the sequence-specific counters so
               managers can still see cadence health. */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-3">
-            <TotalCard label="Emails Sent" value={data.totals.emailsSent} icon="✉️" />
-            <TotalCard label="LinkedIn" value={data.totals.linkedinSent} icon="🔗" />
-            <TotalCard label="Contacts Worked" value={data.totals.contactsWorked} icon="👥" />
-            <TotalCard label="Replies" value={data.totals.replies} icon="💬" />
+            <TotalCard label={T.totalEmails} value={data.totals.emailsSent} icon="✉️" />
+            <TotalCard label={T.totalLinkedIn} value={data.totals.linkedinSent} icon="🔗" />
+            <TotalCard label={T.totalContactsWorked} value={data.totals.contactsWorked} icon="👥" />
+            <TotalCard label={T.totalReplies} value={data.totals.replies} icon="💬" />
             <TotalCard
-              label="Reply Rate"
+              label={T.totalReplyRate}
               value={`${(data.totals.replyRate * 100).toFixed(1)}%`}
               icon="📈"
             />
-            <TotalCard label="Converted" value={data.totals.brandsConverted} icon="🏆" />
+            <TotalCard label={T.totalConverted} value={data.totals.brandsConverted} icon="🏆" />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-            <TotalCard label="Sequences Started" value={data.totals.sequencesStarted} icon="📨" />
-            <TotalCard label="Sequence Steps Sent" value={data.totals.stepsSent} icon="📤" />
-            <TotalCard label="Meetings Booked" value={data.totals.meetingsBooked} icon="🤝" />
+            <TotalCard label={T.totalSequencesStarted} value={data.totals.sequencesStarted} icon="📨" />
+            <TotalCard label={T.totalStepsSent} value={data.totals.stepsSent} icon="📤" />
+            <TotalCard label={T.totalMeetings} value={data.totals.meetingsBooked} icon="🤝" />
           </div>
 
           {/* Leaderboard */}
@@ -189,18 +190,18 @@ export default function BDScoreboardPage() {
             <table className="w-full text-sm min-w-[900px]">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase tracking-wide">
                 <tr>
-                  <th className="text-left px-4 py-3">Rep</th>
-                  <th className="text-right px-3 py-3">Emails</th>
-                  <th className="text-right px-3 py-3">Open %</th>
-                  <th className="text-right px-3 py-3">Click %</th>
-                  <th className="text-right px-3 py-3">Reply %</th>
-                  <th className="text-right px-3 py-3">Seq Active</th>
-                  <th className="text-right px-3 py-3">Ready</th>
-                  <th className="text-right px-3 py-3">Meetings</th>
-                  <th className="text-right px-3 py-3">Velocity</th>
-                  <th className="text-right px-3 py-3">Pipeline $</th>
-                  <th className="text-right px-3 py-3">Refs</th>
-                  <th className="text-right px-4 py-3">Won (90d)</th>
+                  <th className="text-left px-4 py-3">{T.colRep}</th>
+                  <th className="text-right px-3 py-3">{T.colEmails}</th>
+                  <th className="text-right px-3 py-3">{T.colOpenPct}</th>
+                  <th className="text-right px-3 py-3">{T.colClickPct}</th>
+                  <th className="text-right px-3 py-3">{T.colReplyPct}</th>
+                  <th className="text-right px-3 py-3">{T.colSeqActive}</th>
+                  <th className="text-right px-3 py-3">{T.colReady}</th>
+                  <th className="text-right px-3 py-3">{T.colMeetings}</th>
+                  <th className="text-right px-3 py-3">{T.colVelocity}</th>
+                  <th className="text-right px-3 py-3">{T.colPipeline}</th>
+                  <th className="text-right px-3 py-3">{T.colRefs}</th>
+                  <th className="text-right px-4 py-3">{T.colWon}</th>
                 </tr>
               </thead>
               <tbody>
@@ -269,12 +270,7 @@ export default function BDScoreboardPage() {
           </div>
 
           <p className="text-xs text-slate-600 mt-3">
-            Window starts {new Date(data.since).toLocaleDateString()}. Refreshes every 5 minutes.
-            &quot;Emails&quot; = every outbound email the rep sent (wizard + brand page + contact page).
-            &quot;Sequences&quot; is the subset that ran through a multi-step cadence. &quot;Contacts&quot; is
-            the distinct number of humans the rep touched via email or LinkedIn.
-            &quot;Converted&quot; = brands moved past PRESENTATION stage in window. ACM hand-off keeps
-            sourcing rep as account manager — commission attribution is preserved.
+            {T.footerTpl.replace("{date}", new Date(data.since).toLocaleDateString())}
           </p>
         </>
       )}
