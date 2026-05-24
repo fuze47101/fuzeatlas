@@ -7798,6 +7798,28 @@ const es: Translations = {
     mondayReviewBody: "Pruebas marcadas por IA + rechazos de marca. El correo del domingo a las 22:00 UTC arranca la agenda.",
   },
 
+  brandEngagement: {
+    heading: "Salud de la marca",
+    subtitle: "Monitorea el compromiso y las métricas de salud de todas las marcas",
+    recalculatingBtn: "Recalculando...",
+    recalculateBtn: "Recalcular todo",
+    allFilter: "Todas",
+    loadingText: "Cargando...",
+    noBrandsText: "No se encontraron marcas",
+    scoreBreakdownTitle: "Desglose de la puntuación",
+    communicationLabel: "Comunicación",
+    testingVelocityLabel: "Velocidad de pruebas",
+    pipelineVelocityLabel: "Velocidad del pipeline",
+    paymentScoreLabel: "Puntuación de pagos",
+    rawMetricsTitle: "Métricas en bruto",
+    daysSinceContact: "Días desde el último contacto",
+    testsLast30d: "Pruebas (últimos 30 días)",
+    testsLast90d: "Pruebas (últimos 90 días)",
+    avgInvoicePayDays: "Promedio de días de pago de facturas",
+    overdueInvoices: "Facturas vencidas",
+    lastCalculatedLabel: "Última vez calculado:",
+  },
+
 };
 
 export default es;
