@@ -7649,6 +7649,24 @@ const hi: Translations = {
     websiteLabel: "वेबसाइट",
   },
 
+  importContacts: {
+    title: "बल्क आयात — संपर्क",
+    subtitle: "संपर्कों का CSV पेस्ट करें या अपलोड करें। ईमेल प्राकृतिक कुंजी है — मौजूद होने पर हम ईमेल द्वारा अपसर्ट करते हैं। बिना ईमेल लेकिन एक LinkedIn URL वाली पंक्तियां 'ईमेल गायब' के रूप में आयात की जाती हैं ताकि मौजूदा Apollo संवर्धन जॉब उनका पीछा कर सके। न तो वाली पंक्तियां अस्वीकृत हैं।",
+    backLabel: "Lead प्रबंधन",
+    firstNameLabel: "पहला नाम",
+    lastNameLabel: "अंतिम नाम",
+    emailLabel: "ईमेल",
+    emailHint: "यदि कोई LinkedIn URL नहीं तो आवश्यक",
+    linkedinLabel: "LinkedIn URL",
+    linkedinHint: "ईमेल गायब होने पर फॉलबैक पहचानकर्ता",
+    brandNameLabel: "ब्रांड नाम",
+    brandNameHint: "Brand.name पर केस-असंवेदनशील मिलान; नहीं मिलने पर अनलिंक्ड",
+    jobTitleLabel: "पद का नाम",
+    phoneLabel: "फ़ोन",
+    titleLabel: "उपाधि (आदरसूचक)",
+    titleHint: 'जैसे \"Mr.\", \"Dr.\"',
+  },
+
 };
 
 export default hi;
