@@ -5828,6 +5828,54 @@ const hi: Translations = {
     btnCreating: "बना रहे हैं...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "FUZE फैब्रिक लाइब्रेरी",
+    pageSubtitle: "हमारे वैश्विक नेटवर्क में FUZE-उपचारित फैब्रिक्स और सत्यापित परीक्षण परिणाम ब्राउज़ करें। सभी डेटा अनाम है — कारखाना और ब्रांड पहचान गोपनीय हैं।",
+
+    statFabrics: "परीक्षण किए गए फैब्रिक्स",
+    statTests: "कुल परीक्षण",
+    statIcp: "ICP विश्लेषण",
+    statAb: "एंटीमाइक्रोबियल परीक्षण",
+
+    searchPlaceholder: "कंस्ट्रक्शन, धागा, अंतिम उपयोग, FUZE नंबर से खोजें...",
+    filterAllTypes: "सभी परीक्षण प्रकार",
+    filterIcp: "ICP विश्लेषण",
+    filterAntibacterial: "एंटीबैक्टीरियल",
+    filterFungal: "एंटीफंगल",
+    filterOdor: "गंध नियंत्रण",
+    passOnly: "केवल पास",
+
+    emptyTitle: "आपके मानदंडों से कोई फैब्रिक मेल नहीं खाता",
+    emptyClear: "सभी फ़िल्टर साफ़ करें",
+    errorFailedLoad: "फैब्रिक लाइब्रेरी लोड करने में विफल",
+    errorFailedDefault: "लोड करने में विफल",
+
+    testsSuffix: "परीक्षण",
+    testSuffix: "परीक्षण",
+    propConstruction: "कंस्ट्रक्शन:",
+    propWeight: "वजन:",
+    propWidth: "चौड़ाई:",
+    propYarn: "धागा:",
+    propCategory: "श्रेणी:",
+    propEndUse: "अंतिम उपयोग:",
+    propWeave: "बुनाई:",
+    propColor: "रंग:",
+
+    colTest: "परीक्षण",
+    colMethod: "विधि",
+    colWashes: "वॉश",
+    colResult: "परिणाम",
+    colStatus: "स्थिति",
+    pass: "पास",
+    fail: "फेल",
+    passBadge: "पास",
+    failBadge: "फेल",
+
+    paginationPrev: "पिछला",
+    paginationNext: "अगला",
+    paginationLabel: "पृष्ठ {page} / {pages}",
+  },
+
 };
 
 export default hi;
