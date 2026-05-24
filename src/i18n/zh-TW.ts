@@ -4742,6 +4742,19 @@ const zhTW: Translations = {
     generatedTemplate: "產生時間:",
   },
 
+  bdWizard: {
+    homeLink: "← 首頁",
+    pageTitle: "BD 精靈",
+    pageSubtitle: "引導式對外開發。系統自動為您挑選下一個最高信心度的品牌。",
+    inQueueTemplate: "(佇列中 {n} 個)",
+    skipBrand: "略過此品牌 →",
+
+    setFromAddressHeader: "寄送前請先設定您的寄件人地址",
+    setFromAddressBody: "若未設定,系統將使用通用的 FUZE Atlas 通知信箱寄出,客戶回覆將無法送達您的信箱。",
+    currentlyLabel: "目前:",
+    openProfile: "開啟個人檔案",
+  },
+
 };
 
 export default zhTW;
