@@ -7888,6 +7888,24 @@ const es: Translations = {
     emptyBody: "Prueba a ampliar los filtros — o elimina el filtro \"prueba de banco validada\" si quieres ver tejidos que aún están en desarrollo.",
   },
 
+  importBrands: {
+    title: "Importación masiva — Marcas",
+    subtitle: "Pega o sube un CSV de marcas candidatas de una feria, lista o investigación. Mapearemos las columnas, mostraremos una vista previa de la validación, y escribiremos de forma idempotente a través del mismo ayudante seed-brand que usa la CLI.",
+    backLabel: "Pipeline de marcas",
+    brandNameLabel: "Nombre de la marca",
+    brandNameHint: "(clave natural — el upsert se basa en este campo)",
+    domainLabel: "Dominio de correo",
+    domainHint: 'p. ej. "rhone.com"',
+    repEmailLabel: "Correo del AM principal",
+    repEmailHint: "debe existir ya como usuario de Atlas",
+    tierLabel: "Nivel FUZE requerido",
+    tierHint: "F1 / F2 / F3 / F4 — predeterminado F2",
+    cadenceLabel: "Cadencia ICP (cada N lotes)",
+    cadenceHint: "predeterminado 5",
+    countryLabel: "País",
+    websiteLabel: "Sitio web",
+  },
+
 };
 
 export default es;
