@@ -5442,6 +5442,69 @@ const ur: Translations = {
     footerGenerated: "فارم تیار شدہ",
   },
 
+  sampleTrials: {
+    crumbDashboard: "ڈیش بورڈ",
+    crumbHere: "سیمپل ٹرائلز",
+    pageTitle: "سیمپل ٹرائل مینجمنٹ",
+    pageSubtitle: "تمام فیکٹری سیمپل ٹرائل درخواستوں کا جائزہ، منظوری، بھیجنا، اور ٹریک کریں",
+
+    statTotal: "کل",
+    statNeedsAction: "ایکشن کی ضرورت",
+
+    searchPlaceholder: "فیبرک، فیکٹری، برانڈ، رابطہ تلاش کریں...",
+    filterAllStatuses: "تمام اسٹیٹس",
+    filterAllFactories: "تمام فیکٹریاں",
+
+    errorFailedLoad: "ٹرائلز لوڈ کرنے میں ناکامی",
+    errorUpdate: "اپ ڈیٹ ناکام",
+    errorNetwork: "نیٹ ورک کی خرابی",
+
+    quickActionPrefix: "فوری ایکشن —",
+    trialFallback: "ٹرائل",
+    labelStatus: "اسٹیٹس",
+    labelTracking: "ٹریکنگ نمبر",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "ایڈمن نوٹس",
+    placeholderAdminNotes: "اندرونی نوٹس...",
+    labelRejectReason: "مسترد کرنے کی وجہ",
+    btnSave: "تبدیلیاں محفوظ کریں",
+    btnSaving: "محفوظ ہو رہا ہے...",
+    btnCancel: "منسوخ کریں",
+
+    emptyFiltered: "آپ کے فلٹرز سے کوئی ٹرائلز میل نہیں کھاتے",
+    emptyDefault: "ابھی تک کوئی سیمپل ٹرائلز نہیں",
+
+    colFabric: "فیبرک",
+    colFactory: "فیکٹری",
+    colPurpose: "مقصد",
+    colStatus: "اسٹیٹس",
+    colDetails: "تفصیلات",
+    colIcpLab: "ICP لیب",
+    colDate: "تاریخ",
+    colActions: "اعمال",
+
+    purposeBrand: "برانڈ",
+    purposeSelfDev: "خود-ترقی",
+    trialLab: "لیب",
+    trialProduction: "پروڈکشن",
+    detailsTierPrefix: "ٹیئر:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "بذریعہ:",
+    actionAction: "ایکشن",
+    actionView: "دیکھیں",
+
+    statusSubmitted: "جمع کرایا گیا",
+    statusUnderReview: "جائزہ میں",
+    statusApproved: "منظور شدہ",
+    statusRejected: "مسترد",
+    statusShipped: "بھیجا گیا",
+    statusReceived: "موصول",
+    statusInProgress: "جاری",
+    statusIcpPending: "ICP زیر التواء",
+    statusIcpSubmitted: "ICP جمع",
+    statusComplete: "مکمل",
+  },
+
 };
 
 export default ur;
