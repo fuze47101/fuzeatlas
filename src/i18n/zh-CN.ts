@@ -4147,6 +4147,27 @@ const zhCN: Translations = {
     confirmIcpApply: "这将为缺少 ICP 数据的面料创建 FI 估算 ICP 测试档案。继续?",
   },
 
+  educationClaims: {
+    backLink: "← 返回 FUZE 基础",
+    eyebrow: "可声明的内容",
+    pageTitle: "FUZE 处理面料的可辩护品牌声明",
+    pageIntro: "供合规团队、品牌营销与吊牌文案参考。三大类:产品声明、可持续性声明、认证声明。每一项均评为",
+    introCiteFreely: "可自由引用",
+    introWithData: "需配合等级数据引用",
+    introAvoid: "应避免",
+    introTail: "—— 并附通俗语言说明原因。",
+    productClaimsTitle: "产品 / 效能声明",
+    sustainabilityClaimsTitle: "可持续性声明",
+    certClaimsTitle: "认证声明",
+    badgeCiteFreely: "可自由引用",
+    badgeWithData: "需配数据",
+    badgeAvoid: "应避免",
+    fifraTitle: "关于 FIFRA 的说明",
+    fifraBody: "FIFRA(美国联邦杀虫剂、杀菌剂与杀鼠剂法案)规范美国境内的抗菌声明。已处理物品豁免允许使用 \"经抗菌处理\" 等描述性声明,无需单独的产品级 EPA 注册,但具体病原体声明(\"杀灭 99.9% 大肠杆菌\")需有与活性成分注册相关联的测试数据支撑。本页为指导性内容,非法律意见 —— 拟定的营销文案在发布前请与内部合规团队复核。",
+    backToBasics: "返回 FUZE 基础",
+    seeCerts: "查看认证组合",
+  },
+
 };
 
 export default zhCN;
