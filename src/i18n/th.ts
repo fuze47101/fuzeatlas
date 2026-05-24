@@ -4891,6 +4891,81 @@ const th: Translations = {
     docTypeOther: "อื่นๆ",
   },
 
+  consumptionAdmin: {
+    loading: "กำลังโหลดข้อมูลการบริโภค...",
+    pageTitle: "การบริโภค & การสั่งซื้อใหม่",
+    pageSubtitle: "ติดตามการใช้ FUZE ของโรงงาน วันที่คาดว่าจะหมด และทริกเกอร์การสั่งซื้อใหม่อัตโนมัติ",
+
+    btnNewOrder: "+ คำสั่งซื้อใหม่",
+    btnLogUsage: "+ บันทึกการใช้",
+
+    kpiActiveFactories: "โรงงานที่ใช้งาน",
+    kpiOfTotal: "จาก {n} ทั้งหมด",
+    kpiTotalOrdered: "สั่งซื้อทั้งหมด",
+    kpiPending: "รอ {n} รายการ",
+    kpiTotalConsumed: "บริโภคทั้งหมด",
+    kpiAcrossAll: "ในโรงงานทั้งหมด",
+    kpiReorderAlerts: "การแจ้งเตือนสั่งซื้อใหม่",
+    kpiAlertsSplit: "{c} วิกฤต, {w} เตือน",
+
+    annualDemandLabel: "ความต้องการคาดการณ์รายปี",
+    annualDemandUnit: "ลิตร",
+    annualDemandBottles: "~{n} ขวด",
+    annualDemandRevenue: "~${n} รายได้",
+
+    sectionFactoryInventory: "สถานะสต็อกโรงงาน",
+    emptyTitle: "ยังไม่มีโรงงานที่เปิดใช้ FUZE",
+    emptySub: "โรงงานที่ fuzeEnabled = true จะปรากฏที่นี่",
+
+    cellRemaining: "เหลือ",
+    cellBurn: "ใช้/วัน",
+    cellRunOut: "หมด",
+    daysSuffix: "วัน",
+    daysWord: "วัน",
+    fabricsSuffix: "ผ้า",
+    fabricSuffix: "ผ้า",
+    activeOrdersSuffix: "คำสั่งซื้อที่ใช้งาน",
+    activeOrderSuffix: "คำสั่งซื้อที่ใช้งาน",
+
+    colFactory: "โรงงาน",
+    colCountry: "ประเทศ",
+    colOrdered: "สั่งแล้ว",
+    colConsumed: "บริโภคแล้ว",
+    colRemaining: "เหลือ",
+    colBurnDay: "ใช้/วัน",
+    colRunOut: "หมด",
+    colStatus: "สถานะ",
+
+    modalOrderTitle: "คำสั่งซื้อ FUZE ใหม่",
+    modalUsageTitle: "บันทึกการใช้ FUZE",
+    fieldFactory: "โรงงาน",
+    placeholderFactory: "เลือกโรงงาน...",
+    fieldVolumeL: "ปริมาตร (ลิตร)",
+    fieldTier: "ระดับ",
+    fieldNotes: "หมายเหตุ",
+    fieldLitersUsed: "ลิตรที่ใช้",
+    fieldMetersProcessed: "เมตรที่ประมวลผล",
+    placeholderOptional: "ไม่บังคับ",
+    fieldMethod: "วิธีการ",
+    placeholderSelect: "เลือก...",
+    methodExhaust: "Exhaust (Dyebath)",
+    methodPad: "Pad-Dry-Cure",
+    methodSpray: "Spray",
+
+    summaryBottles: "ขวด (19L ต่อขวด):",
+    summaryEstTotal: "รวมประมาณการ:",
+
+    btnCancel: "ยกเลิก",
+    btnCreating: "กำลังสร้าง...",
+    btnCreateOrder: "สร้างคำสั่งซื้อ",
+    btnLogging: "กำลังบันทึก...",
+    btnLogUsageSubmit: "บันทึกการใช้",
+
+    errorCreateOrder: "ไม่สามารถสร้างคำสั่งซื้อได้",
+    errorLogUsage: "ไม่สามารถบันทึกการบริโภคได้",
+    errorNetwork: "ข้อผิดพลาดเครือข่าย",
+  },
+
 };
 
 export default th;
