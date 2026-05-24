@@ -7584,6 +7584,27 @@ const ms: Translations = {
     seeSustainabilityBtn: "Lihat impak kemampanan",
   },
 
+  pressLanding: {
+    heroTitle: "Kit akhbar",
+    heroSubtitle: "Logo, imageri, siaran, dan latar belakang syarikat untuk FUZE Biotech.",
+    aboutTitle: "Tentang FUZE Biotech",
+    aboutBody1: "FUZE Biotech, beribu pejabat di Salt Lake City, Utah, membangunkan rawatan tekstil antimikrob proprietari yang dibina di sekitar FUZE metamaterial. Rawatan berikat secara kekal kepada gentian semasa kemasan tekstil standard — tiada PFAS, tiada pengikat, tiada perubahan kimia kepada tangan atau kebolehbernafasan fabrik.",
+    aboutBody2: "Produk adalah berdaftar EPA (persekutuan), diluluskan California EPA (Q1 2026), OEKO-TEX Standard 100 Class I, dan bluesign® diluluskan. Prestasi disahkan kepada ASTM E2149, AATCC 100, AATCC 30, ISO 18184, dan ISO 20743 oleh makmal pihak ketiga bebas.",
+    foundedLabel: "Diasaskan",
+    foundedValue: "Salt Lake City, UT",
+    addressLabel: "Alamat",
+    pressContactLabel: "Kenalan akhbar",
+    logosSection: "Logo",
+    logoAltFallback: "Logo FUZE",
+    downloadLabel: "Muat Turun →",
+    imagerySection: "Imageri",
+    imageAltFallback: "Imageri FUZE",
+    releasesSection: "Siaran akhbar",
+    releaseFallback: "Siaran",
+    newsSection: "Dalam berita",
+    claimsLink: "Tuntutan",
+  },
+
 };
 
 export default ms;
