@@ -4714,6 +4714,19 @@ const ja: Translations = {
     generatedTemplate: "生成日時:",
   },
 
+  bdWizard: {
+    homeLink: "← ホーム",
+    pageTitle: "BDウィザード",
+    pageSubtitle: "ガイド付きアウトバウンド。最も確信度の高い次のブランドが自動的に選択されます。",
+    inQueueTemplate: "（キューに{n}件）",
+    skipBrand: "このブランドをスキップ →",
+
+    setFromAddressHeader: "送信前に差出人メールアドレスを設定してください",
+    setFromAddressBody: "設定しない場合、汎用のFUZE Atlas通知アドレスから送信され、返信が受信トレイに届きません。",
+    currentlyLabel: "現在:",
+    openProfile: "プロフィールを開く",
+  },
+
 };
 
 export default ja;
