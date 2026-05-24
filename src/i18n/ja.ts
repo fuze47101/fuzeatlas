@@ -4822,6 +4822,49 @@ const ja: Translations = {
     sowEmptyNothingStuck: "停滞案件はありません。",
   },
 
+  ordersAdmin: {
+    pageTitle: "注文管理",
+    pageSubtitle: "すべてのFUZE注文を確認、承認、追跡します",
+    myAccountsOnly: "自分の担当アカウントのみ",
+    awaitingApprovalTemplate: "{n}件の注文が承認待ち",
+
+    statTotal: "合計",
+    statPending: "保留中",
+    statApproved: "承認済み",
+    statProcessing: "処理中",
+    statShipped: "出荷済み",
+    statDelivered: "配達済み",
+    statRevenue: "売上",
+
+    filterAll: "すべて",
+    filterAllTypes: "すべてのタイプ",
+
+    emptyMessage: "フィルターに一致する注文はありません",
+
+    colOrder: "注文",
+    colFactory: "工場",
+    colType: "タイプ",
+    colVolume: "数量",
+    colBrand: "ブランド",
+    colTotal: "合計",
+    colFulfillment: "履行状況",
+    colStatus: "ステータス",
+    colDate: "日付",
+
+    statusDraft: "下書き",
+    statusQuoted: "見積済み",
+    statusPendingApproval: "承認待ち",
+    statusApproved: "承認済み",
+    statusConfirmed: "確定済み",
+    statusProcessing: "処理中",
+    statusShipped: "出荷済み",
+    statusDelivered: "配達済み",
+    statusCancelled: "キャンセル",
+
+    directUsaLabel: "直販USA",
+    tagsSuffix: "件のタグ",
+  },
+
 };
 
 export default ja;
