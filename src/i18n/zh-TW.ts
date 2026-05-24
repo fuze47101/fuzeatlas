@@ -8111,6 +8111,18 @@ const zhTW: Translations = {
     addFavoriteTitle: "加入收藏",
   },
 
+  icpCorrelation: {
+    adminCrumb: "管理員",
+    crumb: "ICP 相關性",
+    heading: "ICP × AB 相關性",
+    subtitle: "Joseph（KUIU）詢問的圖表。布料上的 FUZE 殘留量（ICP 量測）對應 Atlas 中所有品牌可見測試批次的抗菌殺菌率。疊加最佳擬合線與 R²。",
+    errorContext: "載入 ICP 相關性",
+    couldntLoadPrefix: "無法載入相關性資料",
+    networkError: "網路錯誤。",
+    loadingState: "正在載入相關性資料…",
+    footnote: "對客戶的文案使用「FUZE 殘留量」——即實驗室 ICP 報告中的元材料量測值。在所有交付給客戶的文件中皆標示為 FUZE／元材料（CLAUDE.md 品牌語調規範）。",
+  },
+
 };
 
 export default zhTW;
