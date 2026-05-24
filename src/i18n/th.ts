@@ -7526,6 +7526,23 @@ const th: Translations = {
     fieldChangedPlural: "ฟิลด์เปลี่ยน",
   },
 
+  adminLanding: {
+    loadingLabel: "กำลังโหลด admin",
+    crumb: "ผู้ดูแล",
+    heading: "ผู้ดูแล",
+    subtitle: "พื้นผิวควบคุม FUZE-Ops เลือกโมดูลเพื่อเจาะลึก หรือใช้แถบด้านข้างสำหรับ nav เต็ม",
+    openPrefix: "เปิด",
+    fastPathLabel: "เส้นทางเร็ว",
+    dataEntryHubTitle: "ศูนย์ป้อนข้อมูล",
+    dataEntryHubBody: "ตั้ง spec แบรนด์ ระดับราคา ลิงก์ห่วงโซ่อุปทาน ราคาห้องปฏิบัติการ — ทั้งหมดในหน้าเดียว",
+    liveStateLabel: "สถานะสด",
+    commandCenterTitle: "ศูนย์บัญชาการ",
+    commandCenterBody: "ไทล์ metric หกรายการ เมทริกซ์ cadence แบรนด์ × โรงงาน กิจกรรมล่าสุด คิว",
+    weeklyLabel: "รายสัปดาห์",
+    mondayReviewTitle: "คิวตรวจสอบวันจันทร์",
+    mondayReviewBody: "AI ตั้งธงการรันทดสอบ + การปฏิเสธแบรนด์ อีเมลวันอาทิตย์ 22:00 UTC seed agenda",
+  },
+
 };
 
 export default th;
