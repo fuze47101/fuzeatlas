@@ -6172,6 +6172,50 @@ const vi: Translations = {
     emptyTpl: "Chưa có mẫu nào. Nhấp + Mẫu mới để tạo mẫu đầu tiên.",
   },
 
+  pipelineUserPage: {
+    loading: "Đang tải pipeline...",
+    pageTitle: "Pipeline doanh thu",
+    pageSubtitle: "Theo dõi giao dịch từ phát triển đến sản xuất",
+    btnNewDeal: "+ Giao dịch mới",
+
+    kpiTotalPipeline: "Tổng pipeline",
+    kpiTotalPipelineSubTpl: "{n} giao dịch",
+    kpiWeighted: "Dự báo có trọng số",
+    kpiWeightedSub: "Điều chỉnh theo xác suất",
+    kpiActual: "Doanh thu thực tế",
+    kpiActualSub: "Đã xuất hóa đơn & thanh toán",
+    kpiConversion: "Chuyển đổi",
+    kpiConversionSub: "Thực tế / Pipeline",
+
+    cardProdPrefix: "Sản xuất:",
+    emptyDeals: "Không có giao dịch",
+    weightedPrefix: "· trọng số:",
+
+    editTitlePrefix: "Chỉnh sửa dự án:",
+    fieldName: "Tên dự án",
+    fieldStage: "Giai đoạn",
+    keepCurrent: "Giữ nguyên",
+    fieldBrand: "Thương hiệu",
+    fieldNone: "Không",
+    fieldProjectedValue: "Giá trị dự kiến ($)",
+    fieldProbability: "Xác suất (%)",
+    fieldFuzeTier: "Hạng FUZE",
+    fieldAnnualVolume: "Khối lượng hàng năm (m)",
+    fieldFactory: "Nhà máy",
+    fieldDistributor: "Nhà phân phối",
+    autoFromFactory: "Tự động từ nhà máy",
+    fieldExpectedProd: "Sản xuất kỳ vọng",
+    fieldActualProd: "Sản xuất thực tế",
+    btnSaveChanges: "Lưu thay đổi",
+    btnSaving: "Đang lưu...",
+    btnCancel: "Hủy",
+
+    newDealTitle: "Giao dịch mới",
+    newDealPlaceholder: "Tên dự án / giao dịch...",
+    btnCreate: "Tạo",
+    btnCreating: "Đang tạo...",
+  },
+
 };
 
 export default vi;
