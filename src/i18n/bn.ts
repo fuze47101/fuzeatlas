@@ -7543,6 +7543,28 @@ const bn: Translations = {
     mondayReviewBody: "AI-ফ্ল্যাগড টেস্ট রান + ব্র্যান্ড প্রত্যাখ্যান। Sunday 22:00 UTC ইমেল এজেন্ডা সিড করে।",
   },
 
+  brandEngagement: {
+    heading: "ব্র্যান্ড হেলথ",
+    subtitle: "সমস্ত ব্র্যান্ডের জন্য এনগেজমেন্ট ও হেলথ মেট্রিক্স মনিটর করুন",
+    recalculatingBtn: "পুনর্গণনা করা হচ্ছে...",
+    recalculateBtn: "সব পুনর্গণনা করুন",
+    allFilter: "সব",
+    loadingText: "লোড হচ্ছে...",
+    noBrandsText: "কোনো ব্র্যান্ড পাওয়া যায়নি",
+    scoreBreakdownTitle: "স্কোর ব্রেকডাউন",
+    communicationLabel: "যোগাযোগ",
+    testingVelocityLabel: "টেস্টিং ভেলোসিটি",
+    pipelineVelocityLabel: "পাইপলাইন ভেলোসিটি",
+    paymentScoreLabel: "পেমেন্ট স্কোর",
+    rawMetricsTitle: "Raw মেট্রিক্স",
+    daysSinceContact: "যোগাযোগের পর দিন",
+    testsLast30d: "টেস্ট (শেষ 30d)",
+    testsLast90d: "টেস্ট (শেষ 90d)",
+    avgInvoicePayDays: "গড় ইনভয়েস পে দিন",
+    overdueInvoices: "ওভারডিউ ইনভয়েস",
+    lastCalculatedLabel: "শেষ গণনা করা:",
+  },
+
 };
 
 export default bn;
