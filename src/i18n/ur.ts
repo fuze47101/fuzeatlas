@@ -5732,6 +5732,58 @@ const ur: Translations = {
     verdictUnscanned: "غیر اسکین شدہ",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← سیٹنگز",
+    pageTitle: "ای میل ٹیمپلیٹس",
+    pageSubtitle: "آؤٹ ریچ کے لیے دوبارہ قابل استعمال ای میل اسکیفولڈز۔ {firstName}، {company}، وغیرہ استعمال کر کے فوری ذاتی نوعیت دیں۔",
+    btnNew: "+ نیا ٹیمپلیٹ",
+    errorRequired: "عنوان، موضوع، اور باڈی درکار ہیں۔",
+    errorLoadUser: "صارف لوڈ کرنے میں ناکامی",
+    errorLoadTemplates: "ٹیمپلیٹس لوڈ کرنے میں ناکامی",
+    confirmArchive: "\"{title}\" آرکائیو کریں؟ یہ پکر میں ظاہر نہیں ہوگا۔",
+
+    formHeadingEdit: "ٹیمپلیٹ میں ترمیم کریں",
+    formHeadingNew: "نیا ٹیمپلیٹ",
+    labelTitle: "عنوان",
+    placeholderTitle: "مثال: پہلا-ٹچ تعارف (ایتھلیٹک ملبوسات)",
+    labelCategory: "زمرہ",
+    placeholderCategory: "مثال: intro، re-engage، icp-request",
+    labelScope: "اسکوپ",
+    scopePrivate: "نجی (صرف میں)",
+    scopeShared: "مشترکہ (پوری ٹیم)",
+    scopeGlobal: "گلوبل (org default)",
+    labelSubject: "موضوع",
+    placeholderSubject: "ہیلو {firstName} — {company} کے لیے فوری FUZE تعارف",
+    labelBody: "باڈی",
+    btnSaving: "محفوظ ہو رہا ہے…",
+    btnSaveChanges: "تبدیلیاں محفوظ کریں",
+    btnCreate: "ٹیمپلیٹ بنائیں",
+    btnCancel: "منسوخ کریں",
+
+    previewHeading: "پیش نظارہ",
+    previewHelp: "یہ دیکھنے کے لیے نیچے سیمپل اقدار میں ترمیم کریں کہ آپ کے ٹوکن کیسے رینڈر ہوتے ہیں۔",
+    previewSubjectLabel: "موضوع",
+    previewBodyLabel: "باڈی",
+
+    slotsHeading: "BD وزرڈ کوئک-پک سلاٹس",
+    slotsHelp: "اپنے 10 تک ٹیمپلیٹس کو نمبر والے سلاٹس پر پن کریں۔ وزرڈ Draft مرحلے پر، آپ کو 1–10 بٹن سٹرپ نظر آئے گی جو ایک کلک سے موضوع اور باڈی بھرتی ہے۔",
+    openBdWizard: "BD وزرڈ کھولیں →",
+    slotEmptyTitle: "خالی سلاٹ — نیچے تفویض کریں۔",
+    slotEmpty: "خالی",
+
+    loadingTemplates: "ٹیمپلیٹس لوڈ ہو رہے ہیں…",
+    groupPrivate: "آپ کے ٹیمپلیٹس",
+    groupShared: "ٹیم کے ساتھ مشترکہ",
+    groupGlobal: "Org-وائڈ ڈیفالٹس",
+    usedSuffix: "استعمال",
+    byPrefix: "بذریعہ",
+    bdSlot: "BD سلاٹ",
+    edit: "ترمیم",
+    archive: "آرکائیو",
+
+    emptyTpl: "ابھی تک کوئی ٹیمپلیٹس نہیں۔ اپنا پہلا بنانے کے لیے + نیا ٹیمپلیٹ کلک کریں۔",
+  },
+
 };
 
 export default ur;
