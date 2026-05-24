@@ -7869,6 +7869,26 @@ const bn: Translations = {
     footnote: "গ্রাহক-মুখী কপিতে \"FUZE রেসিডুয়াল\" ব্যবহার করা হয় — ল্যাবের ICP রিপোর্ট থেকে metamaterial পরিমাপ। গ্রাহক ডেলিভারেবলে সর্বদা FUZE / metamaterial হিসাবে লেবেল করা (CLAUDE.md ব্র্যান্ড-ভয়েস নিয়ম)।",
   },
 
+  engagementDebug: {
+    crumb: "এনগেজমেন্ট ডিবাগ",
+    engagementSuffix: "এনগেজমেন্ট",
+    calculatedLabel: "গণনা করা হয়েছে",
+    overallScoreLabel: "সামগ্রিক স্কোর",
+    outOf100: "১০০-এর মধ্যে",
+    inputsLabel: "ইনপুট",
+    daysSinceContact: "যোগাযোগের পর থেকে দিন",
+    tests30d: "পরীক্ষা (৩০ দিন)",
+    tests90d: "পরীক্ষা (৯০ দিন)",
+    avgPayDays: "গড় পেমেন্ট দিন",
+    overdueInvoices: "বকেয়া চালান",
+    factorBreakdownTitle: "ফ্যাক্টর ব্রেকডাউন",
+    weightLabel: "ওজন",
+    contributesLabel: "অবদান রাখে",
+    ptsLabel: "পয়েন্ট",
+    loading: "লোড হচ্ছে…",
+    failedToLoad: "লোড করতে ব্যর্থ",
+  },
+
 };
 
 export default bn;
