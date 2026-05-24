@@ -4488,6 +4488,19 @@ const bn: Translations = {
     generatedTemplate: "তৈরি:",
   },
 
+  bdWizard: {
+    homeLink: "← হোম",
+    pageTitle: "BD Wizard",
+    pageSubtitle: "গাইডেড আউটবাউন্ড। আপনার জন্য পরবর্তী সর্বোচ্চ-আত্মবিশ্বাসী ব্র্যান্ড স্বয়ংক্রিয়ভাবে বেছে নেওয়া হয়েছে।",
+    inQueueTemplate: "({n} সারিতে)",
+    skipBrand: "এই ব্র্যান্ড এড়িয়ে যান →",
+
+    setFromAddressHeader: "পাঠানোর আগে আপনার আউটবাউন্ড From: ঠিকানা সেট করুন",
+    setFromAddressBody: "এটি ছাড়া, আউটবাউন্ড সাধারণ FUZE Atlas নোটিফিকেশন ঠিকানা থেকে যায় এবং উত্তর আপনার ইনবক্সে আসবে না।",
+    currentlyLabel: "বর্তমানে:",
+    openProfile: "প্রোফাইল খুলুন",
+  },
+
 };
 
 export default bn;
