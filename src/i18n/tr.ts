@@ -6025,6 +6025,58 @@ const tr: Translations = {
     verdictUnscanned: "taranmamış",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← Ayarlar",
+    pageTitle: "E-posta Şablonları",
+    pageSubtitle: "İletişim için yeniden kullanılabilir e-posta iskeletleri. Anında kişiselleştirmek için {firstName}, {company}, vb. kullanın.",
+    btnNew: "+ Yeni Şablon",
+    errorRequired: "Başlık, konu ve gövde zorunludur.",
+    errorLoadUser: "Kullanıcı yüklenemedi",
+    errorLoadTemplates: "Şablonlar yüklenemedi",
+    confirmArchive: "\"{title}\" arşivlensin mi? Artık seçicide görünmeyecek.",
+
+    formHeadingEdit: "Şablonu düzenle",
+    formHeadingNew: "Yeni şablon",
+    labelTitle: "Başlık",
+    placeholderTitle: "ör. İlk temas tanıtımı (atletik giyim)",
+    labelCategory: "Kategori",
+    placeholderCategory: "ör. tanıtım, yeniden etkileşim, icp-talebi",
+    labelScope: "Kapsam",
+    scopePrivate: "Özel (sadece ben)",
+    scopeShared: "Paylaşılan (tüm ekip)",
+    scopeGlobal: "Global (org varsayılanı)",
+    labelSubject: "Konu",
+    placeholderSubject: "Merhaba {firstName} — {company} için hızlı FUZE tanıtımı",
+    labelBody: "Gövde",
+    btnSaving: "Kaydediliyor…",
+    btnSaveChanges: "Değişiklikleri kaydet",
+    btnCreate: "Şablon oluştur",
+    btnCancel: "İptal",
+
+    previewHeading: "Önizleme",
+    previewHelp: "Token'larınızın nasıl göründüğünü görmek için aşağıdaki örnek değerleri düzenleyin.",
+    previewSubjectLabel: "Konu",
+    previewBodyLabel: "Gövde",
+
+    slotsHeading: "BD Sihirbazı hızlı seçim yuvaları",
+    slotsHelp: "10'a kadar şablonunuzu numaralı yuvalara sabitleyin. Sihirbaz Taslak adımında, konuyu ve gövdeyi tek tıkla dolduran 1-10 düğme şeridi görürsünüz.",
+    openBdWizard: "BD Sihirbazını Aç →",
+    slotEmptyTitle: "Boş yuva — aşağıdan atayın.",
+    slotEmpty: "boş",
+
+    loadingTemplates: "Şablonlar yükleniyor…",
+    groupPrivate: "Şablonlarınız",
+    groupShared: "Ekiple paylaşılan",
+    groupGlobal: "Org çapında varsayılanlar",
+    usedSuffix: "kullanıldı",
+    byPrefix: "yapan",
+    bdSlot: "BD yuvası",
+    edit: "Düzenle",
+    archive: "Arşivle",
+
+    emptyTpl: "Henüz şablon yok. İlkini oluşturmak için + Yeni Şablon'a tıklayın.",
+  },
+
 };
 
 export default tr;
