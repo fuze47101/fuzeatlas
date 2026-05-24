@@ -2689,6 +2689,19 @@ const id: Translations = {
     addFavoriteTitle: "Tambah favorit",
   },
 
+  bdWizard: {
+    homeLink: "← Beranda",
+    pageTitle: "BD Wizard",
+    pageSubtitle: "Outbound terpandu. Brand dengan kepercayaan tertinggi berikutnya dipilih otomatis untuk Anda.",
+    inQueueTemplate: "({n} dalam antrian)",
+    skipBrand: "Lewati brand ini →",
+
+    setFromAddressHeader: "Atur alamat From: outbound Anda sebelum mengirim",
+    setFromAddressBody: "Tanpa ini, outbound dikirim dari alamat notifikasi FUZE Atlas umum dan balasan tidak akan masuk ke inbox Anda.",
+    currentlyLabel: "Saat ini:",
+    openProfile: "Buka Profil",
+  },
+
 };
 
 export default id;
