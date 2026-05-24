@@ -7923,6 +7923,21 @@ const zhTW: Translations = {
     titleHint: "例如「先生」、「博士」",
   },
 
+  importFactories: {
+    title: "批次匯入 — 工廠",
+    subtitle: "貼上或上傳工廠 CSV。系統會依名稱（自然鍵）upsert，若您提供經銷商則連結至該經銷商，並為 Atlas 中已存在的每個品牌建立 SupplyChainLink 列。尚未存在的品牌會回報為「遺失」，您可以先執行品牌匯入。",
+    backLabel: "工廠",
+    factoryNameLabel: "工廠名稱",
+    factoryNameHint: "（自然鍵——以此進行 upsert）",
+    countryLabel: "國家",
+    distributorLabel: "經銷商",
+    distributorHint: "不分大小寫比對 Distributor.name；找不到時略過",
+    brandsLabel: "品牌",
+    brandsHint: "以逗號分隔；每個名稱必須在 Brand 中存在",
+    cityLabel: "城市",
+    websiteLabel: "網站",
+  },
+
 };
 
 export default zhTW;
