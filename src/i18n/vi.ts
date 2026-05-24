@@ -6044,6 +6044,82 @@ const vi: Translations = {
     btnCreatePo: "Tạo PO & Mở gói có thể in →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "Quản trị",
+    crumbHere: "Vệ sinh liên hệ",
+    pageTitle: "Vệ sinh liên hệ",
+    pageSubtitle: "Gắn cờ liên hệ giữ chỗ, hộp thư vai trò và liên hệ sai định dạng để đại diện không lãng phí tiếp cận vào Jane Doe. Có thể hoàn tác — bỏ ẩn để đưa liên hệ trở lại wizard.",
+
+    btnPreviewScan: "🔍 Quét xem trước",
+    btnAutoHide: "🙈 Quét + tự động ẩn",
+    btnScanning: "Đang quét…",
+    btnHiding: "Đang ẩn…",
+    titlePreviewScan: "Chạy lại ảnh chụp vệ sinh trên mọi liên hệ, không thay đổi khả năng hiển thị",
+    titleAutoHide: "Quét + tự động ẩn liên hệ giữ chỗ khỏi BD Wizard",
+    confirmAutoHide: "Tự động ẩn sẽ chuyển hiddenFromWizard = true cho mỗi liên hệ mà quét gắn cờ là giữ chỗ hoặc email không hợp lệ. Có thể hoàn tác (bạn có thể bỏ ẩn từ trang này) nhưng ảnh hưởng đến BD Wizard của mọi đại diện ngay lập tức. Tiếp tục?",
+    promptHide: "Ẩn liên hệ này khỏi BD Wizard? Lý do (tùy chọn):",
+    promptUnhide: "Bỏ ẩn liên hệ này? Lý do (tùy chọn, ghi vào ghi chú của họ):",
+    failedPrefix: "Thất bại:",
+    networkErrPrefix: "Lỗi mạng:",
+    scanFailedPrefix: "Quét thất bại:",
+
+    summaryScanned: "Đã quét",
+    summaryContacts: "liên hệ · giữ chỗ",
+    summarySuspicious: "· nghi ngờ",
+    summaryRole: "· vai trò",
+    summaryReal: "· thật",
+    summaryHiddenSuffix: "mới",
+    summaryHiddenPrefix: "· đã ẩn",
+
+    statPlaceholder: "Giữ chỗ",
+    statSuspicious: "Nghi ngờ",
+    statRole: "Hộp thư vai trò",
+    statReal: "Thật",
+    statUnscanned: "Chưa quét",
+    statHidden: "Đã ẩn",
+
+    filterVerdict: "Đánh giá",
+    filterVisibility: "Khả năng hiển thị",
+    filterAllScanned: "Tất cả đã quét",
+    filterPlaceholder: "Giữ chỗ",
+    filterSuspicious: "Nghi ngờ",
+    filterRoleMailbox: "Hộp thư vai trò",
+    filterReal: "Thật",
+    filterUnscanned: "Chưa quét",
+    filterAllVisibility: "Tất cả khả năng hiển thị",
+    filterHiddenOnly: "Chỉ đã ẩn",
+    filterVisibleOnly: "Chỉ hiển thị",
+    searchPlaceholder: "Tìm tên hoặc email…",
+
+    emptyTitle: "Không có liên hệ nào khớp với bộ lọc hiện tại.",
+    emptyUnscannedTpl: "{n} liên hệ chưa bao giờ được quét — nhấn \"Quét xem trước\" để điền.",
+
+    colContact: "Liên hệ",
+    colBrandFactory: "Thương hiệu / Nhà máy",
+    colVerdict: "Đánh giá",
+    colEmail: "Email",
+    colLinkedin: "LinkedIn",
+    colScore: "Điểm",
+    colFlags: "Cờ",
+    colActions: "Hành động",
+
+    unnamed: "(chưa đặt tên)",
+    noEmail: "không có email",
+    hiddenLabel: "Đã ẩn",
+    flagsMore: "thêm",
+    flagsClean: "sạch",
+    actionHide: "Ẩn",
+    actionUnhide: "Bỏ ẩn",
+
+    helpFooter: "Quét đi qua mọi liên hệ và chụp ảnh đánh giá + cờ lên hàng. Xem trước chỉ ghi đánh giá; Quét + tự động ẩn cũng chuyển hiddenFromWizard cho liên hệ giữ chỗ và email không hợp lệ. Cả hai đều có thể hoàn tác — nhấp \"Bỏ ẩn\" để khôi phục một liên hệ, đồng thời chạy lại ảnh chụp trong trường hợp dữ liệu đã được sửa.",
+
+    verdictReal: "thật",
+    verdictSuspect: "nghi ngờ",
+    verdictPlaceholder: "giữ chỗ",
+    verdictRoleMbx: "hộp thư vai trò",
+    verdictUnscanned: "chưa quét",
+  },
+
 };
 
 export default vi;
