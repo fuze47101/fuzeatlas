@@ -7109,6 +7109,44 @@ const vi: Translations = {
     truncatedNotice: "Đang hiển thị 100 thương hiệu đầu trên {total}. Dùng bộ lọc để thu hẹp.",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "Không tìm thấy lô gửi",
+    notFoundBodyTpl: "Chúng tôi không tìm thấy đơn hàng {order}.",
+    notFoundFooter: "Nếu bạn nhận được mã QR này trên một lô gửi FUZE, liên hệ andrew@fuze47.com.",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "Xác minh lô gửi",
+
+    sectionShipment: "Chi tiết lô gửi",
+    fieldFuzeVolume: "Khối lượng FUZE",
+    bottlesSuffix: "chai",
+    baseFuzePrefix: "cơ sở",
+    wastageSuffix: "hao hụt",
+    fieldTier: "Hạng",
+    fieldMethod: "Phương pháp xử lý",
+    fieldFactory: "Nhà máy",
+    fieldForBrand: "Cho thương hiệu",
+    fieldFabric: "Vải",
+    fieldFulfillment: "Thực hiện",
+    directUsa: "Trực tiếp từ USA",
+    distributorFallback: "Nhà phân phối",
+    fieldTracking: "Tracking",
+
+    sectionDocs: "Tài liệu sản phẩm",
+    sdsLabel: "Bảng dữ liệu an toàn (SDS)",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "Giấy chứng nhận phân tích (COA)",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "Mở thư viện tuân thủ",
+
+    sectionTimeline: "Dòng thời gian vòng đời",
+    viewDocument: "Xem tài liệu →",
+    timelineEmpty: "Chưa ghi nhận sự kiện vòng đời nào. Dòng thời gian sẽ được điền khi lô gửi di chuyển.",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Câu hỏi?",
+  },
+
 };
 
 export default vi;
