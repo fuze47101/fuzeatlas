@@ -3163,6 +3163,31 @@ const ja: Translations = {
     deleteFailed: "削除に失敗しました",
   },
 
+  educationMain: {
+    kicker: "FUZE の基礎",
+    pageTitle: "FUZE の実際の仕組みと、なぜ他と違うのか",
+    pageIntro: "FUZE が生地に何を与えるか、どのように細菌を死滅させるか、どの試験でそれを正しく測定できるか、そしてブランドが当社と silver-ion / 亜鉛 / QAC 系競合の間で選ぶ際に何を意味するかを 4 セクションで解説します。",
+    forBrands: "ブランド向け",
+    forFactories: "工場向け",
+    forDistributors: "ディストリビューター向け",
+    forSalesReps: "営業担当向け",
+    segmentKicker: "セグメント別ピッチ",
+    segmentTitle: "業界別 FUZE",
+    segmentIntro: "上記の科学は普遍的です。各セグメントには推奨される FUZE ティアラダー、試験スタック、規制対応チェックマーク、対象者に合わせたアウトリーチフックが用意されています。",
+    openSegment: "セグメントページを開く →",
+    dosageKicker: "セクション 1 — 使用量",
+    mechanismKicker: "セクション 2 — メカニズム",
+    mechanismTitle: "イオン溶出 vs 非イオン性接触殺菌",
+    performanceKicker: "セクション 3 — パフォーマンススタック (F1 → F4)",
+    performanceTitle: "すべてのティアは永続的です。各ステップで FUZE の層がさらに追加されます。",
+    testsKicker: "セクション 4 — 5 つの試験",
+    testsTitle: "市場には 5 つの試験があり、FUZE のメカニズムに合わせて設計されているのはそのうち 1 つだけです",
+    synthesisKicker: "セクション 5 — これがブランドにとって意味すること",
+    synthesisTitle: "サプライチェーンミーティングに持ち込むべき 3 つのポイント",
+    ctaPricing: "特定の競合とのコスト比較を見る",
+    ctaSustainability: "サステナビリティへの影響を見る",
+  },
+
 };
 
 export default ja;
