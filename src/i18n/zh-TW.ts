@@ -7013,6 +7013,32 @@ const zhTW: Translations = {
     footerQuestions: "有問題嗎?",
   },
 
+  settingsExchangeRates: {
+    title: "匯率",
+    subtitle: "管理貨幣轉換匯率",
+    addRateBtn: "新增匯率",
+    cancelBtn: "取消",
+    addFormTitle: "新增匯率",
+    ratePlaceholder: "匯率",
+    submitAddBtn: "新增匯率",
+    converterTitle: "貨幣轉換器",
+    fromLabel: "從",
+    toLabel: "到",
+    amountLabel: "金額",
+    convertBtn: "轉換",
+    rateResultPrefix: "匯率:",
+    quickStatsTitle: "快速統計",
+    totalCurrenciesLabel: "貨幣總數",
+    activeRatesLabel: "啟用匯率",
+    currentRatesTitle: "目前匯率 (基準: USD)",
+    loading: "載入中...",
+    emptyState: "未設定匯率",
+    colCurrencyPair: "貨幣對",
+    colRate: "匯率",
+    colEffectiveDate: "生效日期",
+    colSource: "來源",
+  },
+
 };
 
 export default zhTW;
