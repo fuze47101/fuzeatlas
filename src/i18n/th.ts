@@ -7208,6 +7208,28 @@ const th: Translations = {
     errNetwork: "ข้อผิดพลาดเครือข่าย",
   },
 
+  notificationsPage: {
+    loading: "กำลังโหลดการแจ้งเตือน...",
+    title: "การแจ้งเตือน",
+    unreadLabel: "ยังไม่อ่าน",
+    allCaughtUp: "ทันทุกอย่าง",
+    totalLabel: "ทั้งหมด",
+    markAllRead: "ทำเครื่องหมายอ่านทั้งหมด",
+    filterAll: "ทั้งหมด",
+    filterUnread: "ยังไม่อ่าน",
+    allTypes: "ทุกประเภท",
+    emptyUnreadTitle: "ไม่มีการแจ้งเตือนที่ยังไม่อ่าน",
+    emptyAllTitle: "ยังไม่มีการแจ้งเตือน",
+    emptyUnreadBody: "คุณทันทุกอย่างแล้ว!",
+    emptyAllBody: "การแจ้งเตือนจะปรากฏที่นี่เมื่อมีกิจกรรมบนบัญชีของคุณ",
+    viewDetails: "ดูรายละเอียด →",
+    markAsRead: "ทำเครื่องหมายอ่านแล้ว",
+    justNow: "เพิ่งเมื่อกี้",
+    minSuffix: "น. ที่ผ่านมา",
+    hourSuffix: "ชม. ที่ผ่านมา",
+    daySuffix: "วันที่ผ่านมา",
+  },
+
 };
 
 export default th;
