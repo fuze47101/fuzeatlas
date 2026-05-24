@@ -7433,6 +7433,23 @@ const th: Translations = {
     whatYouCanClaimBtn: "สิ่งที่คุณอ้างได้ →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ รับรองโดย FUZE Atlas",
+    statFabricsCertified: "ผ้าที่ได้รับการรับรอง",
+    statTestsPassed: "การทดสอบที่ผ่าน (12 เดือน)",
+    statCountries: "ประเทศที่จัดส่ง",
+    activeTiersTitle: "ระดับ FUZE ที่ใช้งาน",
+    activeTiersBody: "ระดับการบำบัดที่อยู่ในการผลิตที่โรงงานที่ได้รับการรับรอง",
+    lastPassedLabel: "ผ่านล่าสุด",
+    aboutSummaryTitle: "เกี่ยวกับเทคโนโลยี FUZE",
+    verifyCtaTitle: "ยืนยันผลิตภัณฑ์เฉพาะ",
+    verifyCtaBody: "ทุกผลิตภัณฑ์ที่ได้รับการรับรองมี QR code เฉพาะที่เชื่อมโยงกับชุดการผลิตและประวัติการทดสอบ",
+    verifyCtaBtn: "ค้นหาผลิตภัณฑ์ →",
+    footerCertifiedBy: "รับรองโดย FUZE Atlas",
+    brandSiteLink: "เว็บไซต์แบรนด์ →",
+    contactLink: "ติดต่อ",
+  },
+
 };
 
 export default th;
