@@ -7371,6 +7371,21 @@ const km: Translations = {
     titleHint: 'e.g. "Mr.", "Dr."',
   },
 
+  importFactories: {
+    title: "Bulk import — រោងចក្រ",
+    subtitle: "Paste or upload a CSV of factories. We'll upsert by name (natural key), link to a distributor if you give one, and stamp SupplyChainLink rows for each brand that already exists in Atlas. ម៉ាក that don't exist yet are reported as 'missing' so you can run a brand import first.",
+    backLabel: "រោងចក្រ",
+    factoryNameLabel: "រោងចក្រ name",
+    factoryNameHint: "(natural key — upsert is keyed here)",
+    countryLabel: "Country",
+    distributorLabel: "អ្នកចែកចាយ",
+    distributorHint: "case-insensitive match on អ្នកចែកចាយ.name; skipped if not found",
+    brandsLabel: "ម៉ាក",
+    brandsHint: "comma-separated; each name must exist as a ម៉ាក",
+    cityLabel: "City",
+    websiteLabel: "Website",
+  },
+
 };
 
 export default km;
