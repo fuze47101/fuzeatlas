@@ -7820,6 +7820,30 @@ const it: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "Caricamento invito…",
+    notFoundTitle: "Invito non trovato",
+    notFoundFallback: "Questo link d'invito potrebbe essere scaduto o già stato utilizzato.",
+    chipLabel: "Invito FUZE Atlas",
+    headingMiddle: "ha invitato",
+    headingSuffix: "nella propria supply chain FUZE",
+    heroSubtitleFallbackPrefix: "utilizza FUZE Atlas per coordinare programmi tessili antimicrobici lungo la propria supply chain.",
+    heroSubtitleFallbackSuffix: "L'adesione consente allo stabilimento di sottoporre i tessuti a test, effettuare ordini FUZE e tracciare i risultati ICP — tutto direttamente collegato al brand.",
+    notePrefix: "Nota da",
+    closedPrefix: "Questo invito è già stato",
+    closedReachOutPrefix: "Contatta",
+    closedTeamFallbackPrefix: "il team",
+    closedTeamFallbackSuffix: "",
+    closedFreshLink: "se hai bisogno di un nuovo link.",
+    signUpCta: "Registrati",
+    signUpSubPrefix: "Crea un nuovo account",
+    signUpSubSuffix: "su Atlas",
+    alreadyInCta: "Siamo già in Atlas",
+    alreadyInSub: "Accedi e collega il tuo stabilimento esistente",
+    sentPrefix: "Invito inviato",
+    questionsPrefix: "· Domande?",
+  },
+
 };
 
 export default it;
