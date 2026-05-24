@@ -5882,6 +5882,82 @@ const ja: Translations = {
     btnCreatePo: "POを作成して印刷可能パケットを開く →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "管理",
+    crumbHere: "コンタクト衛生",
+    pageTitle: "コンタクト衛生",
+    pageSubtitle: "プレースホルダー、役割メールアドレス、不正なコンタクトにフラグを立て、無駄なアウトリーチを防ぎます。可逆 — 非表示を解除してウィザードに戻すことができます。",
+
+    btnPreviewScan: "🔍 プレビュースキャン",
+    btnAutoHide: "🙈 スキャン + 自動非表示",
+    btnScanning: "スキャン中…",
+    btnHiding: "非表示中…",
+    titlePreviewScan: "可視性を変更せずに、すべてのコンタクトで衛生スナップショットを再実行",
+    titleAutoHide: "プレースホルダーコンタクトをスキャンしてBDウィザードから自動非表示",
+    confirmAutoHide: "自動非表示は、スキャンがプレースホルダーまたは無効なメールとして分類したすべてのコンタクトの hiddenFromWizard を true に変更します。これは可逆ですが（このページから解除可能）、すべてのレップのBDウィザードに即座に影響します。続行しますか？",
+    promptHide: "このコンタクトをBDウィザードから非表示にしますか？理由（任意）:",
+    promptUnhide: "このコンタクトの非表示を解除しますか？理由（任意、メモに記録）:",
+    failedPrefix: "失敗:",
+    networkErrPrefix: "ネットワークエラー:",
+    scanFailedPrefix: "スキャン失敗:",
+
+    summaryScanned: "スキャン済み",
+    summaryContacts: "件のコンタクト · プレースホルダー",
+    summarySuspicious: "· 疑わしい",
+    summaryRole: "· 役割",
+    summaryReal: "· 実在",
+    summaryHiddenSuffix: "件新規",
+    summaryHiddenPrefix: "· 非表示",
+
+    statPlaceholder: "プレースホルダー",
+    statSuspicious: "疑わしい",
+    statRole: "役割メールアドレス",
+    statReal: "実在",
+    statUnscanned: "未スキャン",
+    statHidden: "非表示",
+
+    filterVerdict: "判定",
+    filterVisibility: "可視性",
+    filterAllScanned: "すべてスキャン済み",
+    filterPlaceholder: "プレースホルダー",
+    filterSuspicious: "疑わしい",
+    filterRoleMailbox: "役割メールアドレス",
+    filterReal: "実在",
+    filterUnscanned: "未スキャン",
+    filterAllVisibility: "すべての可視性",
+    filterHiddenOnly: "非表示のみ",
+    filterVisibleOnly: "表示のみ",
+    searchPlaceholder: "名前またはメールを検索…",
+
+    emptyTitle: "現在のフィルターに一致するコンタクトはありません。",
+    emptyUnscannedTpl: "{n} 件のコンタクトが未スキャンです — 「プレビュースキャン」を実行して登録してください。",
+
+    colContact: "コンタクト",
+    colBrandFactory: "ブランド / 工場",
+    colVerdict: "判定",
+    colEmail: "メール",
+    colLinkedin: "LinkedIn",
+    colScore: "スコア",
+    colFlags: "フラグ",
+    colActions: "アクション",
+
+    unnamed: "（名前なし）",
+    noEmail: "メールなし",
+    hiddenLabel: "非表示",
+    flagsMore: "件以上",
+    flagsClean: "クリーン",
+    actionHide: "非表示",
+    actionUnhide: "解除",
+
+    helpFooter: "スキャンはすべてのコンタクトを走査し、判定とフラグを各行にスナップショットします。プレビューは判定のみ記録します。スキャン+自動非表示は、プレースホルダーや無効なメールのコンタクトの hiddenFromWizard も切り替えます。どちらも可逆 — 「解除」をクリックするとコンタクトが復元され、データが修正された場合に備えてスナップショットも再実行されます。",
+
+    verdictReal: "実在",
+    verdictSuspect: "疑わしい",
+    verdictPlaceholder: "プレースホルダー",
+    verdictRoleMbx: "役割メール",
+    verdictUnscanned: "未スキャン",
+  },
+
 };
 
 export default ja;
