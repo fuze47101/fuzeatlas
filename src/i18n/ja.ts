@@ -7798,6 +7798,28 @@ const ja: Translations = {
     mondayReviewBody: "AI がフラグを立てた試験ランとブランドの否決事項です。日曜 22:00 UTC のメールで議題が送信されます。",
   },
 
+  brandEngagement: {
+    heading: "ブランドの健全性",
+    subtitle: "全ブランドのエンゲージメントと健全性指標をモニタリングします",
+    recalculatingBtn: "再計算中...",
+    recalculateBtn: "すべて再計算",
+    allFilter: "すべて",
+    loadingText: "読み込み中...",
+    noBrandsText: "ブランドが見つかりません",
+    scoreBreakdownTitle: "スコアの内訳",
+    communicationLabel: "コミュニケーション",
+    testingVelocityLabel: "試験の進捗速度",
+    pipelineVelocityLabel: "パイプラインの進捗速度",
+    paymentScoreLabel: "支払スコア",
+    rawMetricsTitle: "生データ指標",
+    daysSinceContact: "最終連絡からの日数",
+    testsLast30d: "試験数 (過去 30 日)",
+    testsLast90d: "試験数 (過去 90 日)",
+    avgInvoicePayDays: "請求書の平均支払日数",
+    overdueInvoices: "未払い請求書",
+    lastCalculatedLabel: "最終計算日時:",
+  },
+
 };
 
 export default ja;
