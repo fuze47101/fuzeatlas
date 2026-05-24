@@ -7418,6 +7418,19 @@ const hi: Translations = {
     pressKitLink: "प्रेस किट",
   },
 
+  educationCompliance: {
+    backLink: "← FUZE मूल बातें पर वापस",
+    kicker: "अनुपालन और प्रमाणन",
+    heroTitle: "हर प्रमाणन स्टैक जिसके बारे में एक ब्रांड पूछता है",
+    heroBody: "आपकी विक्रेता प्रश्नावली के लिए एक स्क्रीनशॉट। EPA संघीय + California, OEKO-TEX Standard 100 Class I, bluesign® अनुमोदित, PFAS-मुक्त, फॉर्मलडिहाइड-मुक्त, ZDHC-संरेखित। चार टियर में एंटीबैक्टीरियल / एंटीवायरल / एंटीफंगल परीक्षण डेटा — रिपोर्ट अनुरोध पर उपलब्ध।",
+    activeBadge: "सक्रिय ✓",
+    docCopiesTitle: "वास्तविक दस्तावेज़ प्रतियां चाहिए?",
+    docCopiesBody: "दस्तावेज़ केंद्र हर प्रमाणन, SDS, TDS, और COA की लाइव PDF प्रतियां रखता है। अनुपालन टीमें उन्हें विक्रेता प्रश्नावली के लिए सीधे डाउनलोड कर सकती हैं।",
+    docCenterCta: "दस्तावेज़ केंद्र खोलें →",
+    backBasicsBtn: "FUZE मूल बातें पर वापस",
+    whatYouCanClaimBtn: "आप क्या दावा कर सकते हैं →",
+  },
+
 };
 
 export default hi;
