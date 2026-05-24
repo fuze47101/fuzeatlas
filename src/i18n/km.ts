@@ -7010,6 +7010,21 @@ const km: Translations = {
     errNetwork: "Network error",
   },
 
+  verifyEmail: {
+    verifyingTitle: "Verifying your email...",
+    successTitle: "អ៊ីមែល Verified",
+    welcomePrefix: "សូមស្វាគមន៍",
+    successBody: "Your email has been verified. Redirecting to login...",
+    failedTitle: "Verification បរាជ័យ",
+    resendVerificationBtn: "Resend Verification អ៊ីមែល",
+    checkEmailTitle: "Check Your អ៊ីមែល",
+    checkEmailBody: "A verification link has been sent to your email address. Click the link to verify your account.",
+    resendEmailBtn: "Resend អ៊ីមែល",
+    sendingBtn: "ផ្ញើing...",
+    errVerifyFailed: "បរាជ័យ to verify email",
+    errSendFailed: "បរាជ័យ to send verification email",
+  },
+
 };
 
 export default km;
