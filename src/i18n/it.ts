@@ -7802,6 +7802,24 @@ const it: Translations = {
     footerCertifiedBy: "Certificato da FUZE Atlas",
   },
 
+  forgotPassword: {
+    brandSubtitle: "Reimposta la password",
+    cardTitle: "Hai dimenticato la password?",
+    cardBody: "Inserisci il tuo indirizzo email e ti invieremo un link per reimpostare la password.",
+    emailLabel: "Indirizzo email",
+    emailPlaceholder: "tu@801inc.com",
+    sendBtn: "Invia link di reimpostazione",
+    sendingBusy: "Invio in corso...",
+    rememberPrefix: "Ricordi la password?",
+    signInLink: "Accedi",
+    failedFallback: "Impossibile elaborare la richiesta",
+    networkError: "Errore di rete",
+    checkEmailTitle: "Controlla la tua email",
+    checkEmailBody: "Se esiste un account con questa email, riceverai a breve un link per reimpostare la password.",
+    backToSignIn: "Torna all'accesso",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default it;
