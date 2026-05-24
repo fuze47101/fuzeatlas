@@ -2589,6 +2589,37 @@ const hi: Translations = {
     factoryLabel: "कारखाना:",
   },
 
+  verifySku: {
+    errorTitle: "इस कोड को सत्यापित नहीं किया जा सका",
+    errorBlurb:
+      "सत्यापन डेटाबेस तक पहुंचने में समस्या हुई। कुछ क्षण बाद पुनः प्रयास करें।",
+    notCertifiedTitle: "FUZE-प्रमाणित SKU नहीं है",
+    notCertifiedBlurbPrefix: "कोड",
+    notCertifiedBlurbSuffix:
+      "हमारे सत्यापन डेटाबेस में नहीं है। यदि यह किसी FUZE हैंगटैग से है, तो कृपया सीधे ब्रांड से संपर्क करें।",
+    whatIsFuze: "FUZE क्या है? →",
+    fuzeVerified: "FUZE सत्यापित",
+    pageTitle: "यह कपड़ा FUZE से उपचारित है",
+    pageSubtitle: "एंटीमाइक्रोबियल टेक्सटाइल ट्रीटमेंट — तृतीय-पक्ष सत्यापित।",
+    brandLabel: "ब्रांड",
+    millLabel: "मिल",
+    fuzeTierLabel: "FUZE टियर",
+    fuzeNumberLabel: "FUZE नंबर",
+    washClaimSuffix: "वॉश दावा",
+    recentValidation: "सबसे हालिया लैब सत्यापन",
+    testPassed: "पास",
+    testTypeSuffix: "परीक्षण —",
+    validatedByPrefix: "सत्यापनकर्ता",
+    validatedByGeneric: "तृतीय-पक्ष लैब द्वारा सत्यापित",
+    validatedOn: "दिनांक",
+    reportRefPrefix: "रिपोर्ट संदर्भ:",
+    certifications: "FUZE प्रमाणन",
+    aboutBody:
+      "FUZE, FUZE Biotech का एक स्वामित्व वाला एंटीमाइक्रोबियल टेक्सटाइल ट्रीटमेंट है। यह मानक टेक्सटाइल फिनिशिंग के दौरान फाइबर से बंधने वाली मेटामटीरियल केमिस्ट्री का उपयोग करता है — कोई PFAS नहीं, कोई बाइंडर नहीं, कोई क्योरिंग ओवन की आवश्यकता नहीं।",
+    learnMore: "FUZE के बारे में और जानें →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default hi;
