@@ -4830,6 +4830,23 @@ const tr: Translations = {
     nameRequiredError: "Ad gereklidir",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← Hesaplayıcıya geri dön",
+    printButton: "🖨 Yazdır / PDF Olarak Kaydet",
+    eyebrow: "FUZE Biotech · Laboratuvar SOP",
+    pageTitle: "Bench Test Prosedürü",
+    pageSubtitle: "FUZE Reçete Hesaplayıcı — Pad-Dry-Cure Pickup Oranı ve Dilüsyon",
+    docLabel: "Belge: SOP-FUZE-LAB-001",
+    revLabel: "Rev: 1.0 ·",
+    purposeHeader: "Amaç",
+    equipmentHeader: "Ekipman",
+    chemistryRefHeader: "FUZE Kimya Referansı",
+    criticalRulesHeader: "⚠ Kritik Protokol Kuralları",
+    procedureHeader: "Prosedür",
+    formulasHeader: "Formüller (QC çapraz kontrolü için)",
+    sanityRangesHeader: "Mantık Kontrolü Aralıkları",
+  },
+
 };
 
 export default tr;
