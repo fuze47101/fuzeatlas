@@ -4962,6 +4962,61 @@ const km: Translations = {
     scopeFallback: "Default",
   },
 
+  brandDiscovery: {
+    crumbHome: "Home",
+    crumbWizard: "BD Wizard",
+    crumbHere: "ម៉ាក Discovery",
+    pageTitle: "🌎 Worldwide ម៉ាក Discovery",
+    pageSubtitle: "Multi-AI engine — finds + validates textile brands across Anthropic, បើកAI, and Grok, then auto-attaches Apollo contacts to every new brand so the BD Wizard can use them immediately.",
+
+    statTotalLabel: "សរុប ម៉ាក in DB",
+    backToWizard: "← ត្រឡប់ to Wizard",
+    backToWizardTitle: "Round-trip back to the wizard once new brands land",
+
+    statsErrorContext: "Load discovery stats",
+    statsErrorFallback: "Couldn't load discovery stats",
+    statsNetworkError: "Network error while loading discovery stats.",
+
+    autoEnrichTitle: "Auto-enrichment is on",
+    autoEnrichBody: "Every new brand created here gets up to 8 senior contacts (founder / C-suite / VP / head / director) attached via Apollo people-search by domain. The BD Wizard's filter lets these brands through immediately — no separate enrichment pass needed.",
+
+    settingsHeading: "Discovery ការកំណត់",
+    labelCategory: "ប្រភេទ",
+    labelRegion: "Region",
+    labelTargetCount: "Target Count",
+    btnDiscovering: "🔍 Discovering...",
+    btnRunDiscovery: "🚀 Run Discovery",
+    btnRunning: "Running...",
+    btnAllCategories: "🌍 ទាំងអស់ ប្រភេទ",
+
+    runningBanner: "⏳ Running multi-AI discovery across Anthropic + បើកAI + Grok... This takes 30-60 seconds per category.",
+    errorPrefix: "❌",
+    errorDefault: "Discovery failed",
+
+    resultsHeadingPrefix: "Discovery Results —",
+    chipAiSources: "AI Sources:",
+    chipFound: "Found:",
+    chipAfterDedup: "After Dedup:",
+    chipCreated: "បានបង្កើត:",
+    chipContactsAttached: "📇 ទំនាក់ទំនង attached:",
+
+    colBrand: "ម៉ាក",
+    colSegment: "Segment",
+    colPriority: "Priority",
+    colValidation: "Validation",
+    colContacts: "ទំនាក់ទំនង",
+    colAiSources: "AI Sources",
+    colActions: "Actions",
+    tierPrefix: "កម្រិត",
+    aisConfirmed: "AIs confirmed",
+    aiConfirmed: "AI confirmed",
+    viewResearch: "មើល & Research",
+
+    historyHeading: "Discovery History (This Session)",
+    historyFoundLabel: "Found:",
+    historyCreatedLabel: "បានបង្កើត:",
+  },
+
 };
 
 export default km;
