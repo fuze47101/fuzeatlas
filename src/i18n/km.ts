@@ -6835,6 +6835,37 @@ const km: Translations = {
     footerHint: "Stale = 14+ days no activity while still in DRAFT/SENT/SIGNED/ACTIVE. Signed-no-progress = SIGNED or ACTIVE for 30+ days with milestones defined but none completed. សកម្មភាពចុងក្រោយ is the most recent of SOW edit, milestone completion, or test request submission.",
   },
 
+  acmTasks: {
+    title: "🗓️ ACM Tasks",
+    subtitle: "Week-before + day-before reminders go out automatically via bell + email at 8 AM Taipei.",
+    tabOpen: "បើក",
+    tabCompleted: "បានបញ្ចប់",
+    onlyMine: "Only mine",
+    loading: "កំពុងផ្ទុក…",
+    overdueTitle: "Overdue",
+    overdueSubtitle: "Past due — get these off the list",
+    dueWeekTitle: "Due this week",
+    dueWeekSubtitle: "បន្ទាប់ 7 days",
+    upcomingTitle: "Upcoming",
+    upcomingSubtitle: "Beyond 7 days",
+    completedTitle: "បានបញ្ចប់",
+    completedSubtitle: "Last 200",
+    nothingHere: "ទេthing here.",
+    markDoneTitle: "Mark done",
+    cancelTaskTitle: "បោះបង់ task",
+    reopenTitle: "Reopen",
+    highPriorityBadge: "HIGH",
+    overdueRowPrefix: "Overdue — ",
+    duePrefix: "Due",
+    ownerLabel: "ម្ចាស់:",
+    relToday: "today",
+    relTomorrow: "tomorrow",
+    relYesterday: "yesterday",
+    relInPrefix: "in",
+    relDaysSuffix: "days",
+    relDaysAgo: "days ago",
+  },
+
 };
 
 export default km;
