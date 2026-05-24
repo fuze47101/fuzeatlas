@@ -6250,6 +6250,31 @@ const ms: Translations = {
     footerNote: "Diisih: stok-rendah dahulu, kemudian tidak-aktif, kemudian mengikut hari-stok-tinggal menaik. Pembakaran harian = purata bergulir 90-hari liter dihantar ke kilang. Hari berbaki = stok semasa bahagi pembakaran harian. Tidak aktif = tiada pesanan kilang dalam 90 hari lepas. Tiada harga bermakna kadar borong FUZE belum ditetapkan; pengedar tidak boleh menempah semula. Sunting pada halaman per-pengedar.",
   },
 
+  conversionTracking: {
+    crumbDashboard: "Papan Pemuka",
+    crumbCurrent: "Sampel → Pengeluaran",
+    title: "Penukaran Sampel → Pengeluaran",
+    subtitle: "Jejak kilang mana yang menerima sampel dan menukar kepada pesanan pengeluaran",
+    cardFactoriesSampled: "Kilang Disampelkan",
+    cardConverted: "Ditukar",
+    cardConversionRate: "Kadar Penukaran",
+    cardAvgDays: "Purata Hari untuk Tukar",
+    cardProdVolume: "Volum Pengeluaran",
+    cardProdRevenue: "Hasil Pengeluaran",
+    tabAll: "Semua",
+    tabConverted: "Ditukar",
+    tabPending: "Menunggu",
+    emptyText: "Belum ada pesanan sampel dijumpai",
+    badgeConverted: "DITUKAR",
+    badgePending: "MENUNGGU",
+    sectionSamples: "Pesanan Sampel",
+    sectionTrials: "Permintaan Percubaan",
+    sectionProduction: "Pesanan Pengeluaran",
+    productionLabel: "Pengeluaran",
+    daysToConvertSuffix: "hari untuk tukar",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default ms;
