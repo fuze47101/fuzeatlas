@@ -2774,6 +2774,24 @@ const id: Translations = {
     sanityRangesHeader: "Rentang Sanity Check",
   },
 
+  apiDocs: {
+    heading: "Dokumentasi API",
+    subtitle: "Referensi API FUZE Atlas",
+    authStrong: "Autentikasi:",
+    authBodyPrefix: "Semua endpoint kecuali",
+    authBodySuffix: "memerlukan cookie sesi JWT yang valid.",
+    searchPlaceholder: "Cari endpoint berdasarkan path atau deskripsi...",
+    allMethodsBtn: "Semua Method",
+    showingPrefix: "Menampilkan",
+    showingOf: "dari",
+    endpointsLabel: "endpoint",
+    collapseAllBtn: "Tutup Semua",
+    expandAllBtn: "Buka Semua",
+    noResults: "Tidak ada endpoint yang cocok dengan pencarian Anda.",
+    clearFiltersBtn: "Hapus filter",
+    footerPrefix: "Dokumentasi API FUZE Atlas - Terakhir diperbarui",
+  },
+
 };
 
 export default id;
