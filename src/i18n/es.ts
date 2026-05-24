@@ -4501,6 +4501,27 @@ const es: Translations = {
     exportReportTemplate: "Exportar informe {product} vs FUZE",
   },
 
+  educationClaims: {
+    backLink: "← Volver a Fundamentos de FUZE",
+    eyebrow: "Lo que puede declarar",
+    pageTitle: "Reclamos de marca defendibles para tejido tratado con FUZE",
+    pageIntro: "Una referencia para equipos de cumplimiento, marketing de marca y texto de etiquetas. Tres categorías: reclamos de producto, reclamos de sostenibilidad y reclamos de certificación. Cada fila está calificada como",
+    introCiteFreely: "citar libremente",
+    introWithData: "citar con datos específicos del nivel",
+    introAvoid: "evitar",
+    introTail: "— con el motivo en lenguaje claro.",
+    productClaimsTitle: "Reclamos de producto / eficacia",
+    sustainabilityClaimsTitle: "Reclamos de sostenibilidad",
+    certClaimsTitle: "Reclamos de certificación",
+    badgeCiteFreely: "Citar libremente",
+    badgeWithData: "Con datos",
+    badgeAvoid: "Evitar",
+    fifraTitle: "Nota sobre FIFRA",
+    fifraBody: "FIFRA (Ley Federal de Insecticidas, Fungicidas y Rodenticidas) regula los reclamos antimicrobianos en los Estados Unidos. La exención de artículo tratado permite reclamos descriptivos como \"tratado antimicrobiano\" sin registro EPA a nivel de producto, pero los reclamos específicos de patógenos (\"mata el 99,9% de E. coli\") requieren datos de prueba respaldatorios vinculados al registro del ingrediente activo. Esta página es una guía, no asesoramiento legal — revise el texto de marketing propuesto con su equipo interno de cumplimiento antes de enviarlo.",
+    backToBasics: "Volver a Fundamentos de FUZE",
+    seeCerts: "Ver pila de certificaciones",
+  },
+
 };
 
 export default es;
