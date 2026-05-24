@@ -7523,6 +7523,32 @@ const tr: Translations = {
     daySuffix: " gün önce",
   },
 
+  resetPassword: {
+    tagline: "Yeni bir parola oluşturun",
+    formTitle: "Parolayı Sıfırla",
+    newPasswordLabel: "Yeni Parola",
+    newPasswordPlaceholder: "Yeni parolayı girin",
+    confirmPasswordLabel: "Parolayı Doğrula",
+    confirmPasswordPlaceholder: "Parolayı doğrulayın",
+    resetBtn: "Parolayı Sıfırla",
+    resettingBtn: "Sıfırlanıyor...",
+    backToSignIn: "Girişe Dön",
+    successTitle: "Parola Başarıyla Sıfırlandı",
+    successBody: "Parolanız başarıyla sıfırlandı. Yeni parolanızla şimdi giriş yapabilirsiniz.",
+    signInBtn: "Giriş Yap",
+    invalidLinkTitle: "Geçersiz Sıfırlama Bağlantısı",
+    invalidLinkBody: "Sıfırlama bağlantısı geçersiz veya süresi dolmuş. Lütfen yenisini talep edin.",
+    requestNewLinkBtn: "Yeni Bağlantı Talep Et",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "Yükleniyor...",
+    errInvalidToken: "Geçersiz veya eksik sıfırlama belirteci",
+    errInvalidTokenShort: "Geçersiz sıfırlama belirteci",
+    errMinLength: "Parola en az 6 karakter olmalı",
+    errMismatch: "Parolalar eşleşmiyor",
+    errResetFailed: "Parola sıfırlanamadı",
+    errNetwork: "Ağ hatası",
+  },
+
 };
 
 export default tr;
