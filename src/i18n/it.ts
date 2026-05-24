@@ -7322,6 +7322,29 @@ const it: Translations = {
     errServerUnreachable: "Impossibile raggiungere il server",
   },
 
+  educationStory: {
+    backLink: "← Torna a Basi FUZE",
+    kicker: "La storia FUZE",
+    heroTitle: "Da elettronica riciclata ad antimicrobico permanente",
+    heroBody: "Il metamateriale FUZE è prodotto tramite ablazione laser liquida: un laser da 30 ampere, un tavolo di produzione da 1m² e una materia prima di elettronica riciclata. L'intera cella di produzione può essere alimentata a energia solare. Non siamo solo antimicrobici — siamo un'operazione di upcycling di e-waste che finisce nel tuo tessuto.",
+    card1Title: "Materia prima riciclata",
+    card1Body: "Ogni grammo di principio attivo FUZE proviene da metallo prezioso elementare recuperato da elettronica a fine vita. Non estraiamo. Non raffiniamo materiale vergine. Recuperiamo metallo che altrimenti finirebbe in discarica o sarebbe incenerito.",
+    card2Title: "Ablazione laser liquida",
+    card2Body: "Un impulso laser da 30 ampere vaporizza la materia prima metallica immersa in acqua DI ultrapura 18-megaohm al 99,998%. Ciò che condensa è il metamateriale FUZE — un allotropo elementare ad alta densità, 20 ppm nella concentrazione stock fornita. Niente solventi. Niente chimica precursore. Niente tensioattivi.",
+    card3Title: "Produzione a energia solare",
+    card3Body: "La cella di produzione da 1m² funziona con circa l'elettricità che un impianto solare residenziale produce in una giornata soleggiata. I marchi che si impegnano con FUZE si impegnano con una catena di fornitura antimicrobica che può essere a zero emissioni nette nello step di produzione — qualcosa che nessun concorrente può vantare.",
+    esgTitle: "Cosa significa questo nel tuo report ESG",
+    esgBullet1: "✓ Dichiarazione di materia prima circolare — FUZE è prodotto da elettronica a fine vita, supportando i tuoi impegni di economia circolare.",
+    esgBullet2: "✓ Produzione a zero emissioni nette possibile — la cella di produzione è compatibile con il solare. Abbinato a contratti di fornitura rinnovabile, lo step antimicrobico contribuisce a zero emissioni scope-2.",
+    esgBullet3: "✓ Zero contributo di estrazione vergine — nessun coordinamento richiesto con catene di fornitura derivate da minerali in conflitto o estrazione mineraria.",
+    esgBullet4: "✓ Senza PFAS, senza formaldeide, senza leganti, senza forni di indurimento — ogni input petrolchimico che i concorrenti richiedono, FUZE lo elimina.",
+    esgBullet5: "✓ Pulizia dell'acqua documentata — FUZE non rilascia nulla nell'acqua di lavaggio. Il tuo contributo a valle al carico di trattamento delle acque municipali = 0.",
+    differentTitle: "Un tipo diverso di azienda antimicrobica",
+    differentBody: "La maggior parte delle aziende antimicrobiche tessili sono aziende chimiche. Mescolano, diluiscono, formulano e spediscono fusti di chimica sintetizzata ai mulini. Noi siamo un'operazione di scienza dei materiali: ablaziamo metallo in acqua e spediamo il risultato. La semplicità è il differenziatore. Meno chimica sul tessuto. Meno chimica nell'acqua di lavaggio. Meno chimica nella linea di produzione. Meno chimica nel tuo report ESG.",
+    backBasicsBtn: "Torna a Basi FUZE",
+    seeSustainabilityBtn: "Vedi impatto sostenibilità",
+  },
+
 };
 
 export default it;
