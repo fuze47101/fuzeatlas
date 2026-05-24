@@ -2589,6 +2589,37 @@ const bn: Translations = {
     factoryLabel: "কারখানা:",
   },
 
+  verifySku: {
+    errorTitle: "এই কোড যাচাই করা যায়নি",
+    errorBlurb:
+      "যাচাইকরণ ডাটাবেসে পৌঁছাতে সমস্যা হয়েছে। একটু পরে আবার চেষ্টা করুন।",
+    notCertifiedTitle: "FUZE-সার্টিফাইড SKU নয়",
+    notCertifiedBlurbPrefix: "কোডটি",
+    notCertifiedBlurbSuffix:
+      "আমাদের যাচাইকরণ ডাটাবেসে নেই। এটি যদি FUZE হ্যাংট্যাগ থেকে এসে থাকে, অনুগ্রহ করে সরাসরি ব্র্যান্ডের সাথে যোগাযোগ করুন।",
+    whatIsFuze: "FUZE কী? →",
+    fuzeVerified: "FUZE যাচাইকৃত",
+    pageTitle: "এই কাপড় FUZE দিয়ে শোধিত",
+    pageSubtitle: "অ্যান্টিমাইক্রোবিয়াল টেক্সটাইল ট্রিটমেন্ট — তৃতীয় পক্ষ দ্বারা যাচাইকৃত।",
+    brandLabel: "ব্র্যান্ড",
+    millLabel: "মিল",
+    fuzeTierLabel: "FUZE টিয়ার",
+    fuzeNumberLabel: "FUZE নম্বর",
+    washClaimSuffix: "ওয়াশ ক্লেইম",
+    recentValidation: "সর্বশেষ ল্যাব যাচাইকরণ",
+    testPassed: "পাস",
+    testTypeSuffix: "পরীক্ষা —",
+    validatedByPrefix: "যাচাই করেছে",
+    validatedByGeneric: "তৃতীয় পক্ষের ল্যাব দ্বারা যাচাইকৃত",
+    validatedOn: "তারিখে",
+    reportRefPrefix: "রিপোর্ট রেফ:",
+    certifications: "FUZE সার্টিফিকেশন",
+    aboutBody:
+      "FUZE হলো FUZE Biotech-এর একটি স্বত্বাধিকারী অ্যান্টিমাইক্রোবিয়াল টেক্সটাইল ট্রিটমেন্ট। এটি মেটামেটেরিয়াল কেমিস্ট্রি ব্যবহার করে যা স্ট্যান্ডার্ড টেক্সটাইল ফিনিশিংয়ের সময় ফাইবারের সাথে বন্ধন তৈরি করে — কোনো PFAS নেই, কোনো বাইন্ডার নেই, কোনো কিউরিং ওভেন প্রয়োজন নেই।",
+    learnMore: "FUZE সম্পর্কে আরও জানুন →",
+    footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
+  },
+
 };
 
 export default bn;
