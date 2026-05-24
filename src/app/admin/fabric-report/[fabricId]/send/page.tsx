@@ -16,10 +16,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 export default function SendReportPage() {
   const params = useParams();
   const router = useRouter();
+  const { t } = useI18n();
+  const T = t.fabricReportSend;
   const fabricId = params.fabricId as string;
 
   const [fabric, setFabric] = useState<any>(null);
@@ -56,7 +59,7 @@ export default function SendReportPage() {
   }, [fabricId]);
 
   async function handleSend() {
-    if (!recipientEmail) return setSendErr("Recipient email required.");
+    if (!recipientEmail) return setSendErr(T.recipientRequiredError);
     setSending(true);
     setSendErr(null);
     try {
@@ -76,7 +79,7 @@ export default function SendReportPage() {
       );
       const json = await res.json();
       if (!res.ok || !json.ok) {
-        setSendErr(json.error || "Send failed");
+        setSendErr(json.error || T.sendFailedError);
       } else {
         setSentOk({
           url: json.share.downloadUrl,
@@ -107,7 +110,7 @@ export default function SendReportPage() {
   if (!fabric) {
     return (
       <div className="p-8 max-w-3xl mx-auto">
-        <p className="text-red-600">Fabric not found.</p>
+        <p className="text-red-600">{T.fabricNotFound}</p>
       </div>
     );
   }
@@ -124,13 +127,13 @@ export default function SendReportPage() {
           href={`/admin/fabric-report/${fabricId}/print`}
           className="text-xs font-bold text-slate-600 hover:text-slate-900"
         >
-          ← Back to Report
+          {T.backLink}
         </Link>
         <h1 className="text-2xl font-black text-slate-900 mt-2">
-          Email Report to Customer
+          {T.heading}
         </h1>
         <p className="text-slate-600 text-sm mt-1">
-          Sending the FUZE Application & Validation Report for{" "}
+          {T.subtitlePrefix}{" "}
           <strong>{ref}</strong>
           {fabric.brand?.name && <> · {fabric.brand.name}</>}.
         </p>
@@ -139,10 +142,10 @@ export default function SendReportPage() {
       {sentOk && (
         <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
           <p className="text-sm font-bold text-emerald-800 mb-1">
-            ✓ Report sent to {sentOk.email}
+            {T.sentSuccessPrefix} {sentOk.email}
           </p>
           <p className="text-xs text-emerald-700 break-all">
-            Direct download URL:{" "}
+            {T.directUrlLabel}{" "}
             <a
               href={sentOk.url}
               target="_blank"
@@ -153,8 +156,7 @@ export default function SendReportPage() {
             </a>
           </p>
           <p className="text-xs text-emerald-700 mt-1">
-            Customer can also access this under <em>My Reports</em> after
-            signing in to FUZE Atlas.
+            {T.sentSuccessBody}
           </p>
         </div>
       )}
@@ -167,7 +169,7 @@ export default function SendReportPage() {
       <div className="bg-white border border-slate-200 rounded-xl p-6 mb-6 space-y-3">
         <div>
           <label className="block text-xs font-semibold text-slate-700 mb-1">
-            Recipient email <span className="text-red-500">*</span>
+            {T.recipientEmailLabel} <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
@@ -179,7 +181,7 @@ export default function SendReportPage() {
         </div>
         <div>
           <label className="block text-xs font-semibold text-slate-700 mb-1">
-            Recipient name <span className="text-slate-400 font-normal">(optional)</span>
+            {T.recipientNameLabel} <span className="text-slate-400 font-normal">{T.optionalSuffix}</span>
           </label>
           <input
             type="text"
@@ -191,7 +193,7 @@ export default function SendReportPage() {
         </div>
         <div>
           <label className="block text-xs font-semibold text-slate-700 mb-1">
-            Personal note <span className="text-slate-400 font-normal">(optional, shown above the report card)</span>
+            {T.personalNoteLabel} <span className="text-slate-400 font-normal">{T.personalNoteHint}</span>
           </label>
           <textarea
             value={personalNote}
@@ -204,7 +206,7 @@ export default function SendReportPage() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              CC <span className="text-slate-400 font-normal">(optional, comma-separated)</span>
+              {T.ccLabel} <span className="text-slate-400 font-normal">{T.ccHint}</span>
             </label>
             <input
               type="text"
@@ -216,17 +218,17 @@ export default function SendReportPage() {
           </div>
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Direct link valid for
+              {T.ttlLabel}
             </label>
             <select
               value={ttlDays}
               onChange={(e) => setTtlDays(parseInt(e.target.value))}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
             >
-              <option value={30}>30 days</option>
-              <option value={90}>90 days (default)</option>
-              <option value={180}>180 days</option>
-              <option value={365}>1 year</option>
+              <option value={30}>{T.ttl30Days}</option>
+              <option value={90}>{T.ttl90Days}</option>
+              <option value={180}>{T.ttl180Days}</option>
+              <option value={365}>{T.ttl1Year}</option>
             </select>
           </div>
         </div>
@@ -236,7 +238,7 @@ export default function SendReportPage() {
           disabled={sending || !recipientEmail}
           className="px-6 py-2.5 bg-[#00b4c3] text-white rounded-lg font-semibold hover:bg-[#009ba8] disabled:opacity-50"
         >
-          {sending ? "Sending..." : "Send Report"}
+          {sending ? T.sendingBtn : T.sendBtn}
         </button>
       </div>
 
@@ -244,7 +246,7 @@ export default function SendReportPage() {
       {recentShares.length > 0 && (
         <div>
           <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Previously sent
+            {T.previouslySentTitle}
           </h2>
           <div className="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
             {recentShares.slice(0, 8).map((s: any) => (
@@ -256,15 +258,15 @@ export default function SendReportPage() {
                   {s.recipientEmail}
                 </span>
                 <span className="text-xs text-slate-500">
-                  Sent{" "}
+                  {T.sentPrefix}{" "}
                   {new Date(s.sentAt).toLocaleString()}
                 </span>
                 {s.viewedCount > 0 ? (
                   <span className="text-xs text-emerald-700 font-semibold">
-                    ✓ viewed {s.viewedCount}×
+                    ✓ {T.viewedPrefix} {s.viewedCount}×
                   </span>
                 ) : (
-                  <span className="text-xs text-slate-400">not yet opened</span>
+                  <span className="text-xs text-slate-400">{T.notOpenedYet}</span>
                 )}
                 <a
                   href={`/report/${s.token}`}
@@ -272,7 +274,7 @@ export default function SendReportPage() {
                   rel="noreferrer"
                   className="text-xs text-[#00b4c3] underline ml-auto"
                 >
-                  Open the same link →
+                  {T.openSameLink}
                 </a>
               </div>
             ))}
