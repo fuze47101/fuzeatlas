@@ -2815,6 +2815,18 @@ const id: Translations = {
     errAddFailed: "Gagal menambahkan",
   },
 
+  icpCorrelation: {
+    adminCrumb: "Admin",
+    crumb: "Korelasi ICP",
+    heading: "Korelasi ICP × AB",
+    subtitle: "Grafik yang ditanyakan Joseph (KUIU). FUZE residual pada kain (diukur ICP) diplot terhadap tingkat kill antibakteri di setiap test run yang terlihat oleh brand di Atlas. Garis best-fit + R² ditampilkan.",
+    errorContext: "Muat korelasi ICP",
+    couldntLoadPrefix: "Tidak dapat memuat data korelasi",
+    networkError: "Kesalahan jaringan.",
+    loadingState: "Memuat data korelasi…",
+    footnote: "Salinan untuk pelanggan menggunakan \"FUZE residual\" — pengukuran metamaterial dari laporan ICP lab. Selalu dilabeli FUZE / metamaterial dalam deliverable pelanggan (aturan brand-voice CLAUDE.md).",
+  },
+
 };
 
 export default id;
