@@ -6065,6 +6065,38 @@ const ur: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "ٹیسٹ کیٹلاگ اور قیمتوں کا تعین",
+    subtitle: "ٹیسٹ کی اقسام، قیمتوں، ٹرن اراؤنڈ اوقات، اور نمونے کی ضروریات کا انتظام کریں۔ تبدیلیاں فوری طور پر فیکٹری ٹیسٹ ریکویسٹ فارم پر ظاہر ہوتی ہیں۔",
+    sourcePrefix: "ذریعہ:",
+    sourceDb: "ڈیٹا بیس (ایڈمن کے زیر انتظام)",
+    sourceStatic: "اسٹیٹک ڈیفالٹس",
+    successMsg: "ٹیسٹ کامیابی سے اپ ڈیٹ ہوا",
+    failedSave: "محفوظ کرنے میں ناکام",
+    networkErr: "نیٹ ورک کی خرابی",
+    colTestName: "ٹیسٹ کا نام",
+    colCategory: "زمرہ",
+    colPrice: "قیمت (USD)",
+    colTurnaround: "ٹرن اراؤنڈ",
+    colMinSample: "کم از کم نمونہ",
+    colControl: "کنٹرول؟",
+    colActive: "فعال",
+    colActions: "اقدامات",
+    daysSuffix: "دن",
+    metersSuffix: "m",
+    yes: "ہاں",
+    no: "نہیں",
+    saveBtn: "محفوظ کریں",
+    savingDots: "...",
+    cancelBtn: "منسوخ کریں",
+    editBtn: "ترمیم",
+    catRecipeBuild: "ریسپی بلڈ",
+    catPerformance: "کارکردگی",
+    catQuality: "معیار",
+    catCertification: "سرٹیفکیشن",
+    lastUpdatedTpl: "آخری بار {who} نے {when} پر اپ ڈیٹ کیا",
+  },
+
 };
 
 export default ur;
