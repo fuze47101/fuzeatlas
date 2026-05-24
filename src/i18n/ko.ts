@@ -4806,6 +4806,16 @@ const ko: Translations = {
     sanityCheckHeader: "타당성 검증 (CTLA가 보고해야 하는 사항)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "디스트리뷰터 네트워크",
+    pageSubtitle: "글로벌 유통 파트너, 재고 및 커버리지 관리",
+    inventoryCta: "📊 재고 및 소진율",
+    worldwideCta: "🌍 전 세계 재고",
+    newDistributorCta: "+ 새 디스트리뷰터",
+    newDistributorModalTitle: "새 디스트리뷰터",
+    nameRequiredError: "이름이 필요합니다",
+  },
+
 };
 
 export default ko;
