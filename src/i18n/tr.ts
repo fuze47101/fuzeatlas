@@ -7501,6 +7501,28 @@ const tr: Translations = {
     errNetwork: "Ağ hatası",
   },
 
+  notificationsPage: {
+    loading: "Bildirimler yükleniyor...",
+    title: "Bildirimler",
+    unreadLabel: "okunmamış",
+    allCaughtUp: "Hepsi tamam",
+    totalLabel: "toplam",
+    markAllRead: "Tümünü okundu olarak işaretle",
+    filterAll: "Tümü",
+    filterUnread: "Okunmamış",
+    allTypes: "Tüm Türler",
+    emptyUnreadTitle: "Okunmamış bildirim yok",
+    emptyAllTitle: "Henüz bildirim yok",
+    emptyUnreadBody: "Hepsi tamam!",
+    emptyAllBody: "Hesabınızda etkinlik olduğunda bildirimler burada görünecek.",
+    viewDetails: "Detayları gör →",
+    markAsRead: "Okundu olarak işaretle",
+    justNow: "Şimdi",
+    minSuffix: " dk önce",
+    hourSuffix: " sa önce",
+    daySuffix: " gün önce",
+  },
+
 };
 
 export default tr;
