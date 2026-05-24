@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import ErrorPanel from "@/components/ErrorPanel";
+import { useI18n } from "@/i18n";
 
 interface Meeting {
   id: string;
@@ -62,6 +63,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function MeetingsPage() {
+  const { t } = useI18n();
+  const T = t.meetingsAdmin;
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -124,7 +127,7 @@ export default function MeetingsPage() {
       setMeetings(d.meetings || []);
       setStats(d.stats);
     } catch (e: any) {
-      setLoadError(e?.message || "Network error while loading meetings.");
+      setLoadError(e?.message || T.networkLoadError);
     } finally {
       setLoading(false);
     }
@@ -215,14 +218,14 @@ export default function MeetingsPage() {
           attendees: [], newAttendeeName: "", newAttendeeEmail: "",
         });
         setSelectedTemplate(null);
-        toast.success("Meeting scheduled");
+        toast.success(T.meetingScheduled);
         loadMeetings();
       } else {
-        toast.error(d.error || "Failed to schedule meeting");
+        toast.error(d.error || T.failedSchedule);
       }
     } catch (e) {
       console.error(e);
-      toast.error("Failed to schedule meeting");
+      toast.error(T.failedSchedule);
     } finally {
       setCreating(false);
     }
@@ -238,7 +241,7 @@ export default function MeetingsPage() {
       toast.success(`Meeting ${action === "complete" ? "completed" : action === "cancel" ? "cancelled" : "updated"}`);
       loadMeetings();
     } catch {
-      toast.error("Failed to update meeting");
+      toast.error(T.failedUpdate);
     }
   };
 
@@ -247,13 +250,13 @@ export default function MeetingsPage() {
       const res = await fetch(`/api/meetings/${id}`, { method: "DELETE" });
       const d = await res.json();
       if (d.ok) {
-        toast.success("Meeting deleted");
+        toast.success(T.meetingDeleted);
         loadMeetings();
       } else {
-        toast.error(d.error || "Failed to delete meeting");
+        toast.error(d.error || T.failedDelete);
       }
     } catch {
-      toast.error("Failed to delete meeting");
+      toast.error(T.failedDelete);
     }
   };
 
@@ -296,14 +299,14 @@ export default function MeetingsPage() {
       });
       const d = await res.json();
       if (d.ok) {
-        toast.success("Meeting updated");
+        toast.success(T.meetingUpdated);
         setEditingMeeting(null);
         loadMeetings();
       } else {
-        toast.error(d.error || "Failed to update meeting");
+        toast.error(d.error || T.failedUpdate);
       }
     } catch {
-      toast.error("Failed to update meeting");
+      toast.error(T.failedUpdate);
     }
   };
 
@@ -336,31 +339,31 @@ export default function MeetingsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Meetings & Calendar</h1>
+          <h1 className="text-2xl font-bold text-slate-900">{T.pageTitle}</h1>
           <p className="text-slate-500 text-sm mt-0.5">
-            Schedule meetings, track pipeline milestones, sync with Teams & Calendar
+            {T.pageSubtitle}
           </p>
         </div>
         <button
           onClick={() => { setShowCreate(true); setSelectedTemplate(null); }}
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa] font-medium text-sm"
         >
-          + New Meeting
+          {T.newMeeting}
         </button>
       </div>
 
       {/* Stats — silent-zero sweep: explicit error banner instead of zeros. */}
       {loadError ? (
         <div className="mb-6">
-          <ErrorPanel context="Load meetings" error={loadError} onRetry={loadMeetings} />
+          <ErrorPanel context={T.loadMeetingsContext} error={loadError} onRetry={loadMeetings} />
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {[
-            { label: "This Week", value: stats?.thisWeek ?? 0, color: "text-blue-600", bg: "bg-blue-50" },
-            { label: "Upcoming", value: stats?.upcoming ?? 0, color: "text-[#00b4c3]", bg: "bg-[#00b4c3]/10" },
-            { label: "Completed", value: stats?.completed ?? 0, color: "text-emerald-600", bg: "bg-emerald-50" },
-            { label: "Total", value: stats?.total ?? 0, color: "text-slate-600", bg: "bg-slate-50" },
+            { label: T.statThisWeek, value: stats?.thisWeek ?? 0, color: "text-blue-600", bg: "bg-blue-50" },
+            { label: T.statUpcoming, value: stats?.upcoming ?? 0, color: "text-[#00b4c3]", bg: "bg-[#00b4c3]/10" },
+            { label: T.statCompleted, value: stats?.completed ?? 0, color: "text-emerald-600", bg: "bg-emerald-50" },
+            { label: T.statTotal, value: stats?.total ?? 0, color: "text-slate-600", bg: "bg-slate-50" },
           ].map((s) => (
             <div key={s.label} className={`${s.bg} rounded-xl p-4 border border-slate-100`}>
               <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{s.label}</p>
@@ -373,7 +376,7 @@ export default function MeetingsPage() {
       {/* Pipeline Templates */}
       <div className="mb-6">
         <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-3">
-          Quick Schedule from Pipeline Template
+          {T.quickScheduleHeader}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
           {templates.map((t) => {
@@ -396,11 +399,11 @@ export default function MeetingsPage() {
       {/* Filter tabs */}
       <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
         {[
-          { key: "upcoming", label: "Upcoming" },
-          { key: "SCHEDULED", label: "Scheduled" },
-          { key: "COMPLETED", label: "Completed" },
-          { key: "CANCELLED", label: "Cancelled" },
-          { key: "all", label: "All" },
+          { key: "upcoming", label: T.filterUpcoming },
+          { key: "SCHEDULED", label: T.filterScheduled },
+          { key: "COMPLETED", label: T.filterCompleted },
+          { key: "CANCELLED", label: T.filterCancelled },
+          { key: "all", label: T.filterAll },
         ].map((f) => (
           <button
             key={f.key}
@@ -421,7 +424,7 @@ export default function MeetingsPage() {
         {meetings.length === 0 && (
           <div className="text-center py-16 text-slate-400">
             <p className="text-4xl mb-3">📅</p>
-            <p>No meetings found. Schedule one above!</p>
+            <p>{T.noMeetings}</p>
           </div>
         )}
         {meetings.map((m) => {
@@ -492,7 +495,7 @@ export default function MeetingsPage() {
                     {/* Description */}
                     {m.description && (
                       <div className="sm:col-span-2">
-                        <p className="text-xs font-medium text-slate-500 mb-1">Description & Agenda</p>
+                        <p className="text-xs font-medium text-slate-500 mb-1">{T.description}</p>
                         <p className="text-sm text-slate-700 whitespace-pre-line">{m.description}</p>
                       </div>
                     )}
@@ -500,7 +503,7 @@ export default function MeetingsPage() {
                     {/* Attendees */}
                     {m.attendees && Array.isArray(m.attendees) && m.attendees.length > 0 && (
                       <div>
-                        <p className="text-xs font-medium text-slate-500 mb-1">Attendees</p>
+                        <p className="text-xs font-medium text-slate-500 mb-1">{T.attendees}</p>
                         <div className="space-y-1">
                           {(m.attendees as any[]).map((a, i) => (
                             <div key={i} className="text-sm text-slate-700">
@@ -514,14 +517,14 @@ export default function MeetingsPage() {
                     {/* Meeting notes */}
                     {m.notes && (
                       <div>
-                        <p className="text-xs font-medium text-slate-500 mb-1">Notes</p>
+                        <p className="text-xs font-medium text-slate-500 mb-1">{T.notes}</p>
                         <p className="text-sm text-slate-700">{m.notes}</p>
                       </div>
                     )}
 
                     {m.outcome && (
                       <div>
-                        <p className="text-xs font-medium text-slate-500 mb-1">Outcome</p>
+                        <p className="text-xs font-medium text-slate-500 mb-1">{T.outcome}</p>
                         <p className="text-sm text-slate-700">{m.outcome}</p>
                       </div>
                     )}
@@ -536,20 +539,20 @@ export default function MeetingsPage() {
                         rel="noopener noreferrer"
                         className="px-3 py-1.5 text-xs font-semibold bg-[#5B5FC7] text-white rounded-lg hover:bg-[#4B4FB7] transition-colors"
                       >
-                        Open in Teams
+                        {T.openInTeams}
                       </a>
                     )}
                     <a
                       href={`/api/meetings/${m.id}/ics`}
                       className="px-3 py-1.5 text-xs font-semibold bg-white text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
                     >
-                      📅 Add to Calendar (.ics)
+                      {T.addToCalendar}
                     </a>
                     <button
                       onClick={() => startEdit(m)}
                       className="px-3 py-1.5 text-xs font-semibold bg-white text-[#00b4c3] border border-[#00b4c3]/30 rounded-lg hover:bg-[#00b4c3]/5 transition-colors"
                     >
-                      Edit
+                      {T.edit}
                     </button>
                     {m.status === "SCHEDULED" && (
                       <>
@@ -561,13 +564,13 @@ export default function MeetingsPage() {
                           }}
                           className="px-3 py-1.5 text-xs font-semibold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
                         >
-                          ✓ Mark Complete
+                          {T.markComplete}
                         </button>
                         <button
                           onClick={() => setCancelConfirm(m.id)}
                           className="px-3 py-1.5 text-xs font-semibold bg-white text-amber-600 border border-amber-200 rounded-lg hover:bg-amber-50 transition-colors"
                         >
-                          Cancel Meeting
+                          {T.cancelMeetingBtn}
                         </button>
                       </>
                     )}
@@ -575,7 +578,7 @@ export default function MeetingsPage() {
                       onClick={() => setDeleteConfirm(m.id)}
                       className="px-3 py-1.5 text-xs font-semibold bg-white text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
                     >
-                      Delete
+                      {T.deleteBtn}
                     </button>
                   </div>
                 </div>
@@ -591,33 +594,33 @@ export default function MeetingsPage() {
           <div className="absolute inset-0 bg-black/50" onClick={() => setCompleteModal(null)} />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
             <div className="px-6 py-4 border-b border-slate-200">
-              <h2 className="text-lg font-bold text-slate-900">Complete Meeting</h2>
+              <h2 className="text-lg font-bold text-slate-900">{T.completeMeetingTitle}</h2>
             </div>
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Meeting Notes (optional)</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.meetingNotesOptional}</label>
                 <textarea
                   value={completeNotes}
                   onChange={(e) => setCompleteNotes(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                   rows={3}
-                  placeholder="Key discussion points..."
+                  placeholder={T.notesPlaceholder}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Outcome (optional)</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.outcomeOptional}</label>
                 <textarea
                   value={completeOutcome}
                   onChange={(e) => setCompleteOutcome(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                   rows={2}
-                  placeholder="Decisions made, action items..."
+                  placeholder={T.outcomePlaceholder}
                 />
               </div>
             </div>
             <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end">
               <button onClick={() => setCompleteModal(null)} className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">
-                Cancel
+                {T.cancelBtn}
               </button>
               <button
                 onClick={() => {
@@ -629,7 +632,7 @@ export default function MeetingsPage() {
                 }}
                 className="px-5 py-2 text-sm font-semibold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
               >
-                Complete Meeting
+                {T.completeBtn}
               </button>
             </div>
           </div>
@@ -642,30 +645,30 @@ export default function MeetingsPage() {
           <div className="absolute inset-0 bg-black/50" onClick={() => setEditingMeeting(null)} />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
-              <h2 className="text-lg font-bold text-slate-900">Edit Meeting</h2>
+              <h2 className="text-lg font-bold text-slate-900">{T.editMeetingTitle}</h2>
               <button onClick={() => setEditingMeeting(null)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
             </div>
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.title}</label>
                 <input type="text" value={editForm.title} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.date}</label>
                   <input type="date" value={editForm.startDate} onChange={(e) => setEditForm({ ...editForm, startDate: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Time</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.time}</label>
                   <input type="time" value={editForm.startTime} onChange={(e) => setEditForm({ ...editForm, startTime: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Duration (min)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.duration}</label>
                   <select value={editForm.duration} onChange={(e) => setEditForm({ ...editForm, duration: Number(e.target.value) })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
                     <option value={15}>15 min</option>
@@ -677,54 +680,54 @@ export default function MeetingsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.type}</label>
                   <select value={editForm.meetingType} onChange={(e) => setEditForm({ ...editForm, meetingType: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                    <option value="INTERNAL">Internal</option>
-                    <option value="BRAND_PRESENTATION">Brand Presentation</option>
-                    <option value="TESTING_REVIEW">Testing Review</option>
-                    <option value="FACTORY_KICKOFF">Factory Kickoff</option>
-                    <option value="PRODUCTION_REVIEW">Production Review</option>
-                    <option value="SOW_REVIEW">SOW Review</option>
-                    <option value="CUSTOM">Custom</option>
+                    <option value="INTERNAL">{T.typeInternal}</option>
+                    <option value="BRAND_PRESENTATION">{T.typeBrandPresentation}</option>
+                    <option value="TESTING_REVIEW">{T.typeTestingReview}</option>
+                    <option value="FACTORY_KICKOFF">{T.typeFactoryKickoff}</option>
+                    <option value="PRODUCTION_REVIEW">{T.typeProductionReview}</option>
+                    <option value="SOW_REVIEW">{T.typeSowReview}</option>
+                    <option value="CUSTOM">{T.typeCustom}</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.location}</label>
                 <input type="text" value={editForm.location} onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Brand</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.brand}</label>
                   <select value={editForm.brandId} onChange={(e) => setEditForm({ ...editForm, brandId: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                    <option value="">— None —</option>
+                    <option value="">{T.none}</option>
                     {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Project</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.project}</label>
                   <select value={editForm.projectId} onChange={(e) => setEditForm({ ...editForm, projectId: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                    <option value="">— None —</option>
+                    <option value="">{T.none}</option>
                     {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Description / Agenda</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.descriptionAgenda}</label>
                 <textarea value={editForm.description} onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" rows={4} />
               </div>
             </div>
             <div className="px-6 py-4 border-t border-slate-200 flex gap-3 justify-end sticky bottom-0 bg-white">
               <button onClick={() => setEditingMeeting(null)} className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">
-                Cancel
+                {T.cancelBtn}
               </button>
               <button onClick={saveEdit} className="px-5 py-2 text-sm font-semibold bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa]">
-                Save Changes
+                {T.saveChanges}
               </button>
             </div>
           </div>
@@ -734,9 +737,9 @@ export default function MeetingsPage() {
       {/* Delete Confirmation */}
       <ConfirmDialog
         open={!!deleteConfirm}
-        title="Delete Meeting?"
-        message="This will permanently delete this meeting. This action cannot be undone."
-        confirmLabel="Delete Meeting"
+        title={T.deleteMeetingTitle}
+        message={T.deleteMeetingMsg}
+        confirmLabel={T.deleteMeetingConfirm}
         variant="danger"
         onConfirm={() => {
           if (deleteConfirm) deleteMeeting(deleteConfirm);
@@ -748,9 +751,9 @@ export default function MeetingsPage() {
       {/* Cancel Confirmation */}
       <ConfirmDialog
         open={!!cancelConfirm}
-        title="Cancel Meeting?"
-        message="This will mark the meeting as cancelled. You can still view it in the cancelled filter."
-        confirmLabel="Cancel Meeting"
+        title={T.cancelMeetingTitle}
+        message={T.cancelMeetingMsg}
+        confirmLabel={T.cancelMeetingConfirm}
         variant="warning"
         onConfirm={() => {
           if (cancelConfirm) updateStatus(cancelConfirm, "cancel");
@@ -766,25 +769,25 @@ export default function MeetingsPage() {
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
               <h2 className="text-lg font-bold text-slate-900">
-                {selectedTemplate ? `Schedule: ${selectedTemplate.title}` : "New Meeting"}
+                {selectedTemplate ? T.scheduleFromTpl.replace("{tpl}", selectedTemplate.title) : T.newMeetingTitle}
               </h2>
               <button onClick={() => setShowCreate(false)} className="text-slate-400 hover:text-slate-600 text-2xl">×</button>
             </div>
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.title}</label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                  placeholder="Meeting title"
+                  placeholder={T.meetingTitlePlaceholder}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.date}</label>
                   <input
                     type="date"
                     value={form.startDate}
@@ -793,7 +796,7 @@ export default function MeetingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Time</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.time}</label>
                   <input
                     type="time"
                     value={form.startTime}
@@ -805,7 +808,7 @@ export default function MeetingsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Duration (min)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.duration}</label>
                   <select
                     value={form.duration}
                     onChange={(e) => setForm({ ...form, duration: Number(e.target.value) })}
@@ -820,56 +823,56 @@ export default function MeetingsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.type}</label>
                   <select
                     value={form.meetingType}
                     onChange={(e) => setForm({ ...form, meetingType: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                   >
-                    <option value="INTERNAL">Internal</option>
-                    <option value="BRAND_PRESENTATION">Brand Presentation</option>
-                    <option value="TESTING_REVIEW">Testing Review</option>
-                    <option value="FACTORY_KICKOFF">Factory Kickoff</option>
-                    <option value="PRODUCTION_REVIEW">Production Review</option>
-                    <option value="SOW_REVIEW">SOW Review</option>
-                    <option value="CUSTOM">Custom</option>
+                    <option value="INTERNAL">{T.typeInternal}</option>
+                    <option value="BRAND_PRESENTATION">{T.typeBrandPresentation}</option>
+                    <option value="TESTING_REVIEW">{T.typeTestingReview}</option>
+                    <option value="FACTORY_KICKOFF">{T.typeFactoryKickoff}</option>
+                    <option value="PRODUCTION_REVIEW">{T.typeProductionReview}</option>
+                    <option value="SOW_REVIEW">{T.typeSowReview}</option>
+                    <option value="CUSTOM">{T.typeCustom}</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.location}</label>
                 <input
                   type="text"
                   value={form.location}
                   onChange={(e) => setForm({ ...form, location: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                  placeholder="Microsoft Teams, Zoom, Office, etc."
+                  placeholder={T.locationPlaceholder}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Brand</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.brand}</label>
                   <select
                     value={form.brandId}
                     onChange={(e) => setForm({ ...form, brandId: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                   >
-                    <option value="">— None —</option>
+                    <option value="">{T.none}</option>
                     {brands.map((b) => (
                       <option key={b.id} value={b.id}>{b.name}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Project</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.project}</label>
                   <select
                     value={form.projectId}
                     onChange={(e) => setForm({ ...form, projectId: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                   >
-                    <option value="">— None —</option>
+                    <option value="">{T.none}</option>
                     {projects.map((p) => (
                       <option key={p.id} value={p.id}>{p.name}</option>
                     ))}
@@ -878,19 +881,19 @@ export default function MeetingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Description / Agenda</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.descriptionAgenda}</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
                   rows={4}
-                  placeholder="Meeting description and agenda items..."
+                  placeholder={T.agendaPlaceholder}
                 />
               </div>
 
               {/* Attendees */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Attendees</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{T.attendees}</label>
                 {form.attendees.length > 0 && (
                   <div className="space-y-1 mb-2">
                     {form.attendees.map((a, i) => (
@@ -907,21 +910,21 @@ export default function MeetingsPage() {
                     value={form.newAttendeeName}
                     onChange={(e) => setForm({ ...form, newAttendeeName: e.target.value })}
                     className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                    placeholder="Name"
+                    placeholder={T.namePlaceholder}
                   />
                   <input
                     type="email"
                     value={form.newAttendeeEmail}
                     onChange={(e) => setForm({ ...form, newAttendeeEmail: e.target.value })}
                     className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                    placeholder="Email"
+                    placeholder={T.emailPlaceholder}
                     onKeyDown={(e) => e.key === "Enter" && addAttendee()}
                   />
                   <button
                     onClick={addAttendee}
                     className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200"
                   >
-                    Add
+                    {T.add}
                   </button>
                 </div>
               </div>
@@ -932,14 +935,14 @@ export default function MeetingsPage() {
                 onClick={() => setShowCreate(false)}
                 className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
               >
-                Cancel
+                {T.cancelBtn}
               </button>
               <button
                 onClick={createMeeting}
                 disabled={creating || !form.title || !form.startDate}
                 className="px-5 py-2 text-sm font-semibold bg-[#00b4c3] text-white rounded-lg hover:bg-[#009aaa] disabled:opacity-50"
               >
-                {creating ? "Scheduling..." : "Schedule Meeting"}
+                {creating ? T.scheduling : T.scheduleMeeting}
               </button>
             </div>
           </div>
