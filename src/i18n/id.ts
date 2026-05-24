@@ -6077,6 +6077,82 @@ const id: Translations = {
     docTypeOther: "Lain-lain",
   },
 
+  contactHygiene: {
+    crumbAdmin: "Admin",
+    crumbHere: "Kebersihan Kontak",
+    pageTitle: "Kebersihan Kontak",
+    pageSubtitle: "Menandai placeholder, role-mailbox, dan kontak salah bentuk agar rep berhenti membuang outreach pada Jane Doe. Reversibel — un-hide untuk membawa kontak kembali ke wizard.",
+
+    btnPreviewScan: "🔍 Pratinjau scan",
+    btnAutoHide: "🙈 Scan + auto-hide",
+    btnScanning: "Memindai…",
+    btnHiding: "Menyembunyikan…",
+    titlePreviewScan: "Jalankan ulang snapshot hygiene pada setiap kontak, tanpa mengubah visibilitas",
+    titleAutoHide: "Scan + auto-hide kontak placeholder dari BD Wizard",
+    confirmAutoHide: "Auto-hide akan membalik hiddenFromWizard = true untuk setiap kontak yang ditandai scan sebagai placeholder atau email-invalid. Ini reversibel (Anda dapat un-hide dari halaman ini) tetapi memengaruhi BD Wizard setiap rep segera. Lanjutkan?",
+    promptHide: "Sembunyikan kontak ini dari BD Wizard? Alasan (opsional):",
+    promptUnhide: "Un-hide kontak ini? Alasan (opsional, ditulis ke catatan mereka):",
+    failedPrefix: "Gagal:",
+    networkErrPrefix: "Kesalahan jaringan:",
+    scanFailedPrefix: "Scan gagal:",
+
+    summaryScanned: "Dipindai",
+    summaryContacts: "kontak · placeholder",
+    summarySuspicious: "· mencurigakan",
+    summaryRole: "· role",
+    summaryReal: "· nyata",
+    summaryHiddenSuffix: "baru",
+    summaryHiddenPrefix: "· disembunyikan",
+
+    statPlaceholder: "Placeholder",
+    statSuspicious: "Mencurigakan",
+    statRole: "Role mailbox",
+    statReal: "Nyata",
+    statUnscanned: "Belum dipindai",
+    statHidden: "Disembunyikan",
+
+    filterVerdict: "Vonis",
+    filterVisibility: "Visibilitas",
+    filterAllScanned: "Semua dipindai",
+    filterPlaceholder: "Placeholder",
+    filterSuspicious: "Mencurigakan",
+    filterRoleMailbox: "Role mailbox",
+    filterReal: "Nyata",
+    filterUnscanned: "Belum dipindai",
+    filterAllVisibility: "Semua visibilitas",
+    filterHiddenOnly: "Hanya disembunyikan",
+    filterVisibleOnly: "Hanya terlihat",
+    searchPlaceholder: "Cari nama atau email…",
+
+    emptyTitle: "Tidak ada kontak yang cocok dengan filter saat ini.",
+    emptyUnscannedTpl: "{n} kontak belum pernah dipindai — klik \"Pratinjau scan\" untuk mengisi.",
+
+    colContact: "Kontak",
+    colBrandFactory: "Brand / Pabrik",
+    colVerdict: "Vonis",
+    colEmail: "Email",
+    colLinkedin: "LinkedIn",
+    colScore: "Skor",
+    colFlags: "Flag",
+    colActions: "Aksi",
+
+    unnamed: "(tanpa nama)",
+    noEmail: "tidak ada email",
+    hiddenLabel: "Disembunyikan",
+    flagsMore: "lainnya",
+    flagsClean: "bersih",
+    actionHide: "Sembunyikan",
+    actionUnhide: "Un-hide",
+
+    helpFooter: "Scan menelusuri setiap kontak dan snapshot vonis + flag ke baris. Pratinjau hanya merekam vonis; Scan + auto-hide juga membalik hiddenFromWizard untuk placeholder dan kontak email-invalid. Keduanya reversibel — klik \"Un-hide\" untuk memulihkan kontak, yang juga menjalankan ulang snapshot jika data telah diperbaiki.",
+
+    verdictReal: "nyata",
+    verdictSuspect: "tersangka",
+    verdictPlaceholder: "placeholder",
+    verdictRoleMbx: "role mbx",
+    verdictUnscanned: "belum dipindai",
+  },
+
 };
 
 export default id;
