@@ -5830,6 +5830,69 @@ const vi: Translations = {
     footerGenerated: "Mẫu đã tạo",
   },
 
+  sampleTrials: {
+    crumbDashboard: "Bảng điều khiển",
+    crumbHere: "Thử nghiệm mẫu",
+    pageTitle: "Quản lý thử nghiệm mẫu",
+    pageSubtitle: "Xem xét, phê duyệt, gửi và theo dõi tất cả yêu cầu thử nghiệm mẫu của nhà máy",
+
+    statTotal: "Tổng cộng",
+    statNeedsAction: "Cần hành động",
+
+    searchPlaceholder: "Tìm vải, nhà máy, thương hiệu, liên hệ...",
+    filterAllStatuses: "Tất cả trạng thái",
+    filterAllFactories: "Tất cả nhà máy",
+
+    errorFailedLoad: "Không tải được thử nghiệm",
+    errorUpdate: "Cập nhật thất bại",
+    errorNetwork: "Lỗi mạng",
+
+    quickActionPrefix: "Hành động nhanh —",
+    trialFallback: "Thử nghiệm",
+    labelStatus: "Trạng thái",
+    labelTracking: "Số theo dõi",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "Ghi chú quản trị",
+    placeholderAdminNotes: "Ghi chú nội bộ...",
+    labelRejectReason: "Lý do từ chối",
+    btnSave: "Lưu thay đổi",
+    btnSaving: "Đang lưu...",
+    btnCancel: "Hủy",
+
+    emptyFiltered: "Không có thử nghiệm nào khớp bộ lọc",
+    emptyDefault: "Chưa có thử nghiệm mẫu nào",
+
+    colFabric: "Vải",
+    colFactory: "Nhà máy",
+    colPurpose: "Mục đích",
+    colStatus: "Trạng thái",
+    colDetails: "Chi tiết",
+    colIcpLab: "Phòng lab ICP",
+    colDate: "Ngày",
+    colActions: "Hành động",
+
+    purposeBrand: "Thương hiệu",
+    purposeSelfDev: "Tự phát triển",
+    trialLab: "Phòng lab",
+    trialProduction: "Sản xuất",
+    detailsTierPrefix: "Hạng:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "Bởi:",
+    actionAction: "Hành động",
+    actionView: "Xem",
+
+    statusSubmitted: "Đã gửi",
+    statusUnderReview: "Đang xem xét",
+    statusApproved: "Đã phê duyệt",
+    statusRejected: "Đã từ chối",
+    statusShipped: "Đã gửi",
+    statusReceived: "Đã nhận",
+    statusInProgress: "Đang xử lý",
+    statusIcpPending: "Chờ ICP",
+    statusIcpSubmitted: "Đã gửi ICP",
+    statusComplete: "Hoàn thành",
+  },
+
 };
 
 export default vi;
