@@ -7477,6 +7477,32 @@ const ta: Translations = {
     emptyState: "இன்னும் tokens இல்லை — மேலே உங்கள் முதல் batch-ஐ mint செய்.",
   },
 
+  bookMeetingPage: {
+    heading: "சந்திப்பை திட்டமிடு",
+    subtitle: "எங்கள் குழுவுடன் உங்கள் சந்திப்பை பதிவு செய்ய கிடைக்கும் தேதி மற்றும் நேரத்தைத் தேர்ந்தெடுக்கவும்.",
+    selectDateTitle: "தேதியைத் தேர்ந்தெடு",
+    availableTimesPrefix: "கிடைக்கும் நேரங்கள்",
+    loadingSlots: "Slots ஏற்றுகிறது...",
+    noSlotsBody: "இந்த தேதிக்கு கிடைக்கும் slots இல்லை",
+    detailsTitle: "சந்திப்பு விவரங்கள்",
+    selectDateTimeHint: "தொடர ஒரு தேதி மற்றும் நேரத்தைத் தேர்ந்தெடுக்கவும்",
+    dateTimeLabel: "தேதி & நேரம்",
+    meetingTitleLabel: "சந்திப்பு தலைப்பு",
+    defaultTitle: "FUZE சந்திப்பு",
+    descriptionLabel: "விளக்கம் (விருப்பம்)",
+    descriptionPlaceholder: "ஏதேனும் கூடுதல் விவரங்கள்...",
+    confirmBtn: "பதிவை உறுதிப்படுத்து",
+    bookingBusy: "பதிவு செய்கிறது...",
+    bookFailedError: "சந்திப்பை பதிவு செய்ய முடியவில்லை",
+    networkError: "நெட்வொர்க் பிழை",
+    bookedTitle: "சந்திப்பு பதிவு செய்யப்பட்டது!",
+    titleColLabel: "தலைப்பு",
+    timeColLabel: "நேரம்",
+    meetingLinkLabel: "சந்திப்பு Link",
+    openInTeams: "Teams-இல் திற",
+    bookAnotherBtn: "மற்றொரு சந்திப்பை பதிவு செய்",
+  },
+
 };
 
 export default ta;
