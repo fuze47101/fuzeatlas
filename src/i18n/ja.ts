@@ -5117,6 +5117,81 @@ const ja: Translations = {
     docTypeOther: "その他",
   },
 
+  consumptionAdmin: {
+    loading: "消費データを読み込み中...",
+    pageTitle: "消費・再注文",
+    pageSubtitle: "工場のFUZE使用量、予測在庫切れ日、自動再注文トリガーを追跡します",
+
+    btnNewOrder: "+ 新規注文",
+    btnLogUsage: "+ 使用量を記録",
+
+    kpiActiveFactories: "稼働中の工場",
+    kpiOfTotal: "総数 {n} 件中",
+    kpiTotalOrdered: "総注文量",
+    kpiPending: "{n} 件保留中",
+    kpiTotalConsumed: "総消費量",
+    kpiAcrossAll: "全工場合計",
+    kpiReorderAlerts: "再注文アラート",
+    kpiAlertsSplit: "重要 {c} 件、警告 {w} 件",
+
+    annualDemandLabel: "年間予測需要",
+    annualDemandUnit: "リットル",
+    annualDemandBottles: "約 {n} ボトル",
+    annualDemandRevenue: "売上 約 ${n}",
+
+    sectionFactoryInventory: "工場在庫ステータス",
+    emptyTitle: "FUZE対応工場はまだありません。",
+    emptySub: "fuzeEnabled = true の工場がここに表示されます。",
+
+    cellRemaining: "残量",
+    cellBurn: "1日消費",
+    cellRunOut: "在庫切れ予測",
+    daysSuffix: "日",
+    daysWord: "日",
+    fabricsSuffix: "種類の生地",
+    fabricSuffix: "種類の生地",
+    activeOrdersSuffix: "件の進行中注文",
+    activeOrderSuffix: "件の進行中注文",
+
+    colFactory: "工場",
+    colCountry: "国",
+    colOrdered: "注文済み",
+    colConsumed: "消費済み",
+    colRemaining: "残量",
+    colBurnDay: "1日消費",
+    colRunOut: "在庫切れ予測",
+    colStatus: "ステータス",
+
+    modalOrderTitle: "新規FUZE注文",
+    modalUsageTitle: "FUZE使用量を記録",
+    fieldFactory: "工場",
+    placeholderFactory: "工場を選択...",
+    fieldVolumeL: "数量（リットル）",
+    fieldTier: "ティア",
+    fieldNotes: "備考",
+    fieldLitersUsed: "使用リットル",
+    fieldMetersProcessed: "処理メートル数",
+    placeholderOptional: "任意",
+    fieldMethod: "方法",
+    placeholderSelect: "選択...",
+    methodExhaust: "浸染（染浴）",
+    methodPad: "パッド・ドライ・キュア",
+    methodSpray: "スプレー",
+
+    summaryBottles: "ボトル数（各19L）:",
+    summaryEstTotal: "推定合計:",
+
+    btnCancel: "キャンセル",
+    btnCreating: "作成中...",
+    btnCreateOrder: "注文を作成",
+    btnLogging: "記録中...",
+    btnLogUsageSubmit: "使用量を記録",
+
+    errorCreateOrder: "注文の作成に失敗しました",
+    errorLogUsage: "消費量の記録に失敗しました",
+    errorNetwork: "ネットワークエラー",
+  },
+
 };
 
 export default ja;
