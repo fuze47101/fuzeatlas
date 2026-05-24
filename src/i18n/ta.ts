@@ -5887,7 +5887,7 @@ const ta: Translations = {
     tuesday: "செவ்வாய்",
     wednesday: "புதன்",
     thursday: "வியாழன்",
-    friday: "வெள்ளி",
+    friday: "வெள்ளிக்கிழமை",
     saturday: "சனி",
     businessHoursTitle: "வணிக நேரம்",
     startHourLabel: "தொடக்க மணி",
