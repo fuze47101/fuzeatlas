@@ -7727,6 +7727,36 @@ const it: Translations = {
     nextBtn: "Successivo",
   },
 
+  bdSequencesList: {
+    kicker: "BD Wizard",
+    heading: "Sequenze",
+    subtitlePrefix: "Outbound a funnel lungo. Il cron fa avanzare i passi ogni ora. I passi pronti restano in",
+    subtitleSuffix: "in attesa della tua revisione — nulla viene inviato in automatico.",
+    openWizardBtn: "Apri BD Wizard →",
+    stepAwaitingSingular: "passo in attesa della tua revisione",
+    stepsAwaitingPlural: "passi in attesa della tua revisione",
+    showAllRepsLabel: "Mostra tutti i rep",
+    loadingState: "Caricamento sequenze…",
+    emptyHeadPrefix: "Nessuna sequenza",
+    emptyHeadSuffix: "",
+    emptyBodyPrefix: "Avviane una inviando la tua prima email tramite il",
+    emptyBodyLink: "BD Wizard",
+    emptyBodySuffix: ". Ogni primo invio avvia automaticamente una cadenza in 6 passi.",
+    colBrandContact: "Brand / Contatto",
+    colProgress: "Avanzamento",
+    colNext: "Successivo",
+    colRep: "Rep",
+    colStatus: "Stato",
+    colActions: "Azioni",
+    readyChipSuffix: "pronti",
+    reviewSendBtn: "Rivedi e invia",
+    openBtn: "Apri",
+    viewBtn: "Visualizza",
+    pauseBtn: "Metti in pausa",
+    exitBtn: "Esci",
+    resumeBtn: "Riprendi",
+  },
+
 };
 
 export default it;
