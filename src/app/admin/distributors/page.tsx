@@ -2,6 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface Distributor {
   id: string;
@@ -65,6 +66,8 @@ const STATUS_BADGE: Record<string, string> = {
 };
 
 export default function DistributorManagementPage() {
+  const { t } = useI18n();
+  const T = t.distributorsAdmin;
   const [distributors, setDistributors] = useState<Distributor[]>([]);
   // Inline create modal state — Tina's request to add distributors
   // without leaving the network page.
@@ -190,9 +193,9 @@ export default function DistributorManagementPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-800">Distributor Network</h1>
+          <h1 className="text-2xl font-black text-slate-800">{T.pageTitle}</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Manage your global distribution partners, inventory, and coverage
+            {T.pageSubtitle}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -200,13 +203,13 @@ export default function DistributorManagementPage() {
             href="/admin/distributors/inventory"
             className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition"
           >
-            📊 Inventory & Burn Rate
+            {T.inventoryCta}
           </Link>
           <Link
             href="/admin/worldwide-inventory"
             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition"
           >
-            🌍 Worldwide Inventory
+            {T.worldwideCta}
           </Link>
           <button
             onClick={() => {
@@ -216,7 +219,7 @@ export default function DistributorManagementPage() {
             }}
             className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition"
           >
-            + New Distributor
+            {T.newDistributorCta}
           </button>
         </div>
       </div>
@@ -226,7 +229,7 @@ export default function DistributorManagementPage() {
         <div className="fixed inset-0 z-50 bg-black/40 flex items-start justify-center p-6 overflow-y-auto">
           <div className="bg-white rounded-xl max-w-xl w-full p-6 shadow-2xl mt-12">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-black text-slate-900">New distributor</h2>
+              <h2 className="text-xl font-black text-slate-900">{T.newDistributorModalTitle}</h2>
               <button
                 onClick={() => setShowCreate(false)}
                 className="text-slate-400 hover:text-slate-700 text-2xl leading-none"
@@ -243,7 +246,7 @@ export default function DistributorManagementPage() {
               onSubmit={async (e) => {
                 e.preventDefault();
                 if (!createForm.name.trim()) {
-                  setCreateError("Name is required");
+                  setCreateError(T.nameRequiredError);
                   return;
                 }
                 setCreating(true);

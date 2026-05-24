@@ -5157,6 +5157,15 @@ const en = {
     preShipChecklistHeader: "✅ Pre-Ship Checklist (the wizard prints this on the packet)",
     sanityCheckHeader: "Sanity Check (what CTLA should report)",
   },
+  distributorsAdmin: {
+    pageTitle: "Distributor Network",
+    pageSubtitle: "Manage your global distribution partners, inventory, and coverage",
+    inventoryCta: "📊 Inventory & Burn Rate",
+    worldwideCta: "🌍 Worldwide Inventory",
+    newDistributorCta: "+ New Distributor",
+    newDistributorModalTitle: "New distributor",
+    nameRequiredError: "Name is required",
+  },
 };
 
 export default en;
