@@ -8107,6 +8107,18 @@ const zhCN: Translations = {
     addFavoriteTitle: "添加收藏",
   },
 
+  icpCorrelation: {
+    adminCrumb: "管理员",
+    crumb: "ICP 相关性",
+    heading: "ICP × AB 相关性",
+    subtitle: "Joseph (KUIU) 询问过的图表。FUZE 在面料上的残留量(ICP 测量)与 Atlas 中每次品牌可见测试运行的抗菌杀灭率的对比。叠加最佳拟合线 + R²。",
+    errorContext: "加载 ICP 相关性",
+    couldntLoadPrefix: "无法加载相关性数据",
+    networkError: "网络错误。",
+    loadingState: "正在加载相关性数据…",
+    footnote: "面向客户的文案使用「FUZE residual」——来自实验室 ICP 报告的 metamaterial 测量值。在客户交付物中始终标注为 FUZE / metamaterial(CLAUDE.md 品牌语言规则)。",
+  },
+
 };
 
 export default zhCN;
