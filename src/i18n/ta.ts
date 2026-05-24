@@ -7702,6 +7702,31 @@ const ta: Translations = {
     accessLaterTitle: "பின்னர் இந்த அறிக்கையை அணுகுதல்",
   },
 
+  settingsAuditLog: {
+    title: "தணிக்கை பதிவு",
+    subtitle: "அனைத்து கணினி மாற்றங்கள் மற்றும் பயனர் செயல்களைக் கண்காணி",
+    actionLabel: "செயல்",
+    allActionsOption: "அனைத்து செயல்கள்",
+    entityTypeLabel: "Entity வகை",
+    allEntitiesOption: "அனைத்து entities",
+    fromDateLabel: "தொடக்க தேதி",
+    toDateLabel: "முடிவு தேதி",
+    loadingText: "ஏற்றுகிறது...",
+    emptyText: "தணிக்கை பதிவுகள் கிடைக்கவில்லை",
+    colTimestamp: "Timestamp",
+    colUser: "பயனர்",
+    colAction: "செயல்",
+    colEntity: "Entity",
+    colDescription: "விளக்கம்",
+    systemUserFallback: "கணினி",
+    showingPrefix: "காட்டுகிறது",
+    showingTo: "க்கு",
+    showingOf: "of",
+    showingSuffix: "logs",
+    prevBtn: "முந்தைய",
+    nextBtn: "அடுத்த",
+  },
+
 };
 
 export default ta;
