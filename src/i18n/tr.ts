@@ -7235,6 +7235,34 @@ const tr: Translations = {
     backToLeadOption: "← Lead'e geri dön",
   },
 
+  commandCenterGlobe: {
+    loading: "Küre yükleniyor…",
+    title: "Tedarik zinciri küresi",
+    emptyTitle: "Henüz coğrafi kodlanmış varlık yok",
+    emptyHint: "Her varlığın şehir + ülkesinden enlem/boylam doldurmak için geocoder'ı çalıştırın:",
+    emptyFooter: "Nominatim'in 1 istek/sn hız sınırı vardır — tam bir tarama birkaç dakika sürer. Yeniden çalıştırmalar zaten koordinatları olan satırları atlar.",
+    factoriesLabel: "fabrika",
+    brandsLabel: "marka",
+    labsLabel: "laboratuvar",
+    distributorsLabel: "distribütör",
+    shipmentsLabel: "sevkiyat (90g)",
+    searchPlaceholder: "Varlık ara…",
+    legendFactory: "Fabrika",
+    legendPulseHint: "(nabız = aktif 30g)",
+    legendBrand: "Marka Merkezi",
+    legendFuzeLab: "FUZE'a ait laboratuvar",
+    legendPartnerLab: "Partner laboratuvar",
+    legendDistributor: "Distribütör",
+    kindFactory: "Fabrika",
+    kindBrand: "Marka",
+    kindLab: "Laboratuvar",
+    kindDistributor: "Distribütör",
+    stageLabel: "Aşama:",
+    activeBadge: "⚡ Aktif (30g)",
+    openDetailBtn: "Ayrıntıyı aç →",
+    errLoadFailed: "Küre yüklenemedi",
+  },
+
 };
 
 export default tr;
