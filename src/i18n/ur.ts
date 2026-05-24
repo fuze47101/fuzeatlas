@@ -6040,6 +6040,31 @@ const ur: Translations = {
     footerNote: "ترتیب: پہلے کم اسٹاک، پھر غیر فعال، پھر بقیہ اسٹاک کے دن کے لحاظ سے اوپر۔ \"یومیہ برن\" = فیکٹریوں کو بھیجے گئے لیٹرز کی 90 دن کی رولنگ اوسط۔ \"بقیہ دن\" = موجودہ اسٹاک ÷ یومیہ برن۔ \"غیر فعال\" = پچھلے 90 دنوں میں فیکٹری آرڈرز نہیں۔ \"قیمت نہیں\" کا مطلب ہے کہ FUZE ہول سیل ریٹ سیٹ نہیں ہے؛ ڈسٹری بیوٹر ری اسٹاک آرڈرز نہیں دے سکتا۔ فی ڈسٹری بیوٹر صفحے پر ترمیم کریں۔",
   },
 
+  conversionTracking: {
+    crumbDashboard: "ڈیش بورڈ",
+    crumbCurrent: "نمونہ ← پروڈکشن",
+    title: "نمونہ ← پروڈکشن کنورژن",
+    subtitle: "ٹریک کریں کہ کن فیکٹریوں کو نمونے ملے اور پروڈکشن آرڈرز میں تبدیل ہوئے",
+    cardFactoriesSampled: "نمونے بھیجی گئی فیکٹریاں",
+    cardConverted: "تبدیل شدہ",
+    cardConversionRate: "کنورژن کی شرح",
+    cardAvgDays: "تبدیل ہونے کے اوسط دن",
+    cardProdVolume: "پروڈکشن حجم",
+    cardProdRevenue: "پروڈکشن ریونیو",
+    tabAll: "تمام",
+    tabConverted: "تبدیل شدہ",
+    tabPending: "زیر التواء",
+    emptyText: "ابھی تک کوئی نمونہ آرڈرز نہیں ملے",
+    badgeConverted: "تبدیل شدہ",
+    badgePending: "زیر التواء",
+    sectionSamples: "نمونہ آرڈرز",
+    sectionTrials: "آزمائشی درخواستیں",
+    sectionProduction: "پروڈکشن آرڈرز",
+    productionLabel: "پروڈکشن",
+    daysToConvertSuffix: "تبدیل ہونے کے دن",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default ur;
