@@ -7625,6 +7625,24 @@ const ur: Translations = {
     openSameLink: "وہی لنک کھولیں →",
   },
 
+  apiDocs: {
+    heading: "API دستاویزات",
+    subtitle: "FUZE Atlas API حوالہ",
+    authStrong: "تصدیق:",
+    authBodyPrefix: "تمام اختتامی نقاط، سوائے",
+    authBodySuffix: "ایک درست JWT سیشن کوکی درکار ہے۔",
+    searchPlaceholder: "راستے یا تفصیل کے ذریعے اختتامی نقاط تلاش کریں...",
+    allMethodsBtn: "تمام طریقے",
+    showingPrefix: "دکھایا جا رہا ہے",
+    showingOf: "میں سے",
+    endpointsLabel: "اختتامی نقاط",
+    collapseAllBtn: "سب کو سکیڑیں",
+    expandAllBtn: "سب کو پھیلائیں",
+    noResults: "آپ کی تلاش سے ملتے جلتے کوئی اختتامی نقاط نہیں ملے۔",
+    clearFiltersBtn: "فلٹرز صاف کریں",
+    footerPrefix: "FUZE Atlas API دستاویزات - آخری بار اپ ڈیٹ کیا گیا",
+  },
+
 };
 
 export default ur;
