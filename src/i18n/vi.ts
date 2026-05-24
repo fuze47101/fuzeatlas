@@ -7984,6 +7984,24 @@ const vi: Translations = {
     openSameLink: "Mở cùng liên kết →",
   },
 
+  apiDocs: {
+    heading: "Tài liệu API",
+    subtitle: "Tham chiếu API FUZE Atlas",
+    authStrong: "Xác thực:",
+    authBodyPrefix: "Tất cả endpoint trừ",
+    authBodySuffix: "yêu cầu cookie phiên JWT hợp lệ.",
+    searchPlaceholder: "Tìm endpoint theo đường dẫn hoặc mô tả...",
+    allMethodsBtn: "Tất cả phương thức",
+    showingPrefix: "Đang hiển thị",
+    showingOf: "trên",
+    endpointsLabel: "endpoint",
+    collapseAllBtn: "Thu gọn tất cả",
+    expandAllBtn: "Mở rộng tất cả",
+    noResults: "Không tìm thấy endpoint nào khớp với tìm kiếm của bạn.",
+    clearFiltersBtn: "Xóa bộ lọc",
+    footerPrefix: "Tài liệu API FUZE Atlas - Cập nhật lần cuối",
+  },
+
 };
 
 export default vi;
