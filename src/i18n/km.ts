@@ -6696,6 +6696,34 @@ const km: Translations = {
     backToLeadOption: "← ត្រឡប់ to Lead",
   },
 
+  commandCenterGlobe: {
+    loading: "កំពុងផ្ទុក globe…",
+    title: "Supply-chain globe",
+    emptyTitle: "ទេ geocoded entities yet",
+    emptyHint: "Run the geocoder to populate lat/lng from each entity's city + country:",
+    emptyFooter: "ទេminatim has a 1 req/sec rate limit — a full pass takes a few minutes. Re-runs skip rows that already have coordinates.",
+    factoriesLabel: "factories",
+    brandsLabel: "brands",
+    labsLabel: "labs",
+    distributorsLabel: "distributors",
+    shipmentsLabel: "shipments (90d)",
+    searchPlaceholder: "ស្វែងរក entity…",
+    legendFactory: "រោងចក្រ",
+    legendPulseHint: "(pulse = active 30d)",
+    legendBrand: "ម៉ាក HQ",
+    legendFuzeLab: "FUZE-owned lab",
+    legendPartnerLab: "Partner lab",
+    legendDistributor: "អ្នកចែកចាយ",
+    kindFactory: "រោងចក្រ",
+    kindBrand: "ម៉ាក",
+    kindLab: "មន្ទីរពិសោធន៍",
+    kindDistributor: "អ្នកចែកចាយ",
+    stageLabel: "Stage:",
+    activeBadge: "⚡ សកម្ម (30d)",
+    openDetailBtn: "បើក detail →",
+    errLoadFailed: "បរាជ័យ to load globe",
+  },
+
 };
 
 export default km;
