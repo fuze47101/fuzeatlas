@@ -5096,6 +5096,81 @@ const id: Translations = {
     errNetwork: "Kesalahan jaringan",
   },
 
+  consumptionAdmin: {
+    loading: "Memuat data konsumsi...",
+    pageTitle: "Konsumsi & Pesan Ulang",
+    pageSubtitle: "Lacak penggunaan FUZE pabrik, tanggal perkiraan runout, dan trigger pesan ulang otomatis",
+
+    btnNewOrder: "+ Pesanan Baru",
+    btnLogUsage: "+ Catat Penggunaan",
+
+    kpiActiveFactories: "Pabrik Aktif",
+    kpiOfTotal: "dari {n} total",
+    kpiTotalOrdered: "Total Dipesan",
+    kpiPending: "{n} menunggu",
+    kpiTotalConsumed: "Total Dikonsumsi",
+    kpiAcrossAll: "di seluruh pabrik",
+    kpiReorderAlerts: "Alert Pesan Ulang",
+    kpiAlertsSplit: "{c} kritis, {w} peringatan",
+
+    annualDemandLabel: "Permintaan Tahunan Diproyeksikan",
+    annualDemandUnit: "liter",
+    annualDemandBottles: "~{n} botol",
+    annualDemandRevenue: "~${n} pendapatan",
+
+    sectionFactoryInventory: "Status Inventaris Pabrik",
+    emptyTitle: "Belum ada pabrik berkemampuan FUZE.",
+    emptySub: "Pabrik dengan fuzeEnabled = true akan muncul di sini.",
+
+    cellRemaining: "Tersisa",
+    cellBurn: "Burn/hari",
+    cellRunOut: "Runout",
+    daysSuffix: "h",
+    daysWord: "hari",
+    fabricsSuffix: "kain",
+    fabricSuffix: "kain",
+    activeOrdersSuffix: "pesanan aktif",
+    activeOrderSuffix: "pesanan aktif",
+
+    colFactory: "Pabrik",
+    colCountry: "Negara",
+    colOrdered: "Dipesan",
+    colConsumed: "Dikonsumsi",
+    colRemaining: "Tersisa",
+    colBurnDay: "Burn/Hari",
+    colRunOut: "Runout",
+    colStatus: "Status",
+
+    modalOrderTitle: "Pesanan FUZE Baru",
+    modalUsageTitle: "Catat Penggunaan FUZE",
+    fieldFactory: "Pabrik",
+    placeholderFactory: "Pilih pabrik...",
+    fieldVolumeL: "Volume (liter)",
+    fieldTier: "Tier",
+    fieldNotes: "Catatan",
+    fieldLitersUsed: "Liter Terpakai",
+    fieldMetersProcessed: "Meter Diproses",
+    placeholderOptional: "Opsional",
+    fieldMethod: "Metode",
+    placeholderSelect: "Pilih...",
+    methodExhaust: "Exhaust (Dyebath)",
+    methodPad: "Pad-Dry-Cure",
+    methodSpray: "Spray",
+
+    summaryBottles: "Botol (19L masing-masing):",
+    summaryEstTotal: "Total perkiraan:",
+
+    btnCancel: "Batal",
+    btnCreating: "Membuat...",
+    btnCreateOrder: "Buat Pesanan",
+    btnLogging: "Mencatat...",
+    btnLogUsageSubmit: "Catat Penggunaan",
+
+    errorCreateOrder: "Gagal membuat pesanan",
+    errorLogUsage: "Gagal mencatat konsumsi",
+    errorNetwork: "Kesalahan jaringan",
+  },
+
 };
 
 export default id;
