@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface TimeSlot {
   startTime: string;
@@ -12,6 +13,8 @@ interface TimeSlot {
 export default function BookMeetingPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
+  const T = t.bookMeetingPage;
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [slots, setSlots] = useState<TimeSlot[]>([]);
@@ -92,7 +95,7 @@ export default function BookMeetingPage() {
           date: selectedDate,
           startTime: selectedSlot.startTime,
           brandId: user?.brandId || null,
-          title: title || "FUZE Meeting",
+          title: title || T.defaultTitle,
           description: description || undefined,
         }),
       });
@@ -106,10 +109,10 @@ export default function BookMeetingPage() {
         setTitle("");
         setDescription("");
       } else {
-        setBookingError(data.error || "Failed to book meeting");
+        setBookingError(data.error || T.bookFailedError);
       }
     } catch (e: any) {
-      setBookingError(e.message || "Network error");
+      setBookingError(e.message || T.networkError);
     } finally {
       setBooking(false);
     }
@@ -164,14 +167,14 @@ export default function BookMeetingPage() {
                 </svg>
               </div>
               <h2 className="text-xl font-bold text-slate-900">
-                Meeting Booked!
+                {T.bookedTitle}
               </h2>
             </div>
 
             <div className="bg-slate-50 rounded-lg p-4 mb-4 space-y-2 text-sm">
               <div>
                 <p className="text-slate-500 text-xs uppercase font-semibold">
-                  Title
+                  {T.titleColLabel}
                 </p>
                 <p className="text-slate-900 font-medium">
                   {successMeeting.title}
@@ -179,7 +182,7 @@ export default function BookMeetingPage() {
               </div>
               <div>
                 <p className="text-slate-500 text-xs uppercase font-semibold">
-                  Time
+                  {T.timeColLabel}
                 </p>
                 <p className="text-slate-900 font-medium">
                   {formatTime(successMeeting.startTime)} -{" "}
@@ -189,7 +192,7 @@ export default function BookMeetingPage() {
               {successMeeting.teamsLink && (
                 <div>
                   <p className="text-slate-500 text-xs uppercase font-semibold">
-                    Meeting Link
+                    {T.meetingLinkLabel}
                   </p>
                   <a
                     href={successMeeting.teamsLink}
@@ -197,7 +200,7 @@ export default function BookMeetingPage() {
                     rel="noopener noreferrer"
                     className="text-[#00b4c3] hover:underline text-xs break-all"
                   >
-                    Open in Teams
+                    {T.openInTeams}
                   </a>
                 </div>
               )}
@@ -210,7 +213,7 @@ export default function BookMeetingPage() {
               }}
               className="w-full px-4 py-2 bg-[#00b4c3] text-white font-medium rounded-lg hover:bg-[#009ba8] transition-colors"
             >
-              Book Another Meeting
+              {T.bookAnotherBtn}
             </button>
           </div>
         </div>
@@ -218,10 +221,10 @@ export default function BookMeetingPage() {
 
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 mb-2">
-          Schedule a Meeting
+          {T.heading}
         </h1>
         <p className="text-slate-600">
-          Select an available date and time to book your meeting with our team.
+          {T.subtitle}
         </p>
       </div>
 
@@ -229,7 +232,7 @@ export default function BookMeetingPage() {
         {/* Calendar Section */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">
-            Select Date
+            {T.selectDateTitle}
           </h2>
 
           <div className="grid grid-cols-7 gap-2 mb-6">
@@ -273,17 +276,17 @@ export default function BookMeetingPage() {
           {selectedDate && (
             <div>
               <h3 className="text-base font-semibold text-slate-900 mb-4">
-                Available Times on {formatDate(new Date(selectedDate))}
+                {T.availableTimesPrefix} {formatDate(new Date(selectedDate))}
               </h3>
 
               {slotsLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <p className="text-slate-400 text-sm">Loading slots...</p>
+                  <p className="text-slate-400 text-sm">{T.loadingSlots}</p>
                 </div>
               ) : slots.length === 0 ? (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
                   <p className="text-sm text-amber-700">
-                    No available slots for this date
+                    {T.noSlotsBody}
                   </p>
                 </div>
               ) : (
@@ -322,13 +325,13 @@ export default function BookMeetingPage() {
         {/* Details Form */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">
-            Meeting Details
+            {T.detailsTitle}
           </h2>
 
           {!selectedSlot ? (
             <div className="text-center py-8">
               <p className="text-slate-400 text-sm">
-                Select a date and time to continue
+                {T.selectDateTimeHint}
               </p>
             </div>
           ) : (
@@ -341,7 +344,7 @@ export default function BookMeetingPage() {
             >
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">
-                  Date & Time
+                  {T.dateTimeLabel}
                 </label>
                 <div className="bg-[#00b4c3]/10 border border-[#00b4c3]/30 rounded-lg p-3">
                   <p className="text-sm font-medium text-slate-900">
@@ -356,25 +359,25 @@ export default function BookMeetingPage() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">
-                  Meeting Title
+                  {T.meetingTitleLabel}
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="FUZE Meeting"
+                  placeholder={T.defaultTitle}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#00b4c3]"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-2">
-                  Description (optional)
+                  {T.descriptionLabel}
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Any additional details..."
+                  placeholder={T.descriptionPlaceholder}
                   rows={4}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#00b4c3] resize-none"
                 />
@@ -391,7 +394,7 @@ export default function BookMeetingPage() {
                 disabled={booking}
                 className="w-full px-4 py-2 bg-[#00b4c3] text-white font-medium rounded-lg hover:bg-[#009ba8] disabled:opacity-50 transition-colors"
               >
-                {booking ? "Booking..." : "Confirm Booking"}
+                {booking ? T.bookingBusy : T.confirmBtn}
               </button>
             </form>
           )}
