@@ -4835,6 +4835,49 @@ const ms: Translations = {
     sowEmptyNothingStuck: "Tiada yang tersangkut.",
   },
 
+  ordersAdmin: {
+    pageTitle: "Pengurusan Pesanan",
+    pageSubtitle: "Semak, luluskan, dan jejak semua pesanan FUZE",
+    myAccountsOnly: "Akaun saya sahaja",
+    awaitingApprovalTemplate: "{n} pesanan{s} menunggu kelulusan",
+
+    statTotal: "Jumlah",
+    statPending: "Menunggu",
+    statApproved: "Diluluskan",
+    statProcessing: "Memproses",
+    statShipped: "Dihantar",
+    statDelivered: "Diserahkan",
+    statRevenue: "Hasil",
+
+    filterAll: "Semua",
+    filterAllTypes: "Semua Jenis",
+
+    emptyMessage: "Tiada pesanan sepadan dengan penapis",
+
+    colOrder: "Pesanan",
+    colFactory: "Kilang",
+    colType: "Jenis",
+    colVolume: "Isi Padu",
+    colBrand: "Jenama",
+    colTotal: "Jumlah",
+    colFulfillment: "Pemenuhan",
+    colStatus: "Status",
+    colDate: "Tarikh",
+
+    statusDraft: "Draf",
+    statusQuoted: "Disebut Harga",
+    statusPendingApproval: "Menunggu Kelulusan",
+    statusApproved: "Diluluskan",
+    statusConfirmed: "Disahkan",
+    statusProcessing: "Memproses",
+    statusShipped: "Dihantar",
+    statusDelivered: "Diserahkan",
+    statusCancelled: "Dibatalkan",
+
+    directUsaLabel: "Direct USA",
+    tagsSuffix: "tag",
+  },
+
 };
 
 export default ms;
