@@ -5828,6 +5828,54 @@ const ta: Translations = {
     btnCreating: "உருவாக்குகிறது...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "FUZE ஃபேப்ரிக் நூலகம்",
+    pageSubtitle: "எங்கள் உலகளாவிய நெட்வொர்க்கில் FUZE-சிகிச்சை அளிக்கப்பட்ட ஃபேப்ரிக்குகள் மற்றும் சரிபார்க்கப்பட்ட சோதனை முடிவுகளை உலாவவும். அனைத்து தரவும் அநாமதேயமாக்கப்பட்டுள்ளது — தொழிற்சாலை மற்றும் பிராண்ட் அடையாளங்கள் ரகசியமாக உள்ளன.",
+
+    statFabrics: "சோதிக்கப்பட்ட ஃபேப்ரிக்குகள்",
+    statTests: "மொத்த சோதனைகள்",
+    statIcp: "ICP பகுப்பாய்வுகள்",
+    statAb: "ஆன்டிமைக்ரோபியல் சோதனைகள்",
+
+    searchPlaceholder: "கட்டுமானம், yarn, end use, FUZE எண் மூலம் தேடவும்...",
+    filterAllTypes: "அனைத்து சோதனை வகைகள்",
+    filterIcp: "ICP பகுப்பாய்வு",
+    filterAntibacterial: "ஆன்டிபாக்டீரியல்",
+    filterFungal: "ஆன்டிஃபங்கல்",
+    filterOdor: "வாசனை கட்டுப்பாடு",
+    passOnly: "Pass மட்டுமே",
+
+    emptyTitle: "உங்கள் அளவுகோல்களுக்கு பொருந்தும் ஃபேப்ரிக்குகள் இல்லை",
+    emptyClear: "அனைத்து வடிகட்டிகளையும் அழி",
+    errorFailedLoad: "ஃபேப்ரிக் நூலகத்தை ஏற்ற முடியவில்லை",
+    errorFailedDefault: "ஏற்ற முடியவில்லை",
+
+    testsSuffix: "சோதனைகள்",
+    testSuffix: "சோதனை",
+    propConstruction: "கட்டுமானம்:",
+    propWeight: "எடை:",
+    propWidth: "அகலம்:",
+    propYarn: "Yarn:",
+    propCategory: "வகை:",
+    propEndUse: "End Use:",
+    propWeave: "Weave:",
+    propColor: "நிறம்:",
+
+    colTest: "சோதனை",
+    colMethod: "முறை",
+    colWashes: "சலவைகள்",
+    colResult: "முடிவு",
+    colStatus: "நிலை",
+    pass: "தேர்ச்சி",
+    fail: "தோல்வி",
+    passBadge: "PASS",
+    failBadge: "FAIL",
+
+    paginationPrev: "முந்தைய",
+    paginationNext: "அடுத்த",
+    paginationLabel: "பக்கம் {page} / {pages}",
+  },
+
 };
 
 export default ta;
