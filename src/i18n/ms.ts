@@ -6187,6 +6187,35 @@ const ms: Translations = {
     noData: "Tiada data",
   },
 
+  educationApplication: {
+    pageMetaTitle: "Kaedah Aplikasi",
+    backLink: "← Kembali ke Asas FUZE",
+    kicker: "Kaedah Aplikasi",
+    heroTitle: "FUZE berfungsi dalam baris kemasan sedia ada anda",
+    heroBody: "Anda tidak memerlukan tangki baharu, relau baharu, atau peralatan baharu untuk menerap FUZE. Tiga laluan aplikasi meliputi setiap persediaan pengeluaran tekstil yang beroperasi hari ini. F4 Essential Protection langsung tidak memerlukan relau pengawetan pada banyak substrat.",
+    methodExhaustName: "Eksaus (tab pencelup)",
+    methodExhaustDesc: "Tambah FUZE ke tab pencelup. Metamaterial berikat semasa proses eksaus pencelupan sedia ada. Tiada tangki baharu, tiada bekas baharu, tiada baris baharu.",
+    methodExhaustWhen: "Terbaik untuk pencelupan berterusan isi padu tinggi. Metamaterial berintegrasi dengan langkah pengikatan pencelup.",
+    methodPdcName: "Pad-Keringkan-Awet",
+    methodPdcDesc: "Jalankan fabrik melalui padder standard yang diisi dengan bath FUZE cair. Perah, keringkan, awetkan seperti biasa. Suhu pengawetan 150-170°C.",
+    methodPdcWhen: "Laluan aplikasi paling biasa. Serasi dengan setiap baris kemasan tekstil yang beroperasi hari ini.",
+    methodSprayName: "Semburan (jarak kepala)",
+    methodSprayDesc: "Jarak kepala 6 inci, kelajuan baris 15 m/min. Atomisasi FUZE cair ke permukaan fabrik, kemudian keringkan/awetkan. Sesuai untuk pakaian yang telah siap atau substrat bukan tenunan.",
+    methodSprayWhen: "Pakaian yang sudah dipotong/dijahit, atau substrat khusus di mana eksaus/PDC tidak terpakai.",
+    whenToUseLabel: "Bila digunakan",
+    operatorTitle: "Mengapa ini penting kepada operator kilang",
+    operatorBullet1: "✓ Tiada peralatan modal baharu. FUZE jatuh ke dalam baris pad/celup/semburan sedia ada anda.",
+    operatorBullet2: "✓ Tiada pengikat, tiada crosslinker, tiada formaldehid. Kurang inventori untuk diurus, tiada protokol pengendalian bahan karsinogenik.",
+    operatorBullet3: "✓ Tiada kebergantungan relau pengawetan pada F4. Aplikasi tier-lebih rendah boleh kering udara; F1-F3 menggunakan 150-170°C, julat sama seperti kemasan PDC standard.",
+    operatorBullet4: "✓ Tiada hayat simpanan pada FUZE disimpan. Drum dan carboy boleh duduk di ruang kemasan anda selama-lamanya tanpa terdegradasi.",
+    operatorBullet5: "✓ Carboy standard 19L ialah unit pesanan terkecil. Pesan isi padu tersuai (47L, 285L, 1300L) apabila anda memerlukan padanan tepat.",
+    runNumbersTitle: "Jalankan nombor anda",
+    runNumbersBody: "Kalkulator aplikasi mengira isi padu FUZE yang tepat diperlukan setiap meter persegi fabrik pada tier pilihan anda. Pasangkan berat fabrik (gsm), lebar, dan tier sasaran — dapatkan liter bath FUZE, mL stok kepekatan, dan dolar per meter linear.",
+    runNumbersCta: "Buka kalkulator aplikasi →",
+    backBasicsBtn: "Kembali ke Asas FUZE",
+    seePricingBtn: "Lihat harga & tier",
+  },
+
 };
 
 export default ms;
