@@ -7844,6 +7844,19 @@ const th: Translations = {
     questionsPrefix: "· มีคำถาม?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "Playbooks",
+    heading: "BD playbooks",
+    subtitle: "คำแนะนำการติดต่อออกที่แท็กตามหมวดหมู่ ทำสิ่งที่คุณใช้เป็น favorite; แบรนด์แสดง playbook ที่แนะนำตาม Brand.textileCategory",
+    failedFallback: "ล้มเหลว",
+    emptyBody: "ยังไม่มี playbooks สำหรับหมวดหมู่นี้",
+    emptySeedHint: "ทริกเกอร์",
+    emptySeedHintSuffix: "ผ่าน fzcron เพื่อใส่ playbook เริ่มต้นสามรายการ",
+    removeFavoriteTitle: "ลบ favorite",
+    addFavoriteTitle: "เพิ่ม favorite",
+  },
+
 };
 
 export default th;
