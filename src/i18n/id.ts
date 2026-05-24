@@ -3752,6 +3752,32 @@ const id: Translations = {
     tagsSuffix: "tag",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "Dokumen Publik",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "Dokumen referensi publik untuk lini produk FUZE",
+    headerLeadAfter: ". Untuk dokumen privat (TDS/SDS lengkap, harga internal, panduan aplikasi), login ke portal FUZE Atlas untuk peran Anda.",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "Toksikologi",
+    catPricing: "Harga",
+    catSustainability: "Keberlanjutan",
+    catEducation: "Edukasi",
+    catClaimsCompliance: "Klaim & Kepatuhan",
+    catApplicationGuide: "Panduan Aplikasi",
+    catCaseStudy: "Studi Kasus",
+    loading: "Memuat…",
+    emptyBefore: "Belum ada dokumen publik tersedia untuk",
+    emptyAfter: ". Hubungi FUZE untuk perpustakaan privat.",
+    loginCta: "Login ke Atlas →",
+    versionPrefix: "Versi",
+    downloadBtn: "↓ Unduh",
+    unknownLineTitle: "Lini produk tidak dikenal",
+    unknownLineBody: "FUZE memiliki empat tier: F1, F2, F3, F4. Coba salah satunya.",
+    errLoadFailed: "Gagal memuat",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default id;
