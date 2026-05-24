@@ -7702,6 +7702,31 @@ const th: Translations = {
     accessLaterTitle: "การเข้าถึงรายงานนี้ในภายหลัง",
   },
 
+  settingsAuditLog: {
+    title: "Audit Log",
+    subtitle: "ติดตามการเปลี่ยนแปลงระบบและการกระทำของผู้ใช้ทั้งหมด",
+    actionLabel: "การกระทำ",
+    allActionsOption: "ทุกการกระทำ",
+    entityTypeLabel: "ประเภทเอนทิตี",
+    allEntitiesOption: "ทุกเอนทิตี",
+    fromDateLabel: "ตั้งแต่วันที่",
+    toDateLabel: "ถึงวันที่",
+    loadingText: "กำลังโหลด...",
+    emptyText: "ไม่พบ audit log",
+    colTimestamp: "ประทับเวลา",
+    colUser: "ผู้ใช้",
+    colAction: "การกระทำ",
+    colEntity: "เอนทิตี",
+    colDescription: "คำอธิบาย",
+    systemUserFallback: "ระบบ",
+    showingPrefix: "แสดง",
+    showingTo: "ถึง",
+    showingOf: "จาก",
+    showingSuffix: "log",
+    prevBtn: "ก่อนหน้า",
+    nextBtn: "ถัดไป",
+  },
+
 };
 
 export default th;
