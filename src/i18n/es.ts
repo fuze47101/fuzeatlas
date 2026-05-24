@@ -7336,6 +7336,37 @@ const es: Translations = {
     footerHint: "Estancado = 14+ días sin actividad mientras está en DRAFT/SENT/SIGNED/ACTIVE. Firmado-sin-progreso = SIGNED o ACTIVE durante 30+ días con hitos definidos pero ninguno completado. La última actividad es la más reciente entre edición de SOW, finalización de hito o envío de solicitud de prueba.",
   },
 
+  acmTasks: {
+    title: "🗓️ Tareas ACM",
+    subtitle: "Los recordatorios de semana antes + día antes se envían automáticamente por campana + correo a las 8 AM hora de Taipéi.",
+    tabOpen: "Abiertas",
+    tabCompleted: "Completadas",
+    onlyMine: "Solo las mías",
+    loading: "Cargando…",
+    overdueTitle: "Vencidas",
+    overdueSubtitle: "Pasadas de fecha — quítalas de la lista",
+    dueWeekTitle: "Vencen esta semana",
+    dueWeekSubtitle: "Próximos 7 días",
+    upcomingTitle: "Próximas",
+    upcomingSubtitle: "Más allá de 7 días",
+    completedTitle: "Completadas",
+    completedSubtitle: "Últimas 200",
+    nothingHere: "Nada por aquí.",
+    markDoneTitle: "Marcar hecho",
+    cancelTaskTitle: "Cancelar tarea",
+    reopenTitle: "Reabrir",
+    highPriorityBadge: "ALTA",
+    overdueRowPrefix: "Vencida — ",
+    duePrefix: "Vence",
+    ownerLabel: "Responsable:",
+    relToday: "hoy",
+    relTomorrow: "mañana",
+    relYesterday: "ayer",
+    relInPrefix: "en",
+    relDaysSuffix: "días",
+    relDaysAgo: "días atrás",
+  },
+
 };
 
 export default es;
