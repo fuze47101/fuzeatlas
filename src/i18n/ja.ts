@@ -8099,6 +8099,19 @@ const ja: Translations = {
     questionsPrefix: "· ご質問はこちら",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "プレイブック",
+    heading: "BD プレイブック",
+    subtitle: "カテゴリでタグ付けされたアウトリーチガイドです。よく使うものをお気に入りに追加してください。ブランドには Brand.textileCategory に基づくおすすめプレイブックが表示されます。",
+    failedFallback: "失敗",
+    emptyBody: "このカテゴリにはプレイブックがまだありません。",
+    emptySeedHint: "起動:",
+    emptySeedHintSuffix: "を fzcron 経由でトリガーすると、3 つの初期プレイブックが投入されます。",
+    removeFavoriteTitle: "お気に入りから外す",
+    addFavoriteTitle: "お気に入りに追加",
+  },
+
 };
 
 export default ja;
