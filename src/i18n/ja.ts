@@ -8057,6 +8057,24 @@ const ja: Translations = {
     footerCertifiedBy: "FUZE Atlas 認証",
   },
 
+  forgotPassword: {
+    brandSubtitle: "パスワードをリセット",
+    cardTitle: "パスワードをお忘れですか？",
+    cardBody: "メールアドレスを入力すると、パスワードリセット用のリンクをお送りします。",
+    emailLabel: "メールアドレス",
+    emailPlaceholder: "you@801inc.com",
+    sendBtn: "リセットリンクを送信",
+    sendingBusy: "送信中...",
+    rememberPrefix: "パスワードを思い出しましたか？",
+    signInLink: "サインイン",
+    failedFallback: "リクエストの処理に失敗しました",
+    networkError: "ネットワークエラー",
+    checkEmailTitle: "メールをご確認ください",
+    checkEmailBody: "そのメールアドレスのアカウントが存在する場合、まもなくパスワードリセット用のリンクが届きます。",
+    backToSignIn: "サインインに戻る",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default ja;
