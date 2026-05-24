@@ -7596,6 +7596,24 @@ const ta: Translations = {
     openSameLink: "அதே link-ஐ திற →",
   },
 
+  apiDocs: {
+    heading: "API ஆவணப்படுத்தல்",
+    subtitle: "FUZE Atlas API குறிப்பு",
+    authStrong: "Authentication:",
+    authBodyPrefix: "தவிர அனைத்து endpoints-க்கும்",
+    authBodySuffix: "ஒரு செல்லுபடியாகும் JWT session cookie தேவை.",
+    searchPlaceholder: "Path அல்லது விளக்கம் மூலம் endpoints-ஐ தேடவும்...",
+    allMethodsBtn: "அனைத்து முறைகள்",
+    showingPrefix: "காட்டுகிறது",
+    showingOf: "of",
+    endpointsLabel: "endpoints",
+    collapseAllBtn: "அனைத்தையும் Collapse",
+    expandAllBtn: "அனைத்தையும் Expand",
+    noResults: "உங்கள் தேடலுக்கு பொருந்தும் endpoints கிடைக்கவில்லை.",
+    clearFiltersBtn: "வடிகட்டிகளை அழி",
+    footerPrefix: "FUZE Atlas API Documentation - கடைசியாக புதுப்பிக்கப்பட்டது",
+  },
+
 };
 
 export default ta;
