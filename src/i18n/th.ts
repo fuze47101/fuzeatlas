@@ -5505,6 +5505,55 @@ const th: Translations = {
     statusComplete: "เสร็จสิ้น",
   },
 
+  brandFabricsAdmin: {
+    loading: "กำลังโหลดพอร์ตโฟลิโอผ้า…",
+    errorTitle: "ไม่สามารถโหลดพอร์ตโฟลิโอผ้าได้",
+    errorUnknown: "ข้อผิดพลาดไม่ทราบ",
+    errorFailedLoad: "ไม่สามารถโหลดได้",
+    errorSave: "การบันทึกล้มเหลว",
+    btnTryAgain: "ลองอีกครั้ง",
+
+    crumbPartners: "พันธมิตรแบรนด์",
+    crumbHere: "พอร์ตโฟลิโอผ้า",
+    titleSuffix: "— พอร์ตโฟลิโอผ้า",
+    subtitle: "ผ้าทั้งหมดในโรงปั่นทอทั้งหมดสำหรับแบรนด์นี้ แสดง {shown} จาก {total} ผ้า",
+    btnExportCsv: "⬇ ส่งออก CSV",
+
+    searchPlaceholder: "ค้นหา # ผ้า รหัสลูกค้า องค์ประกอบ…",
+    filterAllMills: "โรงปั่นทอทั้งหมด",
+    filterAllTypes: "ทุกประเภท",
+    typeDevelopment: "การพัฒนา",
+    typeActualBulk: "จริง (Bulk)",
+    typeForecast: "คาดการณ์",
+    typeRd: "R&D",
+    filterAllStatuses: "ทุกสถานะ",
+
+    emptyFabric: "🧵",
+    emptyTitle: "ไม่มีผ้าที่ตรงกับตัวกรอง",
+    emptySub: "ปรับตัวกรองด้านบนหรือล้างการค้นหาเพื่อดูพอร์ตโฟลิโอเต็ม",
+    fabricSingular: "ผ้า",
+    fabricPlural: "ผ้า",
+    openFactory: "เปิดโรงงาน →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "Mill Fabric #",
+    colType: "ประเภท",
+    colContent: "องค์ประกอบ",
+    colGsm: "GSM",
+    colCustomerCode: "รหัสลูกค้า",
+    colTrial: "การทดลอง",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "ค่า ICP",
+    colTestDate: "วันที่ทดสอบ",
+    colStatus: "สถานะ",
+
+    unassigned: "ไม่ได้กำหนด",
+    typeBulkProduction: "การผลิต Bulk",
+    notSet: "— ไม่ได้ตั้งค่า —",
+    titleOpenFabric: "เปิดรายละเอียดผ้า",
+  },
+
 };
 
 export default th;
