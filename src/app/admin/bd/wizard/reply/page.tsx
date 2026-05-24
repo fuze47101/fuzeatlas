@@ -26,7 +26,8 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface ReplyStep {
   id: string;
@@ -56,7 +57,8 @@ interface ReplySequence {
 }
 
 export default function BDReplyWizardPage() {
-  const router = useRouter();
+  const { t } = useI18n();
+  const T = t.bdWizardReply;
   const searchParams = useSearchParams();
   const sequenceId = searchParams.get("sequenceId");
 
@@ -76,7 +78,7 @@ export default function BDReplyWizardPage() {
   // ─── Load sequence ───
   useEffect(() => {
     if (!sequenceId) {
-      setError("Missing sequenceId in URL");
+      setError(T.errMissingSeqId);
       setLoading(false);
       return;
     }
@@ -84,7 +86,7 @@ export default function BDReplyWizardPage() {
       try {
         const res = await fetch(`/api/admin/bd/sequence/${sequenceId}`);
         const data = await res.json();
-        if (!res.ok || !data.ok) throw new Error(data.error || "Failed to load sequence");
+        if (!res.ok || !data.ok) throw new Error(data.error || T.errSeqLoad);
         setSeq(data.sequence);
 
         // Prefill replySummary from the most recent BRAND_ACTIVITY notification
@@ -105,11 +107,12 @@ export default function BDReplyWizardPage() {
           /* non-fatal — rep will type it */
         }
       } catch (err: any) {
-        setError(err?.message || "Failed to load sequence");
+        setError(err?.message || T.errSeqLoad);
       } finally {
         setLoading(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sequenceId]);
 
   // ─── Pick the original email to quote ───
@@ -126,13 +129,13 @@ export default function BDReplyWizardPage() {
     seq?.contact?.name ||
     [seq?.contact?.firstName, seq?.contact?.lastName].filter(Boolean).join(" ") ||
     seq?.contact?.email ||
-    "contact";
-  const brandName = seq?.brand?.name || "brand";
+    T.fallbackContact;
+  const brandName = seq?.brand?.name || T.fallbackBrand;
 
   // ─── Draft ───
   async function handleDraft() {
     if (!seq || !replySummary.trim()) {
-      setError("Summarize what the prospect said before drafting.");
+      setError(T.errSummarizeFirst);
       return;
     }
     setError("");
@@ -153,12 +156,12 @@ export default function BDReplyWizardPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error || "Draft failed");
+      if (!res.ok || !data.ok) throw new Error(data.error || T.errDraftFailed);
       setSubject(data.subject);
       setBodyText(data.body);
       setDiagnosed(data.diagnosed || []);
     } catch (err: any) {
-      setError(err?.message || "Draft failed");
+      setError(err?.message || T.errDraftFailed);
     } finally {
       setDrafting(false);
     }
@@ -167,11 +170,11 @@ export default function BDReplyWizardPage() {
   // ─── Send ───
   async function handleSend() {
     if (!seq || !subject.trim() || !bodyText.trim()) {
-      setError("Subject and body are required.");
+      setError(T.errSubjectBodyRequired);
       return;
     }
     if (!seq.contact.email) {
-      setError("Contact has no email address on file.");
+      setError(T.errNoEmail);
       return;
     }
     setError("");
@@ -189,10 +192,10 @@ export default function BDReplyWizardPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error || "Send failed");
+      if (!res.ok || !data.ok) throw new Error(data.error || T.errSendFailed);
       setSendResult(data);
     } catch (err: any) {
-      setError(err?.message || "Send failed");
+      setError(err?.message || T.errSendFailed);
     } finally {
       setSending(false);
     }
@@ -200,14 +203,14 @@ export default function BDReplyWizardPage() {
 
   // ─── Render ───
   if (loading) {
-    return <div className="max-w-4xl mx-auto p-8 text-gray-500">Loading sequence…</div>;
+    return <div className="max-w-4xl mx-auto p-8 text-gray-500">{T.loadingSeq}</div>;
   }
   if (error && !seq) {
     return (
       <div className="max-w-4xl mx-auto p-8">
         <div className="rounded border border-red-300 bg-red-50 p-4 text-red-800">{error}</div>
         <Link href="/admin/bd/sequences" className="text-blue-600 underline mt-4 inline-block">
-          ← Back to sequences
+          {T.backToSequences}
         </Link>
       </div>
     );
@@ -217,28 +220,28 @@ export default function BDReplyWizardPage() {
   if (sendResult) {
     return (
       <div className="max-w-4xl mx-auto p-8 space-y-4">
-        <h1 className="text-2xl font-semibold">Reply sent</h1>
+        <h1 className="text-2xl font-semibold">{T.sentTitle}</h1>
         <div className="rounded border border-green-300 bg-green-50 p-4 text-green-900">
-          Your reply to {contactName} at {brandName} was sent and logged to the contact timeline.
+          {T.sentBodyTpl.replace("{contact}", contactName).replace("{brand}", brandName)}
         </div>
         <div className="flex gap-3">
           <Link
             href={`/brands/${seq.brand.id}`}
             className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
           >
-            Open {brandName}
+            {T.openBrandTpl.replace("{brand}", brandName)}
           </Link>
           <Link
             href="/admin/bd/sequences"
             className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-50"
           >
-            All sequences
+            {T.allSequences}
           </Link>
           <Link
             href="/acm/tasks"
             className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-50"
           >
-            ACM tasks
+            {T.acmTasks}
           </Link>
         </div>
       </div>
@@ -248,8 +251,8 @@ export default function BDReplyWizardPage() {
   return (
     <div className="max-w-4xl mx-auto p-8 space-y-6">
       <div>
-        <div className="text-xs uppercase tracking-wide text-gray-500">BD Wizard — Reply</div>
-        <h1 className="text-2xl font-semibold mt-1">Draft a reply to {contactName}</h1>
+        <div className="text-xs uppercase tracking-wide text-gray-500">{T.kicker}</div>
+        <h1 className="text-2xl font-semibold mt-1">{T.draftTitleTpl.replace("{contact}", contactName)}</h1>
         <div className="text-sm text-gray-600 mt-1">
           {brandName}
           {seq.contact.jobTitle ? ` · ${seq.contact.jobTitle}` : ""}
@@ -257,11 +260,11 @@ export default function BDReplyWizardPage() {
         </div>
         {seq.status === "exited" && seq.exitReason === "replied" ? (
           <div className="mt-2 text-xs text-green-700 bg-green-50 border border-green-200 rounded px-2 py-1 inline-block">
-            ✓ Sequence exited — replied
+            {T.exitedRepliedBadge}
           </div>
         ) : (
           <div className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 inline-block">
-            Sequence still active — it will be exited as &quot;replied&quot; on first auto-detect.
+            {T.stillActiveBadge}
           </div>
         )}
       </div>
@@ -269,43 +272,42 @@ export default function BDReplyWizardPage() {
       {/* ─── Original cold (read-only) ─── */}
       <section className="rounded border border-gray-200 bg-gray-50 p-4">
         <div className="text-xs uppercase tracking-wide text-gray-500 mb-2">
-          Original cold email
+          {T.originalColdLabel}
         </div>
         {originalEmail ? (
           <div className="space-y-2 text-sm">
             <div>
-              <span className="font-medium">Subject:</span>{" "}
-              {originalEmail.draftSubject || "(no subject)"}
+              <span className="font-medium">{T.subjectPrefix}</span>{" "}
+              {originalEmail.draftSubject || T.noSubject}
             </div>
             <pre className="whitespace-pre-wrap font-sans text-sm text-gray-800 bg-white border border-gray-200 rounded p-3 max-h-64 overflow-y-auto">
               {originalEmail.draftBody}
             </pre>
             {originalEmail.sentAt ? (
               <div className="text-xs text-gray-500">
-                Sent {new Date(originalEmail.sentAt).toLocaleString()}
+                {T.sentAtTpl.replace("{when}", new Date(originalEmail.sentAt).toLocaleString())}
               </div>
             ) : null}
           </div>
         ) : (
-          <div className="text-sm text-gray-500">No prior sent email in this sequence.</div>
+          <div className="text-sm text-gray-500">{T.noPriorSent}</div>
         )}
       </section>
 
       {/* ─── What did they say? ─── */}
       <section className="space-y-2">
         <label className="block text-sm font-medium">
-          What did they say? (summary of the reply)
+          {T.summaryLabel}
         </label>
         <textarea
           value={replySummary}
           onChange={(e) => setReplySummary(e.target.value)}
           rows={5}
           className="w-full rounded border border-gray-300 p-3 text-sm font-sans"
-          placeholder="They're interested but want to know how FUZE F1 compares to their existing treatment. Also asked about MOQ for a sample run."
+          placeholder={T.summaryPlaceholder}
         />
         <div className="text-xs text-gray-500">
-          This feeds the draft generator — the draft will lead with their reply, not with FUZE. Keep
-          it conversational, 1-3 sentences.
+          {T.summaryHint}
         </div>
       </section>
 
@@ -316,13 +318,13 @@ export default function BDReplyWizardPage() {
           disabled={drafting || !replySummary.trim()}
           className="px-4 py-2 rounded bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
         >
-          {drafting ? "Drafting…" : bodyText ? "Regenerate draft" : "Generate draft"}
+          {drafting ? T.draftingBtn : bodyText ? T.regenerateBtn : T.generateBtn}
         </button>
         <Link
           href="/admin/bd/sequences"
           className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-50"
         >
-          Cancel
+          {T.cancelBtn}
         </Link>
       </div>
 
@@ -335,9 +337,9 @@ export default function BDReplyWizardPage() {
       {/* ─── Draft editor ─── */}
       {bodyText ? (
         <section className="space-y-3 border-t border-gray-200 pt-6">
-          <h2 className="text-lg font-semibold">Review &amp; send</h2>
+          <h2 className="text-lg font-semibold">{T.reviewTitle}</h2>
           <div className="space-y-2">
-            <label className="block text-sm font-medium">Subject</label>
+            <label className="block text-sm font-medium">{T.subjectFieldLabel}</label>
             <input
               type="text"
               value={subject}
@@ -346,7 +348,7 @@ export default function BDReplyWizardPage() {
             />
           </div>
           <div className="space-y-2">
-            <label className="block text-sm font-medium">Body</label>
+            <label className="block text-sm font-medium">{T.bodyFieldLabel}</label>
             <textarea
               value={bodyText}
               onChange={(e) => setBodyText(e.target.value)}
@@ -356,8 +358,7 @@ export default function BDReplyWizardPage() {
           </div>
           {diagnosed.length > 0 ? (
             <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
-              Anti-AI scrubber flagged: {diagnosed.join(", ")}. Scan the body and rewrite any
-              phrases that still feel canned.
+              {T.scrubberFlagTpl.replace("{list}", diagnosed.join(", "))}
             </div>
           ) : null}
           <div className="flex gap-3">
@@ -366,7 +367,7 @@ export default function BDReplyWizardPage() {
               disabled={sending}
               className="px-4 py-2 rounded bg-green-600 text-white font-medium hover:bg-green-700 disabled:opacity-50"
             >
-              {sending ? "Sending…" : `Send to ${seq.contact.email || contactName}`}
+              {sending ? T.sendingBtn : T.sendBtnTpl.replace("{recipient}", seq.contact.email || contactName)}
             </button>
             <button
               onClick={() => {
@@ -376,7 +377,7 @@ export default function BDReplyWizardPage() {
               }}
               className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-50"
             >
-              Clear draft
+              {T.clearDraft}
             </button>
           </div>
         </section>
