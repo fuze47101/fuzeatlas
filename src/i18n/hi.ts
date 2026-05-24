@@ -6759,6 +6759,32 @@ const hi: Translations = {
     footerQuestions: "प्रश्न?",
   },
 
+  settingsExchangeRates: {
+    title: "विनिमय दरें",
+    subtitle: "मुद्रा रूपांतरण दरें प्रबंधित करें",
+    addRateBtn: "दर जोड़ें",
+    cancelBtn: "रद्द करें",
+    addFormTitle: "विनिमय दर जोड़ें",
+    ratePlaceholder: "दर",
+    submitAddBtn: "दर जोड़ें",
+    converterTitle: "मुद्रा कनवर्टर",
+    fromLabel: "से",
+    toLabel: "तक",
+    amountLabel: "राशि",
+    convertBtn: "रूपांतरित करें",
+    rateResultPrefix: "दर:",
+    quickStatsTitle: "त्वरित आंकड़े",
+    totalCurrenciesLabel: "कुल मुद्राएं",
+    activeRatesLabel: "सक्रिय दरें",
+    currentRatesTitle: "वर्तमान दरें (बेस: USD)",
+    loading: "लोड हो रहा है...",
+    emptyState: "कोई विनिमय दर कॉन्फ़िगर नहीं की गई",
+    colCurrencyPair: "मुद्रा जोड़ी",
+    colRate: "दर",
+    colEffectiveDate: "प्रभावी तिथि",
+    colSource: "स्रोत",
+  },
+
 };
 
 export default hi;
