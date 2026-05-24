@@ -7038,6 +7038,32 @@ const ko: Translations = {
     footerQuestions: "문의처:",
   },
 
+  settingsExchangeRates: {
+    title: "환율",
+    subtitle: "통화 환산율 관리",
+    addRateBtn: "환율 추가",
+    cancelBtn: "취소",
+    addFormTitle: "환율 추가",
+    ratePlaceholder: "환율",
+    submitAddBtn: "환율 추가",
+    converterTitle: "통화 변환기",
+    fromLabel: "변환 전",
+    toLabel: "변환 후",
+    amountLabel: "금액",
+    convertBtn: "변환",
+    rateResultPrefix: "환율:",
+    quickStatsTitle: "빠른 통계",
+    totalCurrenciesLabel: "총 통화",
+    activeRatesLabel: "활성 환율",
+    currentRatesTitle: "현재 환율 (기준: USD)",
+    loading: "로드 중...",
+    emptyState: "구성된 환율이 없습니다",
+    colCurrencyPair: "통화 쌍",
+    colRate: "환율",
+    colEffectiveDate: "유효일",
+    colSource: "출처",
+  },
+
 };
 
 export default ko;
