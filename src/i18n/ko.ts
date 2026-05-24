@@ -6290,6 +6290,31 @@ const ko: Translations = {
     footerNote: "정렬: 저재고 먼저, 그 다음 유휴, 그 다음 남은 재고 일수 오름차순. \"일일 소진\" = 공장으로 발송된 리터의 90일 롤링 평균. \"남은 일수\" = 현재 재고 ÷ 일일 소진. \"유휴\" = 지난 90일간 공장 주문 없음. \"가격 없음\"은 FUZE 도매가가 설정되지 않았다는 의미입니다; 디스트리뷰터는 재고 보충 주문을 할 수 없습니다. 디스트리뷰터별 페이지에서 편집하십시오.",
   },
 
+  conversionTracking: {
+    crumbDashboard: "대시보드",
+    crumbCurrent: "샘플 → 생산",
+    title: "샘플 → 생산 전환",
+    subtitle: "어떤 공장이 샘플을 받고 생산 주문으로 전환했는지 추적",
+    cardFactoriesSampled: "샘플받은 공장",
+    cardConverted: "전환됨",
+    cardConversionRate: "전환율",
+    cardAvgDays: "전환까지 평균 일수",
+    cardProdVolume: "생산 수량",
+    cardProdRevenue: "생산 매출",
+    tabAll: "전체",
+    tabConverted: "전환됨",
+    tabPending: "대기 중",
+    emptyText: "아직 샘플 주문이 없습니다",
+    badgeConverted: "전환됨",
+    badgePending: "대기 중",
+    sectionSamples: "샘플 주문",
+    sectionTrials: "트라이얼 요청",
+    sectionProduction: "생산 주문",
+    productionLabel: "생산",
+    daysToConvertSuffix: "일 만에 전환",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default ko;
