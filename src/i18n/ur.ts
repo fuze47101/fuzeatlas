@@ -7110,6 +7110,37 @@ const ur: Translations = {
     footerHint: "پرانا = 14+ دن کوئی سرگرمی نہیں جبکہ ابھی DRAFT/SENT/SIGNED/ACTIVE میں ہے۔ دستخط شدہ-کوئی-پیشرفت-نہیں = 30+ دن SIGNED یا ACTIVE سنگ میل کے ساتھ متعین لیکن کوئی مکمل نہیں۔ آخری سرگرمی SOW ترمیم، سنگ میل کی تکمیل، یا ٹیسٹ درخواست جمع کرانے میں سب سے حالیہ ہے۔",
   },
 
+  acmTasks: {
+    title: "🗓️ ACM کام",
+    subtitle: "ہفتہ-پہلے + دن-پہلے یاد دہانیاں صبح 8 بجے تائپے بیل + ای میل کے ذریعے خودکار جاتی ہیں۔",
+    tabOpen: "کھلے",
+    tabCompleted: "مکمل",
+    onlyMine: "صرف میرے",
+    loading: "لوڈ ہو رہا ہے…",
+    overdueTitle: "تاخیر کا شکار",
+    overdueSubtitle: "مدت گزر چکی — انہیں فہرست سے ہٹا دیں",
+    dueWeekTitle: "اس ہفتے واجب الادا",
+    dueWeekSubtitle: "اگلے 7 دن",
+    upcomingTitle: "آنے والے",
+    upcomingSubtitle: "7 دن سے زیادہ",
+    completedTitle: "مکمل",
+    completedSubtitle: "آخری 200",
+    nothingHere: "یہاں کچھ نہیں۔",
+    markDoneTitle: "مکمل نشان زد کریں",
+    cancelTaskTitle: "کام منسوخ کریں",
+    reopenTitle: "دوبارہ کھولیں",
+    highPriorityBadge: "اعلیٰ",
+    overdueRowPrefix: "تاخیر — ",
+    duePrefix: "واجب الادا",
+    ownerLabel: "مالک:",
+    relToday: "آج",
+    relTomorrow: "کل",
+    relYesterday: "گزشتہ کل",
+    relInPrefix: "میں",
+    relDaysSuffix: "دن",
+    relDaysAgo: "دن پہلے",
+  },
+
 };
 
 export default ur;
