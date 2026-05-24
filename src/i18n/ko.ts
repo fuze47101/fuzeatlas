@@ -7360,6 +7360,37 @@ const ko: Translations = {
     footerHint: "정체 = DRAFT/SENT/SIGNED/ACTIVE 상태에서 14일+ 활동 없음. 서명됨-진척없음 = 마일스톤이 정의되었지만 완료된 것이 없는 채로 SIGNED 또는 ACTIVE 상태 30일+. 최근 활동은 SOW 편집, 마일스톤 완료 또는 시험 요청 제출 중 가장 최근입니다.",
   },
 
+  acmTasks: {
+    title: "🗓️ ACM 작업",
+    subtitle: "1주 전 + 1일 전 알림이 오전 8시 Taipei에 벨 + 이메일로 자동 발송됩니다.",
+    tabOpen: "오픈",
+    tabCompleted: "완료",
+    onlyMine: "내 것만",
+    loading: "로드 중…",
+    overdueTitle: "기한 초과",
+    overdueSubtitle: "기한 지남 — 이것들을 목록에서 제거하십시오",
+    dueWeekTitle: "이번 주 마감",
+    dueWeekSubtitle: "다음 7일",
+    upcomingTitle: "예정",
+    upcomingSubtitle: "7일 이후",
+    completedTitle: "완료",
+    completedSubtitle: "최근 200개",
+    nothingHere: "여기에 아무것도 없습니다.",
+    markDoneTitle: "완료 표시",
+    cancelTaskTitle: "작업 취소",
+    reopenTitle: "재오픈",
+    highPriorityBadge: "높음",
+    overdueRowPrefix: "기한 초과 — ",
+    duePrefix: "마감",
+    ownerLabel: "담당자:",
+    relToday: "오늘",
+    relTomorrow: "내일",
+    relYesterday: "어제",
+    relInPrefix: "이내",
+    relDaysSuffix: "일",
+    relDaysAgo: "일 전",
+  },
+
 };
 
 export default ko;
