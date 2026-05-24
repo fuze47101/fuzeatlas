@@ -7391,6 +7391,35 @@ const th: Translations = {
     errGeneric: "ไม่สามารถเปลี่ยนรหัสผ่านได้",
   },
 
+  claimsLandingPage: {
+    heroTitle: "การอ้าง การรับรอง & ระเบียบวิธี",
+    heroSubtitle: "FUZE ทำงานอย่างไร สิ่งที่ได้รับการรับรอง และเหตุใดเราจึงทดสอบในวิธีนี้",
+    techTitle: "เทคโนโลยี FUZE",
+    techBody1: "FUZE เป็นการบำบัดสิ่งทอต้านจุลชีพเฉพาะที่สร้างรอบเมตาวัสดุ FUZE — ผลิตผ่าน liquid laser ablation จากอิเล็กทรอนิกส์รีไซเคิลในโรงงาน Salt Lake City ของเรา การบำบัดยึดเกาะถาวรกับเส้นใยระหว่างการตกแต่งสิ่งทอมาตรฐาน (exhaust, pad-dry-cure หรือ spray) โดยไม่เปลี่ยนสัมผัส สีย้อม drape หรือการระบายอากาศของผ้า",
+    techBody2: "FUZE ไม่รั่วซึมโดยการออกแบบ การลดแบคทีเรียเกิดผ่านการสัมผัสทางกายภาพโดยตรงระหว่างเซลล์แบคทีเรียและเมตาวัสดุ FUZE ที่ผูกบนพื้นผิวเส้นใย — ไม่มีเคมีที่ปล่อยลงในน้ำซัก ไม่มี PFAS ไม่มีสารยึดเกาะ ไม่มีเคมี curing ท่าทางวาง FUZE บนด้านที่ถูกต้องของทุก regulatory tailwind (Texas AG PFAS investigations, California SB-707)",
+    techBody3: "ระดับการบำบัด: F1 Full Spectrum (1.0 mg/kg, 100 ครั้งซักตรวจสอบแล้ว) · F2 Advanced (0.75 mg/kg, 75 ครั้งซัก) · F3 Core (0.5 mg/kg, 50 ครั้งซัก) · F4 Foundation (0.25 mg/kg, 25 ครั้งซัก) จำนวนการซักถูกบันทึกผ่านการทดสอบ AATCC 100 + ISO 20743 จากห้องปฏิบัติการอิสระ เผยแพร่ตามคำขอ",
+    certsTitle: "การรับรอง",
+    certEpaTitle: "EPA registered (federal)",
+    certEpaBody: "เคมี FUZE จดทะเบียนกับ U.S. Environmental Protection Agency เป็นยาฆ่าแมลงต้านจุลชีพ",
+    certCaEpaTitle: "California EPA approved (Q1 2026)",
+    certCaEpaBody: "อนุมัติสำหรับชุดออกกำลังกาย สิ่งทอเด็กเล็ก และกรณีการใช้งานด้านสุขภาพภายใต้ระบบที่เข้มงวดของแคลิฟอร์เนีย",
+    certOekoTitle: "OEKO-TEX Standard 100 Class I",
+    certOekoBody: "รับรองปลอดภัยสำหรับการสัมผัสผิวโดยตรง — รวมถึงเสื้อผ้าเด็กและชุดชั้นใน",
+    certBluesignTitle: "bluesign® approved",
+    certBluesignBody: "เคมีตรวจสอบปลอดภัยสำหรับคนงาน ผู้บริโภค และสิ่งแวดล้อมภายใต้เกณฑ์ bluesign",
+    certPfasTitle: "ปลอด PFAS",
+    certPfasBody: "ศูนย์สาร perfluoroalkyl และ polyfluoroalkyl ทุกที่ในสูตร ไม่มีสารยึดเกาะ ไม่มี curing aids",
+    certStandardsTitle: "มาตรฐานที่ตรวจสอบ",
+    certStandardsBody: "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — รายงานบุคคลที่สามพร้อมใช้งานตามคำขอ",
+    standardsTitle: "มาตรฐานการทดสอบ",
+    standardsBody: "ประสิทธิภาพต้านจุลชีพสำหรับสิ่งทอไม่ใช่ตัวเลขเดียว — ขึ้นอยู่กับมาตรฐานที่คุณรันการทดสอบและว่ามาตรฐานนั้นเหมาะกับเคมีหรือไม่ นี่คือวิธีที่ FUZE map ไปยังวิธี",
+    jabTitle: "เหตุใดเรานำด้วย ASTM E2149",
+    jabBody: "เราทดสอบบน ASTM E2149 เพราะเป็นการทดสอบที่ออกแบบสำหรับต้านจุลชีพไม่รั่วซึม เคมีคู่แข่งที่พึ่ง AATCC 100 ทำเพราะเรขาคณิตชั้นซ้อนของ AATCC 100 ช่วยให้ไอออนรั่วซึมอิ่มตัวพื้นที่ระหว่างชั้น — การทดสอบเอื้อต่อการรั่วซึมโดยโครงสร้าง FUZE ไม่รั่วซึมโดยการออกแบบ พบเราในการทดสอบที่ถูกต้อง",
+    jabFootnote: "(การให้เครดิตคู่แข่ง: คำเตือนการทดสอบชั้นใช้กับผู้ผลิตการตกแต่งฐานไอออนโลหะ คลอไรด์โลหะ และ quat — ไม่ใช่ FUZE)",
+    documentsTitle: "เอกสาร",
+    pressKitLink: "ชุดสื่อ",
+  },
+
 };
 
 export default th;
