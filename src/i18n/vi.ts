@@ -3008,6 +3008,40 @@ const vi: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "Yêu cầu đăng nhập Atlas",
+    authBatchPrefix: "Lô",
+    authBlurb:
+      "thông tin chi tiết — bao gồm COA, TDS, SDS — chỉ dành cho người dùng Atlas.",
+    loginCta: "Đăng nhập vào Atlas →",
+    noAccountQuestion: "Chưa có tài khoản? Liên hệ",
+    notFoundTitle: "Không tìm thấy lô",
+    notFoundBlurb: "Chúng tôi không tìm thấy lô",
+    returnHome: "Quay lại Atlas →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "Xác minh lô",
+    qcPassed: "✓ QC đạt",
+    qcFailed: "⚠ QC không đạt",
+    produced: "Sản xuất",
+    batchDetails: "Chi tiết lô",
+    volumeProduced: "Khối lượng sản xuất",
+    bottlesFilled: "Số chai đã đóng",
+    concentration: "Nồng độ",
+    productionDate: "Ngày sản xuất",
+    fuzeMetamaterial: "mg/L metamaterial FUZE",
+    batchNotes: "Ghi chú lô",
+    documents: "Tài liệu",
+    coaTitle: "Giấy chứng nhận phân tích (COA)",
+    coaDescPrefix: "Xác minh thông số lô này · Đã tải lên",
+    coaPending: "Chờ COA",
+    coaPendingBlurb: "Giấy chứng nhận phân tích chưa được tải lên cho lô này.",
+    view: "Xem →",
+    docsEmpty: "TDS / SDS chưa được tải lên. Quản trị viên có thể thêm trong Tài liệu sản phẩm.",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Câu hỏi?",
+    footerReturnAtlas: "Quay lại Atlas",
+  },
+
 };
 
 export default vi;
