@@ -5656,6 +5656,82 @@ const th: Translations = {
     btnCreatePo: "สร้าง PO & เปิดแพ็กพิมพ์ →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "ผู้ดูแล",
+    crumbHere: "สุขอนามัยผู้ติดต่อ",
+    pageTitle: "สุขอนามัยผู้ติดต่อ",
+    pageSubtitle: "ตั้งธง placeholder กล่องอีเมลบทบาท และผู้ติดต่อที่ผิดรูปแบบ เพื่อให้ตัวแทนหยุดเสียการติดต่อกับ Jane Doe ย้อนกลับได้ — เลิกซ่อนเพื่อนำผู้ติดต่อกลับเข้า wizard",
+
+    btnPreviewScan: "🔍 สแกนตัวอย่าง",
+    btnAutoHide: "🙈 สแกน + ซ่อนอัตโนมัติ",
+    btnScanning: "กำลังสแกน…",
+    btnHiding: "กำลังซ่อน…",
+    titlePreviewScan: "รัน snapshot สุขอนามัยใหม่บนผู้ติดต่อทุกราย โดยไม่เปลี่ยนการมองเห็น",
+    titleAutoHide: "สแกน + ซ่อนผู้ติดต่อ placeholder อัตโนมัติจาก BD Wizard",
+    confirmAutoHide: "การซ่อนอัตโนมัติจะตั้ง hiddenFromWizard = true สำหรับผู้ติดต่อทุกรายที่ scan ตั้งธงเป็น placeholder หรืออีเมลไม่ถูกต้อง สิ่งนี้ย้อนกลับได้ (คุณสามารถเลิกซ่อนจากหน้านี้) แต่ส่งผลต่อ BD Wizard ของทุกตัวแทนทันที ดำเนินการต่อ?",
+    promptHide: "ซ่อนผู้ติดต่อนี้จาก BD Wizard? เหตุผล (ไม่บังคับ):",
+    promptUnhide: "เลิกซ่อนผู้ติดต่อนี้? เหตุผล (ไม่บังคับ เขียนในหมายเหตุของพวกเขา):",
+    failedPrefix: "ล้มเหลว:",
+    networkErrPrefix: "ข้อผิดพลาดเครือข่าย:",
+    scanFailedPrefix: "การสแกนล้มเหลว:",
+
+    summaryScanned: "สแกนแล้ว",
+    summaryContacts: "ผู้ติดต่อ · placeholder",
+    summarySuspicious: "· น่าสงสัย",
+    summaryRole: "· บทบาท",
+    summaryReal: "· จริง",
+    summaryHiddenSuffix: "ใหม่",
+    summaryHiddenPrefix: "· ซ่อนแล้ว",
+
+    statPlaceholder: "Placeholder",
+    statSuspicious: "น่าสงสัย",
+    statRole: "กล่องอีเมลบทบาท",
+    statReal: "จริง",
+    statUnscanned: "ยังไม่สแกน",
+    statHidden: "ซ่อนแล้ว",
+
+    filterVerdict: "คำตัดสิน",
+    filterVisibility: "การมองเห็น",
+    filterAllScanned: "ที่สแกนทั้งหมด",
+    filterPlaceholder: "Placeholder",
+    filterSuspicious: "น่าสงสัย",
+    filterRoleMailbox: "กล่องอีเมลบทบาท",
+    filterReal: "จริง",
+    filterUnscanned: "ยังไม่สแกน",
+    filterAllVisibility: "การมองเห็นทั้งหมด",
+    filterHiddenOnly: "ซ่อนเท่านั้น",
+    filterVisibleOnly: "มองเห็นเท่านั้น",
+    searchPlaceholder: "ค้นหาชื่อหรืออีเมล…",
+
+    emptyTitle: "ไม่มีผู้ติดต่อที่ตรงกับตัวกรองปัจจุบัน",
+    emptyUnscannedTpl: "{n} ผู้ติดต่อไม่เคยถูกสแกน — กด \"Preview scan\" เพื่อเติม",
+
+    colContact: "ผู้ติดต่อ",
+    colBrandFactory: "แบรนด์ / โรงงาน",
+    colVerdict: "คำตัดสิน",
+    colEmail: "อีเมล",
+    colLinkedin: "LinkedIn",
+    colScore: "คะแนน",
+    colFlags: "ธง",
+    colActions: "การกระทำ",
+
+    unnamed: "(ไม่ระบุชื่อ)",
+    noEmail: "ไม่มีอีเมล",
+    hiddenLabel: "ซ่อนแล้ว",
+    flagsMore: "เพิ่มเติม",
+    flagsClean: "สะอาด",
+    actionHide: "ซ่อน",
+    actionUnhide: "เลิกซ่อน",
+
+    helpFooter: "การสแกนเดินผ่านผู้ติดต่อทุกรายและ snapshot คำตัดสิน + ธงในแถว Preview บันทึกเฉพาะคำตัดสิน Scan + auto-hide ยังตั้ง hiddenFromWizard สำหรับ placeholder และผู้ติดต่ออีเมลไม่ถูกต้อง ทั้งสองย้อนกลับได้ — คลิก \"Un-hide\" เพื่อกู้คืนผู้ติดต่อ ซึ่งจะรัน snapshot ใหม่ในกรณีที่ข้อมูลถูกแก้ไข",
+
+    verdictReal: "จริง",
+    verdictSuspect: "น่าสงสัย",
+    verdictPlaceholder: "placeholder",
+    verdictRoleMbx: "กล่องบทบาท",
+    verdictUnscanned: "ยังไม่สแกน",
+  },
+
 };
 
 export default th;
