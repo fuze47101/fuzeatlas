@@ -7060,6 +7060,26 @@ const es: Translations = {
     emptyBias: "Aún no hay datos de sesgo.",
   },
 
+  labCreditsAdmin: {
+    loading: "Cargando…",
+    crumbLabs: "Laboratorios",
+    crumbCredits: "Créditos",
+    creditsSuffix: "créditos",
+    balanceLabel: "Saldo de FUZE con este laboratorio",
+    balanceHint: "Se descuenta automáticamente de futuras pruebas pagadas por FUZE en este laboratorio.",
+    addCreditTitle: "Añadir crédito",
+    amountPlaceholder: "$ importe",
+    sourceNotePlaceholder: "nota de origen",
+    addCreditBtn: "Añadir crédito",
+    colCreated: "Creado",
+    colAmount: "Importe",
+    colSource: "Origen",
+    colNote: "Nota",
+    colSpent: "Gastado",
+    availableLabel: "disponible",
+    emptyState: "Aún no hay créditos.",
+  },
+
 };
 
 export default es;
