@@ -7758,6 +7758,29 @@ const ja: Translations = {
     bookAnotherBtn: "別のミーティングを予約",
   },
 
+  adminAuditLog: {
+    adminCrumb: "管理",
+    crumb: "監査ログ",
+    heading: "監査ログ",
+    subtitle: "すべてのエンティティを横断する完全な監査履歴です。アクション、エンティティ、日付で絞り込めます。保持期間は 90 日間です。",
+    errorContext: "監査ログを読み込み",
+    couldntLoadPrefix: "監査ログを読み込めませんでした",
+    networkError: "監査ログの読み込み中にネットワークエラーが発生しました。",
+    actionLabel: "アクション",
+    allActionsOption: "すべてのアクション",
+    entityLabel: "エンティティ",
+    allEntitiesOption: "すべてのエンティティ",
+    sinceLabel: "開始日",
+    resetBtn: "リセット",
+    rowsSuffix: "件",
+    loadingState: "監査ログを読み込み中…",
+    emptyState: "条件に一致する監査ログがありません。",
+    byPrefix: "実行者",
+    systemActor: "システム",
+    fieldChangedSingular: "件のフィールドが変更されました",
+    fieldChangedPlural: "件のフィールドが変更されました",
+  },
+
 };
 
 export default ja;
