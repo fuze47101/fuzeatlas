@@ -5442,6 +5442,69 @@ const hi: Translations = {
     footerGenerated: "फॉर्म उत्पन्न",
   },
 
+  sampleTrials: {
+    crumbDashboard: "डैशबोर्ड",
+    crumbHere: "नमूना ट्रायल",
+    pageTitle: "नमूना ट्रायल प्रबंधन",
+    pageSubtitle: "सभी कारखाना नमूना ट्रायल अनुरोधों की समीक्षा, अनुमोदन, शिप, और ट्रैक करें",
+
+    statTotal: "कुल",
+    statNeedsAction: "क्रिया आवश्यक",
+
+    searchPlaceholder: "फैब्रिक, कारखाना, ब्रांड, संपर्क खोजें...",
+    filterAllStatuses: "सभी स्थितियां",
+    filterAllFactories: "सभी कारखाने",
+
+    errorFailedLoad: "ट्रायल लोड करने में विफल",
+    errorUpdate: "अपडेट विफल",
+    errorNetwork: "नेटवर्क त्रुटि",
+
+    quickActionPrefix: "त्वरित क्रिया —",
+    trialFallback: "ट्रायल",
+    labelStatus: "स्थिति",
+    labelTracking: "ट्रैकिंग संख्या",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "एडमिन नोट्स",
+    placeholderAdminNotes: "आंतरिक नोट्स...",
+    labelRejectReason: "अस्वीकृति कारण",
+    btnSave: "परिवर्तन सहेजें",
+    btnSaving: "सहेज रहे हैं...",
+    btnCancel: "रद्द करें",
+
+    emptyFiltered: "आपके फ़िल्टर से कोई ट्रायल मेल नहीं खाता",
+    emptyDefault: "अभी कोई नमूना ट्रायल नहीं",
+
+    colFabric: "फैब्रिक",
+    colFactory: "कारखाना",
+    colPurpose: "उद्देश्य",
+    colStatus: "स्थिति",
+    colDetails: "विवरण",
+    colIcpLab: "ICP लैब",
+    colDate: "तिथि",
+    colActions: "क्रियाएं",
+
+    purposeBrand: "ब्रांड",
+    purposeSelfDev: "स्व-विकास",
+    trialLab: "लैब",
+    trialProduction: "उत्पादन",
+    detailsTierPrefix: "टियर:",
+    detailsIcpAgPrefix: "ICP:",
+    detailsByPrefix: "द्वारा:",
+    actionAction: "क्रिया",
+    actionView: "देखें",
+
+    statusSubmitted: "जमा",
+    statusUnderReview: "समीक्षा में",
+    statusApproved: "अनुमोदित",
+    statusRejected: "अस्वीकृत",
+    statusShipped: "भेजा",
+    statusReceived: "प्राप्त",
+    statusInProgress: "प्रगति में",
+    statusIcpPending: "ICP लंबित",
+    statusIcpSubmitted: "ICP जमा",
+    statusComplete: "पूर्ण",
+  },
+
 };
 
 export default hi;
