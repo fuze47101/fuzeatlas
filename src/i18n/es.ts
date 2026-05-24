@@ -6203,6 +6203,35 @@ const es: Translations = {
     noData: "Sin datos",
   },
 
+  educationApplication: {
+    pageMetaTitle: "Métodos de aplicación",
+    backLink: "← Volver a Conceptos básicos de FUZE",
+    kicker: "Métodos de aplicación",
+    heroTitle: "FUZE funciona en tu línea de acabado existente",
+    heroBody: "No necesitas un nuevo tanque, un nuevo horno ni un nuevo equipo para aplicar FUZE. Tres rutas de aplicación cubren todas las configuraciones de producción textil en operación hoy. F4 Essential Protection no requiere horno de curado en muchos sustratos.",
+    methodExhaustName: "Agotamiento (baño de tintura)",
+    methodExhaustDesc: "Añade FUZE al baño de tintura. El metamaterial se adhiere durante el proceso de agotamiento de tintura existente. Sin tanque nuevo, sin recipiente nuevo, sin línea nueva.",
+    methodExhaustWhen: "Mejor para tintura continua de alto volumen. El metamaterial se integra con el paso de fijación de tintura.",
+    methodPdcName: "Pad-Dry-Cure",
+    methodPdcDesc: "Pasa la tela por un foulard estándar cargado con baño diluido de FUZE. Estruja, seca y cura como lo harías normalmente. Temperatura de curado 150-170°C.",
+    methodPdcWhen: "La ruta de aplicación más común. Compatible con cada línea de acabado textil en operación hoy.",
+    methodSprayName: "Spray (espaciado en cabezal)",
+    methodSprayDesc: "Espaciado de 6 pulgadas en el cabezal, velocidad de línea de 15 m/min. Atomiza FUZE diluido sobre la superficie del tejido, luego seca/cura. Ideal para prendas terminadas o sustratos no tejidos.",
+    methodSprayWhen: "Prendas ya cortadas/cosidas, o sustratos especiales donde agotamiento/PDC no aplican.",
+    whenToUseLabel: "Cuándo usar",
+    operatorTitle: "Por qué esto le importa a un operador de fábrica",
+    operatorBullet1: "✓ Sin nuevo equipo de capital. FUZE se integra a tu línea de pad/tintura/spray existente.",
+    operatorBullet2: "✓ Sin aglutinante, sin entrecruzante, sin formaldehído. Menos inventario que gestionar, sin protocolos de manejo de sustancias cancerígenas.",
+    operatorBullet3: "✓ Sin dependencia de horno de curado en F4. Aplicaciones de tier inferior pueden secarse al aire; F1-F3 usan 150-170°C, el mismo rango que el acabado PDC estándar.",
+    operatorBullet4: "✓ Sin vida útil en FUZE almacenado. Los bidones y carboys pueden permanecer en tu sala de acabado indefinidamente sin degradarse.",
+    operatorBullet5: "✓ El carboy estándar de 19L es la unidad mínima de pedido. Pide volúmenes personalizados (47L, 285L, 1300L) cuando necesites una coincidencia exacta.",
+    runNumbersTitle: "Calcula tus números",
+    runNumbersBody: "La calculadora de aplicación computa el volumen exacto de FUZE necesario por metro cuadrado de tejido en tu tier elegido. Introduce el peso del tejido (gsm), el ancho y el tier objetivo — obtén litros de baño FUZE, mL de concentrado stock y dólares por metro lineal.",
+    runNumbersCta: "Abrir la calculadora de aplicación →",
+    backBasicsBtn: "Volver a Conceptos básicos de FUZE",
+    seePricingBtn: "Ver precios y tiers",
+  },
+
 };
 
 export default es;
