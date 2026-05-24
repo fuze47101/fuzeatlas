@@ -3287,6 +3287,32 @@ const id: Translations = {
     printedPrefix: "Dicetak",
   },
 
+  settingsExchangeRates: {
+    title: "Kurs Tukar",
+    subtitle: "Kelola kurs konversi mata uang",
+    addRateBtn: "Tambah Kurs",
+    cancelBtn: "Batal",
+    addFormTitle: "Tambah Kurs Tukar",
+    ratePlaceholder: "Kurs",
+    submitAddBtn: "Tambah Kurs",
+    converterTitle: "Konverter Mata Uang",
+    fromLabel: "Dari",
+    toLabel: "Ke",
+    amountLabel: "Jumlah",
+    convertBtn: "Konversi",
+    rateResultPrefix: "Kurs:",
+    quickStatsTitle: "Statistik Cepat",
+    totalCurrenciesLabel: "Total Mata Uang",
+    activeRatesLabel: "Kurs Aktif",
+    currentRatesTitle: "Kurs Saat Ini (Basis: USD)",
+    loading: "Memuat...",
+    emptyState: "Belum ada kurs tukar dikonfigurasi",
+    colCurrencyPair: "Pasangan Mata Uang",
+    colRate: "Kurs",
+    colEffectiveDate: "Tanggal Efektif",
+    colSource: "Sumber",
+  },
+
 };
 
 export default id;
