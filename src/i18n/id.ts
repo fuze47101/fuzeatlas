@@ -3401,6 +3401,19 @@ const id: Translations = {
     titleHint: 'mis. "Bpk.", "Dr."',
   },
 
+  educationCompliance: {
+    backLink: "← Kembali ke Dasar FUZE",
+    kicker: "Kepatuhan & Sertifikasi",
+    heroTitle: "Setiap stack sertifikasi yang diminta brand",
+    heroBody: "Satu screenshot untuk vendor questionnaire Anda. EPA federal + California, OEKO-TEX Standard 100 Class I, bluesign® approved, bebas PFAS, bebas formaldehida, selaras ZDHC. Data uji antibakteri / antivirus / antijamur di empat tier — laporan tersedia atas permintaan.",
+    activeBadge: "Aktif ✓",
+    docCopiesTitle: "Perlu salinan dokumen aktual?",
+    docCopiesBody: "Pusat Dokumen menyimpan salinan PDF live setiap sertifikasi, SDS, TDS, dan COA. Tim compliance dapat mengunduhnya langsung untuk vendor questionnaire.",
+    docCenterCta: "Buka Pusat Dokumen →",
+    backBasicsBtn: "Kembali ke Dasar FUZE",
+    whatYouCanClaimBtn: "Apa yang dapat Anda klaim →",
+  },
+
 };
 
 export default id;
