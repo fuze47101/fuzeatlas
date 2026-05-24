@@ -4639,6 +4639,92 @@ const th: Translations = {
     tagsSuffix: "แท็ก",
   },
 
+  leadManagement: {
+    pageTitle: "การจัดการ Lead & การติดต่อออก",
+    pageSubtitle: "จัดการผู้ติดต่อ เสริมข้อมูลผ่าน Apollo ส่ง SMS/อีเมล",
+
+    loadErrorContext: "โหลด pipeline lead",
+    loadErrorFallback: "ไม่สามารถโหลดข้อมูลการจัดการ lead ได้",
+    networkError: "ข้อผิดพลาดเครือข่ายขณะโหลด lead",
+    loading: "กำลังโหลด lead...",
+
+    statTotalContacts: "ผู้ติดต่อทั้งหมด",
+    statWithEmail: "มีอีเมล",
+    statWithPhone: "มีโทรศัพท์",
+    statEnriched: "เสริมข้อมูลแล้ว",
+    statNotContacted: "ยังไม่ติดต่อ",
+    statContacted: "ติดต่อแล้ว",
+
+    searchPlaceholder: "ค้นหาแบรนด์หรือผู้ติดต่อ...",
+    filterAllPipelineStages: "ทุกขั้น Pipeline",
+    stageLead: "Lead",
+    stagePresentation: "การนำเสนอ",
+    stageBrandTesting: "การทดสอบแบรนด์",
+    stageFactoryOnboarding: "Onboarding โรงงาน",
+    stageProduction: "การผลิต",
+    stageArchive: "เก็บถาวร",
+
+    filterAllVerticals: "ทุก vertical",
+    verticalApparel: "เสื้อผ้า",
+    verticalHospitality: "การบริการ",
+    verticalWorkwear: "ชุดทำงาน",
+    verticalHomeTextiles: "สิ่งทอภายในบ้าน",
+
+    filterAllOutreachStatus: "ทุกสถานะการติดต่อ",
+    outreachNotContacted: "ยังไม่ติดต่อ",
+    outreachContacted: "ติดต่อแล้ว",
+    outreachResponded: "ตอบกลับแล้ว",
+    outreachMeetingBooked: "นัดประชุมแล้ว",
+    outreachNotInterested: "ไม่สนใจ",
+
+    filterAllEmailStatus: "ทุกสถานะอีเมล",
+    emailVerified: "ตรวจสอบแล้ว",
+    emailExtrapolated: "คาดประมาณ",
+    emailUnavailable: "ไม่พร้อมใช้งาน",
+
+    colBrand: "แบรนด์",
+    colContact: "ผู้ติดต่อ",
+    colTitle: "ตำแหน่ง",
+    colEmail: "อีเมล",
+    colPhone: "โทรศัพท์",
+    colLI: "LI",
+    colEmailed: "ส่งอีเมลแล้ว",
+    colOutreach: "การติดต่อออก",
+    colActions: "การกระทำ",
+
+    inProfile: "ในโปรไฟล์",
+    enrichedLabel: "เสริมข้อมูลแล้ว",
+    noContactsNeedsEnrichment: "ไม่มีผู้ติดต่อ — ต้องเสริมข้อมูล",
+    msgsSuffix: "ข้อความ",
+    markLinkedinReached: "ทำเครื่องหมายว่าติดต่อทาง LinkedIn แล้ว",
+    markEmailed: "ทำเครื่องหมายว่าส่งอีเมลแล้ว",
+
+    actionSms: "SMS",
+    actionEmail: "อีเมล",
+    actionEnrich: "เสริมข้อมูล",
+    titleSendSms: "ส่ง SMS",
+    titleSendEmail: "ส่งอีเมล",
+    titleEnrichApollo: "เสริมข้อมูลผ่าน Apollo",
+
+    paginationLabel: "หน้า {page} จาก {pages} ({total} แบรนด์)",
+    paginationPrev: "ก่อนหน้า",
+    paginationNext: "ถัดไป",
+
+    modalSendSmsTo: "ส่ง SMS ไปยัง",
+    modalSendEmailTo: "ส่งอีเมลไปยัง",
+    fieldTemplate: "เทมเพลต",
+    fieldToPrefix: "ถึง:",
+    fieldSubject: "เรื่อง",
+    fieldMessage: "ข้อความ",
+    charsSuffix: "ตัวอักษร",
+    sendSms: "ส่ง SMS",
+    sendEmail: "ส่งอีเมล",
+    sendingButton: "กำลังส่ง...",
+    cancelButton: "ยกเลิก",
+    sendSuccess: "ส่งข้อความสำเร็จ!",
+    sendErrorPrefix: "ข้อผิดพลาด:",
+  },
+
 };
 
 export default th;
