@@ -4,6 +4,7 @@
  * /admin/press-kit — Phase 12E admin manager.
  */
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 
 interface Item {
   id: string;
@@ -18,6 +19,8 @@ interface Item {
 const TYPES = ["", "LOGO", "IMAGE", "RELEASE", "NEWS_LINK"];
 
 export default function PressKitAdminPage() {
+  const { t } = useI18n();
+  const T = t.pressKitAdmin;
   const [items, setItems] = useState<Item[]>([]);
   const [filter, setFilter] = useState("");
   const [draft, setDraft] = useState({ type: "LOGO", url: "", caption: "", releaseDate: "" });
@@ -36,7 +39,7 @@ export default function PressKitAdminPage() {
 
   async function add() {
     if (!draft.url.trim()) {
-      setError("URL required");
+      setError(T.errUrlRequired);
       return;
     }
     setSaving(true);
@@ -47,7 +50,7 @@ export default function PressKitAdminPage() {
         body: JSON.stringify(draft),
       });
       const j = await res.json();
-      if (!j.ok) setError(j.error || "Add failed");
+      if (!j.ok) setError(j.error || T.errAddFailed);
       else {
         setDraft({ type: "LOGO", url: "", caption: "", releaseDate: "" });
         setError(null);
@@ -68,7 +71,7 @@ export default function PressKitAdminPage() {
   }
 
   async function remove(item: Item) {
-    if (!confirm(`Delete press kit item "${item.caption || item.url}"?`)) return;
+    if (!confirm(`${T.deleteConfirmPrefix} "${item.caption || item.url}"?`)) return;
     await fetch(`/api/admin/press-kit-items?id=${item.id}`, { method: "DELETE" });
     load();
   }
@@ -78,17 +81,16 @@ export default function PressKitAdminPage() {
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900">Press kit</h1>
+        <h1 className="text-2xl font-black text-slate-900">{T.title}</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Manage what appears on the public /press page. Toggling active hides
-          a row without deleting it.
+          {T.subtitle}
         </p>
       </div>
 
       {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded">{error}</div>}
 
       <div className="rounded-xl border border-slate-200 bg-white p-5 mb-6">
-        <h2 className="text-sm font-bold text-slate-900 mb-3">Add item</h2>
+        <h2 className="text-sm font-bold text-slate-900 mb-3">{T.addItemTitle}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
           <select
             value={draft.type}
@@ -102,14 +104,14 @@ export default function PressKitAdminPage() {
           </select>
           <input
             type="url"
-            placeholder="URL"
+            placeholder={T.urlPlaceholder}
             value={draft.url}
             onChange={(e) => setDraft({ ...draft, url: e.target.value })}
             className="sm:col-span-2 px-3 py-2 border border-slate-300 rounded text-sm"
           />
           <input
             type="text"
-            placeholder="caption"
+            placeholder={T.captionPlaceholder}
             value={draft.caption}
             onChange={(e) => setDraft({ ...draft, caption: e.target.value })}
             className="px-3 py-2 border border-slate-300 rounded text-sm"
@@ -126,7 +128,7 @@ export default function PressKitAdminPage() {
           disabled={saving}
           className="mt-3 px-4 py-2 bg-[#00b4c3] text-white rounded text-sm font-bold hover:bg-[#009aa8] disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Add item"}
+          {saving ? T.savingBtn : T.addItemBtn}
         </button>
       </div>
 
@@ -141,7 +143,7 @@ export default function PressKitAdminPage() {
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             }`}
           >
-            {t || "all"}
+            {t || T.allFilter}
           </button>
         ))}
       </div>
@@ -150,11 +152,11 @@ export default function PressKitAdminPage() {
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500 border-b">
             <tr>
-              <th className="text-left px-4 py-2">Type</th>
-              <th className="text-left px-3 py-2">Caption</th>
-              <th className="text-left px-3 py-2">URL</th>
-              <th className="text-left px-3 py-2">Released</th>
-              <th className="text-center px-3 py-2">Active</th>
+              <th className="text-left px-4 py-2">{T.colType}</th>
+              <th className="text-left px-3 py-2">{T.colCaption}</th>
+              <th className="text-left px-3 py-2">{T.colUrl}</th>
+              <th className="text-left px-3 py-2">{T.colReleased}</th>
+              <th className="text-center px-3 py-2">{T.colActive}</th>
               <th></th>
             </tr>
           </thead>
@@ -185,7 +187,7 @@ export default function PressKitAdminPage() {
                         : "bg-slate-100 text-slate-600"
                     }`}
                   >
-                    {i.active ? "Active" : "Hidden"}
+                    {i.active ? T.activeLabel : T.hiddenLabel}
                   </button>
                 </td>
                 <td className="px-3 py-2 text-right">
@@ -193,7 +195,7 @@ export default function PressKitAdminPage() {
                     onClick={() => remove(i)}
                     className="text-xs text-red-600 hover:underline"
                   >
-                    Delete
+                    {T.deleteBtn}
                   </button>
                 </td>
               </tr>
@@ -201,7 +203,7 @@ export default function PressKitAdminPage() {
             {filtered.length === 0 && (
               <tr>
                 <td colSpan={6} className="text-center py-10 text-slate-400">
-                  No press kit items yet.
+                  {T.emptyState}
                 </td>
               </tr>
             )}
