@@ -7756,6 +7756,36 @@ const ur: Translations = {
     nextBtn: "اگلا",
   },
 
+  bdSequencesList: {
+    kicker: "BD وزرڈ",
+    heading: "سلسلے",
+    subtitlePrefix: "طویل-فنل آؤٹ باؤنڈ۔ Cron گھنٹہ وار قدم آگے بڑھاتا ہے۔ تیار قدم آپ کے جائزے کے لیے یہاں رکتے ہیں",
+    subtitleSuffix: "— کچھ بھی خود بخود نہیں بھیجا جاتا۔",
+    openWizardBtn: "BD وزرڈ کھولیں →",
+    stepAwaitingSingular: "قدم آپ کے جائزے کا منتظر",
+    stepsAwaitingPlural: "قدم آپ کے جائزے کے منتظر",
+    showAllRepsLabel: "تمام نمائندے دکھائیں",
+    loadingState: "سلسلے لوڈ ہو رہے ہیں…",
+    emptyHeadPrefix: "کوئی",
+    emptyHeadSuffix: "سلسلے نہیں",
+    emptyBodyPrefix: "اپنا پہلا ای میل اس کے ذریعے بھیج کر ایک شروع کریں",
+    emptyBodyLink: "BD وزرڈ",
+    emptyBodySuffix: "۔ ہر پہلی ترسیل خود بخود 6-قدمی کیڈنس شروع کر دیتی ہے۔",
+    colBrandContact: "برانڈ / رابطہ",
+    colProgress: "پیشرفت",
+    colNext: "اگلا",
+    colRep: "نمائندہ",
+    colStatus: "حیثیت",
+    colActions: "اعمال",
+    readyChipSuffix: "تیار",
+    reviewSendBtn: "جائزہ لیں اور بھیجیں",
+    openBtn: "کھولیں",
+    viewBtn: "دیکھیں",
+    pauseBtn: "روکیں",
+    exitBtn: "خارج ہوں",
+    resumeBtn: "دوبارہ شروع کریں",
+  },
+
 };
 
 export default ur;
