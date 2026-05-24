@@ -6942,6 +6942,34 @@ const bn: Translations = {
     backToLeadOption: "← লিডে ফিরে যান",
   },
 
+  commandCenterGlobe: {
+    loading: "গ্লোব লোড হচ্ছে…",
+    title: "সাপ্লাই-চেইন গ্লোব",
+    emptyTitle: "এখনও কোনো জিওকোডেড এন্টিটি নেই",
+    emptyHint: "প্রতিটি এন্টিটির শহর + দেশ থেকে lat/lng পূরণ করতে জিওকোডার চালান:",
+    emptyFooter: "Nominatim-এর 1 req/sec rate limit আছে — সম্পূর্ণ পাস কয়েক মিনিট নেয়। পুনরায় চালানো ইতিমধ্যে কোঅর্ডিনেট থাকা সারি স্কিপ করে।",
+    factoriesLabel: "ফ্যাক্টরি",
+    brandsLabel: "ব্র্যান্ড",
+    labsLabel: "ল্যাব",
+    distributorsLabel: "ডিস্ট্রিবিউটর",
+    shipmentsLabel: "শিপমেন্ট (90d)",
+    searchPlaceholder: "এন্টিটি খুঁজুন…",
+    legendFactory: "ফ্যাক্টরি",
+    legendPulseHint: "(pulse = 30d অ্যাক্টিভ)",
+    legendBrand: "ব্র্যান্ড HQ",
+    legendFuzeLab: "FUZE-মালিকানাধীন ল্যাব",
+    legendPartnerLab: "পার্টনার ল্যাব",
+    legendDistributor: "ডিস্ট্রিবিউটর",
+    kindFactory: "ফ্যাক্টরি",
+    kindBrand: "ব্র্যান্ড",
+    kindLab: "ল্যাব",
+    kindDistributor: "ডিস্ট্রিবিউটর",
+    stageLabel: "স্টেজ:",
+    activeBadge: "⚡ অ্যাক্টিভ (30d)",
+    openDetailBtn: "বিস্তারিত খুলুন →",
+    errLoadFailed: "গ্লোব লোড করতে ব্যর্থ",
+  },
+
 };
 
 export default bn;
