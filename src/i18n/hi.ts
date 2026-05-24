@@ -6825,6 +6825,26 @@ const hi: Translations = {
     emptyState: "अभी कोई क्रेडिट नहीं।",
   },
 
+  bdFunnel: {
+    loading: "लोड हो रहा है…",
+    crumbSalesPipeline: "बिक्री और पाइपलाइन",
+    crumbBdFunnel: "BD फनल",
+    title: "पाइपलाइन फनल",
+    subtitle: "पिछले 30 / 60 / 90 दिनों में इनफ्लो / आउटफ्लो, साथ ही चरण-से-चरण रूपांतरण दर। हर Brand.pipelineStage फ्लिप पर लिखे गए BrandStageTransition पंक्तियों से प्राप्त।",
+    colStage: "चरण",
+    colCurrent: "वर्तमान",
+    colIn30: "30d में",
+    colIn60: "60d में",
+    colIn90: "90d में",
+    colOut30: "30d बाहर",
+    colOut60: "60d बाहर",
+    colOut90: "90d बाहर",
+    colAvgDwell: "औसत ठहराव",
+    colToNext: "→ अगला",
+    footerHint: "रूपांतरण = निकास जो कैनोनिकल अगले चरण पर उतरे / पिछले 90 दिनों में देखे गए कुल निकास। विंडो में कोई निकास नहीं वाले चरण n=0 दिखाते हैं — वे धीमे या स्थिर हैं, बुरे नहीं।",
+    errLoadFailed: "फनल लोड करने में विफल",
+  },
+
 };
 
 export default hi;
