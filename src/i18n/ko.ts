@@ -7670,6 +7670,35 @@ const ko: Translations = {
     errGeneric: "비밀번호 변경 실패",
   },
 
+  claimsLandingPage: {
+    heroTitle: "클레임, 인증 및 방법론",
+    heroSubtitle: "FUZE 작동 원리, 인증 사항 및 그렇게 시험하는 이유.",
+    techTitle: "FUZE 기술",
+    techBody1: "FUZE는 FUZE 메타머티리얼을 중심으로 구축된 독점 항균 텍스타일 가공입니다 — Salt Lake City 시설에서 재활용 전자제품으로부터 액체 레이저 어블레이션을 통해 생산됩니다. 이 처리는 표준 텍스타일 마감 중 섬유에 영구적으로 결합합니다 (익소스트, 패드-건조-큐어 또는 스프레이 도포) 원단의 촉감, 염색, 드레이프 또는 통기성을 변경하지 않습니다.",
+    techBody2: "FUZE는 설계상 비용출형입니다. 박테리아 감소는 박테리아 세포와 섬유 표면의 결합된 FUZE 메타머티리얼 간의 직접 물리적 접촉을 통해 발생합니다 — 세탁수로 방출되는 화학물질 없음, PFAS 없음, 바인더 없음, 큐어링 화학 없음. 이 자세는 FUZE를 모든 규제 순풍의 올바른 쪽에 위치시킵니다 (Texas AG PFAS 조사, California SB-707).",
+    techBody3: "처리 등급: F1 풀 스펙트럼 (1.0 mg/kg, 100회 세탁 검증) · F2 고급 (0.75 mg/kg, 75회 세탁) · F3 코어 (0.5 mg/kg, 50회 세탁) · F4 기초 (0.25 mg/kg, 25회 세탁). 세탁 횟수는 독립 랩 AATCC 100 + ISO 20743 시험을 통해 문서화되며 요청 시 게시됩니다.",
+    certsTitle: "인증",
+    certEpaTitle: "EPA 등록 (연방)",
+    certEpaBody: "FUZE 화학은 미국 환경 보호청에 항균 살충제로 등록되어 있습니다.",
+    certCaEpaTitle: "California EPA 승인 (2026년 1분기)",
+    certCaEpaBody: "California의 더 엄격한 체제 하에서 액티브웨어, 영유아/어린이 텍스타일 및 의료 용도에 대해 승인됨.",
+    certOekoTitle: "OEKO-TEX Standard 100 Class I",
+    certOekoBody: "직접 피부 접촉용으로 안전 인증 — 영유아 및 속옷 포함.",
+    certBluesignTitle: "bluesign® 승인",
+    certBluesignBody: "bluesign 기준 하에서 작업자, 소비자 및 환경에 안전한 것으로 검증된 화학.",
+    certPfasTitle: "PFAS-free",
+    certPfasBody: "제형 어디에도 과불소 및 폴리불소 알킬 물질 제로. 바인더 없음, 큐어링 보조제 없음.",
+    certStandardsTitle: "검증된 표준",
+    certStandardsBody: "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — 제3자 보고서는 요청 시 제공됩니다.",
+    standardsTitle: "시험 표준",
+    standardsBody: "텍스타일에 대한 항균 성능은 단일 숫자가 아닙니다 — 어떤 표준에서 시험을 실행했는지, 그리고 그 표준이 화학에 맞는지에 크게 좌우됩니다. FUZE가 방법에 어떻게 매핑되는지 다음과 같습니다.",
+    jabTitle: "왜 ASTM E2149를 선도하는가",
+    jabBody: "ASTM E2149는 비용출형 항균제용으로 설계된 시험이기 때문에 우리는 이것으로 시험합니다. AATCC 100에 의존하는 경쟁사 화학은 AATCC 100의 적층 형상이 용출 이온이 층간 공간을 포화시키는 데 도움이 되기 때문에 그렇게 합니다 — 시험은 구조상 용출을 선호합니다. FUZE는 설계상 용출되지 않습니다. 올바른 시험에서 만납시다.",
+    jabFootnote: "(경쟁사 귀속: 적층 시험 주의 사항은 금속 이온, 금속 염화물 및 quat 기반 마감재에 적용됩니다 — FUZE에는 적용되지 않습니다.)",
+    documentsTitle: "문서",
+    pressKitLink: "프레스 키트",
+  },
+
 };
 
 export default ko;
