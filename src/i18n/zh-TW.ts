@@ -7674,6 +7674,19 @@ const zhTW: Translations = {
     pressKitLink: "媒體資料包",
   },
 
+  educationCompliance: {
+    backLink: "← 返回 FUZE 基礎",
+    kicker: "法規與認證",
+    heroTitle: "品牌會詢問的每一張認證",
+    heroBody: "供應商問卷一張截圖搞定。EPA 聯邦 + 加州、OEKO-TEX Standard 100 Class I、bluesign® 認可、不含 PFAS、不含甲醛、符合 ZDHC。四個等級皆有抗菌／抗病毒／抗真菌測試資料 — 報告可應要求提供。",
+    activeBadge: "啟用中 ✓",
+    docCopiesTitle: "需要文件正本嗎？",
+    docCopiesBody: "文件中心保存每一份認證、SDS、TDS 與 COA 的最新 PDF 副本。法規團隊可直接下載供供應商問卷使用。",
+    docCenterCta: "開啟文件中心 →",
+    backBasicsBtn: "返回 FUZE 基礎",
+    whatYouCanClaimBtn: "您可宣告哪些內容 →",
+  },
+
 };
 
 export default zhTW;
