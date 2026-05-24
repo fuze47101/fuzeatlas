@@ -7173,6 +7173,29 @@ const zhTW: Translations = {
     errAddFailed: "新增失敗",
   },
 
+  accountsAdmin: {
+    title: "客戶帳號",
+    subtitleBefore: "已超過 Lead 階段的品牌 — 已接收簡報、測試中、生產中或已成為客戶。若要管理新潛在客戶，請至",
+    brandPipelineLink: "品牌管線",
+    allFilter: "全部",
+    stagePresentation: "簡報",
+    stageBrandTesting: "品牌測試",
+    stageFactoryOnboarding: "工廠導入",
+    stageFactoryTesting: "工廠測試",
+    stageProduction: "生產中",
+    stageReConnect: "重新聯繫",
+    stageCustomerWon: "客戶成交",
+    searchPlaceholder: "依名稱或聯絡人搜尋客戶帳號…",
+    emptyTitle: "此檢視中尚無客戶帳號",
+    emptyBody: "當品牌從 LEAD 進入 PRESENTATION 或之後階段時，客戶帳號便會出現。",
+    goToPipelineBtn: "前往品牌管線",
+    highRelevanceBadge: "🔥 高相關性",
+    amPrefix: "AM：",
+    contactsLabel: "聯絡人",
+    enrichedSuffix: "已豐富化",
+    backToLeadOption: "← 退回 Lead",
+  },
+
 };
 
 export default zhTW;
