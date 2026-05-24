@@ -8034,6 +8034,24 @@ const zhCN: Translations = {
     footerVerifiedBy: "由 FUZE Atlas 验证",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "ESG 季度快照 — FUZE Atlas",
+    metaDescPrefix: "由 FUZE Atlas 认证的",
+    metaDescSuffix: "的季度 ESG 影响报告。",
+    backArrowPrefix: "←",
+    headingSuffix: "— ESG 影响",
+    heroSubtitle: "FUZE 认证面料与抗菌测试结果的季度快照。",
+    emptyBody: "暂无已发布的快照。季度报告将在下季度开始时发布。",
+    statFabricsCertified: "已认证面料",
+    statTestsPassed: "通过测试",
+    statFuzeLiters: "FUZE 升数",
+    statFactories: "工厂数",
+    passRateLabel: "通过率:",
+    downloadPdf: "下载 PDF →",
+    footerCertifiedBy: "由 FUZE Atlas 认证",
+  },
+
 };
 
 export default zhCN;
