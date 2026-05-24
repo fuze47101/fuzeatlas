@@ -5505,6 +5505,55 @@ const ur: Translations = {
     statusComplete: "مکمل",
   },
 
+  brandFabricsAdmin: {
+    loading: "فیبرک پورٹ فولیو لوڈ ہو رہا ہے…",
+    errorTitle: "فیبرک پورٹ فولیو لوڈ نہیں ہو سکا",
+    errorUnknown: "نامعلوم خرابی",
+    errorFailedLoad: "لوڈ کرنے میں ناکامی",
+    errorSave: "محفوظ کرنے میں ناکامی",
+    btnTryAgain: "دوبارہ کوشش کریں",
+
+    crumbPartners: "برانڈ پارٹنرز",
+    crumbHere: "فیبرک پورٹ فولیو",
+    titleSuffix: "— فیبرک پورٹ فولیو",
+    subtitle: "اس برانڈ کے لیے تمام ملز میں تمام فیبرکس۔ {total} میں سے {shown} فیبرکس دکھائے گئے ہیں۔",
+    btnExportCsv: "⬇ CSV ایکسپورٹ کریں",
+
+    searchPlaceholder: "فیبرک #، گاہک کوڈ، مواد تلاش کریں…",
+    filterAllMills: "تمام ملز",
+    filterAllTypes: "تمام اقسام",
+    typeDevelopment: "ترقی",
+    typeActualBulk: "حقیقی (بلک)",
+    typeForecast: "پیش گوئی",
+    typeRd: "R&D",
+    filterAllStatuses: "تمام اسٹیٹس",
+
+    emptyFabric: "🧵",
+    emptyTitle: "آپ کے فلٹرز سے کوئی فیبرکس میل نہیں کھاتے۔",
+    emptySub: "اوپر کے فلٹرز کو ایڈجسٹ کریں یا مکمل پورٹ فولیو دیکھنے کے لیے تلاش صاف کریں۔",
+    fabricSingular: "فیبرک",
+    fabricPlural: "فیبرکس",
+    openFactory: "فیکٹری کھولیں →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "مل فیبرک #",
+    colType: "قسم",
+    colContent: "مواد",
+    colGsm: "GSM",
+    colCustomerCode: "گاہک کوڈ",
+    colTrial: "ٹرائل",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "ICP قیمت",
+    colTestDate: "ٹیسٹ کی تاریخ",
+    colStatus: "اسٹیٹس",
+
+    unassigned: "غیر تفویض شدہ",
+    typeBulkProduction: "بلک پروڈکشن",
+    notSet: "— مقرر نہیں —",
+    titleOpenFabric: "فیبرک تفصیل کھولیں",
+  },
+
 };
 
 export default ur;
