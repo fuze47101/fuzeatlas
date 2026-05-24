@@ -7757,6 +7757,29 @@ const zhTW: Translations = {
     bookAnotherBtn: "預約另一場會議",
   },
 
+  adminAuditLog: {
+    adminCrumb: "管理員",
+    crumb: "稽核日誌",
+    heading: "稽核日誌",
+    subtitle: "涵蓋每個實體的完整稽核軌跡。可依動作、實體或日期篩選。保留 90 天。",
+    errorContext: "載入稽核日誌",
+    couldntLoadPrefix: "無法載入稽核日誌",
+    networkError: "載入稽核日誌時發生網路錯誤。",
+    actionLabel: "動作",
+    allActionsOption: "所有動作",
+    entityLabel: "實體",
+    allEntitiesOption: "所有實體",
+    sinceLabel: "起始日期",
+    resetBtn: "重設",
+    rowsSuffix: "列",
+    loadingState: "正在載入稽核日誌…",
+    emptyState: "沒有符合這些篩選條件的稽核列。",
+    byPrefix: "操作者：",
+    systemActor: "系統",
+    fieldChangedSingular: "個欄位已變更",
+    fieldChangedPlural: "個欄位已變更",
+  },
+
 };
 
 export default zhTW;
