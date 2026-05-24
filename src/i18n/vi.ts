@@ -7914,6 +7914,23 @@ const vi: Translations = {
     fieldChangedPlural: "trường đã thay đổi",
   },
 
+  adminLanding: {
+    loadingLabel: "Đang tải quản trị",
+    crumb: "Quản trị",
+    heading: "Quản trị",
+    subtitle: "Các bề mặt điều khiển FUZE-Ops. Chọn một module để đi sâu, hoặc dùng sidebar để xem điều hướng đầy đủ.",
+    openPrefix: "Mở",
+    fastPathLabel: "Đường nhanh",
+    dataEntryHubTitle: "Trung tâm nhập dữ liệu",
+    dataEntryHubBody: "Đặt thông số thương hiệu, hạng giá, liên kết chuỗi cung ứng, giá phòng lab — tất cả trong một trang.",
+    liveStateLabel: "Trạng thái trực tiếp",
+    commandCenterTitle: "Trung tâm điều khiển",
+    commandCenterBody: "Sáu ô số liệu, ma trận nhịp thương hiệu × nhà máy, hoạt động gần đây, hàng đợi.",
+    weeklyLabel: "Hàng tuần",
+    mondayReviewTitle: "Hàng đợi đánh giá thứ Hai",
+    mondayReviewBody: "Các lần chạy thử nghiệm và từ chối thương hiệu do AI gắn cờ. Email 22:00 UTC chủ nhật gieo chương trình.",
+  },
+
 };
 
 export default vi;
