@@ -7477,6 +7477,32 @@ const th: Translations = {
     emptyState: "ยังไม่มีโทเค็น — mint ชุดแรกของคุณด้านบน",
   },
 
+  bookMeetingPage: {
+    heading: "นัดการประชุม",
+    subtitle: "เลือกวันที่และเวลาที่ว่างเพื่อจองประชุมกับทีมของเรา",
+    selectDateTitle: "เลือกวันที่",
+    availableTimesPrefix: "เวลาที่ว่างใน",
+    loadingSlots: "กำลังโหลดช่วงเวลา...",
+    noSlotsBody: "ไม่มีช่วงเวลาว่างสำหรับวันที่นี้",
+    detailsTitle: "รายละเอียดการประชุม",
+    selectDateTimeHint: "เลือกวันที่และเวลาเพื่อดำเนินการต่อ",
+    dateTimeLabel: "วันที่ & เวลา",
+    meetingTitleLabel: "ชื่อการประชุม",
+    defaultTitle: "FUZE Meeting",
+    descriptionLabel: "คำอธิบาย (ไม่บังคับ)",
+    descriptionPlaceholder: "รายละเอียดเพิ่มเติม...",
+    confirmBtn: "ยืนยันการจอง",
+    bookingBusy: "กำลังจอง...",
+    bookFailedError: "ไม่สามารถจองการประชุมได้",
+    networkError: "ข้อผิดพลาดเครือข่าย",
+    bookedTitle: "จองการประชุมแล้ว!",
+    titleColLabel: "ชื่อ",
+    timeColLabel: "เวลา",
+    meetingLinkLabel: "ลิงก์การประชุม",
+    openInTeams: "เปิดใน Teams",
+    bookAnotherBtn: "จองการประชุมอื่น",
+  },
+
 };
 
 export default th;
