@@ -8074,6 +8074,30 @@ const zhTW: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "正在載入邀請…",
+    notFoundTitle: "找不到邀請",
+    notFoundFallback: "此邀請連結可能已過期或已被使用。",
+    chipLabel: "FUZE Atlas 邀請",
+    headingMiddle: "邀請",
+    headingSuffix: "加入其 FUZE 供應鏈",
+    heroSubtitleFallbackPrefix: "使用 FUZE Atlas 協調其供應鏈中的抗菌紡織品計畫。",
+    heroSubtitleFallbackSuffix: "加入後，工廠即可送驗布料、下 FUZE 訂單，並追蹤 ICP 結果——全部直接連結至品牌。",
+    notePrefix: "來自",
+    closedPrefix: "此邀請已",
+    closedReachOutPrefix: "請聯絡",
+    closedTeamFallbackPrefix: "",
+    closedTeamFallbackSuffix: "團隊",
+    closedFreshLink: "以取得新連結。",
+    signUpCta: "註冊",
+    signUpSubPrefix: "在 Atlas 上建立新的",
+    signUpSubSuffix: "帳號",
+    alreadyInCta: "我們已在 Atlas 上",
+    alreadyInSub: "登入並連結您現有的工廠",
+    sentPrefix: "邀請已寄出",
+    questionsPrefix: "· 有問題嗎？",
+  },
+
 };
 
 export default zhTW;
