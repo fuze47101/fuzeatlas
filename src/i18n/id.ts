@@ -3213,6 +3213,21 @@ const id: Translations = {
     fieldChangedPlural: "field diubah",
   },
 
+  importFactories: {
+    title: "Bulk import — Pabrik",
+    subtitle: "Tempel atau unggah CSV pabrik. Kami akan upsert berdasarkan nama (natural key), tautkan ke distributor jika Anda memberikan, dan stamp baris SupplyChainLink untuk setiap brand yang sudah ada di Atlas. Brand yang belum ada dilaporkan sebagai 'missing' sehingga Anda dapat menjalankan import brand terlebih dahulu.",
+    backLabel: "Pabrik",
+    factoryNameLabel: "Nama pabrik",
+    factoryNameHint: "(natural key — upsert dikunci di sini)",
+    countryLabel: "Negara",
+    distributorLabel: "Distributor",
+    distributorHint: "pencocokan case-insensitive pada Distributor.name; dilewati jika tidak ditemukan",
+    brandsLabel: "Brand",
+    brandsHint: "dipisah koma; setiap nama harus ada sebagai Brand",
+    cityLabel: "Kota",
+    websiteLabel: "Website",
+  },
+
 };
 
 export default id;
