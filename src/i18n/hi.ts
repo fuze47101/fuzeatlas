@@ -7541,6 +7541,28 @@ const hi: Translations = {
     mondayReviewBody: "AI-फ़्लैग किए गए परीक्षण रन + ब्रांड अस्वीकृति। रविवार 22:00 UTC ईमेल एजेंडा को सीड करता है।",
   },
 
+  brandEngagement: {
+    heading: "ब्रांड स्वास्थ्य",
+    subtitle: "सभी ब्रांडों के लिए एंगेजमेंट और स्वास्थ्य मेट्रिक्स की निगरानी करें",
+    recalculatingBtn: "पुनः गणना हो रही है...",
+    recalculateBtn: "सभी की पुनः गणना करें",
+    allFilter: "सभी",
+    loadingText: "लोड हो रहा है...",
+    noBrandsText: "कोई ब्रांड नहीं मिला",
+    scoreBreakdownTitle: "स्कोर ब्रेकडाउन",
+    communicationLabel: "संचार",
+    testingVelocityLabel: "परीक्षण वेग",
+    pipelineVelocityLabel: "पाइपलाइन वेग",
+    paymentScoreLabel: "भुगतान स्कोर",
+    rawMetricsTitle: "कच्चे मेट्रिक्स",
+    daysSinceContact: "संपर्क के बाद दिन",
+    testsLast30d: "परीक्षण (पिछले 30d)",
+    testsLast90d: "परीक्षण (पिछले 90d)",
+    avgInvoicePayDays: "औसत चालान भुगतान दिन",
+    overdueInvoices: "देरी चालान",
+    lastCalculatedLabel: "अंतिम गणना:",
+  },
+
 };
 
 export default hi;
