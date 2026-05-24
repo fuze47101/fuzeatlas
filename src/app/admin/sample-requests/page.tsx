@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface Request {
   id: string;
@@ -78,6 +79,8 @@ const STATUS_BADGE: Record<string, string> = {
 export default function AdminSampleRequestsPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
+  const T = t.sampleRequestsAdmin;
   const [requests, setRequests] = useState<Request[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -125,7 +128,7 @@ export default function AdminSampleRequestsPage() {
       });
       const json = await res.json();
       if (!json.ok) {
-        alert(json.error || "update failed");
+        alert(json.error || T.errUpdateFailed);
       } else {
         load();
       }
@@ -149,43 +152,41 @@ export default function AdminSampleRequestsPage() {
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-          <Link href="/admin" className="hover:text-[#00b4c3]">Admin</Link>
+          <Link href="/admin" className="hover:text-[#00b4c3]">{T.crumbAdmin}</Link>
           <span>/</span>
-          <span>Sample Requests</span>
+          <span>{T.crumbSampleRequests}</span>
         </div>
         <h1 className="text-3xl font-black text-slate-900">
-          Factory Sample Requests
+          {T.title}
         </h1>
         <p className="text-slate-600 mt-1 max-w-2xl">
-          Inbound FUZE sample / trial requests from factories. Action
-          needed rows (SUBMITTED, UNDER_REVIEW, ICP_PENDING) bubble to
-          the top so they don't fall through the cracks.
+          {T.subtitle}
         </p>
       </div>
 
       {summary && (
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
-          <Tile label="Total" value={summary.total} />
+          <Tile label={T.tileTotal} value={summary.total} />
           <Tile
-            label="Submitted"
+            label={T.tileSubmitted}
             value={summary.submitted}
             warn={summary.submitted > 0}
           />
-          <Tile label="Under review" value={summary.underReview} />
-          <Tile label="Approved" value={summary.approved} />
-          <Tile label="Shipped" value={summary.shipped} />
+          <Tile label={T.tileUnderReview} value={summary.underReview} />
+          <Tile label={T.tileApproved} value={summary.approved} />
+          <Tile label={T.tileShipped} value={summary.shipped} />
           <Tile
-            label="Stale 3+d"
+            label={T.tileStale}
             value={summary.stale}
             warn={summary.stale > 0}
           />
-          <Tile label="Complete" value={summary.complete} />
+          <Tile label={T.tileComplete} value={summary.complete} />
         </div>
       )}
 
       <div className="bg-white border border-slate-200 rounded-xl p-3 mb-4 flex flex-wrap items-center gap-2">
         <span className="text-xs text-slate-500 uppercase font-bold">
-          Status:
+          {T.statusLabel}
         </span>
         {[
           "",
@@ -208,7 +209,7 @@ export default function AdminSampleRequestsPage() {
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
           >
-            {s ? s.replace("_", " ") : "All"}
+            {s ? s.replace("_", " ") : T.allBtn}
           </button>
         ))}
         <span className="ml-auto" />
@@ -218,14 +219,14 @@ export default function AdminSampleRequestsPage() {
             checked={staleOnly}
             onChange={(e) => setStaleOnly(e.target.checked)}
           />
-          Stale only (SUBMITTED/UNDER_REVIEW 3+d)
+          {T.staleOnlyToggle}
         </label>
       </div>
 
       {requests.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
           <span className="text-4xl mb-3 block">📭</span>
-          <p className="text-slate-600">No sample requests match these filters.</p>
+          <p className="text-slate-600">{T.emptyState}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -260,7 +261,7 @@ export default function AdminSampleRequestsPage() {
                       </span>
                       {flag && (
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700">
-                          STALE {r.ageDays}d
+                          {T.staleBadge} {r.ageDays}d
                         </span>
                       )}
                     </div>
@@ -287,13 +288,13 @@ export default function AdminSampleRequestsPage() {
                       {r.totalMeters} {r.totalUnit}
                       {r.targetFuzeTier && <> · {r.targetFuzeTier}</>}
                       {r.sampleVolumeLiters && (
-                        <> · {r.sampleVolumeLiters}L sample</>
+                        <> · {r.sampleVolumeLiters}{T.sampleSuffix}</>
                       )}
-                      {r.brand?.name && <> · for {r.brand.name}</>}
+                      {r.brand?.name && <> · {T.forPrefix} {r.brand.name}</>}
                     </p>
                     {r.requestedBy && (
                       <p className="text-xs text-slate-400 mt-0.5">
-                        Requested by {r.requestedBy.name || r.requestedBy.email}{" "}
+                        {T.requestedByPrefix} {r.requestedBy.name || r.requestedBy.email}{" "}
                         · {fmtDate(r.createdAt)}
                       </p>
                     )}
@@ -304,12 +305,12 @@ export default function AdminSampleRequestsPage() {
                     )}
                     {r.adminNotes && (
                       <p className="text-xs text-slate-700 mt-1">
-                        <strong>Admin:</strong> {r.adminNotes}
+                        <strong>{T.adminPrefix}</strong> {r.adminNotes}
                       </p>
                     )}
                     {r.rejectedReason && (
                       <p className="text-xs text-red-700 mt-1">
-                        <strong>Rejected:</strong> {r.rejectedReason}
+                        <strong>{T.rejectedPrefix}</strong> {r.rejectedReason}
                       </p>
                     )}
                   </div>
@@ -324,17 +325,17 @@ export default function AdminSampleRequestsPage() {
                         disabled={updating === r.id}
                         className="px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded hover:bg-blue-700 disabled:opacity-50"
                       >
-                        Approve
+                        {T.approveBtn}
                       </button>
                       <button
                         onClick={() => {
-                          const reason = prompt("Reason for rejection?");
+                          const reason = prompt(T.rejectPrompt);
                           if (reason) patch(r.id, "reject", { rejectedReason: reason });
                         }}
                         disabled={updating === r.id}
                         className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded hover:bg-slate-50 disabled:opacity-50"
                       >
-                        Reject…
+                        {T.rejectBtn}
                       </button>
                     </>
                   )}
@@ -352,7 +353,7 @@ export default function AdminSampleRequestsPage() {
                             },
                           }))
                         }
-                        placeholder="Tracking #"
+                        placeholder={T.trackingPlaceholder}
                         className="px-2 py-1 border border-slate-300 rounded text-xs"
                       />
                       <input
@@ -367,7 +368,7 @@ export default function AdminSampleRequestsPage() {
                             },
                           }))
                         }
-                        placeholder="Carrier"
+                        placeholder={T.carrierPlaceholder}
                         className="px-2 py-1 border border-slate-300 rounded text-xs w-28"
                       />
                       <button
@@ -375,7 +376,7 @@ export default function AdminSampleRequestsPage() {
                         disabled={updating === r.id}
                         className="px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded hover:bg-indigo-700 disabled:opacity-50"
                       >
-                        Mark Shipped
+                        {T.markShippedBtn}
                       </button>
                     </>
                   )}
@@ -385,7 +386,7 @@ export default function AdminSampleRequestsPage() {
                       disabled={updating === r.id}
                       className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded hover:bg-emerald-700 disabled:opacity-50"
                     >
-                      Mark Received
+                      {T.markReceivedBtn}
                     </button>
                   )}
                   {r.status === "SAMPLE_RECEIVED" && (
@@ -394,7 +395,7 @@ export default function AdminSampleRequestsPage() {
                       disabled={updating === r.id}
                       className="px-3 py-1.5 bg-purple-600 text-white text-xs font-bold rounded hover:bg-purple-700 disabled:opacity-50"
                     >
-                      Trial Started
+                      {T.trialStartedBtn}
                     </button>
                   )}
                   {r.status === "TRIAL_IN_PROGRESS" && (
@@ -403,7 +404,7 @@ export default function AdminSampleRequestsPage() {
                       disabled={updating === r.id}
                       className="px-3 py-1.5 bg-amber-600 text-white text-xs font-bold rounded hover:bg-amber-700 disabled:opacity-50"
                     >
-                      Awaiting ICP
+                      {T.awaitingIcpBtn}
                     </button>
                   )}
                   {r.status === "ICP_PENDING" && (
@@ -412,14 +413,14 @@ export default function AdminSampleRequestsPage() {
                       disabled={updating === r.id}
                       className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded hover:bg-emerald-700 disabled:opacity-50"
                     >
-                      Mark Complete
+                      {T.markCompleteBtn}
                     </button>
                   )}
                   {r.sampleTrackingNumber && (
                     <span className="text-xs text-slate-500 ml-auto">
-                      Tracking: {r.sampleTrackingNumber}
+                      {T.trackingPrefix} {r.sampleTrackingNumber}
                       {r.sampleShippedDate
-                        ? ` · shipped ${fmtDate(r.sampleShippedDate)}`
+                        ? ` · ${T.shippedPrefix} ${fmtDate(r.sampleShippedDate)}`
                         : ""}
                     </span>
                   )}
