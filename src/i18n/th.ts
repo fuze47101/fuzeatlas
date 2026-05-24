@@ -4596,6 +4596,49 @@ const th: Translations = {
     sowEmptyNothingStuck: "ไม่มีอะไรค้าง",
   },
 
+  ordersAdmin: {
+    pageTitle: "การจัดการคำสั่งซื้อ",
+    pageSubtitle: "ตรวจสอบ อนุมัติ และติดตามคำสั่งซื้อ FUZE ทั้งหมด",
+    myAccountsOnly: "บัญชีของฉันเท่านั้น",
+    awaitingApprovalTemplate: "{n} คำสั่งซื้อ{s} รอการอนุมัติ",
+
+    statTotal: "ทั้งหมด",
+    statPending: "รอดำเนินการ",
+    statApproved: "อนุมัติแล้ว",
+    statProcessing: "กำลังดำเนินการ",
+    statShipped: "จัดส่งแล้ว",
+    statDelivered: "ส่งมอบแล้ว",
+    statRevenue: "รายได้",
+
+    filterAll: "ทั้งหมด",
+    filterAllTypes: "ทุกประเภท",
+
+    emptyMessage: "ไม่มีคำสั่งซื้อที่ตรงกับตัวกรอง",
+
+    colOrder: "คำสั่งซื้อ",
+    colFactory: "โรงงาน",
+    colType: "ประเภท",
+    colVolume: "ปริมาณ",
+    colBrand: "แบรนด์",
+    colTotal: "รวม",
+    colFulfillment: "การจัดส่ง",
+    colStatus: "สถานะ",
+    colDate: "วันที่",
+
+    statusDraft: "ร่าง",
+    statusQuoted: "เสนอราคา",
+    statusPendingApproval: "รออนุมัติ",
+    statusApproved: "อนุมัติแล้ว",
+    statusConfirmed: "ยืนยันแล้ว",
+    statusProcessing: "กำลังดำเนินการ",
+    statusShipped: "จัดส่งแล้ว",
+    statusDelivered: "ส่งมอบแล้ว",
+    statusCancelled: "ยกเลิก",
+
+    directUsaLabel: "ตรงจาก USA",
+    tagsSuffix: "แท็ก",
+  },
+
 };
 
 export default th;
