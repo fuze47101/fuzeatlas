@@ -7781,6 +7781,23 @@ const ja: Translations = {
     fieldChangedPlural: "件のフィールドが変更されました",
   },
 
+  adminLanding: {
+    loadingLabel: "管理画面を読み込み中",
+    crumb: "管理",
+    heading: "管理",
+    subtitle: "FUZE-Ops の操作画面です。モジュールを選択して詳細にアクセスするか、サイドバーから全ナビゲーションをご利用ください。",
+    openPrefix: "開く",
+    fastPathLabel: "クイックパス",
+    dataEntryHubTitle: "データ入力ハブ",
+    dataEntryHubBody: "ブランド仕様、価格ティア、サプライチェーンリンク、ラボ価格をすべて 1 ページで設定できます。",
+    liveStateLabel: "リアルタイム状況",
+    commandCenterTitle: "コマンドセンター",
+    commandCenterBody: "6 つのメトリックタイル、ブランド × 工場のケイデンスマトリクス、最近のアクティビティ、キュー。",
+    weeklyLabel: "週次",
+    mondayReviewTitle: "月曜レビューキュー",
+    mondayReviewBody: "AI がフラグを立てた試験ランとブランドの否決事項です。日曜 22:00 UTC のメールで議題が送信されます。",
+  },
+
 };
 
 export default ja;
