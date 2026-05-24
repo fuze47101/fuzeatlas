@@ -4864,6 +4864,18 @@ const vi: Translations = {
     nextButton: "Tiếp →",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — Xem trước tài liệu",
+    printSavePdf: "In / Lưu PDF",
+    close: "Đóng",
+    documentNotFound: "Không tìm thấy tài liệu",
+    loadingError: "Không tải được tài liệu",
+    networkError: "Lỗi mạng",
+    docNumberLabel: "Số tài liệu:",
+    confidentialFooter: "FUZE Biotech Inc. — Bảo mật",
+    generatedTemplate: "Đã tạo:",
+  },
+
 };
 
 export default vi;
