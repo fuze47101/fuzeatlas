@@ -4488,6 +4488,19 @@ const ta: Translations = {
     generatedTemplate: "உருவாக்கப்பட்டது:",
   },
 
+  bdWizard: {
+    homeLink: "← முகப்பு",
+    pageTitle: "BD Wizard",
+    pageSubtitle: "வழிகாட்டப்பட்ட outbound. அடுத்த அதிக-நம்பிக்கை பிராண்ட் உங்களுக்காக தானாக தேர்ந்தெடுக்கப்படுகிறது.",
+    inQueueTemplate: "(வரிசையில் {n})",
+    skipBrand: "இந்த பிராண்டைத் தவிர் →",
+
+    setFromAddressHeader: "அனுப்புவதற்கு முன் உங்கள் outbound From: முகவரியை அமைக்கவும்",
+    setFromAddressBody: "இது இல்லாமல், outbound பொதுவான FUZE Atlas அறிவிப்பு முகவரியிலிருந்து அனுப்பப்படும் மற்றும் பதில்கள் உங்கள் இன்பாக்ஸில் வராது.",
+    currentlyLabel: "தற்போது:",
+    openProfile: "சுயவிவரத்தைத் திற",
+  },
+
 };
 
 export default ta;
