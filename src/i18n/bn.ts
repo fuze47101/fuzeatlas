@@ -6759,6 +6759,32 @@ const bn: Translations = {
     footerQuestions: "প্রশ্ন?",
   },
 
+  settingsExchangeRates: {
+    title: "এক্সচেঞ্জ রেট",
+    subtitle: "কারেন্সি কনভার্সন রেট পরিচালনা করুন",
+    addRateBtn: "রেট যোগ করুন",
+    cancelBtn: "বাতিল",
+    addFormTitle: "এক্সচেঞ্জ রেট যোগ করুন",
+    ratePlaceholder: "রেট",
+    submitAddBtn: "রেট যোগ করুন",
+    converterTitle: "কারেন্সি কনভার্টার",
+    fromLabel: "থেকে",
+    toLabel: "প্রতি",
+    amountLabel: "পরিমাণ",
+    convertBtn: "কনভার্ট",
+    rateResultPrefix: "রেট:",
+    quickStatsTitle: "দ্রুত পরিসংখ্যান",
+    totalCurrenciesLabel: "মোট কারেন্সি",
+    activeRatesLabel: "অ্যাক্টিভ রেট",
+    currentRatesTitle: "বর্তমান রেট (বেস: USD)",
+    loading: "লোড হচ্ছে...",
+    emptyState: "কোনো এক্সচেঞ্জ রেট কনফিগার করা হয়নি",
+    colCurrencyPair: "কারেন্সি জোড়া",
+    colRate: "রেট",
+    colEffectiveDate: "কার্যকর তারিখ",
+    colSource: "উৎস",
+  },
+
 };
 
 export default bn;
