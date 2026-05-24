@@ -7727,6 +7727,36 @@ const bn: Translations = {
     nextBtn: "পরবর্তী",
   },
 
+  bdSequencesList: {
+    kicker: "BD Wizard",
+    heading: "সিকোয়েন্স",
+    subtitlePrefix: "দীর্ঘ-ফানেল আউটবাউন্ড। ক্রন প্রতি ঘন্টায় ধাপ অগ্রসর করে। প্রস্তুত ধাপগুলো আপনার পর্যালোচনার জন্য",
+    subtitleSuffix: "এ পার্ক হয় — কিছুই স্বয়ংক্রিয়ভাবে পাঠানো হয় না।",
+    openWizardBtn: "BD Wizard খুলুন →",
+    stepAwaitingSingular: "আপনার পর্যালোচনার অপেক্ষায় ধাপ",
+    stepsAwaitingPlural: "আপনার পর্যালোচনার অপেক্ষায় ধাপ",
+    showAllRepsLabel: "সকল রেপ দেখান",
+    loadingState: "সিকোয়েন্স লোড হচ্ছে…",
+    emptyHeadPrefix: "কোন",
+    emptyHeadSuffix: "সিকোয়েন্স নেই",
+    emptyBodyPrefix: "এর মাধ্যমে আপনার প্রথম ইমেল পাঠিয়ে একটি শুরু করুন",
+    emptyBodyLink: "BD Wizard",
+    emptyBodySuffix: "। প্রতিটি প্রথম পাঠানো স্বয়ংক্রিয়ভাবে একটি 6-ধাপের কেডেন্স শুরু করে।",
+    colBrandContact: "ব্র্যান্ড / কন্টাক্ট",
+    colProgress: "অগ্রগতি",
+    colNext: "পরবর্তী",
+    colRep: "রেপ",
+    colStatus: "অবস্থা",
+    colActions: "কার্যকলাপ",
+    readyChipSuffix: "প্রস্তুত",
+    reviewSendBtn: "পর্যালোচনা ও পাঠান",
+    openBtn: "খুলুন",
+    viewBtn: "দেখুন",
+    pauseBtn: "বিরতি",
+    exitBtn: "বের হন",
+    resumeBtn: "পুনরায় শুরু",
+  },
+
 };
 
 export default bn;
