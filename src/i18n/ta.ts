@@ -5047,6 +5047,61 @@ const ta: Translations = {
     scopeFallback: "இயல்புநிலை",
   },
 
+  brandDiscovery: {
+    crumbHome: "முகப்பு",
+    crumbWizard: "BD Wizard",
+    crumbHere: "பிராண்ட் கண்டுபிடிப்பு",
+    pageTitle: "🌎 உலகளாவிய பிராண்ட் கண்டுபிடிப்பு",
+    pageSubtitle: "Multi-AI engine — Anthropic, OpenAI, மற்றும் Grok முழுவதும் ஜவுளி பிராண்டுகளைக் கண்டுபிடித்து சரிபார்க்கிறது, பின்னர் ஒவ்வொரு புதிய பிராண்டுக்கும் Apollo தொடர்புகளை தானாக இணைக்கிறது, எனவே BD Wizard அவற்றை உடனடியாகப் பயன்படுத்த முடியும்.",
+
+    statTotalLabel: "DB-இல் மொத்த பிராண்டுகள்",
+    backToWizard: "← Wizard-க்குத் திரும்பு",
+    backToWizardTitle: "புதிய பிராண்டுகள் வந்தவுடன் wizard-க்கு round-trip",
+
+    statsErrorContext: "Discovery stats ஏற்று",
+    statsErrorFallback: "Discovery stats-ஐ ஏற்ற முடியவில்லை",
+    statsNetworkError: "Discovery stats-ஐ ஏற்றும்போது நெட்வொர்க் பிழை.",
+
+    autoEnrichTitle: "Auto-enrichment செயல்படுகிறது",
+    autoEnrichBody: "இங்கே உருவாக்கப்படும் ஒவ்வொரு புதிய பிராண்டுக்கும் domain மூலம் Apollo people-search வழியாக 8 senior தொடர்புகள் வரை (founder / C-suite / VP / head / director) இணைக்கப்படுகின்றன. BD Wizard-இன் வடிகட்டி இந்த பிராண்டுகளை உடனடியாக அனுமதிக்கிறது — தனி enrichment pass தேவையில்லை.",
+
+    settingsHeading: "Discovery அமைப்புகள்",
+    labelCategory: "வகை",
+    labelRegion: "பகுதி",
+    labelTargetCount: "இலக்கு எண்ணிக்கை",
+    btnDiscovering: "🔍 கண்டுபிடிக்கிறது...",
+    btnRunDiscovery: "🚀 Discovery இயக்கு",
+    btnRunning: "இயங்குகிறது...",
+    btnAllCategories: "🌍 அனைத்து வகைகள்",
+
+    runningBanner: "⏳ Anthropic + OpenAI + Grok முழுவதும் multi-AI discovery இயங்குகிறது... ஒரு வகைக்கு இது 30-60 நொடிகள் எடுக்கும்.",
+    errorPrefix: "❌",
+    errorDefault: "Discovery தோல்வியடைந்தது",
+
+    resultsHeadingPrefix: "Discovery முடிவுகள் —",
+    chipAiSources: "AI மூலங்கள்:",
+    chipFound: "கிடைத்தது:",
+    chipAfterDedup: "Dedup-க்குப் பிறகு:",
+    chipCreated: "உருவாக்கப்பட்டது:",
+    chipContactsAttached: "📇 இணைக்கப்பட்ட தொடர்புகள்:",
+
+    colBrand: "பிராண்ட்",
+    colSegment: "பிரிவு",
+    colPriority: "முன்னுரிமை",
+    colValidation: "சரிபார்ப்பு",
+    colContacts: "தொடர்புகள்",
+    colAiSources: "AI மூலங்கள்",
+    colActions: "செயல்கள்",
+    tierPrefix: "டியர்",
+    aisConfirmed: "AIs உறுதிப்படுத்தியது",
+    aiConfirmed: "AI உறுதிப்படுத்தியது",
+    viewResearch: "பார்க்க & ஆராய்ச்சி",
+
+    historyHeading: "Discovery வரலாறு (இந்த அமர்வு)",
+    historyFoundLabel: "கிடைத்தது:",
+    historyCreatedLabel: "உருவாக்கப்பட்டது:",
+  },
+
 };
 
 export default ta;
