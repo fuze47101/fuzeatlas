@@ -7122,6 +7122,29 @@ const ja: Translations = {
     printedPrefix: "印刷日",
   },
 
+  pressKitAdmin: {
+    title: "プレスキット",
+    subtitle: "公開の/pressページに表示される内容を管理します。アクティブを切り替えると、削除せずに行を非表示にします。",
+    addItemTitle: "アイテムを追加",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "キャプション",
+    addItemBtn: "アイテムを追加",
+    savingBtn: "保存中…",
+    allFilter: "すべて",
+    colType: "タイプ",
+    colCaption: "キャプション",
+    colUrl: "URL",
+    colReleased: "リリース日",
+    colActive: "アクティブ",
+    activeLabel: "アクティブ",
+    hiddenLabel: "非表示",
+    deleteBtn: "削除",
+    deleteConfirmPrefix: "プレスキットアイテムを削除",
+    emptyState: "プレスキットアイテムはまだありません。",
+    errUrlRequired: "URLが必要です",
+    errAddFailed: "追加に失敗しました",
+  },
+
 };
 
 export default ja;
