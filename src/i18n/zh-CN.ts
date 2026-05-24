@@ -6261,6 +6261,31 @@ const zhCN: Translations = {
     footerNote: "排序：低库存优先，然后闲置，然后按剩余库存天数升序。「每日消耗」= 发往工厂的 90 天滚动平均升数。「剩余天数」= 当前库存 ÷ 每日消耗。「闲置」= 过去 90 天内无工厂订单。「无价格」表示 FUZE 批发价未设置；经销商无法下补货订单。在每个经销商页面编辑。",
   },
 
+  conversionTracking: {
+    crumbDashboard: "仪表板",
+    crumbCurrent: "样品 → 生产",
+    title: "样品 → 生产转化",
+    subtitle: "跟踪哪些工厂收到了样品并转化为生产订单",
+    cardFactoriesSampled: "送样工厂数",
+    cardConverted: "已转化",
+    cardConversionRate: "转化率",
+    cardAvgDays: "平均转化天数",
+    cardProdVolume: "生产量",
+    cardProdRevenue: "生产营收",
+    tabAll: "全部",
+    tabConverted: "已转化",
+    tabPending: "待处理",
+    emptyText: "尚未发现样品订单",
+    badgeConverted: "已转化",
+    badgePending: "待处理",
+    sectionSamples: "样品订单",
+    sectionTrials: "试用请求",
+    sectionProduction: "生产订单",
+    productionLabel: "生产",
+    daysToConvertSuffix: "天转化",
+    amPrefix: "AM：",
+  },
+
 };
 
 export default zhCN;
