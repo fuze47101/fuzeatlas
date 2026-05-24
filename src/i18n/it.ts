@@ -7366,6 +7366,31 @@ const it: Translations = {
     claimsLink: "Dichiarazioni",
   },
 
+  changePassword: {
+    titleDefault: "Cambia password",
+    titleForced: "Imposta la tua nuova password",
+    forcedBanner: "Ti è stata assegnata una password temporanea. Crea una password sicura per continuare.",
+    currentPasswordLabel: "Password attuale",
+    newPasswordLabel: "Nuova password",
+    newPasswordPlaceholder: "Min 8 caratteri, 1 maiuscola, 1 numero",
+    confirmPasswordLabel: "Conferma nuova password",
+    reqMinChars: "Almeno 8 caratteri",
+    reqUppercase: "Una lettera maiuscola",
+    reqNumber: "Un numero",
+    reqMatch: "Le password corrispondono",
+    updateBtn: "Aggiorna password",
+    setAndContinueBtn: "Imposta password e continua",
+    updatingBtn: "Aggiornamento...",
+    cancelBtn: "Annulla",
+    passwordUpdatedTitle: "Password aggiornata",
+    redirecting: "Reindirizzamento in corso...",
+    errPasswordsDoNotMatch: "Le password non corrispondono",
+    errMinLength: "La password deve avere almeno 8 caratteri",
+    errNeedUppercase: "La password deve contenere almeno una lettera maiuscola",
+    errNeedNumber: "La password deve contenere almeno un numero",
+    errGeneric: "Cambio password fallito",
+  },
+
 };
 
 export default it;
