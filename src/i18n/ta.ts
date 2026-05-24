@@ -4527,6 +4527,16 @@ const ta: Translations = {
     sanityCheckHeader: "Sanity Check (CTLA என்ன அறிக்கையிட வேண்டும்)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "விநியோகஸ்தர் நெட்வொர்க்",
+    pageSubtitle: "உங்கள் உலகளாவிய விநியோக கூட்டாளர்கள், சரக்கு மற்றும் கவரேஜ்-ஐ நிர்வகிக்கவும்",
+    inventoryCta: "📊 சரக்கு & Burn Rate",
+    worldwideCta: "🌍 உலகளாவிய சரக்கு",
+    newDistributorCta: "+ புதிய விநியோகஸ்தர்",
+    newDistributorModalTitle: "புதிய விநியோகஸ்தர்",
+    nameRequiredError: "பெயர் தேவை",
+  },
+
 };
 
 export default ta;
