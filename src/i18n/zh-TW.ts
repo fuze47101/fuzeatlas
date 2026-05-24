@@ -6265,6 +6265,31 @@ const zhTW: Translations = {
     footerNote: "排序方式:低庫存優先,然後閒置,再依剩餘庫存天數遞增。「日消耗」= 出貨給工廠的 90 天滾動平均公升數。「剩餘天數」= 當前庫存 ÷ 日消耗。「閒置」= 過去 90 天無工廠訂單。「無定價」表示 FUZE 批發費率尚未設定;分銷商無法下補貨單。請於每個分銷商頁面編輯。",
   },
 
+  conversionTracking: {
+    crumbDashboard: "儀表板",
+    crumbCurrent: "樣品 → 量產",
+    title: "樣品 → 量產轉換",
+    subtitle: "追蹤哪些工廠收到樣品並轉換為量產訂單",
+    cardFactoriesSampled: "已送樣工廠",
+    cardConverted: "已轉換",
+    cardConversionRate: "轉換率",
+    cardAvgDays: "平均轉換天數",
+    cardProdVolume: "量產量",
+    cardProdRevenue: "量產營收",
+    tabAll: "全部",
+    tabConverted: "已轉換",
+    tabPending: "待處理",
+    emptyText: "尚未發現樣品訂單",
+    badgeConverted: "已轉換",
+    badgePending: "待處理",
+    sectionSamples: "樣品訂單",
+    sectionTrials: "試樣請求",
+    sectionProduction: "量產訂單",
+    productionLabel: "量產",
+    daysToConvertSuffix: "天轉換",
+    amPrefix: "AM:",
+  },
+
 };
 
 export default zhTW;
