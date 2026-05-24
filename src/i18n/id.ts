@@ -3585,6 +3585,38 @@ const id: Translations = {
     emptyState: "Belum ada token — mint batch pertama Anda di atas.",
   },
 
+  testCatalogAdmin: {
+    title: "Katalog & Harga Uji",
+    subtitle: "Kelola tipe uji, harga, waktu turnaround, dan persyaratan sampel. Perubahan langsung tercermin pada formulir permintaan uji pabrik.",
+    sourcePrefix: "Sumber:",
+    sourceDb: "Database (dikelola admin)",
+    sourceStatic: "Default statis",
+    successMsg: "Uji berhasil diperbarui",
+    failedSave: "Gagal menyimpan",
+    networkErr: "Kesalahan jaringan",
+    colTestName: "Nama Uji",
+    colCategory: "Kategori",
+    colPrice: "Harga (USD)",
+    colTurnaround: "Turnaround",
+    colMinSample: "Sampel Min.",
+    colControl: "Kontrol?",
+    colActive: "Aktif",
+    colActions: "Aksi",
+    daysSuffix: "hari",
+    metersSuffix: "m",
+    yes: "Ya",
+    no: "Tidak",
+    saveBtn: "Simpan",
+    savingDots: "...",
+    cancelBtn: "Batal",
+    editBtn: "Edit",
+    catRecipeBuild: "Pembuatan Resep",
+    catPerformance: "Kinerja",
+    catQuality: "Kualitas",
+    catCertification: "Sertifikasi",
+    lastUpdatedTpl: "Terakhir diperbarui oleh {who} pada {when}",
+  },
+
 };
 
 export default id;
