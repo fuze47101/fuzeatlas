@@ -6805,6 +6805,26 @@ const th: Translations = {
     emptyBias: "ยังไม่มีข้อมูลอคติ",
   },
 
+  labCreditsAdmin: {
+    loading: "กำลังโหลด…",
+    crumbLabs: "ห้องปฏิบัติการ",
+    crumbCredits: "เครดิต",
+    creditsSuffix: "เครดิต",
+    balanceLabel: "ยอด FUZE คงเหลือกับห้องปฏิบัติการนี้",
+    balanceHint: "หักอัตโนมัติจากการทดสอบ FUZE-paid ในอนาคตที่ห้องปฏิบัติการนี้",
+    addCreditTitle: "เพิ่มเครดิต",
+    amountPlaceholder: "จำนวน $",
+    sourceNotePlaceholder: "หมายเหตุแหล่ง",
+    addCreditBtn: "เพิ่มเครดิต",
+    colCreated: "สร้างเมื่อ",
+    colAmount: "จำนวน",
+    colSource: "แหล่ง",
+    colNote: "หมายเหตุ",
+    colSpent: "ใช้แล้ว",
+    availableLabel: "พร้อมใช้",
+    emptyState: "ยังไม่มีเครดิต",
+  },
+
 };
 
 export default th;
