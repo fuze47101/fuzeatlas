@@ -7644,6 +7644,21 @@ const vi: Translations = {
     errNetwork: "Lỗi mạng",
   },
 
+  verifyEmail: {
+    verifyingTitle: "Đang xác minh email của bạn...",
+    successTitle: "Email đã được xác minh",
+    welcomePrefix: "Chào mừng",
+    successBody: "Email của bạn đã được xác minh. Đang chuyển hướng đến đăng nhập...",
+    failedTitle: "Xác minh thất bại",
+    resendVerificationBtn: "Gửi lại email xác minh",
+    checkEmailTitle: "Kiểm tra email của bạn",
+    checkEmailBody: "Một liên kết xác minh đã được gửi đến địa chỉ email của bạn. Nhấp vào liên kết để xác minh tài khoản.",
+    resendEmailBtn: "Gửi lại email",
+    sendingBtn: "Đang gửi...",
+    errVerifyFailed: "Không xác minh được email",
+    errSendFailed: "Không gửi được email xác minh",
+  },
+
 };
 
 export default vi;
