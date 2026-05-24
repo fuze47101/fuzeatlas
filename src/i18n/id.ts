@@ -3458,6 +3458,29 @@ const id: Translations = {
     emptyBody: "Coba lebarkan filter — atau hapus filter \"bench test tervalidasi\" jika Anda ingin melihat kain yang masih dalam pengembangan.",
   },
 
+  accountsAdmin: {
+    title: "Akun",
+    subtitleBefore: "Brand yang melewati tahap Lead — telah menerima presentasi, dalam pengujian, sedang berproduksi, atau sudah menjadi pelanggan. Untuk prospek baru, buka",
+    brandPipelineLink: "Pipeline Brand",
+    allFilter: "Semua",
+    stagePresentation: "Presentasi",
+    stageBrandTesting: "Uji Brand",
+    stageFactoryOnboarding: "Onboarding Pabrik",
+    stageFactoryTesting: "Uji Pabrik",
+    stageProduction: "Produksi",
+    stageReConnect: "Sambungkan Ulang",
+    stageCustomerWon: "Pelanggan Dimenangkan",
+    searchPlaceholder: "Cari akun berdasarkan nama atau kontak...",
+    emptyTitle: "Belum ada akun di tampilan ini",
+    emptyBody: "Akun muncul saat brand pindah dari LEAD ke PRESENTATION atau lebih lanjut.",
+    goToPipelineBtn: "Buka Pipeline Brand",
+    highRelevanceBadge: "🔥 Relevansi tinggi",
+    amPrefix: "AM:",
+    contactsLabel: "kontak",
+    enrichedSuffix: "diperkaya",
+    backToLeadOption: "← Kembali ke Lead",
+  },
+
 };
 
 export default id;
