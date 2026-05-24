@@ -2,11 +2,14 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const { t } = useI18n();
+  const T = t.resetPassword;
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -17,13 +20,13 @@ function ResetPasswordForm() {
 
   useEffect(() => {
     if (!token) {
-      setError("Invalid or missing reset token");
+      setError(T.errInvalidToken);
     }
-  }, [token]);
+  }, [token, T.errInvalidToken]);
 
   const validatePassword = (pass: string) => {
     if (pass.length < 6) {
-      return "Password must be at least 6 characters";
+      return T.errMinLength;
     }
     return "";
   };
@@ -41,12 +44,12 @@ function ResetPasswordForm() {
     }
 
     if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
+      setPasswordError(T.errMismatch);
       return;
     }
 
     if (!token) {
-      setError("Invalid reset token");
+      setError(T.errInvalidTokenShort);
       return;
     }
 
@@ -64,10 +67,10 @@ function ResetPasswordForm() {
       if (data.ok) {
         setSubmitted(true);
       } else {
-        setError(data.error || "Failed to reset password");
+        setError(data.error || T.errResetFailed);
       }
     } catch {
-      setError("Network error");
+      setError(T.errNetwork);
     }
 
     setLoading(false);
@@ -79,16 +82,16 @@ function ResetPasswordForm() {
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-2xl p-8">
             <h2 className="text-lg font-bold text-slate-900 mb-4">
-              Invalid Reset Link
+              {T.invalidLinkTitle}
             </h2>
             <p className="text-sm text-slate-600 mb-6">
-              The reset link is invalid or has expired. Please request a new one.
+              {T.invalidLinkBody}
             </p>
             <Link
               href="/forgot-password"
               className="inline-block bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white px-6 py-2.5 rounded-lg font-medium text-sm"
             >
-              Request New Link
+              {T.requestNewLinkBtn}
             </Link>
           </div>
         </div>
@@ -110,7 +113,7 @@ function ResetPasswordForm() {
             </span>
           </div>
           <p className="text-slate-400 text-sm">
-            Create a new password
+            {T.tagline}
           </p>
         </div>
 
@@ -119,7 +122,7 @@ function ResetPasswordForm() {
           {!submitted ? (
             <>
               <h2 className="text-xl font-bold text-slate-900 mb-6">
-                Reset Password
+                {T.formTitle}
               </h2>
 
               {error && (
@@ -131,14 +134,14 @@ function ResetPasswordForm() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    New Password
+                    {T.newPasswordLabel}
                   </label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="Enter new password"
+                    placeholder={T.newPasswordPlaceholder}
                     required
                     autoFocus
                   />
@@ -146,14 +149,14 @@ function ResetPasswordForm() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Confirm Password
+                    {T.confirmPasswordLabel}
                   </label>
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#00b4c3] focus:border-transparent outline-none"
-                    placeholder="Confirm password"
+                    placeholder={T.confirmPasswordPlaceholder}
                     required
                   />
                 </div>
@@ -169,14 +172,14 @@ function ResetPasswordForm() {
                   disabled={loading}
                   className="w-full bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white py-2.5 rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? "Resetting..." : "Reset Password"}
+                  {loading ? T.resettingBtn : T.resetBtn}
                 </button>
               </form>
 
               <div className="mt-6 pt-6 border-t border-slate-100 text-center">
                 <p className="text-sm text-slate-600">
                   <Link href="/login" className="text-[#00b4c3] hover:underline font-medium">
-                    Back to Sign In
+                    {T.backToSignIn}
                   </Link>
                 </p>
               </div>
@@ -199,23 +202,23 @@ function ResetPasswordForm() {
                 </svg>
               </div>
               <h3 className="text-lg font-bold text-slate-900 mb-2">
-                Password Reset Successful
+                {T.successTitle}
               </h3>
               <p className="text-sm text-slate-600 mb-6">
-                Your password has been reset successfully. You can now sign in with your new password.
+                {T.successBody}
               </p>
               <Link
                 href="/login"
                 className="inline-block bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white px-6 py-2.5 rounded-lg font-medium text-sm hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all"
               >
-                Sign In
+                {T.signInBtn}
               </Link>
             </div>
           )}
         </div>
 
         <p className="text-center mt-6 text-xs text-slate-500">
-          FUZE Biotech Inc. &middot; v0.5.0
+          {T.footerCompany}
         </p>
       </div>
     </div>
@@ -223,11 +226,12 @@ function ResetPasswordForm() {
 }
 
 export default function ResetPasswordPage() {
+  const { t } = useI18n();
   return (
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-          <div className="text-slate-400 text-sm">Loading...</div>
+          <div className="text-slate-400 text-sm">{t.resetPassword.loading}</div>
         </div>
       }
     >
