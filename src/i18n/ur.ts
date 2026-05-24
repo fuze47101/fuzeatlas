@@ -7572,6 +7572,28 @@ const ur: Translations = {
     mondayReviewBody: "AI-فلیگڈ ٹیسٹ رنز + برانڈ مستردگیاں۔ اتوار 22:00 UTC ای میل ایجنڈا فراہم کرتی ہے۔",
   },
 
+  brandEngagement: {
+    heading: "برانڈ صحت",
+    subtitle: "تمام برانڈز کے لیے مصروفیت اور صحت کی پیمائشوں کی نگرانی",
+    recalculatingBtn: "دوبارہ حساب لگایا جا رہا ہے...",
+    recalculateBtn: "سب کا دوبارہ حساب لگائیں",
+    allFilter: "تمام",
+    loadingText: "لوڈ ہو رہا ہے...",
+    noBrandsText: "کوئی برانڈ نہیں ملا",
+    scoreBreakdownTitle: "اسکور بریک ڈاؤن",
+    communicationLabel: "مواصلات",
+    testingVelocityLabel: "ٹیسٹنگ کی رفتار",
+    pipelineVelocityLabel: "پائپ لائن کی رفتار",
+    paymentScoreLabel: "ادائیگی اسکور",
+    rawMetricsTitle: "خام پیمائشیں",
+    daysSinceContact: "رابطے سے دن",
+    testsLast30d: "ٹیسٹس (آخری 30 دن)",
+    testsLast90d: "ٹیسٹس (آخری 90 دن)",
+    avgInvoicePayDays: "اوسط انوائس ادائیگی کے دن",
+    overdueInvoices: "تاخیر شدہ انوائسز",
+    lastCalculatedLabel: "آخری حساب لگایا گیا:",
+  },
+
 };
 
 export default ur;
