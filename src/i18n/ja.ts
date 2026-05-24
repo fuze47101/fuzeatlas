@@ -7869,6 +7869,25 @@ const ja: Translations = {
     footerPrefix: "FUZE Atlas API ドキュメント - 最終更新",
   },
 
+  recipeSearch: {
+    heading: "レシピ検索",
+    subtitle: "ネットワーク全体の FUZE レシピライブラリです。Atlas 内のすべての検証済みファブリックを横断検索し、ご自身のファブリックでなくても、現在作業中のファブリックを実証済みレシピと照合できます。範囲外の行は匿名化されますが、レシピの物理パラメータはご覧いただけます。",
+    keywordPlaceholder: "キーワード (コットン、ジャージー、ツイル...)",
+    anyCategory: "すべてのカテゴリ",
+    knit: "ニット",
+    woven: "ウーブン (織物)",
+    nonwoven: "不織布",
+    fiberPlaceholder: "繊維 (コットン、ポリ...)",
+    gsmMinPlaceholder: "GSM 最小",
+    gsmMaxPlaceholder: "GSM 最大",
+    anyTier: "すべてのティア",
+    onlyValidatedLabel: "ピックアップ実測済み (ベンチ試験で検証済み) のファブリックのみ表示",
+    searchingBtn: "検索中...",
+    searchBtn: "検索",
+    emptyTitle: "一致するレシピがまだありません。",
+    emptyBody: "フィルタを広げてお試しください。あるいは、開発中のファブリックも確認したい場合は「ベンチ試験で検証済み」フィルタを外してください。",
+  },
+
 };
 
 export default ja;
