@@ -3155,6 +3155,24 @@ const id: Translations = {
     contactLink: "Kontak",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "Snapshot ESG — FUZE Atlas",
+    metaDescPrefix: "Laporan dampak ESG kuartalan untuk",
+    metaDescSuffix: "disertifikasi oleh FUZE Atlas.",
+    backArrowPrefix: "←",
+    headingSuffix: "— Dampak ESG",
+    heroSubtitle: "Snapshot kuartalan kain tersertifikasi FUZE dan hasil uji antibakteri.",
+    emptyBody: "Belum ada snapshot yang dipublikasikan. Laporan kuartalan dipublikasikan di awal kuartal berikutnya.",
+    statFabricsCertified: "Kain disertifikasi",
+    statTestsPassed: "Uji lulus",
+    statFuzeLiters: "Liter FUZE",
+    statFactories: "Pabrik",
+    passRateLabel: "Tingkat kelulusan:",
+    downloadPdf: "Unduh PDF →",
+    footerCertifiedBy: "Disertifikasi oleh FUZE Atlas",
+  },
+
 };
 
 export default id;
