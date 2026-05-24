@@ -4469,6 +4469,48 @@ const km: Translations = {
     sanityRangesHeader: "Sanity Check Ranges",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "Weekly Exec Review",
+    weekOfTemplate: "Week of",
+    coveringPrefix: "Covering",
+    daysWindowSuffix: "-day window",
+    ownerLabel: "ម្ចាស់:",
+    generatedLabel: "Generated",
+    enterPresent: "Present",
+    exitPresent: "Exit Present",
+    refreshing: "Refreshing…",
+    refreshSnapshot: "Refresh snapshot",
+
+    execSummaryTitle: "Exec summary",
+    execSummaryPlaceholder: "ទៅp-line takeaway for the board. បានរក្សាទុក on blur.",
+    saving: "Saving…",
+
+    salesDistributionTitle: "Sales & distribution",
+    bookedDollars: "Booked $",
+    shippedDollars: "Shipped $",
+    bookedLiters: "Booked L",
+    shippedLiters: "Shipped L",
+    ordersSuffix: "orders",
+    shipmentsSuffix: "shipments",
+    kgShippedSuffix: "kg shipped",
+    byOrderTypeLabel: "By order type",
+
+    sowProgressTitle: "SOW progress",
+    sowDraft: "draft",
+    sowSent: "sent",
+    sowSigned: "signed",
+    sowActive: "active",
+    sowComplete: "complete",
+    sowSignedThisWindow: "Signed this window",
+    sowNewlyOpened: "ថ្មីly opened",
+    sowActiveTitle: "សកម្ម",
+    sowStale: "Stale (>30d no movement)",
+    sowEmptyNoSignatures: "ទេ new signatures this window.",
+    sowEmptyNoOpened: "ទេ SOWs opened this window.",
+    sowEmptyNoActive: "ទេ active SOWs.",
+    sowEmptyNothingStuck: "ទេthing stuck.",
+  },
+
 };
 
 export default km;
