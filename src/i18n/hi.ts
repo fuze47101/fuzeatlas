@@ -6919,6 +6919,29 @@ const hi: Translations = {
     errAddFailed: "जोड़ना विफल",
   },
 
+  accountsAdmin: {
+    title: "खाते",
+    subtitleBefore: "Lead चरण से आगे के ब्रांड — प्रस्तुति प्राप्त, परीक्षण में, उत्पादन में, या पहले से ग्राहक। नए प्रॉस्पेक्ट्स के लिए जाएं",
+    brandPipelineLink: "ब्रांड पाइपलाइन",
+    allFilter: "सभी",
+    stagePresentation: "प्रस्तुति",
+    stageBrandTesting: "ब्रांड परीक्षण",
+    stageFactoryOnboarding: "कारखाना ऑनबोर्डिंग",
+    stageFactoryTesting: "कारखाना परीक्षण",
+    stageProduction: "उत्पादन",
+    stageReConnect: "पुनः कनेक्ट",
+    stageCustomerWon: "ग्राहक जीता",
+    searchPlaceholder: "नाम या संपर्क से खाते खोजें...",
+    emptyTitle: "इस दृश्य में अभी कोई खाता नहीं",
+    emptyBody: "जब ब्रांड LEAD से PRESENTATION या बाद में जाते हैं तो खाते दिखाई देते हैं।",
+    goToPipelineBtn: "ब्रांड पाइपलाइन पर जाएं",
+    highRelevanceBadge: "🔥 उच्च प्रासंगिकता",
+    amPrefix: "AM:",
+    contactsLabel: "संपर्क",
+    enrichedSuffix: "समृद्ध",
+    backToLeadOption: "← Lead पर वापस",
+  },
+
 };
 
 export default hi;
