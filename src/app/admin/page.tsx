@@ -21,6 +21,7 @@ import LoadingSkeleton from "@/components/LoadingSkeleton";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import OnboardingChecklist from "@/components/OnboardingChecklist";
 import { ONBOARDING_CHECKLISTS } from "@/lib/onboarding-checklists";
+import { useI18n } from "@/i18n";
 
 const ADMIN_ROLES = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER"]);
 
@@ -38,6 +39,8 @@ const ADMIN_LANDING_TILES = [
 export default function AdminLandingPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
+  const T = t.adminLanding;
 
   useEffect(() => {
     if (user === null) return; // still loading
@@ -46,7 +49,7 @@ export default function AdminLandingPage() {
     }
   }, [user, router]);
 
-  if (!user) return <LoadingSkeleton variant="page" label="Loading admin" />;
+  if (!user) return <LoadingSkeleton variant="page" label={T.loadingLabel} />;
   if (!ADMIN_ROLES.has(user.role)) return null;
 
   const tiles = ADMIN_LANDING_TILES.map((t) => {
@@ -56,17 +59,16 @@ export default function AdminLandingPage() {
 
   return (
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
-      <Breadcrumbs className="mb-2" items={[{ label: "Admin" }]} />
+      <Breadcrumbs className="mb-2" items={[{ label: T.crumb }]} />
       <OnboardingChecklist
         surface="admin"
         items={ONBOARDING_CHECKLISTS.admin}
       />
       <h1 className="text-3xl sm:text-4xl font-black text-slate-900">
-        Admin
+        {T.heading}
       </h1>
       <p className="text-slate-600 mt-1 mb-6">
-        FUZE-Ops control surfaces. Pick a module to dive in, or use the
-        sidebar for the full nav.
+        {T.subtitle}
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -86,7 +88,7 @@ export default function AdminLandingPage() {
                 <h2 className="font-black text-slate-900">{m.label}</h2>
                 <p className="text-sm text-slate-600 mt-1 leading-snug">{m.blurb}</p>
                 <div className="mt-3 text-xs text-[#00b4c3] font-bold group-hover:underline">
-                  Open {m.label} →
+                  {T.openPrefix} {m.label} →
                 </div>
               </div>
             </div>
@@ -99,30 +101,30 @@ export default function AdminLandingPage() {
           href="/admin/data-entry"
           className="rounded-xl border border-slate-200 bg-slate-50 p-4 hover:border-[#00b4c3] focus-ring"
         >
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Fast path</p>
-          <p className="font-bold text-slate-900 mt-1">Data entry hub</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{T.fastPathLabel}</p>
+          <p className="font-bold text-slate-900 mt-1">{T.dataEntryHubTitle}</p>
           <p className="text-xs text-slate-600 mt-1">
-            Set brand spec, pricing tier, supply-chain link, lab pricing — all in one page.
+            {T.dataEntryHubBody}
           </p>
         </Link>
         <Link
           href="/admin/command-center"
           className="rounded-xl border border-slate-200 bg-slate-50 p-4 hover:border-[#00b4c3] focus-ring"
         >
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Live state</p>
-          <p className="font-bold text-slate-900 mt-1">Command Center</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{T.liveStateLabel}</p>
+          <p className="font-bold text-slate-900 mt-1">{T.commandCenterTitle}</p>
           <p className="text-xs text-slate-600 mt-1">
-            Six metric tiles, brand × factory cadence matrix, recent activity, queues.
+            {T.commandCenterBody}
           </p>
         </Link>
         <Link
           href="/admin/lab-review"
           className="rounded-xl border border-slate-200 bg-slate-50 p-4 hover:border-[#00b4c3] focus-ring"
         >
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Weekly</p>
-          <p className="font-bold text-slate-900 mt-1">Monday review queue</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{T.weeklyLabel}</p>
+          <p className="font-bold text-slate-900 mt-1">{T.mondayReviewTitle}</p>
           <p className="text-xs text-slate-600 mt-1">
-            AI-flagged test runs + brand rejections. Sunday 22:00 UTC email seeds the agenda.
+            {T.mondayReviewBody}
           </p>
         </Link>
       </div>
