@@ -6873,6 +6873,29 @@ const ta: Translations = {
     errLoadFailed: "Analytics-ஐ ஏற்ற முடியவில்லை",
   },
 
+  orderQrLabel: {
+    orderNotFound: "ஆர்டர் கிடைக்கவில்லை.",
+    headerKicker: "QR Label",
+    previewPublicLink: "பொது பக்க முன்னோட்டம் →",
+    brandLine: "FUZE Biotech",
+    brandLocation: "Salt Lake City, Utah USA",
+    orderLabel: "ஆர்டர்",
+    scanToVerifyTitle: "சரிபார்க்க ஸ்கேன் செய்",
+    scanToVerifyBody: "Shipment status, lifecycle, SDS, மற்றும் COA ஏற்ற இந்த லேபிளை ஒரு தொலைபேசி camera-வில் திற.",
+    tierLabel: "டியர்",
+    volumeLabel: "அளவு",
+    bottlesSuffix: "பாட்டில்கள்",
+    methodLabel: "முறை",
+    typeLabel: "வகை",
+    shipToLabel: "Ship To",
+    forBrandLabel: "பிராண்டிற்கு",
+    viaDistributorLabel: "விநியோகஸ்தர் வழியாக",
+    fabricLabel: "ஃபேப்ரிக்",
+    trackingLabel: "Tracking",
+    footerTagline: "FUZE F1–F4 · மெட்டா-மெட்டீரியல் ஆன்டிமைக்ரோபியல் சிகிச்சை · PFAS இல்லாதது",
+    printedPrefix: "அச்சிடப்பட்டது",
+  },
+
 };
 
 export default ta;
