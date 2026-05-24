@@ -7571,6 +7571,27 @@ const ja: Translations = {
     seeSustainabilityBtn: "サステナビリティの効果を見る",
   },
 
+  pressLanding: {
+    heroTitle: "プレスキット",
+    heroSubtitle: "FUZE Biotech のロゴ、画像、リリース、会社概要をご提供します。",
+    aboutTitle: "FUZE Biotech について",
+    aboutBody1: "FUZE Biotech はユタ州ソルトレイクシティに本社を置き、FUZE メタマテリアルを核とする独自の抗菌繊維処理を開発しています。本処理は標準的な繊維仕上げ工程で繊維に永続的に結合します。PFAS、バインダーは不使用で、ファブリックの風合いや通気性を変化させることもありません。",
+    aboutBody2: "本製品は EPA 連邦登録済み、カリフォルニア EPA 承認済み (2026 年第 1 四半期)、OEKO-TEX Standard 100 Class I、bluesign® 認証済みです。性能は ASTM E2149、AATCC 100、AATCC 30、ISO 18184、ISO 20743 に準拠し、独立した第三者機関により検証されています。",
+    foundedLabel: "設立",
+    foundedValue: "ユタ州ソルトレイクシティ",
+    addressLabel: "住所",
+    pressContactLabel: "プレスに関するお問い合わせ",
+    logosSection: "ロゴ",
+    logoAltFallback: "FUZE ロゴ",
+    downloadLabel: "ダウンロード →",
+    imagerySection: "画像素材",
+    imageAltFallback: "FUZE 画像",
+    releasesSection: "プレスリリース",
+    releaseFallback: "リリース",
+    newsSection: "メディア掲載",
+    claimsLink: "クレーム表示",
+  },
+
 };
 
 export default ja;
