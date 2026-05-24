@@ -7638,6 +7638,27 @@ const tr: Translations = {
     seeSustainabilityBtn: "Sürdürülebilirlik etkisini gör",
   },
 
+  pressLanding: {
+    heroTitle: "Basın kiti",
+    heroSubtitle: "FUZE Biotech için logolar, görseller, basın bültenleri ve şirket arka planı.",
+    aboutTitle: "FUZE Biotech Hakkında",
+    aboutBody1: "Salt Lake City, Utah merkezli FUZE Biotech, FUZE metamateryali etrafında geliştirilmiş tescilli bir antimikrobiyal tekstil işlem ürünü üretir. İşlem, standart tekstil terbiyesi sırasında elyaflara kalıcı olarak bağlanır — PFAS yok, bağlayıcı yok, kumaşın tutuşunda veya nefes alabilirliğinde kimyasal değişiklik yok.",
+    aboutBody2: "Ürün, EPA kayıtlıdır (federal), California EPA onaylıdır (2026 Ç1), OEKO-TEX Standard 100 Class I ve bluesign® onaylıdır. Performans, bağımsız üçüncü taraf laboratuvarlar tarafından ASTM E2149, AATCC 100, AATCC 30, ISO 18184 ve ISO 20743 standartlarına göre doğrulanmıştır.",
+    foundedLabel: "Kuruluş",
+    foundedValue: "Salt Lake City, UT",
+    addressLabel: "Adres",
+    pressContactLabel: "Basın iletişim",
+    logosSection: "Logolar",
+    logoAltFallback: "FUZE logosu",
+    downloadLabel: "İndir →",
+    imagerySection: "Görseller",
+    imageAltFallback: "FUZE görseli",
+    releasesSection: "Basın bültenleri",
+    releaseFallback: "Bülten",
+    newsSection: "Basında",
+    claimsLink: "İddialar",
+  },
+
 };
 
 export default tr;
