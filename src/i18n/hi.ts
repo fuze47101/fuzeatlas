@@ -7254,6 +7254,21 @@ const hi: Translations = {
     errNetwork: "नेटवर्क त्रुटि",
   },
 
+  verifyEmail: {
+    verifyingTitle: "आपका ईमेल सत्यापित हो रहा है...",
+    successTitle: "ईमेल सत्यापित",
+    welcomePrefix: "स्वागत है",
+    successBody: "आपका ईमेल सत्यापित हो गया है। लॉगिन पर पुनर्निर्देशित कर रहे हैं...",
+    failedTitle: "सत्यापन विफल",
+    resendVerificationBtn: "सत्यापन ईमेल पुनः भेजें",
+    checkEmailTitle: "अपना ईमेल देखें",
+    checkEmailBody: "एक सत्यापन लिंक आपके ईमेल पते पर भेजा गया है। अपने खाते को सत्यापित करने के लिए लिंक पर क्लिक करें।",
+    resendEmailBtn: "ईमेल पुनः भेजें",
+    sendingBtn: "भेज रहे हैं...",
+    errVerifyFailed: "ईमेल सत्यापित करने में विफल",
+    errSendFailed: "सत्यापन ईमेल भेजने में विफल",
+  },
+
 };
 
 export default hi;
