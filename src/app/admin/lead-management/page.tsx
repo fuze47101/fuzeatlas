@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import ErrorPanel from "@/components/ErrorPanel";
+import { useI18n } from "@/i18n";
 
 // ─── SMS/Email Templates ───────────────────────────────
 const SMS_TEMPLATES = {
@@ -72,6 +73,8 @@ const EMAIL_COLORS: Record<string, string> = {
 
 // ─── Main Page ─────────────────────────────────────────
 export default function LeadManagementPage() {
+  const { t } = useI18n();
+  const T = t.leadManagement;
   const [brands, setBrands] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -116,7 +119,7 @@ export default function LeadManagementPage() {
       if (!res.ok || !j || j.ok === false) {
         setLoadError(
           (j && (j.error || j.message)) ||
-            `Couldn't load lead management data (HTTP ${res.status}).`,
+            `${T.loadErrorFallback} (HTTP ${res.status}).`,
         );
         return;
       }
@@ -124,7 +127,7 @@ export default function LeadManagementPage() {
       setStats(j.stats);
       setPagination(j.pagination);
     } catch (e: any) {
-      setLoadError(e?.message || "Network error while loading leads.");
+      setLoadError(e?.message || T.networkError);
     } finally {
       setLoading(false);
     }
@@ -250,9 +253,9 @@ export default function LeadManagementPage() {
     <div className="p-6 max-w-[1600px] mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Lead Management & Outreach</h1>
+          <h1 className="text-2xl font-bold">{T.pageTitle}</h1>
           <p className="text-gray-500 text-sm mt-1">
-            Manage contacts, enrich via Apollo, send SMS/email outreach
+            {T.pageSubtitle}
           </p>
         </div>
       </div>
@@ -261,17 +264,17 @@ export default function LeadManagementPage() {
           when the API failed; render an explicit retry banner. */}
       {loadError ? (
         <div className="mb-6">
-          <ErrorPanel context="Load lead pipeline" error={loadError} onRetry={fetchData} />
+          <ErrorPanel context={T.loadErrorContext} error={loadError} onRetry={fetchData} />
         </div>
       ) : (
         stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
-            <StatCard label="Total Contacts" value={stats.totalContacts} />
-            <StatCard label="With Email" value={stats.withEmail} color="text-green-600" />
-            <StatCard label="With Phone" value={stats.withPhone} color="text-blue-600" />
-            <StatCard label="Enriched" value={stats.enriched} color="text-purple-600" />
-            <StatCard label="Not Contacted" value={stats.byOutreachStatus?.not_contacted || 0} color="text-gray-500" />
-            <StatCard label="Contacted" value={(stats.byOutreachStatus?.contacted || 0) + (stats.byOutreachStatus?.responded || 0)} color="text-cyan-600" />
+            <StatCard label={T.statTotalContacts} value={stats.totalContacts} />
+            <StatCard label={T.statWithEmail} value={stats.withEmail} color="text-green-600" />
+            <StatCard label={T.statWithPhone} value={stats.withPhone} color="text-blue-600" />
+            <StatCard label={T.statEnriched} value={stats.enriched} color="text-purple-600" />
+            <StatCard label={T.statNotContacted} value={stats.byOutreachStatus?.not_contacted || 0} color="text-gray-500" />
+            <StatCard label={T.statContacted} value={(stats.byOutreachStatus?.contacted || 0) + (stats.byOutreachStatus?.responded || 0)} color="text-cyan-600" />
           </div>
         )
       )}
@@ -280,7 +283,7 @@ export default function LeadManagementPage() {
       <div className="flex flex-wrap gap-3 mb-4">
         <input
           type="text"
-          placeholder="Search brands or contacts..."
+          placeholder={T.searchPlaceholder}
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           className="border rounded-lg px-3 py-2 text-sm w-64"
@@ -290,67 +293,67 @@ export default function LeadManagementPage() {
           onChange={(e) => { setFilterPipeline(e.target.value); setPage(1); }}
           className="border rounded-lg px-3 py-2 text-sm"
         >
-          <option value="">All Pipeline Stages</option>
-          <option value="LEAD">Lead</option>
-          <option value="PRESENTATION">Presentation</option>
-          <option value="BRAND_TESTING">Brand Testing</option>
-          <option value="FACTORY_ONBOARDING">Factory Onboarding</option>
-          <option value="PRODUCTION">Production</option>
-          <option value="ARCHIVE">Archive</option>
+          <option value="">{T.filterAllPipelineStages}</option>
+          <option value="LEAD">{T.stageLead}</option>
+          <option value="PRESENTATION">{T.stagePresentation}</option>
+          <option value="BRAND_TESTING">{T.stageBrandTesting}</option>
+          <option value="FACTORY_ONBOARDING">{T.stageFactoryOnboarding}</option>
+          <option value="PRODUCTION">{T.stageProduction}</option>
+          <option value="ARCHIVE">{T.stageArchive}</option>
         </select>
         <select
           value={filterVertical}
           onChange={(e) => { setFilterVertical(e.target.value); setPage(1); }}
           className="border rounded-lg px-3 py-2 text-sm"
         >
-          <option value="">All Verticals</option>
-          <option value="apparel">Apparel</option>
-          <option value="hospitality">Hospitality</option>
-          <option value="workwear">Workwear</option>
-          <option value="home_textiles">Home Textiles</option>
+          <option value="">{T.filterAllVerticals}</option>
+          <option value="apparel">{T.verticalApparel}</option>
+          <option value="hospitality">{T.verticalHospitality}</option>
+          <option value="workwear">{T.verticalWorkwear}</option>
+          <option value="home_textiles">{T.verticalHomeTextiles}</option>
         </select>
         <select
           value={filterOutreach}
           onChange={(e) => { setFilterOutreach(e.target.value); setPage(1); }}
           className="border rounded-lg px-3 py-2 text-sm"
         >
-          <option value="">All Outreach Status</option>
-          <option value="not_contacted">Not Contacted</option>
-          <option value="contacted">Contacted</option>
-          <option value="responded">Responded</option>
-          <option value="meeting_booked">Meeting Booked</option>
-          <option value="not_interested">Not Interested</option>
+          <option value="">{T.filterAllOutreachStatus}</option>
+          <option value="not_contacted">{T.outreachNotContacted}</option>
+          <option value="contacted">{T.outreachContacted}</option>
+          <option value="responded">{T.outreachResponded}</option>
+          <option value="meeting_booked">{T.outreachMeetingBooked}</option>
+          <option value="not_interested">{T.outreachNotInterested}</option>
         </select>
         <select
           value={filterEmail}
           onChange={(e) => { setFilterEmail(e.target.value); setPage(1); }}
           className="border rounded-lg px-3 py-2 text-sm"
         >
-          <option value="">All Email Status</option>
-          <option value="verified">Verified</option>
-          <option value="extrapolated">Extrapolated</option>
-          <option value="unavailable">Unavailable</option>
+          <option value="">{T.filterAllEmailStatus}</option>
+          <option value="verified">{T.emailVerified}</option>
+          <option value="extrapolated">{T.emailExtrapolated}</option>
+          <option value="unavailable">{T.emailUnavailable}</option>
         </select>
       </div>
 
       {/* Brand/Contact Table */}
       {loading ? (
-        <div className="text-center py-12 text-gray-500">Loading leads...</div>
+        <div className="text-center py-12 text-gray-500">{T.loading}</div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
                 <tr>
-                  <th className="px-4 py-3">Brand</th>
-                  <th className="px-4 py-3">Contact</th>
-                  <th className="px-4 py-3">Title</th>
-                  <th className="px-4 py-3">Email</th>
-                  <th className="px-4 py-3">Phone</th>
-                  <th className="px-3 py-3 text-center">LI</th>
-                  <th className="px-3 py-3 text-center">Emailed</th>
-                  <th className="px-4 py-3">Outreach</th>
-                  <th className="px-4 py-3">Actions</th>
+                  <th className="px-4 py-3">{T.colBrand}</th>
+                  <th className="px-4 py-3">{T.colContact}</th>
+                  <th className="px-4 py-3">{T.colTitle}</th>
+                  <th className="px-4 py-3">{T.colEmail}</th>
+                  <th className="px-4 py-3">{T.colPhone}</th>
+                  <th className="px-3 py-3 text-center">{T.colLI}</th>
+                  <th className="px-3 py-3 text-center">{T.colEmailed}</th>
+                  <th className="px-4 py-3">{T.colOutreach}</th>
+                  <th className="px-4 py-3">{T.colActions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -379,12 +382,12 @@ export default function LeadManagementPage() {
                           <div className="flex items-center gap-2 mt-1">
                             {contact.linkedinUrl && (
                               <a href={contact.linkedinUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#0077B5] text-white rounded text-[10px] font-bold hover:bg-[#006097] transition">
-                                in Profile
+                                {T.inProfile}
                               </a>
                             )}
                             {contact.enrichedAt && (
                               <span className="text-xs text-purple-500" title={`Enriched ${new Date(contact.enrichedAt).toLocaleDateString()}`}>
-                                enriched
+                                {T.enrichedLabel}
                               </span>
                             )}
                           </div>
@@ -426,7 +429,7 @@ export default function LeadManagementPage() {
                                   ? "bg-[#0077B5] border-[#0077B5] text-white"
                                   : "border-gray-300 hover:border-[#0077B5] text-transparent hover:text-[#0077B5]"
                               }`}
-                              title={contact.lastContactedAt ? `Reached ${new Date(contact.lastContactedAt).toLocaleDateString()}` : "Mark as LinkedIn reached"}
+                              title={contact.lastContactedAt ? `Reached ${new Date(contact.lastContactedAt).toLocaleDateString()}` : T.markLinkedinReached}
                             >
                               ✓
                             </button>
@@ -451,7 +454,7 @@ export default function LeadManagementPage() {
                               }`}
                               title={contact.outreachMessages?.find((m: any) => m.channel === "email")
                                 ? `Emailed ${new Date(contact.outreachMessages.find((m: any) => m.channel === "email").sentAt).toLocaleDateString()}`
-                                : "Mark as emailed"}
+                                : T.markEmailed}
                             >
                               ✓
                             </button>
@@ -465,15 +468,15 @@ export default function LeadManagementPage() {
                             onChange={(e) => handleStatusChange(contact.id, e.target.value)}
                             className={`text-xs rounded px-2 py-1 border-0 ${OUTREACH_COLORS[contact.outreachStatus || "not_contacted"]}`}
                           >
-                            <option value="not_contacted">Not Contacted</option>
-                            <option value="contacted">Contacted</option>
-                            <option value="responded">Responded</option>
-                            <option value="meeting_booked">Meeting Booked</option>
-                            <option value="not_interested">Not Interested</option>
+                            <option value="not_contacted">{T.outreachNotContacted}</option>
+                            <option value="contacted">{T.outreachContacted}</option>
+                            <option value="responded">{T.outreachResponded}</option>
+                            <option value="meeting_booked">{T.outreachMeetingBooked}</option>
+                            <option value="not_interested">{T.outreachNotInterested}</option>
                           </select>
                           {contact.outreachCount > 0 && (
                             <div className="text-[10px] text-gray-400 mt-0.5">
-                              {contact.outreachCount} msgs
+                              {contact.outreachCount} {T.msgsSuffix}
                               {contact.lastContactedAt && ` | ${new Date(contact.lastContactedAt).toLocaleDateString()}`}
                             </div>
                           )}
@@ -484,18 +487,18 @@ export default function LeadManagementPage() {
                               <button
                                 onClick={() => openSendModal(contact, "sms")}
                                 className="px-2 py-1 bg-green-50 text-green-700 rounded text-xs hover:bg-green-100"
-                                title="Send SMS"
+                                title={T.titleSendSms}
                               >
-                                SMS
+                                {T.actionSms}
                               </button>
                             )}
                             {contact.email && (
                               <button
                                 onClick={() => openSendModal(contact, "email")}
                                 className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs hover:bg-blue-100"
-                                title="Send Email"
+                                title={T.titleSendEmail}
                               >
-                                Email
+                                {T.actionEmail}
                               </button>
                             )}
                             {!contact.enrichedAt && (
@@ -503,9 +506,9 @@ export default function LeadManagementPage() {
                                 onClick={() => handleEnrich(contact.id)}
                                 disabled={enriching.has(contact.id)}
                                 className="px-2 py-1 bg-purple-50 text-purple-700 rounded text-xs hover:bg-purple-100 disabled:opacity-50"
-                                title="Enrich via Apollo"
+                                title={T.titleEnrichApollo}
                               >
-                                {enriching.has(contact.id) ? "..." : "Enrich"}
+                                {enriching.has(contact.id) ? "..." : T.actionEnrich}
                               </button>
                             )}
                           </div>
@@ -521,7 +524,7 @@ export default function LeadManagementPage() {
                         <div className="text-xs text-gray-400 mt-1">{brand.pipelineStage?.replace(/_/g, " ")}</div>
                       </td>
                       <td colSpan={8} className="px-4 py-3 text-gray-400 text-xs italic">
-                        No contacts — needs enrichment
+                        {T.noContactsNeedsEnrichment}
                       </td>
                     </tr>
                   )
@@ -534,7 +537,10 @@ export default function LeadManagementPage() {
           {pagination && pagination.pages > 1 && (
             <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
               <span className="text-xs text-gray-500">
-                Page {pagination.page} of {pagination.pages} ({pagination.total} brands)
+                {T.paginationLabel
+                  .replace("{page}", String(pagination.page))
+                  .replace("{pages}", String(pagination.pages))
+                  .replace("{total}", String(pagination.total))}
               </span>
               <div className="flex gap-2">
                 <button
@@ -542,14 +548,14 @@ export default function LeadManagementPage() {
                   disabled={page <= 1}
                   className="px-3 py-1 text-xs border rounded disabled:opacity-30"
                 >
-                  Prev
+                  {T.paginationPrev}
                 </button>
                 <button
                   onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
                   disabled={page >= pagination.pages}
                   className="px-3 py-1 text-xs border rounded disabled:opacity-30"
                 >
-                  Next
+                  {T.paginationNext}
                 </button>
               </div>
             </div>
@@ -564,7 +570,7 @@ export default function LeadManagementPage() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold">
-                  Send {sendChannel === "sms" ? "SMS" : "Email"} to {selectedContact.firstName} {selectedContact.lastName}
+                  {sendChannel === "sms" ? T.modalSendSmsTo : T.modalSendEmailTo} {selectedContact.firstName} {selectedContact.lastName}
                 </h2>
                 <button onClick={() => setShowSendModal(false)} className="text-gray-400 hover:text-gray-600 text-xl">
                   &times;
@@ -574,7 +580,7 @@ export default function LeadManagementPage() {
               <div className="space-y-4">
                 {/* Template selector */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Template</label>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">{T.fieldTemplate}</label>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(sendChannel === "sms" ? SMS_TEMPLATES : EMAIL_TEMPLATES).map(([key, tmpl]) => (
                       <button
@@ -595,14 +601,14 @@ export default function LeadManagementPage() {
                 {/* Destination */}
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1">
-                    To: {sendChannel === "sms" ? selectedContact.phone : selectedContact.email}
+                    {T.fieldToPrefix} {sendChannel === "sms" ? selectedContact.phone : selectedContact.email}
                   </label>
                 </div>
 
                 {/* Subject (email only) */}
                 {sendChannel === "email" && (
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Subject</label>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">{T.fieldSubject}</label>
                     <input
                       type="text"
                       value={sendSubject}
@@ -615,7 +621,7 @@ export default function LeadManagementPage() {
                 {/* Message body */}
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1">
-                    Message {sendChannel === "sms" && `(${sendBody.length} chars)`}
+                    {T.fieldMessage} {sendChannel === "sms" && `(${sendBody.length} ${T.charsSuffix})`}
                   </label>
                   <textarea
                     value={sendBody}
@@ -628,7 +634,7 @@ export default function LeadManagementPage() {
                 {/* Result */}
                 {sendResult && (
                   <div className={`p-3 rounded-lg text-sm ${sendResult.ok ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
-                    {sendResult.ok ? "Message sent successfully!" : `Error: ${sendResult.error || sendResult.failReason}`}
+                    {sendResult.ok ? T.sendSuccess : `${T.sendErrorPrefix} ${sendResult.error || sendResult.failReason}`}
                   </div>
                 )}
 
@@ -639,13 +645,13 @@ export default function LeadManagementPage() {
                     disabled={sending || !sendBody}
                     className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
                   >
-                    {sending ? "Sending..." : `Send ${sendChannel === "sms" ? "SMS" : "Email"}`}
+                    {sending ? T.sendingButton : (sendChannel === "sms" ? T.sendSms : T.sendEmail)}
                   </button>
                   <button
                     onClick={() => setShowSendModal(false)}
                     className="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-50"
                   >
-                    Cancel
+                    {T.cancelButton}
                   </button>
                 </div>
               </div>
