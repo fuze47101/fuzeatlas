@@ -4442,6 +4442,16 @@ const km: Translations = {
     sanityCheckHeader: "Sanity Check (what CTLA should report)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "អ្នកចែកចាយ Network",
+    pageSubtitle: "Manage your global distribution partners, inventory, and coverage",
+    inventoryCta: "📊 Inventory & Burn Rate",
+    worldwideCta: "🌍 Worldwide Inventory",
+    newDistributorCta: "+ ថ្មី អ្នកចែកចាយ",
+    newDistributorModalTitle: "ថ្មី distributor",
+    nameRequiredError: "ឈ្មោះ is required",
+  },
+
 };
 
 export default km;
