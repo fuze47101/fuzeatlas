@@ -7944,6 +7944,24 @@ const tr: Translations = {
     websiteLabel: "Web sitesi",
   },
 
+  importContacts: {
+    title: "Toplu içe aktarma — Kişiler",
+    subtitle: "Kişilerin CSV dosyasını yapıştırın veya yükleyin. E-posta doğal anahtardır — mevcut olduğunda e-postaya göre upsert yaparız. E-postası olmayan ancak LinkedIn URL'si bulunan satırlar 'e-posta eksik' olarak içe aktarılır; mevcut Apollo zenginleştirme işi onları kovalayabilir. Hiçbiri olmayan satırlar reddedilir.",
+    backLabel: "Lead Yönetimi",
+    firstNameLabel: "Ad",
+    lastNameLabel: "Soyad",
+    emailLabel: "E-posta",
+    emailHint: "LinkedIn URL'si yoksa gereklidir",
+    linkedinLabel: "LinkedIn URL",
+    linkedinHint: "e-posta eksik olduğunda yedek tanımlayıcı",
+    brandNameLabel: "Marka adı",
+    brandNameHint: "Brand.name'de büyük/küçük harfe duyarsız eşleşme; bulunmazsa bağlantısız kalır",
+    jobTitleLabel: "İş unvanı",
+    phoneLabel: "Telefon",
+    titleLabel: "Hitap (unvan)",
+    titleHint: 'örn. "Mr.", "Dr."',
+  },
+
 };
 
 export default tr;
