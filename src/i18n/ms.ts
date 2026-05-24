@@ -5681,6 +5681,69 @@ const ms: Translations = {
     footerGenerated: "Borang dijana",
   },
 
+  sampleTrials: {
+    crumbDashboard: "Papan Pemuka",
+    crumbHere: "Percubaan Sampel",
+    pageTitle: "Pengurusan Percubaan Sampel",
+    pageSubtitle: "Semak, luluskan, hantar, dan jejak semua permintaan percubaan sampel kilang",
+
+    statTotal: "Jumlah",
+    statNeedsAction: "Perlukan Tindakan",
+
+    searchPlaceholder: "Cari fabrik, kilang, jenama, kenalan...",
+    filterAllStatuses: "Semua Status",
+    filterAllFactories: "Semua Kilang",
+
+    errorFailedLoad: "Gagal memuatkan percubaan",
+    errorUpdate: "Kemas kini gagal",
+    errorNetwork: "Ralat rangkaian",
+
+    quickActionPrefix: "Tindakan Pantas —",
+    trialFallback: "Percubaan",
+    labelStatus: "Status",
+    labelTracking: "Nombor Penjejakan",
+    placeholderTracking: "No. FedEx/DHL/UPS",
+    labelAdminNotes: "Nota Pentadbir",
+    placeholderAdminNotes: "Nota dalaman...",
+    labelRejectReason: "Sebab Penolakan",
+    btnSave: "Simpan Perubahan",
+    btnSaving: "Menyimpan...",
+    btnCancel: "Batal",
+
+    emptyFiltered: "Tiada percubaan sepadan dengan penapis anda",
+    emptyDefault: "Belum ada percubaan sampel",
+
+    colFabric: "Fabrik",
+    colFactory: "Kilang",
+    colPurpose: "Tujuan",
+    colStatus: "Status",
+    colDetails: "Butiran",
+    colIcpLab: "Makmal ICP",
+    colDate: "Tarikh",
+    colActions: "Tindakan",
+
+    purposeBrand: "Jenama",
+    purposeSelfDev: "Pembangunan Diri",
+    trialLab: "Makmal",
+    trialProduction: "Pengeluaran",
+    detailsTierPrefix: "Tier:",
+    detailsIcpAgPrefix: "ICP FUZE:",
+    detailsByPrefix: "Oleh:",
+    actionAction: "Tindakan",
+    actionView: "Lihat",
+
+    statusSubmitted: "Dihantar",
+    statusUnderReview: "Dalam Semakan",
+    statusApproved: "Diluluskan",
+    statusRejected: "Ditolak",
+    statusShipped: "Dihantar",
+    statusReceived: "Diterima",
+    statusInProgress: "Sedang Berjalan",
+    statusIcpPending: "ICP Menunggu",
+    statusIcpSubmitted: "ICP Dihantar",
+    statusComplete: "Selesai",
+  },
+
 };
 
 export default ms;
