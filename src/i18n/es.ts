@@ -4782,6 +4782,16 @@ const es: Translations = {
     sanityCheckHeader: "Verificación de cordura (lo que CTLA debe reportar)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "Red de distribuidores",
+    pageSubtitle: "Gestione sus socios globales de distribución, inventario y cobertura",
+    inventoryCta: "📊 Inventario y tasa de consumo",
+    worldwideCta: "🌍 Inventario mundial",
+    newDistributorCta: "+ Nuevo distribuidor",
+    newDistributorModalTitle: "Nuevo distribuidor",
+    nameRequiredError: "El nombre es obligatorio",
+  },
+
 };
 
 export default es;
