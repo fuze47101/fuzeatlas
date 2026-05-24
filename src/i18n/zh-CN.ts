@@ -7864,6 +7864,25 @@ const zhCN: Translations = {
     footerPrefix: "FUZE Atlas API 文档 - 最近更新于",
   },
 
+  recipeSearch: {
+    heading: "配方搜索",
+    subtitle: "覆盖全网络的 FUZE 配方库。可在 Atlas 中所有已验证面料间搜索——即使面料不属于您，也能匹配到经过验证的配方。超出权限的行将匿名显示，但配方物理参数可见。",
+    keywordPlaceholder: "关键词（棉、平纹针织、斜纹……）",
+    anyCategory: "任意类别",
+    knit: "针织",
+    woven: "梭织",
+    nonwoven: "非织造布",
+    fiberPlaceholder: "纤维（棉、涤纶……）",
+    gsmMinPlaceholder: "GSM 最小值",
+    gsmMaxPlaceholder: "GSM 最大值",
+    anyTier: "任意等级",
+    onlyValidatedLabel: "仅显示带实测吸液率的面料（已验证台架测试）",
+    searchingBtn: "正在搜索…",
+    searchBtn: "搜索",
+    emptyTitle: "暂无匹配配方。",
+    emptyBody: "请尝试放宽筛选条件——或取消「已验证台架测试」筛选，以查看仍处于开发阶段的面料。",
+  },
+
 };
 
 export default zhCN;
