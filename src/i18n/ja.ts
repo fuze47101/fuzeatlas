@@ -7071,6 +7071,34 @@ const ja: Translations = {
     errLoadFailed: "ファネルの読み込みに失敗しました",
   },
 
+  bdSequenceAnalytics: {
+    loading: "読み込み中…",
+    crumbBdSequences: "BDシーケンス",
+    crumbAnalytics: "分析",
+    modeSequence: "シーケンス",
+    modeCadence: "ケイデンス",
+    title: "ファネル分析",
+    aggregatedAcross: "次の数を集計",
+    sequenceSingular: "シーケンス",
+    sequencePlural: "シーケンス",
+    onCadenceLabel: "ケイデンス上",
+    emptyBefore: "この",
+    stepLabel: "ステップ",
+    sentSuffix: "送信済み",
+    mSent: "送信",
+    mOpens: "開封",
+    mClicks: "クリック",
+    mReplies: "返信",
+    mMeetings: "ミーティング",
+    mAvgDaysReply: "平均日数 → 返信",
+    subjectVariantsTitle: "件名のバリアント",
+    colSubject: "件名",
+    colSent: "送信",
+    colOpens: "開封",
+    colOpenRate: "開封率",
+    errLoadFailed: "分析の読み込みに失敗しました",
+  },
+
 };
 
 export default ja;
