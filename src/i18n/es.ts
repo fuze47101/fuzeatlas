@@ -7732,6 +7732,32 @@ const es: Translations = {
     emptyState: "Aún no hay tokens — genera tu primer lote arriba.",
   },
 
+  bookMeetingPage: {
+    heading: "Programar una reunión",
+    subtitle: "Selecciona una fecha y hora disponibles para reservar tu reunión con nuestro equipo.",
+    selectDateTitle: "Seleccionar fecha",
+    availableTimesPrefix: "Horarios disponibles el",
+    loadingSlots: "Cargando horarios...",
+    noSlotsBody: "No hay horarios disponibles para esta fecha",
+    detailsTitle: "Detalles de la reunión",
+    selectDateTimeHint: "Selecciona una fecha y hora para continuar",
+    dateTimeLabel: "Fecha y hora",
+    meetingTitleLabel: "Título de la reunión",
+    defaultTitle: "Reunión FUZE",
+    descriptionLabel: "Descripción (opcional)",
+    descriptionPlaceholder: "Cualquier detalle adicional...",
+    confirmBtn: "Confirmar reserva",
+    bookingBusy: "Reservando...",
+    bookFailedError: "Error al reservar la reunión",
+    networkError: "Error de red",
+    bookedTitle: "¡Reunión reservada!",
+    titleColLabel: "Título",
+    timeColLabel: "Hora",
+    meetingLinkLabel: "Enlace de la reunión",
+    openInTeams: "Abrir en Teams",
+    bookAnotherBtn: "Reservar otra reunión",
+  },
+
 };
 
 export default es;
