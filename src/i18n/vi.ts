@@ -6216,6 +6216,54 @@ const vi: Translations = {
     btnCreating: "Đang tạo...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "Thư viện vải FUZE",
+    pageSubtitle: "Duyệt các loại vải đã xử lý FUZE và kết quả thử nghiệm đã được xác minh trên mạng lưới toàn cầu của chúng tôi. Tất cả dữ liệu được ẩn danh — danh tính nhà máy và thương hiệu là bảo mật.",
+
+    statFabrics: "Vải đã thử nghiệm",
+    statTests: "Tổng số thử nghiệm",
+    statIcp: "Phân tích ICP",
+    statAb: "Thử nghiệm kháng khuẩn",
+
+    searchPlaceholder: "Tìm theo cấu trúc, sợi, mục đích sử dụng, số FUZE...",
+    filterAllTypes: "Tất cả loại thử nghiệm",
+    filterIcp: "Phân tích ICP",
+    filterAntibacterial: "Kháng khuẩn",
+    filterFungal: "Kháng nấm",
+    filterOdor: "Kiểm soát mùi",
+    passOnly: "Chỉ đạt",
+
+    emptyTitle: "Không có vải nào khớp tiêu chí",
+    emptyClear: "Xóa tất cả bộ lọc",
+    errorFailedLoad: "Không tải được thư viện vải",
+    errorFailedDefault: "Không tải được",
+
+    testsSuffix: "thử nghiệm",
+    testSuffix: "thử nghiệm",
+    propConstruction: "Cấu trúc:",
+    propWeight: "Trọng lượng:",
+    propWidth: "Khổ vải:",
+    propYarn: "Sợi:",
+    propCategory: "Danh mục:",
+    propEndUse: "Mục đích sử dụng:",
+    propWeave: "Dệt:",
+    propColor: "Màu:",
+
+    colTest: "Thử nghiệm",
+    colMethod: "Phương pháp",
+    colWashes: "Lần giặt",
+    colResult: "Kết quả",
+    colStatus: "Trạng thái",
+    pass: "Đạt",
+    fail: "Không đạt",
+    passBadge: "ĐẠT",
+    failBadge: "KHÔNG ĐẠT",
+
+    paginationPrev: "Trước",
+    paginationNext: "Tiếp",
+    paginationLabel: "Trang {page} trên {pages}",
+  },
+
 };
 
 export default vi;
