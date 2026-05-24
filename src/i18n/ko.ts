@@ -5935,6 +5935,82 @@ const ko: Translations = {
     btnCreatePo: "PO 생성 및 인쇄 가능한 패킷 열기 →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "관리자",
+    crumbHere: "연락처 정리",
+    pageTitle: "연락처 정리",
+    pageSubtitle: "플레이스홀더, 역할 메일박스 및 형식 오류 연락처를 플래그하여 담당자가 Jane Doe에게 아웃리치를 낭비하지 않도록 합니다. 되돌릴 수 있습니다 — 숨김 해제로 연락처를 마법사에 다시 가져옵니다.",
+
+    btnPreviewScan: "🔍 스캔 미리보기",
+    btnAutoHide: "🙈 스캔 + 자동 숨김",
+    btnScanning: "스캔 중…",
+    btnHiding: "숨기는 중…",
+    titlePreviewScan: "가시성을 변경하지 않고 모든 연락처에 대해 위생 스냅샷을 다시 실행합니다",
+    titleAutoHide: "BD Wizard에서 플레이스홀더 연락처 스캔 + 자동 숨김",
+    confirmAutoHide: "자동 숨김은 스캔이 플레이스홀더 또는 잘못된 이메일로 플래그한 모든 연락처에 대해 hiddenFromWizard = true로 전환합니다. 되돌릴 수 있지만 (이 페이지에서 숨김 해제 가능) 모든 담당자의 BD Wizard에 즉시 영향을 미칩니다. 계속하시겠습니까?",
+    promptHide: "이 연락처를 BD Wizard에서 숨기시겠습니까? 사유 (선택):",
+    promptUnhide: "이 연락처를 숨김 해제하시겠습니까? 사유 (선택, 노트에 기록됨):",
+    failedPrefix: "실패:",
+    networkErrPrefix: "네트워크 오류:",
+    scanFailedPrefix: "스캔 실패:",
+
+    summaryScanned: "스캔됨",
+    summaryContacts: "연락처 · 플레이스홀더",
+    summarySuspicious: "· 의심",
+    summaryRole: "· 역할",
+    summaryReal: "· 실제",
+    summaryHiddenSuffix: "신규",
+    summaryHiddenPrefix: "· 숨겨짐",
+
+    statPlaceholder: "플레이스홀더",
+    statSuspicious: "의심",
+    statRole: "역할 메일박스",
+    statReal: "실제",
+    statUnscanned: "미스캔",
+    statHidden: "숨겨짐",
+
+    filterVerdict: "판정",
+    filterVisibility: "가시성",
+    filterAllScanned: "모두 스캔됨",
+    filterPlaceholder: "플레이스홀더",
+    filterSuspicious: "의심",
+    filterRoleMailbox: "역할 메일박스",
+    filterReal: "실제",
+    filterUnscanned: "미스캔",
+    filterAllVisibility: "모든 가시성",
+    filterHiddenOnly: "숨겨진 항목만",
+    filterVisibleOnly: "표시된 항목만",
+    searchPlaceholder: "이름 또는 이메일 검색…",
+
+    emptyTitle: "현재 필터와 일치하는 연락처가 없습니다.",
+    emptyUnscannedTpl: "{n}개의 연락처가 스캔된 적이 없습니다 — \"스캔 미리보기\"를 눌러 채우십시오.",
+
+    colContact: "연락처",
+    colBrandFactory: "브랜드 / 공장",
+    colVerdict: "판정",
+    colEmail: "이메일",
+    colLinkedin: "LinkedIn",
+    colScore: "점수",
+    colFlags: "플래그",
+    colActions: "작업",
+
+    unnamed: "(이름 없음)",
+    noEmail: "이메일 없음",
+    hiddenLabel: "숨겨짐",
+    flagsMore: "더 보기",
+    flagsClean: "깨끗함",
+    actionHide: "숨김",
+    actionUnhide: "숨김 해제",
+
+    helpFooter: "스캔은 모든 연락처를 순회하며 판정 + 플래그를 행에 스냅샷합니다. 미리보기는 판정만 기록합니다; 스캔 + 자동 숨김은 플레이스홀더 및 잘못된 이메일 연락처에 대해서도 hiddenFromWizard를 전환합니다. 둘 다 되돌릴 수 있습니다 — \"숨김 해제\"를 클릭하여 연락처를 복원하면 데이터가 수정된 경우를 대비해 스냅샷도 다시 실행됩니다.",
+
+    verdictReal: "실제",
+    verdictSuspect: "의심",
+    verdictPlaceholder: "플레이스홀더",
+    verdictRoleMbx: "역할 메일박스",
+    verdictUnscanned: "미스캔",
+  },
+
 };
 
 export default ko;
