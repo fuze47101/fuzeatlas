@@ -8007,6 +8007,33 @@ const zhCN: Translations = {
     resumeBtn: "继续",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ 已验证 FUZE 处理",
+    tierPrefix: "FUZE tier",
+    productSectionTitle: "产品",
+    skuLabel: "SKU",
+    batchLabel: "批次",
+    fuzeNumberLabel: "FUZE #",
+    constructionLabel: "织造结构",
+    weightLabel: "克重",
+    weightUnit: "GSM",
+    mostRecentValidation: "最近一次验证",
+    testedPrefix: "已测试",
+    afterWashesPrefix: "经历",
+    afterWashesSuffix: "次水洗后",
+    whatDoesThisMean: "这意味着什么?",
+    explainerP1: "FUZE 是一种专有的抗菌纺织品处理技术。FUZE metamaterial 在标准纺织后整理过程中与纤维表面永久结合——不释出、无 PFAS、不改变面料手感与透气性。",
+    explainerP2: "细菌减少是通过与已结合的 metamaterial 直接接触实现的——这就是 FUZE 以 ASTM E2149(专为非释出型抗菌剂设计的接触式杀菌测试)为主导,并以 AATCC 100 作为分层几何验证的原因。",
+    certificationsLabel: "认证:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I、bluesign® approved、EPA 注册、California EPA 批准 (Q1 2026)、PFAS-free。",
+    sustainabilityTitle: "可持续性",
+    sustainabilityBody: "此面料迄今为止消耗的 FUZE 总量。",
+    seeMorePrefix: "查看更多",
+    seeMoreSuffix: "认证产品 →",
+    learnMoreLink: "了解更多 FUZE 技术 →",
+    footerVerifiedBy: "由 FUZE Atlas 验证",
+  },
+
 };
 
 export default zhCN;
