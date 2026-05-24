@@ -7497,6 +7497,32 @@ const ja: Translations = {
     errSendFailed: "確認メールの送信に失敗しました",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "公開ドキュメント",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "FUZE 製品ラインの公開リファレンスドキュメントです:",
+    headerLeadAfter: "製品ライン。非公開ドキュメント (完全な TDS/SDS、社内価格、アプリケーションガイド) については、お客様の役割に応じた FUZE Atlas ポータルにログインしてください。",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "毒性学",
+    catPricing: "価格設定",
+    catSustainability: "サステナビリティ",
+    catEducation: "教育資料",
+    catClaimsCompliance: "表示・コンプライアンス",
+    catApplicationGuide: "アプリケーションガイド",
+    catCaseStudy: "事例研究",
+    loading: "読み込み中…",
+    emptyBefore: "公開ドキュメントはまだありません:",
+    emptyAfter: "の公開ドキュメントはまだございません。非公開ライブラリーについては FUZE までお問い合わせください。",
+    loginCta: "Atlas にログイン →",
+    versionPrefix: "バージョン",
+    downloadBtn: "↓ ダウンロード",
+    unknownLineTitle: "不明な製品ライン",
+    unknownLineBody: "FUZE には 4 つのティアがあります: F1、F2、F3、F4。いずれかをお試しください。",
+    errLoadFailed: "読み込みに失敗しました",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default ja;
