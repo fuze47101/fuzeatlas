@@ -7784,6 +7784,24 @@ const ta: Translations = {
     footerVerifiedBy: "FUZE Atlas-ஆல் சரிபார்க்கப்பட்டது",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "ESG snapshots — FUZE Atlas",
+    metaDescPrefix: "Quarterly ESG impact reports",
+    metaDescSuffix: "FUZE Atlas-ஆல் சான்றளிக்கப்பட்டது.",
+    backArrowPrefix: "←",
+    headingSuffix: "— ESG தாக்கம்",
+    heroSubtitle: "FUZE-சான்றளிக்கப்பட்ட ஃபேப்ரிக் மற்றும் ஆன்டிமைக்ரோபியல் சோதனை விளைவுகளின் காலாண்டு snapshots.",
+    emptyBody: "இன்னும் வெளியிடப்பட்ட snapshots இல்லை. காலாண்டு அறிக்கைகள் அடுத்த காலாண்டின் தொடக்கத்தில் வெளியிடப்படுகின்றன.",
+    statFabricsCertified: "சான்றளிக்கப்பட்ட ஃபேப்ரிக்குகள்",
+    statTestsPassed: "தேர்ச்சி பெற்ற சோதனைகள்",
+    statFuzeLiters: "FUZE லிட்டர்கள்",
+    statFactories: "தொழிற்சாலைகள்",
+    passRateLabel: "தேர்ச்சி விகிதம்:",
+    downloadPdf: "PDF பதிவிறக்கம் →",
+    footerCertifiedBy: "FUZE Atlas-ஆல் சான்றளிக்கப்பட்டது",
+  },
+
 };
 
 export default ta;
