@@ -7889,6 +7889,24 @@ const tr: Translations = {
     openSameLink: "Aynı bağlantıyı aç →",
   },
 
+  apiDocs: {
+    heading: "API Dokümantasyonu",
+    subtitle: "FUZE Atlas API Referansı",
+    authStrong: "Kimlik Doğrulama:",
+    authBodyPrefix: "Şunlar hariç tüm uç noktalar",
+    authBodySuffix: "geçerli bir JWT oturum çerezi gerektirir.",
+    searchPlaceholder: "Yol veya açıklamaya göre uç nokta ara...",
+    allMethodsBtn: "Tüm Yöntemler",
+    showingPrefix: "Gösteriliyor:",
+    showingOf: "/",
+    endpointsLabel: "uç nokta",
+    collapseAllBtn: "Tümünü Daralt",
+    expandAllBtn: "Tümünü Genişlet",
+    noResults: "Aramanızla eşleşen uç nokta bulunamadı.",
+    clearFiltersBtn: "Filtreleri temizle",
+    footerPrefix: "FUZE Atlas API Dokümantasyonu - Son güncelleme",
+  },
+
 };
 
 export default tr;
