@@ -6785,6 +6785,26 @@ const it: Translations = {
     colSource: "Origine",
   },
 
+  interLabVariance: {
+    loadingLabel: "Caricamento varianza tra laboratori",
+    crumbQualityLabs: "Qualità e Laboratori",
+    crumbInterLabVariance: "Varianza tra laboratori",
+    title: "Varianza tra laboratori",
+    subtitleBefore: "Dove lo stesso tessuto è stato testato da ≥2 laboratori negli ultimi",
+    subtitleAfter: "giorni. Ordinato per intervallo (max − min) decrescente.",
+    colFabric: "Tessuto",
+    colMethod: "Metodo",
+    colRange: "Intervallo",
+    colMeanSigma: "Media ± σ",
+    colPerLab: "Risultati per laboratorio",
+    emptyTitle: "Nessun tessuto multi-laboratorio finora",
+    emptyBodyBefore: "La varianza tra laboratori confronta i tessuti testati da ≥2 laboratori negli ultimi",
+    emptyBodyAfter: "giorni. Una volta che hai lo stesso tessuto testato in un laboratorio partner E in FUZE USA (o qualsiasi coppia di 2 laboratori), apparirà qui.",
+    biasTitle: "Bias di calibrazione per laboratorio",
+    biasHint: "Media di (risultato di questo laboratorio − media di gruppo) su ogni tessuto condiviso. Positivo = registra valori più alti dei laboratori peer; negativo = registra valori più bassi.",
+    emptyBias: "Nessun dato di bias finora.",
+  },
+
 };
 
 export default it;
