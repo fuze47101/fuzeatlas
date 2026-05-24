@@ -7924,6 +7924,21 @@ const es: Translations = {
     titleHint: 'p. ej. "Sr.", "Dra."',
   },
 
+  importFactories: {
+    title: "Importación masiva — Fábricas",
+    subtitle: "Pega o sube un CSV de fábricas. Haremos upsert por nombre (clave natural), las vincularemos a un distribuidor si lo indicas, y crearemos filas SupplyChainLink para cada marca que ya exista en Atlas. Las marcas que aún no existen se reportan como 'faltantes' para que puedas ejecutar primero una importación de marcas.",
+    backLabel: "Fábricas",
+    factoryNameLabel: "Nombre de la fábrica",
+    factoryNameHint: "(clave natural — el upsert se basa en este campo)",
+    countryLabel: "País",
+    distributorLabel: "Distribuidor",
+    distributorHint: "coincidencia insensible a mayúsculas con Distributor.name; se omite si no se encuentra",
+    brandsLabel: "Marcas",
+    brandsHint: "separadas por coma; cada nombre debe existir como una Brand",
+    cityLabel: "Ciudad",
+    websiteLabel: "Sitio web",
+  },
+
 };
 
 export default es;
