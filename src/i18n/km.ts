@@ -5702,6 +5702,35 @@ const km: Translations = {
     noData: "ទេ data",
   },
 
+  educationApplication: {
+    pageMetaTitle: "Application Methods",
+    backLink: "← ត្រឡប់ to FUZE Basics",
+    kicker: "Application Methods",
+    heroTitle: "FUZE works in your existing finishing line",
+    heroBody: "You don't need a new tank, a new oven, or a new piece of equipment to apply FUZE. Three application paths cover every textile production setup in operation today. F4 Essential Protection requires no curing oven at all on many substrates.",
+    methodExhaustName: "Exhaust (dyebath)",
+    methodExhaustDesc: "បន្ថែម FUZE to the dyebath. The metamaterial bonds during the existing dye exhaust process. ទេ new tank, no new vessel, no new line.",
+    methodExhaustWhen: "Best for high-volume continuous dyeing. The metamaterial integrates with the dye-fixation step.",
+    methodPdcName: "Pad-Dry-Cure",
+    methodPdcDesc: "Run the fabric through a standard padder loaded with diluted FUZE bath. Squeeze, dry, cure as you normally would. Cure temperature 150-170°C.",
+    methodPdcWhen: "Most common application path. Compatible with every textile finishing line in operation today.",
+    methodSprayName: "Spray (head-spaced)",
+    methodSprayDesc: "6-inch head spacing, 15 m/min line speed. Atomizes diluted FUZE onto the fabric surface, then dry/cure. Ideal for finished garments or non-woven substrates.",
+    methodSprayWhen: "Garments already cut/sewn, or specialty substrates where exhaust/PDC don't apply.",
+    whenToUseLabel: "When to use",
+    operatorTitle: "Why this matters to a factory operator",
+    operatorBullet1: "✓ ទេ new capital equipment. FUZE drops into your existing pad/dye/spray line.",
+    operatorBullet2: "✓ ទេ binder, no crosslinker, no formaldehyde. Less inventory to manage, no carcinogenic-substance handling protocols.",
+    operatorBullet3: "✓ ទេ curing-oven dependency at F4. ទាបer-tier applications can air-dry; F1-F3 use 150-170°C, the same range as standard PDC finishing.",
+    operatorBullet4: "✓ ទេ shelf life on stored FUZE. Drums and carboys can sit in your finishing room indefinitely without degrading.",
+    operatorBullet5: "✓ Standard 19L carboy is the smallest order unit. ការបញ្ជាទិញ custom volumes (47L, 285L, 1300L) when you need an exact match.",
+    runNumbersTitle: "Run your numbers",
+    runNumbersBody: "The application calculator computes exact FUZE volume needed per square meter of fabric at your tier of choice. Plug in fabric weight (gsm), width, and target tier — get back liters of FUZE bath, mL of stock concentrate, and dollars per linear meter.",
+    runNumbersCta: "បើក the application calculator →",
+    backBasicsBtn: "ត្រឡប់ to FUZE Basics",
+    seePricingBtn: "See pricing & tiers",
+  },
+
 };
 
 export default km;
