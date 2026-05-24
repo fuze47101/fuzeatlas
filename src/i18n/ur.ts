@@ -6834,6 +6834,26 @@ const ur: Translations = {
     emptyBias: "ابھی تک کوئی تعصب کا ڈیٹا نہیں۔",
   },
 
+  labCreditsAdmin: {
+    loading: "لوڈ ہو رہا ہے…",
+    crumbLabs: "لیبز",
+    crumbCredits: "کریڈٹس",
+    creditsSuffix: "کریڈٹس",
+    balanceLabel: "اس لیب کے ساتھ FUZE بیلنس",
+    balanceHint: "اس لیب پر مستقبل کی FUZE-ادا شدہ ٹیسٹنگ سے خودکار طور پر کاٹا جاتا ہے۔",
+    addCreditTitle: "کریڈٹ شامل کریں",
+    amountPlaceholder: "$ رقم",
+    sourceNotePlaceholder: "ذریعہ نوٹ",
+    addCreditBtn: "کریڈٹ شامل کریں",
+    colCreated: "بنایا گیا",
+    colAmount: "رقم",
+    colSource: "ذریعہ",
+    colNote: "نوٹ",
+    colSpent: "خرچ",
+    availableLabel: "دستیاب",
+    emptyState: "ابھی تک کوئی کریڈٹس نہیں۔",
+  },
+
 };
 
 export default ur;
