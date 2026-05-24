@@ -4776,6 +4776,23 @@ const ms: Translations = {
     nameRequiredError: "Nama diperlukan",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← Kembali ke kalkulator",
+    printButton: "🖨 Cetak / Simpan sebagai PDF",
+    eyebrow: "FUZE Biotech · SOP Makmal",
+    pageTitle: "Prosedur Ujian Bench",
+    pageSubtitle: "Kalkulator Resipi FUZE — Kadar Pickup Pad-Keringkan-Awet & Pencairan",
+    docLabel: "Dok: SOP-FUZE-LAB-001",
+    revLabel: "Sem: 1.0 ·",
+    purposeHeader: "Tujuan",
+    equipmentHeader: "Peralatan",
+    chemistryRefHeader: "Rujukan Kimia FUZE",
+    criticalRulesHeader: "⚠ Peraturan Protokol Kritikal",
+    procedureHeader: "Prosedur",
+    formulasHeader: "Formula (untuk semak silang QC)",
+    sanityRangesHeader: "Julat Pemeriksaan Kewarasan",
+  },
+
 };
 
 export default ms;
