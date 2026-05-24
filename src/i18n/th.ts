@@ -7450,6 +7450,33 @@ const th: Translations = {
     contactLink: "ติดต่อ",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "แบรนด์",
+    crumb: "Hangtag QR",
+    heading: "Hangtag QR tokens",
+    subtitlePrefix: "แต่ละโทเค็นแก้ไปยังหน้ายืนยันสาธารณะที่",
+    subtitleSuffix: "นับจำนวนการสแกน + เวลาประทับการสแกนครั้งแรก / ล่าสุดถูกติดตามต่อแถว",
+    mintTokensTitle: "Mint โทเค็น",
+    countPlaceholder: "จำนวน",
+    fabricIdPlaceholder: "fabricId (ไม่บังคับ)",
+    skuPlaceholder: "SKU ผลิตภัณฑ์",
+    batchPlaceholder: "รหัสชุด",
+    mintBtn: "Mint",
+    mintingBusy: "กำลัง Mint…",
+    mintFootnote: "สูงสุด 500 ต่อ mint พิมพ์โทเค็นที่ได้เป็น QR codes บนแฮงแท็กโดยใช้ตัวสร้าง QR ที่คุณเลือก (URL แต่ละรายการเป็น URL หน้ายืนยันแน่นอน)",
+    mintFailedError: "Mint ล้มเหลว",
+    tokenSingular: "โทเค็น",
+    tokenPlural: "โทเค็น",
+    exportCsvBtn: "ส่งออก CSV",
+    colToken: "โทเค็น",
+    colSkuBatch: "SKU / ชุด",
+    colFabric: "ผ้า",
+    colScans: "การสแกน",
+    colLastScan: "การสแกนล่าสุด",
+    colVerifyUrl: "URL การยืนยัน",
+    emptyState: "ยังไม่มีโทเค็น — mint ชุดแรกของคุณด้านบน",
+  },
+
 };
 
 export default th;
