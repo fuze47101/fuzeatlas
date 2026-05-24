@@ -7081,6 +7081,37 @@ const bn: Translations = {
     footerHint: "স্টেল = DRAFT/SENT/SIGNED/ACTIVE-এ থাকা অবস্থায় 14+ দিন কোনো কার্যকলাপ নেই। সাইনড-নো-প্রোগ্রেস = 30+ দিন SIGNED বা ACTIVE মাইলস্টোন সংজ্ঞায়িত কিন্তু কোনোটি সম্পূর্ণ হয়নি। শেষ কার্যকলাপ হল SOW এডিট, মাইলস্টোন সম্পূর্ণতা, বা টেস্ট রিকোয়েস্ট সাবমিশনের সবচেয়ে সাম্প্রতিক।",
   },
 
+  acmTasks: {
+    title: "🗓️ ACM টাস্ক",
+    subtitle: "সপ্তাহ-আগে + দিন-আগে রিমাইন্ডার তাইপেই সময় সকাল 8টায় বেল + ইমেল দিয়ে স্বয়ংক্রিয়ভাবে চলে যায়।",
+    tabOpen: "ওপেন",
+    tabCompleted: "সম্পূর্ণ",
+    onlyMine: "শুধু আমার",
+    loading: "লোড হচ্ছে…",
+    overdueTitle: "ওভারডিউ",
+    overdueSubtitle: "মেয়াদ পেরিয়ে গেছে — এগুলি লিস্ট থেকে নামিয়ে নিন",
+    dueWeekTitle: "এই সপ্তাহে প্রাপ্য",
+    dueWeekSubtitle: "পরবর্তী 7 দিন",
+    upcomingTitle: "আসন্ন",
+    upcomingSubtitle: "7 দিনের বেশি",
+    completedTitle: "সম্পূর্ণ",
+    completedSubtitle: "শেষ 200",
+    nothingHere: "এখানে কিছু নেই।",
+    markDoneTitle: "সম্পন্ন চিহ্নিত করুন",
+    cancelTaskTitle: "টাস্ক বাতিল করুন",
+    reopenTitle: "পুনরায় খুলুন",
+    highPriorityBadge: "উচ্চ",
+    overdueRowPrefix: "ওভারডিউ — ",
+    duePrefix: "প্রাপ্য",
+    ownerLabel: "মালিক:",
+    relToday: "আজ",
+    relTomorrow: "আগামীকাল",
+    relYesterday: "গতকাল",
+    relInPrefix: "এর মধ্যে",
+    relDaysSuffix: "দিন",
+    relDaysAgo: "দিন আগে",
+  },
+
 };
 
 export default bn;
