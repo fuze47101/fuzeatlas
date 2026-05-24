@@ -7256,6 +7256,21 @@ const bn: Translations = {
     errNetwork: "নেটওয়ার্ক ত্রুটি",
   },
 
+  verifyEmail: {
+    verifyingTitle: "আপনার ইমেল যাচাই করা হচ্ছে...",
+    successTitle: "ইমেল যাচাই করা হয়েছে",
+    welcomePrefix: "স্বাগতম",
+    successBody: "আপনার ইমেল যাচাই করা হয়েছে। লগইনে রিডাইরেক্ট করা হচ্ছে...",
+    failedTitle: "যাচাই ব্যর্থ",
+    resendVerificationBtn: "ভেরিফিকেশন ইমেল আবার পাঠান",
+    checkEmailTitle: "আপনার ইমেল চেক করুন",
+    checkEmailBody: "আপনার ইমেল ঠিকানায় একটি ভেরিফিকেশন লিঙ্ক পাঠানো হয়েছে। আপনার অ্যাকাউন্ট যাচাই করতে লিঙ্কে ক্লিক করুন।",
+    resendEmailBtn: "ইমেল আবার পাঠান",
+    sendingBtn: "পাঠানো হচ্ছে...",
+    errVerifyFailed: "ইমেল যাচাই করতে ব্যর্থ",
+    errSendFailed: "ভেরিফিকেশন ইমেল পাঠাতে ব্যর্থ",
+  },
+
 };
 
 export default bn;
