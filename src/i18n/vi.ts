@@ -7284,6 +7284,29 @@ const vi: Translations = {
     printedPrefix: "In ngày",
   },
 
+  pressKitAdmin: {
+    title: "Bộ tài liệu báo chí",
+    subtitle: "Quản lý nội dung xuất hiện trên trang /press công khai. Chuyển đổi hoạt động sẽ ẩn một hàng mà không xóa.",
+    addItemTitle: "Thêm mục",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "chú thích",
+    addItemBtn: "Thêm mục",
+    savingBtn: "Đang lưu…",
+    allFilter: "tất cả",
+    colType: "Loại",
+    colCaption: "Chú thích",
+    colUrl: "URL",
+    colReleased: "Phát hành",
+    colActive: "Hoạt động",
+    activeLabel: "Hoạt động",
+    hiddenLabel: "Đã ẩn",
+    deleteBtn: "Xóa",
+    deleteConfirmPrefix: "Xóa mục bộ tài liệu báo chí",
+    emptyState: "Chưa có mục bộ tài liệu báo chí nào.",
+    errUrlRequired: "Cần URL",
+    errAddFailed: "Thêm thất bại",
+  },
+
 };
 
 export default vi;
