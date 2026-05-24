@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface Row {
   id: string;
@@ -55,6 +56,8 @@ interface Summary {
 }
 
 export default function AdminDistributorsInventoryPage() {
+  const { t } = useI18n();
+  const T = t.distributorsInventoryAdmin;
   const { user } = useAuth();
   const router = useRouter();
   const [rows, setRows] = useState<Row[]>([]);
@@ -103,30 +106,28 @@ export default function AdminDistributorsInventoryPage() {
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
             <Link href="/admin" className="hover:text-[#00b4c3]">
-              Admin
+              {T.crumbAdmin}
             </Link>
             <span>/</span>
             <Link href="/admin/distributors" className="hover:text-[#00b4c3]">
-              Distributors
+              {T.crumbDistributors}
             </Link>
             <span>/</span>
-            <span>Inventory</span>
+            <span>{T.crumbInventory}</span>
           </div>
           <h1 className="text-3xl font-black text-slate-900">
-            Distributor Inventory & Burn Rate
+            {T.title}
           </h1>
           <p className="text-slate-600 mt-1">
-            Stock on hand, 90-day burn rate, projected runout — sortable
-            spot-check view across every active distributor.
+            {T.subtitle}
           </p>
           <p className="text-xs text-slate-400 mt-1">
-            Looking for hangtag inventory, weekly consumption charts, or
-            in-transit shipment tracking?{" "}
+            {T.worldwideHintPrefix}
             <Link
               href="/admin/worldwide-inventory"
               className="text-blue-600 hover:underline font-semibold"
             >
-              Open the worldwide dashboard view →
+              {T.worldwideHintLink}
             </Link>
           </p>
         </div>
@@ -135,33 +136,33 @@ export default function AdminDistributorsInventoryPage() {
       {summary && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
           <SummaryCard
-            label="Distributors"
+            label={T.sumDistributors}
             value={summary.total.toString()}
             icon="🌍"
           />
           <SummaryCard
-            label="Total Stock"
+            label={T.sumTotalStock}
             value={`${summary.totalStockLiters.toLocaleString()}L`}
             icon="🧴"
           />
           <SummaryCard
-            label="Total Daily Burn"
-            value={`${summary.totalDailyBurn.toLocaleString()} L/day`}
+            label={T.sumTotalBurn}
+            value={`${summary.totalDailyBurn.toLocaleString()} ${T.burnSuffix}`}
             icon="🔥"
           />
           <SummaryCard
-            label="Low Stock"
+            label={T.sumLowStock}
             value={summary.lowStock.toString()}
             icon="⚠"
             warn={summary.lowStock > 0}
           />
           <SummaryCard
-            label="Idle 90d"
+            label={T.sumIdle}
             value={summary.idle.toString()}
             icon="💤"
           />
           <SummaryCard
-            label="Missing Pricing"
+            label={T.sumMissingPricing}
             value={summary.noPriceSet.toString()}
             icon="🚫"
             warn={summary.noPriceSet > 0}
@@ -173,25 +174,25 @@ export default function AdminDistributorsInventoryPage() {
         <table className="w-full text-sm min-w-[1100px]">
           <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase tracking-wide">
             <tr>
-              <th className="text-left px-4 py-3">Distributor</th>
-              <th className="text-right px-3 py-3">Stock</th>
-              <th className="text-right px-3 py-3">Reorder pt</th>
-              <th className="text-right px-3 py-3">Days left</th>
-              <th className="text-right px-3 py-3">Burn (L/day)</th>
-              <th className="text-right px-3 py-3">90d out</th>
-              <th className="text-left px-3 py-3">Last ship in</th>
-              <th className="text-left px-3 py-3">FUZE $/L</th>
-              <th className="text-right px-3 py-3">Factories</th>
-              <th className="text-left px-4 py-3">Health</th>
+              <th className="text-left px-4 py-3">{T.colDistributor}</th>
+              <th className="text-right px-3 py-3">{T.colStock}</th>
+              <th className="text-right px-3 py-3">{T.colReorder}</th>
+              <th className="text-right px-3 py-3">{T.colDaysLeft}</th>
+              <th className="text-right px-3 py-3">{T.colBurn}</th>
+              <th className="text-right px-3 py-3">{T.col90dOut}</th>
+              <th className="text-left px-3 py-3">{T.colLastShip}</th>
+              <th className="text-left px-3 py-3">{T.colFuzePrice}</th>
+              <th className="text-right px-3 py-3">{T.colFactories}</th>
+              <th className="text-left px-4 py-3">{T.colHealth}</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((d, idx) => {
               const flags: string[] = [];
-              if (d.lowStock) flags.push("LOW STOCK");
-              if (d.idle) flags.push("IDLE");
-              if (d.noPriceSet) flags.push("NO PRICE");
-              if (d.noFactories) flags.push("NO FACTORIES");
+              if (d.lowStock) flags.push(T.flagLowStock);
+              if (d.idle) flags.push(T.flagIdle);
+              if (d.noPriceSet) flags.push(T.flagNoPrice);
+              if (d.noFactories) flags.push(T.flagNoFactories);
               const healthy = flags.length === 0;
 
               return (
@@ -255,7 +256,7 @@ export default function AdminDistributorsInventoryPage() {
                         )}
                       </>
                     ) : (
-                      <span className="text-slate-400">never</span>
+                      <span className="text-slate-400">{T.neverLabel}</span>
                     )}
                   </td>
                   <td
@@ -274,7 +275,7 @@ export default function AdminDistributorsInventoryPage() {
                   <td className="px-4 py-3">
                     {healthy ? (
                       <span className="text-emerald-600 text-xs font-bold">
-                        ✓ healthy
+                        {T.healthyBadge}
                       </span>
                     ) : (
                       <div className="flex flex-wrap gap-1">
@@ -297,12 +298,7 @@ export default function AdminDistributorsInventoryPage() {
       </div>
 
       <p className="text-xs text-slate-500 mt-3">
-        Sorted: low-stock first, then idle, then by days-of-stock-left
-        ascending. &quot;Daily burn&quot; = rolling 90-day average of liters
-        shipped to factories. &quot;Days left&quot; = current stock ÷ daily
-        burn. &quot;Idle&quot; = no factory orders in last 90 days. &quot;No
-        price&quot; means FUZE wholesale rate is unset; the distributor
-        cannot place restock orders. Edit on the per-distributor page.
+        {T.footerNote}
       </p>
     </div>
   );
