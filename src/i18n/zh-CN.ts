@@ -7683,6 +7683,23 @@ const zhCN: Translations = {
     whatYouCanClaimBtn: "可声明的内容 →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ 经 FUZE Atlas 认证",
+    statFabricsCertified: "已认证面料",
+    statTestsPassed: "通过测试（12 个月）",
+    statCountries: "发货国家",
+    activeTiersTitle: "当前 FUZE 等级",
+    activeTiersBody: "已认证工厂正在量产的处理等级。",
+    lastPassedLabel: "最近通过",
+    aboutSummaryTitle: "关于 FUZE 技术",
+    verifyCtaTitle: "核验具体产品",
+    verifyCtaBody: "每件认证产品都带有唯一二维码，可关联到生产批次和测试记录。",
+    verifyCtaBtn: "查询产品 →",
+    footerCertifiedBy: "经 FUZE Atlas 认证",
+    brandSiteLink: "品牌官网 →",
+    contactLink: "联系我们",
+  },
+
 };
 
 export default zhCN;
