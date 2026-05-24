@@ -5949,6 +5949,82 @@ const tr: Translations = {
     btnCreatePo: "PO Oluştur ve Yazdırılabilir Paketi Aç →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "Yönetici",
+    crumbHere: "Kişi Hijyeni",
+    pageTitle: "Kişi Hijyeni",
+    pageSubtitle: "Yer tutucu, rol-posta kutusu ve hatalı biçimli kişileri işaretler; böylece temsilciler John Doe'ya iletişim çabası harcamayı bırakır. Geri alınabilir — bir kişiyi sihirbaza geri getirmek için gizliliği kaldırın.",
+
+    btnPreviewScan: "🔍 Önizleme tara",
+    btnAutoHide: "🙈 Tara + otomatik gizle",
+    btnScanning: "Taranıyor…",
+    btnHiding: "Gizleniyor…",
+    titlePreviewScan: "Görünürlüğü değiştirmeden her kişide hijyen anlık görüntüsünü yeniden çalıştır",
+    titleAutoHide: "BD Sihirbazından yer tutucu kişileri tara + otomatik gizle",
+    confirmAutoHide: "Otomatik gizleme, taramanın yer tutucu veya geçersiz e-posta olarak işaretlediği her kişi için hiddenFromWizard = true değerini ayarlar. Bu geri alınabilir (bu sayfadan gizliliği kaldırabilirsiniz) ancak her temsilcinin BD Sihirbazını anında etkiler. Devam edilsin mi?",
+    promptHide: "Bu kişi BD Sihirbazından gizlensin mi? Neden (isteğe bağlı):",
+    promptUnhide: "Bu kişinin gizliliği kaldırılsın mı? Neden (isteğe bağlı, notlarına yazılır):",
+    failedPrefix: "Başarısız:",
+    networkErrPrefix: "Ağ hatası:",
+    scanFailedPrefix: "Tarama başarısız:",
+
+    summaryScanned: "Tarandı",
+    summaryContacts: "kişi · yer tutucu",
+    summarySuspicious: "· şüpheli",
+    summaryRole: "· rol",
+    summaryReal: "· gerçek",
+    summaryHiddenSuffix: "yeni",
+    summaryHiddenPrefix: "· gizli",
+
+    statPlaceholder: "Yer Tutucu",
+    statSuspicious: "Şüpheli",
+    statRole: "Rol posta kutusu",
+    statReal: "Gerçek",
+    statUnscanned: "Taranmamış",
+    statHidden: "Gizli",
+
+    filterVerdict: "Karar",
+    filterVisibility: "Görünürlük",
+    filterAllScanned: "Tüm taranmışlar",
+    filterPlaceholder: "Yer Tutucu",
+    filterSuspicious: "Şüpheli",
+    filterRoleMailbox: "Rol posta kutusu",
+    filterReal: "Gerçek",
+    filterUnscanned: "Taranmamış",
+    filterAllVisibility: "Tüm görünürlük",
+    filterHiddenOnly: "Yalnızca gizli",
+    filterVisibleOnly: "Yalnızca görünür",
+    searchPlaceholder: "İsim veya e-posta ara…",
+
+    emptyTitle: "Mevcut filtreye uyan kişi yok.",
+    emptyUnscannedTpl: "{n} kişi hiç taranmadı — doldurmak için \"Önizleme tara\"ya basın.",
+
+    colContact: "Kişi",
+    colBrandFactory: "Marka / Fabrika",
+    colVerdict: "Karar",
+    colEmail: "E-posta",
+    colLinkedin: "LinkedIn",
+    colScore: "Skor",
+    colFlags: "Bayraklar",
+    colActions: "İşlemler",
+
+    unnamed: "(isimsiz)",
+    noEmail: "e-posta yok",
+    hiddenLabel: "Gizli",
+    flagsMore: "daha fazla",
+    flagsClean: "temiz",
+    actionHide: "Gizle",
+    actionUnhide: "Gizliliği Kaldır",
+
+    helpFooter: "Tarama her kişiyi dolaşır ve karar + bayrakları satıra anlık görüntü olarak kaydeder. Önizleme yalnızca kararı kaydeder; Tara + otomatik gizle ayrıca yer tutucular ve geçersiz e-posta kişileri için hiddenFromWizard'ı değiştirir. Her ikisi de geri alınabilir — bir kişiyi geri getirmek için \"Gizliliği Kaldır\"a tıklayın, bu da veriler düzeltilmiş olabileceğinden anlık görüntüyü yeniden çalıştırır.",
+
+    verdictReal: "gerçek",
+    verdictSuspect: "şüpheli",
+    verdictPlaceholder: "yer tutucu",
+    verdictRoleMbx: "rol pk",
+    verdictUnscanned: "taranmamış",
+  },
+
 };
 
 export default tr;
