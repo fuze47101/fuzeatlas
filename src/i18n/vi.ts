@@ -7685,6 +7685,31 @@ const vi: Translations = {
     footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
   },
 
+  signupInvitation: {
+    appKicker: "FUZE Atlas",
+    joinPrefix: "Tham gia",
+    invitedSuffix: "đã mời",
+    youWereInvited: "Bạn đã được mời",
+    asLabel: "với tư cách",
+    emailLabel: "Email",
+    yourNameLabel: "Tên của bạn",
+    fullNamePlaceholder: "Họ và tên",
+    passwordLabel: "Mật khẩu",
+    passwordPlaceholder: "Ít nhất 8 ký tự",
+    confirmPasswordLabel: "Xác nhận mật khẩu",
+    confirmPasswordPlaceholder: "Nhập lại mật khẩu",
+    creatingBtn: "Đang tạo tài khoản…",
+    acceptBtn: "Chấp nhận lời mời & đăng nhập",
+    expiresPrefix: "Lời mời hết hạn",
+    problemTitle: "Sự cố lời mời",
+    problemDefault: "Không tải được lời mời này.",
+    goToSignIn: "Đi đến đăng nhập",
+    errPasswordTooShort: "Mật khẩu phải có ít nhất 8 ký tự.",
+    errPasswordsMismatch: "Mật khẩu không khớp.",
+    errNetwork: "Lỗi mạng",
+    errServerUnreachable: "Không thể tiếp cận máy chủ",
+  },
+
 };
 
 export default vi;
