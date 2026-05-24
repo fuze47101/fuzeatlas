@@ -8162,6 +8162,26 @@ const tr: Translations = {
     footnote: "Müşteriye yönelik metin \"FUZE kalıntısı\" terimini kullanır — laboratuvarın ICP raporundaki metamateryal ölçümü. Müşteri çıktılarında her zaman FUZE / metamateryal olarak etiketlenir (CLAUDE.md marka sesi kuralı).",
   },
 
+  engagementDebug: {
+    crumb: "Etkileşim hata ayıklama",
+    engagementSuffix: "etkileşim",
+    calculatedLabel: "Hesaplandı",
+    overallScoreLabel: "Genel puan",
+    outOf100: "100 üzerinden",
+    inputsLabel: "Girdiler",
+    daysSinceContact: "Son iletişimden bu yana geçen gün",
+    tests30d: "Testler (30g)",
+    tests90d: "Testler (90g)",
+    avgPayDays: "Ortalama ödeme günü",
+    overdueInvoices: "Gecikmiş faturalar",
+    factorBreakdownTitle: "Faktör dökümü",
+    weightLabel: "ağırlık",
+    contributesLabel: "katkıda bulunur",
+    ptsLabel: "puan",
+    loading: "Yükleniyor…",
+    failedToLoad: "Yüklenemedi",
+  },
+
 };
 
 export default tr;
