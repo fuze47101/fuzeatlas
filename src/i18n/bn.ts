@@ -5442,6 +5442,69 @@ const bn: Translations = {
     footerGenerated: "ফর্ম তৈরি হয়েছে",
   },
 
+  sampleTrials: {
+    crumbDashboard: "ড্যাশবোর্ড",
+    crumbHere: "নমুনা ট্রায়াল",
+    pageTitle: "নমুনা ট্রায়াল ব্যবস্থাপনা",
+    pageSubtitle: "সমস্ত কারখানা নমুনা ট্রায়াল অনুরোধ পর্যালোচনা, অনুমোদন, শিপ এবং ট্র্যাক করুন",
+
+    statTotal: "মোট",
+    statNeedsAction: "ক্রিয়া প্রয়োজন",
+
+    searchPlaceholder: "ফ্যাব্রিক, কারখানা, ব্র্যান্ড, যোগাযোগ অনুসন্ধান করুন...",
+    filterAllStatuses: "সমস্ত অবস্থা",
+    filterAllFactories: "সমস্ত কারখানা",
+
+    errorFailedLoad: "ট্রায়াল লোড করতে ব্যর্থ",
+    errorUpdate: "আপডেট ব্যর্থ",
+    errorNetwork: "নেটওয়ার্ক ত্রুটি",
+
+    quickActionPrefix: "দ্রুত ক্রিয়া —",
+    trialFallback: "ট্রায়াল",
+    labelStatus: "অবস্থা",
+    labelTracking: "ট্র্যাকিং নম্বর",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "অ্যাডমিন নোট",
+    placeholderAdminNotes: "অভ্যন্তরীণ নোট...",
+    labelRejectReason: "প্রত্যাখ্যানের কারণ",
+    btnSave: "পরিবর্তন সংরক্ষণ করুন",
+    btnSaving: "সংরক্ষণ হচ্ছে...",
+    btnCancel: "বাতিল",
+
+    emptyFiltered: "আপনার ফিল্টারের সাথে কোনো ট্রায়াল মিলছে না",
+    emptyDefault: "এখনও কোনো নমুনা ট্রায়াল নেই",
+
+    colFabric: "ফ্যাব্রিক",
+    colFactory: "কারখানা",
+    colPurpose: "উদ্দেশ্য",
+    colStatus: "অবস্থা",
+    colDetails: "বিবরণ",
+    colIcpLab: "ICP ল্যাব",
+    colDate: "তারিখ",
+    colActions: "ক্রিয়া",
+
+    purposeBrand: "ব্র্যান্ড",
+    purposeSelfDev: "স্ব-উন্নয়ন",
+    trialLab: "ল্যাব",
+    trialProduction: "উৎপাদন",
+    detailsTierPrefix: "টিয়ার:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "দ্বারা:",
+    actionAction: "ক্রিয়া",
+    actionView: "দেখুন",
+
+    statusSubmitted: "জমা দেওয়া হয়েছে",
+    statusUnderReview: "পর্যালোচনাধীন",
+    statusApproved: "অনুমোদিত",
+    statusRejected: "প্রত্যাখ্যাত",
+    statusShipped: "পাঠানো হয়েছে",
+    statusReceived: "প্রাপ্ত",
+    statusInProgress: "চলমান",
+    statusIcpPending: "ICP মুলতুবি",
+    statusIcpSubmitted: "ICP জমা",
+    statusComplete: "সম্পূর্ণ",
+  },
+
 };
 
 export default bn;
