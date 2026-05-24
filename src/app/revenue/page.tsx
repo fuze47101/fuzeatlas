@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/lib/AuthContext";
 import { formatMoney } from "@/lib/revenue-calc";
+import { useI18n } from "@/i18n";
 
 type QuarterData = {
   quarter: string;
@@ -24,7 +24,8 @@ type DistSummary = {
 };
 
 export default function RevenueForecastPage() {
-  const { user } = useAuth();
+  const { t } = useI18n();
+  const T = t.revenuePage;
   const [year, setYear] = useState(new Date().getFullYear());
   const [groupBy, setGroupBy] = useState<"distributor" | "brand" | "factory">("distributor");
   const [forecast, setForecast] = useState<QuarterData[]>([]);
@@ -51,7 +52,7 @@ export default function RevenueForecastPage() {
   }, [year, groupBy]);
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64 text-slate-400">Loading forecast...</div>;
+    return <div className="flex items-center justify-center h-64 text-slate-400">{T.loading}</div>;
   }
 
   const maxBar = Math.max(
@@ -63,8 +64,8 @@ export default function RevenueForecastPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Revenue Forecast</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Projected vs actual revenue by quarter</p>
+          <h1 className="text-2xl font-bold text-slate-900">{T.title}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{T.subtitle}</p>
         </div>
         <div className="flex gap-2">
           <select
@@ -81,9 +82,9 @@ export default function RevenueForecastPage() {
             value={groupBy}
             onChange={(e) => setGroupBy(e.target.value as any)}
           >
-            <option value="distributor">By Distributor</option>
-            <option value="brand">By Brand</option>
-            <option value="factory">By Factory</option>
+            <option value="distributor">{T.byDistributor}</option>
+            <option value="brand">{T.byBrand}</option>
+            <option value="factory">{T.byFactory}</option>
           </select>
         </div>
       </div>
@@ -92,28 +93,28 @@ export default function RevenueForecastPage() {
       {annual && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-[10px] font-medium text-slate-400 uppercase">Total Pipeline</p>
+            <p className="text-[10px] font-medium text-slate-400 uppercase">{T.kpiPipeline}</p>
             <p className="text-xl font-bold text-slate-900">{formatMoney(annual.projected)}</p>
-            <p className="text-xs text-slate-400">{annual.projectCount} deals</p>
+            <p className="text-xs text-slate-400">{annual.projectCount} {T.dealsLabel}</p>
           </div>
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-[10px] font-medium text-slate-400 uppercase">Weighted Forecast</p>
+            <p className="text-[10px] font-medium text-slate-400 uppercase">{T.kpiWeighted}</p>
             <p className="text-xl font-bold text-emerald-600">{formatMoney(annual.weighted)}</p>
           </div>
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-[10px] font-medium text-slate-400 uppercase">YTD Invoiced</p>
+            <p className="text-[10px] font-medium text-slate-400 uppercase">{T.kpiYtdInvoiced}</p>
             <p className="text-xl font-bold text-blue-600">{formatMoney(annual.invoiced)}</p>
-            <p className="text-xs text-slate-400">{annual.invoiceCount} invoices</p>
+            <p className="text-xs text-slate-400">{annual.invoiceCount} {T.invoicesLabel}</p>
           </div>
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-[10px] font-medium text-slate-400 uppercase">YTD Collected</p>
+            <p className="text-[10px] font-medium text-slate-400 uppercase">{T.kpiYtdCollected}</p>
             <p className="text-xl font-bold text-green-600">{formatMoney(annual.actual)}</p>
           </div>
           <div className="bg-white rounded-xl border p-4">
-            <p className="text-[10px] font-medium text-slate-400 uppercase">Outstanding</p>
+            <p className="text-[10px] font-medium text-slate-400 uppercase">{T.kpiOutstanding}</p>
             <p className="text-xl font-bold text-amber-600">{formatMoney(invoiceSummary?.totalOutstanding || 0)}</p>
             <p className="text-xs text-slate-400">
-              {invoiceSummary?.collectionRate || 0}% collected
+              {invoiceSummary?.collectionRate || 0}{T.pctCollectedSuffix}
             </p>
           </div>
         </div>
@@ -121,7 +122,7 @@ export default function RevenueForecastPage() {
 
       {/* Quarterly Chart */}
       <div className="bg-white rounded-xl border p-5 mb-6">
-        <h2 className="text-sm font-bold text-slate-700 mb-4">Quarterly Breakdown — {year}</h2>
+        <h2 className="text-sm font-bold text-slate-700 mb-4">{T.quarterlyBreakdownTpl.replace("{year}", String(year))}</h2>
         <div className="grid grid-cols-4 gap-4">
           {forecast.map((q) => (
             <div key={q.quarter} className="space-y-2">
@@ -135,7 +136,7 @@ export default function RevenueForecastPage() {
                     className="w-6 bg-slate-200 rounded-t"
                     style={{ height: `${Math.max((q.projected / maxBar) * 120, 2)}px` }}
                   />
-                  <span className="text-[8px] text-slate-400 mt-0.5">Proj</span>
+                  <span className="text-[8px] text-slate-400 mt-0.5">{T.barProj}</span>
                 </div>
                 {/* Weighted */}
                 <div className="flex flex-col items-center">
@@ -143,7 +144,7 @@ export default function RevenueForecastPage() {
                     className="w-6 bg-emerald-300 rounded-t"
                     style={{ height: `${Math.max((q.weighted / maxBar) * 120, 2)}px` }}
                   />
-                  <span className="text-[8px] text-emerald-500 mt-0.5">Wt</span>
+                  <span className="text-[8px] text-emerald-500 mt-0.5">{T.barWt}</span>
                 </div>
                 {/* Actual */}
                 <div className="flex flex-col items-center">
@@ -151,15 +152,15 @@ export default function RevenueForecastPage() {
                     className="w-6 bg-blue-400 rounded-t"
                     style={{ height: `${Math.max((q.actual / maxBar) * 120, 2)}px` }}
                   />
-                  <span className="text-[8px] text-blue-500 mt-0.5">Actual</span>
+                  <span className="text-[8px] text-blue-500 mt-0.5">{T.barActual}</span>
                 </div>
               </div>
 
               <div className="text-center space-y-0.5">
                 <p className="text-xs font-semibold text-slate-700">{formatMoney(q.projected)}</p>
-                <p className="text-[10px] text-emerald-600">Wt: {formatMoney(q.weighted)}</p>
-                <p className="text-[10px] text-blue-600">Act: {formatMoney(q.actual)}</p>
-                <p className="text-[10px] text-slate-400">{q.projectCount} deals · {q.invoiceCount} inv</p>
+                <p className="text-[10px] text-emerald-600">{T.barWtPrefix} {formatMoney(q.weighted)}</p>
+                <p className="text-[10px] text-blue-600">{T.barActPrefix} {formatMoney(q.actual)}</p>
+                <p className="text-[10px] text-slate-400">{q.projectCount} {T.dealsLabel} · {q.invoiceCount} {T.invShort}</p>
               </div>
             </div>
           ))}
@@ -169,21 +170,21 @@ export default function RevenueForecastPage() {
       {/* Distributor Summary Table */}
       <div className="bg-white rounded-xl border p-5 mb-6">
         <h2 className="text-sm font-bold text-slate-700 mb-3">
-          Distributor Revenue Summary — {year}
+          {T.distSummaryTpl.replace("{year}", String(year))}
         </h2>
         {distSummary.length === 0 ? (
-          <p className="text-sm text-slate-400">No distributor data yet</p>
+          <p className="text-sm text-slate-400">{T.noDistData}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-xs text-slate-400 uppercase">
-                  <th className="py-2 pr-3">Distributor</th>
-                  <th className="py-2 pr-3 text-right">Projected</th>
-                  <th className="py-2 pr-3 text-right">Weighted</th>
-                  <th className="py-2 pr-3 text-right">Actual</th>
-                  <th className="py-2 pr-3 text-right">Deals</th>
-                  <th className="py-2 text-right">Conversion</th>
+                  <th className="py-2 pr-3">{T.colDistributor}</th>
+                  <th className="py-2 pr-3 text-right">{T.colProjected}</th>
+                  <th className="py-2 pr-3 text-right">{T.colWeighted}</th>
+                  <th className="py-2 pr-3 text-right">{T.colActual}</th>
+                  <th className="py-2 pr-3 text-right">{T.colDeals}</th>
+                  <th className="py-2 text-right">{T.colConversion}</th>
                 </tr>
               </thead>
               <tbody>
@@ -210,14 +211,14 @@ export default function RevenueForecastPage() {
       {/* Quarterly Breakdowns by Group */}
       <div className="bg-white rounded-xl border p-5">
         <h2 className="text-sm font-bold text-slate-700 mb-3">
-          Quarterly by {groupBy.charAt(0).toUpperCase() + groupBy.slice(1)}
+          {T.quarterlyByGroupTpl.replace("{group}", groupBy.charAt(0).toUpperCase() + groupBy.slice(1))}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {forecast.map((q) => (
             <div key={q.quarter} className="border rounded-lg p-3">
               <h3 className="text-xs font-bold text-slate-600 mb-2">{q.quarter}</h3>
               {q.breakdown.length === 0 ? (
-                <p className="text-xs text-slate-400">No data</p>
+                <p className="text-xs text-slate-400">{T.noData}</p>
               ) : (
                 <div className="space-y-1.5">
                   {q.breakdown.map((b) => (
