@@ -3617,6 +3617,34 @@ const id: Translations = {
     lastUpdatedTpl: "Terakhir diperbarui oleh {who} pada {when}",
   },
 
+  commandCenterGlobe: {
+    loading: "Memuat globe…",
+    title: "Globe supply-chain",
+    emptyTitle: "Belum ada entitas yang di-geocode",
+    emptyHint: "Jalankan geocoder untuk mengisi lat/lng dari kota + negara setiap entitas:",
+    emptyFooter: "Nominatim memiliki batas rate 1 req/detik — full pass memerlukan beberapa menit. Re-run melewati baris yang sudah memiliki koordinat.",
+    factoriesLabel: "pabrik",
+    brandsLabel: "brand",
+    labsLabel: "lab",
+    distributorsLabel: "distributor",
+    shipmentsLabel: "pengiriman (90h)",
+    searchPlaceholder: "Cari entitas…",
+    legendFactory: "Pabrik",
+    legendPulseHint: "(pulse = aktif 30h)",
+    legendBrand: "HQ Brand",
+    legendFuzeLab: "Lab milik FUZE",
+    legendPartnerLab: "Lab mitra",
+    legendDistributor: "Distributor",
+    kindFactory: "Pabrik",
+    kindBrand: "Brand",
+    kindLab: "Lab",
+    kindDistributor: "Distributor",
+    stageLabel: "Stage:",
+    activeBadge: "⚡ Aktif (30h)",
+    openDetailBtn: "Buka detail →",
+    errLoadFailed: "Gagal memuat globe",
+  },
+
 };
 
 export default id;
