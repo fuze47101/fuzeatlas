@@ -7855,6 +7855,18 @@ const hi: Translations = {
     addFavoriteTitle: "पसंदीदा जोड़ें",
   },
 
+  icpCorrelation: {
+    adminCrumb: "एडमिन",
+    crumb: "ICP सहसंबंध",
+    heading: "ICP × AB सहसंबंध",
+    subtitle: "वह चार्ट जिसके बारे में Joseph (KUIU) ने पूछा। Atlas में हर ब्रांड-दृश्य परीक्षण रन में फैब्रिक पर FUZE अवशेष (ICP-मापा) एंटीबैक्टीरियल किल दर के विरुद्ध प्लॉट किया गया। बेस्ट-फिट रेखा + R² ओवरले।",
+    errorContext: "ICP सहसंबंध लोड करें",
+    couldntLoadPrefix: "सहसंबंध डेटा लोड नहीं हो सका",
+    networkError: "नेटवर्क त्रुटि।",
+    loadingState: "सहसंबंध डेटा लोड हो रहा है…",
+    footnote: "ग्राहक-सामना कॉपी \"FUZE अवशेष\" का उपयोग करती है — लैब की ICP रिपोर्ट से मेटामटीरियल माप। ग्राहक डिलीवरेबल्स में हमेशा FUZE / मेटामटीरियल के रूप में लेबल किया गया (CLAUDE.md ब्रांड-वॉइस नियम)।",
+  },
+
 };
 
 export default hi;
