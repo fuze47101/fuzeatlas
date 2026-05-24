@@ -6759,6 +6759,32 @@ const it: Translations = {
     footerQuestions: "Domande?",
   },
 
+  settingsExchangeRates: {
+    title: "Tassi di Cambio",
+    subtitle: "Gestisci i tassi di conversione delle valute",
+    addRateBtn: "Aggiungi Tasso",
+    cancelBtn: "Annulla",
+    addFormTitle: "Aggiungi Tasso di Cambio",
+    ratePlaceholder: "Tasso",
+    submitAddBtn: "Aggiungi Tasso",
+    converterTitle: "Convertitore di Valuta",
+    fromLabel: "Da",
+    toLabel: "A",
+    amountLabel: "Importo",
+    convertBtn: "Converti",
+    rateResultPrefix: "Tasso:",
+    quickStatsTitle: "Statistiche Rapide",
+    totalCurrenciesLabel: "Valute Totali",
+    activeRatesLabel: "Tassi Attivi",
+    currentRatesTitle: "Tassi Attuali (Base: USD)",
+    loading: "Caricamento...",
+    emptyState: "Nessun tasso di cambio configurato",
+    colCurrencyPair: "Coppia di Valute",
+    colRate: "Tasso",
+    colEffectiveDate: "Data di Efficacia",
+    colSource: "Origine",
+  },
+
 };
 
 export default it;
