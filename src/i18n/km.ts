@@ -5538,6 +5538,50 @@ const km: Translations = {
     emptyTpl: "ទេ templates yet. Click + ថ្មី Template to create your first one.",
   },
 
+  pipelineUserPage: {
+    loading: "កំពុងផ្ទុក pipeline...",
+    pageTitle: "ប្រាក់ចំណូល Pipeline",
+    pageSubtitle: "Track deals from development to production",
+    btnNewDeal: "+ ថ្មី Deal",
+
+    kpiTotalPipeline: "សរុប Pipeline",
+    kpiTotalPipelineSubTpl: "{n} deals",
+    kpiWeighted: "Weighted Forecast",
+    kpiWeightedSub: "Probability-adjusted",
+    kpiActual: "Actual ប្រាក់ចំណូល",
+    kpiActualSub: "វិក្កយបត្រd & paid",
+    kpiConversion: "Conversion",
+    kpiConversionSub: "Actual / Pipeline",
+
+    cardProdPrefix: "Prod:",
+    emptyDeals: "ទេ deals",
+    weightedPrefix: "· wt:",
+
+    editTitlePrefix: "កែសម្រួល Project:",
+    fieldName: "Project ឈ្មោះ",
+    fieldStage: "Stage",
+    keepCurrent: "Keep current",
+    fieldBrand: "ម៉ាក",
+    fieldNone: "គ្មាន",
+    fieldProjectedValue: "Projected Value ($)",
+    fieldProbability: "Probability (%)",
+    fieldFuzeTier: "FUZE កម្រិត",
+    fieldAnnualVolume: "Annual បរិមាណ (m)",
+    fieldFactory: "រោងចក្រ",
+    fieldDistributor: "អ្នកចែកចាយ",
+    autoFromFactory: "Auto from factory",
+    fieldExpectedProd: "Expected ផលិតកម្ម",
+    fieldActualProd: "Actual ផលិតកម្ម",
+    btnSaveChanges: "រក្សាទុក Changes",
+    btnSaving: "Saving...",
+    btnCancel: "បោះបង់",
+
+    newDealTitle: "ថ្មី Deal",
+    newDealPlaceholder: "Project / Deal name...",
+    btnCreate: "Create",
+    btnCreating: "Creating...",
+  },
+
 };
 
 export default km;
