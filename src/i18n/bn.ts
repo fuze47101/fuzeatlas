@@ -7702,6 +7702,31 @@ const bn: Translations = {
     accessLaterTitle: "এই রিপোর্ট পরে অ্যাক্সেস করা",
   },
 
+  settingsAuditLog: {
+    title: "অডিট লগ",
+    subtitle: "সকল সিস্টেম পরিবর্তন ও ব্যবহারকারী কার্যকলাপ ট্র্যাক করুন",
+    actionLabel: "কার্যকলাপ",
+    allActionsOption: "সকল কার্যকলাপ",
+    entityTypeLabel: "এনটিটি ধরন",
+    allEntitiesOption: "সকল এনটিটি",
+    fromDateLabel: "শুরুর তারিখ",
+    toDateLabel: "শেষের তারিখ",
+    loadingText: "লোড হচ্ছে...",
+    emptyText: "কোন অডিট লগ পাওয়া যায়নি",
+    colTimestamp: "টাইমস্ট্যাম্প",
+    colUser: "ব্যবহারকারী",
+    colAction: "কার্যকলাপ",
+    colEntity: "এনটিটি",
+    colDescription: "বিবরণ",
+    systemUserFallback: "সিস্টেম",
+    showingPrefix: "দেখানো হচ্ছে",
+    showingTo: "থেকে",
+    showingOf: "এর মধ্যে",
+    showingSuffix: "লগ",
+    prevBtn: "পূর্ববর্তী",
+    nextBtn: "পরবর্তী",
+  },
+
 };
 
 export default bn;
