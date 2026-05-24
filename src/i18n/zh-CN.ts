@@ -6198,6 +6198,35 @@ const zhCN: Translations = {
     noData: "无数据",
   },
 
+  educationApplication: {
+    pageMetaTitle: "应用方法",
+    backLink: "← 返回 FUZE 基础",
+    kicker: "应用方法",
+    heroTitle: "FUZE 可在您现有的整理线上使用",
+    heroBody: "您不需要新的浴槽、新的烘箱或新的设备来应用 FUZE。三种应用路径覆盖了当今所有的纺织生产配置。F4 Essential Protection 在许多基底上完全不需要固化烘箱。",
+    methodExhaustName: "竭染（染浴）",
+    methodExhaustDesc: "将 FUZE 加入染浴。元材料在现有的染色竭染过程中结合。无需新的浴槽、新的容器、新的产线。",
+    methodExhaustWhen: "最适合大批量连续染色。元材料与染色定型步骤集成。",
+    methodPdcName: "轧-烘-焙",
+    methodPdcDesc: "让面料通过装有稀释 FUZE 浴液的标准轧车。按您平时的方式压辊、烘干、焙烘。焙烘温度 150-170°C。",
+    methodPdcWhen: "最常见的应用路径。与当今运行中的每一条纺织整理线兼容。",
+    methodSprayName: "喷涂（头部间距）",
+    methodSprayDesc: "6 英寸头部间距，15 m/min 线速度。将稀释的 FUZE 雾化到面料表面，然后烘干/焙烘。非常适合成衣或无纺基底。",
+    methodSprayWhen: "已剪裁/缝制的成衣，或不适用竭染/PDC 的特殊基底。",
+    whenToUseLabel: "何时使用",
+    operatorTitle: "为什么这对工厂操作员很重要",
+    operatorBullet1: "✓ 无需新的资本设备。FUZE 可直接接入您现有的轧/染/喷线。",
+    operatorBullet2: "✓ 无粘合剂、无交联剂、无甲醛。要管理的库存更少，无需致癌物质处理规程。",
+    operatorBullet3: "✓ F4 等级无需固化烘箱依赖。低等级应用可空气干燥；F1-F3 使用 150-170°C，与标准 PDC 整理范围相同。",
+    operatorBullet4: "✓ 储存的 FUZE 无保质期。桶和大桶可在您的整理车间无限期放置而不降解。",
+    operatorBullet5: "✓ 标准 19L 大桶是最小订购单位。需要精确匹配时可订购定制容量（47L、285L、1300L）。",
+    runNumbersTitle: "计算您的数据",
+    runNumbersBody: "应用计算器会根据您选择的等级计算每平方米面料所需的 FUZE 精确用量。输入面料克重 (gsm)、宽度和目标等级——即可得到 FUZE 浴液升数、母液 mL 数以及每米的金额。",
+    runNumbersCta: "打开应用计算器 →",
+    backBasicsBtn: "返回 FUZE 基础",
+    seePricingBtn: "查看定价与等级",
+  },
+
 };
 
 export default zhCN;
