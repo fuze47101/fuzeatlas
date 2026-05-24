@@ -7511,6 +7511,21 @@ const es: Translations = {
     errNetwork: "Error de red",
   },
 
+  verifyEmail: {
+    verifyingTitle: "Verificando tu correo...",
+    successTitle: "Correo verificado",
+    welcomePrefix: "Bienvenido",
+    successBody: "Tu correo ha sido verificado. Redirigiendo al inicio de sesión...",
+    failedTitle: "Verificación fallida",
+    resendVerificationBtn: "Reenviar correo de verificación",
+    checkEmailTitle: "Revisa tu correo",
+    checkEmailBody: "Se ha enviado un enlace de verificación a tu dirección de correo. Haz clic en el enlace para verificar tu cuenta.",
+    resendEmailBtn: "Reenviar correo",
+    sendingBtn: "Enviando...",
+    errVerifyFailed: "Error al verificar el correo",
+    errSendFailed: "Error al enviar el correo de verificación",
+  },
+
 };
 
 export default es;
