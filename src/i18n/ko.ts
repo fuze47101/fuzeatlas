@@ -7221,6 +7221,34 @@ const ko: Translations = {
     backToLeadOption: "← 리드로 돌아가기",
   },
 
+  commandCenterGlobe: {
+    loading: "지구본 로드 중…",
+    title: "공급망 지구본",
+    emptyTitle: "아직 지오코딩된 엔티티가 없습니다",
+    emptyHint: "각 엔티티의 도시 + 국가에서 lat/lng를 채우려면 지오코더를 실행하십시오:",
+    emptyFooter: "Nominatim은 초당 1회 요청 제한이 있습니다 — 전체 패스에는 몇 분이 소요됩니다. 재실행은 이미 좌표가 있는 행을 건너뜁니다.",
+    factoriesLabel: "공장",
+    brandsLabel: "브랜드",
+    labsLabel: "랩",
+    distributorsLabel: "디스트리뷰터",
+    shipmentsLabel: "배송 (90일)",
+    searchPlaceholder: "엔티티 검색…",
+    legendFactory: "공장",
+    legendPulseHint: "(펄스 = 30일 활성)",
+    legendBrand: "브랜드 본사",
+    legendFuzeLab: "FUZE 소유 랩",
+    legendPartnerLab: "파트너 랩",
+    legendDistributor: "디스트리뷰터",
+    kindFactory: "공장",
+    kindBrand: "브랜드",
+    kindLab: "랩",
+    kindDistributor: "디스트리뷰터",
+    stageLabel: "단계:",
+    activeBadge: "⚡ 활성 (30일)",
+    openDetailBtn: "세부 정보 열기 →",
+    errLoadFailed: "지구본 로드 실패",
+  },
+
 };
 
 export default ko;
