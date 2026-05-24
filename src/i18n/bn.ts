@@ -7784,6 +7784,24 @@ const bn: Translations = {
     footerVerifiedBy: "FUZE Atlas দ্বারা যাচাইকৃত",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "ESG স্ন্যাপশট — FUZE Atlas",
+    metaDescPrefix: "ত্রৈমাসিক ESG প্রভাব রিপোর্ট",
+    metaDescSuffix: "FUZE Atlas দ্বারা সার্টিফাইড।",
+    backArrowPrefix: "←",
+    headingSuffix: "— ESG প্রভাব",
+    heroSubtitle: "FUZE-সার্টিফাইড কাপড় এবং অ্যান্টিমাইক্রোবিয়াল পরীক্ষার ফলাফলের ত্রৈমাসিক স্ন্যাপশট।",
+    emptyBody: "এখনও কোন প্রকাশিত স্ন্যাপশট নেই। পরবর্তী ত্রৈমাসিকের শুরুতে ত্রৈমাসিক রিপোর্ট প্রকাশিত হয়।",
+    statFabricsCertified: "সার্টিফাইড কাপড়",
+    statTestsPassed: "উত্তীর্ণ পরীক্ষা",
+    statFuzeLiters: "FUZE লিটার",
+    statFactories: "কারখানা",
+    passRateLabel: "পাস রেট:",
+    downloadPdf: "PDF ডাউনলোড →",
+    footerCertifiedBy: "FUZE Atlas দ্বারা সার্টিফাইড",
+  },
+
 };
 
 export default bn;
