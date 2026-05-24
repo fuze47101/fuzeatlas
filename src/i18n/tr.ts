@@ -7118,6 +7118,26 @@ const tr: Translations = {
     emptyState: "Henüz kredi yok.",
   },
 
+  bdFunnel: {
+    loading: "Yükleniyor…",
+    crumbSalesPipeline: "Satış ve Pipeline",
+    crumbBdFunnel: "BD hunisi",
+    title: "Pipeline hunisi",
+    subtitle: "Son 30 / 60 / 90 günde giriş / çıkış, ayrıca aşamadan aşamaya dönüşüm oranı. Her Brand.pipelineStage değişikliğinde yazılan BrandStageTransition satırlarından alınır.",
+    colStage: "Aşama",
+    colCurrent: "Mevcut",
+    colIn30: "30g İçeri",
+    colIn60: "60g İçeri",
+    colIn90: "90g İçeri",
+    colOut30: "30g Dışarı",
+    colOut60: "60g Dışarı",
+    colOut90: "90g Dışarı",
+    colAvgDwell: "Ort. bekleme",
+    colToNext: "→ sonraki",
+    footerHint: "Dönüşüm = kanonik sonraki aşamaya inen çıkışlar / son 90 günde gözlemlenen toplam çıkışlar. Penceredeki çıkışı olmayan aşamalar n=0 gösterir — yavaş veya kararlıdırlar, kötü değil.",
+    errLoadFailed: "Huni yüklenemedi",
+  },
+
 };
 
 export default tr;
