@@ -5732,6 +5732,58 @@ const ta: Translations = {
     verdictUnscanned: "ஸ்கேன் செய்யப்படவில்லை",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← அமைப்புகள்",
+    pageTitle: "மின்னஞ்சல் வார்ப்புருக்கள்",
+    pageSubtitle: "Outreach-க்கு மீண்டும்-பயன்படுத்தக்கூடிய மின்னஞ்சல் scaffolds. Personalize செய்ய {firstName}, {company} போன்றவற்றைப் பயன்படுத்தவும்.",
+    btnNew: "+ புதிய வார்ப்புரு",
+    errorRequired: "தலைப்பு, பொருள், மற்றும் உடல் தேவை.",
+    errorLoadUser: "பயனரை ஏற்ற முடியவில்லை",
+    errorLoadTemplates: "வார்ப்புருக்களை ஏற்ற முடியவில்லை",
+    confirmArchive: "\"{title}\"-ஐ archive செய்யவா? இது picker-இல் இனி தோன்றாது.",
+
+    formHeadingEdit: "வார்ப்புருவைத் திருத்து",
+    formHeadingNew: "புதிய வார்ப்புரு",
+    labelTitle: "தலைப்பு",
+    placeholderTitle: "எ.கா. முதல்-தொடர்பு intro (athletic apparel)",
+    labelCategory: "வகை",
+    placeholderCategory: "எ.கா. intro, re-engage, icp-request",
+    labelScope: "Scope",
+    scopePrivate: "தனிப்பட்ட (நான் மட்டும்)",
+    scopeShared: "பகிரப்பட்டது (முழு குழு)",
+    scopeGlobal: "உலகளாவிய (org இயல்புநிலை)",
+    labelSubject: "பொருள்",
+    placeholderSubject: "Hi {firstName} — {company}-க்கு விரைவு FUZE intro",
+    labelBody: "உடல்",
+    btnSaving: "சேமிக்கிறது…",
+    btnSaveChanges: "மாற்றங்களைச் சேமி",
+    btnCreate: "வார்ப்புருவை உருவாக்கு",
+    btnCancel: "ரத்து",
+
+    previewHeading: "முன்னோட்டம்",
+    previewHelp: "உங்கள் tokens எவ்வாறு render ஆகின்றன என்பதைப் பார்க்க கீழே உள்ள மாதிரி மதிப்புகளைத் திருத்தவும்.",
+    previewSubjectLabel: "பொருள்",
+    previewBodyLabel: "உடல்",
+
+    slotsHeading: "BD Wizard quick-pick slots",
+    slotsHelp: "உங்கள் வார்ப்புருக்களில் 10 வரை எண்ணிடப்பட்ட slots-க்கு pin செய்யவும். Wizard Draft step-இல், ஒரு-கிளிக் subject மற்றும் body-ஐ நிரப்பும் 1–10 பொத்தான் strip-ஐ காண்பீர்கள்.",
+    openBdWizard: "BD Wizard-ஐ திற →",
+    slotEmptyTitle: "காலி slot — கீழே ஒதுக்கவும்.",
+    slotEmpty: "காலி",
+
+    loadingTemplates: "வார்ப்புருக்கள் ஏற்றுகிறது…",
+    groupPrivate: "உங்கள் வார்ப்புருக்கள்",
+    groupShared: "குழுவுடன் பகிரப்பட்டது",
+    groupGlobal: "Org-முழுவதும் இயல்புநிலைகள்",
+    usedSuffix: "பயன்படுத்தப்பட்டது",
+    byPrefix: "by",
+    bdSlot: "BD slot",
+    edit: "திருத்து",
+    archive: "Archive",
+
+    emptyTpl: "இன்னும் வார்ப்புருக்கள் இல்லை. உங்கள் முதலாவதை உருவாக்க + New Template கிளிக் செய்யவும்.",
+  },
+
 };
 
 export default ta;
