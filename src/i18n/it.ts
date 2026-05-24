@@ -7869,6 +7869,26 @@ const it: Translations = {
     footnote: "I testi rivolti al cliente usano \"FUZE residuo\" — la misurazione del metamateriale dal report ICP del laboratorio. Sempre etichettato FUZE / metamateriale nei deliverable per i clienti (regola di brand voice da CLAUDE.md).",
   },
 
+  engagementDebug: {
+    crumb: "Debug engagement",
+    engagementSuffix: "engagement",
+    calculatedLabel: "Calcolato",
+    overallScoreLabel: "Punteggio complessivo",
+    outOf100: "su 100",
+    inputsLabel: "Input",
+    daysSinceContact: "Giorni dall'ultimo contatto",
+    tests30d: "Test (30 g)",
+    tests90d: "Test (90 g)",
+    avgPayDays: "Giorni medi di pagamento",
+    overdueInvoices: "Fatture scadute",
+    factorBreakdownTitle: "Scomposizione dei fattori",
+    weightLabel: "peso",
+    contributesLabel: "contribuisce",
+    ptsLabel: "pt",
+    loading: "Caricamento…",
+    failedToLoad: "Impossibile caricare",
+  },
+
 };
 
 export default it;
