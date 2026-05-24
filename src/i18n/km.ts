@@ -4511,6 +4511,49 @@ const km: Translations = {
     sowEmptyNothingStuck: "ទេthing stuck.",
   },
 
+  ordersAdmin: {
+    pageTitle: "ការបញ្ជាទិញ Management",
+    pageSubtitle: "Review, approve, and track all FUZE orders",
+    myAccountsOnly: "My accounts only",
+    awaitingApprovalTemplate: "{n} order{s} awaiting approval",
+
+    statTotal: "សរុប",
+    statPending: "កំពុងរង់ចាំ",
+    statApproved: "បានអនុម័ត",
+    statProcessing: "Processing",
+    statShipped: "Shipped",
+    statDelivered: "Delivered",
+    statRevenue: "ប្រាក់ចំណូល",
+
+    filterAll: "ទាំងអស់",
+    filterAllTypes: "ទាំងអស់ ប្រភេទs",
+
+    emptyMessage: "ទេ orders matching filters",
+
+    colOrder: "ការបញ្ជាទិញ",
+    colFactory: "រោងចក្រ",
+    colType: "ប្រភេទ",
+    colVolume: "បរិមាណ",
+    colBrand: "ម៉ាក",
+    colTotal: "សរុប",
+    colFulfillment: "Fulfillment",
+    colStatus: "ស្ថានភាព",
+    colDate: "កាលបរិច្ឆេទ",
+
+    statusDraft: "ព្រាង",
+    statusQuoted: "Quoted",
+    statusPendingApproval: "កំពុងរង់ចាំ Approval",
+    statusApproved: "បានអនុម័ត",
+    statusConfirmed: "បញ្ជាក់ed",
+    statusProcessing: "Processing",
+    statusShipped: "Shipped",
+    statusDelivered: "Delivered",
+    statusCancelled: "បានបោះបង់",
+
+    directUsaLabel: "Direct USA",
+    tagsSuffix: "tags",
+  },
+
 };
 
 export default km;
