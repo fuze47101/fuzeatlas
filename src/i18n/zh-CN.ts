@@ -8070,6 +8070,30 @@ const zhCN: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "正在加载邀请…",
+    notFoundTitle: "未找到邀请",
+    notFoundFallback: "此邀请链接可能已过期或已被使用。",
+    chipLabel: "FUZE Atlas 邀请",
+    headingMiddle: "邀请",
+    headingSuffix: "加入其 FUZE 供应链",
+    heroSubtitleFallbackPrefix: "使用 FUZE Atlas 在其供应链中协调抗菌纺织品项目。",
+    heroSubtitleFallbackSuffix: "加入后,工厂可提交面料进行测试、下达 FUZE 订单,并跟踪 ICP 结果——全部直接与该品牌关联。",
+    notePrefix: "来自以下方的备注:",
+    closedPrefix: "此邀请已被",
+    closedReachOutPrefix: "请联系",
+    closedTeamFallbackPrefix: "",
+    closedTeamFallbackSuffix: "团队",
+    closedFreshLink: "以获取新链接。",
+    signUpCta: "注册",
+    signUpSubPrefix: "在 Atlas 上创建新的",
+    signUpSubSuffix: "账户",
+    alreadyInCta: "我们已在 Atlas 上",
+    alreadyInSub: "登录并关联您现有的工厂",
+    sentPrefix: "邀请已发送",
+    questionsPrefix: "· 有问题?",
+  },
+
 };
 
 export default zhCN;
