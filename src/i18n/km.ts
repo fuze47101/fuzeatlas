@@ -4554,6 +4554,92 @@ const km: Translations = {
     tagsSuffix: "tags",
   },
 
+  leadManagement: {
+    pageTitle: "Lead Management & Outreach",
+    pageSubtitle: "Manage contacts, enrich via Apollo, send SMS/email outreach",
+
+    loadErrorContext: "Load lead pipeline",
+    loadErrorFallback: "Couldn't load lead management data",
+    networkError: "Network error while loading leads.",
+    loading: "កំពុងផ្ទុក leads...",
+
+    statTotalContacts: "សរុប ទំនាក់ទំនង",
+    statWithEmail: "With អ៊ីមែល",
+    statWithPhone: "With ទូរស័ព្ទ",
+    statEnriched: "Enriched",
+    statNotContacted: "ទេt ទំនាក់ទំនងed",
+    statContacted: "ទំនាក់ទំនងed",
+
+    searchPlaceholder: "ស្វែងរក brands or contacts...",
+    filterAllPipelineStages: "ទាំងអស់ Pipeline Stages",
+    stageLead: "Lead",
+    stagePresentation: "Presentation",
+    stageBrandTesting: "ម៉ាក ការសាកល្បងing",
+    stageFactoryOnboarding: "រោងចក្រ Onboarding",
+    stageProduction: "ផលិតកម្ម",
+    stageArchive: "Archive",
+
+    filterAllVerticals: "ទាំងអស់ Verticals",
+    verticalApparel: "Apparel",
+    verticalHospitality: "Hospitality",
+    verticalWorkwear: "Workwear",
+    verticalHomeTextiles: "Home Textiles",
+
+    filterAllOutreachStatus: "ទាំងអស់ Outreach ស្ថានភាព",
+    outreachNotContacted: "ទេt ទំនាក់ទំនងed",
+    outreachContacted: "ទំនាក់ទំនងed",
+    outreachResponded: "Responded",
+    outreachMeetingBooked: "Meeting Booked",
+    outreachNotInterested: "ទេt Interested",
+
+    filterAllEmailStatus: "ទាំងអស់ អ៊ីមែល ស្ថានភាព",
+    emailVerified: "Verified",
+    emailExtrapolated: "Extrapolated",
+    emailUnavailable: "មិនមាន",
+
+    colBrand: "ម៉ាក",
+    colContact: "ទំនាក់ទំនង",
+    colTitle: "ចំណងជើង",
+    colEmail: "អ៊ីមែល",
+    colPhone: "ទូរស័ព្ទ",
+    colLI: "LI",
+    colEmailed: "អ៊ីមែលed",
+    colOutreach: "Outreach",
+    colActions: "Actions",
+
+    inProfile: "in ប្រវត្តិរូប",
+    enrichedLabel: "enriched",
+    noContactsNeedsEnrichment: "ទេ contacts — needs enrichment",
+    msgsSuffix: "msgs",
+    markLinkedinReached: "Mark as LinkedIn reached",
+    markEmailed: "Mark as emailed",
+
+    actionSms: "SMS",
+    actionEmail: "អ៊ីមែល",
+    actionEnrich: "Enrich",
+    titleSendSms: "ផ្ញើ SMS",
+    titleSendEmail: "ផ្ញើ អ៊ីមែល",
+    titleEnrichApollo: "Enrich via Apollo",
+
+    paginationLabel: "Page {page} of {pages} ({total} brands)",
+    paginationPrev: "Prev",
+    paginationNext: "បន្ទាប់",
+
+    modalSendSmsTo: "ផ្ញើ SMS to",
+    modalSendEmailTo: "ផ្ញើ អ៊ីមែល to",
+    fieldTemplate: "Template",
+    fieldToPrefix: "ទៅ:",
+    fieldSubject: "ប្រធានបទ",
+    fieldMessage: "សារ",
+    charsSuffix: "chars",
+    sendSms: "ផ្ញើ SMS",
+    sendEmail: "ផ្ញើ អ៊ីមែល",
+    sendingButton: "ផ្ញើing...",
+    cancelButton: "បោះបង់",
+    sendSuccess: "សារ sent successfully!",
+    sendErrorPrefix: "កំហុស:",
+  },
+
 };
 
 export default km;
