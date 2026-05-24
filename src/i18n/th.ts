@@ -7857,6 +7857,18 @@ const th: Translations = {
     addFavoriteTitle: "เพิ่ม favorite",
   },
 
+  icpCorrelation: {
+    adminCrumb: "ผู้ดูแล",
+    crumb: "ความสัมพันธ์ ICP",
+    heading: "ความสัมพันธ์ ICP × AB",
+    subtitle: "แผนภูมิที่ Joseph (KUIU) ถาม FUZE residual บนผ้า (วัด ICP) วาดเทียบกับอัตราการฆ่าต้านแบคทีเรียในการรันทดสอบที่แบรนด์เห็นได้ทุกรายการใน Atlas เส้น best-fit + R² ทับซ้อน",
+    errorContext: "โหลดความสัมพันธ์ ICP",
+    couldntLoadPrefix: "ไม่สามารถโหลดข้อมูลความสัมพันธ์ได้",
+    networkError: "ข้อผิดพลาดเครือข่าย",
+    loadingState: "กำลังโหลดข้อมูลความสัมพันธ์…",
+    footnote: "สำเนาสำหรับลูกค้าใช้ \"FUZE residual\" — การวัดเมตาวัสดุจากรายงาน ICP ของห้องปฏิบัติการ ติดป้าย FUZE / เมตาวัสดุเสมอในส่งมอบลูกค้า (กฎ brand-voice ของ CLAUDE.md)",
+  },
+
 };
 
 export default th;
