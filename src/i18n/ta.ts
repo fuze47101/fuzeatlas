@@ -5948,6 +5948,35 @@ const ta: Translations = {
     noData: "தரவு இல்லை",
   },
 
+  educationApplication: {
+    pageMetaTitle: "பயன்பாட்டு முறைகள்",
+    backLink: "← FUZE அடிப்படைகளுக்குத் திரும்பு",
+    kicker: "பயன்பாட்டு முறைகள்",
+    heroTitle: "FUZE உங்கள் ஏற்கனவே உள்ள finishing line-இல் வேலை செய்கிறது",
+    heroBody: "FUZE-ஐ பயன்படுத்த உங்களுக்கு புதிய tank, புதிய அடுப்பு, அல்லது புதிய உபகரணம் தேவையில்லை. மூன்று பயன்பாட்டு பாதைகள் இன்று செயல்பாட்டில் உள்ள ஒவ்வொரு ஜவுளி உற்பத்தி அமைப்பையும் உள்ளடக்கியது. F4 Essential Protection பல substrates-இல் curing அடுப்பு தேவையில்லை.",
+    methodExhaustName: "Exhaust (dyebath)",
+    methodExhaustDesc: "Dyebath-இல் FUZE சேர். ஏற்கனவே உள்ள dye exhaust செயல்முறையின் போது மெட்டா-மெட்டீரியல் பிணைகிறது. புதிய tank இல்லை, புதிய vessel இல்லை, புதிய line இல்லை.",
+    methodExhaustWhen: "உயர்-அளவு தொடர்ச்சியான dyeing-க்கு சிறந்தது. மெட்டா-மெட்டீரியல் dye-fixation படியுடன் ஒருங்கிணைகிறது.",
+    methodPdcName: "Pad-Dry-Cure",
+    methodPdcDesc: "Diluted FUZE bath ஏற்றப்பட்ட நிலையான padder மூலம் ஃபேப்ரிக்கை இயக்கவும். வழக்கம் போல் Squeeze, dry, cure. Cure வெப்பநிலை 150-170°C.",
+    methodPdcWhen: "மிகவும் பொதுவான பயன்பாட்டு பாதை. இன்று செயல்பாட்டில் உள்ள ஒவ்வொரு ஜவுளி finishing line-உடனும் இணக்கமானது.",
+    methodSprayName: "Spray (head-spaced)",
+    methodSprayDesc: "6-inch head spacing, 15 m/min line speed. Diluted FUZE-ஐ ஃபேப்ரிக் மேற்பரப்பில் atomize செய்கிறது, பின்னர் dry/cure. முடிக்கப்பட்ட ஆடைகள் அல்லது non-woven substrates-க்கு ஏற்றது.",
+    methodSprayWhen: "ஏற்கனவே வெட்டப்பட்ட/தைக்கப்பட்ட ஆடைகள், அல்லது exhaust/PDC பொருந்தாத சிறப்பு substrates.",
+    whenToUseLabel: "எப்போது பயன்படுத்த",
+    operatorTitle: "ஒரு தொழிற்சாலை operator-க்கு இது ஏன் முக்கியம்",
+    operatorBullet1: "✓ புதிய capital உபகரணம் இல்லை. FUZE உங்கள் ஏற்கனவே உள்ள pad/dye/spray line-இல் சேருகிறது.",
+    operatorBullet2: "✓ Binder இல்லை, crosslinker இல்லை, formaldehyde இல்லை. நிர்வகிக்க குறைவான inventory, carcinogenic-substance handling நெறிமுறைகள் இல்லை.",
+    operatorBullet3: "✓ F4-இல் curing-அடுப்பு சார்பு இல்லை. குறைந்த-தர பயன்பாடுகள் காற்றில் உலர்த்தலாம்; F1-F3 நிலையான PDC finishing-இன் அதே வரம்பான 150-170°C-ஐப் பயன்படுத்துகின்றன.",
+    operatorBullet4: "✓ சேமிக்கப்பட்ட FUZE-இல் shelf life இல்லை. Drums மற்றும் carboys உங்கள் finishing room-இல் சீரழியாமல் காலவரையின்றி உட்காரலாம்.",
+    operatorBullet5: "✓ நிலையான 19L carboy மிகச்சிறிய ஆர்டர் அலகு. துல்லியமான பொருத்தம் தேவைப்படும்போது தனிப்பயன் அளவுகளை ஆர்டர் செய்யவும் (47L, 285L, 1300L).",
+    runNumbersTitle: "உங்கள் எண்களை இயக்கு",
+    runNumbersBody: "Application calculator உங்கள் தேர்வு டியரில் ஒரு சதுர மீட்டர் ஃபேப்ரிக்கிற்கு தேவையான துல்லியமான FUZE அளவை கணக்கிடுகிறது. ஃபேப்ரிக் எடை (gsm), அகலம் மற்றும் இலக்கு டியரை plug-in செய்யவும் — FUZE bath-இன் லிட்டர்கள், stock concentrate-இன் mL, மற்றும் ஒரு நேரியல் மீட்டருக்கு டாலர்களைப் பெறுங்கள்.",
+    runNumbersCta: "Application calculator-ஐ திற →",
+    backBasicsBtn: "FUZE அடிப்படைகளுக்குத் திரும்பு",
+    seePricingBtn: "விலை & டியர்களைப் பார்",
+  },
+
 };
 
 export default ta;
