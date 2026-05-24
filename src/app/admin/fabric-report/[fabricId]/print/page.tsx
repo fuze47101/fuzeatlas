@@ -26,6 +26,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import PrintButton from "@/components/PrintButton";
+import { getServerTranslations } from "@/i18n/server";
 
 const FUZE_CYAN = "#00b4c3";
 
@@ -93,10 +94,14 @@ function constructionLabel(fabric: any, benchTest: any): string {
 
 export default async function FullApplicationReportPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ fabricId: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 }) {
   const { fabricId } = await params;
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).fabricReportPrint;
   const data = await getReport(fabricId);
   if (!data) notFound();
 
@@ -154,14 +159,14 @@ export default async function FullApplicationReportPage({
           href={`/fabrics/${fabric.id}`}
           className="text-xs font-bold text-slate-600 hover:text-slate-900"
         >
-          ← Back to Fabric
+          {T.backToFabric}
         </Link>
         <div className="flex gap-3">
           <Link
             href={`/admin/fabric-report/${fabric.id}/send`}
             className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded hover:bg-slate-800"
           >
-            Email to Customer
+            {T.emailToCustomer}
           </Link>
           <PrintButton />
         </div>
@@ -171,12 +176,10 @@ export default async function FullApplicationReportPage({
       {!safeForExternal && (
         <div className="max-w-4xl mx-auto mt-4 mx-6 print:my-2 border-2 border-red-600 bg-red-50 rounded p-4">
           <p className="text-sm font-black text-red-700 uppercase tracking-widest mb-2">
-            ⚠ Not Safe to Send Externally
+            {T.notSafeExternal}
           </p>
           <p className="text-sm text-red-800 mb-2">
-            This report is missing identifying information that the customer
-            needs in order to recognize the submission. Fill these in on the
-            fabric record before emailing:
+            {T.notSafeBody}
           </p>
           <ul className="text-sm text-red-800 list-disc pl-5">
             {missingForExternal.map((m: string) => (
@@ -188,7 +191,7 @@ export default async function FullApplicationReportPage({
               href={`/fabrics/${fabric.id}/edit`}
               className="underline font-semibold"
             >
-              → Edit fabric record
+              {T.editFabricRecord}
             </Link>
           </p>
         </div>
@@ -202,10 +205,10 @@ export default async function FullApplicationReportPage({
             className="text-[10px] font-bold tracking-[0.25em] uppercase"
             style={{ color: FUZE_CYAN }}
           >
-            FUZE Biotech · Application & Validation Report
+            {T.coverEyebrow}
           </p>
           <h1 className="text-3xl font-black text-slate-900 mt-2 leading-tight">
-            FUZE Treatment Recipe & Validation
+            {T.coverTitle}
           </h1>
           <h2 className="text-xl font-semibold text-slate-700 mt-1">
             {fabric.customerReference ||
@@ -213,9 +216,7 @@ export default async function FullApplicationReportPage({
               `FUZE-${fabric.fuzeNumber}`}
           </h2>
           <p className="text-sm text-slate-500 mt-2">
-            Issued {fmtDate(new Date().toISOString())} · Document covers
-            recommended bath recipe, in-house pad/dry validation, and
-            independent lab ICP verification.
+            {T.issuedTemplate.replace("{date}", fmtDate(new Date().toISOString()))}
           </p>
         </header>
 
@@ -225,12 +226,12 @@ export default async function FullApplicationReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            Prepared For
+            {T.preparedForHeader}
           </h3>
           <div className="grid grid-cols-2 gap-4 border border-slate-300 rounded p-4 bg-slate-50">
             <div>
               <p className="text-[10px] text-slate-500 uppercase font-bold">
-                Brand
+                {T.brandLabel}
               </p>
               <p className="text-base font-semibold">
                 {fabric.brand?.name || "—"}
@@ -238,7 +239,7 @@ export default async function FullApplicationReportPage({
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase font-bold">
-                Factory
+                {T.factoryLabel}
               </p>
               <p className="text-base font-semibold">
                 {fabric.factory?.name || "—"}
@@ -246,7 +247,7 @@ export default async function FullApplicationReportPage({
             </div>
             <div className="col-span-2">
               <p className="text-[10px] text-slate-500 uppercase font-bold">
-                Customer Reference
+                {T.customerReferenceLabel}
               </p>
               <p className="text-lg font-mono font-bold text-slate-900">
                 {fabric.customerReference || "—"}
@@ -254,19 +255,19 @@ export default async function FullApplicationReportPage({
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase font-bold">
-                Customer Item #
+                {T.customerItemNumberLabel}
               </p>
               <p className="text-sm font-mono">{fabric.customerCode || "—"}</p>
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase font-bold">
-                Factory Item #
+                {T.factoryItemNumberLabel}
               </p>
               <p className="text-sm font-mono">{fabric.factoryCode || "—"}</p>
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase font-bold">
-                FUZE Reference #
+                {T.fuzeReferenceLabel}
               </p>
               <p className="text-sm font-mono font-bold">
                 FUZE-{fabric.fuzeNumber || "—"}
@@ -274,7 +275,7 @@ export default async function FullApplicationReportPage({
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase font-bold">
-                Construction
+                {T.constructionLabel}
               </p>
               <p className="text-sm capitalize">
                 {constructionLabel(fabric, benchTest)}
@@ -282,13 +283,13 @@ export default async function FullApplicationReportPage({
             </div>
             <div className="col-span-2">
               <p className="text-[10px] text-slate-500 uppercase font-bold">
-                Fiber Content
+                {T.fiberContentLabel}
               </p>
               <p className="text-sm">{fiberSummary(fabric, benchTest)}</p>
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase font-bold">
-                Weight (GSM)
+                {T.weightLabel}
               </p>
               <p className="text-sm">
                 {fabric.weightGsm ? `${fabric.weightGsm} g/m²` : "—"}
@@ -296,7 +297,7 @@ export default async function FullApplicationReportPage({
             </div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase font-bold">
-                Width
+                {T.widthLabel}
               </p>
               <p className="text-sm">
                 {fabric.widthInches ? `${fabric.widthInches}"` : "—"}
@@ -305,7 +306,7 @@ export default async function FullApplicationReportPage({
             {fabric.color && (
               <div>
                 <p className="text-[10px] text-slate-500 uppercase font-bold">
-                  Color
+                  {T.colorLabel}
                 </p>
                 <p className="text-sm">{fabric.color}</p>
               </div>
@@ -313,7 +314,7 @@ export default async function FullApplicationReportPage({
             {fabric.dyeStage && (
               <div>
                 <p className="text-[10px] text-slate-500 uppercase font-bold">
-                  Dye Stage
+                  {T.dyeStageLabel}
                 </p>
                 <p className="text-sm">{fabric.dyeStage}</p>
               </div>
@@ -327,55 +328,43 @@ export default async function FullApplicationReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            Executive Summary
+            {T.executiveSummaryHeader}
           </h3>
           <div className="border-l-4 border-slate-900 pl-4 py-2 text-[14px] leading-relaxed text-slate-800">
             <p>
-              FUZE Biotech has validated{" "}
+              {T.summaryValidatedPrefix}{" "}
               <strong>
                 {fabric.customerReference ||
                   fabric.customerCode ||
                   `FUZE-${fabric.fuzeNumber}`}
               </strong>{" "}
-              for compatibility with FUZE{" "}
-              <strong>{recommendedTier}</strong> treatment using a
-              proprietary metamaterial antimicrobial finishing system. The
-              recipe below was derived from a measured liquor pickup of{" "}
+              {T.summaryFuzeTier}{" "}
+              <strong>{recommendedTier}</strong> {T.summaryTreatmentSuffix}{" "}
               <strong>{fmtNum(pickupPct, 2)}%</strong>
               {benchTest?.testNumber && (
                 <>
                   {" "}
-                  on bench test{" "}
+                  {T.summaryOnBenchTest}{" "}
                   <span className="font-mono">{benchTest.testNumber}</span>
                 </>
               )}{" "}
-              and is applied via standard textile finishing equipment
-              (pad-dry-cure) at room temperature with no auxiliary,
-              binder, or rinse step required.
+              {T.summaryApplicationDetails}
             </p>
             {benchIcp != null && benchIcpExpected != null && (
               <p className="mt-2">
-                In-house bench validation deposited{" "}
-                <strong>{fmtNum(benchIcp, 3)} ppm</strong> against an
-                expected target of{" "}
-                <strong>{fmtNum(benchIcpExpected, 3)} ppm</strong> on
-                fabric (
-                {fmtNum(benchIcpAffinity, 1)}% affinity), confirming the
-                recipe lands on tier within standard operating tolerance.
+                {T.summaryBenchDepositPrefix}{" "}
+                <strong>{fmtNum(benchIcp, 3)} ppm</strong> {T.summaryBenchExpectedPrefix}{" "}
+                <strong>{fmtNum(benchIcpExpected, 3)} ppm</strong>{" "}
+                {T.summaryBenchAffinityTemplate.replace("{n}", fmtNum(benchIcpAffinity, 1))}
               </p>
             )}
             {labIcpRuns.length > 0 && (
               <p className="mt-2">
-                A third-party laboratory independently measured FUZE
-                deposit on the treated sample, validating the recipe is
-                production-ready (see Section 5).
+                {T.summaryThirdPartyLab}
               </p>
             )}
             <p className="mt-2 text-slate-600 italic">
-              FUZE is OEKO-TEX Standard 100 Class I, bluesign® approved,
-              EPA registered, and PFAS-free. No silver-ion, no
-              nanoparticles — FUZE metamaterial bonds elementally to
-              fibers during standard textile finishing.
+              {T.summaryComplianceLine}
             </p>
           </div>
         </section>
@@ -386,7 +375,7 @@ export default async function FullApplicationReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            Recommended Recipe
+            {T.recommendedRecipeHeader}
           </h3>
           {benchTest && pickupPct && recBathMgPerL ? (
             <div
@@ -394,57 +383,55 @@ export default async function FullApplicationReportPage({
               style={{ borderColor: FUZE_CYAN }}
             >
               <p className="text-base text-slate-900 leading-relaxed">
-                For every <strong>100 L</strong> of bath, mix{" "}
+                {T.recipeFor100L} <strong>100 L</strong> {T.recipeMixIn}{" "}
                 <strong style={{ color: FUZE_CYAN }}>
                   {prettyMl(recFuzeMlPer100L || 0)}
                 </strong>{" "}
-                of FUZE stock ({fmtNum(stockMgPerL, 0)} mg/L) with DI
-                water to volume. This yields a bath concentration of{" "}
+                {T.recipeOfFuzeStockTemplate.replace("{stock}", fmtNum(stockMgPerL, 0))}{" "}
                 <strong>{fmtNum(recBathMgPerL, 3)} mg/L</strong> (
-                {fmtNum(recBathMgPerL, 3)} ppm) which deposits{" "}
+                {fmtNum(recBathMgPerL, 3)} ppm) {T.recipeYieldTemplate}{" "}
                 <strong>{fmtNum(recTierMg, 2)} mg/kg</strong> ({fmtNum(
                   recTierMg,
                   2,
                 )}{" "}
-                ppm) on fabric — Tier{" "}
+                ppm) {T.recipeOnFabricTemplate}{" "}
                 <strong>{recommendedTier}</strong>.
               </p>
               <p className="text-sm text-slate-600 mt-2">
-                <strong>Method:</strong>{" "}
+                <strong>{T.methodLabel}</strong>{" "}
                 {benchTest.applicationMethod || "PAD_DRY_CURE"} ·
-                squeeze{" "}
-                {fmtNum(benchTest.squeezePressure, 1, "bar")} · VFD{" "}
-                {fmtNum(benchTest.vfdFrequencyHz, 1, "Hz")} · line speed{" "}
+                {" "}{T.methodSqueezeLabel}{" "}
+                {fmtNum(benchTest.squeezePressure, 1, "bar")} · {T.methodVfdLabel}{" "}
+                {fmtNum(benchTest.vfdFrequencyHz, 1, "Hz")} · {T.methodLineSpeedLabel}{" "}
                 {fmtNum(benchTest.lineSpeedMPerMin, 1, "m/min")}.
               </p>
               <p className="text-sm text-slate-600 mt-1">
-                <strong>Curing:</strong> Dry at{" "}
-                {fmtNum(benchTest.dryingTemp, 0, "°C")} for{" "}
-                {fmtNum(benchTest.dryingTime, 0, "min")}, then cure at{" "}
-                {fmtNum(benchTest.curingTemp, 0, "°C")} for{" "}
+                <strong>{T.curingLabel}</strong> {T.curingDryAt}{" "}
+                {fmtNum(benchTest.dryingTemp, 0, "°C")} {T.curingForTime}{" "}
+                {fmtNum(benchTest.dryingTime, 0, "min")}, {T.curingThenCureAt}{" "}
+                {fmtNum(benchTest.curingTemp, 0, "°C")} {T.curingForTime}{" "}
                 {fmtNum(benchTest.curingTime, 0, "min")}.
               </p>
               <p className="text-sm text-slate-600 mt-1">
-                <strong>No binder. No auxiliary chemistry. No rinse.</strong>{" "}
-                FUZE bonds during the dry/cure step alone.
+                <strong>{T.noBinderTagline}</strong>{" "}
+                {T.bondsDuringDryCure}
               </p>
               <p className="text-xs text-slate-500 mt-3 pt-2 border-t border-slate-200">
-                Derived from validated bench test{" "}
+                {T.derivedFromBenchTemplate}{" "}
                 <span className="font-mono font-bold">
                   {benchTest.testNumber}
                 </span>{" "}
-                · {fmtDate(benchTest.testDate)} · pickup{" "}
+                · {fmtDate(benchTest.testDate)} · {T.derivedPickupTemplate}{" "}
                 {fmtNum(pickupPct, 2)}%
               </p>
             </div>
           ) : (
             <div className="border-2 border-amber-400 bg-amber-50 rounded p-4">
               <p className="text-sm font-bold text-amber-900">
-                No validated bench test on file for this fabric.
+                {T.noBenchTestHeader}
               </p>
               <p className="text-xs text-amber-800 mt-1">
-                Run the Recipe Calculator to produce a measured pickup %
-                before this section can be filled in.
+                {T.noBenchTestBody}
               </p>
             </div>
           )}
@@ -456,22 +443,19 @@ export default async function FullApplicationReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            FUZE Required (Production Bath Sizes)
+            {T.productionScaleHeader}
           </h3>
           {pickupPct && fuzeMatrix?.length ? (
             <>
               <p className="text-xs text-slate-600 mb-2">
-                FUZE stock at {fmtNum(stockMgPerL, 0)} mg/L. Numbers are
-                exact for the measured pickup of {fmtNum(pickupPct, 2)}% —
-                re-run if your line conditions change pickup by more than
-                ±2 percentage points.
+                {T.productionScaleNoteTemplate.replace("{stock}", fmtNum(stockMgPerL, 0)).replace("{pickup}", fmtNum(pickupPct, 2))}
               </p>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-900 text-white">
                       <th className="border border-slate-700 px-2 py-2 text-left">
-                        Bath Size
+                        {T.colBathSize}
                       </th>
                       {["F1", "F2", "F3", "F4"].map((tier) => (
                         <th
@@ -519,13 +503,13 @@ export default async function FullApplicationReportPage({
                                   : `${cell.fuzeMl.toFixed(0)} mL`}
                               </div>
                               <div className="text-[10px] text-slate-600">
-                                FUZE stock
+                                {T.fuzeStockLabel}
                               </div>
                               <div className="text-[10px] text-slate-500 mt-1">
-                                bath: {cell.bathPpm.toFixed(2)} ppm
+                                {T.bathPpmLabel} {cell.bathPpm.toFixed(2)} ppm
                               </div>
                               <div className="text-[10px] text-slate-500">
-                                fabric: {cell.fabricPpm.toFixed(2)} ppm
+                                {T.fabricPpmLabel} {cell.fabricPpm.toFixed(2)} ppm
                               </div>
                             </td>
                           );
@@ -536,22 +520,15 @@ export default async function FullApplicationReportPage({
                 </table>
               </div>
               <p className="text-[10px] text-slate-500 mt-2">
-                Top-up the bath with DI water to reach the bath size
-                column header. Example: for a 200 L bath at F1, mix the
-                listed mL of FUZE stock with DI water until total volume
-                equals 200 L.
+                {T.bathTopupNote}
               </p>
               <p className="text-[10px] text-slate-500 mt-1">
-                <strong>Unit reference:</strong> bath ppm = mg of FUZE
-                metamaterial per L of bath water. Fabric ppm = mg per kg
-                of dry fabric (OWF, on-weight-of-fabric). 1 ppm = 1 mg/kg
-                = 0.0001%.
+                <strong>{T.unitReference}</strong> {T.unitReferenceBody}
               </p>
             </>
           ) : (
             <p className="text-sm text-slate-500 italic">
-              FUZE Required matrix unavailable — requires a measured
-              pickup % from a validated bench test.
+              {T.matrixUnavailable}
             </p>
           )}
         </section>
@@ -562,20 +539,20 @@ export default async function FullApplicationReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            In-House Validation
+            {T.inHouseValidationHeader}
           </h3>
           {benchTest ? (
             <div className="border border-slate-300 rounded">
               <div className="bg-slate-100 px-4 py-2 border-b border-slate-300">
                 <p className="text-xs font-bold text-slate-700 uppercase tracking-widest">
-                  Bench Test{" "}
+                  {T.benchTestLabel}{" "}
                   <span className="font-mono">{benchTest.testNumber}</span>
                 </p>
               </div>
               <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                 <div>
                   <p className="text-[10px] text-slate-500 uppercase font-bold">
-                    Test date
+                    {T.testDate}
                   </p>
                   <p className="font-semibold">
                     {fmtDate(benchTest.testDate)}
@@ -583,7 +560,7 @@ export default async function FullApplicationReportPage({
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-500 uppercase font-bold">
-                    Method
+                    {T.method}
                   </p>
                   <p className="font-semibold">
                     {benchTest.applicationMethod}
@@ -591,7 +568,7 @@ export default async function FullApplicationReportPage({
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-500 uppercase font-bold">
-                    Pickup
+                    {T.pickup}
                   </p>
                   <p className="font-semibold">
                     {fmtNum(pickupPct, 2)}%
@@ -599,7 +576,7 @@ export default async function FullApplicationReportPage({
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-500 uppercase font-bold">
-                    Stock
+                    {T.stock}
                   </p>
                   <p className="font-semibold">
                     {fmtNum(stockMgPerL, 0)} mg/L
@@ -608,7 +585,7 @@ export default async function FullApplicationReportPage({
                 {benchTest.icpExpectedPpm != null && (
                   <div>
                     <p className="text-[10px] text-slate-500 uppercase font-bold">
-                      ICP expected
+                      {T.icpExpected}
                     </p>
                     <p className="font-semibold">
                       {fmtNum(benchTest.icpExpectedPpm, 3)} ppm
@@ -618,7 +595,7 @@ export default async function FullApplicationReportPage({
                 {benchTest.icpMeasuredPpm != null && (
                   <div>
                     <p className="text-[10px] text-slate-500 uppercase font-bold">
-                      ICP measured
+                      {T.icpMeasured}
                     </p>
                     <p
                       className="font-semibold"
@@ -631,7 +608,7 @@ export default async function FullApplicationReportPage({
                 {benchTest.affinityPct != null && (
                   <div>
                     <p className="text-[10px] text-slate-500 uppercase font-bold">
-                      Affinity
+                      {T.affinity}
                     </p>
                     <p className="font-semibold">
                       {fmtNum(benchTest.affinityPct, 1)}%
@@ -641,7 +618,7 @@ export default async function FullApplicationReportPage({
                 {benchTest.icpLab && (
                   <div>
                     <p className="text-[10px] text-slate-500 uppercase font-bold">
-                      ICP lab
+                      {T.icpLab}
                     </p>
                     <p className="font-semibold">{benchTest.icpLab}</p>
                   </div>
@@ -650,7 +627,7 @@ export default async function FullApplicationReportPage({
               {sampleApplications && sampleApplications.length > 0 && (
                 <div className="border-t border-slate-200 px-4 py-3">
                   <p className="text-[10px] text-slate-500 uppercase font-bold mb-2">
-                    Sample applications ({sampleApplications.length})
+                    {T.sampleAppsTemplate.replace("{n}", String(sampleApplications.length))}
                   </p>
                   <div className="space-y-1">
                     {sampleApplications.slice(0, 5).map((app: any) => (
@@ -669,13 +646,13 @@ export default async function FullApplicationReportPage({
                         </span>
                         <span className="text-slate-400">·</span>
                         <span className="text-slate-600">
-                          padded {fmtDate(app.paddedAt)}
+                          {T.paddedDate} {fmtDate(app.paddedAt)}
                         </span>
                         {app.driedAt && (
                           <>
                             <span className="text-slate-400">·</span>
                             <span className="text-slate-600">
-                              dried {fmtDate(app.driedAt)}
+                              {T.driedDate} {fmtDate(app.driedAt)}
                             </span>
                           </>
                         )}
@@ -687,7 +664,7 @@ export default async function FullApplicationReportPage({
             </div>
           ) : (
             <p className="text-sm text-slate-500 italic">
-              No in-house validation data on file yet.
+              {T.noValidationData}
             </p>
           )}
         </section>
@@ -698,7 +675,7 @@ export default async function FullApplicationReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            Independent Lab ICP Verification
+            {T.independentLabHeader}
           </h3>
           {labIcpRuns.length > 0 ? (
             <div className="overflow-x-auto">
@@ -706,22 +683,22 @@ export default async function FullApplicationReportPage({
                 <thead>
                   <tr className="bg-slate-100 text-slate-700">
                     <th className="border border-slate-300 px-2 py-2 text-left">
-                      Test #
+                      {T.colTestNumber}
                     </th>
                     <th className="border border-slate-300 px-2 py-2 text-left">
-                      Date
+                      {T.colDate}
                     </th>
                     <th className="border border-slate-300 px-2 py-2 text-left">
-                      Lab
+                      {T.colLab}
                     </th>
                     <th className="border border-slate-300 px-2 py-2 text-right">
-                      FUZE on fabric (ppm)
+                      {T.colFuzeOnFabric}
                     </th>
                     <th className="border border-slate-300 px-2 py-2 text-right">
-                      mg/kg OWF
+                      {T.colMgKgOwf}
                     </th>
                     <th className="border border-slate-300 px-2 py-2 text-left">
-                      Method
+                      {T.colMethod}
                     </th>
                   </tr>
                 </thead>
@@ -757,15 +734,12 @@ export default async function FullApplicationReportPage({
                 </tbody>
               </table>
               <p className="text-[10px] text-slate-500 mt-2">
-                ICP-OES results expressed as elemental FUZE metamaterial.
-                On solid fabric, ppm and mg/kg are numerically equivalent
-                (1 ppm = 1 mg per 1 kg of fabric).
+                {T.icpExplainer}
               </p>
             </div>
           ) : (
             <p className="text-sm text-slate-500 italic">
-              No third-party lab ICP results on file for this fabric yet.
-              Bench validation (Section 5) is the current proof of recipe.
+              {T.noLabResults}
             </p>
           )}
 
@@ -773,7 +747,7 @@ export default async function FullApplicationReportPage({
           {abRuns.length > 0 && (
             <div className="mt-4 border-t border-slate-200 pt-3">
               <p className="text-[10px] text-slate-500 uppercase font-bold mb-2">
-                Antibacterial efficacy (third-party)
+                {T.antibacterialHeader}
               </p>
               <div className="space-y-1">
                 {abRuns.slice(0, 4).map((tr: any) => (
@@ -785,21 +759,20 @@ export default async function FullApplicationReportPage({
                     </span>
                     {tr.abResult?.percentReduction != null && (
                       <span className="ml-2">
-                        {fmtNum(tr.abResult.percentReduction, 1)}%
-                        reduction
+                        {fmtNum(tr.abResult.percentReduction, 1)}% {T.reductionLabel}
                       </span>
                     )}
                     {tr.abResult?.activityValue != null && (
                       <span className="ml-2">
-                        A = {fmtNum(tr.abResult.activityValue, 2)}
+                        {T.activityLabel} {fmtNum(tr.abResult.activityValue, 2)}
                       </span>
                     )}
                     <span className="ml-2 text-slate-500">
                       ({tr.testMethodStd || "—"} ·{" "}
                       {tr.lab?.name || "—"} ·{" "}
                       {tr.washCount != null
-                        ? `${tr.washCount} washes`
-                        : "no wash"}
+                        ? T.washesTemplate.replace("{n}", String(tr.washCount))
+                        : T.noWash}
                       )
                     </span>
                   </div>
@@ -815,37 +788,30 @@ export default async function FullApplicationReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            Accessing This Report Later
+            {T.accessLaterHeader}
           </h3>
           <div className="border border-slate-300 rounded p-4 bg-slate-50 text-sm text-slate-700 leading-relaxed">
             <p>
-              This report lives in your FUZE Atlas portal under{" "}
-              <strong>My Reports</strong>. To find it next month:
+              {T.portalIntro}{" "}
+              <strong>{T.myReports}</strong>. {T.portalStepsIntro}
             </p>
             <ol className="list-decimal pl-5 mt-2 space-y-1">
               <li>
-                Open <strong>{portalUrl}</strong>.
+                {T.portalStep1} <strong>{portalUrl}</strong>.
               </li>
               <li>
-                Sign in with the email this report was sent to. If you
-                don't have a password yet, click{" "}
-                <em>"Forgot password / Set password"</em> and we'll email
-                you a one-time link.
+                {T.portalStep2a}{" "}
+                <em>{T.portalStep2b}</em> {T.portalStep2c}
               </li>
               <li>
-                In the sidebar, open <strong>My Reports</strong> — your
-                reports are sorted newest-first and searchable by your
-                customer reference, item number, or FUZE number.
+                {T.portalStep3} <strong>{T.myReports}</strong>{T.portalStep3Tail}
               </li>
               <li>
-                The download link in the email that delivered this report
-                stays live for 90 days; after that, sign in to pull a
-                fresh copy that includes any new lab results.
+                {T.portalStep4}
               </li>
             </ol>
             <p className="mt-3 text-xs text-slate-600">
-              Trouble logging in? Reply to the email this report came
-              from — it routes to your FUZE account manager.
+              {T.troubleLoggingIn}
             </p>
           </div>
         </section>
@@ -856,40 +822,31 @@ export default async function FullApplicationReportPage({
             className="text-[11px] font-black uppercase tracking-widest mb-3"
             style={{ color: FUZE_CYAN }}
           >
-            Appendix
+            {T.appendixHeader}
           </h3>
           <div className="grid grid-cols-2 gap-4 text-xs">
             <div>
-              <p className="font-bold text-slate-700">FUZE compliance</p>
+              <p className="font-bold text-slate-700">{T.fuzeCompliance}</p>
               <p className="text-slate-600 mt-1">
-                OEKO-TEX Standard 100 Class I · bluesign® approved · EPA
-                registered (federal) · California EPA approved (Q1 2026)
-                · PFAS-free.
+                {T.fuzeComplianceBody}
               </p>
             </div>
             <div>
-              <p className="font-bold text-slate-700">Test standards</p>
+              <p className="font-bold text-slate-700">{T.testStandards}</p>
               <p className="text-slate-600 mt-1">
-                AATCC 100 · AATCC 30 · ISO 20743 · ISO 18184 · ICP-OES
-                per lab method.
+                {T.testStandardsBody}
               </p>
             </div>
             <div>
-              <p className="font-bold text-slate-700">Issued by</p>
+              <p className="font-bold text-slate-700">{T.issuedBy}</p>
               <p className="text-slate-600 mt-1">
-                FUZE Biotech · 1895 West 2100 South, Salt Lake City, UT
-                84119 USA · andrew@fuze47.com
+                {T.issuedByBody}
               </p>
             </div>
             <div>
-              <p className="font-bold text-slate-700">Document version</p>
+              <p className="font-bold text-slate-700">{T.documentVersion}</p>
               <p className="text-slate-600 mt-1">
-                Live report — regenerated on every download from the
-                Atlas database. Bench test{" "}
-                <span className="font-mono">
-                  {benchTest?.testNumber || "—"}
-                </span>{" "}
-                · pickup {fmtNum(pickupPct, 2)}%.
+                {T.documentVersionTemplate.replace("{testNum}", benchTest?.testNumber || "—").replace("{pickup}", fmtNum(pickupPct, 2))}
               </p>
             </div>
           </div>
@@ -898,13 +855,13 @@ export default async function FullApplicationReportPage({
         {/* Footer */}
         <div className="mt-6 pt-3 border-t border-slate-300 text-[10px] text-slate-500 flex items-center justify-between">
           <span>
-            FUZE Atlas · Application Report ·{" "}
+            {T.footerTemplate}{" "}
             <span className="font-mono">FUZE-{fabric.fuzeNumber}</span>
             {fabric.customerReference && (
               <> · {fabric.customerReference}</>
             )}
           </span>
-          <span>Printed {fmtDate(new Date().toISOString())}</span>
+          <span>{T.printedTemplate.replace("{date}", fmtDate(new Date().toISOString()))}</span>
         </div>
       </div>
 
