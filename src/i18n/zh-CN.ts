@@ -4846,6 +4846,49 @@ const zhCN: Translations = {
     sowEmptyNothingStuck: "无停滞项。",
   },
 
+  ordersAdmin: {
+    pageTitle: "订单管理",
+    pageSubtitle: "审核、批准并跟踪所有 FUZE 订单",
+    myAccountsOnly: "仅我负责的账户",
+    awaitingApprovalTemplate: "{n} 笔订单待审批{s}",
+
+    statTotal: "总计",
+    statPending: "待处理",
+    statApproved: "已批准",
+    statProcessing: "处理中",
+    statShipped: "已发货",
+    statDelivered: "已送达",
+    statRevenue: "收入",
+
+    filterAll: "全部",
+    filterAllTypes: "全部类型",
+
+    emptyMessage: "无符合筛选条件的订单",
+
+    colOrder: "订单",
+    colFactory: "工厂",
+    colType: "类型",
+    colVolume: "体积",
+    colBrand: "品牌",
+    colTotal: "总计",
+    colFulfillment: "履约",
+    colStatus: "状态",
+    colDate: "日期",
+
+    statusDraft: "草稿",
+    statusQuoted: "已报价",
+    statusPendingApproval: "待审批",
+    statusApproved: "已批准",
+    statusConfirmed: "已确认",
+    statusProcessing: "处理中",
+    statusShipped: "已发货",
+    statusDelivered: "已送达",
+    statusCancelled: "已取消",
+
+    directUsaLabel: "美国直发",
+    tagsSuffix: "标签",
+  },
+
 };
 
 export default zhCN;
