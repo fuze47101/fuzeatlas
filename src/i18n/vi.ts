@@ -5435,6 +5435,61 @@ const vi: Translations = {
     scopeFallback: "Mặc định",
   },
 
+  brandDiscovery: {
+    crumbHome: "Trang chủ",
+    crumbWizard: "BD Wizard",
+    crumbHere: "Khám phá thương hiệu",
+    pageTitle: "🌎 Khám phá thương hiệu toàn cầu",
+    pageSubtitle: "Công cụ đa AI — tìm và xác thực các thương hiệu dệt may trên Anthropic, OpenAI và Grok, sau đó tự động đính kèm liên hệ Apollo cho mỗi thương hiệu mới để BD Wizard có thể sử dụng ngay.",
+
+    statTotalLabel: "Tổng số thương hiệu trong DB",
+    backToWizard: "← Quay lại Wizard",
+    backToWizardTitle: "Quay lại Wizard sau khi thương hiệu mới được thêm",
+
+    statsErrorContext: "Tải thống kê khám phá",
+    statsErrorFallback: "Không tải được thống kê khám phá",
+    statsNetworkError: "Lỗi mạng khi tải thống kê khám phá.",
+
+    autoEnrichTitle: "Tự động làm giàu đang bật",
+    autoEnrichBody: "Mỗi thương hiệu mới được tạo ở đây sẽ nhận được tối đa 8 liên hệ cấp cao (founder / C-suite / VP / head / director) đính kèm qua Apollo people-search theo domain. Bộ lọc BD Wizard cho phép các thương hiệu này đi qua ngay lập tức — không cần pass làm giàu riêng.",
+
+    settingsHeading: "Cài đặt khám phá",
+    labelCategory: "Danh mục",
+    labelRegion: "Khu vực",
+    labelTargetCount: "Số lượng mục tiêu",
+    btnDiscovering: "🔍 Đang khám phá...",
+    btnRunDiscovery: "🚀 Chạy khám phá",
+    btnRunning: "Đang chạy...",
+    btnAllCategories: "🌍 Tất cả danh mục",
+
+    runningBanner: "⏳ Đang chạy khám phá đa AI trên Anthropic + OpenAI + Grok... Mất 30-60 giây mỗi danh mục.",
+    errorPrefix: "❌",
+    errorDefault: "Khám phá thất bại",
+
+    resultsHeadingPrefix: "Kết quả khám phá —",
+    chipAiSources: "Nguồn AI:",
+    chipFound: "Tìm thấy:",
+    chipAfterDedup: "Sau khử trùng lặp:",
+    chipCreated: "Đã tạo:",
+    chipContactsAttached: "📇 Liên hệ đính kèm:",
+
+    colBrand: "Thương hiệu",
+    colSegment: "Phân khúc",
+    colPriority: "Ưu tiên",
+    colValidation: "Xác thực",
+    colContacts: "Liên hệ",
+    colAiSources: "Nguồn AI",
+    colActions: "Hành động",
+    tierPrefix: "Hạng",
+    aisConfirmed: "AI xác nhận",
+    aiConfirmed: "AI xác nhận",
+    viewResearch: "Xem & Nghiên cứu",
+
+    historyHeading: "Lịch sử khám phá (phiên này)",
+    historyFoundLabel: "Tìm thấy:",
+    historyCreatedLabel: "Đã tạo:",
+  },
+
 };
 
 export default vi;
