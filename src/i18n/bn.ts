@@ -7565,6 +7565,37 @@ const bn: Translations = {
     lastCalculatedLabel: "শেষ গণনা করা:",
   },
 
+  fabricReportSend: {
+    backLink: "← রিপোর্টে ফিরে যান",
+    heading: "কাস্টমারকে রিপোর্ট ইমেল করুন",
+    subtitlePrefix: "FUZE অ্যাপ্লিকেশন ও ভ্যালিডেশন রিপোর্ট পাঠানো হচ্ছে",
+    fabricNotFound: "ফ্যাব্রিক পাওয়া যায়নি।",
+    recipientRequiredError: "প্রাপকের ইমেল প্রয়োজন।",
+    sendFailedError: "পাঠাতে ব্যর্থ",
+    sentSuccessPrefix: "✓ রিপোর্ট পাঠানো হয়েছে",
+    directUrlLabel: "সরাসরি ডাউনলোড URL:",
+    sentSuccessBody: "FUZE Atlas-এ সাইন ইন করার পর কাস্টমার My Reports-এর অধীনেও এটি অ্যাক্সেস করতে পারে।",
+    recipientEmailLabel: "প্রাপকের ইমেল",
+    recipientNameLabel: "প্রাপকের নাম",
+    optionalSuffix: "(ঐচ্ছিক)",
+    personalNoteLabel: "ব্যক্তিগত নোট",
+    personalNoteHint: "(ঐচ্ছিক, রিপোর্ট কার্ডের উপরে দেখানো)",
+    ccLabel: "CC",
+    ccHint: "(ঐচ্ছিক, কমা-পৃথক)",
+    ttlLabel: "সরাসরি লিঙ্ক বৈধ",
+    ttl30Days: "30 দিন",
+    ttl90Days: "90 দিন (ডিফল্ট)",
+    ttl180Days: "180 দিন",
+    ttl1Year: "1 বছর",
+    sendingBtn: "পাঠানো হচ্ছে...",
+    sendBtn: "রিপোর্ট পাঠান",
+    previouslySentTitle: "পূর্বে পাঠানো",
+    sentPrefix: "পাঠানো",
+    viewedPrefix: "দেখা হয়েছে",
+    notOpenedYet: "এখনও খোলা হয়নি",
+    openSameLink: "একই লিঙ্ক খুলুন →",
+  },
+
 };
 
 export default bn;
