@@ -7596,6 +7596,24 @@ const th: Translations = {
     openSameLink: "เปิดลิงก์เดียวกัน →",
   },
 
+  apiDocs: {
+    heading: "เอกสาร API",
+    subtitle: "FUZE Atlas API Reference",
+    authStrong: "การพิสูจน์ตัวตน:",
+    authBodyPrefix: "ทุก endpoint ยกเว้น",
+    authBodySuffix: "ต้องการ JWT session cookie ที่ถูกต้อง",
+    searchPlaceholder: "ค้นหา endpoint ตามเส้นทางหรือคำอธิบาย...",
+    allMethodsBtn: "ทุกวิธี",
+    showingPrefix: "แสดง",
+    showingOf: "จาก",
+    endpointsLabel: "endpoints",
+    collapseAllBtn: "ย่อทั้งหมด",
+    expandAllBtn: "ขยายทั้งหมด",
+    noResults: "ไม่พบ endpoint ที่ตรงกับการค้นหา",
+    clearFiltersBtn: "ล้างตัวกรอง",
+    footerPrefix: "เอกสาร FUZE Atlas API - อัปเดตล่าสุด",
+  },
+
 };
 
 export default th;
