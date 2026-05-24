@@ -5784,6 +5784,50 @@ const it: Translations = {
     emptyTpl: "Nessun modello ancora. Clicca + Nuovo modello per crearne uno.",
   },
 
+  pipelineUserPage: {
+    loading: "Caricamento pipeline...",
+    pageTitle: "Pipeline ricavi",
+    pageSubtitle: "Traccia i deal dallo sviluppo alla produzione",
+    btnNewDeal: "+ Nuovo deal",
+
+    kpiTotalPipeline: "Pipeline totale",
+    kpiTotalPipelineSubTpl: "{n} deal",
+    kpiWeighted: "Previsione ponderata",
+    kpiWeightedSub: "Adeguata per probabilità",
+    kpiActual: "Ricavi effettivi",
+    kpiActualSub: "Fatturati e pagati",
+    kpiConversion: "Conversione",
+    kpiConversionSub: "Effettivi / Pipeline",
+
+    cardProdPrefix: "Prod:",
+    emptyDeals: "Nessun deal",
+    weightedPrefix: "· pond:",
+
+    editTitlePrefix: "Modifica progetto:",
+    fieldName: "Nome progetto",
+    fieldStage: "Fase",
+    keepCurrent: "Mantieni attuale",
+    fieldBrand: "Brand",
+    fieldNone: "Nessuno",
+    fieldProjectedValue: "Valore previsto ($)",
+    fieldProbability: "Probabilità (%)",
+    fieldFuzeTier: "Tier FUZE",
+    fieldAnnualVolume: "Volume annuale (m)",
+    fieldFactory: "Stabilimento",
+    fieldDistributor: "Distributore",
+    autoFromFactory: "Automatico dallo stabilimento",
+    fieldExpectedProd: "Produzione prevista",
+    fieldActualProd: "Produzione effettiva",
+    btnSaveChanges: "Salva modifiche",
+    btnSaving: "Salvataggio...",
+    btnCancel: "Annulla",
+
+    newDealTitle: "Nuovo deal",
+    newDealPlaceholder: "Nome progetto / deal...",
+    btnCreate: "Crea",
+    btnCreating: "Creazione...",
+  },
+
 };
 
 export default it;
