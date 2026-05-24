@@ -6275,6 +6275,38 @@ const ms: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "Katalog Ujian & Harga",
+    subtitle: "Urus jenis ujian, harga, masa pulangan, dan keperluan sampel. Perubahan dicerminkan serta-merta pada borang permintaan ujian kilang.",
+    sourcePrefix: "Sumber:",
+    sourceDb: "Pangkalan data (diurus pentadbir)",
+    sourceStatic: "Lalai statik",
+    successMsg: "Ujian berjaya dikemas kini",
+    failedSave: "Gagal menyimpan",
+    networkErr: "Ralat rangkaian",
+    colTestName: "Nama Ujian",
+    colCategory: "Kategori",
+    colPrice: "Harga (USD)",
+    colTurnaround: "Pulangan",
+    colMinSample: "Sampel Min.",
+    colControl: "Kawalan?",
+    colActive: "Aktif",
+    colActions: "Tindakan",
+    daysSuffix: "hari",
+    metersSuffix: "m",
+    yes: "Ya",
+    no: "Tidak",
+    saveBtn: "Simpan",
+    savingDots: "...",
+    cancelBtn: "Batal",
+    editBtn: "Sunting",
+    catRecipeBuild: "Bina Resipi",
+    catPerformance: "Prestasi",
+    catQuality: "Kualiti",
+    catCertification: "Pensijilan",
+    lastUpdatedTpl: "Terakhir dikemas kini oleh {who} pada {when}",
+  },
+
 };
 
 export default ms;
