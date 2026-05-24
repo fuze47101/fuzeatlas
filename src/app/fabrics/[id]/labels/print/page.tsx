@@ -27,6 +27,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface TestRequestRef {
   id: string;
@@ -88,6 +89,8 @@ export default function FabricLabelsPrintPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { t } = useI18n();
+  const T = t.fabricLabelsPrint;
   const [fabric, setFabric] = useState<Fabric | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -107,30 +110,30 @@ export default function FabricLabelsPrintPage({
       .then((r) => r.json())
       .then((j) => {
         if (j.ok) setFabric(j.fabric);
-        else setError(j.error || "Failed to load fabric");
+        else setError(j.error || T.errLoad);
       })
-      .catch((e) => setError(e?.message || "Network error"))
+      .catch((e) => setError(e?.message || T.errNetwork))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, T.errLoad, T.errNetwork]);
 
   if (loading) {
-    return <div className="p-8 text-center text-slate-500">Loading fabric…</div>;
+    return <div className="p-8 text-center text-slate-500">{T.loading}</div>;
   }
   if (error || !fabric) {
     return (
       <div className="p-8">
-        <p className="text-red-600 font-bold">Could not load fabric: {error}</p>
+        <p className="text-red-600 font-bold">{T.couldNotLoadPrefix} {error}</p>
         <Link
           href={`/fabrics/${id}`}
           className="text-blue-600 hover:underline text-sm"
         >
-          ← Back
+          {T.backShort}
         </Link>
       </div>
     );
   }
 
-  const fuzeRef = fabric.fuzeNumber ? `FUZE-${fabric.fuzeNumber}` : "(no FUZE#)";
+  const fuzeRef = fabric.fuzeNumber ? `FUZE-${fabric.fuzeNumber}` : T.noFuzeNumber;
   const printedAt = new Date().toLocaleString("en-US", {
     month: "short",
     day: "numeric",
@@ -235,10 +238,10 @@ export default function FabricLabelsPrintPage({
             href={`/fabrics/${id}`}
             className="text-xs text-slate-400 hover:text-white"
           >
-            ← Back to fabric
+            {T.backToFabric}
           </Link>
           <p className="text-sm font-bold">
-            Print labels — {fuzeRef}
+            {T.headerPrintLabels} {fuzeRef}
             {fabric.customerReference ? ` · ${fabric.customerReference}` : ""}
           </p>
         </div>
@@ -247,7 +250,7 @@ export default function FabricLabelsPrintPage({
             onClick={() => window.print()}
             className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded font-bold text-sm"
           >
-            🖨 Print
+            {T.printBtn}
           </button>
         </div>
       </div>
@@ -255,36 +258,27 @@ export default function FabricLabelsPrintPage({
       {/* Hide-on-print instructions + request picker */}
       <div className="no-print max-w-3xl mx-auto p-5 text-sm text-slate-700 space-y-3">
         <div>
-          <p className="font-semibold">Two 4×6 sheets will print:</p>
+          <p className="font-semibold">{T.instructionsTitle}</p>
           <ol className="list-decimal pl-5 space-y-1 text-xs mt-1">
             <li>
-              <strong>Page 1 — carrier sticker sheet:</strong> 5 distinct
-              labels stacked vertically. Cut along the dashed lines and
-              apply one to each cut sample.
+              <strong>{T.page1TitleBold}</strong> {T.page1Body}
             </li>
             <li>
-              <strong>Page 2 — baggie sticker:</strong> single full 4×6
-              with fabric info + the ICP request data (PO#, tier, lab).
-              Stick on the outside of the plastic baggie holding the
-              cut samples.
+              <strong>{T.page2TitleBold}</strong> {T.page2Body}
             </li>
           </ol>
           <p className="text-xs text-slate-600 mt-2">
-            Both pages use the same 4×6 paper size — set your label
-            printer to <strong>4 × 6 inches</strong> + scale{" "}
-            <strong>actual size</strong> and run them as a single job.
+            {T.paperHint}
           </p>
         </div>
 
         {requests.length > 1 && (
           <div className="bg-amber-50 border border-amber-200 rounded p-3">
             <p className="font-semibold text-amber-900 mb-1">
-              This fabric has {requests.length} test requests on file
+              {T.multiRequestsTitleBefore} {requests.length} {T.multiRequestsTitleAfter}
             </p>
             <p className="text-xs text-amber-800 mb-2">
-              The baggie sticker pulls from the selected request. Default
-              is the most recent. Pick a different one to re-print
-              labels for a past ICP run:
+              {T.multiRequestsBody}
             </p>
             <select
               value={selectedRequest?.id || ""}
@@ -308,17 +302,16 @@ export default function FabricLabelsPrintPage({
 
         {!selectedRequest && (
           <div className="bg-rose-50 border border-rose-200 rounded p-3 text-xs text-rose-800">
-            <strong>⚠ No ICP request linked to this fabric yet.</strong>
+            <strong>{T.noRequestWarn}</strong>
             {" "}
-            The baggie sticker will print fabric identity but won't have
-            a PO#, tier, or lab. Run the ICP Sample Prep wizard at{" "}
+            {T.noRequestBody}{" "}
             <Link
               href="/admin/icp-sample-prep"
               className="text-rose-900 underline font-semibold"
             >
               /admin/icp-sample-prep
             </Link>{" "}
-            first if this is going to a lab.
+            {T.noRequestSuffix}
           </div>
         )}
       </div>
@@ -412,7 +405,7 @@ export default function FabricLabelsPrintPage({
                 paddingTop: "2pt",
               }}
             >
-              #{n} of {LABELS_PER_SHEET} · {printedAt}
+              #{n} {T.ofLabel} {LABELS_PER_SHEET} · {printedAt}
             </div>
           </div>
         ))}
@@ -466,7 +459,7 @@ export default function FabricLabelsPrintPage({
               letterSpacing: "0.06em",
             }}
           >
-            ICP Sample Submission
+            {T.icpSampleSubmission}
           </div>
         </div>
 
@@ -529,11 +522,11 @@ export default function FabricLabelsPrintPage({
           }}
         >
           {fabric.brand?.name && (
-            <BaggieField label="Brand" value={fabric.brand.name} />
+            <BaggieField label={T.fieldBrand} value={fabric.brand.name} />
           )}
           {fabric.factory?.name && (
             <BaggieField
-              label="Factory"
+              label={T.fieldFactory}
               value={
                 fabric.factory.country
                   ? `${fabric.factory.name} (${fabric.factory.country})`
@@ -542,13 +535,13 @@ export default function FabricLabelsPrintPage({
             />
           )}
           {fabric.distributor?.name && (
-            <BaggieField label="Distributor" value={fabric.distributor.name} />
+            <BaggieField label={T.fieldDistributor} value={fabric.distributor.name} />
           )}
           {fabric.customerCode && (
-            <BaggieField label="Customer Code" value={fabric.customerCode} />
+            <BaggieField label={T.fieldCustomerCode} value={fabric.customerCode} />
           )}
           {fabric.factoryCode && (
-            <BaggieField label="Factory Code" value={fabric.factoryCode} />
+            <BaggieField label={T.fieldFactoryCode} value={fabric.factoryCode} />
           )}
         </div>
 
@@ -564,31 +557,31 @@ export default function FabricLabelsPrintPage({
           }}
         >
           {fabric.fabricCategory && (
-            <BaggieField label="Type" value={fabric.fabricCategory} />
+            <BaggieField label={T.fieldType} value={fabric.fabricCategory} />
           )}
           {fabric.construction && (
-            <BaggieField label="Construction" value={fabric.construction} />
+            <BaggieField label={T.fieldConstruction} value={fabric.construction} />
           )}
           {fabric.color && (
-            <BaggieField label="Color" value={fabric.color} />
+            <BaggieField label={T.fieldColor} value={fabric.color} />
           )}
           {fabric.weightGsm && (
-            <BaggieField label="Weight" value={`${fabric.weightGsm} gsm`} />
+            <BaggieField label={T.fieldWeight} value={`${fabric.weightGsm} gsm`} />
           )}
           {fabric.widthInches && (
-            <BaggieField label="Width" value={`${fabric.widthInches}"`} />
+            <BaggieField label={T.fieldWidth} value={`${fabric.widthInches}"`} />
           )}
           {fabric.yarnType && (
-            <BaggieField label="Yarn" value={fabric.yarnType} />
+            <BaggieField label={T.fieldYarn} value={fabric.yarnType} />
           )}
           {fabric.fabricPh != null && (
-            <BaggieField label="pH" value={String(fabric.fabricPh)} />
+            <BaggieField label={T.fieldPh} value={String(fabric.fabricPh)} />
           )}
           {fabric.thickness && (
-            <BaggieField label="Thick" value={`${fabric.thickness} mm`} />
+            <BaggieField label={T.fieldThickness} value={`${fabric.thickness} mm`} />
           )}
           {fabric.endUse && (
-            <BaggieField label="End use" value={fabric.endUse} />
+            <BaggieField label={T.fieldEndUse} value={fabric.endUse} />
           )}
         </div>
 
@@ -612,7 +605,7 @@ export default function FabricLabelsPrintPage({
               marginBottom: "2pt",
             }}
           >
-            🧪 ICP Test Request
+            {T.icpTestRequestHeading}
           </div>
           {selectedRequest ? (
             <>
@@ -649,7 +642,7 @@ export default function FabricLabelsPrintPage({
               </div>
               {selectedRequest.lab && (
                 <div style={{ marginTop: "1pt" }}>
-                  <strong>Lab:</strong> {selectedRequest.lab.name}
+                  <strong>{T.labPrefix}</strong> {selectedRequest.lab.name}
                   {selectedRequest.lab.city ? ` · ${selectedRequest.lab.city}` : ""}
                   {selectedRequest.lab.country
                     ? `, ${selectedRequest.lab.country}`
@@ -658,16 +651,16 @@ export default function FabricLabelsPrintPage({
               )}
               {latestApp && (
                 <div style={{ marginTop: "1pt", color: "#475569" }}>
-                  <strong>Applied recipe:</strong> {latestApp.appNumber}
+                  <strong>{T.appliedRecipePrefix}</strong> {latestApp.appNumber}
                   {latestApp.bathConcentrationMgPerL != null && (
                     <> · {latestApp.bathConcentrationMgPerL.toFixed(2)} mg/L</>
                   )}
                   {latestApp.bathVolumeL != null && (
-                    <> · {latestApp.bathVolumeL}L bath</>
+                    <> · {latestApp.bathVolumeL}L {T.bathSuffix}</>
                   )}
                   {latestApp.driedAt && (
                     <>
-                      {" · dried "}
+                      {" · "}{T.driedPrefix}{" "}
                       {new Date(latestApp.driedAt).toLocaleDateString()}
                     </>
                   )}
@@ -676,8 +669,7 @@ export default function FabricLabelsPrintPage({
             </>
           ) : (
             <div style={{ color: "#9f1239", fontWeight: 600 }}>
-              No ICP request linked. Run the Sample Prep wizard before
-              shipping or write the PO# on this label by hand.
+              {T.noIcpRequestBox}
             </div>
           )}
         </div>
@@ -695,7 +687,7 @@ export default function FabricLabelsPrintPage({
           }}
         >
           <span>
-            FUZE Biotech · 1895 W 2100 S, SLC UT 84119 · andrew@fuze47.com
+            {T.footerCompany}
           </span>
           <span>{printedAt}</span>
         </div>
