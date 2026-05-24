@@ -7770,6 +7770,32 @@ const tr: Translations = {
     emptyState: "Henüz belirteç yok — yukarıdan ilk partinizi oluşturun.",
   },
 
+  bookMeetingPage: {
+    heading: "Toplantı Planla",
+    subtitle: "Ekibimizle toplantı ayırtmak için uygun bir tarih ve saat seçin.",
+    selectDateTitle: "Tarih Seç",
+    availableTimesPrefix: "Müsait Saatler:",
+    loadingSlots: "Saatler yükleniyor...",
+    noSlotsBody: "Bu tarih için müsait saat yok",
+    detailsTitle: "Toplantı Detayları",
+    selectDateTimeHint: "Devam etmek için tarih ve saat seçin",
+    dateTimeLabel: "Tarih ve Saat",
+    meetingTitleLabel: "Toplantı Başlığı",
+    defaultTitle: "FUZE Toplantısı",
+    descriptionLabel: "Açıklama (opsiyonel)",
+    descriptionPlaceholder: "Ek detaylar...",
+    confirmBtn: "Rezervasyonu Onayla",
+    bookingBusy: "Rezervasyon yapılıyor...",
+    bookFailedError: "Toplantı rezerve edilemedi",
+    networkError: "Ağ hatası",
+    bookedTitle: "Toplantı Rezerve Edildi!",
+    titleColLabel: "Başlık",
+    timeColLabel: "Saat",
+    meetingLinkLabel: "Toplantı Bağlantısı",
+    openInTeams: "Teams'de Aç",
+    bookAnotherBtn: "Başka Toplantı Rezerve Et",
+  },
+
 };
 
 export default tr;
