@@ -5,6 +5,7 @@
  */
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getServerTranslations } from "@/i18n/server";
 
 interface QrPayload {
   ok: boolean;
@@ -40,10 +41,14 @@ export const dynamic = "force-dynamic"; // scan-counter requires fresh hit
 
 export default async function HangtagVerificationPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ token: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 }) {
   const { token } = await params;
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).verifiedQrPage;
   const data = await loadQr(token);
   if (!data) notFound();
 
@@ -52,12 +57,12 @@ export default async function HangtagVerificationPage({
       {/* Hero */}
       <section className="bg-gradient-to-br from-[#00b4c3] to-[#009ba8] text-white px-6 py-12 sm:py-16 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur text-xs font-bold uppercase tracking-wider mb-3">
-          ✓ Verified FUZE-treated
+          {T.verifiedBadge}
         </div>
         <h1 className="text-3xl sm:text-4xl font-black">{data.brand.name}</h1>
         {data.tier && (
           <p className="mt-2 text-sm text-white/90">
-            FUZE tier <span className="font-bold">{data.tier}</span>
+            {T.tierPrefix} <span className="font-bold">{data.tier}</span>
           </p>
         )}
       </section>
@@ -66,37 +71,37 @@ export default async function HangtagVerificationPage({
       <section className="max-w-2xl mx-auto px-6 py-8 space-y-4">
         <div className="rounded-xl border border-slate-200 bg-white p-5">
           <h2 className="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3">
-            Product
+            {T.productSectionTitle}
           </h2>
           <dl className="grid grid-cols-2 gap-y-2 text-sm">
             {data.product.sku && (
               <>
-                <dt className="text-slate-500">SKU</dt>
+                <dt className="text-slate-500">{T.skuLabel}</dt>
                 <dd className="text-right font-mono">{data.product.sku}</dd>
               </>
             )}
             {data.product.batchCode && (
               <>
-                <dt className="text-slate-500">Batch</dt>
+                <dt className="text-slate-500">{T.batchLabel}</dt>
                 <dd className="text-right font-mono">{data.product.batchCode}</dd>
               </>
             )}
             {data.fabric?.fuzeNumber && (
               <>
-                <dt className="text-slate-500">FUZE #</dt>
+                <dt className="text-slate-500">{T.fuzeNumberLabel}</dt>
                 <dd className="text-right font-mono">FUZE-{data.fabric.fuzeNumber}</dd>
               </>
             )}
             {data.fabric?.construction && (
               <>
-                <dt className="text-slate-500">Construction</dt>
+                <dt className="text-slate-500">{T.constructionLabel}</dt>
                 <dd className="text-right">{data.fabric.construction}</dd>
               </>
             )}
             {data.fabric?.weightGsm && (
               <>
-                <dt className="text-slate-500">Weight</dt>
-                <dd className="text-right">{data.fabric.weightGsm} GSM</dd>
+                <dt className="text-slate-500">{T.weightLabel}</dt>
+                <dd className="text-right">{data.fabric.weightGsm} {T.weightUnit}</dd>
               </>
             )}
           </dl>
@@ -105,7 +110,7 @@ export default async function HangtagVerificationPage({
         {data.mostRecentTest && (
           <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-5">
             <h2 className="text-xs uppercase tracking-wider text-emerald-800 font-bold mb-3">
-              Most recent validation
+              {T.mostRecentValidation}
             </h2>
             <p className="text-sm">
               <span className="font-bold text-slate-900">{data.mostRecentTest.type}</span>
@@ -117,9 +122,9 @@ export default async function HangtagVerificationPage({
               {data.mostRecentTest.result}
             </p>
             <p className="text-[11px] text-slate-500 mt-1">
-              Tested {new Date(data.mostRecentTest.date).toLocaleDateString()}
+              {T.testedPrefix} {new Date(data.mostRecentTest.date).toLocaleDateString()}
               {data.mostRecentTest.washCount != null && (
-                <> · after {data.mostRecentTest.washCount} washes</>
+                <> · {T.afterWashesPrefix} {data.mostRecentTest.washCount} {T.afterWashesSuffix}</>
               )}
             </p>
           </div>
@@ -127,25 +132,13 @@ export default async function HangtagVerificationPage({
 
         <details className="rounded-xl border border-slate-200 bg-white p-5">
           <summary className="cursor-pointer font-bold text-slate-900">
-            What does this mean?
+            {T.whatDoesThisMean}
           </summary>
           <div className="mt-3 text-sm text-slate-700 space-y-2">
+            <p>{T.explainerP1}</p>
+            <p>{T.explainerP2}</p>
             <p>
-              FUZE is a proprietary antimicrobial textile treatment. The FUZE
-              metamaterial bonds permanently to the fiber surface during
-              standard textile finishing — no leaching, no PFAS, no chemistry
-              change to the fabric's hand or breathability.
-            </p>
-            <p>
-              Bacterial reduction happens through direct contact with the bonded
-              metamaterial — that's why FUZE leads with ASTM E2149 (the
-              contact-kill test designed for non-leaching antimicrobials),
-              alongside AATCC 100 for layered geometry validation.
-            </p>
-            <p>
-              <strong>Certifications:</strong> OEKO-TEX Standard 100 Class I,
-              bluesign® approved, EPA registered, California EPA approved
-              (Q1 2026), PFAS-free.
+              <strong>{T.certificationsLabel}</strong> {T.certificationsBody}
             </p>
           </div>
         </details>
@@ -153,13 +146,13 @@ export default async function HangtagVerificationPage({
         {data.sustainability.fuzeLitersConsumed != null && (
           <div className="rounded-xl border border-indigo-200 bg-indigo-50/40 p-5">
             <h2 className="text-xs uppercase tracking-wider text-indigo-800 font-bold mb-2">
-              Sustainability
+              {T.sustainabilityTitle}
             </h2>
             <p className="text-sm text-slate-700">
               <span className="font-black text-2xl text-indigo-900">
                 {data.sustainability.fuzeLitersConsumed.toFixed(1)}L
               </span>
-              <span className="ml-2">FUZE consumed across this fabric to date.</span>
+              <span className="ml-2">{T.sustainabilityBody}</span>
             </p>
           </div>
         )}
@@ -170,14 +163,14 @@ export default async function HangtagVerificationPage({
               href={`/verified/${data.brand.publicSlug}`}
               className="text-sm text-[#00b4c3] font-bold hover:underline"
             >
-              See more {data.brand.name} certified products →
+              {T.seeMorePrefix} {data.brand.name} {T.seeMoreSuffix}
             </Link>
           ) : (
             <Link
               href="/claims"
               className="text-sm text-[#00b4c3] font-bold hover:underline"
             >
-              Learn more about FUZE technology →
+              {T.learnMoreLink}
             </Link>
           )}
         </div>
@@ -185,7 +178,7 @@ export default async function HangtagVerificationPage({
 
       <footer className="max-w-2xl mx-auto px-6 py-6 text-center text-xs text-slate-500">
         <p>
-          Verified by FUZE Atlas ·{" "}
+          {T.footerVerifiedBy} ·{" "}
           <a href="https://fuzeatlas.com" className="hover:underline">
             fuzeatlas.com
           </a>
