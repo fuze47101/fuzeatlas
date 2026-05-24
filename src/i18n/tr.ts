@@ -7590,6 +7590,31 @@ const tr: Translations = {
     footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
   },
 
+  signupInvitation: {
+    appKicker: "FUZE Atlas",
+    joinPrefix: "Katıl:",
+    invitedSuffix: "davet edildi",
+    youWereInvited: "Davet edildiniz",
+    asLabel: "rol:",
+    emailLabel: "E-posta",
+    yourNameLabel: "Adınız",
+    fullNamePlaceholder: "Ad ve soyad",
+    passwordLabel: "Parola",
+    passwordPlaceholder: "En az 8 karakter",
+    confirmPasswordLabel: "Parolayı doğrula",
+    confirmPasswordPlaceholder: "Parolayı yeniden girin",
+    creatingBtn: "Hesap oluşturuluyor…",
+    acceptBtn: "Daveti kabul et ve giriş yap",
+    expiresPrefix: "Davetin son geçerlilik tarihi",
+    problemTitle: "Davet sorunu",
+    problemDefault: "Bu davet yüklenemedi.",
+    goToSignIn: "Girişe git",
+    errPasswordTooShort: "Parola en az 8 karakter olmalı.",
+    errPasswordsMismatch: "Parolalar eşleşmiyor.",
+    errNetwork: "Ağ hatası",
+    errServerUnreachable: "Sunucuya ulaşılamadı",
+  },
+
 };
 
 export default tr;
