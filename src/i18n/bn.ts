@@ -4554,6 +4554,48 @@ const bn: Translations = {
     sanityRangesHeader: "স্যানিটি চেক পরিসর",
   },
 
+  weeklyReviewDetail: {
+    eyebrow: "সাপ্তাহিক নির্বাহী পর্যালোচনা",
+    weekOfTemplate: "সপ্তাহ",
+    coveringPrefix: "কভারিং",
+    daysWindowSuffix: "-দিনের উইন্ডো",
+    ownerLabel: "মালিক:",
+    generatedLabel: "তৈরি",
+    enterPresent: "উপস্থাপন",
+    exitPresent: "উপস্থাপন প্রস্থান",
+    refreshing: "রিফ্রেশ হচ্ছে…",
+    refreshSnapshot: "স্ন্যাপশট রিফ্রেশ",
+
+    execSummaryTitle: "নির্বাহী সারাংশ",
+    execSummaryPlaceholder: "বোর্ডের জন্য শীর্ষ-লাইন উপসংহার। ব্লারে সংরক্ষিত।",
+    saving: "সংরক্ষণ হচ্ছে…",
+
+    salesDistributionTitle: "সেলস ও বিতরণ",
+    bookedDollars: "বুক $",
+    shippedDollars: "শিপ $",
+    bookedLiters: "বুক L",
+    shippedLiters: "শিপ L",
+    ordersSuffix: "অর্ডার",
+    shipmentsSuffix: "শিপমেন্ট",
+    kgShippedSuffix: "kg শিপ",
+    byOrderTypeLabel: "অর্ডার ধরন অনুযায়ী",
+
+    sowProgressTitle: "SOW অগ্রগতি",
+    sowDraft: "খসড়া",
+    sowSent: "প্রেরিত",
+    sowSigned: "স্বাক্ষরিত",
+    sowActive: "সক্রিয়",
+    sowComplete: "সম্পন্ন",
+    sowSignedThisWindow: "এই উইন্ডোতে স্বাক্ষরিত",
+    sowNewlyOpened: "নতুন খোলা",
+    sowActiveTitle: "সক্রিয়",
+    sowStale: "পুরানো (>৩০ দিন নড়াচড়া নেই)",
+    sowEmptyNoSignatures: "এই উইন্ডোতে কোনো নতুন স্বাক্ষর নেই।",
+    sowEmptyNoOpened: "এই উইন্ডোতে কোনো SOW খোলা হয়নি।",
+    sowEmptyNoActive: "কোনো সক্রিয় SOW নেই।",
+    sowEmptyNothingStuck: "কিছুই আটকে নেই।",
+  },
+
 };
 
 export default bn;
