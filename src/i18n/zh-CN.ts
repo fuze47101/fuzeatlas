@@ -7331,6 +7331,37 @@ const zhCN: Translations = {
     footerHint: "停滞 = 仍处于 DRAFT/SENT/SIGNED/ACTIVE 状态时 14+ 天无活动。已签署无进展 = SIGNED 或 ACTIVE 状态 30+ 天,定义了里程碑但未完成。最后活动是 SOW 编辑、里程碑完成或测试请求提交中的最新一项。",
   },
 
+  acmTasks: {
+    title: "🗓️ ACM 任务",
+    subtitle: "前一周 + 前一天的提醒会在台北时间上午 8 点通过铃声 + 邮件自动发出。",
+    tabOpen: "未完成",
+    tabCompleted: "已完成",
+    onlyMine: "仅我的",
+    loading: "加载中……",
+    overdueTitle: "逾期",
+    overdueSubtitle: "已过期 — 把这些从列表中清除",
+    dueWeekTitle: "本周到期",
+    dueWeekSubtitle: "未来 7 天",
+    upcomingTitle: "即将到来",
+    upcomingSubtitle: "7 天以外",
+    completedTitle: "已完成",
+    completedSubtitle: "最近 200 条",
+    nothingHere: "这里没有内容。",
+    markDoneTitle: "标记完成",
+    cancelTaskTitle: "取消任务",
+    reopenTitle: "重新打开",
+    highPriorityBadge: "高",
+    overdueRowPrefix: "逾期 — ",
+    duePrefix: "到期",
+    ownerLabel: "负责人：",
+    relToday: "今天",
+    relTomorrow: "明天",
+    relYesterday: "昨天",
+    relInPrefix: "在",
+    relDaysSuffix: "天内",
+    relDaysAgo: "天前",
+  },
+
 };
 
 export default zhCN;
