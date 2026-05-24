@@ -3023,6 +3023,30 @@ const id: Translations = {
     errServerUnreachable: "Tidak dapat menghubungi server",
   },
 
+  factoryInvitation: {
+    loadingState: "Memuat undangan…",
+    notFoundTitle: "Undangan tidak ditemukan",
+    notFoundFallback: "Tautan undangan ini mungkin telah kedaluwarsa atau sudah digunakan.",
+    chipLabel: "Undangan FUZE Atlas",
+    headingMiddle: "mengundang",
+    headingSuffix: "ke supply chain FUZE mereka",
+    heroSubtitleFallbackPrefix: "menggunakan FUZE Atlas untuk mengoordinasikan program antibakteri tekstil di seluruh supply chain mereka.",
+    heroSubtitleFallbackSuffix: "Bergabung memungkinkan pabrik mengajukan kain untuk pengujian, melakukan pesanan FUZE, dan melacak hasil ICP — semuanya langsung terhubung dengan brand.",
+    notePrefix: "Catatan dari",
+    closedPrefix: "Undangan ini sudah",
+    closedReachOutPrefix: "Hubungi",
+    closedTeamFallbackPrefix: "tim",
+    closedTeamFallbackSuffix: "",
+    closedFreshLink: "jika Anda memerlukan tautan baru.",
+    signUpCta: "Daftar",
+    signUpSubPrefix: "Buat akun",
+    signUpSubSuffix: "baru di Atlas",
+    alreadyInCta: "Kami sudah di Atlas",
+    alreadyInSub: "Login dan tautkan pabrik Anda yang sudah ada",
+    sentPrefix: "Undangan dikirim",
+    questionsPrefix: "· Pertanyaan?",
+  },
+
 };
 
 export default id;
