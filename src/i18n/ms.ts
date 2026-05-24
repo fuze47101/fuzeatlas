@@ -7320,6 +7320,37 @@ const ms: Translations = {
     footerHint: "Lapuk = 14+ hari tiada aktiviti semasa masih dalam DRAFT/SENT/SIGNED/ACTIVE. Ditandatangani-tiada-kemajuan = SIGNED atau ACTIVE selama 30+ hari dengan pencapaian ditakrifkan tetapi tiada selesai. Aktiviti terakhir ialah paling terkini suntingan SOW, penyelesaian pencapaian, atau penyerahan permintaan ujian.",
   },
 
+  acmTasks: {
+    title: "🗓️ Tugas ACM",
+    subtitle: "Peringatan minggu-sebelum + sehari-sebelum dihantar secara automatik melalui loceng + e-mel pada 8 pagi Taipei.",
+    tabOpen: "Terbuka",
+    tabCompleted: "Selesai",
+    onlyMine: "Saya sahaja",
+    loading: "Memuatkan…",
+    overdueTitle: "Tertunggak",
+    overdueSubtitle: "Melepasi tarikh tamat — selesaikan ini dari senarai",
+    dueWeekTitle: "Tamat minggu ini",
+    dueWeekSubtitle: "7 hari berikutnya",
+    upcomingTitle: "Akan datang",
+    upcomingSubtitle: "Lebih daripada 7 hari",
+    completedTitle: "Selesai",
+    completedSubtitle: "200 terakhir",
+    nothingHere: "Tiada apa-apa di sini.",
+    markDoneTitle: "Tandakan selesai",
+    cancelTaskTitle: "Batalkan tugas",
+    reopenTitle: "Buka semula",
+    highPriorityBadge: "TINGGI",
+    overdueRowPrefix: "Tertunggak — ",
+    duePrefix: "Tamat",
+    ownerLabel: "Pemilik:",
+    relToday: "hari ini",
+    relTomorrow: "esok",
+    relYesterday: "semalam",
+    relInPrefix: "dalam",
+    relDaysSuffix: "hari",
+    relDaysAgo: "hari lalu",
+  },
+
 };
 
 export default ms;
