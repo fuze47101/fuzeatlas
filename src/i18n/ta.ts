@@ -7543,6 +7543,28 @@ const ta: Translations = {
     mondayReviewBody: "AI-flagged test runs + brand rejections. Sunday 22:00 UTC மின்னஞ்சல் நிகழ்ச்சி நிரலை seed செய்கிறது.",
   },
 
+  brandEngagement: {
+    heading: "Brand Health",
+    subtitle: "அனைத்து brands-க்கும் engagement மற்றும் health metrics-ஐ கண்காணி",
+    recalculatingBtn: "மீண்டும் கணக்கிடுகிறது...",
+    recalculateBtn: "அனைத்தையும் மீண்டும் கணக்கிடு",
+    allFilter: "அனைத்தும்",
+    loadingText: "ஏற்றுகிறது...",
+    noBrandsText: "Brands கிடைக்கவில்லை",
+    scoreBreakdownTitle: "Score Breakdown",
+    communicationLabel: "தொடர்பு",
+    testingVelocityLabel: "Testing Velocity",
+    pipelineVelocityLabel: "Pipeline Velocity",
+    paymentScoreLabel: "Payment Score",
+    rawMetricsTitle: "மூல Metrics",
+    daysSinceContact: "தொடர்பு கொண்டதிலிருந்து நாட்கள்",
+    testsLast30d: "சோதனைகள் (கடைசி 30நா)",
+    testsLast90d: "சோதனைகள் (கடைசி 90நா)",
+    avgInvoicePayDays: "சராசரி Invoice Pay நாட்கள்",
+    overdueInvoices: "Overdue invoices",
+    lastCalculatedLabel: "கடைசியாக கணக்கிடப்பட்டது:",
+  },
+
 };
 
 export default ta;
