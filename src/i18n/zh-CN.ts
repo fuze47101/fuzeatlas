@@ -7123,6 +7123,29 @@ const zhCN: Translations = {
     errLoadFailed: "加载分析失败",
   },
 
+  orderQrLabel: {
+    orderNotFound: "未找到订单。",
+    headerKicker: "二维码标签",
+    previewPublicLink: "预览公开页面 →",
+    brandLine: "FUZE Biotech",
+    brandLocation: "美国犹他州盐湖城",
+    orderLabel: "订单",
+    scanToVerifyTitle: "扫描以验证",
+    scanToVerifyBody: "用手机相机打开此标签可加载货运状态、生命周期、SDS 和 COA。",
+    tierLabel: "层级",
+    volumeLabel: "容量",
+    bottlesSuffix: "瓶",
+    methodLabel: "方法",
+    typeLabel: "类型",
+    shipToLabel: "运至",
+    forBrandLabel: "对应品牌",
+    viaDistributorLabel: "通过分销商",
+    fabricLabel: "面料",
+    trackingLabel: "跟踪",
+    footerTagline: "FUZE F1–F4 · 元材料抗菌处理 · 无 PFAS",
+    printedPrefix: "打印于",
+  },
+
 };
 
 export default zhCN;
