@@ -7228,6 +7228,23 @@ const km: Translations = {
     fieldChangedPlural: "fields changed",
   },
 
+  adminLanding: {
+    loadingLabel: "កំពុងផ្ទុក admin",
+    crumb: "នាយក",
+    heading: "នាយក",
+    subtitle: "FUZE-Ops control surfaces. Pick a module to dive in, or use the sidebar for the full nav.",
+    openPrefix: "បើក",
+    fastPathLabel: "Fast path",
+    dataEntryHubTitle: "Data entry hub",
+    dataEntryHubBody: "Set brand spec, pricing tier, supply-chain link, lab pricing — all in one page.",
+    liveStateLabel: "Live state",
+    commandCenterTitle: "Command Center",
+    commandCenterBody: "Six metric tiles, brand × factory cadence matrix, recent activity, queues.",
+    weeklyLabel: "Weekly",
+    mondayReviewTitle: "Monday review queue",
+    mondayReviewBody: "AI-flagged test runs + brand rejections. Sunday 22:00 UTC email seeds the agenda.",
+  },
+
 };
 
 export default km;
