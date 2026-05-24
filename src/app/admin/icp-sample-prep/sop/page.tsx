@@ -1,6 +1,8 @@
 // @ts-nocheck
 "use client";
 
+import { useI18n } from "@/i18n";
+
 /**
  * FUZE Lab — ICP-MS Sample Prep SOP (printable)
  *
@@ -267,6 +269,8 @@ const STEPS: { title: string; body: string; illo: keyof typeof ILLO; tips?: stri
 ];
 
 export default function IcpSamplePrepSOPPage() {
+  const { t } = useI18n();
+  const T = t.icpSamplePrepSop;
   return (
     <div className="min-h-screen bg-white">
       <style>{`
@@ -278,9 +282,9 @@ export default function IcpSamplePrepSOPPage() {
       `}</style>
 
       <div className="no-print max-w-5xl mx-auto px-6 pt-6 flex items-center justify-between">
-        <a href="/admin/icp-sample-prep" className="text-sm text-[#00b4c3] font-semibold">← Back to ICP Sample Prep</a>
+        <a href="/admin/icp-sample-prep" className="text-sm text-[#00b4c3] font-semibold">{T.backLink}</a>
         <button onClick={() => window.print()} className="px-5 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800">
-          🖨 Print / Save as PDF
+          {T.printButton}
         </button>
       </div>
 
@@ -288,20 +292,20 @@ export default function IcpSamplePrepSOPPage() {
         {/* Header */}
         <header className="border-b-4 border-[#00b4c3] pb-4 mb-6 flex items-start justify-between">
           <div>
-            <p className="text-xs font-bold text-[#00b4c3] tracking-widest uppercase">FUZE Biotech · Lab SOP</p>
-            <h1 className="text-3xl font-black text-slate-900 mt-1">ICP-MS Sample Preparation</h1>
-            <p className="text-sm text-slate-600 mt-1">Cut → weigh → fragment → bag → ship to CTLA (Utah) for ICP-MS verification</p>
+            <p className="text-xs font-bold text-[#00b4c3] tracking-widest uppercase">{T.eyebrow}</p>
+            <h1 className="text-3xl font-black text-slate-900 mt-1">{T.pageTitle}</h1>
+            <p className="text-sm text-slate-600 mt-1">{T.pageSubtitle}</p>
           </div>
           <div className="text-right text-xs text-slate-500">
-            <p>Doc: SOP-FUZE-LAB-002</p>
-            <p>Rev: 1.0 · {new Date().toLocaleDateString()}</p>
+            <p>{T.docLabel}</p>
+            <p>{T.revLabel} {new Date().toLocaleDateString()}</p>
           </div>
         </header>
 
         {/* Purpose + Equipment */}
         <section className="mb-6 grid grid-cols-2 gap-4 text-sm">
           <div>
-            <h2 className="font-black text-slate-900 mb-1 text-sm uppercase tracking-wide">Purpose</h2>
+            <h2 className="font-black text-slate-900 mb-1 text-sm uppercase tracking-wide">{T.purposeHeader}</h2>
             <p className="text-slate-700 leading-snug">
               Prepare a treated fabric sample for ICP-MS quantification of FUZE metamaterial (silver, CAS 7440-22-4)
               reported as <strong>mg/kg fabric</strong>. Digestion happens at CTLA Laboratories (Utah) using microwave-assisted
@@ -309,7 +313,7 @@ export default function IcpSamplePrepSOPPage() {
             </p>
           </div>
           <div>
-            <h2 className="font-black text-slate-900 mb-1 text-sm uppercase tracking-wide">Equipment</h2>
+            <h2 className="font-black text-slate-900 mb-1 text-sm uppercase tracking-wide">{T.equipmentHeader}</h2>
             <ul className="text-slate-700 leading-snug list-disc pl-4 space-y-0.5">
               <li>100 cm² fabric cutter (10 × 10 cm)</li>
               <li>Analytical balance (0.01 g or better)</li>
@@ -324,20 +328,20 @@ export default function IcpSamplePrepSOPPage() {
 
         {/* Mass callout */}
         <section className="mb-6 bg-[#00b4c3]/5 border-l-4 border-[#00b4c3] px-5 py-4 text-sm">
-          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide text-xs">Mass Targets (critical)</h2>
+          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide text-xs">{T.massTargetsHeader}</h2>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <p className="text-xs text-slate-500 uppercase">Ship to CTLA</p>
+              <p className="text-xs text-slate-500 uppercase">{T.shipToLabel}</p>
               <p className="text-2xl font-black text-[#00b4c3]">&gt; 5 g</p>
               <p className="text-xs text-slate-600">Gross fabric mass. Gram-weight based, NOT size-based — heavy/light fabrics differ.</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase">Digest per run</p>
+              <p className="text-xs text-slate-500 uppercase">{T.digestPerRunLabel}</p>
               <p className="text-2xl font-black text-[#00b4c3]">0.5 g</p>
               <p className="text-xs text-slate-600">CTLA pulls 0.5 g from your shipped mass for each microwave aqua-regia digest.</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase">Cutter geometry</p>
+              <p className="text-xs text-slate-500 uppercase">{T.cutterGeometryLabel}</p>
               <p className="text-2xl font-black text-[#00b4c3]">100 cm²</p>
               <p className="text-xs text-slate-600">10 × 10 cm wheel. Geometry is for GSM cross-check; reported ppm is by mass.</p>
             </div>
@@ -346,7 +350,7 @@ export default function IcpSamplePrepSOPPage() {
 
         {/* Critical rules */}
         <section className="mb-6 bg-amber-50 border-l-4 border-amber-500 px-5 py-3 text-xs">
-          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide">⚠ Critical Prep Rules</h2>
+          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide">{T.criticalRulesHeader}</h2>
           <ol className="space-y-1 pl-5 list-decimal text-slate-700">
             <li><strong>Gram weight, not size.</strong> Cut to &gt; 5 g of fabric — one 10×10 may be plenty, or you may need three. Record the actual mass to 0.01 g.</li>
             <li><strong>Fragment before bagging.</strong> ~5 × 5 mm bits dramatically improve digest completeness. Big intact squares can leave un-digested fiber = low apparent ppm.</li>
@@ -359,7 +363,7 @@ export default function IcpSamplePrepSOPPage() {
 
         {/* Step cards — 2 per row on screen, 2 per row on print */}
         <section className="mb-8">
-          <h2 className="font-black text-slate-900 mb-4 text-sm uppercase tracking-wide">Procedure</h2>
+          <h2 className="font-black text-slate-900 mb-4 text-sm uppercase tracking-wide">{T.procedureHeader}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 print:grid-cols-2 print:gap-3">
             {STEPS.map((step, i) => (
               <div key={i} className="border border-slate-200 rounded-lg overflow-hidden print:border-slate-400 print:break-inside-avoid">
@@ -387,10 +391,10 @@ export default function IcpSamplePrepSOPPage() {
 
         {/* CTLA address */}
         <section className="mb-4 border border-slate-300 rounded-lg p-4 text-sm">
-          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide text-xs">Shipping Address (auto-filled by wizard)</h2>
+          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide text-xs">{T.shippingAddressHeader}</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-slate-500 uppercase">Ship to</p>
+              <p className="text-xs text-slate-500 uppercase">{T.shipToHeader}</p>
               <p className="font-bold text-slate-900">CTLA Laboratories</p>
               <p className="text-xs text-slate-700">Chemical Technology Laboratory of America</p>
               <p className="text-xs text-slate-700">Attn: ICP-MS Intake</p>
@@ -398,11 +402,11 @@ export default function IcpSamplePrepSOPPage() {
               <p className="text-[11px] text-slate-500 mt-1 italic">Full street address auto-populates on the printed packet from the Lab Directory.</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase">Return address + reporting</p>
+              <p className="text-xs text-slate-500 uppercase">{T.returnAddressHeader}</p>
               <p className="font-bold text-slate-900">FUZE Biotech</p>
               <p className="text-xs text-slate-700">1895 West 2100 South</p>
               <p className="text-xs text-slate-700">Salt Lake City, UT 84119 USA</p>
-              <p className="text-xs text-slate-700 mt-1">Report to: <span className="font-semibold">andrew@fuze47.com</span></p>
+              <p className="text-xs text-slate-700 mt-1">{T.reportToLabel} <span className="font-semibold">andrew@fuze47.com</span></p>
               <p className="text-xs text-slate-700">Invoice per fabric submission number (Atlas PO line)</p>
             </div>
           </div>
@@ -410,7 +414,7 @@ export default function IcpSamplePrepSOPPage() {
 
         {/* What you're NOT missing */}
         <section className="mb-4 bg-slate-50 border border-slate-200 rounded-lg p-4 text-xs">
-          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide">✅ Pre-Ship Checklist (the wizard prints this on the packet)</h2>
+          <h2 className="font-black text-slate-900 mb-2 uppercase tracking-wide">{T.preShipChecklistHeader}</h2>
           <ul className="grid grid-cols-2 gap-x-6 gap-y-1 text-slate-700">
             <li>☐ Fabric record pulled, details confirmed (color, tier, customer code)</li>
             <li>☐ 100 cm² square(s) cut — clean edges, no folds</li>
@@ -427,7 +431,7 @@ export default function IcpSamplePrepSOPPage() {
 
         {/* Sanity */}
         <section className="mb-4 text-xs">
-          <h2 className="font-black text-slate-900 mb-1 uppercase tracking-wide">Sanity Check (what CTLA should report)</h2>
+          <h2 className="font-black text-slate-900 mb-1 uppercase tracking-wide">{T.sanityCheckHeader}</h2>
           <div className="grid grid-cols-2 gap-x-6 gap-y-0.5 text-slate-700">
             <span>Target F1 fabric</span><span className="font-mono">~1.0 mg/kg Ag (±20%)</span>
             <span>Target F2 fabric</span><span className="font-mono">~0.75 mg/kg Ag (±20%)</span>
