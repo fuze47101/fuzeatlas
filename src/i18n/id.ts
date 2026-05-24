@@ -2742,6 +2742,21 @@ const id: Translations = {
     failedToLoad: "Gagal memuat",
   },
 
+  verifyEmail: {
+    verifyingTitle: "Memverifikasi email Anda...",
+    successTitle: "Email Terverifikasi",
+    welcomePrefix: "Selamat datang",
+    successBody: "Email Anda telah diverifikasi. Mengarahkan ke login...",
+    failedTitle: "Verifikasi Gagal",
+    resendVerificationBtn: "Kirim Ulang Email Verifikasi",
+    checkEmailTitle: "Periksa Email Anda",
+    checkEmailBody: "Tautan verifikasi telah dikirim ke alamat email Anda. Klik tautan untuk memverifikasi akun Anda.",
+    resendEmailBtn: "Kirim Ulang Email",
+    sendingBtn: "Mengirim...",
+    errVerifyFailed: "Gagal memverifikasi email",
+    errSendFailed: "Gagal mengirim email verifikasi",
+  },
+
 };
 
 export default id;
