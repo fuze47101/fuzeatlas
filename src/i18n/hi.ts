@@ -7782,6 +7782,24 @@ const hi: Translations = {
     footerVerifiedBy: "FUZE Atlas द्वारा सत्यापित",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "ESG स्नैपशॉट — FUZE Atlas",
+    metaDescPrefix: "के लिए त्रैमासिक ESG प्रभाव रिपोर्ट",
+    metaDescSuffix: "FUZE Atlas द्वारा प्रमाणित।",
+    backArrowPrefix: "←",
+    headingSuffix: "— ESG प्रभाव",
+    heroSubtitle: "FUZE-प्रमाणित फैब्रिक और एंटीमाइक्रोबियल परीक्षण परिणामों के त्रैमासिक स्नैपशॉट।",
+    emptyBody: "अभी कोई प्रकाशित स्नैपशॉट नहीं। त्रैमासिक रिपोर्ट अगली तिमाही की शुरुआत में प्रकाशित होती हैं।",
+    statFabricsCertified: "प्रमाणित फैब्रिक्स",
+    statTestsPassed: "पास परीक्षण",
+    statFuzeLiters: "FUZE लीटर",
+    statFactories: "कारखाने",
+    passRateLabel: "पास दर:",
+    downloadPdf: "PDF डाउनलोड →",
+    footerCertifiedBy: "FUZE Atlas द्वारा प्रमाणित",
+  },
+
 };
 
 export default hi;
