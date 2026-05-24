@@ -7941,6 +7941,31 @@ const ms: Translations = {
     accessLaterTitle: "Mengakses Laporan Ini Kemudian",
   },
 
+  settingsAuditLog: {
+    title: "Log Audit",
+    subtitle: "Jejak semua perubahan sistem dan tindakan pengguna",
+    actionLabel: "Tindakan",
+    allActionsOption: "Semua Tindakan",
+    entityTypeLabel: "Jenis Entiti",
+    allEntitiesOption: "Semua Entiti",
+    fromDateLabel: "Daripada Tarikh",
+    toDateLabel: "Hingga Tarikh",
+    loadingText: "Memuatkan...",
+    emptyText: "Tiada log audit dijumpai",
+    colTimestamp: "Cap Masa",
+    colUser: "Pengguna",
+    colAction: "Tindakan",
+    colEntity: "Entiti",
+    colDescription: "Penerangan",
+    systemUserFallback: "Sistem",
+    showingPrefix: "Menunjukkan",
+    showingTo: "hingga",
+    showingOf: "daripada",
+    showingSuffix: "log",
+    prevBtn: "Sebelumnya",
+    nextBtn: "Seterusnya",
+  },
+
 };
 
 export default ms;
