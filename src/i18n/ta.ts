@@ -5442,6 +5442,69 @@ const ta: Translations = {
     footerGenerated: "படிவம் உருவாக்கப்பட்டது",
   },
 
+  sampleTrials: {
+    crumbDashboard: "டாஷ்போர்டு",
+    crumbHere: "மாதிரி சோதனைகள்",
+    pageTitle: "மாதிரி சோதனை நிர்வாகம்",
+    pageSubtitle: "அனைத்து தொழிற்சாலை மாதிரி சோதனை கோரிக்கைகளையும் மதிப்பாய்வு செய்து, ஒப்புதல் அளித்து, அனுப்பி கண்காணி",
+
+    statTotal: "மொத்தம்",
+    statNeedsAction: "செயல் தேவை",
+
+    searchPlaceholder: "ஃபேப்ரிக், தொழிற்சாலை, பிராண்ட், தொடர்பைத் தேடு...",
+    filterAllStatuses: "அனைத்து நிலைகள்",
+    filterAllFactories: "அனைத்து தொழிற்சாலைகள்",
+
+    errorFailedLoad: "Trials ஏற்ற முடியவில்லை",
+    errorUpdate: "புதுப்பித்தல் தோல்வியடைந்தது",
+    errorNetwork: "நெட்வொர்க் பிழை",
+
+    quickActionPrefix: "விரைவு செயல் —",
+    trialFallback: "சோதனை",
+    labelStatus: "நிலை",
+    labelTracking: "Tracking எண்",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "நிர்வாகி குறிப்புகள்",
+    placeholderAdminNotes: "உள்ளக குறிப்புகள்...",
+    labelRejectReason: "மறுப்புக்கான காரணம்",
+    btnSave: "மாற்றங்களைச் சேமி",
+    btnSaving: "சேமிக்கிறது...",
+    btnCancel: "ரத்து",
+
+    emptyFiltered: "உங்கள் வடிகட்டிகளுக்கு பொருந்தும் trials இல்லை",
+    emptyDefault: "இன்னும் மாதிரி சோதனைகள் இல்லை",
+
+    colFabric: "ஃபேப்ரிக்",
+    colFactory: "தொழிற்சாலை",
+    colPurpose: "நோக்கம்",
+    colStatus: "நிலை",
+    colDetails: "விவரங்கள்",
+    colIcpLab: "ICP ஆய்வகம்",
+    colDate: "தேதி",
+    colActions: "செயல்கள்",
+
+    purposeBrand: "பிராண்ட்",
+    purposeSelfDev: "Self-Dev",
+    trialLab: "ஆய்வகம்",
+    trialProduction: "உற்பத்தி",
+    detailsTierPrefix: "டியர்:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "By:",
+    actionAction: "செயல்",
+    actionView: "பார்",
+
+    statusSubmitted: "சமர்ப்பிக்கப்பட்டது",
+    statusUnderReview: "மதிப்பாய்வில்",
+    statusApproved: "அங்கீகரிக்கப்பட்டது",
+    statusRejected: "மறுக்கப்பட்டது",
+    statusShipped: "அனுப்பப்பட்டது",
+    statusReceived: "பெறப்பட்டது",
+    statusInProgress: "செயலில்",
+    statusIcpPending: "ICP காத்திருக்கிறது",
+    statusIcpSubmitted: "ICP சமர்ப்பிக்கப்பட்டது",
+    statusComplete: "முடிக்கப்பட்டது",
+  },
+
 };
 
 export default ta;
