@@ -7755,6 +7755,33 @@ const hi: Translations = {
     resumeBtn: "फिर से शुरू करें",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ सत्यापित FUZE-उपचारित",
+    tierPrefix: "FUZE टियर",
+    productSectionTitle: "उत्पाद",
+    skuLabel: "SKU",
+    batchLabel: "बैच",
+    fuzeNumberLabel: "FUZE #",
+    constructionLabel: "कंस्ट्रक्शन",
+    weightLabel: "वजन",
+    weightUnit: "GSM",
+    mostRecentValidation: "सबसे हालिया सत्यापन",
+    testedPrefix: "परीक्षण",
+    afterWashesPrefix: "के बाद",
+    afterWashesSuffix: "वॉश",
+    whatDoesThisMean: "इसका क्या मतलब है?",
+    explainerP1: "FUZE एक स्वामित्व वाला एंटीमाइक्रोबियल टेक्सटाइल ट्रीटमेंट है। FUZE मेटामटीरियल मानक टेक्सटाइल फिनिशिंग के दौरान फाइबर सतह से स्थायी रूप से बंधता है — कोई लीचिंग नहीं, कोई PFAS नहीं, फैब्रिक की hand या सांस लेने की क्षमता में कोई केमिस्ट्री परिवर्तन नहीं।",
+    explainerP2: "बैक्टीरियल कमी बंधित मेटामटीरियल के साथ सीधे संपर्क के माध्यम से होती है — इसलिए FUZE ASTM E2149 (गैर-लीचिंग एंटीमाइक्रोबियल के लिए डिज़ाइन किया गया कॉन्टैक्ट-किल परीक्षण) के साथ अग्रणी है, परतदार ज्यामिति सत्यापन के लिए AATCC 100 के साथ।",
+    certificationsLabel: "प्रमाणन:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I, bluesign® अनुमोदित, EPA पंजीकृत, California EPA अनुमोदित (Q1 2026), PFAS-मुक्त।",
+    sustainabilityTitle: "स्थिरता",
+    sustainabilityBody: "आज तक इस फैब्रिक में खपत FUZE।",
+    seeMorePrefix: "और देखें",
+    seeMoreSuffix: "प्रमाणित उत्पाद →",
+    learnMoreLink: "FUZE प्रौद्योगिकी के बारे में और जानें →",
+    footerVerifiedBy: "FUZE Atlas द्वारा सत्यापित",
+  },
+
 };
 
 export default hi;
