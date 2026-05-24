@@ -4767,6 +4767,19 @@ const ko: Translations = {
     generatedTemplate: "생성됨:",
   },
 
+  bdWizard: {
+    homeLink: "← 홈",
+    pageTitle: "BD Wizard",
+    pageSubtitle: "가이드된 아웃바운드. 다음 최고 신뢰도 브랜드가 자동 선택됩니다.",
+    inQueueTemplate: "(대기열 {n}개)",
+    skipBrand: "이 브랜드 건너뛰기 →",
+
+    setFromAddressHeader: "발송 전에 발신: 주소를 설정하십시오",
+    setFromAddressBody: "이 설정 없이는 아웃바운드가 일반 FUZE Atlas 알림 주소에서 발송되며 답장이 받은편지함에 도달하지 않습니다.",
+    currentlyLabel: "현재:",
+    openProfile: "프로필 열기",
+  },
+
 };
 
 export default ko;
