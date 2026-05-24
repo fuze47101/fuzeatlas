@@ -6896,6 +6896,29 @@ const it: Translations = {
     printedPrefix: "Stampato",
   },
 
+  pressKitAdmin: {
+    title: "Press kit",
+    subtitle: "Gestisci cosa appare sulla pagina pubblica /press. Disattivando un elemento lo si nasconde senza eliminarlo.",
+    addItemTitle: "Aggiungi elemento",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "didascalia",
+    addItemBtn: "Aggiungi elemento",
+    savingBtn: "Salvataggio…",
+    allFilter: "tutti",
+    colType: "Tipo",
+    colCaption: "Didascalia",
+    colUrl: "URL",
+    colReleased: "Pubblicato",
+    colActive: "Attivo",
+    activeLabel: "Attivo",
+    hiddenLabel: "Nascosto",
+    deleteBtn: "Elimina",
+    deleteConfirmPrefix: "Elimina elemento press kit",
+    emptyState: "Nessun elemento press kit ancora.",
+    errUrlRequired: "URL obbligatorio",
+    errAddFailed: "Aggiunta fallita",
+  },
+
 };
 
 export default it;
