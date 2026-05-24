@@ -7981,6 +7981,31 @@ const ko: Translations = {
     accessLaterTitle: "나중에 이 보고서에 접근하기",
   },
 
+  settingsAuditLog: {
+    title: "감사 로그",
+    subtitle: "모든 시스템 변경 및 사용자 작업 추적",
+    actionLabel: "작업",
+    allActionsOption: "모든 작업",
+    entityTypeLabel: "엔티티 유형",
+    allEntitiesOption: "모든 엔티티",
+    fromDateLabel: "시작 날짜",
+    toDateLabel: "종료 날짜",
+    loadingText: "로드 중...",
+    emptyText: "감사 로그를 찾을 수 없습니다",
+    colTimestamp: "타임스탬프",
+    colUser: "사용자",
+    colAction: "작업",
+    colEntity: "엔티티",
+    colDescription: "설명",
+    systemUserFallback: "시스템",
+    showingPrefix: "표시 중:",
+    showingTo: "~",
+    showingOf: "/",
+    showingSuffix: "로그",
+    prevBtn: "이전",
+    nextBtn: "다음",
+  },
+
 };
 
 export default ko;
