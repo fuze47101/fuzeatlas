@@ -7543,6 +7543,28 @@ const it: Translations = {
     mondayReviewBody: "Esecuzioni di test segnalate dall'IA + rifiuti dei brand. L'email della domenica alle 22:00 UTC alimenta l'agenda.",
   },
 
+  brandEngagement: {
+    heading: "Salute del brand",
+    subtitle: "Monitora le metriche di engagement e salute per tutti i brand",
+    recalculatingBtn: "Ricalcolo in corso...",
+    recalculateBtn: "Ricalcola tutto",
+    allFilter: "Tutti",
+    loadingText: "Caricamento...",
+    noBrandsText: "Nessun brand trovato",
+    scoreBreakdownTitle: "Scomposizione del punteggio",
+    communicationLabel: "Comunicazione",
+    testingVelocityLabel: "Velocità di test",
+    pipelineVelocityLabel: "Velocità della pipeline",
+    paymentScoreLabel: "Punteggio pagamenti",
+    rawMetricsTitle: "Metriche grezze",
+    daysSinceContact: "Giorni dall'ultimo contatto",
+    testsLast30d: "Test (ultimi 30 g)",
+    testsLast90d: "Test (ultimi 90 g)",
+    avgInvoicePayDays: "Giorni medi di pagamento fattura",
+    overdueInvoices: "Fatture scadute",
+    lastCalculatedLabel: "Ultimo calcolo:",
+  },
+
 };
 
 export default it;
