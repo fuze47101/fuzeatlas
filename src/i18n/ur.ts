@@ -7680,6 +7680,24 @@ const ur: Translations = {
     websiteLabel: "ویب سائٹ",
   },
 
+  importContacts: {
+    title: "بلک امپورٹ — رابطے",
+    subtitle: "رابطوں کا CSV پیسٹ یا اپ لوڈ کریں۔ ای میل قدرتی کلید ہے — جب موجود ہو تو ہم ای میل کے ذریعے upsert کرتے ہیں۔ ای میل کے بغیر لیکن LinkedIn URL والی قطاریں 'ای میل غائب' کے طور پر امپورٹ کی جاتی ہیں تاکہ موجودہ Apollo enrichment جاب ان کا پیچھا کر سکے۔ دونوں کے بغیر قطاریں مسترد کر دی جاتی ہیں۔",
+    backLabel: "لیڈ مینجمنٹ",
+    firstNameLabel: "پہلا نام",
+    lastNameLabel: "آخری نام",
+    emailLabel: "ای میل",
+    emailHint: "اگر کوئی LinkedIn URL نہیں تو درکار",
+    linkedinLabel: "LinkedIn URL",
+    linkedinHint: "جب ای میل غائب ہو تو متبادل شناخت کنندہ",
+    brandNameLabel: "برانڈ کا نام",
+    brandNameHint: "Brand.name پر کیس-غیر حساس ملاپ؛ نہ ملنے پر غیر منسلک",
+    jobTitleLabel: "عہدہ",
+    phoneLabel: "فون",
+    titleLabel: "خطاب (اعزازی)",
+    titleHint: 'مثال "جناب"، "ڈاکٹر"',
+  },
+
 };
 
 export default ur;
