@@ -7510,6 +7510,21 @@ const zhTW: Translations = {
     errNetwork: "網路錯誤",
   },
 
+  verifyEmail: {
+    verifyingTitle: "正在驗證您的電子郵件…",
+    successTitle: "電子郵件已驗證",
+    welcomePrefix: "歡迎",
+    successBody: "您的電子郵件已通過驗證。即將跳轉至登入頁面…",
+    failedTitle: "驗證失敗",
+    resendVerificationBtn: "重新發送驗證信",
+    checkEmailTitle: "請查收電子郵件",
+    checkEmailBody: "驗證連結已寄至您的電子郵件信箱。點選該連結以驗證您的帳號。",
+    resendEmailBtn: "重新寄送",
+    sendingBtn: "傳送中…",
+    errVerifyFailed: "驗證電子郵件失敗",
+    errSendFailed: "傳送驗證信失敗",
+  },
+
 };
 
 export default zhTW;
