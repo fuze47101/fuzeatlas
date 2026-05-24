@@ -7335,6 +7335,37 @@ const zhTW: Translations = {
     footerHint: "停滯 = 仍處於 DRAFT/SENT/SIGNED/ACTIVE 狀態，但 14+ 天無活動。已簽署無進度 = 已 SIGNED 或 ACTIVE 30+ 天，定義了里程碑但無任一完成。上次活動取 SOW 編輯、里程碑完成或測試請求送出三者中最近的時間。",
   },
 
+  acmTasks: {
+    title: "🗓️ ACM 任務",
+    subtitle: "提前一週與前一天的提醒會在台北時間早上 8 點自動透過鈴鐺與電子郵件發送。",
+    tabOpen: "未完成",
+    tabCompleted: "已完成",
+    onlyMine: "僅我的",
+    loading: "載入中…",
+    overdueTitle: "已逾期",
+    overdueSubtitle: "已超過到期日 — 盡快處理掉",
+    dueWeekTitle: "本週到期",
+    dueWeekSubtitle: "未來 7 天",
+    upcomingTitle: "即將到來",
+    upcomingSubtitle: "7 天之後",
+    completedTitle: "已完成",
+    completedSubtitle: "最近 200 筆",
+    nothingHere: "此處沒有項目。",
+    markDoneTitle: "標記為完成",
+    cancelTaskTitle: "取消任務",
+    reopenTitle: "重新開啟",
+    highPriorityBadge: "高",
+    overdueRowPrefix: "逾期 — ",
+    duePrefix: "到期",
+    ownerLabel: "負責人：",
+    relToday: "今天",
+    relTomorrow: "明天",
+    relYesterday: "昨天",
+    relInPrefix: "再",
+    relDaysSuffix: "天",
+    relDaysAgo: "天前",
+  },
+
 };
 
 export default zhTW;
