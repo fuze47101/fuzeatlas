@@ -8081,6 +8081,24 @@ const ko: Translations = {
     footerCertifiedBy: "FUZE Atlas 인증",
   },
 
+  forgotPassword: {
+    brandSubtitle: "비밀번호 재설정",
+    cardTitle: "비밀번호를 잊으셨나요?",
+    cardBody: "이메일 주소를 입력하시면 비밀번호 재설정 링크를 보내 드리겠습니다.",
+    emailLabel: "이메일 주소",
+    emailPlaceholder: "you@801inc.com",
+    sendBtn: "재설정 링크 보내기",
+    sendingBusy: "전송 중...",
+    rememberPrefix: "비밀번호가 기억나시나요?",
+    signInLink: "로그인",
+    failedFallback: "요청 처리 실패",
+    networkError: "네트워크 오류",
+    checkEmailTitle: "이메일을 확인하십시오",
+    checkEmailBody: "해당 이메일로 계정이 존재하는 경우, 곧 비밀번호 재설정 링크를 받게 됩니다.",
+    backToSignIn: "로그인으로 돌아가기",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default ko;
