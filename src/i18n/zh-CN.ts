@@ -7883,6 +7883,24 @@ const zhCN: Translations = {
     emptyBody: "请尝试放宽筛选条件——或取消「已验证台架测试」筛选，以查看仍处于开发阶段的面料。",
   },
 
+  importBrands: {
+    title: "批量导入 — 品牌",
+    subtitle: "粘贴或上传来自展会、名单或调研整理的品牌候选 CSV。我们将映射列、预览校验，并通过 CLI 所用的同一 seed-brand 辅助方法幂等写入。",
+    backLabel: "品牌管线",
+    brandNameLabel: "品牌名称",
+    brandNameHint: "（自然主键 — 以此进行 upsert）",
+    domainLabel: "邮箱域名",
+    domainHint: "例如：\"rhone.com\"",
+    repEmailLabel: "主客户经理邮箱",
+    repEmailHint: "必须是已存在的 Atlas 用户",
+    tierLabel: "所需 FUZE 等级",
+    tierHint: "F1 / F2 / F3 / F4 — 默认 F2",
+    cadenceLabel: "ICP 节奏（每 N 个批次）",
+    cadenceHint: "默认 5",
+    countryLabel: "国家 / 地区",
+    websiteLabel: "网站",
+  },
+
 };
 
 export default zhCN;
