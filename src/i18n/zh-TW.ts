@@ -7620,6 +7620,31 @@ const zhTW: Translations = {
     claimsLink: "聲明",
   },
 
+  changePassword: {
+    titleDefault: "變更密碼",
+    titleForced: "設定新密碼",
+    forcedBanner: "您目前使用的是暫時密碼，請建立一組安全的密碼以繼續使用。",
+    currentPasswordLabel: "目前密碼",
+    newPasswordLabel: "新密碼",
+    newPasswordPlaceholder: "至少 8 字元，含 1 個大寫字母與 1 個數字",
+    confirmPasswordLabel: "確認新密碼",
+    reqMinChars: "至少 8 個字元",
+    reqUppercase: "1 個大寫字母",
+    reqNumber: "1 個數字",
+    reqMatch: "密碼一致",
+    updateBtn: "更新密碼",
+    setAndContinueBtn: "設定密碼並繼續",
+    updatingBtn: "更新中…",
+    cancelBtn: "取消",
+    passwordUpdatedTitle: "密碼已更新",
+    redirecting: "即將為您跳轉…",
+    errPasswordsDoNotMatch: "密碼不一致",
+    errMinLength: "密碼至少需 8 個字元",
+    errNeedUppercase: "密碼至少需含 1 個大寫字母",
+    errNeedNumber: "密碼至少需含 1 個數字",
+    errGeneric: "變更密碼失敗",
+  },
+
 };
 
 export default zhTW;
