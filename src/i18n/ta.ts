@@ -7391,6 +7391,35 @@ const ta: Translations = {
     errGeneric: "கடவுச்சொல்லை மாற்ற முடியவில்லை",
   },
 
+  claimsLandingPage: {
+    heroTitle: "உரிமைகோரல்கள், சான்றிதழ்கள் & முறையியல்",
+    heroSubtitle: "FUZE எவ்வாறு வேலை செய்கிறது, எதற்கு சான்றளிக்கப்பட்டுள்ளது, மற்றும் ஏன் அதை அந்த விதத்தில் சோதிக்கிறோம்.",
+    techTitle: "FUZE தொழில்நுட்பம்",
+    techBody1: "FUZE என்பது FUZE மெட்டா-மெட்டீரியலைச் சுற்றி கட்டப்பட்ட ஒரு தனிப்பட்ட ஆன்டிமைக்ரோபியல் ஃபேப்ரிக் சிகிச்சை — எங்கள் Salt Lake City வசதியில் மறுசுழற்சி எலக்ட்ரானிக்ஸ் இலிருந்து liquid laser ablation மூலம் உற்பத்தி செய்யப்படுகிறது. நிலையான ஃபேப்ரிக் ஃபினிஷிங்கின் போது (exhaust, pad-dry-cure, அல்லது spray application) ஃபேப்ரிக்கின் hand, dye, drape, அல்லது breathability-ஐ மாற்றாமல் சிகிச்சை இழைகளுடன் நிரந்தரமாக பிணைகிறது.",
+    techBody2: "FUZE வடிவமைப்பின் மூலம் non-leaching ஆகும். பாக்டீரியா குறைப்பு பாக்டீரியா cells-க்கும் இழை மேற்பரப்பில் பிணைக்கப்பட்ட FUZE மெட்டா-மெட்டீரியலுக்கும் இடையே நேரடி உடல் தொடர்பு வழியாக நிகழ்கிறது — சலவை நீரில் வேதியியல் வெளியிடப்படவில்லை, PFAS இல்லை, binders இல்லை, curing வேதியியல் இல்லை. Posture FUZE-ஐ ஒவ்வொரு ஒழுங்குமுறை tailwind-இன் சரியான பக்கத்தில் வைக்கிறது (Texas AG PFAS investigations, California SB-707).",
+    techBody3: "சிகிச்சை டியர்கள்: F1 Full Spectrum (1.0 mg/kg, 100 சலவைகள் சரிபார்க்கப்பட்டது) · F2 Advanced (0.75 mg/kg, 75 சலவைகள்) · F3 Core (0.5 mg/kg, 50 சலவைகள்) · F4 Foundation (0.25 mg/kg, 25 சலவைகள்). சலவை எண்ணிக்கைகள் சுயாதீன-ஆய்வக AATCC 100 + ISO 20743 சோதனை மூலம் ஆவணப்படுத்தப்பட்டுள்ளன, கோரிக்கையில் வெளியிடப்படுகிறது.",
+    certsTitle: "சான்றிதழ்கள்",
+    certEpaTitle: "EPA பதிவு செய்யப்பட்டது (கூட்டாட்சி)",
+    certEpaBody: "FUZE வேதியியல் U.S. Environmental Protection Agency-உடன் ஒரு ஆன்டிமைக்ரோபியல் pesticide-ஆக பதிவு செய்யப்பட்டுள்ளது.",
+    certCaEpaTitle: "California EPA அங்கீகரிக்கப்பட்டது (Q1 2026)",
+    certCaEpaBody: "California-வின் கடினமான ஆட்சியின் கீழ் Activewear, baby/kids textiles, மற்றும் healthcare use cases-க்கு cleared.",
+    certOekoTitle: "OEKO-TEX Standard 100 Class I",
+    certOekoBody: "நேரடி தோல் தொடர்புக்கு பாதுகாப்பானதாக சான்றளிக்கப்பட்டது — baby மற்றும் intimate apparel உள்ளிட்டது.",
+    certBluesignTitle: "bluesign® அங்கீகரிக்கப்பட்டது",
+    certBluesignBody: "Bluesign criteria-க்கு உட்பட்டு தொழிலாளர்கள், நுகர்வோர், மற்றும் சுற்றுச்சூழலுக்கு பாதுகாப்பான வேதியியல் சரிபார்க்கப்பட்டது.",
+    certPfasTitle: "PFAS இல்லாதது",
+    certPfasBody: "Formulation-இல் எங்கும் பூஜ்ஜிய per- மற்றும் polyfluoroalkyl substances. Binders இல்லை, curing aids இல்லை.",
+    certStandardsTitle: "தரநிலைகள் சரிபார்க்கப்பட்டது",
+    certStandardsBody: "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — மூன்றாம்-தரப்பு அறிக்கைகள் கோரிக்கையில் கிடைக்கின்றன.",
+    standardsTitle: "சோதனை தரநிலைகள்",
+    standardsBody: "ஜவுளிகளுக்கான ஆன்டிமைக்ரோபியல் செயல்திறன் ஒரே எண் அல்ல — நீங்கள் எந்த தரநிலையில் சோதனை இயக்கினீர்கள் என்பதையும் அந்த தரநிலை வேதியியலுக்கு பொருந்துமா என்பதையும் பெரிதும் சார்ந்துள்ளது. FUZE முறைகளில் எவ்வாறு map ஆகிறது என்பது இங்கே.",
+    jabTitle: "ASTM E2149-உடன் நாம் ஏன் முன்னணியில் செல்கிறோம்",
+    jabBody: "Non-leaching ஆன்டிமைக்ரோபியல்களுக்காக வடிவமைக்கப்பட்ட சோதனை என்பதால் ASTM E2149-இல் சோதிக்கிறோம். AATCC 100-ஐ நம்பும் போட்டியாளர் வேதியியல்கள் அப்படிச் செய்வது AATCC 100-இன் stacked-layer வடிவியல் leaching அயனிகளை inter-layer space-ஐ saturate செய்ய உதவுவதால் — சோதனை கட்டுமானத்தால் leaching-ஐ விரும்புகிறது. FUZE வடிவமைப்பின் மூலம் leach செய்யாது. சரியான சோதனையில் எங்களைச் சந்திக்கவும்.",
+    jabFootnote: "(போட்டியாளர் attribution: layered-test caveat silver-ion, silver-chloride, மற்றும் quat-based finishers-க்கு பொருந்தும் — FUZE-க்கு அல்ல.)",
+    documentsTitle: "ஆவணங்கள்",
+    pressKitLink: "Press kit",
+  },
+
 };
 
 export default ta;
