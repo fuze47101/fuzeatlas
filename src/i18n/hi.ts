@@ -7364,6 +7364,31 @@ const hi: Translations = {
     claimsLink: "दावे",
   },
 
+  changePassword: {
+    titleDefault: "पासवर्ड बदलें",
+    titleForced: "अपना नया पासवर्ड सेट करें",
+    forcedBanner: "आपको एक अस्थायी पासवर्ड दिया गया था। कृपया जारी रखने के लिए एक सुरक्षित पासवर्ड बनाएं।",
+    currentPasswordLabel: "वर्तमान पासवर्ड",
+    newPasswordLabel: "नया पासवर्ड",
+    newPasswordPlaceholder: "न्यूनतम 8 वर्ण, 1 बड़े अक्षर, 1 संख्या",
+    confirmPasswordLabel: "नए पासवर्ड की पुष्टि करें",
+    reqMinChars: "कम से कम 8 वर्ण",
+    reqUppercase: "एक बड़ा अक्षर",
+    reqNumber: "एक संख्या",
+    reqMatch: "पासवर्ड मेल खाते हैं",
+    updateBtn: "पासवर्ड अपडेट करें",
+    setAndContinueBtn: "पासवर्ड सेट करें और जारी रखें",
+    updatingBtn: "अपडेट हो रहा है...",
+    cancelBtn: "रद्द करें",
+    passwordUpdatedTitle: "पासवर्ड अपडेट किया गया",
+    redirecting: "अब पुनर्निर्देशित कर रहे हैं...",
+    errPasswordsDoNotMatch: "पासवर्ड मेल नहीं खाते",
+    errMinLength: "पासवर्ड कम से कम 8 वर्ण होना चाहिए",
+    errNeedUppercase: "पासवर्ड में कम से कम एक बड़ा अक्षर होना चाहिए",
+    errNeedNumber: "पासवर्ड में कम से कम एक संख्या होनी चाहिए",
+    errGeneric: "पासवर्ड बदलने में विफल",
+  },
+
 };
 
 export default hi;
