@@ -6650,6 +6650,29 @@ const km: Translations = {
     printedPrefix: "បោះពុម្ពed",
   },
 
+  pressKitAdmin: {
+    title: "ឧបករណ៍សារព័ត៌មាន",
+    subtitle: "Manage what appears on the public /press page. ទៅggling active hides a row without deleting it.",
+    addItemTitle: "បន្ថែម item",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "caption",
+    addItemBtn: "បន្ថែម item",
+    savingBtn: "Saving…",
+    allFilter: "all",
+    colType: "ប្រភេទ",
+    colCaption: "Caption",
+    colUrl: "URL",
+    colReleased: "Released",
+    colActive: "សកម្ម",
+    activeLabel: "សកម្ម",
+    hiddenLabel: "Hidden",
+    deleteBtn: "លុប",
+    deleteConfirmPrefix: "លុប press kit item",
+    emptyState: "ទេ press kit items yet.",
+    errUrlRequired: "URL required",
+    errAddFailed: "បន្ថែម failed",
+  },
+
 };
 
 export default km;
