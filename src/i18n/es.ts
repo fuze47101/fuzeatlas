@@ -4756,6 +4756,32 @@ const es: Translations = {
     openProfile: "Abrir perfil",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← Volver a Preparación de muestra ICP",
+    printButton: "🖨 Imprimir / Guardar como PDF",
+    eyebrow: "FUZE Biotech · SOP de laboratorio",
+    pageTitle: "Preparación de muestras ICP-MS",
+    pageSubtitle: "Cortar → pesar → fragmentar → embolsar → enviar a CTLA (Utah) para verificación ICP-MS",
+    docLabel: "Doc: SOP-FUZE-LAB-002",
+    revLabel: "Rev: 1.0 ·",
+
+    purposeHeader: "Propósito",
+    equipmentHeader: "Equipamiento",
+    massTargetsHeader: "Objetivos de masa (críticos)",
+    shipToLabel: "Enviar a CTLA",
+    digestPerRunLabel: "Digestión por serie",
+    cutterGeometryLabel: "Geometría del cortador",
+
+    criticalRulesHeader: "⚠ Reglas críticas de preparación",
+    procedureHeader: "Procedimiento",
+    shippingAddressHeader: "Dirección de envío (autocompletada por el asistente)",
+    shipToHeader: "Enviar a",
+    returnAddressHeader: "Dirección de retorno + informes",
+    reportToLabel: "Reportar a:",
+    preShipChecklistHeader: "✅ Lista de verificación previa al envío (el asistente imprime esto en el paquete)",
+    sanityCheckHeader: "Verificación de cordura (lo que CTLA debe reportar)",
+  },
+
 };
 
 export default es;
