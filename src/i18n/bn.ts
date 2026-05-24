@@ -4501,6 +4501,32 @@ const bn: Translations = {
     openProfile: "প্রোফাইল খুলুন",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← ICP নমুনা প্রস্তুতিতে ফিরুন",
+    printButton: "🖨 প্রিন্ট / PDF হিসেবে সংরক্ষণ",
+    eyebrow: "FUZE Biotech · ল্যাব SOP",
+    pageTitle: "ICP-MS নমুনা প্রস্তুতি",
+    pageSubtitle: "কাটা → ওজন → টুকরা → ব্যাগ → ICP-MS যাচাইকরণের জন্য CTLA (Utah)-এ শিপ",
+    docLabel: "ডক: SOP-FUZE-LAB-002",
+    revLabel: "Rev: 1.0 ·",
+
+    purposeHeader: "উদ্দেশ্য",
+    equipmentHeader: "সরঞ্জাম",
+    massTargetsHeader: "ভর লক্ষ্য (গুরুত্বপূর্ণ)",
+    shipToLabel: "CTLA-এ শিপ",
+    digestPerRunLabel: "প্রতি রানে ডাইজেস্ট",
+    cutterGeometryLabel: "কাটার জ্যামিতি",
+
+    criticalRulesHeader: "⚠ গুরুত্বপূর্ণ প্রস্তুতি নিয়ম",
+    procedureHeader: "পদ্ধতি",
+    shippingAddressHeader: "শিপিং ঠিকানা (উইজার্ড দ্বারা স্বয়ংক্রিয়ভাবে পূরণ)",
+    shipToHeader: "প্রাপক",
+    returnAddressHeader: "রিটার্ন ঠিকানা + রিপোর্টিং",
+    reportToLabel: "প্রাপক রিপোর্ট:",
+    preShipChecklistHeader: "✅ প্রি-শিপ চেকলিস্ট (উইজার্ড এটি প্যাকেটে প্রিন্ট করে)",
+    sanityCheckHeader: "স্যানিটি চেক (CTLA কী রিপোর্ট করবে)",
+  },
+
 };
 
 export default bn;
