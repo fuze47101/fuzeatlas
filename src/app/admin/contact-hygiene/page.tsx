@@ -26,6 +26,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 type Verdict = "real" | "suspicious" | "placeholder" | "role_account";
 
@@ -58,22 +59,26 @@ interface HygieneList {
   limit: number;
 }
 
-const VERDICT_FILTERS: Array<{ key: string; label: string }> = [
-  { key: "", label: "All scanned" },
-  { key: "placeholder", label: "Placeholder" },
-  { key: "suspicious", label: "Suspicious" },
-  { key: "role_account", label: "Role mailbox" },
-  { key: "real", label: "Real" },
-  { key: "unscanned", label: "Unscanned" },
+const VERDICT_FILTER_KEYS: Array<{ key: string; labelKey: string }> = [
+  { key: "", labelKey: "filterAllScanned" },
+  { key: "placeholder", labelKey: "filterPlaceholder" },
+  { key: "suspicious", labelKey: "filterSuspicious" },
+  { key: "role_account", labelKey: "filterRoleMailbox" },
+  { key: "real", labelKey: "filterReal" },
+  { key: "unscanned", labelKey: "filterUnscanned" },
 ];
 
-const HIDDEN_FILTERS: Array<{ key: string; label: string }> = [
-  { key: "", label: "All visibility" },
-  { key: "true", label: "Hidden only" },
-  { key: "false", label: "Visible only" },
+const HIDDEN_FILTER_KEYS: Array<{ key: string; labelKey: string }> = [
+  { key: "", labelKey: "filterAllVisibility" },
+  { key: "true", labelKey: "filterHiddenOnly" },
+  { key: "false", labelKey: "filterVisibleOnly" },
 ];
 
 export default function ContactHygienePage() {
+  const { t } = useI18n();
+  const T = t.contactHygiene;
+  const VERDICT_FILTERS = VERDICT_FILTER_KEYS.map(v => ({ key: v.key, label: (T as any)[v.labelKey] }));
+  const HIDDEN_FILTERS = HIDDEN_FILTER_KEYS.map(v => ({ key: v.key, label: (T as any)[v.labelKey] }));
   const { user } = useAuth();
   const router = useRouter();
   const [data, setData] = useState<HygieneList | null>(null);
@@ -116,9 +121,7 @@ export default function ContactHygienePage() {
   const runScan = async (autoHide: boolean) => {
     if (
       autoHide &&
-      !confirm(
-        "Auto-hide will flip hiddenFromWizard = true for every contact the scan flags as placeholder or invalid-email. This is reversible (you can un-hide from this page) but affects every rep's BD Wizard immediately. Continue?",
-      )
+      !confirm(T.confirmAutoHide)
     )
       return;
     setScanning(true);
@@ -141,9 +144,7 @@ export default function ContactHygienePage() {
 
   const toggleHidden = async (row: HygieneRow) => {
     const reason = prompt(
-      row.hiddenFromWizard
-        ? "Un-hide this contact? Reason (optional, written to their notes):"
-        : "Hide this contact from the BD Wizard? Reason (optional):",
+      row.hiddenFromWizard ? T.promptUnhide : T.promptHide,
       "",
     );
     if (reason === null) return; // user cancelled
@@ -156,12 +157,12 @@ export default function ContactHygienePage() {
       });
       const json = await res.json();
       if (!json.ok) {
-        alert(`Failed: ${json.error || "unknown"}`);
+        alert(`${T.failedPrefix} ${json.error || "unknown"}`);
         return;
       }
       await load();
     } catch (e: any) {
-      alert(`Network error: ${e.message}`);
+      alert(`${T.networkErrPrefix} ${e.message}`);
     }
   };
 
@@ -176,15 +177,14 @@ export default function ContactHygienePage() {
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
             <Link href="/admin" className="hover:text-[#00b4c3]">
-              Admin
+              {T.crumbAdmin}
             </Link>
             <span>/</span>
-            <span>Contact Hygiene</span>
+            <span>{T.crumbHere}</span>
           </div>
-          <h1 className="text-3xl font-black text-slate-900">Contact Hygiene</h1>
+          <h1 className="text-3xl font-black text-slate-900">{T.pageTitle}</h1>
           <p className="text-slate-600 mt-1">
-            Flags placeholder, role-mailbox, and malformed contacts so reps stop wasting outreach
-            on Jane Doe. Reversible — un-hide to bring a contact back into the wizard.
+            {T.pageSubtitle}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -192,17 +192,17 @@ export default function ContactHygienePage() {
             onClick={() => runScan(false)}
             disabled={scanning}
             className="px-3 py-2 bg-white border border-slate-300 hover:border-[#00b4c3] rounded-lg text-sm font-semibold disabled:opacity-50"
-            title="Re-run the hygiene snapshot on every contact, without changing visibility"
+            title={T.titlePreviewScan}
           >
-            {scanning ? "Scanning…" : "🔍 Preview scan"}
+            {scanning ? T.btnScanning : T.btnPreviewScan}
           </button>
           <button
             onClick={() => runScan(true)}
             disabled={scanning}
             className="px-3 py-2 bg-[#00b4c3] hover:bg-[#009aa6] text-white rounded-lg text-sm font-semibold disabled:opacity-50"
-            title="Scan + auto-hide placeholder contacts from the BD Wizard"
+            title={T.titleAutoHide}
           >
-            {scanning ? "Hiding…" : "🙈 Scan + auto-hide"}
+            {scanning ? T.btnHiding : T.btnAutoHide}
           </button>
         </div>
       </div>
@@ -218,38 +218,38 @@ export default function ContactHygienePage() {
         >
           {scanSummary.ok ? (
             <>
-              Scanned <b>{scanSummary.scanned}</b> contacts · placeholder{" "}
-              <b>{scanSummary.buckets?.placeholder || 0}</b> · suspicious{" "}
-              <b>{scanSummary.buckets?.suspicious || 0}</b> · role{" "}
-              <b>{scanSummary.buckets?.role_account || 0}</b> · real{" "}
+              {T.summaryScanned} <b>{scanSummary.scanned}</b> {T.summaryContacts}{" "}
+              <b>{scanSummary.buckets?.placeholder || 0}</b> {T.summarySuspicious}{" "}
+              <b>{scanSummary.buckets?.suspicious || 0}</b> {T.summaryRole}{" "}
+              <b>{scanSummary.buckets?.role_account || 0}</b> {T.summaryReal}{" "}
               <b>{scanSummary.buckets?.real || 0}</b>
               {scanSummary.autoHide && scanSummary.hiddenThisRun > 0 && (
                 <>
                   {" "}
-                  · hidden <b>{scanSummary.hiddenThisRun}</b> new
+                  {T.summaryHiddenPrefix} <b>{scanSummary.hiddenThisRun}</b> {T.summaryHiddenSuffix}
                 </>
               )}
             </>
           ) : (
-            <>Scan failed: {scanSummary.error}</>
+            <>{T.scanFailedPrefix} {scanSummary.error}</>
           )}
         </div>
       )}
 
       {/* ── Stat cards ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
-        <StatCard label="Placeholder" value={totals.placeholder || 0} tone="red" />
-        <StatCard label="Suspicious" value={totals.suspicious || 0} tone="amber" />
-        <StatCard label="Role mailbox" value={totals.role_account || 0} tone="slate" />
-        <StatCard label="Real" value={totals.real || 0} tone="emerald" />
-        <StatCard label="Unscanned" value={totals.unscanned || 0} tone="slate" />
-        <StatCard label="Hidden" value={data?.hiddenCount || 0} tone="violet" />
+        <StatCard label={T.statPlaceholder} value={totals.placeholder || 0} tone="red" />
+        <StatCard label={T.statSuspicious} value={totals.suspicious || 0} tone="amber" />
+        <StatCard label={T.statRole} value={totals.role_account || 0} tone="slate" />
+        <StatCard label={T.statReal} value={totals.real || 0} tone="emerald" />
+        <StatCard label={T.statUnscanned} value={totals.unscanned || 0} tone="slate" />
+        <StatCard label={T.statHidden} value={data?.hiddenCount || 0} tone="violet" />
       </div>
 
       {/* ── Filters ── */}
       <div className="bg-white border border-slate-200 rounded-xl p-3 mb-4 flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-xs text-slate-600 uppercase tracking-wide">Verdict</label>
+          <label className="text-xs text-slate-600 uppercase tracking-wide">{T.filterVerdict}</label>
           <select
             value={verdict}
             onChange={(e) => setVerdict(e.target.value)}
@@ -263,7 +263,7 @@ export default function ContactHygienePage() {
           </select>
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-xs text-slate-600 uppercase tracking-wide">Visibility</label>
+          <label className="text-xs text-slate-600 uppercase tracking-wide">{T.filterVisibility}</label>
           <select
             value={hidden}
             onChange={(e) => setHidden(e.target.value)}
@@ -280,7 +280,7 @@ export default function ContactHygienePage() {
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search name or email…"
+          placeholder={T.searchPlaceholder}
           className="flex-1 min-w-[200px] border border-slate-300 rounded-lg px-3 py-1.5 text-sm"
         />
       </div>
@@ -292,10 +292,10 @@ export default function ContactHygienePage() {
         </div>
       ) : !data || data.rows.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center text-slate-600">
-          No contacts match the current filter.
+          {T.emptyTitle}
           {totals.unscanned > 0 && (
             <div className="mt-2 text-sm text-slate-500">
-              {totals.unscanned} contacts have never been scanned — hit "Preview scan" to populate.
+              {T.emptyUnscannedTpl.replace("{n}", String(totals.unscanned))}
             </div>
           )}
         </div>
@@ -304,14 +304,14 @@ export default function ContactHygienePage() {
           <table className="w-full text-sm min-w-[1000px]">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase tracking-wide">
               <tr>
-                <th className="text-left px-3 py-3">Contact</th>
-                <th className="text-left px-3 py-3">Brand / Factory</th>
-                <th className="text-center px-3 py-3">Verdict</th>
-                <th className="text-center px-3 py-3">Email</th>
-                <th className="text-center px-3 py-3">LinkedIn</th>
-                <th className="text-right px-3 py-3">Score</th>
-                <th className="text-left px-3 py-3">Flags</th>
-                <th className="text-right px-3 py-3">Actions</th>
+                <th className="text-left px-3 py-3">{T.colContact}</th>
+                <th className="text-left px-3 py-3">{T.colBrandFactory}</th>
+                <th className="text-center px-3 py-3">{T.colVerdict}</th>
+                <th className="text-center px-3 py-3">{T.colEmail}</th>
+                <th className="text-center px-3 py-3">{T.colLinkedin}</th>
+                <th className="text-right px-3 py-3">{T.colScore}</th>
+                <th className="text-left px-3 py-3">{T.colFlags}</th>
+                <th className="text-right px-3 py-3">{T.colActions}</th>
               </tr>
             </thead>
             <tbody>
@@ -329,14 +329,14 @@ export default function ContactHygienePage() {
                       href={`/contacts/${row.id}`}
                       className="font-semibold text-slate-900 hover:text-[#00b4c3]"
                     >
-                      {row.name || `${row.firstName || ""} ${row.lastName || ""}`.trim() || "(unnamed)"}
+                      {row.name || `${row.firstName || ""} ${row.lastName || ""}`.trim() || T.unnamed}
                     </Link>
                     <div className="text-xs text-slate-500 truncate max-w-xs">
-                      {row.email || "no email"}
+                      {row.email || T.noEmail}
                     </div>
                     {row.hiddenFromWizard && (
                       <span className="inline-block mt-1 text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-violet-100 text-violet-700 font-semibold">
-                        Hidden
+                        {T.hiddenLabel}
                       </span>
                     )}
                   </td>
@@ -354,7 +354,7 @@ export default function ContactHygienePage() {
                     )}
                   </td>
                   <td className="px-3 py-3 text-center">
-                    <VerdictBadge verdict={row.hygieneVerdict} />
+                    <VerdictBadge verdict={row.hygieneVerdict} T={T} />
                   </td>
                   <td className="px-3 py-3 text-center">
                     <ValidityBadge validity={row.emailValidity} />
@@ -377,12 +377,12 @@ export default function ContactHygienePage() {
                         ))}
                         {row.hygieneFlags.length > 3 && (
                           <li className="text-slate-400">
-                            +{row.hygieneFlags.length - 3} more
+                            +{row.hygieneFlags.length - 3} {T.flagsMore}
                           </li>
                         )}
                       </ul>
                     ) : (
-                      <span className="text-slate-400">clean</span>
+                      <span className="text-slate-400">{T.flagsClean}</span>
                     )}
                   </td>
                   <td className="px-3 py-3 text-right">
@@ -394,7 +394,7 @@ export default function ContactHygienePage() {
                           : "text-xs text-red-600 hover:underline font-semibold"
                       }
                     >
-                      {row.hiddenFromWizard ? "Un-hide" : "Hide"}
+                      {row.hiddenFromWizard ? T.actionUnhide : T.actionHide}
                     </button>
                   </td>
                 </tr>
@@ -405,10 +405,7 @@ export default function ContactHygienePage() {
       )}
 
       <p className="text-xs text-slate-500 mt-3">
-        Scan walks every contact and snapshots verdict + flags onto the row. Preview only records
-        the verdict; Scan + auto-hide also flips <code className="font-mono">hiddenFromWizard</code>
-        for placeholders and invalid-email contacts. Both are reversible — click "Un-hide" to
-        restore a contact, which also re-runs the snapshot in case the data has been fixed.
+        {T.helpFooter}
       </p>
     </div>
   );
@@ -438,18 +435,18 @@ function StatCard({
   );
 }
 
-function VerdictBadge({ verdict }: { verdict: Verdict | null }) {
+function VerdictBadge({ verdict, T }: { verdict: Verdict | null; T: any }) {
   const map: Record<string, { label: string; cls: string }> = {
-    real: { label: "real", cls: "bg-emerald-100 text-emerald-700" },
-    suspicious: { label: "suspect", cls: "bg-amber-100 text-amber-700" },
-    placeholder: { label: "placeholder", cls: "bg-red-100 text-red-700" },
-    role_account: { label: "role mbx", cls: "bg-slate-200 text-slate-700" },
+    real: { label: T.verdictReal, cls: "bg-emerald-100 text-emerald-700" },
+    suspicious: { label: T.verdictSuspect, cls: "bg-amber-100 text-amber-700" },
+    placeholder: { label: T.verdictPlaceholder, cls: "bg-red-100 text-red-700" },
+    role_account: { label: T.verdictRoleMbx, cls: "bg-slate-200 text-slate-700" },
   };
   const v = verdict && map[verdict];
   if (!v) {
     return (
       <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
-        unscanned
+        {T.verdictUnscanned}
       </span>
     );
   }
