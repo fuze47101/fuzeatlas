@@ -8041,6 +8041,24 @@ const ms: Translations = {
     footerCertifiedBy: "Disahkan oleh FUZE Atlas",
   },
 
+  forgotPassword: {
+    brandSubtitle: "Set semula kata laluan anda",
+    cardTitle: "Lupa Kata Laluan Anda?",
+    cardBody: "Masukkan alamat e-mel anda dan kami akan menghantar pautan untuk menetapkan semula kata laluan anda.",
+    emailLabel: "Alamat E-mel",
+    emailPlaceholder: "anda@801inc.com",
+    sendBtn: "Hantar Pautan Set Semula",
+    sendingBusy: "Menghantar...",
+    rememberPrefix: "Ingat kata laluan anda?",
+    signInLink: "Log masuk",
+    failedFallback: "Gagal memproses permintaan",
+    networkError: "Ralat rangkaian",
+    checkEmailTitle: "Semak E-mel Anda",
+    checkEmailBody: "Jika akaun wujud dengan e-mel itu, anda akan menerima pautan set semula kata laluan tidak lama lagi.",
+    backToSignIn: "Kembali ke Log Masuk",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default ms;
