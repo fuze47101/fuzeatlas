@@ -7316,6 +7316,25 @@ const km: Translations = {
     footerPrefix: "FUZE Atlas API ឯកសារation - ធ្វើបច្ចុប្បន្នភាពចុងក្រោយ",
   },
 
+  recipeSearch: {
+    heading: "រូបមន្ត ស្វែងរក",
+    subtitle: "Network-wide FUZE recipe library. ស្វែងរក across every validated fabric in Atlas — match what you're working on to a proven recipe, even when the fabric isn't yours. Out-of-scope rows are anonymized but the recipe physics are visible.",
+    keywordPlaceholder: "Keyword (cotton, jersey, twill...)",
+    anyCategory: "Any category",
+    knit: "Knit",
+    woven: "Woven",
+    nonwoven: "ទេnwoven",
+    fiberPlaceholder: "Fiber (cotton, poly...)",
+    gsmMinPlaceholder: "GSM min",
+    gsmMaxPlaceholder: "GSM max",
+    anyTier: "Any tier",
+    onlyValidatedLabel: "Only show fabrics with measured pickup (validated bench test)",
+    searchingBtn: "ស្វែងរកing...",
+    searchBtn: "ស្វែងរក",
+    emptyTitle: "ទេ matching recipes yet.",
+    emptyBody: "Try widening the filters — or remove the \"validated bench test\" filter if you want to see fabrics that are still mid-development.",
+  },
+
 };
 
 export default km;
