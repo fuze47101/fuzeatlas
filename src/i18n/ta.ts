@@ -7757,6 +7757,33 @@ const ta: Translations = {
     resumeBtn: "மீள்-தொடங்கு",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ சரிபார்க்கப்பட்ட FUZE-treated",
+    tierPrefix: "FUZE டியர்",
+    productSectionTitle: "தயாரிப்பு",
+    skuLabel: "SKU",
+    batchLabel: "Batch",
+    fuzeNumberLabel: "FUZE #",
+    constructionLabel: "கட்டுமானம்",
+    weightLabel: "எடை",
+    weightUnit: "GSM",
+    mostRecentValidation: "மிக சமீபத்திய சரிபார்ப்பு",
+    testedPrefix: "சோதிக்கப்பட்டது",
+    afterWashesPrefix: "பிறகு",
+    afterWashesSuffix: "சலவைகள்",
+    whatDoesThisMean: "இதன் பொருள் என்ன?",
+    explainerP1: "FUZE என்பது ஒரு தனிப்பட்ட ஆன்டிமைக்ரோபியல் ஃபேப்ரிக் சிகிச்சை. நிலையான ஃபேப்ரிக் ஃபினிஷிங்கின் போது FUZE மெட்டா-மெட்டீரியல் இழை மேற்பரப்புடன் நிரந்தரமாக பிணைகிறது — leaching இல்லை, PFAS இல்லை, ஃபேப்ரிக்கின் hand அல்லது breathability-க்கு வேதியியல் மாற்றம் இல்லை.",
+    explainerP2: "பிணைக்கப்பட்ட மெட்டா-மெட்டீரியலுடன் நேரடி தொடர்பு வழியாக பாக்டீரியா குறைப்பு நிகழ்கிறது — அதனால்தான் FUZE ASTM E2149 (non-leaching ஆன்டிமைக்ரோபியல்களுக்காக வடிவமைக்கப்பட்ட contact-kill சோதனை)-உடன் முன்னணியில் செல்கிறது, layered geometry சரிபார்ப்புக்காக AATCC 100-உடன்.",
+    certificationsLabel: "சான்றிதழ்கள்:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I, bluesign® அங்கீகரிக்கப்பட்டது, EPA பதிவு செய்யப்பட்டது, California EPA அங்கீகரிக்கப்பட்டது (Q1 2026), PFAS இல்லாதது.",
+    sustainabilityTitle: "நிலைத்தன்மை",
+    sustainabilityBody: "இந்த ஃபேப்ரிக்கில் இன்றுவரை நுகரப்பட்ட FUZE.",
+    seeMorePrefix: "மேலும் பார்",
+    seeMoreSuffix: "சான்றளிக்கப்பட்ட தயாரிப்புகள் →",
+    learnMoreLink: "FUZE தொழில்நுட்பம் பற்றி மேலும் அறிய →",
+    footerVerifiedBy: "FUZE Atlas-ஆல் சரிபார்க்கப்பட்டது",
+  },
+
 };
 
 export default ta;
