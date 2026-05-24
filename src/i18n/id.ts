@@ -3246,6 +3246,24 @@ const id: Translations = {
     websiteLabel: "Website",
   },
 
+  reportSharePage: {
+    unavailableTitle: "Laporan tidak tersedia",
+    unavailableBodyPrefix: "Untuk akses jangka panjang, login di",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "dan temukan laporan di Laporan Saya, atau balas email yang mengirimnya.",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · Laporan Aplikasi & Validasi",
+    heading: "Resep Perlakuan FUZE & Validasi",
+    issuedLabel: "Diterbitkan",
+    linkValidUntil: "· Tautan langsung ini berlaku sampai",
+    preparedForTitle: "Disiapkan Untuk",
+    execSummaryTitle: "Ringkasan Eksekutif",
+    recipeTitle: "Resep Yang Direkomendasikan",
+    fuzeRequiredTitle: "FUZE Diperlukan (Ukuran Bath Produksi)",
+    labIcpTitle: "Verifikasi ICP Lab Independen",
+    accessLaterTitle: "Mengakses Laporan Ini Nanti",
+  },
+
 };
 
 export default id;
