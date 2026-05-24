@@ -7228,6 +7228,32 @@ const hi: Translations = {
     daySuffix: "d पहले",
   },
 
+  resetPassword: {
+    tagline: "एक नया पासवर्ड बनाएं",
+    formTitle: "पासवर्ड रीसेट करें",
+    newPasswordLabel: "नया पासवर्ड",
+    newPasswordPlaceholder: "नया पासवर्ड दर्ज करें",
+    confirmPasswordLabel: "पासवर्ड की पुष्टि करें",
+    confirmPasswordPlaceholder: "पासवर्ड की पुष्टि करें",
+    resetBtn: "पासवर्ड रीसेट करें",
+    resettingBtn: "रीसेट कर रहे हैं...",
+    backToSignIn: "साइन इन पर वापस",
+    successTitle: "पासवर्ड रीसेट सफल",
+    successBody: "आपका पासवर्ड सफलतापूर्वक रीसेट हो गया है। अब आप अपने नए पासवर्ड के साथ साइन इन कर सकते हैं।",
+    signInBtn: "साइन इन",
+    invalidLinkTitle: "अमान्य रीसेट लिंक",
+    invalidLinkBody: "रीसेट लिंक अमान्य है या समाप्त हो गया है। कृपया नया अनुरोध करें।",
+    requestNewLinkBtn: "नया लिंक अनुरोध करें",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "लोड हो रहा है...",
+    errInvalidToken: "अमान्य या गायब रीसेट टोकन",
+    errInvalidTokenShort: "अमान्य रीसेट टोकन",
+    errMinLength: "पासवर्ड कम से कम 6 वर्ण होना चाहिए",
+    errMismatch: "पासवर्ड मेल नहीं खाते",
+    errResetFailed: "पासवर्ड रीसेट करने में विफल",
+    errNetwork: "नेटवर्क त्रुटि",
+  },
+
 };
 
 export default hi;
