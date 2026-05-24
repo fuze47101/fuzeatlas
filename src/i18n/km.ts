@@ -7404,6 +7404,31 @@ const km: Translations = {
     accessLaterTitle: "Accessing This របាយការណ៍ Later",
   },
 
+  settingsAuditLog: {
+    title: "Audit Log",
+    subtitle: "Track all system changes and user actions",
+    actionLabel: "Action",
+    allActionsOption: "ទាំងអស់ Actions",
+    entityTypeLabel: "Entity ប្រភេទ",
+    allEntitiesOption: "ទាំងអស់ Entities",
+    fromDateLabel: "ពី កាលបរិច្ឆេទ",
+    toDateLabel: "ទៅ កាលបរិច្ឆេទ",
+    loadingText: "កំពុងផ្ទុក…",
+    emptyText: "ទេ audit logs found",
+    colTimestamp: "Timestamp",
+    colUser: "អ្នកប្រើ",
+    colAction: "Action",
+    colEntity: "Entity",
+    colDescription: "ការពិពណ៌នា",
+    systemUserFallback: "System",
+    showingPrefix: "Showing",
+    showingTo: "to",
+    showingOf: "of",
+    showingSuffix: "logs",
+    prevBtn: "មុន",
+    nextBtn: "បន្ទាប់",
+  },
+
 };
 
 export default km;
