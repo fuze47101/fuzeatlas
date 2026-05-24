@@ -7353,6 +7353,24 @@ const km: Translations = {
     websiteLabel: "Website",
   },
 
+  importContacts: {
+    title: "Bulk import — ទំនាក់ទំនង",
+    subtitle: "Paste or upload a CSV of contacts. អ៊ីមែល is the natural key — we upsert by email when present. Rows with no email but a LinkedIn URL are imported as 'email missing' so the existing Apollo enrichment job can chase them. Rows with neither are rejected.",
+    backLabel: "Lead Management",
+    firstNameLabel: "នាមខ្លួន",
+    lastNameLabel: "នាមត្រកូល",
+    emailLabel: "អ៊ីមែល",
+    emailHint: "required if no LinkedIn URL",
+    linkedinLabel: "LinkedIn URL",
+    linkedinHint: "fallback identifier when email missing",
+    brandNameLabel: "ម៉ាក name",
+    brandNameHint: "case-insensitive match on ម៉ាក.name; unlinked if not found",
+    jobTitleLabel: "Job title",
+    phoneLabel: "ទូរស័ព្ទ",
+    titleLabel: "ចំណងជើង (honorific)",
+    titleHint: 'e.g. "Mr.", "Dr."',
+  },
+
 };
 
 export default km;
