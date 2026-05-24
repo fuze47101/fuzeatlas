@@ -7850,6 +7850,24 @@ const zhTW: Translations = {
     openSameLink: "開啟相同連結 →",
   },
 
+  apiDocs: {
+    heading: "API 文件",
+    subtitle: "FUZE Atlas API 參考",
+    authStrong: "身分驗證：",
+    authBodyPrefix: "除了下列端點以外的所有端點，",
+    authBodySuffix: "皆需有效的 JWT 工作階段 cookie。",
+    searchPlaceholder: "依路徑或描述搜尋端點...",
+    allMethodsBtn: "所有方法",
+    showingPrefix: "顯示",
+    showingOf: "／共",
+    endpointsLabel: "個端點",
+    collapseAllBtn: "全部收合",
+    expandAllBtn: "全部展開",
+    noResults: "找不到符合搜尋條件的端點。",
+    clearFiltersBtn: "清除篩選",
+    footerPrefix: "FUZE Atlas API 文件 — 最後更新",
+  },
+
 };
 
 export default zhTW;
