@@ -4176,6 +4176,54 @@ const id: Translations = {
     seeCerts: "Lihat stack sertifikasi",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "Perpustakaan Kain FUZE",
+    pageSubtitle: "Telusuri kain yang diolah FUZE dan hasil uji terverifikasi di jaringan global kami. Semua data dianonimkan — identitas pabrik dan brand bersifat rahasia.",
+
+    statFabrics: "Kain Diuji",
+    statTests: "Total Uji",
+    statIcp: "Analisis ICP",
+    statAb: "Uji Antibakteri",
+
+    searchPlaceholder: "Cari berdasarkan construction, yarn, end use, nomor FUZE...",
+    filterAllTypes: "Semua Tipe Uji",
+    filterIcp: "Analisis ICP",
+    filterAntibacterial: "Antibakteri",
+    filterFungal: "Antijamur",
+    filterOdor: "Kontrol Bau",
+    passOnly: "Hanya lulus",
+
+    emptyTitle: "Tidak ada kain yang cocok dengan kriteria Anda",
+    emptyClear: "Hapus semua filter",
+    errorFailedLoad: "Gagal memuat perpustakaan kain",
+    errorFailedDefault: "Gagal memuat",
+
+    testsSuffix: "uji",
+    testSuffix: "uji",
+    propConstruction: "Construction:",
+    propWeight: "Berat:",
+    propWidth: "Lebar:",
+    propYarn: "Yarn:",
+    propCategory: "Kategori:",
+    propEndUse: "End Use:",
+    propWeave: "Weave:",
+    propColor: "Warna:",
+
+    colTest: "Uji",
+    colMethod: "Metode",
+    colWashes: "Cucian",
+    colResult: "Hasil",
+    colStatus: "Status",
+    pass: "Lulus",
+    fail: "Gagal",
+    passBadge: "LULUS",
+    failBadge: "GAGAL",
+
+    paginationPrev: "Sebelumnya",
+    paginationNext: "Selanjutnya",
+    paginationLabel: "Halaman {page} dari {pages}",
+  },
+
 };
 
 export default id;
