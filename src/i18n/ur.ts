@@ -4596,6 +4596,49 @@ const ur: Translations = {
     sowEmptyNothingStuck: "کچھ بھی پھنسا ہوا نہیں۔",
   },
 
+  ordersAdmin: {
+    pageTitle: "آرڈر مینجمنٹ",
+    pageSubtitle: "تمام FUZE آرڈرز کا جائزہ، منظوری، اور ٹریک کریں",
+    myAccountsOnly: "صرف میرے اکاؤنٹس",
+    awaitingApprovalTemplate: "{n} آرڈر{s} منظوری کے منتظر",
+
+    statTotal: "کل",
+    statPending: "زیر التواء",
+    statApproved: "منظور شدہ",
+    statProcessing: "پراسیسنگ",
+    statShipped: "بھیجا گیا",
+    statDelivered: "ڈیلیور",
+    statRevenue: "ریونیو",
+
+    filterAll: "تمام",
+    filterAllTypes: "تمام اقسام",
+
+    emptyMessage: "فلٹرز سے مماثل کوئی آرڈر نہیں",
+
+    colOrder: "آرڈر",
+    colFactory: "فیکٹری",
+    colType: "قسم",
+    colVolume: "حجم",
+    colBrand: "برانڈ",
+    colTotal: "کل",
+    colFulfillment: "تکمیل",
+    colStatus: "اسٹیٹس",
+    colDate: "تاریخ",
+
+    statusDraft: "مسودہ",
+    statusQuoted: "حوالہ شدہ",
+    statusPendingApproval: "منظوری زیر التواء",
+    statusApproved: "منظور شدہ",
+    statusConfirmed: "تصدیق شدہ",
+    statusProcessing: "پراسیسنگ",
+    statusShipped: "بھیجا گیا",
+    statusDelivered: "ڈیلیور",
+    statusCancelled: "منسوخ",
+
+    directUsaLabel: "ڈائریکٹ USA",
+    tagsSuffix: "ٹیگز",
+  },
+
 };
 
 export default ur;
