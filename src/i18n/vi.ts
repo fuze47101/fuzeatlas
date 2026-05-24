@@ -7821,6 +7821,23 @@ const vi: Translations = {
     whatYouCanClaimBtn: "Những gì bạn có thể tuyên bố →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ Được FUZE Atlas chứng nhận",
+    statFabricsCertified: "Vải đã chứng nhận",
+    statTestsPassed: "Thử nghiệm đạt (12 tháng)",
+    statCountries: "Các quốc gia vận chuyển",
+    activeTiersTitle: "Các hạng FUZE đang hoạt động",
+    activeTiersBody: "Mức xử lý hiện đang được sản xuất tại các cơ sở đã được chứng nhận.",
+    lastPassedLabel: "Đạt lần cuối",
+    aboutSummaryTitle: "Về công nghệ FUZE",
+    verifyCtaTitle: "Xác minh sản phẩm cụ thể",
+    verifyCtaBody: "Mỗi sản phẩm đã được chứng nhận đều có mã QR duy nhất liên kết với lô sản xuất và lịch sử thử nghiệm của nó.",
+    verifyCtaBtn: "Tra cứu sản phẩm →",
+    footerCertifiedBy: "Được FUZE Atlas chứng nhận",
+    brandSiteLink: "Trang web thương hiệu →",
+    contactLink: "Liên hệ",
+  },
+
 };
 
 export default vi;
