@@ -7198,6 +7198,29 @@ const ko: Translations = {
     errAddFailed: "추가 실패",
   },
 
+  accountsAdmin: {
+    title: "계정",
+    subtitleBefore: "리드 단계를 지난 브랜드 — 프레젠테이션 받음, 시험 중, 생산 중, 또는 이미 고객. 신규 잠재 고객은 다음으로 이동하십시오:",
+    brandPipelineLink: "브랜드 파이프라인",
+    allFilter: "전체",
+    stagePresentation: "프레젠테이션",
+    stageBrandTesting: "브랜드 시험",
+    stageFactoryOnboarding: "공장 온보딩",
+    stageFactoryTesting: "공장 시험",
+    stageProduction: "생산",
+    stageReConnect: "재연결",
+    stageCustomerWon: "고객 수주",
+    searchPlaceholder: "이름 또는 연락처로 계정 검색...",
+    emptyTitle: "이 뷰에 아직 계정이 없습니다",
+    emptyBody: "계정은 브랜드가 LEAD에서 PRESENTATION 이후로 이동할 때 표시됩니다.",
+    goToPipelineBtn: "브랜드 파이프라인으로 이동",
+    highRelevanceBadge: "🔥 높은 관련성",
+    amPrefix: "AM:",
+    contactsLabel: "연락처",
+    enrichedSuffix: "보강됨",
+    backToLeadOption: "← 리드로 돌아가기",
+  },
+
 };
 
 export default ko;
