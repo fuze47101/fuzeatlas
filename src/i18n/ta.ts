@@ -7256,6 +7256,21 @@ const ta: Translations = {
     errNetwork: "நெட்வொர்க் பிழை",
   },
 
+  verifyEmail: {
+    verifyingTitle: "உங்கள் மின்னஞ்சலை சரிபார்க்கிறது...",
+    successTitle: "மின்னஞ்சல் சரிபார்க்கப்பட்டது",
+    welcomePrefix: "வரவேற்கிறோம்",
+    successBody: "உங்கள் மின்னஞ்சல் சரிபார்க்கப்பட்டது. Login-க்கு redirect செய்கிறது...",
+    failedTitle: "சரிபார்ப்பு தோல்வியடைந்தது",
+    resendVerificationBtn: "சரிபார்ப்பு மின்னஞ்சலை மீண்டும் அனுப்பு",
+    checkEmailTitle: "உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்",
+    checkEmailBody: "உங்கள் மின்னஞ்சல் முகவரிக்கு ஒரு சரிபார்ப்பு link அனுப்பப்பட்டுள்ளது. உங்கள் கணக்கை சரிபார்க்க link-ஐ கிளிக் செய்யவும்.",
+    resendEmailBtn: "மின்னஞ்சலை மீண்டும் அனுப்பு",
+    sendingBtn: "அனுப்புகிறது...",
+    errVerifyFailed: "மின்னஞ்சலை சரிபார்க்க முடியவில்லை",
+    errSendFailed: "சரிபார்ப்பு மின்னஞ்சலை அனுப்ப முடியவில்லை",
+  },
+
 };
 
 export default ta;
