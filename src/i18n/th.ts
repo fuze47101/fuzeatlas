@@ -7420,6 +7420,19 @@ const th: Translations = {
     pressKitLink: "ชุดสื่อ",
   },
 
+  educationCompliance: {
+    backLink: "← กลับไปยังพื้นฐาน FUZE",
+    kicker: "การปฏิบัติตาม & การรับรอง",
+    heroTitle: "ทุก stack การรับรองที่แบรนด์ขอ",
+    heroBody: "ภาพหน้าจอเดียวสำหรับแบบสอบถามผู้ขายของคุณ EPA federal + California, OEKO-TEX Standard 100 Class I, bluesign® approved, ปลอด PFAS, ปลอดฟอร์มาลดีไฮด์ จัดแนวกับ ZDHC ข้อมูลทดสอบต้านแบคทีเรีย / ต้านไวรัส / ต้านเชื้อราในสี่ระดับ — รายงานพร้อมใช้งานตามคำขอ",
+    activeBadge: "ใช้งาน ✓",
+    docCopiesTitle: "ต้องการสำเนาเอกสารจริง?",
+    docCopiesBody: "ศูนย์เอกสารเก็บสำเนา PDF สดของทุกการรับรอง SDS, TDS และ COA ทีมการปฏิบัติตามสามารถดาวน์โหลดได้โดยตรงสำหรับแบบสอบถามผู้ขาย",
+    docCenterCta: "เปิดศูนย์เอกสาร →",
+    backBasicsBtn: "กลับไปยังพื้นฐาน FUZE",
+    whatYouCanClaimBtn: "สิ่งที่คุณอ้างได้ →",
+  },
+
 };
 
 export default th;
