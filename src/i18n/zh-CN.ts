@@ -4542,6 +4542,16 @@ const zhCN: Translations = {
     openProfile: "打开个人资料",
   },
 
+  distributorsAdmin: {
+    pageTitle: "经销商网络",
+    pageSubtitle: "管理您的全球分销合作伙伴、库存与覆盖范围",
+    inventoryCta: "📊 库存与消耗速率",
+    worldwideCta: "🌍 全球库存",
+    newDistributorCta: "+ 新增经销商",
+    newDistributorModalTitle: "新增经销商",
+    nameRequiredError: "名称为必填项",
+  },
+
 };
 
 export default zhCN;
