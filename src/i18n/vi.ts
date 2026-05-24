@@ -4984,6 +4984,49 @@ const vi: Translations = {
     sowEmptyNothingStuck: "Không có gì bị kẹt.",
   },
 
+  ordersAdmin: {
+    pageTitle: "Quản lý đơn hàng",
+    pageSubtitle: "Xem xét, phê duyệt và theo dõi tất cả đơn hàng FUZE",
+    myAccountsOnly: "Chỉ tài khoản của tôi",
+    awaitingApprovalTemplate: "{n} đơn hàng{s} chờ phê duyệt",
+
+    statTotal: "Tổng cộng",
+    statPending: "Chờ duyệt",
+    statApproved: "Đã phê duyệt",
+    statProcessing: "Đang xử lý",
+    statShipped: "Đã gửi",
+    statDelivered: "Đã giao",
+    statRevenue: "Doanh thu",
+
+    filterAll: "Tất cả",
+    filterAllTypes: "Tất cả loại",
+
+    emptyMessage: "Không có đơn hàng phù hợp bộ lọc",
+
+    colOrder: "Đơn hàng",
+    colFactory: "Nhà máy",
+    colType: "Loại",
+    colVolume: "Khối lượng",
+    colBrand: "Thương hiệu",
+    colTotal: "Tổng",
+    colFulfillment: "Thực hiện",
+    colStatus: "Trạng thái",
+    colDate: "Ngày",
+
+    statusDraft: "Bản nháp",
+    statusQuoted: "Đã báo giá",
+    statusPendingApproval: "Chờ phê duyệt",
+    statusApproved: "Đã phê duyệt",
+    statusConfirmed: "Đã xác nhận",
+    statusProcessing: "Đang xử lý",
+    statusShipped: "Đã gửi",
+    statusDelivered: "Đã giao",
+    statusCancelled: "Đã hủy",
+
+    directUsaLabel: "Trực tiếp USA",
+    tagsSuffix: "thẻ",
+  },
+
 };
 
 export default vi;
