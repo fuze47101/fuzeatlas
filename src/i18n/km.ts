@@ -7504,6 +7504,24 @@ const km: Translations = {
     footerCertifiedBy: "Certified by FUZE Atlas",
   },
 
+  forgotPassword: {
+    brandSubtitle: "Reset your password",
+    cardTitle: "Forgot Your ពាក្យសម្ងាត់?",
+    cardBody: "Enter your email address and we'll send you a link to reset your password.",
+    emailLabel: "អ៊ីមែល បន្ថែមress",
+    emailPlaceholder: "you@801inc.com",
+    sendBtn: "ផ្ញើ Reset Link",
+    sendingBusy: "ផ្ញើing...",
+    rememberPrefix: "Remember your password?",
+    signInLink: "ចូល",
+    failedFallback: "បរាជ័យ to process request",
+    networkError: "Network error",
+    checkEmailTitle: "Check Your អ៊ីមែល",
+    checkEmailBody: "If an account exists with that email, you'll receive a password reset link shortly.",
+    backToSignIn: "ត្រឡប់ to Sign In",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default km;
