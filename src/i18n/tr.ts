@@ -7374,6 +7374,37 @@ const tr: Translations = {
     footerHint: "Eski = DRAFT/SENT/SIGNED/ACTIVE'de iken 14+ gün etkinlik yok. İmzalı-ilerleme-yok = kilometre taşları tanımlı ama hiçbiri tamamlanmamış olarak 30+ gündür SIGNED veya ACTIVE. Son etkinlik, SOW düzenleme, kilometre taşı tamamlama veya test talebi gönderiminin en yenisidir.",
   },
 
+  acmTasks: {
+    title: "🗓️ ACM Görevleri",
+    subtitle: "Bir hafta önceden + bir gün önceden hatırlatmalar Taipei saatiyle sabah 8'de zil + e-posta yoluyla otomatik gönderilir.",
+    tabOpen: "Açık",
+    tabCompleted: "Tamamlanan",
+    onlyMine: "Yalnızca benimkiler",
+    loading: "Yükleniyor…",
+    overdueTitle: "Gecikmiş",
+    overdueSubtitle: "Vadesi geçti — bunları listeden çıkarın",
+    dueWeekTitle: "Bu hafta vadesi gelenler",
+    dueWeekSubtitle: "Sonraki 7 gün",
+    upcomingTitle: "Yaklaşan",
+    upcomingSubtitle: "7 günden uzak",
+    completedTitle: "Tamamlanan",
+    completedSubtitle: "Son 200",
+    nothingHere: "Burada bir şey yok.",
+    markDoneTitle: "Tamamlandı olarak işaretle",
+    cancelTaskTitle: "Görevi iptal et",
+    reopenTitle: "Yeniden aç",
+    highPriorityBadge: "YÜKSEK",
+    overdueRowPrefix: "Gecikmiş — ",
+    duePrefix: "Vade",
+    ownerLabel: "Sahip:",
+    relToday: "bugün",
+    relTomorrow: "yarın",
+    relYesterday: "dün",
+    relInPrefix: "içinde",
+    relDaysSuffix: "gün",
+    relDaysAgo: "gün önce",
+  },
+
 };
 
 export default tr;
