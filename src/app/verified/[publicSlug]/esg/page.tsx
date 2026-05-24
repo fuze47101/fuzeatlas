@@ -5,6 +5,7 @@
  */
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getServerTranslations } from "@/i18n/server";
 
 interface Snapshot {
   period: string;
@@ -51,19 +52,24 @@ export async function generateMetadata({
 }) {
   const { publicSlug } = await params;
   const data = await loadEsg(publicSlug);
-  if (!data) return { title: "ESG — FUZE Atlas" };
+  const T = (await getServerTranslations()).verifiedEsgPage;
+  if (!data) return { title: T.metaTitleFallback };
   return {
-    title: `${data.brand.name} ESG snapshots — FUZE Atlas`,
-    description: `Quarterly ESG impact reports for ${data.brand.name}, certified by FUZE Atlas.`,
+    title: `${data.brand.name} ${T.metaTitleSuffix}`,
+    description: `${T.metaDescPrefix} ${data.brand.name}, ${T.metaDescSuffix}`,
   };
 }
 
 export default async function EsgListingPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ publicSlug: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 }) {
   const { publicSlug } = await params;
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).verifiedEsgPage;
   const data = await loadEsg(publicSlug);
   if (!data) notFound();
 
@@ -73,15 +79,14 @@ export default async function EsgListingPage({
         <div className="max-w-4xl mx-auto">
           <div className="text-xs uppercase tracking-wider opacity-80 mb-1">
             <Link href={`/verified/${publicSlug}`} className="hover:underline">
-              ← {data.brand.name}
+              {T.backArrowPrefix} {data.brand.name}
             </Link>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black">
-            {data.brand.name} — ESG impact
+            {data.brand.name} {T.headingSuffix}
           </h1>
           <p className="mt-2 text-white/90">
-            Quarterly snapshots of FUZE-certified fabric and antimicrobial test
-            outcomes.
+            {T.heroSubtitle}
           </p>
         </div>
       </section>
@@ -90,8 +95,7 @@ export default async function EsgListingPage({
         {data.snapshots.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-white p-10 text-center">
             <p className="text-slate-500">
-              No published snapshots yet. Quarterly reports publish at the start
-              of the next quarter.
+              {T.emptyBody}
             </p>
           </div>
         ) : (
@@ -114,17 +118,17 @@ export default async function EsgListingPage({
                     </p>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                    <Stat label="Fabrics certified" value={s.fabricsCertified} />
+                    <Stat label={T.statFabricsCertified} value={s.fabricsCertified} />
                     <Stat
-                      label="Tests passed"
+                      label={T.statTestsPassed}
                       value={`${s.testsPassedCount}/${s.testsRunCount}`}
                     />
-                    <Stat label="FUZE liters" value={s.fuzeConsumedLiters.toFixed(0)} />
-                    <Stat label="Factories" value={s.factoryCountActive} />
+                    <Stat label={T.statFuzeLiters} value={s.fuzeConsumedLiters.toFixed(0)} />
+                    <Stat label={T.statFactories} value={s.factoryCountActive} />
                   </div>
                   <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
                     {passRate != null && (
-                      <p>Pass rate: <b>{(passRate * 100).toFixed(1)}%</b></p>
+                      <p>{T.passRateLabel} <b>{(passRate * 100).toFixed(1)}%</b></p>
                     )}
                     {s.publicPdfUrl && (
                       <a
@@ -133,7 +137,7 @@ export default async function EsgListingPage({
                         rel="noreferrer"
                         className="text-[#00b4c3] font-bold hover:underline"
                       >
-                        Download PDF →
+                        {T.downloadPdf}
                       </a>
                     )}
                   </div>
@@ -145,7 +149,7 @@ export default async function EsgListingPage({
       </section>
 
       <footer className="max-w-4xl mx-auto px-6 py-8 text-xs text-slate-500 text-center border-t border-slate-200">
-        Certified by FUZE Atlas
+        {T.footerCertifiedBy}
       </footer>
     </div>
   );
