@@ -7938,6 +7938,24 @@ const zhTW: Translations = {
     websiteLabel: "網站",
   },
 
+  reportSharePage: {
+    unavailableTitle: "報告無法使用",
+    unavailableBodyPrefix: "如需長期存取，請登入",
+    fuzeAtlasLinkLabel: "FUZE Atlas",
+    unavailableBodySuffix: "並在「我的報告」中尋找該報告，或回覆此郵件來源。",
+    backLink: "← FUZE Atlas",
+    kicker: "FUZE Biotech · 應用與驗證報告",
+    heading: "FUZE 處理配方與驗證",
+    issuedLabel: "發行日期",
+    linkValidUntil: "· 此直接連結有效期至",
+    preparedForTitle: "編製對象",
+    execSummaryTitle: "執行摘要",
+    recipeTitle: "建議配方",
+    fuzeRequiredTitle: "所需 FUZE（生產浴池量）",
+    labIcpTitle: "獨立實驗室 ICP 驗證",
+    accessLaterTitle: "稍後存取此報告",
+  },
+
 };
 
 export default zhTW;
