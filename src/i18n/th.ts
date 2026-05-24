@@ -6896,6 +6896,29 @@ const th: Translations = {
     printedPrefix: "พิมพ์เมื่อ",
   },
 
+  pressKitAdmin: {
+    title: "ชุดสื่อ",
+    subtitle: "จัดการสิ่งที่ปรากฏบนหน้า /press สาธารณะ สลับ active ซ่อนแถวโดยไม่ลบ",
+    addItemTitle: "เพิ่มรายการ",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "คำบรรยาย",
+    addItemBtn: "เพิ่มรายการ",
+    savingBtn: "กำลังบันทึก…",
+    allFilter: "ทั้งหมด",
+    colType: "ประเภท",
+    colCaption: "คำบรรยาย",
+    colUrl: "URL",
+    colReleased: "เผยแพร่",
+    colActive: "ใช้งาน",
+    activeLabel: "ใช้งานอยู่",
+    hiddenLabel: "ซ่อนแล้ว",
+    deleteBtn: "ลบ",
+    deleteConfirmPrefix: "ลบรายการชุดสื่อ",
+    emptyState: "ยังไม่มีรายการชุดสื่อ",
+    errUrlRequired: "ต้องระบุ URL",
+    errAddFailed: "การเพิ่มล้มเหลว",
+  },
+
 };
 
 export default th;
