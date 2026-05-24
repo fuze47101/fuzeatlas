@@ -5828,6 +5828,54 @@ const ur: Translations = {
     btnCreating: "بنایا جا رہا ہے...",
   },
 
+  fabricLibraryPage: {
+    pageTitle: "FUZE فیبرک لائبریری",
+    pageSubtitle: "ہمارے عالمی نیٹ ورک میں FUZE علاج شدہ فیبرکس اور تصدیق شدہ ٹیسٹ کے نتائج براؤز کریں۔ تمام ڈیٹا گمنام ہے — فیکٹری اور برانڈ کی شناخت خفیہ ہے۔",
+
+    statFabrics: "ٹیسٹ شدہ فیبرکس",
+    statTests: "کل ٹیسٹس",
+    statIcp: "ICP تجزیے",
+    statAb: "اینٹی مائکروبیل ٹیسٹس",
+
+    searchPlaceholder: "تعمیر، یارن، آخری استعمال، FUZE نمبر سے تلاش کریں...",
+    filterAllTypes: "تمام ٹیسٹ اقسام",
+    filterIcp: "ICP تجزیہ",
+    filterAntibacterial: "اینٹی بیکٹیریل",
+    filterFungal: "اینٹی فنگل",
+    filterOdor: "بدبو کنٹرول",
+    passOnly: "صرف پاس",
+
+    emptyTitle: "آپ کے معیار سے کوئی فیبرکس میل نہیں کھاتے",
+    emptyClear: "تمام فلٹرز صاف کریں",
+    errorFailedLoad: "فیبرک لائبریری لوڈ کرنے میں ناکامی",
+    errorFailedDefault: "لوڈ کرنے میں ناکامی",
+
+    testsSuffix: "ٹیسٹس",
+    testSuffix: "ٹیسٹ",
+    propConstruction: "تعمیر:",
+    propWeight: "وزن:",
+    propWidth: "چوڑائی:",
+    propYarn: "یارن:",
+    propCategory: "زمرہ:",
+    propEndUse: "آخری استعمال:",
+    propWeave: "بنائی:",
+    propColor: "رنگ:",
+
+    colTest: "ٹیسٹ",
+    colMethod: "طریقہ",
+    colWashes: "دھلائیاں",
+    colResult: "نتیجہ",
+    colStatus: "اسٹیٹس",
+    pass: "پاس",
+    fail: "ناکام",
+    passBadge: "PASS",
+    failBadge: "FAIL",
+
+    paginationPrev: "پچھلا",
+    paginationNext: "اگلا",
+    paginationLabel: "صفحہ {page} از {pages}",
+  },
+
 };
 
 export default ur;
