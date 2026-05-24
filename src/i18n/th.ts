@@ -4501,6 +4501,32 @@ const th: Translations = {
     openProfile: "เปิดโปรไฟล์",
   },
 
+  icpSamplePrepSop: {
+    backLink: "← กลับไปยัง ICP Sample Prep",
+    printButton: "🖨 พิมพ์ / บันทึก PDF",
+    eyebrow: "FUZE Biotech · SOP ห้องปฏิบัติการ",
+    pageTitle: "การเตรียมตัวอย่าง ICP-MS",
+    pageSubtitle: "ตัด → ชั่ง → แยกชิ้น → ใส่ถุง → ส่ง CTLA (Utah) สำหรับการตรวจสอบ ICP-MS",
+    docLabel: "Doc: SOP-FUZE-LAB-002",
+    revLabel: "Rev: 1.0 ·",
+
+    purposeHeader: "วัตถุประสงค์",
+    equipmentHeader: "อุปกรณ์",
+    massTargetsHeader: "เป้าหมายมวล (สำคัญ)",
+    shipToLabel: "ส่งไปยัง CTLA",
+    digestPerRunLabel: "Digest ต่อรอบ",
+    cutterGeometryLabel: "เรขาคณิตเครื่องตัด",
+
+    criticalRulesHeader: "⚠ กฎการเตรียมที่สำคัญ",
+    procedureHeader: "ขั้นตอน",
+    shippingAddressHeader: "ที่อยู่จัดส่ง (กรอกอัตโนมัติโดยตัวช่วย)",
+    shipToHeader: "ส่งถึง",
+    returnAddressHeader: "ที่อยู่ส่งคืน + การรายงาน",
+    reportToLabel: "รายงานถึง:",
+    preShipChecklistHeader: "✅ รายการตรวจสอบก่อนจัดส่ง (ตัวช่วยพิมพ์สิ่งนี้บนแพ็ก)",
+    sanityCheckHeader: "ตรวจสอบความสมเหตุสมผล (สิ่งที่ CTLA ควรรายงาน)",
+  },
+
 };
 
 export default th;
