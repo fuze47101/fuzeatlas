@@ -5948,6 +5948,35 @@ const it: Translations = {
     noData: "Nessun dato",
   },
 
+  educationApplication: {
+    pageMetaTitle: "Metodi di Applicazione",
+    backLink: "← Torna alle Basi FUZE",
+    kicker: "Metodi di Applicazione",
+    heroTitle: "FUZE funziona nella tua linea di finissaggio esistente",
+    heroBody: "Non hai bisogno di una nuova vasca, di un nuovo forno o di un nuovo macchinario per applicare FUZE. Tre percorsi di applicazione coprono ogni configurazione di produzione tessile oggi in funzione. F4 Essential Protection non richiede affatto un forno di polimerizzazione su molti substrati.",
+    methodExhaustName: "Esaurimento (bagno di tintura)",
+    methodExhaustDesc: "Aggiungi FUZE al bagno di tintura. Il metamateriale si lega durante il processo di esaurimento della tintura esistente. Nessuna nuova vasca, nessun nuovo recipiente, nessuna nuova linea.",
+    methodExhaustWhen: "Ideale per tintura continua ad alto volume. Il metamateriale si integra con la fase di fissaggio della tintura.",
+    methodPdcName: "Pad-Dry-Cure",
+    methodPdcDesc: "Passa il tessuto attraverso un foulard standard caricato con bagno FUZE diluito. Spremitura, asciugatura e polimerizzazione come faresti normalmente. Temperatura di polimerizzazione 150-170°C.",
+    methodPdcWhen: "Il percorso applicativo più comune. Compatibile con ogni linea di finissaggio tessile oggi in funzione.",
+    methodSprayName: "Spruzzo (con distanza tra le testine)",
+    methodSprayDesc: "Distanza tra le testine di 6 pollici, velocità di linea di 15 m/min. Atomizza FUZE diluito sulla superficie del tessuto, poi asciuga/polimerizza. Ideale per capi finiti o substrati non tessuti.",
+    methodSprayWhen: "Capi già tagliati/cuciti, o substrati speciali dove l'esaurimento/PDC non si applicano.",
+    whenToUseLabel: "Quando usare",
+    operatorTitle: "Perché è importante per un operatore di stabilimento",
+    operatorBullet1: "✓ Nessun nuovo investimento in macchinari. FUZE si inserisce nella tua linea di pad/tintura/spruzzo esistente.",
+    operatorBullet2: "✓ Nessun legante, nessun reticolante, nessuna formaldeide. Meno inventario da gestire, nessun protocollo di gestione di sostanze cancerogene.",
+    operatorBullet3: "✓ Nessuna dipendenza dal forno di polimerizzazione a F4. Le applicazioni di tier inferiore possono asciugarsi all'aria; F1-F3 usano 150-170°C, la stessa gamma del finissaggio PDC standard.",
+    operatorBullet4: "✓ Nessuna scadenza per FUZE immagazzinato. Fusti e taniche possono rimanere nella tua sala di finissaggio indefinitamente senza degradarsi.",
+    operatorBullet5: "✓ La tanica standard da 19L è la più piccola unità d'ordine. Ordina volumi personalizzati (47L, 285L, 1300L) quando hai bisogno di un'esatta corrispondenza.",
+    runNumbersTitle: "Calcola i tuoi numeri",
+    runNumbersBody: "Il calcolatore dell'applicazione determina il volume esatto di FUZE necessario per metro quadrato di tessuto al tier scelto. Inserisci il peso del tessuto (gsm), la larghezza e il tier obiettivo — ottieni litri di bagno FUZE, mL di stock concentrato e dollari per metro lineare.",
+    runNumbersCta: "Apri il calcolatore di applicazione →",
+    backBasicsBtn: "Torna alle Basi FUZE",
+    seePricingBtn: "Vedi prezzi e tier",
+  },
+
 };
 
 export default it;
