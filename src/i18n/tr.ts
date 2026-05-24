@@ -8137,6 +8137,19 @@ const tr: Translations = {
     questionsPrefix: "· Sorularınız mı var?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "Oyun Kitapları",
+    heading: "BD oyun kitapları",
+    subtitle: "Kategori etiketli iletişim rehberi. Kullandıklarınızı favorilere ekleyin; markalar, Brand.textileCategory üzerinden önerilen bir oyun kitabı gösterir.",
+    failedFallback: "Başarısız",
+    emptyBody: "Bu kategori için henüz oyun kitabı yok.",
+    emptySeedHint: "Tetikleyin —",
+    emptySeedHintSuffix: "üç başlangıç oyun kitabını fzcron ile bırakmak için.",
+    removeFavoriteTitle: "Favoriden kaldır",
+    addFavoriteTitle: "Favorilere ekle",
+  },
+
 };
 
 export default tr;
