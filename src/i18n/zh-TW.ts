@@ -7887,6 +7887,24 @@ const zhTW: Translations = {
     emptyBody: "請嘗試放寬篩選條件——或如果您想看到仍在開發中的布料，可移除「已驗證實驗室測試」篩選。",
   },
 
+  importBrands: {
+    title: "批次匯入 — 品牌",
+    subtitle: "貼上或上傳來自展會、清單或研究資料的候選品牌 CSV。系統會自動對應欄位、預覽驗證結果，並透過 CLI 使用的同一個 seed-brand 輔助程式以冪等方式寫入。",
+    backLabel: "品牌業務流",
+    brandNameLabel: "品牌名稱",
+    brandNameHint: "（自然鍵——以此進行 upsert）",
+    domainLabel: "電子郵件網域",
+    domainHint: '例如「rhone.com」',
+    repEmailLabel: "主要客戶經理電子郵件",
+    repEmailHint: "必須已存在於 Atlas 使用者中",
+    tierLabel: "指定 FUZE 層級",
+    tierHint: "F1 / F2 / F3 / F4 — 預設 F2",
+    cadenceLabel: "ICP 節奏（每 N 批次）",
+    cadenceHint: "預設 5",
+    countryLabel: "國家",
+    websiteLabel: "網站",
+  },
+
 };
 
 export default zhTW;
