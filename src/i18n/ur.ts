@@ -7886,6 +7886,18 @@ const ur: Translations = {
     addFavoriteTitle: "پسندیدہ شامل کریں",
   },
 
+  icpCorrelation: {
+    adminCrumb: "ایڈمن",
+    crumb: "ICP correlation",
+    heading: "ICP × AB correlation",
+    subtitle: "وہ چارٹ جس کے بارے میں Joseph (KUIU) نے پوچھا تھا۔ Atlas میں ہر برانڈ-نظر آنے والے ٹیسٹ رن میں antibacterial کِل ریٹ کے مقابلے میں کپڑے پر FUZE باقیات (ICP سے ماپا گیا) پلاٹ کیا گیا۔ بہترین-فٹ لائن + R² اوور لیئر۔",
+    errorContext: "ICP correlation لوڈ کریں",
+    couldntLoadPrefix: "correlation ڈیٹا لوڈ نہیں ہو سکا",
+    networkError: "نیٹ ورک کی خرابی۔",
+    loadingState: "correlation ڈیٹا لوڈ ہو رہا ہے…",
+    footnote: "صارف کا سامنا کرنے والی کاپی \"FUZE residual\" استعمال کرتی ہے — لیب کی ICP رپورٹ سے metamaterial کی پیمائش۔ صارف کی ترسیلات میں ہمیشہ FUZE / metamaterial کے طور پر لیبل لگایا جاتا ہے (CLAUDE.md برانڈ-وائس قاعدہ)۔",
+  },
+
 };
 
 export default ur;
