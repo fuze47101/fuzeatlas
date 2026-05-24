@@ -8006,6 +8006,36 @@ const ko: Translations = {
     nextBtn: "다음",
   },
 
+  bdSequencesList: {
+    kicker: "BD Wizard",
+    heading: "시퀀스",
+    subtitlePrefix: "장기 퍼널 아웃바운드. Cron이 시간별로 단계를 진행합니다. 준비된 단계는 다음에 대기합니다:",
+    subtitleSuffix: "검토를 위해 — 자동 발송되는 것은 없습니다.",
+    openWizardBtn: "BD Wizard 열기 →",
+    stepAwaitingSingular: "검토 대기 단계",
+    stepsAwaitingPlural: "검토 대기 단계",
+    showAllRepsLabel: "모든 담당자 표시",
+    loadingState: "시퀀스 로드 중…",
+    emptyHeadPrefix: "없음",
+    emptyHeadSuffix: "시퀀스",
+    emptyBodyPrefix: "첫 이메일을 다음을 통해 보내서 시작하십시오:",
+    emptyBodyLink: "BD Wizard",
+    emptyBodySuffix: ". 첫 발송마다 6단계 주기가 자동으로 시작됩니다.",
+    colBrandContact: "브랜드 / 연락처",
+    colProgress: "진행률",
+    colNext: "다음",
+    colRep: "담당자",
+    colStatus: "상태",
+    colActions: "작업",
+    readyChipSuffix: "준비됨",
+    reviewSendBtn: "검토 및 발송",
+    openBtn: "열기",
+    viewBtn: "보기",
+    pauseBtn: "일시 정지",
+    exitBtn: "종료",
+    resumeBtn: "재개",
+  },
+
 };
 
 export default ko;
