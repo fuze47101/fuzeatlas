@@ -3113,6 +3113,31 @@ const id: Translations = {
     daySuffix: " hari lalu",
   },
 
+  settingsAuditLog: {
+    title: "Log Audit",
+    subtitle: "Lacak semua perubahan sistem dan tindakan pengguna",
+    actionLabel: "Aksi",
+    allActionsOption: "Semua Aksi",
+    entityTypeLabel: "Tipe Entitas",
+    allEntitiesOption: "Semua Entitas",
+    fromDateLabel: "Dari Tanggal",
+    toDateLabel: "Sampai Tanggal",
+    loadingText: "Memuat...",
+    emptyText: "Tidak ada log audit ditemukan",
+    colTimestamp: "Waktu",
+    colUser: "Pengguna",
+    colAction: "Aksi",
+    colEntity: "Entitas",
+    colDescription: "Deskripsi",
+    systemUserFallback: "Sistem",
+    showingPrefix: "Menampilkan",
+    showingTo: "ke",
+    showingOf: "dari",
+    showingSuffix: "log",
+    prevBtn: "Sebelumnya",
+    nextBtn: "Selanjutnya",
+  },
+
 };
 
 export default id;
