@@ -6960,6 +6960,44 @@ const ms: Translations = {
     truncatedNotice: "Menunjukkan 100 pertama daripada {total} jenama. Gunakan penapis untuk menyempitkan.",
   },
 
+  shipmentTrackerPage: {
+    notFoundTitle: "Penghantaran Tidak Dijumpai",
+    notFoundBodyTpl: "Kami tidak menemui pesanan {order}.",
+    notFoundFooter: "Jika anda menerima kod QR ini pada penghantaran FUZE, hubungi andrew@fuze47.com.",
+
+    headerBadge: "FUZE Biotech · Salt Lake City",
+    headerSubtitle: "Pengesahan Penghantaran",
+
+    sectionShipment: "Butiran Penghantaran",
+    fieldFuzeVolume: "Isi Padu FUZE",
+    bottlesSuffix: "botol",
+    baseFuzePrefix: "asas",
+    wastageSuffix: "pembaziran",
+    fieldTier: "Tier",
+    fieldMethod: "Kaedah Rawatan",
+    fieldFactory: "Kilang",
+    fieldForBrand: "Untuk Jenama",
+    fieldFabric: "Fabrik",
+    fieldFulfillment: "Pemenuhan",
+    directUsa: "Langsung dari USA",
+    distributorFallback: "Pengedar",
+    fieldTracking: "Penjejakan",
+
+    sectionDocs: "Dokumen Produk",
+    sdsLabel: "Lembaran Data Keselamatan (SDS)",
+    sdsTitleFallback: "FUZE SDS",
+    coaLabel: "Sijil Analisis (COA)",
+    coaTitleFallback: "FUZE COA",
+    openCompliance: "Buka perpustakaan pematuhan",
+
+    sectionTimeline: "Garis Masa Kitaran Hidup",
+    viewDocument: "Lihat dokumen →",
+    timelineEmpty: "Tiada peristiwa kitaran hidup dilog. Garis masa akan dipenuhi semasa penghantaran bergerak.",
+
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Soalan?",
+  },
+
 };
 
 export default ms;
