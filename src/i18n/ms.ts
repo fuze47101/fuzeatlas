@@ -7447,6 +7447,28 @@ const ms: Translations = {
     errNetwork: "Ralat rangkaian",
   },
 
+  notificationsPage: {
+    loading: "Memuatkan pemberitahuan...",
+    title: "Pemberitahuan",
+    unreadLabel: "belum dibaca",
+    allCaughtUp: "Semua dikemas kini",
+    totalLabel: "jumlah",
+    markAllRead: "Tandakan semua sebagai dibaca",
+    filterAll: "Semua",
+    filterUnread: "Belum Dibaca",
+    allTypes: "Semua Jenis",
+    emptyUnreadTitle: "Tiada pemberitahuan belum dibaca",
+    emptyAllTitle: "Belum ada pemberitahuan",
+    emptyUnreadBody: "Anda sudah dikemas kini!",
+    emptyAllBody: "Pemberitahuan akan muncul di sini apabila ada aktiviti pada akaun anda.",
+    viewDetails: "Lihat butiran →",
+    markAsRead: "Tandakan sebagai dibaca",
+    justNow: "Baru sahaja",
+    minSuffix: "m lalu",
+    hourSuffix: "j lalu",
+    daySuffix: "h lalu",
+  },
+
 };
 
 export default ms;
