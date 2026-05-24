@@ -4727,6 +4727,19 @@ const ms: Translations = {
     generatedTemplate: "Dijana:",
   },
 
+  bdWizard: {
+    homeLink: "← Laman Utama",
+    pageTitle: "BD Wizard",
+    pageSubtitle: "Outbound berpandu. Jenama berkeyakinan tertinggi seterusnya dipilih secara automatik untuk anda.",
+    inQueueTemplate: "({n} dalam baris menunggu)",
+    skipBrand: "Langkau jenama ini →",
+
+    setFromAddressHeader: "Tetapkan alamat Daripada: keluar anda sebelum menghantar",
+    setFromAddressBody: "Tanpa ini, outbound dihantar daripada alamat pemberitahuan FUZE Atlas generik dan balasan tidak akan masuk ke peti masuk anda.",
+    currentlyLabel: "Semasa:",
+    openProfile: "Buka Profil",
+  },
+
 };
 
 export default ms;
