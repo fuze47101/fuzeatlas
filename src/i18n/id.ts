@@ -3778,6 +3778,37 @@ const id: Translations = {
     footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
   },
 
+  fabricReportSend: {
+    backLink: "← Kembali ke Laporan",
+    heading: "Email Laporan ke Pelanggan",
+    subtitlePrefix: "Mengirim Laporan Aplikasi & Validasi FUZE untuk",
+    fabricNotFound: "Kain tidak ditemukan.",
+    recipientRequiredError: "Email penerima diperlukan.",
+    sendFailedError: "Pengiriman gagal",
+    sentSuccessPrefix: "✓ Laporan dikirim ke",
+    directUrlLabel: "URL unduhan langsung:",
+    sentSuccessBody: "Pelanggan juga dapat mengakses ini di Laporan Saya setelah login ke FUZE Atlas.",
+    recipientEmailLabel: "Email penerima",
+    recipientNameLabel: "Nama penerima",
+    optionalSuffix: "(opsional)",
+    personalNoteLabel: "Catatan pribadi",
+    personalNoteHint: "(opsional, ditampilkan di atas kartu laporan)",
+    ccLabel: "CC",
+    ccHint: "(opsional, dipisah koma)",
+    ttlLabel: "Tautan langsung berlaku selama",
+    ttl30Days: "30 hari",
+    ttl90Days: "90 hari (default)",
+    ttl180Days: "180 hari",
+    ttl1Year: "1 tahun",
+    sendingBtn: "Mengirim...",
+    sendBtn: "Kirim Laporan",
+    previouslySentTitle: "Sebelumnya dikirim",
+    sentPrefix: "Dikirim",
+    viewedPrefix: "dilihat",
+    notOpenedYet: "belum dibuka",
+    openSameLink: "Buka tautan yang sama →",
+  },
+
 };
 
 export default id;
