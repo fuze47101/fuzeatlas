@@ -2843,6 +2843,34 @@ const zhCN: Translations = {
     factoryLabel: "工厂:",
   },
 
+  verifySku: {
+    errorTitle: "无法验证此代码",
+    errorBlurb: "我们在连接验证数据库时遇到问题。请稍后重试。",
+    notCertifiedTitle: "非 FUZE 认证 SKU",
+    notCertifiedBlurbPrefix: "此代码",
+    notCertifiedBlurbSuffix: "不在我们的验证数据库中。如果此代码来自 FUZE 吊牌,请直接联系品牌方。",
+    whatIsFuze: "什么是 FUZE? →",
+    fuzeVerified: "FUZE 已验证",
+    pageTitle: "此面料采用 FUZE 处理",
+    pageSubtitle: "抗菌纺织品处理 —— 第三方验证。",
+    brandLabel: "品牌",
+    millLabel: "织造厂",
+    fuzeTierLabel: "FUZE 等级",
+    fuzeNumberLabel: "FUZE 编号",
+    washClaimSuffix: "次水洗声明",
+    recentValidation: "最近一次实验室验证",
+    testPassed: "通过",
+    testTypeSuffix: "测试 ——",
+    validatedByPrefix: "验证机构:",
+    validatedByGeneric: "由第三方实验室验证",
+    validatedOn: "验证日期:",
+    reportRefPrefix: "报告编号:",
+    certifications: "FUZE 认证",
+    aboutBody: "FUZE 是 FUZE Biotech 公司的专有抗菌纺织品处理技术。它采用元材料化学,在标准纺织品后整理过程中与纤维结合 —— 无 PFAS、无粘合剂、无需固化烘箱。",
+    learnMore: "了解更多关于 FUZE →",
+    footerAddress: "FUZE Biotech · 美国犹他州盐湖城 · fuzeatlas.com",
+  },
+
 };
 
 export default zhCN;
