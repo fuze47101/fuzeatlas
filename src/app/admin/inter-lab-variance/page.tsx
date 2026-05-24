@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
+import { useI18n } from "@/i18n";
 
 interface LabResult {
   labId: string;
@@ -35,6 +36,8 @@ interface Payload {
 }
 
 export default function InterLabVariancePage() {
+  const { t } = useI18n();
+  const T = t.interLabVariance;
   const [data, setData] = useState<Payload | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,21 +52,20 @@ export default function InterLabVariancePage() {
   }, []);
 
   if (error) return <div className="p-6 text-red-700">{error}</div>;
-  if (!data) return <LoadingSkeleton variant="page" lines={6} label="Loading inter-lab variance" />;
+  if (!data) return <LoadingSkeleton variant="page" lines={6} label={T.loadingLabel} />;
 
   return (
     <div className="max-w-[1280px] mx-auto p-4 sm:p-6">
       <Breadcrumbs
         className="mb-2"
         items={[
-          { label: "Quality & Labs" },
-          { label: "Inter-lab variance" },
+          { label: T.crumbQualityLabs },
+          { label: T.crumbInterLabVariance },
         ]}
       />
-      <h1 className="text-2xl font-black text-slate-900 mb-1">Inter-lab variance</h1>
+      <h1 className="text-2xl font-black text-slate-900 mb-1">{T.title}</h1>
       <p className="text-sm text-slate-600 mb-6">
-        Where the same fabric was tested by ≥2 labs in the last {data.windowDays} days. Sorted
-        by range (max − min) descending.
+        {T.subtitleBefore} {data.windowDays} {T.subtitleAfter}
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -71,11 +73,11 @@ export default function InterLabVariancePage() {
           <table className="w-full text-sm min-w-[760px]">
             <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500 border-b">
               <tr>
-                <th className="text-left px-4 py-2">Fabric</th>
-                <th className="text-left px-3 py-2">Method</th>
-                <th className="text-right px-3 py-2">Range</th>
-                <th className="text-right px-3 py-2">Mean ± σ</th>
-                <th className="text-left px-3 py-2">Per-lab results</th>
+                <th className="text-left px-4 py-2">{T.colFabric}</th>
+                <th className="text-left px-3 py-2">{T.colMethod}</th>
+                <th className="text-right px-3 py-2">{T.colRange}</th>
+                <th className="text-right px-3 py-2">{T.colMeanSigma}</th>
+                <th className="text-left px-3 py-2">{T.colPerLab}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -109,9 +111,9 @@ export default function InterLabVariancePage() {
                   <td colSpan={5} className="px-4 py-10">
                     <div className="max-w-md mx-auto text-center">
                       <p className="text-3xl mb-2" aria-hidden="true">⚖️</p>
-                      <p className="font-bold text-slate-900">No multi-lab fabrics yet</p>
+                      <p className="font-bold text-slate-900">{T.emptyTitle}</p>
                       <p className="text-sm text-slate-600 mt-1">
-                        Inter-lab variance compares fabrics tested by ≥2 labs in the last {data.windowDays} days. Once you have the same fabric tested at a partner lab AND at FUZE USA (or any 2-lab pair), it'll show up here.
+                        {T.emptyBodyBefore} {data.windowDays} {T.emptyBodyAfter}
                       </p>
                     </div>
                   </td>
@@ -122,10 +124,9 @@ export default function InterLabVariancePage() {
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="text-sm font-bold text-slate-900 mb-3">Per-lab calibration bias</h2>
+          <h2 className="text-sm font-bold text-slate-900 mb-3">{T.biasTitle}</h2>
           <p className="text-xs text-slate-500 mb-3">
-            Mean of (this lab's result − group mean) across every shared fabric.
-            Positive = runs higher than peer labs; negative = runs lower.
+            {T.biasHint}
           </p>
           <ul className="space-y-3 text-sm">
             {data.perLab.map((p) => (
@@ -150,7 +151,7 @@ export default function InterLabVariancePage() {
               </li>
             ))}
             {data.perLab.length === 0 && (
-              <li className="text-slate-400 text-xs">No bias data yet.</li>
+              <li className="text-slate-400 text-xs">{T.emptyBias}</li>
             )}
           </ul>
         </div>
