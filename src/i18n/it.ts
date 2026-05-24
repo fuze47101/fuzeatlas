@@ -7669,6 +7669,21 @@ const it: Translations = {
     titleHint: 'es. "Sig.", "Dott."',
   },
 
+  importFactories: {
+    title: "Importazione in blocco — Stabilimenti",
+    subtitle: "Incolla o carica un CSV di stabilimenti. Eseguiremo l'upsert per nome (chiave naturale), il collegamento a un distributore se ne fornisci uno e l'inserimento di righe SupplyChainLink per ogni brand già esistente in Atlas. I brand non ancora presenti sono segnalati come \"mancanti\" in modo che tu possa prima eseguire un'importazione di brand.",
+    backLabel: "Stabilimenti",
+    factoryNameLabel: "Nome dello stabilimento",
+    factoryNameHint: "(chiave naturale — l'upsert è basato qui)",
+    countryLabel: "Paese",
+    distributorLabel: "Distributore",
+    distributorHint: "corrispondenza non case-sensitive su Distributor.name; saltato se non trovato",
+    brandsLabel: "Brand",
+    brandsHint: "separati da virgole; ogni nome deve esistere come Brand",
+    cityLabel: "Città",
+    websiteLabel: "Sito web",
+  },
+
 };
 
 export default it;
