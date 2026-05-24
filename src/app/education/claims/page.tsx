@@ -7,6 +7,8 @@
  */
 
 import Link from "next/link";
+import { getServerTranslations } from "@/i18n/server";
+import type { Translations } from "@/i18n";
 
 export const metadata = {
   title: "What You Can Claim",
@@ -130,7 +132,7 @@ const CERT_CLAIMS: ClaimRow[] = [
   },
 ];
 
-function ClaimSection({ title, rows }: { title: string; rows: ClaimRow[] }) {
+function ClaimSection({ title, rows, T }: { title: string; rows: ClaimRow[]; T: Translations["educationClaims"] }) {
   return (
     <section className="bg-white border border-slate-200 rounded-2xl p-6">
       <h2 className="text-lg font-black text-slate-900 mb-4">{title}</h2>
@@ -146,7 +148,7 @@ function ClaimSection({ title, rows }: { title: string; rows: ClaimRow[] }) {
                   : "bg-red-600 text-white"
               }`}
             >
-              {r.defensibility === "ok" ? "Cite freely" : r.defensibility === "with-data" ? "With data" : "Avoid"}
+              {r.defensibility === "ok" ? T.badgeCiteFreely : r.defensibility === "with-data" ? T.badgeWithData : T.badgeAvoid}
             </span>
             <div className="flex-1">
               <div className="text-sm font-bold text-slate-900">{r.claim}</div>
@@ -159,38 +161,35 @@ function ClaimSection({ title, rows }: { title: string; rows: ClaimRow[] }) {
   );
 }
 
-export default function ClaimsPage() {
+export default async function ClaimsPage({ searchParams }: { searchParams?: Promise<{ lang?: string }> }) {
+  const sp = (await searchParams) || {};
+  const T = (await getServerTranslations(sp.lang)).educationClaims;
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
       <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 md:p-8">
-        <Link href="/education" className="text-xs text-emerald-300 hover:text-emerald-200">← Back to FUZE Basics</Link>
-        <div className="text-xs font-bold uppercase tracking-wider text-emerald-300 mt-2 mb-1">What you can claim</div>
-        <h1 className="text-3xl md:text-4xl font-black tracking-tight">Defensible brand claims for FUZE-treated fabric</h1>
+        <Link href="/education" className="text-xs text-emerald-300 hover:text-emerald-200">{T.backLink}</Link>
+        <div className="text-xs font-bold uppercase tracking-wider text-emerald-300 mt-2 mb-1">{T.eyebrow}</div>
+        <h1 className="text-3xl md:text-4xl font-black tracking-tight">{T.pageTitle}</h1>
         <p className="mt-3 text-sm md:text-base text-slate-300 max-w-3xl">
-          A reference for compliance teams, brand marketing, and hangtag copy. Three categories: product claims,
-          sustainability claims, and certification claims. Each row is rated <strong>cite freely</strong>,
-          <strong> cite with tier-specific data</strong>, or <strong>avoid</strong> — with the reason in plain English.
+          {T.pageIntro} <strong>{T.introCiteFreely}</strong>,
+          <strong> {T.introWithData}</strong>, or <strong>{T.introAvoid}</strong> {T.introTail}
         </p>
       </div>
 
-      <ClaimSection title="Product / efficacy claims" rows={PRODUCT_CLAIMS} />
-      <ClaimSection title="Sustainability claims" rows={SUSTAINABILITY_CLAIMS} />
-      <ClaimSection title="Certification claims" rows={CERT_CLAIMS} />
+      <ClaimSection title={T.productClaimsTitle} rows={PRODUCT_CLAIMS} T={T} />
+      <ClaimSection title={T.sustainabilityClaimsTitle} rows={SUSTAINABILITY_CLAIMS} T={T} />
+      <ClaimSection title={T.certClaimsTitle} rows={CERT_CLAIMS} T={T} />
 
       <section className="bg-amber-50 border border-amber-300 rounded-2xl p-6">
-        <h2 className="text-lg font-black text-amber-900 mb-2">A note on FIFRA</h2>
+        <h2 className="text-lg font-black text-amber-900 mb-2">{T.fifraTitle}</h2>
         <p className="text-sm text-amber-800 leading-relaxed">
-          FIFRA (Federal Insecticide, Fungicide, and Rodenticide Act) governs antimicrobial claims in the United States.
-          Treated-article exemption permits descriptive claims like &ldquo;antimicrobial-treated&rdquo; without separate
-          product-level EPA registration, but specific pathogen claims (&ldquo;kills 99.9% of E. coli&rdquo;)
-          require backing test data tied to the active ingredient&apos;s registration. This page is guidance, not legal
-          counsel — review proposed marketing copy with your in-house compliance team before it ships.
+          {T.fifraBody}
         </p>
       </section>
 
       <div className="flex flex-wrap gap-3">
-        <Link href="/education" className="px-4 py-2.5 rounded-lg bg-slate-900 text-white text-sm font-bold hover:bg-slate-800">Back to FUZE Basics</Link>
-        <Link href="/education/compliance" className="px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-bold hover:bg-blue-700">See certifications stack</Link>
+        <Link href="/education" className="px-4 py-2.5 rounded-lg bg-slate-900 text-white text-sm font-bold hover:bg-slate-800">{T.backToBasics}</Link>
+        <Link href="/education/compliance" className="px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-bold hover:bg-blue-700">{T.seeCerts}</Link>
       </div>
     </div>
   );

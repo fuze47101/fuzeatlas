@@ -4882,6 +4882,26 @@ const en = {
     pricingLink: "Pricing & Environmental Comparison Tool →",
     exportReportTemplate: "Export {product} vs FUZE Report",
   },
+  educationClaims: {
+    backLink: "← Back to FUZE Basics",
+    eyebrow: "What you can claim",
+    pageTitle: "Defensible brand claims for FUZE-treated fabric",
+    pageIntro: "A reference for compliance teams, brand marketing, and hangtag copy. Three categories: product claims, sustainability claims, and certification claims. Each row is rated",
+    introCiteFreely: "cite freely",
+    introWithData: "cite with tier-specific data",
+    introAvoid: "avoid",
+    introTail: "— with the reason in plain English.",
+    productClaimsTitle: "Product / efficacy claims",
+    sustainabilityClaimsTitle: "Sustainability claims",
+    certClaimsTitle: "Certification claims",
+    badgeCiteFreely: "Cite freely",
+    badgeWithData: "With data",
+    badgeAvoid: "Avoid",
+    fifraTitle: "A note on FIFRA",
+    fifraBody: "FIFRA (Federal Insecticide, Fungicide, and Rodenticide Act) governs antimicrobial claims in the United States. Treated-article exemption permits descriptive claims like \"antimicrobial-treated\" without separate product-level EPA registration, but specific pathogen claims (\"kills 99.9% of E. coli\") require backing test data tied to the active ingredient's registration. This page is guidance, not legal counsel — review proposed marketing copy with your in-house compliance team before it ships.",
+    backToBasics: "Back to FUZE Basics",
+    seeCerts: "See certifications stack",
+  },
 };
 
 export default en;
