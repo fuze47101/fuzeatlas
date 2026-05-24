@@ -7298,6 +7298,24 @@ const km: Translations = {
     openSameLink: "បើក the same link →",
   },
 
+  apiDocs: {
+    heading: "API ឯកសារation",
+    subtitle: "FUZE Atlas API សេចក្តីយោង",
+    authStrong: "Authentication:",
+    authBodyPrefix: "ទាំងអស់ endpoints except",
+    authBodySuffix: "require a valid JWT session cookie.",
+    searchPlaceholder: "ស្វែងរក endpoints by path or description...",
+    allMethodsBtn: "ទាំងអស់ Methods",
+    showingPrefix: "Showing",
+    showingOf: "of",
+    endpointsLabel: "endpoints",
+    collapseAllBtn: "Collapse ទាំងអស់",
+    expandAllBtn: "Expand ទាំងអស់",
+    noResults: "ទេ endpoints found matching your search.",
+    clearFiltersBtn: "Clear filters",
+    footerPrefix: "FUZE Atlas API ឯកសារation - ធ្វើបច្ចុប្បន្នភាពចុងក្រោយ",
+  },
+
 };
 
 export default km;
