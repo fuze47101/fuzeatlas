@@ -4639,6 +4639,92 @@ const hi: Translations = {
     tagsSuffix: "टैग",
   },
 
+  leadManagement: {
+    pageTitle: "Lead प्रबंधन और आउटरीच",
+    pageSubtitle: "संपर्क प्रबंधित करें, Apollo के माध्यम से समृद्ध करें, SMS/ईमेल आउटरीच भेजें",
+
+    loadErrorContext: "Lead पाइपलाइन लोड करें",
+    loadErrorFallback: "Lead प्रबंधन डेटा लोड नहीं हो सका",
+    networkError: "Lead लोड करते समय नेटवर्क त्रुटि।",
+    loading: "Lead लोड हो रहे हैं...",
+
+    statTotalContacts: "कुल संपर्क",
+    statWithEmail: "ईमेल के साथ",
+    statWithPhone: "फ़ोन के साथ",
+    statEnriched: "समृद्ध",
+    statNotContacted: "संपर्क नहीं किया",
+    statContacted: "संपर्क किया",
+
+    searchPlaceholder: "ब्रांड या संपर्क खोजें...",
+    filterAllPipelineStages: "सभी पाइपलाइन चरण",
+    stageLead: "Lead",
+    stagePresentation: "प्रस्तुति",
+    stageBrandTesting: "ब्रांड परीक्षण",
+    stageFactoryOnboarding: "कारखाना ऑनबोर्डिंग",
+    stageProduction: "उत्पादन",
+    stageArchive: "संग्रह",
+
+    filterAllVerticals: "सभी वर्टिकल",
+    verticalApparel: "परिधान",
+    verticalHospitality: "आतिथ्य",
+    verticalWorkwear: "कार्यवस्त्र",
+    verticalHomeTextiles: "होम टेक्सटाइल",
+
+    filterAllOutreachStatus: "सभी आउटरीच स्थिति",
+    outreachNotContacted: "संपर्क नहीं किया",
+    outreachContacted: "संपर्क किया",
+    outreachResponded: "जवाब दिया",
+    outreachMeetingBooked: "बैठक बुक",
+    outreachNotInterested: "रुचि नहीं",
+
+    filterAllEmailStatus: "सभी ईमेल स्थिति",
+    emailVerified: "सत्यापित",
+    emailExtrapolated: "एक्सट्रापोलेटेड",
+    emailUnavailable: "अनुपलब्ध",
+
+    colBrand: "ब्रांड",
+    colContact: "संपर्क",
+    colTitle: "पद",
+    colEmail: "ईमेल",
+    colPhone: "फ़ोन",
+    colLI: "LI",
+    colEmailed: "ईमेल भेजा",
+    colOutreach: "आउटरीच",
+    colActions: "क्रियाएं",
+
+    inProfile: "प्रोफ़ाइल में",
+    enrichedLabel: "समृद्ध",
+    noContactsNeedsEnrichment: "कोई संपर्क नहीं — संवर्धन की आवश्यकता",
+    msgsSuffix: "संदेश",
+    markLinkedinReached: "LinkedIn पहुंचा हुआ चिह्नित करें",
+    markEmailed: "ईमेल भेजा गया चिह्नित करें",
+
+    actionSms: "SMS",
+    actionEmail: "ईमेल",
+    actionEnrich: "समृद्ध करें",
+    titleSendSms: "SMS भेजें",
+    titleSendEmail: "ईमेल भेजें",
+    titleEnrichApollo: "Apollo के माध्यम से समृद्ध करें",
+
+    paginationLabel: "पृष्ठ {page} / {pages} ({total} ब्रांड)",
+    paginationPrev: "पिछला",
+    paginationNext: "अगला",
+
+    modalSendSmsTo: "को SMS भेजें",
+    modalSendEmailTo: "को ईमेल भेजें",
+    fieldTemplate: "टेम्पलेट",
+    fieldToPrefix: "प्रति:",
+    fieldSubject: "विषय",
+    fieldMessage: "संदेश",
+    charsSuffix: "वर्ण",
+    sendSms: "SMS भेजें",
+    sendEmail: "ईमेल भेजें",
+    sendingButton: "भेज रहे हैं...",
+    cancelButton: "रद्द करें",
+    sendSuccess: "संदेश सफलतापूर्वक भेजा गया!",
+    sendErrorPrefix: "त्रुटि:",
+  },
+
 };
 
 export default hi;
