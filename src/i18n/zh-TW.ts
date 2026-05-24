@@ -5696,6 +5696,69 @@ const zhTW: Translations = {
     footerGenerated: "表單產生時間",
   },
 
+  sampleTrials: {
+    crumbDashboard: "儀表板",
+    crumbHere: "樣品試作",
+    pageTitle: "樣品試作管理",
+    pageSubtitle: "檢視、核准、出貨並追蹤所有工廠樣品試作申請",
+
+    statTotal: "總計",
+    statNeedsAction: "需要處理",
+
+    searchPlaceholder: "搜尋布料、工廠、品牌、聯絡人...",
+    filterAllStatuses: "所有狀態",
+    filterAllFactories: "所有工廠",
+
+    errorFailedLoad: "無法載入試作",
+    errorUpdate: "更新失敗",
+    errorNetwork: "網路錯誤",
+
+    quickActionPrefix: "快速操作 —",
+    trialFallback: "試作",
+    labelStatus: "狀態",
+    labelTracking: "追蹤號碼",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "管理員備註",
+    placeholderAdminNotes: "內部備註...",
+    labelRejectReason: "拒絕理由",
+    btnSave: "儲存變更",
+    btnSaving: "儲存中...",
+    btnCancel: "取消",
+
+    emptyFiltered: "無符合篩選條件的試作",
+    emptyDefault: "尚無樣品試作",
+
+    colFabric: "布料",
+    colFactory: "工廠",
+    colPurpose: "目的",
+    colStatus: "狀態",
+    colDetails: "詳情",
+    colIcpLab: "ICP 實驗室",
+    colDate: "日期",
+    colActions: "操作",
+
+    purposeBrand: "品牌",
+    purposeSelfDev: "自開發",
+    trialLab: "實驗室",
+    trialProduction: "量產",
+    detailsTierPrefix: "階別:",
+    detailsIcpAgPrefix: "ICP FUZE:",
+    detailsByPrefix: "由:",
+    actionAction: "操作",
+    actionView: "檢視",
+
+    statusSubmitted: "已送出",
+    statusUnderReview: "審查中",
+    statusApproved: "已核准",
+    statusRejected: "已拒絕",
+    statusShipped: "已出貨",
+    statusReceived: "已收件",
+    statusInProgress: "進行中",
+    statusIcpPending: "ICP 待處理",
+    statusIcpSubmitted: "ICP 已送樣",
+    statusComplete: "已完成",
+  },
+
 };
 
 export default zhTW;
