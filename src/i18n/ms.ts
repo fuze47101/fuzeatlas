@@ -5744,6 +5744,55 @@ const ms: Translations = {
     statusComplete: "Selesai",
   },
 
+  brandFabricsAdmin: {
+    loading: "Memuatkan portfolio fabrik…",
+    errorTitle: "Tidak dapat memuatkan portfolio fabrik",
+    errorUnknown: "Ralat tidak diketahui",
+    errorFailedLoad: "Gagal memuatkan",
+    errorSave: "Penyimpanan gagal",
+    btnTryAgain: "Cuba lagi",
+
+    crumbPartners: "Rakan Kongsi Jenama",
+    crumbHere: "Portfolio Fabrik",
+    titleSuffix: "— Portfolio Fabrik",
+    subtitle: "Semua fabrik merentas semua kilang untuk jenama ini. {shown} daripada {total} fabrik ditunjukkan.",
+    btnExportCsv: "⬇ Eksport CSV",
+
+    searchPlaceholder: "Cari no. fabrik, kod pelanggan, kandungan…",
+    filterAllMills: "Semua kilang",
+    filterAllTypes: "Semua jenis",
+    typeDevelopment: "Pembangunan",
+    typeActualBulk: "Sebenar (Pukal)",
+    typeForecast: "Ramalan",
+    typeRd: "R&D",
+    filterAllStatuses: "Semua status",
+
+    emptyFabric: "🧵",
+    emptyTitle: "Tiada fabrik sepadan dengan penapis anda.",
+    emptySub: "Laraskan penapis di atas atau kosongkan carian untuk melihat portfolio penuh.",
+    fabricSingular: "fabrik",
+    fabricPlural: "fabrik",
+    openFactory: "Buka kilang →",
+
+    colFuze: "No. FUZE",
+    colMillFabric: "No. Fabrik Kilang",
+    colType: "Jenis",
+    colContent: "Kandungan",
+    colGsm: "GSM",
+    colCustomerCode: "Kod Pelanggan",
+    colTrial: "Percubaan",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "Nilai ICP",
+    colTestDate: "Tarikh Ujian",
+    colStatus: "Status",
+
+    unassigned: "tidak ditugaskan",
+    typeBulkProduction: "Pengeluaran Pukal",
+    notSet: "— Tidak ditetapkan —",
+    titleOpenFabric: "Buka butiran fabrik",
+  },
+
 };
 
 export default ms;
