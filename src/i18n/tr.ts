@@ -5798,6 +5798,55 @@ const tr: Translations = {
     statusComplete: "Tamamlandı",
   },
 
+  brandFabricsAdmin: {
+    loading: "Kumaş portföyü yükleniyor…",
+    errorTitle: "Kumaş portföyü yüklenemedi",
+    errorUnknown: "Bilinmeyen hata",
+    errorFailedLoad: "Yüklenemedi",
+    errorSave: "Kaydetme başarısız",
+    btnTryAgain: "Tekrar dene",
+
+    crumbPartners: "Marka Ortakları",
+    crumbHere: "Kumaş Portföyü",
+    titleSuffix: "— Kumaş Portföyü",
+    subtitle: "Bu marka için tüm fabrikalardaki tüm kumaşlar. {total} kumaştan {shown} tanesi gösteriliyor.",
+    btnExportCsv: "⬇ CSV Dışa Aktar",
+
+    searchPlaceholder: "Kumaş #, müşteri kodu, içerik ara…",
+    filterAllMills: "Tüm fabrikalar",
+    filterAllTypes: "Tüm tipler",
+    typeDevelopment: "Geliştirme",
+    typeActualBulk: "Gerçek (Toplu)",
+    typeForecast: "Tahmin",
+    typeRd: "Ar-Ge",
+    filterAllStatuses: "Tüm durumlar",
+
+    emptyFabric: "🧵",
+    emptyTitle: "Filtrelerinize uyan kumaş yok.",
+    emptySub: "Tüm portföyü görmek için yukarıdaki filtreleri ayarlayın veya aramayı temizleyin.",
+    fabricSingular: "kumaş",
+    fabricPlural: "kumaş",
+    openFactory: "Fabrikayı aç →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "Fabrika Kumaş #",
+    colType: "Tip",
+    colContent: "İçerik",
+    colGsm: "GSM",
+    colCustomerCode: "Müşteri Kodu",
+    colTrial: "Deneme",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "ICP Değeri",
+    colTestDate: "Test Tarihi",
+    colStatus: "Durum",
+
+    unassigned: "atanmamış",
+    typeBulkProduction: "Toplu Üretim",
+    notSet: "— Ayarlanmamış —",
+    titleOpenFabric: "Kumaş detayını aç",
+  },
+
 };
 
 export default tr;
