@@ -11,6 +11,7 @@
  */
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface Me {
   id: string;
@@ -25,6 +26,8 @@ interface Me {
 }
 
 export default function ProfileSettingsPage() {
+  const { t } = useI18n();
+  const T = t.settingsProfile;
   const [me, setMe] = useState<Me | null>(null);
   const [allowed, setAllowed] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +56,7 @@ export default function ProfileSettingsPage() {
         const res = await fetch("/api/me");
         const data = await res.json();
         if (!res.ok || !data.ok) {
-          if (!cancelled) setError(data.error || "Failed to load profile");
+          if (!cancelled) setError(data.error || T.failedLoadProfile);
           return;
         }
         if (cancelled) return;
@@ -65,7 +68,7 @@ export default function ProfileSettingsPage() {
         setSignature(data.user.outboundSignature || "");
         setTimezone(data.user.timezone || "");
       } catch (e: any) {
-        if (!cancelled) setError(e?.message || "Failed to load profile");
+        if (!cancelled) setError(e?.message || T.failedLoadProfile);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -121,28 +124,28 @@ export default function ProfileSettingsPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.ok) {
-        setError(data.error || "Failed to save");
+        setError(data.error || T.failedSave);
       } else {
         setMe(data.user);
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
       }
     } catch (e: any) {
-      setError(e?.message || "Failed to save");
+      setError(e?.message || T.failedSave);
     } finally {
       setSaving(false);
     }
   }
 
   if (loading) {
-    return <div className="p-8 max-w-3xl mx-auto text-slate-500">Loading profile…</div>;
+    return <div className="p-8 max-w-3xl mx-auto text-slate-500">{T.loadingProfile}</div>;
   }
 
   if (!me) {
     return (
       <div className="p-8 max-w-3xl mx-auto">
         <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4">
-          {error || "Could not load profile"}
+          {error || T.couldNotLoad}
         </div>
       </div>
     );
@@ -150,30 +153,30 @@ export default function ProfileSettingsPage() {
 
   const previewFrom = fromEmail
     ? `${fromName || me.name} <${fromEmail.trim().toLowerCase()}>`
-    : "FUZE Atlas <notifications@fuzeatlas.com> (default)";
+    : T.defaultPreview;
 
   return (
     <div className="p-6 md:p-8 max-w-3xl mx-auto">
       <div className="mb-6">
         <Link href="/home" className="text-sm text-slate-500 hover:text-slate-700">
-          ← Home
+          {T.backHome}
         </Link>
-        <h1 className="text-2xl font-bold mt-2 text-slate-900">Profile Settings</h1>
+        <h1 className="text-2xl font-bold mt-2 text-slate-900">{T.pageTitle}</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Configure your account and how your outbound emails appear to prospects.
+          {T.pageBlurb}
         </p>
         <div className="mt-3 flex flex-wrap gap-2 text-xs">
           <Link
             href="/settings/email-templates"
             className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-slate-700 hover:border-sky-300 hover:text-sky-700"
           >
-            ✉️ Email Templates
+            {T.quickEmailTemplates}
           </Link>
           <Link
             href="/settings/availability"
             className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-slate-700 hover:border-sky-300 hover:text-sky-700"
           >
-            📅 Availability
+            {T.quickAvailability}
           </Link>
         </div>
       </div>
@@ -182,23 +185,23 @@ export default function ProfileSettingsPage() {
         {/* Identity */}
         <section className="bg-white border rounded-xl p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-4">
-            Identity
+            {T.identityHeader}
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Name</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{T.nameLabel}</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
-                placeholder="Your full name"
+                placeholder={T.namePlaceholder}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Email (login)</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{T.emailLoginLabel}</label>
               <input
                 type="email"
                 value={me.email}
@@ -206,12 +209,12 @@ export default function ProfileSettingsPage() {
                 className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500"
               />
               <p className="text-[11px] text-slate-400 mt-1">
-                Contact an admin to change your login email.
+                {T.emailLoginHint}
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Role</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{T.roleLabel}</label>
               <input
                 type="text"
                 value={me.role}
@@ -221,7 +224,7 @@ export default function ProfileSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{T.statusLabel}</label>
               <input
                 type="text"
                 value={me.status}
@@ -232,14 +235,14 @@ export default function ProfileSettingsPage() {
 
             <div className="md:col-span-2">
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Timezone (IANA, e.g. America/Denver, Asia/Taipei)
+                {T.timezoneLabel}
               </label>
               <input
                 type="text"
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
-                placeholder="America/Denver"
+                placeholder={T.timezonePlaceholder}
                 list="iana-tz-suggestions"
               />
               <datalist id="iana-tz-suggestions">
@@ -260,9 +263,7 @@ export default function ProfileSettingsPage() {
                 <option value="Australia/Sydney" />
               </datalist>
               <p className="text-[11px] text-slate-400 mt-1">
-                Non-urgent notifications between 22:00 and 07:00 local time
-                are deferred to 08:00 the next morning. Errors and
-                approval-required signals fire immediately regardless.
+                {T.timezoneHint}
               </p>
             </div>
           </div>
@@ -272,22 +273,20 @@ export default function ProfileSettingsPage() {
         <section className="bg-white border rounded-xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
-              Outbound Email Identity
+              {T.outboundHeader}
             </h2>
             <span className="text-[11px] text-sky-600 bg-sky-50 border border-sky-100 rounded-full px-2 py-0.5">
-              BD Wizard
+              {T.bdWizardBadge}
             </span>
           </div>
 
           <p className="text-xs text-slate-500 mb-4">
-            When you send outbound through the BD Wizard, the email will appear to come from this
-            address. Replies route back to your inbox normally. You'll also receive a BCC summary of
-            every send so you know exactly what went out.
+            {T.outboundBlurb}
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">From: Email</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{T.fromEmailLabel}</label>
               <input
                 type="email"
                 value={fromEmail}
@@ -297,27 +296,27 @@ export default function ProfileSettingsPage() {
               />
               {allowed.length > 0 && (
                 <p className="text-[11px] text-slate-400 mt-1">
-                  Allowed domains: {allowed.join(", ")}
+                  {T.allowedDomainsLabel}{allowed.join(", ")}
                 </p>
               )}
             </div>
 
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                From: Display Name
+                {T.fromDisplayNameLabel}
               </label>
               <input
                 type="text"
                 value={fromName}
                 onChange={(e) => setFromName(e.target.value)}
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
-                placeholder="Andrew Moger"
+                placeholder={T.fromDisplayPlaceholder}
               />
             </div>
           </div>
 
           <div className="mt-4 p-3 rounded-lg bg-slate-50 border border-slate-200">
-            <div className="text-[11px] uppercase tracking-wide text-slate-500 mb-1">Preview</div>
+            <div className="text-[11px] uppercase tracking-wide text-slate-500 mb-1">{T.previewLabel}</div>
             <div className="text-sm font-mono text-slate-700">{previewFrom}</div>
           </div>
         </section>
@@ -325,21 +324,20 @@ export default function ProfileSettingsPage() {
         {/* Signature */}
         <section className="bg-white border rounded-xl p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-2">
-            Email Signature
+            {T.signatureHeader}
           </h2>
           <p className="text-xs text-slate-500 mb-3">
-            Appended to outbound emails sent through the BD Wizard. Plain text is fine — keep it
-            short. If you leave this blank, no signature is added.
+            {T.signatureBlurb}
           </p>
           <textarea
             value={signature}
             onChange={(e) => setSignature(e.target.value)}
             rows={6}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-sky-400"
-            placeholder={`Andrew Moger\nFUZE Industries\n801-555-0123`}
+            placeholder={T.signaturePlaceholder}
           />
           <div className="text-[11px] text-slate-400 mt-1">
-            {signature.length} / 4000 characters
+            {T.charCountTemplate.replace("{count}", String(signature.length))}
           </div>
         </section>
 
@@ -347,16 +345,14 @@ export default function ProfileSettingsPage() {
         <section className="bg-white border rounded-xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
-              Calendar Subscription
+              {T.calendarHeader}
             </h2>
             <span className="text-[11px] text-violet-600 bg-violet-50 border border-violet-100 rounded-full px-2 py-0.5">
-              Outlook · Google · Apple
+              {T.calendarBadge}
             </span>
           </div>
           <p className="text-xs text-slate-500 mb-3">
-            Subscribe your calendar app to a read-only overlay of your Atlas meetings and open CRM
-            tasks. Updates flow automatically — no IT permission required. The URL contains a
-            private token, so don't share it.
+            {T.calendarBlurb}
           </p>
           {calendarFeed ? (
             <>
@@ -373,35 +369,34 @@ export default function ProfileSettingsPage() {
                   onClick={copyCalendarUrl}
                   className="px-3 py-2 rounded-lg bg-slate-900 text-white text-xs font-medium hover:bg-slate-800 whitespace-nowrap"
                 >
-                  {copiedUrl ? "Copied ✓" : "Copy URL"}
+                  {copiedUrl ? T.copiedCheck : T.copyUrl}
                 </button>
                 <a
                   href={calendarFeed.webcalUrl}
                   className="px-3 py-2 rounded-lg bg-violet-600 text-white text-xs font-medium hover:bg-violet-700 whitespace-nowrap"
                 >
-                  Subscribe →
+                  {T.subscribeBtn}
                 </a>
               </div>
               <details className="mt-3 text-xs text-slate-600">
                 <summary className="cursor-pointer hover:text-slate-900">
-                  How to add this to Outlook / Google / Apple
+                  {T.calendarHelpSummary}
                 </summary>
                 <ul className="mt-2 ml-4 list-disc space-y-1 text-slate-500">
                   <li>
-                    <b>Outlook (web):</b> Calendar → Add calendar → Subscribe from web → paste URL.
+                    <b>{T.calendarOutlook}</b>{T.calendarOutlookSteps}
                   </li>
                   <li>
-                    <b>Google Calendar:</b> Other calendars + → From URL → paste URL.
+                    <b>{T.calendarGoogle}</b>{T.calendarGoogleSteps}
                   </li>
                   <li>
-                    <b>Apple Calendar:</b> File → New Calendar Subscription → paste URL → set
-                    auto-refresh to 1 hour.
+                    <b>{T.calendarApple}</b>{T.calendarAppleSteps}
                   </li>
                 </ul>
               </details>
             </>
           ) : (
-            <div className="text-xs text-slate-400">Loading subscription URL…</div>
+            <div className="text-xs text-slate-400">{T.loadingSubscriptionUrl}</div>
           )}
         </section>
 
@@ -413,7 +408,7 @@ export default function ProfileSettingsPage() {
         )}
         {saved && (
           <div className="bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-2 text-sm">
-            Saved.
+            {T.savedFlag}
           </div>
         )}
 
@@ -422,14 +417,14 @@ export default function ProfileSettingsPage() {
             href="/home"
             className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm hover:bg-slate-50"
           >
-            Cancel
+            {T.cancelBtn}
           </Link>
           <button
             type="submit"
             disabled={saving}
             className="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm font-medium hover:bg-sky-700 disabled:opacity-50"
           >
-            {saving ? "Saving…" : "Save Changes"}
+            {saving ? T.saving : T.saveChanges}
           </button>
         </div>
       </form>
