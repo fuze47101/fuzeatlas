@@ -8190,6 +8190,24 @@ const vi: Translations = {
     footerCertifiedBy: "Được FUZE Atlas chứng nhận",
   },
 
+  forgotPassword: {
+    brandSubtitle: "Đặt lại mật khẩu của bạn",
+    cardTitle: "Quên mật khẩu?",
+    cardBody: "Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn một liên kết để đặt lại mật khẩu.",
+    emailLabel: "Địa chỉ email",
+    emailPlaceholder: "you@801inc.com",
+    sendBtn: "Gửi liên kết đặt lại",
+    sendingBusy: "Đang gửi...",
+    rememberPrefix: "Nhớ mật khẩu?",
+    signInLink: "Đăng nhập",
+    failedFallback: "Không xử lý được yêu cầu",
+    networkError: "Lỗi mạng",
+    checkEmailTitle: "Kiểm tra email của bạn",
+    checkEmailBody: "Nếu một tài khoản tồn tại với email đó, bạn sẽ nhận được liên kết đặt lại mật khẩu trong thời gian ngắn.",
+    backToSignIn: "Quay lại đăng nhập",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default vi;
