@@ -7796,6 +7796,29 @@ const tr: Translations = {
     bookAnotherBtn: "Başka Toplantı Rezerve Et",
   },
 
+  adminAuditLog: {
+    adminCrumb: "Yönetici",
+    crumb: "Denetim günlüğü",
+    heading: "Denetim günlüğü",
+    subtitle: "Her varlık için tam denetim izi. Eylem, varlık veya tarihe göre filtreleyin. 90 günlük saklama.",
+    errorContext: "Denetim günlüğünü yükle",
+    couldntLoadPrefix: "Denetim günlüğü yüklenemedi",
+    networkError: "Denetim günlüğü yüklenirken ağ hatası.",
+    actionLabel: "Eylem",
+    allActionsOption: "Tüm eylemler",
+    entityLabel: "Varlık",
+    allEntitiesOption: "Tüm varlıklar",
+    sinceLabel: "Tarih",
+    resetBtn: "Sıfırla",
+    rowsSuffix: "satır",
+    loadingState: "Denetim günlüğü yükleniyor…",
+    emptyState: "Bu filtrelerle eşleşen denetim satırı yok.",
+    byPrefix: "kullanıcı:",
+    systemActor: "Sistem",
+    fieldChangedSingular: "alan değişti",
+    fieldChangedPlural: "alan değişti",
+  },
+
 };
 
 export default tr;
