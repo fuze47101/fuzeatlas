@@ -4894,6 +4894,92 @@ const es: Translations = {
     tagsSuffix: "etiquetas",
   },
 
+  leadManagement: {
+    pageTitle: "Gestión de leads y contacto",
+    pageSubtitle: "Gestione contactos, enriquezca vía Apollo, envíe SMS/correos de contacto",
+
+    loadErrorContext: "Cargar pipeline de leads",
+    loadErrorFallback: "No se pudieron cargar los datos de gestión de leads",
+    networkError: "Error de red al cargar leads.",
+    loading: "Cargando leads...",
+
+    statTotalContacts: "Total de contactos",
+    statWithEmail: "Con correo",
+    statWithPhone: "Con teléfono",
+    statEnriched: "Enriquecidos",
+    statNotContacted: "Sin contactar",
+    statContacted: "Contactados",
+
+    searchPlaceholder: "Buscar marcas o contactos...",
+    filterAllPipelineStages: "Todas las etapas del pipeline",
+    stageLead: "Lead",
+    stagePresentation: "Presentación",
+    stageBrandTesting: "Pruebas de marca",
+    stageFactoryOnboarding: "Incorporación de fábrica",
+    stageProduction: "Producción",
+    stageArchive: "Archivo",
+
+    filterAllVerticals: "Todas las verticales",
+    verticalApparel: "Ropa",
+    verticalHospitality: "Hostelería",
+    verticalWorkwear: "Ropa de trabajo",
+    verticalHomeTextiles: "Textiles para el hogar",
+
+    filterAllOutreachStatus: "Todos los estados de contacto",
+    outreachNotContacted: "Sin contactar",
+    outreachContacted: "Contactado",
+    outreachResponded: "Respondió",
+    outreachMeetingBooked: "Reunión reservada",
+    outreachNotInterested: "No interesado",
+
+    filterAllEmailStatus: "Todos los estados de correo",
+    emailVerified: "Verificado",
+    emailExtrapolated: "Extrapolado",
+    emailUnavailable: "No disponible",
+
+    colBrand: "Marca",
+    colContact: "Contacto",
+    colTitle: "Título",
+    colEmail: "Correo",
+    colPhone: "Teléfono",
+    colLI: "LI",
+    colEmailed: "Enviado",
+    colOutreach: "Contacto",
+    colActions: "Acciones",
+
+    inProfile: "en el perfil",
+    enrichedLabel: "enriquecido",
+    noContactsNeedsEnrichment: "Sin contactos — necesita enriquecimiento",
+    msgsSuffix: "msj",
+    markLinkedinReached: "Marcar como alcanzado en LinkedIn",
+    markEmailed: "Marcar como enviado",
+
+    actionSms: "SMS",
+    actionEmail: "Correo",
+    actionEnrich: "Enriquecer",
+    titleSendSms: "Enviar SMS",
+    titleSendEmail: "Enviar correo",
+    titleEnrichApollo: "Enriquecer vía Apollo",
+
+    paginationLabel: "Página {page} de {pages} ({total} marcas)",
+    paginationPrev: "Ant.",
+    paginationNext: "Sig.",
+
+    modalSendSmsTo: "Enviar SMS a",
+    modalSendEmailTo: "Enviar correo a",
+    fieldTemplate: "Plantilla",
+    fieldToPrefix: "Para:",
+    fieldSubject: "Asunto",
+    fieldMessage: "Mensaje",
+    charsSuffix: "caracteres",
+    sendSms: "Enviar SMS",
+    sendEmail: "Enviar correo",
+    sendingButton: "Enviando...",
+    cancelButton: "Cancelar",
+    sendSuccess: "¡Mensaje enviado con éxito!",
+    sendErrorPrefix: "Error:",
+  },
+
 };
 
 export default es;
