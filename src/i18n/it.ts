@@ -4639,6 +4639,92 @@ const it: Translations = {
     tagsSuffix: "etichette",
   },
 
+  leadManagement: {
+    pageTitle: "Gestione lead e outreach",
+    pageSubtitle: "Gestisci contatti, arricchisci tramite Apollo, invia outreach SMS/email",
+
+    loadErrorContext: "Carica pipeline lead",
+    loadErrorFallback: "Impossibile caricare i dati di gestione lead",
+    networkError: "Errore di rete durante il caricamento dei lead.",
+    loading: "Caricamento lead...",
+
+    statTotalContacts: "Contatti totali",
+    statWithEmail: "Con email",
+    statWithPhone: "Con telefono",
+    statEnriched: "Arricchiti",
+    statNotContacted: "Non contattati",
+    statContacted: "Contattati",
+
+    searchPlaceholder: "Cerca brand o contatti...",
+    filterAllPipelineStages: "Tutte le fasi pipeline",
+    stageLead: "Lead",
+    stagePresentation: "Presentazione",
+    stageBrandTesting: "Test brand",
+    stageFactoryOnboarding: "Onboarding stabilimento",
+    stageProduction: "Produzione",
+    stageArchive: "Archivio",
+
+    filterAllVerticals: "Tutti i settori",
+    verticalApparel: "Abbigliamento",
+    verticalHospitality: "Hospitality",
+    verticalWorkwear: "Workwear",
+    verticalHomeTextiles: "Tessili per la casa",
+
+    filterAllOutreachStatus: "Tutti gli stati outreach",
+    outreachNotContacted: "Non contattati",
+    outreachContacted: "Contattati",
+    outreachResponded: "Risposto",
+    outreachMeetingBooked: "Riunione prenotata",
+    outreachNotInterested: "Non interessati",
+
+    filterAllEmailStatus: "Tutti gli stati email",
+    emailVerified: "Verificata",
+    emailExtrapolated: "Estrapolata",
+    emailUnavailable: "Non disponibile",
+
+    colBrand: "Brand",
+    colContact: "Contatto",
+    colTitle: "Titolo",
+    colEmail: "Email",
+    colPhone: "Telefono",
+    colLI: "LI",
+    colEmailed: "Email inviate",
+    colOutreach: "Outreach",
+    colActions: "Azioni",
+
+    inProfile: "nel profilo",
+    enrichedLabel: "arricchito",
+    noContactsNeedsEnrichment: "Nessun contatto — richiede arricchimento",
+    msgsSuffix: "msg",
+    markLinkedinReached: "Contrassegna come raggiunto su LinkedIn",
+    markEmailed: "Contrassegna come email inviata",
+
+    actionSms: "SMS",
+    actionEmail: "Email",
+    actionEnrich: "Arricchisci",
+    titleSendSms: "Invia SMS",
+    titleSendEmail: "Invia email",
+    titleEnrichApollo: "Arricchisci tramite Apollo",
+
+    paginationLabel: "Pagina {page} di {pages} ({total} brand)",
+    paginationPrev: "Precedente",
+    paginationNext: "Successiva",
+
+    modalSendSmsTo: "Invia SMS a",
+    modalSendEmailTo: "Invia email a",
+    fieldTemplate: "Modello",
+    fieldToPrefix: "A:",
+    fieldSubject: "Oggetto",
+    fieldMessage: "Messaggio",
+    charsSuffix: "caratteri",
+    sendSms: "Invia SMS",
+    sendEmail: "Invia email",
+    sendingButton: "Invio in corso...",
+    cancelButton: "Annulla",
+    sendSuccess: "Messaggio inviato con successo!",
+    sendErrorPrefix: "Errore:",
+  },
+
 };
 
 export default it;
