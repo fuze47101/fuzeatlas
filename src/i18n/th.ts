@@ -7565,6 +7565,37 @@ const th: Translations = {
     lastCalculatedLabel: "คำนวณล่าสุด:",
   },
 
+  fabricReportSend: {
+    backLink: "← กลับไปยังรายงาน",
+    heading: "ส่งรายงานทางอีเมลถึงลูกค้า",
+    subtitlePrefix: "กำลังส่ง FUZE Application & Validation Report สำหรับ",
+    fabricNotFound: "ไม่พบผ้า",
+    recipientRequiredError: "ต้องระบุอีเมลผู้รับ",
+    sendFailedError: "การส่งล้มเหลว",
+    sentSuccessPrefix: "✓ ส่งรายงานถึง",
+    directUrlLabel: "URL ดาวน์โหลดโดยตรง:",
+    sentSuccessBody: "ลูกค้ายังสามารถเข้าถึงได้ใต้ My Reports หลังจากเข้าสู่ระบบ FUZE Atlas",
+    recipientEmailLabel: "อีเมลผู้รับ",
+    recipientNameLabel: "ชื่อผู้รับ",
+    optionalSuffix: "(ไม่บังคับ)",
+    personalNoteLabel: "หมายเหตุส่วนตัว",
+    personalNoteHint: "(ไม่บังคับ แสดงเหนือการ์ดรายงาน)",
+    ccLabel: "CC",
+    ccHint: "(ไม่บังคับ คั่นด้วยจุลภาค)",
+    ttlLabel: "ลิงก์ตรงใช้ได้สำหรับ",
+    ttl30Days: "30 วัน",
+    ttl90Days: "90 วัน (ค่าเริ่มต้น)",
+    ttl180Days: "180 วัน",
+    ttl1Year: "1 ปี",
+    sendingBtn: "กำลังส่ง...",
+    sendBtn: "ส่งรายงาน",
+    previouslySentTitle: "ส่งก่อนหน้า",
+    sentPrefix: "ส่งแล้ว",
+    viewedPrefix: "ดูแล้ว",
+    notOpenedYet: "ยังไม่เปิด",
+    openSameLink: "เปิดลิงก์เดียวกัน →",
+  },
+
 };
 
 export default th;
