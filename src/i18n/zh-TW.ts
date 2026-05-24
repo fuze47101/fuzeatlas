@@ -5986,6 +5986,58 @@ const zhTW: Translations = {
     verdictUnscanned: "未掃描",
   },
 
+  settingsEmailTemplates: {
+    backToSettings: "← 設定",
+    pageTitle: "電子郵件範本",
+    pageSubtitle: "可重複使用的對外開發郵件範本。使用 {firstName}、{company} 等變數可即時個人化。",
+    btnNew: "+ 新增範本",
+    errorRequired: "標題、主旨與內文皆為必填。",
+    errorLoadUser: "無法載入使用者",
+    errorLoadTemplates: "無法載入範本",
+    confirmArchive: "封存「{title}」?封存後將不再於選擇器中顯示。",
+
+    formHeadingEdit: "編輯範本",
+    formHeadingNew: "新增範本",
+    labelTitle: "標題",
+    placeholderTitle: "例:首次接觸介紹(運動服飾)",
+    labelCategory: "類別",
+    placeholderCategory: "例:intro、re-engage、icp-request",
+    labelScope: "範圍",
+    scopePrivate: "私人(僅限本人)",
+    scopeShared: "共享(整個團隊)",
+    scopeGlobal: "全域(組織預設)",
+    labelSubject: "主旨",
+    placeholderSubject: "Hi {firstName} — 為 {company} 簡介 FUZE",
+    labelBody: "內文",
+    btnSaving: "儲存中…",
+    btnSaveChanges: "儲存變更",
+    btnCreate: "建立範本",
+    btnCancel: "取消",
+
+    previewHeading: "預覽",
+    previewHelp: "編輯下方範例值以檢視變數的呈現結果。",
+    previewSubjectLabel: "主旨",
+    previewBodyLabel: "內文",
+
+    slotsHeading: "BD 精靈快選插槽",
+    slotsHelp: "可將最多 10 個範本釘選至編號插槽。在精靈草稿步驟中,您會看到 1–10 按鈕列,一鍵即可填入主旨與內文。",
+    openBdWizard: "開啟 BD 精靈 →",
+    slotEmptyTitle: "空插槽 — 請於下方指派。",
+    slotEmpty: "空",
+
+    loadingTemplates: "正在載入範本…",
+    groupPrivate: "您的範本",
+    groupShared: "與團隊共享",
+    groupGlobal: "組織共用預設",
+    usedSuffix: "次使用",
+    byPrefix: "由",
+    bdSlot: "BD 插槽",
+    edit: "編輯",
+    archive: "封存",
+
+    emptyTpl: "尚無範本。點選 + 新增範本 以建立第一個範本。",
+  },
+
 };
 
 export default zhTW;
