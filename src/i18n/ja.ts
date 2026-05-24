@@ -8075,6 +8075,30 @@ const ja: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "招待を読み込み中…",
+    notFoundTitle: "招待が見つかりません",
+    notFoundFallback: "この招待リンクは期限切れか、既に使用されている可能性があります。",
+    chipLabel: "FUZE Atlas からの招待",
+    headingMiddle: "より招待",
+    headingSuffix: "の FUZE サプライチェーンへの参加",
+    heroSubtitleFallbackPrefix: "は FUZE Atlas を用いて、サプライチェーン全体の抗菌繊維プログラムを連携しています。",
+    heroSubtitleFallbackSuffix: "参加すると、工場はファブリックを試験のために提出したり、FUZE の発注を行ったり、ICP 結果を追跡したりでき、すべてがブランドと直接結びつきます。",
+    notePrefix: "メッセージ:",
+    closedPrefix: "この招待は既に",
+    closedReachOutPrefix: "問い合わせ先:",
+    closedTeamFallbackPrefix: "",
+    closedTeamFallbackSuffix: "のチーム",
+    closedFreshLink: "に連絡して新しいリンクをご請求ください。",
+    signUpCta: "サインアップ",
+    signUpSubPrefix: "新しい",
+    signUpSubSuffix: "アカウントを Atlas で作成",
+    alreadyInCta: "既に Atlas を利用しています",
+    alreadyInSub: "ログインして既存の工場と紐付け",
+    sentPrefix: "招待送信日",
+    questionsPrefix: "· ご質問はこちら",
+  },
+
 };
 
 export default ja;
