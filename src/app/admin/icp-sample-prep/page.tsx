@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 /**
  * ═══════════════════════════════════════════════════════════════
@@ -191,6 +192,8 @@ function computeBathPreview(bench: BenchTestSnapshot, tier: string, bathVolumeL:
 
 // ── Component ─────────────────────────────────────────────
 export default function IcpSamplePrepWizardPage() {
+  const { t } = useI18n();
+  const T = t.icpSamplePrepPage;
   const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
 
@@ -272,12 +275,12 @@ export default function IcpSamplePrepWizardPage() {
     const s = samples.find((x) => x.fabricId === fabricId);
     if (!s) return;
     if (!s.benchTest?.id) {
-      setApplicationError((e) => ({ ...e, [fabricId]: "No recipe bench test linked to this fabric. Run the Recipe Calculator first." }));
+      setApplicationError((e) => ({ ...e, [fabricId]: T.errorNoBench }));
       return;
     }
     const vol = Number(s.bathVolumeL);
     if (!Number.isFinite(vol) || vol <= 0) {
-      setApplicationError((e) => ({ ...e, [fabricId]: "Bath volume must be greater than 0 L." }));
+      setApplicationError((e) => ({ ...e, [fabricId]: T.errorBathVolume }));
       return;
     }
     setApplicationSaving((x) => ({ ...x, [fabricId]: true }));
@@ -378,12 +381,11 @@ export default function IcpSamplePrepWizardPage() {
     <header className="flex items-start justify-between mb-6">
       <div>
         <p className="text-[10px] font-bold text-[#00b4c3] tracking-[0.2em] uppercase">
-          FUZE Biotech · Quality &amp; Labs
+          {T.headerBadge}
         </p>
-        <h1 className="text-3xl font-black text-slate-900 mt-1">ICP Sample Prep</h1>
+        <h1 className="text-3xl font-black text-slate-900 mt-1">{T.headerTitle}</h1>
         <p className="text-sm text-slate-600 mt-1">
-          Build a CTLA submission packet with one or more FUZE-treated fabric samples.
-          One PO covers the whole batch; CTLA bills per fabric submission number.
+          {T.headerSubtitle}
         </p>
       </div>
       <div className="flex gap-2 text-xs">
@@ -393,7 +395,7 @@ export default function IcpSamplePrepWizardPage() {
           rel="noreferrer"
           className="px-3 py-2 rounded border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50"
         >
-          📋 How-To (SOP)
+          {T.btnHowTo}
         </a>
       </div>
     </header>
@@ -403,11 +405,11 @@ export default function IcpSamplePrepWizardPage() {
   const StepBar = (
     <div className="flex items-center gap-2 mb-6">
       {[
-        { n: 1, label: "Pick fabrics" },
-        { n: 2, label: "Confirm details" },
-        { n: 3, label: "Application recipe" },
-        { n: 4, label: "Weigh &amp; tier" },
-        { n: 5, label: "Review &amp; submit" },
+        { n: 1, label: T.stepPick },
+        { n: 2, label: T.stepConfirm },
+        { n: 3, label: T.stepRecipe },
+        { n: 4, label: T.stepWeigh },
+        { n: 5, label: T.stepReview },
       ].map((s, i) => (
         <div key={s.n} className="flex items-center gap-2 flex-1">
           <div
@@ -442,17 +444,17 @@ export default function IcpSamplePrepWizardPage() {
           <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-black text-slate-900">
-                1. Pick the fabrics you prepped
+                {T.step1Heading}
               </h2>
               <div className="text-sm font-semibold text-slate-600">
-                {selectedIds.length} selected
+                {selectedIds.length} {T.step1Selected}
               </div>
             </div>
 
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search by FUZE number, customer code, factory code, color, construction…"
+              placeholder={T.step1Search}
               className="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:border-[#00b4c3] focus:ring-2 focus:ring-[#00b4c3]/30"
             />
 
@@ -464,9 +466,9 @@ export default function IcpSamplePrepWizardPage() {
 
             <div className="mt-4 border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-[520px] overflow-auto">
               {fabricsLoading ? (
-                <div className="p-6 text-center text-slate-600 text-sm">Loading fabrics…</div>
+                <div className="p-6 text-center text-slate-600 text-sm">{T.fabricsLoading}</div>
               ) : fabrics.length === 0 ? (
-                <div className="p-6 text-center text-slate-600 text-sm">No fabrics match.</div>
+                <div className="p-6 text-center text-slate-600 text-sm">{T.fabricsEmpty}</div>
               ) : (
                 fabrics.map((f) => {
                   const selected = selectedIds.includes(f.id);
@@ -499,7 +501,7 @@ export default function IcpSamplePrepWizardPage() {
                         <div className="text-xs text-slate-600 truncate">
                           {[f.construction, f.color, f.weightGsm ? `${f.weightGsm} gsm` : null]
                             .filter(Boolean)
-                            .join(" · ") || "(no details)"}
+                            .join(" · ") || T.noDetails}
                         </div>
                       </div>
                     </label>
@@ -519,7 +521,7 @@ export default function IcpSamplePrepWizardPage() {
                   canContinueFromStep1 ? "bg-[#00b4c3] hover:bg-[#009ba8]" : "bg-slate-300 cursor-not-allowed"
                 }`}
               >
-                Continue →
+                {T.btnContinue}
               </button>
             </div>
           </section>
@@ -529,23 +531,22 @@ export default function IcpSamplePrepWizardPage() {
         {step === 2 && (
           <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
             <h2 className="text-lg font-black text-slate-900 mb-1">
-              2. Confirm the fabric details we pulled from the library
+              {T.step2Heading}
             </h2>
             <p className="text-xs text-slate-600 mb-4">
-              These come straight from the Atlas fabric record — no re-typing. Remove any row that
-              isn&apos;t actually in the bag, or go back to add more.
+              {T.step2Sub}
             </p>
 
             <div className="overflow-auto border border-slate-200 rounded-lg">
               <table className="min-w-full text-sm">
                 <thead className="bg-slate-50 text-xs uppercase text-slate-600">
                   <tr>
-                    <th className="px-3 py-2 text-left">FUZE #</th>
-                    <th className="px-3 py-2 text-left">Customer code</th>
-                    <th className="px-3 py-2 text-left">Factory code</th>
-                    <th className="px-3 py-2 text-left">Construction</th>
-                    <th className="px-3 py-2 text-left">Color</th>
-                    <th className="px-3 py-2 text-right">GSM</th>
+                    <th className="px-3 py-2 text-left">{T.colFuze}</th>
+                    <th className="px-3 py-2 text-left">{T.colCustomerCode}</th>
+                    <th className="px-3 py-2 text-left">{T.colFactoryCode}</th>
+                    <th className="px-3 py-2 text-left">{T.colConstruction}</th>
+                    <th className="px-3 py-2 text-left">{T.colColor}</th>
+                    <th className="px-3 py-2 text-right">{T.colGsm}</th>
                     <th className="px-3 py-2 text-right w-12"></th>
                   </tr>
                 </thead>
@@ -568,7 +569,7 @@ export default function IcpSamplePrepWizardPage() {
                           }}
                           className="text-red-600 hover:underline text-xs font-bold"
                         >
-                          Remove
+                          {T.btnRemove}
                         </button>
                       </td>
                     </tr>
@@ -576,7 +577,7 @@ export default function IcpSamplePrepWizardPage() {
                   {samples.length === 0 && (
                     <tr>
                       <td colSpan={7} className="px-3 py-6 text-center text-slate-600 text-sm">
-                        No samples selected. Go back and pick at least one fabric.
+                        {T.step2NoSamples}
                       </td>
                     </tr>
                   )}
@@ -589,7 +590,7 @@ export default function IcpSamplePrepWizardPage() {
                 onClick={() => setStep(1)}
                 className="px-5 py-2.5 rounded-lg text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200"
               >
-                ← Back
+                {T.btnBack}
               </button>
               <button
                 disabled={!canContinueFromStep2}
@@ -598,7 +599,7 @@ export default function IcpSamplePrepWizardPage() {
                   canContinueFromStep2 ? "bg-[#00b4c3] hover:bg-[#009ba8]" : "bg-slate-300 cursor-not-allowed"
                 }`}
               >
-                Continue →
+                {T.btnContinue}
               </button>
             </div>
           </section>
@@ -608,13 +609,10 @@ export default function IcpSamplePrepWizardPage() {
         {step === 3 && (
           <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
             <h2 className="text-lg font-black text-slate-900 mb-1">
-              3. Apply FUZE — build the bath, pad, and dry
+              {T.step3Heading}
             </h2>
             <p className="text-xs text-slate-600 mb-4">
-              Pull the recipe straight from this fabric&apos;s latest Recipe Bench Test. Pick the
-              FUZE tier and bath volume — we compute mL of 30 ppm FUZE stock + mL of DI water on
-              the fly. Pad through the vertical micro-padder at the saved settings, dry in the
-              chamber, then hit <b>Pad + dry complete</b> to record the SampleApplication.
+              {T.step3Sub}
             </p>
 
             <div className="grid grid-cols-1 gap-4">
@@ -980,11 +978,10 @@ export default function IcpSamplePrepWizardPage() {
         {step === 4 && (
           <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
             <h2 className="text-lg font-black text-slate-900 mb-1">
-              4. Weigh each sample + confirm tier
+              {T.step4Heading}
             </h2>
             <p className="text-xs text-slate-600 mb-4">
-              Cut with the {WHEEL_CM2} cm² wheel, fragment to ~5 mm bits, and weigh the whole bag.
-              We need <b>more than {SHIP_TARGET_G.toFixed(1)} g</b> per fabric — CTLA digests {DIGEST_TARGET_G.toFixed(1)} g at a time.
+              {T.step4SubTpl.replace("{wheel}", String(WHEEL_CM2)).replace("{ship}", SHIP_TARGET_G.toFixed(1)).replace("{digest}", DIGEST_TARGET_G.toFixed(1))}
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1111,11 +1108,10 @@ export default function IcpSamplePrepWizardPage() {
         {step === 5 && (
           <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
             <h2 className="text-lg font-black text-slate-900 mb-1">
-              5. Review &amp; submit to CTLA
+              {T.step5Heading}
             </h2>
             <p className="text-xs text-slate-600 mb-4">
-              Submitting creates a FUZE PO, auto-adds a line per fabric (so CTLA can invoice per
-              submission number), and opens the printable packet to drop in the shipping bag.
+              {T.step5Sub}
             </p>
 
             {/* Batch options */}
@@ -1129,9 +1125,9 @@ export default function IcpSamplePrepWizardPage() {
                   onChange={(e) => setPriority(e.target.value as any)}
                   className="w-full px-3 py-2 rounded border border-slate-300 bg-white text-sm"
                 >
-                  <option value="NORMAL">Normal</option>
-                  <option value="HIGH">High</option>
-                  <option value="URGENT">Urgent</option>
+                  <option value="NORMAL">{T.priorityNormal}</option>
+                  <option value="HIGH">{T.priorityHigh}</option>
+                  <option value="URGENT">{T.priorityUrgent}</option>
                 </select>
               </div>
               <div>
@@ -1217,7 +1213,7 @@ export default function IcpSamplePrepWizardPage() {
                 disabled={submitting}
                 className="px-5 py-2.5 rounded-lg text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200"
               >
-                ← Back
+                {T.btnBack}
               </button>
               <button
                 onClick={submit}
@@ -1226,7 +1222,7 @@ export default function IcpSamplePrepWizardPage() {
                   submitting ? "bg-slate-400 cursor-wait" : "bg-[#00b4c3] hover:bg-[#009ba8]"
                 }`}
               >
-                {submitting ? "Submitting…" : "Create PO & Open Printable Packet →"}
+                {submitting ? T.btnSubmitting : T.btnCreatePo}
               </button>
             </div>
           </section>
