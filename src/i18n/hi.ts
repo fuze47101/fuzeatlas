@@ -7431,6 +7431,23 @@ const hi: Translations = {
     whatYouCanClaimBtn: "आप क्या दावा कर सकते हैं →",
   },
 
+  publicVerifiedPage: {
+    certifiedBadge: "✓ FUZE Atlas द्वारा प्रमाणित",
+    statFabricsCertified: "प्रमाणित फैब्रिक्स",
+    statTestsPassed: "पास परीक्षण (12 महीने)",
+    statCountries: "शिपिंग देश",
+    activeTiersTitle: "सक्रिय FUZE टियर",
+    activeTiersBody: "वर्तमान में प्रमाणित सुविधाओं पर उत्पादन में ट्रीटमेंट स्तर।",
+    lastPassedLabel: "अंतिम पास",
+    aboutSummaryTitle: "FUZE प्रौद्योगिकी के बारे में",
+    verifyCtaTitle: "एक विशिष्ट उत्पाद सत्यापित करें",
+    verifyCtaBody: "हर प्रमाणित उत्पाद में एक अद्वितीय QR कोड होता है जो उसके उत्पादन बैच और परीक्षण इतिहास से लिंक होता है।",
+    verifyCtaBtn: "उत्पाद खोजें →",
+    footerCertifiedBy: "FUZE Atlas द्वारा प्रमाणित",
+    brandSiteLink: "ब्रांड साइट →",
+    contactLink: "संपर्क",
+  },
+
 };
 
 export default hi;
