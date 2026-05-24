@@ -7552,6 +7552,31 @@ const es: Translations = {
     footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
   },
 
+  signupInvitation: {
+    appKicker: "FUZE Atlas",
+    joinPrefix: "Únete a",
+    invitedSuffix: "invitado",
+    youWereInvited: "Has sido invitado",
+    asLabel: "como",
+    emailLabel: "Correo",
+    yourNameLabel: "Tu nombre",
+    fullNamePlaceholder: "Nombre completo",
+    passwordLabel: "Contraseña",
+    passwordPlaceholder: "Al menos 8 caracteres",
+    confirmPasswordLabel: "Confirmar contraseña",
+    confirmPasswordPlaceholder: "Vuelve a introducir la contraseña",
+    creatingBtn: "Creando cuenta…",
+    acceptBtn: "Aceptar invitación e iniciar sesión",
+    expiresPrefix: "La invitación caduca",
+    problemTitle: "Problema con la invitación",
+    problemDefault: "No se pudo cargar esta invitación.",
+    goToSignIn: "Ir al inicio de sesión",
+    errPasswordTooShort: "La contraseña debe tener al menos 8 caracteres.",
+    errPasswordsMismatch: "Las contraseñas no coinciden.",
+    errNetwork: "Error de red",
+    errServerUnreachable: "No se pudo contactar con el servidor",
+  },
+
 };
 
 export default es;
