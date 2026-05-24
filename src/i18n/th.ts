@@ -4527,6 +4527,16 @@ const th: Translations = {
     sanityCheckHeader: "ตรวจสอบความสมเหตุสมผล (สิ่งที่ CTLA ควรรายงาน)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "เครือข่ายผู้จัดจำหน่าย",
+    pageSubtitle: "จัดการพันธมิตรการจัดจำหน่ายทั่วโลก สต็อก และความครอบคลุม",
+    inventoryCta: "📊 สต็อก & อัตราการใช้",
+    worldwideCta: "🌍 สต็อกทั่วโลก",
+    newDistributorCta: "+ ผู้จัดจำหน่ายใหม่",
+    newDistributorModalTitle: "ผู้จัดจำหน่ายใหม่",
+    nameRequiredError: "ต้องระบุชื่อ",
+  },
+
 };
 
 export default th;
