@@ -3512,6 +3512,26 @@ const id: Translations = {
     relDaysAgo: "hari yang lalu",
   },
 
+  interLabVariance: {
+    loadingLabel: "Memuat variasi antar-lab",
+    crumbQualityLabs: "Kualitas & Lab",
+    crumbInterLabVariance: "Variasi antar-lab",
+    title: "Variasi antar-lab",
+    subtitleBefore: "Di mana kain yang sama diuji oleh ≥2 lab dalam",
+    subtitleAfter: "hari terakhir. Diurutkan berdasarkan range (max − min) menurun.",
+    colFabric: "Kain",
+    colMethod: "Metode",
+    colRange: "Range",
+    colMeanSigma: "Mean ± σ",
+    colPerLab: "Hasil per-lab",
+    emptyTitle: "Belum ada kain multi-lab",
+    emptyBodyBefore: "Variasi antar-lab membandingkan kain yang diuji oleh ≥2 lab dalam",
+    emptyBodyAfter: "hari terakhir. Setelah Anda memiliki kain yang sama diuji di lab mitra DAN di FUZE USA (atau pasangan 2-lab mana pun), akan muncul di sini.",
+    biasTitle: "Bias kalibrasi per-lab",
+    biasHint: "Mean dari (hasil lab ini − mean grup) di setiap kain bersama. Positif = berjalan lebih tinggi dari lab peer; negatif = berjalan lebih rendah.",
+    emptyBias: "Belum ada data bias.",
+  },
+
 };
 
 export default id;
