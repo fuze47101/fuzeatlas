@@ -7285,6 +7285,21 @@ const ur: Translations = {
     errNetwork: "نیٹ ورک کی خرابی",
   },
 
+  verifyEmail: {
+    verifyingTitle: "آپ کی ای میل کی تصدیق ہو رہی ہے...",
+    successTitle: "ای میل کی تصدیق ہو گئی",
+    welcomePrefix: "خوش آمدید",
+    successBody: "آپ کی ای میل کی تصدیق ہو گئی ہے۔ لاگ ان کی طرف بھیجا جا رہا ہے...",
+    failedTitle: "تصدیق ناکام",
+    resendVerificationBtn: "تصدیقی ای میل دوبارہ بھیجیں",
+    checkEmailTitle: "اپنی ای میل چیک کریں",
+    checkEmailBody: "آپ کے ای میل پتے پر ایک تصدیقی لنک بھیجا گیا ہے۔ اپنے اکاؤنٹ کی تصدیق کے لیے لنک پر کلک کریں۔",
+    resendEmailBtn: "ای میل دوبارہ بھیجیں",
+    sendingBtn: "بھیج رہا ہے...",
+    errVerifyFailed: "ای میل کی تصدیق کرنے میں ناکامی",
+    errSendFailed: "تصدیقی ای میل بھیجنے میں ناکامی",
+  },
+
 };
 
 export default ur;
