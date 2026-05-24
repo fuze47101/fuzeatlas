@@ -7175,6 +7175,29 @@ const ko: Translations = {
     printedPrefix: "인쇄됨",
   },
 
+  pressKitAdmin: {
+    title: "프레스 키트",
+    subtitle: "공개 /press 페이지에 나타나는 내용을 관리하십시오. 활성을 전환하면 행이 삭제되지 않고 숨겨집니다.",
+    addItemTitle: "항목 추가",
+    urlPlaceholder: "URL",
+    captionPlaceholder: "캡션",
+    addItemBtn: "항목 추가",
+    savingBtn: "저장 중…",
+    allFilter: "전체",
+    colType: "유형",
+    colCaption: "캡션",
+    colUrl: "URL",
+    colReleased: "릴리스",
+    colActive: "활성",
+    activeLabel: "활성",
+    hiddenLabel: "숨겨짐",
+    deleteBtn: "삭제",
+    deleteConfirmPrefix: "프레스 키트 항목 삭제",
+    emptyState: "아직 프레스 키트 항목이 없습니다.",
+    errUrlRequired: "URL 필요",
+    errAddFailed: "추가 실패",
+  },
+
 };
 
 export default ko;
