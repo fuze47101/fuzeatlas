@@ -7009,6 +7009,32 @@ const zhCN: Translations = {
     footerQuestions: "有问题？",
   },
 
+  settingsExchangeRates: {
+    title: "汇率",
+    subtitle: "管理货币转换汇率",
+    addRateBtn: "添加汇率",
+    cancelBtn: "取消",
+    addFormTitle: "添加汇率",
+    ratePlaceholder: "汇率",
+    submitAddBtn: "添加汇率",
+    converterTitle: "货币转换器",
+    fromLabel: "从",
+    toLabel: "至",
+    amountLabel: "金额",
+    convertBtn: "转换",
+    rateResultPrefix: "汇率：",
+    quickStatsTitle: "快速统计",
+    totalCurrenciesLabel: "总货币数",
+    activeRatesLabel: "活跃汇率",
+    currentRatesTitle: "当前汇率（基准：USD）",
+    loading: "加载中……",
+    emptyState: "未配置汇率",
+    colCurrencyPair: "货币对",
+    colRate: "汇率",
+    colEffectiveDate: "生效日期",
+    colSource: "来源",
+  },
+
 };
 
 export default zhCN;
