@@ -7025,6 +7025,32 @@ const km: Translations = {
     errSendFailed: "បរាជ័យ to send verification email",
   },
 
+  productLineDocs: {
+    crumbApp: "FUZE Atlas",
+    crumbPublicDocs: "Public ឯកសារ",
+    headerPrefix: "FUZE",
+    headerLeadBefore: "Public reference documents for the FUZE",
+    headerLeadAfter: "product line. For private documents (full TDS/SDS, internal pricing, application guides), log in to the FUZE Atlas portal for your role.",
+    catTdsSds: "TDS / SDS",
+    catToxicology: "ទៅxicology",
+    catPricing: "តម្លៃ",
+    catSustainability: "និរន្តរភាព",
+    catEducation: "ការអប់រំ",
+    catClaimsCompliance: "Claims & ការអនុលោម",
+    catApplicationGuide: "Application Guide",
+    catCaseStudy: "Case Study",
+    loading: "កំពុងផ្ទុក…",
+    emptyBefore: "ទេ public documents available for",
+    emptyAfter: "yet. Reach out to FUZE for the private library.",
+    loginCta: "ចូល to Atlas →",
+    versionPrefix: "កំណែ",
+    downloadBtn: "↓ ទាញយក",
+    unknownLineTitle: "មិនស្គាល់ product line",
+    unknownLineBody: "FUZE has four tiers: F1, F2, F3, F4. Try one of those.",
+    errLoadFailed: "បរាជ័យ to load",
+    footerCompany: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+  },
+
 };
 
 export default km;
