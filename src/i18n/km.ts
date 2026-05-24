@@ -7097,6 +7097,31 @@ const km: Translations = {
     claimsLink: "Claims",
   },
 
+  changePassword: {
+    titleDefault: "Change ពាក្យសម្ងាត់",
+    titleForced: "Set Your ថ្មី ពាក្យសម្ងាត់",
+    forcedBanner: "You were assigned a temporary password. Please create a secure password to continue.",
+    currentPasswordLabel: "Current ពាក្យសម្ងាត់",
+    newPasswordLabel: "ថ្មី ពាក្យសម្ងាត់",
+    newPasswordPlaceholder: "Min 8 chars, 1 uppercase, 1 number",
+    confirmPasswordLabel: "បញ្ជាក់ ថ្មី ពាក្យសម្ងាត់",
+    reqMinChars: "At least 8 characters",
+    reqUppercase: "One uppercase letter",
+    reqNumber: "One number",
+    reqMatch: "ពាក្យសម្ងាត់s match",
+    updateBtn: "Update ពាក្យសម្ងាត់",
+    setAndContinueBtn: "Set ពាក្យសម្ងាត់ & បន្ត",
+    updatingBtn: "Updating...",
+    cancelBtn: "បោះបង់",
+    passwordUpdatedTitle: "ពាក្យសម្ងាត់ បានធ្វើបច្ចុប្បន្នភាព",
+    redirecting: "Redirecting you now...",
+    errPasswordsDoNotMatch: "ពាក្យសម្ងាត់s do not match",
+    errMinLength: "ពាក្យសម្ងាត់ must be at least 8 characters",
+    errNeedUppercase: "ពាក្យសម្ងាត់ must contain at least one uppercase letter",
+    errNeedNumber: "ពាក្យសម្ងាត់ must contain at least one number",
+    errGeneric: "បរាជ័យ to change password",
+  },
+
 };
 
 export default km;
