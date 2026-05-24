@@ -7898,6 +7898,26 @@ const ur: Translations = {
     footnote: "صارف کا سامنا کرنے والی کاپی \"FUZE residual\" استعمال کرتی ہے — لیب کی ICP رپورٹ سے metamaterial کی پیمائش۔ صارف کی ترسیلات میں ہمیشہ FUZE / metamaterial کے طور پر لیبل لگایا جاتا ہے (CLAUDE.md برانڈ-وائس قاعدہ)۔",
   },
 
+  engagementDebug: {
+    crumb: "Engagement ڈیبگ",
+    engagementSuffix: "engagement",
+    calculatedLabel: "حساب لگایا گیا",
+    overallScoreLabel: "مجموعی اسکور",
+    outOf100: "100 میں سے",
+    inputsLabel: "ان پٹس",
+    daysSinceContact: "رابطے سے دن",
+    tests30d: "ٹیسٹس (30 دن)",
+    tests90d: "ٹیسٹس (90 دن)",
+    avgPayDays: "اوسط ادائیگی کے دن",
+    overdueInvoices: "تاخیر شدہ انوائسز",
+    factorBreakdownTitle: "عوامل کا تجزیہ",
+    weightLabel: "وزن",
+    contributesLabel: "حصہ ڈالتا ہے",
+    ptsLabel: "پوائنٹس",
+    loading: "لوڈ ہو رہا ہے…",
+    failedToLoad: "لوڈ کرنے میں ناکام",
+  },
+
 };
 
 export default ur;
