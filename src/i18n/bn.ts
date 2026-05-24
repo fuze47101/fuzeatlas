@@ -7844,6 +7844,19 @@ const bn: Translations = {
     questionsPrefix: "· প্রশ্ন আছে?",
   },
 
+  bdPlaybooks: {
+    bdCrumb: "BD",
+    crumb: "প্লেবুক",
+    heading: "BD প্লেবুক",
+    subtitle: "ক্যাটেগরি-ট্যাগ করা আউটরিচ নির্দেশিকা। আপনি যেগুলো ব্যবহার করেন সেগুলোকে ফেভারিট করুন; ব্র্যান্ডগুলো Brand.textileCategory-এর উপর ভিত্তি করে একটি প্রস্তাবিত প্লেবুক দেখায়।",
+    failedFallback: "ব্যর্থ",
+    emptyBody: "এই ক্যাটেগরির জন্য এখনও কোন প্লেবুক নেই।",
+    emptySeedHint: "ট্রিগার করুন",
+    emptySeedHintSuffix: "তিনটি স্টার্টার প্লেবুক যুক্ত করতে fzcron-এর মাধ্যমে।",
+    removeFavoriteTitle: "ফেভারিট সরান",
+    addFavoriteTitle: "ফেভারিট যোগ করুন",
+  },
+
 };
 
 export default bn;
