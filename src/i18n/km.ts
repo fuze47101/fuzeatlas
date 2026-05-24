@@ -6579,6 +6579,26 @@ const km: Translations = {
     emptyState: "ទេ credits yet.",
   },
 
+  bdFunnel: {
+    loading: "កំពុងផ្ទុក…",
+    crumbSalesPipeline: "Sales & Pipeline",
+    crumbBdFunnel: "BD funnel",
+    title: "Pipeline funnel",
+    subtitle: "Inflow / outflow over the last 30 / 60 / 90 days, plus stage-to-stage conversion rate. Sourced from ម៉ាកStageTransition rows written on every ម៉ាក.pipelineStage flip.",
+    colStage: "Stage",
+    colCurrent: "Current",
+    colIn30: "In 30d",
+    colIn60: "In 60d",
+    colIn90: "In 90d",
+    colOut30: "Out 30d",
+    colOut60: "Out 60d",
+    colOut90: "Out 90d",
+    colAvgDwell: "Avg dwell",
+    colToNext: "→ next",
+    footerHint: "Conversion = exits that landed on the canonical next stage / total exits observed in the last 90 days. Stages with no exits in the window show n=0 — they're slow or stable, not bad.",
+    errLoadFailed: "បរាជ័យ to load funnel",
+  },
+
 };
 
 export default km;
