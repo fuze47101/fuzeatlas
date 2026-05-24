@@ -7600,6 +7600,27 @@ const es: Translations = {
     seeSustainabilityBtn: "Ver impacto de sostenibilidad",
   },
 
+  pressLanding: {
+    heroTitle: "Kit de prensa",
+    heroSubtitle: "Logos, imágenes, comunicados e información corporativa de FUZE Biotech.",
+    aboutTitle: "Sobre FUZE Biotech",
+    aboutBody1: "FUZE Biotech, con sede en Salt Lake City, Utah, desarrolla un tratamiento antimicrobiano textil propietario construido en torno al metamaterial FUZE. El tratamiento se adhiere permanentemente a las fibras durante el acabado textil estándar — sin PFAS, sin aglutinantes, sin cambio químico en el tacto ni la transpirabilidad de la tela.",
+    aboutBody2: "El producto está registrado por la EPA (federal), aprobado por la EPA de California (Q1 2026), cumple OEKO-TEX Standard 100 Class I y está aprobado por bluesign®. El rendimiento está validado para ASTM E2149, AATCC 100, AATCC 30, ISO 18184 e ISO 20743 por laboratorios independientes externos.",
+    foundedLabel: "Fundada",
+    foundedValue: "Salt Lake City, UT",
+    addressLabel: "Dirección",
+    pressContactLabel: "Contacto de prensa",
+    logosSection: "Logos",
+    logoAltFallback: "Logo de FUZE",
+    downloadLabel: "Descargar →",
+    imagerySection: "Imágenes",
+    imageAltFallback: "Imagen de FUZE",
+    releasesSection: "Comunicados de prensa",
+    releaseFallback: "Comunicado",
+    newsSection: "En las noticias",
+    claimsLink: "Declaraciones",
+  },
+
 };
 
 export default es;
