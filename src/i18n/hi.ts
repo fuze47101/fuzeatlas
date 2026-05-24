@@ -4476,6 +4476,18 @@ const hi: Translations = {
     nextButton: "अगला →",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — दस्तावेज़ पूर्वावलोकन",
+    printSavePdf: "प्रिंट करें / PDF सहेजें",
+    close: "बंद करें",
+    documentNotFound: "दस्तावेज़ नहीं मिला",
+    loadingError: "दस्तावेज़ लोड करने में विफल",
+    networkError: "नेटवर्क त्रुटि",
+    docNumberLabel: "दस्तावेज़ #:",
+    confidentialFooter: "FUZE Biotech Inc. — गोपनीय",
+    generatedTemplate: "उत्पन्न:",
+  },
+
 };
 
 export default hi;
