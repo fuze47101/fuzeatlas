@@ -7081,6 +7081,37 @@ const ta: Translations = {
     footerHint: "Stale = DRAFT/SENT/SIGNED/ACTIVE-இல் இருந்தாலும் 14+ நாட்கள் செயல்பாடு இல்லை. Signed-no-progress = milestones வரையறுக்கப்பட்டாலும் எதுவும் முடிக்கப்படாமல் SIGNED அல்லது ACTIVE-இல் 30+ நாட்கள். கடைசி செயல்பாடு என்பது SOW edit, milestone முடிவு, அல்லது test request சமர்ப்பிப்பின் மிக சமீபமானது.",
   },
 
+  acmTasks: {
+    title: "🗓️ ACM பணிகள்",
+    subtitle: "Week-before + day-before reminders 8 AM Taipei-இல் தானாக bell + மின்னஞ்சல் வழியாக வெளியேறுகின்றன.",
+    tabOpen: "திறந்தது",
+    tabCompleted: "முடிக்கப்பட்டது",
+    onlyMine: "என்னுடையது மட்டும்",
+    loading: "ஏற்றுகிறது…",
+    overdueTitle: "Overdue",
+    overdueSubtitle: "Past due — பட்டியலில் இருந்து இவற்றை அகற்று",
+    dueWeekTitle: "இந்த வாரம் due",
+    dueWeekSubtitle: "அடுத்த 7 நாட்கள்",
+    upcomingTitle: "வரவிருக்கும்",
+    upcomingSubtitle: "7 நாட்களுக்கு அப்பால்",
+    completedTitle: "முடிக்கப்பட்டது",
+    completedSubtitle: "கடைசி 200",
+    nothingHere: "எதுவும் இல்லை.",
+    markDoneTitle: "Done என குறி",
+    cancelTaskTitle: "Task-ஐ ரத்து செய்",
+    reopenTitle: "மீள்-திற",
+    highPriorityBadge: "HIGH",
+    overdueRowPrefix: "Overdue — ",
+    duePrefix: "Due",
+    ownerLabel: "உரிமையாளர்:",
+    relToday: "இன்று",
+    relTomorrow: "நாளை",
+    relYesterday: "நேற்று",
+    relInPrefix: "in",
+    relDaysSuffix: "நாட்கள்",
+    relDaysAgo: "நாட்களுக்கு முன்",
+  },
+
 };
 
 export default ta;
