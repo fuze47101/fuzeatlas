@@ -7857,6 +7857,18 @@ const bn: Translations = {
     addFavoriteTitle: "ফেভারিট যোগ করুন",
   },
 
+  icpCorrelation: {
+    adminCrumb: "অ্যাডমিন",
+    crumb: "ICP কোরিলেশন",
+    heading: "ICP × AB কোরিলেশন",
+    subtitle: "Joseph (KUIU) যে চার্ট সম্পর্কে জিজ্ঞাসা করেছিলেন। কাপড়ে FUZE রেসিডুয়াল (ICP-পরিমাপিত) Atlas-এ প্রতিটি ব্র্যান্ড-দৃশ্যমান টেস্ট রানে অ্যান্টিব্যাকটেরিয়াল কিল রেটের বিরুদ্ধে প্লট করা হয়েছে। বেস্ট-ফিট লাইন + R² ওভারলে করা।",
+    errorContext: "ICP কোরিলেশন লোড করুন",
+    couldntLoadPrefix: "কোরিলেশন ডেটা লোড করা যায়নি",
+    networkError: "নেটওয়ার্ক ত্রুটি।",
+    loadingState: "কোরিলেশন ডেটা লোড হচ্ছে…",
+    footnote: "গ্রাহক-মুখী কপিতে \"FUZE রেসিডুয়াল\" ব্যবহার করা হয় — ল্যাবের ICP রিপোর্ট থেকে metamaterial পরিমাপ। গ্রাহক ডেলিভারেবলে সর্বদা FUZE / metamaterial হিসাবে লেবেল করা (CLAUDE.md ব্র্যান্ড-ভয়েস নিয়ম)।",
+  },
+
 };
 
 export default bn;
