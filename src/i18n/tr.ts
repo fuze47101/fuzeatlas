@@ -8050,6 +8050,33 @@ const tr: Translations = {
     resumeBtn: "Devam et",
   },
 
+  verifiedQrPage: {
+    verifiedBadge: "✓ FUZE ile işlenmiş — doğrulandı",
+    tierPrefix: "FUZE seviyesi",
+    productSectionTitle: "Ürün",
+    skuLabel: "SKU",
+    batchLabel: "Parti",
+    fuzeNumberLabel: "FUZE #",
+    constructionLabel: "Konstrüksiyon",
+    weightLabel: "Ağırlık",
+    weightUnit: "GSM",
+    mostRecentValidation: "En son doğrulama",
+    testedPrefix: "Test edildi",
+    afterWashesPrefix: "—",
+    afterWashesSuffix: "yıkama sonrası",
+    whatDoesThisMean: "Bu ne anlama geliyor?",
+    explainerP1: "FUZE, tescilli bir antimikrobiyal tekstil işlemidir. FUZE metamateryali, standart tekstil terbiyesi sırasında fiber yüzeyine kalıcı olarak bağlanır — sızıntı yok, PFAS yok, kumaşın tutuşu veya nefes alabilirliği değişmez.",
+    explainerP2: "Bakteri azaltımı, bağlanmış metamateryalle doğrudan temas yoluyla gerçekleşir — bu nedenle FUZE, sızdırmayan antimikrobiyaller için tasarlanmış temas-öldürme testi ASTM E2149 ile öncülük eder; katmanlı geometri doğrulaması için ise AATCC 100 kullanılır.",
+    certificationsLabel: "Sertifikalar:",
+    certificationsBody: "OEKO-TEX Standard 100 Class I, bluesign® onaylı, EPA tescilli, California EPA onaylı (Q1 2026), PFAS içermez.",
+    sustainabilityTitle: "Sürdürülebilirlik",
+    sustainabilityBody: "Bugüne kadar bu kumaşta tüketilen FUZE.",
+    seeMorePrefix: "Daha fazla",
+    seeMoreSuffix: "sertifikalı ürün gör →",
+    learnMoreLink: "FUZE teknolojisi hakkında daha fazla bilgi →",
+    footerVerifiedBy: "FUZE Atlas tarafından doğrulandı",
+  },
+
 };
 
 export default tr;
