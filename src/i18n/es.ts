@@ -5911,6 +5911,82 @@ const es: Translations = {
     btnCreatePo: "Crear PO y abrir paquete imprimible →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "Admin",
+    crumbHere: "Higiene de contactos",
+    pageTitle: "Higiene de contactos",
+    pageSubtitle: "Marca contactos con marcadores de posición, buzones de rol y formato incorrecto para que los representantes dejen de desperdiciar contactos con Jane Doe. Reversible — restaurar visibilidad devuelve el contacto al asistente.",
+
+    btnPreviewScan: "🔍 Vista previa del escaneo",
+    btnAutoHide: "🙈 Escanear + ocultar automáticamente",
+    btnScanning: "Escaneando…",
+    btnHiding: "Ocultando…",
+    titlePreviewScan: "Vuelve a ejecutar la instantánea de higiene en cada contacto, sin cambiar la visibilidad",
+    titleAutoHide: "Escanear + ocultar automáticamente los contactos marcadores de posición del Asistente BD",
+    confirmAutoHide: "Ocultar automáticamente cambiará hiddenFromWizard = true para cada contacto que el escaneo marque como marcador de posición o correo no válido. Esto es reversible (puedes restaurar la visibilidad desde esta página) pero afecta al Asistente BD de cada representante inmediatamente. ¿Continuar?",
+    promptHide: "¿Ocultar este contacto del Asistente BD? Motivo (opcional):",
+    promptUnhide: "¿Restaurar visibilidad de este contacto? Motivo (opcional, se escribirá en sus notas):",
+    failedPrefix: "Falló:",
+    networkErrPrefix: "Error de red:",
+    scanFailedPrefix: "Escaneo fallido:",
+
+    summaryScanned: "Escaneados",
+    summaryContacts: "contactos · marcador",
+    summarySuspicious: "· sospechoso",
+    summaryRole: "· rol",
+    summaryReal: "· real",
+    summaryHiddenSuffix: "nuevo",
+    summaryHiddenPrefix: "· ocultos",
+
+    statPlaceholder: "Marcador de posición",
+    statSuspicious: "Sospechoso",
+    statRole: "Buzón de rol",
+    statReal: "Real",
+    statUnscanned: "Sin escanear",
+    statHidden: "Oculto",
+
+    filterVerdict: "Veredicto",
+    filterVisibility: "Visibilidad",
+    filterAllScanned: "Todos escaneados",
+    filterPlaceholder: "Marcador de posición",
+    filterSuspicious: "Sospechoso",
+    filterRoleMailbox: "Buzón de rol",
+    filterReal: "Real",
+    filterUnscanned: "Sin escanear",
+    filterAllVisibility: "Toda la visibilidad",
+    filterHiddenOnly: "Solo ocultos",
+    filterVisibleOnly: "Solo visibles",
+    searchPlaceholder: "Buscar nombre o correo…",
+
+    emptyTitle: "Ningún contacto coincide con el filtro actual.",
+    emptyUnscannedTpl: "{n} contactos nunca han sido escaneados — haz clic en \"Vista previa del escaneo\" para rellenar.",
+
+    colContact: "Contacto",
+    colBrandFactory: "Marca / Fábrica",
+    colVerdict: "Veredicto",
+    colEmail: "Correo",
+    colLinkedin: "LinkedIn",
+    colScore: "Puntuación",
+    colFlags: "Banderas",
+    colActions: "Acciones",
+
+    unnamed: "(sin nombre)",
+    noEmail: "sin correo",
+    hiddenLabel: "Oculto",
+    flagsMore: "más",
+    flagsClean: "limpio",
+    actionHide: "Ocultar",
+    actionUnhide: "Restaurar",
+
+    helpFooter: "Escanear recorre cada contacto y registra el veredicto + banderas en la fila. Vista previa solo registra el veredicto; Escanear + ocultar automáticamente también cambia hiddenFromWizard para marcadores de posición y contactos con correo no válido. Ambos son reversibles — haz clic en \"Restaurar\" para devolver un contacto, lo que también vuelve a ejecutar la instantánea por si los datos se han corregido.",
+
+    verdictReal: "real",
+    verdictSuspect: "sospechoso",
+    verdictPlaceholder: "marcador",
+    verdictRoleMbx: "buzón rol",
+    verdictUnscanned: "sin escanear",
+  },
+
 };
 
 export default es;
