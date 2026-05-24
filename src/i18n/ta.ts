@@ -4596,6 +4596,49 @@ const ta: Translations = {
     sowEmptyNothingStuck: "எதுவும் சிக்கவில்லை.",
   },
 
+  ordersAdmin: {
+    pageTitle: "ஆர்டர் நிர்வாகம்",
+    pageSubtitle: "அனைத்து FUZE ஆர்டர்களையும் மதிப்பாய்வு செய்து, ஒப்புதல் அளித்து, கண்காணி",
+    myAccountsOnly: "என் கணக்குகள் மட்டுமே",
+    awaitingApprovalTemplate: "{n} ஆர்டர்{s} ஒப்புதலுக்கு காத்திருக்கின்றன",
+
+    statTotal: "மொத்தம்",
+    statPending: "காத்திருக்கிறது",
+    statApproved: "அங்கீகரிக்கப்பட்டது",
+    statProcessing: "செயலாக்கம்",
+    statShipped: "அனுப்பப்பட்டது",
+    statDelivered: "வழங்கப்பட்டது",
+    statRevenue: "வருவாய்",
+
+    filterAll: "அனைத்தும்",
+    filterAllTypes: "அனைத்து வகைகளும்",
+
+    emptyMessage: "வடிகட்டிகளுக்கு பொருத்தமான ஆர்டர்கள் இல்லை",
+
+    colOrder: "ஆர்டர்",
+    colFactory: "தொழிற்சாலை",
+    colType: "வகை",
+    colVolume: "அளவு",
+    colBrand: "பிராண்ட்",
+    colTotal: "மொத்தம்",
+    colFulfillment: "நிறைவேற்றம்",
+    colStatus: "நிலை",
+    colDate: "தேதி",
+
+    statusDraft: "வரைவு",
+    statusQuoted: "மேற்கோள்",
+    statusPendingApproval: "ஒப்புதல் காத்திருப்பு",
+    statusApproved: "அங்கீகரிக்கப்பட்டது",
+    statusConfirmed: "உறுதிப்படுத்தப்பட்டது",
+    statusProcessing: "செயலாக்கம்",
+    statusShipped: "அனுப்பப்பட்டது",
+    statusDelivered: "வழங்கப்பட்டது",
+    statusCancelled: "ரத்து செய்யப்பட்டது",
+
+    directUsaLabel: "நேரடியாக USA",
+    tagsSuffix: "டேக்குகள்",
+  },
+
 };
 
 export default ta;
