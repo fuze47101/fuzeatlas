@@ -7458,6 +7458,28 @@ const zhCN: Translations = {
     errNetwork: "网络错误",
   },
 
+  notificationsPage: {
+    loading: "正在加载通知…",
+    title: "通知",
+    unreadLabel: "未读",
+    allCaughtUp: "全部已查看",
+    totalLabel: "总计",
+    markAllRead: "全部标记为已读",
+    filterAll: "全部",
+    filterUnread: "未读",
+    allTypes: "所有类型",
+    emptyUnreadTitle: "没有未读通知",
+    emptyAllTitle: "暂无通知",
+    emptyUnreadBody: "您已查看全部通知！",
+    emptyAllBody: "您账户有动态时，通知将在这里显示。",
+    viewDetails: "查看详情 →",
+    markAsRead: "标记为已读",
+    justNow: "刚刚",
+    minSuffix: "分钟前",
+    hourSuffix: "小时前",
+    daySuffix: "天前",
+  },
+
 };
 
 export default zhCN;
