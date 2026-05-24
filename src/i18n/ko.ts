@@ -7509,6 +7509,32 @@ const ko: Translations = {
     daySuffix: "일 전",
   },
 
+  resetPassword: {
+    tagline: "새 비밀번호 생성",
+    formTitle: "비밀번호 재설정",
+    newPasswordLabel: "새 비밀번호",
+    newPasswordPlaceholder: "새 비밀번호 입력",
+    confirmPasswordLabel: "비밀번호 확인",
+    confirmPasswordPlaceholder: "비밀번호 확인",
+    resetBtn: "비밀번호 재설정",
+    resettingBtn: "재설정 중...",
+    backToSignIn: "로그인으로 돌아가기",
+    successTitle: "비밀번호 재설정 성공",
+    successBody: "비밀번호가 성공적으로 재설정되었습니다. 이제 새 비밀번호로 로그인할 수 있습니다.",
+    signInBtn: "로그인",
+    invalidLinkTitle: "잘못된 재설정 링크",
+    invalidLinkBody: "재설정 링크가 잘못되었거나 만료되었습니다. 새 링크를 요청하십시오.",
+    requestNewLinkBtn: "새 링크 요청",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "로드 중...",
+    errInvalidToken: "잘못되었거나 누락된 재설정 토큰",
+    errInvalidTokenShort: "잘못된 재설정 토큰",
+    errMinLength: "비밀번호는 최소 6자 이상이어야 합니다",
+    errMismatch: "비밀번호가 일치하지 않습니다",
+    errResetFailed: "비밀번호 재설정 실패",
+    errNetwork: "네트워크 오류",
+  },
+
 };
 
 export default ko;
