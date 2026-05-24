@@ -8056,6 +8056,24 @@ const zhTW: Translations = {
     footerCertifiedBy: "由 FUZE Atlas 認證",
   },
 
+  forgotPassword: {
+    brandSubtitle: "重設您的密碼",
+    cardTitle: "忘記密碼？",
+    cardBody: "輸入您的電子郵件地址，我們會寄送密碼重設連結給您。",
+    emailLabel: "電子郵件地址",
+    emailPlaceholder: "you@801inc.com",
+    sendBtn: "寄送重設連結",
+    sendingBusy: "寄送中...",
+    rememberPrefix: "想起密碼了？",
+    signInLink: "登入",
+    failedFallback: "處理請求失敗",
+    networkError: "網路錯誤",
+    checkEmailTitle: "請查收電子郵件",
+    checkEmailBody: "若該電子郵件存在對應帳號，您很快會收到密碼重設連結。",
+    backToSignIn: "返回登入",
+    footerCompany: "FUZE Biotech Inc.",
+  },
+
 };
 
 export default zhTW;
