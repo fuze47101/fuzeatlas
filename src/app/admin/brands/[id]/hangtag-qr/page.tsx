@@ -5,6 +5,7 @@
  */
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface Row {
   id: string;
@@ -25,6 +26,8 @@ export default function HangtagQRPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { t } = useI18n();
+  const T = t.hangtagQrAdmin;
   const [rows, setRows] = useState<Row[]>([]);
   const [draft, setDraft] = useState({
     count: "10",
@@ -60,7 +63,7 @@ export default function HangtagQRPage({
         }),
       });
       const j = await res.json();
-      if (!j.ok) setError(j.error || "Mint failed");
+      if (!j.ok) setError(j.error || T.mintFailedError);
       else load();
     } finally {
       setSaving(false);
@@ -98,50 +101,50 @@ export default function HangtagQRPage({
       <div className="mb-6">
         <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
           <Link href={`/brands/${id}`} className="hover:text-[#00b4c3]">
-            Brand
+            {T.brandCrumb}
           </Link>
           <span>·</span>
-          <span className="text-slate-800 font-medium">Hangtag QR</span>
+          <span className="text-slate-800 font-medium">{T.crumb}</span>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">Hangtag QR tokens</h1>
+        <h1 className="text-2xl font-black text-slate-900">{T.heading}</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Each token resolves to a public verification page at{" "}
+          {T.subtitlePrefix}{" "}
           <code className="font-mono bg-slate-100 px-1">/verified/qr/{`{token}`}</code>.
-          Scan count + first / last scan timestamps tracked per row.
+          {" "}{T.subtitleSuffix}
         </p>
       </div>
 
       {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded">{error}</div>}
 
       <div className="rounded-xl border border-slate-200 bg-white p-5 mb-6">
-        <h2 className="text-sm font-bold text-slate-900 mb-3">Mint tokens</h2>
+        <h2 className="text-sm font-bold text-slate-900 mb-3">{T.mintTokensTitle}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
           <input
             type="number"
             min="1"
             max="500"
-            placeholder="count"
+            placeholder={T.countPlaceholder}
             value={draft.count}
             onChange={(e) => setDraft({ ...draft, count: e.target.value })}
             className="px-3 py-2 border border-slate-300 rounded text-sm"
           />
           <input
             type="text"
-            placeholder="fabricId (optional)"
+            placeholder={T.fabricIdPlaceholder}
             value={draft.fabricId}
             onChange={(e) => setDraft({ ...draft, fabricId: e.target.value })}
             className="px-3 py-2 border border-slate-300 rounded text-sm"
           />
           <input
             type="text"
-            placeholder="product SKU"
+            placeholder={T.skuPlaceholder}
             value={draft.productSku}
             onChange={(e) => setDraft({ ...draft, productSku: e.target.value })}
             className="px-3 py-2 border border-slate-300 rounded text-sm"
           />
           <input
             type="text"
-            placeholder="batch code"
+            placeholder={T.batchPlaceholder}
             value={draft.batchCode}
             onChange={(e) => setDraft({ ...draft, batchCode: e.target.value })}
             className="px-3 py-2 border border-slate-300 rounded text-sm"
@@ -151,23 +154,22 @@ export default function HangtagQRPage({
             disabled={saving}
             className="px-4 py-2 bg-[#00b4c3] text-white rounded text-sm font-bold hover:bg-[#009aa8] disabled:opacity-50"
           >
-            {saving ? "Minting…" : "Mint"}
+            {saving ? T.mintingBusy : T.mintBtn}
           </button>
         </div>
         <p className="text-[11px] text-slate-500 mt-2">
-          Max 500 per mint. Print the resulting tokens as QR codes on hangtags using
-          your QR generator of choice (each URL is exactly the verify-page URL).
+          {T.mintFootnote}
         </p>
       </div>
 
       <div className="flex justify-between items-center mb-3">
-        <p className="text-sm text-slate-600">{rows.length} token{rows.length === 1 ? "" : "s"}</p>
+        <p className="text-sm text-slate-600">{rows.length} {rows.length === 1 ? T.tokenSingular : T.tokenPlural}</p>
         <button
           onClick={exportCsv}
           disabled={rows.length === 0}
           className="px-3 py-1.5 border border-slate-300 rounded text-sm hover:bg-slate-50 disabled:opacity-50"
         >
-          Export CSV
+          {T.exportCsvBtn}
         </button>
       </div>
 
@@ -175,12 +177,12 @@ export default function HangtagQRPage({
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500 border-b">
             <tr>
-              <th className="text-left px-4 py-2">Token</th>
-              <th className="text-left px-3 py-2">SKU / Batch</th>
-              <th className="text-left px-3 py-2">Fabric</th>
-              <th className="text-right px-3 py-2">Scans</th>
-              <th className="text-left px-3 py-2">Last scan</th>
-              <th className="text-left px-3 py-2">Verify URL</th>
+              <th className="text-left px-4 py-2">{T.colToken}</th>
+              <th className="text-left px-3 py-2">{T.colSkuBatch}</th>
+              <th className="text-left px-3 py-2">{T.colFabric}</th>
+              <th className="text-right px-3 py-2">{T.colScans}</th>
+              <th className="text-left px-3 py-2">{T.colLastScan}</th>
+              <th className="text-left px-3 py-2">{T.colVerifyUrl}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -219,7 +221,7 @@ export default function HangtagQRPage({
             {rows.length === 0 && (
               <tr>
                 <td colSpan={6} className="text-center py-10 text-slate-400">
-                  No tokens yet — mint your first batch above.
+                  {T.emptyState}
                 </td>
               </tr>
             )}
