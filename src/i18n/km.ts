@@ -5790,6 +5790,38 @@ const km: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "ការសាកល្បង Catalog & តម្លៃ",
+    subtitle: "Manage test types, pricing, turnaround times, and sample requirements. Changes are reflected immediately on the factory test request form.",
+    sourcePrefix: "Source:",
+    sourceDb: "Database (admin-managed)",
+    sourceStatic: "Static defaults",
+    successMsg: "ការសាកល្បង updated successfully",
+    failedSave: "បរាជ័យ to save",
+    networkErr: "Network error",
+    colTestName: "ការសាកល្បង ឈ្មោះ",
+    colCategory: "ប្រភេទ",
+    colPrice: "តម្លៃ (USD)",
+    colTurnaround: "Turnaround",
+    colMinSample: "Min. គំរូ",
+    colControl: "Control?",
+    colActive: "សកម្ម",
+    colActions: "Actions",
+    daysSuffix: "days",
+    metersSuffix: "m",
+    yes: "បាទ/ចាស",
+    no: "ទេ",
+    saveBtn: "រក្សាទុក",
+    savingDots: "...",
+    cancelBtn: "បោះបង់",
+    editBtn: "កែសម្រួល",
+    catRecipeBuild: "រូបមន្ត Build",
+    catPerformance: "Performance",
+    catQuality: "Quality",
+    catCertification: "Certification",
+    lastUpdatedTpl: "ធ្វើបច្ចុប្បន្នភាពចុងក្រោយ by {who} on {when}",
+  },
+
 };
 
 export default km;
