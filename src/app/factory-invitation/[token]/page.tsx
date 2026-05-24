@@ -15,6 +15,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 interface Invitation {
   id: string;
@@ -42,6 +43,8 @@ interface Invitation {
 export default function FactoryInvitationPage() {
   const params = useParams<{ token: string }>();
   const token = params?.token as string | undefined;
+  const { t } = useI18n();
+  const T = t.factoryInvitation;
 
   const [invitation, setInvitation] = useState<Invitation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,7 +65,7 @@ export default function FactoryInvitationPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
-        Loading invitation…
+        {T.loadingState}
       </div>
     );
   }
@@ -70,9 +73,9 @@ export default function FactoryInvitationPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white px-4">
         <div className="max-w-md text-center">
-          <h1 className="text-2xl font-bold mb-2">Invitation not found</h1>
+          <h1 className="text-2xl font-bold mb-2">{T.notFoundTitle}</h1>
           <p className="text-slate-400">
-            {error || "This invitation link may have expired or already been used."}
+            {error || T.notFoundFallback}
           </p>
         </div>
       </div>
@@ -97,7 +100,7 @@ export default function FactoryInvitationPage() {
           ) : null}
           <div>
             <div className="text-xs font-bold uppercase tracking-wider text-emerald-300">
-              FUZE Atlas invitation
+              {T.chipLabel}
             </div>
             <div className="text-lg font-bold">{brand.name}</div>
           </div>
@@ -110,21 +113,19 @@ export default function FactoryInvitationPage() {
 
         {/* Headline */}
         <h1 className="text-3xl sm:text-4xl font-black mb-3 leading-tight">
-          {brand.name} invited{" "}
-          <span style={{ color: accent }}>{invitation.invitedFactoryName}</span> to their FUZE
-          supply chain
+          {brand.name} {T.headingMiddle}{" "}
+          <span style={{ color: accent }}>{invitation.invitedFactoryName}</span> {T.headingSuffix}
         </h1>
         <p className="text-base text-slate-300 mb-8 max-w-2xl">
           {brand.profile?.heroHeadline ||
-            `${brand.name} uses FUZE Atlas to coordinate antimicrobial textile programs across their supply chain. ` +
-              "Joining lets the factory submit fabrics for testing, place FUZE orders, and track ICP results — all directly tied to the brand."}
+            `${brand.name} ${T.heroSubtitleFallbackPrefix} ${T.heroSubtitleFallbackSuffix}`}
         </p>
 
         {/* Notes from inviter */}
         {invitation.notes ? (
           <div className="rounded-xl border border-white/10 bg-white/5 p-5 mb-8 text-sm">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
-              Note from {brand.name}
+              {T.notePrefix} {brand.name}
             </div>
             <p className="text-slate-200 whitespace-pre-wrap">{invitation.notes}</p>
           </div>
@@ -133,9 +134,9 @@ export default function FactoryInvitationPage() {
         {/* CTAs */}
         {closed ? (
           <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-5 text-amber-100">
-            This invitation has already been{" "}
-            <strong>{invitation.status.toLowerCase()}</strong>. Reach out to{" "}
-            {brand.profile?.supportEmail || `the ${brand.name} team`} if you need a fresh link.
+            {T.closedPrefix}{" "}
+            <strong>{invitation.status.toLowerCase()}</strong>. {T.closedReachOutPrefix}{" "}
+            {brand.profile?.supportEmail || `${T.closedTeamFallbackPrefix} ${brand.name} ${T.closedTeamFallbackSuffix}`} {T.closedFreshLink}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -144,27 +145,27 @@ export default function FactoryInvitationPage() {
               className="block rounded-2xl p-6 text-center font-bold text-lg transition-all hover:opacity-90 shadow-lg"
               style={{ backgroundColor: accent, color: "#fff" }}
             >
-              Sign up
+              {T.signUpCta}
               <div className="text-xs font-normal opacity-90 mt-1">
-                Create a new {invitation.invitedFactoryName} account on Atlas
+                {T.signUpSubPrefix} {invitation.invitedFactoryName} {T.signUpSubSuffix}
               </div>
             </a>
             <a
               href={`/login?next=${encodeURIComponent(`/factory-portal/network?invitation=${token}`)}`}
               className="block rounded-2xl p-6 text-center font-bold text-lg bg-white/10 border border-white/20 hover:bg-white/15 transition-all"
             >
-              We're already in Atlas
+              {T.alreadyInCta}
               <div className="text-xs font-normal opacity-80 mt-1">
-                Log in and link your existing factory
+                {T.alreadyInSub}
               </div>
             </a>
           </div>
         )}
 
         <p className="text-xs text-slate-400 mt-12">
-          Invitation sent {new Date(invitation.invitedAt).toLocaleDateString()}
+          {T.sentPrefix} {new Date(invitation.invitedAt).toLocaleDateString()}
           {brand.profile?.supportEmail
-            ? ` · Questions? ${brand.profile.supportEmail}`
+            ? ` ${T.questionsPrefix} ${brand.profile.supportEmail}`
             : ""}
         </p>
       </div>
