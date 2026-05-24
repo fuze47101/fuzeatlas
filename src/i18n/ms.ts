@@ -4878,6 +4878,92 @@ const ms: Translations = {
     tagsSuffix: "tag",
   },
 
+  leadManagement: {
+    pageTitle: "Pengurusan Lead & Jangkauan",
+    pageSubtitle: "Urus kenalan, perkaya melalui Apollo, hantar jangkauan SMS/e-mel",
+
+    loadErrorContext: "Muatkan saluran paip lead",
+    loadErrorFallback: "Tidak dapat memuatkan data pengurusan lead",
+    networkError: "Ralat rangkaian semasa memuatkan lead.",
+    loading: "Memuatkan lead...",
+
+    statTotalContacts: "Jumlah Kenalan",
+    statWithEmail: "Dengan E-mel",
+    statWithPhone: "Dengan Telefon",
+    statEnriched: "Diperkaya",
+    statNotContacted: "Belum Dihubungi",
+    statContacted: "Sudah Dihubungi",
+
+    searchPlaceholder: "Cari jenama atau kenalan...",
+    filterAllPipelineStages: "Semua Peringkat Saluran Paip",
+    stageLead: "Lead",
+    stagePresentation: "Persembahan",
+    stageBrandTesting: "Ujian Jenama",
+    stageFactoryOnboarding: "Onboarding Kilang",
+    stageProduction: "Pengeluaran",
+    stageArchive: "Arkib",
+
+    filterAllVerticals: "Semua Vertikal",
+    verticalApparel: "Pakaian",
+    verticalHospitality: "Perhotelan",
+    verticalWorkwear: "Pakaian Kerja",
+    verticalHomeTextiles: "Tekstil Rumah",
+
+    filterAllOutreachStatus: "Semua Status Jangkauan",
+    outreachNotContacted: "Belum Dihubungi",
+    outreachContacted: "Dihubungi",
+    outreachResponded: "Membalas",
+    outreachMeetingBooked: "Mesyuarat Ditempah",
+    outreachNotInterested: "Tidak Berminat",
+
+    filterAllEmailStatus: "Semua Status E-mel",
+    emailVerified: "Disahkan",
+    emailExtrapolated: "Diekstrapolasi",
+    emailUnavailable: "Tiada",
+
+    colBrand: "Jenama",
+    colContact: "Kenalan",
+    colTitle: "Jawatan",
+    colEmail: "E-mel",
+    colPhone: "Telefon",
+    colLI: "LI",
+    colEmailed: "E-mel Dihantar",
+    colOutreach: "Jangkauan",
+    colActions: "Tindakan",
+
+    inProfile: "dalam Profil",
+    enrichedLabel: "diperkaya",
+    noContactsNeedsEnrichment: "Tiada kenalan — memerlukan pengayaan",
+    msgsSuffix: "mesej",
+    markLinkedinReached: "Tandakan sebagai dicapai LinkedIn",
+    markEmailed: "Tandakan sebagai dihantar e-mel",
+
+    actionSms: "SMS",
+    actionEmail: "E-mel",
+    actionEnrich: "Perkaya",
+    titleSendSms: "Hantar SMS",
+    titleSendEmail: "Hantar E-mel",
+    titleEnrichApollo: "Perkaya melalui Apollo",
+
+    paginationLabel: "Halaman {page} daripada {pages} ({total} jenama)",
+    paginationPrev: "Sebelum",
+    paginationNext: "Seterusnya",
+
+    modalSendSmsTo: "Hantar SMS kepada",
+    modalSendEmailTo: "Hantar E-mel kepada",
+    fieldTemplate: "Templat",
+    fieldToPrefix: "Kepada:",
+    fieldSubject: "Subjek",
+    fieldMessage: "Mesej",
+    charsSuffix: "aksara",
+    sendSms: "Hantar SMS",
+    sendEmail: "Hantar E-mel",
+    sendingButton: "Menghantar...",
+    cancelButton: "Batal",
+    sendSuccess: "Mesej berjaya dihantar!",
+    sendErrorPrefix: "Ralat:",
+  },
+
 };
 
 export default ms;
