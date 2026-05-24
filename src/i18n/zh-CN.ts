@@ -7901,6 +7901,24 @@ const zhCN: Translations = {
     websiteLabel: "网站",
   },
 
+  importContacts: {
+    title: "批量导入 — 联系人",
+    subtitle: "粘贴或上传联系人 CSV。邮箱为自然主键——存在时按邮箱 upsert。无邮箱但有 LinkedIn URL 的行将作为「邮箱缺失」导入，留给现有 Apollo 增强任务后续补全。两者都没有的行将被拒绝。",
+    backLabel: "线索管理",
+    firstNameLabel: "名",
+    lastNameLabel: "姓",
+    emailLabel: "邮箱",
+    emailHint: "无 LinkedIn URL 时必填",
+    linkedinLabel: "LinkedIn 网址",
+    linkedinHint: "邮箱缺失时的备用标识",
+    brandNameLabel: "品牌名称",
+    brandNameHint: "不区分大小写匹配 Brand.name；未找到则不关联",
+    jobTitleLabel: "职位",
+    phoneLabel: "电话",
+    titleLabel: "称谓",
+    titleHint: "例如「先生」「博士」",
+  },
+
 };
 
 export default zhCN;
