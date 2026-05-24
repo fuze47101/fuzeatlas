@@ -7506,6 +7506,21 @@ const zhCN: Translations = {
     errNetwork: "网络错误",
   },
 
+  verifyEmail: {
+    verifyingTitle: "正在验证您的邮箱…",
+    successTitle: "邮箱已验证",
+    welcomePrefix: "欢迎",
+    successBody: "您的邮箱已验证。正在跳转到登录…",
+    failedTitle: "验证失败",
+    resendVerificationBtn: "重新发送验证邮件",
+    checkEmailTitle: "请查收邮件",
+    checkEmailBody: "验证链接已发送至您的邮箱。点击链接即可验证账户。",
+    resendEmailBtn: "重新发送邮件",
+    sendingBtn: "正在发送…",
+    errVerifyFailed: "邮箱验证失败",
+    errSendFailed: "验证邮件发送失败",
+  },
+
 };
 
 export default zhCN;
