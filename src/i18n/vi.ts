@@ -4634,6 +4634,27 @@ const vi: Translations = {
     exportReportTemplate: "Xuất báo cáo {product} so với FUZE",
   },
 
+  educationClaims: {
+    backLink: "← Quay lại FUZE cơ bản",
+    eyebrow: "Những gì bạn có thể tuyên bố",
+    pageTitle: "Tuyên bố thương hiệu có thể bảo vệ cho vải đã xử lý FUZE",
+    pageIntro: "Tài liệu tham khảo cho các nhóm tuân thủ, tiếp thị thương hiệu và nội dung hangtag. Ba danh mục: tuyên bố sản phẩm, tuyên bố bền vững và tuyên bố chứng nhận. Mỗi hàng được đánh giá",
+    introCiteFreely: "trích dẫn tự do",
+    introWithData: "trích dẫn với dữ liệu theo hạng",
+    introAvoid: "tránh",
+    introTail: "— với lý do bằng tiếng Anh đơn giản.",
+    productClaimsTitle: "Tuyên bố sản phẩm / hiệu quả",
+    sustainabilityClaimsTitle: "Tuyên bố bền vững",
+    certClaimsTitle: "Tuyên bố chứng nhận",
+    badgeCiteFreely: "Trích dẫn tự do",
+    badgeWithData: "Với dữ liệu",
+    badgeAvoid: "Tránh",
+    fifraTitle: "Ghi chú về FIFRA",
+    fifraBody: "FIFRA (Đạo luật thuốc trừ sâu, thuốc diệt nấm và thuốc diệt loài gặm nhấm liên bang) quản lý các tuyên bố kháng khuẩn tại Hoa Kỳ. Miễn trừ cho sản phẩm đã được xử lý cho phép các tuyên bố mô tả như \"đã được xử lý kháng khuẩn\" mà không cần đăng ký EPA ở cấp độ sản phẩm riêng, nhưng các tuyên bố về tác nhân gây bệnh cụ thể (\"diệt 99,9% E. coli\") yêu cầu dữ liệu kiểm tra hỗ trợ gắn với đăng ký hoạt chất. Trang này là hướng dẫn, không phải tư vấn pháp lý — xem xét nội dung tiếp thị đề xuất với nhóm tuân thủ nội bộ của bạn trước khi xuất bản.",
+    backToBasics: "Quay lại FUZE cơ bản",
+    seeCerts: "Xem bộ chứng nhận",
+  },
+
 };
 
 export default vi;
