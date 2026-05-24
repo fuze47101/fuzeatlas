@@ -7230,6 +7230,32 @@ const th: Translations = {
     daySuffix: "วันที่ผ่านมา",
   },
 
+  resetPassword: {
+    tagline: "สร้างรหัสผ่านใหม่",
+    formTitle: "รีเซ็ตรหัสผ่าน",
+    newPasswordLabel: "รหัสผ่านใหม่",
+    newPasswordPlaceholder: "ป้อนรหัสผ่านใหม่",
+    confirmPasswordLabel: "ยืนยันรหัสผ่าน",
+    confirmPasswordPlaceholder: "ยืนยันรหัสผ่าน",
+    resetBtn: "รีเซ็ตรหัสผ่าน",
+    resettingBtn: "กำลังรีเซ็ต...",
+    backToSignIn: "กลับไปยังหน้าเข้าสู่ระบบ",
+    successTitle: "รีเซ็ตรหัสผ่านสำเร็จ",
+    successBody: "รหัสผ่านของคุณถูกรีเซ็ตสำเร็จ ตอนนี้คุณสามารถเข้าสู่ระบบด้วยรหัสผ่านใหม่",
+    signInBtn: "เข้าสู่ระบบ",
+    invalidLinkTitle: "ลิงก์รีเซ็ตไม่ถูกต้อง",
+    invalidLinkBody: "ลิงก์รีเซ็ตไม่ถูกต้องหรือหมดอายุ กรุณาขอใหม่",
+    requestNewLinkBtn: "ขอลิงก์ใหม่",
+    footerCompany: "FUZE Biotech Inc. · v0.5.0",
+    loading: "กำลังโหลด...",
+    errInvalidToken: "โทเค็นรีเซ็ตไม่ถูกต้องหรือขาด",
+    errInvalidTokenShort: "โทเค็นรีเซ็ตไม่ถูกต้อง",
+    errMinLength: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
+    errMismatch: "รหัสผ่านไม่ตรงกัน",
+    errResetFailed: "ไม่สามารถรีเซ็ตรหัสผ่านได้",
+    errNetwork: "ข้อผิดพลาดเครือข่าย",
+  },
+
 };
 
 export default th;
