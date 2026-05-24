@@ -7651,6 +7651,24 @@ const ta: Translations = {
     websiteLabel: "வலைத்தளம்",
   },
 
+  importContacts: {
+    title: "Bulk import — தொடர்புகள்",
+    subtitle: "தொடர்புகளின் CSV-ஐ ஒட்டவும் அல்லது பதிவேற்றவும். மின்னஞ்சல் natural key — present-ஆக இருக்கும்போது மின்னஞ்சல் மூலம் upsert செய்கிறோம். மின்னஞ்சல் இல்லாமல் LinkedIn URL உள்ள வரிசைகள் 'email missing' ஆக இறக்குமதி செய்யப்படுகின்றன, எனவே ஏற்கனவே உள்ள Apollo enrichment job அவற்றைத் தொடரலாம். எதுவும் இல்லாத வரிசைகள் நிராகரிக்கப்படுகின்றன.",
+    backLabel: "Lead Management",
+    firstNameLabel: "முதல் பெயர்",
+    lastNameLabel: "கடைசி பெயர்",
+    emailLabel: "மின்னஞ்சல்",
+    emailHint: "LinkedIn URL இல்லை என்றால் தேவை",
+    linkedinLabel: "LinkedIn URL",
+    linkedinHint: "மின்னஞ்சல் இல்லாமல் இருக்கும்போது fallback identifier",
+    brandNameLabel: "Brand பெயர்",
+    brandNameHint: "Brand.name-இல் case-insensitive match; கிடைக்கவில்லை என்றால் unlinked",
+    jobTitleLabel: "வேலை தலைப்பு",
+    phoneLabel: "தொலைபேசி",
+    titleLabel: "தலைப்பு (honorific)",
+    titleHint: 'எ.கா. "Mr.", "Dr."',
+  },
+
 };
 
 export default ta;
