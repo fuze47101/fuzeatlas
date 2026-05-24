@@ -7563,6 +7563,37 @@ const hi: Translations = {
     lastCalculatedLabel: "अंतिम गणना:",
   },
 
+  fabricReportSend: {
+    backLink: "← रिपोर्ट पर वापस",
+    heading: "ग्राहक को रिपोर्ट ईमेल करें",
+    subtitlePrefix: "के लिए FUZE अनुप्रयोग और सत्यापन रिपोर्ट भेज रहे हैं",
+    fabricNotFound: "फैब्रिक नहीं मिला।",
+    recipientRequiredError: "प्राप्तकर्ता ईमेल आवश्यक।",
+    sendFailedError: "भेजना विफल",
+    sentSuccessPrefix: "✓ रिपोर्ट भेजी गई को",
+    directUrlLabel: "सीधा डाउनलोड URL:",
+    sentSuccessBody: "ग्राहक FUZE Atlas में साइन इन करने के बाद My Reports के तहत भी इसे एक्सेस कर सकता है।",
+    recipientEmailLabel: "प्राप्तकर्ता ईमेल",
+    recipientNameLabel: "प्राप्तकर्ता नाम",
+    optionalSuffix: "(वैकल्पिक)",
+    personalNoteLabel: "व्यक्तिगत नोट",
+    personalNoteHint: "(वैकल्पिक, रिपोर्ट कार्ड के ऊपर दिखाया गया)",
+    ccLabel: "CC",
+    ccHint: "(वैकल्पिक, कॉमा-विभाजित)",
+    ttlLabel: "सीधा लिंक के लिए वैध",
+    ttl30Days: "30 दिन",
+    ttl90Days: "90 दिन (डिफ़ॉल्ट)",
+    ttl180Days: "180 दिन",
+    ttl1Year: "1 वर्ष",
+    sendingBtn: "भेज रहे हैं...",
+    sendBtn: "रिपोर्ट भेजें",
+    previouslySentTitle: "पहले भेजी गई",
+    sentPrefix: "भेजा",
+    viewedPrefix: "देखा",
+    notOpenedYet: "अभी तक नहीं खोला गया",
+    openSameLink: "वही लिंक खोलें →",
+  },
+
 };
 
 export default hi;
