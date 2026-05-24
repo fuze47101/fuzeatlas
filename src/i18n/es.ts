@@ -5302,6 +5302,61 @@ const es: Translations = {
     scopeFallback: "Predeterminado",
   },
 
+  brandDiscovery: {
+    crumbHome: "Inicio",
+    crumbWizard: "Asistente BD",
+    crumbHere: "Descubrimiento de marcas",
+    pageTitle: "🌎 Descubrimiento mundial de marcas",
+    pageSubtitle: "Motor multi-IA — encuentra + valida marcas textiles en Anthropic, OpenAI y Grok, luego adjunta automáticamente contactos de Apollo a cada nueva marca para que el Asistente BD pueda usarlos de inmediato.",
+
+    statTotalLabel: "Total de marcas en BD",
+    backToWizard: "← Volver al Asistente",
+    backToWizardTitle: "Volver al asistente una vez que aterricen las nuevas marcas",
+
+    statsErrorContext: "Cargar estadísticas de descubrimiento",
+    statsErrorFallback: "No se pudieron cargar las estadísticas de descubrimiento",
+    statsNetworkError: "Error de red al cargar las estadísticas de descubrimiento.",
+
+    autoEnrichTitle: "El autoenriquecimiento está activado",
+    autoEnrichBody: "Cada nueva marca creada aquí obtiene hasta 8 contactos senior (fundador / C-suite / VP / jefe / director) adjuntos vía búsqueda de personas de Apollo por dominio. El filtro del Asistente BD deja pasar estas marcas inmediatamente — no se necesita pase de enriquecimiento separado.",
+
+    settingsHeading: "Configuración de descubrimiento",
+    labelCategory: "Categoría",
+    labelRegion: "Región",
+    labelTargetCount: "Cantidad objetivo",
+    btnDiscovering: "🔍 Descubriendo...",
+    btnRunDiscovery: "🚀 Ejecutar descubrimiento",
+    btnRunning: "Ejecutando...",
+    btnAllCategories: "🌍 Todas las categorías",
+
+    runningBanner: "⏳ Ejecutando descubrimiento multi-IA en Anthropic + OpenAI + Grok... Esto tarda 30-60 segundos por categoría.",
+    errorPrefix: "❌",
+    errorDefault: "Falló el descubrimiento",
+
+    resultsHeadingPrefix: "Resultados del descubrimiento —",
+    chipAiSources: "Fuentes de IA:",
+    chipFound: "Encontradas:",
+    chipAfterDedup: "Después de deduplicar:",
+    chipCreated: "Creadas:",
+    chipContactsAttached: "📇 Contactos adjuntos:",
+
+    colBrand: "Marca",
+    colSegment: "Segmento",
+    colPriority: "Prioridad",
+    colValidation: "Validación",
+    colContacts: "Contactos",
+    colAiSources: "Fuentes de IA",
+    colActions: "Acciones",
+    tierPrefix: "Nivel",
+    aisConfirmed: "IAs confirmaron",
+    aiConfirmed: "IA confirmó",
+    viewResearch: "Ver e investigar",
+
+    historyHeading: "Historial de descubrimiento (esta sesión)",
+    historyFoundLabel: "Encontradas:",
+    historyCreatedLabel: "Creadas:",
+  },
+
 };
 
 export default es;
