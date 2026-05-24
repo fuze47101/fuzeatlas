@@ -4452,6 +4452,23 @@ const km: Translations = {
     nameRequiredError: "ឈ្មោះ is required",
   },
 
+  recipeCalculatorSop: {
+    backLink: "← ត្រឡប់ to calculator",
+    printButton: "🖨 បោះពុម្ព / រក្សាទុក as PDF",
+    eyebrow: "FUZE Biotech · មន្ទីរពិសោធន៍ SOP",
+    pageTitle: "Bench ការសាកល្បង Procedure",
+    pageSubtitle: "FUZE រូបមន្ត Calculator — Pad-Dry-Cure Pickup Rate & Dilution",
+    docLabel: "Doc: SOP-FUZE-LAB-001",
+    revLabel: "Rev: 1.0 ·",
+    purposeHeader: "Purpose",
+    equipmentHeader: "Equipment",
+    chemistryRefHeader: "FUZE Chemistry សេចក្តីយោង",
+    criticalRulesHeader: "⚠ សំខាន់ Protocol Rules",
+    procedureHeader: "Procedure",
+    formulasHeader: "Formulas (for QC cross-check)",
+    sanityRangesHeader: "Sanity Check Ranges",
+  },
+
 };
 
 export default km;
