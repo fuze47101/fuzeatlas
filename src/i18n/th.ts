@@ -7784,6 +7784,24 @@ const th: Translations = {
     footerVerifiedBy: "ตรวจสอบโดย FUZE Atlas",
   },
 
+  verifiedEsgPage: {
+    metaTitleFallback: "ESG — FUZE Atlas",
+    metaTitleSuffix: "ESG snapshots — FUZE Atlas",
+    metaDescPrefix: "รายงานผลกระทบ ESG รายไตรมาสสำหรับ",
+    metaDescSuffix: "ได้รับการรับรองโดย FUZE Atlas",
+    backArrowPrefix: "←",
+    headingSuffix: "— ผลกระทบ ESG",
+    heroSubtitle: "Snapshot รายไตรมาสของผ้าที่ได้รับการรับรอง FUZE และผลการทดสอบต้านจุลชีพ",
+    emptyBody: "ยังไม่มี snapshot ที่เผยแพร่ รายงานรายไตรมาสเผยแพร่ที่ต้นไตรมาสถัดไป",
+    statFabricsCertified: "ผ้าที่ได้รับการรับรอง",
+    statTestsPassed: "การทดสอบที่ผ่าน",
+    statFuzeLiters: "FUZE ลิตร",
+    statFactories: "โรงงาน",
+    passRateLabel: "อัตราผ่าน:",
+    downloadPdf: "ดาวน์โหลด PDF →",
+    footerCertifiedBy: "ได้รับการรับรองโดย FUZE Atlas",
+  },
+
 };
 
 export default th;
