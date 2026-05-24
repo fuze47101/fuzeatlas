@@ -2620,6 +2620,40 @@ const id: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "Login Atlas Diperlukan",
+    authBatchPrefix: "Batch",
+    authBlurb:
+      "detail — termasuk COA, TDS, SDS — hanya tersedia untuk pengguna Atlas.",
+    loginCta: "Login ke Atlas →",
+    noAccountQuestion: "Belum punya akun? Hubungi",
+    notFoundTitle: "Batch Tidak Ditemukan",
+    notFoundBlurb: "Kami tidak dapat menemukan batch",
+    returnHome: "Kembali ke Atlas →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "Verifikasi Batch",
+    qcPassed: "✓ QC Lulus",
+    qcFailed: "⚠ QC Gagal",
+    produced: "Diproduksi",
+    batchDetails: "Detail Batch",
+    volumeProduced: "Volume Diproduksi",
+    bottlesFilled: "Botol Terisi",
+    concentration: "Konsentrasi",
+    productionDate: "Tanggal Produksi",
+    fuzeMetamaterial: "mg/L metamaterial FUZE",
+    batchNotes: "Catatan Batch",
+    documents: "Dokumen",
+    coaTitle: "Sertifikat Analisis (COA)",
+    coaDescPrefix: "Verifikasi spesifikasi batch ini · Diunggah",
+    coaPending: "COA Menunggu",
+    coaPendingBlurb: "Sertifikat Analisis belum diunggah untuk batch ini.",
+    view: "Lihat →",
+    docsEmpty: "TDS / SDS belum diunggah. Admin dapat menambahkannya di Dokumen Produk.",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Pertanyaan?",
+    footerReturnAtlas: "Kembali ke Atlas",
+  },
+
 };
 
 export default id;
