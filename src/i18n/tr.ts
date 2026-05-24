@@ -5340,6 +5340,61 @@ const tr: Translations = {
     scopeFallback: "Varsayılan",
   },
 
+  brandDiscovery: {
+    crumbHome: "Ana Sayfa",
+    crumbWizard: "BD Sihirbazı",
+    crumbHere: "Marka Keşfi",
+    pageTitle: "🌎 Dünya Çapında Marka Keşfi",
+    pageSubtitle: "Çoklu yapay zekâ motoru — Anthropic, OpenAI ve Grok üzerinden tekstil markalarını bulur ve doğrular, ardından her yeni markaya Apollo kişilerini otomatik olarak ekler; böylece BD Sihirbazı onları hemen kullanabilir.",
+
+    statTotalLabel: "Veritabanındaki Toplam Marka",
+    backToWizard: "← Sihirbaza Dön",
+    backToWizardTitle: "Yeni markalar geldikten sonra sihirbaza geri dön",
+
+    statsErrorContext: "Keşif istatistiklerini yükle",
+    statsErrorFallback: "Keşif istatistikleri yüklenemedi",
+    statsNetworkError: "Keşif istatistikleri yüklenirken ağ hatası oluştu.",
+
+    autoEnrichTitle: "Otomatik zenginleştirme açık",
+    autoEnrichBody: "Burada oluşturulan her yeni markaya, alan adına göre Apollo kişi araması yoluyla 8'e kadar üst düzey kişi (kurucu / C-seviye / Başkan Yardımcısı / başkan / direktör) eklenir. BD Sihirbazı filtresi bu markaların hemen geçişine izin verir — ayrı bir zenginleştirme adımı gerekmez.",
+
+    settingsHeading: "Keşif Ayarları",
+    labelCategory: "Kategori",
+    labelRegion: "Bölge",
+    labelTargetCount: "Hedef Sayı",
+    btnDiscovering: "🔍 Keşfediliyor...",
+    btnRunDiscovery: "🚀 Keşfi Başlat",
+    btnRunning: "Çalışıyor...",
+    btnAllCategories: "🌍 Tüm Kategoriler",
+
+    runningBanner: "⏳ Anthropic + OpenAI + Grok üzerinden çoklu yapay zekâ keşfi çalışıyor... Kategori başına 30-60 saniye sürer.",
+    errorPrefix: "❌",
+    errorDefault: "Keşif başarısız",
+
+    resultsHeadingPrefix: "Keşif Sonuçları —",
+    chipAiSources: "Yapay Zekâ Kaynakları:",
+    chipFound: "Bulunan:",
+    chipAfterDedup: "Tekilleştirme Sonrası:",
+    chipCreated: "Oluşturulan:",
+    chipContactsAttached: "📇 Eklenen kişiler:",
+
+    colBrand: "Marka",
+    colSegment: "Segment",
+    colPriority: "Öncelik",
+    colValidation: "Doğrulama",
+    colContacts: "Kişiler",
+    colAiSources: "Yapay Zekâ Kaynakları",
+    colActions: "İşlemler",
+    tierPrefix: "Kademe",
+    aisConfirmed: "Yapay zekâlar onayladı",
+    aiConfirmed: "Yapay zekâ onayladı",
+    viewResearch: "Görüntüle ve Araştır",
+
+    historyHeading: "Keşif Geçmişi (Bu Oturum)",
+    historyFoundLabel: "Bulunan:",
+    historyCreatedLabel: "Oluşturulan:",
+  },
+
 };
 
 export default tr;
