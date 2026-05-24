@@ -7869,6 +7869,25 @@ const es: Translations = {
     footerPrefix: "Documentación de la API de FUZE Atlas - Última actualización",
   },
 
+  recipeSearch: {
+    heading: "Búsqueda de recetas",
+    subtitle: "Biblioteca de recetas FUZE de toda la red. Busca entre cada tejido validado en Atlas — empareja lo que estás trabajando con una receta probada, incluso cuando el tejido no es el tuyo. Las filas fuera del alcance se anonimizan, pero la física de la receta es visible.",
+    keywordPlaceholder: "Palabra clave (algodón, jersey, sarga...)",
+    anyCategory: "Cualquier categoría",
+    knit: "Punto",
+    woven: "Tejido plano",
+    nonwoven: "No tejido",
+    fiberPlaceholder: "Fibra (algodón, poliéster...)",
+    gsmMinPlaceholder: "GSM mín",
+    gsmMaxPlaceholder: "GSM máx",
+    anyTier: "Cualquier nivel",
+    onlyValidatedLabel: "Mostrar solo tejidos con captación medida (prueba de banco validada)",
+    searchingBtn: "Buscando...",
+    searchBtn: "Buscar",
+    emptyTitle: "Aún no hay recetas coincidentes.",
+    emptyBody: "Prueba a ampliar los filtros — o elimina el filtro \"prueba de banco validada\" si quieres ver tejidos que aún están en desarrollo.",
+  },
+
 };
 
 export default es;
