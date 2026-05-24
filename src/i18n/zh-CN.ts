@@ -7192,6 +7192,34 @@ const zhCN: Translations = {
     backToLeadOption: "← 返回 Lead",
   },
 
+  commandCenterGlobe: {
+    loading: "正在加载地球仪……",
+    title: "供应链地球仪",
+    emptyTitle: "尚无已地理编码的实体",
+    emptyHint: "运行地理编码器以从每个实体的城市 + 国家填充经纬度：",
+    emptyFooter: "Nominatim 有 1 req/sec 的速率限制 — 完整运行需要几分钟。重新运行会跳过已有坐标的行。",
+    factoriesLabel: "工厂",
+    brandsLabel: "品牌",
+    labsLabel: "实验室",
+    distributorsLabel: "分销商",
+    shipmentsLabel: "货运 (90 天)",
+    searchPlaceholder: "搜索实体……",
+    legendFactory: "工厂",
+    legendPulseHint: "(脉冲 = 30 天内活跃)",
+    legendBrand: "品牌总部",
+    legendFuzeLab: "FUZE 自有实验室",
+    legendPartnerLab: "合作伙伴实验室",
+    legendDistributor: "分销商",
+    kindFactory: "工厂",
+    kindBrand: "品牌",
+    kindLab: "实验室",
+    kindDistributor: "分销商",
+    stageLabel: "阶段：",
+    activeBadge: "⚡ 活跃 (30 天)",
+    openDetailBtn: "打开详情 →",
+    errLoadFailed: "加载地球仪失败",
+  },
+
 };
 
 export default zhCN;
