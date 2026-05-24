@@ -2620,6 +2620,40 @@ const it: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "Accesso ad Atlas richiesto",
+    authBatchPrefix: "Lotto",
+    authBlurb:
+      "dettagli — inclusi COA, TDS, SDS — sono disponibili solo per gli utenti di Atlas.",
+    loginCta: "Accedi ad Atlas →",
+    noAccountQuestion: "Non hai un account? Contatta",
+    notFoundTitle: "Lotto non trovato",
+    notFoundBlurb: "Impossibile trovare il lotto",
+    returnHome: "Torna ad Atlas →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "Verifica lotto",
+    qcPassed: "✓ QC superato",
+    qcFailed: "⚠ QC fallito",
+    produced: "Prodotto",
+    batchDetails: "Dettagli lotto",
+    volumeProduced: "Volume prodotto",
+    bottlesFilled: "Bottiglie riempite",
+    concentration: "Concentrazione",
+    productionDate: "Data di produzione",
+    fuzeMetamaterial: "mg/L metamateriale FUZE",
+    batchNotes: "Note lotto",
+    documents: "Documenti",
+    coaTitle: "Certificato di analisi (COA)",
+    coaDescPrefix: "Verifica delle specifiche di questo lotto · Caricato",
+    coaPending: "COA in attesa",
+    coaPendingBlurb: "Il certificato di analisi non è stato ancora caricato per questo lotto.",
+    view: "Vedi →",
+    docsEmpty: "TDS / SDS non ancora caricati. L'amministratore può aggiungerli in Documenti prodotto.",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Domande?",
+    footerReturnAtlas: "Torna ad Atlas",
+  },
+
 };
 
 export default it;
