@@ -4,16 +4,18 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
-
-const DOC_TYPES = [
-  { key: "TDS", label: "Technical Data Sheet (TDS)", icon: "📘", desc: "Product specifications, properties, application guidance" },
-  { key: "SDS", label: "Safety Data Sheet (SDS)", icon: "📕", desc: "Chemical safety, handling, storage, emergency info" },
-  { key: "PRODUCT_SPEC", label: "Product Specification", icon: "📗", desc: "Detailed product profile" },
-  { key: "HANDLING_GUIDE", label: "Handling Guide", icon: "📙", desc: "Storage, transport, shelf life guidance" },
-  { key: "APPLICATION_GUIDE", label: "Application Guide", icon: "📓", desc: "How to apply FUZE — Exhaust / Pad-Dry-Cure / Spray" },
-];
+import { useI18n } from "@/i18n";
 
 export default function ProductDocumentsPage() {
+  const { t } = useI18n();
+  const T = t.productDocumentsAdmin;
+  const DOC_TYPES = [
+    { key: "TDS", label: T.docTypeTDSLabel, icon: "📘", desc: T.docTypeTDSDesc },
+    { key: "SDS", label: T.docTypeSDSLabel, icon: "📕", desc: T.docTypeSDSDesc },
+    { key: "PRODUCT_SPEC", label: T.docTypeSpecLabel, icon: "📗", desc: T.docTypeSpecDesc },
+    { key: "HANDLING_GUIDE", label: T.docTypeHandlingLabel, icon: "📙", desc: T.docTypeHandlingDesc },
+    { key: "APPLICATION_GUIDE", label: T.docTypeApplicationLabel, icon: "📓", desc: T.docTypeApplicationDesc },
+  ];
   const { user } = useAuth();
   const router = useRouter();
   const [docs, setDocs] = useState<any[]>([]);
@@ -66,14 +68,14 @@ export default function ProductDocumentsPage() {
 
   // Phase 6D — categories + audiences + product lines.
   const CATEGORIES = [
-    { value: "tds_sds", label: "TDS / SDS" },
-    { value: "toxicology", label: "Toxicology" },
-    { value: "pricing", label: "Pricing" },
-    { value: "sustainability", label: "Sustainability" },
-    { value: "education", label: "Education" },
-    { value: "claims_compliance", label: "Claims & Compliance" },
-    { value: "application_guide", label: "Application Guide" },
-    { value: "case_study", label: "Case Study" },
+    { value: "tds_sds", label: T.catTdsSds },
+    { value: "toxicology", label: T.catToxicology },
+    { value: "pricing", label: T.catPricing },
+    { value: "sustainability", label: T.catSustainability },
+    { value: "education", label: T.catEducation },
+    { value: "claims_compliance", label: T.catClaimsCompliance },
+    { value: "application_guide", label: T.catApplicationGuide },
+    { value: "case_study", label: T.catCaseStudy },
   ];
   const AUDIENCES = ["BRAND", "FACTORY", "DISTRIBUTOR", "LAB", "PUBLIC"];
   const PRODUCT_LINES = ["", "F1", "F2", "F3", "F4"];
@@ -85,8 +87,8 @@ export default function ProductDocumentsPage() {
   return (
     <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-black text-slate-900">Product Documents</h1>
-        <p className="text-slate-600">Product-wide documents (TDS, SDS, Application Guide). These are static and apply to every batch. Batch-specific COAs are uploaded per batch in <a href="/admin/batches" className="text-[#00b4c3] font-semibold">Production Batches</a>.</p>
+        <h1 className="text-3xl font-black text-slate-900">{T.title}</h1>
+        <p className="text-slate-600">{T.introPrefix}<a href="/admin/batches" className="text-[#00b4c3] font-semibold">{T.introLink}</a>{T.introSuffix}</p>
       </div>
 
       <div className="space-y-4">
@@ -109,13 +111,13 @@ export default function ProductDocumentsPage() {
                         </p>
                         {doc.description && <p className="text-xs text-slate-500 mt-0.5">{doc.description}</p>}
                         <div className="flex flex-wrap gap-3 mt-1 text-xs text-slate-500">
-                          <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-[#00b4c3] font-semibold">View file →</a>
-                          <span>Uploaded by {doc.uploadedByName || "?"}</span>
+                          <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-[#00b4c3] font-semibold">{T.viewFile}</a>
+                          <span>{T.uploadedByTpl.replace("{name}", doc.uploadedByName || T.unknownAuthor)}</span>
                           <span>{new Date(doc.updatedAt).toLocaleDateString()}</span>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-sm text-amber-600 mt-1">No document uploaded yet.</p>
+                      <p className="text-sm text-amber-600 mt-1">{T.noDocYet}</p>
                     )}
                   </div>
                 </div>
@@ -140,24 +142,24 @@ export default function ProductDocumentsPage() {
                   }}
                   className="flex-shrink-0 px-4 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg hover:bg-[#009aa8]"
                 >
-                  {isEditing ? "Cancel" : doc ? "Update" : "Upload"}
+                  {isEditing ? T.cancelBtn : doc ? T.updateBtn : T.uploadBtn}
                 </button>
               </div>
 
               {isEditing && (
                 <div className="mt-4 pt-4 border-t border-slate-200 space-y-2">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <input type="text" placeholder="Title" value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-                    <input type="text" placeholder="Version (e.g. v3.1)" value={form.version || ""} onChange={(e) => setForm({ ...form, version: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                    <input type="text" placeholder={T.titlePlaceholder} value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                    <input type="text" placeholder={T.versionPlaceholder} value={form.version || ""} onChange={(e) => setForm({ ...form, version: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                   </div>
-                  <input type="url" placeholder="File URL (PDF link)" value={form.fileUrl || ""} onChange={(e) => setForm({ ...form, fileUrl: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-                  <input type="date" placeholder="Effective date" value={form.effectiveDate || ""} onChange={(e) => setForm({ ...form, effectiveDate: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-                  <textarea placeholder="Description / notes" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
+                  <input type="url" placeholder={T.fileUrlPlaceholder} value={form.fileUrl || ""} onChange={(e) => setForm({ ...form, fileUrl: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                  <input type="date" placeholder={T.effectiveDatePlaceholder} value={form.effectiveDate || ""} onChange={(e) => setForm({ ...form, effectiveDate: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                  <textarea placeholder={T.descriptionPlaceholder} value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none" />
 
                   {/* Phase 6D — library categorization */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-100">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Library category</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">{T.categoryLabel}</label>
                       <select
                         value={form.category || "tds_sds"}
                         onChange={(e) => setForm({ ...form, category: e.target.value })}
@@ -171,7 +173,7 @@ export default function ProductDocumentsPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Product line</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">{T.productLineLabel}</label>
                       <select
                         value={form.productLine || ""}
                         onChange={(e) => setForm({ ...form, productLine: e.target.value })}
@@ -179,14 +181,14 @@ export default function ProductDocumentsPage() {
                       >
                         {PRODUCT_LINES.map((pl) => (
                           <option key={pl || "any"} value={pl}>
-                            {pl ? `FUZE ${pl}` : "Product-wide"}
+                            {pl ? T.productLineTpl.replace("{tier}", pl) : T.productLineAny}
                           </option>
                         ))}
                       </select>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Audience (who can see this in their library)</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">{T.audienceLabel}</label>
                     <div className="flex flex-wrap gap-2">
                       {AUDIENCES.map((aud) => {
                         const active = (form.audience || []).includes(aud);
@@ -214,7 +216,7 @@ export default function ProductDocumentsPage() {
                     </div>
                   </div>
 
-                  <button onClick={() => save(t.key)} className="px-5 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg">Save</button>
+                  <button onClick={() => save(t.key)} className="px-5 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg">{T.saveBtn}</button>
                 </div>
               )}
             </div>
