@@ -7820,6 +7820,30 @@ const ta: Translations = {
     footerCompany: "FUZE Biotech Inc.",
   },
 
+  factoryInvitation: {
+    loadingState: "அழைப்பு ஏற்றுகிறது…",
+    notFoundTitle: "அழைப்பு கிடைக்கவில்லை",
+    notFoundFallback: "இந்த அழைப்பு link காலாவதியாகியிருக்கலாம் அல்லது ஏற்கனவே பயன்படுத்தப்பட்டிருக்கலாம்.",
+    chipLabel: "FUZE Atlas அழைப்பு",
+    headingMiddle: "அழைத்தனர்",
+    headingSuffix: "தங்கள் FUZE சப்ளை சங்கிலியில் சேர",
+    heroSubtitleFallbackPrefix: "தங்கள் சப்ளை சங்கிலி முழுவதும் ஆன்டிமைக்ரோபியல் ஜவுளி திட்டங்களை coordinate செய்ய FUZE Atlas-ஐப் பயன்படுத்துகிறார்கள்.",
+    heroSubtitleFallbackSuffix: "இணைதல் தொழிற்சாலையை சோதனைக்கு ஃபேப்ரிக்குகளை சமர்ப்பிக்க, FUZE ஆர்டர்களை வைக்க, மற்றும் ICP முடிவுகளைக் கண்காணிக்க அனுமதிக்கிறது — அனைத்தும் brand-உடன் நேரடியாக இணைக்கப்பட்டுள்ளன.",
+    notePrefix: "இலிருந்து குறிப்பு",
+    closedPrefix: "இந்த அழைப்பு ஏற்கனவே",
+    closedReachOutPrefix: "தொடர்பு கொள்ளவும்",
+    closedTeamFallbackPrefix: "the",
+    closedTeamFallbackSuffix: "team",
+    closedFreshLink: "புதிய link தேவைப்பட்டால்.",
+    signUpCta: "Sign up",
+    signUpSubPrefix: "புதிய ஒன்றை உருவாக்கு",
+    signUpSubSuffix: "Atlas-இல் கணக்கு",
+    alreadyInCta: "நாங்கள் ஏற்கனவே Atlas-இல் உள்ளோம்",
+    alreadyInSub: "Log in செய்து உங்கள் ஏற்கனவே உள்ள தொழிற்சாலையை இணை",
+    sentPrefix: "அழைப்பு அனுப்பப்பட்டது",
+    questionsPrefix: "· கேள்விகள்?",
+  },
+
 };
 
 export default ta;
