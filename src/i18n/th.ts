@@ -6036,6 +6036,38 @@ const th: Translations = {
     amPrefix: "AM:",
   },
 
+  testCatalogAdmin: {
+    title: "แค็ตตาล็อกการทดสอบ & ราคา",
+    subtitle: "จัดการประเภทการทดสอบ ราคา เวลาตอบกลับ และข้อกำหนดตัวอย่าง การเปลี่ยนแปลงสะท้อนทันทีในแบบฟอร์มคำขอทดสอบของโรงงาน",
+    sourcePrefix: "แหล่ง:",
+    sourceDb: "ฐานข้อมูล (จัดการโดยผู้ดูแล)",
+    sourceStatic: "ค่าเริ่มต้นแบบคงที่",
+    successMsg: "อัปเดตการทดสอบสำเร็จ",
+    failedSave: "การบันทึกล้มเหลว",
+    networkErr: "ข้อผิดพลาดเครือข่าย",
+    colTestName: "ชื่อการทดสอบ",
+    colCategory: "หมวดหมู่",
+    colPrice: "ราคา (USD)",
+    colTurnaround: "เวลาตอบกลับ",
+    colMinSample: "ตัวอย่างขั้นต่ำ",
+    colControl: "ควบคุม?",
+    colActive: "ใช้งาน",
+    colActions: "การกระทำ",
+    daysSuffix: "วัน",
+    metersSuffix: "ม.",
+    yes: "ใช่",
+    no: "ไม่",
+    saveBtn: "บันทึก",
+    savingDots: "...",
+    cancelBtn: "ยกเลิก",
+    editBtn: "แก้ไข",
+    catRecipeBuild: "Recipe Build",
+    catPerformance: "ประสิทธิภาพ",
+    catQuality: "คุณภาพ",
+    catCertification: "การรับรอง",
+    lastUpdatedTpl: "อัปเดตล่าสุดโดย {who} เมื่อ {when}",
+  },
+
 };
 
 export default th;
