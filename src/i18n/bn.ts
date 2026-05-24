@@ -7669,6 +7669,21 @@ const bn: Translations = {
     titleHint: 'যেমন "Mr.", "Dr."',
   },
 
+  importFactories: {
+    title: "বাল্ক ইম্পোর্ট — কারখানা",
+    subtitle: "কারখানাগুলোর একটি CSV পেস্ট বা আপলোড করুন। আমরা নাম দিয়ে upsert করব (প্রাকৃতিক কী), আপনি একটি ডিস্ট্রিবিউটর দিলে তার সাথে লিঙ্ক করব, এবং Atlas-এ ইতিমধ্যে বিদ্যমান প্রতিটি ব্র্যান্ডের জন্য SupplyChainLink সারি স্ট্যাম্প করব। যে ব্র্যান্ডগুলো এখনও বিদ্যমান নয় তা 'missing' হিসেবে রিপোর্ট করা হয় যাতে আপনি প্রথমে একটি ব্র্যান্ড ইম্পোর্ট চালাতে পারেন।",
+    backLabel: "কারখানা",
+    factoryNameLabel: "কারখানার নাম",
+    factoryNameHint: "(প্রাকৃতিক কী — upsert এখানে কী করা হয়)",
+    countryLabel: "দেশ",
+    distributorLabel: "ডিস্ট্রিবিউটর",
+    distributorHint: "Distributor.name-এ কেস-অসংবেদনশীল মিল; না পাওয়া গেলে এড়িয়ে যাওয়া হয়",
+    brandsLabel: "ব্র্যান্ড",
+    brandsHint: "কমা-পৃথক; প্রতিটি নাম একটি Brand হিসেবে বিদ্যমান থাকতে হবে",
+    cityLabel: "শহর",
+    websiteLabel: "ওয়েবসাইট",
+  },
+
 };
 
 export default bn;
