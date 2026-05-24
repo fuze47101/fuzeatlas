@@ -8115,6 +8115,36 @@ const vi: Translations = {
     nextBtn: "Tiếp",
   },
 
+  bdSequencesList: {
+    kicker: "BD Wizard",
+    heading: "Sequences",
+    subtitlePrefix: "Tiếp cận đi long-funnel. Cron tiến bước theo giờ. Các bước sẵn sàng đậu trên",
+    subtitleSuffix: "để bạn xem xét — không có gì tự động gửi.",
+    openWizardBtn: "Mở BD Wizard →",
+    stepAwaitingSingular: "bước chờ bạn xem xét",
+    stepsAwaitingPlural: "bước chờ bạn xem xét",
+    showAllRepsLabel: "Hiển thị tất cả đại diện",
+    loadingState: "Đang tải sequences…",
+    emptyHeadPrefix: "Không có",
+    emptyHeadSuffix: "sequences",
+    emptyBodyPrefix: "Khởi động một sequence bằng cách gửi email đầu tiên qua",
+    emptyBodyLink: "BD Wizard",
+    emptyBodySuffix: ". Mỗi lần gửi đầu tiên sẽ tự động tạo một cadence 6 bước.",
+    colBrandContact: "Thương hiệu / Liên hệ",
+    colProgress: "Tiến độ",
+    colNext: "Tiếp",
+    colRep: "Đại diện",
+    colStatus: "Trạng thái",
+    colActions: "Hành động",
+    readyChipSuffix: "sẵn sàng",
+    reviewSendBtn: "Xem xét & gửi",
+    openBtn: "Mở",
+    viewBtn: "Xem",
+    pauseBtn: "Tạm dừng",
+    exitBtn: "Thoát",
+    resumeBtn: "Tiếp tục",
+  },
+
 };
 
 export default vi;
