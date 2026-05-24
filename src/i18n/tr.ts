@@ -4539,6 +4539,27 @@ const tr: Translations = {
     exportReportTemplate: "{product} vs FUZE Raporu Dışa Aktar",
   },
 
+  educationClaims: {
+    backLink: "← FUZE Temellerine Geri Dön",
+    eyebrow: "Neleri iddia edebilirsiniz",
+    pageTitle: "FUZE ile işlenmiş kumaş için savunulabilir marka iddiaları",
+    pageIntro: "Uyum ekipleri, marka pazarlaması ve hangtag metni için referans. Üç kategori: ürün iddiaları, sürdürülebilirlik iddiaları ve sertifikasyon iddiaları. Her satır şu şekilde derecelendirilir:",
+    introCiteFreely: "serbestçe alıntıla",
+    introWithData: "seviyeye özel veriyle alıntıla",
+    introAvoid: "kaçın",
+    introTail: "— ve sade dilde gerekçesi.",
+    productClaimsTitle: "Ürün / etkinlik iddiaları",
+    sustainabilityClaimsTitle: "Sürdürülebilirlik iddiaları",
+    certClaimsTitle: "Sertifikasyon iddiaları",
+    badgeCiteFreely: "Serbestçe alıntıla",
+    badgeWithData: "Veriyle",
+    badgeAvoid: "Kaçın",
+    fifraTitle: "FIFRA hakkında bir not",
+    fifraBody: "FIFRA (Federal Insecticide, Fungicide, and Rodenticide Act) Birleşik Devletler'de antimikrobiyal iddiaları yönetir. İşlenmiş ürün muafiyeti, ayrı bir ürün düzeyi EPA kaydı olmadan \"antimikrobiyal ile işlenmiş\" gibi tanımlayıcı iddialara izin verir, ancak belirli patojen iddiaları (\"E. coli'nin %99.9'unu öldürür\") aktif maddenin kaydına bağlı test verileri gerektirir. Bu sayfa rehberdir, hukuki danışmanlık değildir — önerilen pazarlama metnini yayınlanmadan önce kendi uyum ekibinizle gözden geçirin.",
+    backToBasics: "FUZE Temellerine Geri Dön",
+    seeCerts: "Sertifikasyon yığınını gör",
+  },
+
 };
 
 export default tr;
