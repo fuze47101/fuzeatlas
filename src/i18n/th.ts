@@ -7543,6 +7543,28 @@ const th: Translations = {
     mondayReviewBody: "AI ตั้งธงการรันทดสอบ + การปฏิเสธแบรนด์ อีเมลวันอาทิตย์ 22:00 UTC seed agenda",
   },
 
+  brandEngagement: {
+    heading: "สุขภาพแบรนด์",
+    subtitle: "ติดตาม metric การมีส่วนร่วมและสุขภาพสำหรับแบรนด์ทั้งหมด",
+    recalculatingBtn: "กำลังคำนวณใหม่...",
+    recalculateBtn: "คำนวณใหม่ทั้งหมด",
+    allFilter: "ทั้งหมด",
+    loadingText: "กำลังโหลด...",
+    noBrandsText: "ไม่พบแบรนด์",
+    scoreBreakdownTitle: "การแยกคะแนน",
+    communicationLabel: "การสื่อสาร",
+    testingVelocityLabel: "ความเร็วการทดสอบ",
+    pipelineVelocityLabel: "ความเร็ว Pipeline",
+    paymentScoreLabel: "คะแนนการชำระ",
+    rawMetricsTitle: "Metrics ดิบ",
+    daysSinceContact: "วันตั้งแต่ติดต่อ",
+    testsLast30d: "การทดสอบ (30 วันล่าสุด)",
+    testsLast90d: "การทดสอบ (90 วันล่าสุด)",
+    avgInvoicePayDays: "วันชำระใบแจ้งหนี้เฉลี่ย",
+    overdueInvoices: "ใบแจ้งหนี้เลยกำหนด",
+    lastCalculatedLabel: "คำนวณล่าสุด:",
+  },
+
 };
 
 export default th;
