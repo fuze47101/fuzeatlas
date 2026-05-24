@@ -7330,6 +7330,34 @@ const vi: Translations = {
     backToLeadOption: "← Quay lại Lead",
   },
 
+  commandCenterGlobe: {
+    loading: "Đang tải địa cầu…",
+    title: "Địa cầu chuỗi cung ứng",
+    emptyTitle: "Chưa có thực thể nào được geocode",
+    emptyHint: "Chạy geocoder để điền lat/lng từ thành phố + quốc gia của mỗi thực thể:",
+    emptyFooter: "Nominatim có giới hạn tốc độ 1 req/giây — một lần chạy đầy đủ mất vài phút. Chạy lại sẽ bỏ qua các hàng đã có tọa độ.",
+    factoriesLabel: "nhà máy",
+    brandsLabel: "thương hiệu",
+    labsLabel: "phòng lab",
+    distributorsLabel: "nhà phân phối",
+    shipmentsLabel: "lô gửi (90d)",
+    searchPlaceholder: "Tìm thực thể…",
+    legendFactory: "Nhà máy",
+    legendPulseHint: "(nhịp = hoạt động 30d)",
+    legendBrand: "Trụ sở thương hiệu",
+    legendFuzeLab: "Phòng lab thuộc FUZE",
+    legendPartnerLab: "Phòng lab đối tác",
+    legendDistributor: "Nhà phân phối",
+    kindFactory: "Nhà máy",
+    kindBrand: "Thương hiệu",
+    kindLab: "Phòng lab",
+    kindDistributor: "Nhà phân phối",
+    stageLabel: "Giai đoạn:",
+    activeBadge: "⚡ Đang hoạt động (30d)",
+    openDetailBtn: "Mở chi tiết →",
+    errLoadFailed: "Không tải được địa cầu",
+  },
+
 };
 
 export default vi;
