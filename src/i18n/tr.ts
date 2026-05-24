@@ -7166,6 +7166,29 @@ const tr: Translations = {
     errLoadFailed: "Analitik yüklenemedi",
   },
 
+  orderQrLabel: {
+    orderNotFound: "Sipariş bulunamadı.",
+    headerKicker: "QR Etiketi",
+    previewPublicLink: "genel sayfayı önizle →",
+    brandLine: "FUZE Biotech",
+    brandLocation: "Salt Lake City, Utah USA",
+    orderLabel: "Sipariş",
+    scanToVerifyTitle: "Doğrulamak için tarayın",
+    scanToVerifyBody: "Sevkiyat durumunu, yaşam döngüsünü, SDS'yi ve COA'yı yüklemek için bu etiketi telefon kamerasında açın.",
+    tierLabel: "Kademe",
+    volumeLabel: "Hacim",
+    bottlesSuffix: "şişe",
+    methodLabel: "Yöntem",
+    typeLabel: "Tip",
+    shipToLabel: "Sevkiyat Adresi",
+    forBrandLabel: "Marka İçin",
+    viaDistributorLabel: "Distribütör Aracılığıyla",
+    fabricLabel: "Kumaş",
+    trackingLabel: "Takip",
+    footerTagline: "FUZE F1–F4 · metamateryal antimikrobiyal işlem · PFAS içermez",
+    printedPrefix: "Yazdırıldı",
+  },
+
 };
 
 export default tr;
