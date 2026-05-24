@@ -5047,6 +5047,61 @@ const ur: Translations = {
     scopeFallback: "ڈیفالٹ",
   },
 
+  brandDiscovery: {
+    crumbHome: "گھر",
+    crumbWizard: "BD وزرڈ",
+    crumbHere: "برانڈ ڈسکوری",
+    pageTitle: "🌎 عالمی برانڈ ڈسکوری",
+    pageSubtitle: "ملٹی-AI انجن — Anthropic، OpenAI، اور Grok میں ٹیکسٹائل برانڈز تلاش + تصدیق کرتا ہے، پھر ہر نئے برانڈ سے Apollo رابطے خودکار طور پر منسلک کرتا ہے تاکہ BD وزرڈ انہیں فوری استعمال کر سکے۔",
+
+    statTotalLabel: "DB میں کل برانڈز",
+    backToWizard: "← وزرڈ پر واپس",
+    backToWizardTitle: "نئے برانڈز پہنچنے کے بعد وزرڈ پر واپس راؤنڈ ٹرپ",
+
+    statsErrorContext: "ڈسکوری اسٹیٹس لوڈ کریں",
+    statsErrorFallback: "ڈسکوری اسٹیٹس لوڈ نہیں ہو سکے",
+    statsNetworkError: "ڈسکوری اسٹیٹس لوڈ کرتے وقت نیٹ ورک کی خرابی۔",
+
+    autoEnrichTitle: "خودکار ای نرچمنٹ آن ہے",
+    autoEnrichBody: "یہاں بنائے گئے ہر نئے برانڈ کو Apollo people-search by domain کے ذریعے 8 سینئر رابطے (founder / C-suite / VP / head / director) منسلک ہوتے ہیں۔ BD وزرڈ کا فلٹر ان برانڈز کو فوری اجازت دیتا ہے — کوئی الگ ای نرچمنٹ پاس کی ضرورت نہیں۔",
+
+    settingsHeading: "ڈسکوری سیٹنگز",
+    labelCategory: "زمرہ",
+    labelRegion: "ریجن",
+    labelTargetCount: "ہدف تعداد",
+    btnDiscovering: "🔍 دریافت کیا جا رہا ہے...",
+    btnRunDiscovery: "🚀 ڈسکوری چلائیں",
+    btnRunning: "چل رہا ہے...",
+    btnAllCategories: "🌍 تمام زمرے",
+
+    runningBanner: "⏳ Anthropic + OpenAI + Grok میں ملٹی-AI ڈسکوری چل رہی ہے... یہ فی زمرہ 30-60 سیکنڈ لیتا ہے۔",
+    errorPrefix: "❌",
+    errorDefault: "ڈسکوری ناکام",
+
+    resultsHeadingPrefix: "ڈسکوری نتائج —",
+    chipAiSources: "AI ذرائع:",
+    chipFound: "ملا:",
+    chipAfterDedup: "Dedup کے بعد:",
+    chipCreated: "بنایا گیا:",
+    chipContactsAttached: "📇 رابطے منسلک:",
+
+    colBrand: "برانڈ",
+    colSegment: "سیگمنٹ",
+    colPriority: "ترجیح",
+    colValidation: "تصدیق",
+    colContacts: "رابطے",
+    colAiSources: "AI ذرائع",
+    colActions: "اعمال",
+    tierPrefix: "ٹیئر",
+    aisConfirmed: "AIs نے تصدیق کی",
+    aiConfirmed: "AI نے تصدیق کی",
+    viewResearch: "دیکھیں اور تحقیق کریں",
+
+    historyHeading: "ڈسکوری ہسٹری (یہ سیشن)",
+    historyFoundLabel: "ملا:",
+    historyCreatedLabel: "بنایا گیا:",
+  },
+
 };
 
 export default ur;
