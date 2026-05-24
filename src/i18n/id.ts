@@ -6324,6 +6324,35 @@ const id: Translations = {
     versionFooter: "Protokol v1.0 · Dipublikasikan 2026-05-20 · Berdasarkan battery validasi BV Hong Kong (Mei 2026) dan investigasi kegagalan CAI-Textile. Pembaruan dipublikasikan kuartalan.",
   },
 
+  claimsLandingPage: {
+    heroTitle: "Klaim, sertifikasi & metodologi",
+    heroSubtitle: "Cara FUZE bekerja, apa yang disertifikasi, dan mengapa kami mengujinya seperti yang kami lakukan.",
+    techTitle: "Teknologi FUZE",
+    techBody1: "FUZE adalah perlakuan antibakteri tekstil milik sendiri yang dibangun di sekitar metamaterial FUZE — diproduksi via liquid laser ablation dari elektronik daur ulang di fasilitas Salt Lake City kami. Perlakuan ini berikatan permanen dengan serat selama finishing tekstil standar (aplikasi exhaust, pad-dry-cure, atau spray) tanpa mengubah hand, pewarnaan, drape, atau breathability kain.",
+    techBody2: "FUZE non-leaching by design. Reduksi bakteri terjadi melalui kontak fisik langsung antara sel bakteri dan metamaterial FUZE terikat pada permukaan serat — tidak ada kimia yang dilepaskan ke air cuci, tanpa PFAS, tanpa binder, tanpa kimia curing. Posisi ini menempatkan FUZE di sisi yang benar dari setiap tailwind regulasi (investigasi PFAS Texas AG, California SB-707).",
+    techBody3: "Tier perlakuan: F1 Full Spectrum (1,0 mg/kg, 100 cucian divalidasi) · F2 Advanced (0,75 mg/kg, 75 cucian) · F3 Core (0,5 mg/kg, 50 cucian) · F4 Foundation (0,25 mg/kg, 25 cucian). Jumlah cucian didokumentasikan melalui pengujian lab independen AATCC 100 + ISO 20743, dipublikasikan atas permintaan.",
+    certsTitle: "Sertifikasi",
+    certEpaTitle: "Terdaftar EPA (federal)",
+    certEpaBody: "Kimia FUZE terdaftar di U.S. Environmental Protection Agency sebagai pestisida antibakteri.",
+    certCaEpaTitle: "Disetujui California EPA (Q1 2026)",
+    certCaEpaBody: "Diizinkan untuk activewear, tekstil bayi/anak, dan kasus penggunaan kesehatan di bawah rezim California yang lebih ketat.",
+    certOekoTitle: "OEKO-TEX Standard 100 Class I",
+    certOekoBody: "Disertifikasi aman untuk kontak kulit langsung — termasuk apparel bayi dan intim.",
+    certBluesignTitle: "Disetujui bluesign®",
+    certBluesignBody: "Kimia diverifikasi aman untuk pekerja, konsumen, dan lingkungan di bawah kriteria bluesign.",
+    certPfasTitle: "Bebas PFAS",
+    certPfasBody: "Nol zat per- dan polyfluoroalkyl di mana pun dalam formulasi. Tanpa binder, tanpa curing aids.",
+    certStandardsTitle: "Standar divalidasi",
+    certStandardsBody: "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — laporan pihak ketiga tersedia atas permintaan.",
+    standardsTitle: "Standar uji",
+    standardsBody: "Kinerja antibakteri untuk tekstil bukan satu angka — sangat bergantung pada standar mana yang Anda gunakan untuk uji, dan apakah standar itu cocok dengan kimianya. Berikut bagaimana FUZE memetakan ke metode.",
+    jabTitle: "Mengapa kami memimpin dengan ASTM E2149",
+    jabBody: "Kami menguji dengan ASTM E2149 karena ini adalah uji yang dirancang untuk antibakteri non-leaching. Kimia kompetitor yang mengandalkan AATCC 100 melakukannya karena geometri stacked-layer AATCC 100 membantu ion leaching menjenuhkan ruang antar-lapisan — uji ini menguntungkan leaching by construction. FUZE tidak leach, by design. Temui kami di uji yang tepat.",
+    jabFootnote: "(Atribusi kompetitor: caveat uji berlapis berlaku untuk finisher berbasis ion-logam, klorida-logam, dan quat — bukan untuk FUZE.)",
+    documentsTitle: "Dokumen",
+    pressKitLink: "Kit pers",
+  },
+
 };
 
 export default id;
