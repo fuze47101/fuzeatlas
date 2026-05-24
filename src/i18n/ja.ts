@@ -2846,6 +2846,40 @@ const ja: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "Atlas ログインが必要です",
+    authBatchPrefix: "バッチ",
+    authBlurb:
+      "の詳細 (COA、TDS、SDS を含む) は Atlas ユーザー限定でご覧いただけます。",
+    loginCta: "Atlas にログイン →",
+    noAccountQuestion: "アカウントをお持ちでないですか? お問い合わせ先:",
+    notFoundTitle: "バッチが見つかりません",
+    notFoundBlurb: "バッチを見つけられませんでした:",
+    returnHome: "Atlas に戻る →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "バッチ検証",
+    qcPassed: "✓ QC合格",
+    qcFailed: "⚠ QC不合格",
+    produced: "製造日",
+    batchDetails: "バッチ詳細",
+    volumeProduced: "製造量",
+    bottlesFilled: "充填本数",
+    concentration: "濃度",
+    productionDate: "製造日",
+    fuzeMetamaterial: "mg/L FUZE メタマテリアル",
+    batchNotes: "バッチ備考",
+    documents: "ドキュメント",
+    coaTitle: "分析証明書 (COA)",
+    coaDescPrefix: "このバッチの規格検証 · アップロード日",
+    coaPending: "COA 準備中",
+    coaPendingBlurb: "このバッチの分析証明書はまだアップロードされていません。",
+    view: "表示 →",
+    docsEmpty: "TDS / SDS はまだアップロードされていません。管理者は Product Documents から追加できます。",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "ご質問は?",
+    footerReturnAtlas: "Atlas に戻る",
+  },
+
 };
 
 export default ja;
