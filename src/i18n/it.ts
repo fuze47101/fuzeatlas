@@ -4527,6 +4527,16 @@ const it: Translations = {
     sanityCheckHeader: "Verifica di coerenza (cosa dovrebbe riportare CTLA)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "Rete distributori",
+    pageSubtitle: "Gestisci i tuoi partner di distribuzione globali, l'inventario e la copertura",
+    inventoryCta: "📊 Inventario e tasso di consumo",
+    worldwideCta: "🌍 Inventario globale",
+    newDistributorCta: "+ Nuovo distributore",
+    newDistributorModalTitle: "Nuovo distributore",
+    nameRequiredError: "Il nome è obbligatorio",
+  },
+
 };
 
 export default it;
