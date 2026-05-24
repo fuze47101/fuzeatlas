@@ -4915,6 +4915,16 @@ const vi: Translations = {
     sanityCheckHeader: "Kiểm tra hợp lý (CTLA sẽ báo cáo gì)",
   },
 
+  distributorsAdmin: {
+    pageTitle: "Mạng lưới nhà phân phối",
+    pageSubtitle: "Quản lý các đối tác phân phối toàn cầu, tồn kho và phạm vi phủ sóng",
+    inventoryCta: "📊 Tồn kho & Tỷ lệ tiêu hao",
+    worldwideCta: "🌍 Tồn kho toàn cầu",
+    newDistributorCta: "+ Nhà phân phối mới",
+    newDistributorModalTitle: "Nhà phân phối mới",
+    nameRequiredError: "Tên là bắt buộc",
+  },
+
 };
 
 export default vi;
