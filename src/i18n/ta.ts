@@ -7857,6 +7857,18 @@ const ta: Translations = {
     addFavoriteTitle: "Favorite-ஐ சேர்",
   },
 
+  icpCorrelation: {
+    adminCrumb: "நிர்வாகம்",
+    crumb: "ICP correlation",
+    heading: "ICP × AB correlation",
+    subtitle: "Joseph (KUIU) கேட்ட chart. Atlas-இல் ஒவ்வொரு brand-visible test run முழுவதும் ஃபேப்ரிக்கில் FUZE residual (ICP-அளவிடப்பட்டது) antibacterial kill rate-க்கு எதிராக plot செய்யப்பட்டது. Best-fit line + R² overlaid.",
+    errorContext: "ICP correlation ஏற்று",
+    couldntLoadPrefix: "Correlation தரவை ஏற்ற முடியவில்லை",
+    networkError: "நெட்வொர்க் பிழை.",
+    loadingState: "Correlation தரவை ஏற்றுகிறது…",
+    footnote: "வாடிக்கையாளர்-முகமான copy \"FUZE residual\"-ஐப் பயன்படுத்துகிறது — ஆய்வகத்தின் ICP அறிக்கையில் இருந்து metamaterial அளவீடு. வாடிக்கையாளர் deliverables-இல் எப்போதும் FUZE / metamaterial என்று label செய்யப்படுகிறது (CLAUDE.md brand-voice rule).",
+  },
+
 };
 
 export default ta;
