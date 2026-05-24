@@ -6854,6 +6854,26 @@ const ur: Translations = {
     emptyState: "ابھی تک کوئی کریڈٹس نہیں۔",
   },
 
+  bdFunnel: {
+    loading: "لوڈ ہو رہا ہے…",
+    crumbSalesPipeline: "فروخت اور پائپ لائن",
+    crumbBdFunnel: "BD فنل",
+    title: "پائپ لائن فنل",
+    subtitle: "پچھلے 30 / 60 / 90 دنوں میں ان فلو / آؤٹ فلو، اور اسٹیج تا اسٹیج کنورژن کی شرح۔ ہر Brand.pipelineStage فلپ پر لکھی گئی BrandStageTransition قطاروں سے حاصل۔",
+    colStage: "اسٹیج",
+    colCurrent: "موجودہ",
+    colIn30: "30d میں",
+    colIn60: "60d میں",
+    colIn90: "90d میں",
+    colOut30: "30d باہر",
+    colOut60: "60d باہر",
+    colOut90: "90d باہر",
+    colAvgDwell: "اوسط قیام",
+    colToNext: "← اگلا",
+    footerHint: "کنورژن = پچھلے 90 دنوں میں مشاہدہ کیے گئے کل اخراج میں سے کینونیکل اگلے اسٹیج پر اترنے والے۔ ونڈو میں کوئی اخراج نہ ہونے والے اسٹیجز n=0 دکھاتے ہیں — وہ سست یا مستحکم ہیں، خراب نہیں۔",
+    errLoadFailed: "فنل لوڈ کرنے میں ناکام",
+  },
+
 };
 
 export default ur;
