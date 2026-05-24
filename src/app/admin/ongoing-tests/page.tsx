@@ -2,6 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 interface OngoingTest {
   id: string;
@@ -46,6 +47,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function OngoingTestsPage() {
+  const { t: i18n } = useI18n();
+  const T = i18n.ongoingTests;
   const [tests, setTests] = useState<OngoingTest[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -97,16 +100,16 @@ export default function OngoingTestsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-800">Ongoing Tests Tracker</h1>
+          <h1 className="text-2xl font-black text-slate-800">{T.title}</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Real-time visibility into all active test requests across labs
+            {T.subtitle}
           </p>
         </div>
         <Link
           href="/admin/sample-trials"
           className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-200 transition"
         >
-          🧪 Sample Trials
+          {T.sampleTrialsBtn}
         </Link>
       </div>
 
@@ -115,25 +118,25 @@ export default function OngoingTestsPage() {
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
           <div className="bg-white border rounded-xl p-4 text-center">
             <p className="text-2xl font-black text-slate-700">{summary.total}</p>
-            <p className="text-[10px] font-semibold text-slate-500 uppercase">Total Active</p>
+            <p className="text-[10px] font-semibold text-slate-500 uppercase">{T.totalActive}</p>
           </div>
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
             <p className="text-2xl font-black text-amber-700">{summary.awaitingAccept}</p>
-            <p className="text-[10px] font-semibold text-amber-600 uppercase">Awaiting Accept</p>
+            <p className="text-[10px] font-semibold text-amber-600 uppercase">{T.awaitingAccept}</p>
           </div>
           <div className="bg-cyan-50 border border-cyan-200 rounded-xl p-4 text-center">
             <p className="text-2xl font-black text-cyan-700">{summary.inProgress}</p>
-            <p className="text-[10px] font-semibold text-cyan-600 uppercase">In Progress</p>
+            <p className="text-[10px] font-semibold text-cyan-600 uppercase">{T.inProgress}</p>
           </div>
           <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 text-center">
             <p className="text-2xl font-black text-purple-700">{summary.resultsReady}</p>
-            <p className="text-[10px] font-semibold text-purple-600 uppercase">Results Ready</p>
+            <p className="text-[10px] font-semibold text-purple-600 uppercase">{T.resultsReady}</p>
           </div>
           <div className={`border rounded-xl p-4 text-center ${summary.overdue > 0 ? "bg-red-50 border-red-200" : "bg-white"}`}>
             <p className={`text-2xl font-black ${summary.overdue > 0 ? "text-red-600" : "text-slate-400"}`}>
               {summary.overdue}
             </p>
-            <p className="text-[10px] font-semibold text-slate-500 uppercase">Overdue</p>
+            <p className="text-[10px] font-semibold text-slate-500 uppercase">{T.overdueLabel}</p>
           </div>
         </div>
       )}
@@ -142,7 +145,7 @@ export default function OngoingTestsPage() {
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <input
           type="text"
-          placeholder="Search PO, brand, factory, lab, fabric..."
+          placeholder={T.searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -152,19 +155,19 @@ export default function OngoingTestsPage() {
           onChange={(e) => setFilterStatus(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
         >
-          <option value="ALL">All Statuses</option>
-          <option value="SUBMITTED">Submitted</option>
-          <option value="PENDING_APPROVAL">Pending Approval</option>
-          <option value="APPROVED">Approved</option>
-          <option value="IN_PROGRESS">In Progress</option>
-          <option value="RESULTS_RECEIVED">Results Received</option>
+          <option value="ALL">{T.allStatuses}</option>
+          <option value="SUBMITTED">{T.statusSubmitted}</option>
+          <option value="PENDING_APPROVAL">{T.statusPendingApproval}</option>
+          <option value="APPROVED">{T.statusApproved}</option>
+          <option value="IN_PROGRESS">{T.statusInProgress}</option>
+          <option value="RESULTS_RECEIVED">{T.statusResultsReceived}</option>
         </select>
         <select
           value={filterLab}
           onChange={(e) => setFilterLab(e.target.value)}
           className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
         >
-          <option value="ALL">All Labs</option>
+          <option value="ALL">{T.allLabs}</option>
           {labs.map((l) => (
             <option key={l} value={l}>{l}</option>
           ))}
@@ -172,7 +175,7 @@ export default function OngoingTestsPage() {
       </div>
 
       <p className="text-xs text-slate-400 mb-3">
-        Showing {filtered.length} of {tests.length} tests
+        {T.showingCountTpl.replace("{shown}", String(filtered.length)).replace("{total}", String(tests.length))}
       </p>
 
       {/* Tests Table (Desktop) */}
@@ -180,14 +183,14 @@ export default function OngoingTestsPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-slate-50 text-left">
-              <th className="px-4 py-3 font-semibold text-slate-600">PO / Request</th>
-              <th className="px-4 py-3 font-semibold text-slate-600">Brand</th>
-              <th className="px-4 py-3 font-semibold text-slate-600">Lab</th>
-              <th className="px-4 py-3 font-semibold text-slate-600">Status</th>
-              <th className="px-4 py-3 font-semibold text-slate-600">Progress</th>
-              <th className="px-4 py-3 font-semibold text-slate-600">ETA</th>
-              <th className="px-4 py-3 font-semibold text-slate-600">Days Active</th>
-              <th className="px-4 py-3 font-semibold text-slate-600">AM</th>
+              <th className="px-4 py-3 font-semibold text-slate-600">{T.colPo}</th>
+              <th className="px-4 py-3 font-semibold text-slate-600">{T.colBrand}</th>
+              <th className="px-4 py-3 font-semibold text-slate-600">{T.colLab}</th>
+              <th className="px-4 py-3 font-semibold text-slate-600">{T.colStatus}</th>
+              <th className="px-4 py-3 font-semibold text-slate-600">{T.colProgress}</th>
+              <th className="px-4 py-3 font-semibold text-slate-600">{T.colEta}</th>
+              <th className="px-4 py-3 font-semibold text-slate-600">{T.colDaysActive}</th>
+              <th className="px-4 py-3 font-semibold text-slate-600">{T.colAM}</th>
             </tr>
           </thead>
           <tbody>
@@ -211,7 +214,7 @@ export default function OngoingTestsPage() {
                   </span>
                   {t.priority && t.priority <= 2 && (
                     <span className="ml-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-700">
-                      PRIORITY
+                      {T.priorityBadge}
                     </span>
                   )}
                 </td>
@@ -230,20 +233,20 @@ export default function OngoingTestsPage() {
                   {t.estimatedCompletionDate ? (
                     <div className={`text-xs font-semibold ${t.overdue ? "text-red-600" : "text-slate-700"}`}>
                       {new Date(t.estimatedCompletionDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                      {t.overdue && <span className="ml-1 text-red-500">({Math.abs(t.daysUntilEta || 0)}d late)</span>}
+                      {t.overdue && <span className="ml-1 text-red-500">{T.lateSuffixTpl.replace("{n}", String(Math.abs(t.daysUntilEta || 0)))}</span>}
                     </div>
                   ) : (
                     <span className="text-xs text-slate-400">—</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-xs text-slate-600">{t.daysActive}d</td>
+                <td className="px-4 py-3 text-xs text-slate-600">{t.daysActive}{T.daysActiveSuffix}</td>
                 <td className="px-4 py-3 text-xs text-slate-600">{t.accountManager}</td>
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-4 py-12 text-center text-slate-400">
-                  No tests match your filters.
+                  {T.noMatch}
                 </td>
               </tr>
             )}
@@ -265,9 +268,9 @@ export default function OngoingTestsPage() {
               </span>
             </div>
             <div className="text-xs text-slate-500 space-y-1 mb-2">
-              <p>Brand: {t.brandName || "—"} | Lab: {t.labName || "—"}</p>
-              <p>Factory: {t.factoryName || "—"}</p>
-              <p>AM: {t.accountManager}</p>
+              <p>{T.mobileBrandLabel} {t.brandName || "—"} | {T.mobileLabLabel} {t.labName || "—"}</p>
+              <p>{T.mobileFactoryLabel} {t.factoryName || "—"}</p>
+              <p>{T.mobileAmLabel} {t.accountManager}</p>
             </div>
             <div className="flex items-center gap-2 mb-1">
               <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
@@ -276,13 +279,13 @@ export default function OngoingTestsPage() {
               <span className="text-xs text-slate-500">{t.completedLines}/{t.totalLines}</span>
             </div>
             <div className="flex justify-between text-xs text-slate-500">
-              <span>{t.daysActive}d active</span>
+              <span>{t.daysActive}{T.mobileActiveSuffix}</span>
               <span>
-                ETA:{" "}
+                {T.mobileEtaLabel}{" "}
                 {t.estimatedCompletionDate
                   ? new Date(t.estimatedCompletionDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
                   : "—"}
-                {t.overdue && <span className="text-red-600 ml-1">OVERDUE</span>}
+                {t.overdue && <span className="text-red-600 ml-1">{T.overdueInline}</span>}
               </span>
             </div>
           </div>
