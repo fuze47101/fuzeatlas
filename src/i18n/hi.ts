@@ -5505,6 +5505,55 @@ const hi: Translations = {
     statusComplete: "पूर्ण",
   },
 
+  brandFabricsAdmin: {
+    loading: "फैब्रिक पोर्टफोलियो लोड हो रहा है…",
+    errorTitle: "फैब्रिक पोर्टफोलियो लोड नहीं हो सका",
+    errorUnknown: "अज्ञात त्रुटि",
+    errorFailedLoad: "लोड करने में विफल",
+    errorSave: "सहेजना विफल",
+    btnTryAgain: "पुनः प्रयास करें",
+
+    crumbPartners: "ब्रांड पार्टनर",
+    crumbHere: "फैब्रिक पोर्टफोलियो",
+    titleSuffix: "— फैब्रिक पोर्टफोलियो",
+    subtitle: "इस ब्रांड के लिए सभी मिलों में सभी फैब्रिक्स। {total} में से {shown} फैब्रिक्स दिखाए गए।",
+    btnExportCsv: "⬇ CSV निर्यात करें",
+
+    searchPlaceholder: "फैब्रिक #, ग्राहक कोड, सामग्री खोजें…",
+    filterAllMills: "सभी मिलें",
+    filterAllTypes: "सभी प्रकार",
+    typeDevelopment: "विकास",
+    typeActualBulk: "वास्तविक (बल्क)",
+    typeForecast: "पूर्वानुमान",
+    typeRd: "R&D",
+    filterAllStatuses: "सभी स्थितियां",
+
+    emptyFabric: "🧵",
+    emptyTitle: "आपके फ़िल्टर से कोई फैब्रिक मेल नहीं खाता।",
+    emptySub: "पूर्ण पोर्टफोलियो देखने के लिए ऊपर के फ़िल्टर समायोजित करें या खोज साफ़ करें।",
+    fabricSingular: "फैब्रिक",
+    fabricPlural: "फैब्रिक्स",
+    openFactory: "कारखाना खोलें →",
+
+    colFuze: "FUZE #",
+    colMillFabric: "मिल फैब्रिक #",
+    colType: "प्रकार",
+    colContent: "सामग्री",
+    colGsm: "GSM",
+    colCustomerCode: "ग्राहक कोड",
+    colTrial: "ट्रायल",
+    colICP: "ICP",
+    colAM: "AM",
+    colICPValue: "ICP मान",
+    colTestDate: "परीक्षण तिथि",
+    colStatus: "स्थिति",
+
+    unassigned: "असाइन नहीं किया",
+    typeBulkProduction: "बल्क उत्पादन",
+    notSet: "— सेट नहीं —",
+    titleOpenFabric: "फैब्रिक विवरण खोलें",
+  },
+
 };
 
 export default hi;
