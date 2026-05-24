@@ -7245,6 +7245,28 @@ const km: Translations = {
     mondayReviewBody: "AI-flagged test runs + brand rejections. Sunday 22:00 UTC email seeds the agenda.",
   },
 
+  brandEngagement: {
+    heading: "ម៉ាក Health",
+    subtitle: "Monitor engagement and health metrics for all brands",
+    recalculatingBtn: "Recalculating...",
+    recalculateBtn: "Recalculate ទាំងអស់",
+    allFilter: "ទាំងអស់",
+    loadingText: "កំពុងផ្ទុក…",
+    noBrandsText: "ទេ brands found",
+    scoreBreakdownTitle: "Score Breakdown",
+    communicationLabel: "Communication",
+    testingVelocityLabel: "ការសាកល្បងing Velocity",
+    pipelineVelocityLabel: "Pipeline Velocity",
+    paymentScoreLabel: "Payment Score",
+    rawMetricsTitle: "Raw Metrics",
+    daysSinceContact: "Days Since ទំនាក់ទំនង",
+    testsLast30d: "ការសាកល្បង (Last 30d)",
+    testsLast90d: "ការសាកល្បង (Last 90d)",
+    avgInvoicePayDays: "Avg វិក្កយបត្រ Pay Days",
+    overdueInvoices: "Overdue វិក្កយបត្រ",
+    lastCalculatedLabel: "Last calculated:",
+  },
+
 };
 
 export default km;
