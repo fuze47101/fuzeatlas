@@ -6805,6 +6805,26 @@ const bn: Translations = {
     emptyBias: "এখনও কোনো বায়াস ডেটা নেই।",
   },
 
+  labCreditsAdmin: {
+    loading: "লোড হচ্ছে…",
+    crumbLabs: "ল্যাব",
+    crumbCredits: "ক্রেডিট",
+    creditsSuffix: "ক্রেডিট",
+    balanceLabel: "এই ল্যাবে FUZE ব্যালেন্স",
+    balanceHint: "এই ল্যাবে ভবিষ্যৎ FUZE-প্রদত্ত টেস্টিং থেকে স্বয়ংক্রিয়ভাবে কেটে নেয়।",
+    addCreditTitle: "ক্রেডিট যোগ করুন",
+    amountPlaceholder: "$ পরিমাণ",
+    sourceNotePlaceholder: "উৎস নোট",
+    addCreditBtn: "ক্রেডিট যোগ করুন",
+    colCreated: "তৈরি",
+    colAmount: "পরিমাণ",
+    colSource: "উৎস",
+    colNote: "নোট",
+    colSpent: "ব্যয়",
+    availableLabel: "উপলব্ধ",
+    emptyState: "এখনও কোনো ক্রেডিট নেই।",
+  },
+
 };
 
 export default bn;
