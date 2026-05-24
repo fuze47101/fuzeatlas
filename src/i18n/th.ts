@@ -2620,6 +2620,40 @@ const th: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "ต้องเข้าสู่ระบบ Atlas",
+    authBatchPrefix: "ชุด",
+    authBlurb:
+      "รายละเอียด — รวมถึง COA, TDS, SDS — มีให้สำหรับผู้ใช้ Atlas เท่านั้น",
+    loginCta: "เข้าสู่ระบบ Atlas →",
+    noAccountQuestion: "ไม่มีบัญชี? ติดต่อ",
+    notFoundTitle: "ไม่พบชุด",
+    notFoundBlurb: "เราไม่พบชุด",
+    returnHome: "กลับไปยัง Atlas →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "การยืนยันชุด",
+    qcPassed: "✓ QC ผ่าน",
+    qcFailed: "⚠ QC ไม่ผ่าน",
+    produced: "ผลิตเมื่อ",
+    batchDetails: "รายละเอียดชุด",
+    volumeProduced: "ปริมาณที่ผลิต",
+    bottlesFilled: "ขวดที่บรรจุ",
+    concentration: "ความเข้มข้น",
+    productionDate: "วันที่ผลิต",
+    fuzeMetamaterial: "mg/L เมตาวัสดุ FUZE",
+    batchNotes: "หมายเหตุชุด",
+    documents: "เอกสาร",
+    coaTitle: "ใบรับรองการวิเคราะห์ (COA)",
+    coaDescPrefix: "การตรวจสอบข้อมูลจำเพาะของชุดนี้ · อัปโหลดเมื่อ",
+    coaPending: "COA รออยู่",
+    coaPendingBlurb: "ยังไม่ได้อัปโหลดใบรับรองการวิเคราะห์สำหรับชุดนี้",
+    view: "ดู →",
+    docsEmpty: "ยังไม่ได้อัปโหลด TDS / SDS ผู้ดูแลระบบสามารถเพิ่มได้ในเอกสารผลิตภัณฑ์",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "มีคำถาม?",
+    footerReturnAtlas: "กลับไปยัง Atlas",
+  },
+
 };
 
 export default th;
