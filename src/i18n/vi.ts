@@ -7596,6 +7596,28 @@ const vi: Translations = {
     errNetwork: "Lỗi mạng",
   },
 
+  notificationsPage: {
+    loading: "Đang tải thông báo...",
+    title: "Thông báo",
+    unreadLabel: "chưa đọc",
+    allCaughtUp: "Đã đọc hết",
+    totalLabel: "tổng cộng",
+    markAllRead: "Đánh dấu tất cả là đã đọc",
+    filterAll: "Tất cả",
+    filterUnread: "Chưa đọc",
+    allTypes: "Tất cả loại",
+    emptyUnreadTitle: "Không có thông báo chưa đọc",
+    emptyAllTitle: "Chưa có thông báo nào",
+    emptyUnreadBody: "Bạn đã đọc hết!",
+    emptyAllBody: "Thông báo sẽ xuất hiện ở đây khi có hoạt động trên tài khoản của bạn.",
+    viewDetails: "Xem chi tiết →",
+    markAsRead: "Đánh dấu là đã đọc",
+    justNow: "Vừa xong",
+    minSuffix: "phút trước",
+    hourSuffix: "giờ trước",
+    daySuffix: "ngày trước",
+  },
+
 };
 
 export default vi;
