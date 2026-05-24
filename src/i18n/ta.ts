@@ -7869,6 +7869,26 @@ const ta: Translations = {
     footnote: "வாடிக்கையாளர்-முகமான copy \"FUZE residual\"-ஐப் பயன்படுத்துகிறது — ஆய்வகத்தின் ICP அறிக்கையில் இருந்து metamaterial அளவீடு. வாடிக்கையாளர் deliverables-இல் எப்போதும் FUZE / metamaterial என்று label செய்யப்படுகிறது (CLAUDE.md brand-voice rule).",
   },
 
+  engagementDebug: {
+    crumb: "Engagement debug",
+    engagementSuffix: "engagement",
+    calculatedLabel: "கணக்கிடப்பட்டது",
+    overallScoreLabel: "ஒட்டுமொத்த score",
+    outOf100: "100-இல்",
+    inputsLabel: "Inputs",
+    daysSinceContact: "தொடர்பு கொண்டதிலிருந்து நாட்கள்",
+    tests30d: "சோதனைகள் (30நா)",
+    tests90d: "சோதனைகள் (90நா)",
+    avgPayDays: "சராசரி pay நாட்கள்",
+    overdueInvoices: "Overdue invoices",
+    factorBreakdownTitle: "Factor breakdown",
+    weightLabel: "weight",
+    contributesLabel: "பங்களிக்கிறது",
+    ptsLabel: "pts",
+    loading: "ஏற்றுகிறது…",
+    failedToLoad: "ஏற்ற முடியவில்லை",
+  },
+
 };
 
 export default ta;
