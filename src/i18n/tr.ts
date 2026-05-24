@@ -2850,6 +2850,40 @@ const tr: Translations = {
     footerAddress: "FUZE Biotech · Salt Lake City, Utah · fuzeatlas.com",
   },
 
+  verifyBatch: {
+    authRequired: "Atlas Girişi Gerekli",
+    authBatchPrefix: "Batch",
+    authBlurb:
+      "ayrıntıları — COA, TDS, SDS dahil — yalnızca Atlas kullanıcılarına açıktır.",
+    loginCta: "Atlas'a Giriş Yap →",
+    noAccountQuestion: "Hesabınız yok mu? İletişim:",
+    notFoundTitle: "Batch Bulunamadı",
+    notFoundBlurb: "Aşağıdaki batch bulunamadı:",
+    returnHome: "Atlas'a Dön →",
+    productionLocation: "FUZE Biotech · Salt Lake City",
+    batchVerification: "Batch Doğrulama",
+    qcPassed: "✓ QC Geçti",
+    qcFailed: "⚠ QC Başarısız",
+    produced: "Üretildi",
+    batchDetails: "Batch Detayları",
+    volumeProduced: "Üretilen Hacim",
+    bottlesFilled: "Doldurulan Şişe",
+    concentration: "Konsantrasyon",
+    productionDate: "Üretim Tarihi",
+    fuzeMetamaterial: "mg/L FUZE metamateryal",
+    batchNotes: "Batch Notları",
+    documents: "Belgeler",
+    coaTitle: "Analiz Sertifikası (COA)",
+    coaDescPrefix: "Bu batch'in spesifikasyon doğrulaması · Yüklendi",
+    coaPending: "COA Beklemede",
+    coaPendingBlurb: "Bu batch için Analiz Sertifikası henüz yüklenmedi.",
+    view: "Görüntüle →",
+    docsEmpty: "TDS / SDS henüz yüklenmedi. Yöneticiler Ürün Belgeleri'nden ekleyebilir.",
+    footerAddress: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, Utah 84119 USA",
+    footerQuestions: "Sorular?",
+    footerReturnAtlas: "Atlas'a Dön",
+  },
+
 };
 
 export default tr;
