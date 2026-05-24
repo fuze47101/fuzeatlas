@@ -7651,6 +7651,24 @@ const th: Translations = {
     websiteLabel: "เว็บไซต์",
   },
 
+  importContacts: {
+    title: "Bulk import — ผู้ติดต่อ",
+    subtitle: "วางหรืออัปโหลด CSV ของผู้ติดต่อ อีเมลเป็น natural key — เรา upsert ตามอีเมลเมื่อมี แถวที่ไม่มีอีเมลแต่มี LinkedIn URL ถูกนำเข้าเป็น 'email missing' เพื่อให้ Apollo enrichment job ที่มีอยู่ติดตามได้ แถวที่ไม่มีทั้งสองถูกปฏิเสธ",
+    backLabel: "การจัดการ Lead",
+    firstNameLabel: "ชื่อ",
+    lastNameLabel: "นามสกุล",
+    emailLabel: "อีเมล",
+    emailHint: "จำเป็นหากไม่มี LinkedIn URL",
+    linkedinLabel: "LinkedIn URL",
+    linkedinHint: "ตัวระบุ fallback เมื่อไม่มีอีเมล",
+    brandNameLabel: "ชื่อแบรนด์",
+    brandNameHint: "การจับคู่ที่ไม่คำนึงถึงตัวพิมพ์บน Brand.name; ไม่เชื่อมโยงหากไม่พบ",
+    jobTitleLabel: "ตำแหน่งงาน",
+    phoneLabel: "โทรศัพท์",
+    titleLabel: "ตำแหน่ง (honorific)",
+    titleHint: "เช่น \"Mr.\", \"Dr.\"",
+  },
+
 };
 
 export default th;
