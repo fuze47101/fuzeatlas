@@ -5735,6 +5735,69 @@ const tr: Translations = {
     footerGenerated: "Form oluşturuldu",
   },
 
+  sampleTrials: {
+    crumbDashboard: "Gösterge Paneli",
+    crumbHere: "Numune Denemeleri",
+    pageTitle: "Numune Denemesi Yönetimi",
+    pageSubtitle: "Tüm fabrika numune denemesi taleplerini inceleyin, onaylayın, sevk edin ve takip edin",
+
+    statTotal: "Toplam",
+    statNeedsAction: "Aksiyon Gerekli",
+
+    searchPlaceholder: "Kumaş, fabrika, marka, kişi ara...",
+    filterAllStatuses: "Tüm Durumlar",
+    filterAllFactories: "Tüm Fabrikalar",
+
+    errorFailedLoad: "Denemeler yüklenemedi",
+    errorUpdate: "Güncelleme başarısız",
+    errorNetwork: "Ağ hatası",
+
+    quickActionPrefix: "Hızlı İşlem —",
+    trialFallback: "Deneme",
+    labelStatus: "Durum",
+    labelTracking: "Takip Numarası",
+    placeholderTracking: "FedEx/DHL/UPS #",
+    labelAdminNotes: "Yönetici Notları",
+    placeholderAdminNotes: "Dahili notlar...",
+    labelRejectReason: "Red Nedeni",
+    btnSave: "Değişiklikleri Kaydet",
+    btnSaving: "Kaydediliyor...",
+    btnCancel: "İptal",
+
+    emptyFiltered: "Filtrelerinize uyan deneme yok",
+    emptyDefault: "Henüz numune denemesi yok",
+
+    colFabric: "Kumaş",
+    colFactory: "Fabrika",
+    colPurpose: "Amaç",
+    colStatus: "Durum",
+    colDetails: "Detaylar",
+    colIcpLab: "ICP Lab",
+    colDate: "Tarih",
+    colActions: "İşlemler",
+
+    purposeBrand: "Marka",
+    purposeSelfDev: "Öz-Gelişim",
+    trialLab: "Laboratuvar",
+    trialProduction: "Üretim",
+    detailsTierPrefix: "Kademe:",
+    detailsIcpAgPrefix: "ICP Ag:",
+    detailsByPrefix: "Yapan:",
+    actionAction: "İşlem",
+    actionView: "Görüntüle",
+
+    statusSubmitted: "Gönderildi",
+    statusUnderReview: "İnceleniyor",
+    statusApproved: "Onaylandı",
+    statusRejected: "Reddedildi",
+    statusShipped: "Sevk Edildi",
+    statusReceived: "Alındı",
+    statusInProgress: "Devam Ediyor",
+    statusIcpPending: "ICP Beklemede",
+    statusIcpSubmitted: "ICP Gönderildi",
+    statusComplete: "Tamamlandı",
+  },
+
 };
 
 export default tr;
