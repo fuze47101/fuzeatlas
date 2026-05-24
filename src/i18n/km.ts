@@ -7860,6 +7860,35 @@ const km: Translations = {
     seeSustainabilityBtn: "See sustainability impact",
   },
 
+  claimsLandingPage: {
+    heroTitle: "Claims, certifications & methodology",
+    heroSubtitle: "How FUZE works, what it's certified for, and why we test it the way we do.",
+    techTitle: "FUZE technology",
+    techBody1: "FUZE is a proprietary antimicrobial textile treatment built around FUZE metamaterial — produced via liquid laser ablation from recycled electronics in our Salt Lake City facility. The treatment bonds permanently to fibers during standard textile finishing (exhaust, pad-dry-cure, or spray application) without changing the fabric's hand, dye, drape, or breathability.",
+    techBody2: "FUZE is non-leaching by design. Bacterial reduction happens through direct physical contact between bacterial cells and the bonded FUZE metamaterial on the fiber surface — there's no chemistry released into wash water, no PFAS, no binders, no curing chemistry. The posture sits FUZE on the right side of every regulatory tailwind (Texas AG PFAS investigations, California SB-707).",
+    techBody3: "Treatment tiers: F1 Full Spectrum (1.0 mg/kg, 100 washes validated) · F2 Advanced (0.75 mg/kg, 75 washes) · F3 Core (0.5 mg/kg, 50 washes) · F4 Foundation (0.25 mg/kg, 25 washes). Wash counts are documented through independent-lab AATCC 100 + ISO 20743 testing, published on request.",
+    certsTitle: "Certifications",
+    certEpaTitle: "EPA registered (federal)",
+    certEpaBody: "FUZE chemistry is registered with the U.S. Environmental Protection Agency as an antimicrobial pesticide.",
+    certCaEpaTitle: "California EPA approved (Q1 2026)",
+    certCaEpaBody: "Cleared for activewear, baby/kids textiles, and healthcare use cases under California's stricter regime.",
+    certOekoTitle: "OEKO-TEX Standard 100 Class I",
+    certOekoBody: "Certified safe for direct skin contact — including baby and intimate apparel.",
+    certBluesignTitle: "bluesign® approved",
+    certBluesignBody: "Chemistry verified safe for workers, consumers, and the environment under bluesign criteria.",
+    certPfasTitle: "PFAS-free",
+    certPfasBody: "Zero per- and polyfluoroalkyl substances anywhere in the formulation. ទេ binders, no curing aids.",
+    certStandardsTitle: "Standards validated",
+    certStandardsBody: "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — third-party reports available on request.",
+    standardsTitle: "ការសាកល្បង standards",
+    standardsBody: "Antimicrobial performance for textiles isn't a single number — it depends heavily on which standard you ran the test on, and whether that standard fits the chemistry. Here's how FUZE maps onto the methods.",
+    jabTitle: "Why we lead with ASTM E2149",
+    jabBody: "We test on ASTM E2149 because it's the test designed for non-leaching antimicrobials. Competitor chemistries that rely on AATCC 100 do so because AATCC 100's stacked-layer geometry helps leaching ions saturate the inter-layer space — the test favors leaching by construction. FUZE doesn't leach, by design. Meet us on the right test.",
+    jabFootnote: "(Competitor attribution: the layered-test caveat applies to silver-ion, silver-chloride, and quat-based finishers — not to FUZE.)",
+    documentsTitle: "ឯកសារ",
+    pressKitLink: "ឧបករណ៍សារព័ត៌មាន",
+  },
+
 };
 
 export default km;
