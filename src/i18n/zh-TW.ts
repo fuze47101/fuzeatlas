@@ -6038,6 +6038,50 @@ const zhTW: Translations = {
     emptyTpl: "尚無範本。點選 + 新增範本 以建立第一個範本。",
   },
 
+  pipelineUserPage: {
+    loading: "正在載入 Pipeline...",
+    pageTitle: "營收 Pipeline",
+    pageSubtitle: "追蹤從開發到量產的交易",
+    btnNewDeal: "+ 新增交易",
+
+    kpiTotalPipeline: "Pipeline 總計",
+    kpiTotalPipelineSubTpl: "{n} 筆交易",
+    kpiWeighted: "加權預測",
+    kpiWeightedSub: "經機率調整",
+    kpiActual: "實際營收",
+    kpiActualSub: "已開立並收款",
+    kpiConversion: "轉換率",
+    kpiConversionSub: "實際 / Pipeline",
+
+    cardProdPrefix: "量產:",
+    emptyDeals: "無交易",
+    weightedPrefix: "· 加權:",
+
+    editTitlePrefix: "編輯專案:",
+    fieldName: "專案名稱",
+    fieldStage: "階段",
+    keepCurrent: "保留目前",
+    fieldBrand: "品牌",
+    fieldNone: "無",
+    fieldProjectedValue: "預估金額 ($)",
+    fieldProbability: "機率 (%)",
+    fieldFuzeTier: "FUZE 階別",
+    fieldAnnualVolume: "年度量 (m)",
+    fieldFactory: "工廠",
+    fieldDistributor: "經銷商",
+    autoFromFactory: "依工廠自動帶入",
+    fieldExpectedProd: "預期量產",
+    fieldActualProd: "實際量產",
+    btnSaveChanges: "儲存變更",
+    btnSaving: "儲存中...",
+    btnCancel: "取消",
+
+    newDealTitle: "新增交易",
+    newDealPlaceholder: "專案 / 交易名稱...",
+    btnCreate: "建立",
+    btnCreating: "建立中...",
+  },
+
 };
 
 export default zhTW;
