@@ -5656,6 +5656,82 @@ const ta: Translations = {
     btnCreatePo: "PO உருவாக்கு & அச்சிடக்கூடிய Packet-ஐ திற →",
   },
 
+  contactHygiene: {
+    crumbAdmin: "நிர்வாகம்",
+    crumbHere: "Contact Hygiene",
+    pageTitle: "Contact Hygiene",
+    pageSubtitle: "Reps Jane Doe-வில் outreach-ஐ வீணாக்குவதை நிறுத்த placeholder, role-mailbox, மற்றும் malformed தொடர்புகளை flag செய்கிறது. மாற்றக்கூடியது — wizard-க்கு தொடர்பை திரும்பக் கொண்டுவர un-hide செய்.",
+
+    btnPreviewScan: "🔍 ஸ்கேன் முன்னோட்டம்",
+    btnAutoHide: "🙈 Scan + auto-hide",
+    btnScanning: "ஸ்கேன் செய்கிறது…",
+    btnHiding: "மறைக்கிறது…",
+    titlePreviewScan: "தெரிவுநிலையை மாற்றாமல் ஒவ்வொரு தொடர்பிலும் hygiene snapshot-ஐ மீண்டும் இயக்கு",
+    titleAutoHide: "Scan + auto-hide placeholder தொடர்புகளை BD Wizard-இலிருந்து",
+    confirmAutoHide: "Auto-hide ஸ்கேன் placeholder அல்லது invalid-email என flag செய்யும் ஒவ்வொரு தொடர்பிற்கும் hiddenFromWizard = true ஆக flip செய்யும். இது மாற்றக்கூடியது (இந்த பக்கத்திலிருந்து un-hide செய்யலாம்) ஆனால் ஒவ்வொரு rep-ன் BD Wizard-ஐ உடனடியாக பாதிக்கிறது. தொடரவா?",
+    promptHide: "BD Wizard-இல் இருந்து இந்த தொடர்பை மறைக்கவா? காரணம் (விருப்பம்):",
+    promptUnhide: "இந்த தொடர்பை un-hide செய்யவா? காரணம் (விருப்பம், அவர்களின் குறிப்புகளில் எழுதப்படும்):",
+    failedPrefix: "தோல்வி:",
+    networkErrPrefix: "நெட்வொர்க் பிழை:",
+    scanFailedPrefix: "ஸ்கேன் தோல்வியடைந்தது:",
+
+    summaryScanned: "ஸ்கேன் செய்யப்பட்டது",
+    summaryContacts: "தொடர்புகள் · placeholder",
+    summarySuspicious: "· சந்தேகமானது",
+    summaryRole: "· role",
+    summaryReal: "· உண்மையான",
+    summaryHiddenSuffix: "புதிய",
+    summaryHiddenPrefix: "· மறைக்கப்பட்டது",
+
+    statPlaceholder: "Placeholder",
+    statSuspicious: "சந்தேகமானது",
+    statRole: "Role mailbox",
+    statReal: "உண்மையான",
+    statUnscanned: "ஸ்கேன் செய்யப்படவில்லை",
+    statHidden: "மறைக்கப்பட்டது",
+
+    filterVerdict: "தீர்ப்பு",
+    filterVisibility: "தெரிவுநிலை",
+    filterAllScanned: "ஸ்கேன் செய்யப்பட்ட அனைத்தும்",
+    filterPlaceholder: "Placeholder",
+    filterSuspicious: "சந்தேகமானது",
+    filterRoleMailbox: "Role mailbox",
+    filterReal: "உண்மையான",
+    filterUnscanned: "ஸ்கேன் செய்யப்படவில்லை",
+    filterAllVisibility: "அனைத்து தெரிவுநிலையும்",
+    filterHiddenOnly: "மறைக்கப்பட்டது மட்டுமே",
+    filterVisibleOnly: "தெரியக்கூடியது மட்டுமே",
+    searchPlaceholder: "பெயர் அல்லது மின்னஞ்சலைத் தேடு…",
+
+    emptyTitle: "தற்போதைய வடிகட்டிக்கு பொருந்தும் தொடர்புகள் இல்லை.",
+    emptyUnscannedTpl: "{n} தொடர்புகள் ஒருபோதும் ஸ்கேன் செய்யப்படவில்லை — நிரப்ப \"Preview scan\"-ஐ அழுத்தவும்.",
+
+    colContact: "தொடர்பு",
+    colBrandFactory: "பிராண்ட் / தொழிற்சாலை",
+    colVerdict: "தீர்ப்பு",
+    colEmail: "மின்னஞ்சல்",
+    colLinkedin: "LinkedIn",
+    colScore: "மதிப்பெண்",
+    colFlags: "Flags",
+    colActions: "செயல்கள்",
+
+    unnamed: "(பெயரில்லாதது)",
+    noEmail: "மின்னஞ்சல் இல்லை",
+    hiddenLabel: "மறைக்கப்பட்டது",
+    flagsMore: "மேலும்",
+    flagsClean: "சுத்தம்",
+    actionHide: "மறை",
+    actionUnhide: "Un-hide",
+
+    helpFooter: "ஸ்கேன் ஒவ்வொரு தொடர்பையும் நடந்து வரிசையில் verdict + flags-ஐ snapshot செய்கிறது. Preview verdict-ஐ மட்டுமே பதிவு செய்கிறது; Scan + auto-hide placeholders மற்றும் invalid-email தொடர்புகளுக்கு hiddenFromWizard-ஐயும் flip செய்கிறது. இரண்டும் மாற்றக்கூடியது — ஒரு தொடர்பை மீட்டெடுக்க \"Un-hide\" கிளிக் செய்யவும், இது தரவு சரிசெய்யப்பட்டிருந்தால் snapshot-ஐயும் மீண்டும் இயக்குகிறது.",
+
+    verdictReal: "உண்மையான",
+    verdictSuspect: "சந்தேகம்",
+    verdictPlaceholder: "placeholder",
+    verdictRoleMbx: "role mbx",
+    verdictUnscanned: "ஸ்கேன் செய்யப்படவில்லை",
+  },
+
 };
 
 export default ta;
