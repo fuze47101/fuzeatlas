@@ -7448,6 +7448,33 @@ const hi: Translations = {
     contactLink: "संपर्क",
   },
 
+  hangtagQrAdmin: {
+    brandCrumb: "ब्रांड",
+    crumb: "हैंगटैग QR",
+    heading: "हैंगटैग QR टोकन",
+    subtitlePrefix: "प्रत्येक टोकन इस पर एक सार्वजनिक सत्यापन पृष्ठ पर रिज़ॉल्व होता है",
+    subtitleSuffix: "स्कैन काउंट + प्रति पंक्ति पहला / अंतिम स्कैन टाइमस्टैम्प ट्रैक किए गए।",
+    mintTokensTitle: "टोकन मिंट करें",
+    countPlaceholder: "संख्या",
+    fabricIdPlaceholder: "fabricId (वैकल्पिक)",
+    skuPlaceholder: "उत्पाद SKU",
+    batchPlaceholder: "बैच कोड",
+    mintBtn: "मिंट करें",
+    mintingBusy: "मिंट कर रहे हैं…",
+    mintFootnote: "प्रति मिंट अधिकतम 500। अपनी पसंद के QR जनरेटर का उपयोग करके परिणामी टोकन को हैंगटैग पर QR कोड के रूप में प्रिंट करें (प्रत्येक URL ठीक verify-page URL है)।",
+    mintFailedError: "मिंट विफल",
+    tokenSingular: "टोकन",
+    tokenPlural: "टोकन",
+    exportCsvBtn: "CSV निर्यात करें",
+    colToken: "टोकन",
+    colSkuBatch: "SKU / बैच",
+    colFabric: "फैब्रिक",
+    colScans: "स्कैन",
+    colLastScan: "अंतिम स्कैन",
+    colVerifyUrl: "सत्यापन URL",
+    emptyState: "अभी कोई टोकन नहीं — ऊपर अपना पहला बैच मिंट करें।",
+  },
+
 };
 
 export default hi;
