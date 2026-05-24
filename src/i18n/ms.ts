@@ -7908,6 +7908,21 @@ const ms: Translations = {
     titleHint: 'cth. "Encik", "Dr."',
   },
 
+  importFactories: {
+    title: "Import pukal — Kilang",
+    subtitle: "Tampal atau muat naik CSV kilang. Kami akan upsert mengikut nama (kunci semula jadi), memautkan ke pengedar jika anda memberikan satu, dan mencap baris SupplyChainLink untuk setiap jenama yang sudah wujud dalam Atlas. Jenama yang belum wujud dilaporkan sebagai 'hilang' supaya anda boleh menjalankan import jenama dahulu.",
+    backLabel: "Kilang",
+    factoryNameLabel: "Nama kilang",
+    factoryNameHint: "(kunci semula jadi — upsert berkunci di sini)",
+    countryLabel: "Negara",
+    distributorLabel: "Pengedar",
+    distributorHint: "padanan tidak sensitif huruf besar pada Distributor.name; dilangkau jika tidak dijumpai",
+    brandsLabel: "Jenama",
+    brandsHint: "dipisahkan koma; setiap nama mesti wujud sebagai Brand",
+    cityLabel: "Bandar",
+    websiteLabel: "Laman web",
+  },
+
 };
 
 export default ms;
