@@ -4715,6 +4715,18 @@ const ms: Translations = {
     nextButton: "Seterusnya →",
   },
 
+  distributorDocsPrint: {
+    previewBanner: "FUZE Atlas — Pratonton Dokumen",
+    printSavePdf: "Cetak / Simpan PDF",
+    close: "Tutup",
+    documentNotFound: "Dokumen tidak dijumpai",
+    loadingError: "Gagal memuatkan dokumen",
+    networkError: "Ralat rangkaian",
+    docNumberLabel: "No. Dokumen:",
+    confidentialFooter: "FUZE Biotech Inc. — Sulit",
+    generatedTemplate: "Dijana:",
+  },
+
 };
 
 export default ms;
