@@ -7853,6 +7853,25 @@ const ms: Translations = {
     footerPrefix: "Dokumentasi API FUZE Atlas - Terakhir dikemas kini",
   },
 
+  recipeSearch: {
+    heading: "Carian Resipi",
+    subtitle: "Perpustakaan resipi FUZE seluruh rangkaian. Cari merentas setiap fabrik yang disahkan dalam Atlas — padankan apa yang anda sedang usahakan dengan resipi terbukti, walaupun fabrik itu bukan milik anda. Baris di luar skop tanpa nama tetapi fizik resipi boleh dilihat.",
+    keywordPlaceholder: "Kata kunci (kapas, jersey, twill...)",
+    anyCategory: "Sebarang kategori",
+    knit: "Kait",
+    woven: "Anyaman",
+    nonwoven: "Bukan Tenunan",
+    fiberPlaceholder: "Gentian (kapas, poli...)",
+    gsmMinPlaceholder: "GSM min",
+    gsmMaxPlaceholder: "GSM maks",
+    anyTier: "Sebarang tier",
+    onlyValidatedLabel: "Hanya tunjukkan fabrik dengan pickup diukur (ujian bench disahkan)",
+    searchingBtn: "Mencari...",
+    searchBtn: "Cari",
+    emptyTitle: "Belum ada resipi sepadan.",
+    emptyBody: "Cuba luaskan penapis — atau buang penapis \"ujian bench disahkan\" jika anda mahu melihat fabrik yang masih dalam pertengahan pembangunan.",
+  },
+
 };
 
 export default ms;
