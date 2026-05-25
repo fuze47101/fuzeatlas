@@ -139,6 +139,40 @@ export default function FabricIntakePage() {
   const [confirming, setConfirming] = useState(false);
   const [confirmError, setConfirmError] = useState<string | null>(null);
 
+  // ─── Intake photo upload (T6 phase 16) ───
+  const [intakePhotoUrl, setIntakePhotoUrl] = useState<string>("");
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+
+  const uploadIntakePhoto = async (file: File) => {
+    setPhotoUploading(true);
+    setPhotoError(null);
+    try {
+      const urlRes = await fetch("/api/fabrics/photo-upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind: "intake",
+          filename: file.name,
+          contentType: file.type || "image/jpeg",
+        }),
+      });
+      const urlData = await urlRes.json();
+      if (!urlData.ok) throw new Error(urlData.error || "Upload prep failed");
+      const s3Res = await fetch(urlData.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type || "image/jpeg" },
+        body: file,
+      });
+      if (!s3Res.ok) throw new Error("S3 upload failed");
+      setIntakePhotoUrl(urlData.publicUrl);
+    } catch (e: any) {
+      setPhotoError(e.message || "Photo upload failed");
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
+
   // Auto-set brandId/factoryId for external users
   useEffect(() => {
     if (user?.brandId) setBrandId(user.brandId);
@@ -266,6 +300,15 @@ export default function FabricIntakePage() {
         payload.intakeFormId = documentId;
         payload.intakeParsedAt = new Date().toISOString();
         payload.raw = parsed || null;
+      }
+
+      // Stamp intake photo URL onto raw so chain-of-custody is preserved.
+      if (intakePhotoUrl) {
+        payload.raw = {
+          ...(payload.raw || {}),
+          intakePhotoUrl,
+          intakePhotoUploadedAt: new Date().toISOString(),
+        };
       }
 
       // Manual-form-specific fields
@@ -675,6 +718,65 @@ export default function FabricIntakePage() {
 
           <div className="p-6 space-y-6">
             {confirmError && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{confirmError}</div>}
+
+            {/* Intake photo — chain-of-custody proof of sample condition. */}
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-2">Sample Photo (optional)</h3>
+              <p className="text-xs text-slate-500 mb-3">
+                Snap or drop a photo of the fabric sample as you received it.
+                Stamped onto the recipe report so the brand can confirm what
+                was tested.
+              </p>
+              {intakePhotoUrl ? (
+                <div className="flex items-center gap-4">
+                  <img
+                    src={intakePhotoUrl}
+                    alt="Intake photo"
+                    className="w-32 h-32 object-cover rounded-lg border border-slate-300"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIntakePhotoUrl("")}
+                    className="text-xs text-rose-600 hover:underline font-semibold"
+                  >
+                    Remove photo
+                  </button>
+                </div>
+              ) : (
+                <div
+                  onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const f = e.dataTransfer.files?.[0];
+                    if (f) uploadIntakePhoto(f);
+                  }}
+                  onClick={() => {
+                    const input = document.createElement("input");
+                    input.type = "file";
+                    input.accept = "image/*";
+                    input.capture = "environment";
+                    input.onchange = (ev: any) => {
+                      const f = ev.target.files?.[0];
+                      if (f) uploadIntakePhoto(f);
+                    };
+                    input.click();
+                  }}
+                  className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-[#00b4c3] hover:bg-cyan-50/30 transition-colors cursor-pointer"
+                >
+                  {photoUploading ? (
+                    <p className="text-xs text-slate-700 font-semibold">Uploading…</p>
+                  ) : (
+                    <p className="text-xs text-slate-500">
+                      Drop a photo here, or click to take one · JPEG / PNG / WebP / HEIC
+                    </p>
+                  )}
+                </div>
+              )}
+              {photoError && (
+                <p className="mt-2 text-xs text-rose-600">{photoError}</p>
+              )}
+            </div>
 
             {/* Identification */}
             <div>

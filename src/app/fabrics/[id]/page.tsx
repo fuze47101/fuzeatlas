@@ -108,15 +108,31 @@ export default function FabricDetailPage() {
     <div className="max-w-[1200px] mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <button onClick={() => router.push(backUrl)} className="text-sm text-[#00b4c3] hover:underline mb-1 block">&larr; Back to Fabrics</button>
-          <h1 className="text-2xl font-black text-slate-900">FUZE {fabric.fuzeNumber || "—"}</h1>
-          <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
-            {fabric.contents?.length > 0 && (
-              <span>{fabric.contents.map((c: any) => `${c.percent || ""}% ${c.material}`).join(" / ")}</span>
-            )}
-            {fabric.factory && <span>· {fabric.factory.name}</span>}
-            {fabric.brand && <span>· {fabric.brand.name}</span>}
+        <div className="flex items-start gap-4">
+          {fabric.raw?.intakePhotoUrl && (
+            <a
+              href={fabric.raw.intakePhotoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Sample photo at intake — click for full size"
+            >
+              <img
+                src={fabric.raw.intakePhotoUrl}
+                alt="Intake photo"
+                className="w-16 h-16 object-cover rounded-lg border border-slate-300 hover:border-[#00b4c3] flex-shrink-0"
+              />
+            </a>
+          )}
+          <div>
+            <button onClick={() => router.push(backUrl)} className="text-sm text-[#00b4c3] hover:underline mb-1 block">&larr; Back to Fabrics</button>
+            <h1 className="text-2xl font-black text-slate-900">FUZE {fabric.fuzeNumber || "—"}</h1>
+            <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
+              {fabric.contents?.length > 0 && (
+                <span>{fabric.contents.map((c: any) => `${c.percent || ""}% ${c.material}`).join(" / ")}</span>
+              )}
+              {fabric.factory && <span>· {fabric.factory.name}</span>}
+              {fabric.brand && <span>· {fabric.brand.name}</span>}
+            </div>
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
