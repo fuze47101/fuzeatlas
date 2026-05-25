@@ -4220,3 +4220,26 @@ model NotificationSubscription {
   preferences Json     @default("{}")
   updatedAt   DateTime @updatedAt
 }
+
+// ─────────────────────────────────────────────
+// LOCALE REVIEW STATUS (T13 phase 16)
+// ─────────────────────────────────────────────
+// Tracks who is reviewing the Claude-quality i18n bundle for each
+// of the 17 locales we ship. Pure metadata — does not block deploys.
+// Tina covers zh-CN / zh-TW / ja / ko today; the other 13 need
+// reviewers identified per region.
+
+model LocaleReviewStatus {
+  id              String    @id @default(cuid())
+  locale          String    @unique
+  reviewerId      String?
+  reviewerEmail   String?
+  reviewerName    String?
+  lastTranslatedAt DateTime?
+  lastReviewedAt   DateTime?
+  notes           String?   @db.Text
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([reviewerId])
+}
