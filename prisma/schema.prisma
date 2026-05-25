@@ -76,7 +76,7 @@ enum UserRole {
   EMPLOYEE
   SALES_MANAGER
   SALES_REP
-  BD_REP             // Independent BD reps / commission-only partners (Viktor, Barth, Hi-Goal, etc.)
+  BD_REP // Independent BD reps / commission-only partners (Viktor, Barth, Hi-Goal, etc.)
   FABRIC_MANAGER
   TESTING_MANAGER
   FACTORY_MANAGER
@@ -99,31 +99,31 @@ enum UserStatus {
 // ─────────────────────────────────────────────
 
 model CompetitorPriceOverride {
-  id              String  @id @default(cuid())
-  competitorId    String  @unique  // matches id from COMPETITORS array in competitors.ts
+  id           String @id @default(cuid())
+  competitorId String @unique // matches id from COMPETITORS array in competitors.ts
 
   // Distributor pricing (real espionage data from China distributors etc.)
-  chemicalPricePerKg         Float?   // USD/kg of antimicrobial as purchased
-  chemicalPriceSource        String?  // "China distributor quote", "India contact", etc.
-  chemicalPriceDate          DateTime? // when the price was obtained
+  chemicalPricePerKg  Float? // USD/kg of antimicrobial as purchased
+  chemicalPriceSource String? // "China distributor quote", "India contact", etc.
+  chemicalPriceDate   DateTime? // when the price was obtained
 
   // Binder pricing overrides
-  binderPricePerKg           Float?   // USD/kg of binder chemical
+  binderPricePerKg Float? // USD/kg of binder chemical
 
   // Application cost overrides (per linear meter)
-  estimatedCostPerMeterLow      Float?
-  estimatedCostPerMeterHigh     Float?
-  estimatedCostPerMeterTypical  Float?
+  estimatedCostPerMeterLow     Float?
+  estimatedCostPerMeterHigh    Float?
+  estimatedCostPerMeterTypical Float?
 
   // Re-treatment multiplier override
-  retreatmentCostMultiplier  Float?
+  retreatmentCostMultiplier Float?
 
   // Notes
-  notes          String?  // free-form notes about the source, confidence, etc.
+  notes String? // free-form notes about the source, confidence, etc.
 
-  updatedBy      String?  // user name who last updated
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedBy String? // user name who last updated
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([competitorId])
 }
@@ -141,18 +141,18 @@ model SourceRecord {
   raw            Json
   importedAt     DateTime     @default(now())
 
-  brandId      String?
-  factoryId    String?
-  labId        String?
-  submissionId String?
-  testRunId      String?
-  distributorId  String?
+  brandId       String?
+  factoryId     String?
+  labId         String?
+  submissionId  String?
+  testRunId     String?
+  distributorId String?
 
-  brand      Brand?            @relation(fields: [brandId], references: [id])
-  factory    Factory?          @relation(fields: [factoryId], references: [id])
-  lab        Lab?              @relation(fields: [labId], references: [id])
-  submission FabricSubmission? @relation(fields: [submissionId], references: [id])
-  testRun    TestRun?          @relation(fields: [testRunId], references: [id])
+  brand       Brand?            @relation(fields: [brandId], references: [id])
+  factory     Factory?          @relation(fields: [factoryId], references: [id])
+  lab         Lab?              @relation(fields: [labId], references: [id])
+  submission  FabricSubmission? @relation(fields: [submissionId], references: [id])
+  testRun     TestRun?          @relation(fields: [testRunId], references: [id])
   distributor Distributor?      @relation(fields: [distributorId], references: [id])
 
   @@index([sourceSystem, sourceTable])
@@ -172,11 +172,11 @@ model User {
   status   UserStatus @default(ACTIVE)
 
   // Security flags
-  mustChangePassword Boolean  @default(false)  // Force password change on next login
-  emailVerified      Boolean  @default(false)  // Email address verified
-  emailVerifyToken   String?  @unique          // Verification token
-  emailVerifyExpiry  DateTime?                 // Token expiry
-  passwordChangedAt  DateTime?                 // Last password change timestamp
+  mustChangePassword Boolean   @default(false) // Force password change on next login
+  emailVerified      Boolean   @default(false) // Email address verified
+  emailVerifyToken   String?   @unique // Verification token
+  emailVerifyExpiry  DateTime? // Token expiry
+  passwordChangedAt  DateTime? // Last password change timestamp
 
   // BD Portal — can this user claim unclaimed brand accounts?
   // Admins always can (enforced in code). Everyone else needs canClaim = true.
@@ -219,27 +219,27 @@ model User {
   labId         String?
   lab           Lab?         @relation("LabUsers", fields: [labId], references: [id])
 
-  assignedBrands    Brand[]    @relation("BrandSalesRep")
-  assignedFactories Factory[]  @relation("FactorySalesRep")
+  assignedBrands    Brand[]   @relation("BrandSalesRep")
+  assignedFactories Factory[] @relation("FactorySalesRep")
 
-  notes          Note[]
-  accessRequest  AccessRequest?
-  testRequestsCreated  TestRequest[] @relation("TestRequestRequester")
-  testRequestsApproved TestRequest[] @relation("TestRequestApprover")
-  notifications Notification[] @relation("UserNotifications")
-  notifSubscription NotificationSubscription? @relation("UserNotifSub")
-  crmTasksOwned   CrmTask[] @relation("OwnedCrmTasks")
-  crmTasksCreated CrmTask[] @relation("CreatedCrmTasks")
-  auditLogs AuditLog[] @relation("UserAuditLogs")
-  passwordResets PasswordResetToken[] @relation("PasswordResets")
-  organizedMeetings Meeting[] @relation("MeetingOrganizer")
-  complianceUploads ComplianceDocument[]
-  sampleTrials     SampleTrialRequest[] @relation("TrialRequester")
-  fuzeOrders       FuzeOrder[]          @relation("OrderUser")
-  managedOrders    FuzeOrder[]          @relation("OrderAccountManager")
-  outreachChecks   ContactOutreach[]    @relation("UserOutreach")
-  entityManagers   EntityManager[]      @relation("UserEntityManagers")
-  feedbackReports  FeedbackReport[]     @relation("FeedbackSubmitter")
+  notes                Note[]
+  accessRequest        AccessRequest?
+  testRequestsCreated  TestRequest[]             @relation("TestRequestRequester")
+  testRequestsApproved TestRequest[]             @relation("TestRequestApprover")
+  notifications        Notification[]            @relation("UserNotifications")
+  notifSubscription    NotificationSubscription? @relation("UserNotifSub")
+  crmTasksOwned        CrmTask[]                 @relation("OwnedCrmTasks")
+  crmTasksCreated      CrmTask[]                 @relation("CreatedCrmTasks")
+  auditLogs            AuditLog[]                @relation("UserAuditLogs")
+  passwordResets       PasswordResetToken[]      @relation("PasswordResets")
+  organizedMeetings    Meeting[]                 @relation("MeetingOrganizer")
+  complianceUploads    ComplianceDocument[]
+  sampleTrials         SampleTrialRequest[]      @relation("TrialRequester")
+  fuzeOrders           FuzeOrder[]               @relation("OrderUser")
+  managedOrders        FuzeOrder[]               @relation("OrderAccountManager")
+  outreachChecks       ContactOutreach[]         @relation("UserOutreach")
+  entityManagers       EntityManager[]           @relation("UserEntityManagers")
+  feedbackReports      FeedbackReport[]          @relation("FeedbackSubmitter")
 
   // NEED-7a — self-service org user roster invitations. The inviter
   // sends a magic-link signup invite; the invitee accepts and lands
@@ -248,7 +248,7 @@ model User {
   acceptedOrgInvitations OrgInvitation[] @relation("OrgInviteAcceptor")
 
   // NEED-6 — brand spec acknowledgements this user clicked through.
-  specAcknowledgements   BrandSpecAcknowledgement[] @relation("SpecAckUser")
+  specAcknowledgements BrandSpecAcknowledgement[] @relation("SpecAckUser")
 
   // Weekly Exec Review (gated dashboard — see WeeklyExecReport)
   ownedWeeklyReports   WeeklyExecReport[]      @relation("WeeklyReportOwner")
@@ -257,15 +257,15 @@ model User {
 
   // BD Wizard Phase 3 — sequences this rep owns. A sequence is a multi-step
   // outbound run against (brand, contact, rep). Inverse of BDSequence.rep.
-  bdSequences          BDSequence[]            @relation("UserBDSequences")
+  bdSequences BDSequence[] @relation("UserBDSequences")
 
   // Saved email templates owned by this user (ticket #24). Includes PRIVATE
   // and SHARED ones they authored. GLOBAL templates have ownerId=null and
   // therefore don't appear in this collection.
-  emailTemplates       EmailTemplate[]         @relation("EmailTemplateOwner")
+  emailTemplates EmailTemplate[] @relation("EmailTemplateOwner")
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([role])
   @@index([email])
@@ -276,26 +276,26 @@ model User {
 // ─────────────────────────────────────────────
 
 model Brand {
-  id     String @id @default(cuid())
-  name   String @unique
-  knackId String? @unique
+  id                String    @id @default(cuid())
+  name              String    @unique
+  knackId           String?   @unique
   // HubSpot migration — stamped on import so re-runs of the importer
   // update existing rows instead of creating duplicates. Distinct from
   // knackId (legacy Knack-app import). Both can coexist on the same
   // brand if the same company existed in both systems.
-  hubspotId String? @unique
+  hubspotId         String?   @unique
   hubspotImportedAt DateTime?
 
-  pipelineStage      PipelineStage @default(LEAD)
-  customerType       String?
-  leadReferralSource String?
+  pipelineStage        PipelineStage @default(LEAD)
+  customerType         String?
+  leadReferralSource   String?
   dateOfInitialContact DateTime?
 
-  website        String?
+  website         String?
   linkedInProfile String?
-  backgroundInfo String?
-  researchData   Json?
-  researchDate   DateTime?
+  backgroundInfo  String?
+  researchData    Json?
+  researchDate    DateTime?
 
   projectType        String?
   projectDescription String?
@@ -312,34 +312,34 @@ model Brand {
   referralValue       Float?
 
   // ─── Phase 11A — geocoded HQ coordinates for the supply-chain globe.
-  lat                 Float?
-  lng                 Float?
+  lat Float?
+  lng Float?
 
   // ─── Phase 11C — Predictive churn (Claude-driven, nightly) ─
-  churnRiskScore      Float?
-  churnRiskUpdatedAt  DateTime?
-  churnRiskReasoning  String?
+  churnRiskScore     Float?
+  churnRiskUpdatedAt DateTime?
+  churnRiskReasoning String?
 
   // ─── MB-4 — ML-lite pipeline-value prediction ──────────────
   // Stamped nightly by /api/cron/recompute-pipeline-predictions.
   // predictedValueUSD = expectedAnnualVolumeL × $36/L × stageProbability.
   // factors is the breakdown so an admin row can be inspected
   // without re-running the helper.
-  predictedValueUSD          Float?
-  predictedValueComputedAt   DateTime?
-  predictedValueFactors      Json?
+  predictedValueUSD        Float?
+  predictedValueComputedAt DateTime?
+  predictedValueFactors    Json?
 
   // Validation fields (Phase 1 brand audit)
-  validationStatus  String?   // verified | irrelevant | dead | duplicate | pending | unknown
-  validationReason  String?   // AI-generated explanation for the classification
-  validationDate    DateTime? // When last validated
-  fuzeRelevance     String?   // high | medium | low | none — can we sell FUZE to them?
-  textileCategory   String?   // What they actually make: apparel, home textiles, workwear, etc.
-  companyStatus     String?   // active | closed | acquired | unknown
-  validationData    Json?     // Full AI response + web research results
+  validationStatus String? // verified | irrelevant | dead | duplicate | pending | unknown
+  validationReason String? // AI-generated explanation for the classification
+  validationDate   DateTime? // When last validated
+  fuzeRelevance    String? // high | medium | low | none — can we sell FUZE to them?
+  textileCategory  String? // What they actually make: apparel, home textiles, workwear, etc.
+  companyStatus    String? // active | closed | acquired | unknown
+  validationData   Json? // Full AI response + web research results
 
   salesRepId String?
-  salesRep   User?  @relation("BrandSalesRep", fields: [salesRepId], references: [id])
+  salesRep   User?   @relation("BrandSalesRep", fields: [salesRepId], references: [id])
 
   // BD Wizard concurrency lock — soft reservation with 30-min TTL so two
   // reps can't start the wizard on the same brand at the same second. The
@@ -371,34 +371,34 @@ model Brand {
   paidAudienceTagged   Boolean   @default(false)
   paidAudienceTaggedAt DateTime?
 
-  contacts    Contact[]
-  bdSequences BDSequence[]  @relation("BrandBDSequences")
-  factories   BrandFactory[]
-  submissions FabricSubmission[]
-  fabrics     Fabric[]
-  projects    Project[]
-  products    Product[]
-  sows        SOW[]
-  invoices    Invoice[]
-  notes       Note[]
-  users       User[]         @relation("BrandUsers")
-  testRequests TestRequest[] @relation("TestRequestBrand")
-  sampleTrials SampleTrialRequest[] @relation("TrialBrand")
-  fuzeConsumptions FuzeConsumption[] @relation("ConsumptionBrand")
-  fuzeOrders       FuzeOrder[]      @relation("OrderBrand")
-  orderAllocations OrderBrandAllocation[] @relation("BrandOrderAllocations")
-  pricingTiers     BrandPricingTier[]      @relation("BrandPricingTiers")
+  contacts             Contact[]
+  bdSequences          BDSequence[]               @relation("BrandBDSequences")
+  factories            BrandFactory[]
+  submissions          FabricSubmission[]
+  fabrics              Fabric[]
+  projects             Project[]
+  products             Product[]
+  sows                 SOW[]
+  invoices             Invoice[]
+  notes                Note[]
+  users                User[]                     @relation("BrandUsers")
+  testRequests         TestRequest[]              @relation("TestRequestBrand")
+  sampleTrials         SampleTrialRequest[]       @relation("TrialBrand")
+  fuzeConsumptions     FuzeConsumption[]          @relation("ConsumptionBrand")
+  fuzeOrders           FuzeOrder[]                @relation("OrderBrand")
+  orderAllocations     OrderBrandAllocation[]     @relation("BrandOrderAllocations")
+  pricingTiers         BrandPricingTier[]         @relation("BrandPricingTiers")
   // NEED-6 — factory acknowledgements of this brand's spec.
   specAcknowledgements BrandSpecAcknowledgement[] @relation("BrandSpecAcks")
-  profile          BrandProfile?           @relation("BrandHasProfile")
-  hangtagQRs       HangtagQR[]             @relation("BrandHangtagQR")
-  esgSnapshots     BrandEsgSnapshot[]      @relation("BrandEsgSnapshots")
-  recipeRequests   RecipeRequest[]         @relation("BrandRecipeRequests")
-  factoryInvitations FactoryInvitation[]   @relation("BrandFactoryInvitations")
-  meetings     Meeting[]      @relation("MeetingBrand")
-  crmTasks     CrmTask[]      @relation("BrandCrmTasks")
-  sourceRecords SourceRecord[]
-  engagement BrandEngagement? @relation("BrandEngagement")
+  profile              BrandProfile?              @relation("BrandHasProfile")
+  hangtagQRs           HangtagQR[]                @relation("BrandHangtagQR")
+  esgSnapshots         BrandEsgSnapshot[]         @relation("BrandEsgSnapshots")
+  recipeRequests       RecipeRequest[]            @relation("BrandRecipeRequests")
+  factoryInvitations   FactoryInvitation[]        @relation("BrandFactoryInvitations")
+  meetings             Meeting[]                  @relation("MeetingBrand")
+  crmTasks             CrmTask[]                  @relation("BrandCrmTasks")
+  sourceRecords        SourceRecord[]
+  engagement           BrandEngagement?           @relation("BrandEngagement")
 
   // Brand-stipulated FUZE specification (KUIU promise May 2026 — Andrew
   // → Joseph: "you stipulate in the setup ... ongoing ICP testing at
@@ -444,21 +444,21 @@ model Brand {
 // ─────────────────────────────────────────────
 
 model Factory {
-  id      String @id @default(cuid())
-  name    String
-  knackId String? @unique
+  id                String    @id @default(cuid())
+  name              String
+  knackId           String?   @unique
   // HubSpot migration — stamped on import so contacts whose
   // "Associated Company IDs (Primary)" maps to a HubSpot company
   // that's a Factory in Atlas can resolve via this id rather than
   // landing as orphans. Same pattern as Brand.hubspotId.
-  hubspotId String? @unique
+  hubspotId         String?   @unique
   hubspotImportedAt DateTime?
 
-  chineseName  String?
-  millType     String?
-  specialty    String?
-  purchasing   String?
-  annualSales  String?
+  chineseName String?
+  millType    String?
+  specialty   String?
+  purchasing  String?
+  annualSales String?
 
   address          String?
   city             String?
@@ -468,8 +468,8 @@ model Factory {
 
   // Phase 11A — geocoded coordinates for the supply-chain globe.
   // Populated by scripts/geocode-entities.ts via Nominatim.
-  lat              Float?
-  lng              Float?
+  lat Float?
+  lng Float?
 
   development          String?
   presentationComplete Boolean?
@@ -477,20 +477,20 @@ model Factory {
   brandNominated       String?
 
   // ─── Searchable / Discovery Fields ─────────────
-  productTypes      String?   // JSON array: ["activewear","denim","intimates","socks","wovens","knits","outerwear","home_textiles","non_woven","medical","industrial"]
-  capabilities      String?   // JSON array: ["dyeing","finishing","printing","knitting","weaving","cut_sew","coating","laminating","embroidery","laser_cutting","digital_printing"]
-  certifications    String?   // JSON array: ["oeko_tex_100","bluesign","gots","grs","iso_9001","iso_14001","wrap","bsci","sedex","higg"]
-  fabricTypes       String?   // JSON array: ["jersey","interlock","pique","fleece","terry","mesh","rib","twill","poplin","satin","denim","nylon","polyester","cotton","blends","recycled"]
-  moqMeters         Int?      // Minimum order quantity in meters
-  leadTimeDays      Int?      // Typical lead time in days
-  capacityMtMonth   Int?      // Monthly capacity in metric tons
-  yearEstablished   Int?      // Year factory was established
-  employeeCount     Int?      // Approximate headcount
-  fuzeEnabled       Boolean?  // Has active FUZE treatment capability
-  fuzeApplications  String?   // JSON array: ["bath_exhaust","spray_finish","jeanologia","wash_cycle","yarn_dye"]
-  website           String?
-  description       String?   // Free-text about the factory, searchable
-  profileComplete   Boolean   @default(false)  // Whether discovery profile is filled out
+  productTypes     String? // JSON array: ["activewear","denim","intimates","socks","wovens","knits","outerwear","home_textiles","non_woven","medical","industrial"]
+  capabilities     String? // JSON array: ["dyeing","finishing","printing","knitting","weaving","cut_sew","coating","laminating","embroidery","laser_cutting","digital_printing"]
+  certifications   String? // JSON array: ["oeko_tex_100","bluesign","gots","grs","iso_9001","iso_14001","wrap","bsci","sedex","higg"]
+  fabricTypes      String? // JSON array: ["jersey","interlock","pique","fleece","terry","mesh","rib","twill","poplin","satin","denim","nylon","polyester","cotton","blends","recycled"]
+  moqMeters        Int? // Minimum order quantity in meters
+  leadTimeDays     Int? // Typical lead time in days
+  capacityMtMonth  Int? // Monthly capacity in metric tons
+  yearEstablished  Int? // Year factory was established
+  employeeCount    Int? // Approximate headcount
+  fuzeEnabled      Boolean? // Has active FUZE treatment capability
+  fuzeApplications String? // JSON array: ["bath_exhaust","spray_finish","jeanologia","wash_cycle","yarn_dye"]
+  website          String?
+  description      String? // Free-text about the factory, searchable
+  profileComplete  Boolean  @default(false) // Whether discovery profile is filled out
 
   raw Json?
 
@@ -507,25 +507,26 @@ model Factory {
   distributorTierIndex Int?
 
   salesRepId String?
-  salesRep   User?  @relation("FactorySalesRep", fields: [salesRepId], references: [id])
+  salesRep   User?   @relation("FactorySalesRep", fields: [salesRepId], references: [id])
 
-  contacts      Contact[]
-  brands        BrandFactory[]
-  submissions   FabricSubmission[]
-  fabrics       Fabric[]
-  fuzeTestRequests FuzeTestRequest[] @relation("FuzeTestFactory")
-  projects      Project[]      @relation("ProjectFactory")
-  invoices      Invoice[]
-  users         User[]         @relation("FactoryUsers")
-  sourceRecords SourceRecord[]
-  accessRequests AccessRequest[] @relation("AccessRequestFactory")
-  sampleTrials   SampleTrialRequest[] @relation("FactoryTrials")
-  distributorDocs DistributorDocument[] @relation("DistributorDocFactory")
-  fuzeOrders      FuzeOrder[]          @relation("FactoryOrders")
-  fuzeConsumptions FuzeConsumption[]   @relation("FactoryConsumption")
-  distributorPricing DistributorPricing[] @relation("FactoryDistributorPricing")
-  notes           Note[]               @relation("FactoryNotes")
-  recipeRequests  RecipeRequest[]      @relation("FactoryRecipeRequests")
+  contacts             Contact[]
+  brands               BrandFactory[]
+  distributorRoster    DistributorFactory[]       @relation("FactoryDistributorRoster")
+  submissions          FabricSubmission[]
+  fabrics              Fabric[]
+  fuzeTestRequests     FuzeTestRequest[]          @relation("FuzeTestFactory")
+  projects             Project[]                  @relation("ProjectFactory")
+  invoices             Invoice[]
+  users                User[]                     @relation("FactoryUsers")
+  sourceRecords        SourceRecord[]
+  accessRequests       AccessRequest[]            @relation("AccessRequestFactory")
+  sampleTrials         SampleTrialRequest[]       @relation("FactoryTrials")
+  distributorDocs      DistributorDocument[]      @relation("DistributorDocFactory")
+  fuzeOrders           FuzeOrder[]                @relation("FactoryOrders")
+  fuzeConsumptions     FuzeConsumption[]          @relation("FactoryConsumption")
+  distributorPricing   DistributorPricing[]       @relation("FactoryDistributorPricing")
+  notes                Note[]                     @relation("FactoryNotes")
+  recipeRequests       RecipeRequest[]            @relation("FactoryRecipeRequests")
   // NEED-6 — this factory's ack-trail across every brand it supplies.
   specAcknowledgements BrandSpecAcknowledgement[] @relation("FactorySpecAcks")
 
@@ -555,19 +556,40 @@ model BrandFactory {
   @@index([factoryId])
 }
 
+// Distributor ↔ Factory many-to-many (T5 of phase 16 — Tina Distributor's
+// "I want to add a factory to my org without an admin in the loop" ask).
+// Mirrors BrandFactory in shape. Factory.distributorId stays in place as
+// the "primary distributor" pointer; this junction lets a distributor
+// also claim factories they share with other distributors (Honghao /
+// Texwell / SRS overlap) without overwriting that pointer.
+model DistributorFactory {
+  id            String      @id @default(cuid())
+  distributorId String
+  factoryId     String
+  distributor   Distributor @relation("DistributorFactoryRoster", fields: [distributorId], references: [id])
+  factory       Factory     @relation("FactoryDistributorRoster", fields: [factoryId], references: [id])
+
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@unique([distributorId, factoryId])
+  @@index([distributorId])
+  @@index([factoryId])
+}
+
 // ─────────────────────────────────────────────
 // DISTRIBUTORS
 // ─────────────────────────────────────────────
 
 model Distributor {
-  id      String @id @default(cuid())
-  name    String
-  knackId String? @unique
+  id                String    @id @default(cuid())
+  name              String
+  knackId           String?   @unique
   // HubSpot migration — same pattern as Brand.hubspotId and
   // Factory.hubspotId. Lets contacts whose company maps to an
   // Atlas distributor resolve to the right entity instead of
   // becoming an orphan or creating a duplicate Brand.
-  hubspotId String? @unique
+  hubspotId         String?   @unique
   hubspotImportedAt DateTime?
 
   chineseName  String?
@@ -576,50 +598,51 @@ model Distributor {
   annualSales  String?
 
   // Location
-  country      String?
-  region       String?   // "South Asia", "Middle East", "East Asia", "Europe", "Latin America", etc.
-  city         String?
-  address      String?
+  country String?
+  region  String? // "South Asia", "Middle East", "East Asia", "Europe", "Latin America", etc.
+  city    String?
+  address String?
 
   // Phase 11A — geocoded coordinates for the supply-chain globe.
-  lat          Float?
-  lng          Float?
+  lat Float?
+  lng Float?
 
   // Phase 11F — opt-in zero-touch auto-reorder.
   autoReorderEnabled Boolean @default(false)
 
   // Contact
-  email        String?
-  phone        String?
-  website      String?
+  email   String?
+  phone   String?
+  website String?
 
   // Status
-  status       String   @default("ACTIVE")  // ACTIVE, INACTIVE, ONBOARDING
-  active       Boolean  @default(true)
+  status String  @default("ACTIVE") // ACTIVE, INACTIVE, ONBOARDING
+  active Boolean @default(true)
 
   // Coverage — countries this distributor serves
-  coverageCountries String?  // JSON array: ["India","Bangladesh","Sri Lanka"]
-  localCurrency     String?  // Primary local currency code: INR, AED, EUR, TWD, CNY, etc.
+  coverageCountries String? // JSON array: ["India","Bangladesh","Sri Lanka"]
+  localCurrency     String? // Primary local currency code: INR, AED, EUR, TWD, CNY, etc.
 
-  notes        String?
+  notes String?
 
   raw Json?
 
-  contacts      Contact[]
-  factories     Factory[]      @relation("FactoryDistributor")
-  projects      Project[]      @relation("ProjectDistributor")
-  invoices      Invoice[]
-  documents     DistributorDocument[]
-  users         User[]         @relation("DistributorUsers")
-  sourceRecords SourceRecord[]
-  fuzeOrders    FuzeOrder[]    @relation("OrderDistributor")
-  testRequests  TestRequest[]  @relation("TestRequestDistributor")
+  contacts          Contact[]
+  factories         Factory[]                 @relation("FactoryDistributor")
+  factoryRoster     DistributorFactory[]      @relation("DistributorFactoryRoster")
+  projects          Project[]                 @relation("ProjectDistributor")
+  invoices          Invoice[]
+  documents         DistributorDocument[]
+  users             User[]                    @relation("DistributorUsers")
+  sourceRecords     SourceRecord[]
+  fuzeOrders        FuzeOrder[]               @relation("OrderDistributor")
+  testRequests      TestRequest[]             @relation("TestRequestDistributor")
   // Distributor-owned fabric portfolio — fabrics they're testing
   // independently or in co-op programs.
-  fabrics       Fabric[]       @relation("FabricDistributor")
-  pricing       DistributorPricing[] @relation("DistributorPricing")
-  inventory     DistributorInventory? @relation("DistributorInventory")
-  restockOrders DistributorRestockOrder[] @relation("DistributorRestockOrders")
+  fabrics           Fabric[]                  @relation("FabricDistributor")
+  pricing           DistributorPricing[]      @relation("DistributorPricing")
+  inventory         DistributorInventory?     @relation("DistributorInventory")
+  restockOrders     DistributorRestockOrder[] @relation("DistributorRestockOrders")
   // Restock orders this distributor receives from sub-distributors —
   // i.e. the inverse of `restockOrders`, fired when a sub-distributor
   // places an order against this (master) distributor instead of FUZE.
@@ -646,13 +669,13 @@ model Distributor {
   // Master → Sub wholesale pricing (only meaningful when this dist
   // acts as a master and has children).
   subDistributorPricePerLiter Float?
-  subDistributorCurrency      String?  // Master's currency to sub (often local — e.g. RMB for Tandy's China master)
+  subDistributorCurrency      String? // Master's currency to sub (often local — e.g. RMB for Tandy's China master)
   subDistributorNotes         String?
 
   // FUZE → Distributor pricing (what FUZE charges this distributor for restock)
-  fuzeRestockPricePerLiter Float?   // USD/L that FUZE charges this distributor
-  fuzeRestockCurrency      String?  @default("USD")
-  fuzeRestockNotes         String?  // Admin notes on pricing terms
+  fuzeRestockPricePerLiter Float? // USD/L that FUZE charges this distributor
+  fuzeRestockCurrency      String? @default("USD")
+  fuzeRestockNotes         String? // Admin notes on pricing terms
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -667,11 +690,11 @@ model Distributor {
 // CONTAINER_20 (10 gaylords / 6,080L), CONTAINER_40 (20 gaylords / 12,160L)
 // ─────────────────────────────────────────────
 model DistributorRestockOrder {
-  id              String   @id @default(cuid())
-  orderNumber     String   @unique  // FUZE-RST-YYYYMMDD-XXXX
+  id          String @id @default(cuid())
+  orderNumber String @unique // FUZE-RST-YYYYMMDD-XXXX
 
-  distributorId   String
-  distributor     Distributor @relation("DistributorRestockOrders", fields: [distributorId], references: [id])
+  distributorId String
+  distributor   Distributor @relation("DistributorRestockOrders", fields: [distributorId], references: [id])
 
   // Where the restock order is sourced FROM. Null = ordered direct
   // from FUZE HQ (the original behavior, still the default for master
@@ -682,38 +705,38 @@ model DistributorRestockOrder {
   targetDistributorId String?
   targetDistributor   Distributor? @relation("MasterIncomingRestocks", fields: [targetDistributorId], references: [id])
 
-  orderedById     String?  // User who placed the order
+  orderedById  String? // User who placed the order
   // What was ordered
-  unitType        String   // CARBOY | GAYLORD | CONTAINER_20 | CONTAINER_40
-  unitQuantity    Int      // Number of those units
-  totalLiters     Float    // Computed total liters
+  unitType     String // CARBOY | GAYLORD | CONTAINER_20 | CONTAINER_40
+  unitQuantity Int // Number of those units
+  totalLiters  Float // Computed total liters
 
   // Quote / pricing
   pricePerLiter   Float
-  currency        String   @default("USD")
+  currency        String    @default("USD")
   totalPrice      Float
   quoteAcceptedAt DateTime?
 
   // Shipping
-  shippingAddress String?
-  shippingCity    String?
-  shippingCountry String?
-  trackingNumber  String?
-  carrier         String?
-  shippedDate     DateTime?
-  estimatedDelivery DateTime?
-  deliveredDate   DateTime?
-  receivedConfirmedAt DateTime?  // Distributor confirms receipt
+  shippingAddress     String?
+  shippingCity        String?
+  shippingCountry     String?
+  trackingNumber      String?
+  carrier             String?
+  shippedDate         DateTime?
+  estimatedDelivery   DateTime?
+  deliveredDate       DateTime?
+  receivedConfirmedAt DateTime? // Distributor confirms receipt
 
   // Status workflow:
   // DRAFT → PENDING_APPROVAL → APPROVED → PROCESSING → SHIPPED → DELIVERED → RECEIVED → CANCELLED
-  status          String   @default("PENDING_APPROVAL")
+  status String @default("PENDING_APPROVAL")
 
-  approvedAt      DateTime?
-  approvedById    String?
+  approvedAt   DateTime?
+  approvedById String?
 
-  notes           String?
-  adminNotes      String?
+  notes      String?
+  adminNotes String?
 
   // Sample / FOC handling — Tina Distributor #cmo9jdb1a request.
   // orderCategory: PRODUCTION | SAMPLE | HANGTAG. Defaults to
@@ -722,11 +745,11 @@ model DistributorRestockOrder {
   // (which would otherwise fail the international-Gaylord-minimum
   // gate). isFOC = "free of charge" — distributor + admin both see
   // the line item but the totalPrice on FOC orders is forced to 0.
-  orderCategory   String?  @default("PRODUCTION")
-  isFOC           Boolean  @default(false)
+  orderCategory String? @default("PRODUCTION")
+  isFOC         Boolean @default(false)
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([distributorId])
   @@index([status])
@@ -739,25 +762,25 @@ model DistributorRestockOrder {
 // ─────────────────────────────────────────────
 
 model Lab {
-  id      String @id @default(cuid())
-  name    String @unique
+  id      String  @id @default(cuid())
+  name    String  @unique
   knackId String? @unique
 
   // Location
-  address   String?
-  city      String?
-  state     String?
-  country   String?
-  region    String?   // "Asia Pacific", "North America", "Europe", etc.
+  address String?
+  city    String?
+  state   String?
+  country String?
+  region  String? // "Asia Pacific", "North America", "Europe", etc.
 
   // Contact
-  website   String?
-  email     String?
-  phone     String?
+  website String?
+  email   String?
+  phone   String?
 
   // Capabilities & Certifications
-  accreditations String?  // "ISO 17025, TAF, CNAS" etc.
-  capabilities   String?  // Comma-separated: "ICP,ANTIBACTERIAL,FUNGAL,ODOR,UV"
+  accreditations String? // "ISO 17025, TAF, CNAS" etc.
+  capabilities   String? // Comma-separated: "ICP,ANTIBACTERIAL,FUNGAL,ODOR,UV"
   icpApproved    Boolean @default(false)
   abApproved     Boolean @default(false)
   fungalApproved Boolean @default(false)
@@ -765,8 +788,8 @@ model Lab {
   uvApproved     Boolean @default(false)
 
   // Notes
-  notes     String?
-  active    Boolean @default(true)
+  notes  String?
+  active Boolean @default(true)
 
   raw Json?
 
@@ -774,36 +797,36 @@ model Lab {
   customerNumber String?
 
   // ─── Phase 10A — lab self-service profile fields ────────────
-  opsContactName    String?
-  opsContactEmail   String?
-  opsContactPhone   String?
-  timezone          String?   // IANA tz, e.g. "America/Denver"
-  certifications    Json?     // [{ name, issuer, validUntil, verifiedAt }]
-  accreditationsJson Json?    // [{ standard, scope }] — ISO 17025 etc.
-  websiteUrl        String?
-  instrumentList    Json?     // [{ name, model, serial, calibrationDate }]
-  servicesOffered   Json?     // ["AATCC 100", "ASTM E2149", ...]
-  isFuzeOwned       Boolean   @default(false)  // true for the SLC FUZE lab
-  defaultLanguage   String    @default("en")
+  opsContactName     String?
+  opsContactEmail    String?
+  opsContactPhone    String?
+  timezone           String? // IANA tz, e.g. "America/Denver"
+  certifications     Json? // [{ name, issuer, validUntil, verifiedAt }]
+  accreditationsJson Json? // [{ standard, scope }] — ISO 17025 etc.
+  websiteUrl         String?
+  instrumentList     Json? // [{ name, model, serial, calibrationDate }]
+  servicesOffered    Json? // ["AATCC 100", "ASTM E2149", ...]
+  isFuzeOwned        Boolean @default(false) // true for the SLC FUZE lab
+  defaultLanguage    String  @default("en")
 
   // Phase 11A — geocoded coordinates for the supply-chain globe.
-  lat               Float?
-  lng               Float?
+  lat Float?
+  lng Float?
 
   // Phase 10B / 10F relations
-  tests       LabTest[]
-  credits     LabCredit[]
+  tests   LabTest[]
+  credits LabCredit[]
 
-  users         User[]       @relation("LabUsers")
-  testRuns      TestRun[]
-  testRequests  TestRequest[]
-  sourceRecords SourceRecord[]
-  services      LabService[]
-  documents     Document[]
-  shipments SampleShipment[] @relation("LabShipments")
-  sampleTrials SampleTrialRequest[] @relation("TrialIcpLab")
-  fuzeTestRequests FuzeTestRequest[] @relation("FuzeTestLab")
-  formTemplates LabFormTemplate[] @relation("LabFormTemplates")
+  users            User[]               @relation("LabUsers")
+  testRuns         TestRun[]
+  testRequests     TestRequest[]
+  sourceRecords    SourceRecord[]
+  services         LabService[]
+  documents        Document[]
+  shipments        SampleShipment[]     @relation("LabShipments")
+  sampleTrials     SampleTrialRequest[] @relation("TrialIcpLab")
+  fuzeTestRequests FuzeTestRequest[]    @relation("FuzeTestLab")
+  formTemplates    LabFormTemplate[]    @relation("LabFormTemplates")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -821,17 +844,17 @@ model LabService {
   labId String
   lab   Lab    @relation(fields: [labId], references: [id], onDelete: Cascade)
 
-  testType      String   // "ICP", "ANTIBACTERIAL", "FUNGAL", "ODOR", "UV", "MICROFIBER", etc.
-  testMethod    String?  // "AATCC 100", "ASTM E2149", "JIS L 1902", "ICP-OES", etc.
-  description   String?  // e.g. "Antibacterial - AATCC 100 (S. aureus + K. pneumoniae)"
-  priceUSD      Float?   // Our negotiated price per test
-  listPriceUSD  Float?   // Lab's list price (before discount)
-  turnaroundDays Int?    // Standard turnaround in business days
-  rushPriceUSD  Float?   // Rush/expedited price
-  rushDays      Int?     // Rush turnaround days
-  preferred     Boolean  @default(false) // FUZE-recommended lab for this specific test
-  preferredNote String?  // e.g. "Best price", "Fastest turnaround", "Best accuracy"
-  notes         String?  // Special conditions, minimum qty, etc.
+  testType       String // "ICP", "ANTIBACTERIAL", "FUNGAL", "ODOR", "UV", "MICROFIBER", etc.
+  testMethod     String? // "AATCC 100", "ASTM E2149", "JIS L 1902", "ICP-OES", etc.
+  description    String? // e.g. "Antibacterial - AATCC 100 (S. aureus + K. pneumoniae)"
+  priceUSD       Float? // Our negotiated price per test
+  listPriceUSD   Float? // Lab's list price (before discount)
+  turnaroundDays Int? // Standard turnaround in business days
+  rushPriceUSD   Float? // Rush/expedited price
+  rushDays       Int? // Rush turnaround days
+  preferred      Boolean @default(false) // FUZE-recommended lab for this specific test
+  preferredNote  String? // e.g. "Best price", "Fastest turnaround", "Best accuracy"
+  notes          String? // Special conditions, minimum qty, etc.
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -841,23 +864,23 @@ model LabService {
 }
 
 model TestCatalogItem {
-  id              String  @id @default(cuid())
-  testKey         String  @unique  // "recipe-build", "antibacterial-screen", etc.
-  name            String
-  description     String?
-  category        String  @default("performance") // recipe_build, performance, quality, certification
-  moqMeters       Float   @default(1)
-  controlRequired Boolean @default(false)
-  controlNote     String?
-  turnaroundDays  Int     @default(7)
+  id               String   @id @default(cuid())
+  testKey          String   @unique // "recipe-build", "antibacterial-screen", etc.
+  name             String
+  description      String?
+  category         String   @default("performance") // recipe_build, performance, quality, certification
+  moqMeters        Float    @default(1)
+  controlRequired  Boolean  @default(false)
+  controlNote      String?
+  turnaroundDays   Int      @default(7)
   estimatedCostUsd Float?
-  methods         String[] // test methods included
-  active          Boolean @default(true)
-  sortOrder       Int     @default(0)
+  methods          String[] // test methods included
+  active           Boolean  @default(true)
+  sortOrder        Int      @default(0)
 
-  updatedBy       String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([active])
 }
@@ -880,31 +903,31 @@ model Contact {
   address String?
 
   // Enrichment fields
-  personalEmail    String?
-  linkedinUrl      String?
-  jobTitle         String?   // VP Supply Chain, Director Sourcing, etc.
-  seniority        String?   // vp, director, c_suite, manager
-  emailStatus      String?   // verified, unavailable, extrapolated
-  enrichedAt       DateTime?
-  enrichmentSource String?   // apollo, manual, research, hubspot_migration
-  apolloId         String?   // Apollo person ID for re-enrichment
+  personalEmail     String?
+  linkedinUrl       String?
+  jobTitle          String? // VP Supply Chain, Director Sourcing, etc.
+  seniority         String? // vp, director, c_suite, manager
+  emailStatus       String? // verified, unavailable, extrapolated
+  enrichedAt        DateTime?
+  enrichmentSource  String? // apollo, manual, research, hubspot_migration
+  apolloId          String? // Apollo person ID for re-enrichment
   // HubSpot migration — stamped on import so re-runs of the importer
   // update existing rows instead of creating duplicates. Falls through
   // to email match for contacts that existed in Atlas before the
   // HubSpot pull.
-  hubspotId        String?  @unique
+  hubspotId         String?   @unique
   hubspotImportedAt DateTime?
 
   // Outreach tracking
-  outreachStatus   String?   @default("not_contacted") // not_contacted, contacted, responded, meeting_booked, not_interested
-  lastContactedAt  DateTime?
-  lastResponseAt   DateTime?
-  outreachCount    Int       @default(0)
+  outreachStatus  String?   @default("not_contacted") // not_contacted, contacted, responded, meeting_booked, not_interested
+  lastContactedAt DateTime?
+  lastResponseAt  DateTime?
+  outreachCount   Int       @default(0)
 
   // Categorization
-  vertical         String?   // apparel, hospitality, workwear, home_textiles
-  decisionMaker    Boolean   @default(false)
-  companyRevenue   String?
+  vertical       String? // apparel, hospitality, workwear, home_textiles
+  decisionMaker  Boolean @default(false)
+  companyRevenue String?
 
   // ─ Hygiene / placeholder-detection ──────────────────────────────
   // Populated by /api/admin/contact-hygiene/scan (admin sweep) or
@@ -912,13 +935,13 @@ model Contact {
   // result of assessContact() from src/lib/contact-quality.ts so the
   // UI doesn't have to recompute on every render and the flag
   // survives across refreshes.
-  hygieneScore     Int?       // 0-100, higher = more likely real
-  hygieneVerdict   String?    // real | suspicious | placeholder | role_account
-  hygieneFlags     String?    // JSON array of reasons (stringified)
-  hygieneCheckedAt DateTime?  // when the hygiene pass last ran
-  emailValidity    String?    // valid | invalid | risky | unknown (format-only)
-  linkedinValidity String?    // valid | invalid | unknown (shape-only)
-  hiddenFromWizard Boolean    @default(false) // reversible — admin can unflag
+  hygieneScore     Int? // 0-100, higher = more likely real
+  hygieneVerdict   String? // real | suspicious | placeholder | role_account
+  hygieneFlags     String? // JSON array of reasons (stringified)
+  hygieneCheckedAt DateTime? // when the hygiene pass last ran
+  emailValidity    String? // valid | invalid | risky | unknown (format-only)
+  linkedinValidity String? // valid | invalid | unknown (shape-only)
+  hiddenFromWizard Boolean   @default(false) // reversible — admin can unflag
 
   brandId       String?
   factoryId     String?
@@ -956,12 +979,12 @@ model ContactOutreach {
   contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
 
   userId String
-  user   User @relation("UserOutreach", fields: [userId], references: [id])
+  user   User   @relation("UserOutreach", fields: [userId], references: [id])
 
   type String // LINKEDIN, EMAIL
 
-  sentAt    DateTime @default(now())
-  notes     String?  // optional note about the outreach
+  sentAt DateTime @default(now())
+  notes  String? // optional note about the outreach
 
   createdAt DateTime @default(now())
 
@@ -980,34 +1003,34 @@ model OutreachMessage {
   contactId String
   contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
 
-  channel     String   // sms, email
-  template    String?  // intro, sustainability, competitive, sample_offer, followup
-  subject     String?  // email subject line
-  body        String   // full message body sent
-  toAddress   String   // phone number or email address used
+  channel   String // sms, email
+  template  String? // intro, sustainability, competitive, sample_offer, followup
+  subject   String? // email subject line
+  body      String // full message body sent
+  toAddress String // phone number or email address used
 
-  status      String   @default("sent") // sent, delivered, failed, bounced, replied
-  sentAt      DateTime @default(now())
+  status      String    @default("sent") // sent, delivered, failed, bounced, replied
+  sentAt      DateTime  @default(now())
   deliveredAt DateTime?
   failReason  String?
 
   // Twilio/Resend tracking
-  externalId  String?  // Twilio SID or Resend message ID
-  sentBy      String?  // user ID or "system"
+  externalId String? // Twilio SID or Resend message ID
+  sentBy     String? // user ID or "system"
 
   // ─── Phase 9A — open + click + reply tracking ───────────────
-  trackingToken  String?   @unique  // base64url(16) — pixel + link rewriter
-  openedAt       DateTime?           // first open
-  lastOpenedAt   DateTime?
-  openCount      Int       @default(0)
-  clickedAt      DateTime?           // first click on any tracked link
-  lastClickedAt  DateTime?
-  clickCount     Int       @default(0)
-  repliedAt      DateTime?
-  bouncedAt      DateTime?
-  bounceReason   String?
+  trackingToken String?   @unique // base64url(16) — pixel + link rewriter
+  openedAt      DateTime? // first open
+  lastOpenedAt  DateTime?
+  openCount     Int       @default(0)
+  clickedAt     DateTime? // first click on any tracked link
+  lastClickedAt DateTime?
+  clickCount    Int       @default(0)
+  repliedAt     DateTime?
+  bouncedAt     DateTime?
+  bounceReason  String?
 
-  linkClicks  OutreachLinkClick[]
+  linkClicks OutreachLinkClick[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1022,24 +1045,24 @@ model OutreachMessage {
 
 // ─── Phase 9A — per-link click event log ───────────────────────
 model OutreachLinkClick {
-  id        String @id @default(cuid())
+  id        String          @id @default(cuid())
   messageId String
   message   OutreachMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
   url       String
-  clickedAt DateTime @default(now())
+  clickedAt DateTime        @default(now())
   userAgent String?
-  ipHash    String?  // SHA256 first 8 chars — unique-visitor estimate, not PII
+  ipHash    String? // SHA256 first 8 chars — unique-visitor estimate, not PII
 
   @@index([messageId, clickedAt])
 }
 
 // ─── Phase 9E — Brand pipeline-stage audit trail ──────────────
 model BrandStageTransition {
-  id              String   @id @default(cuid())
-  brandId         String
-  fromStage       String?
-  toStage         String
-  transitionedAt  DateTime @default(now())
+  id               String   @id @default(cuid())
+  brandId          String
+  fromStage        String?
+  toStage          String
+  transitionedAt   DateTime @default(now())
   transitionedById String?
 
   @@index([brandId, transitionedAt])
@@ -1050,8 +1073,8 @@ model BrandStageTransition {
 model BDPlaybook {
   id                          String   @id @default(cuid())
   name                        String   @unique
-  textileCategory             String   // hospitality | activewear | intimates | kids | workwear | medical | industrial | other
-  description                 String   // markdown
+  textileCategory             String // hospitality | activewear | intimates | kids | workwear | medical | industrial | other
+  description                 String // markdown
   recommendedSequenceId       String?
   recommendedEmailTemplateIds String[]
   notes                       String?
@@ -1068,15 +1091,15 @@ model BDPlaybook {
 // When a new brand-side user lands without a brandId, they can
 // request a workspace. Admin reviews under /settings/access-requests.
 model BrandWorkspaceRequest {
-  id                  String   @id @default(cuid())
-  requestedByUserId   String
-  suggestedBrandName  String
-  suggestedDomain     String?
-  status              String   @default("PENDING") // PENDING | APPROVED | REJECTED
-  resolvedAt          DateTime?
-  resolvedByUserId    String?
-  resolvedBrandId     String?
-  createdAt           DateTime @default(now())
+  id                 String    @id @default(cuid())
+  requestedByUserId  String
+  suggestedBrandName String
+  suggestedDomain    String?
+  status             String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  resolvedAt         DateTime?
+  resolvedByUserId   String?
+  resolvedBrandId    String?
+  createdAt          DateTime  @default(now())
 
   @@index([status, createdAt])
   @@index([requestedByUserId])
@@ -1086,16 +1109,16 @@ model BrandWorkspaceRequest {
 // When a user hits a RestrictedSurface and clicks Request access,
 // this row captures the ask. EntityManager + admins get notified.
 model RoleEscalationRequest {
-  id                String   @id @default(cuid())
+  id                String    @id @default(cuid())
   requestedByUserId String
-  scope             String   // "brand" | "factory" | "distributor" | "lab"
+  scope             String // "brand" | "factory" | "distributor" | "lab"
   scopeId           String
   requestedRole     String
   reason            String?
-  status            String   @default("PENDING")
+  status            String    @default("PENDING")
   resolvedAt        DateTime?
   resolvedByUserId  String?
-  createdAt         DateTime @default(now())
+  createdAt         DateTime  @default(now())
 
   @@index([status, createdAt])
   @@index([requestedByUserId])
@@ -1105,25 +1128,25 @@ model RoleEscalationRequest {
 // ─── Phase 15 IMP-4 — Per-user onboarding checklist state ──
 // Keyed by (user, surface) so each portal has its own checklist.
 model UserOnboardingState {
-  id              String    @id @default(cuid())
-  userId          String
-  surface         String    // "brand-portal" | "factory-portal" | ...
-  completedItems  String[]  @default([])
-  dismissed       Boolean   @default(false)
-  dismissedAt     DateTime?
-  updatedAt       DateTime  @updatedAt
-  createdAt       DateTime  @default(now())
+  id             String    @id @default(cuid())
+  userId         String
+  surface        String // "brand-portal" | "factory-portal" | ...
+  completedItems String[]  @default([])
+  dismissed      Boolean   @default(false)
+  dismissedAt    DateTime?
+  updatedAt      DateTime  @updatedAt
+  createdAt      DateTime  @default(now())
 
   @@unique([userId, surface])
   @@index([userId])
 }
 
 model UserPlaybookFavorite {
-  id         String   @id @default(cuid())
+  id         String     @id @default(cuid())
   userId     String
   playbookId String
   playbook   BDPlaybook @relation(fields: [playbookId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
+  createdAt  DateTime   @default(now())
 
   @@unique([userId, playbookId])
   @@index([userId])
@@ -1134,7 +1157,7 @@ model CoachFeedback {
   id           String   @id @default(cuid())
   userId       String
   suggestionId String
-  kind         String   // subject | opener | closer | cta
+  kind         String // subject | opener | closer | cta
   applied      Boolean
   feedback     String?
   createdAt    DateTime @default(now())
@@ -1168,13 +1191,13 @@ model LabTest {
   id                String   @id @default(cuid())
   labId             String
   lab               Lab      @relation(fields: [labId], references: [id], onDelete: Cascade)
-  testType          String   // ICP_MS, AATCC_100, ASTM_E2149, AATCC_30, ISO_18184, ...
-  protocolName      String   // "AATCC 100 — S. aureus, 24hr"
+  testType          String // ICP_MS, AATCC_100, ASTM_E2149, AATCC_30, ISO_18184, ...
+  protocolName      String // "AATCC 100 — S. aureus, 24hr"
   fuzeCostUsd       Float?
   publishedPriceUsd Float?
   slaDays           Int?
   notes             String?
-  protocolJson      Json?    // 10I — incubation, broth, sterilization, etc.
+  protocolJson      Json? // 10I — incubation, broth, sterilization, etc.
   active            Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -1186,16 +1209,16 @@ model LabTest {
 
 // ─── Phase 10F — lab credit ledger ───────────────────────────
 model LabCredit {
-  id              String   @id @default(cuid())
-  labId           String
-  lab             Lab      @relation(fields: [labId], references: [id], onDelete: Cascade)
-  amountUsd       Float
-  sourceType      String   // REFERRAL | OVERPAYMENT | MANUAL_ADJUSTMENT
-  sourceNote      String?
-  createdAt       DateTime @default(now())
+  id               String    @id @default(cuid())
+  labId            String
+  lab              Lab       @relation(fields: [labId], references: [id], onDelete: Cascade)
+  amountUsd        Float
+  sourceType       String // REFERRAL | OVERPAYMENT | MANUAL_ADJUSTMENT
+  sourceNote       String?
+  createdAt        DateTime  @default(now())
   spentOnTestRunId String?
-  spentAt         DateTime?
-  spentNote       String?
+  spentAt          DateTime?
+  spentNote        String?
 
   @@index([labId, spentAt])
 }
@@ -1205,9 +1228,9 @@ model AiTestReview {
   id                String   @id @default(cuid())
   testRunId         String   @unique
   reviewedAt        DateTime @default(now())
-  modelUsed         String   // "claude-sonnet-4-6"
-  flags             Json     // [{ severity, code, message, evidence }]
-  recommendedAction String?  // APPROVE | REVIEW | RETEST | REJECT
+  modelUsed         String // "claude-sonnet-4-6"
+  flags             Json // [{ severity, code, message, evidence }]
+  recommendedAction String? // APPROVE | REVIEW | RETEST | REJECT
   reviewedNotes     String?
 
   @@index([recommendedAction])
@@ -1215,14 +1238,14 @@ model AiTestReview {
 
 // ─── Phase 10K — quiet-hours-aware notification deliveries ───
 model NotificationDelivery {
-  id             String   @id @default(cuid())
+  id             String       @id @default(cuid())
   notificationId String
   notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
   scheduledFor   DateTime
   deliveredAt    DateTime?
-  channel        String   // in_app | email | sms
-  attempts       Int      @default(0)
-  createdAt      DateTime @default(now())
+  channel        String // in_app | email | sms
+  attempts       Int          @default(0)
+  createdAt      DateTime     @default(now())
 
   @@index([scheduledFor, deliveredAt])
   @@index([notificationId])
@@ -1256,8 +1279,8 @@ model Fabric {
   finishNote   String?
   note         String?
 
-  brandId   String?
-  factoryId String?
+  brandId       String?
+  factoryId     String?
   // Distributor-owned fabrics — for fabrics a distributor is testing
   // independently or as part of a co-op program (multi-brand /
   // multi-factory pilots they sponsor). Distinct from factoryId
@@ -1266,49 +1289,49 @@ model Fabric {
   // can have NO factoryId / brandId yet — they're developing it
   // before assigning to anyone.
   distributorId String?
-  brand     Brand?       @relation(fields: [brandId], references: [id])
-  factory   Factory?     @relation(fields: [factoryId], references: [id])
-  distributor Distributor? @relation("FabricDistributor", fields: [distributorId], references: [id])
+  brand         Brand?       @relation(fields: [brandId], references: [id])
+  factory       Factory?     @relation(fields: [factoryId], references: [id])
+  distributor   Distributor? @relation("FabricDistributor", fields: [distributorId], references: [id])
 
   raw Json?
 
   // Expanded fields (v2 intake form)
-  endUse           String?    // Product type: t-shirt, athletic, bedding, etc.
-  targetFuzeTier   String?    // F1, F2, F3, F4
-  annualVolume     String?    // Estimated annual volume
-  quantityType     String?    // ACTUAL, FORECAST, DEVELOPMENT, RD
-  quantityUnit     String?    // meters, yards, kg
-  batchLotNumber   String?    // Manufacturer batch/lot
-  thickness        Float?     // mm
-  shrinkageLength  Float?     // % shrinkage length
-  shrinkageWidth   Float?     // % shrinkage width
-  fabricCategory   String?    // woven, knit, nonwoven
-  knitStitchType   String?    // jersey, rib, interlock, etc.
-  weavePattern     String?    // plain, twill, satin, etc.
-  gauge            String?    // knit gauge
-  threadCountWarp  Int?
-  threadCountWeft  Int?
+  endUse          String? // Product type: t-shirt, athletic, bedding, etc.
+  targetFuzeTier  String? // F1, F2, F3, F4
+  annualVolume    String? // Estimated annual volume
+  quantityType    String? // ACTUAL, FORECAST, DEVELOPMENT, RD
+  quantityUnit    String? // meters, yards, kg
+  batchLotNumber  String? // Manufacturer batch/lot
+  thickness       Float? // mm
+  shrinkageLength Float? // % shrinkage length
+  shrinkageWidth  Float? // % shrinkage width
+  fabricCategory  String? // woven, knit, nonwoven
+  knitStitchType  String? // jersey, rib, interlock, etc.
+  weavePattern    String? // plain, twill, satin, etc.
+  gauge           String? // knit gauge
+  threadCountWarp Int?
+  threadCountWeft Int?
 
   // Pretreatment
-  pretreatment     Json?      // Full pretreatment data as JSON
-  fabricPh         Float?     // pH after pretreatment
+  pretreatment Json? // Full pretreatment data as JSON
+  fabricPh     Float? // pH after pretreatment
 
   // Dyeing
-  dyeApplied       Boolean?
-  dyeStage         String?    // yarn-dyed, piece-dyed, garment-dyed, greige
-  dyeClass         String?    // reactive, disperse, acid, vat, etc.
-  dyeDetails       Json?      // Full dye chemistry as JSON
+  dyeApplied Boolean?
+  dyeStage   String? // yarn-dyed, piece-dyed, garment-dyed, greige
+  dyeClass   String? // reactive, disperse, acid, vat, etc.
+  dyeDetails Json? // Full dye chemistry as JSON
 
   // Chemical finishes
-  finishSoftener   Json?      // Softener details (type, ionic charge, concentration, etc.)
-  finishRepellent  Json?      // Water repellent details
-  finishWicking    Json?      // Moisture management details
-  finishWrinkleFree Json?     // Easy-care finish details
-  finishOther      Json?      // Other finishes (flame retardant, UV, anti-static, etc.)
+  finishSoftener    Json? // Softener details (type, ionic charge, concentration, etc.)
+  finishRepellent   Json? // Water repellent details
+  finishWicking     Json? // Moisture management details
+  finishWrinkleFree Json? // Easy-care finish details
+  finishOther       Json? // Other finishes (flame retardant, UV, anti-static, etc.)
 
   // Intake metadata
-  intakeFormId     String?    // Reference to uploaded intake form
-  intakeParsedAt   DateTime?  // When the intake form was parsed
+  intakeFormId   String? // Reference to uploaded intake form
+  intakeParsedAt DateTime? // When the intake form was parsed
 
   // Development workflow status — the column Tina tracks in her
   // SanMar spreadsheet. Captures where a fabric sits in the
@@ -1319,33 +1342,33 @@ model Fabric {
   // TRIAL_COMPLETE, AWAITING_AM_TEST, AM_TESTING_FUZE_USA,
   // PROCEED_TO_BULK, BULK_PRODUCTION, DROPPED, NO_FURTHER_UPDATE,
   // FURTHER_UPDATE_PENDING. Added May 18 — Tina spreadsheet replacement.
-  developmentStatus           String?
+  developmentStatus String?
 
   // Lab lifecycle
   // UPLOADED → RECEIVED → TESTING → COMPLETE (→ ARCHIVED)
-  labStatus                   String?   @default("UPLOADED")
-  receivedAt                  DateTime?
-  receivedById                String?
-  testingStartedAt            DateTime?
-  testingStartedById          String?
-  testingEstimatedCompletion  DateTime?
-  testingCompletedAt          DateTime?
-  testingCompletedById        String?
-  labNotes                    String?
+  labStatus                  String?   @default("UPLOADED")
+  receivedAt                 DateTime?
+  receivedById               String?
+  testingStartedAt           DateTime?
+  testingStartedById         String?
+  testingEstimatedCompletion DateTime?
+  testingCompletedAt         DateTime?
+  testingCompletedById       String?
+  labNotes                   String?
 
-  contents    FabricContent[]
-  submissions FabricSubmission[]
-  testRequests TestRequest[]
-  fuzeTestRequests FuzeTestRequest[] @relation("FuzeTestFabric")
-  sampleTrials     SampleTrialRequest[] @relation("FabricTrials")
-  fuzeConsumptions FuzeConsumption[] @relation("ConsumptionFabric")
-  fuzeOrders       FuzeOrder[]      @relation("OrderFabric")
-  recipeBenchTests RecipeBenchTest[] @relation("FabricRecipeBenchTests")
-  hangtagQRs       HangtagQR[]       @relation("FabricHangtagQR")
-  solarisTests     SolarisTest[]     @relation("FabricSolarisTests")
-  sampleApplications SampleApplication[] @relation("FabricSampleApplications")
-  shipments SampleShipment[] @relation("FabricShipments")
-  reportShares     FabricReportShare[] @relation("FabricReportShares")
+  contents           FabricContent[]
+  submissions        FabricSubmission[]
+  testRequests       TestRequest[]
+  fuzeTestRequests   FuzeTestRequest[]    @relation("FuzeTestFabric")
+  sampleTrials       SampleTrialRequest[] @relation("FabricTrials")
+  fuzeConsumptions   FuzeConsumption[]    @relation("ConsumptionFabric")
+  fuzeOrders         FuzeOrder[]          @relation("OrderFabric")
+  recipeBenchTests   RecipeBenchTest[]    @relation("FabricRecipeBenchTests")
+  hangtagQRs         HangtagQR[]          @relation("FabricHangtagQR")
+  solarisTests       SolarisTest[]        @relation("FabricSolarisTests")
+  sampleApplications SampleApplication[]  @relation("FabricSampleApplications")
+  shipments          SampleShipment[]     @relation("FabricShipments")
+  reportShares       FabricReportShare[]  @relation("FabricReportShares")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1363,9 +1386,9 @@ model FabricContent {
   fabricId String
   fabric   Fabric @relation(fields: [fabricId], references: [id])
 
-  material      String
-  percent       Float?
-  rawText       String?
+  material String
+  percent  Float?
+  rawText  String?
 
   @@index([fabricId])
   @@index([material])
@@ -1420,9 +1443,9 @@ model FabricSubmission {
   icpReceived Boolean?
   icpPassed   Boolean?
 
-  abSent      Boolean?
-  abReceived  Boolean?
-  abPassed    Boolean?
+  abSent     Boolean?
+  abReceived Boolean?
+  abPassed   Boolean?
 
   progressPercent Float?
 
@@ -1432,7 +1455,7 @@ model FabricSubmission {
   testRequests  TestRequest[]
   documents     Document[]
   sourceRecords SourceRecord[]
-  shipments SampleShipment[] @relation("SubmissionShipments")
+  shipments     SampleShipment[] @relation("SubmissionShipments")
 
   // Phase 7A — brand approval workflow.
   brandApprovalStatus  String?
@@ -1456,7 +1479,7 @@ model FabricSubmission {
 // ─────────────────────────────────────────────
 
 model Project {
-  id      String @id @default(cuid())
+  id      String  @id @default(cuid())
   name    String
   brandId String?
   brand   Brand?  @relation(fields: [brandId], references: [id])
@@ -1464,14 +1487,14 @@ model Project {
   description String?
 
   // ─── Commercial Pipeline Fields ─────────────
-  stage              String    @default("DEVELOPMENT")  // DEVELOPMENT, SAMPLING, TESTING, APPROVED, COMMERCIALIZATION, PRODUCTION, COMPLETE
-  projectedValue     Float?    // Projected annual revenue (USD or currency)
-  actualValue        Float?    // Realized revenue from invoices
-  currency           String    @default("USD")
-  probability        Int       @default(50)             // Win probability 0-100
-  fuzeTier           String?   // F1, F2, F3, F4
-  annualVolumeMeters Float?    // Projected annual production volume in meters
-  annualFuzeLiters   Float?    // Calculated: FUZE liters needed per year
+  stage              String  @default("DEVELOPMENT") // DEVELOPMENT, SAMPLING, TESTING, APPROVED, COMMERCIALIZATION, PRODUCTION, COMPLETE
+  projectedValue     Float? // Projected annual revenue (USD or currency)
+  actualValue        Float? // Realized revenue from invoices
+  currency           String  @default("USD")
+  probability        Int     @default(50) // Win probability 0-100
+  fuzeTier           String? // F1, F2, F3, F4
+  annualVolumeMeters Float? // Projected annual production volume in meters
+  annualFuzeLiters   Float? // Calculated: FUZE liters needed per year
 
   // ─── Manufacturing Assignment ─────────────
   factoryId     String?
@@ -1486,7 +1509,7 @@ model Project {
   testRuns     TestRun[]
   testRequests TestRequest[]
   invoices     Invoice[]
-  meetings     Meeting[] @relation("MeetingProject")
+  meetings     Meeting[]     @relation("MeetingProject")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1554,11 +1577,11 @@ model TestRun {
   lab        Lab?              @relation(fields: [labId], references: [id])
   project    Project?          @relation(fields: [projectId], references: [id])
 
-  testNumber       Int?
-  testType         TestType
-  testMethodRaw    String?
-  testMethodStd    String?
-  testReportNumber String?
+  testNumber               Int?
+  testType                 TestType
+  testMethodRaw            String?
+  testMethodStd            String?
+  testReportNumber         String?
   fuzeInternalReportNumber String?
   postWashReportNumber     String?
 
@@ -1578,26 +1601,26 @@ model TestRun {
   raw Json?
 
   // Multi-test PDF support
-  testNumberInReport Int?      // Which test in a multi-test report (1, 2, ...)
+  testNumberInReport Int? // Which test in a multi-test report (1, 2, ...)
 
   // AI review
-  aiReviewData  Json?          // Merged anomaly review from dual-AI
+  aiReviewData  Json? // Merged anomaly review from dual-AI
   aiReviewDate  DateTime?
-  aiReviewNotes String?        // Human-editable notes from AI flags
+  aiReviewNotes String? // Human-editable notes from AI flags
 
   // MB-3 — plain-English narration for brand-visible test results.
   // Generated async after brandVisible flips true. The brand-voice
   // gate rejects + retries (2x) anything containing silver/nano
   // before persisting.
-  aiNarration                    String?
-  aiNarrationModel               String?
-  aiNarrationGeneratedAt         DateTime?
-  aiNarrationGenerationFailedAt  DateTime?
+  aiNarration                   String?
+  aiNarrationModel              String?
+  aiNarrationGeneratedAt        DateTime?
+  aiNarrationGenerationFailedAt DateTime?
 
   // Brand visibility: only "stamped" tests visible to brand users
-  brandVisible      Boolean  @default(false)
-  brandApprovedById String?
-  brandApprovedAt   DateTime?
+  brandVisible         Boolean   @default(false)
+  brandApprovedById    String?
+  brandApprovedAt      DateTime?
   // Phase 7A — brand approval workflow.
   // PENDING set when brandVisible flips true AND brand.requiresApproval.
   // APPROVED / REJECTED stamped via /api/brand-portal/approve.
@@ -1609,8 +1632,8 @@ model TestRun {
   fungalResult FungalResult?
   odorResult   OdorResult?
 
-  documents     Document[]
-  sourceRecords SourceRecord[]
+  documents        Document[]
+  sourceRecords    SourceRecord[]
   testRequestLines TestRequestLine[]
 
   createdAt DateTime @default(now())
@@ -1654,30 +1677,30 @@ model AntibacterialResult {
   pass         Boolean?
 
   // ── Rich fields for ITS-style reports ──────────────────
-  organism        String?   // "Staphylococcus aureus" or "Escherichia coli"
-  strainNumber    String?   // "ATCC 6538" or "ATCC 25922"
-  testMethodStd   String?   // "AATCC TM100-2019", "JIS L 1902:2015", "ASTM E2149-20"
-  brothMedia      String?   // "Cation Adjusted Mueller Hinton Broth"
-  surfactant      String?   // "0.05% Triton X-100"
-  sterilization   String?   // "UV Sterilization" / "No Sterilization"
-  contactTime     String?   // "24 Hours"
-  incubationTemp  String?   // "37±2°C" / "35±2°C"
-  agarMedium      String?   // "Nutrient Agar" / "Plate Count Agar"
+  organism       String? // "Staphylococcus aureus" or "Escherichia coli"
+  strainNumber   String? // "ATCC 6538" or "ATCC 25922"
+  testMethodStd  String? // "AATCC TM100-2019", "JIS L 1902:2015", "ASTM E2149-20"
+  brothMedia     String? // "Cation Adjusted Mueller Hinton Broth"
+  surfactant     String? // "0.05% Triton X-100"
+  sterilization  String? // "UV Sterilization" / "No Sterilization"
+  contactTime    String? // "24 Hours"
+  incubationTemp String? // "37±2°C" / "35±2°C"
+  agarMedium     String? // "Nutrient Agar" / "Plate Count Agar"
 
   // Numeric results (method-dependent)
-  inoculumCFU      Float?   // Starting inoculum concentration (CFU/mL)
-  controlCFU       Float?   // Control bacteria after incubation
-  treatedCFU       Float?   // Treated bacteria after incubation
-  percentReduction Float?   // For AATCC TM100 & ASTM E2149
-  growthValue      Float?   // F value (log growth)
-  activityValue    Float?   // JIS L 1902 "A" value
+  inoculumCFU      Float? // Starting inoculum concentration (CFU/mL)
+  controlCFU       Float? // Control bacteria after incubation
+  treatedCFU       Float? // Treated bacteria after incubation
+  percentReduction Float? // For AATCC TM100 & ASTM E2149
+  growthValue      Float? // F value (log growth)
+  activityValue    Float? // JIS L 1902 "A" value
 
   // Method-specific pass/fail
   methodPass       Boolean? // Per method thresholds
-  methodPassReason String?  // "A=-0.2, requires A>=2.0 for Effect"
+  methodPassReason String? // "A=-0.2, requires A>=2.0 for Effect"
 
   // All extracted data as JSON (preserves everything the parser found)
-  rawExtracted     Json?
+  rawExtracted Json?
 }
 
 model FungalResult {
@@ -1705,9 +1728,9 @@ model OdorResult {
 // ─────────────────────────────────────────────
 
 model SOW {
-  id      String    @id @default(cuid())
+  id      String @id @default(cuid())
   brandId String
-  brand   Brand     @relation(fields: [brandId], references: [id])
+  brand   Brand  @relation(fields: [brandId], references: [id])
 
   title               String?
   expectations        String?
@@ -1808,12 +1831,12 @@ model Note {
   taskStatus  String?
 
   // ─── Email log fields (populated when noteType = "EMAIL") ─────
-  emailDirection String?  // "INBOUND" | "OUTBOUND"
+  emailDirection String? // "INBOUND" | "OUTBOUND"
   emailSubject   String?
   emailFrom      String?
   emailTo        String?
   emailCc        String?
-  emailMessageId String?  @unique
+  emailMessageId String? @unique
 
   // Optional link back to a Weekly Exec Review — when a note is captured
   // inline from the /admin/weekly-review dashboard, we stamp this FK so
@@ -1843,8 +1866,8 @@ model Invoice {
   dueDate       DateTime?
   paidDate      DateTime?
   amount        Float
-  currency      String   @default("USD")
-  status        String   @default("DRAFT")  // DRAFT, SENT, PAID, OVERDUE, CANCELLED
+  currency      String    @default("USD")
+  status        String    @default("DRAFT") // DRAFT, SENT, PAID, OVERDUE, CANCELLED
   description   String?
   notes         String?
 
@@ -1880,36 +1903,36 @@ model DistributorDocument {
   distributor   Distributor @relation(fields: [distributorId], references: [id])
 
   // Document classification
-  docType     DistDocType  @default(OTHER)
-  title       String                // "Certificate of Analysis - Batch 2024-03"
+  docType     DistDocType @default(OTHER)
+  title       String // "Certificate of Analysis - Batch 2024-03"
   description String?
 
   // File info
   filename    String?
   contentType String?
   sizeBytes   Int?
-  url         String?               // S3/R2 URL or external link
+  url         String? // S3/R2 URL or external link
   bucket      String?
-  key         String?    @unique
+  key         String? @unique
 
   // Optional links to related entities
-  factoryId   String?
-  factory     Factory?   @relation("DistributorDocFactory", fields: [factoryId], references: [id])
-  invoiceId   String?
+  factoryId String?
+  factory   Factory? @relation("DistributorDocFactory", fields: [factoryId], references: [id])
+  invoiceId String?
 
   // Shipping/logistics metadata
-  shipmentRef   String?             // tracking number or shipment ID
-  batchNumber   String?             // production batch reference
-  poNumber      String?             // purchase order
-  portOfOrigin  String?
-  portOfDest    String?
-  hsCode        String?             // harmonized system code
+  shipmentRef  String? // tracking number or shipment ID
+  batchNumber  String? // production batch reference
+  poNumber     String? // purchase order
+  portOfOrigin String?
+  portOfDest   String?
+  hsCode       String? // harmonized system code
 
-  uploadedBy  String?               // user ID who uploaded
-  expiresAt   DateTime?             // for time-sensitive docs like C of A
+  uploadedBy String? // user ID who uploaded
+  expiresAt  DateTime? // for time-sensitive docs like C of A
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([distributorId])
   @@index([docType])
@@ -1918,8 +1941,8 @@ model DistributorDocument {
 }
 
 enum DistDocType {
-  CERTIFICATE_OF_ANALYSIS   // C of A
-  BILL_OF_LADING            // BOL
+  CERTIFICATE_OF_ANALYSIS // C of A
+  BILL_OF_LADING // BOL
   COMMERCIAL_INVOICE
   PACKING_LIST
   CUSTOMS_DECLARATION
@@ -1927,7 +1950,7 @@ enum DistDocType {
   EXPORT_PERMIT
   PHYTOSANITARY_CERT
   INSURANCE_CERT
-  SDS_MSDS                  // Safety Data Sheet
+  SDS_MSDS // Safety Data Sheet
   OTHER
 }
 
@@ -1939,53 +1962,53 @@ model AccessRequest {
   id String @id @default(cuid())
 
   // Requester info
-  firstName     String
-  lastName      String
-  email         String
-  phone         String?
-  jobTitle      String?
-  company       String   // Brand / company name (or Factory/Mill name)
-  website       String?
+  firstName String
+  lastName  String
+  email     String
+  phone     String?
+  jobTitle  String?
+  company   String // Brand / company name (or Factory/Mill name)
+  website   String?
 
   // Request type
-  requestType   String   @default("BRAND") // BRAND or FACTORY
+  requestType String @default("BRAND") // BRAND or FACTORY
 
   // Brand-specific fields
-  fabricTypes    String?  // "Athletic, Hospitality, Medical" etc.
-  annualVolume  String?  // "Under 100k meters", "100k-500k", "500k-1M", "Over 1M"
-  timeline      String?  // "Immediate", "1-3 months", "3-6 months", "Exploratory"
+  fabricTypes          String? // "Athletic, Hospitality, Medical" etc.
+  annualVolume         String? // "Under 100k meters", "100k-500k", "500k-1M", "Over 1M"
+  timeline             String? // "Immediate", "1-3 months", "3-6 months", "Exploratory"
   currentAntimicrobial String? // What they currently use
-  notes         String?  // Anything else
+  notes                String? // Anything else
 
   // Factory-specific fields
-  factoryLocation  String?  // Country/city
-  capabilities     String?  // JSON: ["knitting","weaving","dyeing","finishing"]
-  certifications   String?  // "ISO 9001, OEKO-TEX, GOTS"
-  productTypes     String?  // "Athletic, Denim, Medical" (can be same as fabricTypes for factory)
-  monthlyCapacity  String?  // "Under 100k meters", "100k-500k", etc.
+  factoryLocation       String? // Country/city
+  capabilities          String? // JSON: ["knitting","weaving","dyeing","finishing"]
+  certifications        String? // "ISO 9001, OEKO-TEX, GOTS"
+  productTypes          String? // "Athletic, Denim, Medical" (can be same as fabricTypes for factory)
+  monthlyCapacity       String? // "Under 100k meters", "100k-500k", etc.
   fuzeApplicationMethod String? // "pad_exhaust", "spray", "wash_cycle", etc.
 
   // SOW reference (optional — linked when SOW exists)
-  sowId         String?
-  sow           SOW?     @relation(fields: [sowId], references: [id])
+  sowId String?
+  sow   SOW?    @relation(fields: [sowId], references: [id])
 
   // Processing
-  status        String   @default("PENDING") // PENDING, APPROVED, DENIED, EXPIRED
-  reviewedBy    String?  // User ID of reviewer
-  reviewedAt    DateTime?
-  reviewNote    String?
-  deniedReason  String?
+  status       String    @default("PENDING") // PENDING, APPROVED, DENIED, EXPIRED
+  reviewedBy   String? // User ID of reviewer
+  reviewedAt   DateTime?
+  reviewNote   String?
+  deniedReason String?
 
   // When approved, the created user
-  userId        String?  @unique
-  user          User?    @relation(fields: [userId], references: [id])
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id])
 
   // When approved factory request, link to factory
-  factoryId     String?
-  factory       Factory? @relation("AccessRequestFactory", fields: [factoryId], references: [id])
+  factoryId String?
+  factory   Factory? @relation("AccessRequestFactory", fields: [factoryId], references: [id])
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([status])
   @@index([email])
@@ -2001,92 +2024,92 @@ model TestRequest {
   id String @id @default(cuid())
 
   // Auto-generated PO number: FUZE-PO-YYYYMMDD-XXXX
-  poNumber      String    @unique
-  poDate        DateTime  @default(now())
+  poNumber String   @unique
+  poDate   DateTime @default(now())
 
   // What we're testing
-  brandId       String?
-  brand         Brand?    @relation("TestRequestBrand", fields: [brandId], references: [id])
-  fabricId      String?
-  fabric        Fabric?   @relation(fields: [fabricId], references: [id])
-  submissionId  String?
-  submission    FabricSubmission? @relation(fields: [submissionId], references: [id])
-  projectId     String?
-  project       Project?  @relation(fields: [projectId], references: [id])
-  sowId         String?
-  sow           SOW?      @relation(fields: [sowId], references: [id])
+  brandId      String?
+  brand        Brand?            @relation("TestRequestBrand", fields: [brandId], references: [id])
+  fabricId     String?
+  fabric       Fabric?           @relation(fields: [fabricId], references: [id])
+  submissionId String?
+  submission   FabricSubmission? @relation(fields: [submissionId], references: [id])
+  projectId    String?
+  project      Project?          @relation(fields: [projectId], references: [id])
+  sowId        String?
+  sow          SOW?              @relation(fields: [sowId], references: [id])
 
   // Where we're sending it (optional — assigned after admin approval for factory requests)
-  labId         String?
-  lab           Lab?      @relation(fields: [labId], references: [id])
+  labId String?
+  lab   Lab?    @relation(fields: [labId], references: [id])
 
   // Distributor assignment (admin assigns after request comes in)
   distributorId String?
   distributor   Distributor? @relation("TestRequestDistributor", fields: [distributorId], references: [id])
-  pricingTier   String?      // F1, F2, F3, F4 — set by account manager on first order
+  pricingTier   String? // F1, F2, F3, F4 — set by account manager on first order
 
   // Lab tracking
-  labCustomerNumber String?   // Auto-filled from Lab.customerNumber
-  labAccountRef     String?   // Additional reference for lab
+  labCustomerNumber String? // Auto-filled from Lab.customerNumber
+  labAccountRef     String? // Additional reference for lab
 
   // Fabric identification on the PO
-  fuzeFabricNumber  String?   // e.g. "FUZE-1042"
-  customerFabricCode String?  // brand's code
-  factoryFabricCode  String?  // factory's code
+  fuzeFabricNumber   String? // e.g. "FUZE-1042"
+  customerFabricCode String? // brand's code
+  factoryFabricCode  String? // factory's code
 
   // Status workflow: DRAFT → PENDING_APPROVAL → APPROVED → ASSIGNED_TO_LAB
   //                  → SUBMITTED → IN_PROGRESS → RESULTS_RECEIVED → COMPLETE → CANCELLED
   // (NEED-7 added the ASSIGNED_TO_LAB interstitial between APPROVED and
   // SUBMITTED — the lab must explicitly accept before testing starts.)
-  status        String    @default("DRAFT")
+  status String @default("DRAFT")
 
   // Approval
   requestedById String?
   requestedBy   User?     @relation("TestRequestRequester", fields: [requestedById], references: [id])
   requestedAt   DateTime?
 
-  approvedById  String?
-  approvedBy    User?     @relation("TestRequestApprover", fields: [approvedById], references: [id])
-  approvedAt    DateTime?
-  rejectedAt    DateTime?
+  approvedById   String?
+  approvedBy     User?     @relation("TestRequestApprover", fields: [approvedById], references: [id])
+  approvedAt     DateTime?
+  rejectedAt     DateTime?
   rejectedReason String?
 
   // Cost tracking
-  estimatedCost Float?    // Sum of line items
-  actualCost    Float?    // After invoice reconciliation
-  currency      String    @default("USD")
+  estimatedCost Float? // Sum of line items
+  actualCost    Float? // After invoice reconciliation
+  currency      String @default("USD")
 
   // Priority & scheduling
-  priority      String    @default("NORMAL") // URGENT, HIGH, NORMAL, LOW
+  priority                String    @default("NORMAL") // URGENT, HIGH, NORMAL, LOW
   requestedCompletionDate DateTime?
   actualCompletionDate    DateTime?
 
   // Notes & instructions
-  specialInstructions String?  // Instructions for the lab
-  internalNotes       String?  // Internal notes (not sent to lab)
+  specialInstructions String? // Instructions for the lab
+  internalNotes       String? // Internal notes (not sent to lab)
 
   // Lab testing workflow
-  testingStartedAt         DateTime?   // When admin clicks "Start Testing"
-  testingStartedById       String?     // Who started it
-  estimatedCompletionDate  DateTime?   // Calculated when testing starts
+  testingStartedAt        DateTime? // When admin clicks "Start Testing"
+  testingStartedById      String? // Who started it
+  estimatedCompletionDate DateTime? // Calculated when testing starts
 
   // NEED-7 — lab assignment accept/reject loop. Admin sets
   // labAssignedAt + labAssignedById when handing off; lab user
   // flips labAcceptedAt or labRejectedAt + labRejectionReason.
   // SLA cron at /api/cron/lab-assignment-overdue escalates if
   // neither timestamp lands within 24h of labAssignedAt.
-  labAssignedAt        DateTime?
-  labAssignedById      String?
-  labAcceptedAt        DateTime?
-  labRejectedAt        DateTime?
-  labRejectionReason   String?
+  labAssignedAt      DateTime?
+  labAssignedById    String?
+  labAcceptedAt      DateTime?
+  labRejectedAt      DateTime?
+  labRejectionReason String?
 
   // Line items
-  lines         TestRequestLine[]
+  lines     TestRequestLine[]
   shipments SampleShipment[]
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([status])
   @@index([brandId])
@@ -2107,31 +2130,31 @@ model TestRequestLine {
   testRequest   TestRequest @relation(fields: [testRequestId], references: [id], onDelete: Cascade)
 
   // Test details
-  testType      String    // ICP, ANTIBACTERIAL, FUNGAL, ODOR, UV, MICROFIBER
-  testMethod    String?   // AATCC 100, ASTM E2149, JIS L 1902, ICP-OES, etc.
-  description   String?   // Additional description or wash count spec
+  testType    String // ICP, ANTIBACTERIAL, FUNGAL, ODOR, UV, MICROFIBER
+  testMethod  String? // AATCC 100, ASTM E2149, JIS L 1902, ICP-OES, etc.
+  description String? // Additional description or wash count spec
 
   // Pricing (from LabService or manual)
-  quantity      Int       @default(1)
-  unitPrice     Float?    // USD per test
-  totalPrice    Float?    // quantity × unitPrice
-  rush          Boolean   @default(false)
-  rushPrice     Float?    // Rush surcharge
+  quantity   Int     @default(1)
+  unitPrice  Float? // USD per test
+  totalPrice Float? // quantity × unitPrice
+  rush       Boolean @default(false)
+  rushPrice  Float? // Rush surcharge
 
   // Turnaround
-  estimatedDays Int?      // Expected TAT from lab
+  estimatedDays Int? // Expected TAT from lab
 
   // Status per line
-  status        String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETE, CANCELLED
+  status String @default("PENDING") // PENDING, IN_PROGRESS, COMPLETE, CANCELLED
 
   // Link back to actual test result when received
-  testRunId     String?
-  testRun       TestRun?  @relation(fields: [testRunId], references: [id])
+  testRunId String?
+  testRun   TestRun? @relation(fields: [testRunId], references: [id])
 
-  notes         String?
+  notes String?
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([testRequestId])
   @@index([testRunId])
@@ -2143,40 +2166,40 @@ model TestRequestLine {
 // ─────────────────────────────────────────────
 
 model FuzeTestRequest {
-  id            String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  fabricId      String
-  fabric        Fabric   @relation("FuzeTestFabric", fields: [fabricId], references: [id])
+  fabricId String
+  fabric   Fabric @relation("FuzeTestFabric", fields: [fabricId], references: [id])
 
-  factoryId     String?
-  factory       Factory? @relation("FuzeTestFactory", fields: [factoryId], references: [id])
+  factoryId String?
+  factory   Factory? @relation("FuzeTestFactory", fields: [factoryId], references: [id])
 
   // Preferred lab for this test (chosen by factory at submission time)
-  labId         String?
-  lab           Lab?     @relation("FuzeTestLab", fields: [labId], references: [id])
+  labId String?
+  lab   Lab?    @relation("FuzeTestLab", fields: [labId], references: [id])
 
-  requestedBy   String?  // User ID
+  requestedBy String? // User ID
 
   // Selected tests (JSON array of test IDs from catalog)
-  selectedTests Json     // ["recipe-build", "antibacterial-screen"]
+  selectedTests Json // ["recipe-build", "antibacterial-screen"]
 
   // Requirements
-  totalMoqMeters Float?
+  totalMoqMeters  Float?
   controlRequired Boolean @default(false)
 
   // Shipping
-  trackingNumber  String?
-  shippedDate     DateTime?
-  receivedDate    DateTime?
+  trackingNumber String?
+  shippedDate    DateTime?
+  receivedDate   DateTime?
 
   // Status
-  status         String   @default("PENDING") // PENDING, SAMPLES_REQUESTED, SAMPLES_RECEIVED, IN_PROGRESS, COMPLETED, CANCELLED
+  status String @default("PENDING") // PENDING, SAMPLES_REQUESTED, SAMPLES_RECEIVED, IN_PROGRESS, COMPLETED, CANCELLED
 
-  notes          String?
-  adminNotes     String?
+  notes      String?
+  adminNotes String?
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([fabricId])
   @@index([factoryId])
@@ -2191,15 +2214,15 @@ model FuzeTestRequest {
 model EntityManager {
   id String @id @default(cuid())
 
-  entityType String   // BRAND, FACTORY, DISTRIBUTOR
-  entityId   String   // ID of the brand/factory/distributor
+  entityType String // BRAND, FACTORY, DISTRIBUTOR
+  entityId   String // ID of the brand/factory/distributor
 
   userId String
-  user   User @relation("UserEntityManagers", fields: [userId], references: [id])
+  user   User   @relation("UserEntityManagers", fields: [userId], references: [id])
 
-  role      String   // ACCOUNT_MANAGER, FACTORY_LEAD, DISTRIBUTOR_LEAD, SUPPORT
-  isPrimary Boolean  @default(false)
-  notes     String?  // e.g. "NY office contact", "India factory lead"
+  role      String // ACCOUNT_MANAGER, FACTORY_LEAD, DISTRIBUTOR_LEAD, SUPPORT
+  isPrimary Boolean @default(false)
+  notes     String? // e.g. "NY office contact", "India factory lead"
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2221,20 +2244,20 @@ model EntityManager {
 model OrgInvitation {
   id String @id @default(cuid())
 
-  entityType String   // BRAND | FACTORY | DISTRIBUTOR | LAB
-  entityId   String   // brandId / factoryId / distributorId / labId
+  entityType String // BRAND | FACTORY | DISTRIBUTOR | LAB
+  entityId   String // brandId / factoryId / distributorId / labId
 
   invitedByUserId String
   invitedBy       User   @relation("OrgInviter", fields: [invitedByUserId], references: [id])
 
-  email     String   // lowercased, normalized
-  role      String   // BRAND_USER | BRAND_MANAGER | FACTORY_USER | FACTORY_MANAGER | DISTRIBUTOR_USER | LAB_USER etc.
+  email     String // lowercased, normalized
+  role      String // BRAND_USER | BRAND_MANAGER | FACTORY_USER | FACTORY_MANAGER | DISTRIBUTOR_USER | LAB_USER etc.
   firstName String?
   lastName  String?
   jobTitle  String?
   notes     String?
 
-  token     String   @unique  // 32-char random; one-time use
+  token     String   @unique // 32-char random; one-time use
   status    String   @default("PENDING") // PENDING | ACCEPTED | REVOKED | EXPIRED
   expiresAt DateTime
 
@@ -2242,8 +2265,8 @@ model OrgInvitation {
   acceptedByUserId String?
   acceptedBy       User?     @relation("OrgInviteAcceptor", fields: [acceptedByUserId], references: [id])
 
-  revokedAt        DateTime?
-  revokedByUserId  String?
+  revokedAt       DateTime?
+  revokedByUserId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2278,15 +2301,15 @@ model BrandSpecAcknowledgement {
   specVersion DateTime
 
   acknowledgedByUserId String
-  acknowledgedBy       User   @relation("SpecAckUser", fields: [acknowledgedByUserId], references: [id])
+  acknowledgedBy       User     @relation("SpecAckUser", fields: [acknowledgedByUserId], references: [id])
   acknowledgedAt       DateTime @default(now())
 
   /// Snapshot of the four spec fields at time of ack — for the
   /// audit trail and "what did they actually agree to" question.
-  acknowledgedTier         String?
-  acknowledgedCadenceBatches  Int?
-  acknowledgedCadenceLiters   Float?
-  acknowledgedProtocolDocUrl  String?
+  acknowledgedTier           String?
+  acknowledgedCadenceBatches Int?
+  acknowledgedCadenceLiters  Float?
+  acknowledgedProtocolDocUrl String?
 
   createdAt DateTime @default(now())
 
@@ -2301,26 +2324,26 @@ model BrandSpecAcknowledgement {
 model CrmTask {
   id String @id @default(cuid())
 
-  title     String
-  notes     String?
+  title String
+  notes String?
 
-  dueAt     DateTime
-  status    String   @default("OPEN")       // OPEN | DONE | SNOOZED | CANCELLED
-  priority  String   @default("NORMAL")     // LOW | NORMAL | HIGH
+  dueAt    DateTime
+  status   String   @default("OPEN") // OPEN | DONE | SNOOZED | CANCELLED
+  priority String   @default("NORMAL") // LOW | NORMAL | HIGH
 
-  ownerId     String
-  owner       User     @relation("OwnedCrmTasks", fields: [ownerId], references: [id])
+  ownerId String
+  owner   User   @relation("OwnedCrmTasks", fields: [ownerId], references: [id])
 
   createdById String?
-  createdBy   User?    @relation("CreatedCrmTasks", fields: [createdById], references: [id])
+  createdBy   User?   @relation("CreatedCrmTasks", fields: [createdById], references: [id])
 
-  brandId   String?
-  brand     Brand?   @relation("BrandCrmTasks", fields: [brandId], references: [id])
+  brandId String?
+  brand   Brand?  @relation("BrandCrmTasks", fields: [brandId], references: [id])
 
-  completedAt         DateTime?
+  completedAt        DateTime?
   // Reminder tracking — set once we've fired the matching reminder so we don't double-send
-  weekReminderSentAt  DateTime?
-  dayReminderSentAt   DateTime?
+  weekReminderSentAt DateTime?
+  dayReminderSentAt  DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2333,18 +2356,18 @@ model CrmTask {
 model Notification {
   id String @id @default(cuid())
 
-  userId    String
-  user      User     @relation("UserNotifications", fields: [userId], references: [id])
+  userId String
+  user   User   @relation("UserNotifications", fields: [userId], references: [id])
 
-  type      String   // TEST_APPROVED, TEST_RESULTS, ACCESS_REQUEST, PO_STATUS, SOW_UPDATE, BRAND_ACTIVITY, SYSTEM
-  title     String
-  message   String
-  link      String?  // URL to navigate to
+  type    String // TEST_APPROVED, TEST_RESULTS, ACCESS_REQUEST, PO_STATUS, SOW_UPDATE, BRAND_ACTIVITY, SYSTEM
+  title   String
+  message String
+  link    String? // URL to navigate to
 
-  read      Boolean  @default(false)
-  readAt    DateTime?
+  read   Boolean   @default(false)
+  readAt DateTime?
 
-  metadata  Json?    // Extra context data
+  metadata Json? // Extra context data
 
   createdAt DateTime @default(now())
 
@@ -2366,15 +2389,15 @@ model Notification {
 model AuditLog {
   id String @id @default(cuid())
 
-  userId    String?
-  user      User?    @relation("UserAuditLogs", fields: [userId], references: [id])
+  userId String?
+  user   User?   @relation("UserAuditLogs", fields: [userId], references: [id])
 
-  action    String   // CREATE, UPDATE, DELETE, APPROVE, REJECT, LOGIN, EXPORT, STAMP
-  entity    String   // Brand, Fabric, TestRequest, TestRun, SOW, User, AccessRequest
-  entityId  String?
+  action   String // CREATE, UPDATE, DELETE, APPROVE, REJECT, LOGIN, EXPORT, STAMP
+  entity   String // Brand, Fabric, TestRequest, TestRun, SOW, User, AccessRequest
+  entityId String?
 
   description String
-  changes     Json?    // { field: { old: x, new: y } }
+  changes     Json? // { field: { old: x, new: y } }
   ipAddress   String?
 
   createdAt DateTime @default(now())
@@ -2392,10 +2415,10 @@ model AuditLog {
 model PasswordResetToken {
   id String @id @default(cuid())
 
-  userId    String
-  user      User    @relation("PasswordResets", fields: [userId], references: [id])
+  userId String
+  user   User   @relation("PasswordResets", fields: [userId], references: [id])
 
-  token     String  @unique
+  token     String    @unique
   expiresAt DateTime
   usedAt    DateTime?
 
@@ -2414,53 +2437,53 @@ model SampleShipment {
 
   // What's being shipped
   fabricId      String?
-  fabric        Fabric?  @relation("FabricShipments", fields: [fabricId], references: [id])
+  fabric        Fabric?           @relation("FabricShipments", fields: [fabricId], references: [id])
   submissionId  String?
   submission    FabricSubmission? @relation("SubmissionShipments", fields: [submissionId], references: [id])
   testRequestId String?
-  testRequest   TestRequest? @relation(fields: [testRequestId], references: [id])
+  testRequest   TestRequest?      @relation(fields: [testRequestId], references: [id])
 
   // Where
-  originName    String?   // "FUZE Lab Shanghai"
-  originAddress String?
-  destinationName    String?  // Lab name or factory
+  originName         String? // "FUZE Lab Shanghai"
+  originAddress      String?
+  destinationName    String? // Lab name or factory
   destinationAddress String?
 
-  labId         String?
-  lab           Lab?     @relation("LabShipments", fields: [labId], references: [id])
+  labId String?
+  lab   Lab?    @relation("LabShipments", fields: [labId], references: [id])
 
   // Shipping details
-  carrier       String?   // FedEx, DHL, UPS, SF Express, local courier
-  trackingNumber String?
-  shipDate      DateTime?
+  carrier          String? // FedEx, DHL, UPS, SF Express, local courier
+  trackingNumber   String?
+  shipDate         DateTime?
   estimatedArrival DateTime?
-  actualArrival   DateTime?
+  actualArrival    DateTime?
 
   // Sample details
-  sampleCount   Int       @default(1)
-  sampleType    String?   // "Fabric swatch", "Treated sample", "Washed sample"
+  sampleCount     Int     @default(1)
+  sampleType      String? // "Fabric swatch", "Treated sample", "Washed sample"
   sampleCondition String? // "Good", "Damaged", "Sealed"
-  weight        Float?    // kg
+  weight          Float? // kg
 
   // Status: PREPARING → SHIPPED → IN_TRANSIT → DELIVERED → AT_LAB → RETURNED
-  status        String    @default("PREPARING")
+  status String @default("PREPARING")
 
   // Receiving details
-  receivedCondition  String?   // GOOD, DAMAGED, INSUFFICIENT
-  receivedPieces     Int?      // Number of pieces received
-  controlIncluded    Boolean?  // Was control sample included
-  receivedNotes      String?   // Free text notes on receiving
-  receivedById       String?   // Who marked it received
+  receivedCondition String? // GOOD, DAMAGED, INSUFFICIENT
+  receivedPieces    Int? // Number of pieces received
+  controlIncluded   Boolean? // Was control sample included
+  receivedNotes     String? // Free text notes on receiving
+  receivedById      String? // Who marked it received
 
   // Chain of custody
-  events        ShipmentEvent[]
+  events ShipmentEvent[]
 
-  notes         String?
+  notes String?
 
-  createdBy     String?
+  createdBy String?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([status])
   @@index([trackingNumber])
@@ -2475,13 +2498,13 @@ model ShipmentEvent {
   shipmentId String
   shipment   SampleShipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
 
-  eventType  String    // CREATED, PICKED_UP, IN_TRANSIT, CUSTOMS, DELIVERED, RECEIVED_AT_LAB, CONDITION_NOTE, RETURNED
-  location   String?
-  handler    String?   // Person name
-  notes      String?
-  photoUrl   String?   // Optional photo of sample condition
+  eventType String // CREATED, PICKED_UP, IN_TRANSIT, CUSTOMS, DELIVERED, RECEIVED_AT_LAB, CONDITION_NOTE, RETURNED
+  location  String?
+  handler   String? // Person name
+  notes     String?
+  photoUrl  String? // Optional photo of sample condition
 
-  createdAt  DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([shipmentId])
   @@index([createdAt])
@@ -2499,100 +2522,100 @@ model ShipmentEvent {
 // into a published FabricRecipe.
 // ─────────────────────────────────────────────
 model RecipeBenchTest {
-  id              String   @id @default(cuid())
-  testNumber      String   @unique  // FUZE-BT-YYYYMMDD-XXXX
-  testDate        DateTime @default(now())
+  id         String   @id @default(cuid())
+  testNumber String   @unique // FUZE-BT-YYYYMMDD-XXXX
+  testDate   DateTime @default(now())
 
   // What was tested
   fabricId        String?
-  fabric          Fabric?  @relation("FabricRecipeBenchTests", fields: [fabricId], references: [id])
-  fabricLabel     String   // free-text label if no Fabric linked
-  fabricType      String?  // "Knit" | "Woven" | "Nonwoven"
-  fiberContent    String?  // "100% Cotton", "65/35 Poly-Cotton"
+  fabric          Fabric? @relation("FabricRecipeBenchTests", fields: [fabricId], references: [id])
+  fabricLabel     String // free-text label if no Fabric linked
+  fabricType      String? // "Knit" | "Woven" | "Nonwoven"
+  fiberContent    String? // "100% Cotton", "65/35 Poly-Cotton"
   fabricWeightGsm Float?
 
   // Method
-  applicationMethod String  // "PAD_DRY_CURE" | "EXHAUST" | "SPRAY" | "FOAM"
-  squeezePressure   Float?  // bar or psi (pad)
-  vfdFrequencyHz    Float?  // VFD output frequency — FUZE mini pad: m/min ≈ Hz × 0.295
-  lineSpeedMPerMin  Float?  // computed feed speed
-  dryingTemp        Float?  // °C
-  dryingTime        Float?  // minutes
-  curingTemp        Float?  // °C
-  curingTime        Float?  // minutes
+  applicationMethod String // "PAD_DRY_CURE" | "EXHAUST" | "SPRAY" | "FOAM"
+  squeezePressure   Float? // bar or psi (pad)
+  vfdFrequencyHz    Float? // VFD output frequency — FUZE mini pad: m/min ≈ Hz × 0.295
+  lineSpeedMPerMin  Float? // computed feed speed
+  dryingTemp        Float? // °C
+  dryingTime        Float? // minutes
+  curingTemp        Float? // °C
+  curingTime        Float? // minutes
   liquorRatio       String? // "1:10" for exhaust
 
   // Raw measurements (grams) — primary values are the mean across sample runs
-  sampleAreaCm2         Float?  // area of the cut sample (default 100 cm² with FUZE cutter)
-  sampleRuns            Json?   // [{run:1, dry, wet, preWet?, wetFromPreWet?}, ...]  for triplicate
-  drySampleWeight       Float   // dry fabric before any wetting
-  wetAfterBathWeight    Float   // dry-to-wet pad: dry → bath → pad → weigh
-  preWetSampleWeight    Float?  // wet-to-wet pad: pre-wet the fabric first
+  sampleAreaCm2          Float? // area of the cut sample (default 100 cm² with FUZE cutter)
+  sampleRuns             Json? // [{run:1, dry, wet, preWet?, wetFromPreWet?}, ...]  for triplicate
+  drySampleWeight        Float // dry fabric before any wetting
+  wetAfterBathWeight     Float // dry-to-wet pad: dry → bath → pad → weigh
+  preWetSampleWeight     Float? // wet-to-wet pad: pre-wet the fabric first
   wetAfterBathFromPreWet Float? // then dip in bath & pad, weigh
 
   // Calculated outputs (dry-to-wet)
-  pickupDryToWetPct     Float?  // %
+  pickupDryToWetPct Float? // %
   // Calculated outputs (wet-to-wet, optional)
-  pickupWetToWetPct     Float?  // %
-  preWetMoisturePct     Float?  // % of dry
+  pickupWetToWetPct Float? // %
+  preWetMoisturePct Float? // % of dry
 
   // For each tier, bath concentration needed (dry-to-wet basis):
   // bath_mg_per_L = (tier_mg_per_kg) / (pickupDryToWetPct / 100 / 1000) → simpler: divide active goal by pickup fraction
   // Then dilution ratio = 30 / bath_mg_per_L (since stock is 30 mg/L)
-  f1BathMgPerL          Float?
-  f2BathMgPerL          Float?
-  f3BathMgPerL          Float?
-  f4BathMgPerL          Float?
-  f1DilutionRatio       Float?  // parts water per 1 part FUZE stock
-  f2DilutionRatio       Float?
-  f3DilutionRatio       Float?
-  f4DilutionRatio       Float?
-  f1FuzeMlPerLBath      Float?  // mL FUZE per L of final bath
-  f2FuzeMlPerLBath      Float?
-  f3FuzeMlPerLBath      Float?
-  f4FuzeMlPerLBath      Float?
+  f1BathMgPerL     Float?
+  f2BathMgPerL     Float?
+  f3BathMgPerL     Float?
+  f4BathMgPerL     Float?
+  f1DilutionRatio  Float? // parts water per 1 part FUZE stock
+  f2DilutionRatio  Float?
+  f3DilutionRatio  Float?
+  f4DilutionRatio  Float?
+  f1FuzeMlPerLBath Float? // mL FUZE per L of final bath
+  f2FuzeMlPerLBath Float?
+  f3FuzeMlPerLBath Float?
+  f4FuzeMlPerLBath Float?
 
   // Production scaling (optional)
-  targetProductionKg    Float?  // kg of fabric planned for a production run
+  targetProductionKg    Float? // kg of fabric planned for a production run
   f1FuzeLitersForTarget Float?
   f2FuzeLitersForTarget Float?
   f3FuzeLitersForTarget Float?
   f4FuzeLitersForTarget Float?
-  targetBathVolumeL     Float?  // total bath volume needed for production (L)
+  targetBathVolumeL     Float? // total bath volume needed for production (L)
 
   // Stock concentration reference (should be 30 mg/L, but snapshot in case it changes)
-  stockMgPerL           Float   @default(30)
+  stockMgPerL Float @default(30)
 
   // Test bath actually prepared + tier applied for ICP validation
-  testedAtTier          String?   // "F1" | "F2" | "F3" | "F4"
-  testBathVolumeL       Float?    // 0.5 or 1.0 typical
-  testBathFuzeMl        Float?    // mL of FUZE stock added to bath
-  testBathWaterMl       Float?    // mL of water to reach the target volume
+  testedAtTier    String? // "F1" | "F2" | "F3" | "F4"
+  testBathVolumeL Float? // 0.5 or 1.0 typical
+  testBathFuzeMl  Float? // mL of FUZE stock added to bath
+  testBathWaterMl Float? // mL of water to reach the target volume
 
   // ICP validation — sample sent to lab, result entered when received
-  icpLab                String?     // ITS, VL, FPC, etc
-  icpSampleId           String?     // lab's tracking number
-  icpSubmittedAt        DateTime?
-  icpSubmittedById      String?
-  icpExpectedPpm        Float?      // expected Ag ppm on fabric (from recipe target)
-  icpMeasuredPpm        Float?      // actual ICP result
-  icpResultReceivedAt   DateTime?
-  icpReportUrl          String?     // uploaded PDF link
-  icpNotes              String?
-  affinityPct           Float?      // measured / expected × 100  (100% = perfect)
+  icpLab              String? // ITS, VL, FPC, etc
+  icpSampleId         String? // lab's tracking number
+  icpSubmittedAt      DateTime?
+  icpSubmittedById    String?
+  icpExpectedPpm      Float? // expected Ag ppm on fabric (from recipe target)
+  icpMeasuredPpm      Float? // actual ICP result
+  icpResultReceivedAt DateTime?
+  icpReportUrl        String? // uploaded PDF link
+  icpNotes            String?
+  affinityPct         Float? // measured / expected × 100  (100% = perfect)
 
   // Graduation into a published recipe
-  graduatedRecipeId     String?
-  qcPassed              Boolean @default(true)
-  notes                 String?
+  graduatedRecipeId String?
+  qcPassed          Boolean @default(true)
+  notes             String?
 
-  createdById           String?
+  createdById String?
 
   // Sample applications that used this bench test as their source recipe
-  sampleApplications    SampleApplication[] @relation("BenchTestSampleApplications")
+  sampleApplications SampleApplication[] @relation("BenchTestSampleApplications")
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([fabricId])
   @@index([applicationMethod])
@@ -2610,41 +2633,41 @@ model RecipeBenchTest {
 // One SampleApplication → ≥ 0 ICP submission lines.
 // ─────────────────────────────────────────────
 model SampleApplication {
-  id               String   @id @default(cuid())
-  appNumber        String   @unique   // FUZE-APP-YYYYMMDD-XXXX
+  id        String @id @default(cuid())
+  appNumber String @unique // FUZE-APP-YYYYMMDD-XXXX
 
-  fabricId         String
-  fabric           Fabric   @relation("FabricSampleApplications", fields: [fabricId], references: [id])
+  fabricId String
+  fabric   Fabric @relation("FabricSampleApplications", fields: [fabricId], references: [id])
 
   // Source recipe this application was derived from
-  benchTestId      String
-  benchTest        RecipeBenchTest @relation("BenchTestSampleApplications", fields: [benchTestId], references: [id])
+  benchTestId String
+  benchTest   RecipeBenchTest @relation("BenchTestSampleApplications", fields: [benchTestId], references: [id])
 
   // What tier was applied in this run
-  tier             String   // "F1" | "F2" | "F3" | "F4"
+  tier String // "F1" | "F2" | "F3" | "F4"
 
   // Bath actually prepared (snapshot of the computed recipe at run time)
-  bathVolumeL             Float    @default(1.0)   // operator-selected bath volume in L
-  stockMgPerL             Float    @default(30)    // FUZE stock concentration (30 ppm standard)
-  bathConcentrationMgPerL Float                    // target bath concentration for this tier
-  fuzeMl                  Float                    // mL of 30 ppm FUZE stock added to bath
-  waterMl                 Float                    // mL of DI water added to reach bathVolumeL
+  bathVolumeL             Float @default(1.0) // operator-selected bath volume in L
+  stockMgPerL             Float @default(30) // FUZE stock concentration (30 ppm standard)
+  bathConcentrationMgPerL Float // target bath concentration for this tier
+  fuzeMl                  Float // mL of 30 ppm FUZE stock added to bath
+  waterMl                 Float // mL of DI water added to reach bathVolumeL
 
   // Padder settings — pulled read-only from the bench test recipe
-  squeezePressure         Float?                   // bar (e.g. 4 bar on the vertical micro-padder)
-  vfdFrequencyHz          Float?                   // Hz
-  lineSpeedMPerMin        Float?                   // m/min (computed from VFD Hz)
-  pickupDryToWetPct       Float?                   // snapshot of bench test pickup %
+  squeezePressure   Float? // bar (e.g. 4 bar on the vertical micro-padder)
+  vfdFrequencyHz    Float? // Hz
+  lineSpeedMPerMin  Float? // m/min (computed from VFD Hz)
+  pickupDryToWetPct Float? // snapshot of bench test pickup %
 
   // Lifecycle
-  paddedAt         DateTime?   // stamped when operator confirms pad complete
-  driedAt          DateTime?   // stamped when operator confirms dryer chamber done
-  operator         String?     // free-text tech name (Ashlee, etc.)
-  notes            String?
+  paddedAt DateTime? // stamped when operator confirms pad complete
+  driedAt  DateTime? // stamped when operator confirms dryer chamber done
+  operator String? // free-text tech name (Ashlee, etc.)
+  notes    String?
 
-  createdById      String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([fabricId])
   @@index([benchTestId])
@@ -2666,14 +2689,14 @@ model SampleApplication {
 // email link keep working a week later.
 // ─────────────────────────────────────────────
 model FabricReportShare {
-  id        String  @id @default(cuid())
-  fabricId  String
-  fabric    Fabric  @relation("FabricReportShares", fields: [fabricId], references: [id])
+  id       String @id @default(cuid())
+  fabricId String
+  fabric   Fabric @relation("FabricReportShares", fields: [fabricId], references: [id])
 
   // Public download token (random, URL-safe). Anyone with this token
   // can fetch the report at /api/fabric-report/[token] until expiresAt.
   // Rotated by issuing a new FabricReportShare row, never re-using.
-  token     String  @unique
+  token String @unique
 
   // Who we sent it to
   recipientEmail String
@@ -2686,12 +2709,12 @@ model FabricReportShare {
   // Optional note shown to the recipient ("here's the validation report
   // for Penfabric Test #2503, ICP came back at 0.94 ppm against 1.0 target")
   subjectLine String?
-  emailBody   String?  // snapshot of the HTML we sent — so we can re-show it
+  emailBody   String? // snapshot of the HTML we sent — so we can re-show it
 
   // Lifecycle
   sentByUserId String?
   sentAt       DateTime  @default(now())
-  expiresAt    DateTime  // 90-day TTL by default — set in the create handler
+  expiresAt    DateTime // 90-day TTL by default — set in the create handler
   revokedAt    DateTime? // admin can revoke a stale link without deleting the row
 
   // Engagement
@@ -2722,73 +2745,73 @@ model FabricReportShare {
 // on plate, SHT31 in air gap).
 // ─────────────────────────────────────────────
 model SolarisTest {
-  id                String   @id @default(cuid())
-  testNumber        String   @unique   // FUZE-SOL-YYYYMMDD-XXXX
-  testDate          DateTime @default(now())
+  id         String   @id @default(cuid())
+  testNumber String   @unique // FUZE-SOL-YYYYMMDD-XXXX
+  testDate   DateTime @default(now())
 
   // What's being tested
-  fabricId          String?
-  fabric            Fabric?  @relation("FabricSolarisTests", fields: [fabricId], references: [id])
-  fabricLabel       String   // free-text if no Fabric linked
-  fabricType        String?
-  fiberContent      String?
-  fabricWeightGsm   Float?
-  fabricColor       String?  // color matters A LOT for IR absorption
-  treatedAtTier     String?  // F1/F2/F3/F4, null for untreated control
-  benchTestId       String?  // link to the bench test that produced this treatment
+  fabricId        String?
+  fabric          Fabric? @relation("FabricSolarisTests", fields: [fabricId], references: [id])
+  fabricLabel     String // free-text if no Fabric linked
+  fabricType      String?
+  fiberContent    String?
+  fabricWeightGsm Float?
+  fabricColor     String? // color matters A LOT for IR absorption
+  treatedAtTier   String? // F1/F2/F3/F4, null for untreated control
+  benchTestId     String? // link to the bench test that produced this treatment
 
   // Device setup (snapshot at test time)
-  deviceName        String?  // "Solaris Unit 1", etc.
-  bulbWattage       Float?   // W of the IR bulb (e.g. 175 W)
-  bulbType          String?  // "IR heat lamp · 175W · halogen", etc.
-  bulbToFabricMm    Float?   @default(200)
-  fabricToPlateMm   Float?   @default(45)
-  hoopDiameterMm    Float?   @default(150)
-  hoopThicknessMm   Float?   @default(10)
-  plateWidthMm      Float?   @default(175)
-  plateHeightMm     Float?   @default(175)
-  plateMaterial     String?  // "anodized aluminum", etc.
-  ambientTempC      Float?   // lab ambient at test start
+  deviceName         String? // "Solaris Unit 1", etc.
+  bulbWattage        Float? // W of the IR bulb (e.g. 175 W)
+  bulbType           String? // "IR heat lamp · 175W · halogen", etc.
+  bulbToFabricMm     Float?  @default(200)
+  fabricToPlateMm    Float?  @default(45)
+  hoopDiameterMm     Float?  @default(150)
+  hoopThicknessMm    Float?  @default(10)
+  plateWidthMm       Float?  @default(175)
+  plateHeightMm      Float?  @default(175)
+  plateMaterial      String? // "anodized aluminum", etc.
+  ambientTempC       Float? // lab ambient at test start
   ambientHumidityPct Float?
 
   // Run durations
-  runDurationSec    Int?     @default(600)  // 10 min default
-  sampleIntervalMs  Int?     @default(1000) // 1 Hz default
+  runDurationSec   Int? @default(600) // 10 min default
+  sampleIntervalMs Int? @default(1000) // 1 Hz default
 
   // Baseline run (no fabric OR untreated control fabric)
   baselineStartedAt     DateTime?
   baselineCompletedAt   DateTime?
   baselineMaxPlateTempC Float?
   baselineMaxAirTempC   Float?
-  baselineTimeTo50C_sec Float?   // time (s) for plate to reach 50°C
+  baselineTimeTo50C_sec Float? // time (s) for plate to reach 50°C
   baselineTimeTo60C_sec Float?
-  baselineRampRateCps   Float?   // °C/sec in first 60s (slope of heat rise)
-  baselineSeries        Json?    // [{t_sec, plateA, plateB, air, humidity}, ...]
+  baselineRampRateCps   Float? // °C/sec in first 60s (slope of heat rise)
+  baselineSeries        Json? // [{t_sec, plateA, plateB, air, humidity}, ...]
 
   // Treated run (fabric with FUZE applied)
-  treatedStartedAt      DateTime?
-  treatedCompletedAt    DateTime?
-  treatedMaxPlateTempC  Float?
-  treatedMaxAirTempC    Float?
-  treatedTimeTo50C_sec  Float?
-  treatedTimeTo60C_sec  Float?
-  treatedRampRateCps    Float?
-  treatedSeries         Json?
+  treatedStartedAt     DateTime?
+  treatedCompletedAt   DateTime?
+  treatedMaxPlateTempC Float?
+  treatedMaxAirTempC   Float?
+  treatedTimeTo50C_sec Float?
+  treatedTimeTo60C_sec Float?
+  treatedRampRateCps   Float?
+  treatedSeries        Json?
 
   // Calculated outcomes (δ = treated − baseline, negative is good)
-  deltaMaxPlateC        Float?   // treated.max - baseline.max
-  deltaMaxAirC          Float?
-  deltaRampRateCps      Float?   // slower heat-up is better
-  irDeflectionPct       Float?   // % reduction in peak temp rise vs baseline
-  passFail              String?  // "PASS" | "FAIL" | "MARGINAL"
-  nikeSpecMaxDeltaC     Float?   // client target if any
+  deltaMaxPlateC    Float? // treated.max - baseline.max
+  deltaMaxAirC      Float?
+  deltaRampRateCps  Float? // slower heat-up is better
+  irDeflectionPct   Float? // % reduction in peak temp rise vs baseline
+  passFail          String? // "PASS" | "FAIL" | "MARGINAL"
+  nikeSpecMaxDeltaC Float? // client target if any
 
-  notes                 String?
-  qcPassed              Boolean  @default(true)
-  createdById           String?
+  notes       String?
+  qcPassed    Boolean @default(true)
+  createdById String?
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([fabricId])
   @@index([testDate])
@@ -2798,43 +2821,43 @@ model SolarisTest {
 model FabricRecipe {
   id String @id @default(cuid())
 
-  name          String    // "Cotton 180GSM Pad Application F2"
+  name String // "Cotton 180GSM Pad Application F2"
 
   // Fabric characteristics this recipe applies to
-  fabricType    String?   // "Knit", "Woven", "Nonwoven"
-  fiberContent  String?   // "100% Cotton", "65/35 Poly-Cotton", etc.
-  gsmMin        Float?    // GSM range this recipe works for
-  gsmMax        Float?
-  yarnType      String?
+  fabricType   String? // "Knit", "Woven", "Nonwoven"
+  fiberContent String? // "100% Cotton", "65/35 Poly-Cotton", etc.
+  gsmMin       Float? // GSM range this recipe works for
+  gsmMax       Float?
+  yarnType     String?
 
   // Treatment parameters
-  fuzeTier      String?   // F1, F2, F3, F4
+  fuzeTier          String? // F1, F2, F3, F4
   applicationMethod String? // "Pad", "Exhaust", "Spray", "Foam"
-  padPickupPercent  Float?  // Pad pickup %
-  bathConcentration Float?  // g/L or ppm
-  squeezePressure   Float?  // bar/psi
-  dryingTemp        Float?  // Celsius
-  dryingTime        Float?  // minutes
-  curingTemp        Float?  // Celsius
-  curingTime        Float?  // minutes
+  padPickupPercent  Float? // Pad pickup %
+  bathConcentration Float? // g/L or ppm
+  squeezePressure   Float? // bar/psi
+  dryingTemp        Float? // Celsius
+  dryingTime        Float? // minutes
+  curingTemp        Float? // Celsius
+  curingTime        Float? // minutes
   phRange           String? // "4.5-5.5"
 
   // Results achieved
-  avgIcpAg      Float?    // Average silver ppm from tests
-  avgReduction  Float?    // Average % reduction from AB tests
-  testMethod    String?   // "AATCC 100", "ASTM E2149"
-  passRate      Float?    // % of tests that passed
+  avgIcpAg     Float? // Average silver ppm from tests
+  avgReduction Float? // Average % reduction from AB tests
+  testMethod   String? // "AATCC 100", "ASTM E2149"
+  passRate     Float? // % of tests that passed
 
   // Linked test runs that validated this recipe
   validatedTestCount Int @default(0)
 
-  notes         String?
-  active        Boolean   @default(true)
+  notes  String?
+  active Boolean @default(true)
 
-  createdById   String?
+  createdById String?
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([fabricType])
   @@index([fiberContent])
@@ -2849,10 +2872,10 @@ model FabricRecipe {
 model ExchangeRate {
   id String @id @default(cuid())
 
-  fromCurrency String   // "USD"
-  toCurrency   String   // "CNY"
-  rate         Float    // 1 USD = X CNY
-  source       String?  // "manual", "api", "bank"
+  fromCurrency String // "USD"
+  toCurrency   String // "CNY"
+  rate         Float // 1 USD = X CNY
+  source       String? // "manual", "api", "bank"
 
   effectiveDate DateTime
 
@@ -2870,24 +2893,24 @@ model ExchangeRate {
 model BrandEngagement {
   id String @id @default(cuid())
 
-  brandId     String    @unique
-  brand       Brand     @relation("BrandEngagement", fields: [brandId], references: [id])
+  brandId String @unique
+  brand   Brand  @relation("BrandEngagement", fields: [brandId], references: [id])
 
   // Scores (0-100)
-  overallScore     Int   @default(50)
-  communicationScore Int @default(50)  // Days since last note/contact
-  testingVelocity   Int @default(50)  // Tests completed per month
-  pipelineVelocity  Int @default(50)  // Speed moving through stages
-  paymentScore      Int @default(50)  // Invoice payment timeliness
-  engagementTrend   String @default("STABLE") // RISING, STABLE, DECLINING, AT_RISK
+  overallScore       Int    @default(50)
+  communicationScore Int    @default(50) // Days since last note/contact
+  testingVelocity    Int    @default(50) // Tests completed per month
+  pipelineVelocity   Int    @default(50) // Speed moving through stages
+  paymentScore       Int    @default(50) // Invoice payment timeliness
+  engagementTrend    String @default("STABLE") // RISING, STABLE, DECLINING, AT_RISK
 
   // Raw metrics
   daysSinceLastContact Int?
-  testsLast30Days      Int @default(0)
-  testsLast90Days      Int @default(0)
+  testsLast30Days      Int    @default(0)
+  testsLast90Days      Int    @default(0)
   avgInvoicePayDays    Float?
-  overdueInvoices      Int @default(0)
-  stageChanges90Days   Int @default(0)
+  overdueInvoices      Int    @default(0)
+  stageChanges90Days   Int    @default(0)
 
   lastCalculated DateTime @default(now())
 
@@ -2904,15 +2927,15 @@ model Meeting {
 
   title       String
   description String?
-  meetingType String    @default("INTERNAL")   // INTERNAL, BRAND_PRESENTATION, TESTING_REVIEW, FACTORY_KICKOFF, PRODUCTION_REVIEW, SOW_REVIEW, CUSTOM
+  meetingType String  @default("INTERNAL") // INTERNAL, BRAND_PRESENTATION, TESTING_REVIEW, FACTORY_KICKOFF, PRODUCTION_REVIEW, SOW_REVIEW, CUSTOM
 
   // Schedule
   startTime   DateTime
   endTime     DateTime
-  timezone    String    @default("Asia/Taipei")
-  location    String?                           // Physical location or "Microsoft Teams" / "Zoom"
-  teamsLink   String?                           // Auto-generated Teams deep link
-  calendarUrl String?                           // .ics download URL
+  timezone    String   @default("Asia/Taipei")
+  location    String? // Physical location or "Microsoft Teams" / "Zoom"
+  teamsLink   String? // Auto-generated Teams deep link
+  calendarUrl String? // .ics download URL
 
   // Relations
   brandId   String?
@@ -2921,17 +2944,17 @@ model Meeting {
   project   Project? @relation("MeetingProject", fields: [projectId], references: [id])
 
   // Pipeline trigger
-  pipelineStage String?                         // Which stage triggered this meeting
-  autoScheduled Boolean @default(false)         // Was this auto-created by pipeline movement?
+  pipelineStage String? // Which stage triggered this meeting
+  autoScheduled Boolean @default(false) // Was this auto-created by pipeline movement?
 
   // Organizer & attendees stored as JSON
   organizerId String?
-  organizer   User?    @relation("MeetingOrganizer", fields: [organizerId], references: [id])
-  attendees   Json?                             // [{name, email, role}]
+  organizer   User?   @relation("MeetingOrganizer", fields: [organizerId], references: [id])
+  attendees   Json? // [{name, email, role}]
 
-  status    String   @default("SCHEDULED")      // SCHEDULED, COMPLETED, CANCELLED, RESCHEDULED
-  notes     String?                             // Post-meeting notes
-  outcome   String?                             // Meeting outcome summary
+  status  String  @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED, RESCHEDULED
+  notes   String? // Post-meeting notes
+  outcome String? // Meeting outcome summary
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2948,15 +2971,15 @@ model Meeting {
 // ─────────────────────────────────────────────
 
 model AvailabilityConfig {
-  id                    String   @id @default("default")
-  availableDays         Json     @default("[2,4]")                    // 0=Sunday, 2=Tuesday, 4=Thursday, etc
-  startHour             Int      @default(9)                          // 9 = 9 AM
-  endHour               Int      @default(17)                         // 5 PM
-  slotDurationMinutes   Int      @default(60)
-  timezone              String   @default("Asia/Taipei")
-  blockedDates          Json     @default("[]")                       // ISO date strings
-  maxBookingsPerDay     Int      @default(3)
-  updatedAt             DateTime @updatedAt
+  id                  String   @id @default("default")
+  availableDays       Json     @default("[2,4]") // 0=Sunday, 2=Tuesday, 4=Thursday, etc
+  startHour           Int      @default(9) // 9 = 9 AM
+  endHour             Int      @default(17) // 5 PM
+  slotDurationMinutes Int      @default(60)
+  timezone            String   @default("Asia/Taipei")
+  blockedDates        Json     @default("[]") // ISO date strings
+  maxBookingsPerDay   Int      @default(3)
+  updatedAt           DateTime @updatedAt
 }
 
 // ─────────────────────────────────────────────
@@ -2968,14 +2991,14 @@ model ComplianceDocument {
 
   title       String
   description String?
-  category    String   @default("OTHER") // Flexible string categories (SDS_MSDS, TDS, BLUESIGN, ZDHC, OEKO_TEX, GOTS, EPA, REACH, COA, COC, ISO, IMPORT_EXPORT, OTHER, or custom)
+  category    String  @default("OTHER") // Flexible string categories (SDS_MSDS, TDS, BLUESIGN, ZDHC, OEKO_TEX, GOTS, EPA, REACH, COA, COC, ISO, IMPORT_EXPORT, OTHER, or custom)
   version     String?
   filename    String?
   contentType String?
   sizeBytes   Int?
   url         String?
-  data        String?            // base64 data URL for inline storage (legacy — prefer S3)
-  s3Key       String?            // S3 object key for files uploaded via presigned URL
+  data        String? // base64 data URL for inline storage (legacy — prefer S3)
+  s3Key       String? // S3 object key for files uploaded via presigned URL
 
   // Role-based visibility: JSON array of role strings e.g. ["ADMIN","BRAND_USER","FACTORY_USER"]
   // If empty/null, only ADMIN can see it
@@ -2997,80 +3020,80 @@ model ComplianceDocument {
 // ─────────────────────────────────────────────
 
 model SampleTrialRequest {
-  id                  String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Who's requesting
-  factoryId           String
-  factory             Factory  @relation("FactoryTrials", fields: [factoryId], references: [id])
-  requestedById       String
-  requestedBy         User     @relation("TrialRequester", fields: [requestedById], references: [id])
+  factoryId     String
+  factory       Factory @relation("FactoryTrials", fields: [factoryId], references: [id])
+  requestedById String
+  requestedBy   User    @relation("TrialRequester", fields: [requestedById], references: [id])
 
   // What fabric (must exist — if not, factory submits fabric first)
-  fabricId            String
-  fabric              Fabric   @relation("FabricTrials", fields: [fabricId], references: [id])
+  fabricId String
+  fabric   Fabric @relation("FabricTrials", fields: [fabricId], references: [id])
 
   // For whom — brand partnership or self-development
-  purposeType         String   // BRAND_PARTNERSHIP | SELF_DEVELOPMENT
-  brandId             String?
-  brand               Brand?   @relation("TrialBrand", fields: [brandId], references: [id])
-  partnershipNote     String?  // Free text if brand not in system yet
+  purposeType     String // BRAND_PARTNERSHIP | SELF_DEVELOPMENT
+  brandId         String?
+  brand           Brand?  @relation("TrialBrand", fields: [brandId], references: [id])
+  partnershipNote String? // Free text if brand not in system yet
 
   // Trial details
-  trialType           String   // LAB_TRIAL | PRODUCTION_TRIAL
-  totalMeters         Float    // Total fabric meters/yards to be treated
-  totalUnit           String   @default("meters") // meters | yards
-  targetFuzeTier      String?  // F1, F2, F3, F4
-  applicationMethod   String?  // exhaust | pad | spray
+  trialType         String // LAB_TRIAL | PRODUCTION_TRIAL
+  totalMeters       Float // Total fabric meters/yards to be treated
+  totalUnit         String  @default("meters") // meters | yards
+  targetFuzeTier    String? // F1, F2, F3, F4
+  applicationMethod String? // exhaust | pad | spray
 
   // FUZE sample shipment
-  sampleVolumeLiters  Float?   // Calculated from fabric params + tier
-  shippingAddress     String?  // Factory address for sample delivery
-  shippingCity        String?
-  shippingState       String?
-  shippingPostalCode  String?
-  shippingCountry     String?
-  shippingContactName String?
+  sampleVolumeLiters   Float? // Calculated from fabric params + tier
+  shippingAddress      String? // Factory address for sample delivery
+  shippingCity         String?
+  shippingState        String?
+  shippingPostalCode   String?
+  shippingCountry      String?
+  shippingContactName  String?
   shippingContactPhone String?
   shippingContactEmail String?
 
   // Shipping account — factory pays freight on US-origin samples
-  shippingCarrier       String?  // FedEx, DHL, UPS, etc.
-  shippingAccountNumber String?  // Their carrier account number for billing
-  shippingMethod        String?  // EXPRESS | STANDARD | ECONOMY
-  shippingOrigin        String?  @default("US") // US = ships from FUZE USA, DISTRIBUTOR = in-country
-  shippingNotes         String?  // Special instructions, broker info, customs notes
+  shippingCarrier       String? // FedEx, DHL, UPS, etc.
+  shippingAccountNumber String? // Their carrier account number for billing
+  shippingMethod        String? // EXPRESS | STANDARD | ECONOMY
+  shippingOrigin        String? @default("US") // US = ships from FUZE USA, DISTRIBUTOR = in-country
+  shippingNotes         String? // Special instructions, broker info, customs notes
 
   // ICP Lab commitment (mandatory)
-  icpLabId            String?
-  icpLab              Lab?     @relation("TrialIcpLab", fields: [icpLabId], references: [id])
-  icpLabOther         String?  // If lab not yet in system
-  icpCommitDate       DateTime? // When they commit to send for ICP testing
+  icpLabId      String?
+  icpLab        Lab?      @relation("TrialIcpLab", fields: [icpLabId], references: [id])
+  icpLabOther   String? // If lab not yet in system
+  icpCommitDate DateTime? // When they commit to send for ICP testing
 
   // Status workflow
   // SUBMITTED → UNDER_REVIEW → APPROVED → SAMPLE_SHIPPED →
   // SAMPLE_RECEIVED → TRIAL_IN_PROGRESS → ICP_PENDING →
   // ICP_SUBMITTED → COMPLETE  (or REJECTED at any point)
-  status              String   @default("SUBMITTED")
+  status String @default("SUBMITTED")
 
   // Admin tracking
-  approvedById        String?
-  approvedAt          DateTime?
-  rejectedReason      String?
+  approvedById         String?
+  approvedAt           DateTime?
+  rejectedReason       String?
   sampleTrackingNumber String?
-  sampleShippedDate   DateTime?
-  sampleReceivedDate  DateTime?
+  sampleShippedDate    DateTime?
+  sampleReceivedDate   DateTime?
 
   // ICP follow-up
-  icpTestRunId        String?  // Links to actual ICP TestRun when results submitted
-  icpSubmittedAt      DateTime?
-  icpAgValue          Float?   // Quick-reference Ag result
-  icpAuValue          Float?   // Quick-reference Au result
+  icpTestRunId   String? // Links to actual ICP TestRun when results submitted
+  icpSubmittedAt DateTime?
+  icpAgValue     Float? // Quick-reference Ag result
+  icpAuValue     Float? // Quick-reference Au result
 
-  notes               String?
-  adminNotes          String?
+  notes      String?
+  adminNotes String?
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([factoryId])
   @@index([fabricId])
@@ -3085,11 +3108,11 @@ model SampleTrialRequest {
 
 model ApiCallLog {
   id          String   @id @default(cuid())
-  provider    String   // "openai" | "anthropic"
-  callerRoute String   // "chat" | "research" | "test-review" | "fabric-intake"
-  userId      String?  // from x-user-id header (who triggered it)
-  statusCode  Int      // HTTP status from the AI API
-  durationMs  Int      // how long the call took
+  provider    String // "openai" | "anthropic"
+  callerRoute String // "chat" | "research" | "test-review" | "fabric-intake"
+  userId      String? // from x-user-id header (who triggered it)
+  statusCode  Int // HTTP status from the AI API
+  durationMs  Int // how long the call took
   attempt     Int      @default(0) // retry attempt number
   createdAt   DateTime @default(now())
 
@@ -3106,10 +3129,10 @@ model ApiCallLog {
 // ─────────────────────────────────────────────
 
 model DistributorPricing {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  distributorId   String
-  distributor     Distributor @relation("DistributorPricing", fields: [distributorId], references: [id])
+  distributorId String
+  distributor   Distributor @relation("DistributorPricing", fields: [distributorId], references: [id])
 
   // ─── Tier (1..5) ──────────────────────────────────
   // Each distributor maintains up to 5 pricing tiers driven by
@@ -3123,36 +3146,36 @@ model DistributorPricing {
   // tierIndex null = legacy default row (the single-tier shape we had
   // before the multi-tier rollout). Order pricing falls back to the
   // isDefault row when a factory's assigned tier doesn't match.
-  tierIndex       Int?     // 1..5
-  tierName        String?  // free-text label
+  tierIndex Int? // 1..5
+  tierName  String? // free-text label
 
   // Scope: can be per-factory, per-region, or default
-  factoryId       String?  // If set, price applies to this factory only
-  factory         Factory? @relation("FactoryDistributorPricing", fields: [factoryId], references: [id])
-  region          String?  // APAC, EMEA, LATAM, NAM, etc. — if set, applies to region
-  country         String?  // If set, applies to this country only
+  factoryId String? // If set, price applies to this factory only
+  factory   Factory? @relation("FactoryDistributorPricing", fields: [factoryId], references: [id])
+  region    String? // APAC, EMEA, LATAM, NAM, etc. — if set, applies to region
+  country   String? // If set, applies to this country only
 
   // FUZE product pricing
-  pricePerLiter   Float    // Distributor's price to factory
-  currency        String   @default("USD")
-  minOrderLiters  Float?   // Minimum order volume
-  leadTimeDays    Int?     // Estimated delivery time
+  pricePerLiter  Float // Distributor's price to factory
+  currency       String @default("USD")
+  minOrderLiters Float? // Minimum order volume
+  leadTimeDays   Int? // Estimated delivery time
 
   // Tiered volume discounts (JSON array)
   // [{ minLiters: 100, discountPct: 5 }, { minLiters: 500, discountPct: 10 }]
   volumeDiscounts Json?
 
   // Hangtag pricing
-  hangtagPricePerUnit Float?  // Price per hangtag
-  hangtagMinOrder     Int?    // Minimum hangtag order
+  hangtagPricePerUnit Float? // Price per hangtag
+  hangtagMinOrder     Int? // Minimum hangtag order
 
-  isDefault       Boolean  @default(false)  // Default pricing for this distributor
-  active          Boolean  @default(true)
+  isDefault Boolean @default(false) // Default pricing for this distributor
+  active    Boolean @default(true)
 
-  notes           String?
+  notes String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([distributorId])
   @@index([factoryId])
@@ -3161,29 +3184,29 @@ model DistributorPricing {
 }
 
 model DistributorInventory {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  distributorId   String
-  distributor     Distributor @relation("DistributorInventory", fields: [distributorId], references: [id])
+  distributorId String
+  distributor   Distributor @relation("DistributorInventory", fields: [distributorId], references: [id])
 
   // Stock on hand
-  fuzeStockLiters Float    @default(0)  // Current FUZE product stock in liters
-  fuzeStockBottles Int     @default(0)  // Current stock in 19L bottles
-  hangtagStock    Int      @default(0)  // Hangtags in stock
+  fuzeStockLiters  Float @default(0) // Current FUZE product stock in liters
+  fuzeStockBottles Int   @default(0) // Current stock in 19L bottles
+  hangtagStock     Int   @default(0) // Hangtags in stock
 
   // Reorder thresholds
-  reorderPointLiters Float?  // Auto-alert when stock drops below
-  reorderQtyLiters   Float?  // Suggested reorder quantity
+  reorderPointLiters Float? // Auto-alert when stock drops below
+  reorderQtyLiters   Float? // Suggested reorder quantity
 
   // Last updated
   lastStockUpdate DateTime?
   lastAuditDate   DateTime?
   updatedById     String?
 
-  notes           String?
+  notes String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([distributorId])
 }
@@ -3196,57 +3219,57 @@ model DistributorInventory {
 // ─────────────────────────────────────────────
 
 model FuzeOrder {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Who ordered
-  factoryId       String
-  factory         Factory  @relation("FactoryOrders", fields: [factoryId], references: [id])
-  orderedById     String?
-  orderedBy       User?    @relation("OrderUser", fields: [orderedById], references: [id])
+  factoryId   String
+  factory     Factory @relation("FactoryOrders", fields: [factoryId], references: [id])
+  orderedById String?
+  orderedBy   User?   @relation("OrderUser", fields: [orderedById], references: [id])
 
   // What was ordered
-  orderNumber     String   @unique  // FUZE-ORD-YYYYMMDD-XXXX
-  orderType       String   @default("PRODUCTION")  // PRODUCTION | SAMPLE | HANGTAG
-  volumeLiters    Float?   // Total liters ordered (for PRODUCTION/SAMPLE)
-  fuzeTier        String?  // F1/F2/F3/F4
-  bottles         Int?     // Number of 19L bottles
+  orderNumber  String  @unique // FUZE-ORD-YYYYMMDD-XXXX
+  orderType    String  @default("PRODUCTION") // PRODUCTION | SAMPLE | HANGTAG
+  volumeLiters Float? // Total liters ordered (for PRODUCTION/SAMPLE)
+  fuzeTier     String? // F1/F2/F3/F4
+  bottles      Int? // Number of 19L bottles
 
   // Hangtag orders
-  hangtagQty      Int?     // Number of hangtags (for HANGTAG orders)
-  hangtagDesign   String?  // Design variant
+  hangtagQty    Int? // Number of hangtags (for HANGTAG orders)
+  hangtagDesign String? // Design variant
 
   // Brand & fabric context (what is this order for?)
-  brandId         String?
-  brand           Brand?   @relation("OrderBrand", fields: [brandId], references: [id])
-  fabricId        String?
-  fabric          Fabric?  @relation("OrderFabric", fields: [fabricId], references: [id])
-  purposeNote     String?  // "New account development", "Production run for Rhone Q3", etc.
+  brandId     String?
+  brand       Brand?  @relation("OrderBrand", fields: [brandId], references: [id])
+  fabricId    String?
+  fabric      Fabric? @relation("OrderFabric", fields: [fabricId], references: [id])
+  purposeNote String? // "New account development", "Production run for Rhone Q3", etc.
 
   // Quote (auto-generated from distributor pricing)
-  quoteNumber     String?  // FUZE-QTE-YYYYMMDD-XXXX
-  pricePerLiter   Float?   // From distributor pricing or manual
-  pricePerHangtag Float?   // For hangtag orders
+  quoteNumber     String? // FUZE-QTE-YYYYMMDD-XXXX
+  pricePerLiter   Float? // From distributor pricing or manual
+  pricePerHangtag Float? // For hangtag orders
   totalPrice      Float?
-  currency        String   @default("USD")
-  discountPct     Float?   // Volume discount applied
+  currency        String    @default("USD")
+  discountPct     Float? // Volume discount applied
   quoteExpiresAt  DateTime?
-  quoteAccepted   Boolean  @default(false)
+  quoteAccepted   Boolean   @default(false)
   quoteAcceptedAt DateTime?
 
   // Fulfillment routing
-  fulfillmentSource String?  // DISTRIBUTOR | DIRECT_USA
-  distributorId   String?
-  distributor     Distributor? @relation("OrderDistributor", fields: [distributorId], references: [id])
+  fulfillmentSource String? // DISTRIBUTOR | DIRECT_USA
+  distributorId     String?
+  distributor       Distributor? @relation("OrderDistributor", fields: [distributorId], references: [id])
 
   // Account manager approval
   accountManagerId String?
-  accountManager   User?   @relation("OrderAccountManager", fields: [accountManagerId], references: [id])
-  approvedAt      DateTime?
-  approvedById    String?
+  accountManager   User?     @relation("OrderAccountManager", fields: [accountManagerId], references: [id])
+  approvedAt       DateTime?
+  approvedById     String?
 
   // Sample support (FUZE subsidizes sample costs)
   isSampleSubsidized Boolean @default(false)
-  subsidyAmount      Float?   // USD amount FUZE covers
+  subsidyAmount      Float? // USD amount FUZE covers
   subsidyNote        String?
 
   // Shipping
@@ -3260,24 +3283,24 @@ model FuzeOrder {
 
   // Status workflow:
   // DRAFT → QUOTED → PENDING_APPROVAL → APPROVED → PROCESSING → SHIPPED → DELIVERED → CANCELLED
-  status          String   @default("DRAFT")
+  status String @default("DRAFT")
 
   // Reorder tracking
-  isReorder       Boolean  @default(false)
+  isReorder       Boolean @default(false)
   previousOrderId String?
 
   // Production batch this order was filled from (set at ship time)
-  batchId         String?
-  batch           ProductionBatch? @relation("OrderBatch", fields: [batchId], references: [id])
+  batchId String?
+  batch   ProductionBatch? @relation("OrderBatch", fields: [batchId], references: [id])
 
   // Fabric spec & wastage (factory production orders)
-  fabricWeightGsm    Float?   // Fabric weight in g/m²
-  fabricLengthMeters Float?   // Total fabric length
-  fabricWidthMeters  Float?   // Fabric width
-  fabricMassKg       Float?   // Total fabric mass (kg) — either entered or computed
-  treatmentMethod    String?  // EXHAUST | PAD_DRY_CURE | SPRAY
-  baseFuzeLiters     Float?   // Calculated FUZE needed before wastage
-  wastageFactorPct   Float?   @default(10)  // Wastage / safety buffer %
+  fabricWeightGsm    Float? // Fabric weight in g/m²
+  fabricLengthMeters Float? // Total fabric length
+  fabricWidthMeters  Float? // Fabric width
+  fabricMassKg       Float? // Total fabric mass (kg) — either entered or computed
+  treatmentMethod    String? // EXHAUST | PAD_DRY_CURE | SPRAY
+  baseFuzeLiters     Float? // Calculated FUZE needed before wastage
+  wastageFactorPct   Float?  @default(10) // Wastage / safety buffer %
 
   // Distributor Portal Ordering — factory attaches a PO when they
   // accept a quote; we snapshot the distributor tier the quote was
@@ -3287,18 +3310,16 @@ model FuzeOrder {
   poDocumentUrl               String?
   distributorTierIndexAtOrder Int?
 
-  notes           String?
-  adminNotes      String?
-  factoryNotes    String?  // Factory's internal notes
+  notes        String?
+  adminNotes   String?
+  factoryNotes String? // Factory's internal notes
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  consumptions    FuzeConsumption[]
-  brandAllocations OrderBrandAllocation[]
-  lifecycleEvents OrderLifecycleEvent[] @relation("OrderLifecycle")
-
-  @@index([factoryId])
+  consumptions         FuzeConsumption[]
+  brandAllocations     OrderBrandAllocation[]
+  lifecycleEvents      OrderLifecycleEvent[]  @relation("OrderLifecycle")
   // Phase 7A — brand approval workflow. Defaults null on legacy rows;
   // PENDING set on order POST when Brand.requiresApproval=true and
   // orderType=PRODUCTION and brand has cadence stipulated.
@@ -3307,6 +3328,7 @@ model FuzeOrder {
   brandApprovedAt      DateTime?
   brandRejectionReason String?
 
+  @@index([factoryId])
   @@index([brandId])
   @@index([distributorId])
   @@index([accountManagerId])
@@ -3324,24 +3346,24 @@ model FuzeOrder {
 // Enables: AM commission credit, brand rebates, volume tracking
 // ─────────────────────────────────────────────
 model OrderBrandAllocation {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  orderId         String
-  order           FuzeOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+  order   FuzeOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  brandId         String
-  brand           Brand    @relation("BrandOrderAllocations", fields: [brandId], references: [id])
+  brandId String
+  brand   Brand  @relation("BrandOrderAllocations", fields: [brandId], references: [id])
 
   // Volume allocation for this brand
-  allocatedLiters Float?   // Liters allocated to this brand
-  allocatedPct    Float?   // Percentage of order volume (0-100)
-  hangtagQty      Int?     // Hangtags for this brand (hangtag orders)
+  allocatedLiters Float? // Liters allocated to this brand
+  allocatedPct    Float? // Percentage of order volume (0-100)
+  hangtagQty      Int? // Hangtags for this brand (hangtag orders)
 
   // Notes from factory about this brand's usage
-  notes           String?
+  notes String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([orderId, brandId])
   @@index([brandId])
@@ -3363,10 +3385,10 @@ model BrandPricingTier {
   brandId String
   brand   Brand  @relation("BrandPricingTiers", fields: [brandId], references: [id], onDelete: Cascade)
 
-  thresholdLiters Float    // cumulative consumption needed to qualify
-  discountPct     Float    // % off list price (0–100)
-  label           String?  // optional label e.g. "Bronze", "Silver"
-  active          Boolean  @default(true)
+  thresholdLiters Float // cumulative consumption needed to qualify
+  discountPct     Float // % off list price (0–100)
+  label           String? // optional label e.g. "Bronze", "Silver"
+  active          Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -3382,31 +3404,31 @@ model BrandPricingTier {
 // COA plus the product-wide TDS and SDS.
 // ─────────────────────────────────────────────
 model ProductionBatch {
-  id              String   @id @default(cuid())
-  batchCode       String   @unique  // FB-YYYYMMDD-XXXX e.g. FB-20260413-0007
-  productionDate  DateTime
+  id                   String   @id @default(cuid())
+  batchCode            String   @unique // FB-YYYYMMDD-XXXX e.g. FB-20260413-0007
+  productionDate       DateTime
   volumeProducedLiters Float
-  bottlesFilled   Int?     // 19L carboys filled from this batch
+  bottlesFilled        Int? // 19L carboys filled from this batch
 
   // Documents specific to this batch
-  coaDocUrl       String?  // Certificate of Analysis (per-batch)
+  coaDocUrl       String? // Certificate of Analysis (per-batch)
   coaUploadedAt   DateTime?
   coaUploadedById String?
 
   // Production details
-  ablationRunIds  String?  // JSON: ["run-001","run-002"]
-  concentrationMgPerL Float? @default(30)
-  qcPassed        Boolean  @default(true)
-  qcNotes         String?
+  ablationRunIds      String? // JSON: ["run-001","run-002"]
+  concentrationMgPerL Float?  @default(30)
+  qcPassed            Boolean @default(true)
+  qcNotes             String?
 
-  notes           String?
+  notes String?
 
   // Orders fulfilled from this batch (set at ship time)
-  orders          FuzeOrder[] @relation("OrderBatch")
-  scans           BatchScanLog[]
+  orders FuzeOrder[]    @relation("OrderBatch")
+  scans  BatchScanLog[]
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([batchCode])
   @@index([productionDate])
@@ -3419,18 +3441,18 @@ model ProductionBatch {
 // and forensic investigations if QC issues ever arise.
 // ─────────────────────────────────────────────
 model BatchScanLog {
-  id        String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  batchId   String
-  batch     ProductionBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  batchId String
+  batch   ProductionBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
 
-  userId    String?  // Atlas user who scanned (null if public access later enabled)
-  userName  String?  // Cached display name
-  userRole  String?  // ADMIN, FACTORY_USER, BRAND_USER, etc.
+  userId   String? // Atlas user who scanned (null if public access later enabled)
+  userName String? // Cached display name
+  userRole String? // ADMIN, FACTORY_USER, BRAND_USER, etc.
 
   ipAddress String?
   userAgent String?
-  location  String?  // Factory name / brand name / free text
+  location  String? // Factory name / brand name / free text
 
   createdAt DateTime @default(now())
 
@@ -3446,16 +3468,16 @@ model BatchScanLog {
 // ProductionBatch.coaDocUrl).
 // ─────────────────────────────────────────────
 model ProductDocument {
-  id          String   @id @default(cuid())
-  docType     String   @unique  // TDS | SDS | PRODUCT_SPEC | HANDLING_GUIDE | APPLICATION_GUIDE
-  title       String
-  description String?
-  fileUrl     String
-  version     String?  // e.g. "v3.1"
+  id            String    @id @default(cuid())
+  docType       String    @unique // TDS | SDS | PRODUCT_SPEC | HANDLING_GUIDE | APPLICATION_GUIDE
+  title         String
+  description   String?
+  fileUrl       String
+  version       String? // e.g. "v3.1"
   effectiveDate DateTime?
-  expiresAt   DateTime?
+  expiresAt     DateTime?
 
-  uploadedById String?
+  uploadedById   String?
   uploadedByName String?
 
   // Phase 6A — library categorization. category is one of the
@@ -3478,8 +3500,8 @@ model ProductDocument {
   restrictedToDistributorId String?
   restrictedToLabId         String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([docType])
   @@index([category])
@@ -3491,28 +3513,28 @@ model ProductDocument {
 // Feeds the public shipment verification page (QR destination)
 // ─────────────────────────────────────────────
 model OrderLifecycleEvent {
-  id        String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  orderId   String
-  order     FuzeOrder @relation("OrderLifecycle", fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+  order   FuzeOrder @relation("OrderLifecycle", fields: [orderId], references: [id], onDelete: Cascade)
 
-  eventType String   // ORDER_PLACED | QUOTE_ACCEPTED | APPROVED | SHIPPED_FROM_FUZE |
-                     // SHIPPED_FROM_DISTRIBUTOR | IN_TRANSIT | CUSTOMS |
-                     // RECEIVED_AT_FACTORY | TREATMENT_APPLIED | ICP_SAMPLE_SUBMITTED |
-                     // ICP_CERTIFIED | BRAND_NOTIFIED | CANCELLED | NOTE
-  title     String   // Short human-readable label
+  eventType   String // ORDER_PLACED | QUOTE_ACCEPTED | APPROVED | SHIPPED_FROM_FUZE |
+  // SHIPPED_FROM_DISTRIBUTOR | IN_TRANSIT | CUSTOMS |
+  // RECEIVED_AT_FACTORY | TREATMENT_APPLIED | ICP_SAMPLE_SUBMITTED |
+  // ICP_CERTIFIED | BRAND_NOTIFIED | CANCELLED | NOTE
+  title       String // Short human-readable label
   description String? // Longer narrative
-  location  String?
-  actorId   String?  // User who logged the event
-  actorName String?  // Cached display name
+  location    String?
+  actorId     String? // User who logged the event
+  actorName   String? // Cached display name
 
   // Structured payload for specific event types
-  data      Json?    // { metersProcessed, litersUsed, method, trackingNumber, carrier, labId, certificateUrl, ... }
+  data Json? // { metersProcessed, litersUsed, method, trackingNumber, carrier, labId, certificateUrl, ... }
 
-  photoUrl  String?
+  photoUrl    String?
   documentUrl String? // Link to SDS/COA/BOL/certificate
 
-  isPublic  Boolean  @default(true)  // Hide internal notes from public QR page
+  isPublic Boolean @default(true) // Hide internal notes from public QR page
 
   createdAt DateTime @default(now())
 
@@ -3522,37 +3544,37 @@ model OrderLifecycleEvent {
 }
 
 model FuzeConsumption {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Who used it
-  factoryId       String
-  factory         Factory  @relation("FactoryConsumption", fields: [factoryId], references: [id])
+  factoryId String
+  factory   Factory @relation("FactoryConsumption", fields: [factoryId], references: [id])
 
   // Against which order
-  orderId         String?
-  order           FuzeOrder? @relation(fields: [orderId], references: [id])
+  orderId String?
+  order   FuzeOrder? @relation(fields: [orderId], references: [id])
 
   // Usage details
-  litersUsed      Float    // How many liters consumed
-  metersProcessed Float?   // How many meters of fabric treated
+  litersUsed        Float // How many liters consumed
+  metersProcessed   Float? // How many meters of fabric treated
   applicationMethod String? // exhaust | pad | spray
-  fuzeTier        String?  // F1/F2/F3/F4
+  fuzeTier          String? // F1/F2/F3/F4
 
   // Production context
   brandId         String?
-  brand           Brand?   @relation("ConsumptionBrand", fields: [brandId], references: [id])
+  brand           Brand?  @relation("ConsumptionBrand", fields: [brandId], references: [id])
   fabricId        String?
-  fabric          Fabric?  @relation("ConsumptionFabric", fields: [fabricId], references: [id])
-  productionRunId String?  // Factory's internal reference
+  fabric          Fabric? @relation("ConsumptionFabric", fields: [fabricId], references: [id])
+  productionRunId String? // Factory's internal reference
 
   // Date of consumption
-  usageDate       DateTime @default(now())
-  reportedById    String?
+  usageDate    DateTime @default(now())
+  reportedById String?
 
-  notes           String?
+  notes String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([factoryId])
   @@index([orderId])
@@ -3568,22 +3590,22 @@ model FeedbackReport {
   id String @id @default(cuid())
 
   // Who reported (may be null for unauthenticated pages, though we expect auth everywhere)
-  userId     String?
-  user       User?   @relation("FeedbackSubmitter", fields: [userId], references: [id])
-  userEmail  String? // cached so we can email even if user is later deleted
-  userName   String?
-  userRole   String? // cached role at time of submission
+  userId    String?
+  user      User?   @relation("FeedbackSubmitter", fields: [userId], references: [id])
+  userEmail String? // cached so we can email even if user is later deleted
+  userName  String?
+  userRole  String? // cached role at time of submission
 
   // Classification
-  category String // PROBLEM | CONFUSING | MISSING | SUGGESTION | BROKEN_LINK | ERROR | OTHER
-  title    String
+  category    String // PROBLEM | CONFUSING | MISSING | SUGGESTION | BROKEN_LINK | ERROR | OTHER
+  title       String
   description String @db.Text
 
   // Auto-captured context (all optional so we gracefully degrade)
-  url       String?   // full URL the user was on
-  portal    String?   // e.g. "lab-portal", "brand-portal", "admin", "crm"
+  url       String? // full URL the user was on
+  portal    String? // e.g. "lab-portal", "brand-portal", "admin", "crm"
   userAgent String?
-  viewport  String?   // "1440x900"
+  viewport  String? // "1440x900"
   referer   String?
 
   // Optional screenshot — S3 key + public URL (or base64 data-URL fallback)
@@ -3592,18 +3614,18 @@ model FeedbackReport {
   screenshotKey    String?
 
   // Triage + resolution
-  status       FeedbackStatus @default(NEW)
-  triagedById  String?
-  triagedAt    DateTime?
-  triageNotes  String?  @db.Text
+  status      FeedbackStatus @default(NEW)
+  triagedById String?
+  triagedAt   DateTime?
+  triageNotes String?        @db.Text
 
-  resolvedById   String?
-  resolvedAt     DateTime?
-  resolution     String? @db.Text   // what was fixed, shown to user on notification
-  resolutionUrl  String?            // optional link to the feature / page / PR
+  resolvedById  String?
+  resolvedAt    DateTime?
+  resolution    String?   @db.Text // what was fixed, shown to user on notification
+  resolutionUrl String? // optional link to the feature / page / PR
 
-  notifiedAt        DateTime?       // when we last emailed the requester about a status change
-  notificationCount Int      @default(0) // how many times we have emailed the reporter — surfaces spammy fan-outs
+  notifiedAt        DateTime? // when we last emailed the requester about a status change
+  notificationCount Int       @default(0) // how many times we have emailed the reporter — surfaces spammy fan-outs
 
   priority Int? // 1 (critical) — 5 (nice-to-have)
 
@@ -3617,13 +3639,13 @@ model FeedbackReport {
 }
 
 enum FeedbackStatus {
-  NEW           // just submitted, needs triage
-  TRIAGED       // reviewed, awaiting decision
-  ACCEPTED      // agreed, going to fix
-  IN_PROGRESS   // actively being fixed
-  FIXED         // done, requester notified
-  REJECTED      // wont fix / not a bug
-  DUPLICATE     // merged into another report
+  NEW // just submitted, needs triage
+  TRIAGED // reviewed, awaiting decision
+  ACCEPTED // agreed, going to fix
+  IN_PROGRESS // actively being fixed
+  FIXED // done, requester notified
+  REJECTED // wont fix / not a bug
+  DUPLICATE // merged into another report
   CLOSED
 }
 
@@ -3650,10 +3672,10 @@ model WeeklyExecReport {
   // Monday 00:00 UTC for the covered week. For the first "2-week backfill"
   // run we still file the report under the most recent Monday and include
   // the prior week inside the snapshot.
-  weekOf   DateTime @unique
+  weekOf       DateTime @unique
   // Optional lookback override — when > 7 days, the snapshot's period
   // starts at (weekOf - lookbackDays) instead of the prior Monday.
-  lookbackDays Int @default(7)
+  lookbackDays Int      @default(7)
 
   // Fully computed report payload. Shape lives in
   // src/lib/weekly-review/types.ts — never read fields directly from
@@ -3735,22 +3757,22 @@ model BDSequence {
   id String @id @default(cuid())
 
   brandId String
-  brand   Brand @relation("BrandBDSequences", fields: [brandId], references: [id], onDelete: Cascade)
+  brand   Brand  @relation("BrandBDSequences", fields: [brandId], references: [id], onDelete: Cascade)
 
   contactId String
   contact   Contact @relation("ContactBDSequences", fields: [contactId], references: [id], onDelete: Cascade)
 
   repId String
-  rep   User @relation("UserBDSequences", fields: [repId], references: [id])
+  rep   User   @relation("UserBDSequences", fields: [repId], references: [id])
 
   // Cadence template applied at creation. "default" = the 6-step long funnel.
   // Future cadences (e.g. "premium_light_touch") will live in src/lib/bd-sequence.ts
   // and reference this string.
   cadenceKey String @default("default")
 
-  status      String   @default("active") // active | paused | completed | exited
-  exitReason  String?  // replied | meeting_booked | unqualified | manual_stop | replaced
-  startedAt   DateTime @default(now())
+  status      String    @default("active") // active | paused | completed | exited
+  exitReason  String? // replied | meeting_booked | unqualified | manual_stop | replaced
+  startedAt   DateTime  @default(now())
   completedAt DateTime?
 
   // Cached counters so the dashboard doesn't have to count steps each render.
@@ -3782,14 +3804,14 @@ model BDSequenceStep {
   sequenceId String
   sequence   BDSequence @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
 
-  stepIndex Int      // 0-based position in the cadence
-  channel   String   // email | linkedin_connect | linkedin_dm | paid | tradeshow
-  status    String   @default("pending") // pending | ready | sent | skipped | failed
+  stepIndex Int // 0-based position in the cadence
+  channel   String // email | linkedin_connect | linkedin_dm | paid | tradeshow
+  status    String @default("pending") // pending | ready | sent | skipped | failed
 
   // When this step becomes eligible for the rep to review/send. Cron looks
   // for status="pending" AND scheduledFor <= now() and flips to "ready".
   scheduledFor DateTime
-  readyAt      DateTime?  // when cron generated the draft
+  readyAt      DateTime? // when cron generated the draft
   sentAt       DateTime?
   skippedAt    DateTime?
   failedAt     DateTime?
@@ -3837,16 +3859,16 @@ model BDSequenceStep {
 //   {senderName} {senderEmail}
 // New tokens can be added without a schema change.
 model EmailTemplate {
-  id      String @id @default(cuid())
+  id String @id @default(cuid())
 
-  title   String   // human-readable label shown in the picker
-  subject String   // may contain {variables}
-  body    String   @db.Text // HTML or plain — renderer is forgiving
+  title    String // human-readable label shown in the picker
+  subject  String // may contain {variables}
+  body     String  @db.Text // HTML or plain — renderer is forgiving
   // Optional category tag for grouping in the picker. Free-form string today —
   // we may promote to enum once usage settles.
   category String?
 
-  scope   EmailTemplateScope @default(PRIVATE)
+  scope EmailTemplateScope @default(PRIVATE)
 
   // Owner — null only for GLOBAL templates seeded via migration. PRIVATE
   // templates are filtered by ownerId === currentUser.id; SHARED ignore owner
@@ -3861,7 +3883,7 @@ model EmailTemplate {
   // Lightweight usage stats — incremented on /api/email-templates/[id]/use
   // when the picker actually injects this template into a compose draft.
   // Useful for "show most-used first" UX without a separate analytics table.
-  useCount Int @default(0)
+  useCount   Int       @default(0)
   lastUsedAt DateTime?
 
   // Per-user BD Wizard quick-pick slot (1-10). When set, this template shows
@@ -3877,10 +3899,10 @@ model EmailTemplate {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([ownerId, bdSlot], name: "owner_bdSlot_unique")
   @@index([ownerId, scope])
   @@index([scope, archivedAt])
   @@index([category])
-  @@unique([ownerId, bdSlot], name: "owner_bdSlot_unique")
 }
 
 enum EmailTemplateScope {
@@ -3906,11 +3928,11 @@ enum EmailTemplateScope {
 
 model SupplyChainLink {
   id        String   @id @default(cuid())
-  fromType  String   // BRAND | FACTORY | DISTRIBUTOR | LAB | FUZE
+  fromType  String // BRAND | FACTORY | DISTRIBUTOR | LAB | FUZE
   fromId    String
-  toType    String   // BRAND | FACTORY | DISTRIBUTOR | LAB | FUZE
+  toType    String // BRAND | FACTORY | DISTRIBUTOR | LAB | FUZE
   toId      String
-  relation  String   // SUPPLIES | DISTRIBUTES_TO | TESTS_FOR | OWNS | CONSULTS_FOR
+  relation  String // SUPPLIES | DISTRIBUTES_TO | TESTS_FOR | OWNS | CONSULTS_FOR
   active    Boolean  @default(true)
   notes     String?
   createdAt DateTime @default(now())
@@ -3935,40 +3957,40 @@ model SupplyChainLink {
 // pages later.
 
 model BrandProfile {
-  id           String   @id @default(cuid())
-  brandId      String   @unique
-  brand        Brand    @relation("BrandHasProfile", fields: [brandId], references: [id], onDelete: Cascade)
-  logoUrl      String?
-  primaryColor String?  // hex
-  heroHeadline String?
-  heroSubhead  String?
-  supportEmail String?
-  supportPhone String?
-  departments  Json?    // [{name, lead, email}]
-  publicSlug   String?  @unique
+  id            String   @id @default(cuid())
+  brandId       String   @unique
+  brand         Brand    @relation("BrandHasProfile", fields: [brandId], references: [id], onDelete: Cascade)
+  logoUrl       String?
+  primaryColor  String? // hex
+  heroHeadline  String?
+  heroSubhead   String?
+  supportEmail  String?
+  supportPhone  String?
+  departments   Json? // [{name, lead, email}]
+  publicSlug    String?  @unique
   // Phase 12A — gate the /verified/[publicSlug] storefront on this
   // boolean. Defaults false so a publicSlug never accidentally goes
   // live; brand owner opts in via /brand-portal/storefront settings.
-  publicEnabled Boolean @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  publicEnabled Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 // ─── Phase 12B — QR hangtag verification ──────────────────────
 model HangtagQR {
-  id             String   @id @default(cuid())
-  token          String   @unique  // short base32, 12 chars
+  id             String    @id @default(cuid())
+  token          String    @unique // short base32, 12 chars
   brandId        String
-  brand          Brand    @relation("BrandHangtagQR", fields: [brandId], references: [id], onDelete: Cascade)
+  brand          Brand     @relation("BrandHangtagQR", fields: [brandId], references: [id], onDelete: Cascade)
   fabricId       String?
-  fabric         Fabric?  @relation("FabricHangtagQR", fields: [fabricId], references: [id])
+  fabric         Fabric?   @relation("FabricHangtagQR", fields: [fabricId], references: [id])
   productSku     String?
   batchCode      String?
   printedAt      DateTime?
-  scannedCount   Int      @default(0)
+  scannedCount   Int       @default(0)
   firstScannedAt DateTime?
   lastScannedAt  DateTime?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime  @default(now())
 
   @@index([brandId])
   @@index([fabricId])
@@ -3976,10 +3998,10 @@ model HangtagQR {
 
 // ─── Phase 12C — Public ESG snapshots ────────────────────────
 model BrandEsgSnapshot {
-  id                  String   @id @default(cuid())
+  id                  String    @id @default(cuid())
   brandId             String
-  brand               Brand    @relation("BrandEsgSnapshots", fields: [brandId], references: [id], onDelete: Cascade)
-  period              String   // "2026-Q2"
+  brand               Brand     @relation("BrandEsgSnapshots", fields: [brandId], references: [id], onDelete: Cascade)
+  period              String // "2026-Q2"
   periodStart         DateTime
   periodEnd           DateTime
   fabricsCertified    Int
@@ -3989,7 +4011,7 @@ model BrandEsgSnapshot {
   factoryCountActive  Int
   zeroPfasFabricCount Int
   publicPdfUrl        String?
-  generatedAt         DateTime @default(now())
+  generatedAt         DateTime  @default(now())
   publishedAt         DateTime?
 
   @@unique([brandId, period])
@@ -3998,14 +4020,14 @@ model BrandEsgSnapshot {
 
 // ─── Phase 12E — Press kit items ─────────────────────────────
 model PressKitItem {
-  id          String   @id @default(cuid())
-  type        String   // LOGO | IMAGE | RELEASE | NEWS_LINK
+  id          String    @id @default(cuid())
+  type        String // LOGO | IMAGE | RELEASE | NEWS_LINK
   url         String
   caption     String?
   releaseDate DateTime?
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([type, active])
 }
@@ -4015,7 +4037,7 @@ model PublicPageView {
   id        String   @id @default(cuid())
   path      String
   brandId   String?
-  ipHash    String   // SHA-256 first 8 chars — not PII
+  ipHash    String // SHA-256 first 8 chars — not PII
   userAgent String?
   referer   String?
   createdAt DateTime @default(now())
@@ -4041,19 +4063,19 @@ model PublicPageView {
 //   EXPIRED           — auto-stamp once past a TTL with no progress
 
 model RecipeRequest {
-  id                String   @id @default(cuid())
+  id                String    @id @default(cuid())
   brandId           String
   factoryId         String
   fabricId          String?
-  requestedTier     String?  // F1/F2/F3/F4
+  requestedTier     String? // F1/F2/F3/F4
   notes             String?
-  status            String   @default("OPEN")
+  status            String    @default("OPEN")
   requestedById     String?
-  requestedAt       DateTime @default(now())
+  requestedAt       DateTime  @default(now())
   fulfilledRecipeId String?
   fulfilledAt       DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   brand   Brand   @relation("BrandRecipeRequests", fields: [brandId], references: [id], onDelete: Cascade)
   factory Factory @relation("FactoryRecipeRequests", fields: [factoryId], references: [id], onDelete: Cascade)
@@ -4076,16 +4098,16 @@ model RecipeRequest {
 // banner on /admin/inventory.
 
 model FuzeHQInventory {
-  id                String   @id @default(cuid())
-  sku               String   @unique     // e.g. "FUZE-30MGL-19L-CARBOY"
-  description       String
-  onHandLiters      Float    @default(0)
-  reservedLiters    Float    @default(0) // committed to outbound shipments
-  reorderThreshold  Float?
-  lastInventoryAt   DateTime @default(now())
-  notes             String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id               String   @id @default(cuid())
+  sku              String   @unique // e.g. "FUZE-30MGL-19L-CARBOY"
+  description      String
+  onHandLiters     Float    @default(0)
+  reservedLiters   Float    @default(0) // committed to outbound shipments
+  reorderThreshold Float?
+  lastInventoryAt  DateTime @default(now())
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 // ─────────────────────────────────────────────
@@ -4105,8 +4127,8 @@ model LabFormTemplate {
   id        String   @id @default(cuid())
   labId     String
   lab       Lab      @relation("LabFormTemplates", fields: [labId], references: [id], onDelete: Cascade)
-  name      String                            // e.g. "ICP Intake", "Antibacterial Result Upload"
-  fields    Json                              // [{key,label,type,required,options?}]
+  name      String // e.g. "ICP Intake", "Antibacterial Result Upload"
+  fields    Json // [{key,label,type,required,options?}]
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -4133,9 +4155,9 @@ model LabFormTemplate {
 //               this invitation (no new account created)
 
 model FactoryInvitation {
-  id                  String   @id @default(cuid())
+  id                  String    @id @default(cuid())
   brandId             String
-  brand               Brand    @relation("BrandFactoryInvitations", fields: [brandId], references: [id], onDelete: Cascade)
+  brand               Brand     @relation("BrandFactoryInvitations", fields: [brandId], references: [id], onDelete: Cascade)
   invitedFactoryName  String
   invitedContactName  String?
   invitedContactEmail String
@@ -4143,14 +4165,14 @@ model FactoryInvitation {
   invitedAddress      String?
   invitedCountry      String?
   notes               String?
-  status              String   @default("PENDING")
+  status              String    @default("PENDING")
   linkedFactoryId     String?
   invitedById         String?
-  invitedAt           DateTime @default(now())
+  invitedAt           DateTime  @default(now())
   respondedAt         DateTime?
-  inviteToken         String   @unique
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  inviteToken         String    @unique
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   @@index([brandId, status])
   @@index([invitedContactEmail])

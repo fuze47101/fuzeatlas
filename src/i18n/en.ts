@@ -879,6 +879,7 @@ const en = {
     factoryOrders: "Factory Orders",
     subDistributorOrders: "Sub-Distributor Orders",
     inventoryPricing: "Inventory & Pricing",
+    factoryRoster: "Factory Roster",
     fabricPortfolio: "Fabric Portfolio",
     applyForTest: "Apply for Test",
     testReports: "Test Reports",

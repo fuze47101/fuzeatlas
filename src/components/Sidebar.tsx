@@ -332,6 +332,7 @@ export default function Sidebar() {
             icon: "📥",
           },
           { href: "/distributor-portal/inventory", label: "Inventory & Pricing", labelKey: "inventoryPricing", icon: "📊" },
+          { href: "/distributor-portal/factories", label: "Factory Roster", labelKey: "factoryRoster", icon: "🏭" },
           { href: "/distributor-portal/fabrics", label: "Fabric Portfolio", labelKey: "fabricPortfolio", icon: "📒" },
           { href: "/distributor-portal/test-request", label: "Apply for Test", labelKey: "applyForTest", icon: "🧪" },
           { href: "/distributor-portal/upload-report", label: "Upload Test Report", labelKey: "uploadTestReport", icon: "📤" },
