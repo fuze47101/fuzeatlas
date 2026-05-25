@@ -780,7 +780,7 @@ function FactoryContactsTab({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const empty = { firstName: "", lastName: "", title: "", email: "", phone: "" };
+  const empty = { firstName: "", lastName: "", title: "", email: "", phone: "", linkedinUrl: "" };
   const [form, setForm] = useState(empty);
 
   const sync = (updated: any[]) => {
@@ -851,6 +851,7 @@ function FactoryContactsTab({
       title: ct.title || "",
       email: ct.email || "",
       phone: ct.phone || "",
+      linkedinUrl: ct.linkedinUrl || "",
     });
   };
 
@@ -960,6 +961,24 @@ function FactoryContactsTab({
               placeholder="Phone"
             />
           </div>
+          <div className="mb-3">
+            <label className="block text-[11px] uppercase tracking-wide text-slate-500 font-semibold mb-1">
+              LinkedIn profile URL
+              <span className="ml-2 text-slate-400 normal-case font-normal">
+                (paste if you found it during research)
+              </span>
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400 text-sm">in</span>
+              <input
+                type="url"
+                value={form.linkedinUrl}
+                onChange={(e) => setForm({ ...form, linkedinUrl: e.target.value })}
+                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono"
+                placeholder="https://www.linkedin.com/in/jane-smith/"
+              />
+            </div>
+          </div>
           <div className="flex gap-2">
             <button
               onClick={handleAdd}
@@ -1021,6 +1040,21 @@ function FactoryContactsTab({
                     placeholder="Phone"
                   />
                 </div>
+                <div className="mb-3">
+                  <label className="block text-[11px] uppercase tracking-wide text-slate-500 font-semibold mb-1">
+                    LinkedIn profile URL
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-400 text-sm">in</span>
+                    <input
+                      type="url"
+                      value={form.linkedinUrl}
+                      onChange={(e) => setForm({ ...form, linkedinUrl: e.target.value })}
+                      className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono"
+                      placeholder="https://www.linkedin.com/in/jane-smith/"
+                    />
+                  </div>
+                </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleUpdate(ct.id)}
@@ -1061,6 +1095,21 @@ function FactoryContactsTab({
                     {ct.email}
                     {ct.phone && ` · ${ct.phone}`}
                   </div>
+                  {ct.linkedinUrl && (
+                    <div className="mt-0.5">
+                      <a
+                        href={ct.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 text-[11px] text-sky-700 hover:text-sky-900 hover:underline font-medium"
+                        title={ct.linkedinUrl}
+                      >
+                        <span className="text-[10px] font-bold">in</span>
+                        LinkedIn profile
+                      </a>
+                    </div>
+                  )}
                 </div>
                 {/* stopPropagation keeps inline edit/delete from triggering the
                    card's navigate-to-detail click handler. */}
