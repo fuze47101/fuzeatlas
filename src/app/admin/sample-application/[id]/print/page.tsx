@@ -59,11 +59,11 @@ export default async function SampleApplicationPrintPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ lang?: string }>;
+  searchParams?: Promise<{ lang?: string; locale?: string }>;
 }) {
   const { id } = await params;
   const sp = (await searchParams) || {};
-  const T = (await getServerTranslations(sp.lang)).sampleApplicationPrint;
+  const T = (await getServerTranslations(sp.locale || sp.lang)).sampleApplicationPrint;
   const app = await getApplication(id);
   if (!app) notFound();
 

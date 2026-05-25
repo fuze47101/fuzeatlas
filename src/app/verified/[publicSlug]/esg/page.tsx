@@ -65,11 +65,11 @@ export default async function EsgListingPage({
   searchParams,
 }: {
   params: Promise<{ publicSlug: string }>;
-  searchParams?: Promise<{ lang?: string }>;
+  searchParams?: Promise<{ lang?: string; locale?: string }>;
 }) {
   const { publicSlug } = await params;
   const sp = (await searchParams) || {};
-  const T = (await getServerTranslations(sp.lang)).verifiedEsgPage;
+  const T = (await getServerTranslations(sp.locale || sp.lang)).verifiedEsgPage;
   const data = await loadEsg(publicSlug);
   if (!data) notFound();
 

@@ -80,11 +80,11 @@ export default async function VerifySkuPage({
   searchParams,
 }: {
   params: Promise<{ code: string }>;
-  searchParams?: Promise<{ lang?: string }>;
+  searchParams?: Promise<{ lang?: string; locale?: string }>;
 }) {
   const { code } = await params;
   const sp = (await searchParams) || {};
-  const T = (await getServerTranslations(sp.lang)).verifySku;
+  const T = (await getServerTranslations(sp.locale || sp.lang)).verifySku;
   const data = await loadVerify(code);
 
   // Network / API error — render a soft "couldn't verify right now" state.

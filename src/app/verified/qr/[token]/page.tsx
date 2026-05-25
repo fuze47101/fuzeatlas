@@ -44,11 +44,11 @@ export default async function HangtagVerificationPage({
   searchParams,
 }: {
   params: Promise<{ token: string }>;
-  searchParams?: Promise<{ lang?: string }>;
+  searchParams?: Promise<{ lang?: string; locale?: string }>;
 }) {
   const { token } = await params;
   const sp = (await searchParams) || {};
-  const T = (await getServerTranslations(sp.lang)).verifiedQrPage;
+  const T = (await getServerTranslations(sp.locale || sp.lang)).verifiedQrPage;
   const data = await loadQr(token);
   if (!data) notFound();
 

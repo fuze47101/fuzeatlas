@@ -90,11 +90,11 @@ export default async function VerifiedStorefrontPage({
   searchParams,
 }: {
   params: Promise<{ publicSlug: string }>;
-  searchParams?: Promise<{ lang?: string }>;
+  searchParams?: Promise<{ lang?: string; locale?: string }>;
 }) {
   const { publicSlug } = await params;
   const sp = (await searchParams) || {};
-  const T = (await getServerTranslations(sp.lang)).publicVerifiedPage;
+  const T = (await getServerTranslations(sp.locale || sp.lang)).publicVerifiedPage;
   const data = await loadStorefront(publicSlug);
   if (!data) notFound();
 

@@ -23,9 +23,24 @@ function writeCookie(name: string, value: string) {
 export default function I18nProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("en");
 
-  // Load saved locale on mount — cookie wins (server can read it too),
-  // localStorage is a fallback for users upgrading from the cookie-less era.
+  // Resolve locale on mount in priority order:
+  //   1. ?locale=xx URL param (transient — for share/print links that
+  //      should render in the recipient's language regardless of the
+  //      viewer's saved preference; deliberately NOT persisted to
+  //      cookie/localStorage so it doesn't clobber the user's pref).
+  //   2. fuze-atlas-locale cookie (server can read it too).
+  //   3. localStorage (fallback for users upgrading from the
+  //      cookie-less era; backfilled to cookie so the next request
+  //      gets server-side i18n too).
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const fromUrl = params.get("locale");
+      if (fromUrl && isValidLocale(fromUrl)) {
+        setLocaleState(fromUrl as Locale);
+        return;
+      }
+    }
     const fromCookie = readCookie(COOKIE_NAME);
     if (fromCookie && isValidLocale(fromCookie)) {
       setLocaleState(fromCookie);
@@ -34,7 +49,6 @@ export default function I18nProvider({ children }: { children: React.ReactNode }
     const fromStorage = localStorage.getItem(STORAGE_KEY);
     if (fromStorage && isValidLocale(fromStorage)) {
       setLocaleState(fromStorage);
-      // Backfill the cookie so server-rendered pages start picking it up.
       writeCookie(COOKIE_NAME, fromStorage);
     }
   }, []);
