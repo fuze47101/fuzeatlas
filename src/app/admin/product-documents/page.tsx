@@ -23,8 +23,11 @@ export default function ProductDocumentsPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [form, setForm] = useState<any>({});
 
+  const INTERNAL_ROLES = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP", "FABRIC_MANAGER", "TESTING_MANAGER"];
+  const canEdit = !!user && ["ADMIN", "EMPLOYEE"].includes(user.role);
+
   useEffect(() => {
-    if (user && !["ADMIN", "EMPLOYEE"].includes(user.role)) {
+    if (user && !INTERNAL_ROLES.includes(user.role)) {
       router.push("/home");
       return;
     }
@@ -121,29 +124,31 @@ export default function ProductDocumentsPage() {
                     )}
                   </div>
                 </div>
-                <button
-                  onClick={() => {
-                    if (isEditing) {
-                      setEditing(null);
-                      setForm({});
-                    } else {
-                      setEditing(t.key);
-                      setForm({
-                        title: doc?.title || t.label,
-                        description: doc?.description || "",
-                        fileUrl: doc?.fileUrl || "",
-                        version: doc?.version || "",
-                        effectiveDate: doc?.effectiveDate ? new Date(doc.effectiveDate).toISOString().slice(0, 10) : "",
-                        category: doc?.category || "tds_sds",
-                        audience: doc?.audience || ["BRAND", "FACTORY", "DISTRIBUTOR", "LAB"],
-                        productLine: doc?.productLine || "",
-                      });
-                    }
-                  }}
-                  className="flex-shrink-0 px-4 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg hover:bg-[#009aa8]"
-                >
-                  {isEditing ? T.cancelBtn : doc ? T.updateBtn : T.uploadBtn}
-                </button>
+                {canEdit && (
+                  <button
+                    onClick={() => {
+                      if (isEditing) {
+                        setEditing(null);
+                        setForm({});
+                      } else {
+                        setEditing(t.key);
+                        setForm({
+                          title: doc?.title || t.label,
+                          description: doc?.description || "",
+                          fileUrl: doc?.fileUrl || "",
+                          version: doc?.version || "",
+                          effectiveDate: doc?.effectiveDate ? new Date(doc.effectiveDate).toISOString().slice(0, 10) : "",
+                          category: doc?.category || "tds_sds",
+                          audience: doc?.audience || ["BRAND", "FACTORY", "DISTRIBUTOR", "LAB"],
+                          productLine: doc?.productLine || "",
+                        });
+                      }
+                    }}
+                    className="flex-shrink-0 px-4 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg hover:bg-[#009aa8]"
+                  >
+                    {isEditing ? T.cancelBtn : doc ? T.updateBtn : T.uploadBtn}
+                  </button>
+                )}
               </div>
 
               {isEditing && (
