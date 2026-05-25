@@ -20,7 +20,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     user.role === "ADMIN" ||
     user.role === "EMPLOYEE" ||
     user.role === "SALES_MANAGER" ||
-    user.role === "SALES_REP";
+    user.role === "SALES_REP" ||
+    user.role === "BD_REP";
   if (!isBDEligible) return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
   const isAdmin = user.role === "ADMIN" || user.role === "EMPLOYEE";
 
