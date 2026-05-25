@@ -246,9 +246,16 @@ export async function POST(req: Request) {
       });
       if (sendRes.ok) {
         result.actions.push(`notified ${ticket.userEmail}`);
+        // Bump notificationCount so we can see how many times a
+        // reporter was emailed on the same ticket. Admin re-notifies
+        // on status transitions are intentional — the count surfaces
+        // spammy fan-outs if they happen.
         await prisma.feedbackReport.update({
           where: { id: feedbackId },
-          data: { notifiedAt: new Date() },
+          data: {
+            notifiedAt: new Date(),
+            notificationCount: { increment: 1 },
+          },
         });
       } else {
         result.actions.push(`notify-failed (${sendRes.error || "unknown"})`);

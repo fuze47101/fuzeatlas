@@ -3602,7 +3602,8 @@ model FeedbackReport {
   resolution     String? @db.Text   // what was fixed, shown to user on notification
   resolutionUrl  String?            // optional link to the feature / page / PR
 
-  notifiedAt   DateTime?            // when we emailed the requester that it was fixed
+  notifiedAt        DateTime?       // when we last emailed the requester about a status change
+  notificationCount Int      @default(0) // how many times we have emailed the reporter — surfaces spammy fan-outs
 
   priority Int? // 1 (critical) — 5 (nice-to-have)
 

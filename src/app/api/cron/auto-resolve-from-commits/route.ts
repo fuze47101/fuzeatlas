@@ -179,15 +179,24 @@ async function handle(req: Request) {
           },
         });
 
-        // Send the same "we fixed it" email the PATCH endpoint sends,
-        // gated on never-notified + has-email. Failure non-blocking.
+        // Send the "we fixed it" email on transition TO FIXED, even
+        // when a prior email already went out for a non-FIXED status
+        // (TRIAGED, ACCEPTED, IN_PROGRESS). Previously the guard was
+        // `!existing.notifiedAt`, which silenced the close-loop on
+        // every ticket that had been triaged first — Penny's ticket
+        // exhibited this. Bump notificationCount each send so spammy
+        // fan-outs are visible. Failure non-blocking.
         let emailed = false;
-        if (!existing.notifiedAt && updated.userEmail) {
+        const wasAlreadyFixed = existing.status === "FIXED";
+        if (!wasAlreadyFixed && updated.userEmail) {
           try {
             await sendFixedEmail(updated);
             await prisma.feedbackReport.update({
               where: { id: feedbackId },
-              data: { notifiedAt: new Date() },
+              data: {
+                notifiedAt: new Date(),
+                notificationCount: { increment: 1 },
+              },
             });
             emailed = true;
           } catch (emailErr) {
