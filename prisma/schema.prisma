@@ -2369,6 +2369,10 @@ model Notification {
   read   Boolean   @default(false)
   readAt DateTime?
 
+  // T10 phase 16 — soft archive so the 5k+ unread backlog can drop
+  // off the default /notifications query without losing history.
+  archivedAt DateTime?
+
   metadata Json? // Extra context data
 
   createdAt DateTime @default(now())
@@ -2382,6 +2386,7 @@ model Notification {
   @@index([userId, read])
   @@index([userId, createdAt])
   @@index([type])
+  @@index([archivedAt])
 }
 
 // ─────────────────────────────────────────────

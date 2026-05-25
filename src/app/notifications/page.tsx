@@ -109,6 +109,25 @@ export default function NotificationsPage() {
     } catch {}
   };
 
+  const handleArchiveOld = async () => {
+    if (!user?.id) return;
+    if (!confirm("Archive all notifications older than 30 days? They'll be hidden from this list but kept in history.")) return;
+    try {
+      const r = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "x-user-id": user.id },
+        body: JSON.stringify({ archive: true, archiveOlderThanDays: 30 }),
+      });
+      const d = await r.json();
+      if (d.ok) {
+        const cutoffMs = Date.now() - 30 * 86400000;
+        setNotifications((prev) =>
+          prev.filter((n) => new Date(n.createdAt).getTime() >= cutoffMs),
+        );
+      }
+    } catch {}
+  };
+
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   // Get unique types for the filter
@@ -135,14 +154,25 @@ export default function NotificationsPage() {
             {unreadCount > 0 ? `${unreadCount} ${T.unreadLabel}` : T.allCaughtUp} · {notifications.length} {T.totalLabel}
           </p>
         </div>
-        {unreadCount > 0 && (
-          <button
-            onClick={handleMarkAllRead}
-            className="px-4 py-2 text-sm font-medium text-[#00b4c3] bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors self-start"
-          >
-            {T.markAllRead}
-          </button>
-        )}
+        <div className="flex flex-wrap gap-2 self-start">
+          {unreadCount > 0 && (
+            <button
+              onClick={handleMarkAllRead}
+              className="px-4 py-2 text-sm font-medium text-[#00b4c3] bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors"
+            >
+              {T.markAllRead}
+            </button>
+          )}
+          {notifications.length > 0 && (
+            <button
+              onClick={handleArchiveOld}
+              className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+              title="Archive everything older than 30 days. History is preserved, just hidden from the default list."
+            >
+              Archive {">"} 30 days
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Filters */}

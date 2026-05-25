@@ -42,6 +42,7 @@ export async function GET(req: Request) {
             where: {
               userId,
               read: false,
+              archivedAt: null,
             },
             orderBy: { createdAt: "desc" },
             take: 10,

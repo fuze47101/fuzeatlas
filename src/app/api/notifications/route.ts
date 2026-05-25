@@ -12,10 +12,16 @@ export async function GET(req: Request) {
 
     const url = new URL(req.url);
     const unreadOnly = url.searchParams.get("unreadOnly") === "true";
+    const includeArchived = url.searchParams.get("includeArchived") === "true";
 
     const where: any = { userId };
     if (unreadOnly) {
       where.read = false;
+    }
+    // T10 phase 16 — by default hide archived noise so the 5k+
+    // backlog drops out of view. Toggle with ?includeArchived=true.
+    if (!includeArchived) {
+      where.archivedAt = null;
     }
 
     const notifications = await prisma.notification.findMany({
@@ -24,7 +30,7 @@ export async function GET(req: Request) {
     });
 
     const unreadCount = await prisma.notification.count({
-      where: { userId, read: false },
+      where: { userId, read: false, archivedAt: null },
     });
 
     return NextResponse.json({
@@ -90,14 +96,31 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { ids, all } = body;
+    const { ids, all, archive, archiveOlderThanDays } = body;
+
+    // T10 phase 16 — bulk archive endpoints.
+    //   { archive: true, all: true } → archive every notification for caller.
+    //   { archive: true, archiveOlderThanDays: 30 } → archive only old ones.
+    if (archive === true) {
+      const where: any = { userId, archivedAt: null };
+      if (typeof archiveOlderThanDays === "number" && archiveOlderThanDays > 0) {
+        const cutoff = new Date(Date.now() - archiveOlderThanDays * 86400000);
+        where.createdAt = { lt: cutoff };
+      }
+      const r = await prisma.notification.updateMany({
+        where,
+        data: { archivedAt: new Date(), read: true, readAt: new Date() },
+      });
+      return NextResponse.json({ ok: true, archived: r.count });
+    }
 
     if (all === true) {
-      // Mark all as read
-      await prisma.notification.updateMany({
-        where: { userId },
+      // Mark all as read (skip already-archived).
+      const r = await prisma.notification.updateMany({
+        where: { userId, archivedAt: null },
         data: { read: true, readAt: new Date() },
       });
+      return NextResponse.json({ ok: true, updated: r.count });
     } else if (ids && Array.isArray(ids)) {
       // Mark specific IDs as read
       await prisma.notification.updateMany({
