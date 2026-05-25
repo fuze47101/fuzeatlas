@@ -36,6 +36,7 @@ export const S3_PREFIXES = {
   FABRIC_INTAKE: "fabric-intake",
   LAB_DOCS: "lab-docs",
   COMPLIANCE_DOCS: "compliance-docs",
+  PRODUCT_DOCUMENTS: "product-documents",
   DISTRIBUTOR_DOCS: "distributor-docs",
   SAMPLE_TRIAL: "sample-trial",
   FEEDBACK: "feedback-screenshots",

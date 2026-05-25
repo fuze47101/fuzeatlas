@@ -25,6 +25,43 @@ export default function ProductDocumentsPage() {
 
   const INTERNAL_ROLES = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP", "FABRIC_MANAGER", "TESTING_MANAGER"];
   const canEdit = !!user && ["ADMIN", "EMPLOYEE"].includes(user.role);
+  const [uploadingFor, setUploadingFor] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+
+  async function handleFileUpload(file: File, docType: string) {
+    setUploadingFor(docType);
+    setUploadProgress("Preparing upload...");
+    try {
+      const urlRes = await fetch("/api/admin/product-documents/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type || "application/pdf",
+          docType,
+        }),
+      });
+      const urlData = await urlRes.json();
+      if (!urlData.ok) throw new Error(urlData.error || "Failed to prepare upload");
+
+      setUploadProgress(`Uploading ${file.name}...`);
+      const s3Res = await fetch(urlData.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type || "application/pdf" },
+        body: file,
+      });
+      if (!s3Res.ok) throw new Error("S3 upload failed");
+
+      setForm((f: any) => ({ ...f, fileUrl: urlData.publicUrl }));
+      setUploadProgress("Uploaded — click Save to record.");
+      setTimeout(() => setUploadProgress(null), 2500);
+    } catch (err: any) {
+      setUploadProgress(`Upload failed: ${err.message}`);
+      setTimeout(() => setUploadProgress(null), 4000);
+    } finally {
+      setUploadingFor(null);
+    }
+  }
 
   useEffect(() => {
     if (user && !INTERNAL_ROLES.includes(user.role)) {
@@ -156,6 +193,39 @@ export default function ProductDocumentsPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <input type="text" placeholder={T.titlePlaceholder} value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                     <input type="text" placeholder={T.versionPlaceholder} value={form.version || ""} onChange={(e) => setForm({ ...form, version: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-700">
+                      Upload PDF (or paste URL below)
+                    </label>
+                    <div
+                      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const file = e.dataTransfer.files?.[0];
+                        if (file) handleFileUpload(file, t.key);
+                      }}
+                      className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center hover:border-[#00b4c3] hover:bg-cyan-50/30 transition-colors cursor-pointer"
+                      onClick={() => {
+                        const input = window.document.createElement("input");
+                        input.type = "file";
+                        input.accept = "application/pdf,.pdf,.doc,.docx,.xls,.xlsx";
+                        input.onchange = (ev: any) => {
+                          const file = ev.target.files?.[0];
+                          if (file) handleFileUpload(file, t.key);
+                        };
+                        input.click();
+                      }}
+                    >
+                      {uploadingFor === t.key && uploadProgress ? (
+                        <p className="text-xs text-slate-700 font-semibold">{uploadProgress}</p>
+                      ) : (
+                        <p className="text-xs text-slate-500">
+                          Drop a PDF here or click to choose · PDF / DOCX / XLSX
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <input type="url" placeholder={T.fileUrlPlaceholder} value={form.fileUrl || ""} onChange={(e) => setForm({ ...form, fileUrl: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                   <input type="date" placeholder={T.effectiveDatePlaceholder} value={form.effectiveDate || ""} onChange={(e) => setForm({ ...form, effectiveDate: e.target.value })} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
