@@ -12,6 +12,9 @@ interface UserRecord {
   status: string;
   createdAt: string;
   canClaim?: boolean;
+  emailVerified?: boolean;
+  emailVerifiedAt?: string | null;
+  emailBounceCount?: number;
   brandId?: string | null;
   factoryId?: string | null;
   distributorId?: string | null;
@@ -884,7 +887,44 @@ export default function UserManagementPage() {
                         placeholder={T.inlineEmailPlaceholder}
                       />
                     ) : (
-                      u.email
+                      <span className="inline-flex items-center gap-1.5">
+                        <span>{u.email}</span>
+                        {(() => {
+                          const ageMs = Date.now() - new Date(u.createdAt).getTime();
+                          const stale = !u.emailVerified && ageMs > 24 * 60 * 60 * 1000;
+                          if (u.emailBounceCount && u.emailBounceCount > 0) {
+                            return (
+                              <span
+                                title={`Email bounced ${u.emailBounceCount}× — address likely dead`}
+                                className="text-[10px] font-bold uppercase bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded"
+                              >
+                                bounce ×{u.emailBounceCount}
+                              </span>
+                            );
+                          }
+                          if (stale) {
+                            return (
+                              <span
+                                title="Verification email never confirmed — possible typo address. Investigate with /api/cron/diag-user."
+                                className="text-[10px] font-bold uppercase bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded"
+                              >
+                                unverified
+                              </span>
+                            );
+                          }
+                          if (u.emailVerifiedAt) {
+                            return (
+                              <span
+                                title={`Email verified ${new Date(u.emailVerifiedAt).toLocaleDateString()}`}
+                                className="text-[10px] font-bold uppercase bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded"
+                              >
+                                verified
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </span>
                     )}
                   </td>
                   <td className="px-4 py-3">

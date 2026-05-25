@@ -9,6 +9,8 @@ import {
   hasMinRole,
 } from "@/lib/auth";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { sendEmailVerification } from "@/lib/email";
+import { randomBytes } from "crypto";
 
 export async function POST(req: Request) {
   try {
@@ -116,6 +118,35 @@ export async function POST(req: Request) {
           ...(labId && { labId }),
         },
       });
+    }
+
+    // Fire verification email so address typos surface early (T8
+    // phase 16). Diagnostic only — does NOT block sign-in. Skip
+    // the first admin (they're creating the system from scratch
+    // and don't need to verify themselves).
+    if (!isFirstAdmin && user?.email) {
+      try {
+        const verifyToken = randomBytes(32).toString("hex");
+        const expiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7d
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            emailVerifyToken: verifyToken,
+            emailVerifyExpiry: expiry,
+          },
+        });
+        await sendEmailVerification({
+          email: user.email,
+          name: user.name,
+          verifyToken,
+        });
+      } catch (verifyErr) {
+        console.error(
+          `[register] verification email to ${user.email} failed:`,
+          verifyErr,
+        );
+        // Non-blocking — the admin still gets the success response.
+      }
     }
 
     // If first admin, auto-login
