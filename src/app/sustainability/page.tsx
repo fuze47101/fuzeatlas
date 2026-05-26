@@ -447,7 +447,7 @@ export default function SustainabilityPage() {
         {/* CO2 Breakdown: Mining → Refining → Synthesis */}
         {upstreamData.co2Breakdown && (
           <div className="bg-white border border-red-200 rounded-xl p-4 mb-4">
-            <div className="text-xs font-semibold text-red-800 mb-3">{T.co2BreakdownHeader} — {T.co2PerKgTemplate.replace("{n}", num(upstreamData.facilityCO2PerKg, 0))}</div>
+            <div className="text-xs font-semibold text-red-800 mb-3">{T.co2BreakdownHeader} — {T.co2PerKgTemplate.replace("{n}", num(typeof upstreamData.facilityCO2PerKg === "number" ? upstreamData.facilityCO2PerKg : upstreamData.facilityCO2PerKg.value, 0))}</div>
             <div className="grid grid-cols-3 gap-3 mb-3">
               <div className="text-center">
                 <div className="text-lg font-black text-red-700">{num(upstreamData.co2Breakdown.mining, 0)}</div>

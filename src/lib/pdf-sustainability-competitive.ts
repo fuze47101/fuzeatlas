@@ -14,6 +14,8 @@ import {
   generateESGClaims,
   FUZE_SUSTAINABILITY,
   UPSTREAM_MANUFACTURING,
+  valueOf,
+  sourceOf,
   type SustainabilityScore,
   type ESGClaim,
 } from "./sustainability";
@@ -438,7 +440,7 @@ function renderLifecycleStage1(results: CompetitorResult[], params: ReportParams
     const breakdownHtml = upstream.co2Breakdown ? `
       <div style="background:#fff;border:1px solid #fecaca;border-radius:8px;padding:12px;margin-top:10px;">
         <div style="font-size:10px;font-weight:700;color:#991b1b;margin-bottom:8px;">
-          CO₂ Breakdown — ${num(upstream.facilityCO2PerKg, 0)} kg CO₂/kg product
+          CO₂ Breakdown — ${num(valueOf(upstream.facilityCO2PerKg), 0)} kg CO₂/kg product
         </div>
         <table style="width:100%;border-collapse:collapse;">
           <tr>
@@ -1216,7 +1218,7 @@ function renderSourcesAppendix(results: CompetitorResult[]): string {
     return `
       <tr>
         <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;font-weight:600;">${r.competitor.product}</td>
-        <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;">${upstream.facilityCO2PerKg} kg CO₂/kg</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;">${valueOf(upstream.facilityCO2PerKg)} kg CO₂/kg</td>
         <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:8px;">${upstream.co2Breakdown.source}</td>
       </tr>`;
   }).filter(Boolean).join("");
@@ -1238,8 +1240,8 @@ function renderSourcesAppendix(results: CompetitorResult[]): string {
   const rawMaterialRows = results.map(r => {
     const upKey = resolveUpstreamKey(r.competitor.chemistryType);
     const upstream = UPSTREAM_MANUFACTURING[upKey] || UPSTREAM_MANUFACTURING.silver_chloride;
-    const rawList = upstream.rawMaterials.map(m => `${m.name} (${m.kgPerKgProduct} kg/kg @ $${m.costPerKg}/kg)`).join("; ");
-    const chemList = upstream.reactionChemicals.map(c => `${c.name} (${c.kgPerKgProduct} kg/kg)`).join("; ");
+    const rawList = upstream.rawMaterials.map(m => `${m.name} (${valueOf(m.kgPerKgProduct)} kg/kg @ $${m.costPerKg}/kg)`).join("; ");
+    const chemList = upstream.reactionChemicals.map(c => `${c.name} (${valueOf(c.kgPerKgProduct)} kg/kg)`).join("; ");
     return `
       <tr>
         <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;font-size:9px;font-weight:600;vertical-align:top;">${r.competitor.product}</td>
@@ -1247,10 +1249,10 @@ function renderSourcesAppendix(results: CompetitorResult[]): string {
           <strong>Process:</strong> ${upstream.processName}<br/>
           <strong>Raw materials:</strong> ${rawList}<br/>
           <strong>Reaction chemicals:</strong> ${chemList}<br/>
-          <strong>Facility energy:</strong> ${upstream.facilityEnergyKwhPerKg} kWh/kg &nbsp;|&nbsp;
-          <strong>Water:</strong> ${upstream.facilityWaterLitersPerKg} L/kg &nbsp;|&nbsp;
-          <strong>Waste:</strong> ${upstream.facilityWasteKgPerKg} kg/kg &nbsp;|&nbsp;
-          <strong>VOC:</strong> ${upstream.facilityVOCgPerKg} g/kg
+          <strong>Facility energy:</strong> ${valueOf(upstream.facilityEnergyKwhPerKg)} kWh/kg &nbsp;|&nbsp;
+          <strong>Water:</strong> ${valueOf(upstream.facilityWaterLitersPerKg)} L/kg &nbsp;|&nbsp;
+          <strong>Waste:</strong> ${valueOf(upstream.facilityWasteKgPerKg)} kg/kg &nbsp;|&nbsp;
+          <strong>VOC:</strong> ${valueOf(upstream.facilityVOCgPerKg)} g/kg
         </td>
       </tr>`;
   }).join("");

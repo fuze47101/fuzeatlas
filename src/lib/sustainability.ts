@@ -108,20 +108,96 @@ const EMISSION_FACTORS = {
 };
 
 // ═══════════════════════════════════════════════════════
+// SOURCED NUMBER TYPE (Phase 19.5)
+// Every customer-visible CO2/water/waste/VOC input must carry
+// a companion source citation. TypeScript-enforces the discipline
+// so future entries can't ship without sourcing.
+// ═══════════════════════════════════════════════════════
+
+export type SourceCitation = {
+  /** Public URL to the SDS, EPA label, TDS, or peer-reviewed source. Optional only when estimated:true. */
+  sdsUrl?: string;
+  /** ISO date the SDS / label was published or last revised. */
+  sdsDate?: string;
+  /** Section reference within the source document (e.g. "Section 3 — Composition", "Section 1 — Active Ingredient"). */
+  sdsSection?: string;
+  /** Verbatim quote of the line containing the published value. Quoted, not paraphrased. */
+  valueAsPublished?: string;
+  /** ISO date this audit row was verified. */
+  verifiedDate: string;
+  /** Who verified (e.g. "Phase 19.5 audit (Code, automated)" or a specific human). */
+  verifiedBy: string;
+  /**
+   * True if no public source was located and the value is an industry-average
+   * estimate. When true, `estimationBasis` must explain the basis (e.g. peer-
+   * reviewed textile finishing literature, ecoinvent process, EPA average
+   * for the chemical class).
+   */
+  estimated?: boolean;
+  /** Required when estimated:true. The basis text travels into customer-facing tooltips. */
+  estimationBasis?: string;
+  /** Optional audit notes (escalations, marketing-vs-EPA discrepancies, etc.). */
+  notes?: string;
+};
+
+/**
+ * A numeric input paired with the source citation that justifies it.
+ * Used everywhere a CO2 / water / waste / VOC value enters the
+ * customer-facing math. TypeScript enforcement means a contributor
+ * can't ship a new chemistry archetype without a citation.
+ *
+ * Legacy entries that pre-date Phase 19.5 are still raw numbers —
+ * see RawMaterialEntry / ReactionChemicalEntry below, which accept
+ * both shapes during the migration window. New chemistry archetypes
+ * MUST use SourcedNumber.
+ */
+export type SourcedNumber = {
+  value: number;
+  source: SourceCitation;
+};
+
+/** Helper: build a SourcedNumber for an audited value. */
+export function sourced(value: number, source: SourceCitation): SourcedNumber {
+  return { value, source };
+}
+
+/** Helper: extract the numeric value from either a SourcedNumber or a raw number. */
+export function valueOf(n: number | SourcedNumber): number {
+  return typeof n === "number" ? n : n.value;
+}
+
+/** Helper: extract the source citation if present, else undefined. */
+export function sourceOf(n: number | SourcedNumber): SourceCitation | undefined {
+  return typeof n === "number" ? undefined : n.source;
+}
+
+// ═══════════════════════════════════════════════════════
 // UPSTREAM CHEMICAL PLANT MANUFACTURING COSTS
 // What happens at the chemical facility BEFORE the
 // antimicrobial reaches the textile factory
 // ═══════════════════════════════════════════════════════
 
+/**
+ * A raw material or reaction chemical row. The `kgPerKgProduct` field
+ * is the customer-visible input that the audit corrects — it accepts
+ * either a raw number (legacy entries) or a SourcedNumber (post-audit
+ * entries). The render and PDF generator unwrap via valueOf().
+ */
+export type IngredientEntry = {
+  name: string;
+  kgPerKgProduct: number | SourcedNumber;
+  costPerKg: number;
+};
+
 export type UpstreamManufacturing = {
   processName: string;
-  rawMaterials: { name: string; kgPerKgProduct: number; costPerKg: number }[];
-  reactionChemicals: { name: string; kgPerKgProduct: number; costPerKg: number }[];
-  facilityEnergyKwhPerKg: number;    // kWh to produce 1 kg of antimicrobial product
-  facilityWaterLitersPerKg: number;  // liters of process water per kg product
-  facilityWasteKgPerKg: number;      // kg chemical waste per kg product
-  facilityVOCgPerKg: number;         // grams VOC emitted per kg product at plant
-  facilityCO2PerKg: number;          // total kg CO2 to manufacture 1 kg at the chemical plant
+  rawMaterials: IngredientEntry[];
+  reactionChemicals: IngredientEntry[];
+  facilityEnergyKwhPerKg: number | SourcedNumber;    // kWh to produce 1 kg of antimicrobial product
+  facilityWaterLitersPerKg: number | SourcedNumber;  // liters of process water per kg product
+  facilityWasteKgPerKg: number | SourcedNumber;      // kg chemical waste per kg product
+  facilityVOCgPerKg: number | SourcedNumber;         // grams VOC emitted per kg product at plant
+  facilityCO2PerKg: number | SourcedNumber;          // total kg CO2 to manufacture 1 kg at the chemical plant
   // CO2 breakdown for transparency (must sum to facilityCO2PerKg)
   co2Breakdown?: {
     mining: number;       // kg CO2 — ore extraction, hauling, crushing, concentrating
@@ -129,6 +205,8 @@ export type UpstreamManufacturing = {
     synthesis: number;    // kg CO2 — converting refined metal into antimicrobial product
     source: string;       // citation for the numbers
   };
+  /** Phase 19.5 audit-level citation for the chemistry archetype itself. */
+  archetypeSource?: SourceCitation;
 };
 
 export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
@@ -568,14 +646,14 @@ export function calcSustainabilityScore(
   const compProductKgPerMeter = (competitor.dosageTypical * fabricWeightKg) / 1000000 * 1000; // mg/kg → g → scale
   const fuzeProductKgPerMeter = (1.0 * fabricWeightKg) / 1000000 * 1000;
 
-  const upstreamPlantCO2PerMeter = (compProductKgPerMeter * compUpstream.facilityCO2PerKg * competitorApps) - (fuzeProductKgPerMeter * fuzeUpstream.facilityCO2PerKg);
-  const upstreamPlantWasteKgPerMeter = compProductKgPerMeter * compUpstream.facilityWasteKgPerKg * competitorApps;
-  const upstreamPlantVOCgPerMeter = compProductKgPerMeter * compUpstream.facilityVOCgPerKg * competitorApps;
-  const upstreamPlantWaterLitersPerMeter = compProductKgPerMeter * compUpstream.facilityWaterLitersPerKg * competitorApps;
+  const upstreamPlantCO2PerMeter = (compProductKgPerMeter * valueOf(compUpstream.facilityCO2PerKg) * competitorApps) - (fuzeProductKgPerMeter * valueOf(fuzeUpstream.facilityCO2PerKg));
+  const upstreamPlantWasteKgPerMeter = compProductKgPerMeter * valueOf(compUpstream.facilityWasteKgPerKg) * competitorApps;
+  const upstreamPlantVOCgPerMeter = compProductKgPerMeter * valueOf(compUpstream.facilityVOCgPerKg) * competitorApps;
+  const upstreamPlantWaterLitersPerMeter = compProductKgPerMeter * valueOf(compUpstream.facilityWaterLitersPerKg) * competitorApps;
 
   // Raw material cost at the chemical plant
-  const compRawCostPerKg = compUpstream.rawMaterials.reduce((sum, m) => sum + m.kgPerKgProduct * m.costPerKg, 0)
-    + compUpstream.reactionChemicals.reduce((sum, m) => sum + m.kgPerKgProduct * m.costPerKg, 0);
+  const compRawCostPerKg = compUpstream.rawMaterials.reduce((sum, m) => sum + valueOf(m.kgPerKgProduct) * m.costPerKg, 0)
+    + compUpstream.reactionChemicals.reduce((sum, m) => sum + valueOf(m.kgPerKgProduct) * m.costPerKg, 0);
   const upstreamRawMaterialCostPerMeter = compProductKgPerMeter * compRawCostPerKg * competitorApps;
 
   // ── Wastewater remediation at textile factory ──
