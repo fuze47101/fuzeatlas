@@ -1427,7 +1427,70 @@ function renderSourcesAppendix(results: CompetitorResult[]): string {
         <strong>5. FUZE baseline:</strong> FUZE's near-zero upstream footprint is based on: (a) recycled electronics feedstock eliminates mining and refining CO₂, (b) liquid laser ablation is a single-step physical process requiring no reaction chemicals, (c) carrier is ultrapure DI water requiring no treatment or disposal.
       </div>
     </div>
+
+    ${renderAppendixA6_PhaseAudit()}
   </div>`;
+}
+
+/**
+ * Phase 19.5 audit appendix — auto-renders from UPSTREAM_MANUFACTURING's
+ * archetypeSource + per-ingredient SourceCitation fields, so future
+ * audits keep the PDF Sources section accurate without editing this file.
+ */
+function renderAppendixA6_PhaseAudit(): string {
+  const archetypeRows = Object.entries(UPSTREAM_MANUFACTURING)
+    .filter(([, u]) => u.archetypeSource)
+    .map(([key, u]) => {
+      const s = u.archetypeSource!;
+      const isEstimated = s.estimated === true;
+      return `
+        <tr style="border-bottom:1px solid #e5e7eb;">
+          <td style="padding:6px 8px;font-size:9px;font-weight:600;color:#1f2937;vertical-align:top;">
+            ${key}
+            ${isEstimated ? '<span style="display:inline-block;background:#fef3c7;color:#92400e;font-size:7px;font-weight:700;padding:1px 4px;border-radius:3px;margin-left:4px;">EST</span>' : ""}
+          </td>
+          <td style="padding:6px 8px;font-size:9px;color:#374151;vertical-align:top;">${u.processName}</td>
+          <td style="padding:6px 8px;font-size:8px;color:#4b5563;vertical-align:top;">
+            ${s.valueAsPublished ? `&ldquo;${s.valueAsPublished}&rdquo;` : ""}
+            ${s.estimationBasis ? `<br/><em>Estimation basis:</em> ${s.estimationBasis}` : ""}
+          </td>
+          <td style="padding:6px 8px;font-size:8px;color:#1d4ed8;vertical-align:top;word-break:break-all;">
+            ${s.sdsUrl ? `<a href="${s.sdsUrl}" style="color:#1d4ed8;">${s.sdsUrl}</a>` : "no public source"}
+            ${s.sdsDate ? `<br/><span style="color:#6b7280;">${s.sdsDate}</span>` : ""}
+            ${s.sdsSection ? `<br/><span style="color:#6b7280;">${s.sdsSection}</span>` : ""}
+          </td>
+          <td style="padding:6px 8px;font-size:8px;color:#6b7280;vertical-align:top;">${s.verifiedDate}<br/>${s.verifiedBy}</td>
+        </tr>`;
+    })
+    .join("");
+
+  return `
+    <div style="margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:#1f2937;margin-bottom:8px;border-bottom:2px solid #1f2937;padding-bottom:4px;">
+        A.6 — Phase 19.5 Audit: Per-Chemistry Active Ingredient Citations
+      </div>
+      <p style="font-size:9px;color:#374151;line-height:1.6;margin:0 0 8px;">
+        Every chemistry archetype below was verified against its canonical public
+        source (EPA Master Label Section 1, manufacturer SDS Section 3, or
+        peer-reviewed industry data) in the 2026-05-26 audit. Entries tagged
+        <span style="display:inline-block;background:#fef3c7;color:#92400e;font-size:7px;font-weight:700;padding:1px 4px;border-radius:3px;">EST</span>
+        rely on industry-average estimates because the manufacturer does not publish
+        % w/w on any public surface — basis cited inline. Full audit transcript at
+        <code style="background:#f3f4f6;padding:1px 3px;border-radius:2px;">deliverables/Competitor_SDS_Audit_2026-05.md</code>.
+      </p>
+      <table style="width:100%;border-collapse:collapse;background:#fff;border:1px solid #e5e7eb;border-radius:6px;">
+        <thead>
+          <tr style="background:#f3f4f6;">
+            <th style="padding:6px 8px;font-size:9px;text-align:left;color:#1f2937;">Archetype</th>
+            <th style="padding:6px 8px;font-size:9px;text-align:left;color:#1f2937;">Process</th>
+            <th style="padding:6px 8px;font-size:9px;text-align:left;color:#1f2937;">Value as published</th>
+            <th style="padding:6px 8px;font-size:9px;text-align:left;color:#1f2937;">Source</th>
+            <th style="padding:6px 8px;font-size:9px;text-align:left;color:#1f2937;">Verified</th>
+          </tr>
+        </thead>
+        <tbody>${archetypeRows}</tbody>
+      </table>
+    </div>`;
 }
 
 function renderDisclaimer(today: string): string {

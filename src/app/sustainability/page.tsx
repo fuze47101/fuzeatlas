@@ -4,8 +4,9 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { calcQuote, money, type WidthUnit } from "@/lib/fuze-calc";
 import { COMPETITORS, applyOverrides, calcCostComparison, type Competitor, type PriceOverride } from "@/lib/competitors";
-import { calcSustainabilityScore, generateESGClaims, FUZE_SUSTAINABILITY, UPSTREAM_MANUFACTURING } from "@/lib/sustainability";
+import { calcSustainabilityScore, generateESGClaims, FUZE_SUSTAINABILITY, UPSTREAM_MANUFACTURING, valueOf, sourceOf } from "@/lib/sustainability";
 import WashProtectionChart from "@/components/WashProtectionChart";
+import SourceTooltip from "@/components/SourceTooltip";
 import { useI18n } from "@/i18n";
 
 function num(n: number, digits = 2) {
@@ -447,7 +448,10 @@ export default function SustainabilityPage() {
         {/* CO2 Breakdown: Mining → Refining → Synthesis */}
         {upstreamData.co2Breakdown && (
           <div className="bg-white border border-red-200 rounded-xl p-4 mb-4">
-            <div className="text-xs font-semibold text-red-800 mb-3">{T.co2BreakdownHeader} — {T.co2PerKgTemplate.replace("{n}", num(typeof upstreamData.facilityCO2PerKg === "number" ? upstreamData.facilityCO2PerKg : upstreamData.facilityCO2PerKg.value, 0))}</div>
+            <div className="text-xs font-semibold text-red-800 mb-3 inline-flex items-center">
+              {T.co2BreakdownHeader} — {T.co2PerKgTemplate.replace("{n}", num(valueOf(upstreamData.facilityCO2PerKg), 0))}
+              {upstreamData.archetypeSource && <SourceTooltip source={upstreamData.archetypeSource} />}
+            </div>
             <div className="grid grid-cols-3 gap-3 mb-3">
               <div className="text-center">
                 <div className="text-lg font-black text-red-700">{num(upstreamData.co2Breakdown.mining, 0)}</div>
@@ -834,6 +838,41 @@ export default function SustainabilityPage() {
         >
           {exporting ? T.generating : T.exportReportTemplate.replace("{product}", competitor.product)}
         </button>
+      </div>
+
+      {/* Phase 19.5 — sources + methodology footer. Renders on every
+          /sustainability load below the export buttons. */}
+      <div className="mt-8 p-5 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] leading-relaxed text-slate-600">
+        <div className="font-bold text-slate-900 text-xs mb-2">Sources &amp; methodology</div>
+        <p>
+          All competitor CO₂, water, waste, and VOC figures shown above were verified
+          against published EPA Master Labels (Section 1 — Active Ingredient) and
+          manufacturer Safety Data Sheets in the latest audit. Hover the
+          <span className="inline-block mx-1 align-middle w-4 h-4 leading-none text-[10px] bg-slate-200 text-slate-700 rounded-full text-center">ⓘ</span>
+          icon next to any number for the canonical source citation, verified date,
+          and verbatim &ldquo;value as published&rdquo; quote. A
+          <span className="inline-block mx-1 align-middle w-4 h-4 leading-none text-[10px] bg-amber-100 text-amber-700 rounded-full text-center font-bold">~</span>
+          icon flags an industry-average estimate (manufacturer declines to publish
+          % w/w; estimation basis appears in the tooltip).
+        </p>
+        <p className="mt-2">
+          Last full audit: <strong>2026-05-26</strong>. Sources may have updated
+          since — click any source link to verify against the current published SDS.
+          The full audit transcript is committed at{" "}
+          <code className="text-slate-700 bg-slate-100 px-1 rounded">
+            deliverables/Competitor_SDS_Audit_2026-05.md
+          </code>{" "}
+          in the FUZE Atlas repository.
+        </p>
+        <p className="mt-2 text-slate-500">
+          Methodology: per-100,000m fabric CO₂/water/waste/VOC totals are computed as
+          (kg active ingredient / kg product) × (kg product / kg fabric) ×
+          (kg fabric / 100,000m) × (kg CO₂ / kg active) for each life-cycle stage —
+          upstream chemical plant, factory application, wastewater remediation, and
+          end-of-life consumer wash + municipal treatment. The per-archetype CO₂
+          intensities reference ecoinvent 3.10 + Aurubis EFD 2024 + IEA Chemicals
+          Sector 2023 process LCAs.
+        </p>
       </div>
     </div>
   );
