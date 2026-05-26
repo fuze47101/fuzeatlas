@@ -137,6 +137,7 @@ export const MODULES: ModuleDef[] = [
       { label: "ICP Prep SOP", labelKey: "icpPrepSop", href: "/admin/icp-sample-prep/sop", icon: "📋" },
       // Lab pipeline + analytics
       { label: "Test Requests", labelKey: "testRequests", href: "/test-requests", icon: "📝", badgeKey: "testRequests" },
+      { label: "Test Tracking", labelKey: "testTracking", href: "/admin/test-tracking", icon: "📡", adminOnly: true },
       { label: "Ongoing Tests", labelKey: "ongoingTests", href: "/admin/ongoing-tests", icon: "🔬" },
       { label: "Sample Trials", labelKey: "sampleTrials", href: "/admin/sample-trials", icon: "🧪" },
       { label: "Test Repository", labelKey: "testRepository", href: "/admin/test-repository", icon: "🗂️", adminOnly: true },
