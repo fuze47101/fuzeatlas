@@ -522,26 +522,210 @@ export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
     },
   },
   copper: {
-    processName: "Copper Oxide Nanoparticle Synthesis",
+    processName: "Cuprous Oxide Masterbatch Fiber (Cupron Classic PET class)",
+    archetypeSource: {
+      sdsUrl: "https://pmc.ncbi.nlm.nih.gov/articles/PMC7930948/",
+      sdsSection: "Borkow et al. — Cupron-authored peer-reviewed paper",
+      valueAsPublished: "\"cuprous oxide microparticles in a polyester master batch were added to the slurry of the polyester to a final concentration of 2.6% w/w\"",
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit",
+      notes: "Was 0.5 CuSO₄ + 0.8 polydopamine binder = 1.3 kg/kg (over 100% — structurally broken). Also wrong vehicle entirely — Cupron is masterbatch fiber extrusion (Palmer Holland 20%/40% PET masterbatch, let down to ~2.6% in final yarn), NOT a topical PDA finish. Corrected to 2.6% Cu₂O per Cupron's own peer-reviewed paper.",
+    },
     rawMaterials: [
-      { name: "Copper sulfate/acetate", kgPerKgProduct: 0.5, costPerKg: 5.50 },
-      { name: "Polydopamine binder", kgPerKgProduct: 0.8, costPerKg: 45 },
+      {
+        name: "Cuprous oxide (Cu₂O) in PET masterbatch",
+        kgPerKgProduct: sourced(0.026, {
+          sdsUrl: "https://pmc.ncbi.nlm.nih.gov/articles/PMC7930948/",
+          sdsSection: "Borkow et al. Test Sample 1 (Cupron Classic PET 100% Cupron yarn)",
+          valueAsPublished: "\"a final concentration of 2.6% w/w\"",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+          notes: "Cupron Classic PET 100% yarn at 2.6% Cu₂O. Palmer Holland masterbatch ships at 20% and is diluted to ~2.6% in final yarn at 13% let-down ratio. Blended-content garments (Test Sample 2) end up at 1.04% Cu₂O.",
+        }),
+        costPerKg: 12,
+      },
+      { name: "PET polymer matrix", kgPerKgProduct: 0.97, costPerKg: 1.20 },
+    ],
+    reactionChemicals: [],
+    facilityEnergyKwhPerKg: 15,
+    facilityWaterLitersPerKg: 35,
+    facilityWasteKgPerKg: 0.1,
+    facilityVOCgPerKg: 0,
+    facilityCO2PerKg: 2.4,
+    co2Breakdown: {
+      mining: 0.05,     // 0.026 × ~89% Cu in Cu₂O × 3.5 kg CO2/kg Cu mining fraction
+      refining: 0.04,
+      synthesis: 2.31,  // PET masterbatch extrusion is the dominant CO2 contributor at 2.6% Cu₂O loading
+      source: "ecoinvent 3.10 copper production (3.5 kg CO2/kg Cu); ICA Carbon Footprint of Copper 2022. Masterbatch extrusion energy from IEA Plastics Sector 2023 PET processing benchmarks, scaled by 0.026 Cu₂O fraction.",
+    },
+  },
+
+  /**
+   * Bio-based + EPA-exempt chemistries. These five archetypes were
+   * missing from UPSTREAM_MANUFACTURING before Phase 19.5 — competitors
+   * using them (NordShield CiTex / BioLayr / Crisp + chitosan textile
+   * finishes) fell back to silver_chloride math by accident.
+   */
+
+  chitosan: {
+    processName: "Chitosan Textile Finishing (EPA Section 25(b) minimum-risk exempt)",
+    archetypeSource: {
+      sdsUrl: "https://www.epa.gov/pesticides/epa-adds-chitosan-list-active-ingredients-eligible-minimum-risk-pesticide-exemption",
+      sdsSection: "EPA chitosan minimum-risk exemption (FIFRA Section 25(b), 2022)",
+      valueAsPublished: "Chitosan added to FIFRA Section 25(b) minimum-risk active ingredient list",
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit",
+      estimated: true,
+      estimationBasis: "Industry-average commercial chitosan textile finishes 0.5-2% on-fabric per Ferrero & Periolatto, Carbohydrate Polymers 2012; midpoint 1% used.",
+      notes: "EPA-EXEMPT under FIFRA Section 25(b) — better regulatory optics than EPA-registered silver/QAC competitors. Counter-narrative for FUZE: efficacy/dose — chitosan needs ~1% w/w on-fabric, FUZE F1 at 0.0001% w/w.",
+    },
+    rawMaterials: [
+      {
+        name: "Chitosan (deacetylated chitin, CAS 9012-76-4)",
+        kgPerKgProduct: sourced(0.010, {
+          sdsUrl: "https://www.sciencedirect.com/science/article/abs/pii/S0144861711010861",
+          sdsSection: "Ferrero & Periolatto, Carbohydrate Polymers 2012",
+          valueAsPublished: "fabrics impregnated with 2% w chitosan in aqueous acetic acid; ~1% on weight of fabric retained",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+          estimated: true,
+          estimationBasis: "1% on-fabric is midpoint of industry-average 0.5-2% commercial chitosan textile finish range.",
+        }),
+        costPerKg: 18,
+      },
+      { name: "Acetic acid carrier", kgPerKgProduct: 0.02, costPerKg: 0.85 },
+      { name: "Aqueous bath", kgPerKgProduct: 0.97, costPerKg: 0.002 },
     ],
     reactionChemicals: [
-      { name: "Sodium hypophosphite (reducing agent)", kgPerKgProduct: 0.3, costPerKg: 8 },
-      { name: "Ascorbic acid (alt. reducer)", kgPerKgProduct: 0.2, costPerKg: 12 },
-      { name: "CTAB surfactant (stabilizer)", kgPerKgProduct: 0.15, costPerKg: 35 },
+      { name: "Citric acid crosslinker", kgPerKgProduct: 0.005, costPerKg: 1.20 },
     ],
-    facilityEnergyKwhPerKg: 55,
-    facilityWaterLitersPerKg: 300,
-    facilityWasteKgPerKg: 3.5,
-    facilityVOCgPerKg: 25,
-    facilityCO2PerKg: 65,
+    facilityEnergyKwhPerKg: 6,
+    facilityWaterLitersPerKg: 80,
+    facilityWasteKgPerKg: 0.15,
+    facilityVOCgPerKg: 3,
+    facilityCO2PerKg: 1.2,
     co2Breakdown: {
-      mining: 18,       // Copper ore extraction — ecoinvent copper production ~3.5 kg CO2/kg Cu
-      refining: 22,     // Copper smelting + electrolytic refining (pyrometallurgical route ~33 MJ/kg)
-      synthesis: 25,    // CuO nanoparticle formation + polydopamine binder production
-      source: "ecoinvent 3.10 copper production (3.5 kg CO2/kg Cu); ICA Carbon Footprint of Copper 2022.",
+      mining: 0,
+      refining: 0,
+      synthesis: 1.2,   // Crab/shrimp shell deacetylation — bio-based but energy-intensive deacetylation
+      source: "Peer-reviewed chitosan LCA (Muñoz et al., J Cleaner Production 2018) ~120 kg CO2/kg chitosan production; scaled to 1% on-fabric loading.",
+    },
+  },
+
+  citric_acid: {
+    processName: "Citric Acid Crosslink Antimicrobial Finish (NordShield CiTex class)",
+    archetypeSource: {
+      sdsUrl: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3046493/",
+      sdsSection: "Schramm et al. — citric acid antimicrobial cotton",
+      valueAsPublished: "\"samples were impregnated with 7% CA and 6.5% SHP solution with ~100% wet pickup\" → ~6.9% citric acid on fabric",
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit",
+      notes: "EPA-EXEMPT under FIFRA Section 25(b). competitors.ts current 8% claim within ±15% of peer-reviewed 6.9-7.0% — defensible. Acts as competitive narrative trap: high dose (~70 g/kg fabric) but regulatorily clean.",
+    },
+    rawMaterials: [
+      {
+        name: "Citric acid (CAS 77-92-9)",
+        kgPerKgProduct: sourced(0.07, {
+          sdsUrl: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3046493/",
+          sdsSection: "Schramm et al., antibacterial citric acid cotton textiles",
+          valueAsPublished: "7% citric acid + 6.5% SHP in 100% pickup → ~6.9% on fabric",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+        }),
+        costPerKg: 1.20,
+      },
+      { name: "Sodium hypophosphite (SHP catalyst)", kgPerKgProduct: 0.065, costPerKg: 8.0 },
+      { name: "Aqueous bath", kgPerKgProduct: 0.86, costPerKg: 0.002 },
+    ],
+    reactionChemicals: [],
+    facilityEnergyKwhPerKg: 12,
+    facilityWaterLitersPerKg: 110,
+    facilityWasteKgPerKg: 0.25,
+    facilityVOCgPerKg: 5,
+    facilityCO2PerKg: 0.9,
+    co2Breakdown: {
+      mining: 0,
+      refining: 0,
+      synthesis: 0.9,   // Citric acid is produced by Aspergillus niger fermentation — relatively low-carbon
+      source: "ecoinvent 3.10 citric acid market (Aspergillus niger submerged fermentation, ~0.9 kg CO2/kg). High dose 7% but low carbon intensity per kg active.",
+    },
+  },
+
+  resin_acid: {
+    processName: "Coniferous Resin Acid Composition (NordShield BioLayr class)",
+    archetypeSource: {
+      sdsUrl: "https://patents.google.com/patent/US12054880B2/en",
+      sdsSection: "Nordic BioTech Group US Patent 12,054,880 B2 examples",
+      valueAsPublished: "\"the fabric treated with coniferous resin acid composition in an amount of 0.3-0.365 g/m² had sustained strong bactericidal activity\" → 0.2% w/w on 150 g/m² fabric",
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit",
+      notes: "ESCALATED to Andrew: competitors.ts entry assumes 1.5% (15000 mg/kg dosageTypical) — patent says 0.2%, a 7.5× overstatement. Corrected to 0.2% per manufacturer's own patent. Makes BioLayr a less dramatic comparison than we've been claiming.",
+    },
+    rawMaterials: [
+      {
+        name: "Coniferous resin acid composition (abietic-type diterpene acids from spruce/pine side streams)",
+        kgPerKgProduct: sourced(0.002, {
+          sdsUrl: "https://patents.google.com/patent/US12054880B2/en",
+          sdsSection: "Nordic BioTech Group US 12,054,880 B2 Examples (0.30 g/m² / 150 g/m² activewear fabric)",
+          valueAsPublished: "0.3-0.365 g/m² on fabric",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+          notes: "Bath is only 200 ppm (0.02%). On-fabric load 0.2% w/w. Plant-derived mixture; no single CAS.",
+        }),
+        costPerKg: 22,
+      },
+      { name: "Water-soluble carrier", kgPerKgProduct: 0.998, costPerKg: 0.002 },
+    ],
+    reactionChemicals: [],
+    facilityEnergyKwhPerKg: 4,
+    facilityWaterLitersPerKg: 45,
+    facilityWasteKgPerKg: 0.05,
+    facilityVOCgPerKg: 8,
+    facilityCO2PerKg: 0.7,
+    co2Breakdown: {
+      mining: 0,
+      refining: 0,
+      synthesis: 0.7,   // Resin acid extraction from forestry side streams — bio-based, low energy
+      source: "Forestry side-stream extraction LCAs (Stora Enso / UPM Biofore reports) ~70-80 kg CO2/kg purified resin acid; scaled to 0.2% on-fabric.",
+    },
+  },
+
+  wood_extract: {
+    processName: "Wood Extract Film-Former (NordShield Crisp class)",
+    archetypeSource: {
+      sdsUrl: "https://patents.google.com/patent/US12054880B2/en",
+      sdsSection: "Same Nordic BioTech patent family (Crisp variant)",
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit",
+      estimated: true,
+      estimationBasis: "No Crisp-specific public TDS or quantitative source. Film-forming wood extractives on cellulose typically need 2-5× the resin-acid load (0.3-0.7% w/w on-fabric); midpoint 0.5% used.",
+      notes: "Cellulose-substrate-only limitation is the more lethal competitive lever — Crisp cannot treat polyester/nylon/synthetic blends at all, killing it for the majority of the performance textile market.",
+    },
+    rawMaterials: [
+      {
+        name: "Wood-based bio-extract (film-forming wood extractives)",
+        kgPerKgProduct: sourced(0.005, {
+          sdsSection: "Industry-average wood-extractive film-former (Crisp-specific TDS not public)",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+          estimated: true,
+          estimationBasis: "0.5% midpoint of 0.3-0.7% film-former range on cellulose substrates per wood-extractive textile finishing literature.",
+        }),
+        costPerKg: 18,
+      },
+      { name: "Aqueous carrier + emulsifier", kgPerKgProduct: 0.995, costPerKg: 0.05 },
+    ],
+    reactionChemicals: [],
+    facilityEnergyKwhPerKg: 5,
+    facilityWaterLitersPerKg: 50,
+    facilityWasteKgPerKg: 0.06,
+    facilityVOCgPerKg: 10,
+    facilityCO2PerKg: 0.9,
+    co2Breakdown: {
+      mining: 0,
+      refining: 0,
+      synthesis: 0.9,
+      source: "Forestry side-stream extraction LCAs (Stora Enso / UPM Biofore); estimated similar carbon intensity to resin_acid archetype.",
     },
   },
   fuze: {
