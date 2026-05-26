@@ -327,24 +327,36 @@ async function main(): Promise<void> {
       // Stage + commit + (optional) push for this (locale × namespace).
       try {
         execSync(`rm -f .git/index.lock`, { cwd: REPO_ROOT, stdio: "ignore" });
-        execSync(`git add ${JSON.stringify(`src/i18n/${locale}.ts`)}`, {
-          cwd: REPO_ROOT,
-          stdio: "ignore",
-        });
+        execSync(`git add src/i18n/${locale}.ts`, { cwd: REPO_ROOT, stdio: "pipe" });
+        const stillStaged = execSync(
+          `git diff --cached --name-only src/i18n/${locale}.ts`,
+          { cwd: REPO_ROOT, encoding: "utf8" },
+        ).trim();
+        if (!stillStaged) {
+          log(`    (no diff on disk — writer reported applied=${wrote.applied} but file unchanged; skipping commit)`);
+          continue;
+        }
         const msg = safeCommitMessage(locale, wrote.applied, ns);
-        execSync(
-          `FUZE_SKIP_I18N_HOOK=1 git commit --no-verify -m ${JSON.stringify(msg)}`,
-          { cwd: REPO_ROOT, stdio: "ignore" },
-        );
+        execSync(`FUZE_SKIP_I18N_HOOK=1 git commit --no-verify -F -`, {
+          cwd: REPO_ROOT,
+          input: msg,
+          stdio: ["pipe", "pipe", "pipe"],
+        });
         perLocale[locale].commits++;
         totalCommits++;
         log(`    ✓ committed ${wrote.applied} key(s)`);
         if (args.push) {
-          execSync(`git push origin main`, { cwd: REPO_ROOT, stdio: "ignore" });
-          log(`    ✓ pushed`);
+          try {
+            execSync(`git push origin main`, { cwd: REPO_ROOT, stdio: "pipe" });
+            log(`    ✓ pushed`);
+          } catch (pushErr: any) {
+            const stderr = pushErr?.stderr?.toString() || pushErr?.message || "";
+            log(`    ! push failed: ${stderr.split("\n")[0]}`);
+          }
         }
       } catch (e: any) {
-        log(`    ! git step failed: ${e?.message || e}`);
+        const stderr = e?.stderr?.toString() || e?.message || String(e);
+        log(`    ! git step failed: ${stderr.split("\n").slice(0, 3).join(" | ")}`);
       }
     }
   }
