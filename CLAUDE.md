@@ -416,6 +416,87 @@ Order placed → Product shipped → Received → Treatment applied → ICP subm
 
 Each order gets QR → links to SDS, COA for the shipment. Factory scans on receive + on application.
 
+## Sustainability Citations (Phase 19.5+)
+
+Every numeric input on the sustainability page and in the competitive
+PDF that drives a customer-visible CO₂/water/waste/VOC calculation
+MUST carry a source citation. Andrew chose credibility hits on
+dramatic-narrative numbers over the risk of a brand sustainability
+lead fact-checking and finding a vendor inflation.
+
+**To add a new competitor / chemistry archetype:**
+
+1. Find the canonical public source first — EPA Master Label PDF
+   (Section 1 — Active Ingredient) for any EPA-registered antimicrobial,
+   manufacturer SDS Section 3 — Composition for non-EPA products, or
+   peer-reviewed industry papers for bio-based chemistries.
+
+2. If the source is gated or non-public, do NOT estimate without an
+   explicit `estimated: true` flag + written `estimationBasis`
+   citation. Better to under-claim with a citation than over-claim
+   without.
+
+3. Wrap every numeric field in `SourcedNumber` via the `sourced()`
+   helper from `src/lib/sustainability.ts`:
+
+   ```typescript
+   {
+     name: "Silver chloride (AgCl)",
+     kgPerKgProduct: sourced(0.020, {
+       sdsUrl: "https://...",
+       sdsDate: "2024-03-15",
+       sdsSection: "Section 1 — Active Ingredient",
+       valueAsPublished: "Silver chloride (AgCl) 2.0%",
+       verifiedDate: "2026-05-26",
+       verifiedBy: "Phase 19.5 audit",
+     }),
+     costPerKg: 850,
+   }
+   ```
+
+4. Set `archetypeSource` on the `UpstreamManufacturing` entry — that
+   surfaces as the chemistry-level citation in the page tooltip and
+   PDF appendix A.6.
+
+**Where citations surface:**
+
+- `/sustainability` — the ⓘ icon next to any sourced number opens a
+  hover popover (`src/components/SourceTooltip.tsx`). A `~` icon
+  flags an estimated value with the estimationBasis inline.
+- Generated competitive PDFs — section "A.6 — Phase 19.5 Audit:
+  Per-Chemistry Active Ingredient Citations" auto-renders from
+  the `archetypeSource` fields. No PDF edits required when adding
+  a new archetype.
+- Page footer surfaces the last full audit date + links to the
+  full transcript at `deliverables/Competitor_SDS_Audit_<YYYY-MM>.md`.
+
+**Audit cadence:** run a full pass whenever a brand asks how a number
+was derived, an EPA registration changes, a manufacturer publishes
+a revised SDS, or a new competitor lands in `src/lib/competitors.ts`.
+Audit transcripts append-only at `deliverables/Competitor_SDS_Audit_<YYYY-MM>.md`.
+
+**Phase 19.5 audit (2026-05-26) findings worth knowing:**
+
+- Silvadur 930 Flex assumption was 459× overstated (0.45 vs 0.098%
+  per EPA Reg 464-785). Corrected.
+- Five competitors in `src/lib/competitors.ts` carry the wrong
+  `chemistryType`:
+  - `polygiene-viraloff` (zinc → actually silver chloride)
+  - `sanitized-zinc-pyrithione` (zinc → actually silane-QAC)
+  - `heiq-hyprotecht` (zinc → actually silver)
+  - `microban-additive-gs` (qac_silane → actually benzoic acid)
+  - `ultrafresh-dw56` (qac_silane → actually zinc pyrithione + thiabendazole)
+  These misclassifications are escalated in the audit transcript;
+  the `chemistryType` pointers in `competitors.ts` were intentionally
+  left unchanged pending Andrew's sign-off. New archetypes
+  `zinc_oxide`, `organic_acid`, `chitosan`, `citric_acid`,
+  `resin_acid`, `wood_extract` were added so the fix has somewhere
+  to land.
+- BioLayr was UNDERSTATED — was 1.5% in our model, actually 0.2%
+  per Nordic BioTech US patent 12,054,880 B2. Corrected. The
+  FUZE-vs-BioLayr comparison compresses from ~15,000× to ~2,000×
+  but stays defensible.
+
 ## Auto-Translation Pipeline (Phase 19+)
 
 **Adding a new user-facing string to `src/i18n/en.ts` automatically
@@ -1534,6 +1615,29 @@ Schema synced via `npx prisma db push` (see Debugging Lessons note — this repo
 - Brand language is sacred — FUZE and metamaterial, never silver/nano
 - Commission system needed but save for later
   → Full glossary: memory/glossary.md
+
+## NON-NEGOTIABLE WORKFLOW RULES (Cowork ↔ Claude Code)
+
+These rules are how Andrew works. Violating them wastes his time.
+
+1. **NEVER ask Andrew to manually edit a file, find a line, or replace text by hand.** Andrew does not open files. Andrew does not hunt for code. Andrew pastes prompts into Code. If a fix requires editing a file, the answer is ALWAYS "write a Code prompt that does the edit" — never "open foo.tsx and change line 42." This applies to next.config.ts, eslint.config.mjs, locale files, page components — every file. No exceptions.
+
+2. **NEVER hand Andrew a "Path A vs Path B" choice where Path A is a manual edit.** If both paths exist, both must be Code-executable. The shortest path is still a Code prompt.
+
+3. **Specs sent to Code MUST be self-sufficient overnight.** They must:
+   - Run their own `fzcron` verification commands (sourcing `.env.local` for `$CRON_SECRET`)
+   - Run their own `diag-all-surfaces` checks between phases
+   - Fire their own migration crons (`fzcron migrate-XX-bundle`) without asking Andrew to do it
+   - Push their own commits without check-ins between tracks
+   - Verify Vercel deploy status via the Vercel MCP or via curl + the bearer token
+   - Never pause and wait for Andrew between tracks — the 300-second auto-resume rule applies absolutely
+   - Only escalate to Andrew on (a) genuine ambiguity that can't be resolved by reading the codebase, (b) approval needed for a customer-impacting decision (e.g. naming a customer in a comparison), or (c) unrecoverable error blocking all forward progress
+
+4. **Code prompts MUST be a single copy-pasteable block.** No multi-step "first do X, then Y" instructions for Andrew to type. One paste, Code grinds end-to-end.
+
+5. **When something breaks, the diagnosis comes from Cowork (via Vercel MCP, sandbox file reads, etc.) and the fix is shipped to Code.** Andrew should not be triaging build logs, hunting through Vercel dashboards, or running ad-hoc verification curl commands. Cowork pulls the data via MCP, identifies the fix, hands the fix to Code.
+
+6. **Repeated violation of these rules** = bigger problem than the technical work itself. Andrew has explicitly called this out multiple times. Lock it in here so future Cowork sessions don't repeat the same anti-pattern.
 
 ## Platform Wish List (Priority Order)
 
