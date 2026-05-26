@@ -332,23 +332,36 @@ export async function GET(req: Request) {
           take: 1,
         }),
     ),
-    // MB-1 — ICP × AB correlation chart. Catches schema drift on
-    // the testRun → icpResult + abResult join the scatter depends on.
+    // MB-1 — ICP × AB correlation chart. TestRun.testType is single-valued,
+    // so no single row carries both icpResult AND abResult — correlation
+    // pairs are joined through their shared FabricSubmission. Smoke
+    // probes the submission-level query loadCorrelationPoints() drives.
     check(
-      "/analytics/icp-correlation — TestRun w/ ICP + AB",
-      "testRun findFirst icpResult+abResult",
+      "/analytics/icp-correlation — Submission w/ ICP + AB runs",
+      "fabricSubmission findFirst paired ICP+AB",
       () =>
-        prisma.testRun.findFirst({
+        prisma.fabricSubmission.findFirst({
           where: {
-            brandVisible: true,
-            icpResult: { isNot: null },
-            abResult: { isNot: null },
+            testRuns: {
+              some: {
+                testType: "ICP",
+                brandVisible: true,
+                icpResult: { is: { agValue: { not: null } } },
+              },
+            },
+            AND: [
+              {
+                testRuns: {
+                  some: {
+                    testType: "ANTIBACTERIAL",
+                    brandVisible: true,
+                    abResult: { is: { percentReduction: { not: null } } },
+                  },
+                },
+              },
+            ],
           },
-          select: {
-            id: true,
-            icpResult: { select: { agValue: true } },
-            abResult: { select: { percentReduction: true } },
-          },
+          select: { id: true },
         }),
     ),
     // MB-2 — supply chain map. Catches drift on the
