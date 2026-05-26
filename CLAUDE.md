@@ -416,6 +416,45 @@ Order placed → Product shipped → Received → Treatment applied → ICP subm
 
 Each order gets QR → links to SDS, COA for the shipment. Factory scans on receive + on application.
 
+## Brand Onboarding — CSV Importer (Phase 18+)
+
+**Use the generic importer at `/admin/brands/[id]/fabrics/import`,
+not a per-brand seed endpoint.** Hand-written seeds like
+`/api/cron/seed-sanmar` were the right call when SanMar was the
+only brand with a fabric portfolio. With KUIU, Penfabric, Rhone,
+BesTex, North Face, Nike, and the Nike testing program all
+ramping up, per-brand seeds don't scale — each one is days of
+custom code vs minutes of CSV upload.
+
+Workflow per new brand:
+
+1. Send the brand `deliverables/Brand_Fabric_Portfolio_Template.csv`
+   (also downloadable via the importer page's "Download CSV
+   template" link).
+2. They fill it in and email it back, OR you transcribe their
+   existing spreadsheet into the canonical columns.
+3. Open `/admin/brands/[id]/fabrics/import`, drop the CSV.
+4. The page auto-fires a dry-run, shows validation errors +
+   warnings + factory-name resolution prompts.
+5. For any unresolved mill, pick an existing Factory from the
+   dropdown — the alias persists in `BrandFactoryAlias`, so the
+   next import for that brand won't reprompt.
+6. Click "Commit import" → fabrics + FabricSubmissions + ICP
+   TestRuns + AM TestRuns + BrandFactory + SupplyChainLink
+   junctions all written atomically per row.
+
+The importer accepts the canonical column names *and* common
+variants — "Factory" instead of "Mill", "GSM" instead of "Weight
+(gsm)", "Brand SKU" instead of "Brand Article #", etc. See
+`src/lib/fabric-csv-import.ts` `COLUMN_ALIASES` for the full
+map. Headers it can't recognize go into `Fabric.note` as
+`[original_col: value]` so data isn't dropped.
+
+Keep `seed-sanmar` as-is for back-compat — SanMar reruns still go
+through it and it has SanMar-specific logic baked in. But **do
+not write new per-brand seed endpoints**. Any new brand goes
+through the importer.
+
 ## Built Features (Session — May 20-22, 2026 — i18n full rollout + protocol publish)
 
 Biggest shipping week of the year by commit count. **~100 commits across three days** covering: full 17-locale i18n parity (compact + full-depth in progress), the FUZE Certified Testing Protocol page, auto-resolve-from-commits cron fix (silent bug discovery), account management for typo-fixes, and a Tina-live-call escalation cleanup.
