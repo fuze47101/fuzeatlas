@@ -389,6 +389,22 @@ export default function BrandPipelinePage() {
           <option value="activity">{T.sortActivity}</option>
           <option value="contacts">{T.sortContacts}</option>
         </select>
+        <button
+          type="button"
+          onClick={() => {
+            const params = new URLSearchParams();
+            if (search) params.set("search", search);
+            if (stageFilter !== "all") params.set("stage", stageFilter);
+            if (relevanceFilter !== "all") params.set("relevance", relevanceFilter);
+            params.set("view", viewFilter);
+            params.set("mode", "pipeline");
+            window.location.href = `/api/admin/brand-pipeline/export?${params.toString()}`;
+          }}
+          title={T.exportCsvHint || "Downloads the brand list with current filters applied"}
+          className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium whitespace-nowrap"
+        >
+          {T.exportCsv || "↓ Export CSV"}
+        </button>
       </div>
 
       {/* Brand List */}

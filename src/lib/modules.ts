@@ -29,7 +29,7 @@ export type ModuleItem = {
   label: string;
   href: string;
   icon?: string;
-  badgeKey?: "testRequests" | "accessRequests";
+  badgeKey?: "testRequests" | "accessRequests" | "suspectEmailTypos";
   adminOnly?: boolean;
   hideInCard?: boolean;
   // Phase 16 i18n — points into t.modules[labelKey] for translation.

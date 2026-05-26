@@ -5942,6 +5942,8 @@ const en = {
     sortName: "Sort: A-Z",
     sortActivity: "Sort: Last Activity",
     sortContacts: "Sort: Most Contacts",
+    exportCsv: "↓ Export CSV",
+    exportCsvHint: "Downloads the brand list with current filters applied",
 
     emptyBrands: "No brands match your filters",
 

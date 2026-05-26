@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { buildBrandPipelineWhere } from "@/lib/brand-pipeline-where";
 
 /**
  * GET /api/admin/brand-pipeline
@@ -25,99 +26,9 @@ export async function GET(req: Request) {
     }
 
     const url = new URL(req.url);
-    const stage = url.searchParams.get("stage");
-    const relevance = url.searchParams.get("relevance");
-    const search = url.searchParams.get("search");
-    const view = url.searchParams.get("view") || "actionable";
-    // mode: "pipeline" (LEAD only) | "accounts" (post-LEAD) | undefined (both)
-    const mode = url.searchParams.get("mode");
-
-    // Build where clause
-    const conditions: any[] = [];
-
-    // Pipeline vs Accounts split:
-    // "pipeline" shows only LEAD brands (prospects being worked)
-    // "accounts" shows brands that have received a presentation or more
-    // (PRESENTATION, BRAND_TESTING, FACTORY_ONBOARDING, FACTORY_TESTING,
-    // PRODUCTION, BRAND_EXPANSION, CUSTOMER_WON)
-    if (mode === "pipeline") {
-      conditions.push({ pipelineStage: "LEAD" });
-    } else if (mode === "accounts") {
-      conditions.push({
-        pipelineStage: {
-          in: [
-            "PRESENTATION",
-            "BRAND_TESTING",
-            "FACTORY_ONBOARDING",
-            "FACTORY_TESTING",
-            "PRODUCTION",
-            "BRAND_EXPANSION",
-            "CUSTOMER_WON",
-          ],
-        },
-      });
-    }
-
-    if (view === "actionable") {
-      // Brands you can actually work with: have contacts, or past LEAD, or verified with high relevance
-      conditions.push({ pipelineStage: { not: "ARCHIVE" } });
-      conditions.push({
-        validationStatus: { notIn: ["irrelevant", "dead"] },
-      });
-      conditions.push({
-        OR: [
-          { contacts: { some: {} } },                                    // has any contacts
-          { pipelineStage: { notIn: ["LEAD"] } },                        // past lead stage
-          { fuzeRelevance: { in: ["high", "medium"] } },                 // high/medium fit
-        ],
-      });
-    } else if (view === "enriched") {
-      // Only brands with enriched contacts (email or linkedin)
-      conditions.push({ pipelineStage: { not: "ARCHIVE" } });
-      conditions.push({
-        contacts: {
-          some: {
-            OR: [
-              { email: { not: null } },
-              { linkedinUrl: { not: null } },
-            ],
-          },
-        },
-      });
-    } else if (view === "verified") {
-      conditions.push({ validationStatus: "verified" });
-      conditions.push({ pipelineStage: { not: "ARCHIVE" } });
-    } else if (view === "all") {
-      // Everything except dead/irrelevant/archived
-      conditions.push({ pipelineStage: { not: "ARCHIVE" } });
-      conditions.push({
-        OR: [
-          { validationStatus: { notIn: ["irrelevant", "dead"] } },
-          { validationStatus: null },
-        ],
-      });
-    }
-    // view === "everything" has no conditions
-
-    if (stage && stage !== "all") {
-      conditions.push({ pipelineStage: stage });
-    }
-
-    if (relevance && relevance !== "all") {
-      conditions.push({ fuzeRelevance: relevance });
-    }
-
-    if (search) {
-      conditions.push({
-        OR: [
-          { name: { contains: search, mode: "insensitive" } },
-          { contacts: { some: { name: { contains: search, mode: "insensitive" } } } },
-          { contacts: { some: { email: { contains: search, mode: "insensitive" } } } },
-        ],
-      });
-    }
-
-    const where: any = conditions.length > 0 ? { AND: conditions } : {};
+    // Shared where-clause builder — also used by /api/admin/brand-pipeline/export
+    // so the two endpoints can't drift on filter semantics.
+    const where = buildBrandPipelineWhere(url.searchParams);
 
     // Fetch brands — no arbitrary limit
     const brands = await prisma.brand.findMany({
