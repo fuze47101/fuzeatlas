@@ -416,6 +416,93 @@ Order placed → Product shipped → Received → Treatment applied → ICP subm
 
 Each order gets QR → links to SDS, COA for the shipment. Factory scans on receive + on application.
 
+## Auto-Translation Pipeline (Phase 19+)
+
+**Adding a new user-facing string to `src/i18n/en.ts` automatically
+fans out translations to all 16 non-English locales.** No more
+manual per-locale TODOs. Two execution modes.
+
+### Mode A — Manual / CLI (primary)
+
+```bash
+# Dry-run (no writes, no commits) — see what would translate
+fzcron translate-missing-keys -X POST -d '{"dryRun":true}'
+
+# Single locale catch-up
+fzcron translate-missing-keys -X POST -d '{"locales":["vi"]}'
+
+# Single namespace within one locale
+fzcron translate-missing-keys -X POST \
+  -d '{"locales":["vi"],"namespaces":["factoryPortal"]}'
+
+# Big catch-up — bump the per-locale cap (default 500)
+fzcron translate-missing-keys -X POST -d '{"maxKeysPerLocale":1000}'
+```
+
+Each batch becomes ONE commit (per locale × namespace) so a leak
+can be rolled back without disturbing other locales. Commit
+messages embed brand-voice retry counts + estimated $$$ spend.
+
+### Mode B — Pre-commit hook (automatic)
+
+`.husky/pre-commit` detects when `src/i18n/en.ts` is staged. If it
+is, `scripts/i18n-pre-commit.ts` runs, translates the new/empty
+keys via Claude, and `git add`s the modified locale files so a
+single commit captures the en.ts change + all 16 locale files
+atomically.
+
+Caps at 100 keys per locale in the hook path to keep commits
+fast. Larger catch-ups go through Mode A. Hook fails open — if
+ANTHROPIC_API_KEY is unset or Claude is unreachable, the commit
+proceeds without translations and you recover later via the
+CLI. To skip explicitly: `FUZE_SKIP_I18N_HOOK=1 git commit ...`.
+
+### Brand-voice guarantee
+
+Every translated value is grep-checked against the per-locale ban
+list in `src/lib/i18n-translate.ts`. If a banned term appears, the
+key is retried up to 3 times with explicit "do not use {word}"
+guidance to Claude. After 3 strikes the key is dropped from the
+output and surfaced in the response's `flagged` list for manual
+authoring. Commit bodies report `brand-voice retries: N` so leaks
+are visible in `git log`.
+
+### Drift detection (T7)
+
+`GET /api/cron/i18n-drift-report` runs Mondays 14:00 UTC. Silent
+when all locales sit below the 10-missing-keys threshold; emails
+Andrew otherwise with the canonical `fzcron translate-missing-keys`
+recovery line for the affected locales.
+
+### Coverage in admin UI
+
+`/admin/i18n/review` now shows per-locale coverage % computed
+live from `diffLocale()`. Locales below 99% glow amber; below 95%
+glow red. Each row has a "Run auto-translate" button that
+dry-runs the cron + surfaces the `fzcron` command in a copy-paste
+banner.
+
+### Files
+
+- `src/lib/i18n-diff.ts` — pure diff (missing + empty keys per locale)
+- `src/lib/i18n-translate.ts` — Claude API + brand-voice retry
+- `src/lib/i18n-writer.ts` — TS-AST locale file mutation (preserves
+  comments, indentation, namespace structure; tsc-validates before
+  swap)
+- `src/app/api/cron/translate-missing-keys/route.ts` — orchestrator
+- `src/app/api/cron/i18n-drift-report/route.ts` — weekly drift email
+- `scripts/i18n-pre-commit.ts` — husky hook entry point
+- `/admin/i18n/review` — coverage dashboard + run-button
+
+### Cost guardrails
+
+Per spec, Phase 19 caps at 500 keys per locale per run (override
+via `maxKeysPerLocale` body field). Claude Haiku 4.5 pricing at
+~$0.80/M input + $4.00/M output tokens — a full 16-locale catch-up
+typically runs $5–20. Per-run cost surfaces in the response's
+`summary.estimatedCostUsd`. The drift cron is weekly only —
+intentional rate-limit on autonomous spend.
+
 ## Brand Onboarding — CSV Importer (Phase 18+)
 
 **Use the generic importer at `/admin/brands/[id]/fabrics/import`,

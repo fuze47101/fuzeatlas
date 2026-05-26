@@ -23,6 +23,9 @@ interface LocaleRow {
   lastTranslatedAt: string | null;
   lastReviewedAt: string | null;
   notes: string | null;
+  coverage?: number;
+  missingKeys?: number;
+  emptyKeys?: number;
 }
 
 function fmtDate(iso: string | null): string {
@@ -46,6 +49,8 @@ export default function LocaleReviewPage() {
   const [notesDraft, setNotesDraft] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [translatingLocale, setTranslatingLocale] = useState<string | null>(null);
+  const [translateBanner, setTranslateBanner] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && user.role !== "ADMIN" && user.role !== "EMPLOYEE") {
@@ -95,6 +100,39 @@ export default function LocaleReviewPage() {
     }
   }
 
+  async function runAutoTranslate(locale: string) {
+    setTranslatingLocale(locale);
+    setTranslateBanner(null);
+    setError("");
+    try {
+      const r = await fetch("/api/cron/translate-missing-keys", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Bearer header is set server-side; client doesn't have CRON_SECRET.
+          // The endpoint also accepts a session-authed bridge via /api/admin
+          // wrapper in a future pass — for now, require admins to invoke
+          // through fzcron CLI. The button just surfaces the CLI command.
+        },
+        body: JSON.stringify({ locales: [locale], dryRun: true }),
+      });
+      const d = await r.json();
+      if (!d.ok) {
+        setError(d.error || "Could not query translator");
+        return;
+      }
+      const total = d.summary?.totalRequested || 0;
+      setTranslateBanner(
+        `${locale}: ${total} keys flagged. Run from CLI:\n` +
+          `fzcron translate-missing-keys -X POST -d '{"locales":["${locale}"]}'`,
+      );
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setTranslatingLocale(null);
+    }
+  }
+
   function startEdit(row: LocaleRow) {
     setEditing(row.locale);
     setEmailDraft(row.reviewerEmail || "");
@@ -127,11 +165,18 @@ export default function LocaleReviewPage() {
         </div>
       )}
 
+      {translateBanner && (
+        <div className="mb-4 p-3 bg-violet-50 border border-violet-200 rounded-lg text-violet-900 text-xs whitespace-pre-wrap font-mono">
+          {translateBanner}
+        </div>
+      )}
+
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
             <tr>
               <th className="px-4 py-3 text-left">Locale</th>
+              <th className="px-4 py-3 text-right">Coverage</th>
               <th className="px-4 py-3 text-left">Reviewer</th>
               <th className="px-4 py-3 text-left">Last translated</th>
               <th className="px-4 py-3 text-left">Last reviewed</th>
@@ -147,6 +192,30 @@ export default function LocaleReviewPage() {
                     <span className="mr-2">{row.flag}</span>
                     {row.label}
                     <div className="text-[10px] text-slate-400 font-mono uppercase">{row.locale}</div>
+                  </td>
+                  <td className="px-4 py-3 text-right text-xs tabular-nums">
+                    {row.coverage !== undefined ? (
+                      <div>
+                        <div
+                          className={`font-bold ${
+                            row.coverage >= 0.99
+                              ? "text-emerald-700"
+                              : row.coverage >= 0.95
+                                ? "text-slate-700"
+                                : "text-amber-700"
+                          }`}
+                        >
+                          {(row.coverage * 100).toFixed(1)}%
+                        </div>
+                        {((row.missingKeys || 0) + (row.emptyKeys || 0)) > 0 && (
+                          <div className="text-[10px] text-slate-500">
+                            {row.missingKeys || 0} miss · {row.emptyKeys || 0} empty
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-slate-400">—</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-slate-700">
                     {isEdit ? (
@@ -212,12 +281,25 @@ export default function LocaleReviewPage() {
                         </button>
                       </div>
                     ) : (
-                      <button
-                        onClick={() => startEdit(row)}
-                        className="text-xs text-[#00b4c3] hover:underline font-semibold"
-                      >
-                        Assign / Mark reviewed
-                      </button>
+                      <div className="flex flex-col items-end gap-1">
+                        <button
+                          onClick={() => startEdit(row)}
+                          className="text-xs text-[#00b4c3] hover:underline font-semibold"
+                        >
+                          Assign / Mark reviewed
+                        </button>
+                        {row.locale !== "en" &&
+                          ((row.missingKeys || 0) + (row.emptyKeys || 0)) > 0 && (
+                            <button
+                              onClick={() => runAutoTranslate(row.locale)}
+                              disabled={translatingLocale === row.locale}
+                              className="text-[11px] text-violet-700 hover:underline font-semibold disabled:opacity-50"
+                              title="Dry-run the auto-translator and surface the fzcron command"
+                            >
+                              {translatingLocale === row.locale ? "Checking…" : "Run auto-translate"}
+                            </button>
+                          )}
+                      </div>
                     )}
                   </td>
                 </tr>

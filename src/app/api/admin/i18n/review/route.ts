@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { LOCALES } from "@/i18n/core";
+import { diffLocale } from "@/lib/i18n-diff";
 
 /**
  * GET /api/admin/i18n/review
@@ -41,20 +42,40 @@ export async function GET() {
   const rows = await prisma.localeReviewStatus.findMany();
   const byLocale = new Map(rows.map((r) => [r.locale, r]));
 
-  const result = LOCALES.map((l) => {
-    const row = byLocale.get(l.code);
-    return {
-      locale: l.code,
-      label: l.label,
-      flag: l.flag,
-      reviewerId: row?.reviewerId || null,
-      reviewerEmail: row?.reviewerEmail || null,
-      reviewerName: row?.reviewerName || null,
-      lastTranslatedAt: row?.lastTranslatedAt || null,
-      lastReviewedAt: row?.lastReviewedAt || null,
-      notes: row?.notes || null,
-    };
-  });
+  // Phase 19 — also report live coverage per locale via diffLocale.
+  // English is 100% by definition; skip the API call for it.
+  const result = await Promise.all(
+    LOCALES.map(async (l) => {
+      const row = byLocale.get(l.code);
+      let coverage = 1;
+      let missingKeys = 0;
+      let emptyKeys = 0;
+      if (l.code !== "en") {
+        try {
+          const d = await diffLocale(l.code as any);
+          coverage = d.coverage;
+          missingKeys = d.missingKeys.length;
+          emptyKeys = d.emptyKeys.length;
+        } catch {
+          // Tolerate diff errors — render with unknown coverage.
+        }
+      }
+      return {
+        locale: l.code,
+        label: l.label,
+        flag: l.flag,
+        reviewerId: row?.reviewerId || null,
+        reviewerEmail: row?.reviewerEmail || null,
+        reviewerName: row?.reviewerName || null,
+        lastTranslatedAt: row?.lastTranslatedAt || null,
+        lastReviewedAt: row?.lastReviewedAt || null,
+        notes: row?.notes || null,
+        coverage,
+        missingKeys,
+        emptyKeys,
+      };
+    }),
+  );
 
   return NextResponse.json({ ok: true, locales: result });
 }

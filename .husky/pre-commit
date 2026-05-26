@@ -1,1 +1,8 @@
 npx lint-staged
+
+# Phase 19 T6 — auto-translate locale files when en.ts is staged.
+# Never blocks the commit; fails open if Claude API unreachable or
+# ANTHROPIC_API_KEY unset. Skip explicitly with FUZE_SKIP_I18N_HOOK=1.
+if git diff --cached --name-only | grep -q "^src/i18n/en\.ts$"; then
+  npx tsx scripts/i18n-pre-commit.ts || true
+fi
