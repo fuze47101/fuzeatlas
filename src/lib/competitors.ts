@@ -326,6 +326,96 @@ export const COMPETITORS: Competitor[] = [
     retreatmentPossible: false,
     retreatmentCostMultiplier: 1.5,
   },
+  // ──────────────────────────────────────────────────────────
+  // IFTNA FreshTX — added 2026-05-26 (Phase 19.5 follow-up T2)
+  //
+  // Andrew asked for a deep-dive and made it a standing rule that every
+  // competitive research session ends with the product persisted to
+  // src/lib/competitors.ts (now locked in CLAUDE.md "Competitive
+  // Intelligence Persistence Rule").
+  //
+  // Headline finding: NO EPA REGISTRATION discoverable for FreshTX
+  // despite explicit antimicrobial efficacy claims. iFabric's other
+  // antimicrobial products (PROTX2 = EPA Reg 87246-13, BioACTIV AM =
+  // EPA Reg 87246-12, plus bioFRESH / PROTX2 S / bioTX announced in
+  // 2024 press releases without published reg numbers) display their
+  // registration prominently. FreshTX omits it.
+  //
+  // Three scenarios consistent with the evidence:
+  //   1. 25(b) exemption — but marketing language ("positive/negative
+  //      ion technology") doesn't match any 25(b)-eligible chemistry.
+  //   2. Unregistered product making federally-regulated antimicrobial
+  //      claims — a FIFRA Section 12(a)(1)(A) violation. Marketing
+  //      pages must NOT make antibacterial/antifungal/antimicrobial
+  //      efficacy claims for an unregistered pesticide regardless of
+  //      dose.
+  //   3. Private-label OEM finish where the brand customer carries the
+  //      registration obligation downstream. iFabric's website footer
+  //      ("Due to worldwide regulatory differences, not all information
+  //      found on our website can be applied and are valid in all
+  //      countries or regions") supports this routing.
+  //
+  // Audit transcript: deliverables/Competitor_SDS_Audit_2026-05.md
+  // section "## 2026-05-26 follow-up — FreshTX addition".
+  // ──────────────────────────────────────────────────────────
+  {
+    id: "iftna-freshtx",
+    company: "Intelligent Fabric Technologies (North America) Inc. — IFTNA",
+    product: "FreshTX Odour-Neutralizing Textile Finish",
+    // chemistryType: best estimate. Marketing claims "positive and
+    // negative ion technology" with no active-ingredient disclosure.
+    // Amphoteric silane-quat is the commercial chemistry most commonly
+    // associated with this exact marketing language. Confidence: LOW
+    // until manufacturer or EPA discloses formulation. Re-route if a
+    // future EPA registration surfaces under iFabric's 87246 registrant
+    // (bioFRESH / PROTX2 S / bioTX may yet land in PPLS public index).
+    chemistryType: "qac_silane",
+    chemistryLabel:
+      "Amphoteric ion-pair odor-neutralizing finish (silane-QAC suspected; manufacturer does not disclose). Marketed as \"positive and negative ion technology.\"",
+    activeAgent:
+      "Not disclosed by manufacturer. Marketing describes \"positive and negative ion technology [that] gets to work attracting, isolating and neutralizing... positive and negatively charged odour-causing bacterias.\" Closest commercial chemistry match: amphoteric organosilane quaternary ammonium (silane-QAC), CAS 27668-52-6 / 199111-50-7 family — same as Microban CS5-A and Aegis AEM 5772, the dominant amphoteric textile-finish chemistries making this exact marketing claim.",
+    epaRegNumber: "N/A — no EPA registration discoverable",
+    epaRegYear: null,
+    epaRegNote:
+      "No EPA registration discoverable on the FreshTX product page (https://www.iftna.com/freshtx) as of 2026-05-26 despite explicit antimicrobial efficacy claims: \"protects fibres from odour-causing bacteria\" + \"captures, prevents and neutralizes growth and fungal buildup.\" These are antibacterial AND antifungal efficacy claims, which under FIFRA require federal pesticide registration regardless of dose. " +
+      "iFabric Corp's other antimicrobial textile products display their EPA registration prominently: PROTX2 = EPA Reg 87246-13 (Apr 10, 2023), BioACTIV AM = EPA Reg 87246-12 (Oct 6, 2022). Two additional 2024-announced products from iFabric — bioFRESH and PROTX2 S — were described as 'EPA-registered' in their press releases (AccessNewswire 2024-04-23) but their reg numbers were not disclosed in any indexed source as of 2026-05-26. A separate bioTX product was also announced as 'metal-free anti-microbial' EPA-registered without a published reg number. FreshTX is not named in any of those press releases. " +
+      "Three scenarios consistent with the evidence: (1) FreshTX is EPA-exempt under FIFRA Section 25(b), but marketing language doesn't fit any 25(b)-eligible chemistry; (2) FreshTX is making federally-regulated antimicrobial claims while unregistered — a FIFRA Section 12(a)(1)(A) violation; (3) FreshTX is sold as a non-public-claims OEM finish to brands who carry the registration obligation downstream (iFabric's website footer disclaimer about worldwide regulatory differences supports this routing). Competitive opening: ask brands sourcing FreshTX which scenario applies — if (3), they may be unknowingly carrying the FIFRA exposure themselves.",
+    epaLabelUrl: "https://www.iftna.com/freshtx",
+    // No published dosage. Estimated to amphoteric silane-quat
+    // commercial textile-finish range (Microban CS5-A class).
+    dosageLow: 100,
+    dosageHigh: 500,
+    dosageTypical: 250,
+    maxWashClaim: 20,
+    washClaimNote:
+      "No specific wash claim published on the FreshTX product page. Estimated 20 industrial washes based on amphoteric silane-quat class durability (Microban CS5-A class). No third-party validation reports publicly available. Manufacturer-marketed.",
+    washClaimSource: "marketing",
+    binderRequired: false,
+    binderGPerKg: 0,
+    binderType: "—",
+    binderPricePerKg: 0,
+    binderLeachPctLifetime: 0,
+    binderVOC: false,
+    binderFormaldehyde: false,
+    curingRequired: false,
+    curingTempC: 0,
+    leachRateFirst10Washes: 30,
+    leachRatePerWash: 3.0,
+    heavyMetalReleased:
+      "Not disclosed. If chemistry is amphoteric silane-QAC as suspected, no heavy metal release expected. If undisclosed chemistry contains silver (similar pattern to IFTNA PROTX2 marketing-vs-EPA discrepancy), independent silver leaching would apply.",
+    aquaticToxicityNote:
+      "Not disclosed. Amphoteric silane-quats typically classified as toxic to Daphnia magna at low μg/L (Microban CS5-A class). If the actual chemistry differs from suspected, toxicity profile may differ — only a published SDS or EPA label would settle the question.",
+    endOfLifeNote:
+      "Not disclosed. Amphoteric silane-quats resist biodegradation and persist in soil. End-of-life pathway depends on what the actual chemistry is.",
+    chemicalPricePerKg: 18,
+    chemicalPriceSource:
+      "Estimate based on Microban CS5-A class amphoteric silane-quat pricing. iFabric Corp is a public Canadian company (CVE:IFA, OTC:IFABF); FreshTX unit pricing not publicly disclosed.",
+    estimatedCostPerMeterLow: 0.03,
+    estimatedCostPerMeterHigh: 0.12,
+    estimatedCostPerMeterTypical: 0.06,
+    retreatmentPossible: true,
+    retreatmentCostMultiplier: 1.0,
+  },
   {
     id: "microban-additive-gs",
     company: "Microban International",

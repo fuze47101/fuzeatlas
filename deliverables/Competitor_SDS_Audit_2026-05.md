@@ -143,3 +143,138 @@ Peer-reviewed / patent / industry:
 - NICNAS Public Report STD/1230 (Sanitized T 99-19) — Australian regulator
 - Sciessent / AgION technical literature (Knowde)
 - Aurubis EFD 2024 + ecoinvent 3.10 (existing CO2 emission factors — unchanged by this audit)
+
+---
+
+## 2026-05-26 follow-up — FreshTX addition
+
+Phase 19.5 spec follow-up (Track 2) added IFTNA FreshTX to
+`src/lib/competitors.ts` and asked the audit to document the EPA-
+registration question. Andrew's standing rule (now locked in
+CLAUDE.md "Competitive Intelligence Persistence Rule"): every
+competitive deep-dive ends with a persisted entry in the canonical
+competitor catalog.
+
+### Product
+
+- **Name:** FreshTX Odour-Neutralizing Textile Finish
+- **Manufacturer:** Intelligent Fabric Technologies (North America)
+  Inc. (IFTNA), wholly-owned subsidiary of iFabric Corp (CVE:IFA,
+  OTC:IFABF). 525 Denison Street, Unit 1, Markham, Ontario L3R1B8,
+  Canada.
+- **Product page:** https://www.iftna.com/freshtx
+- **Marketed positioning:** "odour-neutralizing technology" for fiber-
+  level odor control. Target market: chefs, healthcare workers,
+  athletes, runners, parents, pet owners. Apparel + bedding +
+  towels + kitchen textiles + footwear.
+
+### EPA-registration hunt (2026-05-26 audit)
+
+**Finding: no EPA registration discoverable.**
+
+Sources checked:
+- FreshTX product page (https://www.iftna.com/freshtx) — no EPA Reg
+  Number anywhere on the page, no certification badges, no
+  active-ingredient %, no concentration claim.
+- EPA PPLS search interface (https://ordspub.epa.gov/ords/pesticides/f?p=PPLS:1)
+  — supports search by product name / company / registration number.
+  PPLS web interface does not return a hit for "FreshTX" by name,
+  and registrant 87246 (iFabric's company number) is not publicly
+  enumerable through the web search proxy.
+- WebSearch for "FreshTX iFabric EPA registration" — no
+  direct hit. Discovered adjacent iFabric press releases instead.
+- iFabric / IFTNA press releases (AccessNewswire 2024-04-23,
+  StockTitan, Fibre2Fashion). Three additional iFabric antimicrobial
+  products were announced as EPA-registered in 2024 — **bioFRESH**
+  (bio-based), **PROTX2 S** (hydrothermal mineral-based), and
+  **bioTX** (metal-free) — but none of the public press releases
+  disclosed their reg numbers, and **none of those press releases
+  mention FreshTX by name**.
+
+Publicly-known iFabric EPA registrations:
+- 87246-12 — BioACTIV AM (97% ZnO; verified Phase 16)
+- 87246-13 — PROTX2 (1.53% total actives, silane-quat + Ag +
+  PHMB + propiconazole; verified Phase 16)
+- 87246-?? — bioFRESH, PROTX2 S, bioTX (announced 2024-04-23, reg
+  numbers not published)
+
+### Marketing claims that require EPA registration under FIFRA
+
+Verbatim from iftna.com/freshtx:
+- "protects fibres from odour-causing bacteria"
+- "captures, prevents and neutralizes growth and fungal buildup"
+- "odour neutralizing technology has the capabilities to combat even
+  the smelliest bacterias"
+
+Per the EPA's interpretation of FIFRA Section 2(u), "pesticide"
+includes any substance intended to **prevent, destroy, repel, or
+mitigate** any pest including bacteria and fungi. Marketing claims
+of antibacterial / antifungal efficacy require federal pesticide
+registration regardless of the active ingredient's dose.
+
+### Three scenarios consistent with the evidence
+
+1. **25(b) exemption.** FIFRA Section 25(b) exempts minimum-risk
+   pesticides whose active ingredients appear on the EPA approved
+   list (citric acid, lactic acid, plant essential oils, chitosan,
+   cinnamon oil, clove oil, garlic oil, etc.). FreshTX's "positive
+   and negative ion technology" marketing language does not match
+   any 25(b)-eligible chemistry. **Low-confidence scenario.**
+
+2. **Unregistered product making federally-regulated antimicrobial
+   claims** — a FIFRA Section 12(a)(1)(A) violation. The marketing
+   page makes explicit "bacteria" + "fungal" mitigation claims
+   without showing an EPA reg number. Misbranding under Section
+   12(a)(1)(E) also applies if any registered claim is
+   substantively different from the marketing.
+
+3. **Private-label OEM finish.** FreshTX is sold to brands who then
+   carry the registration obligation downstream. The iftna.com
+   website footer disclaimer ("Due to worldwide regulatory
+   differences, not all information found on our website can be
+   applied and are valid in all countries or regions") supports
+   this routing. iFabric retains EPA-registered finished-textile
+   products separately (PROTX2 etc.) and ships FreshTX as the
+   non-public-claims chemistry that brand customers use as their
+   choice.
+
+The customer-conversation framing per the spec's escalation rules
+becomes: ask brands sourcing FreshTX which scenario applies. If
+(3), they may be unknowingly carrying the FIFRA exposure
+themselves — a competitive opening similar to the previously
+documented PROTX2 marketing-vs-EPA discrepancy.
+
+### Chemistry-archetype routing decision
+
+competitors.ts entry routed to `chemistryType: "qac_silane"` at
+LOW confidence. Justification: amphoteric organosilane quaternary
+ammonium is the commercial chemistry most commonly associated
+with "positive and negative ion technology" marketing language —
+Microban CS5-A and Aegis AEM 5772 make the same exact claim. No
+active ingredient % or chemistry name is disclosed by IFTNA, so
+this is a best-fit estimate, not verified.
+
+If a future EPA registration surfaces under registrant 87246 and
+discloses FreshTX's actual chemistry, swap the chemistryType to
+the EPA-disclosed active ingredient and update epaRegNote with
+the actual reg number — the "three scenarios" framing drops away.
+
+### Sources
+
+- iftna.com/freshtx product page (verified 2026-05-26)
+- EPA PPLS pesticide label search (https://ordspub.epa.gov/ords/pesticides/f?p=PPLS:1)
+- iFabric Corp press releases announcing bioFRESH + PROTX2 S
+  (AccessNewswire 2024-04-23, StockTitan IFABF)
+- Fibre2Fashion iFabric bioTX announcement
+- EPA PPLS PROTX2 label PDF (https://www3.epa.gov/pesticides/chem_search/ppls/087246-00013-20230410.pdf)
+- EPA PPLS BioACTIV AM label PDF (https://www3.epa.gov/pesticides/chem_search/ppls/087246-00012-20221006.pdf)
+
+### Sustainability-page impact
+
+FreshTX routes through `qac_silane` archetype in
+`UPSTREAM_MANUFACTURING` — corrected 2026-05-26 to 3.6% active
+in Microban CS5-A RTU class. CO2/water/waste/VOC math for the
+FreshTX competitor card on /sustainability will reflect that
+archetype's audited values. If chemistry confidence increases to
+"verified" later (via EPA label disclosure), the archetype
+routing may change.
