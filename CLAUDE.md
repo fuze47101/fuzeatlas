@@ -377,7 +377,7 @@ Toggle via POST /api/admin/contact-outreach
 API: `/api/admin/brand-pipeline?view=actionable|enriched|verified|all|everything`
 Default sort: relevance (high→medium→low→none) → enriched → stage → A-Z
 Stage filter defaults to LEAD on the page.
-CSV export: `GET /api/admin/brand-pipeline/export` mirrors the same filter params (view/mode/stage/relevance/search) — file name `brand_pipeline_<YYYY-MM-DD>_<view>[_<stage>].csv`, RFC 4180 escaped with UTF-8 BOM. Where-clause builder lives at `src/lib/brand-pipeline-where.ts` so the JSON + CSV routes can't drift.
+Export: `GET /api/admin/brand-pipeline/export` mirrors the same filter params (view/mode/stage/relevance/search). Default `?format=xlsx` returns a true Excel workbook via `exceljs` — frozen header, autofilter, stage color-coding, currency/percentage/date number formats, clickable Website + LinkedIn hyperlinks, workbook metadata (Creator/Subject/Description) capturing the filter set. `?format=csv` returns the legacy RFC 4180 + UTF-8 BOM serialization. Filename `brand_pipeline_<YYYY-MM-DD>_<view>[_<stage>].xlsx`. Where-clause builder lives at `src/lib/brand-pipeline-where.ts` so the JSON + export routes can't drift.
 
 ### CRM (ActivityFeed component)
 

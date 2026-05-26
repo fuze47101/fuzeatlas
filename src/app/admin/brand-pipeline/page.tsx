@@ -400,10 +400,20 @@ export default function BrandPipelinePage() {
             params.set("mode", "pipeline");
             window.location.href = `/api/admin/brand-pipeline/export?${params.toString()}`;
           }}
-          title={T.exportCsvHint || "Downloads the brand list with current filters applied"}
-          className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium whitespace-nowrap"
+          title={T.exportExcelHint || "Downloads the brand list as Excel with current filters applied"}
+          className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium whitespace-nowrap inline-flex items-center gap-1.5"
         >
-          {T.exportCsv || "↓ Export CSV"}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="h-4 w-4"
+            aria-hidden="true"
+          >
+            <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.69L6.97 9.22a.75.75 0 1 0-1.06 1.06l3.5 3.5a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 1 0-1.06-1.06l-2.28 2.22V2.75Z" />
+            <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+          </svg>
+          {T.exportExcel || "Download Excel"}
         </button>
       </div>
 

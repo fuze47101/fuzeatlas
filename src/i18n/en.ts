@@ -5944,6 +5944,8 @@ const en = {
     sortContacts: "Sort: Most Contacts",
     exportCsv: "↓ Export CSV",
     exportCsvHint: "Downloads the brand list with current filters applied",
+    exportExcel: "Download Excel",
+    exportExcelHint: "Downloads the brand list as Excel with current filters applied",
 
     emptyBrands: "No brands match your filters",
 
