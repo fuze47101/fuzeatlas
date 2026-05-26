@@ -23,6 +23,8 @@ const FK_BY_ENTITY: Record<string, "brandId" | "factoryId" | "distributorId" | "
   FACTORY: "factoryId",
   DISTRIBUTOR: "distributorId",
   LAB: "labId",
+  // INTERNAL: no FK — admin/employee/sales accounts aren't scoped to any
+  // single org. Handled below.
 };
 
 async function getInvitationByToken(token: string) {
@@ -54,6 +56,9 @@ async function orgLabel(entityType: string, entityId: string): Promise<string> {
     if (entityType === "LAB") {
       const r = await prisma.lab.findUnique({ where: { id: entityId }, select: { name: true } });
       return r?.name || "your lab";
+    }
+    if (entityType === "INTERNAL") {
+      return "FUZE Atlas";
     }
   } catch {
     /* fallthrough */
@@ -157,7 +162,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ token: string 
     return NextResponse.json({ ok: false, error: "This invitation has expired." }, { status: 410 });
 
   const fk = FK_BY_ENTITY[invite.entityType];
-  if (!fk)
+  if (!fk && invite.entityType !== "INTERNAL")
     return NextResponse.json(
       { ok: false, error: `Unknown entity type ${invite.entityType}` },
       { status: 500 },
@@ -184,15 +189,17 @@ export async function POST(req: Request, ctx: { params: Promise<{ token: string 
   if (existing) {
     // If the existing user already belongs to a different org of the
     // SAME type, refuse — moving people laterally needs admin intent.
-    const currentFkValue = (existing as any)[fk];
-    if (currentFkValue && currentFkValue !== invite.entityId) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: `Account ${invite.email} is already attached to a different ${invite.entityType.toLowerCase()}. Contact an admin.`,
-        },
-        { status: 409 },
-      );
+    if (fk) {
+      const currentFkValue = (existing as any)[fk];
+      if (currentFkValue && currentFkValue !== invite.entityId) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: `Account ${invite.email} is already attached to a different ${invite.entityType.toLowerCase()}. Contact an admin.`,
+          },
+          { status: 409 },
+        );
+      }
     }
     if (existing.password) {
       return NextResponse.json(
@@ -206,31 +213,20 @@ export async function POST(req: Request, ctx: { params: Promise<{ token: string 
   }
 
   const hashed = await hashPassword(password);
+  const baseData: any = {
+    name: fullName,
+    password: hashed,
+    role: invite.role,
+    status: "ACTIVE",
+    emailVerified: true,
+    passwordChangedAt: new Date(),
+  };
+  if (fk) {
+    baseData[fk] = invite.entityId;
+  }
   const user = existing
-    ? await prisma.user.update({
-        where: { id: existing.id },
-        data: {
-          name: fullName,
-          password: hashed,
-          role: invite.role,
-          status: "ACTIVE",
-          emailVerified: true,
-          passwordChangedAt: new Date(),
-          [fk]: invite.entityId,
-        } as any,
-      })
-    : await prisma.user.create({
-        data: {
-          name: fullName,
-          email: invite.email,
-          password: hashed,
-          role: invite.role,
-          status: "ACTIVE",
-          emailVerified: true,
-          passwordChangedAt: new Date(),
-          [fk]: invite.entityId,
-        } as any,
-      });
+    ? await prisma.user.update({ where: { id: existing.id }, data: baseData })
+    : await prisma.user.create({ data: { ...baseData, email: invite.email } });
 
   await prisma.orgInvitation.update({
     where: { id: invite.id },
@@ -261,7 +257,9 @@ export async function POST(req: Request, ctx: { params: Promise<{ token: string 
         ? "/factory-portal"
         : invite.entityType === "DISTRIBUTOR"
           ? "/distributor-portal"
-          : "/lab-portal";
+          : invite.entityType === "LAB"
+            ? "/lab-portal"
+            : "/home"; // INTERNAL → admin home
 
   return NextResponse.json({
     ok: true,

@@ -90,6 +90,22 @@ export default function UserManagementPage() {
   const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // Invite-user modal state
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteName, setInviteName] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("EMPLOYEE");
+  const [inviteBrandId, setInviteBrandId] = useState("");
+  const [inviteFactoryId, setInviteFactoryId] = useState("");
+  const [inviteDistributorId, setInviteDistributorId] = useState("");
+  const [inviteLabId, setInviteLabId] = useState("");
+  const [inviteSending, setInviteSending] = useState(false);
+  const [inviteError, setInviteError] = useState<string | null>(null);
+  const [inviteToast, setInviteToast] = useState<{
+    email: string;
+    expiresAt: string;
+  } | null>(null);
+
   // Lookup data for dropdowns
   const [brands, setBrands] = useState<LookupItem[]>([]);
   const [factories, setFactories] = useState<LookupItem[]>([]);
@@ -206,6 +222,84 @@ export default function UserManagementPage() {
       setFormError(T.networkError);
     }
     setSaving(false);
+  };
+
+  const inviteEntityKind: "brand" | "factory" | "distributor" | "lab" | "none" =
+    NEEDS_BRAND.includes(inviteRole)
+      ? "brand"
+      : NEEDS_FACTORY.includes(inviteRole)
+        ? "factory"
+        : NEEDS_DISTRIBUTOR.includes(inviteRole)
+          ? "distributor"
+          : NEEDS_LAB.includes(inviteRole)
+            ? "lab"
+            : "none";
+
+  const handleSendInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setInviteError(null);
+    if (!inviteEmail.trim()) {
+      setInviteError("Email is required");
+      return;
+    }
+    if (inviteEntityKind === "brand" && !inviteBrandId) {
+      setInviteError("Pick a brand for this role");
+      return;
+    }
+    if (inviteEntityKind === "factory" && !inviteFactoryId) {
+      setInviteError("Pick a factory for this role");
+      return;
+    }
+    if (inviteEntityKind === "distributor" && !inviteDistributorId) {
+      setInviteError("Pick a distributor for this role");
+      return;
+    }
+    if (inviteEntityKind === "lab" && !inviteLabId) {
+      setInviteError("Pick a lab for this role");
+      return;
+    }
+
+    let entityId: string | undefined;
+    if (inviteEntityKind === "brand") entityId = inviteBrandId;
+    else if (inviteEntityKind === "factory") entityId = inviteFactoryId;
+    else if (inviteEntityKind === "distributor") entityId = inviteDistributorId;
+    else if (inviteEntityKind === "lab") entityId = inviteLabId;
+
+    setInviteSending(true);
+    try {
+      const res = await fetch("/api/admin/invitations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: inviteEmail.trim(),
+          name: inviteName.trim() || undefined,
+          role: inviteRole,
+          entityId,
+        }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        setInviteError(data.error || "Failed to send invitation");
+      } else {
+        setInviteToast({
+          email: data.email || inviteEmail.trim(),
+          expiresAt: data.expiresAt || "",
+        });
+        // Reset modal form
+        setInviteOpen(false);
+        setInviteName("");
+        setInviteEmail("");
+        setInviteRole("EMPLOYEE");
+        setInviteBrandId("");
+        setInviteFactoryId("");
+        setInviteDistributorId("");
+        setInviteLabId("");
+      }
+    } catch (err: any) {
+      setInviteError(err?.message || T.networkError);
+    } finally {
+      setInviteSending(false);
+    }
   };
 
   /**
@@ -362,13 +456,221 @@ export default function UserManagementPage() {
             {T.usersRegisteredTemplate.replace("{count}", String(users.length)).replace("{label}", users.length !== 1 ? T.userPlural : T.userSingular)}
           </p>
         </div>
-        <button
-          onClick={() => setShowAdd(!showAdd)}
-          className="px-4 py-2 bg-[#00b4c3] text-white text-sm font-medium rounded-lg hover:bg-[#009ba8] transition-colors"
-        >
-          {showAdd ? T.cancelBtn : T.addUserBtn}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              setInviteOpen(true);
+              setInviteError(null);
+            }}
+            className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors inline-flex items-center gap-1.5"
+            title="Send a magic-link invitation — the recipient sets their own password"
+          >
+            <span aria-hidden="true">✉</span>
+            <span>Invite User</span>
+          </button>
+          <button
+            onClick={() => setShowAdd(!showAdd)}
+            className="px-4 py-2 bg-[#00b4c3] text-white text-sm font-medium rounded-lg hover:bg-[#009ba8] transition-colors"
+          >
+            {showAdd ? T.cancelBtn : T.addUserBtn}
+          </button>
+        </div>
       </div>
+
+      {inviteToast && (
+        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-800 flex items-start justify-between gap-3">
+          <div>
+            <strong>Invitation sent</strong> to {inviteToast.email}.
+            {inviteToast.expiresAt && (
+              <span className="ml-1 text-emerald-700">
+                Magic link expires {new Date(inviteToast.expiresAt).toLocaleString()}.
+              </span>
+            )}
+          </div>
+          <button
+            onClick={() => setInviteToast(null)}
+            className="text-emerald-700 hover:text-emerald-900 font-semibold text-xs"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {inviteOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+          onClick={() => !inviteSending && setInviteOpen(false)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-md p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Invite a teammate</h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Sends a magic-link email. They click through to set their own password.
+                </p>
+              </div>
+              <button
+                onClick={() => !inviteSending && setInviteOpen(false)}
+                className="text-slate-400 hover:text-slate-600 text-xl leading-none"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            {inviteError && (
+              <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                {inviteError}
+              </div>
+            )}
+
+            <form onSubmit={handleSendInvite} className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={inviteName}
+                  onChange={(e) => setInviteName(e.target.value)}
+                  placeholder="Optional — taken from email local-part if blank"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  Role <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  {ROLES.map((r) => (
+                    <option key={r} value={r}>
+                      {ROLE_LABELS[r] || r}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {inviteEntityKind === "brand" && (
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Brand <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={inviteBrandId}
+                    onChange={(e) => setInviteBrandId(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="">Select brand…</option>
+                    {brands.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {inviteEntityKind === "factory" && (
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Factory <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={inviteFactoryId}
+                    onChange={(e) => setInviteFactoryId(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="">Select factory…</option>
+                    {factories.map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {inviteEntityKind === "distributor" && (
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Distributor <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={inviteDistributorId}
+                    onChange={(e) => setInviteDistributorId(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="">Select distributor…</option>
+                    {distributors.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {inviteEntityKind === "lab" && (
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Lab <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={inviteLabId}
+                    onChange={(e) => setInviteLabId(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="">Select lab…</option>
+                    {labs.map((l) => (
+                      <option key={l.id} value={l.id}>
+                        {l.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {inviteEntityKind === "none" && (
+                <p className="text-xs text-slate-500 italic">
+                  Internal role — no entity required.
+                </p>
+              )}
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setInviteOpen(false)}
+                  disabled={inviteSending}
+                  className="px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={inviteSending || !inviteEmail.trim()}
+                  className="px-4 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {inviteSending ? "Sending…" : "Send invitation"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* ── Unassigned-Users Alert (task #73) ────────────────────
            Active external users whose role requires an entity FK but

@@ -14,7 +14,13 @@ import { randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
 
-export type OrgEntityType = "BRAND" | "FACTORY" | "DISTRIBUTOR" | "LAB";
+export type OrgEntityType = "BRAND" | "FACTORY" | "DISTRIBUTOR" | "LAB" | "INTERNAL";
+
+/** Stable sentinel for INTERNAL invitations — internal roles (ADMIN,
+ * EMPLOYEE, SALES_*) don't attach to any brand/factory/distributor/lab,
+ * but OrgInvitation.entityId is non-nullable in schema, so we anchor
+ * them on a non-FK string the acceptance route recognizes. */
+export const INTERNAL_ENTITY_ID = "fuze-internal";
 
 /** Roles a portal admin is allowed to invite their teammates as. */
 export const ALLOWED_INVITE_ROLES: Record<OrgEntityType, string[]> = {
@@ -22,6 +28,15 @@ export const ALLOWED_INVITE_ROLES: Record<OrgEntityType, string[]> = {
   FACTORY: ["FACTORY_USER", "FACTORY_MANAGER"],
   DISTRIBUTOR: ["DISTRIBUTOR_USER"],
   LAB: ["LAB_USER"],
+  INTERNAL: [
+    "ADMIN",
+    "EMPLOYEE",
+    "SALES_MANAGER",
+    "SALES_REP",
+    "BD_REP",
+    "TESTING_MANAGER",
+    "FABRIC_MANAGER",
+  ],
 };
 
 /** Roles that can manage their org's roster (invite + revoke). */
@@ -30,10 +45,15 @@ export const ROSTER_ADMIN_ROLES: Record<OrgEntityType, string[]> = {
   FACTORY: ["ADMIN", "EMPLOYEE", "FACTORY_MANAGER"],
   DISTRIBUTOR: ["ADMIN", "EMPLOYEE", "DISTRIBUTOR_USER"],
   LAB: ["ADMIN", "EMPLOYEE", "LAB_USER"],
+  INTERNAL: ["ADMIN", "EMPLOYEE", "SALES_MANAGER"],
 };
 
-/** Maps OrgEntityType to the User-table FK column name. */
-const USER_FK_FIELD: Record<OrgEntityType, "brandId" | "factoryId" | "distributorId" | "labId"> = {
+/** Maps OrgEntityType to the User-table FK column name. INTERNAL has
+ * no FK — the acceptance route creates the user with no entity link. */
+const USER_FK_FIELD: Record<
+  Exclude<OrgEntityType, "INTERNAL">,
+  "brandId" | "factoryId" | "distributorId" | "labId"
+> = {
   BRAND: "brandId",
   FACTORY: "factoryId",
   DISTRIBUTOR: "distributorId",
@@ -73,6 +93,11 @@ export async function listOrgTeam(
   entityType: OrgEntityType,
   entityId: string,
 ): Promise<{ teammates: Teammate[]; pending: PendingInvite[] }> {
+  if (entityType === "INTERNAL") {
+    // INTERNAL has no FK-scoped roster; callers should use a separate
+    // admin listing path. Return empty for safety.
+    return { teammates: [], pending: [] };
+  }
   const fk = USER_FK_FIELD[entityType];
 
   // Note: User model doesn't have a lastLoginAt column in the canonical
@@ -179,13 +204,26 @@ export async function createOrgInvitation(
     );
   }
 
-  const fk = USER_FK_FIELD[input.entityType];
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true, [fk]: true } as any,
-  });
-  if (existingUser && (existingUser as any)[fk] === input.entityId) {
-    throw new Error(`${email} is already on this team.`);
+  if (input.entityType !== "INTERNAL") {
+    const fk = USER_FK_FIELD[input.entityType];
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, [fk]: true } as any,
+    });
+    if (existingUser && (existingUser as any)[fk] === input.entityId) {
+      throw new Error(`${email} is already on this team.`);
+    }
+  } else {
+    // INTERNAL: just reject if a user already exists with a password —
+    // admin should use Add User flow for those. The acceptance route
+    // also enforces this defensively.
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, password: true },
+    });
+    if (existingUser?.password) {
+      throw new Error(`${email} already has an active account.`);
+    }
   }
 
   const expiresAt = new Date(Date.now() + INVITATION_TTL_MS);
