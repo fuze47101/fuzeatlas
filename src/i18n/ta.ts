@@ -86,6 +86,28 @@ const ta: Translations = {
     groupResourcesDocs: "📚 வளங்கள் & ஆவணங்கள்",
     groupAdminEmoji: "⚙️ நிர்வாகம்",
     groupLabPortal: "ஆய்வக போர்டல்",
+    allModules: "அனைத்து தொகுதிகள் (முகப்பு)",
+    module: "தொகுதி",
+    pickModuleHint: "வலதுபுறம் உள்ள அட்டைகளில் ஒரு தொகுதியைத் தேர்வுசெய்க. பக்கப்பட்டி அந்த தொகுதியின் கருவிகளை மட்டுமே காட்டும். தொகுதிகளை மாற்ற எப்போது வேண்டுமானாலும் \"முகப்பு\" அழுத்தவும்.",
+    viewAs: "என பார்க்க...",
+    exitViewAs: "பார்வையை விட்டு வெளியேறு",
+    viewAsSwitching: "மாற்றுகிறது...",
+    viewAsSearchPlaceholder: "பயனர்களைத் தேடு...",
+    viewAsLoading: "பயனர்கள் ஏற்றப்படுகிறது...",
+    viewAsNoUsers: "பயனர்கள் எதுவும் கிடைக்கவில்லை",
+    signOut: "வெளியேறு",
+    roleAdmin: "நிர்வாகி",
+    roleEmployee: "ஊழியர்",
+    roleSalesManager: "விற்பனை மேலாளர்",
+    roleSalesRep: "விற்பனை பிரதிநிதி",
+    roleFabricManager: "துணி மேலாளர்",
+    roleTestingManager: "சோதனை மேலாளர்",
+    roleFactoryManager: "தொழிற்சாலை மேலாளர்",
+    roleFactoryUser: "தொழிற்சாலை",
+    roleBrandUser: "பிராண்ட்",
+    roleDistributorUser: "விநியோகஸ்தர்",
+    roleLabUser: "ஆய்வகம்",
+    rolePublic: "பொது",
   },
 
   // ─── Common ──────────────────────────────────
@@ -7889,6 +7911,59 @@ const ta: Translations = {
     failedToLoad: "ஏற்ற முடியவில்லை",
   },
 
+
+  // Phase 16.5
+  bdScoreboardCard: {
+    teamTitle: "குழு BD மதிப்பெண் பலகை",
+    repTitle: "உங்கள் BD செயல்பாடு",
+    teamSubtitle: "கடந்த 30 நாட்களின் சிறந்த பிரதிநிதிகள்.",
+    repSubtitle: "கடந்த 30 நாட்களில் உங்கள் தொடர்பு மற்றும் மாற்றம்.",
+    fullBoard: "முழு பலகை →",
+    mySequences: "என் வரிசைகள் →",
+    statEmails: "மின்னஞ்சல்கள்",
+    statEmailsSent: "அனுப்பிய மின்னஞ்சல்கள்",
+    statContacts: "தொடர்புகள்",
+    statReplies: "பதில்கள்",
+    statConverted: "மாற்றப்பட்டது",
+    statLinkedin: "LinkedIn",
+    statReplyPct: "பதில் %",
+    statMeetings: "சந்திப்புகள்",
+    statSequences: "வரிசைகள்",
+    statWon: "வென்றது",
+    colRep: "பிரதிநிதி",
+    colEmails: "மின்னஞ்சல்கள்",
+    colContacts: "தொடர்புகள்",
+    colReplies: "பதில்கள்",
+    colWon: "வென்றது",
+    emptyTitle: "கடந்த 30 நாட்களில் BD செயல்பாடு இல்லை.",
+    emptyCta: "ஒரு வரிசையைத் தொடங்கு →",
+    stepReadyOne: "{n} படி அனுப்ப தயார்",
+    stepReadyMany: "{n} படிகள் அனுப்ப தயார்",
+  },
+
+  // Phase 16.5
+  homeActivityFeed: {
+    heading: "சமீபத்திய செயல்பாடு",
+    subtitle: "கடந்த 7 நாட்கள் · ஒவ்வொரு நிமிடமும் தானாக புதுப்பிக்கிறது",
+    fullAuditLog: "முழு தணிக்கை பதிவு →",
+    empty: "இந்த சாளரத்தில் இன்னும் எதுவும் இல்லை. நிகழும்போது இங்கே தோன்றும்.",
+    loadingLabel: "செயல்பாட்டை ஏற்றுகிறது…",
+    errorTitle: "செயல்பாட்டை ஏற்ற முடியவில்லை",
+    retry: "மீண்டும் முயற்சி",
+    allChip: "அனைத்தும் ({n})",
+  },
+
+  // Phase 16.5
+  feedbackBubble: {
+    howdoLabel: "எப்படி செய்வது?",
+    howdoTooltip: "நீங்கள் செய்ய முயற்சிப்பதற்கான படிப்படியான வழிகாட்டிகள்",
+    howdoTitle: "எப்படி செய்வது…?",
+    howdoCardHeadline: "எப்படி செய்வது…?",
+    supportLabel: "ஆதரவு டிக்கெட்",
+    supportTooltip: "பிழை, குழப்பத்தைப் புகாரளிக்க அல்லது அம்சத்தைக் கோர",
+    supportCardHeadline: "சிக்கலைப் புகாரளிக்க",
+    backTooltip: "பின்",
+  },
 };
 
 export default ta;

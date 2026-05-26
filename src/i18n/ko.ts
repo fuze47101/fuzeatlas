@@ -86,6 +86,28 @@ const ko: Translations = {
     groupResourcesDocs: "📚 자원 & 문서",
     groupAdminEmoji: "⚙️ 관리자",
     groupLabPortal: "랩 포털",
+    allModules: "모든 모듈 (홈)",
+    module: "모듈",
+    pickModuleHint: "오른쪽 카드에서 모듈을 선택하세요. 사이드바가 해당 모듈의 도구만 표시합니다. \"홈\"을 눌러 언제든 모듈을 바꿀 수 있습니다.",
+    viewAs: "다른 사용자로 보기...",
+    exitViewAs: "보기 종료",
+    viewAsSwitching: "전환 중...",
+    viewAsSearchPlaceholder: "사용자 검색...",
+    viewAsLoading: "사용자 로드 중...",
+    viewAsNoUsers: "사용자를 찾을 수 없음",
+    signOut: "로그아웃",
+    roleAdmin: "관리자",
+    roleEmployee: "직원",
+    roleSalesManager: "영업 매니저",
+    roleSalesRep: "영업 담당",
+    roleFabricManager: "원단 매니저",
+    roleTestingManager: "테스트 매니저",
+    roleFactoryManager: "공장 매니저",
+    roleFactoryUser: "공장",
+    roleBrandUser: "브랜드",
+    roleDistributorUser: "유통사",
+    roleLabUser: "랩",
+    rolePublic: "공개",
   },
 
   // ─── Common ──────────────────────────────────
@@ -8168,6 +8190,59 @@ const ko: Translations = {
     failedToLoad: "로드 실패",
   },
 
+
+  // Phase 16.5
+  bdScoreboardCard: {
+    teamTitle: "팀 BD 스코어보드",
+    repTitle: "내 BD 활동",
+    teamSubtitle: "지난 30일 최고 담당자.",
+    repSubtitle: "지난 30일 아웃리치 및 전환.",
+    fullBoard: "전체 보드 →",
+    mySequences: "내 시퀀스 →",
+    statEmails: "이메일",
+    statEmailsSent: "발송 이메일",
+    statContacts: "연락처",
+    statReplies: "답장",
+    statConverted: "전환",
+    statLinkedin: "링크드인",
+    statReplyPct: "답장률",
+    statMeetings: "미팅",
+    statSequences: "시퀀스",
+    statWon: "수주",
+    colRep: "담당",
+    colEmails: "이메일",
+    colContacts: "연락처",
+    colReplies: "답장",
+    colWon: "수주",
+    emptyTitle: "지난 30일간 BD 활동 없음.",
+    emptyCta: "시퀀스 시작 →",
+    stepReadyOne: "{n}개 단계 발송 준비",
+    stepReadyMany: "{n}개 단계 발송 준비",
+  },
+
+  // Phase 16.5
+  homeActivityFeed: {
+    heading: "최근 활동",
+    subtitle: "지난 7일 · 1분마다 자동 새로고침",
+    fullAuditLog: "전체 감사 로그 →",
+    empty: "이 기간 동안 활동이 없습니다. 발생하면 여기에 표시됩니다.",
+    loadingLabel: "활동 로드 중…",
+    errorTitle: "활동을 로드할 수 없음",
+    retry: "다시 시도",
+    allChip: "전체 ({n})",
+  },
+
+  // Phase 16.5
+  feedbackBubble: {
+    howdoLabel: "어떻게 하나요?",
+    howdoTooltip: "지금 하려는 작업의 단계별 안내",
+    howdoTitle: "어떻게 하나요…?",
+    howdoCardHeadline: "어떻게 하나요…?",
+    supportLabel: "지원 티켓",
+    supportTooltip: "버그 신고, 혼란, 기능 요청",
+    supportCardHeadline: "문제 보고",
+    backTooltip: "뒤로",
+  },
 };
 
 export default ko;

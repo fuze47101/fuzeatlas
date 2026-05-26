@@ -86,6 +86,28 @@ const ms: Translations = {
     groupResourcesDocs: "📚 Sumber & Dokumen",
     groupAdminEmoji: "⚙️ Admin",
     groupLabPortal: "Portal Makmal",
+    allModules: "Semua Modul (Laman Utama)",
+    module: "Modul",
+    pickModuleHint: "Pilih modul dari kad di sebelah kanan. Bar sisi akan menumpukan hanya pada alat modul tersebut. Tekan \"Laman Utama\" pada bila-bila masa untuk tukar modul.",
+    viewAs: "Lihat Sebagai...",
+    exitViewAs: "Keluar Lihat Sebagai",
+    viewAsSwitching: "Menukar...",
+    viewAsSearchPlaceholder: "Cari pengguna...",
+    viewAsLoading: "Memuatkan pengguna...",
+    viewAsNoUsers: "Tiada pengguna ditemui",
+    signOut: "Log keluar",
+    roleAdmin: "Pentadbir",
+    roleEmployee: "Pekerja",
+    roleSalesManager: "Pengurus Jualan",
+    roleSalesRep: "Wakil Jualan",
+    roleFabricManager: "Pengurus Fabrik",
+    roleTestingManager: "Pengurus Ujian",
+    roleFactoryManager: "Pengurus Kilang",
+    roleFactoryUser: "Kilang",
+    roleBrandUser: "Jenama",
+    roleDistributorUser: "Pengedar",
+    roleLabUser: "Makmal",
+    rolePublic: "Awam",
   },
 
   // ─── Common ──────────────────────────────────
@@ -8128,6 +8150,59 @@ const ms: Translations = {
     failedToLoad: "Gagal memuatkan",
   },
 
+
+  // Phase 16.5
+  bdScoreboardCard: {
+    teamTitle: "Papan Mata BD Pasukan",
+    repTitle: "Aktiviti BD Anda",
+    teamSubtitle: "Wakil terbaik 30 hari lepas.",
+    repSubtitle: "Capaian dan penukaran anda 30 hari lepas.",
+    fullBoard: "Papan penuh →",
+    mySequences: "Urutan saya →",
+    statEmails: "E-mel",
+    statEmailsSent: "E-mel dihantar",
+    statContacts: "Kenalan",
+    statReplies: "Balasan",
+    statConverted: "Ditukar",
+    statLinkedin: "LinkedIn",
+    statReplyPct: "% Balasan",
+    statMeetings: "Mesyuarat",
+    statSequences: "Urutan",
+    statWon: "Menang",
+    colRep: "Wakil",
+    colEmails: "E-mel",
+    colContacts: "Kenalan",
+    colReplies: "Balasan",
+    colWon: "Menang",
+    emptyTitle: "Tiada aktiviti BD dalam 30 hari lepas.",
+    emptyCta: "Mulakan urutan →",
+    stepReadyOne: "{n} langkah sedia untuk dihantar",
+    stepReadyMany: "{n} langkah sedia untuk dihantar",
+  },
+
+  // Phase 16.5
+  homeActivityFeed: {
+    heading: "Aktiviti terkini",
+    subtitle: "7 hari lepas · auto-segar semula setiap minit",
+    fullAuditLog: "Log audit penuh →",
+    empty: "Tiada aktiviti dalam tetingkap ini. Aktiviti akan muncul di sini apabila berlaku.",
+    loadingLabel: "Memuatkan aktiviti…",
+    errorTitle: "Tidak boleh memuatkan aktiviti",
+    retry: "Cuba semula",
+    allChip: "Semua ({n})",
+  },
+
+  // Phase 16.5
+  feedbackBubble: {
+    howdoLabel: "Bagaimana saya?",
+    howdoTooltip: "Panduan langkah demi langkah untuk apa yang anda cuba lakukan",
+    howdoTitle: "Bagaimana saya…?",
+    howdoCardHeadline: "Bagaimana saya…?",
+    supportLabel: "Tiket sokongan",
+    supportTooltip: "Lapor bug, kekeliruan atau minta ciri",
+    supportCardHeadline: "Lapor masalah",
+    backTooltip: "Kembali",
+  },
 };
 
 export default ms;

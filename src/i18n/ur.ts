@@ -86,6 +86,28 @@ const ur: Translations = {
     groupResourcesDocs: "📚 وسائل اور دستاویزات",
     groupAdminEmoji: "⚙️ ایڈمن",
     groupLabPortal: "لیب پورٹل",
+    allModules: "تمام ماڈیولز (ہوم)",
+    module: "ماڈیول",
+    pickModuleHint: "دائیں جانب کے کارڈز سے ایک ماڈیول منتخب کریں۔ سائڈ بار صرف اس ماڈیول کے ٹولز پر فوکس کرے گا۔ ماڈیولز تبدیل کرنے کے لیے کبھی بھی \"ہوم\" پر کلک کریں۔",
+    viewAs: "بطور دیکھیں...",
+    exitViewAs: "دیکھنا ختم کریں",
+    viewAsSwitching: "تبدیل ہو رہا ہے...",
+    viewAsSearchPlaceholder: "صارفین تلاش کریں...",
+    viewAsLoading: "صارفین لوڈ ہو رہے ہیں...",
+    viewAsNoUsers: "کوئی صارف نہیں ملا",
+    signOut: "سائن آؤٹ",
+    roleAdmin: "ایڈمن",
+    roleEmployee: "ملازم",
+    roleSalesManager: "سیلز مینیجر",
+    roleSalesRep: "سیلز نمائندہ",
+    roleFabricManager: "فیبرک مینیجر",
+    roleTestingManager: "ٹیسٹنگ مینیجر",
+    roleFactoryManager: "فیکٹری مینیجر",
+    roleFactoryUser: "فیکٹری",
+    roleBrandUser: "برانڈ",
+    roleDistributorUser: "ڈسٹریبیوٹر",
+    roleLabUser: "لیب",
+    rolePublic: "عوامی",
   },
 
   // ─── Common ──────────────────────────────────
@@ -7889,6 +7911,59 @@ const ur: Translations = {
     failedToLoad: "لوڈ کرنے میں ناکام",
   },
 
+
+  // Phase 16.5
+  bdScoreboardCard: {
+    teamTitle: "ٹیم BD اسکور بورڈ",
+    repTitle: "آپ کی BD سرگرمی",
+    teamSubtitle: "گزشتہ 30 دنوں کے بہترین نمائندے۔",
+    repSubtitle: "گزشتہ 30 دنوں میں آپ کی رسائی اور تبدیلی۔",
+    fullBoard: "مکمل بورڈ ←",
+    mySequences: "میرے سلسلے ←",
+    statEmails: "ای میلز",
+    statEmailsSent: "بھیجی گئی ای میلز",
+    statContacts: "رابطے",
+    statReplies: "جوابات",
+    statConverted: "تبدیل شدہ",
+    statLinkedin: "LinkedIn",
+    statReplyPct: "جواب %",
+    statMeetings: "ملاقاتیں",
+    statSequences: "سلسلے",
+    statWon: "جیتے",
+    colRep: "نمائندہ",
+    colEmails: "ای میلز",
+    colContacts: "رابطے",
+    colReplies: "جوابات",
+    colWon: "جیتے",
+    emptyTitle: "گزشتہ 30 دنوں میں کوئی BD سرگرمی نہیں۔",
+    emptyCta: "ایک سلسلہ شروع کریں ←",
+    stepReadyOne: "{n} مرحلہ بھیجنے کے لیے تیار",
+    stepReadyMany: "{n} مراحل بھیجنے کے لیے تیار",
+  },
+
+  // Phase 16.5
+  homeActivityFeed: {
+    heading: "حالیہ سرگرمی",
+    subtitle: "گزشتہ 7 دن · ہر منٹ خود بخود تازہ ہوتا ہے",
+    fullAuditLog: "مکمل آڈٹ لاگ ←",
+    empty: "اس ونڈو میں ابھی کوئی سرگرمی نہیں۔ ہونے پر یہاں نظر آئے گی۔",
+    loadingLabel: "سرگرمی لوڈ ہو رہی ہے…",
+    errorTitle: "سرگرمی لوڈ نہیں ہو سکی",
+    retry: "دوبارہ کوشش",
+    allChip: "تمام ({n})",
+  },
+
+  // Phase 16.5
+  feedbackBubble: {
+    howdoLabel: "میں کیسے کروں؟",
+    howdoTooltip: "آپ جو کرنا چاہتے ہیں اس کے لیے قدم بہ قدم رہنمائی",
+    howdoTitle: "میں کیسے کروں…؟",
+    howdoCardHeadline: "میں کیسے کروں…؟",
+    supportLabel: "سپورٹ ٹکٹ",
+    supportTooltip: "بگ، الجھن کی اطلاع دیں یا فیچر کی درخواست کریں",
+    supportCardHeadline: "مسئلہ رپورٹ کریں",
+    backTooltip: "واپس",
+  },
 };
 
 export default ur;

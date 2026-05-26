@@ -86,6 +86,28 @@ const it: Translations = {
     groupResourcesDocs: "📚 Risorse & Documenti",
     groupAdminEmoji: "⚙️ Admin",
     groupLabPortal: "Portale Laboratorio",
+    allModules: "Tutti i moduli (Home)",
+    module: "Modulo",
+    pickModuleHint: "Scegli un modulo dalle schede a destra. La barra laterale si focalizzerà solo sugli strumenti di quel modulo. Premi «Home» per cambiare modulo in qualsiasi momento.",
+    viewAs: "Visualizza come...",
+    exitViewAs: "Esci da Visualizza",
+    viewAsSwitching: "Cambio in corso...",
+    viewAsSearchPlaceholder: "Cerca utenti...",
+    viewAsLoading: "Caricamento utenti...",
+    viewAsNoUsers: "Nessun utente trovato",
+    signOut: "Esci",
+    roleAdmin: "Amministratore",
+    roleEmployee: "Dipendente",
+    roleSalesManager: "Sales Manager",
+    roleSalesRep: "Sales Rep",
+    roleFabricManager: "Responsabile Tessuti",
+    roleTestingManager: "Responsabile Test",
+    roleFactoryManager: "Responsabile Fabbrica",
+    roleFactoryUser: "Fabbrica",
+    roleBrandUser: "Marchio",
+    roleDistributorUser: "Distributore",
+    roleLabUser: "Laboratorio",
+    rolePublic: "Pubblico",
   },
 
   // ─── Common ──────────────────────────────────
@@ -7889,6 +7911,59 @@ const it: Translations = {
     failedToLoad: "Impossibile caricare",
   },
 
+
+  // Phase 16.5
+  bdScoreboardCard: {
+    teamTitle: "Classifica BD del Team",
+    repTitle: "La tua attività BD",
+    teamSubtitle: "Migliori rappresentanti degli ultimi 30 giorni.",
+    repSubtitle: "Il tuo outreach e la conversione negli ultimi 30 giorni.",
+    fullBoard: "Classifica completa →",
+    mySequences: "Le mie sequenze →",
+    statEmails: "Email",
+    statEmailsSent: "Email inviate",
+    statContacts: "Contatti",
+    statReplies: "Risposte",
+    statConverted: "Convertiti",
+    statLinkedin: "LinkedIn",
+    statReplyPct: "% Risposte",
+    statMeetings: "Riunioni",
+    statSequences: "Sequenze",
+    statWon: "Vinti",
+    colRep: "Rappresentante",
+    colEmails: "Email",
+    colContacts: "Contatti",
+    colReplies: "Risposte",
+    colWon: "Vinti",
+    emptyTitle: "Nessuna attività BD negli ultimi 30 giorni.",
+    emptyCta: "Avvia una sequenza →",
+    stepReadyOne: "{n} passo pronto da inviare",
+    stepReadyMany: "{n} passi pronti da inviare",
+  },
+
+  // Phase 16.5
+  homeActivityFeed: {
+    heading: "Attività recente",
+    subtitle: "Ultimi 7 giorni · aggiornamento automatico ogni minuto",
+    fullAuditLog: "Log di audit completo →",
+    empty: "Ancora nessuna attività in questa finestra. Apparirà qui quando si verifica.",
+    loadingLabel: "Caricamento attività…",
+    errorTitle: "Impossibile caricare l'attività",
+    retry: "Riprova",
+    allChip: "Tutti ({n})",
+  },
+
+  // Phase 16.5
+  feedbackBubble: {
+    howdoLabel: "Come faccio?",
+    howdoTooltip: "Guide passo-passo per ciò che stai cercando di fare",
+    howdoTitle: "Come faccio…?",
+    howdoCardHeadline: "Come faccio…?",
+    supportLabel: "Ticket di supporto",
+    supportTooltip: "Segnala bug, confusione o richiedi funzionalità",
+    supportCardHeadline: "Segnala un problema",
+    backTooltip: "Indietro",
+  },
 };
 
 export default it;

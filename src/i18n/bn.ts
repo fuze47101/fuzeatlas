@@ -86,6 +86,28 @@ const bn: Translations = {
     groupResourcesDocs: "📚 সম্পদ ও নথি",
     groupAdminEmoji: "⚙️ অ্যাডমিন",
     groupLabPortal: "ল্যাব পোর্টাল",
+    allModules: "সব মডিউল (হোম)",
+    module: "মডিউল",
+    pickModuleHint: "ডানদিকের কার্ড থেকে একটি মডিউল বেছে নিন। সাইডবার কেবল সেই মডিউলের সরঞ্জামগুলিতে ফোকাস করবে। যেকোনো সময় মডিউল পরিবর্তন করতে \"হোম\" চাপুন।",
+    viewAs: "হিসেবে দেখুন...",
+    exitViewAs: "দেখা শেষ করুন",
+    viewAsSwitching: "পরিবর্তন হচ্ছে...",
+    viewAsSearchPlaceholder: "ব্যবহারকারী অনুসন্ধান...",
+    viewAsLoading: "ব্যবহারকারী লোড হচ্ছে...",
+    viewAsNoUsers: "কোনো ব্যবহারকারী পাওয়া যায়নি",
+    signOut: "সাইন আউট",
+    roleAdmin: "প্রশাসক",
+    roleEmployee: "কর্মচারী",
+    roleSalesManager: "বিক্রয় ব্যবস্থাপক",
+    roleSalesRep: "বিক্রয় প্রতিনিধি",
+    roleFabricManager: "ফেব্রিক ব্যবস্থাপক",
+    roleTestingManager: "পরীক্ষা ব্যবস্থাপক",
+    roleFactoryManager: "কারখানা ব্যবস্থাপক",
+    roleFactoryUser: "কারখানা",
+    roleBrandUser: "ব্র্যান্ড",
+    roleDistributorUser: "পরিবেশক",
+    roleLabUser: "ল্যাব",
+    rolePublic: "পাবলিক",
   },
 
   // ─── Common ──────────────────────────────────
@@ -7889,6 +7911,59 @@ const bn: Translations = {
     failedToLoad: "লোড করতে ব্যর্থ",
   },
 
+
+  // Phase 16.5
+  bdScoreboardCard: {
+    teamTitle: "দল BD স্কোরবোর্ড",
+    repTitle: "আপনার BD কার্যকলাপ",
+    teamSubtitle: "গত 30 দিনের শীর্ষ প্রতিনিধি।",
+    repSubtitle: "গত 30 দিনে আপনার যোগাযোগ ও কনভার্সন।",
+    fullBoard: "পূর্ণ বোর্ড →",
+    mySequences: "আমার ক্রম →",
+    statEmails: "ইমেইল",
+    statEmailsSent: "প্রেরিত ইমেইল",
+    statContacts: "যোগাযোগ",
+    statReplies: "উত্তর",
+    statConverted: "কনভার্ট",
+    statLinkedin: "LinkedIn",
+    statReplyPct: "উত্তর %",
+    statMeetings: "মিটিং",
+    statSequences: "ক্রম",
+    statWon: "জিতেছে",
+    colRep: "প্রতিনিধি",
+    colEmails: "ইমেইল",
+    colContacts: "যোগাযোগ",
+    colReplies: "উত্তর",
+    colWon: "জিতেছে",
+    emptyTitle: "গত 30 দিনে কোনো BD কার্যকলাপ নেই।",
+    emptyCta: "একটি ক্রম শুরু করুন →",
+    stepReadyOne: "{n} ধাপ পাঠাতে প্রস্তুত",
+    stepReadyMany: "{n} ধাপ পাঠাতে প্রস্তুত",
+  },
+
+  // Phase 16.5
+  homeActivityFeed: {
+    heading: "সাম্প্রতিক কার্যকলাপ",
+    subtitle: "গত 7 দিন · প্রতি মিনিটে স্বয়ংক্রিয় রিফ্রেশ",
+    fullAuditLog: "সম্পূর্ণ নিরীক্ষা লগ →",
+    empty: "এই উইন্ডোতে এখনো কিছু নেই। ঘটলে এখানে দেখাবে।",
+    loadingLabel: "কার্যকলাপ লোড হচ্ছে…",
+    errorTitle: "কার্যকলাপ লোড করা যাচ্ছে না",
+    retry: "আবার চেষ্টা করুন",
+    allChip: "সব ({n})",
+  },
+
+  // Phase 16.5
+  feedbackBubble: {
+    howdoLabel: "আমি কীভাবে?",
+    howdoTooltip: "আপনি যা করতে চাইছেন তার ধাপে ধাপে নির্দেশিকা",
+    howdoTitle: "আমি কীভাবে…?",
+    howdoCardHeadline: "আমি কীভাবে…?",
+    supportLabel: "সহায়তা টিকেট",
+    supportTooltip: "বাগ, বিভ্রান্তি রিপোর্ট করুন বা ফিচার অনুরোধ করুন",
+    supportCardHeadline: "সমস্যা রিপোর্ট করুন",
+    backTooltip: "পেছনে",
+  },
 };
 
 export default bn;

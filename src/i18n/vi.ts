@@ -86,6 +86,28 @@ const vi: Translations = {
     groupResourcesDocs: "📚 Tài nguyên & Tài liệu",
     groupAdminEmoji: "⚙️ Quản trị",
     groupLabPortal: "Cổng Phòng thí nghiệm",
+    allModules: "Tất cả mô-đun (Trang chính)",
+    module: "Mô-đun",
+    pickModuleHint: "Chọn một mô-đun từ các thẻ bên phải. Thanh bên sẽ chỉ hiển thị các công cụ của mô-đun đó. Nhấn \"Trang chính\" bất cứ lúc nào để chuyển mô-đun.",
+    viewAs: "Xem dưới dạng...",
+    exitViewAs: "Thoát Xem dưới dạng",
+    viewAsSwitching: "Đang chuyển...",
+    viewAsSearchPlaceholder: "Tìm người dùng...",
+    viewAsLoading: "Đang tải người dùng...",
+    viewAsNoUsers: "Không tìm thấy người dùng",
+    signOut: "Đăng xuất",
+    roleAdmin: "Quản trị",
+    roleEmployee: "Nhân viên",
+    roleSalesManager: "Quản lý kinh doanh",
+    roleSalesRep: "Đại diện kinh doanh",
+    roleFabricManager: "Quản lý vải",
+    roleTestingManager: "Quản lý kiểm thử",
+    roleFactoryManager: "Quản lý nhà máy",
+    roleFactoryUser: "Nhà máy",
+    roleBrandUser: "Thương hiệu",
+    roleDistributorUser: "Nhà phân phối",
+    roleLabUser: "Phòng lab",
+    rolePublic: "Công khai",
   },
 
   // ─── Common ──────────────────────────────────
@@ -8277,6 +8299,59 @@ const vi: Translations = {
     failedToLoad: "Không tải được",
   },
 
+
+  // Phase 16.5
+  bdScoreboardCard: {
+    teamTitle: "Bảng xếp hạng BD nhóm",
+    repTitle: "Hoạt động BD của bạn",
+    teamSubtitle: "Đại diện hàng đầu trong 30 ngày qua.",
+    repSubtitle: "Tiếp cận và chuyển đổi của bạn trong 30 ngày qua.",
+    fullBoard: "Bảng đầy đủ →",
+    mySequences: "Chuỗi của tôi →",
+    statEmails: "Email",
+    statEmailsSent: "Email đã gửi",
+    statContacts: "Liên hệ",
+    statReplies: "Phản hồi",
+    statConverted: "Đã chuyển đổi",
+    statLinkedin: "LinkedIn",
+    statReplyPct: "% Phản hồi",
+    statMeetings: "Cuộc họp",
+    statSequences: "Chuỗi",
+    statWon: "Thắng",
+    colRep: "Đại diện",
+    colEmails: "Email",
+    colContacts: "Liên hệ",
+    colReplies: "Phản hồi",
+    colWon: "Thắng",
+    emptyTitle: "Không có hoạt động BD trong 30 ngày qua.",
+    emptyCta: "Bắt đầu một chuỗi →",
+    stepReadyOne: "{n} bước sẵn sàng gửi",
+    stepReadyMany: "{n} bước sẵn sàng gửi",
+  },
+
+  // Phase 16.5
+  homeActivityFeed: {
+    heading: "Hoạt động gần đây",
+    subtitle: "7 ngày qua · tự động làm mới mỗi phút",
+    fullAuditLog: "Nhật ký kiểm toán →",
+    empty: "Chưa có hoạt động trong khoảng thời gian này. Sẽ xuất hiện ở đây khi có.",
+    loadingLabel: "Đang tải hoạt động…",
+    errorTitle: "Không thể tải hoạt động",
+    retry: "Thử lại",
+    allChip: "Tất cả ({n})",
+  },
+
+  // Phase 16.5
+  feedbackBubble: {
+    howdoLabel: "Làm thế nào để?",
+    howdoTooltip: "Hướng dẫn từng bước cho việc bạn đang làm",
+    howdoTitle: "Làm thế nào để…?",
+    howdoCardHeadline: "Làm thế nào để…?",
+    supportLabel: "Phiếu hỗ trợ",
+    supportTooltip: "Báo lỗi, thắc mắc, hoặc đề xuất tính năng",
+    supportCardHeadline: "Báo cáo sự cố",
+    backTooltip: "Quay lại",
+  },
 };
 
 export default vi;

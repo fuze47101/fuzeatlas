@@ -86,6 +86,28 @@ const th: Translations = {
     groupResourcesDocs: "📚 ทรัพยากร & เอกสาร",
     groupAdminEmoji: "⚙️ ผู้ดูแลระบบ",
     groupLabPortal: "พอร์ทัลห้องปฏิบัติการ",
+    allModules: "ทุกโมดูล (หน้าหลัก)",
+    module: "โมดูล",
+    pickModuleHint: "เลือกโมดูลจากการ์ดด้านขวา แถบด้านข้างจะแสดงเฉพาะเครื่องมือของโมดูลนั้น กดปุ่ม \"หน้าหลัก\" เมื่อใดก็ได้เพื่อสลับโมดูล",
+    viewAs: "ดูในฐานะ...",
+    exitViewAs: "ออกจากการดู",
+    viewAsSwitching: "กำลังสลับ...",
+    viewAsSearchPlaceholder: "ค้นหาผู้ใช้...",
+    viewAsLoading: "กำลังโหลดผู้ใช้...",
+    viewAsNoUsers: "ไม่พบผู้ใช้",
+    signOut: "ออกจากระบบ",
+    roleAdmin: "ผู้ดูแล",
+    roleEmployee: "พนักงาน",
+    roleSalesManager: "ผู้จัดการฝ่ายขาย",
+    roleSalesRep: "ตัวแทนขาย",
+    roleFabricManager: "ผู้จัดการผ้า",
+    roleTestingManager: "ผู้จัดการการทดสอบ",
+    roleFactoryManager: "ผู้จัดการโรงงาน",
+    roleFactoryUser: "โรงงาน",
+    roleBrandUser: "แบรนด์",
+    roleDistributorUser: "ผู้จัดจำหน่าย",
+    roleLabUser: "ห้องปฏิบัติการ",
+    rolePublic: "สาธารณะ",
   },
 
   // ─── Common ──────────────────────────────────
@@ -7889,6 +7911,59 @@ const th: Translations = {
     failedToLoad: "ไม่สามารถโหลดได้",
   },
 
+
+  // Phase 16.5
+  bdScoreboardCard: {
+    teamTitle: "กระดานคะแนน BD ทีม",
+    repTitle: "กิจกรรม BD ของคุณ",
+    teamSubtitle: "ตัวแทนยอดเยี่ยมใน 30 วันที่ผ่านมา",
+    repSubtitle: "การเข้าถึงและการแปลงของคุณใน 30 วันที่ผ่านมา",
+    fullBoard: "กระดานเต็ม →",
+    mySequences: "ลำดับของฉัน →",
+    statEmails: "อีเมล",
+    statEmailsSent: "อีเมลที่ส่ง",
+    statContacts: "ผู้ติดต่อ",
+    statReplies: "การตอบกลับ",
+    statConverted: "แปลงแล้ว",
+    statLinkedin: "LinkedIn",
+    statReplyPct: "% ตอบกลับ",
+    statMeetings: "การประชุม",
+    statSequences: "ลำดับ",
+    statWon: "ชนะ",
+    colRep: "ตัวแทน",
+    colEmails: "อีเมล",
+    colContacts: "ผู้ติดต่อ",
+    colReplies: "การตอบกลับ",
+    colWon: "ชนะ",
+    emptyTitle: "ไม่มีกิจกรรม BD ใน 30 วันที่ผ่านมา",
+    emptyCta: "เริ่มลำดับ →",
+    stepReadyOne: "{n} ขั้นตอนพร้อมส่ง",
+    stepReadyMany: "{n} ขั้นตอนพร้อมส่ง",
+  },
+
+  // Phase 16.5
+  homeActivityFeed: {
+    heading: "กิจกรรมล่าสุด",
+    subtitle: "7 วันที่ผ่านมา · รีเฟรชอัตโนมัติทุกนาที",
+    fullAuditLog: "บันทึกการตรวจสอบเต็มรูปแบบ →",
+    empty: "ยังไม่มีกิจกรรมในหน้าต่างนี้ จะปรากฏที่นี่เมื่อเกิดขึ้น",
+    loadingLabel: "กำลังโหลดกิจกรรม…",
+    errorTitle: "โหลดกิจกรรมไม่ได้",
+    retry: "ลองใหม่",
+    allChip: "ทั้งหมด ({n})",
+  },
+
+  // Phase 16.5
+  feedbackBubble: {
+    howdoLabel: "ฉันทำอย่างไร?",
+    howdoTooltip: "คำแนะนำทีละขั้นตอนสำหรับสิ่งที่คุณกำลังพยายามทำ",
+    howdoTitle: "ฉันทำอย่างไร…?",
+    howdoCardHeadline: "ฉันทำอย่างไร…?",
+    supportLabel: "ตั๋วสนับสนุน",
+    supportTooltip: "รายงานบั๊ก ความสับสน หรือขอคุณสมบัติ",
+    supportCardHeadline: "รายงานปัญหา",
+    backTooltip: "กลับ",
+  },
 };
 
 export default th;

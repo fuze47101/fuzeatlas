@@ -86,6 +86,28 @@ const km: Translations = {
     groupResourcesDocs: "📚 ធនធាន & ឯកសារ",
     groupAdminEmoji: "⚙️ នាយក",
     groupLabPortal: "ច្រកមន្ទីរពិសោធន៍",
+    allModules: "ម៉ូឌុលទាំងអស់ (ទំព័រដើម)",
+    module: "ម៉ូឌុល",
+    pickModuleHint: "ជ្រើសរើសម៉ូឌុលពីកាតនៅខាងស្ដាំ។ របារចំហៀងនឹងផ្ដោតលើតែឧបករណ៍នៃម៉ូឌុលនោះ។ ចុច \"ទំព័រដើម\" នៅពេលណាក៏បាន ដើម្បីប្ដូរម៉ូឌុល។",
+    viewAs: "មើលជា...",
+    exitViewAs: "ចាកចេញពីការមើល",
+    viewAsSwitching: "កំពុងប្ដូរ...",
+    viewAsSearchPlaceholder: "ស្វែងរកអ្នកប្រើ...",
+    viewAsLoading: "កំពុងផ្ទុកអ្នកប្រើ...",
+    viewAsNoUsers: "មិនមានអ្នកប្រើ",
+    signOut: "ចេញ",
+    roleAdmin: "អ្នកគ្រប់គ្រង",
+    roleEmployee: "បុគ្គលិក",
+    roleSalesManager: "អ្នកគ្រប់គ្រងលក់",
+    roleSalesRep: "តំណាងលក់",
+    roleFabricManager: "អ្នកគ្រប់គ្រងក្រណាត់",
+    roleTestingManager: "អ្នកគ្រប់គ្រងតេស្ត",
+    roleFactoryManager: "អ្នកគ្រប់គ្រងរោងចក្រ",
+    roleFactoryUser: "រោងចក្រ",
+    roleBrandUser: "ម៉ាក",
+    roleDistributorUser: "អ្នកចែកចាយ",
+    roleLabUser: "មន្ទីរពិសោធន៍",
+    rolePublic: "សាធារណៈ",
   },
 
   // ─── Common ──────────────────────────────────
@@ -7889,6 +7911,59 @@ const km: Translations = {
     pressKitLink: "ឧបករណ៍សារព័ត៌មាន",
   },
 
+
+  // Phase 16.5
+  bdScoreboardCard: {
+    teamTitle: "តារាងពិន្ទុ BD ក្រុម",
+    repTitle: "សកម្មភាព BD របស់អ្នក",
+    teamSubtitle: "តំណាងលេចធ្លោក្នុង 30 ថ្ងៃចុងក្រោយ។",
+    repSubtitle: "ការខិតខំនិងការប្ដូរក្នុង 30 ថ្ងៃចុងក្រោយ។",
+    fullBoard: "តារាងពេញ →",
+    mySequences: "លំដាប់របស់ខ្ញុំ →",
+    statEmails: "អ៊ីមែល",
+    statEmailsSent: "អ៊ីមែលបានផ្ញើ",
+    statContacts: "ទំនាក់ទំនង",
+    statReplies: "ការឆ្លើយតប",
+    statConverted: "បានប្ដូរ",
+    statLinkedin: "LinkedIn",
+    statReplyPct: "% ឆ្លើយ",
+    statMeetings: "ការប្រជុំ",
+    statSequences: "លំដាប់",
+    statWon: "ឈ្នះ",
+    colRep: "តំណាង",
+    colEmails: "អ៊ីមែល",
+    colContacts: "ទំនាក់ទំនង",
+    colReplies: "ការឆ្លើយតប",
+    colWon: "ឈ្នះ",
+    emptyTitle: "មិនមានសកម្មភាព BD ក្នុង 30 ថ្ងៃចុងក្រោយ។",
+    emptyCta: "ចាប់ផ្ដើមលំដាប់ →",
+    stepReadyOne: "{n} ជំហានរួចរាល់ផ្ញើ",
+    stepReadyMany: "{n} ជំហានរួចរាល់ផ្ញើ",
+  },
+
+  // Phase 16.5
+  homeActivityFeed: {
+    heading: "សកម្មភាពថ្មីៗ",
+    subtitle: "7 ថ្ងៃចុងក្រោយ · ផ្ទុកស្វ័យប្រវត្តិរៀងរាល់នាទី",
+    fullAuditLog: "កំណត់ហេតុសវនកម្មពេញ →",
+    empty: "មិនទាន់មានសកម្មភាពនៅក្នុងបង្អួចនេះ។ វានឹងបង្ហាញនៅទីនេះពេលកើតឡើង។",
+    loadingLabel: "កំពុងផ្ទុកសកម្មភាព…",
+    errorTitle: "មិនអាចផ្ទុកសកម្មភាព",
+    retry: "ព្យាយាមម្ដងទៀត",
+    allChip: "ទាំងអស់ ({n})",
+  },
+
+  // Phase 16.5
+  feedbackBubble: {
+    howdoLabel: "ខ្ញុំធ្វើដូចម្ដេច?",
+    howdoTooltip: "ការណែនាំជាជំហានសម្រាប់អ្វីដែលអ្នកព្យាយាមធ្វើ",
+    howdoTitle: "ខ្ញុំធ្វើដូចម្ដេច…?",
+    howdoCardHeadline: "ខ្ញុំធ្វើដូចម្ដេច…?",
+    supportLabel: "សំបុត្រគាំទ្រ",
+    supportTooltip: "រាយការណ៍កំហុស ការច្រឡំ ឬស្នើសុំមុខងារ",
+    supportCardHeadline: "រាយការណ៍បញ្ហា",
+    backTooltip: "ត្រឡប់ក្រោយ",
+  },
 };
 
 export default km;

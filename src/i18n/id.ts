@@ -86,6 +86,28 @@ const id: Translations = {
     groupResourcesDocs: "📚 Sumber Daya & Dokumen",
     groupAdminEmoji: "⚙️ Admin",
     groupLabPortal: "Portal Lab",
+    allModules: "Semua Modul (Beranda)",
+    module: "Modul",
+    pickModuleHint: "Pilih modul dari kartu di sebelah kanan. Bilah sisi akan menampilkan hanya alat modul tersebut. Tekan \"Beranda\" kapan saja untuk berganti modul.",
+    viewAs: "Lihat Sebagai...",
+    exitViewAs: "Keluar dari Lihat Sebagai",
+    viewAsSwitching: "Berpindah...",
+    viewAsSearchPlaceholder: "Cari pengguna...",
+    viewAsLoading: "Memuat pengguna...",
+    viewAsNoUsers: "Tidak ada pengguna ditemukan",
+    signOut: "Keluar",
+    roleAdmin: "Admin",
+    roleEmployee: "Karyawan",
+    roleSalesManager: "Manajer Penjualan",
+    roleSalesRep: "Wakil Penjualan",
+    roleFabricManager: "Manajer Kain",
+    roleTestingManager: "Manajer Pengujian",
+    roleFactoryManager: "Manajer Pabrik",
+    roleFactoryUser: "Pabrik",
+    roleBrandUser: "Merek",
+    roleDistributorUser: "Distributor",
+    roleLabUser: "Lab",
+    rolePublic: "Publik",
   },
 
   // ─── Common ──────────────────────────────────
@@ -7889,6 +7911,59 @@ const id: Translations = {
     exportReportTemplate: "Ekspor Laporan {product} vs FUZE",
   },
 
+
+  // Phase 16.5
+  bdScoreboardCard: {
+    teamTitle: "Papan Skor BD Tim",
+    repTitle: "Aktivitas BD Anda",
+    teamSubtitle: "Perwakilan terbaik 30 hari terakhir.",
+    repSubtitle: "Jangkauan dan konversi Anda 30 hari terakhir.",
+    fullBoard: "Papan penuh →",
+    mySequences: "Urutan saya →",
+    statEmails: "Email",
+    statEmailsSent: "Email terkirim",
+    statContacts: "Kontak",
+    statReplies: "Balasan",
+    statConverted: "Dikonversi",
+    statLinkedin: "LinkedIn",
+    statReplyPct: "% Balasan",
+    statMeetings: "Rapat",
+    statSequences: "Urutan",
+    statWon: "Menang",
+    colRep: "Wakil",
+    colEmails: "Email",
+    colContacts: "Kontak",
+    colReplies: "Balasan",
+    colWon: "Menang",
+    emptyTitle: "Tidak ada aktivitas BD dalam 30 hari terakhir.",
+    emptyCta: "Mulai urutan →",
+    stepReadyOne: "{n} langkah siap kirim",
+    stepReadyMany: "{n} langkah siap kirim",
+  },
+
+  // Phase 16.5
+  homeActivityFeed: {
+    heading: "Aktivitas terkini",
+    subtitle: "7 hari terakhir · auto-segarkan setiap menit",
+    fullAuditLog: "Log audit lengkap →",
+    empty: "Belum ada aktivitas di jendela ini. Akan muncul di sini saat terjadi.",
+    loadingLabel: "Memuat aktivitas…",
+    errorTitle: "Tidak dapat memuat aktivitas",
+    retry: "Coba lagi",
+    allChip: "Semua ({n})",
+  },
+
+  // Phase 16.5
+  feedbackBubble: {
+    howdoLabel: "Bagaimana cara?",
+    howdoTooltip: "Panduan langkah demi langkah untuk yang sedang Anda coba lakukan",
+    howdoTitle: "Bagaimana cara…?",
+    howdoCardHeadline: "Bagaimana cara…?",
+    supportLabel: "Tiket dukungan",
+    supportTooltip: "Laporkan bug, kebingungan, atau minta fitur",
+    supportCardHeadline: "Laporkan masalah",
+    backTooltip: "Kembali",
+  },
 };
 
 export default id;
