@@ -497,6 +497,40 @@ Audit transcripts append-only at `deliverables/Competitor_SDS_Audit_<YYYY-MM>.md
   FUZE-vs-BioLayr comparison compresses from ~15,000× to ~2,000×
   but stays defensible.
 
+## Competitive Intelligence Persistence Rule
+
+Every competitive deep-dive — every time Cowork pulls EPA data, SDS
+data, manufacturer marketing pages, or third-party LCA on a competitor
+product — MUST end with that product persisted to `src/lib/competitors.ts`
+with a corresponding entry in the audit transcript at
+`deliverables/Competitor_SDS_Audit_<YYYY-MM>.md`.
+
+This is a no-exceptions rule. The research is worthless if it doesn't
+land in the platform's canonical competitor catalog — it just lives in
+chat scrollback until the session ends.
+
+**The four required artifacts for every competitive deep-dive:**
+
+1. **Competitor entry** in `src/lib/competitors.ts` with `chemistryType`,
+   `epaRegNote`, `epaLabelUrl`, and (where relevant) the marketing-vs-EPA
+   discrepancy framing inside `epaRegNote`.
+2. **Archetype entry** in `UPSTREAM_MANUFACTURING` in `src/lib/sustainability.ts`
+   IF the competitor's chemistry doesn't already have one — wrap every
+   numeric input in `sourced()` with full citation.
+3. **Audit transcript row** appended to `deliverables/Competitor_SDS_Audit_<YYYY-MM>.md`
+   with the source URL(s), verifiedDate, and any escalations.
+4. **Customer-facing comparison doc** at `deliverables/<Product>_Comparison_FUZE_vs_<Competitor>.md`
+   IF the competitor is being raised by a customer in real sales conversations.
+   Otherwise skip — only build comparison docs when a real brand has
+   asked.
+
+**Why this rule exists:** Andrew has caught two cases (PROTX2 marketing-
+vs-EPA discrepancy, FreshTX missing-EPA-registration) where the
+competitive lever was significant and would have stayed buried if the
+research hadn't landed in the catalog. The catalog is also what powers
+`/admin/competitor-pricing` and `/sustainability`, so research that
+doesn't persist literally doesn't show up to sales reps.
+
 ## Auto-Translation Pipeline (Phase 19+)
 
 **Adding a new user-facing string to `src/i18n/en.ts` automatically
