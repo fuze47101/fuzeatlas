@@ -250,5 +250,11 @@ export async function loadCorrelationPoints(
 
   // Sort newest-first for stable rendering — caller may re-sort.
   points.sort((a, b) => (b.testDate || "").localeCompare(a.testDate || ""));
+  console.log(
+    "[icp-correlation] brand=%s, submissions=%d, points=%d",
+    brandId || "(all)",
+    submissions.length,
+    points.length,
+  );
   return points;
 }

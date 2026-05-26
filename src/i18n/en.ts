@@ -8434,7 +8434,7 @@ const en = {
     adminCrumb: "Admin",
     crumb: "ICP correlation",
     heading: "ICP × AB correlation",
-    subtitle: "The chart Joseph (KUIU) asked about. FUZE residual on fabric (ICP-measured) plotted against antibacterial kill rate across every brand-visible test run in Atlas. Best-fit line + R² overlaid.",
+    subtitle: "Every brand-visible fabric submission with both an ICP residual measurement and an antibacterial percent-reduction result, paired per submission (and per wash count when available). Best-fit line + R² overlaid.",
     errorContext: "Load ICP correlation",
     couldntLoadPrefix: "Couldn't load correlation data",
     networkError: "Network error.",
