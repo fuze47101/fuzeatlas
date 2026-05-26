@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n";
 
 /**
  * TRACK 3 — Tina's admin home activity feed.
@@ -54,6 +55,8 @@ function timeAgo(ts: string): string {
 }
 
 export default function HomeActivityFeed() {
+  const { t } = useI18n();
+  const T = t.homeActivityFeed;
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +88,7 @@ export default function HomeActivityFeed() {
   if (loading) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-        <p className="text-sm text-slate-500">Loading activity…</p>
+        <p className="text-sm text-slate-500">{T.loadingLabel}</p>
       </div>
     );
   }
@@ -93,13 +96,13 @@ export default function HomeActivityFeed() {
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
-        <p className="font-bold text-red-700 mb-1">Couldn't load activity feed</p>
+        <p className="font-bold text-red-700 mb-1">{T.errorTitle}</p>
         <p className="text-red-600 text-xs mb-2">{error}</p>
         <button
           onClick={load}
           className="px-3 py-1 bg-red-100 text-red-700 rounded text-xs font-semibold hover:bg-red-200"
         >
-          Retry
+          {T.retry}
         </button>
       </div>
     );
@@ -112,13 +115,11 @@ export default function HomeActivityFeed() {
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h3 className="text-sm font-bold text-slate-700">Recent activity</h3>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Last 7 days · auto-refreshes every minute
-          </p>
+          <h3 className="text-sm font-bold text-slate-700">{T.heading}</h3>
+          <p className="text-xs text-slate-500 mt-0.5">{T.subtitle}</p>
         </div>
         <Link href="/admin/audit-log" className="text-[10px] text-[#00b4c3] font-semibold hover:underline">
-          Full audit log →
+          {T.fullAuditLog}
         </Link>
       </div>
 
@@ -131,7 +132,7 @@ export default function HomeActivityFeed() {
               !filter ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
           >
-            All ({events.length})
+            {T.allChip.replace("{n}", String(events.length))}
           </button>
           {types.map((t) => (
             <button
@@ -150,9 +151,7 @@ export default function HomeActivityFeed() {
       )}
 
       {filtered.length === 0 ? (
-        <p className="text-sm text-slate-500 py-6 text-center">
-          Nothing in this window yet. Activity will land here as it happens.
-        </p>
+        <p className="text-sm text-slate-500 py-6 text-center">{T.empty}</p>
       ) : (
         <ul className="divide-y divide-slate-100">
           {filtered.map((e) => (
@@ -160,7 +159,7 @@ export default function HomeActivityFeed() {
               <span className="text-base shrink-0 mt-0.5">{TYPE_ICONS[e.type] || "•"}</span>
               <div className="flex-1 min-w-0">
                 <Link href={e.link} className="text-slate-800 hover:text-[#00b4c3] block">
-                  <span className="font-semibold">{e.actorName}</span>
+                  <span className="font-semibold"><bdi>{e.actorName}</bdi></span>
                   {e.actorRole && (
                     <span className="text-[10px] text-slate-400 ml-1">
                       ({e.actorRole.replace(/_/g, " ").toLowerCase()})

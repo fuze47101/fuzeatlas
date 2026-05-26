@@ -19,6 +19,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useI18n } from "@/i18n";
 
 type Mode = "LANDING" | "HOWTO" | "TICKET";
 
@@ -96,6 +97,8 @@ async function fileToCompressedDataUrl(file: File): Promise<string> {
 export default function FeedbackButton() {
   const pathname = usePathname();
   const [mode, setMode] = useState<Mode | null>(null);
+  const { t } = useI18n();
+  const FB = (t as any).feedbackBubble || {};
 
   const hidden =
     !pathname ||
@@ -121,19 +124,19 @@ export default function FeedbackButton() {
       >
         <button
           onClick={() => setMode("HOWTO")}
-          title="Step-by-step how-tos for what you're trying to do"
+          title={FB.howdoTooltip || "Step-by-step how-tos for what you're trying to do"}
           className="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 rounded-full shadow-lg text-sm font-semibold flex items-center gap-2 transition-all hover:shadow-xl"
         >
           <span className="text-base">💡</span>
-          <span className="hidden sm:inline">How do I?</span>
+          <span className="hidden sm:inline">{FB.howdoLabel || "How do I?"}</span>
         </button>
         <button
           onClick={() => setMode("TICKET")}
-          title="Report a bug, confusion, or request a feature"
+          title={FB.supportTooltip || "Report a bug, confusion, or request a feature"}
           className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-full shadow-lg text-sm font-semibold flex items-center gap-2 transition-all hover:shadow-xl"
         >
           <span className="text-base">🐞</span>
-          <span className="hidden sm:inline">Support ticket</span>
+          <span className="hidden sm:inline">{FB.supportLabel || "Support ticket"}</span>
         </button>
       </div>
       {mode && <HelpModal initialMode={mode} onClose={() => setMode(null)} />}

@@ -15,6 +15,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 
 interface RepRow {
   rep: { id: string; name: string | null; email: string; role: string };
@@ -63,6 +64,8 @@ const BD_ROLES = [
 
 export default function BDScoreboardCard() {
   const { user } = useAuth();
+  const { t } = useI18n();
+  const T = t.bdScoreboardCard;
   const [data, setData] = useState<Scoreboard | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -96,19 +99,17 @@ export default function BDScoreboardCard() {
           <div>
             <span className="text-3xl">📊</span>
             <h3 className="text-xl font-black mt-3">
-              {isManager ? "Team BD Scoreboard" : "Your BD Activity"}
+              {isManager ? T.teamTitle : T.repTitle}
             </h3>
             <p className="text-sm text-white/80 mt-1">
-              {isManager
-                ? "Top reps over the last 30 days."
-                : "Your outreach &amp; conversion in the last 30 days."}
+              {isManager ? T.teamSubtitle : T.repSubtitle}
             </p>
           </div>
           <Link
             href={isManager ? "/admin/bd/scoreboard" : "/admin/bd/sequences"}
             className="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap"
           >
-            {isManager ? "Full board →" : "My sequences →"}
+            {isManager ? T.fullBoard : T.mySequences}
           </Link>
         </div>
       </div>
@@ -120,15 +121,15 @@ export default function BDScoreboardCard() {
           </div>
         ) : !data || data.rows.length === 0 ? (
           <div className="py-6 text-center text-sm text-slate-500">
-            No BD activity in the last 30 days.{" "}
+            {T.emptyTitle}{" "}
             <Link href="/admin/bd/wizard" className="text-violet-700 font-semibold hover:underline">
-              Start a sequence →
+              {T.emptyCta}
             </Link>
           </div>
         ) : isManager ? (
-          <ManagerView rows={data.rows.slice(0, 3)} totals={data.totals} />
+          <ManagerView rows={data.rows.slice(0, 3)} totals={data.totals} T={T} />
         ) : (
-          <RepView row={data.rows[0]} />
+          <RepView row={data.rows[0]} T={T} />
         )}
       </div>
     </div>
@@ -138,26 +139,28 @@ export default function BDScoreboardCard() {
 function ManagerView({
   rows,
   totals,
+  T,
 }: {
   rows: RepRow[];
   totals: Scoreboard["totals"];
+  T: any;
 }) {
   return (
     <>
       <div className="grid grid-cols-4 gap-2 mb-4 pb-3 border-b border-slate-100">
-        <Stat label="Emails" value={totals.emailsSent} />
-        <Stat label="Contacts" value={totals.contactsWorked} />
-        <Stat label="Replies" value={totals.replies} />
-        <Stat label="Converted" value={totals.brandsConverted} />
+        <Stat label={T.statEmails} value={totals.emailsSent} />
+        <Stat label={T.statContacts} value={totals.contactsWorked} />
+        <Stat label={T.statReplies} value={totals.replies} />
+        <Stat label={T.statConverted} value={totals.brandsConverted} />
       </div>
       <table className="w-full text-sm">
         <thead className="text-xs uppercase text-slate-500">
           <tr>
-            <th className="text-left pb-2">Rep</th>
-            <th className="text-right pb-2">Emails</th>
-            <th className="text-right pb-2">Contacts</th>
-            <th className="text-right pb-2">Replies</th>
-            <th className="text-right pb-2">Won</th>
+            <th className="text-left pb-2">{T.colRep}</th>
+            <th className="text-right pb-2">{T.colEmails}</th>
+            <th className="text-right pb-2">{T.colContacts}</th>
+            <th className="text-right pb-2">{T.colReplies}</th>
+            <th className="text-right pb-2">{T.colWon}</th>
           </tr>
         </thead>
         <tbody>
@@ -166,7 +169,7 @@ function ManagerView({
               <td className="py-2">
                 <span className="text-slate-400 mr-1">{idx + 1}.</span>
                 <span className="font-medium text-slate-900">
-                  {r.rep.name || r.rep.email}
+                  <bdi>{r.rep.name || r.rep.email}</bdi>
                 </span>
               </td>
               <td className="text-right tabular-nums py-2">{r.emailsSent}</td>
@@ -183,30 +186,34 @@ function ManagerView({
   );
 }
 
-function RepView({ row }: { row: RepRow }) {
+function RepView({ row, T }: { row: RepRow; T: any }) {
   const replyPct = (row.replyRate * 100).toFixed(1);
+  const readyLabel = (row.stepsReady === 1 ? T.stepReadyOne : T.stepReadyMany).replace(
+    "{n}",
+    String(row.stepsReady),
+  );
   return (
     <>
       <div className="grid grid-cols-3 gap-2 mb-4">
-        <Stat label="Emails Sent" value={row.emailsSent} />
-        <Stat label="Contacts" value={row.contactsWorked} />
-        <Stat label="Replies" value={row.replies} highlight />
+        <Stat label={T.statEmailsSent} value={row.emailsSent} />
+        <Stat label={T.statContacts} value={row.contactsWorked} />
+        <Stat label={T.statReplies} value={row.replies} highlight />
       </div>
       <div className="grid grid-cols-3 gap-2 mb-4">
-        <Stat label="LinkedIn" value={row.linkedinSent} />
-        <Stat label="Reply %" value={`${replyPct}%`} />
-        <Stat label="Meetings" value={row.meetingsBooked} />
+        <Stat label={T.statLinkedin} value={row.linkedinSent} />
+        <Stat label={T.statReplyPct} value={`${replyPct}%`} />
+        <Stat label={T.statMeetings} value={row.meetingsBooked} />
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <Stat label="Sequences" value={row.sequencesStarted} />
-        <Stat label="Won" value={row.brandsConverted} highlight />
+        <Stat label={T.statSequences} value={row.sequencesStarted} />
+        <Stat label={T.statWon} value={row.brandsConverted} highlight />
       </div>
       {row.stepsReady > 0 && (
         <Link
           href="/admin/bd/sequences"
           className="mt-4 block text-center px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-lg text-sm font-bold"
         >
-          ⚡ {row.stepsReady} step{row.stepsReady === 1 ? "" : "s"} ready to send
+          ⚡ {readyLabel}
         </Link>
       )}
     </>

@@ -1,21 +1,25 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/lib/AuthContext";
+import { useI18n } from "@/i18n";
 
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: "Admin",
-  EMPLOYEE: "Employee",
-  SALES_MANAGER: "Sales Manager",
-  SALES_REP: "Sales Rep",
-  FABRIC_MANAGER: "Fabric Manager",
-  TESTING_MANAGER: "Testing Manager",
-  FACTORY_MANAGER: "Factory Manager",
-  FACTORY_USER: "Factory",
-  BRAND_USER: "Brand",
-  DISTRIBUTOR_USER: "Distributor",
-  LAB_USER: "Lab",
-  PUBLIC: "Public",
-};
+function getRoleLabel(role: string, nav: any): string {
+  const map: Record<string, string> = {
+    ADMIN: nav.roleAdmin,
+    EMPLOYEE: nav.roleEmployee,
+    SALES_MANAGER: nav.roleSalesManager,
+    SALES_REP: nav.roleSalesRep,
+    FABRIC_MANAGER: nav.roleFabricManager,
+    TESTING_MANAGER: nav.roleTestingManager,
+    FACTORY_MANAGER: nav.roleFactoryManager,
+    FACTORY_USER: nav.roleFactoryUser,
+    BRAND_USER: nav.roleBrandUser,
+    DISTRIBUTOR_USER: nav.roleDistributorUser,
+    LAB_USER: nav.roleLabUser,
+    PUBLIC: nav.rolePublic,
+  };
+  return map[role] || role;
+}
 
 const ROLE_ICONS: Record<string, string> = {
   BRAND_USER: "🏷️",
@@ -51,6 +55,8 @@ interface UserOption {
 
 export default function ViewAsSwitcher() {
   const { impersonation, startImpersonating, stopImpersonating } = useAuth();
+  const { t } = useI18n();
+  const NAV = t.nav;
   const [isOpen, setIsOpen] = useState(false);
   const [users, setUsers] = useState<UserOption[]>([]);
   const [loading, setLoading] = useState(false);
@@ -132,7 +138,7 @@ export default function ViewAsSwitcher() {
       u.name.toLowerCase().includes(q) ||
       u.email.toLowerCase().includes(q) ||
       (u.entityName || "").toLowerCase().includes(q) ||
-      (ROLE_LABELS[u.role] || "").toLowerCase().includes(q)
+      (getRoleLabel(u.role, NAV) || "").toLowerCase().includes(q)
     );
   });
 
@@ -163,7 +169,7 @@ export default function ViewAsSwitcher() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
           <span className="truncate">
-            {switching ? "Switching..." : "Exit View As"}
+            {switching ? NAV.viewAsSwitching || "Switching..." : NAV.exitViewAs || "Exit View As"}
           </span>
         </button>
       ) : (
@@ -176,7 +182,7 @@ export default function ViewAsSwitcher() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
           </svg>
-          <span>View As...</span>
+          <span>{NAV.viewAs || "View As..."}</span>
           <svg
             className={`w-3 h-3 ml-auto transition-transform ${isOpen ? "rotate-180" : ""}`}
             fill="none"
@@ -198,7 +204,7 @@ export default function ViewAsSwitcher() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search users..."
+              placeholder={NAV.viewAsSearchPlaceholder || "Search users..."}
               className="w-full px-3 py-2 rounded-md bg-slate-900 text-sm text-white placeholder-slate-500 border border-slate-600 focus:border-[#00b4c3] focus:outline-none focus:ring-1 focus:ring-[#00b4c3]"
             />
           </div>
@@ -206,14 +212,14 @@ export default function ViewAsSwitcher() {
           {/* User list */}
           <div className="overflow-y-auto flex-1">
             {loading ? (
-              <div className="p-4 text-center text-slate-500 text-sm">Loading users...</div>
+              <div className="p-4 text-center text-slate-500 text-sm">{NAV.viewAsLoading || "Loading users..."}</div>
             ) : filtered.length === 0 ? (
-              <div className="p-4 text-center text-slate-500 text-sm">No users found</div>
+              <div className="p-4 text-center text-slate-500 text-sm">{NAV.viewAsNoUsers || "No users found"}</div>
             ) : (
               sortedRoles.map((role) => (
                 <div key={role}>
                   <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-900/50 sticky top-0">
-                    {ROLE_ICONS[role] || "👤"} {ROLE_LABELS[role] || role}
+                    {ROLE_ICONS[role] || "👤"} {getRoleLabel(role, NAV)}
                   </div>
                   {grouped[role].map((u) => (
                     <button
@@ -226,7 +232,7 @@ export default function ViewAsSwitcher() {
                         {u.name?.charAt(0)?.toUpperCase() || "?"}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="truncate font-medium">{u.name}</div>
+                        <div className="truncate font-medium"><bdi>{u.name}</bdi></div>
                         {u.entityName && (
                           <div className="truncate text-[11px] text-slate-500">{u.entityName}</div>
                         )}

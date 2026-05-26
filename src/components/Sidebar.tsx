@@ -33,20 +33,25 @@ import {
  * ═══════════════════════════════════════════════════════════════
  */
 
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: "Admin",
-  EMPLOYEE: "Employee",
-  SALES_MANAGER: "Sales Manager",
-  SALES_REP: "Sales Rep",
-  FABRIC_MANAGER: "Fabric Manager",
-  TESTING_MANAGER: "Testing Manager",
-  FACTORY_MANAGER: "Factory Manager",
-  FACTORY_USER: "Factory",
-  BRAND_USER: "Brand",
-  DISTRIBUTOR_USER: "Distributor",
-  LAB_USER: "Lab",
-  PUBLIC: "Public",
-};
+// Per-role display label, resolved against t.nav at render time so the
+// chip under the user card reflects the active locale.
+function getRoleLabel(role: string, nav: any): string {
+  const map: Record<string, string> = {
+    ADMIN: nav.roleAdmin,
+    EMPLOYEE: nav.roleEmployee,
+    SALES_MANAGER: nav.roleSalesManager,
+    SALES_REP: nav.roleSalesRep,
+    FABRIC_MANAGER: nav.roleFabricManager,
+    TESTING_MANAGER: nav.roleTestingManager,
+    FACTORY_MANAGER: nav.roleFactoryManager,
+    FACTORY_USER: nav.roleFactoryUser,
+    BRAND_USER: nav.roleBrandUser,
+    DISTRIBUTOR_USER: nav.roleDistributorUser,
+    LAB_USER: nav.roleLabUser,
+    PUBLIC: nav.rolePublic,
+  };
+  return map[role] || role;
+}
 
 interface NavItem {
   href: string;
@@ -610,14 +615,14 @@ export default function Sidebar() {
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-300 bg-slate-800/60 hover:bg-slate-800 hover:text-white transition-colors border border-slate-700/60"
               >
                 <span className="text-base">←</span>
-                <span className="flex-1">All Modules (Home)</span>
+                <span className="flex-1">{t.nav.allModules || "All Modules (Home)"}</span>
               </Link>
 
               {/* Module header */}
               {scopedModule && (
                 <div className="mt-3 px-3 py-2 rounded-lg bg-gradient-to-br from-slate-800/80 to-slate-800/40 border border-slate-700/50">
                   <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">
-                    Module
+                    {t.nav.module || "Module"}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-lg">{scopedModule.icon}</span>
@@ -663,8 +668,8 @@ export default function Sidebar() {
               {/* For internal home view: friendly hint */}
               {isInternal && onHome && (
                 <div className="px-3 pb-2 text-[11px] text-slate-500 leading-snug">
-                  Pick a module from the cards on the right. The sidebar will scope itself to just
-                  that module&apos;s tools. Hit &ldquo;Home&rdquo; any time to switch modules.
+                  {t.nav.pickModuleHint ||
+                    `Pick a module from the cards on the right. The sidebar will scope itself to just that module's tools. Hit "Home" any time to switch modules.`}
                 </div>
               )}
 
@@ -750,13 +755,13 @@ export default function Sidebar() {
                 {user.name?.charAt(0)?.toUpperCase() || "?"}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-white truncate">{user.name}</p>
-                <p className="text-[10px] text-slate-400">{ROLE_LABELS[user.role] || user.role}</p>
+                <p className="text-sm font-medium text-white truncate"><bdi>{user.name}</bdi></p>
+                <p className="text-[10px] text-slate-400">{getRoleLabel(user.role, t.nav)}</p>
               </div>
               <button
                 onClick={logout}
                 className="p-1.5 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition-colors flex-shrink-0"
-                title="Sign out"
+                title={t.nav.signOut || "Sign out"}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
