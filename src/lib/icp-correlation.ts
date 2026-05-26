@@ -88,81 +88,167 @@ export function fitRegression(points: CorrelationPoint[]): RegressionLine | null
 }
 
 /**
- * Load brand-visible TestRuns with both ICP + AB data. When
- * `brandId` is set, scopes to that brand (drives the brand-portal
- * view). Without it returns global (admin scope).
+ * Load correlation points pairing ICP residual (mg/kg) to AB
+ * percentReduction (%). When `brandId` is set, scopes to that brand
+ * (drives the brand-portal view); otherwise returns global (admin scope).
  *
- * Cap is 2000 points so the SVG stays performant — well above any
- * realistic dataset for the foreseeable future.
+ * Architecture: TestRun.testType is single-valued — no single row holds
+ * both an icpResult AND an abResult. Correlation points are produced
+ * by joining ICP and AB TestRuns through their shared FabricSubmission.
+ *
+ * Pairing rule per submission:
+ *   1. If any (ICP, AB) pair shares a washCount, emit one point per
+ *      shared washCount — same wash cycle, apples-to-apples.
+ *   2. Otherwise emit one point pairing the most-recent ICP value to
+ *      the most-recent AB value on that submission (by testDate desc).
+ *
+ * Both runs must be brandVisible. Submission cap is 2000 — well above
+ * any realistic dataset.
  */
 export async function loadCorrelationPoints(
   brandId?: string | null,
 ): Promise<CorrelationPoint[]> {
-  const where: any = {
-    brandVisible: true,
-    // Prisma relation-filter syntax: field constraints on the related
-    // record go INSIDE an `is: {...}` block, not siblinged with
-    // `isNot`. Previous shape `{ isNot: null, agValue: {...} }` threw
-    // "Unknown argument is" — caught when Akina (Rhone) hit the page
-    // May 16. Using `is: { ... }` implies the relation exists AND the
-    // field constraint holds, which is exactly what we want here.
-    icpResult: { is: { agValue: { not: null } } },
-    abResult: { is: { percentReduction: { not: null } } },
-  };
-  if (brandId) {
-    where.submission = { fabric: { brandId } };
-  }
-
-  const runs = await prisma.testRun.findMany({
-    where,
-    select: {
-      id: true,
-      testDate: true,
-      icpResult: { select: { agValue: true } },
-      abResult: {
-        select: { percentReduction: true, testMethodStd: true },
+  const submissionWhere: any = {
+    // Submission must have BOTH an ICP run with agValue AND an AB run
+    // with percentReduction, both brand-visible. Prisma `some:` filter
+    // returns submissions where at least one related row matches.
+    testRuns: {
+      some: {
+        testType: "ICP",
+        brandVisible: true,
+        icpResult: { is: { agValue: { not: null } } },
       },
-      lab: { select: { name: true } },
-      submission: {
-        select: {
-          fabric: {
-            select: {
-              id: true,
-              fuzeNumber: true,
-              targetFuzeTier: true,
-              brand: { select: { id: true, name: true, requiredFuzeTier: true } },
-              factory: { select: { name: true } },
-            },
+    },
+    AND: [
+      {
+        testRuns: {
+          some: {
+            testType: "ANTIBACTERIAL",
+            brandVisible: true,
+            abResult: { is: { percentReduction: { not: null } } },
           },
         },
       },
+    ],
+  };
+  if (brandId) {
+    submissionWhere.fabric = { brandId };
+  }
+
+  const submissions = await prisma.fabricSubmission.findMany({
+    where: submissionWhere,
+    select: {
+      id: true,
+      fabric: {
+        select: {
+          id: true,
+          fuzeNumber: true,
+          targetFuzeTier: true,
+          brand: { select: { id: true, name: true, requiredFuzeTier: true } },
+          factory: { select: { name: true } },
+        },
+      },
+      testRuns: {
+        where: {
+          brandVisible: true,
+          OR: [
+            { testType: "ICP", icpResult: { is: { agValue: { not: null } } } },
+            {
+              testType: "ANTIBACTERIAL",
+              abResult: { is: { percentReduction: { not: null } } },
+            },
+          ],
+        },
+        select: {
+          id: true,
+          testType: true,
+          testDate: true,
+          washCount: true,
+          icpResult: { select: { agValue: true } },
+          abResult: { select: { percentReduction: true, testMethodStd: true } },
+        },
+        orderBy: { testDate: "desc" },
+      },
     },
-    orderBy: { testDate: "desc" },
     take: 2000,
   });
 
   const points: CorrelationPoint[] = [];
-  for (const r of runs) {
-    const icpValue = r.icpResult?.agValue;
-    const abPct = r.abResult?.percentReduction;
-    if (icpValue == null || abPct == null) continue;
-    if (!Number.isFinite(icpValue) || !Number.isFinite(abPct)) continue;
-    points.push({
-      testRunId: r.id,
-      fabricId: r.submission?.fabric?.id || null,
-      fuzeNumber: r.submission?.fabric?.fuzeNumber ?? null,
-      factoryName: r.submission?.fabric?.factory?.name || null,
-      brandId: r.submission?.fabric?.brand?.id || null,
-      brandName: r.submission?.fabric?.brand?.name || null,
-      tier:
-        r.submission?.fabric?.targetFuzeTier ||
-        r.submission?.fabric?.brand?.requiredFuzeTier ||
-        null,
-      testDate: r.testDate?.toISOString() || null,
-      icpValue,
-      abPercentReduction: abPct,
-      testMethod: r.abResult?.testMethodStd || null,
-    });
+
+  for (const sub of submissions) {
+    const fab = sub.fabric;
+
+    const icpRuns = sub.testRuns
+      .filter(
+        (r) =>
+          r.testType === "ICP" &&
+          r.icpResult?.agValue != null &&
+          Number.isFinite(r.icpResult.agValue as number),
+      )
+      .sort((a, b) => (b.testDate?.getTime() || 0) - (a.testDate?.getTime() || 0));
+
+    const abRuns = sub.testRuns
+      .filter(
+        (r) =>
+          r.testType === "ANTIBACTERIAL" &&
+          r.abResult?.percentReduction != null &&
+          Number.isFinite(r.abResult.percentReduction as number),
+      )
+      .sort((a, b) => (b.testDate?.getTime() || 0) - (a.testDate?.getTime() || 0));
+
+    if (icpRuns.length === 0 || abRuns.length === 0) continue;
+
+    const tier =
+      fab?.targetFuzeTier || fab?.brand?.requiredFuzeTier || null;
+    const fabContext = {
+      fabricId: fab?.id || null,
+      fuzeNumber: fab?.fuzeNumber ?? null,
+      factoryName: fab?.factory?.name || null,
+      brandId: fab?.brand?.id || null,
+      brandName: fab?.brand?.name || null,
+      tier,
+    };
+
+    // Pairing rule 1: matched washCount → one point per shared cycle.
+    const icpByWash = new Map<number, (typeof icpRuns)[number]>();
+    for (const r of icpRuns) {
+      if (r.washCount != null && !icpByWash.has(r.washCount)) {
+        icpByWash.set(r.washCount, r);
+      }
+    }
+    const matchedWashCounts = new Set<number>();
+    for (const ab of abRuns) {
+      if (ab.washCount == null) continue;
+      const icp = icpByWash.get(ab.washCount);
+      if (!icp) continue;
+      matchedWashCounts.add(ab.washCount);
+      points.push({
+        testRunId: `${icp.id}+${ab.id}`,
+        ...fabContext,
+        testDate: ab.testDate?.toISOString() || icp.testDate?.toISOString() || null,
+        icpValue: icp.icpResult!.agValue as number,
+        abPercentReduction: ab.abResult!.percentReduction as number,
+        testMethod: ab.abResult?.testMethodStd || null,
+      });
+    }
+
+    // Pairing rule 2 (fallback): if no wash-count match landed, pair the
+    // most-recent ICP with the most-recent AB on the submission.
+    if (matchedWashCounts.size === 0) {
+      const icp = icpRuns[0];
+      const ab = abRuns[0];
+      points.push({
+        testRunId: `${icp.id}+${ab.id}`,
+        ...fabContext,
+        testDate: ab.testDate?.toISOString() || icp.testDate?.toISOString() || null,
+        icpValue: icp.icpResult!.agValue as number,
+        abPercentReduction: ab.abResult!.percentReduction as number,
+        testMethod: ab.abResult?.testMethodStd || null,
+      });
+    }
   }
+
+  // Sort newest-first for stable rendering — caller may re-sort.
+  points.sort((a, b) => (b.testDate || "").localeCompare(a.testDate || ""));
   return points;
 }
