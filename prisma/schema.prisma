@@ -376,6 +376,7 @@ model Brand {
   contacts             Contact[]
   bdSequences          BDSequence[]               @relation("BrandBDSequences")
   factories            BrandFactory[]
+  factoryAliases       BrandFactoryAlias[]        @relation("BrandFactoryAliases")
   submissions          FabricSubmission[]
   fabrics              Fabric[]
   projects             Project[]
@@ -513,6 +514,7 @@ model Factory {
 
   contacts             Contact[]
   brands               BrandFactory[]
+  brandAliases         BrandFactoryAlias[]        @relation("FactoryBrandAliases")
   distributorRoster    DistributorFactory[]       @relation("FactoryDistributorRoster")
   submissions          FabricSubmission[]
   fabrics              Fabric[]
@@ -554,6 +556,27 @@ model BrandFactory {
   createdAt DateTime @default(now())
 
   @@unique([brandId, factoryId])
+  @@index([brandId])
+  @@index([factoryId])
+}
+
+// Brand → Factory CSV-name alias (Phase 18 importer). When a brand
+// uploads a fabric portfolio spreadsheet, the "Mill" column rarely
+// matches our canonical Factory.name. Saving the brand's per-CSV
+// name → factoryId mapping lets future imports auto-resolve without
+// reprompting. Example: SanMar's sheet says "XinKaiSheng (New Kasum)"
+// but Atlas has it as "NK".
+model BrandFactoryAlias {
+  id        String   @id @default(cuid())
+  brandId   String
+  factoryId String
+  brand     Brand    @relation("BrandFactoryAliases", fields: [brandId], references: [id])
+  factory   Factory  @relation("FactoryBrandAliases", fields: [factoryId], references: [id])
+
+  csvName   String
+  createdAt DateTime @default(now())
+
+  @@unique([brandId, csvName])
   @@index([brandId])
   @@index([factoryId])
 }
