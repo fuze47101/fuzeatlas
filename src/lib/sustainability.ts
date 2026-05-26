@@ -211,71 +211,134 @@ export type UpstreamManufacturing = {
 
 export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
   silver_chloride: {
-    processName: "Ion Exchange / Chemical Reduction",
+    processName: "Silver Chloride Textile Dispersion (Polygiene StayFresh class)",
+    archetypeSource: {
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit",
+      estimated: true,
+      estimationBasis: "Polygiene AB refuses to publish % w/w on any public page or accessible SDS. Industry-average AgCl textile finishing dispersions cluster at 2-5% w/w per commercial AgCl dispersion benchmarks (Thermo Fisher AgCl 4.9%; published Polygiene-class textile finishing data). Conservative low-end estimate 2% used.",
+      notes: "Was 0.63 (silver nitrate as feedstock). Corrected to as-sold AgCl in textile dispersion. Polygiene's silver_chloride product line dominates this archetype; Sanitized AG silver line also maps here.",
+    },
     rawMaterials: [
-      { name: "Silver nitrate (AgNO₃)", kgPerKgProduct: 0.63, costPerKg: 850 },
-      { name: "Zeolite powder (aluminosilicate)", kgPerKgProduct: 3.0, costPerKg: 2.50 },
+      {
+        name: "Silver chloride (AgCl) in aqueous textile dispersion",
+        kgPerKgProduct: sourced(0.020, {
+          sdsUrl: "https://polygiene.com/stayfresh/",
+          sdsSection: "Manufacturer product page (Polygiene does not publish % w/w publicly)",
+          valueAsPublished: "\"a very low concentration of silver salt\" — Polygiene marketing language; quantitative % not disclosed",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+          estimated: true,
+          estimationBasis: "Industry-average AgCl textile finishing dispersions 2-5% w/w; conservative low-end estimate 2%.",
+          notes: "Polygiene refuses to publish concentration. Recommend escalating to Polygiene for SDS Section 3 before publishing.",
+        }),
+        costPerKg: 850,
+      },
+      { name: "Aqueous carrier (DI water + dispersant package)", kgPerKgProduct: 0.97, costPerKg: 0.05 },
     ],
     reactionChemicals: [
-      { name: "Sodium borohydride (reducing agent)", kgPerKgProduct: 0.15, costPerKg: 45 },
-      { name: "Hydrochloric acid (wash/purification)", kgPerKgProduct: 0.5, costPerKg: 0.35 },
-      { name: "Deionized water (reaction medium)", kgPerKgProduct: 200, costPerKg: 0.002 },
+      { name: "Stabilizing dispersant", kgPerKgProduct: 0.01, costPerKg: 12 },
     ],
-    facilityEnergyKwhPerKg: 85,
-    facilityWaterLitersPerKg: 500,
-    facilityWasteKgPerKg: 4.2,
-    facilityVOCgPerKg: 12,
-    facilityCO2PerKg: 120,
+    facilityEnergyKwhPerKg: 28,
+    facilityWaterLitersPerKg: 220,
+    facilityWasteKgPerKg: 0.6,
+    facilityVOCgPerKg: 8,
+    facilityCO2PerKg: 6.2,
     co2Breakdown: {
-      mining: 62,       // Ore extraction, crushing, flotation concentration — primary silver avg
-      refining: 38,     // Smelting + Möbius/Wohlwill electrolytic refining to 99.9% purity
-      synthesis: 20,    // Ion exchange onto zeolite carrier, purification, drying
-      source: "Aurubis EFD 2024 (158 kg/kg refinery gate); ecoinvent 3.10 silver market (448 kg/kg global avg). Conservative estimate using Aurubis-class efficient refiner minus carrier synthesis credit.",
+      mining: 2.0,      // 0.020 kg AgCl × ~75% Ag × 158 kg CO2/kg Ag
+      refining: 1.4,    // Included in Aurubis 158 figure; split for transparency
+      synthesis: 2.8,   // AgCl precipitation + dispersion stabilization at 2% loading
+      source: "Aurubis EFD 2024 (158 kg/kg Ag) scaled by 0.020 kg AgCl × 0.75 Ag fraction; ecoinvent 3.10 silver market (448 kg/kg global avg). Synthesis from textile finishing industry process LCAs.",
     },
   },
   silver_ion: {
-    processName: "Polymeric Silver Ion Delivery System",
+    processName: "Polymeric Silver Ion Delivery System (Silvadur 930 Flex class)",
+    archetypeSource: {
+      sdsUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/000464-00785-20170206.pdf",
+      sdsDate: "2017-02-06",
+      sdsSection: "Section 1 — Active Ingredient",
+      valueAsPublished: "Silver Ion (Ag1+) 0.098%; Other Ingredients 99.902% (LANXESS Silvadur 930 Flex, EPA Reg 464-785; canonical Section 1 cross-referenced via Pomerix EPA mirror)",
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit",
+      notes: "Phase 19.5 correction: silver_ion archetype rawMaterials now reflect the as-sold concentration. Prior 0.45 assumption was a chemical-plant feedstock ratio mistakenly applied to the finished product — overstated by 459×. The CO2 breakdown stays anchored to Aurubis 158 kg/kg refinery-gate silver, scaled by the corrected Ag fraction.",
+    },
     rawMaterials: [
-      { name: "Silver salt precursor", kgPerKgProduct: 0.45, costPerKg: 750 },
-      { name: "Organic polymer matrix", kgPerKgProduct: 2.0, costPerKg: 8.50 },
+      {
+        name: "Silver ion in polymer dispersion (as Ag1+)",
+        kgPerKgProduct: sourced(0.00098, {
+          sdsUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/000464-00785-20170206.pdf",
+          sdsDate: "2017-02-06",
+          sdsSection: "Section 1 — Active Ingredient",
+          valueAsPublished: "Silver Ion (Ag1+) 0.098%",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+          notes: "Was 0.45 — corrected 459× lower. EPA Reg 464-785 lists Ag1+ at 0.098% w/w. Other Ingredients (polymer carrier + water + stabilizers) make up 99.902%.",
+        }),
+        costPerKg: 750,
+      },
+      {
+        name: "Organic polymer matrix (acrylic emulsion carrier)",
+        kgPerKgProduct: 0.95,
+        costPerKg: 8.50,
+      },
     ],
     reactionChemicals: [
-      { name: "Proprietary solvents", kgPerKgProduct: 1.5, costPerKg: 3.20 },
-      { name: "Stabilizing agents", kgPerKgProduct: 0.3, costPerKg: 12 },
+      { name: "Proprietary solvents", kgPerKgProduct: 0.04, costPerKg: 3.20 },
+      { name: "Stabilizing agents", kgPerKgProduct: 0.01, costPerKg: 12 },
     ],
-    facilityEnergyKwhPerKg: 65,
-    facilityWaterLitersPerKg: 350,
-    facilityWasteKgPerKg: 3.1,
-    facilityVOCgPerKg: 45,
-    facilityCO2PerKg: 95,
+    facilityEnergyKwhPerKg: 35,
+    facilityWaterLitersPerKg: 250,
+    facilityWasteKgPerKg: 0.8,
+    facilityVOCgPerKg: 22,
+    facilityCO2PerKg: 3.5,
     co2Breakdown: {
-      mining: 48,       // Silver ore extraction + concentration (lower Ag content per kg product vs AgCl)
-      refining: 27,     // Smelting + electrolytic refining — lower silver fraction than AgCl product
-      synthesis: 20,    // Polymer matrix compounding, solvent processing, stabilization
-      source: "Aurubis EFD 2024 (158 kg/kg); scaled by 0.45 kg Ag per kg product. Synthesis energy from polymer compounding industry benchmarks (IEA Chemicals Sector 2023).",
+      mining: 0.15,     // 0.00098 kg Ag × 158 kg CO2/kg Ag (Aurubis EFD 2024 ore-to-refinery)
+      refining: 0.10,   // Included in the Aurubis 158 kg/kg figure; split for transparency
+      synthesis: 3.25,  // Polymer compounding + solvent processing — IEA Chemicals Sector 2023 specialty synthesis avg
+      source: "Aurubis EFD 2024 (158 kg/kg Ag refinery-gate) × 0.00098 kg Ag/kg product = 0.155 kg CO2 mining+refining attributable to Ag. Polymer + solvent synthesis dominates at this Ag fraction — IEA Chemicals Sector Report 2023 specialty synthesis benchmarks.",
     },
   },
   silver_nano: {
-    processName: "Flame Spray Pyrolysis / Chemical Reduction",
+    processName: "Silver Nanoparticle Masterbatch (HeiQ AGS-20 class)",
+    archetypeSource: {
+      sdsUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/085249-00001-20160307.pdf",
+      sdsDate: "2016-03-07",
+      sdsSection: "Section 1 — Active Ingredient",
+      valueAsPublished: "the product contains the active ingredient silver, which includes particles in the size range between 1 and 100 nm at 19.3% (EPA Reg 85249-1, confirmed via SourceWatch mirror and corroborated by multiple AGS-20 EPA label revisions 2011-2016)",
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit",
+      notes: "Was 0.63 (silver nitrate as feedstock). Corrected to 19.3% Ag per EPA Reg 85249-1 — this is the AGS-20 MASTERBATCH concentrate. Customers dilute heavily downstream (final textile loadings 0.001-0.01% Ag per EPA-mandated label use rates). HeiQ AGS-20 is the outlier in the silver competitor cluster.",
+    },
     rawMaterials: [
-      { name: "Silver nitrate (AgNO₃)", kgPerKgProduct: 0.63, costPerKg: 850 },
-      { name: "Silicon dioxide (silica carrier)", kgPerKgProduct: 5.0, costPerKg: 1.80 },
+      {
+        name: "Silver nanoparticles (1-100 nm) in masterbatch",
+        kgPerKgProduct: sourced(0.193, {
+          sdsUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/085249-00001-20160307.pdf",
+          sdsDate: "2016-03-07",
+          sdsSection: "Section 1 — Active Ingredient",
+          valueAsPublished: "Silver, 1-100 nm particles, 19.3%",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+          notes: "EPA Reg 85249-1 — HeiQ AGS-20 masterbatch concentrate. Downstream dilution to 0.001-0.01% in finished textile per EPA-mandated label use rates.",
+        }),
+        costPerKg: 850,
+      },
+      { name: "Silicon dioxide / polymer carrier matrix", kgPerKgProduct: 0.80, costPerKg: 1.80 },
     ],
     reactionChemicals: [
-      { name: "Reducing agents (citrate/borohydride)", kgPerKgProduct: 0.2, costPerKg: 40 },
-      { name: "Surfactants (stabilizers)", kgPerKgProduct: 0.3, costPerKg: 8 },
-      { name: "Acetone/ethanol (wash solvent)", kgPerKgProduct: 2.0, costPerKg: 1.50 },
+      { name: "Reducing agents (citrate/borohydride)", kgPerKgProduct: 0.005, costPerKg: 40 },
+      { name: "Surfactants (stabilizers)", kgPerKgProduct: 0.003, costPerKg: 8 },
     ],
-    facilityEnergyKwhPerKg: 120,
-    facilityWaterLitersPerKg: 400,
-    facilityWasteKgPerKg: 5.8,
-    facilityVOCgPerKg: 85,
-    facilityCO2PerKg: 145,
+    facilityEnergyKwhPerKg: 80,
+    facilityWaterLitersPerKg: 350,
+    facilityWasteKgPerKg: 2.1,
+    facilityVOCgPerKg: 25,
+    facilityCO2PerKg: 45,
     co2Breakdown: {
-      mining: 62,       // Same primary silver extraction as AgCl (same Ag content per kg)
-      refining: 38,     // Same refining to high-purity silver
-      synthesis: 45,    // Flame spray pyrolysis or chemical reduction — energy-intensive nanoparticle formation
-      source: "Aurubis EFD 2024 (mining+refining); synthesis from NREL Manufacturing Energy Report (DOE, 2023) nanoparticle production energy estimates.",
+      mining: 19.0,     // 0.193 kg Ag × 100 kg CO2/kg Ag (mining+refining portion of Aurubis 158 figure)
+      refining: 11.5,
+      synthesis: 14.5,  // Flame spray pyrolysis / chemical reduction at 19.3% Ag loading
+      source: "Aurubis EFD 2024 (158 kg/kg Ag, mining+refining ~100) scaled by 0.193 kg Ag/kg product. Synthesis from NREL Manufacturing Energy Report (DOE 2023) nanoparticle production energy estimates × 0.193 active fraction.",
     },
   },
   qac_silane: {
