@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { computeSuspects, normalizeEmail } from "@/lib/suspect-email-typos";
 
 /**
  * GET /api/admin/suspect-email-typos
@@ -17,94 +18,11 @@ import { getCurrentUser } from "@/lib/auth";
  *   - fix-email     { userId, newEmail }
  *   - confirm-match { userId, contactId }   (links the user to the contact)
  *
- * Returns the same payload shape as diag-similar-emails (results
- * array). The page polls this endpoint on load.
+ * Read path delegates to src/lib/suspect-email-typos.ts so the badge
+ * count + weekly cron can't drift from what the page shows.
  */
 
-function levenshtein(a: string, b: string): number {
-  if (a === b) return 0;
-  const m = a.length, n = b.length;
-  if (m === 0) return n;
-  if (n === 0) return m;
-  if (Math.abs(m - n) > 3) return 99;
-  let prev = new Array(n + 1);
-  let curr = new Array(n + 1);
-  for (let j = 0; j <= n; j++) prev[j] = j;
-  for (let i = 1; i <= m; i++) {
-    curr[0] = i;
-    for (let j = 1; j <= n; j++) {
-      const cost = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
-      curr[j] = Math.min(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
-    }
-    [prev, curr] = [curr, prev];
-  }
-  return prev[n];
-}
-
-const normalize = (s: any) => String(s || "").trim().toLowerCase();
-const MAX_DISTANCE = 2;
-
-async function computeSuspects() {
-  const [users, contacts, ignores] = await Promise.all([
-    prisma.user.findMany({
-      where: { status: "ACTIVE", email: { not: null } },
-      select: { id: true, email: true, name: true, role: true, createdAt: true, emailVerified: true },
-    }),
-    prisma.contact.findMany({
-      where: { email: { not: null } },
-      select: {
-        id: true, email: true, firstName: true, lastName: true,
-        brandId: true, factoryId: true, distributorId: true,
-        brand: { select: { name: true } },
-        factory: { select: { name: true } },
-      },
-    }),
-    (prisma as any).similarEmailIgnore?.findMany({
-      select: { userId: true, contactEmail: true },
-    }).catch(() => []) ?? [],
-  ]);
-
-  const ignoreSet = new Set<string>(
-    (ignores || []).map((r: any) => `${r.userId}::${normalize(r.contactEmail)}`)
-  );
-
-  const results: any[] = [];
-  for (const u of users) {
-    const userEmail = normalize(u.email);
-    if (!userEmail) continue;
-    const suspects: any[] = [];
-    for (const c of contacts) {
-      const contactEmail = normalize(c.email);
-      if (!contactEmail || contactEmail === userEmail) continue;
-      if (ignoreSet.has(`${u.id}::${contactEmail}`)) continue;
-      const d = levenshtein(userEmail, contactEmail);
-      if (d > 0 && d <= MAX_DISTANCE) {
-        suspects.push({
-          contactId: c.id,
-          contactEmail: c.email,
-          contactName: [c.firstName, c.lastName].filter(Boolean).join(" ") || null,
-          source: c.brandId ? "brand" : c.factoryId ? "factory" : c.distributorId ? "distributor" : "orphan",
-          sourceName: c.brand?.name || c.factory?.name || null,
-          distance: d,
-        });
-      }
-    }
-    if (suspects.length > 0) {
-      results.push({
-        user: {
-          id: u.id,
-          email: u.email,
-          name: u.name,
-          role: u.role,
-          createdAt: u.createdAt,
-          emailVerified: u.emailVerified,
-        },
-        suspects: suspects.sort((a, b) => a.distance - b.distance).slice(0, 5),
-      });
-    }
-  }
-  return results;
-}
+const normalize = normalizeEmail;
 
 export async function GET(_req: Request) {
   const user = await getCurrentUser();

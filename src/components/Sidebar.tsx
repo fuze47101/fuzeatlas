@@ -180,21 +180,16 @@ export default function Sidebar() {
   useEffect(() => {
     if (!isAdmin) return;
     const fetchCounts = () => {
-      Promise.all([
-        fetch("/api/admin/pending-counts").then((r) => r.json()).catch(() => null),
-        fetch("/api/admin/suspect-email-typos").then((r) => r.json()).catch(() => null),
-      ])
-        .then(([base, suspects]) => {
-          if (base?.ok) {
-            setPendingCounts((prev) => ({
-              ...prev,
-              accessRequests: base.accessRequests || 0,
-              testRequests: base.testRequests || 0,
-              total: base.total || 0,
-              suspectEmailTypos: suspects?.ok ? Number(suspects.count || 0) : prev.suspectEmailTypos,
-            }));
-          } else if (suspects?.ok) {
-            setPendingCounts((prev) => ({ ...prev, suspectEmailTypos: Number(suspects.count || 0) }));
+      fetch("/api/admin/pending-counts")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.ok) {
+            setPendingCounts({
+              accessRequests: d.accessRequests || 0,
+              testRequests: d.testRequests || 0,
+              suspectEmailTypos: d.suspectEmailTypos || 0,
+              total: d.total || 0,
+            });
           }
         })
         .catch(() => {});
