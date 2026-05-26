@@ -22,6 +22,7 @@
     "check:mobile": "tsx scripts/check-mobile.ts",
     "check:mobile:staged": "tsx scripts/check-mobile.ts --staged",
     "check:doc-acl": "tsx scripts/check-doc-acl.ts",
+    "i18n:translate": "tsx scripts/translate-i18n.ts",
     "seed:geocode": "tsx scripts/geocode-entities.ts",
     "seed:brand-spec": "tsx scripts/seed-customer-data.ts brand-spec",
     "seed:pricing-tier": "tsx scripts/seed-customer-data.ts pricing-tier",

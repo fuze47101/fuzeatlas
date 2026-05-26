@@ -538,26 +538,37 @@ doesn't persist literally doesn't show up to sales reps.
 fans out translations to all 16 non-English locales.** No more
 manual per-locale TODOs. Two execution modes.
 
-### Mode A — Manual / CLI (primary)
+### Mode A — Local CLI (primary)
+
+The Vercel route `/api/cron/translate-missing-keys` was retired —
+serverless can't write files or push git. The auto-translation
+pipeline now runs locally on Andrew's Mac via `scripts/translate-i18n.ts`:
 
 ```bash
-# Dry-run (no writes, no commits) — see what would translate
-fzcron translate-missing-keys -X POST -d '{"dryRun":true}'
+# Dry-run all 16 locales — no Claude calls, no writes, no git
+npx tsx scripts/translate-i18n.ts --dry-run
+npm run i18n:translate -- --dry-run    # equivalent
+
+# Real run — 500-key cap per locale (default)
+npx tsx scripts/translate-i18n.ts
+
+# Big catch-up — 1000-key cap per locale
+npx tsx scripts/translate-i18n.ts --max-keys-per-locale 1000
 
 # Single locale catch-up
-fzcron translate-missing-keys -X POST -d '{"locales":["vi"]}'
+npx tsx scripts/translate-i18n.ts --locales vi
 
 # Single namespace within one locale
-fzcron translate-missing-keys -X POST \
-  -d '{"locales":["vi"],"namespaces":["factoryPortal"]}'
+npx tsx scripts/translate-i18n.ts --locales vi --namespaces factoryPortal
 
-# Big catch-up — bump the per-locale cap (default 500)
-fzcron translate-missing-keys -X POST -d '{"maxKeysPerLocale":1000}'
+# Commit but don't push (useful when verifying first)
+npx tsx scripts/translate-i18n.ts --locales vi --no-push
 ```
 
-Each batch becomes ONE commit (per locale × namespace) so a leak
-can be rolled back without disturbing other locales. Commit
-messages embed brand-voice retry counts + estimated $$$ spend.
+Each (locale × namespace) becomes its own commit. The script pushes
+incrementally to origin/main so a leak rolls back per-locale-per-namespace
+without disturbing other batches. Dry-run is genuinely free — does NOT
+call Claude. Source `.env.local` for `ANTHROPIC_API_KEY` is automatic.
 
 ### Mode B — Pre-commit hook (automatic)
 
@@ -587,16 +598,18 @@ are visible in `git log`.
 
 `GET /api/cron/i18n-drift-report` runs Mondays 14:00 UTC. Silent
 when all locales sit below the 10-missing-keys threshold; emails
-Andrew otherwise with the canonical `fzcron translate-missing-keys`
-recovery line for the affected locales.
+Andrew otherwise with the `npx tsx scripts/translate-i18n.ts
+--locales <list>` recovery line for the affected locales. (This
+cron stays Vercel-side — it only sends email, no file writes.)
 
 ### Coverage in admin UI
 
-`/admin/i18n/review` now shows per-locale coverage % computed
-live from `diffLocale()`. Locales below 99% glow amber; below 95%
-glow red. Each row has a "Run auto-translate" button that
-dry-runs the cron + surfaces the `fzcron` command in a copy-paste
-banner.
+`/admin/i18n/review` shows per-locale coverage % computed live
+from `diffLocale()`. Locales below 99% glow amber; below 95% glow
+red. Each row's "Run auto-translate" button surfaces the local
+`npx tsx scripts/translate-i18n.ts --locales <code>` command for
+copy-paste — clicking no longer fires a route (the route was
+retired).
 
 ### Files
 
@@ -605,10 +618,11 @@ banner.
 - `src/lib/i18n-writer.ts` — TS-AST locale file mutation (preserves
   comments, indentation, namespace structure; tsc-validates before
   swap)
-- `src/app/api/cron/translate-missing-keys/route.ts` — orchestrator
+- `scripts/translate-i18n.ts` — local CLI driver (replaces the
+  retired `/api/cron/translate-missing-keys` route)
 - `src/app/api/cron/i18n-drift-report/route.ts` — weekly drift email
 - `scripts/i18n-pre-commit.ts` — husky hook entry point
-- `/admin/i18n/review` — coverage dashboard + run-button
+- `/admin/i18n/review` — coverage dashboard + copy-paste command
 
 ### Cost guardrails
 

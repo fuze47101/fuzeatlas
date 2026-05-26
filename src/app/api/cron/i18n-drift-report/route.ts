@@ -74,8 +74,8 @@ async function handle(req: Request) {
         <tbody>${rows}</tbody>
       </table>
       <p style="margin:16px 0 0;padding:12px;background:#f1f5f9;border-radius:6px;font-family:monospace;font-size:12px">
-        # Recover with:<br>
-        fzcron translate-missing-keys -X POST -d '{"locales":["${flagged.map((f) => f.locale).join('","')}"]}'
+        # Recover locally on Andrew's Mac with:<br>
+        npx tsx scripts/translate-i18n.ts --locales ${flagged.map((f) => f.locale).join(",")}
       </p>
     </div>
   `;

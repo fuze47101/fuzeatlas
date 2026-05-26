@@ -101,36 +101,18 @@ export default function LocaleReviewPage() {
   }
 
   async function runAutoTranslate(locale: string) {
+    // The /api/cron/translate-missing-keys endpoint was retired — Vercel
+    // serverless can't write files or push git, so the workflow runs on
+    // Andrew's Mac via `npx tsx scripts/translate-i18n.ts`. The button
+    // surfaces the local CLI command instead of firing the dead route.
     setTranslatingLocale(locale);
-    setTranslateBanner(null);
-    setError("");
-    try {
-      const r = await fetch("/api/cron/translate-missing-keys", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Bearer header is set server-side; client doesn't have CRON_SECRET.
-          // The endpoint also accepts a session-authed bridge via /api/admin
-          // wrapper in a future pass — for now, require admins to invoke
-          // through fzcron CLI. The button just surfaces the CLI command.
-        },
-        body: JSON.stringify({ locales: [locale], dryRun: true }),
-      });
-      const d = await r.json();
-      if (!d.ok) {
-        setError(d.error || "Could not query translator");
-        return;
-      }
-      const total = d.summary?.totalRequested || 0;
-      setTranslateBanner(
-        `${locale}: ${total} keys flagged. Run from CLI:\n` +
-          `fzcron translate-missing-keys -X POST -d '{"locales":["${locale}"]}'`,
-      );
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setTranslatingLocale(null);
-    }
+    setTranslateBanner(
+      `${locale}: run on Andrew's Mac to translate locally:\n` +
+        `npx tsx scripts/translate-i18n.ts --locales ${locale}\n\n` +
+        `Dry-run first to see scope + estimated cost:\n` +
+        `npx tsx scripts/translate-i18n.ts --dry-run --locales ${locale}`,
+    );
+    setTranslatingLocale(null);
   }
 
   function startEdit(row: LocaleRow) {
