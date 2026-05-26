@@ -1015,8 +1015,13 @@ export function calcSustainabilityScore(
     : chemType === "silver_chloride" ? "silver_chloride"
     : chemType.includes("silver") ? "silver_chloride"  // fallback for other silver variants
     : chemType === "qac_silane" ? "qac_silane"
+    : chemType === "organic_acid" ? "organic_acid"
     : chemType.includes("zinc") ? "zinc_pyrithione"
     : chemType === "copper" ? "copper"
+    : chemType === "chitosan" ? "chitosan"
+    : chemType === "citric_acid" ? "citric_acid"
+    : chemType === "resin_acid" ? "resin_acid"
+    : chemType === "wood_extract" ? "wood_extract"
     : "silver_chloride"; // default fallback
   const compUpstream = UPSTREAM_MANUFACTURING[upstreamKey] || UPSTREAM_MANUFACTURING.silver_chloride;
   const fuzeUpstream = UPSTREAM_MANUFACTURING.fuze;

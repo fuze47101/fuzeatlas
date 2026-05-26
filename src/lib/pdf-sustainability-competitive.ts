@@ -419,8 +419,13 @@ function resolveUpstreamKey(chemType: string): string {
     : chemType === "silver_chloride" ? "silver_chloride"
     : chemType.includes("silver") ? "silver_chloride"
     : chemType === "qac_silane" ? "qac_silane"
+    : chemType === "organic_acid" ? "organic_acid"
     : chemType.includes("zinc") ? "zinc_pyrithione"
     : chemType === "copper" ? "copper"
+    : chemType === "chitosan" ? "chitosan"
+    : chemType === "citric_acid" ? "citric_acid"
+    : chemType === "resin_acid" ? "resin_acid"
+    : chemType === "wood_extract" ? "wood_extract"
     : "silver_chloride";
 }
 

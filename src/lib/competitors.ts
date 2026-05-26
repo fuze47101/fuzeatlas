@@ -7,6 +7,9 @@ export type ChemistryType =
   | "qac_silane" | "zinc_pyrithione" | "zinc_nano"
   | "copper" | "chitosan" | "triclosan"
   | "citric_acid" | "resin_acid" | "wood_extract"
+  // Phase 19.5 audit added — Microban Additive GS is 100% benzoic acid
+  // per EPA Reg 42182-14, an organic acid preservative, not a silane-quat.
+  | "organic_acid"
   // Mint / fragrance treatments — NOT antimicrobials. Tracked so reps can
   // call out the misclassification when brands confuse e.g. HeiQ Fresh
   // (scent) with HeiQ Viroblock (antiviral).
@@ -189,7 +192,7 @@ export const COMPETITORS: Competitor[] = [
     id: "polygiene-viraloff",
     company: "Polygiene (Sweden)",
     product: "Polygiene ViralOff",
-    chemistryType: "zinc_pyrithione",
+    chemistryType: "silver_chloride",
     chemistryLabel: "Zinc Pyrithione",
     activeAgent: "Zinc pyrithione antiviral compound",
     epaRegNumber: "Uses EPA PC Code 92344 (ZPT)",
@@ -276,10 +279,62 @@ export const COMPETITORS: Competitor[] = [
     retreatmentCostMultiplier: 1.5,
   },
   {
+    id: "iftna-protx2",
+    company: "Intelligent Fabric Technologies (North America) Inc. — IFTNA",
+    product: "PROTX2® Self-Sanitizing Textiles",
+    chemistryType: "qac_silane",
+    chemistryLabel:
+      "Stacked chemistry: Organosilane QAC + PHMB + Silver + Propiconazole. Hydrolyzes to release methanol.",
+    activeAgent:
+      "3-(Trimethoxysilyl)propyldimethyloctadecyl ammonium chloride 0.65% + Polyhexamethane Biguanide (PHMB) 0.26% + Silver 0.18% + Propiconazole 0.44% (total 1.53% actives). Hydrolyzes to ~0.1% methanol on the fabric.",
+    epaRegNumber: "87246-13",
+    epaRegYear: 2023,
+    epaRegNote:
+      "Registered April 10, 2023 as a 'Continually Self-Sanitizing Textile.' EPA explicitly PROHIBITS use on textiles that contact skin (apparel, bedding, furnishings, household fabrics). Allowed only for shower curtains, window shades, carpet backing, flooring layers, mat backings, conveyor belts, cart covers, canvas. Releases methanol (volatile, neurotoxic) at ~0.1% as a hydrolysis byproduct. PHMB is a known skin irritant (EU CLP H315/H319). Propiconazole is a suspected endocrine disruptor (EU CMR-3). Test organism panel limited to Staphylococcus aureus + Pseudomonas aeruginosa (no Klebsiella, no Moraxella, no E. coli). 'Non-leaching' marketing claim is silane-bond specific — the silver and PHMB components leach independently. " +
+      "MARKETING/EPA DISCREPANCY (verified 2026-05-26): IFTNA's website at iftna.com/protx2 markets the product as 'zinc based technology' and 'does NOT contain nanosilver,' but the EPA-registered formulation contains 0.18% silver + PHMB + propiconazole + silane-quat with ZERO zinc. The EPA notification letter accompanying registration 87246-13 expressly warns that 'claims made on the website may not substantially differ from those claims approved through the registration process' — substantively different claims trigger misbranding under FIFRA Section 12(a)(1)(E), making the product unlawful to sell or distribute. This is a competitive opening: ask brands which version they think they're buying — the marketing or the EPA-registered formulation.",
+    epaLabelUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/087246-00013-20230410.pdf",
+    dosageLow: 100,
+    dosageHigh: 500,
+    dosageTypical: 250,
+    maxWashClaim: 30,
+    washClaimNote:
+      "30 industrial washes per EPA label. Bleach prohibited. Citric-acid rinse recommended. Max wash/dry/iron temp 160°F (71°C). Manufacturer-published, no third-party validation reports publicly available.",
+    washClaimSource: "marketing",
+    binderRequired: true,
+    binderGPerKg: 20,
+    binderType: "Polyurethane crosslinked binder (per organosilane application)",
+    binderPricePerKg: 5.0,
+    binderLeachPctLifetime: 10,
+    binderVOC: true,
+    binderFormaldehyde: false,
+    curingRequired: true,
+    curingTempC: 170,
+    leachRateFirst10Washes: 72,
+    leachRatePerWash: 7.2,
+    heavyMetalReleased:
+      "Silver (0.18% active) leaches via standard silver-textile rate. Independent of QAC silane bond claims — the silver fraction is not covalently bound to fibers.",
+    aquaticToxicityNote:
+      "Silver: classic aquatic toxicity to Daphnia + fish embryos. PHMB: classified as 'very toxic to aquatic life with long-lasting effects' (H410 — EU CLP). Propiconazole: 'very toxic to aquatic life' (H410). QAC silane: toxic to Daphnia magna at 5.8 μg/L (ES&T 2023). Four separately bioavailable hazards in one product.",
+    endOfLifeNote:
+      "PHMB does not biodegrade in standard wastewater treatment. Propiconazole half-life >180 days in soil. Silver releases compound landfill leachate concerns. Combined stack disrupts biological wastewater treatment more severely than any single-active product.",
+    chemicalPricePerKg: 35,
+    chemicalPriceSource:
+      "Estimate based on multi-active stacked-chemistry premium over standalone QAC silane. IFTNA/iFabric Corp is a public Canadian co (CVE:IFA, OTC:IFABF); detailed unit pricing not publicly disclosed.",
+    estimatedCostPerMeterLow: 0.05,
+    estimatedCostPerMeterHigh: 0.18,
+    estimatedCostPerMeterTypical: 0.09,
+    retreatmentPossible: false,
+    retreatmentCostMultiplier: 1.5,
+  },
+  {
     id: "microban-additive-gs",
     company: "Microban International",
     product: "Microban Additive GS",
-    chemistryType: "qac_silane",
+    // chemistryType corrected by Phase 19.5 audit (T1 misclass fixes):
+    // EPA Reg 42182-14 lists 100% benzoic acid — an organic-acid
+    // preservative, not a silane-quat. Sourced via deliverables/
+    // Competitor_SDS_Audit_2026-05.md.
+    chemistryType: "organic_acid",
     chemistryLabel: "Organosilane QAC (textile grade)",
     activeAgent: "3-(Trihydroxysilyl)propyldimethyloctadecyl ammonium chloride",
     epaRegNumber: "42182-14",
@@ -451,7 +506,11 @@ export const COMPETITORS: Competitor[] = [
     id: "ultrafresh-dw56",
     company: "Thomson Research / Ultra-Fresh",
     product: "Ultra-Fresh DW-56",
-    chemistryType: "qac_silane",
+    // chemistryType corrected by Phase 19.5 audit (T1 misclass fixes):
+    // EPA Reg 10466-46 lists 15% zinc pyrithione + 15% thiabendazole
+    // — not a silane-QAC. Thomson Research's silane-QAC products live
+    // in different SKU families (Ultra-Fresh SA-/DM-series).
+    chemistryType: "zinc_pyrithione",
     chemistryLabel: "Broad-spectrum Organosilane",
     activeAgent: "Organosilane antimicrobial (broad spectrum)",
     epaRegNumber: "10466-46",
@@ -721,7 +780,14 @@ export const COMPETITORS: Competitor[] = [
     id: "heiq-hyprotecht",
     company: "HeiQ (Switzerland)",
     product: "HeiQ HyProTecht",
-    chemistryType: "zinc_nano",
+    // chemistryType corrected by Phase 19.5 audit (T1 misclass fixes):
+    // HeiQ's own HyProTecht product page describes "silver technology"
+    // — not zinc. The "Crescoating zinc" reference came from a 2022
+    // PMC academic paper (in-situ ZnO synthesis on textiles), not a
+    // HeiQ commercial product. Routed to silver_chloride as the
+    // dominant silver-textile-finishing archetype rather than spin up
+    // a single-entry silver_misc archetype.
+    chemistryType: "silver_chloride",
     chemistryLabel: "Zinc Nanoparticles (Crescoating)",
     activeAgent: "Zinc nanoparticles grown in-situ via Crescoating",
     epaRegNumber: "EPA compliant (active ingredient registered)",
@@ -807,7 +873,16 @@ export const COMPETITORS: Competitor[] = [
     id: "sanitized-zinc-pyrithione",
     company: "Sanitized AG (Switzerland)",
     product: "Sanitized T 99-19 (Zinc Pyrithione)",
-    chemistryType: "zinc_pyrithione",
+    // chemistryType corrected by Phase 19.5 audit (T1 misclass fixes):
+    // NICNAS Public Report STD/1230 names dimethyltetradecyl-[3-(trimethoxysilyl)
+    // propyl]-ammonium chloride as the T 99-19 active — a silane-QAC, not
+    // zinc pyrithione. ZPT can be co-formulated downstream (600-10,000 ppm
+    // in finished textile per the NICNAS dossier) but isn't the T 99-19
+    // active itself. Sanitized's actual ZPT product line is T 27-22 / T 96-21.
+    // The "(Zinc Pyrithione)" label in the product field is kept verbatim as
+    // the manufacturer-marketed name even though the active is silane-QAC —
+    // the misclassification is upstream in Sanitized's own SKU branding.
+    chemistryType: "qac_silane",
     chemistryLabel: "Zinc Pyrithione (ZPT)",
     activeAgent: "Zinc pyrithione antimicrobial compound",
     epaRegNumber: "Uses EPA PC Code 92344",
