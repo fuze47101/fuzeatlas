@@ -266,12 +266,20 @@ export default function BrandFabricsPage() {
             {T.subtitle.replace("{shown}", String(filteredTotal)).replace("{total}", String(data.total))}
           </p>
         </div>
-        <button
-          onClick={downloadCsv}
-          className="shrink-0 px-3 py-2 rounded-lg bg-slate-900 text-white text-sm font-bold hover:bg-slate-800"
-        >
-          {T.btnExportCsv}
-        </button>
+        <div className="shrink-0 flex gap-2">
+          <Link
+            href={`/admin/brands/${brandId}/fabrics/import`}
+            className="px-3 py-2 rounded-lg bg-[#00b4c3] text-white text-sm font-bold hover:bg-[#009aa8]"
+          >
+            📥 Import CSV
+          </Link>
+          <button
+            onClick={downloadCsv}
+            className="px-3 py-2 rounded-lg bg-slate-900 text-white text-sm font-bold hover:bg-slate-800"
+          >
+            {T.btnExportCsv}
+          </button>
+        </div>
       </div>
 
       {/* Filter bar */}
