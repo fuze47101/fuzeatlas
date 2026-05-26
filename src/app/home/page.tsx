@@ -84,7 +84,7 @@ export default function HomePage() {
         </p>
         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">
           {greeting}
-          {firstName ? `, ${firstName}` : ""}
+          {firstName ? <>, <bdi>{firstName}</bdi></> : ""}
         </h1>
         <p className="text-slate-600 mt-1">{t.home.subtitle}</p>
       </div>

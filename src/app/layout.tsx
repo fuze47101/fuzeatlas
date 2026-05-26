@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/AuthContext";
 import I18nProvider from "@/i18n/I18nProvider";
+import { getServerLocale } from "@/i18n/server";
 import AuthLayout from "@/components/AuthLayout";
 import { ToastProvider } from "@/components/Toast";
 import FeedbackButton from "@/components/FeedbackButton";
@@ -39,9 +40,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Read locale from cookie so server-rendered HTML carries the right
+  // lang + dir attributes. Falls back to "en" for first visits.
+  // RTL: ur is the only RTL locale we ship; flip dir accordingly.
+  const locale = await getServerLocale();
+  const dir = locale === "ur" ? "rtl" : "ltr";
   return (
-    <html lang="en">
+    <html lang={locale} dir={dir}>
       <head>
         {/* `maximum-scale=1` was blocking pinch-zoom and trapping the
             iPhone in a zoomed-in state after focusing an input
