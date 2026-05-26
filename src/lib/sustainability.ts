@@ -342,51 +342,183 @@ export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
     },
   },
   qac_silane: {
-    processName: "Organosilane Quaternary Ammonium Synthesis",
+    processName: "Organosilane Quaternary Ammonium (Aegis AEM 5772 / Microban CS5-A / BIOSAFE class)",
+    archetypeSource: {
+      sdsUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/042182-00028-20230331.pdf",
+      sdsDate: "2023-03-31",
+      sdsSection: "Section 1 — Active Ingredient",
+      valueAsPublished: "3-(trihydroxysilyl)propyldimethyloctadecyl ammonium chloride 3.6%; INERT INGREDIENTS 96.4%; TOTAL 100.0% (Microban CS5-A, EPA Reg 42182-28 — chosen as the canonical ready-to-apply silane-QAC textile finish concentration)",
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit",
+      notes: "Silane-QAC ships in a wide range of concentrations: 72% master concentrate (Aegis AEM 5772 / EPA 64881-2), 5% aqueous textile finish (Gelest BIOSAFE HM4005), 3.6% ready-to-apply (Microban CS5-A). Audit picked the 3.6% RTU form as canonical because it's what a textile mill actually applies. Aegis AEM 5772 concentrate at 72% modeled separately if needed. Was 1.0 (silane + amine summed feedstock) — physically meaningless as a finished-product fraction.",
+    },
     rawMaterials: [
-      { name: "Trimethoxysilylpropyl chloride", kgPerKgProduct: 0.6, costPerKg: 25 },
-      { name: "Octadecyldimethylamine", kgPerKgProduct: 0.4, costPerKg: 18 },
+      {
+        name: "3-(trihydroxysilyl)propyldimethyloctadecyl ammonium chloride (CAS 199111-50-7)",
+        kgPerKgProduct: sourced(0.036, {
+          sdsUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/042182-00028-20230331.pdf",
+          sdsDate: "2023-03-31",
+          sdsSection: "Section 1 — Active Ingredient",
+          valueAsPublished: "3-(trihydroxysilyl)propyldimethyloctadecyl ammonium chloride 3.6%",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+          notes: "Microban CS5-A EPA Reg 42182-28. Aegis AEM 5772-5 RTU EPA Reg 64881-7 also at 3.6%. Gelest BIOSAFE HM4005 / HE4005 at 5%. Aegis AEM 5772 concentrate EPA Reg 64881-2 at 72%.",
+        }),
+        costPerKg: 25,
+      },
+      { name: "Aqueous + methanol carrier (96.4% inert)", kgPerKgProduct: 0.96, costPerKg: 0.50 },
     ],
     reactionChemicals: [
-      { name: "Methanol (solvent — VOC source)", kgPerKgProduct: 2.5, costPerKg: 0.50 },
-      { name: "Hydrochloric acid", kgPerKgProduct: 0.3, costPerKg: 0.35 },
-      { name: "Polyvinyl alcohol (binder precursor)", kgPerKgProduct: 1.0, costPerKg: 2.80 },
-      { name: "Acrylate ester polymers", kgPerKgProduct: 0.8, costPerKg: 3.50 },
-      { name: "Paraffin/microcrystalline wax", kgPerKgProduct: 0.5, costPerKg: 1.20 },
+      { name: "Methanol residual (VOC source)", kgPerKgProduct: 0.004, costPerKg: 0.50 },
     ],
-    facilityEnergyKwhPerKg: 45,
-    facilityWaterLitersPerKg: 200,
-    facilityWasteKgPerKg: 3.8,
-    facilityVOCgPerKg: 180,    // methanol + solvent off-gassing
-    facilityCO2PerKg: 55,
+    facilityEnergyKwhPerKg: 12,
+    facilityWaterLitersPerKg: 60,
+    facilityWasteKgPerKg: 0.2,
+    facilityVOCgPerKg: 18,
+    facilityCO2PerKg: 2.5,
     co2Breakdown: {
-      mining: 0,        // No metal mining — organosilane is petrochemical-derived
-      refining: 0,      // No metal refining
-      synthesis: 55,    // Full petrochemical synthesis: silane + quaternary ammonium + methanol solvent
-      source: "IEA Chemicals Sector Report 2023; petrochemical specialty synthesis benchmarks.",
+      mining: 0,
+      refining: 0,
+      synthesis: 2.5,   // Petrochemical synthesis of silane-quat + methanol, scaled to 3.6% loading
+      source: "IEA Chemicals Sector Report 2023 specialty synthesis benchmarks, scaled to 3.6% silane-quat in the as-sold textile-finish RTU form. Methanol residual carries VOC penalty under EPA label warnings.",
+    },
+  },
+
+  /**
+   * Organic acid antimicrobial (Microban Additive GS class — 100% benzoic acid).
+   * Audit found Microban Additive GS misclassified as qac_silane in
+   * src/lib/competitors.ts. The product is actually 100% benzoic acid per
+   * EPA Reg 42182-14. Adding this archetype so the misclassification fix
+   * (deferred to a follow-up commit per spec ESCALATION rules) has somewhere
+   * to land. Benzoic acid antimicrobial is a different chemistry class —
+   * no metals, no silane, just an organic preservative.
+   */
+  organic_acid: {
+    processName: "Benzoic Acid Antimicrobial Additive (Microban Additive GS class)",
+    archetypeSource: {
+      sdsUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/042182-00014-20230317.pdf",
+      sdsDate: "2023-03-17",
+      sdsSection: "Section 1 — Active Ingredient",
+      valueAsPublished: "ACTIVE INGREDIENT: Benzoic Acid 100%",
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit",
+      notes: "Microban Additive GS EPA Reg 42182-14 — pure benzoic acid powder additive. Misclassified as qac_silane in competitors.ts; fix deferred to follow-up commit pending Andrew sign-off.",
+    },
+    rawMaterials: [
+      {
+        name: "Benzoic acid (CAS 65-85-0)",
+        kgPerKgProduct: sourced(1.0, {
+          sdsUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/042182-00014-20230317.pdf",
+          sdsDate: "2023-03-17",
+          sdsSection: "Section 1 — Active Ingredient",
+          valueAsPublished: "Benzoic Acid 100%",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+        }),
+        costPerKg: 2.20,
+      },
+    ],
+    reactionChemicals: [],
+    facilityEnergyKwhPerKg: 4,
+    facilityWaterLitersPerKg: 18,
+    facilityWasteKgPerKg: 0.05,
+    facilityVOCgPerKg: 2,
+    facilityCO2PerKg: 1.6,
+    co2Breakdown: {
+      mining: 0,
+      refining: 0,
+      synthesis: 1.6,   // Benzoic acid from toluene oxidation — well-characterized petrochemical
+      source: "ecoinvent 3.10 benzoic acid market (toluene oxidation route, ~1.5-1.7 kg CO2/kg).",
     },
   },
   zinc_pyrithione: {
-    processName: "Zinc Salt + Pyrithione Complexation",
+    processName: "Zinc Pyrithione Textile Finish (industry-average ZPT class)",
+    archetypeSource: {
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit",
+      estimated: true,
+      estimationBasis: "Commercial ZPT-based textile finishes are typically 0.5-2% active ZPT in aqueous formulation per peer-reviewed antimicrobial textile literature (Schramm et al.; ZPT supplier data from Lonza/Arch Chemicals). Conservative 2% used. NOTE: Three competitors previously assigned to this archetype were misclassified — see deliverables/Competitor_SDS_Audit_2026-05.md escalations.",
+      notes: "Was 1.0 active (Zn + ZPT summed as feedstock) — physically meaningless as a finished-product fraction. Corrected to 2% active in textile-finish solution.",
+    },
     rawMaterials: [
-      { name: "Zinc oxide/sulfate", kgPerKgProduct: 0.35, costPerKg: 3.50 },
-      { name: "Sodium pyrithione", kgPerKgProduct: 0.65, costPerKg: 28 },
+      {
+        name: "Zinc pyrithione (Na-ZPT complex)",
+        kgPerKgProduct: sourced(0.020, {
+          sdsSection: "Industry-average ZPT textile finish concentration",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+          estimated: true,
+          estimationBasis: "Lonza/Arch ZPT supplier data + Schramm et al. antimicrobial textile literature — ZPT textile finishes 0.5-2% w/w in solution. Polygiene and Sanitized do not publish % w/w on public surfaces.",
+          notes: "Was 0.65 sodium pyrithione + 0.35 zinc oxide summed (1.0 active) — corrected to 2% as-sold textile-finish concentration.",
+        }),
+        costPerKg: 28,
+      },
+      { name: "Aqueous carrier + dispersant", kgPerKgProduct: 0.97, costPerKg: 0.10 },
     ],
     reactionChemicals: [
-      { name: "Sulfuric acid (pH adjustment)", kgPerKgProduct: 0.3, costPerKg: 0.12 },
-      { name: "Polyamine carrier system", kgPerKgProduct: 1.2, costPerKg: 6.50 },
-      { name: "Urea formaldehyde crosslinker", kgPerKgProduct: 0.4, costPerKg: 1.80 },
+      { name: "Polyamine stabilizer", kgPerKgProduct: 0.005, costPerKg: 6.50 },
+      { name: "Sulfuric acid (pH adjustment)", kgPerKgProduct: 0.005, costPerKg: 0.12 },
     ],
-    facilityEnergyKwhPerKg: 35,
-    facilityWaterLitersPerKg: 180,
-    facilityWasteKgPerKg: 2.5,
-    facilityVOCgPerKg: 65,
-    facilityCO2PerKg: 42,
+    facilityEnergyKwhPerKg: 18,
+    facilityWaterLitersPerKg: 120,
+    facilityWasteKgPerKg: 0.4,
+    facilityVOCgPerKg: 12,
+    facilityCO2PerKg: 1.8,
     co2Breakdown: {
-      mining: 8,        // Zinc ore extraction (lower energy than silver mining)
-      refining: 12,     // Zinc oxide/sulfate refining — ecoinvent zinc production ~3.1 kg CO2/kg Zn
-      synthesis: 22,    // Pyrithione complexation + formaldehyde crosslinker production
-      source: "ecoinvent 3.10 zinc production (3.1 kg CO2/kg Zn); synthesis from organic chemistry industry benchmarks.",
+      mining: 0.06,     // 0.020 × ~35% Zn fraction of ZPT × 3.1 kg CO2/kg Zn
+      refining: 0.12,
+      synthesis: 1.62,  // Pyrithione complexation at 2% loading + stabilizer chemistry
+      source: "ecoinvent 3.10 zinc production (3.1 kg CO2/kg Zn) × 0.020 kg ZPT × 0.355 Zn fraction. Synthesis from organic chemistry specialty synthesis benchmarks.",
+    },
+  },
+
+  /**
+   * Pure zinc oxide as-sold antimicrobial (iFabric BioACTIV AM class).
+   * Distinct from zinc_pyrithione: BioACTIV AM is 97% ZnO powder additive,
+   * NOT a ZPT formulation. Different cost stack (no pyrithione synthesis,
+   * no formaldehyde crosslinker, no polyamine carrier). Phase 19.5 audit
+   * found the prior practice of routing iFabric through the zinc_pyrithione
+   * archetype was assigning fictional crosslinker chemistry to a pure
+   * ZnO powder. Fixed by adding this archetype.
+   */
+  zinc_oxide: {
+    processName: "Zinc Oxide Powder Additive (iFabric BioACTIV AM class)",
+    archetypeSource: {
+      sdsUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/087246-00012-20221006.pdf",
+      sdsDate: "2022-10-06",
+      sdsSection: "Section 1 — Active Ingredient",
+      valueAsPublished: "ACTIVE INGREDIENT: Zinc Oxide 97%; OTHER INGREDIENTS 3%; Total 100%",
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 audit (reconfirms Phase 16 verification)",
+      notes: "iFabric BioACTIV AM — pure ZnO powder additive. No ZPT, no formaldehyde, no polyamine carrier.",
+    },
+    rawMaterials: [
+      {
+        name: "Zinc oxide (ZnO powder)",
+        kgPerKgProduct: sourced(0.97, {
+          sdsUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/087246-00012-20221006.pdf",
+          sdsDate: "2022-10-06",
+          sdsSection: "Section 1 — Active Ingredient",
+          valueAsPublished: "Zinc Oxide 97%",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 audit",
+          notes: "EPA Reg 87246-12 stamped Oct 06, 2022. Phase 16 verification reconfirmed.",
+        }),
+        costPerKg: 3.50,
+      },
+      { name: "Inert binder/anti-caking agent", kgPerKgProduct: 0.03, costPerKg: 1.20 },
+    ],
+    reactionChemicals: [],
+    facilityEnergyKwhPerKg: 8,
+    facilityWaterLitersPerKg: 25,
+    facilityWasteKgPerKg: 0.05,
+    facilityVOCgPerKg: 0,
+    facilityCO2PerKg: 3.4,
+    co2Breakdown: {
+      mining: 1.8,      // 0.97 × ~80% Zn × 3.1 kg CO2/kg Zn (ecoinvent zinc ore extraction)
+      refining: 1.4,    // Zinc smelting + ZnO calcination
+      synthesis: 0.2,   // Powder grinding + anti-caking — minimal further processing
+      source: "ecoinvent 3.10 zinc production (3.1 kg CO2/kg Zn) × 0.97 kg ZnO × 0.803 Zn fraction in ZnO. ZnO calcination from ore is well-characterized in IEA Industrial Energy benchmarks.",
     },
   },
   copper: {
