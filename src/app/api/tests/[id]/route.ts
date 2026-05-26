@@ -5,6 +5,7 @@ import { sendResultsReadyEmail } from "@/lib/email";
 import { getCurrentUser } from "@/lib/auth";
 import { notifyTestResult } from "@/lib/notify";
 import { generateAndPersistNarration } from "@/lib/test-narration";
+import { recordTrackingEvent } from "@/lib/test-tracking";
 
 /* ── GET /api/tests/[id] ── fetch single test run with all details */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -168,6 +169,30 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         ...brandVisData,
       },
     });
+
+    // P17 — when a TestRun gets stamped brand-visible, transition the
+    // attached TestRequest's tracking to BRAND_VISIBLE.
+    if (brandVisible === true) {
+      void (async () => {
+        try {
+          const links = await prisma.testRequestLine.findMany({
+            where: { testRunId: id },
+            select: { testRequestId: true },
+            distinct: ["testRequestId"],
+          });
+          for (const l of links) {
+            if (l.testRequestId) {
+              await recordTrackingEvent({
+                testRequestId: l.testRequestId,
+                state: "BRAND_VISIBLE",
+                occurredById: userId,
+                metadata: { testRunId: id },
+              });
+            }
+          }
+        } catch {}
+      })();
+    }
 
     // Factory lives on the linked FabricSubmission, not on TestRun. If the
     // caller passed factoryId, proxy it onto the submission. If there's no

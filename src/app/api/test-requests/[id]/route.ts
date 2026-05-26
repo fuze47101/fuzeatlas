@@ -13,11 +13,44 @@ import {
   sendResultsReadyEmail,
 } from "@/lib/email";
 import { getNotifyEmails } from "@/lib/notify-workflow";
+import { recordTrackingEvent } from "@/lib/test-tracking";
 
 const prisma = new PrismaClient();
 
+const ACTION_TO_TRACKING_STATE: Record<string, string> = {
+  approve: "REQUEST_APPROVED",
+  submit_to_lab: "REQUEST_APPROVED",
+  mark_shipped: "SAMPLE_SHIPPED",
+  receive_sample: "SAMPLE_RECEIVED",
+  in_progress: "LAB_TESTING",
+  start_testing: "LAB_TESTING",
+  results_received: "RESULTS_AVAILABLE",
+  complete: "COMPLETE",
+  cancel: "CANCELLED",
+};
+
+const STATUS_TO_TRACKING_STATE: Record<string, string> = {
+  PENDING_APPROVAL: "REQUEST_SUBMITTED",
+  APPROVED: "REQUEST_APPROVED",
+  ASSIGNED_TO_LAB: "REQUEST_APPROVED",
+  IN_PROGRESS: "LAB_TESTING",
+  RESULTS_RECEIVED: "RESULTS_AVAILABLE",
+  COMPLETE: "COMPLETE",
+  CANCELLED: "CANCELLED",
+  REJECTED: "CANCELLED",
+};
+
 /** Fire notification + email for test request status changes (non-blocking) */
 async function notifyTestRequestChange(testRequestId: string, newStatus: string, existing: any) {
+  // P17 — derive tracking state from status (best-effort, non-blocking)
+  const trackingState = STATUS_TO_TRACKING_STATE[newStatus];
+  if (trackingState) {
+    void recordTrackingEvent({
+      testRequestId,
+      state: trackingState,
+      metadata: { source: "status-change", newStatus },
+    }).catch(() => null);
+  }
   try {
     // Resolve brand + factory IDs so we can fan out to their whole user
     // base, not just the requester. Penfabric phase 1 May 2026 — factory

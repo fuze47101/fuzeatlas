@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { recordTrackingEvent, ensureTrackingToken } from "@/lib/test-tracking";
 
 const prisma = new PrismaClient();
 
@@ -212,6 +213,15 @@ export async function POST(request: Request) {
         lines: true,
       },
     });
+
+    // P17 — record initial tracking event + generate public token.
+    void ensureTrackingToken(testRequest.id);
+    void recordTrackingEvent({
+      testRequestId: testRequest.id,
+      state: "REQUEST_SUBMITTED",
+      occurredById: userId || null,
+      metadata: { poNumber, brandId: brandId || null },
+    }).catch(() => null);
 
     return NextResponse.json({ ok: true, testRequest, poNumber });
   } catch (e: any) {

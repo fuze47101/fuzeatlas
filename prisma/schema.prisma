@@ -2133,6 +2133,13 @@ model TestRequest {
   lines     TestRequestLine[]
   shipments SampleShipment[]
 
+  // Phase 17 — real-time tracking
+  trackingEvents        TestTrackingEvent[]        @relation("TestTrackingEventRequest")
+  trackingSubscriptions TestTrackingSubscription[] @relation("TestTrackingSubRequest")
+  trackingToken         TestTrackingToken?         @relation("TestTrackingTokenRequest")
+  trackingState         String?
+  trackingUpdatedAt     DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -2146,6 +2153,56 @@ model TestRequest {
   @@index([approvedById])
   @@index([poDate])
   @@index([priority])
+  @@index([trackingState])
+}
+
+// ─────────────────────────────────────────────
+// PHASE 17 — REAL-TIME TEST TRACKING (FedEx-style)
+// ─────────────────────────────────────────────
+
+model TestTrackingEvent {
+  id            String      @id @default(cuid())
+  testRequestId String
+  testRequest   TestRequest @relation("TestTrackingEventRequest", fields: [testRequestId], references: [id], onDelete: Cascade)
+  state         String
+  label         String
+  occurredAt    DateTime    @default(now())
+  occurredById  String?
+  metadata      Json?
+  isPublic      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+
+  @@index([testRequestId, occurredAt])
+  @@index([state])
+}
+
+model TestTrackingToken {
+  id            String      @id @default(cuid())
+  testRequestId String      @unique
+  testRequest   TestRequest @relation("TestTrackingTokenRequest", fields: [testRequestId], references: [id], onDelete: Cascade)
+  token         String      @unique
+  createdAt     DateTime    @default(now())
+  expiresAt     DateTime?
+  viewCount     Int         @default(0)
+  lastViewedAt  DateTime?
+
+  @@index([token])
+}
+
+model TestTrackingSubscription {
+  id              String      @id @default(cuid())
+  testRequestId   String
+  testRequest     TestRequest @relation("TestTrackingSubRequest", fields: [testRequestId], references: [id], onDelete: Cascade)
+  userId          String?
+  email           String?
+  webPushEndpoint String?
+  webPushKeys     Json?
+  channels        String      @default("EMAIL,IN_APP")
+  createdAt       DateTime    @default(now())
+  unsubscribedAt  DateTime?
+
+  @@index([testRequestId, userId])
+  @@index([testRequestId, email])
 }
 
 model TestRequestLine {

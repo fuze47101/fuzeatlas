@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { recordChange } from "@/lib/audit";
+import { recordTrackingEvent } from "@/lib/test-tracking";
 
 /**
  * POST /api/lab-portal/test-requests/[id]/accept
@@ -98,6 +99,13 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       poNumber: true,
     },
   });
+
+  void recordTrackingEvent({
+    testRequestId: updated.id,
+    state: "LAB_IN_QUEUE",
+    occurredById: user.id,
+    metadata: { estimatedCompletionDate },
+  }).catch(() => null);
 
   recordChange({
     actorUserId: user.id,
