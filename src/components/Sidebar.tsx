@@ -173,16 +173,29 @@ export default function Sidebar() {
   const [pendingCounts, setPendingCounts] = useState<{
     accessRequests: number;
     testRequests: number;
+    suspectEmailTypos: number;
     total: number;
-  }>({ accessRequests: 0, testRequests: 0, total: 0 });
+  }>({ accessRequests: 0, testRequests: 0, suspectEmailTypos: 0, total: 0 });
 
   useEffect(() => {
     if (!isAdmin) return;
     const fetchCounts = () => {
-      fetch("/api/admin/pending-counts")
-        .then((r) => r.json())
-        .then((d) => {
-          if (d.ok) setPendingCounts(d);
+      Promise.all([
+        fetch("/api/admin/pending-counts").then((r) => r.json()).catch(() => null),
+        fetch("/api/admin/suspect-email-typos").then((r) => r.json()).catch(() => null),
+      ])
+        .then(([base, suspects]) => {
+          if (base?.ok) {
+            setPendingCounts((prev) => ({
+              ...prev,
+              accessRequests: base.accessRequests || 0,
+              testRequests: base.testRequests || 0,
+              total: base.total || 0,
+              suspectEmailTypos: suspects?.ok ? Number(suspects.count || 0) : prev.suspectEmailTypos,
+            }));
+          } else if (suspects?.ok) {
+            setPendingCounts((prev) => ({ ...prev, suspectEmailTypos: Number(suspects.count || 0) }));
+          }
         })
         .catch(() => {});
     };
@@ -430,6 +443,7 @@ export default function Sidebar() {
     function badgeFor(item: ModuleItem): number | undefined {
       if (item.badgeKey === "testRequests") return pendingCounts.testRequests;
       if (item.badgeKey === "accessRequests") return pendingCounts.accessRequests;
+      if (item.badgeKey === "suspectEmailTypos") return pendingCounts.suspectEmailTypos;
       return undefined;
     }
 

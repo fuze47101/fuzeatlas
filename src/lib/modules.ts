@@ -221,6 +221,14 @@ export const MODULES: ModuleDef[] = [
       { label: "Notifications", labelKey: "notifications", href: "/notifications", icon: "🔔" },
       { label: "User Management", labelKey: "userManagement", href: "/settings/users", icon: "👥" },
       {
+        label: "Suspect Email Typos",
+        labelKey: "suspectEmailTypos",
+        href: "/admin/users/suspect-email-typos",
+        icon: "📧",
+        badgeKey: "suspectEmailTypos",
+        adminOnly: true,
+      },
+      {
         label: "Access Requests",
         labelKey: "accessRequests",
         href: "/settings/access-requests",

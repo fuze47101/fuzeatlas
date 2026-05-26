@@ -4266,3 +4266,15 @@ model LocaleReviewStatus {
 
   @@index([reviewerId])
 }
+
+model SimilarEmailIgnore {
+  id           String   @id @default(cuid())
+  userId       String
+  contactEmail String
+  ignoredById  String
+  ignoredAt    DateTime @default(now())
+  reason       String?
+
+  @@unique([userId, contactEmail])
+  @@index([userId])
+}

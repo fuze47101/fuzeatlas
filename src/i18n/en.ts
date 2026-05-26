@@ -45,6 +45,7 @@ const en = {
     pricing: "Pricing",
     sustainability: "Sustainability",
     userManagement: "User Management",
+    suspectEmailTypos: "Suspect Email Typos",
     availabilitySettings: "Availability Settings",
     accessRequests: "Access Requests",
     exchangeRates: "Exchange Rates",
