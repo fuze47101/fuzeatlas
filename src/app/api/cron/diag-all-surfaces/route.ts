@@ -702,6 +702,36 @@ export async function GET(req: Request) {
           where: { status: "OPEN", assigneeId: { not: null } },
         }),
     ),
+    // Phase 54 — Project Start Wizard probes.
+    check(
+      "/admin/projects — Project.projectType column readable",
+      "project count w/ projectType filter",
+      () =>
+        prisma.project.count({
+          where: { projectType: { in: ["BRAND", "FACTORY", "INTERNAL"] } } as any,
+        }),
+    ),
+    check(
+      "/admin/projects — Project.ownerId column readable",
+      "project count w/ ownerId not null",
+      () =>
+        prisma.project.count({
+          where: { ownerId: { not: null } } as any,
+        }),
+    ),
+    check(
+      "/admin/projects/[id] — MeetingNote.projectId column readable",
+      "meetingNote count w/ projectId not null",
+      () =>
+        (prisma as any).meetingNote.count({
+          where: { projectId: { not: null } },
+        }),
+    ),
+    check(
+      "/api/admin/projects — POST endpoint reachable (route file present)",
+      "project findFirst — smoke read",
+      () => prisma.project.findFirst({ select: { id: true } }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
