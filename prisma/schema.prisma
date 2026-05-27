@@ -270,6 +270,14 @@ model User {
   // Tina is the Asia regional approver after the migration cron backfill.
   approvedLabs Lab[] @relation("LabRegionalApprover")
 
+  // Phase 53 — Meeting Notes module relations.
+  meetingSeriesCreated MeetingSeries[]     @relation("MeetingSeriesCreator")
+  meetingNotesCreated  MeetingNote[]       @relation("MeetingNoteCreator")
+  meetingEntries       MeetingNoteEntry[]
+  actionItemsAssigned  MeetingActionItem[] @relation("ActionItemAssignee")
+  actionItemsClosed    MeetingActionItem[] @relation("ActionItemCloser")
+  actionItemsCreated   MeetingActionItem[] @relation("ActionItemCreator")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -403,6 +411,8 @@ model Brand {
   recipeRequests       RecipeRequest[]            @relation("BrandRecipeRequests")
   factoryInvitations   FactoryInvitation[]        @relation("BrandFactoryInvitations")
   meetings             Meeting[]                  @relation("MeetingBrand")
+  meetingNotes         MeetingNote[]              @relation("MeetingNoteBrand")
+  meetingSeries        MeetingSeries[]            @relation("MeetingSeriesBrand")
   crmTasks             CrmTask[]                  @relation("BrandCrmTasks")
   sourceRecords        SourceRecord[]
   engagement           BrandEngagement?           @relation("BrandEngagement")
@@ -537,6 +547,9 @@ model Factory {
   recipeRequests       RecipeRequest[]            @relation("FactoryRecipeRequests")
   // NEED-6 — this factory's ack-trail across every brand it supplies.
   specAcknowledgements BrandSpecAcknowledgement[] @relation("FactorySpecAcks")
+  // Phase 53 — Meeting Notes module.
+  meetingNotes         MeetingNote[]              @relation("MeetingNoteFactory")
+  meetingSeries        MeetingSeries[]            @relation("MeetingSeriesFactory")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -4357,4 +4370,137 @@ model SimilarEmailIgnore {
 
   @@unique([userId, contactEmail])
   @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// PHASE 53 — MEETING NOTES MODULE
+// ─────────────────────────────────────────────
+//
+// Markdown meeting-notes docs distinct from the calendar Meeting model
+// above. Per-user attributed entries, inline @mention parser for
+// first-class action items, /my-tasks personal board, auto-create-next
+// cron for recurring series.
+//
+// Model naming convention:
+//   MeetingSeries     — recurring template (Monday Global Meeting,
+//                       KUIU Weekly, ...).
+//   MeetingNote       — one meeting's note doc (renamed from spec's
+//                       'Meeting' to avoid collision with the existing
+//                       calendar Meeting model).
+//   MeetingNoteEntry  — one user's contribution (append-only, edits
+//                       create new rows that point back via editsId).
+//   MeetingActionItem — first-class task with priority + assignee +
+//                       due date, extracted from @mention parser.
+// ─────────────────────────────────────────────
+
+model MeetingSeries {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  cadence     String?  // "weekly" | "biweekly" | "monthly" | "adhoc"
+  cadenceDay  Int?     // 0=Sun, 1=Mon ... 6=Sat
+  cadenceHour Int?     // 0-23 UTC
+  templateMd  String?
+
+  brandId   String?
+  brand     Brand?   @relation("MeetingSeriesBrand", fields: [brandId], references: [id])
+  factoryId String?
+  factory   Factory? @relation("MeetingSeriesFactory", fields: [factoryId], references: [id])
+
+  active   Boolean       @default(true)
+  meetings MeetingNote[] @relation("MeetingNoteSeries")
+
+  createdById String?
+  createdBy   User?    @relation("MeetingSeriesCreator", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active])
+  @@index([brandId])
+  @@index([factoryId])
+}
+
+model MeetingNote {
+  id       String         @id @default(cuid())
+  seriesId String?
+  series   MeetingSeries? @relation("MeetingNoteSeries", fields: [seriesId], references: [id])
+
+  title       String
+  meetingDate DateTime
+  notesMd     String   @default("")
+  status      String   @default("DRAFT") // DRAFT | IN_PROGRESS | COMPLETED | ARCHIVED
+
+  brandId   String?
+  brand     Brand?   @relation("MeetingNoteBrand", fields: [brandId], references: [id])
+  factoryId String?
+  factory   Factory? @relation("MeetingNoteFactory", fields: [factoryId], references: [id])
+
+  createdById String?
+  createdBy   User?   @relation("MeetingNoteCreator", fields: [createdById], references: [id])
+
+  entries     MeetingNoteEntry[]
+  actionItems MeetingActionItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([meetingDate])
+  @@index([seriesId])
+  @@index([brandId])
+  @@index([factoryId])
+  @@index([status])
+}
+
+model MeetingNoteEntry {
+  id            String      @id @default(cuid())
+  meetingNoteId String
+  meetingNote   MeetingNote @relation(fields: [meetingNoteId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  bodyMd   String
+  isEdit   Boolean            @default(false)
+  editsId  String?
+  edits    MeetingNoteEntry?  @relation("EntryEdits", fields: [editsId], references: [id])
+  editedBy MeetingNoteEntry[] @relation("EntryEdits")
+
+  actionItemsFromEntry MeetingActionItem[] @relation("ActionItemSource")
+
+  createdAt DateTime @default(now())
+
+  @@index([meetingNoteId])
+  @@index([authorId])
+}
+
+model MeetingActionItem {
+  id            String      @id @default(cuid())
+  meetingNoteId String
+  meetingNote   MeetingNote @relation(fields: [meetingNoteId], references: [id], onDelete: Cascade)
+
+  sourceEntryId String?
+  sourceEntry   MeetingNoteEntry? @relation("ActionItemSource", fields: [sourceEntryId], references: [id])
+
+  description String
+  assigneeId  String?
+  assignee    User?   @relation("ActionItemAssignee", fields: [assigneeId], references: [id])
+
+  priority String    @default("NORMAL") // LOW | NORMAL | HIGH | URGENT
+  dueDate  DateTime?
+
+  status   String    @default("OPEN")   // OPEN | DONE | BLOCKED | CANCELLED
+  doneAt   DateTime?
+  doneById String?
+  doneBy   User?     @relation("ActionItemCloser", fields: [doneById], references: [id])
+
+  createdById String?
+  createdBy   User?    @relation("ActionItemCreator", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([assigneeId, status])
+  @@index([meetingNoteId])
+  @@index([dueDate])
+  @@index([priority])
+  @@index([status])
 }
