@@ -10,6 +10,11 @@ export type ChemistryType =
   // Phase 19.5 audit added — Microban Additive GS is 100% benzoic acid
   // per EPA Reg 42182-14, an organic acid preservative, not a silane-quat.
   | "organic_acid"
+  // 2026-05-26 Rudolf deep-dive — AGXX (RUCO-BAC ROX) is silver +
+  // ruthenium micro-galvanic catalyst. Ruthenium dominates the CO2
+  // footprint despite being the minority component by mass; needs its
+  // own archetype so the math doesn't fall through to silver_chloride.
+  | "silver_ruthenium_catalytic"
   // Mint / fragrance treatments — NOT antimicrobials. Tracked so reps can
   // call out the misclassification when brands confuse e.g. HeiQ Fresh
   // (scent) with HeiQ Viroblock (antiviral).
@@ -558,7 +563,7 @@ export const COMPETITORS: Competitor[] = [
     activeAgent: "Silane quaternary ammonium with polymer science",
     epaRegNumber: "EPA approved (via Sanitized AG)",
     epaRegYear: null,
-    epaRegNote: "EPA approved, OEKO-TEX Classes I-IV. Swiss brand distributed via Rudolf Group.",
+    epaRegNote: "EPA approved, OEKO-TEX Classes I-IV. Swiss brand. Rudolf GmbH holds exclusive global distribution rights — when a brand specs Sanitized Puretec in any market outside Switzerland, the supply chain runs Sanitized AG (Burgdorf, Switzerland) → Rudolf GmbH (Geretsried, Germany) → regional Rudolf subsidiary → mill. This adds a third logistics handoff vs single-source competitors and increases the per-kg-product distribution CO2.",
     epaLabelUrl: "https://www.sanitized.com/en/technologies/sanitized-puretec/",
     dosageLow: 100,
     dosageHigh: 500,
@@ -1314,6 +1319,201 @@ export const COMPETITORS: Competitor[] = [
     estimatedCostPerMeterTypical: 0.06,
     retreatmentPossible: false,
     retreatmentCostMultiplier: 1.0,
+  },
+  // ──────────────────────────────────────────────────────────
+  // Rudolf Group antimicrobial line — added 2026-05-26
+  //
+  // 5 entries total: 4 new (ROX/AGP/AGL/SILVERPLUS) + the existing
+  // sanitized-puretec entry above updated with the Rudolf-exclusive
+  // global distribution relationship.
+  //
+  // Headline finding: Rudolf's own RUCO-BAC disclaimer
+  // (rudolf.com/uploads/.../disclaimer_ruco_bac_series_en.pdf)
+  // explicitly states "antibacterial, bactericidal, germicidal" claims
+  // are NOT EPA-acceptable without product-specific registration. Yet
+  // RUCO-BAC marketing uses all three terms freely. Same FIFRA Section
+  // 12(a)(1)(A) misbranding pattern caught with IFTNA FreshTX.
+  //
+  // Also: explicit admission in the disclaimer that AGP / AGL / HSA CONC /
+  // CID OF / ZPY are NOT registered by Canada PMRA. Rudolf cannot
+  // legally make antimicrobial claims in Canada on any of these.
+  //
+  // Audit transcript: deliverables/Competitor_SDS_Audit_2026-05.md
+  // section "## 2026-05-26 follow-up — Rudolf Group antimicrobial line".
+  // ──────────────────────────────────────────────────────────
+  {
+    id: "rudolf-ruco-bac-rox",
+    company: "Rudolf GmbH (Germany) — distributing Heraeus AGXX technology",
+    product: "RUCO-BAC ROX (powered by AGXX®)",
+    chemistryType: "silver_ruthenium_catalytic",
+    chemistryLabel: "Silver-Ruthenium Catalytic (AGXX)",
+    activeAgent:
+      "Silver-ruthenium micro-galvanic elements (Heraeus AGXX, ~87.5% Ag / ~12.5% Ru per peer-reviewed literature)",
+    epaRegNumber: "N/A",
+    epaRegYear: null,
+    epaRegNote:
+      "NO US EPA registration discoverable for RUCO-BAC ROX as of 2026-05-26 despite explicit antimicrobial efficacy claims ('continuously reducing odor-causing microorganisms'). Heraeus AGXX has EU Biocidal Products Regulation (BPR) approval but US registration status unclear. Per Rudolf's own RUCO-BAC disclaimer (rudolf.com/uploads/rudolfgroup/Documents/disclaimer_ruco_bac_series_en.pdf): 'antibacterial, bactericidal, germicidal' claims are NOT EPA-acceptable without product-specific registration. Marketing language exceeds the regulatory floor. Also NOT registered by Canada PMRA per Rudolf's own admission. EPA PPLS verification 2026-05-26 — no registrations under company name 'Rudolf' found in PPLS public index for ROX/AGXX products.",
+    epaLabelUrl: "https://rudolf.com/uploads/rudolfgroup/Documents/disclaimer_ruco_bac_series_en.pdf",
+    dosageLow: 1,
+    dosageHigh: 3,
+    dosageTypical: 2,
+    maxWashClaim: 30,
+    washClaimNote:
+      "Manufacturer claims catalyst is non-consumed; no third-party AATCC 100 reports publicly available",
+    binderRequired: true,
+    binderGPerKg: 12,
+    binderType: "Polymer matrix (acrylic-based)",
+    binderPricePerKg: 4.2,
+    binderLeachPctLifetime: 8,
+    binderVOC: true,
+    binderFormaldehyde: false,
+    curingRequired: true,
+    curingTempC: 160,
+    leachRateFirst10Washes: 25,
+    leachRatePerWash: 2.5,
+    heavyMetalReleased: "Silver + Ruthenium",
+    aquaticToxicityNote:
+      "Silver: classic aquatic toxicity to Daphnia + fish embryos. Ruthenium: limited textile-wash ecotox data — peer-reviewed precious-metal ecotox literature flags Ru oxidation states as moderately bioavailable to aquatic invertebrates. Two distinct precious-metal pollutants in one product, with no PMRA registration for environmental release oversight.",
+    endOfLifeNote:
+      "Combined silver + ruthenium precious-metal residue in landfill leachate. Ruthenium is essentially absent from existing textile-recycling stream models — no recovery infrastructure exists at scale. Per-garment precious-metal recovery uneconomic below industrial-fleet quantities.",
+    chemicalPricePerKg: 400,
+    chemicalPriceSource:
+      "Estimate: Heraeus AGXX precious-metal-based formulation, German manufacturing premium — ~$320-480/kg active ingredient (midpoint $400 used).",
+    estimatedCostPerMeterLow: 0.32,
+    estimatedCostPerMeterHigh: 0.96,
+    estimatedCostPerMeterTypical: 0.55,
+    retreatmentPossible: false,
+    retreatmentCostMultiplier: 2.8,
+  },
+  {
+    id: "rudolf-ruco-bac-agp",
+    company: "Rudolf GmbH (Germany)",
+    product: "RUCO-BAC AGP (SILVERPLUS sub-brand, flagship antimicrobial + antiviral)",
+    chemistryType: "silver_chloride",
+    chemistryLabel: "Silver chloride (textile finishing dispersion)",
+    activeAgent: "Silver chloride microstructures releasing Ag+ ions",
+    epaRegNumber: "84189-2 (claimed — unverified)",
+    epaRegYear: null,
+    epaRegNote:
+      "Claimed EPA Reg 84189-2 per third-party search results — EPA PPLS lookup 2026-05-26 against registrant 84189 / 'Rudolf' did NOT return a public product label matching the 84189-2 designation. Treat the claimed reg number as unverified until Rudolf provides a label PDF URL. Per Rudolf's own RUCO-BAC disclaimer, 'antibacterial, bactericidal, germicidal' claims are NOT EPA-acceptable without product-specific registration — AGP marketing uses all three terms freely. NOT registered by Canada PMRA per Rudolf's own admission. The combination of (a) unverified EPA reg number and (b) explicit Canada PMRA non-registration with continued antimicrobial marketing claims is a FIFRA Section 12(a)(1)(A) misbranding risk if the registration cannot be substantiated.",
+    epaLabelUrl: "https://rudolf.com/uploads/rudolfgroup/Documents/disclaimer_ruco_bac_series_en.pdf",
+    dosageLow: 5,
+    dosageHigh: 15,
+    dosageTypical: 10,
+    maxWashClaim: 50,
+    washClaimNote:
+      "Manufacturer claims 'highly resistant to washing' — no specific wash-count number publicly disclosed, no third-party AATCC 100 reports public",
+    binderRequired: true,
+    binderGPerKg: 14,
+    binderType: "Acrylic co-polymer",
+    binderPricePerKg: 3.8,
+    binderLeachPctLifetime: 15,
+    binderVOC: true,
+    binderFormaldehyde: true,
+    curingRequired: true,
+    curingTempC: 155,
+    leachRateFirst10Washes: 45,
+    leachRatePerWash: 4.5,
+    heavyMetalReleased: "Silver",
+    aquaticToxicityNote:
+      "Silver chloride dispersion releases Ag+ in wash water; classic aquatic toxicity to Daphnia + fish embryos. Polymer carrier leaches an additional 15% of binder mass over lifetime.",
+    endOfLifeNote:
+      "Silver in landfill leachate; acrylic + formaldehyde-crosslinked binder residue. Not recoverable through standard textile recycling streams.",
+    chemicalPricePerKg: 115,
+    chemicalPriceSource:
+      "Estimate: silver-based textile finish, German manufacturing — ~$95-140/kg active (midpoint $115).",
+    estimatedCostPerMeterLow: 0.08,
+    estimatedCostPerMeterHigh: 0.22,
+    estimatedCostPerMeterTypical: 0.13,
+    retreatmentPossible: false,
+    retreatmentCostMultiplier: 1.4,
+  },
+  {
+    id: "rudolf-ruco-bac-agl",
+    company: "Rudolf GmbH (Germany)",
+    product: "RUCO-BAC AGL ('non-migrating' silver for skin-contact)",
+    chemistryType: "silver_chloride",
+    chemistryLabel: "Silver bound in polymer matrix ('non-migrating' marketing claim)",
+    activeAgent: "Silver bonded into polymer matrix for slow-release",
+    epaRegNumber: "84189 (unspecified — unverified)",
+    epaRegYear: null,
+    epaRegNote:
+      "Per Rudolf's RUCO-BAC disclaimer, AGL is EPA registered as part of the AGP/AGL family — specific reg number not disclosed by Rudolf and EPA PPLS lookup 2026-05-26 returned no public 84189 label matching AGL. 'Non-migrating' marketing claim is contradicted by every published silver-textile wash-leaching study (Reed et al. ES&T 2010, Benn & Westerhoff ES&T 2008). All silver textile finishes migrate during washing — 'non-migrating' is marketing language for 'binds in a polymer matrix that releases more slowly than a free salt.' NOT registered by Canada PMRA per Rudolf's own admission.",
+    epaLabelUrl: "https://rudolf.com/uploads/rudolfgroup/Documents/disclaimer_ruco_bac_series_en.pdf",
+    dosageLow: 5,
+    dosageHigh: 15,
+    dosageTypical: 10,
+    maxWashClaim: 50,
+    washClaimNote:
+      "Manufacturer claims durability for skin-contact apparel; no third-party validation reports public",
+    binderRequired: true,
+    binderGPerKg: 18,
+    binderType: "Polymer matrix (proprietary)",
+    binderPricePerKg: 5.2,
+    binderLeachPctLifetime: 10,
+    binderVOC: true,
+    binderFormaldehyde: false,
+    curingRequired: true,
+    curingTempC: 160,
+    leachRateFirst10Washes: 30,
+    leachRatePerWash: 3.0,
+    heavyMetalReleased: "Silver",
+    aquaticToxicityNote:
+      "'Non-migrating' marketing notwithstanding, Reed et al. ES&T 2010 and Benn & Westerhoff ES&T 2008 measure silver release from all polymer-bound silver textile chemistries — wash water still carries Ag+ to wastewater.",
+    endOfLifeNote:
+      "Polymer-bound silver fragments in landfill leachate. Slower release profile but same eventual mass balance.",
+    chemicalPricePerKg: 135,
+    chemicalPriceSource:
+      "Estimate: silver + polymer matrix system, German manufacturing premium — ~$110-160/kg active (midpoint $135).",
+    estimatedCostPerMeterLow: 0.09,
+    estimatedCostPerMeterHigh: 0.26,
+    estimatedCostPerMeterTypical: 0.16,
+    retreatmentPossible: false,
+    retreatmentCostMultiplier: 1.6,
+  },
+  {
+    id: "rudolf-silverplus",
+    company: "Rudolf GmbH (Germany)",
+    product: "SILVERPLUS (umbrella sub-brand wrapping RUCO-BAC AGP + AGL for apparel)",
+    chemistryType: "silver_chloride",
+    chemistryLabel: "Silver chloride (apparel-market positioning of AGP/AGL)",
+    activeAgent:
+      "Silver chloride microstructures (same chemistry as AGP/AGL — SILVERPLUS is the consumer-facing brand)",
+    epaRegNumber: "84189-2 (inherited from AGP/AGL — unverified)",
+    epaRegYear: null,
+    epaRegNote:
+      "SILVERPLUS is Rudolf's apparel-market sub-brand for RUCO-BAC AGP + AGL. Same EPA registration footprint as the underlying products — and the same EPA PPLS verification gap (2026-05-26 lookup against 84189 registrant returned no public label for SILVERPLUS or 84189-2). Marketing focuses on 'odor control' which IS an EPA-acceptable non-public-health claim — but the underlying AGP/AGL chemistry is still subject to the full FIFRA scope when broader 'antibacterial' claims appear. Per Rudolf disclaimer, NOT registered by Canada PMRA. This is the most-deployed Rudolf antimicrobial in US apparel — most likely Target-stores replacement candidate per the 2026-05-26 sales intel.",
+    epaLabelUrl: "https://rudolf.com/technologies/silverplus",
+    dosageLow: 5,
+    dosageHigh: 20,
+    dosageTypical: 12,
+    maxWashClaim: 50,
+    washClaimNote:
+      "Marketing claims '50+ washes' durability; no public AATCC 100 third-party reports",
+    binderRequired: true,
+    binderGPerKg: 15,
+    binderType: "Acrylic / polymer matrix",
+    binderPricePerKg: 4.0,
+    binderLeachPctLifetime: 12,
+    binderVOC: true,
+    binderFormaldehyde: true,
+    curingRequired: true,
+    curingTempC: 155,
+    leachRateFirst10Washes: 38,
+    leachRatePerWash: 3.8,
+    heavyMetalReleased: "Silver",
+    aquaticToxicityNote:
+      "Silver release pattern follows underlying AGP/AGL chemistry — Daphnia + fish embryo aquatic toxicity. Acrylic + formaldehyde-crosslinked binder leaches additional 12% of binder mass over lifetime.",
+    endOfLifeNote:
+      "Apparel sub-brand carries the parent chemistry's end-of-life profile: silver in landfill leachate plus formaldehyde-binder residue. Not recoverable through standard textile recycling.",
+    chemicalPricePerKg: 120,
+    chemicalPriceSource:
+      "Estimate: silver chloride textile finish branded for apparel, German manufacturing — ~$100-145/kg active (midpoint $120).",
+    estimatedCostPerMeterLow: 0.09,
+    estimatedCostPerMeterHigh: 0.24,
+    estimatedCostPerMeterTypical: 0.14,
+    retreatmentPossible: false,
+    retreatmentCostMultiplier: 1.5,
   },
 ];
 
