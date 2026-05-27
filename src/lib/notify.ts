@@ -394,8 +394,13 @@ export async function notifyTestRequestStatus(params: {
   // CANCELLED — those are internal admin states.
   brandId?: string | null;
   factoryId?: string | null;
+  // Phase 52 T2 — Lab.regionalApproverId. When the originating request
+  // is going to a lab with a regional approver set (e.g. Tina for Asia
+  // labs), PENDING_APPROVAL notifications route to that user instead of
+  // the generic admin fan-out.
+  labId?: string | null;
 }) {
-  const { testRequestId, status, createdByUserId, poNumber, factoryName, brandId, factoryId } =
+  const { testRequestId, status, createdByUserId, poNumber, factoryName, brandId, factoryId, labId } =
     params;
 
   const statusLabels: Record<string, string> = {
@@ -430,7 +435,35 @@ export async function notifyTestRequestStatus(params: {
       status === "PENDING_APPROVAL"
         ? `New test request ${ref}${fromWho} is awaiting your approval.`
         : `Results received for test request ${ref}${fromWho}. Ready for review.`;
-    await notifyAdmins("PO_STATUS", `Test Request ${label}: ${ref}`, message, `/test-requests`);
+
+    // Phase 52 T2 — regional routing for PENDING_APPROVAL. If the lab
+    // has a regionalApproverId set, notify ONLY that approver (e.g.
+    // Tina for Asia labs). Otherwise fall back to the all-admin
+    // fan-out so nothing falls through the cracks.
+    let regionalApproverId: string | null = null;
+    if (status === "PENDING_APPROVAL" && labId) {
+      try {
+        const lab = await (prisma as any).lab.findUnique({
+          where: { id: labId },
+          select: { regionalApproverId: true },
+        });
+        regionalApproverId = lab?.regionalApproverId || null;
+      } catch {
+        // column may not yet exist on early deploys — fall through to admin fan-out
+      }
+    }
+
+    if (regionalApproverId) {
+      await createNotification({
+        userId: regionalApproverId,
+        type: "PO_STATUS",
+        title: `Test Request ${label}: ${ref}`,
+        message,
+        link: `/test-requests`,
+      });
+    } else {
+      await notifyAdmins("PO_STATUS", `Test Request ${label}: ${ref}`, message, `/test-requests`);
+    }
   }
 
   // Customer-facing fan-out — brand users + factory users at the org

@@ -76,7 +76,9 @@ async function notifyTestRequestChange(testRequestId: string, newStatus: string,
       console.error("[NOTIFY] Test request brand/factory lookup failed:", lookupErr);
     }
 
-    // Push real-time notification (DB row + SSE)
+    // Push real-time notification (DB row + SSE). Phase 52 T2 — pass
+    // existing.labId through so PENDING_APPROVAL routes to the lab's
+    // regional approver (e.g. Tina for Asia labs).
     await pushTestRequestStatus({
       testRequestId,
       status: newStatus,
@@ -84,6 +86,7 @@ async function notifyTestRequestChange(testRequestId: string, newStatus: string,
       poNumber: existing.poNumber,
       brandId,
       factoryId,
+      labId: existing.labId || null,
     });
 
     // Send email to the requester
