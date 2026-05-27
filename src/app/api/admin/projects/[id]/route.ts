@@ -12,9 +12,103 @@ import { getCurrentUser } from "@/lib/auth";
  * goalMd if they're the owner.
  */
 const STAFF_ROLES = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER"]);
+const READ_ROLES = new Set([
+  "ADMIN",
+  "EMPLOYEE",
+  "SALES_MANAGER",
+  "SALES_REP",
+  "BD_REP",
+  "TESTING_MANAGER",
+  "FABRIC_MANAGER",
+  "FACTORY_MANAGER",
+]);
 
 function bad(msg: string, status = 400) {
   return NextResponse.json({ ok: false, error: msg }, { status });
+}
+
+/**
+ * GET /api/admin/projects/[id]
+ *
+ * Header + Overview/Tasks/Meetings tab data. Sample grid stays on
+ * /api/admin/projects/[id]/grid (Phase 52 T3).
+ */
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const user = await getCurrentUser();
+  if (!user) return bad("Unauthorized", 401);
+  if (!READ_ROLES.has(user.role)) return bad("Forbidden", 403);
+
+  const project = await prisma.project.findUnique({
+    where: { id },
+    include: {
+      brand: { select: { id: true, name: true } },
+      factory: { select: { id: true, name: true } },
+      owner: { select: { id: true, name: true, email: true } } as any,
+      meetingNotes: {
+        orderBy: { meetingDate: "desc" },
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          meetingDate: true,
+          createdBy: { select: { id: true, name: true } },
+          _count: { select: { entries: true, actionItems: true } },
+        },
+      } as any,
+    },
+  });
+  if (!project) return bad("Project not found", 404);
+
+  const actionItems = await (prisma as any).meetingActionItem.findMany({
+    where: { meetingNote: { projectId: id } },
+    include: {
+      assignee: { select: { id: true, name: true, email: true } },
+      createdBy: { select: { id: true, name: true } },
+      meetingNote: { select: { id: true, title: true } },
+    },
+    orderBy: [{ priority: "desc" }, { dueDate: "asc" }, { createdAt: "asc" }],
+  });
+
+  const openActionItems = actionItems.filter((a: any) => a.status === "OPEN").length;
+  const meetingCount = (project as any).meetingNotes?.length || 0;
+  const testRequestsCount = await prisma.testRequest
+    .count({ where: { projectId: id } })
+    .catch(() => 0);
+
+  return NextResponse.json({
+    ok: true,
+    project: {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      stage: project.stage,
+      projectType: (project as any).projectType || "BRAND",
+      goalMd: (project as any).goalMd || null,
+      ownerId: (project as any).ownerId || null,
+      owner: (project as any).owner || null,
+      brandId: project.brandId,
+      brandName: project.brand?.name || null,
+      factoryId: project.factoryId,
+      factoryName: project.factory?.name || null,
+      kickoffMeetingNoteId: (project as any).kickoffMeetingNoteId || null,
+      projectedValue: project.projectedValue,
+      annualVolumeMeters: project.annualVolumeMeters,
+      fuzeTier: project.fuzeTier,
+      createdAt: project.createdAt,
+    },
+    counts: {
+      openActionItems,
+      totalActionItems: actionItems.length,
+      meetings: meetingCount,
+      testRequests: testRequestsCount,
+    },
+    actionItems,
+    meetings: (project as any).meetingNotes || [],
+  });
 }
 
 export async function PATCH(
