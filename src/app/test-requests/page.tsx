@@ -366,15 +366,25 @@ export default function TestRequestsPage() {
           <h1 className="text-2xl font-black text-slate-900">{T.pageTitle}</h1>
           <p className="text-sm text-slate-500 mt-1">{T.pageSubtitle}</p>
         </div>
-        <button
-          onClick={() => { setShowCreate(!showCreate); if (!showCreate) loadReferenceData(); }}
-          className="px-5 py-2.5 bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white rounded-lg text-sm font-semibold hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all flex items-center gap-2"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          {T.newRequestBtn}
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/test-requests/wizard"
+            className="px-4 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 inline-flex items-center gap-1.5"
+            title="AI-assisted wizard pulled from the lab's intake form"
+          >
+            <span aria-hidden="true">✨</span>
+            <span>New via Wizard</span>
+          </Link>
+          <button
+            onClick={() => { setShowCreate(!showCreate); if (!showCreate) loadReferenceData(); }}
+            className="px-5 py-2.5 bg-gradient-to-r from-[#00b4c3] to-[#009ba8] text-white rounded-lg text-sm font-semibold hover:shadow-lg hover:shadow-[#00b4c3]/30 transition-all flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            {T.newRequestBtn}
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
