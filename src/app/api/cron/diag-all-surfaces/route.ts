@@ -631,6 +631,45 @@ export async function GET(req: Request) {
           where: { status: { in: ["FIXED", "CLOSED", "REJECTED", "DUPLICATE"] } },
         }),
     ),
+    // Phase 52 T1 — confirm TestRequestLine.organisms + washCount
+    // columns exist post-migration. count() will throw "column does
+    // not exist" if the migration didn't land.
+    check(
+      "/test-requests — TestRequestLine.organisms/washCount columns",
+      "testRequestLine count w/ organisms/washCount where-clause",
+      () =>
+        prisma.testRequestLine.count({
+          where: {
+            OR: [
+              { organisms: { not: null } },
+              { washCount: { not: null } },
+            ],
+          },
+        }),
+    ),
+    // Phase 52 T2 — Lab.regionalApproverId readable + index usable.
+    check(
+      "/admin/test-requests — Lab.regionalApproverId column",
+      "lab count where regionalApproverId not null",
+      () => prisma.lab.count({ where: { regionalApproverId: { not: null } } as any }),
+    ),
+    // Phase 52 T3 — admin projects list endpoint readable.
+    check(
+      "/admin/projects — list endpoint readable",
+      "project findMany w/ brand+factory include",
+      () =>
+        prisma.project.findMany({
+          select: { id: true, name: true, stage: true },
+          take: 1,
+        }),
+    ),
+    // Phase 52 T4 — LabFormTemplate table readable. Returning 0 is
+    // fine; this confirms the table exists.
+    check(
+      "/lab-portal/forms — LabFormTemplate count",
+      "labFormTemplate count w/ active filter",
+      () => prisma.labFormTemplate.count({ where: { active: true } }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
