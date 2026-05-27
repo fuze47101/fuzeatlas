@@ -332,7 +332,15 @@ export async function POST(req: Request) {
       },
     });
   } catch (e: any) {
-    console.error("Brand test-request POST error:", e);
-    return NextResponse.json({ ok: false, error: "Failed to create test request" }, { status: 500 });
+    // Kaylee Pace 2026-05-27 — 'failed to create test request' bug.
+    // Old catch block returned a generic string and discarded e.message
+    // entirely, leaving no clue server-side or client-side. Surface the
+    // actual Prisma/runtime message so the client banner shows what
+    // broke, and stamp the stack to Vercel runtime logs for follow-up.
+    console.error("[POST /api/brand-portal/test-request] error:", e?.stack || e?.message || e);
+    return NextResponse.json(
+      { ok: false, error: e?.message || "Failed to create test request" },
+      { status: 500 },
+    );
   }
 }
