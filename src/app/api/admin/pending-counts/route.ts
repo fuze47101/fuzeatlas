@@ -19,12 +19,18 @@ export async function GET(req: Request) {
     // suspectEmailTypos (P16.6 T4) shares the same Levenshtein-distance-2
     // helper as /api/admin/suspect-email-typos + the weekly cron — single
     // source of truth in src/lib/suspect-email-typos.ts.
-    const [accessRequests, brandRequests, factoryRequests, testRequests, suspectEmailTypos] = await Promise.all([
+    const userId = req.headers.get("x-user-id") || null;
+    const [accessRequests, brandRequests, factoryRequests, testRequests, suspectEmailTypos, openActionItems] = await Promise.all([
       prisma.accessRequest.count({ where: { status: "PENDING" } }),
       prisma.accessRequest.count({ where: { status: "PENDING", requestType: "BRAND" } }),
       prisma.accessRequest.count({ where: { status: "PENDING", requestType: "FACTORY" } }),
       prisma.testRequest.count({ where: { status: "PENDING_APPROVAL" } }).catch(() => 0),
       countSuspectPairs().catch(() => 0),
+      userId
+        ? (prisma as any).meetingActionItem.count({
+            where: { assigneeId: userId, status: "OPEN" },
+          }).catch(() => 0)
+        : 0,
     ]);
 
     return NextResponse.json({
@@ -34,6 +40,7 @@ export async function GET(req: Request) {
       factoryRequests,
       testRequests,
       suspectEmailTypos,
+      openActionItems,
       total: accessRequests + testRequests + suspectEmailTypos,
     });
   } catch (e: any) {

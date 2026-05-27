@@ -174,8 +174,9 @@ export default function Sidebar() {
     accessRequests: number;
     testRequests: number;
     suspectEmailTypos: number;
+    openActionItems: number;
     total: number;
-  }>({ accessRequests: 0, testRequests: 0, suspectEmailTypos: 0, total: 0 });
+  }>({ accessRequests: 0, testRequests: 0, suspectEmailTypos: 0, openActionItems: 0, total: 0 });
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -188,6 +189,7 @@ export default function Sidebar() {
               accessRequests: d.accessRequests || 0,
               testRequests: d.testRequests || 0,
               suspectEmailTypos: d.suspectEmailTypos || 0,
+              openActionItems: d.openActionItems || 0,
               total: d.total || 0,
             });
           }
@@ -439,6 +441,7 @@ export default function Sidebar() {
       if (item.badgeKey === "testRequests") return pendingCounts.testRequests;
       if (item.badgeKey === "accessRequests") return pendingCounts.accessRequests;
       if (item.badgeKey === "suspectEmailTypos") return pendingCounts.suspectEmailTypos;
+      if (item.badgeKey === "openActionItems") return pendingCounts.openActionItems;
       return undefined;
     }
 

@@ -29,7 +29,7 @@ export type ModuleItem = {
   label: string;
   href: string;
   icon?: string;
-  badgeKey?: "testRequests" | "accessRequests" | "suspectEmailTypos";
+  badgeKey?: "testRequests" | "accessRequests" | "suspectEmailTypos" | "openActionItems";
   adminOnly?: boolean;
   hideInCard?: boolean;
   // Phase 16 i18n — points into t.modules[labelKey] for translation.
@@ -166,6 +166,23 @@ export const MODULES: ModuleDef[] = [
       { label: "Distributors", labelKey: "distributors", href: "/admin/distributors", icon: "🌍" },
       { label: "Distributor Documents", labelKey: "distributorDocuments", href: "/admin/distributor-docs", icon: "📂" },
       { label: "Labs", labelKey: "labs", href: "/labs", icon: "🏢" },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  {
+    key: "meetings",
+    label: "Meetings",
+    icon: "🗒",
+    accent: "from-purple-500 to-purple-700",
+    sidebarAccent: "text-purple-400",
+    blurb: "Project meeting notes, action items, weekly standups",
+    landing: "/meeting-notes",
+    adminOnly: false,
+    items: [
+      { label: "All Meetings", labelKey: "meetingsAll", href: "/meeting-notes", icon: "📋" },
+      { label: "My Tasks", labelKey: "myTasks", href: "/my-tasks", icon: "✓", badgeKey: "openActionItems" },
+      { label: "All Tasks (admin)", labelKey: "allTasks", href: "/admin/all-tasks", icon: "📊", adminOnly: true },
     ],
   },
 
