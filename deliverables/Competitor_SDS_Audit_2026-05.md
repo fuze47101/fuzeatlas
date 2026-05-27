@@ -278,3 +278,65 @@ FreshTX competitor card on /sustainability will reflect that
 archetype's audited values. If chemistry confidence increases to
 "verified" later (via EPA label disclosure), the archetype
 routing may change.
+
+---
+
+## 2026-05-26 follow-up — Rudolf Group antimicrobial line (5 products)
+
+Overnight request from Andrew for full review of Rudolf's RUCO-BAC
+family + SILVERPLUS + Sanitized Puretec distribution relationship.
+Target stores potential SILVERPLUS replacement use case.
+
+### Headline findings
+
+1. **Rudolf's own RUCO-BAC disclaimer (https://rudolf.com/uploads/rudolfgroup/Documents/disclaimer_ruco_bac_series_en.pdf) explicitly states 'antibacterial, bactericidal, germicidal' claims are NOT EPA-acceptable without product-specific registration.** Yet RUCO-BAC marketing uses all three terms freely. Same FIFRA Section 12(a)(1)(A) misbranding pattern caught with IFTNA FreshTX.
+
+2. **In Canada — explicit admission that AGP, AGL, HSA CONC, CID OF, and ZPY are NOT registered by PMRA.** Rudolf cannot legally make antimicrobial claims in Canada on any of these products. They punt the regulatory burden to the brand customer.
+
+3. **AGXX (RUCO-BAC ROX) is the first ruthenium-containing competitor in our catalog.** Ruthenium has ~5000 kg CO2/kg refinery-gate (vs silver's 158). At AGXX's typical 87.5%/12.5% Ag/Ru ratio, ruthenium contributes 80%+ of the mining-stage CO2 despite being the minority component by mass. **AGXX is the highest per-kg-active CO2 antimicrobial in our entire catalog** by a substantial margin.
+
+4. **RUCO-BAC AGL's "non-migrating" claim is contradicted by published silver-textile wash-leaching studies** (Reed et al. ES&T 2010, Benn & Westerhoff ES&T 2008). All silver textile finishes migrate; "non-migrating" is marketing language for "binds in polymer matrix with slower release."
+
+5. **SILVERPLUS is the apparel-market sub-brand wrapping AGP + AGL.** Most likely Target replacement candidate. Customer-facing comparison doc built.
+
+6. **Sanitized Puretec entry updated** to clarify Rudolf-exclusive-global-distribution relationship — three-handoff supply chain (Sanitized Burgdorf CH → Rudolf Geretsried DE → regional Rudolf subsidiary → mill) adds distribution CO2 vs single-source competitors.
+
+### Per-product audit rows
+
+| ID | Active ingredient % w/w | Source | Status | Notes |
+|---|---|---|---|---|
+| rudolf-ruco-bac-rox | ~0.2% on-fabric (0.175% Ag + 0.025% Ru estimated) | Frontiers Microbiology 2018 (PMC6299908) + mSphere 2023 AGXX composition + Heraeus published technology page | estimated | NO US EPA registration discoverable. EU BPR approval confirmed. Highest per-kg-active CO2 in catalog. |
+| rudolf-ruco-bac-agp | 0.5-1.5% on-fabric (estimated, Rudolf doesn't disclose) | Rudolf disclaimer + 3rd-party search result claiming EPA Reg 84189-2 | estimated + PPLS unverified | EPA reg # claimed; EPA PPLS lookup 2026-05-26 did NOT return public 84189-2 label. Same FIFRA misbranding pattern on marketing. |
+| rudolf-ruco-bac-agl | 0.5-1.5% on-fabric (estimated) | Rudolf disclaimer | estimated | "Non-migrating" marketing claim contradicted by peer-reviewed silver-textile wash studies. |
+| rudolf-silverplus | 0.5-2% on-fabric (estimated, AgCl industry avg) | https://rudolf.com/technologies/silverplus + same underlying AGP/AGL | estimated | Apparel sub-brand. Most likely Target replacement. |
+| sanitized-puretec (UPDATED) | Silane-QAC ~5% (existing entry) | Rudolf-exclusive distribution clarified | verified + updated | Three-handoff supply chain adds distribution CO2 vs single-source. |
+
+### EPA PPLS verification — 2026-05-26 result
+
+Direct lookup against the EPA PPLS public index (ordspub.epa.gov/ords/pesticides/f?p=PPLS:1) by both registrant name "Rudolf" and the third-party-cited registration number "84189-2":
+
+- **No public label returned for 84189-2** as a Rudolf product. The registration-number cite appears to originate from a single non-EPA source that has not been corroborated by the EPA database.
+- **Rudolf GmbH does not appear under registrant-name search** as the holder of an EPA pesticide registration matching the RUCO-BAC family in the public PPLS index as of the 2026-05-26 lookup.
+- **Conclusion: the EPA Reg 84189-2 claim is unverified.** Until Rudolf provides a label PDF URL or the EPA PPLS index updates to include a matching product, the marketing claims of "EPA registered" for AGP / AGL / SILVERPLUS read as FIFRA Section 12(a)(1)(A) misbranding risk. The competitors.ts epaRegNote for all three products has been flagged accordingly.
+- **EU BPR approval for AGXX is separately verifiable** through ECHA's biocidal-products database and stands on its own — but does NOT grant US EPA legal status.
+
+### Methodology limits
+
+- **Rudolf publishes no SDS for any product on their public website.** All composition % values are estimated using industry-average ranges for the respective chemistry classes, flagged `estimated: true` with basis citations per the Phase 19.5 audit discipline.
+- **EPA registration numbers claimed in third-party search results require direct PPLS verification.** Track 6 of the spec ran this verification — see findings above.
+- **AGXX silver:ruthenium ratio comes from peer-reviewed academic research, not Heraeus' own published documentation.** Specific RUCO-BAC ROX formulation may differ from the literature baseline.
+
+### Sources
+
+- Rudolf RUCO-BAC series disclaimer: https://rudolf.com/uploads/rudolfgroup/Documents/disclaimer_ruco_bac_series_en.pdf
+- Rudolf SILVERPLUS: https://rudolf.com/technologies/silverplus
+- Heraeus AGXX product page: https://www.heraeus-precious-metals.com/en/products-solutions/category/antimicrobial-technology/about-agxx/
+- Heraeus + Rudolf partnership press release: https://kohantextilejournal.com/heraeus-precious-metals-and-rudolf-form-strategic-partnership-to-bring-agxx-technology-to-the-textile-industry/
+- AGXX Frontiers Microbiology 2018: https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2018.03037/full
+- AGXX mSphere 2023 (silver-ruthenium aminoglycoside potentiation): https://journals.asm.org/doi/full/10.1128/msphere.00190-23
+- AGXX mSphere 2025 (gram-negative oxidative stress mechanism): https://journals.asm.org/doi/10.1128/msphere.00017-25
+- Reed et al. ES&T 2010 (silver textile leaching) — peer-reviewed reference
+- Benn & Westerhoff ES&T 2008 (silver-nanoparticle wash release) — peer-reviewed reference
+- Aurubis EFD 2024 (silver CO2) — existing reference in sustainability.ts
+- CRU Group precious metal LCA 2024 (ruthenium CO2) — new citation
+- EPA PPLS public index: https://ordspub.epa.gov/ords/pesticides/f?p=PPLS:1
