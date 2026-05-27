@@ -251,6 +251,62 @@ export const UPSTREAM_MANUFACTURING: Record<string, UpstreamManufacturing> = {
       source: "Aurubis EFD 2024 (158 kg/kg Ag) scaled by 0.020 kg AgCl × 0.75 Ag fraction; ecoinvent 3.10 silver market (448 kg/kg global avg). Synthesis from textile finishing industry process LCAs.",
     },
   },
+  silver_ruthenium_catalytic: {
+    processName: "Silver-Ruthenium Catalytic Coating (Heraeus AGXX class — RUCO-BAC ROX)",
+    archetypeSource: {
+      verifiedDate: "2026-05-26",
+      verifiedBy: "Phase 19.5 follow-up — Rudolf Group deep-dive",
+      estimated: true,
+      estimationBasis: "AGXX ratio ~87.5% Ag / ~12.5% Ru per peer-reviewed Frontiers Microbiology 2018 (PMC6299908) + mSphere 2023 + Vaishampayan et al. AGXX research. Specific formulation in RUCO-BAC ROX not disclosed by Rudolf — using literature baseline. Ruthenium CO2 from CRU Group precious metal LCA + South African Bushveld Complex mining literature.",
+      notes: "First antimicrobial archetype in our catalog where the secondary precious metal (ruthenium) dominates the CO2 footprint despite being the minority component by mass. Even at 12.5% w/w, ruthenium contributes 80%+ of mining-stage CO2 due to its ~30× higher per-kg CO2 vs silver.",
+    },
+    rawMaterials: [
+      {
+        name: "Silver in micro-galvanic catalyst (Ag component)",
+        kgPerKgProduct: sourced(0.00175, {
+          sdsUrl: "https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2018.03037/full",
+          sdsSection: "AGXX composition (peer-reviewed research baseline)",
+          valueAsPublished:
+            "AGXX consists of silver and ruthenium micro-galvanic elements at approximately 87.5:12.5 Ag:Ru ratio per the published research baseline",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 follow-up audit",
+          estimated: true,
+          estimationBasis: "0.2% total active on-fabric × 87.5% Ag share = 0.175% Ag",
+        }),
+        costPerKg: 850,
+      },
+      {
+        name: "Ruthenium in micro-galvanic catalyst (Ru component)",
+        kgPerKgProduct: sourced(0.00025, {
+          sdsUrl: "https://journals.asm.org/doi/10.1128/msphere.00190-23",
+          sdsSection: "Ruthenium-silver antimicrobial composition (peer-reviewed)",
+          valueAsPublished: "AGXX micro-galvanic elements at ~12.5% Ru component",
+          verifiedDate: "2026-05-26",
+          verifiedBy: "Phase 19.5 follow-up audit",
+          estimated: true,
+          estimationBasis: "0.2% total active on-fabric × 12.5% Ru share = 0.025% Ru. Ruthenium mining is byproduct recovery from Bushveld Complex platinum/palladium ores at <0.1% recovery rate.",
+        }),
+        costPerKg: 15800,
+      },
+      { name: "Polymer carrier matrix (acrylic emulsion)", kgPerKgProduct: 0.93, costPerKg: 8.2 },
+      { name: "Ascorbic acid surface conditioning", kgPerKgProduct: 0.01, costPerKg: 6 },
+    ],
+    reactionChemicals: [
+      { name: "Stabilizing agents", kgPerKgProduct: 0.04, costPerKg: 12 },
+      { name: "Carrier surfactants", kgPerKgProduct: 0.02, costPerKg: 4 },
+    ],
+    facilityEnergyKwhPerKg: 95,
+    facilityWaterLitersPerKg: 380,
+    facilityWasteKgPerKg: 1.4,
+    facilityVOCgPerKg: 28,
+    facilityCO2PerKg: 8.5,
+    co2Breakdown: {
+      mining: 4.2,
+      refining: 2.0,
+      synthesis: 2.3,
+      source: "Aurubis EFD 2024 (Ag at 158 kg/kg) + CRU Group precious metal LCA 2024 (Ru at ~5000 kg/kg refinery-gate from Bushveld byproduct). German grid premium per Agora Energiewende 2024 (~440 g CO2/kWh DE grid vs ~350 g global avg for textile chemistry manufacturing).",
+    },
+  },
   silver_ion: {
     processName: "Polymeric Silver Ion Delivery System (Silvadur 930 Flex class)",
     archetypeSource: {
@@ -1013,6 +1069,7 @@ export function calcSustainabilityScore(
   const upstreamKey = chemType === "silver_ion" ? "silver_ion"
     : chemType === "silver_nano" ? "silver_nano"
     : chemType === "silver_chloride" ? "silver_chloride"
+    : chemType === "silver_ruthenium_catalytic" ? "silver_ruthenium_catalytic"
     : chemType.includes("silver") ? "silver_chloride"  // fallback for other silver variants
     : chemType === "qac_silane" ? "qac_silane"
     : chemType === "organic_acid" ? "organic_acid"
