@@ -278,6 +278,9 @@ model User {
   actionItemsClosed    MeetingActionItem[] @relation("ActionItemCloser")
   actionItemsCreated   MeetingActionItem[] @relation("ActionItemCreator")
 
+  // Phase 54 — projects this user owns.
+  projectsOwned Project[] @relation("ProjectOwner")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1558,6 +1561,21 @@ model Project {
   testRequests TestRequest[]
   invoices     Invoice[]
   meetings     Meeting[]     @relation("MeetingProject")
+  meetingNotes MeetingNote[] @relation("MeetingNoteProject")
+
+  // ─── Phase 54 — Project Start Wizard ────────────────
+  // projectType: BRAND (tied to a brand FK), FACTORY (tied to a
+  // factory FK), or INTERNAL (no customer FK — Project Red Rover,
+  // R&D, etc.). Default BRAND so existing rows back-fill safely.
+  projectType String  @default("BRAND")
+  ownerId     String?
+  owner       User?   @relation("ProjectOwner", fields: [ownerId], references: [id])
+  goalMd      String?
+
+  // FK to the Phase 53 MeetingNote auto-created by the wizard. Unique
+  // — one project, one kickoff doc.
+  kickoffMeetingNoteId String?      @unique
+  kickoffMeetingNote   MeetingNote? @relation("ProjectKickoffMeetingNote", fields: [kickoffMeetingNoteId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1568,6 +1586,8 @@ model Project {
   @@index([stage])
   @@index([factoryId])
   @@index([distributorId])
+  @@index([projectType])
+  @@index([ownerId])
 }
 
 // ─────────────────────────────────────────────
@@ -4438,6 +4458,13 @@ model MeetingNote {
   createdById String?
   createdBy   User?   @relation("MeetingNoteCreator", fields: [createdById], references: [id])
 
+  // Phase 54 — Project Start Wizard. When the wizard auto-creates a
+  // Project Kickoff, the kickoff MeetingNote is tagged here AND
+  // referenced by Project.kickoffMeetingNoteId for the 1:1 link.
+  projectId String?
+  project   Project? @relation("MeetingNoteProject", fields: [projectId], references: [id])
+  kickoffOf Project? @relation("ProjectKickoffMeetingNote")
+
   entries     MeetingNoteEntry[]
   actionItems MeetingActionItem[]
 
@@ -4449,6 +4476,7 @@ model MeetingNote {
   @@index([brandId])
   @@index([factoryId])
   @@index([status])
+  @@index([projectId])
 }
 
 model MeetingNoteEntry {
