@@ -48,9 +48,27 @@ async function handle(req: Request) {
     trace.push({ step: "lab.findFirst", ok: !!lab, lab });
     if (!lab) return NextResponse.json({ ok: false, trace, error: "no matching lab found" }, { status: 404 });
 
-    // 3. Look up lab services (informational)
-    const labServices = await prisma.labService.findMany({ where: { labId: lab.id, testType }, take: 5 });
-    trace.push({ step: "labService.findMany", count: labServices.length });
+    // 3. Look up lab services (informational + list testTypes available)
+    const labServices = await prisma.labService.findMany({ where: { labId: lab.id }, take: 50 });
+    trace.push({
+      step: "labService.findMany (all for lab)",
+      count: labServices.length,
+      testTypes: [...new Set(labServices.map((s) => s.testType))],
+      sample: labServices.slice(0, 6).map((s) => ({ testType: s.testType, testMethod: s.testMethod, priceUSD: s.priceUSD })),
+    });
+
+    // Also replay the post-create email-prep queries from the real endpoint
+    const labRecord = await prisma.lab.findUnique({
+      where: { id: lab.id },
+      select: { email: true, name: true, users: { select: { email: true }, where: { status: "ACTIVE" } } },
+    });
+    trace.push({ step: "lab.findUnique + users:ACTIVE include", ok: !!labRecord, userCount: labRecord?.users?.length || 0 });
+
+    const admins = await prisma.user.findMany({
+      where: { role: "ADMIN", status: "ACTIVE" },
+      select: { email: true },
+    });
+    trace.push({ step: "user.findMany ADMIN+ACTIVE", count: admins.length });
 
     // 4. Find or stage a FabricSubmission (do not write — dry-run only)
     const submission = await prisma.fabricSubmission.findFirst({
