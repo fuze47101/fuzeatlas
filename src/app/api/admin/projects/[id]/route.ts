@@ -1,0 +1,105 @@
+// @ts-nocheck
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
+
+/**
+ * PATCH /api/admin/projects/[id]
+ *
+ * Phase 54 T5 — partial project updates. Owner-change supported with
+ * tighter ACL: ADMIN / EMPLOYEE / SALES_MANAGER or the current
+ * project.ownerId can reassign. Other roles can only edit name +
+ * goalMd if they're the owner.
+ */
+const STAFF_ROLES = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER"]);
+
+function bad(msg: string, status = 400) {
+  return NextResponse.json({ ok: false, error: msg }, { status });
+}
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const user = await getCurrentUser();
+  if (!user) return bad("Unauthorized", 401);
+
+  const project = await prisma.project.findUnique({
+    where: { id },
+    select: { id: true, ownerId: true, name: true } as any,
+  });
+  if (!project) return bad("Project not found", 404);
+
+  const isStaff = STAFF_ROLES.has(user.role);
+  const isOwner = (project as any).ownerId === user.id;
+  if (!isStaff && !isOwner) return bad("Forbidden", 403);
+
+  const body = await req.json().catch(() => ({}));
+  const data: any = {};
+
+  // Owner-change — staff OR the outgoing owner.
+  if (body.ownerId !== undefined) {
+    if (!isStaff && !isOwner) return bad("Owner change requires staff or current owner", 403);
+    const newOwnerId = String(body.ownerId);
+    const newOwner = await prisma.user.findUnique({
+      where: { id: newOwnerId },
+      select: { id: true, name: true, email: true },
+    });
+    if (!newOwner) return bad("new owner user not found", 404);
+    data.ownerId = newOwnerId;
+  }
+
+  if (body.name !== undefined) data.name = String(body.name).trim();
+  if (body.goalMd !== undefined) data.goalMd = body.goalMd ? String(body.goalMd) : null;
+
+  // Stage / projectType / brand / factory edits are staff-only.
+  if (body.stage !== undefined) {
+    if (!isStaff) return bad("stage change requires staff", 403);
+    data.stage = String(body.stage);
+  }
+  if (body.projectType !== undefined) {
+    if (!isStaff) return bad("projectType change requires staff", 403);
+    data.projectType = String(body.projectType).toUpperCase();
+  }
+  if (body.brandId !== undefined) {
+    if (!isStaff) return bad("brand change requires staff", 403);
+    data.brandId = body.brandId || null;
+  }
+  if (body.factoryId !== undefined) {
+    if (!isStaff) return bad("factory change requires staff", 403);
+    data.factoryId = body.factoryId || null;
+  }
+
+  const updated = await prisma.project.update({
+    where: { id },
+    data,
+    select: {
+      id: true,
+      name: true,
+      ownerId: true,
+      goalMd: true,
+      stage: true,
+      projectType: true,
+      brandId: true,
+      factoryId: true,
+    } as any,
+  });
+
+  // Owner-change notification — fire after the row commits.
+  if (data.ownerId && data.ownerId !== (project as any).ownerId) {
+    await prisma.notification
+      .create({
+        data: {
+          userId: data.ownerId,
+          type: "SYSTEM",
+          title: `You've been assigned ownership of project: ${updated.name}`,
+          message: `${user.name || user.email} reassigned ownership to you.`,
+          link: `/admin/projects/${id}`,
+        },
+      })
+      .catch(() => null);
+  }
+
+  return NextResponse.json({ ok: true, project: updated });
+}
