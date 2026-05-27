@@ -670,6 +670,38 @@ export async function GET(req: Request) {
       "labFormTemplate count w/ active filter",
       () => prisma.labFormTemplate.count({ where: { active: true } }),
     ),
+    // Phase 53 — meeting notes module surfaces. Each check exercises
+    // the columns Track 1 created; a migration gap surfaces as a diag
+    // failure instead of a runtime UI break.
+    check(
+      "/meeting-notes — MeetingNote table readable",
+      "meetingNote count",
+      () => (prisma as any).meetingNote.count(),
+    ),
+    check(
+      "/my-tasks — MeetingActionItem.priority column",
+      "meetingActionItem count grouped by priority",
+      () =>
+        (prisma as any).meetingActionItem.count({
+          where: { priority: { in: ["LOW", "NORMAL", "HIGH", "URGENT"] } },
+        }),
+    ),
+    check(
+      "/api/cron/create-next-meeting-notes — MeetingSeries readable",
+      "meetingSeries count w/ active+cadence",
+      () =>
+        (prisma as any).meetingSeries.count({
+          where: { active: true, cadence: { not: null } },
+        }),
+    ),
+    check(
+      "/api/cron/action-item-digest — open-item count by assignee",
+      "meetingActionItem groupBy assigneeId where status OPEN",
+      () =>
+        (prisma as any).meetingActionItem.count({
+          where: { status: "OPEN", assigneeId: { not: null } },
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
