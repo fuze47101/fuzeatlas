@@ -173,8 +173,14 @@ export default function UserManagementPage() {
   }, []);
 
   useEffect(() => {
-    // Only admins can access
-    if (currentUser && currentUser.role !== "ADMIN" && currentUser.role !== "EMPLOYEE") {
+    // Page access — admins manage everything; BD_REP / SALES_REP /
+    // SALES_MANAGER can land on the page to send invitations (the
+    // Add User and other admin actions stay hidden via the same role
+    // gates that wrap their UI).
+    if (
+      currentUser &&
+      !["ADMIN", "EMPLOYEE", "SALES_MANAGER", "BD_REP", "SALES_REP"].includes(currentUser.role)
+    ) {
       router.push("/dashboard");
       return;
     }
@@ -468,12 +474,14 @@ export default function UserManagementPage() {
             <span aria-hidden="true">✉</span>
             <span>Invite User</span>
           </button>
-          <button
-            onClick={() => setShowAdd(!showAdd)}
-            className="px-4 py-2 bg-[#00b4c3] text-white text-sm font-medium rounded-lg hover:bg-[#009ba8] transition-colors"
-          >
-            {showAdd ? T.cancelBtn : T.addUserBtn}
-          </button>
+          {currentUser && ["ADMIN", "EMPLOYEE"].includes(currentUser.role) && (
+            <button
+              onClick={() => setShowAdd(!showAdd)}
+              className="px-4 py-2 bg-[#00b4c3] text-white text-sm font-medium rounded-lg hover:bg-[#009ba8] transition-colors"
+            >
+              {showAdd ? T.cancelBtn : T.addUserBtn}
+            </button>
+          )}
         </div>
       </div>
 
@@ -560,12 +568,32 @@ export default function UserManagementPage() {
                   onChange={(e) => setInviteRole(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  {ROLES.map((r) => (
-                    <option key={r} value={r}>
-                      {ROLE_LABELS[r] || r}
-                    </option>
-                  ))}
+                  {ROLES
+                    .filter((r) => {
+                      // BD_REP / SALES_REP can't grant ADMIN / EMPLOYEE /
+                      // SALES_MANAGER via the invite flow. Server-side
+                      // also enforces this in /api/admin/invitations.
+                      if (
+                        currentUser &&
+                        (currentUser.role === "BD_REP" || currentUser.role === "SALES_REP") &&
+                        ["ADMIN", "EMPLOYEE", "SALES_MANAGER"].includes(r)
+                      ) {
+                        return false;
+                      }
+                      return true;
+                    })
+                    .map((r) => (
+                      <option key={r} value={r}>
+                        {ROLE_LABELS[r] || r}
+                      </option>
+                    ))}
                 </select>
+                {currentUser &&
+                  (currentUser.role === "BD_REP" || currentUser.role === "SALES_REP") && (
+                    <p className="mt-1 text-[10px] text-slate-500">
+                      Admin / Employee / Sales Manager roles can only be granted by an admin.
+                    </p>
+                  )}
               </div>
 
               {inviteEntityKind === "brand" && (

@@ -26,10 +26,27 @@ import {
  *   jobTitle / notes            optional
  *   entityId                    required for BRAND/FACTORY/DISTRIBUTOR/LAB roles
  *
- * ACL: ADMIN, EMPLOYEE, SALES_MANAGER.
+ * ACL:
+ *   ADMIN / EMPLOYEE / SALES_MANAGER  → full role picker (any role)
+ *   BD_REP / SALES_REP                → restricted picker, can't invite
+ *                                       ADMIN / EMPLOYEE / SALES_MANAGER
  */
 
-const INVITE_AUTHORIZED_ROLES = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER"]);
+const INVITE_AUTHORIZED_ROLES = new Set([
+  "ADMIN",
+  "EMPLOYEE",
+  "SALES_MANAGER",
+  "BD_REP",
+  "SALES_REP",
+]);
+
+// Roles BD_REP / SALES_REP are NOT allowed to grant via invitation.
+// Prevents a BD rep from inviting someone as ADMIN.
+const ROLES_RESTRICTED_FROM_BD = new Set([
+  "ADMIN",
+  "EMPLOYEE",
+  "SALES_MANAGER",
+]);
 
 const ROLE_TO_ENTITY_TYPE: Record<string, OrgEntityType> = {
   BRAND_USER: "BRAND",
@@ -110,6 +127,19 @@ export async function POST(req: Request) {
   // belt-and-suspenders against a hand-edited request body.
   if (!ALLOWED_INVITE_ROLES[entityType].includes(role)) {
     return bad(`Role ${role} not allowed for ${entityType}`);
+  }
+
+  // BD_REP / SALES_REP cannot grant ADMIN / EMPLOYEE / SALES_MANAGER
+  // via the invite flow. Server-side belt-and-suspenders behind the
+  // client-side picker restriction.
+  if (
+    (user.role === "BD_REP" || user.role === "SALES_REP") &&
+    ROLES_RESTRICTED_FROM_BD.has(role)
+  ) {
+    return bad(
+      `${user.role} cannot invite users with role ${role}. Ask an admin.`,
+      403,
+    );
   }
 
   let entityId: string;

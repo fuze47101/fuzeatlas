@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { hashPassword } from "@/lib/auth";
+import { hashPassword, getCurrentUser, hasMinRole } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -19,12 +19,22 @@ function generateRandomPassword(length: number = 12): string {
 export async function PUT(req: Request, props: { params: Promise<{ id: string }> }) {
   try {
     const params = await props.params;
-    const userRole = req.headers.get("x-user-role");
 
-    // Authorization check
-    if (userRole !== "ADMIN" && userRole !== "EMPLOYEE") {
+    // Session-based auth — previously this route trusted the spoofable
+    // x-user-role header (set by middleware on cookie auth). When the
+    // header wasn't populated the role check 403'd silently — caught
+    // when Ryan Prince's role-change action failed in /settings/users.
+    // Same pattern as the working /api/settings/users/[id] PATCH.
+    const sessionUser = await getCurrentUser();
+    if (!sessionUser) {
       return NextResponse.json(
-        { ok: false, error: "Unauthorized: Admin or Employee role required" },
+        { ok: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+    if (!hasMinRole(sessionUser.role, "ADMIN")) {
+      return NextResponse.json(
+        { ok: false, error: "Forbidden — admin role required" },
         { status: 403 }
       );
     }
