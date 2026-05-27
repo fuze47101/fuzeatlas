@@ -38,6 +38,20 @@ enum TestType {
   UV
   MICROFIBER
   OTHER
+  // 2026-05-27 Kaylee Pace fix — LabService.testType is String? and the
+  // FUZE Atlas Lab seed has services using these wider-scope categories
+  // (ANTIMICROBIAL covers AB+fungal+viral; RECIPE_DEVELOPMENT is the
+  // pad/cure workflow; PERFORMANCE/SOLAR_PERFORMANCE/HEAT_DEFLECTION are
+  // the Solaris FZ-300/400/500 tracks). Without these enum members the
+  // TestRequestLine create at /api/brand-portal/test-request rejected
+  // every FUZE Atlas Lab service submission with 'Invalid value
+  // provided. Expected TestType.'
+  ANTIMICROBIAL
+  ANTIVIRAL
+  RECIPE_DEVELOPMENT
+  PERFORMANCE
+  SOLAR_PERFORMANCE
+  HEAT_DEFLECTION
 }
 
 enum TestStatus {
