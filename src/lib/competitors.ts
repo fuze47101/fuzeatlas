@@ -1391,12 +1391,14 @@ export const COMPETITORS: Competitor[] = [
     product: "RUCO-BAC AGP (SILVERPLUS sub-brand, flagship antimicrobial + antiviral)",
     chemistryType: "silver_chloride",
     chemistryLabel: "Silver chloride (textile finishing dispersion)",
-    activeAgent: "Silver chloride microstructures releasing Ag+ ions",
-    epaRegNumber: "84189-2 (claimed — unverified)",
-    epaRegYear: null,
+    activeAgent: "Silver chloride 1.75% (as-sold per EPA Reg 84189-2 master label dated 2016-07-25)",
+    epaRegNumber: "84189-2",
+    epaRegYear: 2016,
     epaRegNote:
-      "Claimed EPA Reg 84189-2 per third-party search results — EPA PPLS lookup 2026-05-26 against registrant 84189 / 'Rudolf' did NOT return a public product label matching the 84189-2 designation. Treat the claimed reg number as unverified until Rudolf provides a label PDF URL. Per Rudolf's own RUCO-BAC disclaimer, 'antibacterial, bactericidal, germicidal' claims are NOT EPA-acceptable without product-specific registration — AGP marketing uses all three terms freely. NOT registered by Canada PMRA per Rudolf's own admission. The combination of (a) unverified EPA reg number and (b) explicit Canada PMRA non-registration with continued antimicrobial marketing claims is a FIFRA Section 12(a)(1)(A) misbranding risk if the registration cannot be substantiated.",
-    epaLabelUrl: "https://rudolf.com/uploads/rudolfgroup/Documents/disclaimer_ruco_bac_series_en.pdf",
+      "EPA Reg 84189-2 VERIFIED 2026-05-27 via direct PPLS fetch. Registrant: RUDOLF GMBH, Altvaterstrasse 58-64, D-82538 Geretsried, Germany. Product name on label: 'Product EP 10%' with alternate brand name 'RUCO-BAC AGP'. Active: Silver Chloride 1.75%. Use site per label: 'Broad Spectrum Biocide for use in the manufacture of polymers, plastics, textiles, and surface coatings.' " +
+      "CRITICAL COMPETITIVE LEVER — the EPA-approved label EXPLICITLY prohibits the public-health antimicrobial claims Rudolf uses in its marketing. Verbatim from the label: 'Manufactured products incorporating Product EP 10% may not make any public health claims relating to antimicrobial activity without first obtaining an EPA registration for the manufactured product which permits such claims. When incorporated into treated articles, this product does not protect users of any such treated articles or others against food borne or disease causing bacteria, viruses, germs, or other disease causing microorganisms.' Yet Rudolf's RUCO-BAC AGP and SILVERPLUS marketing pages use 'antibacterial,' 'antiviral,' and 'antimicrobial' claims throughout — claims that the EPA registration explicitly does not authorize. " +
+      "The EPA registration acceptance letter contains the standard FIFRA Section 12(a)(1)(E) warning: 'claims made on the website may not substantially differ from those claims approved through the registration process.' Same misbranding pattern caught with IFTNA PROTX2. NOT registered by Canada PMRA per Rudolf's own RUCO-BAC series disclaimer.",
+    epaLabelUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/084189-00002-20160725.pdf",
     dosageLow: 5,
     dosageHigh: 15,
     dosageTypical: 10,
@@ -1434,12 +1436,14 @@ export const COMPETITORS: Competitor[] = [
     product: "RUCO-BAC AGL ('non-migrating' silver for skin-contact)",
     chemistryType: "silver_chloride",
     chemistryLabel: "Silver bound in polymer matrix ('non-migrating' marketing claim)",
-    activeAgent: "Silver bonded into polymer matrix for slow-release",
-    epaRegNumber: "84189 (unspecified — unverified)",
-    epaRegYear: null,
+    activeAgent: "Silver chloride 0.2% (as-sold per EPA Reg 84189-1 master label dated 2016-07-25)",
+    epaRegNumber: "84189-1",
+    epaRegYear: 2016,
     epaRegNote:
-      "Per Rudolf's RUCO-BAC disclaimer, AGL is EPA registered as part of the AGP/AGL family — specific reg number not disclosed by Rudolf and EPA PPLS lookup 2026-05-26 returned no public 84189 label matching AGL. 'Non-migrating' marketing claim is contradicted by every published silver-textile wash-leaching study (Reed et al. ES&T 2010, Benn & Westerhoff ES&T 2008). All silver textile finishes migrate during washing — 'non-migrating' is marketing language for 'binds in a polymer matrix that releases more slowly than a free salt.' NOT registered by Canada PMRA per Rudolf's own admission.",
-    epaLabelUrl: "https://rudolf.com/uploads/rudolfgroup/Documents/disclaimer_ruco_bac_series_en.pdf",
+      "EPA Reg 84189-1 VERIFIED 2026-05-27 via direct PPLS fetch. Registrant: RUDOLF GMBH, Geretsried, Germany. Product name on label: 'Product EP 1%' with alternate brand name 'RUCO-BAC AGL'. Active: Silver Chloride 0.2%. Use site per label: 'Broad Spectrum Biocide for use in the manufacture of polymers, plastics, textiles, and surface coatings.' " +
+      "Same treated-article disclaimer + FIFRA Section 12(a)(1)(E) warning as 84189-2 — the EPA registration explicitly forbids 'public health claims relating to antimicrobial activity,' yet Rudolf's RUCO-BAC AGL marketing uses 'antibacterial' freely. Marketing claims substantially differ from the registered scope. " +
+      "The 'non-migrating' marketing claim is separately contradicted by every published silver-textile wash-leaching study (Reed et al. ES&T 2010, Benn & Westerhoff ES&T 2008). All silver textile finishes migrate during washing — 'non-migrating' is marketing language for 'binds in a polymer matrix that releases more slowly than a free salt.' NOT registered by Canada PMRA per Rudolf's own admission.",
+    epaLabelUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/084189-00001-20160725.pdf",
     dosageLow: 5,
     dosageHigh: 15,
     dosageTypical: 10,
@@ -1478,12 +1482,14 @@ export const COMPETITORS: Competitor[] = [
     chemistryType: "silver_chloride",
     chemistryLabel: "Silver chloride (apparel-market positioning of AGP/AGL)",
     activeAgent:
-      "Silver chloride microstructures (same chemistry as AGP/AGL — SILVERPLUS is the consumer-facing brand)",
-    epaRegNumber: "84189-2 (inherited from AGP/AGL — unverified)",
-    epaRegYear: null,
+      "Silver chloride (same chemistry as AGP/AGL — SILVERPLUS is the consumer-facing brand wrapping EPA Reg 84189-1 / 84189-2)",
+    epaRegNumber: "84189-1 / 84189-2 (inherited from underlying RUCO-BAC AGL + AGP)",
+    epaRegYear: 2016,
     epaRegNote:
-      "SILVERPLUS is Rudolf's apparel-market sub-brand for RUCO-BAC AGP + AGL. Same EPA registration footprint as the underlying products — and the same EPA PPLS verification gap (2026-05-26 lookup against 84189 registrant returned no public label for SILVERPLUS or 84189-2). Marketing focuses on 'odor control' which IS an EPA-acceptable non-public-health claim — but the underlying AGP/AGL chemistry is still subject to the full FIFRA scope when broader 'antibacterial' claims appear. Per Rudolf disclaimer, NOT registered by Canada PMRA. This is the most-deployed Rudolf antimicrobial in US apparel — most likely Target-stores replacement candidate per the 2026-05-26 sales intel.",
-    epaLabelUrl: "https://rudolf.com/technologies/silverplus",
+      "SILVERPLUS is Rudolf's apparel-market sub-brand for RUCO-BAC AGP + AGL. The underlying registrations are EPA Reg 84189-1 (RUCO-BAC AGL, Silver Chloride 0.2%) and EPA Reg 84189-2 (RUCO-BAC AGP, Silver Chloride 1.75%), both VERIFIED 2026-05-27 via direct PPLS fetch. " +
+      "CRITICAL COMPETITIVE LEVER — the EPA-approved labels for both underlying products explicitly prohibit the public-health antimicrobial claims that SILVERPLUS marketing uses. Per the master label verbatim: 'Manufactured products incorporating Product EP ... may not make any public health claims relating to antimicrobial activity without first obtaining an EPA registration for the manufactured product which permits such claims. When incorporated into treated articles, this product does not protect users of any such treated articles or others against food borne or disease causing bacteria, viruses, germs, or other disease causing microorganisms.' Yet SILVERPLUS marketing pitches 'antibacterial' protection on apparel — exactly the public-health claim the underlying registration prohibits. " +
+      "Marketing 'odor control' positioning IS an EPA-acceptable non-public-health claim. But any 'antibacterial / antimicrobial / antiviral' language on the apparel SILVERPLUS hangtag substantially differs from the registered scope and triggers the FIFRA Section 12(a)(1)(E) misbranding warning that's on Rudolf's own registration acceptance letter. Per Rudolf disclaimer, NOT registered by Canada PMRA. Most likely Target-stores replacement candidate per the 2026-05-26 sales intel.",
+    epaLabelUrl: "https://www3.epa.gov/pesticides/chem_search/ppls/084189-00002-20160725.pdf",
     dosageLow: 5,
     dosageHigh: 20,
     dosageTypical: 12,

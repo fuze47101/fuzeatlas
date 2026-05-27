@@ -13,7 +13,7 @@
 |---|---|---|
 | Active chemistry | Silver chloride (AgCl) — flagship of the AGP/AGL family | FUZE metamaterial (proprietary, non-leaching contact-kill) |
 | Active loading on fabric | 5-15 mg/kg (industry-typical AgCl finish) | 1 mg/kg (F1 spec) |
-| EPA registration | Claimed 84189-2 — **unverified against the EPA PPLS public index as of 2026-05-26** | EPA federally registered, OEKO-TEX Standard 100 Class I, bluesign® approved |
+| EPA registration | **EPA Reg 84189-2 — verified 2026-05-27.** Master label registers AGP as treated-article biocide for "manufacture of polymers, plastics, textiles, and surface coatings" — not as a finished-product antimicrobial. Apparel "antibacterial" marketing exceeds the registered scope (FIFRA Section 12(a)(1)(E) misbranding risk). | EPA federally registered for finished-product antimicrobial use, OEKO-TEX Standard 100 Class I, bluesign® approved |
 | Canada PMRA | NOT registered (Rudolf's own admission) | EPA + California EPA approved Q1 2026 |
 | Binder required | Yes — acrylic co-polymer, ~14 g/kg fabric, formaldehyde-crosslinked, 155°C curing | None |
 | Wash durability claim | "Highly resistant to washing" — specific wash count not publicly disclosed | F1 = 100+ washes; third-party reports shared on request |
@@ -56,7 +56,7 @@ And:
 > "In Canada, RUCO®-BAC AGP, RUCO®-BAC AGL, RUCO®-BAC HSA CONC,
 > RUCO®-BAC CID OF and RUCO®-BAC ZPY are not registered by PMRA."
 
-**Rudolf's own marketing for RUCO-BAC AGP uses "antibacterial," "antiviral," and "antimicrobial" claims — all three terms that Rudolf themselves acknowledge are not EPA-acceptable without product-specific registration.** Combined with the EPA PPLS public-index lookup (2026-05-26) returning no public 84189-2 label, the claimed registration is unverified and the marketing posture is a FIFRA Section 12(a)(1)(A) misbranding risk pending substantiation.
+**EPA PPLS verification 2026-05-27 — the registration exists, but it covers the wrong claim scope.** The 84189-2 master label registers AGP as "Product EP 10%" — a "Broad Spectrum Biocide for use in the manufacture of polymers, plastics, textiles, and surface coatings." That's a treated-article preservative. The label expressly states: "Manufactured products incorporating Product EP 10% may not make any public health claims relating to antimicrobial activity without first obtaining an EPA registration for the manufactured product which permits such claims. When incorporated into treated articles, this product does not protect users of any such treated articles or others against food borne or disease causing bacteria, viruses, germs, or other disease causing microorganisms." Yet RUCO-BAC AGP marketing routinely claims "antibacterial, antiviral, antimicrobial" protection on finished apparel — exactly the public-health claims the registration prohibits. **FIFRA Section 12(a)(1)(E) misbranding pattern** — same regulatory exposure as the IFTNA PROTX2 case.
 
 ---
 
@@ -83,7 +83,7 @@ And:
 
 ## Where each chemistry belongs
 
-- **RUCO-BAC AGP** suits brands willing to ship antimicrobial marketing claims under an unverified registration AND lose the Canadian market for any antimicrobial label posture.
+- **RUCO-BAC AGP** is verifiably EPA-registered as a treated-article biocide (84189-2). Brands willing to ship "antibacterial" finished-apparel claims that substantially differ from that registered scope AND lose the Canadian market for any antimicrobial label posture can deploy it — but the FIFRA Section 12(a)(1)(E) misbranding exposure is real.
 - **FUZE F1** is the choice when sustainability, legal, and regulatory all need to sign off on the same antimicrobial story without exposure to Section 12(a)(1)(A) misbranding risk.
 
 ---
@@ -91,6 +91,7 @@ And:
 ## Sources
 
 - Rudolf RUCO-BAC series disclaimer: https://rudolf.com/uploads/rudolfgroup/Documents/disclaimer_ruco_bac_series_en.pdf
+- EPA Reg 84189-2 master label PDF (RUCO-BAC AGP, Silver Chloride 1.75%): https://www3.epa.gov/pesticides/chem_search/ppls/084189-00002-20160725.pdf
 - EPA PPLS public index: https://ordspub.epa.gov/ords/pesticides/f?p=PPLS:1
 - Reed et al. ES&T 2010 / Benn & Westerhoff ES&T 2008 — silver textile leaching peer-reviewed literature
 - Aurubis EFD 2024 + ecoinvent 3.10 silver-market data — sustainability.ts archetype source

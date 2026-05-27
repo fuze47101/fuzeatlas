@@ -67,7 +67,7 @@ The catalytic-regeneration mechanism is a wash-durability story, not a sustainab
 
 ## EPA / regulatory posture
 
-- **RUCO-BAC ROX:** No US EPA registration discoverable as of 2026-05-26 despite explicit antimicrobial efficacy claims in Rudolf's marketing. Heraeus AGXX has EU Biocidal Products Regulation (BPR) approval, but BPR is a different jurisdiction and does not confer EPA legal status. Per Rudolf's own RUCO-BAC disclaimer: "antibacterial, bactericidal, germicidal" claims are NOT EPA-acceptable without product-specific registration. ROX also NOT registered by Canada PMRA per Rudolf's admission.
+- **RUCO-BAC ROX:** No US EPA registration discoverable as of 2026-05-27. Rudolf's other RUCO-BAC products (AGP / AGL) DO have verifiable EPA registrations (84189-1, 84189-2 — confirmed via PPLS PDF fetch) — ROX is absent from the Rudolf registrant's public PPLS index. Heraeus AGXX has EU Biocidal Products Regulation (BPR) approval, but BPR is a different jurisdiction and does not confer EPA legal status. Per Rudolf's own RUCO-BAC disclaimer: "antibacterial, bactericidal, germicidal" claims are NOT EPA-acceptable without product-specific registration. ROX is also NOT registered by Canada PMRA per Rudolf's admission. If ROX is shipped to a US brand and the brand makes antimicrobial claims on the finished article, the FIFRA Section 12(a)(1)(A) misbranding exposure is on the BRAND, not Rudolf — Rudolf has punted the regulatory burden downstream.
 - **FUZE F1 Full Spectrum:** EPA federally registered, California EPA approved Q1 2026, OEKO-TEX Standard 100 Class I, bluesign® approved, EPA + PFAS-free across the formulation.
 
 ---

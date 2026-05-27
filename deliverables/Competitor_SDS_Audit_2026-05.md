@@ -340,3 +340,42 @@ Direct lookup against the EPA PPLS public index (ordspub.epa.gov/ords/pesticides
 - Aurubis EFD 2024 (silver CO2) — existing reference in sustainability.ts
 - CRU Group precious metal LCA 2024 (ruthenium CO2) — new citation
 - EPA PPLS public index: https://ordspub.epa.gov/ords/pesticides/f?p=PPLS:1
+
+---
+
+## 2026-05-27 — EPA PPLS verification UPDATE (Rudolf 84189-1 + 84189-2)
+
+The 2026-05-26 audit row recorded the Rudolf EPA registrations as "claimed / unverified." Direct PPLS PDF fetch on 2026-05-27 against the EPA web server overturns that:
+
+- **EPA Reg 84189-2 — VERIFIED**: Product "Product EP 10%" with alternate brand name **RUCO-BAC AGP**. Active: **Silver Chloride 1.75%**. Registrant: RUDOLF GMBH, Altvaterstrasse 58-64, D-82538 Geretsried, Germany. Master label dated 2016-07-25. PDF: https://www3.epa.gov/pesticides/chem_search/ppls/084189-00002-20160725.pdf
+- **EPA Reg 84189-1 — VERIFIED**: Product "Product EP 1%" with alternate brand name **RUCO-BAC AGL**. Active: **Silver Chloride 0.2%**. Same registrant + master label date. PDF: https://www3.epa.gov/pesticides/chem_search/ppls/084189-00001-20160725.pdf
+
+### The lever shifts — registered, but marketing exceeds the registered scope
+
+The earlier "unverified registration → Section 12(a)(1)(A) misbranding risk" framing is OBSOLETE. Both registrations exist and are public-record. The competitive lever is **stronger, not weaker**, because the labels themselves contain explicit treated-article disclaimers that PROHIBIT the very claims Rudolf uses in marketing:
+
+> **From the EPA-approved 84189-2 master label (verbatim):**
+> "Manufactured products incorporating Product EP 10% may not make any public health claims relating to antimicrobial activity without first obtaining an EPA registration for the manufactured product which permits such claims. When incorporated into treated articles, this product does not protect users of any such treated articles or others against food borne or disease causing bacteria, viruses, germs, or other disease causing microorganisms."
+
+And the registration acceptance letter carries the canonical Section 12(a)(1)(E) warning:
+
+> "claims made on the website may not substantially differ from those claims approved through the registration process. Therefore, should the Agency find or if it is brought to our attention that a website contains false or misleading statements or claims substantially differing from the EPA approved registration, the website will be referred to the EPA's Office of Enforcement and Compliance."
+
+Yet Rudolf's marketing for RUCO-BAC AGP / RUCO-BAC AGL / SILVERPLUS uses "antibacterial," "antiviral," and "antimicrobial" claims throughout. **Same FIFRA Section 12(a)(1)(E) misbranding pattern caught with IFTNA PROTX2.** The registered use site is "manufacture of polymers, plastics, textiles, and surface coatings" — a treated-article preservative, not a finished-product antimicrobial. Apparel hangtag claims of "antibacterial protection" substantially differ from the registered scope.
+
+### Use rate on the EPA master label
+
+Per the 84189-2 master label: "Maximum Use Rate: 20,000 ppm of product (400 ppm of silver chloride) by weight of goods (equivalent to 5 lb of product to 100 lb of goods)." The 400 ppm AgCl maximum on-fabric loading is materially higher than industry-typical AgCl finishes — our competitors.ts dosageTypical of 10-12 mg/kg captures the at-market deployment range, well below the EPA-allowed ceiling. SILVERPLUS apparel is well within registered dose, but the **claim scope** is the issue, not the dose.
+
+### Updated competitors.ts state
+
+- `rudolf-ruco-bac-agp` — epaRegNumber: "84189-2", epaRegYear: 2016, epaLabelUrl: PPLS PDF
+- `rudolf-ruco-bac-agl` — epaRegNumber: "84189-1", epaRegYear: 2016, epaLabelUrl: PPLS PDF
+- `rudolf-silverplus` — epaRegNumber: "84189-1 / 84189-2 (inherited)", epaRegYear: 2016, epaLabelUrl: PPLS PDF
+- `rudolf-ruco-bac-rox` — unchanged; no AGXX-specific EPA registration discoverable for US
+
+### Sources
+
+- Direct PPLS PDF (84189-1, RUCO-BAC AGL): https://www3.epa.gov/pesticides/chem_search/ppls/084189-00001-20160725.pdf
+- Direct PPLS PDF (84189-2, RUCO-BAC AGP): https://www3.epa.gov/pesticides/chem_search/ppls/084189-00002-20160725.pdf
+- EPA PPLS public index: https://ordspub.epa.gov/ords/pesticides/f?p=PPLS:1
