@@ -323,32 +323,61 @@ export default function RecipeCalculatorPage() {
   const [icpForm, setIcpForm] = useState<any>({ icpLab: "", icpSampleId: "", icpMeasuredPpm: "", icpReportUrl: "" });
   const [icpSaving, setIcpSaving] = useState(false);
   const [icpState, setIcpState] = useState<"idle" | "submitted" | "complete">("idle");
+  // Kaylee Pace 2026-05-27 — 'antimicrobial test request will not go
+  // through' bug. Root cause was the silent-fail pattern in the two
+  // handlers below: any {ok:false} or non-200 response was discarded
+  // and the user saw nothing change. Surface every failure visibly.
+  const [icpError, setIcpError] = useState<string | null>(null);
 
   async function submitToIcp() {
-    if (!savedTestId) return;
+    if (!savedTestId) {
+      setIcpError("No saved bench test yet — finish + save the recipe before submitting to ICP.");
+      return;
+    }
     setIcpSaving(true);
+    setIcpError(null);
+    const payload = {
+      action: "submit",
+      icpLab: icpForm.icpLab,
+      icpSampleId: icpForm.icpSampleId,
+      testedAtTier: form.testedAtTier,
+      testBathVolumeL: Number(form.testBathVolumeL) || null,
+      icpExpectedPpm: TIER_MG_PER_KG[form.testedAtTier || "F1"] * 1000,
+    };
     try {
       const res = await fetch(`/api/admin/recipe-bench-tests/${savedTestId}/icp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "submit",
-          icpLab: icpForm.icpLab,
-          icpSampleId: icpForm.icpSampleId,
-          testedAtTier: form.testedAtTier,
-          testBathVolumeL: Number(form.testBathVolumeL),
-          icpExpectedPpm: TIER_MG_PER_KG[form.testedAtTier || "F1"] * 1000,
-        }),
+        body: JSON.stringify(payload),
       });
-      if ((await res.json()).ok) setIcpState("submitted");
+      let json: any = null;
+      try { json = await res.json(); } catch {
+        const text = await res.text().catch(() => "(no body)");
+        console.error("[icp-submit] non-JSON response", res.status, text);
+        setIcpError(`HTTP ${res.status} — server returned non-JSON. Open Network tab for the full body.`);
+        return;
+      }
+      if (!res.ok || !json?.ok) {
+        console.error("[icp-submit] failed", res.status, json, "payload:", payload);
+        setIcpError(json?.error || `HTTP ${res.status} — submit failed.`);
+        return;
+      }
+      setIcpState("submitted");
+    } catch (e: any) {
+      console.error("[icp-submit] threw", e);
+      setIcpError(e?.message || "Network error — the request never reached the server.");
     } finally {
       setIcpSaving(false);
     }
   }
 
   async function enterIcpResult() {
-    if (!savedTestId || !icpForm.icpMeasuredPpm) return;
+    if (!savedTestId || !icpForm.icpMeasuredPpm) {
+      setIcpError("Bench test id + measured Ag ppm both required.");
+      return;
+    }
     setIcpSaving(true);
+    setIcpError(null);
     try {
       const res = await fetch(`/api/admin/recipe-bench-tests/${savedTestId}/icp`, {
         method: "POST",
@@ -359,7 +388,20 @@ export default function RecipeCalculatorPage() {
           icpReportUrl: icpForm.icpReportUrl,
         }),
       });
-      if ((await res.json()).ok) setIcpState("complete");
+      let json: any = null;
+      try { json = await res.json(); } catch {
+        setIcpError(`HTTP ${res.status} — server returned non-JSON.`);
+        return;
+      }
+      if (!res.ok || !json?.ok) {
+        console.error("[icp-result] failed", res.status, json);
+        setIcpError(json?.error || `HTTP ${res.status} — result entry failed.`);
+        return;
+      }
+      setIcpState("complete");
+    } catch (e: any) {
+      console.error("[icp-result] threw", e);
+      setIcpError(e?.message || "Network error.");
     } finally {
       setIcpSaving(false);
     }
@@ -943,6 +985,12 @@ export default function RecipeCalculatorPage() {
                 {/* ICP submission + result */}
                 <div className="mt-4 p-4 bg-violet-50 border border-violet-200 rounded-lg">
                   <p className="text-xs font-black uppercase tracking-wide text-violet-900 mb-2">🧫 ICP Validation</p>
+                  {icpError && (
+                    <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                      <strong>Submit failed:</strong> {icpError}
+                      <button onClick={() => setIcpError(null)} className="ml-2 text-red-900 hover:underline">dismiss</button>
+                    </div>
+                  )}
                   {icpState === "idle" && (
                     <div className="space-y-2">
                       <p className="text-xs text-slate-700">Bag &amp; tag the treated sample, fill the submission form, send to the ICP lab. Expected Ag on fabric: <strong>{(TIER_MG_PER_KG[form.testedAtTier || "F1"] * 1000).toFixed(0)} ppm</strong>.</p>

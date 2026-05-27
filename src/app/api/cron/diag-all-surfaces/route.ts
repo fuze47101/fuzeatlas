@@ -732,6 +732,26 @@ export async function GET(req: Request) {
       "project findFirst — smoke read",
       () => prisma.project.findFirst({ select: { id: true } }),
     ),
+    // Kaylee Pace 2026-05-27 — recipe-calculator ICP submit path.
+    // Confirms RecipeBenchTest table is reachable + the columns the
+    // ICP submit handler writes to all exist.
+    check(
+      "/admin/recipe-calculator — RecipeBenchTest.icp* columns readable",
+      "recipeBenchTest findFirst w/ icp columns selected",
+      () =>
+        prisma.recipeBenchTest.findFirst({
+          select: {
+            id: true,
+            icpLab: true,
+            icpSampleId: true,
+            icpSubmittedAt: true,
+            icpSubmittedById: true,
+            icpExpectedPpm: true,
+            testedAtTier: true,
+            testBathVolumeL: true,
+          },
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
