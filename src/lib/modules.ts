@@ -171,6 +171,22 @@ export const MODULES: ModuleDef[] = [
 
   // ─────────────────────────────────────────────────────────────
   {
+    key: "projects",
+    label: "Projects",
+    icon: "🎯",
+    accent: "from-cyan-500 to-cyan-700",
+    sidebarAccent: "text-cyan-400",
+    blurb: "Active projects, kickoffs, ownership, sample grids",
+    landing: "/admin/projects",
+    adminOnly: false,
+    items: [
+      { label: "All Projects", labelKey: "projectsAll", href: "/admin/projects", icon: "📋" },
+      { label: "New Project", labelKey: "projectNew", href: "/admin/projects/new", icon: "+" },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  {
     key: "meetings",
     label: "Meetings",
     icon: "🗒",

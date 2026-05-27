@@ -51,6 +51,8 @@ const en = {
     myTasks: "My Tasks",
     meetingSeries: "Series",
     allTasks: "All Tasks (admin)",
+    projectsAll: "All Projects",
+    projectNew: "New Project",
     availabilitySettings: "Availability Settings",
     accessRequests: "Access Requests",
     exchangeRates: "Exchange Rates",
