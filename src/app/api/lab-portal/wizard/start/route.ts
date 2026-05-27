@@ -19,7 +19,28 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { aiFetch } from "@/lib/ai-fetch";
 
-const LAB_ROLES = ["LAB_USER", "LAB_MANAGER", "ADMIN", "EMPLOYEE"];
+// Phase 52 T5 — broadened to include customer-side roles for the
+// /test-requests/wizard flow. The route only auto-fills fields from
+// fabric/brand/factory rows the body references; if the caller doesn't
+// have access to those rows, the Prisma findUnique returns null and
+// the relevant fields just won't be pre-filled. No data leak.
+const LAB_ROLES = [
+  "LAB_USER",
+  "LAB_MANAGER",
+  "ADMIN",
+  "EMPLOYEE",
+  "SALES_MANAGER",
+  "SALES_REP",
+  "BD_REP",
+  "TESTING_MANAGER",
+  "FABRIC_MANAGER",
+  "BRAND_USER",
+  "BRAND_MANAGER",
+  "FACTORY_USER",
+  "FACTORY_LEAD",
+  "FACTORY_MANAGER",
+  "DISTRIBUTOR_USER",
+];
 
 interface FormField {
   key: string;
