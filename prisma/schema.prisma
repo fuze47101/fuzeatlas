@@ -266,6 +266,10 @@ model User {
   // therefore don't appear in this collection.
   emailTemplates EmailTemplate[] @relation("EmailTemplateOwner")
 
+  // Phase 52 T2 — labs this user approves PENDING_APPROVAL test requests for.
+  // Tina is the Asia regional approver after the migration cron backfill.
+  approvedLabs Lab[] @relation("LabRegionalApprover")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -815,6 +819,12 @@ model Lab {
   // Notes
   notes  String?
   active Boolean @default(true)
+
+  // Phase 52 T2 — regional approval routing. When set, every TestRequest
+  // headed to this lab routes its PENDING_APPROVAL notification to this
+  // user (e.g. Tina for Asia labs) instead of fanning to every admin.
+  regionalApproverId String?
+  regionalApprover   User?   @relation("LabRegionalApprover", fields: [regionalApproverId], references: [id])
 
   raw Json?
 
@@ -2221,6 +2231,13 @@ model TestRequestLine {
   testType    String // ICP, ANTIBACTERIAL, FUNGAL, ODOR, UV, MICROFIBER
   testMethod  String? // AATCC 100, ASTM E2149, JIS L 1902, ICP-OES, etc.
   description String? // Additional description or wash count spec
+
+  // Phase 52 T1 — organism + washCount per line. Free-text organism
+  // (comma-separated list); see src/lib/test-organisms.ts for the
+  // curated autocomplete pool. washCount supports wash-progression
+  // series (0 / 25 / 50 / 100).
+  organisms String?
+  washCount Int?
 
   // Pricing (from LabService or manual)
   quantity   Int     @default(1)
