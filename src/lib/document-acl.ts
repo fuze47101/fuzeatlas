@@ -254,6 +254,7 @@ export async function listDocumentsForUser(
   // 2) Document table (per-submission / test / lab uploads)
   try {
     const docs = await prisma.document.findMany({
+      where: { deletedAt: null },
       orderBy: { createdAt: "desc" },
       take: 200,
       include: {

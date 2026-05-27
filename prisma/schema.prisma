@@ -1824,12 +1824,18 @@ model Document {
 
   raw Json?
 
+  // Soft-delete column — Charming Industry (Jany Lu) needed to replace
+  // a wrong PDF uploaded as Application Report, and we want recovery
+  // if someone fat-fingers the Delete button. Filter at the read path.
+  deletedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([submissionId])
   @@index([testRunId])
   @@index([sowId])
+  @@index([deletedAt])
 }
 
 // ─────────────────────────────────────────────

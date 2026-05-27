@@ -21,6 +21,20 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
         submissions: {
           include: {
             testRuns: { include: { icpResult: true, abResult: true, fungalResult: true, odorResult: true } },
+            documents: {
+              where: { deletedAt: null },
+              orderBy: { createdAt: "desc" },
+              select: {
+                id: true,
+                kind: true,
+                filename: true,
+                contentType: true,
+                sizeBytes: true,
+                url: true,
+                createdAt: true,
+                updatedAt: true,
+              },
+            },
           },
           orderBy: { createdAt: "desc" },
           take: 20,

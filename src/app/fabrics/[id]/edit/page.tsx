@@ -583,6 +583,9 @@ export default function FabricEditPage() {
               <div><label className={labelClass}>General Notes</label><textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} className={inputClass} /></div>
             </div>
           </div>
+
+          {/* Section 8: Documents */}
+          <FabricDocumentsSection fabricId={id as string} fabric={fabric} />
         </div>
 
         {/* Action bar */}
@@ -623,6 +626,177 @@ export default function FabricEditPage() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─── Documents section ──────────────────────────────────────────────
+// Replace + soft-delete UI for documents attached to a fabric's
+// submissions. Built for the Charming Industry / Jany Lu case where the
+// wrong Application Report PDF was uploaded and there was no in-app
+// route to fix it.
+
+interface DocRow {
+  id: string;
+  kind: string;
+  filename: string | null;
+  contentType: string | null;
+  sizeBytes: number | null;
+  updatedAt: string;
+}
+
+function FabricDocumentsSection({ fabricId, fabric }: { fabricId: string; fabric: any }) {
+  const toast = useToast();
+  const [docs, setDocs] = useState<DocRow[]>([]);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!fabric?.submissions) return;
+    const flat: DocRow[] = [];
+    for (const s of fabric.submissions) {
+      for (const d of s.documents || []) flat.push(d);
+    }
+    setDocs(flat);
+  }, [fabric]);
+
+  async function refresh() {
+    try {
+      const r = await fetch(`/api/fabrics/${fabricId}`);
+      const d = await r.json();
+      if (d.ok && d.fabric?.submissions) {
+        const flat: DocRow[] = [];
+        for (const s of d.fabric.submissions) {
+          for (const dd of s.documents || []) flat.push(dd);
+        }
+        setDocs(flat);
+      }
+    } catch {}
+  }
+
+  async function handleReplace(docId: string, file: File) {
+    setBusyId(docId);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const r = await fetch(`/api/fabrics/${fabricId}/documents/${docId}`, {
+        method: "PATCH",
+        body: fd,
+      });
+      const d = await r.json();
+      if (!d.ok) toast.error(d.error || "Replace failed");
+      else {
+        toast.success(`Replaced — "${d.document?.filename || file.name}"`);
+        await refresh();
+      }
+    } catch (e: any) {
+      toast.error(e?.message || "Replace failed");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleDelete(docId: string) {
+    setBusyId(docId);
+    try {
+      const r = await fetch(`/api/fabrics/${fabricId}/documents/${docId}`, { method: "DELETE" });
+      const d = await r.json();
+      if (!d.ok) toast.error(d.error || "Delete failed");
+      else {
+        toast.success(`Deleted — "${d.filename || "document"}"`);
+        await refresh();
+      }
+    } catch (e: any) {
+      toast.error(e?.message || "Delete failed");
+    } finally {
+      setBusyId(null);
+      setConfirmingId(null);
+    }
+  }
+
+  function fmtSize(b: number | null): string {
+    if (!b) return "";
+    if (b < 1024) return `${b} B`;
+    if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
+    return `${(b / 1024 / 1024).toFixed(1)} MB`;
+  }
+
+  return (
+    <div className="border-t border-slate-200 pt-6">
+      <h3 className="font-semibold text-slate-900 mb-4">Documents ({docs.length})</h3>
+      {docs.length === 0 ? (
+        <p className="text-sm text-slate-500 italic">No documents attached to this fabric.</p>
+      ) : (
+        <div className="divide-y divide-slate-200 rounded-lg border border-slate-200 overflow-hidden">
+          {docs.map((d) => (
+            <div key={d.id} className="flex items-center gap-3 p-3 bg-white hover:bg-slate-50">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs uppercase tracking-wide font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">
+                    {d.kind}
+                  </span>
+                  <a
+                    href={`/api/documents/${d.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm font-medium text-indigo-700 hover:underline truncate"
+                  >
+                    {d.filename || `Document ${d.id.slice(-6)}`}
+                  </a>
+                </div>
+                <div className="text-xs text-slate-500 mt-0.5">
+                  {fmtSize(d.sizeBytes)} {d.contentType ? `· ${d.contentType}` : ""} · updated{" "}
+                  {new Date(d.updatedAt).toLocaleString()}
+                </div>
+              </div>
+
+              {confirmingId === d.id ? (
+                <div className="flex items-center gap-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                  <span className="text-xs text-red-700 font-medium">
+                    Permanently delete "{d.filename || d.id.slice(-6)}"?
+                  </span>
+                  <button
+                    onClick={() => handleDelete(d.id)}
+                    disabled={busyId === d.id}
+                    className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                  >
+                    Yes, delete
+                  </button>
+                  <button
+                    onClick={() => setConfirmingId(null)}
+                    className="px-2 py-1 text-xs text-slate-600 border border-slate-300 rounded hover:bg-white"
+                  >
+                    No
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <label className="px-3 py-1.5 text-xs bg-indigo-600 text-white rounded-md hover:bg-indigo-700 cursor-pointer disabled:opacity-50">
+                    {busyId === d.id ? "Working…" : "Replace"}
+                    <input
+                      type="file"
+                      className="hidden"
+                      disabled={busyId === d.id}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) handleReplace(d.id, f);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  <button
+                    onClick={() => setConfirmingId(d.id)}
+                    disabled={busyId === d.id}
+                    className="px-3 py-1.5 text-xs text-red-600 border border-red-200 rounded-md hover:bg-red-50 disabled:opacity-50"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
