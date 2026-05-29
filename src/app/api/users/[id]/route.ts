@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { hashPassword, getCurrentUser, hasMinRole } from "@/lib/auth";
+import { hashPassword, getRealUser, hasMinRole } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -20,12 +20,12 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
   try {
     const params = await props.params;
 
-    // Session-based auth — previously this route trusted the spoofable
-    // x-user-role header (set by middleware on cookie auth). When the
-    // header wasn't populated the role check 403'd silently — caught
-    // when Ryan Prince's role-change action failed in /settings/users.
-    // Same pattern as the working /api/settings/users/[id] PATCH.
-    const sessionUser = await getCurrentUser();
+    // Admin permission gate — must check the REAL session user's role,
+    // not the impersonated user's. getCurrentUser() swaps in the
+    // impersonated user when fuze-impersonate is set, which would lock
+    // an admin out of role-change/delete/etc. on a View-As session.
+    // Use getRealUser() per src/lib/auth.ts:111 docstring guidance.
+    const sessionUser = await getRealUser();
     if (!sessionUser) {
       return NextResponse.json(
         { ok: false, error: "Unauthorized" },

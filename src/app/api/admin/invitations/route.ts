@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getRealUser } from "@/lib/auth";
 import {
   createOrgInvitation,
   ALLOWED_INVITE_ROLES,
@@ -107,7 +107,10 @@ async function resolveEntityName(
 }
 
 export async function POST(req: Request) {
-  const user = await getCurrentUser();
+  // Permission gate — use the REAL session user, not the impersonated
+  // one, so a View-As session doesn't block an admin from sending an
+  // invitation.
+  const user = await getRealUser();
   if (!user) return bad("Unauthorized", 401);
   if (!INVITE_AUTHORIZED_ROLES.has(user.role)) return bad("Forbidden", 403);
 

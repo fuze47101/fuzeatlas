@@ -5,7 +5,7 @@ import {
   hashPassword,
   createToken,
   setSessionCookie,
-  getCurrentUser,
+  getRealUser,
   hasMinRole,
 } from "@/lib/auth";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
@@ -52,9 +52,10 @@ export async function POST(req: Request) {
     });
     const isFirstAdmin = usersWithPassword === 0;
 
-    // If not first admin setup, require admin to create accounts
+    // If not first admin setup, require admin to create accounts.
+    // Permission gate — real session user, ignore impersonation.
     if (!isFirstAdmin) {
-      const currentUser = await getCurrentUser();
+      const currentUser = await getRealUser();
       if (!currentUser || !hasMinRole(currentUser.role, "ADMIN")) {
         return NextResponse.json(
           { ok: false, error: "Only administrators can create new accounts" },

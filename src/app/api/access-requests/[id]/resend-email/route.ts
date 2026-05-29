@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser, hasMinRole, hashPassword } from "@/lib/auth";
+import { getRealUser, hasMinRole, hashPassword } from "@/lib/auth";
 import { sendAccessApprovedEmail } from "@/lib/email";
 
 /* ── POST /api/access-requests/[id]/resend-email ── ADMIN: resend approval email with new temp password ── */
@@ -10,7 +10,8 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getCurrentUser();
+    // Permission gate — real session user, ignore impersonation.
+    const user = await getRealUser();
     if (!user || !hasMinRole(user.role, "ADMIN")) {
       return NextResponse.json({ ok: false, error: "Admin access required" }, { status: 403 });
     }

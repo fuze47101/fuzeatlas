@@ -25,7 +25,7 @@
  */
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser, hasMinRole, hashPassword } from "@/lib/auth";
+import { getRealUser, hasMinRole, hashPassword } from "@/lib/auth";
 import { sendAccessApprovedEmail } from "@/lib/email";
 
 // Local copy of generateTempPassword from /api/access-requests/[id]/route.ts.
@@ -45,7 +45,8 @@ function generateTempPassword(): string {
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const me = await getCurrentUser();
+    // Permission gate — real session user, ignore impersonation.
+    const me = await getRealUser();
     if (!me || !hasMinRole(me.role, "ADMIN")) {
       return NextResponse.json(
         { ok: false, error: "Only admins can provision Atlas users" },

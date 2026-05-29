@@ -1,12 +1,14 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser, hasMinRole, hashPassword } from "@/lib/auth";
+import { getRealUser, hasMinRole, hashPassword } from "@/lib/auth";
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const currentUser = await getCurrentUser();
+    // Admin permission gate — use the REAL session user, not the
+    // impersonated one, so View-As doesn't lock admins out of writes.
+    const currentUser = await getRealUser();
 
     if (!currentUser || !hasMinRole(currentUser.role, "ADMIN")) {
       return NextResponse.json(

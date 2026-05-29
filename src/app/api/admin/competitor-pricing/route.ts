@@ -1,12 +1,12 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser, hasMinRole } from "@/lib/auth";
+import { getRealUser, hasMinRole } from "@/lib/auth";
 
 // GET — list all overrides
 export async function GET() {
   try {
-    const user = await getCurrentUser();
+    const user = await getRealUser();
     if (!user) {
       return NextResponse.json({ ok: false, error: "Authentication required" }, { status: 401 });
     }
@@ -24,7 +24,7 @@ export async function GET() {
 // POST — create or update (upsert by competitorId)
 export async function POST(req: Request) {
   try {
-    const user = await getCurrentUser();
+    const user = await getRealUser();
     if (!user || !hasMinRole(user.role, "ADMIN")) {
       return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
     }
@@ -75,7 +75,7 @@ export async function POST(req: Request) {
 // DELETE — remove override for a competitor
 export async function DELETE(req: Request) {
   try {
-    const user = await getCurrentUser();
+    const user = await getRealUser();
     if (!user || !hasMinRole(user.role, "ADMIN")) {
       return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
     }

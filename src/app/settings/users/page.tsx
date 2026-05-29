@@ -70,7 +70,23 @@ const NEEDS_LAB = ["LAB_USER"];
 export default function UserManagementPage() {
   const { t } = useI18n();
   const T = t.settingsUsers;
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, impersonation } = useAuth();
+  const [clearingImpersonation, setClearingImpersonation] = useState(false);
+
+  async function clearImpersonation() {
+    setClearingImpersonation(true);
+    try {
+      await fetch("/api/admin/impersonate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "stop" }),
+      });
+      // Reload so the AuthContext repulls /api/auth/me without the cookie.
+      window.location.reload();
+    } catch {
+      setClearingImpersonation(false);
+    }
+  }
   const router = useRouter();
 
   const [users, setUsers] = useState<UserRecord[]>([]);
@@ -463,6 +479,17 @@ export default function UserManagementPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          {impersonation?.active && (
+            <button
+              onClick={clearImpersonation}
+              disabled={clearingImpersonation}
+              className="px-3 py-2 bg-amber-100 text-amber-900 text-sm font-medium rounded-lg hover:bg-amber-200 border border-amber-300 transition-colors inline-flex items-center gap-1.5"
+              title="Stop impersonating — clears the fuze-impersonate cookie and reloads as the real session user"
+            >
+              <span aria-hidden="true">↩</span>
+              <span>{clearingImpersonation ? "Clearing…" : "Clear impersonation"}</span>
+            </button>
+          )}
           <button
             onClick={() => {
               setInviteOpen(true);

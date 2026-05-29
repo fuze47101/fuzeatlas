@@ -1,11 +1,13 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser, hasMinRole } from "@/lib/auth";
+import { getRealUser, hasMinRole } from "@/lib/auth";
 
 export async function GET() {
   try {
-    const currentUser = await getCurrentUser();
+    // Admin/staff permission gate — use the REAL session user so
+    // View-As doesn't lock admins out of the user list.
+    const currentUser = await getRealUser();
     if (!currentUser || !hasMinRole(currentUser.role, "EMPLOYEE")) {
       return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
     }

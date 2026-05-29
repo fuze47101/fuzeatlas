@@ -1,13 +1,13 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser, hasMinRole } from "@/lib/auth";
+import { getRealUser, hasMinRole } from "@/lib/auth";
 import { uploadToS3, generateS3Key, isS3Configured, S3_PREFIXES } from "@/lib/s3";
 
 // GET: List all distributor documents (admin view)
 export async function GET(req: Request) {
   try {
-    const user = await getCurrentUser();
+    const user = await getRealUser();
     if (!user || !hasMinRole(user.role, "EMPLOYEE")) {
       return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 403 });
     }
@@ -51,7 +51,7 @@ export async function GET(req: Request) {
 // POST: Create a new distributor document entry
 export async function POST(req: Request) {
   try {
-    const user = await getCurrentUser();
+    const user = await getRealUser();
     if (!user || !hasMinRole(user.role, "EMPLOYEE")) {
       return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 403 });
     }
