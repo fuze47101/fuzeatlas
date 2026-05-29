@@ -348,27 +348,61 @@ export default function UserManagementPage() {
     setSaving(true);
     setEditError(null);
     try {
-      // Build the patch body. Always send role + status. For entity
-      // FKs: send the PICKER VALUE for the role's required entity
-      // (so the API's role-coherence guard at /api/settings/users/[id]
-      // sees a valid finalFkValue), AND null out the OTHER three
-      // entity FKs so a role-category switch doesn't leave stale
-      // assignments. Tina's bug: she switched Shauna FACTORY_USER →
-      // DISTRIBUTOR_USER without a way to clear factoryId or set
-      // distributorId.
-      const body: any = { role: editRole, status: editStatus };
-      // Email + name editable from inline row. API enforces email format
-      // + collision check on save (Jany Lu typo-correction case).
-      if (editEmail && editEmail.trim()) body.email = editEmail.trim();
-      if (editName && editName.trim()) body.name = editName.trim();
-      const isBrand = NEEDS_BRAND.includes(editRole);
-      const isFactory = NEEDS_FACTORY.includes(editRole);
-      const isDistributor = NEEDS_DISTRIBUTOR.includes(editRole);
-      const isLab = NEEDS_LAB.includes(editRole);
-      body.brandId = isBrand ? editBrandId || null : null;
-      body.factoryId = isFactory ? editFactoryId || null : null;
-      body.distributorId = isDistributor ? editDistributorId || null : null;
-      body.labId = isLab ? editLabId || null : null;
+      // Build the patch body. Diff against the loaded user record so we
+      // only PATCH fields that ACTUALLY CHANGED — Ryan Prince
+      // 2026-05-29 bug: Andrew picked ADMIN via the Change Role modal
+      // (succeeded), but an inline edit row was still open with the
+      // stale BD_REP editRole. A subsequent Save on the inline row
+      // posted role=BD_REP and stomped the modal's update. Sending
+      // only diffs eliminates the stomp pattern entirely.
+      const original = users.find((u) => u.id === userId);
+      const body: any = {};
+      if (original) {
+        if (editRole !== original.role) body.role = editRole;
+        if (editStatus !== original.status) body.status = editStatus;
+        const trimmedEmail = (editEmail || "").trim();
+        if (trimmedEmail && trimmedEmail !== (original.email || "")) body.email = trimmedEmail;
+        const trimmedName = (editName || "").trim();
+        if (trimmedName && trimmedName !== (original.name || "")) body.name = trimmedName;
+      } else {
+        // Fallback if we lost the original row (rare race) — preserve
+        // legacy behavior so the edit doesn't silently drop fields.
+        body.role = editRole;
+        body.status = editStatus;
+        if (editEmail && editEmail.trim()) body.email = editEmail.trim();
+        if (editName && editName.trim()) body.name = editName.trim();
+      }
+
+      // Entity-FK diffing only fires when the role changed or the
+      // user explicitly picked a new entity. For an unchanged role
+      // we don't touch entity FKs — preserves Tina's switch-and-
+      // assign flow while preventing accidental nulling.
+      const roleForFk = body.role ?? editRole;
+      const isBrand = NEEDS_BRAND.includes(roleForFk);
+      const isFactory = NEEDS_FACTORY.includes(roleForFk);
+      const isDistributor = NEEDS_DISTRIBUTOR.includes(roleForFk);
+      const isLab = NEEDS_LAB.includes(roleForFk);
+      if (body.role) {
+        // Role changed — send the FK pattern for the new role category.
+        body.brandId = isBrand ? editBrandId || null : null;
+        body.factoryId = isFactory ? editFactoryId || null : null;
+        body.distributorId = isDistributor ? editDistributorId || null : null;
+        body.labId = isLab ? editLabId || null : null;
+      } else {
+        // Role unchanged — only send the entity FK if the picker value
+        // differs from the original record.
+        if (isBrand && editBrandId !== (original?.brandId || "")) body.brandId = editBrandId || null;
+        if (isFactory && editFactoryId !== (original?.factoryId || "")) body.factoryId = editFactoryId || null;
+        if (isDistributor && editDistributorId !== (original?.distributorId || "")) body.distributorId = editDistributorId || null;
+        if (isLab && editLabId !== (original?.labId || "")) body.labId = editLabId || null;
+      }
+
+      // No-op save — exit without hitting the API.
+      if (Object.keys(body).length === 0) {
+        setEditingId(null);
+        setSaving(false);
+        return;
+      }
 
       const res = await fetch(`/api/settings/users/${userId}`, {
         method: "PATCH",
@@ -450,6 +484,10 @@ export default function UserManagementPage() {
           setGeneratedPassword(data.generatedPassword);
         } else {
           setModalOpen(false);
+          // Close any inline edit row on the same user so a stale
+          // editRole can't stomp the modal's change on a subsequent
+          // Save (Ryan Prince 2026-05-29 stomp race).
+          if (editingId === modalUserId) setEditingId(null);
           fetchUsers();
         }
       } else {
