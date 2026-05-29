@@ -186,8 +186,44 @@ function cleanDescription(raw: string, handle: string): string {
 }
 
 /**
+ * Detect a section-header line. Section headers carry priority hints
+ * that propagate to every @mention bullet below them until the next
+ * header. Andrew's Monday Global format uses `**Brand — Priority 1
+ * URGENT**` markdown bold-only lines as section delimiters.
+ *
+ * A line counts as a header when:
+ *   - It's `**...**` with the bold markers wrapping the WHOLE trimmed
+ *     line (no list bullet, no per-bullet body text), OR
+ *   - It's a markdown heading (`#`, `##`, `###`...), OR
+ *   - It looks like a label line (single short clause, ends with `:`).
+ *
+ * Returns the inner header text when a match lands so the priority
+ * detector can scan it; null otherwise.
+ */
+function sectionHeaderText(line: string): string | null {
+  const trimmed = line.trim();
+  if (!trimmed) return null;
+  // Bullet line — skip even if it's all bold-wrapped, since bullets
+  // aren't section delimiters in the Monday format.
+  if (/^[-*]\s/.test(trimmed)) return null;
+  // ## Heading
+  const headingMatch = trimmed.match(/^#{1,6}\s+(.+)$/);
+  if (headingMatch) return headingMatch[1];
+  // **Bold Header** — bold markers must wrap the entire trimmed line.
+  const boldMatch = trimmed.match(/^\*\*(.+)\*\*$/);
+  if (boldMatch && !/@/.test(boldMatch[1])) return boldMatch[1];
+  return null;
+}
+
+/**
  * Split the body into action-item-candidate clauses. Each line OR
  * sentence with an @mention spawns one ExtractedAction.
+ *
+ * Section-header priority is inherited: when a `**Header**` or `## Header`
+ * line carries a priority keyword (URGENT / HIGH PRIORITY / LOW PRIORITY /
+ * etc.) every bullet beneath it picks up that priority unless its own
+ * sentence overrides with a different keyword. Sentence-level priority
+ * always wins over section default; section default beats NORMAL fallback.
  */
 export function extractActionItems(
   bodyMd: string,
@@ -197,10 +233,22 @@ export function extractActionItems(
   const out: ExtractedAction[] = [];
   if (!bodyMd) return out;
 
+  let sectionPriority: ActionPriority = "NORMAL";
+
   // Split on line boundaries first; within each line split on period+space
   // to catch multiple @mentions on the same line.
   const lines = bodyMd.split(/\r?\n/);
   for (const line of lines) {
+    // Track section-header priority hints first — a header line never
+    // also carries an @mention (the test inside sectionHeaderText() bails
+    // out when the header contains '@').
+    const headerText = sectionHeaderText(line);
+    if (headerText) {
+      const p = detectPriority(headerText);
+      sectionPriority = p; // reset (including NORMAL — new section without a hint clears prior)
+      continue;
+    }
+
     if (!/@/.test(line)) continue;
     const sentences = line.split(/(?<=[.!?])\s+(?=[A-Z@])/);
     for (const sentence of sentences) {
@@ -209,7 +257,10 @@ export function extractActionItems(
       for (const m of mentionMatches) {
         const handle = m[1];
         const { user, ambiguous } = matchUserByHandle(handle, users);
-        const priority = detectPriority(sentence);
+        // Sentence-level priority wins; fall back to the current
+        // section's default when the sentence doesn't override.
+        const sentencePriority = detectPriority(sentence);
+        const priority = sentencePriority === "NORMAL" ? sectionPriority : sentencePriority;
         const dueDate = detectDueDate(sentence, now);
         const cleaned = cleanDescription(sentence, handle);
         if (!cleaned) continue;
