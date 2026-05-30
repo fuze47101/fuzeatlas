@@ -295,6 +295,11 @@ model User {
   // Phase 54 — projects this user owns.
   projectsOwned Project[] @relation("ProjectOwner")
 
+  // Phase 55 — meeting project blocks this user is in charge of (owner)
+  // + blocks this user created.
+  ownedMeetingProjectBlocks   MeetingProjectBlock[] @relation("MeetingProjectBlockOwner")
+  createdMeetingProjectBlocks MeetingProjectBlock[] @relation("MeetingProjectBlockCreator")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -430,6 +435,7 @@ model Brand {
   meetings             Meeting[]                  @relation("MeetingBrand")
   meetingNotes         MeetingNote[]              @relation("MeetingNoteBrand")
   meetingSeries        MeetingSeries[]            @relation("MeetingSeriesBrand")
+  meetingProjectBlocks MeetingProjectBlock[]      @relation("MeetingProjectBlockBrand")
   crmTasks             CrmTask[]                  @relation("BrandCrmTasks")
   sourceRecords        SourceRecord[]
   engagement           BrandEngagement?           @relation("BrandEngagement")
@@ -567,6 +573,8 @@ model Factory {
   // Phase 53 — Meeting Notes module.
   meetingNotes         MeetingNote[]              @relation("MeetingNoteFactory")
   meetingSeries        MeetingSeries[]            @relation("MeetingSeriesFactory")
+  // Phase 55 — structured project blocks tagged to this factory.
+  meetingProjectBlocks MeetingProjectBlock[]      @relation("MeetingProjectBlockFactory")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -601,11 +609,11 @@ model BrandFactory {
 // reprompting. Example: SanMar's sheet says "XinKaiSheng (New Kasum)"
 // but Atlas has it as "NK".
 model BrandFactoryAlias {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   brandId   String
   factoryId String
-  brand     Brand    @relation("BrandFactoryAliases", fields: [brandId], references: [id])
-  factory   Factory  @relation("FactoryBrandAliases", fields: [factoryId], references: [id])
+  brand     Brand   @relation("BrandFactoryAliases", fields: [brandId], references: [id])
+  factory   Factory @relation("FactoryBrandAliases", fields: [factoryId], references: [id])
 
   csvName   String
   createdAt DateTime @default(now())
@@ -4380,16 +4388,16 @@ model NotificationSubscription {
 // reviewers identified per region.
 
 model LocaleReviewStatus {
-  id              String    @id @default(cuid())
-  locale          String    @unique
-  reviewerId      String?
-  reviewerEmail   String?
-  reviewerName    String?
+  id               String    @id @default(cuid())
+  locale           String    @unique
+  reviewerId       String?
+  reviewerEmail    String?
+  reviewerName     String?
   lastTranslatedAt DateTime?
   lastReviewedAt   DateTime?
-  notes           String?   @db.Text
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  notes            String?   @db.Text
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@index([reviewerId])
 }
@@ -4428,12 +4436,12 @@ model SimilarEmailIgnore {
 // ─────────────────────────────────────────────
 
 model MeetingSeries {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
-  cadence     String?  // "weekly" | "biweekly" | "monthly" | "adhoc"
-  cadenceDay  Int?     // 0=Sun, 1=Mon ... 6=Sat
-  cadenceHour Int?     // 0-23 UTC
+  cadence     String? // "weekly" | "biweekly" | "monthly" | "adhoc"
+  cadenceDay  Int? // 0=Sun, 1=Mon ... 6=Sat
+  cadenceHour Int? // 0-23 UTC
   templateMd  String?
 
   brandId   String?
@@ -4479,8 +4487,10 @@ model MeetingNote {
   project   Project? @relation("MeetingNoteProject", fields: [projectId], references: [id])
   kickoffOf Project? @relation("ProjectKickoffMeetingNote")
 
-  entries     MeetingNoteEntry[]
-  actionItems MeetingActionItem[]
+  entries       MeetingNoteEntry[]
+  actionItems   MeetingActionItem[]
+  // Phase 55 — structured project blocks per meeting.
+  projectBlocks MeetingProjectBlock[] @relation("MeetingNoteProjectBlock")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -4523,6 +4533,13 @@ model MeetingActionItem {
   sourceEntryId String?
   sourceEntry   MeetingNoteEntry? @relation("ActionItemSource", fields: [sourceEntryId], references: [id])
 
+  // Phase 55 — structured project blocks. Tasks created from the
+  // "+ Add task" button on a block carry the block FK so the UI can
+  // render them grouped under the right project. Free-form parser-
+  // extracted tasks (legacy / unstructured entries) leave this null.
+  projectBlockId String?
+  projectBlock   MeetingProjectBlock? @relation("ActionItemProjectBlock", fields: [projectBlockId], references: [id], onDelete: SetNull)
+
   description String
   assigneeId  String?
   assignee    User?   @relation("ActionItemAssignee", fields: [assigneeId], references: [id])
@@ -4530,7 +4547,7 @@ model MeetingActionItem {
   priority String    @default("NORMAL") // LOW | NORMAL | HIGH | URGENT
   dueDate  DateTime?
 
-  status   String    @default("OPEN")   // OPEN | DONE | BLOCKED | CANCELLED
+  status   String    @default("OPEN") // OPEN | DONE | BLOCKED | CANCELLED
   doneAt   DateTime?
   doneById String?
   doneBy   User?     @relation("ActionItemCloser", fields: [doneById], references: [id])
@@ -4542,7 +4559,70 @@ model MeetingActionItem {
 
   @@index([assigneeId, status])
   @@index([meetingNoteId])
+  @@index([projectBlockId])
   @@index([dueDate])
   @@index([priority])
   @@index([status])
+}
+
+// ─────────────────────────────────────────────
+// PHASE 55 — STRUCTURED MEETING PROJECT BLOCKS
+// ─────────────────────────────────────────────
+//
+// Each MeetingNote is composed of N project blocks (one per
+// brand / factory / internal initiative discussed). Replaces the
+// pasted-paper free-text body with dropdown-driven structure:
+//
+//   customerType  BRAND | FACTORY | OTHER
+//   brand/factory FK when applicable
+//   internalLabel free text when customerType=OTHER (e.g. Project
+//                 Red Rover, Helios spray tests)
+//   ownerId       FUZE user in charge of the project
+//   priority      A | B | C | D — exec-set, drives sort
+//   discussionMd  free-text talking points
+//
+// Tasks are first-class: every block has a "+ Add task" form that
+// creates a MeetingActionItem with projectBlockId set, fires the
+// immediate-assignment email pipeline on save, and surfaces grouped
+// under the block in the UI.
+
+model MeetingProjectBlock {
+  id            String      @id @default(cuid())
+  meetingNoteId String
+  meetingNote   MeetingNote @relation("MeetingNoteProjectBlock", fields: [meetingNoteId], references: [id], onDelete: Cascade)
+
+  // Dropdown 1 — customer type. Drives which FK below is meaningful.
+  customerType String // BRAND | FACTORY | OTHER
+
+  brandId       String?
+  brand         Brand?   @relation("MeetingProjectBlockBrand", fields: [brandId], references: [id])
+  factoryId     String?
+  factory       Factory? @relation("MeetingProjectBlockFactory", fields: [factoryId], references: [id])
+  // When customerType=OTHER (Project Red Rover, internal R&D, etc.)
+  internalLabel String?
+
+  // Dropdown 2 — FUZE user in charge of this project.
+  ownerId String?
+  owner   User?   @relation("MeetingProjectBlockOwner", fields: [ownerId], references: [id])
+
+  // Dropdown 3 — exec-set priority. A is highest. Null = unranked.
+  priority String? // A | B | C | D
+
+  // Stable manual order within the same priority for tiebreaker drag.
+  sortOrder Int @default(0)
+
+  // Free-text discussion notes (markdown).
+  discussionMd String @default("")
+
+  actionItems MeetingActionItem[] @relation("ActionItemProjectBlock")
+
+  createdById String?
+  createdBy   User?    @relation("MeetingProjectBlockCreator", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([meetingNoteId, priority])
+  @@index([brandId])
+  @@index([factoryId])
+  @@index([ownerId])
 }

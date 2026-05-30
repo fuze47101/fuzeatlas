@@ -702,6 +702,28 @@ export async function GET(req: Request) {
           where: { status: "OPEN", assigneeId: { not: null } },
         }),
     ),
+    // Phase 55 — Structured project-block module probes.
+    check(
+      "/meeting-notes/[id] — MeetingProjectBlock table readable",
+      "meetingProjectBlock count",
+      () => (prisma as any).meetingProjectBlock.count(),
+    ),
+    check(
+      "/meeting-notes/[id] — MeetingProjectBlock.priority A→D column",
+      "meetingProjectBlock count w/ priority A|B|C|D",
+      () =>
+        (prisma as any).meetingProjectBlock.count({
+          where: { priority: { in: ["A", "B", "C", "D"] } },
+        }),
+    ),
+    check(
+      "/meeting-notes/[id] — MeetingActionItem.projectBlockId reverse column",
+      "meetingActionItem count w/ projectBlockId not null",
+      () =>
+        (prisma as any).meetingActionItem.count({
+          where: { projectBlockId: { not: null } },
+        }),
+    ),
     // Phase 54 — Project Start Wizard probes.
     check(
       "/admin/projects — Project.projectType column readable",

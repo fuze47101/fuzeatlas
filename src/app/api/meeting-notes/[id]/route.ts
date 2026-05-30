@@ -45,6 +45,18 @@ export async function GET(
           createdBy: { select: { id: true, name: true } },
         },
       },
+      projectBlocks: {
+        include: {
+          brand: { select: { id: true, name: true } },
+          factory: { select: { id: true, name: true } },
+          owner: { select: { id: true, name: true, email: true } },
+          createdBy: { select: { id: true, name: true } },
+          actionItems: {
+            orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
+            include: { assignee: { select: { id: true, name: true, email: true } } },
+          },
+        },
+      },
     },
   });
   if (!note) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
