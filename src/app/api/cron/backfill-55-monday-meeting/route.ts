@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { extractActionItems } from "@/lib/meeting-mentions";
 
 /**
  * POST /api/cron/backfill-55-monday-meeting?meetingId=<id>
@@ -172,23 +173,35 @@ async function handle(req: Request) {
 
   const users = await prisma.user.findMany({
     where: { status: "ACTIVE" },
-    select: { id: true, name: true, email: true },
+    select: { id: true, name: true, email: true, updatedAt: true },
   });
 
   const sections = parseSections(meeting.notesMd || "");
 
-  // Pre-fetch action items for the meeting, ordered by createdAt.
+  // Pre-fetch action items for the meeting, ordered by createdAt
+  // (parser order = stable when extractActionItems re-runs against
+  // the same input).
   const allItems = await (prisma as any).meetingActionItem.findMany({
     where: { meetingNoteId: meetingId },
     orderBy: { createdAt: "asc" },
     select: { id: true, description: true },
   });
 
+  // Per-section action-item counts — re-run the same parser used at
+  // seed time so position-based pairing matches the original insert
+  // order one-for-one.
+  const perSectionCounts: number[] = sections.map((s) => {
+    const sectionMd = `${s.headerRaw}\n${s.body.join("\n")}`;
+    return extractActionItems(sectionMd, users as any).length;
+  });
+  const expectedTotal = perSectionCounts.reduce((a, b) => a + b, 0);
+
   const createdBlocks: any[] = [];
   let sortOrder = 0;
   let itemCursor = 0;
 
-  for (const s of sections) {
+  for (let i = 0; i < sections.length; i++) {
+    const s = sections[i];
     const resolved = await resolveCustomer(s.headerClean);
     const ownerId = firstMentionedUserId(s, users);
 
@@ -207,21 +220,12 @@ async function handle(req: Request) {
       select: { id: true, customerType: true, priority: true, ownerId: true },
     });
 
-    // Re-attach action items whose description appears anywhere in
-    // this section's body. Walk the cursor forward; an item can only
-    // be attached to one block, so order-of-appearance suffices.
-    const bodyText = s.body.join("\n");
+    // Position-based pairing.
+    const expectN = perSectionCounts[i];
     const taken: string[] = [];
-    while (itemCursor < allItems.length) {
-      const item = allItems[itemCursor];
-      // Use the first 50 chars of the description as a fingerprint.
-      const fingerprint = String(item.description || "").slice(0, 40);
-      if (fingerprint && bodyText.includes(fingerprint.slice(0, 30))) {
-        taken.push(item.id);
-        itemCursor++;
-      } else {
-        break;
-      }
+    for (let k = 0; k < expectN && itemCursor < allItems.length; k++) {
+      taken.push(allItems[itemCursor].id);
+      itemCursor++;
     }
     if (taken.length) {
       await (prisma as any).meetingActionItem.updateMany({
@@ -249,6 +253,9 @@ async function handle(req: Request) {
     meetingId,
     meetingTitle: meeting.title,
     sectionsParsed: sections.length,
+    actionItemsFoundInDb: allItems.length,
+    actionItemsExpectedByParser: expectedTotal,
+    actionItemsAttached: itemCursor,
     blocksCreated: createdBlocks.length,
     remainingOrphanActionItems: remainingOrphan,
     blocks: createdBlocks,
