@@ -754,6 +754,37 @@ export async function GET(req: Request) {
       "project findFirst — smoke read",
       () => prisma.project.findFirst({ select: { id: true } }),
     ),
+    // Phase 54.5 — Project priority + Weekly Update flow probes.
+    check(
+      "/admin/projects — Project.priority column readable",
+      "project count w/ priority URGENT|HIGH|NORMAL|LOW",
+      () =>
+        prisma.project.count({
+          where: { priority: { in: ["URGENT", "HIGH", "NORMAL", "LOW"] } } as any,
+        }),
+    ),
+    check(
+      "/admin/projects/weekly — Project.lastUpdatedAt column readable",
+      "project findFirst with lastUpdatedAt selected",
+      () =>
+        prisma.project.findFirst({
+          select: { id: true, lastUpdatedAt: true } as any,
+        }),
+    ),
+    check(
+      "/admin/projects?status=closed — Project.closedAt column readable",
+      "project count w/ closedAt not null",
+      () =>
+        prisma.project.count({
+          where: { closedAt: { not: null } } as any,
+        }),
+    ),
+    check(
+      "/admin/brands/[id] — Brand.subtype column readable",
+      "brand count w/ subtype OEM",
+      () =>
+        (prisma as any).brand.count({ where: { subtype: "OEM" } }),
+    ),
     // Kaylee Pace 2026-05-27 — recipe-calculator ICP submit path.
     // Confirms RecipeBenchTest table is reachable + the columns the
     // ICP submit handler writes to all exist.

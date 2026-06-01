@@ -293,7 +293,9 @@ model User {
   actionItemsCreated   MeetingActionItem[] @relation("ActionItemCreator")
 
   // Phase 54 — projects this user owns.
-  projectsOwned Project[] @relation("ProjectOwner")
+  projectsOwned  Project[] @relation("ProjectOwner")
+  // Phase 54.5 — projects this user closed (Mark complete).
+  projectsClosed Project[] @relation("ProjectCloser")
 
   // Phase 55 — meeting project blocks this user is in charge of (owner)
   // + blocks this user created.
@@ -324,6 +326,11 @@ model Brand {
 
   pipelineStage        PipelineStage @default(LEAD)
   customerType         String?
+  // Phase 54.5 — OEM/middleman tag for brands like MMI, WTS, Active
+  // Apparel Group that source for brand customers but aren't the
+  // brand themselves. Stored as a tag on the Brand row, not a
+  // separate customer-type card in the wizard.
+  subtype              String? // OEM | null
   leadReferralSource   String?
   dateOfInitialContact DateTime?
 
@@ -1599,6 +1606,15 @@ model Project {
   kickoffMeetingNoteId String?      @unique
   kickoffMeetingNote   MeetingNote? @relation("ProjectKickoffMeetingNote", fields: [kickoffMeetingNoteId], references: [id])
 
+  // ─── Phase 54.5 — Project priority + Weekly Update flow ────────────
+  priority      String? // URGENT | HIGH | NORMAL | LOW
+  weeklyStatus  String? // latest weekly-update narrative (markdown)
+  lastUpdatedAt DateTime?
+  closedAt      DateTime?
+  closedById    String?
+  closedBy      User?     @relation("ProjectCloser", fields: [closedById], references: [id])
+  closingNotes  String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1610,6 +1626,9 @@ model Project {
   @@index([distributorId])
   @@index([projectType])
   @@index([ownerId])
+  @@index([priority])
+  @@index([lastUpdatedAt])
+  @@index([closedAt])
 }
 
 // ─────────────────────────────────────────────
