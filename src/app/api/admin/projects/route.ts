@@ -29,7 +29,7 @@ const ALLOWED_ROLES = new Set([
   "BD_REP",
 ]);
 
-const VALID_TYPES = new Set(["BRAND", "FACTORY", "INTERNAL"]);
+const VALID_TYPES = new Set(["BRAND", "FACTORY", "DISTRIBUTOR", "INTERNAL"]);
 const VALID_PRIORITIES = new Set(["LOW", "NORMAL", "HIGH", "URGENT"]);
 
 function bad(msg: string, status = 400) {
@@ -46,14 +46,17 @@ export async function POST(req: Request) {
   const projectType = String(body?.projectType || "").trim().toUpperCase();
   const brandId = body?.brandId || null;
   const factoryId = body?.factoryId || null;
+  const distributorId = body?.distributorId || null;
   const ownerId = String(body?.ownerId || "").trim();
   const goalMd = body?.goalMd ? String(body.goalMd) : null;
   const initialTasks = Array.isArray(body?.initialTasks) ? body.initialTasks : [];
 
   if (!name) return bad("name required");
-  if (!VALID_TYPES.has(projectType)) return bad("projectType must be BRAND, FACTORY, or INTERNAL");
+  if (!VALID_TYPES.has(projectType)) return bad("projectType must be BRAND, FACTORY, DISTRIBUTOR, or INTERNAL");
   if (projectType === "BRAND" && !brandId) return bad("brandId required for BRAND projects");
   if (projectType === "FACTORY" && !factoryId) return bad("factoryId required for FACTORY projects");
+  if (projectType === "DISTRIBUTOR" && !distributorId) return bad("distributorId required for DISTRIBUTOR projects");
+  if (projectType === "INTERNAL" && user.role !== "ADMIN") return bad("INTERNAL projects are admin-only", 403);
   if (!ownerId) return bad("ownerId required");
 
   // Resolve owner + assignees up-front so we can fail-fast with a clear error.
@@ -86,12 +89,13 @@ export async function POST(req: Request) {
           name,
           brandId: projectType === "BRAND" ? brandId : null,
           factoryId: projectType === "FACTORY" ? factoryId : null,
+          distributorId: projectType === "DISTRIBUTOR" ? distributorId : null,
           stage: "DEVELOPMENT",
           projectType,
           ownerId,
           goalMd,
         } as any,
-        select: { id: true, name: true, projectType: true, brandId: true, factoryId: true },
+        select: { id: true, name: true, projectType: true, brandId: true, factoryId: true, distributorId: true },
       });
 
       const kickoff = await (tx as any).meetingNote.create({

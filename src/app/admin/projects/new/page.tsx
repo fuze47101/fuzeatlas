@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 
-type ProjectType = "BRAND" | "FACTORY" | "INTERNAL";
+type ProjectType = "BRAND" | "FACTORY" | "DISTRIBUTOR" | "INTERNAL";
 type Priority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
 
 interface Lookup {
@@ -62,12 +62,14 @@ export default function ProjectStartWizardPage() {
   const [projectType, setProjectType] = useState<ProjectType | null>(null);
   const [brandId, setBrandId] = useState("");
   const [factoryId, setFactoryId] = useState("");
+  const [distributorId, setDistributorId] = useState("");
   const [name, setName] = useState("");
   const [ownerId, setOwnerId] = useState("");
   const [goalMd, setGoalMd] = useState("");
   const [tasks, setTasks] = useState<TaskRow[]>([{ ...EMPTY_TASK }, { ...EMPTY_TASK }, { ...EMPTY_TASK }]);
   const [brands, setBrands] = useState<Lookup[]>([]);
   const [factories, setFactories] = useState<Lookup[]>([]);
+  const [distributors, setDistributors] = useState<Lookup[]>([]);
   const [users, setUsers] = useState<UserLite[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,6 +93,10 @@ export default function ProjectStartWizardPage() {
     fetch("/api/factories")
       .then((r) => r.json())
       .then((d) => setFactories((d.factories || []).map((f: any) => ({ id: f.id, name: f.name }))))
+      .catch(() => {});
+    fetch("/api/distributors")
+      .then((r) => r.json())
+      .then((d) => setDistributors((d.distributors || []).map((x: any) => ({ id: x.id, name: x.name }))))
       .catch(() => {});
     fetch("/api/settings/users")
       .then((r) => r.json())
@@ -142,11 +148,12 @@ export default function ProjectStartWizardPage() {
       return (
         projectType === "INTERNAL" ||
         (projectType === "BRAND" && !!brandId) ||
-        (projectType === "FACTORY" && !!factoryId)
+        (projectType === "FACTORY" && !!factoryId) ||
+        (projectType === "DISTRIBUTOR" && !!distributorId)
       );
     if (step === 3) return !!name.trim() && !!ownerId;
     return true;
-  }, [step, projectType, brandId, factoryId, name, ownerId]);
+  }, [step, projectType, brandId, factoryId, distributorId, name, ownerId]);
 
   const nonEmptyTasks = tasks.filter((t) => t.description.trim().length > 0);
 
@@ -168,6 +175,7 @@ export default function ProjectStartWizardPage() {
       };
       if (projectType === "BRAND") body.brandId = brandId;
       if (projectType === "FACTORY") body.factoryId = factoryId;
+      if (projectType === "DISTRIBUTOR") body.distributorId = distributorId;
       const r = await fetch("/api/admin/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -242,11 +250,14 @@ export default function ProjectStartWizardPage() {
       )}
 
       {step === 1 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { type: "BRAND" as const, icon: "🏷", label: "Brand project", desc: "Tied to a specific brand partner. e.g., KUIU Performance Line, North Face Activewear, Lululemon F1 Pilot." },
-            { type: "FACTORY" as const, icon: "🏭", label: "Factory project", desc: "Tied to a specific factory partner. e.g., Penfabric Capacity Expansion, Hurricane Site Setup, Welspun Onboarding." },
-            { type: "INTERNAL" as const, icon: "💼", label: "Internal project", desc: "FUZE-internal initiative without an external customer. e.g., Project Red Rover, Sustainability PDF Series, Lab Equipment Build." },
+            { type: "BRAND" as const, icon: "🏷", label: "Brand", desc: "Brand customer that sells finished consumer products. e.g., Nike, North Face, Lululemon. (OEM/middlemen like MMI also go here — tag the brand record with subtype=OEM.)" },
+            { type: "FACTORY" as const, icon: "🏭", label: "Factory", desc: "Manufacturing partner that produces fabric or treated products. e.g., Penfabric, Hurricane, Welspun." },
+            { type: "DISTRIBUTOR" as const, icon: "🤝", label: "Distributor", desc: "Sales channel partner reselling FUZE chemistry. e.g., Harris & Menuk, SRS, Texwell." },
+            ...(user?.role === "ADMIN"
+              ? [{ type: "INTERNAL" as const, icon: "🔬", label: "Internal (admin)", desc: "FUZE-internal initiative without an external customer. e.g., Project Red Rover, Patriots, R&D, Lab Build. Admin-only — not surfaced to brand/factory/distributor users." }]
+              : []),
           ].map((c) => (
             <button
               key={c.type}
@@ -294,6 +305,23 @@ export default function ProjectStartWizardPage() {
           {factoryId && (
             <div className="text-xs text-slate-500">
               Selected: <strong className="text-slate-900">{factories.find((f) => f.id === factoryId)?.name}</strong>
+            </div>
+          )}
+        </div>
+      )}
+
+      {step === 2 && projectType === "DISTRIBUTOR" && (
+        <div className="rounded-lg border border-slate-200 bg-white p-6 space-y-3">
+          <label className="block text-sm font-medium text-slate-700">Distributor</label>
+          <select value={distributorId} onChange={(e) => setDistributorId(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm">
+            <option value="">— Pick a distributor —</option>
+            {distributors.map((d) => (
+              <option key={d.id} value={d.id}>{d.name}</option>
+            ))}
+          </select>
+          {distributorId && (
+            <div className="text-xs text-slate-500">
+              Selected: <strong className="text-slate-900">{distributors.find((d) => d.id === distributorId)?.name}</strong>
             </div>
           )}
         </div>
@@ -393,6 +421,7 @@ export default function ProjectStartWizardPage() {
             <div className="py-1.5 grid grid-cols-[180px_1fr]"><dt className="text-slate-600">Type</dt><dd className="text-slate-900">{projectType}</dd></div>
             {projectType === "BRAND" && <div className="py-1.5 grid grid-cols-[180px_1fr]"><dt className="text-slate-600">Brand</dt><dd className="text-slate-900">{brands.find((b) => b.id === brandId)?.name || "—"}</dd></div>}
             {projectType === "FACTORY" && <div className="py-1.5 grid grid-cols-[180px_1fr]"><dt className="text-slate-600">Factory</dt><dd className="text-slate-900">{factories.find((f) => f.id === factoryId)?.name || "—"}</dd></div>}
+            {projectType === "DISTRIBUTOR" && <div className="py-1.5 grid grid-cols-[180px_1fr]"><dt className="text-slate-600">Distributor</dt><dd className="text-slate-900">{distributors.find((d) => d.id === distributorId)?.name || "—"}</dd></div>}
             <div className="py-1.5 grid grid-cols-[180px_1fr]"><dt className="text-slate-600">Name</dt><dd className="text-slate-900">{name}</dd></div>
             <div className="py-1.5 grid grid-cols-[180px_1fr]"><dt className="text-slate-600">Owner</dt><dd className="text-slate-900">{users.find((u) => u.id === ownerId)?.name || ownerId}</dd></div>
             <div className="py-1.5 grid grid-cols-[180px_1fr]"><dt className="text-slate-600">Goal</dt><dd className="text-slate-900 whitespace-pre-wrap">{goalMd || <span className="text-slate-400">(none)</span>}</dd></div>
