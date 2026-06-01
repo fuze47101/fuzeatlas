@@ -82,7 +82,25 @@ async function handle(req: Request) {
     log.push({ skip: "andrew-owner-canon", reason: "missing fuze47 or 801 Andrew" });
   }
 
-  // 3. Nike Project.priority = URGENT.
+  // 3b. MMI Brand.subtype = OEM (Phase 54.5 taxonomy — MMI is a
+  // sourcing middleman, not a brand customer).
+  const mmiBrand = await (prisma as any).brand.findFirst({
+    where: { name: { equals: "MMI Textiles", mode: "insensitive" } },
+    select: { id: true, subtype: true },
+  });
+  if (mmiBrand) {
+    if (mmiBrand.subtype !== "OEM") {
+      await (prisma as any).brand.update({
+        where: { id: mmiBrand.id },
+        data: { subtype: "OEM" },
+      });
+      log.push({ fix: "mmi-subtype-oem" });
+    } else {
+      log.push({ skip: "mmi-subtype-oem", reason: "already OEM" });
+    }
+  }
+
+  // 4. Nike Project.priority = URGENT.
   const nike = await prisma.project.findFirst({
     where: { name: "Nike" },
     select: { id: true, priority: true } as any,
