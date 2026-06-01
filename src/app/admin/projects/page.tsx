@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface ProjectRow {
   id: string;
@@ -29,6 +29,8 @@ const STAGE_COLORS: Record<string, string> = {
 export default function AdminProjectsListPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const closedOnly = searchParams?.get("status") === "closed";
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -42,26 +44,56 @@ export default function AdminProjectsListPage() {
 
   useEffect(() => {
     setBusy(true);
-    fetch("/api/projects")
+    const url = closedOnly
+      ? "/api/admin/projects/weekly-list?status=closed"
+      : "/api/projects";
+    fetch(url)
       .then((r) => r.json())
       .then((d) => {
         if (!d.ok) setErr(d.error || "Load failed");
-        else setProjects(d.projects || []);
+        else {
+          // weekly-list returns a richer shape; map to ProjectRow.
+          const rows = (d.projects || []).map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            brandName: p.brandName || p.brand?.name || null,
+            stage: p.stage,
+            projectedValue: p.projectedValue ?? null,
+            currency: p.currency ?? null,
+            fuzeTier: p.fuzeTier ?? null,
+            annualVolumeMeters: p.annualVolumeMeters ?? null,
+          }));
+          setProjects(rows);
+        }
       })
       .catch((e) => setErr(e?.message || "Load failed"))
       .finally(() => setBusy(false));
-  }, []);
+  }, [closedOnly]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
       <div className="mb-4 flex items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Projects</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">{closedOnly ? "Completed projects" : "Projects"}</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Open + closed projects across every brand. Click a row for the sample grid.
+            {closedOnly
+              ? "Projects that have been marked complete. Read-only archive."
+              : "Open projects across every brand. Click a row for the sample grid."}
           </p>
         </div>
-        <div className="text-xs text-slate-500">{projects.length} project(s)</div>
+        <div className="flex items-center gap-3">
+          {!closedOnly && (
+            <Link href="/admin/projects?status=closed" className="text-xs text-indigo-600 hover:underline">
+              View completed →
+            </Link>
+          )}
+          {closedOnly && (
+            <Link href="/admin/projects" className="text-xs text-indigo-600 hover:underline">
+              ← Back to active
+            </Link>
+          )}
+          <span className="text-xs text-slate-500">{projects.length} project(s)</span>
+        </div>
       </div>
 
       {err && (

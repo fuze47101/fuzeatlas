@@ -181,7 +181,9 @@ export const MODULES: ModuleDef[] = [
     adminOnly: false,
     items: [
       { label: "All Projects", labelKey: "projectsAll", href: "/admin/projects", icon: "📋" },
+      { label: "Weekly Update", labelKey: "projectWeekly", href: "/admin/projects/weekly", icon: "🗓" },
       { label: "New Project", labelKey: "projectNew", href: "/admin/projects/new", icon: "+" },
+      { label: "Completed", labelKey: "projectCompleted", href: "/admin/projects?status=closed", icon: "✅" },
     ],
   },
 

@@ -231,14 +231,35 @@ export default function AdminProjectDetailPage() {
               {" · "}created {new Date(project.createdAt).toLocaleDateString()}
             </p>
           </div>
-          {project.kickoffMeetingNoteId && (
-            <Link
-              href={`/meeting-notes/${project.kickoffMeetingNoteId}`}
-              className="px-3 py-1.5 text-xs bg-white border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50 whitespace-nowrap"
-            >
-              Kickoff note →
-            </Link>
-          )}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {project.kickoffMeetingNoteId && (
+              <Link
+                href={`/meeting-notes/${project.kickoffMeetingNoteId}`}
+                className="px-3 py-1.5 text-xs bg-white border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50 whitespace-nowrap"
+              >
+                Kickoff note →
+              </Link>
+            )}
+            {project.stage !== "COMPLETE" && (
+              <button
+                onClick={async () => {
+                  const notes = prompt("Closing notes (optional) — summary of what closed this project:");
+                  if (notes === null) return;
+                  const r = await fetch(`/api/admin/projects/${project.id}/weekly-update`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ markComplete: true, closingNotes: notes || undefined }),
+                  });
+                  const d = await r.json();
+                  if (!d.ok) alert(d.error || "Mark complete failed");
+                  else router.refresh();
+                }}
+                className="px-3 py-1.5 text-xs bg-emerald-600 text-white rounded-md hover:bg-emerald-700 whitespace-nowrap"
+              >
+                Mark complete
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
