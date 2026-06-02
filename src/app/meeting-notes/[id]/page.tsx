@@ -117,6 +117,7 @@ function MeetingNotePage() {
   const [options, setOptions] = useState<Options | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [highlightBlockId, setHighlightBlockId] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading) return;
@@ -157,7 +158,7 @@ function MeetingNotePage() {
       const r = await fetch(`/api/meeting-notes/${id}/project-blocks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerType: "OTHER", priority: "C" }),
+        body: JSON.stringify({ customerType: "OTHER", priority: "A" }),
       });
       // eslint-disable-next-line no-console
       console.log("[FETCH-RESULT]", new Date().toISOString(), "POST project-blocks", "status=" + r.status);
@@ -169,7 +170,20 @@ function MeetingNotePage() {
         console.error("[addBlock] failed:", msg, d);
         return;
       }
+      const newBlockId: string | null = d.block?.id || null;
       await refresh();
+      // Scroll the new block into view and flash it so Andrew can
+      // actually see what got created. Priority A also floats it to
+      // the top of the list so it's not lost in 16 existing rows.
+      if (newBlockId) {
+        setHighlightBlockId(newBlockId);
+        setTimeout(() => {
+          document
+            .querySelector(`[data-block-id="${newBlockId}"]`)
+            ?.scrollIntoView({ block: "center", behavior: "smooth" });
+        }, 100);
+        setTimeout(() => setHighlightBlockId(null), 4000);
+      }
     } catch (e: any) {
       // eslint-disable-next-line no-console
       console.error("[addBlock] threw:", e);
@@ -313,16 +327,21 @@ function MeetingNotePage() {
 
       <div className="space-y-4">
         {sortedBlocks.map((b) => (
-          <BlockCard
+          <div
             key={b.id}
-            block={b}
-            options={options}
-            onPatch={(patch) => patchBlock(b.id, patch)}
-            onDelete={() => deleteBlock(b.id)}
-            onAddTask={(payload) => addTask(b.id, payload)}
-            onPatchTask={(taskId, patch) => patchTask(b.id, taskId, patch)}
-            onDeleteTask={(taskId) => deleteTask(b.id, taskId)}
-          />
+            data-block-id={b.id}
+            className={highlightBlockId === b.id ? "ring-4 ring-emerald-400 rounded-lg transition-all" : ""}
+          >
+            <BlockCard
+              block={b}
+              options={options}
+              onPatch={(patch) => patchBlock(b.id, patch)}
+              onDelete={() => deleteBlock(b.id)}
+              onAddTask={(payload) => addTask(b.id, payload)}
+              onPatchTask={(taskId, patch) => patchTask(b.id, taskId, patch)}
+              onDeleteTask={(taskId) => deleteTask(b.id, taskId)}
+            />
+          </div>
         ))}
         {sortedBlocks.length === 0 && (
           <div className="rounded-md border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">

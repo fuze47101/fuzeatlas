@@ -60,7 +60,10 @@ export async function GET(
     },
   });
   if (!note) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
-  return NextResponse.json({ ok: true, meetingNote: note });
+  return NextResponse.json(
+    { ok: true, meetingNote: note },
+    { headers: { "Cache-Control": "no-store, max-age=0, must-revalidate" } },
+  );
 }
 
 export async function PATCH(
