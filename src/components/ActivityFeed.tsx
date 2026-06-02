@@ -4,14 +4,24 @@ import { useState, useEffect, useCallback } from "react";
 
 // ── Types ──
 interface TimelineItem {
-  type: "note" | "outreach" | "meeting";
+  type:
+    | "note"
+    | "outreach"
+    | "meeting"
+    // Phase 53/54/54.5/56 entries piped in by buildProjectTimeline.
+    | "project_created"
+    | "project_weekly_update"
+    | "project_completed"
+    | "task_assigned"
+    | "task_completed"
+    | "block_discussion";
   subtype: string;
   id: string;
   date: string;
   content?: string;
   contactName?: string;
   contactId?: string;
-  user?: { id: string; name: string };
+  user?: { id: string; name: string | null; email?: string | null } | null;
   subject?: string;
   toAddress?: string;
   status?: string;
@@ -20,6 +30,17 @@ interface TimelineItem {
   teamsLink?: string;
   attendees?: any;
   endTime?: string;
+  // Project / task / block fields.
+  projectId?: string;
+  projectName?: string;
+  taskId?: string;
+  blockId?: string;
+  description?: string;
+  priority?: string;
+  dueDate?: string | null;
+  assignee?: { id: string; name: string | null; email?: string | null } | null;
+  meetingTitle?: string;
+  link?: string;
 }
 
 interface Contact {
@@ -55,6 +76,20 @@ const TYPE_CONFIG: Record<string, { icon: string; color: string; bg: string; lab
   outreach_email: { icon: "📤", color: "text-indigo-700", bg: "bg-indigo-100", label: "Outreach Email" },
   outreach_sms: { icon: "💬", color: "text-teal-700", bg: "bg-teal-100", label: "SMS" },
   meeting_event: { icon: "📅", color: "text-emerald-700", bg: "bg-emerald-100", label: "Meeting" },
+  // Phase 53/54/54.5/56
+  project_created: { icon: "📋", color: "text-cyan-700", bg: "bg-cyan-100", label: "Project Created" },
+  project_weekly_update: { icon: "🗒", color: "text-sky-700", bg: "bg-sky-100", label: "Weekly Update" },
+  project_completed: { icon: "🏁", color: "text-emerald-800", bg: "bg-emerald-100", label: "Project Completed" },
+  task_assigned: { icon: "⚡", color: "text-amber-700", bg: "bg-amber-100", label: "Task Assigned" },
+  task_completed: { icon: "✓", color: "text-emerald-700", bg: "bg-emerald-100", label: "Task Done" },
+  block_discussion: { icon: "💬", color: "text-violet-700", bg: "bg-violet-100", label: "Discussion" },
+};
+
+const TASK_PRIORITY_CHIP: Record<string, string> = {
+  URGENT: "bg-rose-600 text-white",
+  HIGH: "bg-amber-500 text-white",
+  NORMAL: "bg-slate-200 text-slate-700",
+  LOW: "bg-slate-100 text-slate-500",
 };
 
 const NOTE_TYPES = [
@@ -69,6 +104,8 @@ const NOTE_TYPES = [
 function getConfig(item: TimelineItem) {
   if (item.type === "outreach") return TYPE_CONFIG[`outreach_${item.subtype}`] || TYPE_CONFIG.EMAIL;
   if (item.type === "meeting") return TYPE_CONFIG.meeting_event;
+  // Phase 53/54/54.5/56 — look up by type itself.
+  if (TYPE_CONFIG[item.type]) return TYPE_CONFIG[item.type];
   return TYPE_CONFIG[item.subtype] || TYPE_CONFIG.NOTE;
 }
 
@@ -79,6 +116,7 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
   const [summary, setSummary] = useState<ActivitySummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+  const [visibleCount, setVisibleCount] = useState<number>(50);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ content: "", noteType: "NOTE", contactName: "" });
@@ -144,6 +182,17 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
     if (filter === "outreach") return item.type === "outreach";
     if (filter === "meetings") return item.type === "meeting";
     if (filter === "calls") return item.type === "note" && item.subtype === "CALL";
+    if (filter === "projects") {
+      return (
+        item.type === "project_created" ||
+        item.type === "project_weekly_update" ||
+        item.type === "project_completed" ||
+        item.type === "block_discussion"
+      );
+    }
+    if (filter === "tasks") {
+      return item.type === "task_assigned" || item.type === "task_completed";
+    }
     return true;
   });
 
@@ -301,13 +350,15 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
         </div>
 
         {/* Filter tabs */}
-        <div className="flex gap-2 mb-5 pb-3 border-b border-slate-100">
+        <div className="flex gap-2 mb-5 pb-3 border-b border-slate-100 flex-wrap">
           {[
             { key: "all", label: "All", count: timeline.length },
             { key: "notes", label: "Notes", count: timeline.filter(i => i.type === "note" && i.subtype !== "CALL").length },
             { key: "calls", label: "Calls", count: timeline.filter(i => i.type === "note" && i.subtype === "CALL").length },
             { key: "outreach", label: "Outreach", count: timeline.filter(i => i.type === "outreach").length },
             { key: "meetings", label: "Meetings", count: timeline.filter(i => i.type === "meeting").length },
+            { key: "projects", label: "Projects", count: timeline.filter(i => i.type === "project_created" || i.type === "project_weekly_update" || i.type === "project_completed" || i.type === "block_discussion").length },
+            { key: "tasks", label: "Tasks", count: timeline.filter(i => i.type === "task_assigned" || i.type === "task_completed").length },
           ].map((f) => (
             <button
               key={f.key}
@@ -332,7 +383,7 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
           </div>
         ) : (
           <div className="space-y-2">
-            {filtered.map((item) => {
+            {filtered.slice(0, visibleCount).map((item) => {
               const cfg = getConfig(item);
               const dateStr = item.date ? new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
               const timeStr = item.date ? new Date(item.date).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "";
@@ -376,6 +427,42 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
                       <p className="text-sm font-bold text-slate-800 mb-1">{item.subject}</p>
                     )}
 
+                    {/* Phase 53/54/54.5/56 renderers */}
+                    {(item.type === "project_created" ||
+                      item.type === "project_weekly_update" ||
+                      item.type === "project_completed") && item.projectName && (
+                      <p className="text-sm font-bold text-slate-800 mb-1">
+                        {item.link ? (
+                          <a href={item.link} className="hover:underline">{item.projectName}</a>
+                        ) : item.projectName}
+                      </p>
+                    )}
+
+                    {(item.type === "task_assigned" || item.type === "task_completed") && (
+                      <p className="text-sm text-slate-800 mb-1">
+                        {item.description}
+                        {item.assignee?.name && item.type === "task_assigned" && (
+                          <span className="ml-2 text-xs text-slate-500">→ {item.assignee.name}</span>
+                        )}
+                        {item.priority && item.type === "task_assigned" && (
+                          <span className={`ml-2 inline-flex rounded px-1.5 py-0.5 text-[10px] font-semibold ${TASK_PRIORITY_CHIP[item.priority] || ""}`}>
+                            {item.priority}
+                          </span>
+                        )}
+                        {item.dueDate && item.type === "task_assigned" && (
+                          <span className="ml-2 text-[11px] text-slate-500">due {new Date(item.dueDate).toLocaleDateString()}</span>
+                        )}
+                      </p>
+                    )}
+
+                    {item.type === "block_discussion" && item.meetingTitle && (
+                      <p className="text-xs font-semibold text-slate-700 mb-1">
+                        {item.link ? (
+                          <a href={item.link} className="hover:underline">{item.meetingTitle}</a>
+                        ) : item.meetingTitle}
+                      </p>
+                    )}
+
                     {item.content && (
                       <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{item.content}</p>
                     )}
@@ -408,6 +495,16 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
                 </div>
               );
             })}
+            {filtered.length > visibleCount && (
+              <div className="pt-3 text-center">
+                <button
+                  onClick={() => setVisibleCount((c) => c + 50)}
+                  className="px-4 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg"
+                >
+                  Load older entries ({filtered.length - visibleCount} remaining)
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { buildProjectTimeline } from "@/lib/project-timeline";
 
 /**
  * GET /api/brands/[id]/activity
@@ -18,7 +19,7 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
     const { id } = await props.params;
 
     // Fetch all activity types in parallel
-    const [notes, contacts, outreachMessages, meetings] = await Promise.all([
+    const [notes, contacts, outreachMessages, meetings, projectEntries] = await Promise.all([
       // Notes (all types: NOTE, CALL, EMAIL, MEETING, TASK, FOLLOW_UP)
       prisma.note.findMany({
         where: { brandId: id },
@@ -101,6 +102,11 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
         orderBy: { startTime: "desc" },
         take: 50,
       }),
+
+      // Phase 53/54/54.5/56 — Project + Project weekly updates +
+      // MeetingActionItem + MeetingProjectBlock discussion entries
+      // tied to this brand.
+      buildProjectTimeline({ brandId: id }),
     ]);
 
     // Build unified timeline
@@ -149,6 +155,9 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
       });
     }
 
+    // Phase 53/54/54.5/56 entries — already shaped by buildProjectTimeline.
+    for (const e of projectEntries) timeline.push(e);
+
     // Sort by date descending
     timeline.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
@@ -161,6 +170,7 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
         totalOutreach: outreachMessages.length,
         totalMeetings: meetings.length,
         totalContacts: contacts.length,
+        totalProjectEntries: projectEntries.length,
       },
     });
   } catch (e: any) {

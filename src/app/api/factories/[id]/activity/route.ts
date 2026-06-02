@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { buildProjectTimeline } from "@/lib/project-timeline";
 
 /**
  * GET /api/factories/[id]/activity
@@ -17,7 +18,7 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
     const { id } = await props.params;
 
     // Fetch all activity types in parallel
-    const [notes, contacts] = await Promise.all([
+    const [notes, contacts, projectEntries] = await Promise.all([
       prisma.note.findMany({
         where: { factoryId: id },
         select: {
@@ -58,6 +59,11 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
         },
         orderBy: { createdAt: "desc" },
       }),
+
+      // Phase 53/54/54.5/56 — Project + Project weekly updates +
+      // MeetingActionItem + MeetingProjectBlock discussion entries
+      // tied to this factory.
+      buildProjectTimeline({ factoryId: id }),
     ]);
 
     // Build timeline from notes
@@ -75,6 +81,9 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
       });
     }
 
+    // Phase 53/54/54.5/56 entries.
+    for (const e of projectEntries) timeline.push(e);
+
     timeline.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return NextResponse.json({
@@ -86,6 +95,7 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
         totalOutreach: 0,
         totalMeetings: 0,
         totalContacts: contacts.length,
+        totalProjectEntries: projectEntries.length,
       },
     });
   } catch (e: any) {
