@@ -159,6 +159,36 @@ export default function WeeklyUpdatePage() {
                 <span className={`ml-auto text-xs ${staleColor(days)}`}>
                   {days == null ? "never updated" : `${days}d since last update`}
                 </span>
+                <label className="flex items-center gap-1 text-xs text-slate-600 cursor-pointer" title="Mark complete — one click, no confirmation. Reversible from Completed view.">
+                  <input
+                    type="checkbox"
+                    checked={false}
+                    onChange={async () => {
+                      // Optimistic: drop row immediately.
+                      setProjects((arr) => arr.filter((x) => x.id !== p.id));
+                      setError(null);
+                      try {
+                        const r = await fetch(`/api/admin/projects/${p.id}/weekly-update`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ markComplete: true, closingNotes: "Marked complete inline" }),
+                        });
+                        const d = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
+                        if (!r.ok || !d.ok) {
+                          setError(d.error || `Mark complete failed (HTTP ${r.status})`);
+                          console.error("[weekly] markComplete failed:", d);
+                          await refresh();
+                          return;
+                        }
+                      } catch (e: any) {
+                        setError(e?.message || "Network error");
+                        console.error("[weekly] markComplete threw:", e);
+                        await refresh();
+                      }
+                    }}
+                  />
+                  Done
+                </label>
                 <button
                   onClick={() => setExpanded((cur) => (cur === p.id ? null : p.id))}
                   className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-md hover:bg-indigo-700"

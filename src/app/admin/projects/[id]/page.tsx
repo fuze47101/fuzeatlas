@@ -158,13 +158,30 @@ export default function AdminProjectDetailPage() {
   }, [tab, id, gridColumns.length, gridSamples.length]);
 
   async function toggleDone(row: ActionItemRow) {
+    const prev = row.status;
     const next = row.status === "DONE" ? "OPEN" : "DONE";
-    await fetch(`/api/action-items/${row.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: next }),
-    });
-    refresh();
+    // Optimistic UI flip so the checkbox animates immediately.
+    setActionItems((arr) => arr.map((x) => (x.id === row.id ? { ...x, status: next } : x)));
+    setErr(null);
+    try {
+      const r = await fetch(`/api/action-items/${row.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      });
+      const d = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
+      if (!r.ok || !d.ok) {
+        setActionItems((arr) => arr.map((x) => (x.id === row.id ? { ...x, status: prev } : x)));
+        setErr(d.error || `Update failed (HTTP ${r.status})`);
+        console.error("[project-tasks] PATCH /api/action-items failed:", d);
+        return;
+      }
+      refresh();
+    } catch (e: any) {
+      setActionItems((arr) => arr.map((x) => (x.id === row.id ? { ...x, status: prev } : x)));
+      setErr(e?.message || "Network error");
+      console.error("[project-tasks] PATCH /api/action-items threw:", e);
+    }
   }
 
   function openOwnerModal() {

@@ -31,6 +31,7 @@ export default function AdminAllTasksPage() {
   const [groups, setGroups] = useState<AssigneeGroup[]>([]);
   const [total, setTotal] = useState(0);
   const [statusFilter, setStatusFilter] = useState("OPEN");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading) return;
@@ -39,7 +40,7 @@ export default function AdminAllTasksPage() {
     }
   }, [user, loading, router]);
 
-  useEffect(() => {
+  const refresh = () =>
     fetch(`/api/admin/all-tasks?status=${statusFilter}`)
       .then((r) => r.json())
       .then((d) => {
@@ -48,7 +49,51 @@ export default function AdminAllTasksPage() {
           setTotal(d.totalItems || 0);
         }
       });
+
+  useEffect(() => {
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter]);
+
+  async function toggleDone(itemId: string, prevStatus: string) {
+    const next = prevStatus === "DONE" ? "OPEN" : "DONE";
+    setGroups((gs) =>
+      gs.map((g) => ({
+        ...g,
+        items: g.items.map((i) => (i.id === itemId ? { ...i, status: next } : i)),
+      })),
+    );
+    setError(null);
+    try {
+      const r = await fetch(`/api/action-items/${itemId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      });
+      const d = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
+      if (!r.ok || !d.ok) {
+        setGroups((gs) =>
+          gs.map((g) => ({
+            ...g,
+            items: g.items.map((i) => (i.id === itemId ? { ...i, status: prevStatus } : i)),
+          })),
+        );
+        setError(d.error || `Update failed (HTTP ${r.status})`);
+        console.error("[all-tasks] PATCH /api/action-items failed:", d);
+        return;
+      }
+      refresh();
+    } catch (e: any) {
+      setGroups((gs) =>
+        gs.map((g) => ({
+          ...g,
+          items: g.items.map((i) => (i.id === itemId ? { ...i, status: prevStatus } : i)),
+        })),
+      );
+      setError(e?.message || "Network error");
+      console.error("[all-tasks] PATCH /api/action-items threw:", e);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
@@ -71,6 +116,13 @@ export default function AdminAllTasksPage() {
         </label>
       </div>
 
+      {error && (
+        <div className="mb-3 rounded-md border border-rose-200 bg-rose-50 p-2 text-xs text-rose-700 flex items-center justify-between">
+          <span>{error}</span>
+          <button className="underline" onClick={() => setError(null)}>dismiss</button>
+        </div>
+      )}
+
       <div className="space-y-4">
         {groups.map((g) => (
           <div key={g.assignee.id || "_un"} className="rounded-lg border border-slate-200 bg-white">
@@ -85,12 +137,21 @@ export default function AdminAllTasksPage() {
               <tbody className="divide-y divide-slate-100">
                 {g.items.map((i) => (
                   <tr key={i.id}>
+                    <td className="px-3 py-2 w-[40px]">
+                      <input
+                        type="checkbox"
+                        checked={i.status === "DONE"}
+                        onChange={() => toggleDone(i.id, i.status)}
+                      />
+                    </td>
                     <td className="px-3 py-2 w-[80px]">
                       <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${PRIORITY_STYLE[i.priority] || ""}`}>
                         {i.priority}
                       </span>
                     </td>
-                    <td className="px-3 py-2 text-slate-800">{i.description}</td>
+                    <td className={`px-3 py-2 ${i.status === "DONE" ? "line-through text-slate-400" : "text-slate-800"}`}>
+                      {i.description}
+                    </td>
                     <td className="px-3 py-2 w-[200px]">
                       {i.meetingNote ? (
                         <Link href={`/meeting-notes/${i.meetingNote.id}`} className="text-xs text-indigo-600 hover:underline">

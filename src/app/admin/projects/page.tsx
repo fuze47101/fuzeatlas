@@ -34,6 +34,7 @@ export default function AdminProjectsListPage() {
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading) return;
@@ -102,6 +103,13 @@ export default function AdminProjectsListPage() {
         </div>
       )}
 
+      {actionError && (
+        <div className="mb-3 rounded-md border border-rose-200 bg-rose-50 p-2 text-xs text-rose-700 flex items-center justify-between">
+          <span>{actionError}</span>
+          <button className="underline" onClick={() => setActionError(null)}>dismiss</button>
+        </div>
+      )}
+
       <div className="overflow-x-auto rounded-md border border-slate-200 bg-white">
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
@@ -112,6 +120,7 @@ export default function AdminProjectsListPage() {
               <th className="px-3 py-2 text-left">Tier</th>
               <th className="px-3 py-2 text-right">Projected ($)</th>
               <th className="px-3 py-2 text-right">Volume (m)</th>
+              <th className="px-3 py-2 text-right">{closedOnly ? "Reopen" : "Done"}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -137,12 +146,61 @@ export default function AdminProjectsListPage() {
                 <td className="px-3 py-2 text-right tabular-nums text-slate-600">
                   {p.annualVolumeMeters != null ? p.annualVolumeMeters.toLocaleString() : "—"}
                 </td>
+                <td className="px-3 py-2 text-right">
+                  {closedOnly ? (
+                    <button
+                      onClick={async () => {
+                        setProjects((arr) => arr.filter((x) => x.id !== p.id));
+                        setActionError(null);
+                        try {
+                          const r = await fetch(`/api/admin/projects/${p.id}/reopen`, { method: "POST" });
+                          const d = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
+                          if (!r.ok || !d.ok) {
+                            setActionError(d.error || `Reopen failed (HTTP ${r.status})`);
+                            console.error("[projects] reopen failed:", d);
+                          }
+                        } catch (e: any) {
+                          setActionError(e?.message || "Network error");
+                          console.error("[projects] reopen threw:", e);
+                        }
+                      }}
+                      className="px-2 py-0.5 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                    >
+                      Reopen
+                    </button>
+                  ) : (
+                    <input
+                      type="checkbox"
+                      checked={false}
+                      title="Mark complete — one click, reversible from Completed view"
+                      onChange={async () => {
+                        setProjects((arr) => arr.filter((x) => x.id !== p.id));
+                        setActionError(null);
+                        try {
+                          const r = await fetch(`/api/admin/projects/${p.id}/weekly-update`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ markComplete: true, closingNotes: "Marked complete inline" }),
+                          });
+                          const d = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
+                          if (!r.ok || !d.ok) {
+                            setActionError(d.error || `Mark complete failed (HTTP ${r.status})`);
+                            console.error("[projects] markComplete failed:", d);
+                          }
+                        } catch (e: any) {
+                          setActionError(e?.message || "Network error");
+                          console.error("[projects] markComplete threw:", e);
+                        }
+                      }}
+                    />
+                  )}
+                </td>
               </tr>
             ))}
             {projects.length === 0 && !busy && (
               <tr>
-                <td colSpan={6} className="px-3 py-8 text-center text-sm text-slate-500">
-                  No projects yet.
+                <td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-500">
+                  {closedOnly ? "No completed projects yet." : "No projects yet."}
                 </td>
               </tr>
             )}

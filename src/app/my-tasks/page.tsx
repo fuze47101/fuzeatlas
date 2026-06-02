@@ -38,6 +38,7 @@ export default function MyTasksPage() {
   const [priorityFilter, setPriorityFilter] = useState("");
   const [sort, setSort] = useState("priority");
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading) return;
@@ -63,22 +64,46 @@ export default function MyTasksPage() {
     refresh();
   }, [refresh]);
 
+  async function patchItem(itemId: string, patch: any, prevStatus?: string) {
+    // Optimistic update — flip local state immediately so the checkbox
+    // animates and the user sees the change.
+    setError(null);
+    setItems((arr) => arr.map((x) => (x.id === itemId ? { ...x, ...patch } : x)));
+    try {
+      const r = await fetch(`/api/action-items/${itemId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+      const d = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
+      if (!r.ok || !d.ok) {
+        // Revert if we know the prior status.
+        if (prevStatus !== undefined) {
+          setItems((arr) => arr.map((x) => (x.id === itemId ? { ...x, status: prevStatus } : x)));
+        }
+        const msg = d.error || `Update failed (HTTP ${r.status})`;
+        setError(msg);
+        console.error("[my-tasks] PATCH /api/action-items failed:", msg, d);
+        return;
+      }
+      // Success — refresh in the background to pick up server-side
+      // computed fields (doneAt, doneBy).
+      refresh();
+    } catch (e: any) {
+      if (prevStatus !== undefined) {
+        setItems((arr) => arr.map((x) => (x.id === itemId ? { ...x, status: prevStatus } : x)));
+      }
+      const msg = e?.message || "Network error";
+      setError(msg);
+      console.error("[my-tasks] PATCH /api/action-items threw:", e);
+    }
+  }
   async function toggleDone(item: ActionItem) {
     const next = item.status === "DONE" ? "OPEN" : "DONE";
-    await fetch(`/api/action-items/${item.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: next }),
-    });
-    refresh();
+    await patchItem(item.id, { status: next }, item.status);
   }
   async function setPriority(item: ActionItem, priority: string) {
-    await fetch(`/api/action-items/${item.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ priority }),
-    });
-    refresh();
+    await patchItem(item.id, { priority });
   }
 
   return (
@@ -97,6 +122,13 @@ export default function MyTasksPage() {
           ← Meetings
         </Link>
       </div>
+
+      {error && (
+        <div className="mb-3 rounded-md border border-rose-200 bg-rose-50 p-2 text-xs text-rose-700 flex items-center justify-between">
+          <span>{error}</span>
+          <button className="underline" onClick={() => setError(null)}>dismiss</button>
+        </div>
+      )}
 
       <div className="mb-3 flex flex-wrap items-center gap-3 rounded-md border border-slate-200 bg-white p-3 text-sm">
         <label className="flex items-center gap-2">
