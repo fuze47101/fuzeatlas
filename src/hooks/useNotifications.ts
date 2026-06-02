@@ -133,7 +133,10 @@ export function useNotifications(): UseNotificationsReturn {
   const connect = useCallback(() => {
     const userId = getUserId();
     if (!userId) {
-      console.warn("[useNotifications] Cannot connect: no user ID available");
+      // No user yet (auth context still loading or anonymous page).
+      // Silent return — connect() will be re-invoked when userId
+      // resolves. Previously logged a warn that polluted the console
+      // on every page mount.
       return;
     }
 

@@ -127,10 +127,14 @@ function MeetingNotePage() {
   const refresh = useCallback(async () => {
     if (!id) return;
     try {
-      const r = await fetch(`/api/meeting-notes/${id}`);
+      const r = await fetch(`/api/meeting-notes/${id}?_=${Date.now()}`, { cache: "no-store" });
       const d = await r.json();
-      if (d.ok) setMeeting(d.meetingNote);
-      else setError(d.error || "Failed to load");
+      if (d.ok) {
+        const blockCount = (d.meetingNote?.projectBlocks || []).length;
+        // eslint-disable-next-line no-console
+        console.log("[refresh] meeting-notes fetched blockCount=" + blockCount);
+        setMeeting(d.meetingNote);
+      } else setError(d.error || "Failed to load");
     } catch (e: any) {
       setError(e?.message || "Failed to load");
     }
@@ -155,9 +159,10 @@ function MeetingNotePage() {
     setBusy(true);
     setError(null);
     try {
-      const r = await fetch(`/api/meeting-notes/${id}/project-blocks`, {
+      const r = await fetch(`/api/meeting-notes/${id}/project-blocks?_=${Date.now()}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        cache: "no-store",
         body: JSON.stringify({ customerType: "OTHER", priority: "A" }),
       });
       // eslint-disable-next-line no-console
@@ -170,17 +175,35 @@ function MeetingNotePage() {
         console.error("[addBlock] failed:", msg, d);
         return;
       }
-      const newBlockId: string | null = d.block?.id || null;
-      await refresh();
-      // Scroll the new block into view and flash it so Andrew can
-      // actually see what got created. Priority A also floats it to
-      // the top of the list so it's not lost in 16 existing rows.
+      const newBlock = d.block;
+      const newBlockId: string | null = newBlock?.id || null;
+      // eslint-disable-next-line no-console
+      console.log("[addBlock] server returned block id=" + newBlockId, "priority=" + newBlock?.priority);
+
+      // Optimistic update — prepend the new block straight into local
+      // state. Bypasses every cache layer (Vercel edge, browser HTTP,
+      // fetch deduper). The earlier refetch-after-POST path was
+      // racing with no-store-headers-not-yet-deployed.
+      if (newBlock) {
+        setMeeting((m) => {
+          if (!m) return m;
+          const already = (m.projectBlocks || []).some((b) => b.id === newBlock.id);
+          if (already) return m;
+          return { ...m, projectBlocks: [newBlock, ...(m.projectBlocks || [])] };
+        });
+      }
+
+      // Belt-and-suspenders refetch too, so any other client that's
+      // open also sees the row eventually.
+      refresh().catch(() => null);
+
       if (newBlockId) {
         setHighlightBlockId(newBlockId);
         setTimeout(() => {
-          document
-            .querySelector(`[data-block-id="${newBlockId}"]`)
-            ?.scrollIntoView({ block: "center", behavior: "smooth" });
+          const el = document.querySelector(`[data-block-id="${newBlockId}"]`);
+          // eslint-disable-next-line no-console
+          console.log("[addBlock] scrollIntoView target=" + (el ? "found" : "MISSING"), "id=" + newBlockId);
+          el?.scrollIntoView({ block: "center", behavior: "smooth" });
         }, 100);
         setTimeout(() => setHighlightBlockId(null), 4000);
       }
@@ -257,6 +280,8 @@ function MeetingNotePage() {
     () => (meeting ? sortBlocks(meeting.projectBlocks || []) : []),
     [meeting],
   );
+  const debugBlocks = typeof window !== "undefined"
+    && new URLSearchParams(window.location.search).get("debugBlocks") === "1";
   const orphanTasks = useMemo(
     () => (meeting ? (meeting.actionItems || []).filter((a) => !a.projectBlockId) : []),
     [meeting],
@@ -324,6 +349,25 @@ function MeetingNotePage() {
           + Add project block
         </button>
       </div>
+
+      {debugBlocks && (
+        <div className="mb-4 rounded-md border border-sky-300 bg-sky-50 p-3 text-[11px] text-sky-900">
+          <div className="font-semibold mb-1">debugBlocks=1 probe</div>
+          <div>raw projectBlocks fetched: {(meeting?.projectBlocks || []).length}</div>
+          <div>sortedBlocks rendered: {sortedBlocks.length}</div>
+          <div>highlightBlockId: {highlightBlockId || "—"}</div>
+          <div className="mt-1">
+            sort order:
+            <ol className="ml-4 list-decimal">
+              {sortedBlocks.slice(0, 30).map((b) => (
+                <li key={b.id}>
+                  <code>{b.id.slice(-6)}</code> · pri <strong>{b.priority || "—"}</strong> · {b.customerType} · {b.internalLabel || b.brand?.name || b.factory?.name || "(unset)"}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         {sortedBlocks.map((b) => (
