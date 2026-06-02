@@ -118,6 +118,7 @@ function AdminProjectDetailPage() {
   const [gridSamples, setGridSamples] = useState<SampleRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [siblings, setSiblings] = useState<{ prev: { id: string; name: string } | null; next: { id: string; name: string } | null; position: number; total: number } | null>(null);
 
   // Owner change modal
   const [showOwnerModal, setShowOwnerModal] = useState(false);
@@ -142,6 +143,7 @@ function AdminProjectDetailPage() {
         setCounts(d.counts || {});
         setActionItems(d.actionItems || []);
         setMeetings(d.meetings || []);
+        setSiblings(d.siblings || null);
       }
     } catch (e: any) {
       setErr(e?.message || "Load failed");
@@ -232,7 +234,36 @@ function AdminProjectDetailPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-6">
       <div className="mb-2">
-        <Link href="/admin/projects" className="text-xs text-indigo-600 hover:underline">← All projects</Link>
+        <div className="flex items-center justify-between gap-3">
+          <Link href="/admin/projects/weekly" className="text-xs text-indigo-600 hover:underline">← Weekly view</Link>
+          {siblings && (
+            <div className="flex items-center gap-2 text-xs">
+              {siblings.prev ? (
+                <a
+                  href={`/admin/projects/${siblings.prev.id}`}
+                  className="px-2 py-1 bg-white border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50"
+                  title={siblings.prev.name}
+                >
+                  ← Prev
+                </a>
+              ) : (
+                <span className="px-2 py-1 text-slate-400">← Prev</span>
+              )}
+              <span className="text-slate-500">{siblings.position} of {siblings.total}</span>
+              {siblings.next ? (
+                <a
+                  href={`/admin/projects/${siblings.next.id}`}
+                  className="px-2 py-1 bg-white border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50"
+                  title={siblings.next.name}
+                >
+                  Next →
+                </a>
+              ) : (
+                <span className="px-2 py-1 text-slate-400">Next →</span>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mb-4">

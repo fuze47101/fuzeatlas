@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
+import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
 
 type UserLite = { id: string; name: string | null; email: string | null };
 type ActionItem = {
@@ -99,7 +100,16 @@ function labelForBlock(b: ProjectBlock): string {
   return b.internalLabel || "(unnamed internal project)";
 }
 
-export default function MeetingNotePage() {
+export default function MeetingNotePageOuter() {
+  return (
+    <HydrationFrame name="/meeting-notes/[id]">
+      <MeetingNotePage />
+    </HydrationFrame>
+  );
+}
+
+function MeetingNotePage() {
+  useMountLog("meeting-note-detail");
   const { id } = useParams();
   const router = useRouter();
   const { user, loading } = useAuth();
@@ -136,16 +146,34 @@ export default function MeetingNotePage() {
   }, [refresh]);
 
   async function addBlock() {
+    // eslint-disable-next-line no-console
+    console.log("[CLICK]", new Date().toISOString(), "handler=meeting-note.addBlock", "id=" + id);
+    if (typeof window !== "undefined") {
+      (window as any).__lastClick = { handler: "meeting-note.addBlock", id, ts: Date.now() };
+    }
     setBusy(true);
+    setError(null);
     try {
       const r = await fetch(`/api/meeting-notes/${id}/project-blocks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ customerType: "OTHER", priority: "C" }),
       });
-      const d = await r.json();
-      if (!d.ok) setError(d.error);
-      else await refresh();
+      // eslint-disable-next-line no-console
+      console.log("[FETCH-RESULT]", new Date().toISOString(), "POST project-blocks", "status=" + r.status);
+      const d = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
+      if (!r.ok || !d.ok) {
+        const msg = d.error || `Add block failed (HTTP ${r.status})`;
+        setError(msg);
+        // eslint-disable-next-line no-console
+        console.error("[addBlock] failed:", msg, d);
+        return;
+      }
+      await refresh();
+    } catch (e: any) {
+      // eslint-disable-next-line no-console
+      console.error("[addBlock] threw:", e);
+      setError(e?.message || "Network error");
     } finally {
       setBusy(false);
     }

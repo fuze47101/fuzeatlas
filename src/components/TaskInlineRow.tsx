@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import Link from "next/link";
 
 /**
@@ -47,7 +47,7 @@ type Props = {
   surfaceTag: string; // for diagnostic logs
 };
 
-export function TaskInlineRow({ item, users, onPatched, onError, showMeeting, surfaceTag }: Props) {
+function TaskInlineRowImpl({ item, users, onPatched, onError, showMeeting, surfaceTag }: Props) {
   const [editingDesc, setEditingDesc] = useState(false);
   const [editingDue, setEditingDue] = useState(false);
   const [editingAssignee, setEditingAssignee] = useState(false);
@@ -228,3 +228,23 @@ export function TaskInlineRow({ item, users, onPatched, onError, showMeeting, su
     </tr>
   );
 }
+
+// Skip re-render when neither the item itself nor the user-list
+// reference changed. Optimistic state updates on the parent re-create
+// the items array on every keystroke; without memo, every row
+// re-rendered on every per-cell edit — Andrew's "super slow mo"
+// complaint when assigning a name or picking a date.
+export const TaskInlineRow = memo(TaskInlineRowImpl, (prev, next) => {
+  if (prev.users !== next.users) return false;
+  if (prev.surfaceTag !== next.surfaceTag) return false;
+  if (prev.showMeeting !== next.showMeeting) return false;
+  const a = prev.item, b = next.item;
+  return (
+    a.id === b.id &&
+    a.description === b.description &&
+    a.priority === b.priority &&
+    a.status === b.status &&
+    a.dueDate === b.dueDate &&
+    (a.assignee?.id || null) === (b.assignee?.id || null)
+  );
+});

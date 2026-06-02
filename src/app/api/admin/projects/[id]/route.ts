@@ -95,6 +95,30 @@ export async function GET(
     },
   });
 
+  // Prev/Next sibling so the detail page can offer "← previous /
+  // next →" navigation without bouncing back to the list. Order
+  // matches /admin/projects/weekly: closed projects excluded, then
+  // sorted by lastUpdatedAt asc (most stale first), createdAt asc
+  // as tiebreaker.
+  const siblings = await prisma.project.findMany({
+    where: { closedAt: null } as any,
+    select: {
+      id: true,
+      name: true,
+      lastUpdatedAt: true,
+      createdAt: true,
+    } as any,
+  });
+  siblings.sort((a: any, b: any) => {
+    const da = a.lastUpdatedAt ? new Date(a.lastUpdatedAt).getTime() : 0;
+    const db = b.lastUpdatedAt ? new Date(b.lastUpdatedAt).getTime() : 0;
+    if (da !== db) return da - db;
+    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+  });
+  const idx = siblings.findIndex((s: any) => s.id === id);
+  const prev = idx > 0 ? siblings[idx - 1] : null;
+  const next = idx >= 0 && idx < siblings.length - 1 ? siblings[idx + 1] : null;
+
   return NextResponse.json({
     ok: true,
     project: {
@@ -125,6 +149,12 @@ export async function GET(
     actionItems,
     meetings: (project as any).meetingNotes || [],
     recentEntries,
+    siblings: {
+      prev: prev ? { id: prev.id, name: prev.name } : null,
+      next: next ? { id: next.id, name: next.name } : null,
+      position: idx + 1,
+      total: siblings.length,
+    },
   });
 }
 
