@@ -41,7 +41,14 @@ export async function PATCH(
 
   const existing = await (prisma as any).meetingActionItem.findUnique({
     where: { id: taskId },
-    select: { id: true, meetingNoteId: true, projectBlockId: true, assigneeId: true, description: true },
+    select: {
+      id: true,
+      meetingNoteId: true,
+      projectBlockId: true,
+      assigneeId: true,
+      description: true,
+      doneAt: true,
+    },
   });
   if (!existing || existing.meetingNoteId !== id) {
     return NextResponse.json({ ok: false, error: "Task not found" }, { status: 404 });
@@ -61,7 +68,15 @@ export async function PATCH(
     const s = String(body.status || "").toUpperCase();
     if (!VALID_STATUS.has(s)) return NextResponse.json({ ok: false, error: "status invalid" }, { status: 400 });
     data.status = s;
-    if (s === "DONE" && !existing.completedAt) data.completedAt = new Date();
+    // Schema field is `doneAt` + `doneById`, NOT completedAt — earlier
+    // version of this handler called the column completedAt which
+    // does not exist on MeetingActionItem and surfaced as "Invalid
+    // `prisma.meetingActionItem.update` ... Unknown argument
+    // `completedAt`" on every status flip.
+    if (s === "DONE" && !existing.doneAt) {
+      data.doneAt = new Date();
+      data.doneById = user.id;
+    }
   }
   // Allow moving a task to a different block on this meeting.
   if (body.projectBlockId !== undefined) {
@@ -77,13 +92,32 @@ export async function PATCH(
     data.projectBlockId = body.projectBlockId || null;
   }
 
-  const task = await (prisma as any).meetingActionItem.update({
-    where: { id: taskId },
-    data,
-    include: {
-      assignee: { select: { id: true, name: true, email: true } },
-    },
-  });
+  let task: any;
+  try {
+    task = await (prisma as any).meetingActionItem.update({
+      where: { id: taskId },
+      data,
+      include: {
+        assignee: { select: { id: true, name: true, email: true } },
+      },
+    });
+  } catch (e: any) {
+    console.error(
+      "[meeting-notes][project-blocks][tasks][PATCH] update failed:",
+      e?.message,
+      e?.code,
+      e?.meta,
+    );
+    return NextResponse.json(
+      {
+        ok: false,
+        error: e?.message || "update failed",
+        code: e?.code || null,
+        meta: e?.meta || null,
+      },
+      { status: 500 },
+    );
+  }
 
   // Reassignment → fire email + notification.
   const reassigned =

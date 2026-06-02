@@ -48,107 +48,138 @@ export async function GET() {
     entityName?: string | null;
   }> = [];
 
+  // Per-model isolation: a schema-drift bug in one query no longer
+  // erases the entire activity feed. We capture each model's error
+  // separately and surface them in the response so the next failure
+  // is visible without grepping Vercel logs.
+  const modelErrors: Array<{ model: string; message: string; code: string | null; meta: any }> = [];
+  async function safeQuery<T>(model: string, fn: () => Promise<T>): Promise<T | []> {
+    try {
+      return await fn();
+    } catch (e: any) {
+      console.error(`[home-activity] ${model} query failed:`, e?.message, e?.code, e?.meta);
+      modelErrors.push({
+        model,
+        message: e?.message || String(e),
+        code: e?.code || null,
+        meta: e?.meta || null,
+      });
+      return [] as any;
+    }
+  }
+
   const [fabricSubs, orders, testRequests, users, sampleTrials, outreach, meetings] =
     await Promise.all([
-      prisma.fabricSubmission.findMany({
-        where: { createdAt: { gte: since } },
-        orderBy: { createdAt: "desc" },
-        take: TAKE_PER_TYPE,
-        select: {
-          id: true,
-          createdAt: true,
-          fuzeFabricNumber: true,
-          fabric: { select: { fuzeNumber: true } },
-          brand: { select: { name: true } },
-          factory: { select: { name: true } },
-        },
-      }),
-      prisma.fuzeOrder.findMany({
-        where: { createdAt: { gte: since } },
-        orderBy: { createdAt: "desc" },
-        take: TAKE_PER_TYPE,
-        select: {
-          id: true,
-          createdAt: true,
-          orderNumber: true,
-          orderType: true,
-          volumeLiters: true,
-          factory: { select: { name: true } },
-          brand: { select: { name: true } },
-          orderedBy: { select: { name: true, role: true } },
-        },
-      }),
-      prisma.testRequest.findMany({
-        where: { createdAt: { gte: since } },
-        orderBy: { createdAt: "desc" },
-        take: TAKE_PER_TYPE,
-        select: {
-          id: true,
-          createdAt: true,
-          poNumber: true,
-          requestedBy: { select: { name: true, role: true } },
-          lab: { select: { name: true } },
-          fabric: { select: { fuzeNumber: true } },
-        },
-      }),
-      prisma.user.findMany({
-        where: { createdAt: { gte: since } },
-        orderBy: { createdAt: "desc" },
-        take: TAKE_PER_TYPE,
-        select: {
-          id: true,
-          createdAt: true,
-          name: true,
-          email: true,
-          role: true,
-          brand: { select: { name: true } },
-          factory: { select: { name: true } },
-          distributor: { select: { name: true } },
-        },
-      }),
-      prisma.sampleTrialRequest.findMany({
-        where: { createdAt: { gte: since } },
-        orderBy: { createdAt: "desc" },
-        take: TAKE_PER_TYPE,
-        select: {
-          id: true,
-          createdAt: true,
-          brand: { select: { name: true } },
-          factory: { select: { name: true } },
-          fabric: { select: { fuzeNumber: true } },
-          requestedBy: { select: { name: true, role: true } },
-        },
-      }),
-      prisma.outreachMessage.findMany({
-        where: { sentAt: { gte: since } },
-        orderBy: { sentAt: "desc" },
-        take: TAKE_PER_TYPE,
-        select: {
-          id: true,
-          sentAt: true,
-          type: true,
-          subject: true,
-          sentBy: { select: { name: true, role: true } },
-          contact: { select: { name: true, brand: { select: { name: true } } } },
-        },
-      }),
-      prisma.meeting.findMany({
-        where: { createdAt: { gte: since } },
-        orderBy: { createdAt: "desc" },
-        take: TAKE_PER_TYPE,
-        select: {
-          id: true,
-          createdAt: true,
-          title: true,
-          scheduledFor: true,
-          bookedByUser: { select: { name: true, role: true } },
-          brand: { select: { name: true } },
-        },
-      }),
-    ]).catch((e) => {
-      console.error("[home-activity] partial query failure:", e);
-      return [[], [], [], [], [], [], []];
-    });
+      safeQuery("fabricSubmission", () =>
+        prisma.fabricSubmission.findMany({
+          where: { createdAt: { gte: since } },
+          orderBy: { createdAt: "desc" },
+          take: TAKE_PER_TYPE,
+          select: {
+            id: true,
+            createdAt: true,
+            fuzeFabricNumber: true,
+            fabric: { select: { fuzeNumber: true } },
+            brand: { select: { name: true } },
+            factory: { select: { name: true } },
+          },
+        }),
+      ),
+      safeQuery("fuzeOrder", () =>
+        prisma.fuzeOrder.findMany({
+          where: { createdAt: { gte: since } },
+          orderBy: { createdAt: "desc" },
+          take: TAKE_PER_TYPE,
+          select: {
+            id: true,
+            createdAt: true,
+            orderNumber: true,
+            orderType: true,
+            volumeLiters: true,
+            factory: { select: { name: true } },
+            brand: { select: { name: true } },
+            orderedBy: { select: { name: true, role: true } },
+          },
+        }),
+      ),
+      safeQuery("testRequest", () =>
+        prisma.testRequest.findMany({
+          where: { createdAt: { gte: since } },
+          orderBy: { createdAt: "desc" },
+          take: TAKE_PER_TYPE,
+          select: {
+            id: true,
+            createdAt: true,
+            poNumber: true,
+            requestedBy: { select: { name: true, role: true } },
+            lab: { select: { name: true } },
+            fabric: { select: { fuzeNumber: true } },
+          },
+        }),
+      ),
+      safeQuery("user", () =>
+        prisma.user.findMany({
+          where: { createdAt: { gte: since } },
+          orderBy: { createdAt: "desc" },
+          take: TAKE_PER_TYPE,
+          select: {
+            id: true,
+            createdAt: true,
+            name: true,
+            email: true,
+            role: true,
+            brand: { select: { name: true } },
+            factory: { select: { name: true } },
+            distributor: { select: { name: true } },
+          },
+        }),
+      ),
+      safeQuery("sampleTrialRequest", () =>
+        prisma.sampleTrialRequest.findMany({
+          where: { createdAt: { gte: since } },
+          orderBy: { createdAt: "desc" },
+          take: TAKE_PER_TYPE,
+          select: {
+            id: true,
+            createdAt: true,
+            brand: { select: { name: true } },
+            factory: { select: { name: true } },
+            fabric: { select: { fuzeNumber: true } },
+            requestedBy: { select: { name: true, role: true } },
+          },
+        }),
+      ),
+      safeQuery("outreachMessage", () =>
+        prisma.outreachMessage.findMany({
+          where: { sentAt: { gte: since } },
+          orderBy: { sentAt: "desc" },
+          take: TAKE_PER_TYPE,
+          select: {
+            id: true,
+            sentAt: true,
+            type: true,
+            subject: true,
+            sentBy: { select: { name: true, role: true } },
+            contact: { select: { name: true, brand: { select: { name: true } } } },
+          },
+        }),
+      ),
+      safeQuery("meeting", () =>
+        prisma.meeting.findMany({
+          where: { createdAt: { gte: since } },
+          orderBy: { createdAt: "desc" },
+          take: TAKE_PER_TYPE,
+          select: {
+            id: true,
+            createdAt: true,
+            title: true,
+            scheduledFor: true,
+            bookedByUser: { select: { name: true, role: true } },
+            brand: { select: { name: true } },
+          },
+        }),
+      ),
+    ]);
 
   for (const f of fabricSubs) {
     const fz = f.fabric?.fuzeNumber || f.fuzeFabricNumber;
@@ -239,5 +270,13 @@ export async function GET() {
   }
 
   events.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-  return NextResponse.json({ ok: true, events: events.slice(0, LIMIT), generatedAt: new Date() });
+  return NextResponse.json({
+    ok: true,
+    events: events.slice(0, LIMIT),
+    generatedAt: new Date(),
+    // Surface any per-model failures explicitly so a silent prisma
+    // drift no longer hides behind an empty feed + 200 OK.
+    modelErrors,
+    partial: modelErrors.length > 0,
+  });
 }

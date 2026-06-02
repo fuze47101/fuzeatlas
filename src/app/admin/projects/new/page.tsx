@@ -1,9 +1,43 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, Suspense, Component, ReactNode } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+
+/**
+ * Wrap the page in Suspense (Next.js 15 routinely warns on
+ * useSearchParams in a client component without one) + an error
+ * boundary that surfaces the actual render failure instead of a
+ * blank page so the "Add Project button doesn't navigate"
+ * symptom can be diagnosed in a single screenshot.
+ */
+class WizardErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+  state = { error: null as Error | null };
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  componentDidCatch(error: Error, info: any) {
+    // eslint-disable-next-line no-console
+    console.error("[/admin/projects/new] render error:", error, info);
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="mx-auto max-w-3xl px-4 py-12">
+          <div className="rounded-lg border border-rose-200 bg-rose-50 p-6">
+            <h1 className="text-lg font-semibold text-rose-900">Project wizard failed to render</h1>
+            <p className="mt-2 text-sm text-rose-800">{this.state.error.message}</p>
+            <pre className="mt-3 whitespace-pre-wrap text-[10px] text-rose-700 bg-white border border-rose-200 rounded p-2 max-h-[40vh] overflow-auto">{this.state.error.stack}</pre>
+            <p className="mt-3 text-xs text-rose-700">
+              This error replaces the previous blank-page failure mode. Screenshot this and
+              share so the cause can be fixed.
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 type ProjectType = "BRAND" | "FACTORY" | "DISTRIBUTOR" | "INTERNAL";
 type Priority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
@@ -53,7 +87,17 @@ function endOfWeekISO(): string {
 
 const EMPTY_TASK: TaskRow = { description: "", assigneeId: "", priority: "NORMAL", dueDate: "" };
 
-export default function ProjectStartWizardPage() {
+export default function ProjectStartWizardPageOuter() {
+  return (
+    <WizardErrorBoundary>
+      <Suspense fallback={<div className="mx-auto max-w-3xl px-4 py-12 text-sm text-slate-500">Loading wizard…</div>}>
+        <ProjectStartWizardPage />
+      </Suspense>
+    </WizardErrorBoundary>
+  );
+}
+
+function ProjectStartWizardPage() {
   const router = useRouter();
   const params = useSearchParams();
   const { user, loading } = useAuth();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -28,7 +28,15 @@ const STAGE_COLORS: Record<string, string> = {
   COMPLETE: "bg-slate-200 text-slate-700",
 };
 
-export default function AdminProjectsListPage() {
+export default function AdminProjectsListPageOuter() {
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-6xl px-4 py-6 text-sm text-slate-500">Loading projects…</div>}>
+      <AdminProjectsListPage />
+    </Suspense>
+  );
+}
+
+function AdminProjectsListPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
