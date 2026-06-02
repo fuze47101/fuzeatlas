@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import { TaskInlineRow, TaskInlineRowItem, UserLite } from "@/components/TaskInlineRow";
+import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
 
 interface ActionItem {
   id: string;
@@ -18,7 +19,16 @@ interface ActionItem {
   assignee?: UserLite | null;
 }
 
-export default function MyTasksPage() {
+export default function MyTasksPageOuter() {
+  return (
+    <HydrationFrame name="/my-tasks">
+      <MyTasksPage />
+    </HydrationFrame>
+  );
+}
+
+function MyTasksPage() {
+  useMountLog("my-tasks");
   const { user, loading } = useAuth();
   const router = useRouter();
   const [items, setItems] = useState<ActionItem[]>([]);

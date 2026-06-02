@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import { TaskInlineRow, UserLite } from "@/components/TaskInlineRow";
+import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
 
 interface AssigneeGroup {
   assignee: { id: string | null; name: string | null; email: string | null };
@@ -19,7 +20,16 @@ interface AssigneeGroup {
   }>;
 }
 
-export default function AdminAllTasksPage() {
+export default function AdminAllTasksPageOuter() {
+  return (
+    <HydrationFrame name="/admin/all-tasks">
+      <AdminAllTasksPage />
+    </HydrationFrame>
+  );
+}
+
+function AdminAllTasksPage() {
+  useMountLog("all-tasks");
   const { user, loading } = useAuth();
   const router = useRouter();
   const [groups, setGroups] = useState<AssigneeGroup[]>([]);

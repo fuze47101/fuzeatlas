@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment } from "react";
 import { ProjectInlineDetail } from "@/components/ProjectInlineDetail";
+import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
 
 interface ProjectRow {
   id: string;
@@ -30,13 +31,16 @@ const STAGE_COLORS: Record<string, string> = {
 
 export default function AdminProjectsListPageOuter() {
   return (
-    <Suspense fallback={<div className="mx-auto max-w-6xl px-4 py-6 text-sm text-slate-500">Loading projects…</div>}>
-      <AdminProjectsListPage />
-    </Suspense>
+    <HydrationFrame name="/admin/projects">
+      <Suspense fallback={<div className="mx-auto max-w-6xl px-4 py-6 text-sm text-slate-500">Loading projects…</div>}>
+        <AdminProjectsListPage />
+      </Suspense>
+    </HydrationFrame>
   );
 }
 
 function AdminProjectsListPage() {
+  useMountLog("projects-list");
   const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();

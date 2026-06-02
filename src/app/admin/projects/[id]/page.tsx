@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { TaskInlineRow } from "@/components/TaskInlineRow";
+import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
 
 type Tab = "overview" | "grid" | "tasks" | "meetings";
 
@@ -94,7 +95,16 @@ const PRIORITY_STYLE: Record<string, string> = {
   LOW: "bg-slate-100 text-slate-500",
 };
 
-export default function AdminProjectDetailPage() {
+export default function AdminProjectDetailPageOuter() {
+  return (
+    <HydrationFrame name="/admin/projects/[id]">
+      <AdminProjectDetailPage />
+    </HydrationFrame>
+  );
+}
+
+function AdminProjectDetailPage() {
+  useMountLog("project-detail");
   const { id } = useParams();
   const router = useRouter();
   const { user, loading } = useAuth();

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { ProjectInlineDetail } from "@/components/ProjectInlineDetail";
+import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
 
 type Priority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
 
@@ -48,9 +49,13 @@ const TYPE_CHIP: Record<string, string> = {
   INTERNAL: "bg-slate-50 text-slate-800 border-slate-200",
 };
 
-function daysSince(iso: string | null): number | null {
-  if (!iso) return null;
-  return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+// NOTE: this returns null pre-mount so the SSR pass and the first
+// client render produce identical HTML — Date.now() reads must be
+// gated to after mount or React reports a hydration mismatch and
+// silently aborts handler attachment.
+function daysSince(iso: string | null, nowMs: number | null): number | null {
+  if (!iso || nowMs == null) return null;
+  return Math.floor((nowMs - new Date(iso).getTime()) / 86400000);
 }
 function staleColor(days: number | null): string {
   if (days == null) return "text-rose-700 font-semibold";
@@ -59,13 +64,27 @@ function staleColor(days: number | null): string {
   return "text-slate-600";
 }
 
-export default function WeeklyUpdatePage() {
+export default function WeeklyUpdatePageOuter() {
+  return (
+    <HydrationFrame name="/admin/projects/weekly">
+      <WeeklyUpdatePage />
+    </HydrationFrame>
+  );
+}
+
+function WeeklyUpdatePage() {
+  useMountLog("weekly");
   const router = useRouter();
   const { user, loading } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [detailExpanded, setDetailExpanded] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // nowMs is null on the server + first client render → daysSince()
+  // returns null + the UI shows "never updated" briefly. After mount,
+  // a fresh Date.now() replaces it and the staleness color kicks in.
+  const [nowMs, setNowMs] = useState<number | null>(null);
+  useEffect(() => setNowMs(Date.now()), []);
 
   useEffect(() => {
     if (loading) return;
@@ -89,16 +108,16 @@ export default function WeeklyUpdatePage() {
 
   const stale = useMemo(
     () => projects.filter((p) => {
-      const d = daysSince(p.lastUpdatedAt);
+      const d = daysSince(p.lastUpdatedAt, nowMs);
       return d == null || d >= 7;
     }).length,
-    [projects],
+    [projects, nowMs],
   );
 
   function nextStaleAfter(currentId: string): string | null {
     const idx = projects.findIndex((p) => p.id === currentId);
     for (let i = idx + 1; i < projects.length; i++) {
-      const d = daysSince(projects[i].lastUpdatedAt);
+      const d = daysSince(projects[i].lastUpdatedAt, nowMs);
       if (d == null || d >= 7) return projects[i].id;
     }
     return null;
@@ -133,7 +152,7 @@ export default function WeeklyUpdatePage() {
 
       <div className="space-y-3">
         {projects.map((p) => {
-          const days = daysSince(p.lastUpdatedAt);
+          const days = daysSince(p.lastUpdatedAt, nowMs);
           const customerLabel = p.projectType === "BRAND"
             ? p.brand?.name
             : p.projectType === "FACTORY"
