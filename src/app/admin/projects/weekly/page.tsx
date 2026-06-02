@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+import { ProjectInlineDetail } from "@/components/ProjectInlineDetail";
 
 type Priority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
 
@@ -63,6 +64,7 @@ export default function WeeklyUpdatePage() {
   const { user, loading } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [detailExpanded, setDetailExpanded] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -104,6 +106,10 @@ export default function WeeklyUpdatePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
+      <div className="mb-3 rounded-md border border-amber-200 bg-amber-50 p-2 text-[11px] text-amber-900">
+        <strong>Diagnostic mode</strong> — click logging enabled. Open DevTools Console to verify
+        clicks fire. <code>window.__lastClick</code> + <code>window.__lastClickResult</code> capture the latest event.
+      </div>
       <div className="mb-6 flex items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Weekly Project Update</h1>
@@ -138,9 +144,16 @@ export default function WeeklyUpdatePage() {
           return (
             <div key={p.id} className="rounded-lg border border-slate-200 bg-white">
               <div className="flex flex-wrap items-center gap-3 p-3">
-                <Link href={`/admin/projects/${p.id}`} className="text-base font-semibold text-indigo-700 hover:underline">
+                <button
+                  onClick={() => setDetailExpanded((cur) => (cur === p.id ? null : p.id))}
+                  className="flex items-center gap-1.5 text-base font-semibold text-indigo-700 hover:underline"
+                  title="Click to expand inline"
+                >
+                  <span className="text-xs text-slate-500">
+                    {detailExpanded === p.id ? "▼" : "▶"}
+                  </span>
                   {p.name}
-                </Link>
+                </button>
                 {p.priority && (
                   <span className={`inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold ${PRIORITY_CHIP[p.priority]}`}>
                     {p.priority}
@@ -164,7 +177,17 @@ export default function WeeklyUpdatePage() {
                     type="checkbox"
                     checked={false}
                     onChange={async () => {
-                      // Optimistic: drop row immediately.
+                      // DIAGNOSTIC: log click before anything else.
+                      const ts = new Date().toISOString();
+                      // eslint-disable-next-line no-console
+                      console.error("[CLICK]", ts, "handler=weekly.markComplete", `id=${p.id}`);
+                      if (typeof window !== "undefined") {
+                        (window as any).__lastClick = {
+                          handler: "weekly.markComplete",
+                          id: p.id,
+                          ts: Date.now(),
+                        };
+                      }
                       setProjects((arr) => arr.filter((x) => x.id !== p.id));
                       setError(null);
                       try {
@@ -173,6 +196,11 @@ export default function WeeklyUpdatePage() {
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ markComplete: true, closingNotes: "Marked complete inline" }),
                         });
+                        // eslint-disable-next-line no-console
+                        console.error("[CLICK-RESULT]", new Date().toISOString(), `ok=${r.ok}`, `status=${r.status}`);
+                        if (typeof window !== "undefined") {
+                          (window as any).__lastClickResult = { ok: r.ok, status: r.status, ts: Date.now() };
+                        }
                         const d = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
                         if (!r.ok || !d.ok) {
                           setError(d.error || `Mark complete failed (HTTP ${r.status})`);
@@ -181,8 +209,12 @@ export default function WeeklyUpdatePage() {
                           return;
                         }
                       } catch (e: any) {
+                        // eslint-disable-next-line no-console
+                        console.error("[CLICK-RESULT]", new Date().toISOString(), "threw:", e?.message);
+                        if (typeof window !== "undefined") {
+                          (window as any).__lastClickResult = { ok: false, error: e?.message, ts: Date.now() };
+                        }
                         setError(e?.message || "Network error");
-                        console.error("[weekly] markComplete threw:", e);
                         await refresh();
                       }
                     }}
@@ -197,6 +229,9 @@ export default function WeeklyUpdatePage() {
                 </button>
               </div>
 
+              {detailExpanded === p.id && (
+                <ProjectInlineDetail projectId={p.id} surfaceTag="weekly" />
+              )}
               {expanded === p.id && (
                 <UpdateForm
                   projectId={p.id}
@@ -205,7 +240,6 @@ export default function WeeklyUpdatePage() {
                     const nextId = !markedComplete ? nextStaleAfter(p.id) : null;
                     setExpanded(nextId);
                     if (nextId) {
-                      // Scroll into view.
                       setTimeout(() => {
                         document.querySelector(`[data-pid="${nextId}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
                       }, 100);

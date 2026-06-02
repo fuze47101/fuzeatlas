@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
+import { TaskInlineRow } from "@/components/TaskInlineRow";
 
 type Tab = "overview" | "grid" | "tasks" | "meetings";
 
@@ -390,50 +391,42 @@ export default function AdminProjectDetailPage() {
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
               <tr>
-                <th className="px-3 py-2"></th>
-                <th className="px-3 py-2 text-left">Description</th>
-                <th className="px-3 py-2 text-left">Assignee</th>
-                <th className="px-3 py-2 text-left">Priority</th>
-                <th className="px-3 py-2 text-left">Due</th>
-                <th className="px-3 py-2 text-left">Meeting</th>
-                <th className="px-3 py-2 text-left">Status</th>
+                <th className="px-2 py-2"></th>
+                <th className="px-2 py-2 text-left">Description</th>
+                <th className="px-2 py-2 text-left">Priority</th>
+                <th className="px-2 py-2 text-left">Assignee</th>
+                <th className="px-2 py-2 text-left">Due</th>
+                <th className="px-2 py-2 text-left">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {actionItems.map((a) => (
-                <tr key={a.id} className="hover:bg-slate-50">
-                  <td className="px-3 py-2">
-                    <input type="checkbox" checked={a.status === "DONE"} onChange={() => toggleDone(a)} />
-                  </td>
-                  <td className="px-3 py-2 text-slate-900">{a.description}</td>
-                  <td className="px-3 py-2 text-xs text-slate-700">{a.assignee?.name || a.assignee?.email || "—"}</td>
-                  <td className="px-3 py-2">
-                    <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${PRIORITY_STYLE[a.priority] || ""}`}>
-                      {a.priority}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2 text-xs text-slate-600 whitespace-nowrap">
-                    {a.dueDate ? new Date(a.dueDate).toLocaleDateString() : "—"}
-                  </td>
-                  <td className="px-3 py-2 text-xs">
-                    {a.meetingNote ? (
-                      <Link href={`/meeting-notes/${a.meetingNote.id}`} className="text-indigo-600 hover:underline">
-                        {a.meetingNote.title}
-                      </Link>
-                    ) : (
-                      <span className="text-slate-400">—</span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2">
-                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs ${STATUS_STYLE[a.status] || ""}`}>
-                      {a.status}
-                    </span>
-                  </td>
-                </tr>
+                <TaskInlineRow
+                  key={a.id}
+                  item={{
+                    id: a.id,
+                    description: a.description,
+                    priority: a.priority,
+                    status: a.status,
+                    dueDate: a.dueDate,
+                    assignee: a.assignee,
+                    meetingNote: a.meetingNote,
+                  }}
+                  users={users}
+                  showMeeting
+                  surfaceTag="project-detail"
+                  onPatched={(updated) => {
+                    setActionItems((arr) =>
+                      arr.map((x) => (x.id === updated.id ? ({ ...x, ...updated } as ActionItemRow) : x)),
+                    );
+                    refresh();
+                  }}
+                  onError={setErr}
+                />
               ))}
               {actionItems.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-500">
+                  <td colSpan={6} className="px-3 py-8 text-center text-sm text-slate-500">
                     No tasks yet. Tasks come from the kickoff or any meeting tagged to this project.
                   </td>
                 </tr>

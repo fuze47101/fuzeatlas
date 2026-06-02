@@ -79,6 +79,22 @@ export async function GET(
     .count({ where: { projectId: id } })
     .catch(() => 0);
 
+  // Last 5 MeetingNoteEntry rows across every meeting note tied to
+  // this project — drives the "Recent activity" strip in the inline
+  // expanded row.
+  const recentEntries = await (prisma as any).meetingNoteEntry.findMany({
+    where: { meetingNote: { projectId: id } },
+    orderBy: { createdAt: "desc" },
+    take: 5,
+    select: {
+      id: true,
+      bodyMd: true,
+      createdAt: true,
+      author: { select: { id: true, name: true, email: true } },
+      meetingNote: { select: { id: true, title: true } },
+    },
+  });
+
   return NextResponse.json({
     ok: true,
     project: {
@@ -108,6 +124,7 @@ export async function GET(
     },
     actionItems,
     meetings: (project as any).meetingNotes || [],
+    recentEntries,
   });
 }
 

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
+import { TaskInlineRow, TaskInlineRowItem, UserLite } from "@/components/TaskInlineRow";
 
 interface ActionItem {
   id: string;
@@ -14,21 +15,8 @@ interface ActionItem {
   createdAt: string;
   meetingNote: { id: string; title: string; meetingDate: string } | null;
   createdBy: { id: string; name: string | null } | null;
+  assignee?: UserLite | null;
 }
-
-const PRIORITY_STYLE: Record<string, string> = {
-  URGENT: "bg-rose-600 text-white",
-  HIGH: "bg-amber-500 text-white",
-  NORMAL: "bg-slate-200 text-slate-700",
-  LOW: "bg-slate-100 text-slate-500",
-};
-
-const STATUS_STYLE: Record<string, string> = {
-  OPEN: "bg-sky-100 text-sky-800",
-  DONE: "bg-emerald-100 text-emerald-700",
-  BLOCKED: "bg-amber-100 text-amber-800",
-  CANCELLED: "bg-slate-100 text-slate-500",
-};
 
 export default function MyTasksPage() {
   const { user, loading } = useAuth();
@@ -39,6 +27,19 @@ export default function MyTasksPage() {
   const [sort, setSort] = useState("priority");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [users, setUsers] = useState<UserLite[]>([]);
+
+  useEffect(() => {
+    fetch("/api/settings/users")
+      .then((r) => r.json())
+      .then((d) => {
+        const list = (d.users || []).filter((u: any) =>
+          ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP"].includes(u.role),
+        );
+        setUsers(list);
+      })
+      .catch(() => null);
+  }, []);
 
   useEffect(() => {
     if (loading) return;
@@ -64,50 +65,13 @@ export default function MyTasksPage() {
     refresh();
   }, [refresh]);
 
-  async function patchItem(itemId: string, patch: any, prevStatus?: string) {
-    // Optimistic update — flip local state immediately so the checkbox
-    // animates and the user sees the change.
-    setError(null);
-    setItems((arr) => arr.map((x) => (x.id === itemId ? { ...x, ...patch } : x)));
-    try {
-      const r = await fetch(`/api/action-items/${itemId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(patch),
-      });
-      const d = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
-      if (!r.ok || !d.ok) {
-        // Revert if we know the prior status.
-        if (prevStatus !== undefined) {
-          setItems((arr) => arr.map((x) => (x.id === itemId ? { ...x, status: prevStatus } : x)));
-        }
-        const msg = d.error || `Update failed (HTTP ${r.status})`;
-        setError(msg);
-        console.error("[my-tasks] PATCH /api/action-items failed:", msg, d);
-        return;
-      }
-      // Success — refresh in the background to pick up server-side
-      // computed fields (doneAt, doneBy).
-      refresh();
-    } catch (e: any) {
-      if (prevStatus !== undefined) {
-        setItems((arr) => arr.map((x) => (x.id === itemId ? { ...x, status: prevStatus } : x)));
-      }
-      const msg = e?.message || "Network error";
-      setError(msg);
-      console.error("[my-tasks] PATCH /api/action-items threw:", e);
-    }
-  }
-  async function toggleDone(item: ActionItem) {
-    const next = item.status === "DONE" ? "OPEN" : "DONE";
-    await patchItem(item.id, { status: next }, item.status);
-  }
-  async function setPriority(item: ActionItem, priority: string) {
-    await patchItem(item.id, { priority });
-  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
+      <div className="mb-3 rounded-md border border-amber-200 bg-amber-50 p-2 text-[11px] text-amber-900">
+        <strong>Diagnostic mode</strong> — click logging enabled. Open DevTools Console to verify
+        clicks fire. <code>window.__lastClick</code> + <code>window.__lastClickResult</code> capture the latest event.
+      </div>
       <div className="mb-4 flex items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">My Tasks</h1>
@@ -167,56 +131,42 @@ export default function MyTasksPage() {
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
             <tr>
-              <th className="px-3 py-2"></th>
-              <th className="px-3 py-2 text-left">Description</th>
-              <th className="px-3 py-2 text-left">Priority</th>
-              <th className="px-3 py-2 text-left">Meeting</th>
-              <th className="px-3 py-2 text-left">Due</th>
-              <th className="px-3 py-2 text-left">Status</th>
+              <th className="px-2 py-2"></th>
+              <th className="px-2 py-2 text-left">Description</th>
+              <th className="px-2 py-2 text-left">Priority</th>
+              <th className="px-2 py-2 text-left">Assignee</th>
+              <th className="px-2 py-2 text-left">Due</th>
+              <th className="px-2 py-2 text-left">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {items.map((i) => (
-              <tr key={i.id} className="hover:bg-slate-50">
-                <td className="px-3 py-2">
-                  <input type="checkbox" checked={i.status === "DONE"} onChange={() => toggleDone(i)} />
-                </td>
-                <td className="px-3 py-2">
-                  <div className="text-slate-900">{i.description}</div>
-                  {i.createdBy?.name && (
-                    <div className="text-[10px] text-slate-500">assigned by {i.createdBy.name}</div>
-                  )}
-                </td>
-                <td className="px-3 py-2">
-                  <select
-                    value={i.priority}
-                    onChange={(e) => setPriority(i, e.target.value)}
-                    className={`text-[10px] font-semibold rounded px-1.5 py-0.5 border-0 ${PRIORITY_STYLE[i.priority] || ""}`}
-                  >
-                    <option value="URGENT">URGENT</option>
-                    <option value="HIGH">HIGH</option>
-                    <option value="NORMAL">NORMAL</option>
-                    <option value="LOW">LOW</option>
-                  </select>
-                </td>
-                <td className="px-3 py-2">
-                  {i.meetingNote ? (
-                    <Link href={`/meeting-notes/${i.meetingNote.id}`} className="text-xs text-indigo-600 hover:underline">
-                      {i.meetingNote.title}
-                    </Link>
-                  ) : (
-                    <span className="text-xs text-slate-400">—</span>
-                  )}
-                </td>
-                <td className="px-3 py-2 text-xs text-slate-600 whitespace-nowrap">
-                  {i.dueDate ? new Date(i.dueDate).toLocaleDateString() : "—"}
-                </td>
-                <td className="px-3 py-2">
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs ${STATUS_STYLE[i.status] || ""}`}>
-                    {i.status}
-                  </span>
-                </td>
-              </tr>
+              <TaskInlineRow
+                key={i.id}
+                item={{
+                  id: i.id,
+                  description: i.description,
+                  priority: i.priority,
+                  status: i.status,
+                  dueDate: i.dueDate,
+                  assignee: i.assignee || null,
+                  meetingNote: i.meetingNote,
+                }}
+                users={users}
+                showMeeting
+                surfaceTag="my-tasks"
+                onPatched={(updated) => {
+                  setItems((arr) =>
+                    arr.map((x) =>
+                      x.id === updated.id ? ({ ...x, ...updated } as ActionItem) : x,
+                    ),
+                  );
+                  // Background refresh to pick up server-computed
+                  // fields (doneAt, etc).
+                  refresh();
+                }}
+                onError={setError}
+              />
             ))}
             {items.length === 0 && !busy && (
               <tr>

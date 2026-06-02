@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Fragment } from "react";
+import { ProjectInlineDetail } from "@/components/ProjectInlineDetail";
 
 interface ProjectRow {
   id: string;
@@ -35,6 +37,7 @@ export default function AdminProjectsListPage() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [detailExpanded, setDetailExpanded] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading) return;
@@ -125,11 +128,19 @@ export default function AdminProjectsListPage() {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {projects.map((p) => (
-              <tr key={p.id} className="hover:bg-slate-50">
+              <Fragment key={p.id}>
+              <tr className="hover:bg-slate-50">
                 <td className="px-3 py-2">
-                  <Link href={`/admin/projects/${p.id}`} className="text-indigo-600 hover:underline font-medium">
+                  <button
+                    onClick={() => setDetailExpanded((cur) => (cur === p.id ? null : p.id))}
+                    className="flex items-center gap-1.5 text-indigo-600 hover:underline font-medium text-left"
+                    title="Click to expand inline"
+                  >
+                    <span className="text-xs text-slate-500">
+                      {detailExpanded === p.id ? "▼" : "▶"}
+                    </span>
                     {p.name}
-                  </Link>
+                  </button>
                 </td>
                 <td className="px-3 py-2">{p.brandName || "—"}</td>
                 <td className="px-3 py-2">
@@ -174,6 +185,16 @@ export default function AdminProjectsListPage() {
                       checked={false}
                       title="Mark complete — one click, reversible from Completed view"
                       onChange={async () => {
+                        const ts = new Date().toISOString();
+                        // eslint-disable-next-line no-console
+                        console.error("[CLICK]", ts, "handler=projects.markComplete", `id=${p.id}`);
+                        if (typeof window !== "undefined") {
+                          (window as any).__lastClick = {
+                            handler: "projects.markComplete",
+                            id: p.id,
+                            ts: Date.now(),
+                          };
+                        }
                         setProjects((arr) => arr.filter((x) => x.id !== p.id));
                         setActionError(null);
                         try {
@@ -182,20 +203,37 @@ export default function AdminProjectsListPage() {
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ markComplete: true, closingNotes: "Marked complete inline" }),
                           });
+                          // eslint-disable-next-line no-console
+                          console.error("[CLICK-RESULT]", new Date().toISOString(), `ok=${r.ok}`, `status=${r.status}`);
+                          if (typeof window !== "undefined") {
+                            (window as any).__lastClickResult = { ok: r.ok, status: r.status, ts: Date.now() };
+                          }
                           const d = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
                           if (!r.ok || !d.ok) {
                             setActionError(d.error || `Mark complete failed (HTTP ${r.status})`);
                             console.error("[projects] markComplete failed:", d);
                           }
                         } catch (e: any) {
+                          // eslint-disable-next-line no-console
+                          console.error("[CLICK-RESULT]", new Date().toISOString(), "threw:", e?.message);
+                          if (typeof window !== "undefined") {
+                            (window as any).__lastClickResult = { ok: false, error: e?.message, ts: Date.now() };
+                          }
                           setActionError(e?.message || "Network error");
-                          console.error("[projects] markComplete threw:", e);
                         }
                       }}
                     />
                   )}
                 </td>
               </tr>
+              {detailExpanded === p.id && (
+                <tr>
+                  <td colSpan={7} className="p-0">
+                    <ProjectInlineDetail projectId={p.id} surfaceTag={closedOnly ? "projects.closed" : "projects"} />
+                  </td>
+                </tr>
+              )}
+              </Fragment>
             ))}
             {projects.length === 0 && !busy && (
               <tr>

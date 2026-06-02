@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
+import { TaskInlineRow, UserLite } from "@/components/TaskInlineRow";
 
 interface AssigneeGroup {
   assignee: { id: string | null; name: string | null; email: string | null };
@@ -15,15 +15,9 @@ interface AssigneeGroup {
     status: string;
     dueDate: string | null;
     meetingNote: { id: string; title: string } | null;
+    assignee?: UserLite | null;
   }>;
 }
-
-const PRIORITY_STYLE: Record<string, string> = {
-  URGENT: "bg-rose-600 text-white",
-  HIGH: "bg-amber-500 text-white",
-  NORMAL: "bg-slate-200 text-slate-700",
-  LOW: "bg-slate-100 text-slate-500",
-};
 
 export default function AdminAllTasksPage() {
   const { user, loading } = useAuth();
@@ -32,6 +26,19 @@ export default function AdminAllTasksPage() {
   const [total, setTotal] = useState(0);
   const [statusFilter, setStatusFilter] = useState("OPEN");
   const [error, setError] = useState<string | null>(null);
+  const [users, setUsers] = useState<UserLite[]>([]);
+
+  useEffect(() => {
+    fetch("/api/settings/users")
+      .then((r) => r.json())
+      .then((d) => {
+        const list = (d.users || []).filter((u: any) =>
+          ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP"].includes(u.role),
+        );
+        setUsers(list);
+      })
+      .catch(() => null);
+  }, []);
 
   useEffect(() => {
     if (loading) return;
@@ -55,44 +62,14 @@ export default function AdminAllTasksPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter]);
 
-  async function toggleDone(itemId: string, prevStatus: string) {
-    const next = prevStatus === "DONE" ? "OPEN" : "DONE";
+  function onPatched(itemId: string, updates: any) {
     setGroups((gs) =>
       gs.map((g) => ({
         ...g,
-        items: g.items.map((i) => (i.id === itemId ? { ...i, status: next } : i)),
+        items: g.items.map((i) => (i.id === itemId ? { ...i, ...updates } : i)),
       })),
     );
-    setError(null);
-    try {
-      const r = await fetch(`/api/action-items/${itemId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: next }),
-      });
-      const d = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
-      if (!r.ok || !d.ok) {
-        setGroups((gs) =>
-          gs.map((g) => ({
-            ...g,
-            items: g.items.map((i) => (i.id === itemId ? { ...i, status: prevStatus } : i)),
-          })),
-        );
-        setError(d.error || `Update failed (HTTP ${r.status})`);
-        console.error("[all-tasks] PATCH /api/action-items failed:", d);
-        return;
-      }
-      refresh();
-    } catch (e: any) {
-      setGroups((gs) =>
-        gs.map((g) => ({
-          ...g,
-          items: g.items.map((i) => (i.id === itemId ? { ...i, status: prevStatus } : i)),
-        })),
-      );
-      setError(e?.message || "Network error");
-      console.error("[all-tasks] PATCH /api/action-items threw:", e);
-    }
+    refresh();
   }
 
   return (
@@ -136,36 +113,23 @@ export default function AdminAllTasksPage() {
             <table className="min-w-full text-sm">
               <tbody className="divide-y divide-slate-100">
                 {g.items.map((i) => (
-                  <tr key={i.id}>
-                    <td className="px-3 py-2 w-[40px]">
-                      <input
-                        type="checkbox"
-                        checked={i.status === "DONE"}
-                        onChange={() => toggleDone(i.id, i.status)}
-                      />
-                    </td>
-                    <td className="px-3 py-2 w-[80px]">
-                      <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold ${PRIORITY_STYLE[i.priority] || ""}`}>
-                        {i.priority}
-                      </span>
-                    </td>
-                    <td className={`px-3 py-2 ${i.status === "DONE" ? "line-through text-slate-400" : "text-slate-800"}`}>
-                      {i.description}
-                    </td>
-                    <td className="px-3 py-2 w-[200px]">
-                      {i.meetingNote ? (
-                        <Link href={`/meeting-notes/${i.meetingNote.id}`} className="text-xs text-indigo-600 hover:underline">
-                          {i.meetingNote.title}
-                        </Link>
-                      ) : (
-                        <span className="text-xs text-slate-400">—</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2 w-[110px] text-xs text-slate-600 whitespace-nowrap">
-                      {i.dueDate ? new Date(i.dueDate).toLocaleDateString() : "—"}
-                    </td>
-                    <td className="px-3 py-2 w-[90px] text-xs text-slate-500">{i.status}</td>
-                  </tr>
+                  <TaskInlineRow
+                    key={i.id}
+                    item={{
+                      id: i.id,
+                      description: i.description,
+                      priority: i.priority,
+                      status: i.status,
+                      dueDate: i.dueDate,
+                      assignee: i.assignee || null,
+                      meetingNote: i.meetingNote,
+                    }}
+                    users={users}
+                    showMeeting
+                    surfaceTag="all-tasks"
+                    onPatched={(updated) => onPatched(i.id, updated)}
+                    onError={setError}
+                  />
                 ))}
               </tbody>
             </table>
