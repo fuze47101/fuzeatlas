@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo, Suspense, Component, ReactNode } from "react";
+import { useEffect, useState, useMemo, Component, ReactNode } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 
 /**
@@ -90,16 +90,13 @@ const EMPTY_TASK: TaskRow = { description: "", assigneeId: "", priority: "NORMAL
 export default function ProjectStartWizardPageOuter() {
   return (
     <WizardErrorBoundary>
-      <Suspense fallback={<div className="mx-auto max-w-3xl px-4 py-12 text-sm text-slate-500">Loading wizard…</div>}>
-        <ProjectStartWizardPage />
-      </Suspense>
+      <ProjectStartWizardPage />
     </WizardErrorBoundary>
   );
 }
 
 function ProjectStartWizardPage() {
   const router = useRouter();
-  const params = useSearchParams();
   const { user, loading } = useAuth();
 
   const [step, setStep] = useState(1);
@@ -153,18 +150,22 @@ function ProjectStartWizardPage() {
       .catch(() => {});
   }, []);
 
-  // Pre-fill via query params (e.g. opened from /admin/brand-pipeline?brandId=...)
+  // Pre-fill via query params (e.g. opened from /admin/brand-pipeline?brandId=...).
+  // Read straight from window.location.search to avoid useSearchParams,
+  // which triggers Next.js 15's "Suspense required" warning and
+  // sometimes blanks the page.
   useEffect(() => {
-    const qBrand = params?.get("brandId");
-    const qFactory = params?.get("factoryId");
-    const qType = (params?.get("type") || "").toUpperCase() as ProjectType | "";
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const qBrand = params.get("brandId");
+    const qFactory = params.get("factoryId");
+    const qType = (params.get("type") || "").toUpperCase() as ProjectType | "";
     if (qBrand) { setProjectType("BRAND"); setBrandId(qBrand); setStep(3); }
     else if (qFactory) { setProjectType("FACTORY"); setFactoryId(qFactory); setStep(3); }
     else if (qType === "BRAND" || qType === "FACTORY" || qType === "INTERNAL") {
       setProjectType(qType);
       setStep(qType === "INTERNAL" ? 3 : 2);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-suggest project name + default owner once enough context is set

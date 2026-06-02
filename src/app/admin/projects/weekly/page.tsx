@@ -137,12 +137,15 @@ function WeeklyUpdatePage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/admin/projects?status=closed" className="px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50">
+          {/* Plain <a> on purpose — forces a full browser navigation
+              so this button works even if the Next.js client router
+              is broken by a hydration mismatch elsewhere on the page. */}
+          <a href="/admin/projects?status=closed" className="px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50">
             Completed projects →
-          </Link>
-          <Link href="/admin/projects/new" className="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+          </a>
+          <a href="/admin/projects/new" className="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
             + Add project
-          </Link>
+          </a>
         </div>
       </div>
 
