@@ -1606,6 +1606,11 @@ model Project {
   kickoffMeetingNoteId String?      @unique
   kickoffMeetingNote   MeetingNote? @relation("ProjectKickoffMeetingNote", fields: [kickoffMeetingNoteId], references: [id])
 
+  // Phase 56 — meeting blocks that surface this project on a
+  // Monday-style meeting page. Nullable on the block side; one
+  // project can show up in multiple meetings over time.
+  meetingBlocks MeetingProjectBlock[] @relation("ProjectMeetingBlocks")
+
   // ─── Phase 54.5 — Project priority + Weekly Update flow ────────────
   priority      String? // URGENT | HIGH | NORMAL | LOW
   weeklyStatus  String? // latest weekly-update narrative (markdown)
@@ -4635,6 +4640,14 @@ model MeetingProjectBlock {
 
   actionItems MeetingActionItem[] @relation("ActionItemProjectBlock")
 
+  // Phase 56 — optional link back to the canonical Project row so
+  // the block's "✓ Project Complete" button can call the existing
+  // Phase 54.5 weekly-update markComplete path and archive the
+  // project, not just the block. Nullable so legacy blocks without
+  // a matching Project still render.
+  projectId String?
+  project   Project? @relation("ProjectMeetingBlocks", fields: [projectId], references: [id], onDelete: SetNull)
+
   createdById String?
   createdBy   User?    @relation("MeetingProjectBlockCreator", fields: [createdById], references: [id])
   createdAt   DateTime @default(now())
@@ -4644,4 +4657,5 @@ model MeetingProjectBlock {
   @@index([brandId])
   @@index([factoryId])
   @@index([ownerId])
+  @@index([projectId])
 }

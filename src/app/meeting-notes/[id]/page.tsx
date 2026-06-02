@@ -30,6 +30,8 @@ type ProjectBlock = {
   factory: { id: string; name: string } | null;
   owner: UserLite | null;
   actionItems: ActionItem[];
+  projectId?: string | null;
+  project?: { id: string; name: string; stage: string } | null;
   createdAt: string;
 };
 type Entry = {
@@ -118,6 +120,8 @@ function MeetingNotePage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [highlightBlockId, setHighlightBlockId] = useState<string | null>(null);
+  const [expandedBlockId, setExpandedBlockId] = useState<string | null>(null);
+  const [confirmDeleteProject, setConfirmDeleteProject] = useState<{ blockId: string; projectId: string; projectName: string } | null>(null);
 
   useEffect(() => {
     if (loading) return;
@@ -216,55 +220,229 @@ function MeetingNotePage() {
     }
   }
 
+  /** Optimistic block patch — local state first, fetch in background. */
   async function patchBlock(blockId: string, patch: any) {
-    const r = await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(patch),
+    const prev = meeting?.projectBlocks?.find((b) => b.id === blockId);
+    setMeeting((m) => {
+      if (!m) return m;
+      return {
+        ...m,
+        projectBlocks: (m.projectBlocks || []).map((b) =>
+          b.id === blockId ? ({ ...b, ...patch } as ProjectBlock) : b,
+        ),
+      };
     });
-    const d = await r.json();
-    if (!d.ok) setError(d.error);
-    else await refresh();
+    try {
+      const r = await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify(patch),
+      });
+      const d = await r.json();
+      if (!d.ok) {
+        // Revert.
+        setMeeting((m) => {
+          if (!m || !prev) return m;
+          return {
+            ...m,
+            projectBlocks: (m.projectBlocks || []).map((b) => (b.id === blockId ? prev : b)),
+          };
+        });
+        setError(d.error || "Update failed");
+      }
+    } catch (e: any) {
+      setError(e?.message || "Network error");
+    }
   }
 
+  /** Optimistic block delete (used by the per-block × — non-archive). */
   async function deleteBlock(blockId: string) {
-    if (!confirm("Delete this project block? Its tasks will be detached but not deleted.")) return;
-    const r = await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}`, { method: "DELETE" });
-    const d = await r.json();
-    if (!d.ok) setError(d.error);
-    else await refresh();
+    const snapshot = meeting?.projectBlocks || [];
+    setMeeting((m) => (m ? { ...m, projectBlocks: snapshot.filter((b) => b.id !== blockId) } : m));
+    setExpandedBlockId((cur) => (cur === blockId ? null : cur));
+    try {
+      const r = await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}`, { method: "DELETE", cache: "no-store" });
+      const d = await r.json();
+      if (!d.ok) {
+        setMeeting((m) => (m ? { ...m, projectBlocks: snapshot } : m));
+        setError(d.error || "Delete failed");
+      }
+    } catch (e: any) {
+      setMeeting((m) => (m ? { ...m, projectBlocks: snapshot } : m));
+      setError(e?.message || "Network error");
+    }
   }
 
   async function addTask(blockId: string, payload: any) {
-    const r = await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}/tasks`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const d = await r.json();
-    if (!d.ok) setError(d.error);
-    else await refresh();
-    return d.ok;
+    try {
+      const r = await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}/tasks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify(payload),
+      });
+      const d = await r.json();
+      if (!d.ok) {
+        setError(d.error);
+        return false;
+      }
+      const newTask = d.task;
+      if (newTask) {
+        setMeeting((m) => {
+          if (!m) return m;
+          return {
+            ...m,
+            projectBlocks: (m.projectBlocks || []).map((b) =>
+              b.id === blockId ? { ...b, actionItems: [newTask, ...(b.actionItems || [])] } : b,
+            ),
+          };
+        });
+      }
+      return true;
+    } catch (e: any) {
+      setError(e?.message || "Network error");
+      return false;
+    }
   }
 
   async function patchTask(blockId: string, taskId: string, patch: any) {
-    const r = await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}/tasks/${taskId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(patch),
+    const prev = meeting?.projectBlocks
+      ?.find((b) => b.id === blockId)
+      ?.actionItems?.find((t) => t.id === taskId);
+    setMeeting((m) => {
+      if (!m) return m;
+      return {
+        ...m,
+        projectBlocks: (m.projectBlocks || []).map((b) =>
+          b.id === blockId
+            ? {
+                ...b,
+                actionItems: (b.actionItems || []).map((t) =>
+                  t.id === taskId ? ({ ...t, ...patch } as ActionItem) : t,
+                ),
+              }
+            : b,
+        ),
+      };
     });
-    const d = await r.json();
-    if (!d.ok) setError(d.error);
-    else await refresh();
+    try {
+      const r = await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify(patch),
+      });
+      const d = await r.json();
+      if (!d.ok) {
+        setMeeting((m) => {
+          if (!m || !prev) return m;
+          return {
+            ...m,
+            projectBlocks: (m.projectBlocks || []).map((b) =>
+              b.id === blockId
+                ? { ...b, actionItems: (b.actionItems || []).map((t) => (t.id === taskId ? prev : t)) }
+                : b,
+            ),
+          };
+        });
+        setError(d.error || "Update failed");
+      }
+    } catch (e: any) {
+      setError(e?.message || "Network error");
+    }
   }
 
   async function deleteTask(blockId: string, taskId: string) {
-    const r = await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}/tasks/${taskId}`, {
-      method: "DELETE",
+    if (!confirm("Delete this task? This cannot be undone.")) return;
+    const prevTask = meeting?.projectBlocks
+      ?.find((b) => b.id === blockId)
+      ?.actionItems?.find((t) => t.id === taskId);
+    setMeeting((m) => {
+      if (!m) return m;
+      return {
+        ...m,
+        projectBlocks: (m.projectBlocks || []).map((b) =>
+          b.id === blockId
+            ? { ...b, actionItems: (b.actionItems || []).filter((t) => t.id !== taskId) }
+            : b,
+        ),
+      };
     });
-    const d = await r.json();
-    if (!d.ok) setError(d.error);
-    else await refresh();
+    try {
+      const r = await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}/tasks/${taskId}`, {
+        method: "DELETE",
+        cache: "no-store",
+      });
+      const d = await r.json();
+      if (!d.ok) {
+        // Revert.
+        setMeeting((m) => {
+          if (!m || !prevTask) return m;
+          return {
+            ...m,
+            projectBlocks: (m.projectBlocks || []).map((b) =>
+              b.id === blockId
+                ? { ...b, actionItems: [prevTask, ...(b.actionItems || [])] }
+                : b,
+            ),
+          };
+        });
+        setError(d.error || "Delete failed");
+      }
+    } catch (e: any) {
+      setError(e?.message || "Network error");
+    }
+  }
+
+  /** Phase 56 — "✓ Project Complete" archives the linked Project + removes the block. */
+  async function markProjectComplete(blockId: string, projectId: string | null) {
+    // Optimistic: remove the block from view immediately.
+    const snapshot = meeting?.projectBlocks || [];
+    setMeeting((m) => (m ? { ...m, projectBlocks: snapshot.filter((b) => b.id !== blockId) } : m));
+    setExpandedBlockId((cur) => (cur === blockId ? null : cur));
+    try {
+      if (projectId) {
+        const r = await fetch(`/api/admin/projects/${projectId}/weekly-update`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store",
+          body: JSON.stringify({ markComplete: true, closingNotes: "Marked complete from meeting block" }),
+        });
+        const d = await r.json();
+        if (!r.ok || !d.ok) {
+          setMeeting((m) => (m ? { ...m, projectBlocks: snapshot } : m));
+          setError(d.error || "Project complete failed");
+          return;
+        }
+      }
+      // Also remove the meeting block server-side.
+      await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}`, { method: "DELETE", cache: "no-store" }).catch(() => null);
+    } catch (e: any) {
+      setMeeting((m) => (m ? { ...m, projectBlocks: snapshot } : m));
+      setError(e?.message || "Network error");
+    }
+  }
+
+  /** Phase 56 — destructive delete with confirmation. */
+  async function doDeleteProject(blockId: string, projectId: string) {
+    const snapshot = meeting?.projectBlocks || [];
+    setMeeting((m) => (m ? { ...m, projectBlocks: snapshot.filter((b) => b.id !== blockId) } : m));
+    setExpandedBlockId((cur) => (cur === blockId ? null : cur));
+    setConfirmDeleteProject(null);
+    try {
+      const r = await fetch(`/api/admin/projects/${projectId}`, { method: "DELETE", cache: "no-store" });
+      const d = await r.json();
+      if (!r.ok || !d.ok) {
+        setMeeting((m) => (m ? { ...m, projectBlocks: snapshot } : m));
+        setError(d.error || "Delete project failed");
+        return;
+      }
+      await fetch(`/api/meeting-notes/${id}/project-blocks/${blockId}`, { method: "DELETE", cache: "no-store" }).catch(() => null);
+    } catch (e: any) {
+      setMeeting((m) => (m ? { ...m, projectBlocks: snapshot } : m));
+      setError(e?.message || "Network error");
+    }
   }
 
   async function setStatus(status: string) {
@@ -369,30 +547,87 @@ function MeetingNotePage() {
         </div>
       )}
 
-      <div className="space-y-4">
-        {sortedBlocks.map((b) => (
-          <div
-            key={b.id}
-            data-block-id={b.id}
-            className={highlightBlockId === b.id ? "ring-4 ring-emerald-400 rounded-lg transition-all" : ""}
-          >
-            <BlockCard
-              block={b}
-              options={options}
-              onPatch={(patch) => patchBlock(b.id, patch)}
-              onDelete={() => deleteBlock(b.id)}
-              onAddTask={(payload) => addTask(b.id, payload)}
-              onPatchTask={(taskId, patch) => patchTask(b.id, taskId, patch)}
-              onDeleteTask={(taskId) => deleteTask(b.id, taskId)}
-            />
-          </div>
-        ))}
+      <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
+        {sortedBlocks.map((b, idx) => {
+          const isExpanded = expandedBlockId === b.id;
+          const prev = idx > 0 ? sortedBlocks[idx - 1] : null;
+          const next = idx < sortedBlocks.length - 1 ? sortedBlocks[idx + 1] : null;
+          return (
+            <div
+              key={b.id}
+              data-block-id={b.id}
+              className={`${highlightBlockId === b.id ? "ring-2 ring-emerald-400" : ""} border-b border-slate-100 last:border-0`}
+            >
+              <BlockRow
+                block={b}
+                isExpanded={isExpanded}
+                onToggle={() =>
+                  setExpandedBlockId((cur) => (cur === b.id ? null : b.id))
+                }
+              />
+              {isExpanded && (
+                <BlockCard
+                  block={b}
+                  options={options}
+                  onPatch={(patch) => patchBlock(b.id, patch)}
+                  onProjectComplete={() => markProjectComplete(b.id, b.projectId || b.project?.id || null)}
+                  onDeleteProject={() => {
+                    const pid = b.projectId || b.project?.id;
+                    if (!pid) {
+                      setError("This block isn't linked to a project — nothing to delete. Use the meeting-block delete via API if needed.");
+                      return;
+                    }
+                    setConfirmDeleteProject({
+                      blockId: b.id,
+                      projectId: pid,
+                      projectName: b.project?.name || labelForBlock(b),
+                    });
+                  }}
+                  onAddTask={(payload) => addTask(b.id, payload)}
+                  onPatchTask={(taskId, patch) => patchTask(b.id, taskId, patch)}
+                  onDeleteTask={(taskId) => deleteTask(b.id, taskId)}
+                  prev={prev}
+                  next={next}
+                  onGotoPrev={() => prev && setExpandedBlockId(prev.id)}
+                  onGotoNext={() => next && setExpandedBlockId(next.id)}
+                  onCloseAndNext={() => {
+                    if (next) setExpandedBlockId(next.id);
+                    else setExpandedBlockId(null);
+                  }}
+                />
+              )}
+            </div>
+          );
+        })}
         {sortedBlocks.length === 0 && (
-          <div className="rounded-md border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+          <div className="p-6 text-center text-sm text-slate-500">
             No project blocks yet. Click <strong>+ Add project block</strong> to start structuring this meeting.
           </div>
         )}
       </div>
+
+      {confirmDeleteProject && (
+        <div className="fixed inset-0 bg-black/50 z-[10000] flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-5">
+            <h3 className="text-base font-semibold text-rose-700 mb-2">Permanently delete this project?</h3>
+            <p className="text-sm text-slate-700 mb-1"><strong>{confirmDeleteProject.projectName}</strong></p>
+            <p className="text-xs text-slate-600 mb-4">
+              This deletes the project and all its data (kickoff meeting note, action items, etc.) — <strong>this cannot be undone</strong>. The meeting block here is also removed.
+            </p>
+            <div className="flex items-center justify-end gap-2">
+              <button onClick={() => setConfirmDeleteProject(null)} className="px-3 py-1.5 text-xs text-slate-700 hover:underline">
+                Cancel
+              </button>
+              <button
+                onClick={() => doDeleteProject(confirmDeleteProject.blockId, confirmDeleteProject.projectId)}
+                className="px-3 py-1.5 text-xs bg-rose-600 text-white rounded-md hover:bg-rose-700"
+              >
+                🗑 Permanently delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {orphanTasks.length > 0 && (
         <section className="mt-8">
@@ -427,22 +662,83 @@ function MeetingNotePage() {
   );
 }
 
+function BlockRow({
+  block,
+  isExpanded,
+  onToggle,
+}: {
+  block: ProjectBlock;
+  isExpanded: boolean;
+  onToggle: () => void;
+}) {
+  const open = block.actionItems.filter((t) => t.status !== "DONE").length;
+  const total = block.actionItems.length;
+  const customerIcon =
+    block.customerType === "BRAND" ? "🏷" : block.customerType === "FACTORY" ? "🏭" : "🔬";
+  const ownerInitials = block.owner?.name
+    ? block.owner.name
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((s) => s[0])
+        .join("")
+        .toUpperCase()
+    : "?";
+  return (
+    <button
+      onClick={onToggle}
+      className={`w-full flex items-center gap-3 px-3 py-2 text-left ${isExpanded ? "bg-indigo-50" : "hover:bg-slate-50"}`}
+    >
+      <span className="text-base" title={block.customerType}>{customerIcon}</span>
+      <span className="text-sm font-medium text-slate-900 flex-1 truncate">
+        {labelForBlock(block)}
+      </span>
+      <span
+        className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold"
+        title={block.owner?.name || "no owner"}
+      >
+        {ownerInitials}
+      </span>
+      {block.priority && (
+        <span className={`inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold ${PRIORITY_CHIP[block.priority] || ""}`}>
+          {block.priority}
+        </span>
+      )}
+      <span className="text-[11px] text-slate-500 tabular-nums whitespace-nowrap">
+        {open}/{total} tasks
+      </span>
+      <span className="text-slate-400 text-xs">{isExpanded ? "▼" : "▶"}</span>
+    </button>
+  );
+}
+
 function BlockCard({
   block,
   options,
   onPatch,
-  onDelete,
+  onProjectComplete,
+  onDeleteProject,
   onAddTask,
   onPatchTask,
   onDeleteTask,
+  prev,
+  next,
+  onGotoPrev,
+  onGotoNext,
+  onCloseAndNext,
 }: {
   block: ProjectBlock;
   options: Options | null;
   onPatch: (patch: any) => Promise<void>;
-  onDelete: () => Promise<void>;
+  onProjectComplete: () => Promise<void>;
+  onDeleteProject: () => void;
   onAddTask: (payload: any) => Promise<boolean>;
   onPatchTask: (taskId: string, patch: any) => Promise<void>;
   onDeleteTask: (taskId: string) => Promise<void>;
+  prev: ProjectBlock | null;
+  next: ProjectBlock | null;
+  onGotoPrev: () => void;
+  onGotoNext: () => void;
+  onCloseAndNext: () => void;
 }) {
   const [discussionDraft, setDiscussionDraft] = useState(block.discussionMd);
   const [discussionDirty, setDiscussionDirty] = useState(false);
@@ -480,17 +776,18 @@ function BlockCard({
   const chip = PRIORITY_CHIP[block.priority || ""] || "bg-slate-300 text-slate-700";
 
   return (
-    <div className={`rounded-lg border-2 p-4 ${bg}`}>
+    <div className={`border-l-4 ${bg} p-4`}>
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${chip}`}>
           {block.priority || "—"}
         </span>
         <h3 className="text-base font-semibold text-slate-900">{labelForBlock(block)}</h3>
         <button
-          onClick={onDelete}
-          className="ml-auto text-xs text-rose-600 hover:underline"
+          onClick={onProjectComplete}
+          className="ml-auto px-3 py-1 text-xs bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
+          title="Archive this project — appears under Completed for later reference"
         >
-          Delete block
+          ✓ Project Complete
         </button>
       </div>
 
@@ -669,6 +966,40 @@ function BlockCard({
           </button>
         </form>
       </div>
+
+      {/* Prev / Next nav + Close & next + destructive delete */}
+      <div className="mt-4 pt-3 border-t border-slate-300 flex items-center gap-2">
+        <button
+          onClick={onGotoPrev}
+          disabled={!prev}
+          className="px-3 py-1.5 text-xs bg-white border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+          title={prev ? `Go to ${labelForBlock(prev)}` : "First project"}
+        >
+          ← Previous project
+        </button>
+        <button
+          onClick={onGotoNext}
+          disabled={!next}
+          className="px-3 py-1.5 text-xs bg-white border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+          title={next ? `Go to ${labelForBlock(next)}` : "Last project"}
+        >
+          Next project →
+        </button>
+        <button
+          onClick={onCloseAndNext}
+          className="px-3 py-1.5 text-xs bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+          title="Close this block and jump to the next one"
+        >
+          Close &amp; next
+        </button>
+        <button
+          onClick={onDeleteProject}
+          className="ml-auto px-2 py-1 text-[11px] text-slate-500 hover:text-rose-600 hover:underline"
+          title="Permanently delete this project — cannot be undone"
+        >
+          🗑 Delete project
+        </button>
+      </div>
     </div>
   );
 }
@@ -753,7 +1084,11 @@ function TaskRow({
         onChange={(e) => onPatch({ dueDate: e.target.value || null })}
         className="px-1.5 py-0.5 text-[11px] border border-slate-300 rounded"
       />
-      <button onClick={onDelete} className="text-[11px] text-rose-600 hover:underline">
+      <button
+        onClick={onDelete}
+        className="w-5 h-5 inline-flex items-center justify-center rounded text-rose-600 hover:bg-rose-100 text-sm font-bold"
+        title="Delete this task"
+      >
         ×
       </button>
     </li>

@@ -244,3 +244,55 @@ export async function PATCH(
 
   return NextResponse.json({ ok: true, project: updated });
 }
+
+/**
+ * DELETE /api/admin/projects/[id]
+ *
+ * Phase 56 — destructive permanent delete. Cascade-clears the
+ * kickoff MeetingNote, every MeetingActionItem tied to it, and
+ * detaches any MeetingProjectBlock pointing at this project (via
+ * onDelete: SetNull on MeetingProjectBlock.projectId). ACL:
+ * ADMIN / EMPLOYEE only — destructive.
+ */
+const DELETE_ALLOWED = new Set(["ADMIN", "EMPLOYEE"]);
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const user = await getCurrentUser();
+  if (!user) return bad("Unauthorized", 401);
+  if (!DELETE_ALLOWED.has(user.role)) return bad("Forbidden", 403);
+
+  const existing = await prisma.project.findUnique({
+    where: { id },
+    select: { id: true, name: true, kickoffMeetingNoteId: true } as any,
+  });
+  if (!existing) return bad("Project not found", 404);
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Detach MeetingProjectBlock rows pointing at this project so
+      // the SET NULL FK doesn't fight us.
+      await (tx as any).meetingProjectBlock.updateMany({
+        where: { projectId: id } as any,
+        data: { projectId: null } as any,
+      });
+      // Delete kickoff MeetingNote (cascades to its entries +
+      // action items via Prisma onDelete: Cascade).
+      if ((existing as any).kickoffMeetingNoteId) {
+        await (tx as any).meetingNote.delete({
+          where: { id: (existing as any).kickoffMeetingNoteId },
+        }).catch(() => null);
+      }
+      await tx.project.delete({ where: { id } });
+    });
+    return NextResponse.json({ ok: true, deletedId: id, deletedName: (existing as any).name });
+  } catch (e: any) {
+    console.error("[DELETE /api/admin/projects/[id]] failed:", e?.message, e?.code, e?.meta);
+    return NextResponse.json(
+      { ok: false, error: e?.message || "delete failed", code: e?.code || null, meta: e?.meta || null },
+      { status: 500 },
+    );
+  }
+}

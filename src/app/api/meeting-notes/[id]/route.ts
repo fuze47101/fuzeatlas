@@ -51,6 +51,7 @@ export async function GET(
           factory: { select: { id: true, name: true } },
           owner: { select: { id: true, name: true, email: true } },
           createdBy: { select: { id: true, name: true } },
+          project: { select: { id: true, name: true, stage: true } } as any,
           actionItems: {
             orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
             include: { assignee: { select: { id: true, name: true, email: true } } },
