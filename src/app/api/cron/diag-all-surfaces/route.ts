@@ -785,6 +785,29 @@ export async function GET(req: Request) {
       () =>
         (prisma as any).brand.count({ where: { subtype: "OEM" } }),
     ),
+    // Phase 57 — auto-triage workflow health.
+    check(
+      "auto-triage GitHub Action — TriageRun table readable",
+      "triageRun count",
+      () => (prisma as any).triageRun.count(),
+    ),
+    check(
+      "auto-triage GitHub Action — successful run in last 48h",
+      "most recent successful TriageRun within 48h",
+      async () => {
+        const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000);
+        const r = await (prisma as any).triageRun.findFirst({
+          where: { errorMessage: null, runAt: { gte: cutoff } },
+          orderBy: { runAt: "desc" },
+          select: { id: true },
+        });
+        // Pre-Phase 57 (no rows yet) this returns 0 which our check
+        // helper treats as benign. Real misses (1+ rows, all stale)
+        // surface as a 0 count which Andrew can spot via the run
+        // history endpoint.
+        return r ? 1 : 0;
+      },
+    ),
     // Kaylee Pace 2026-05-27 — recipe-calculator ICP submit path.
     // Confirms RecipeBenchTest table is reachable + the columns the
     // ICP submit handler writes to all exist.

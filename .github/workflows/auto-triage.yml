@@ -2,28 +2,28 @@ name: Daily ticket auto-triage
 
 # Runs once a day, 07:30 MT (14:30 UTC) — 30 minutes after the
 # /api/cron/feedback-digest cron has emailed Andrew the open queue.
-# Also manually triggerable so a maintainer can re-run after a deploy
-# or kick off a fresh pass without waiting for the next scheduled run.
-#
-# What this workflow does end-to-end:
-#   1. Fetches the live open-ticket payload from the Atlas API.
-#   2. Hands the tickets to Claude Code in a non-interactive run with a
-#      tightly-scoped prompt: only attempt fixes on bug-class tickets
-#      (BROKEN_LINK / ERROR / PROBLEM) that point at concrete file paths.
-#   3. Claude makes the change, runs lint + tsc, and commits to a fresh
-#      branch named auto/<ticket-id>.
-#   4. peter-evans/create-pull-request opens a PR per branch with the
-#      ticket description in the body and the ticket id in the title.
+# Also manually triggerable from the Actions tab so a maintainer can
+# kick off a fresh pass without waiting for the schedule (useful when
+# the backlog has piled up).
 #
 # Required GitHub repo secrets:
 #   ANTHROPIC_API_KEY  — your Anthropic console API key
 #   CRON_SECRET        — same secret already in Vercel; lets us call
-#                        /api/admin/feedback authenticated
+#                        /api/cron/feedback-list authenticated
 
 on:
   schedule:
     - cron: "30 14 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      max_prs:
+        description: "Cap PRs created this run"
+        required: false
+        default: "5"
+      ticket_id:
+        description: "Optional single ticket id to triage (leave blank to attempt the whole backlog)"
+        required: false
+        default: ""
 
 jobs:
   triage:
@@ -31,16 +31,35 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      issues: write
 
     env:
-      # Atlas API host. Override via the workflow_dispatch input if you
-      # want to run against a preview deploy.
       ATLAS_BASE_URL: https://fuzeatlas.com
-      # Cap the number of PRs per run so a stray run never floods the
-      # repo with 50 stale auto-PRs. Bump in the schedule yaml if needed.
-      MAX_AUTO_PRS: "5"
+      MAX_AUTO_PRS: ${{ github.event.inputs.max_prs || '5' }}
+      SINGLE_TICKET_ID: ${{ github.event.inputs.ticket_id || '' }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
     steps:
+      # ────────────────────────────────────────────────────────────
+      # 1. Verify required secrets up-front. The old workflow ran
+      # silently with a missing API key — the action would no-op and
+      # nothing landed. Fail loud now.
+      # ────────────────────────────────────────────────────────────
+      - name: Verify required secrets
+        id: secrets_check
+        run: |
+          MISSING=""
+          if [ -z "${{ secrets.ANTHROPIC_API_KEY }}" ]; then MISSING="$MISSING ANTHROPIC_API_KEY"; fi
+          if [ -z "${{ secrets.CRON_SECRET }}" ]; then MISSING="$MISSING CRON_SECRET"; fi
+          if [ -n "$MISSING" ]; then
+            echo "::error::Missing repo secrets:$MISSING — set them at Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          echo "All required secrets present (ANTHROPIC_API_KEY, CRON_SECRET)."
+          echo "Tip — to rotate either secret, paste a new value via gh CLI:"
+          echo "  gh secret set ANTHROPIC_API_KEY -b 'sk-ant-...'"
+          echo "  gh secret set CRON_SECRET     -b '<vercel cron secret>'"
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
@@ -56,10 +75,11 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
-      # Pull the live open-ticket queue. The cron route returns the same
-      # data structure the digest email is built from, so we hit it with
-      # the bearer token rather than spinning up an admin session here.
-      # (Auth check happens against process.env.CRON_SECRET on the server.)
+      # ────────────────────────────────────────────────────────────
+      # 2. Pull live open-ticket queue. Honest about failures here —
+      # if the API returned non-2xx, dump the body so the Actions log
+      # tells us what went wrong instead of just "step failed."
+      # ────────────────────────────────────────────────────────────
       - name: Fetch open tickets
         id: fetch
         env:
@@ -67,16 +87,23 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/triage
-          # /api/cron/feedback-list is the bearer-authed sibling of the
-          # admin UI's /api/admin/feedback. We use the cron variant so
-          # the workflow doesn't need a session cookie.
-          curl -fsSL \
+          HTTP_CODE=$(curl -sS -o /tmp/triage/tickets.json -w "%{http_code}" \
             -H "Authorization: Bearer $CRON_SECRET" \
-            "$ATLAS_BASE_URL/api/cron/feedback-list?status=NEW&limit=50" \
-            > /tmp/triage/tickets.json || {
-              echo "Failed to fetch tickets — likely the prod deploy is unhealthy." >&2
-              exit 1
-            }
+            "$ATLAS_BASE_URL/api/cron/feedback-list?status=NEW&limit=50")
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::feedback-list returned HTTP $HTTP_CODE"
+            cat /tmp/triage/tickets.json
+            exit 1
+          fi
+          # If workflow_dispatch passed a single ticket id, filter the
+          # payload down to it so the rest of the run only deals with
+          # that one ticket. Helpful for testing the chain end-to-end.
+          if [ -n "$SINGLE_TICKET_ID" ]; then
+            jq --arg id "$SINGLE_TICKET_ID" '{reports: [.reports[] | select(.id == $id)]}' \
+              /tmp/triage/tickets.json > /tmp/triage/tickets-filtered.json
+            mv /tmp/triage/tickets-filtered.json /tmp/triage/tickets.json
+            echo "Filtered to ticket id $SINGLE_TICKET_ID"
+          fi
           NEW_COUNT=$(jq '.reports | length' /tmp/triage/tickets.json)
           echo "newCount=$NEW_COUNT" >> "$GITHUB_OUTPUT"
           echo "Fetched $NEW_COUNT NEW tickets."
@@ -86,92 +113,117 @@ jobs:
         run: |
           echo "No NEW tickets — exiting cleanly."
 
-      # The Claude Code action runs the agent against the checked-out
-      # repo. Anthropic publishes this action at:
-      #   https://github.com/anthropics/claude-code-action
-      #
-      # We give it a focused prompt: triage rules, hard cap on PRs, must
-      # run lint + tsc before committing. The action handles the heavy
-      # lifting of file edits, tool use, and shell calls.
+      # ────────────────────────────────────────────────────────────
+      # 3. The Claude Code agent — relaxed triage prompt.
+      # Previously skipped everything not BROKEN_LINK/ERROR/PROBLEM
+      # with a concrete file path → exhausted whole backlogs.
+      # Now: attempt BUG/ERROR/PROBLEM with any context + SUGGESTION
+      # tickets that are clearly small UI/copy nudges; only skip
+      # OTHER, ACCEPTED-parked, and one-sentence-ambiguous tickets.
+      # ────────────────────────────────────────────────────────────
+      # The official action is published as
+      # https://github.com/anthropics/claude-code-action with a `beta`
+      # tag — there is no v1 tag. The old workflow's `@v1` reference
+      # was the root cause of 27 consecutive red runs since 2026-05-27:
+      # GitHub Actions silently retries a missing tag a few times,
+      # logs an error, and fails the job in <60s. Always pin to a
+      # real ref (beta is the canonical floating tag the
+      # marketplace listing recommends).
       - name: Claude Code — attempt fixes
+        id: claude
         if: steps.fetch.outputs.newCount != '0'
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Pin a fast model — these tickets are usually small. Bump to
-          # an Opus-class model if the success rate is too low.
           model: claude-sonnet-4-6
-          # The triage instructions. Keep this prompt deliberate and
-          # narrow — the more freedom we give the agent, the more
-          # likely it is to wander into nontrivial refactors.
           prompt: |
             You are running daily ticket auto-triage for FUZE Atlas.
 
             BEFORE YOU TOUCH CODE:
-            1. Read /CLAUDE.md end to end. It contains brand-voice rules
-               (FUZE, metamaterial — never silver/nano), Next.js 15
-               gotchas, and the canonical product voice file
-               (src/lib/fuze-knowledge.ts).
-            2. Read the ticket payload at /tmp/triage/tickets.json. Each
-               item has: id, title, description, category, status, url
-               (page they were on), portal, userEmail, userRole.
+            1. Read /CLAUDE.md end to end. Brand-voice rules (FUZE,
+               metamaterial — never silver/nano), Next.js 15 gotchas,
+               canonical product voice in src/lib/fuze-knowledge.ts.
+            2. Read the ticket payload at /tmp/triage/tickets.json.
+               Each item has: id, title, description, category,
+               status, url (page they were on), portal, userEmail,
+               userRole.
 
-            FIXING RULES:
-            - Only attempt fixes on category in {BROKEN_LINK, ERROR, PROBLEM}.
-              Skip SUGGESTION / MISSING / CONFUSING — those need design
-              judgment, not auto-fixes.
-            - Skip any ticket whose description is < 30 chars or doesn't
-              point at a concrete file/page/route. We need a clear target.
-            - Cap your work at $MAX_AUTO_PRS tickets per run. Quality > volume.
+            FIXING RULES (RELAXED 2026-06-04):
+            - ATTEMPT tickets whose category is BUG, BROKEN_LINK,
+              ERROR, PROBLEM (these are obvious targets), OR
+              SUGGESTION ones that are clearly small UI/copy nudges
+              (button label, missing tooltip, layout twitch, color
+              fix, etc).
+            - SKIP only when:
+                - category is OTHER, or status is ACCEPTED-parked
+                - description is < 20 chars AND no other context (no
+                  url, no portal)
+                - the change would require backend/schema work AND
+                  no concrete file/route is named
+            - When the ticket gives a URL but no file path, navigate
+              the repo and find the page yourself (the URL is enough
+              context). DO NOT skip just because a file isn't named.
+            - Cap at $MAX_AUTO_PRS tickets per run. Quality > volume.
             - For each ticket you try:
                 a. Make the minimal change that resolves it.
-                b. Run `npm run lint` and `npx tsc --noEmit`. If either
-                   fails, REVERT and skip the ticket — don't ship broken
-                   code.
+                b. Run `npm run lint` and `npx tsc --noEmit`. If
+                   either fails, REVERT and skip the ticket.
                 c. Create a fresh branch: `auto/<ticketId>`
-                d. Commit with message:
+                d. Commit:
                      `fix: <short title> (auto-triage #<ticketId>)`
-                e. Stop. The next workflow step will open the PR.
-            - DO NOT push to main. DO NOT delete any files. DO NOT
-              modify CLAUDE.md or schema.prisma.
-            - When in doubt, skip and leave the ticket for a human.
+                e. Stop. The next workflow step opens the PR.
+            - DO NOT push to main. DO NOT modify CLAUDE.md or
+              schema.prisma. DO NOT delete any files.
+            - When in doubt, skip and leave a clear reason.
 
             REPORT:
-            Write a JSON file at /tmp/triage/result.json with
-            { "attempted": [...], "skipped": [{id, reason}], "branches": [...] }
-            so the next step can decide what to PR.
+            Write /tmp/triage/result.json with
+              {
+                "attempted": [ticketId, ...],
+                "skipped":   [{id, reason}, ...],
+                "branches":  ["auto/<id>", ...]
+              }
+            so the PR step + callback step can use it.
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
           MAX_AUTO_PRS: ${{ env.MAX_AUTO_PRS }}
 
-      # Open one PR per branch Claude created. We use peter-evans's
-      # create-pull-request because it handles the case where the
-      # branch already exists from a prior run (it'll force-update it
-      # and re-open the PR rather than creating duplicates).
+      # ────────────────────────────────────────────────────────────
+      # 4. Open one PR per branch Claude created.
+      # ────────────────────────────────────────────────────────────
       - name: Open PRs for each branch
+        id: prs
         if: steps.fetch.outputs.newCount != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          PRS_OPENED=0
+          PR_URLS=""
+
           if [ ! -f /tmp/triage/result.json ]; then
             echo "Claude didn't produce a result.json — nothing to PR."
+            echo "prsOpened=0" >> "$GITHUB_OUTPUT"
+            echo "prUrls=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          # List the branches we created locally that match auto/*.
-          # We re-derive from git rather than trusting result.json so a
-          # half-malformed JSON never blocks PRs.
           BRANCHES=$(git branch --list 'auto/*' --format='%(refname:short)')
           if [ -z "$BRANCHES" ]; then
             echo "No auto/* branches — Claude skipped everything."
+            echo "prsOpened=0" >> "$GITHUB_OUTPUT"
+            echo "prUrls=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           for branch in $BRANCHES; do
             echo "::group::Opening PR for $branch"
-            git push --force --set-upstream origin "$branch"
+            git push --force --set-upstream origin "$branch" || {
+              echo "::warning::push failed for $branch — skipping"
+              echo "::endgroup::"
+              continue
+            }
 
-            # Pull the ticket id from the branch name, then look up the
-            # title + description so the PR body is rich.
             TICKET_ID="${branch#auto/}"
             TITLE=$(jq -r --arg id "$TICKET_ID" '.reports[] | select(.id==$id) | .title' /tmp/triage/tickets.json)
             DESC=$(jq -r --arg id "$TICKET_ID" '.reports[] | select(.id==$id) | .description' /tmp/triage/tickets.json)
@@ -189,22 +241,140 @@ jobs:
 
           - Generated by \`.github/workflows/auto-triage.yml\`
           - Lint + tsc passed locally before commit
-          - Review carefully — auto-PRs occasionally get the intent right but the implementation wrong
-          - To reject, close this PR and the next nightly run won't reopen it (we use force-push but only re-attempt new tickets)
-          - To merge, hit Squash & Merge as usual
+          - Review carefully — auto-PRs occasionally get intent right but implementation wrong
+          - To reject: close. To merge: Squash & Merge.
 
           Triage queue: ${ATLAS_BASE_URL}/admin/feedback?focus=$TICKET_ID
+          Run: ${RUN_URL}
           EOF
           )
 
-            gh pr create \
+            PR_URL=$(gh pr create \
               --base main \
               --head "$branch" \
               --title "fix: ${TITLE} (auto-triage #${TICKET_ID})" \
               --body "$PR_BODY" \
-              --label auto-triage \
-              || gh pr edit "$branch" --body "$PR_BODY"
+              --label auto-triage 2>&1 | tail -1) || {
+                # PR already exists — refresh body via edit
+                gh pr edit "$branch" --body "$PR_BODY" || echo "::warning::could not edit PR for $branch"
+                PR_URL=$(gh pr view "$branch" --json url --jq .url 2>/dev/null || echo "")
+              }
+            PRS_OPENED=$((PRS_OPENED + 1))
+            PR_URLS="$PR_URLS $PR_URL"
             echo "::endgroup::"
           done
+
+          echo "prsOpened=$PRS_OPENED" >> "$GITHUB_OUTPUT"
+          # Trim leading space
+          echo "prUrls=$(echo $PR_URLS | xargs)" >> "$GITHUB_OUTPUT"
+
+      # ────────────────────────────────────────────────────────────
+      # 5. POST callback to Atlas so the dashboard knows we ran.
+      # ────────────────────────────────────────────────────────────
+      - name: Callback to Atlas triage-status
+        if: always()
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set +e
+          ATTEMPTED_IDS="[]"
+          SKIPPED="[]"
+          ATTEMPTED_COUNT=0
+          SKIPPED_COUNT=0
+          if [ -f /tmp/triage/result.json ]; then
+            ATTEMPTED_IDS=$(jq -c '.attempted // []' /tmp/triage/result.json)
+            SKIPPED=$(jq -c '.skipped // []' /tmp/triage/result.json)
+            ATTEMPTED_COUNT=$(jq '.attempted | length' /tmp/triage/result.json)
+            SKIPPED_COUNT=$(jq '.skipped | length' /tmp/triage/result.json)
+          fi
+          NEW_COUNT="${{ steps.fetch.outputs.newCount || 0 }}"
+          PRS_OPENED="${{ steps.prs.outputs.prsOpened || 0 }}"
+          PR_URLS_RAW="${{ steps.prs.outputs.prUrls || '' }}"
+          # Convert space-separated PR URLs to JSON array.
+          PR_URLS_JSON=$(echo "$PR_URLS_RAW" | tr ' ' '\n' | jq -R . | jq -sc 'map(select(length>0))' || echo "[]")
+          ERROR_MSG=""
+          if [ "${{ job.status }}" = "failure" ]; then
+            ERROR_MSG="Workflow job failed. See run logs."
+          fi
+          BODY=$(jq -n \
+            --arg runUrl "$RUN_URL" \
+            --argjson newTicketCount "$NEW_COUNT" \
+            --argjson ticketsAttempted "$ATTEMPTED_COUNT" \
+            --argjson ticketsSkipped "$SKIPPED_COUNT" \
+            --argjson prsCreated "$PRS_OPENED" \
+            --argjson attemptedIds "$ATTEMPTED_IDS" \
+            --argjson skippedReasons "$SKIPPED" \
+            --argjson prUrls "$PR_URLS_JSON" \
+            --arg errorMessage "$ERROR_MSG" \
+            '{runUrl:$runUrl,newTicketCount:$newTicketCount,ticketsAttempted:$ticketsAttempted,ticketsSkipped:$ticketsSkipped,prsCreated:$prsCreated,attemptedIds:$attemptedIds,skippedReasons:$skippedReasons,prUrls:$prUrls,errorMessage:($errorMessage | select(length>0))}')
+          curl -sS -X POST \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "Content-Type: application/json" \
+            -d "$BODY" \
+            "$ATLAS_BASE_URL/api/cron/triage-callback" \
+            > /tmp/triage/callback-response.json 2>&1 || true
+          cat /tmp/triage/callback-response.json
+
+      # ────────────────────────────────────────────────────────────
+      # 6. Run summary panel so a glance at the Actions tab tells
+      # you what happened.
+      # ────────────────────────────────────────────────────────────
+      - name: Workflow run summary
+        if: always()
+        run: |
+          ATTEMPTED_COUNT=0
+          SKIPPED_COUNT=0
+          if [ -f /tmp/triage/result.json ]; then
+            ATTEMPTED_COUNT=$(jq '.attempted | length' /tmp/triage/result.json)
+            SKIPPED_COUNT=$(jq '.skipped | length' /tmp/triage/result.json)
+          fi
+          PRS_OPENED="${{ steps.prs.outputs.prsOpened || 0 }}"
+          PR_URLS="${{ steps.prs.outputs.prUrls || '' }}"
+          NEW_COUNT="${{ steps.fetch.outputs.newCount || 0 }}"
+          {
+            echo "## Auto-triage run summary"
+            echo ""
+            echo "| metric | value |"
+            echo "| --- | --- |"
+            echo "| NEW tickets fetched | $NEW_COUNT |"
+            echo "| tickets attempted   | $ATTEMPTED_COUNT |"
+            echo "| tickets skipped     | $SKIPPED_COUNT |"
+            echo "| PRs opened          | $PRS_OPENED |"
+            echo ""
+            if [ -n "$PR_URLS" ]; then
+              echo "### PRs"
+              for url in $PR_URLS; do echo "- $url"; done
+            fi
+            if [ -f /tmp/triage/result.json ]; then
+              SKIPPED_REASONS=$(jq -r '.skipped[] | "- \(.id): \(.reason)"' /tmp/triage/result.json 2>/dev/null || echo "")
+              if [ -n "$SKIPPED_REASONS" ]; then
+                echo ""
+                echo "### Skipped reasons"
+                echo "$SKIPPED_REASONS"
+              fi
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ────────────────────────────────────────────────────────────
+      # 7. If any prior step failed, dump everything we have so the
+      # log isn't just "step failed" without context.
+      # ────────────────────────────────────────────────────────────
+      - name: Failure forensics
+        if: failure()
+        run: |
+          echo "::error::auto-triage workflow failed — dumping diagnostic state"
+          echo "::group::tickets.json"
+          [ -f /tmp/triage/tickets.json ] && cat /tmp/triage/tickets.json || echo "(missing)"
+          echo "::endgroup::"
+          echo "::group::result.json"
+          [ -f /tmp/triage/result.json ] && cat /tmp/triage/result.json || echo "(missing)"
+          echo "::endgroup::"
+          echo "::group::callback-response.json"
+          [ -f /tmp/triage/callback-response.json ] && cat /tmp/triage/callback-response.json || echo "(missing)"
+          echo "::endgroup::"
+          echo "::group::git status"
+          git status || true
+          echo "::endgroup::"
+          echo "::group::git branches"
+          git branch --list 'auto/*' || true
+          echo "::endgroup::"

@@ -4659,3 +4659,23 @@ model MeetingProjectBlock {
   @@index([ownerId])
   @@index([projectId])
 }
+
+// Phase 57 — auto-triage run audit log. Every GitHub Actions
+// auto-triage workflow run POSTs a callback into TriageRun so a
+// human (or diag probe) can answer "did it actually run?" without
+// scraping the Actions UI.
+model TriageRun {
+  id               String   @id @default(cuid())
+  runAt            DateTime @default(now())
+  runUrl           String? // GitHub Actions run URL
+  newTicketCount   Int      @default(0)
+  ticketsAttempted Int      @default(0)
+  ticketsSkipped   Int      @default(0)
+  prsCreated       Int      @default(0)
+  errorMessage     String? // populated when the workflow failed early
+  attemptedIds     String? // comma-separated ticket ids attempted
+  skippedReasons   String? // free-form JSON blob
+  prUrls           String? // comma-separated PR URLs
+
+  @@index([runAt])
+}
