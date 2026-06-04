@@ -32,6 +32,11 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
+      # Required by the official Anthropic claude-code action chain
+      # for short-lived OIDC token exchange. Missing this permission
+      # is the cause of "Could not fetch an OIDC token. Did you
+      # remember to add 'id-token: write'" in run #27.
+      id-token: write
 
     env:
       ATLAS_BASE_URL: https://fuzeatlas.com
@@ -121,22 +126,29 @@ jobs:
       # tickets that are clearly small UI/copy nudges; only skip
       # OTHER, ACCEPTED-parked, and one-sentence-ambiguous tickets.
       # ────────────────────────────────────────────────────────────
-      # The official action is published as
-      # https://github.com/anthropics/claude-code-action with a `beta`
-      # tag — there is no v1 tag. The old workflow's `@v1` reference
-      # was the root cause of 27 consecutive red runs since 2026-05-27:
-      # GitHub Actions silently retries a missing tag a few times,
-      # logs an error, and fails the job in <60s. Always pin to a
-      # real ref (beta is the canonical floating tag the
-      # marketplace listing recommends).
-      - name: Claude Code — attempt fixes
-        id: claude
+      # The official anthropics/claude-code-action's input schema
+      # flipped recently — it no longer accepts `model:` or `prompt:`
+      # the way the original workflow needed (it's now built around
+      # trigger_phrase / assignee_trigger for "comment /claude" flows,
+      # not headless scheduled triage). Run #27 surfaced this as
+      # "Unexpected input(s) 'model', valid inputs are ['trigger_phrase'…]".
+      # We bypass the action wrapper entirely and call the published
+      # @anthropic-ai/claude-code npm CLI with our own prompt file —
+      # same agent, stable interface, no input-schema layer in the way.
+      - name: Install Claude Code CLI
         if: steps.fetch.outputs.newCount != '0'
-        uses: anthropics/claude-code-action@beta
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          model: claude-sonnet-4-6
-          prompt: |
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Configure git for auto commits
+        if: steps.fetch.outputs.newCount != '0'
+        run: |
+          git config user.name "fuze-auto-triage[bot]"
+          git config user.email "auto-triage@fuze47.com"
+
+      - name: Write triage prompt
+        if: steps.fetch.outputs.newCount != '0'
+        run: |
+          cat > /tmp/triage/prompt.md <<'PROMPT'
             You are running daily ticket auto-triage for FUZE Atlas.
 
             BEFORE YOU TOUCH CODE:
@@ -184,9 +196,46 @@ jobs:
                 "branches":  ["auto/<id>", ...]
               }
             so the PR step + callback step can use it.
+          PROMPT
+          echo "Prompt written ($(wc -c < /tmp/triage/prompt.md) bytes)"
+
+      - name: Claude Code — attempt fixes
+        id: claude
+        if: steps.fetch.outputs.newCount != '0'
         env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
           MAX_AUTO_PRS: ${{ env.MAX_AUTO_PRS }}
+        run: |
+          set +e
+          # --print: non-interactive headless mode (no TTY prompts).
+          # --dangerously-skip-permissions: lets the agent edit files
+          # + run git/npm without per-tool confirmation in CI.
+          # Model defaults to whatever the CLI ships with; we pin to
+          # the sonnet-4-6 build via --model.
+          claude --print \
+            --model claude-sonnet-4-6 \
+            --dangerously-skip-permissions \
+            "$(cat /tmp/triage/prompt.md)" \
+            2>&1 | tee /tmp/triage/claude-output.log
+          CLAUDE_EXIT=${PIPESTATUS[0]}
+          echo "Claude exit code: $CLAUDE_EXIT"
+          # Non-zero exit doesn't necessarily mean nothing happened —
+          # Claude may have committed branches before erroring. Let
+          # the PR + callback steps decide based on result.json /
+          # the auto/* branches that exist.
+          exit 0
+
+      - name: Claude run summary
+        if: always() && steps.fetch.outputs.newCount != '0'
+        run: |
+          echo "::group::Claude output (tail)"
+          [ -f /tmp/triage/claude-output.log ] && tail -200 /tmp/triage/claude-output.log || echo "(no log)"
+          echo "::endgroup::"
+          echo "::group::auto/* branches Claude created"
+          git branch --list 'auto/*' || true
+          echo "::endgroup::"
+          [ -f /tmp/triage/result.json ] && cat /tmp/triage/result.json || echo "(no result.json)"
 
       # ────────────────────────────────────────────────────────────
       # 4. Open one PR per branch Claude created.
