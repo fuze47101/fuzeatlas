@@ -732,6 +732,12 @@ export default function LabUploadPage() {
                     </div>
                   )}
 
+                  {confirmFields.testRequestId && (
+                    <div className="mt-3 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800">
+                      Linking to Test Request <code className="font-mono">{String(confirmFields.testRequestId).slice(-8)}</code> —
+                      on save, this request will flip to <strong>COMPLETE</strong> and notify the brand + factory.
+                    </div>
+                  )}
                   <div className="mt-4 flex items-center justify-end gap-2">
                     <button
                       onClick={handleConfirm}
@@ -798,7 +804,12 @@ export default function LabUploadPage() {
               .catch(() => {})
               .finally(() => setLoadingPending(false));
           }}
-          onSwitchToUpload={() => setTab("upload")}
+          onSwitchToUpload={(testRequestId?: string) => {
+            if (testRequestId) {
+              setConfirmFields((p) => ({ ...p, testRequestId }));
+            }
+            setTab("upload");
+          }}
         />
       )}
     </div>
@@ -815,7 +826,7 @@ function PendingTestsPanel({
   pendingTests: PendingTest[];
   loading: boolean;
   onRefresh: () => void;
-  onSwitchToUpload: () => void;
+  onSwitchToUpload: (testRequestId?: string) => void;
 }) {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [expandedTest, setExpandedTest] = useState<string | null>(null);
@@ -1034,7 +1045,7 @@ function TestCard({
   noteText: Record<string, string>;
   setNoteText: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   doAction: (action: string, id: string, extra?: Record<string, any>) => Promise<void>;
-  onSwitchToUpload: () => void;
+  onSwitchToUpload: (testRequestId?: string) => void;
 }) {
   const canAccept = ["SUBMITTED", "PENDING_APPROVAL", "APPROVED"].includes(test.status);
   const isInProgress = test.status === "IN_PROGRESS";
@@ -1259,10 +1270,12 @@ function TestCard({
               </div>
             )}
 
-            {/* Upload / Link Report */}
+            {/* Upload / Link Report — passes the TestRequest id so
+                the confirm payload can flip its status. Kaylee Pace
+                ticket cmpyq564c0001l404naf8m4hj. */}
             {!test.reportUploaded && (
               <button
-                onClick={onSwitchToUpload}
+                onClick={() => onSwitchToUpload(test.id)}
                 className="px-4 py-1.5 bg-[#00b4c3] text-white rounded-lg text-xs font-bold hover:bg-[#009aa8]"
               >
                 📤 Upload Report

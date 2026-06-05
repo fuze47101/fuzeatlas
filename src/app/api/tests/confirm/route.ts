@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { notifyTestRequestStatus } from "@/lib/notify";
 
 /* ── POST /api/tests/confirm ───────────────────────────────────
    Accepts reviewed test data and creates TestRun + result records.
@@ -25,6 +26,11 @@ export async function POST(req: Request) {
       factoryId,
       fabricId,
       projectId,
+      // Phase 58 — when the upload originated from a TestRequest detail
+      // page, the client passes testRequestId so we can flip the
+      // request's status to RESULTS_RECEIVED + COMPLETE + create the
+      // pivot row (Kaylee Pace ticket cmpyq564c0001l404naf8m4hj).
+      testRequestId,
       // Legacy Antibacterial
       organism1,
       organism2,
@@ -254,11 +260,75 @@ export async function POST(req: Request) {
       });
     }
 
+    // Phase 58 — close the originating TestRequest when one was named.
+    // Creates the pivot row, flips status RESULTS_RECEIVED → COMPLETE,
+    // stamps actualCompletionDate, and fans out the notify. Idempotent
+    // on re-upload: only flips when the request is in a pre-results
+    // state.
+    let testRequestFlipped: any = null;
+    if (testRequestId) {
+      try {
+        const tr = await prisma.testRequest.findUnique({
+          where: { id: String(testRequestId) },
+          select: {
+            id: true, poNumber: true, status: true, brandId: true,
+            requestedById: true, factoryId: true,
+            submission: { select: { factoryId: true, brandId: true } },
+          },
+        });
+        if (tr) {
+          // Create the pivot row if it doesn't already exist for
+          // this testRun.
+          const existingLine = await prisma.testRequestLine.findFirst({
+            where: { testRequestId: tr.id, testRunId: testRun.id },
+            select: { id: true },
+          });
+          if (!existingLine) {
+            await prisma.testRequestLine.create({
+              data: {
+                testRequestId: tr.id,
+                testRunId: testRun.id,
+                testType,
+                testMethod: testMethodStd || null,
+                status: "COMPLETE",
+              },
+            });
+          }
+          // Status transition. Pre-results states flip to COMPLETE in
+          // a single step (we have the result on hand). Already-COMPLETE
+          // or CANCELLED requests stay where they are.
+          const preResults = ["DRAFT", "PENDING_APPROVAL", "APPROVED", "ASSIGNED_TO_LAB", "SUBMITTED", "IN_PROGRESS", "RESULTS_RECEIVED"];
+          if (preResults.includes(tr.status)) {
+            await prisma.testRequest.update({
+              where: { id: tr.id },
+              data: { status: "COMPLETE", actualCompletionDate: new Date() },
+            });
+            const brandIdForNotify = tr.brandId || tr.submission?.brandId || null;
+            const factoryIdForNotify = tr.factoryId || tr.submission?.factoryId || null;
+            void notifyTestRequestStatus({
+              testRequestId: tr.id,
+              status: "COMPLETE",
+              poNumber: tr.poNumber,
+              createdByUserId: tr.requestedById || undefined,
+              brandId: brandIdForNotify,
+              factoryId: factoryIdForNotify,
+            }).catch((e) => console.error("[confirm] notifyTestRequestStatus failed:", e));
+            testRequestFlipped = { id: tr.id, from: tr.status, to: "COMPLETE" };
+          } else {
+            testRequestFlipped = { id: tr.id, from: tr.status, to: tr.status, skipped: true };
+          }
+        }
+      } catch (e: any) {
+        console.error("[confirm] TestRequest flip failed:", e?.message, e?.code, e?.meta);
+      }
+    }
+
     return NextResponse.json({
       ok: true,
       testRunId: testRun.id,
       submissionId: resolvedSubmissionId,
       testType,
+      testRequestFlipped,
       message: `Test run created successfully (${testType})`,
     });
   } catch (err: any) {
