@@ -21,7 +21,7 @@ export async function PATCH(
 
   const item = await (prisma as any).meetingActionItem.findUnique({
     where: { id },
-    select: { id: true, assigneeId: true, createdById: true },
+    select: { id: true, assigneeId: true, createdById: true, meetingNoteId: true },
   });
   if (!item) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
 
@@ -67,7 +67,7 @@ export async function PATCH(
           type: "SYSTEM",
           title: `Action item reassigned to you: ${updated.description.slice(0, 60)}`,
           message: `${user.name || user.email} reassigned this to you.`,
-          link: `/my-tasks`,
+          link: item.meetingNoteId ? `/meeting-notes/${item.meetingNoteId}` : `/my-tasks`,
         },
       })
       .catch(() => null);

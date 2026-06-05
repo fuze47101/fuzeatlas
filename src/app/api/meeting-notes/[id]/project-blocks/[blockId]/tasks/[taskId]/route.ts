@@ -130,7 +130,7 @@ export async function PATCH(
           type: "SYSTEM",
           title: `Action item reassigned to you`,
           message: `${user.name || user.email} reassigned this to you: ${String(task.description).slice(0, 80)}`,
-          link: `/my-tasks`,
+          link: `/meeting-notes/${id}`,
         },
       })
       .catch(() => null);

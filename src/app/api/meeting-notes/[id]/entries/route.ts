@@ -102,7 +102,7 @@ export async function POST(
             type: "SYSTEM",
             title: `New action item: ${ex.description.slice(0, 60)}`,
             message: `${user.name || user.email} assigned this to you in a meeting.`,
-            link: `/my-tasks`,
+            link: `/meeting-notes/${id}`,
           },
         })
         .catch(() => null);
