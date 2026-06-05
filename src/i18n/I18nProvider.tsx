@@ -53,10 +53,13 @@ export default function I18nProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  // Update HTML attributes when locale changes
+  // Update HTML attributes when locale changes.
+  // dir is intentionally always ltr — Atlas layout is not RTL-aware.
+  // Switching to "ur" without RTL-specific CSS causes the entire page to
+  // flip horizontally (reported by Tina: "it goes upside down").
   useEffect(() => {
     document.documentElement.lang = locale;
-    document.documentElement.dir = locale === "ur" ? "rtl" : "ltr";
+    document.documentElement.dir = "ltr";
   }, [locale]);
 
   const setLocale = (l: Locale) => {
