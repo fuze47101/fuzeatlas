@@ -422,6 +422,19 @@ export default function BrandPipelinePage() {
         {sorted.length === 0 ? (
           <div className="text-center py-16 bg-white border rounded-xl">
             <p className="text-slate-400">{T.emptyBrands}</p>
+            {search && viewFilter !== "everything" && (
+              <div className="mt-3 text-xs text-slate-500">
+                <span>Search is filtered to </span>
+                <strong>&quot;{viewFilter}&quot;</strong>
+                <span> view. </span>
+                <button
+                  onClick={() => setViewFilter("everything")}
+                  className="text-indigo-600 hover:underline font-medium"
+                >
+                  Search all brands
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           sorted.map((b) => {
