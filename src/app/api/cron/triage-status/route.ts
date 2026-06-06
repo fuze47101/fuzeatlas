@@ -51,6 +51,7 @@ async function handle(req: Request) {
         id: true, runAt: true, runUrl: true, newTicketCount: true,
         ticketsAttempted: true, ticketsSkipped: true, prsCreated: true,
         errorMessage: true, prUrls: true,
+        rawFetchCount: true, sampleIds: true, fetchHttpCode: true,
       },
     }),
   ]);

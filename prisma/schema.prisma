@@ -4676,6 +4676,14 @@ model TriageRun {
   attemptedIds     String? // comma-separated ticket ids attempted
   skippedReasons   String? // free-form JSON blob
   prUrls           String? // comma-separated PR URLs
+  // Phase 58 visibility — surface the raw fetch count + sample ids so
+  // a 0-count run is debuggable without scraping the Actions log.
+  // rawFetchCount = open-NEW tickets the workflow saw before any
+  // single-ticket filter; sampleIds = JSON array of first 5;
+  // fetchHttpCode = curl status on feedback-list.
+  rawFetchCount    Int?
+  sampleIds        String?
+  fetchHttpCode    Int?
 
   @@index([runAt])
 }

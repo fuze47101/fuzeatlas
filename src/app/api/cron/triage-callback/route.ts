@@ -44,6 +44,10 @@ async function handle(req: Request) {
         attemptedIds: Array.isArray(body?.attemptedIds) ? body.attemptedIds.join(",") : null,
         skippedReasons: body?.skippedReasons ? JSON.stringify(body.skippedReasons).slice(0, 4000) : null,
         prUrls: Array.isArray(body?.prUrls) ? body.prUrls.join(",") : null,
+        // Phase 58 visibility.
+        rawFetchCount: body?.rawFetchCount != null ? Number(body.rawFetchCount) | 0 : null,
+        sampleIds: Array.isArray(body?.sampleIds) ? JSON.stringify(body.sampleIds) : null,
+        fetchHttpCode: body?.fetchHttpCode != null ? Number(body.fetchHttpCode) | 0 : null,
       },
       select: { id: true, runAt: true },
     });

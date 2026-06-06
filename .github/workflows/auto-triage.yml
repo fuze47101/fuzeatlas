@@ -61,9 +61,21 @@ jobs:
             exit 1
           fi
           echo "All required secrets present (ANTHROPIC_API_KEY, CRON_SECRET)."
-          echo "Tip — to rotate either secret, paste a new value via gh CLI:"
-          echo "  gh secret set ANTHROPIC_API_KEY -b 'sk-ant-...'"
-          echo "  gh secret set CRON_SECRET     -b '<vercel cron secret>'"
+          # Length-only fingerprints so a missing/wrong secret is
+          # obvious in the summary without leaking the value.
+          ANTHROPIC_LEN=${#ANTHROPIC_API_KEY}
+          CRON_LEN=${#CRON_SECRET}
+          {
+            echo "## Secret pre-check"
+            echo ""
+            echo "| secret | length |"
+            echo "| --- | --- |"
+            echo "| ANTHROPIC_API_KEY | $ANTHROPIC_LEN |"
+            echo "| CRON_SECRET       | $CRON_LEN |"
+          } >> "$GITHUB_STEP_SUMMARY"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
 
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -92,17 +104,41 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/triage
+          # Capture HTTP code + raw body length so a 0-count failure is
+          # impossible to hide. Both go into outputs + the run summary.
           HTTP_CODE=$(curl -sS -o /tmp/triage/tickets.json -w "%{http_code}" \
             -H "Authorization: Bearer $CRON_SECRET" \
             "$ATLAS_BASE_URL/api/cron/feedback-list?status=NEW&limit=50")
+          BODY_BYTES=$(wc -c < /tmp/triage/tickets.json | tr -d ' ')
+          echo "httpCode=$HTTP_CODE" >> "$GITHUB_OUTPUT"
+          echo "bodyBytes=$BODY_BYTES" >> "$GITHUB_OUTPUT"
           if [ "$HTTP_CODE" != "200" ]; then
-            echo "::error::feedback-list returned HTTP $HTTP_CODE"
+            echo "::error::feedback-list returned HTTP $HTTP_CODE (body $BODY_BYTES bytes)"
             cat /tmp/triage/tickets.json
             exit 1
           fi
+          RAW_FETCH_COUNT=$(jq '.reports | length' /tmp/triage/tickets.json)
+          FIRST_ID=$(jq -r '.reports[0].id // ""' /tmp/triage/tickets.json)
+          LAST_ID=$(jq -r '(.reports | last).id // ""' /tmp/triage/tickets.json)
+          SAMPLE_IDS=$(jq -c '[.reports[0:5][].id]' /tmp/triage/tickets.json)
+          echo "rawFetchCount=$RAW_FETCH_COUNT" >> "$GITHUB_OUTPUT"
+          echo "firstId=$FIRST_ID" >> "$GITHUB_OUTPUT"
+          echo "lastId=$LAST_ID" >> "$GITHUB_OUTPUT"
+          echo "sampleIds=$SAMPLE_IDS" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Fetch step"
+            echo ""
+            echo "| metric | value |"
+            echo "| --- | --- |"
+            echo "| ATLAS_BASE_URL    | $ATLAS_BASE_URL |"
+            echo "| HTTP status       | $HTTP_CODE |"
+            echo "| body size (bytes) | $BODY_BYTES |"
+            echo "| rawFetchCount     | $RAW_FETCH_COUNT |"
+            echo "| first id          | \`$FIRST_ID\` |"
+            echo "| last id           | \`$LAST_ID\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
           # If workflow_dispatch passed a single ticket id, filter the
-          # payload down to it so the rest of the run only deals with
-          # that one ticket. Helpful for testing the chain end-to-end.
+          # payload down to it.
           if [ -n "$SINGLE_TICKET_ID" ]; then
             jq --arg id "$SINGLE_TICKET_ID" '{reports: [.reports[] | select(.id == $id)]}' \
               /tmp/triage/tickets.json > /tmp/triage/tickets-filtered.json
@@ -111,7 +147,7 @@ jobs:
           fi
           NEW_COUNT=$(jq '.reports | length' /tmp/triage/tickets.json)
           echo "newCount=$NEW_COUNT" >> "$GITHUB_OUTPUT"
-          echo "Fetched $NEW_COUNT NEW tickets."
+          echo "Fetched $NEW_COUNT NEW tickets (raw fetch count before filter: $RAW_FETCH_COUNT)."
 
       - name: Skip when nothing to do
         if: steps.fetch.outputs.newCount == '0'
@@ -337,6 +373,9 @@ jobs:
             SKIPPED_COUNT=$(jq '.skipped | length' /tmp/triage/result.json)
           fi
           NEW_COUNT="${{ steps.fetch.outputs.newCount || 0 }}"
+          RAW_FETCH_COUNT="${{ steps.fetch.outputs.rawFetchCount || 0 }}"
+          SAMPLE_IDS_RAW="${{ steps.fetch.outputs.sampleIds || '[]' }}"
+          HTTP_CODE="${{ steps.fetch.outputs.httpCode || 0 }}"
           PRS_OPENED="${{ steps.prs.outputs.prsOpened || 0 }}"
           PR_URLS_RAW="${{ steps.prs.outputs.prUrls || '' }}"
           # Convert space-separated PR URLs to JSON array.
@@ -348,6 +387,9 @@ jobs:
           BODY=$(jq -n \
             --arg runUrl "$RUN_URL" \
             --argjson newTicketCount "$NEW_COUNT" \
+            --argjson rawFetchCount "$RAW_FETCH_COUNT" \
+            --argjson sampleIds "$SAMPLE_IDS_RAW" \
+            --argjson fetchHttpCode "$HTTP_CODE" \
             --argjson ticketsAttempted "$ATTEMPTED_COUNT" \
             --argjson ticketsSkipped "$SKIPPED_COUNT" \
             --argjson prsCreated "$PRS_OPENED" \
@@ -355,7 +397,7 @@ jobs:
             --argjson skippedReasons "$SKIPPED" \
             --argjson prUrls "$PR_URLS_JSON" \
             --arg errorMessage "$ERROR_MSG" \
-            '{runUrl:$runUrl,newTicketCount:$newTicketCount,ticketsAttempted:$ticketsAttempted,ticketsSkipped:$ticketsSkipped,prsCreated:$prsCreated,attemptedIds:$attemptedIds,skippedReasons:$skippedReasons,prUrls:$prUrls,errorMessage:($errorMessage | select(length>0))}')
+            '{runUrl:$runUrl,newTicketCount:$newTicketCount,rawFetchCount:$rawFetchCount,sampleIds:$sampleIds,fetchHttpCode:$fetchHttpCode,ticketsAttempted:$ticketsAttempted,ticketsSkipped:$ticketsSkipped,prsCreated:$prsCreated,attemptedIds:$attemptedIds,skippedReasons:$skippedReasons,prUrls:$prUrls,errorMessage:($errorMessage | select(length>0))}')
           curl -sS -X POST \
             -H "Authorization: Bearer $CRON_SECRET" \
             -H "Content-Type: application/json" \

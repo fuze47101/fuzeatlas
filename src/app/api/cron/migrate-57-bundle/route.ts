@@ -37,6 +37,19 @@ async function handle(req: Request) {
       `CREATE INDEX IF NOT EXISTS "TriageRun_runAt_idx" ON "TriageRun"("runAt");`,
     );
     log.push("ensured TriageRun.runAt index");
+    // Phase 58 — visibility fields. ALTER ... ADD COLUMN IF NOT EXISTS
+    // so re-running the bundle is a no-op on rows that already have
+    // them.
+    await prisma.$executeRawUnsafe(
+      `ALTER TABLE "TriageRun" ADD COLUMN IF NOT EXISTS "rawFetchCount" INTEGER;`,
+    );
+    await prisma.$executeRawUnsafe(
+      `ALTER TABLE "TriageRun" ADD COLUMN IF NOT EXISTS "sampleIds" TEXT;`,
+    );
+    await prisma.$executeRawUnsafe(
+      `ALTER TABLE "TriageRun" ADD COLUMN IF NOT EXISTS "fetchHttpCode" INTEGER;`,
+    );
+    log.push("ensured TriageRun.rawFetchCount + sampleIds + fetchHttpCode columns");
     return NextResponse.json({ ok: true, verdict: "Phase 57 migration applied", log });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e?.message, log }, { status: 500 });
