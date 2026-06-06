@@ -225,6 +225,21 @@ function TaskInlineRowImpl({ item, users, onPatched, onError, showMeeting, surfa
         )}
       </td>
       <td className="px-2 py-1.5 align-top w-[80px] text-[10px] text-slate-500">{item.status}</td>
+      <td className="px-2 py-1.5 align-top w-[60px] text-right">
+        {item.meetingNote ? (
+          <Link
+            href={`/meeting-notes/${item.meetingNote.id}?task=${item.id}`}
+            className="inline-flex items-center gap-0.5 text-[11px] text-indigo-600 hover:underline font-medium"
+            title={`Open in ${item.meetingNote.title}`}
+          >
+            Open ↗
+          </Link>
+        ) : (
+          <span className="text-[10px] text-slate-300 italic" title="No source meeting linked">
+            —
+          </span>
+        )}
+      </td>
     </tr>
   );
 }

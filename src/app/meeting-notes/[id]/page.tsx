@@ -120,6 +120,16 @@ function MeetingNotePage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [highlightBlockId, setHighlightBlockId] = useState<string | null>(null);
+  // Phase 58 — when arriving with ?task=<id> on the URL (from /my-tasks
+  // "Open ↗"), scroll the task into view and pulse it. Captured once on
+  // mount; cleared after the post-render scroll happens.
+  const [pendingTaskFocus, setPendingTaskFocus] = useState<string | null>(null);
+  const [highlightTaskId, setHighlightTaskId] = useState<string | null>(null);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const t = new URLSearchParams(window.location.search).get("task");
+    if (t) setPendingTaskFocus(t);
+  }, []);
   const [expandedBlockId, setExpandedBlockId] = useState<string | null>(null);
   const [confirmDeleteProject, setConfirmDeleteProject] = useState<{ blockId: string; projectId: string; projectName: string } | null>(null);
 
@@ -460,6 +470,28 @@ function MeetingNotePage() {
   );
   const debugBlocks = typeof window !== "undefined"
     && new URLSearchParams(window.location.search).get("debugBlocks") === "1";
+
+  // Once meeting data is loaded, scroll the deep-linked task into view
+  // + expand the block it belongs to + pulse the row for ~4s. Re-runs
+  // any time pendingTaskFocus or projectBlocks changes; clears
+  // pendingTaskFocus on success so the scroll only fires once per
+  // arrival.
+  useEffect(() => {
+    if (!pendingTaskFocus || !meeting?.projectBlocks?.length) return;
+    const owningBlock = meeting.projectBlocks.find((b) =>
+      (b.actionItems || []).some((t) => t.id === pendingTaskFocus),
+    );
+    if (owningBlock) setExpandedBlockId(owningBlock.id);
+    setHighlightTaskId(pendingTaskFocus);
+    const id = pendingTaskFocus;
+    setTimeout(() => {
+      document
+        .querySelector(`[data-task-id="${id}"]`)
+        ?.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 200);
+    setTimeout(() => setHighlightTaskId(null), 4000);
+    setPendingTaskFocus(null);
+  }, [pendingTaskFocus, meeting?.projectBlocks]);
   const orphanTasks = useMemo(
     () => (meeting ? (meeting.actionItems || []).filter((a) => !a.projectBlockId) : []),
     [meeting],
@@ -594,6 +626,7 @@ function MeetingNotePage() {
                     if (next) setExpandedBlockId(next.id);
                     else setExpandedBlockId(null);
                   }}
+                  highlightTaskId={highlightTaskId}
                 />
               )}
             </div>
@@ -725,6 +758,7 @@ function BlockCard({
   onGotoPrev,
   onGotoNext,
   onCloseAndNext,
+  highlightTaskId,
 }: {
   block: ProjectBlock;
   options: Options | null;
@@ -739,6 +773,7 @@ function BlockCard({
   onGotoPrev: () => void;
   onGotoNext: () => void;
   onCloseAndNext: () => void;
+  highlightTaskId: string | null;
 }) {
   const [discussionDraft, setDiscussionDraft] = useState(block.discussionMd);
   const [discussionDirty, setDiscussionDirty] = useState(false);
@@ -914,6 +949,7 @@ function BlockCard({
               key={t.id}
               task={t}
               options={options}
+              isHighlighted={highlightTaskId === t.id}
               onPatch={(patch) => onPatchTask(t.id, patch)}
               onDelete={() => onDeleteTask(t.id)}
             />
@@ -1040,14 +1076,19 @@ function TaskRow({
   options,
   onPatch,
   onDelete,
+  isHighlighted,
 }: {
   task: ActionItem;
   options: Options | null;
   onPatch: (patch: any) => Promise<void>;
   onDelete: () => Promise<void>;
+  isHighlighted?: boolean;
 }) {
   return (
-    <li className="flex flex-wrap items-center gap-2 rounded-md bg-white border border-slate-200 px-2 py-1.5">
+    <li
+      data-task-id={task.id}
+      className={`flex flex-wrap items-center gap-2 rounded-md bg-white border ${isHighlighted ? "ring-2 ring-amber-400 border-amber-300" : "border-slate-200"} px-2 py-1.5 transition`}
+    >
       <input
         type="checkbox"
         checked={task.status === "DONE"}
