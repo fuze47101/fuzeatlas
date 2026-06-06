@@ -18,6 +18,8 @@ const ALLOWED_ROLES = new Set([
   "SALES_MANAGER",
   "SALES_REP",
   "BD_REP",
+  "TESTING_MANAGER",
+  "FABRIC_MANAGER",
 ]);
 
 export async function GET(req: Request) {

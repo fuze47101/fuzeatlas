@@ -23,7 +23,8 @@ type Project = {
   kickoffMeetingNoteId: string | null;
 };
 
-const ALLOWED = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP"]);
+// Phase 60 — TESTING_MANAGER + FABRIC_MANAGER access (Tina m68cloe4).
+const ALLOWED = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP", "TESTING_MANAGER", "FABRIC_MANAGER"]);
 
 const PRIORITY_CHIP: Record<string, string> = {
   URGENT: "bg-rose-600 text-white",

@@ -561,15 +561,31 @@ export default function FabricDetailPage() {
       {/* ═══════════════════════════════════════════ */}
       {fabric.submissions && fabric.submissions.length > 0 && (
         <div className="bg-white rounded-xl p-6 shadow-sm border mb-6">
-          <h2 className="text-sm font-bold text-[#00b4c3] uppercase tracking-wider mb-4">Test Submissions ({fabric.submissions.length})</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-bold text-[#00b4c3] uppercase tracking-wider">Test Submissions ({fabric.submissions.length})</h2>
+            {/* Phase 60 kjefl5wr — upload a test report directly from the fabric page */}
+            <a
+              href={`/tests/upload?fabricId=${fabric.id}`}
+              className="px-3 py-1.5 bg-[#00b4c3] text-white rounded-md text-xs font-bold hover:bg-[#009aa8]"
+              title="Upload a test report PDF for this fabric"
+            >
+              📤 Upload Test Report
+            </a>
+          </div>
           <table className="w-full text-sm">
             <thead><tr className="text-left text-xs text-slate-500 border-b">
-              <th className="pb-2">Fabric #</th><th className="pb-2">Status</th><th className="pb-2">Test Status</th><th className="pb-2">Tests</th><th className="pb-2">Date</th>
+              <th className="pb-2">Fabric #</th><th className="pb-2">Lot #</th><th className="pb-2">Wash</th><th className="pb-2">Storage</th><th className="pb-2">Status</th><th className="pb-2">Tests</th><th className="pb-2">Date</th>
             </tr></thead>
             <tbody>
               {fabric.submissions.map((s: any) => (
                 <tr key={s.id} className="border-b border-slate-100">
                   <td className="py-2 font-bold text-[#00b4c3]">FUZE {s.fuzeFabricNumber || "—"}</td>
+                  <td className="py-2 text-xs">{s.lotNumber || "—"}</td>
+                  <td className="py-2 text-xs">
+                    {s.washStatus === "PRE_WASHED" ? "🌀 pre-washed" : s.washStatus === "WASH_REQUESTED" ? "💧 wash req'd" : "—"}
+                    {s.washTarget != null && <span className="ml-1 text-slate-400">@{s.washTarget}w</span>}
+                  </td>
+                  <td className="py-2 text-xs text-slate-600">{s.storageLocation || "—"}</td>
                   <td className="py-2">
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                       s.status === "Complete" ? "bg-green-100 text-green-700"
@@ -577,13 +593,29 @@ export default function FabricDetailPage() {
                         : "bg-amber-100 text-amber-700"
                     }`}>{s.status || "Pending"}</span>
                   </td>
-                  <td className="py-2">{s.testStatus || "—"}</td>
                   <td className="py-2">{s.testRuns?.length || 0} Tests</td>
                   <td className="py-2 text-slate-500">{s.createdAt ? new Date(s.createdAt).toLocaleDateString() : "—"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Phase 60 c5zofr6r — empty-state CTA when this fabric has no submissions yet.
+          Lets Kaylee record a lot + storage + wash status without going to /tests/upload first. */}
+      {(!fabric.submissions || fabric.submissions.length === 0) && (
+        <div className="bg-white rounded-xl p-6 shadow-sm border mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-bold text-[#00b4c3] uppercase tracking-wider">Test Submissions</h2>
+            <a
+              href={`/tests/upload?fabricId=${fabric.id}`}
+              className="px-3 py-1.5 bg-[#00b4c3] text-white rounded-md text-xs font-bold hover:bg-[#009aa8]"
+            >
+              📤 Upload Test Report
+            </a>
+          </div>
+          <p className="text-xs text-slate-500">No submissions yet — record this fabric's first test report.</p>
         </div>
       )}
 

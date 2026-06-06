@@ -31,6 +31,12 @@ export async function POST(req: Request) {
       // request's status to RESULTS_RECEIVED + COMPLETE + create the
       // pivot row (Kaylee Pace ticket cmpyq564c0001l404naf8m4hj).
       testRequestId,
+      // Phase 60 — per-submission tracking (Kaylee tickets cmpoerqbi/
+      // cmpoevbni/cmprcqqy3). Stamp lot number, wash status, and
+      // storage location onto the FabricSubmission row.
+      submissionLotNumber,
+      submissionWashStatus,
+      submissionStorage,
       // Legacy Antibacterial
       organism1,
       organism2,
@@ -139,7 +145,21 @@ export async function POST(req: Request) {
         if (brandId) data.brandId = brandId;
         if (factoryId) data.factoryId = factoryId;
         if (fabricId) data.fabricId = fabricId;
+        // Phase 60 — stamp lot/wash/storage on first create.
+        if (submissionLotNumber) data.lotNumber = String(submissionLotNumber);
+        if (submissionWashStatus) data.washStatus = String(submissionWashStatus);
+        if (submissionStorage) data.storageLocation = String(submissionStorage);
         submission = await prisma.fabricSubmission.create({ data });
+      } else if (submissionLotNumber || submissionWashStatus || submissionStorage) {
+        // Existing submission — backfill any provided fields that
+        // aren't already set so re-uploads don't overwrite curated data.
+        const patch: any = {};
+        if (submissionLotNumber && !(submission as any).lotNumber) patch.lotNumber = String(submissionLotNumber);
+        if (submissionWashStatus && !(submission as any).washStatus) patch.washStatus = String(submissionWashStatus);
+        if (submissionStorage && !(submission as any).storageLocation) patch.storageLocation = String(submissionStorage);
+        if (Object.keys(patch).length > 0) {
+          await prisma.fabricSubmission.update({ where: { id: submission.id }, data: patch });
+        }
       }
       resolvedSubmissionId = submission.id;
     }

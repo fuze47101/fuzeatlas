@@ -1519,6 +1519,18 @@ model FabricSubmission {
 
   washTarget Int?
 
+  // Phase 60 (Kaylee 2026-06-05 tickets cmpoerqbi/cmpoevbni/cmprcqqy3):
+  //  - lotNumber: same fabric arrives in multiple lots; tracked here so
+  //    each incoming sample carries its own lot rather than overwriting
+  //    on the parent Fabric row.
+  //  - washStatus: PRE_WASHED (came already laundered) vs WASH_REQUESTED
+  //    (we run the cycle) — disambiguates testing intent.
+  //  - storageLocation: where the physical sample lives in the lab.
+  //    Replaces the spreadsheet Kaylee was keeping.
+  lotNumber       String?
+  washStatus      String? // PRE_WASHED | WASH_REQUESTED | UNKNOWN
+  storageLocation String?
+
   status           String?
   programName      String?
   developmentStage String?

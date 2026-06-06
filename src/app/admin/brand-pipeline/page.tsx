@@ -146,7 +146,17 @@ export default function BrandPipelinePage() {
   // let the user change it and we never render a stage-filter bar here.
   const [stageFilter] = useState("LEAD");
   const [relevanceFilter, setRelevanceFilter] = useState("all");
-  const [viewFilter, setViewFilter] = useState("actionable");
+  // Phase 60 (Scott ticket cmpn3myu10001ju059j45x2lw — "True Classis
+  // missing when I run a search"): the default "actionable" view hid
+  // brands Scott had recently added but hadn't yet flagged actionable,
+  // so he typed True Classic into the search box and the row was
+  // invisible. When a search query is present we always run against
+  // "everything" — search-with-a-hidden-filter is a UX trap.
+  const initialView = typeof window !== "undefined"
+    && new URLSearchParams(window.location.search).get("search")
+    ? "everything"
+    : "actionable";
+  const [viewFilter, setViewFilter] = useState(initialView);
   const [sortBy, setSortBy] = useState<"relevance" | "stage" | "name" | "activity" | "contacts" | "potential">(
     "relevance",
   );
@@ -162,7 +172,12 @@ export default function BrandPipelinePage() {
     if (search) params.set("search", search);
     if (stageFilter !== "all") params.set("stage", stageFilter);
     if (relevanceFilter !== "all") params.set("relevance", relevanceFilter);
-    params.set("view", viewFilter);
+    // Phase 60 (Scott cmpn3myu1) — typing in the search box overrides the
+    // view filter to "everything" so a recently-added brand that's not
+    // yet "actionable" still shows up. The visible <select> stays at
+    // whatever the user picked; this is server-side only.
+    const effectiveView = search.trim() ? "everything" : viewFilter;
+    params.set("view", effectiveView);
     // Hard-scope this page to LEAD-only brands; Accounts page lives separately.
     params.set("mode", "pipeline");
 

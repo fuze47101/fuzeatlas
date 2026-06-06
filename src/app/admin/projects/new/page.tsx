@@ -59,7 +59,10 @@ interface TaskRow {
   dueDate: string;
 }
 
-const ALLOWED = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP"]);
+// Phase 60 (Tina cmpvydmti0007jt04m68cloe4 — "access to add task to
+// projects"). TESTING_MANAGER + FABRIC_MANAGER added so Tina + the
+// lab manager pool can use the project wizard.
+const ALLOWED = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP", "TESTING_MANAGER", "FABRIC_MANAGER"]);
 const PRIORITIES: Priority[] = ["LOW", "NORMAL", "HIGH", "URGENT"];
 
 function todayISO(): string {
@@ -143,7 +146,7 @@ function ProjectStartWizardPage() {
       .then((r) => r.json())
       .then((d) => {
         const list = (d.users || []).filter((u: any) =>
-          ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP"].includes(u.role),
+          ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP", "TESTING_MANAGER", "FABRIC_MANAGER"].includes(u.role),
         );
         setUsers(list);
       })

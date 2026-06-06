@@ -177,6 +177,12 @@ export default function TestUploadPage() {
   const [factoryName, setFactoryName] = useState<string | null>(null);
   const [fabricId, setFabricId] = useState<string | null>(null);
   const [fabricName, setFabricName] = useState<string | null>(null);
+  // Phase 60 (Kaylee tickets cmpoerqbi/cmpoevbni/cmprcqqy3) — per-submission
+  // lot number + wash status + storage location captured at upload time
+  // and stamped onto the FabricSubmission row.
+  const [submissionLotNumber, setSubmissionLotNumber] = useState("");
+  const [submissionWashStatus, setSubmissionWashStatus] = useState<"" | "PRE_WASHED" | "WASH_REQUESTED">("");
+  const [submissionStorage, setSubmissionStorage] = useState("");
   const [projectId, setProjectId] = useState<string | null>(null);
   const [projectName, setProjectName] = useState<string | null>(null);
   const [creating, setCreating] = useState<"brand" | "factory" | "fabric" | null>(null);
@@ -193,6 +199,15 @@ export default function TestUploadPage() {
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [existingTestIds, setExistingTestIds] = useState<string[]>([]);
   const [forceDuplicate, setForceDuplicate] = useState(false);
+
+  // Phase 60 kjefl5wr — accept ?fabricId=<id> from URL so the fabric
+  // detail page's "Upload Test Report" button pre-fills the context.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const p = new URLSearchParams(window.location.search);
+    const f = p.get("fabricId");
+    if (f) setFabricId(f);
+  }, []);
 
   // Load dropdowns
   useEffect(() => {
@@ -360,6 +375,10 @@ export default function TestUploadPage() {
           fabricId: fabricId || null,
           forceDuplicate: forceDuplicate,
           projectId: projectId || null,
+          // Phase 60 — per-submission tracking.
+          submissionLotNumber: submissionLotNumber || null,
+          submissionWashStatus: submissionWashStatus || null,
+          submissionStorage: submissionStorage || null,
           // Rich antibacterial fields
           testNumberInReport: test.testIndex,
           organism: test.organism,
@@ -427,6 +446,10 @@ export default function TestUploadPage() {
         overallPass: overallPass === "true" ? true : overallPass === "false" ? false : null,
         brandId: brandId || null, factoryId: factoryId || null,
         fabricId: fabricId || null, projectId: projectId || null,
+        // Phase 60 — per-submission tracking.
+        submissionLotNumber: submissionLotNumber || null,
+        submissionWashStatus: submissionWashStatus || null,
+        submissionStorage: submissionStorage || null,
         forceDuplicate: forceDuplicate,
       };
 
@@ -957,6 +980,41 @@ export default function TestUploadPage() {
                   <CreateInlineForm entityType={creating} prefillName={createPrefill}
                     onCreated={(entity) => handleEntityCreated(creating, entity)} onCancel={() => setCreating(null)} />
                 )}
+
+                {/* Phase 60 (Kaylee tickets cmpoerqbi/cmpoevbni/cmprcqqy3)
+                    — per-submission tracking captured at upload time. */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-1">Lot number</label>
+                    <input
+                      value={submissionLotNumber}
+                      onChange={(e) => setSubmissionLotNumber(e.target.value)}
+                      placeholder="e.g. LOT-2026-0341"
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-md text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-1">Wash status</label>
+                    <select
+                      value={submissionWashStatus}
+                      onChange={(e) => setSubmissionWashStatus(e.target.value as any)}
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-md text-sm bg-white"
+                    >
+                      <option value="">—</option>
+                      <option value="PRE_WASHED">🌀 Pre-washed (arrived washed)</option>
+                      <option value="WASH_REQUESTED">💧 Wash requested (we run it)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-1">Storage location</label>
+                    <input
+                      value={submissionStorage}
+                      onChange={(e) => setSubmissionStorage(e.target.value)}
+                      placeholder="e.g. Rack 3 / Bin 12"
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-md text-sm"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Duplicate Warning Banner */}

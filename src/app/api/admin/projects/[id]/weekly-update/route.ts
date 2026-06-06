@@ -29,6 +29,8 @@ const ALLOWED_ROLES = new Set([
   "SALES_MANAGER",
   "SALES_REP",
   "BD_REP",
+  "TESTING_MANAGER",
+  "FABRIC_MANAGER",
 ]);
 const VALID_PRIORITY = new Set(["LOW", "NORMAL", "HIGH", "URGENT"]);
 
