@@ -160,6 +160,15 @@ export default function FabricDetailPage() {
           </button>
           {canEdit && (
             <a
+              href={`/tests/upload?fabricId=${fabric.id}`}
+              className="px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700"
+              title="Upload a lab test report PDF and attach it to this fabric"
+            >
+              📤 Upload Test Report
+            </a>
+          )}
+          {canEdit && (
+            <a
               href={`/admin/fabric-report/${id}/print`}
               className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-700"
               title="Open the customer-facing Full Application Report — recipe, in-house validation, and lab ICP all in one PDF-ready view. Send to customer from the report header."

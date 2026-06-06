@@ -1,6 +1,6 @@
 "use client";
 import { useState, useCallback, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useI18n } from "@/i18n";
 import SearchableSelect, { type SelectOption } from "@/components/SearchableSelect";
 import CreateInlineForm from "@/components/CreateInlineForm";
@@ -116,6 +116,7 @@ interface AIReview {
 export default function TestUploadPage() {
   const { t } = useI18n();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Upload state
@@ -220,7 +221,7 @@ export default function TestUploadPage() {
         // option label fell back to customerCode first, so the FUZE number was
         // never in any field SearchableSelect filters. Pack every code into the
         // visible label so any of fuzeNumber / customerCode / factoryCode hits.
-        setFabrics(faData.fabrics.map((f: any) => {
+        const mappedFabrics = faData.fabrics.map((f: any) => {
           const fuzeStr = f.fuzeNumber ? `FUZE ${f.fuzeNumber}` : null;
           const labelParts = [fuzeStr, f.customerCode, f.factoryCode].filter(Boolean);
           const detailParts = [f.brand, f.factory, f.construction, f.color].filter(Boolean);
@@ -229,7 +230,14 @@ export default function TestUploadPage() {
             name: labelParts.length ? labelParts.join(" · ") : f.id,
             detail: detailParts.length ? detailParts.join(" · ") : undefined,
           };
-        }));
+        });
+        setFabrics(mappedFabrics);
+        // Pre-fill from ?fabricId= query param (e.g. linked from fabric detail page)
+        const prefillId = searchParams?.get("fabricId");
+        if (prefillId) {
+          const match = mappedFabrics.find((f: SelectOption) => f.id === prefillId);
+          if (match) { setFabricId(match.id); setFabricName(match.name); }
+        }
       }
       if (pData.ok && pData.projects) {
         setProjects(pData.projects.map((p: any) => ({ id: p.id, name: p.name, detail: p.brandName ? `Brand: ${p.brandName}` : undefined })));
