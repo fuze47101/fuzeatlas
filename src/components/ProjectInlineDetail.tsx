@@ -22,6 +22,10 @@ export function ProjectInlineDetail({ projectId, surfaceTag }: { projectId: stri
   const [goalDraft, setGoalDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [addingTask, setAddingTask] = useState(false);
+  const [taskDesc, setTaskDesc] = useState("");
+  const [taskPriority, setTaskPriority] = useState("NORMAL");
+  const [taskBusy, setTaskBusy] = useState(false);
 
   const load = useCallback(async () => {
     setBusy(true);
@@ -105,6 +109,32 @@ export function ProjectInlineDetail({ projectId, surfaceTag }: { projectId: stri
     );
   }
 
+  async function addTask() {
+    const desc = taskDesc.trim();
+    if (!desc) return;
+    setTaskBusy(true);
+    try {
+      const r = await fetch(`/api/admin/projects/${projectId}/weekly-update`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ extraTasks: [{ description: desc, priority: taskPriority }] }),
+      });
+      const d = await r.json();
+      if (!d.ok) {
+        setError(d.error || "Failed to add task");
+        return;
+      }
+      setTaskDesc("");
+      setTaskPriority("NORMAL");
+      setAddingTask(false);
+      load();
+    } catch (e: any) {
+      setError(e?.message || "Network error");
+    } finally {
+      setTaskBusy(false);
+    }
+  }
+
   return (
     <div className="border-t border-slate-200 p-4 bg-slate-50 space-y-4">
       {error && (
@@ -157,9 +187,57 @@ export function ProjectInlineDetail({ projectId, surfaceTag }: { projectId: stri
       </section>
 
       <section>
-        <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
-          Action items ({allItems.length} total)
-        </h4>
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Action items ({allItems.length} total)
+          </h4>
+          {!addingTask && (
+            <button
+              onClick={() => setAddingTask(true)}
+              className="text-xs text-indigo-600 hover:underline"
+            >
+              + Add Task
+            </button>
+          )}
+        </div>
+        {addingTask && (
+          <div className="mb-3 bg-white border border-indigo-200 rounded-md p-3 space-y-2">
+            <input
+              type="text"
+              placeholder="Task description…"
+              value={taskDesc}
+              onChange={(e) => setTaskDesc(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") addTask(); if (e.key === "Escape") { setAddingTask(false); setTaskDesc(""); } }}
+              autoFocus
+              className="w-full px-2 py-1 border border-slate-300 rounded text-xs"
+            />
+            <div className="flex items-center gap-2">
+              <select
+                value={taskPriority}
+                onChange={(e) => setTaskPriority(e.target.value)}
+                className="px-2 py-1 border border-slate-300 rounded text-xs"
+              >
+                <option value="LOW">Low</option>
+                <option value="NORMAL">Normal</option>
+                <option value="HIGH">High</option>
+                <option value="URGENT">Urgent</option>
+              </select>
+              <button
+                onClick={addTask}
+                disabled={taskBusy || !taskDesc.trim()}
+                className="px-3 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50"
+              >
+                {taskBusy ? "Saving…" : "Add Task"}
+              </button>
+              <button
+                onClick={() => { setAddingTask(false); setTaskDesc(""); setTaskPriority("NORMAL"); }}
+                className="text-xs text-slate-500 hover:underline"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
         {(["OPEN", "DONE", "BLOCKED", "CANCELLED"] as const).map((s) =>
           (byStatus[s] || []).length === 0 ? null : (
             <div key={s} className="mb-3">
@@ -184,7 +262,7 @@ export function ProjectInlineDetail({ projectId, surfaceTag }: { projectId: stri
             </div>
           ),
         )}
-        {allItems.length === 0 && (
+        {allItems.length === 0 && !addingTask && (
           <div className="text-xs text-slate-500 italic">No action items yet.</div>
         )}
       </section>
