@@ -98,10 +98,13 @@ export default function BulkEnrichButton({
         remaining: data.brandsRemainingNoContacts ?? 0,
         lastBatchSize: data.brandsEnriched || 0,
       }));
-      if ((data.brandsRemainingNoContacts ?? 0) === 0) {
-        // Slight delay so the user sees the "✓ Done" state before
-        // the parent reacts.
-        setTimeout(() => onPipelineReady?.(), 600);
+      // BUG 1 (Barth 2026-06-05) — used to only fire onPipelineReady
+      // when remaining hit 0. Barth ran AI Research, saw new brands
+      // get created mid-batch, but the parent list never refreshed
+      // until he hit reload. Fire after EVERY successful batch so the
+      // pipeline list reflects what just got added.
+      if ((data.brandsEnriched || 0) > 0) {
+        onPipelineReady?.();
       }
     } catch (e: any) {
       setProgress((p) => ({

@@ -90,7 +90,16 @@ export async function POST(req: NextRequest) {
 
     if (person.email && person.email_status !== "unavailable") {
       updateData.email = person.email;
-      updateData.emailStatus = person.email_status;
+      // BUG 2 (Barth 2026-06-05) — run our own deliverability gate
+      // alongside Apollo's signal. mergeApolloStatus prefers Apollo's
+      // verdict when present; falls back to MX lookup otherwise.
+      const { classifyForImport } = await import("@/lib/email-verify");
+      const cls = await classifyForImport({
+        email: person.email,
+        apolloStatus: person.email_status,
+      });
+      updateData.emailStatus = cls.status;
+      updateData.emailValidity = cls.validity;
     }
     if (person.personal_emails?.length > 0) {
       updateData.personalEmail = person.personal_emails.join(";");

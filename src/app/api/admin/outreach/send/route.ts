@@ -136,6 +136,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // BUG 2 (Barth 2026-06-05) — refuse to send to known-invalid
+    // email addresses. The contact's emailStatus is stamped at import
+    // time + by Apollo enrichment; if it's already "invalid" /
+    // "bounced" the user has been warned in the UI and the row has a
+    // visual line-through. Catch the case where they hit Send anyway.
+    if (channel === "email" && (contact as any).emailStatus) {
+      const { isSendForbidden } = await import("@/lib/email-verify");
+      if (isSendForbidden((contact as any).emailStatus)) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: `This contact's email is marked ${(contact as any).emailStatus} — send blocked to protect your sender reputation. Update the contact with a verified address first.`,
+            emailStatus: (contact as any).emailStatus,
+          },
+          { status: 422 }
+        );
+      }
+    }
+
     let externalId: string | null = null;
     let status = "sent";
     let failReason: string | null = null;

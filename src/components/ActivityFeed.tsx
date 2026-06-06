@@ -177,6 +177,36 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
     } catch {}
   };
 
+  // FEATURE 7 (Barth 2026-06-05) — inline note editing.
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingNoteText, setEditingNoteText] = useState("");
+  const handleStartEdit = (noteId: string, current: string) => {
+    setEditingNoteId(noteId);
+    setEditingNoteText(current || "");
+  };
+  const handleSaveEdit = async (noteId: string) => {
+    const next = editingNoteText.trim();
+    if (!next) return;
+    // Optimistic local update.
+    setTimeline((arr) =>
+      arr.map((x) =>
+        x.id === noteId && x.type === "note" ? { ...x, content: next } : x,
+      ),
+    );
+    setEditingNoteId(null);
+    try {
+      const r = await fetch(`/api/notes/${noteId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: next }),
+      });
+      const d = await r.json();
+      if (!d.ok) loadActivity(); // revert via reload on error
+    } catch {
+      loadActivity();
+    }
+  };
+
   const filtered = filter === "all" ? timeline : timeline.filter((item) => {
     if (filter === "notes") return item.type === "note";
     if (filter === "outreach") return item.type === "outreach";
@@ -463,8 +493,41 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
                       </p>
                     )}
 
-                    {item.content && (
+                    {item.content && !(item.type === "note" && editingNoteId === item.id) && (
                       <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{item.content}</p>
+                    )}
+                    {item.type === "note" && editingNoteId === item.id && (
+                      <div className="mt-1">
+                        <textarea
+                          autoFocus
+                          value={editingNoteText}
+                          onChange={(e) => setEditingNoteText(e.target.value)}
+                          onKeyDown={(e) => {
+                            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+                              e.preventDefault();
+                              handleSaveEdit(item.id);
+                            }
+                            if (e.key === "Escape") setEditingNoteId(null);
+                          }}
+                          rows={Math.min(8, Math.max(2, editingNoteText.split("\n").length + 1))}
+                          className="w-full px-2 py-1 text-sm border border-blue-300 rounded-md font-mono"
+                        />
+                        <div className="mt-1 flex items-center gap-2">
+                          <button
+                            onClick={() => handleSaveEdit(item.id)}
+                            className="px-3 py-1 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingNoteId(null)}
+                            className="px-3 py-1 text-xs text-slate-600 hover:underline"
+                          >
+                            Cancel
+                          </button>
+                          <span className="text-[10px] text-slate-400">⌘+↵ to save · esc to cancel</span>
+                        </div>
+                      </div>
                     )}
 
                     {item.type === "meeting" && (
@@ -483,14 +546,22 @@ export default function ActivityFeed({ entityType, entityId }: { entityType: "br
                     )}
                   </div>
 
-                  {/* Delete (notes only) */}
+                  {/* Edit + Delete (notes only) — FEATURE 7 inline edit */}
                   {item.type === "note" && (
-                    <button
-                      onClick={() => handleDeleteNote(item.id)}
-                      className="text-xs text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 self-start mt-1"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex flex-col items-end gap-1 shrink-0 self-start mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => handleStartEdit(item.id, item.content || "")}
+                        className="text-xs text-blue-500 hover:text-blue-700"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteNote(item.id)}
+                        className="text-xs text-red-400 hover:text-red-600"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   )}
                 </div>
               );

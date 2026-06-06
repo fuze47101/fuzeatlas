@@ -1036,6 +1036,11 @@ model Contact {
   bdSequences      BDSequence[]      @relation("ContactBDSequences")
   notes            Note[]
 
+  // Phase 59 / FEATURE 5 (Barth 2026-06-05) — one primary contact per
+  // company. The API layer enforces "only one true per (brandId,
+  // factoryId, distributorId) tuple" at set time.
+  isPrimary Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1046,6 +1051,7 @@ model Contact {
   @@index([vertical])
   @@index([hiddenFromWizard])
   @@index([hygieneVerdict])
+  @@index([isPrimary])
 }
 
 // ─────────────────────────────────────────────

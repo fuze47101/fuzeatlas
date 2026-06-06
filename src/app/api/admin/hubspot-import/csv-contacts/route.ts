@@ -328,6 +328,30 @@ export async function POST(req: Request) {
           stats.linkedToDistributor++;
         }
 
+        // BUG 2 (Barth 2026-06-05) — stamp emailStatus + emailValidity
+        // BEFORE the contact row goes into the DB so the import never
+        // surfaces an unverified address as "sendable". classify() is
+        // sync (format/role/disposable filter); MX lookup only fires
+        // for addresses that pass the sync gate.
+        if (email) {
+          try {
+            const { classify, verifyDeliverable } = await import("@/lib/email-verify");
+            const initial = classify(email);
+            if (initial.status === "invalid" || initial.status === "risky") {
+              data.emailStatus = initial.status;
+              data.emailValidity = initial.validity;
+            } else {
+              const cls = await verifyDeliverable(email);
+              data.emailStatus = cls.status;
+              data.emailValidity = cls.validity;
+            }
+          } catch {
+            // DNS hiccup — leave unverified rather than blocking import.
+            data.emailStatus = data.emailStatus || "unverified";
+            data.emailValidity = data.emailValidity || "unknown";
+          }
+        }
+
         // 1. Match on hubspotId
         let existing = hubspotId
           ? await prisma.contact.findUnique({ where: { hubspotId } })

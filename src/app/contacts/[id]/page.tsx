@@ -220,7 +220,11 @@ export default function ContactDetailPage() {
 
   return (
     <div className="p-4 sm:p-8 max-w-5xl mx-auto">
-      {/* Breadcrumb */}
+      {/* Breadcrumb — BUG 3 + BUG 4 fix (Barth 2026-06-05).
+          "Contacts" links to /contacts (now a real page, not 404), and
+          when the contact has a parent company we route the
+          intermediate link to /contacts?<parentKind>Id=<id> so back
+          navigation lands on the originating company's contact list. */}
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
         <Link href="/contacts" className="hover:text-slate-700">
           {T.contactsBreadcrumb}
@@ -228,7 +232,17 @@ export default function ContactDetailPage() {
         {parent && (
           <>
             <span>›</span>
-            <Link href={parent.href} className="hover:text-slate-700">
+            <Link
+              href={
+                parent.kind === "brand"
+                  ? `/contacts?brandId=${parent.id}`
+                  : parent.kind === "factory"
+                    ? `/contacts?factoryId=${parent.id}`
+                    : `/contacts?distributorId=${parent.id}`
+              }
+              className="hover:text-slate-700"
+              title={`Back to ${parent.name} contacts`}
+            >
               {parent.name}
             </Link>
           </>
@@ -247,7 +261,27 @@ export default function ContactDetailPage() {
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">{displayName}</h1>
+                <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                  {(contact as any).isPrimary && (
+                    <span title="Primary contact for this company" className="text-amber-500">⭐</span>
+                  )}
+                  {displayName}
+                </h1>
+                {/* FEATURE 5 (Barth 2026-06-05) — Make / unmake primary toggle */}
+                <button
+                  onClick={async () => {
+                    const target = !((contact as any).isPrimary);
+                    await fetch(`/api/contacts/${contact.id}`, {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ isPrimary: target }),
+                    });
+                    location.reload();
+                  }}
+                  className="mt-1 text-[11px] text-indigo-600 hover:underline"
+                >
+                  {(contact as any).isPrimary ? "Unmark as primary" : "Make primary"}
+                </button>
                 {displayTitle && <div className="text-slate-600 mt-0.5">{displayTitle}</div>}
                 {parent && (
                   <div className="text-sm text-slate-500 mt-0.5 flex items-center gap-2">

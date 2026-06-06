@@ -73,6 +73,31 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       data.distributorId = body.distributorId || null;
     }
 
+    // FEATURE 5 (Barth 2026-06-05) — when caller sets isPrimary:true,
+    // demote every other contact at the same company first so the
+    // "only one primary" invariant holds.
+    if (body.isPrimary === true) {
+      const me = await prisma.contact.findUnique({
+        where: { id },
+        select: { brandId: true, factoryId: true, distributorId: true } as any,
+      });
+      if (me) {
+        const scope: any = {};
+        if ((me as any).brandId) scope.brandId = (me as any).brandId;
+        else if ((me as any).factoryId) scope.factoryId = (me as any).factoryId;
+        else if ((me as any).distributorId) scope.distributorId = (me as any).distributorId;
+        if (Object.keys(scope).length > 0) {
+          await prisma.contact.updateMany({
+            where: { ...scope, id: { not: id }, isPrimary: true } as any,
+            data: { isPrimary: false } as any,
+          });
+        }
+      }
+      data.isPrimary = true;
+    } else if (body.isPrimary === false) {
+      data.isPrimary = false;
+    }
+
     const contact = await prisma.contact.update({ where: { id }, data });
 
     // Log the reassignment as a Note on the OLD brand so the audit

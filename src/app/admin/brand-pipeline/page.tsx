@@ -293,7 +293,7 @@ export default function BrandPipelinePage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
-          <BulkEnrichButton variant="compact" />
+          <BulkEnrichButton variant="compact" onPipelineReady={loadData} />
           <Link
             href="/admin/brand-discovery"
             className="px-3 py-2 text-xs font-bold rounded-lg bg-cyan-100 text-cyan-700 hover:bg-cyan-200 transition"

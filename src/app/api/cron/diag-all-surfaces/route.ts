@@ -785,6 +785,17 @@ export async function GET(req: Request) {
       () =>
         (prisma as any).brand.count({ where: { subtype: "OEM" } }),
     ),
+    // Phase 59 (Barth 2026-06-05) — Contact primary + email gates.
+    check(
+      "/contacts — Contact.isPrimary column readable",
+      "contact count w/ isPrimary true",
+      () => prisma.contact.count({ where: { isPrimary: true } as any }),
+    ),
+    check(
+      "/contacts — Contact.emailStatus column has values",
+      "contact count w/ emailStatus not null",
+      () => prisma.contact.count({ where: { emailStatus: { not: null } } as any }),
+    ),
     // Phase 57 — auto-triage workflow health.
     check(
       "auto-triage GitHub Action — TriageRun table readable",

@@ -8,17 +8,48 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const brandId = searchParams.get("brandId");
     const factoryId = searchParams.get("factoryId");
+    const distributorId = searchParams.get("distributorId");
 
     const where: any = {};
     if (brandId) where.brandId = brandId;
     if (factoryId) where.factoryId = factoryId;
+    if (distributorId) where.distributorId = distributorId;
 
     const contacts = await prisma.contact.findMany({
       where,
+      include: {
+        brand: { select: { id: true, name: true } } as any,
+        factory: { select: { id: true, name: true } } as any,
+        // FEATURE 6 (Barth 2026-06-05) — most recent Note so the list
+        // can surface "last activity" inline without an extra request.
+        notes: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: {
+            id: true,
+            content: true,
+            noteType: true,
+            createdAt: true,
+            user: { select: { id: true, name: true } } as any,
+          },
+        } as any,
+      },
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ ok: true, contacts });
+    let parentLabel: string | null = null;
+    if (brandId) {
+      const b = await (prisma as any).brand.findUnique({ where: { id: brandId }, select: { name: true } });
+      if (b) parentLabel = b.name;
+    } else if (factoryId) {
+      const f = await (prisma as any).factory.findUnique({ where: { id: factoryId }, select: { name: true } });
+      if (f) parentLabel = f.name;
+    } else if (distributorId) {
+      const d = await (prisma as any).distributor.findUnique({ where: { id: distributorId }, select: { name: true } });
+      if (d) parentLabel = d.name;
+    }
+
+    return NextResponse.json({ ok: true, contacts, parentLabel });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
