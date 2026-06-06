@@ -42,10 +42,14 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Read locale from cookie so server-rendered HTML carries the right
-  // lang + dir attributes. Falls back to "en" for first visits.
-  // RTL: ur is the only RTL locale we ship; flip dir accordingly.
+  // lang attribute. Falls back to "en" for first visits.
+  // BUG 3 (Tina cmplvllhg0001lb04ysg3sj9u 2026-06-05): dir is locked
+  // to "ltr" for every locale until Atlas ships a real RTL pass.
+  // Switching to ur previously flipped the page upside down for the
+  // user — the layout, sidebar, and inputs aren't mirrored, so dir=rtl
+  // produced visual chaos. Text-only locale changes for all 17.
   const locale = await getServerLocale();
-  const dir = locale === "ur" ? "rtl" : "ltr";
+  const dir = "ltr";
   return (
     <html lang={locale} dir={dir}>
       <head>

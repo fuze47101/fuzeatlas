@@ -53,10 +53,17 @@ export default function I18nProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  // Update HTML attributes when locale changes
+  // Update HTML attributes when locale changes.
+  // BUG 3 (Tina cmplvllhg0001lb04ysg3sj9u 2026-06-05): switching locale
+  // used to flip dir=rtl for Urdu. Atlas isn't RTL-ready (only a few
+  // .sidebar-nav rules in globals.css) so the rest of the layout
+  // inverted/broke for any user who hit `ur`. Gating to dir=ltr until
+  // a real RTL pass ships — text-only changes for all 17 locales,
+  // no layout mirroring. See globals.css html[dir="rtl"] rules — they
+  // are dormant now but kept so the future RTL project can reactivate.
   useEffect(() => {
     document.documentElement.lang = locale;
-    document.documentElement.dir = locale === "ur" ? "rtl" : "ltr";
+    document.documentElement.dir = "ltr";
   }, [locale]);
 
   const setLocale = (l: Locale) => {
