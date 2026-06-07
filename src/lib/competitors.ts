@@ -112,20 +112,28 @@ export const COMPETITORS: Competitor[] = [
     maxWashClaim: 50,
     washClaimNote: "LANXESS marketing claim. EPA registration covers active ingredient only — no third-party validated AATCC 100 wash data publicly available.",
     washClaimSource: "marketing",
-    binderRequired: true,
-    binderGPerKg: 15,
-    binderType: "Acrylic co-polymer with crosslinker",
-    binderPricePerKg: 3.50,
-    binderLeachPctLifetime: 12,
-    binderVOC: true,
-    binderFormaldehyde: true,
-    curingRequired: true,
-    curingTempC: 160,
+    // Phase 60.5 (Tina cmp21cxdf 2026-06-06) — corrected after DuPont TDS
+    // 101-TD audit. Silvadur 930 Flex self-binds via its proprietary
+    // polymer carrier ("Smart control polymer: binds silver sufficiently
+    // to enable at least 50 home launderings"). The TDS specifies pH
+    // adjustment with acetic acid + acetate buffer and drying not above
+    // 180°C — no external crosslinker, no DMDHEU, no melamine-formaldehyde
+    // chemistry called for. Earlier entry assumed acrylic-binder defaults
+    // that didn't survive the published TDS. The polymer IS the binder.
+    binderRequired: false,
+    binderGPerKg: 0,
+    binderType: "Self-binding via proprietary polymer carrier (no external resin)",
+    binderPricePerKg: 0,
+    binderLeachPctLifetime: 0,
+    binderVOC: false,
+    binderFormaldehyde: false,
+    curingRequired: false,
+    curingTempC: 180, // drying ceiling per TDS, not a thermal cure
     leachRateFirst10Washes: 35,
     leachRatePerWash: 3.5,
     heavyMetalReleased: "Silver",
     aquaticToxicityNote: "Silver continues leaching in landfill conditions post-disposal",
-    endOfLifeNote: "99%+ ingredients undisclosed on EPA label",
+    endOfLifeNote: "99.902% Other Ingredients undisclosed on EPA Reg 464-785 — polymer carrier composition not published.",
     chemicalPricePerKg: 65,
     chemicalPriceSource: "Estimate: LANXESS premium silver ion, branded distribution (China ≈$55-75/kg)",
     estimatedCostPerMeterLow: 0.04,
