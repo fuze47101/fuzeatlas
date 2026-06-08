@@ -100,8 +100,12 @@ export async function GET(
   // matches /admin/projects/weekly: closed projects excluded, then
   // sorted by lastUpdatedAt asc (most stale first), createdAt asc
   // as tiebreaker.
+  // 2026-06-08 — was `where: { closedAt: null }`. That excluded the
+  // current project when it was closed (idx === -1, prev/next both
+  // null), so opening any project directly via deep-link showed no
+  // navigation. Include every project; the user wants to walk
+  // Prev→Next through all of them while taking notes.
   const siblings = await prisma.project.findMany({
-    where: { closedAt: null } as any,
     select: {
       id: true,
       name: true,

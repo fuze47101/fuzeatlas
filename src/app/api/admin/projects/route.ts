@@ -102,9 +102,16 @@ export async function POST(req: Request) {
 
       const kickoff = await (tx as any).meetingNote.create({
         data: {
-          title: `Project Kickoff — ${project.name}`,
+          // 2026-06-08 — was `Project Kickoff — ${project.name}`; the
+          // prefix is noise on the meeting-notes list and the project
+          // name alone is the identifier the team navigates by.
+          title: project.name,
           meetingDate: new Date(),
-          status: "COMPLETED",
+          // 2026-06-08 — was "COMPLETED", which made every active
+          // project's kickoff show up as already-done on
+          // /meeting-notes. The weekly-update route flips this to
+          // COMPLETED only when markComplete is true.
+          status: "IN_PROGRESS",
           notesMd: "",
           brandId: project.brandId,
           factoryId: project.factoryId,
