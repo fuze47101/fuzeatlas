@@ -79,13 +79,14 @@ export async function GET(
     .count({ where: { projectId: id } })
     .catch(() => 0);
 
-  // Last 5 MeetingNoteEntry rows across every meeting note tied to
-  // this project — drives the "Recent activity" strip in the inline
-  // expanded row.
+  // 2026-06-08 — was take:5 ("recent activity strip"). The detail
+  // page now renders the project's full chronological note log, so
+  // return every entry ordered most-recent first. Pre-existing
+  // callers that only need the latest 5 read the same field.
   const recentEntries = await (prisma as any).meetingNoteEntry.findMany({
     where: { meetingNote: { projectId: id } },
     orderBy: { createdAt: "desc" },
-    take: 5,
+    take: 500,
     select: {
       id: true,
       bodyMd: true,

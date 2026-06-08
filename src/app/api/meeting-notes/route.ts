@@ -33,7 +33,13 @@ export async function GET(req: Request) {
   if (!INTERNAL_ROLES.has(user.role)) return forbidden();
 
   const url = new URL(req.url);
-  const where: any = {};
+  // 2026-06-08 — project-backed kickoff MeetingNotes are containers
+  // for per-project note logs (rendered inside /admin/projects/[id]),
+  // not standalone meetings. Filter them out of the meetings list so
+  // /meeting-notes shows only the Monday Global series + ad-hoc
+  // meetings. Pass ?includeProjects=1 to surface them anyway.
+  const includeProjects = url.searchParams.get("includeProjects") === "1";
+  const where: any = includeProjects ? {} : { projectId: null };
   const seriesId = url.searchParams.get("seriesId");
   const brandId = url.searchParams.get("brandId");
   const factoryId = url.searchParams.get("factoryId");

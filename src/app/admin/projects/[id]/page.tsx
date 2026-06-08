@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { TaskInlineRow } from "@/components/TaskInlineRow";
 import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
 
-type Tab = "overview" | "grid" | "tasks" | "meetings";
+type Tab = "notes" | "overview" | "grid" | "tasks" | "meetings";
 
 interface ProjectMeta {
   id: string;
@@ -109,7 +109,15 @@ function AdminProjectDetailPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
 
-  const [tab, setTab] = useState<Tab>("overview");
+  // 2026-06-08 — Notes tab is the new default. Projects are now
+  // running, date-stamped note logs first; Overview / Grid / Tasks /
+  // Meetings stay reachable.
+  const [tab, setTab] = useState<Tab>("notes");
+  // FEATURE — chronological dated note log + Add Note input.
+  const [recentEntries, setRecentEntries] = useState<Array<any>>([]);
+  const [noteDraft, setNoteDraft] = useState("");
+  const [noteSaving, setNoteSaving] = useState(false);
+  const [noteError, setNoteError] = useState<string | null>(null);
   const [project, setProject] = useState<ProjectMeta | null>(null);
   const [counts, setCounts] = useState<any>({});
   const [actionItems, setActionItems] = useState<ActionItemRow[]>([]);
@@ -144,6 +152,7 @@ function AdminProjectDetailPage() {
         setActionItems(d.actionItems || []);
         setMeetings(d.meetings || []);
         setSiblings(d.siblings || null);
+        setRecentEntries(d.recentEntries || []);
       }
     } catch (e: any) {
       setErr(e?.message || "Load failed");
@@ -323,7 +332,7 @@ function AdminProjectDetailPage() {
       </div>
 
       <div className="border-b border-slate-200 mb-4 flex items-center gap-1">
-        {(["overview", "grid", "tasks", "meetings"] as Tab[]).map((t) => (
+        {(["notes", "overview", "grid", "tasks", "meetings"] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -333,10 +342,84 @@ function AdminProjectDetailPage() {
                 : "border-transparent text-slate-600 hover:text-slate-900"
             }`}
           >
-            {t === "overview" ? "Overview" : t === "grid" ? "Sample Grid" : t === "tasks" ? `Tasks (${counts.openActionItems || 0})` : `Meetings (${counts.meetings || 0})`}
+            {t === "notes" ? `Notes (${recentEntries.length})` : t === "overview" ? "Overview" : t === "grid" ? "Sample Grid" : t === "tasks" ? `Tasks (${counts.openActionItems || 0})` : `Meetings (${counts.meetings || 0})`}
           </button>
         ))}
       </div>
+
+      {tab === "notes" && (
+        <div className="rounded-lg border border-slate-200 bg-white p-4">
+          <h2 className="text-sm font-semibold text-slate-900 mb-2">Add note</h2>
+          {noteError && (
+            <div className="mb-2 rounded-md border border-rose-200 bg-rose-50 p-2 text-xs text-rose-700">{noteError}</div>
+          )}
+          <textarea
+            value={noteDraft}
+            onChange={(e) => setNoteDraft(e.target.value)}
+            placeholder="Drop a note — use @username to assign tasks; URGENT / HIGH for priority; 'by Friday' for due dates."
+            rows={3}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm font-mono"
+            disabled={noteSaving}
+          />
+          <div className="mt-2 flex items-center justify-end gap-2">
+            <button
+              onClick={async () => {
+                const draft = noteDraft.trim();
+                if (!draft) return;
+                setNoteSaving(true);
+                setNoteError(null);
+                try {
+                  const r = await fetch(`/api/admin/projects/${project.id}/notes`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ bodyMd: draft }),
+                  });
+                  const d = await r.json();
+                  if (!r.ok || !d.ok) {
+                    setNoteError(d.error || `HTTP ${r.status}`);
+                    return;
+                  }
+                  setNoteDraft("");
+                  await refresh();
+                } catch (e: any) {
+                  setNoteError(e?.message || "Network error");
+                } finally {
+                  setNoteSaving(false);
+                }
+              }}
+              disabled={noteSaving || !noteDraft.trim()}
+              className="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+            >
+              {noteSaving ? "Saving…" : "Add note"}
+            </button>
+          </div>
+
+          <h2 className="text-sm font-semibold text-slate-900 mt-6 mb-2">
+            Note log ({recentEntries.length})
+          </h2>
+          {recentEntries.length === 0 ? (
+            <p className="text-xs text-slate-500 italic">No notes yet — drop your first one above.</p>
+          ) : (
+            <ul className="space-y-3">
+              {recentEntries.map((e: any) => {
+                const ts = new Date(e.createdAt);
+                return (
+                  <li key={e.id} className="border-l-2 border-indigo-200 pl-3">
+                    <div className="text-[11px] text-slate-500">
+                      <strong className="text-slate-700">{ts.toLocaleDateString(undefined, { weekday: "short", year: "numeric", month: "short", day: "numeric" })}</strong>
+                      {" · "}{ts.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
+                      {e.author?.name && <> · {e.author.name}</>}
+                    </div>
+                    <pre className="mt-1 whitespace-pre-wrap font-sans text-sm text-slate-800 leading-relaxed">
+                      {e.bodyMd}
+                    </pre>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      )}
 
       {tab === "overview" && (
         <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4">
