@@ -130,33 +130,36 @@ async function handle(req: Request) {
     });
   }
 
+  // Batched. Sequential per-brand $transactions hit the Vercel
+  // function timeout around ~400 rows on the first call. updateMany
+  // + createMany finish the whole 557-row batch in <2s.
   let unclaimed = 0;
   const failures: any[] = [];
-  for (const b of noResponse) {
+  const ids = noResponse.map((b: any) => b.id);
+  if (ids.length > 0) {
     try {
-      await prisma.$transaction([
-        (prisma as any).brand.update({
-          where: { id: b.id },
-          data: {
-            salesRepId: null,
-            reservedBy: null,
-            reservedUntil: null,
-            inactivityWarnedAt: null,
-          },
-        }),
-        prisma.note.create({
-          data: {
-            brandId: b.id,
-            userId: owner.id, // attribute audit to the prior owner
-            noteType: "NOTE",
-            content: NOTE_TEXT,
-            date: new Date(),
-          },
-        }),
-      ]);
-      unclaimed++;
+      const r = await (prisma as any).brand.updateMany({
+        where: { id: { in: ids } },
+        data: {
+          salesRepId: null,
+          reservedBy: null,
+          reservedUntil: null,
+          inactivityWarnedAt: null,
+        },
+      });
+      unclaimed = r.count;
+      const now = new Date();
+      await prisma.note.createMany({
+        data: ids.map((id: string) => ({
+          brandId: id,
+          userId: owner.id,
+          noteType: "NOTE",
+          content: NOTE_TEXT,
+          date: now,
+        })),
+      });
     } catch (e: any) {
-      failures.push({ id: b.id, name: b.name, error: e?.message || String(e) });
+      failures.push({ batchSize: ids.length, error: e?.message || String(e) });
     }
   }
 

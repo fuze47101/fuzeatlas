@@ -37,10 +37,12 @@ async function handle(req: Request) {
   const url = new URL(req.url);
   const region = url.searchParams.get("region") || "Global";
   const count = Math.max(1, Math.min(Number(url.searchParams.get("count") || 12) | 0, 25));
-  const baseUrl =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
-    "http://localhost:3000";
+  // Invoke the discover handler in-process. An HTTP fetch to
+  // /api/brands/discover would be intercepted by src/middleware.ts
+  // (which exempts /api/cron but not /api/brands/discover) and
+  // bounced as "Authentication required" before the route's own
+  // x-cron-secret check could run.
+  const { POST: discoverPOST } = await import("@/app/api/brands/discover/route");
 
   const results: any[] = [];
   let totalCreated = 0;
@@ -48,7 +50,7 @@ async function handle(req: Request) {
 
   for (const category of TARGET_CATEGORIES) {
     try {
-      const r = await fetch(`${baseUrl}/api/brands/discover`, {
+      const synthetic = new Request("http://internal/api/brands/discover", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,6 +58,7 @@ async function handle(req: Request) {
         },
         body: JSON.stringify({ category, region, count, excludeExisting: true }),
       });
+      const r = await discoverPOST(synthetic as any);
       const d = await r.json();
       const created = d?.summary?.created || 0;
       const skipped = d?.summary?.skipped || 0;

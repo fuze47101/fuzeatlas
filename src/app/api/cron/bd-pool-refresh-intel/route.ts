@@ -117,13 +117,12 @@ async function handle(req: Request) {
       orderBy: { enrichedAt: "asc" }, // oldest enrichment first
       take: apolloLimit,
     });
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
-      "http://localhost:3000";
+    // In-process invoke to skip middleware (same fix as
+    // bd-pool-discovery-sweep — see that file's comment).
+    const { POST: enrichPOST } = await import("@/app/api/admin/outreach/enrich/route");
     for (const c of apolloTargets) {
       try {
-        const r = await fetch(`${baseUrl}/api/admin/outreach/enrich`, {
+        const synthetic = new Request("http://internal/api/admin/outreach/enrich", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -131,6 +130,7 @@ async function handle(req: Request) {
           },
           body: JSON.stringify({ contactId: c.id, apolloId: c.apolloId }),
         });
+        const r = await enrichPOST(synthetic as any);
         const d = await r.json().catch(() => ({ ok: false }));
         if (r.ok && d?.ok) {
           apolloRefreshed++;
