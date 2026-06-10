@@ -235,7 +235,7 @@ export default function TestUploadPage() {
         // option label fell back to customerCode first, so the FUZE number was
         // never in any field SearchableSelect filters. Pack every code into the
         // visible label so any of fuzeNumber / customerCode / factoryCode hits.
-        setFabrics(faData.fabrics.map((f: any) => {
+        const fabricList: SelectOption[] = faData.fabrics.map((f: any) => {
           const fuzeStr = f.fuzeNumber ? `FUZE ${f.fuzeNumber}` : null;
           const labelParts = [fuzeStr, f.customerCode, f.factoryCode].filter(Boolean);
           const detailParts = [f.brand, f.factory, f.construction, f.color].filter(Boolean);
@@ -244,7 +244,19 @@ export default function TestUploadPage() {
             name: labelParts.length ? labelParts.join(" · ") : f.id,
             detail: detailParts.length ? detailParts.join(" · ") : undefined,
           };
-        }));
+        });
+        setFabrics(fabricList);
+        // Resolve display name for fabric pre-filled from ?fabricId= URL param.
+        // When navigating from the fabric detail page, fabricId is set from the
+        // URL but fabricName is not, leaving SearchableSelect with value but no
+        // displayValue — the dropdown is suppressed and typing does nothing.
+        if (typeof window !== "undefined") {
+          const urlFabricId = new URLSearchParams(window.location.search).get("fabricId");
+          if (urlFabricId) {
+            const match = fabricList.find((opt) => opt.id === urlFabricId);
+            if (match) setFabricName(match.name);
+          }
+        }
       }
       if (pData.ok && pData.projects) {
         setProjects(pData.projects.map((p: any) => ({ id: p.id, name: p.name, detail: p.brandName ? `Brand: ${p.brandName}` : undefined })));
