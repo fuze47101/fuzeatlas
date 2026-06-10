@@ -13,8 +13,14 @@ import { uploadDocument } from "@/lib/upload";
 /* ── PDF text extraction (lightweight, no native deps) ────────── */
 async function extractPdfText(buffer: Buffer): Promise<string> {
   const pdfParse = (await import("pdf-parse")).default;
-  const data = await pdfParse(buffer);
-  return data.text;
+  // Guard against pdf-parse hanging indefinitely on malformed/encrypted PDFs.
+  // If it doesn't resolve in 15 s we reject early so the upload route can
+  // still return a useful error (parseError) instead of timing out entirely.
+  const parsePromise = pdfParse(buffer).then((d: any) => d.text as string);
+  const timeoutPromise = new Promise<string>((_, reject) =>
+    setTimeout(() => reject(new Error("PDF text extraction timed out")), 15000),
+  );
+  return Promise.race([parsePromise, timeoutPromise]);
 }
 
 /* ── Call AI review endpoint internally ───────────────────────── */
@@ -22,9 +28,8 @@ async function callAIReview(parsed: ParsedITSReport): Promise<any> {
   try {
     // Build the base URL from environment or default
     const baseUrl =
-      process.env.NEXTAUTH_URL || process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
+      process.env.NEXTAUTH_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
     const response = await fetch(`${baseUrl}/api/tests/review`, {
       method: "POST",
