@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
 import { useI18n } from "@/i18n";
+import { uploadTestReport } from "@/lib/upload-client";
 
 interface UploadResult {
   documentId: string;
@@ -153,25 +154,19 @@ export default function LabUploadPage() {
     setResult(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/tests/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const json = await res.json();
-
-      if (!json.ok) {
-        setError(json.error || "Upload failed");
+      // Presigned-S3 flow (handles >4.5 MB without hitting Vercel's
+      // body-size limit; surfaces real errors instead of JSON-parse
+      // crashes). See src/lib/upload-client.ts.
+      const result = await uploadTestReport(file);
+      if (!result.ok) {
+        setError(result.error || "Upload failed");
         return;
       }
-
-      setResult(json);
-      setUploadHistory((prev) => [json, ...prev]);
+      setResult(result.data);
+      setUploadHistory((prev) => [result.data, ...prev]);
       setFile(null);
     } catch (err: any) {
-      setError(err.message);
+      setError(err?.message || "Upload failed");
     } finally {
       setUploading(false);
     }

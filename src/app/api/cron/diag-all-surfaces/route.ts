@@ -839,6 +839,21 @@ export async function GET(req: Request) {
           },
         }),
     ),
+    // Kaylee Pace June 2026 — presigned-S3 upload pipeline. Confirms
+    // /api/tests/upload-url + Document insertion stay healthy so
+    // big-PDF uploads (the >4.5 MB Vercel-limit class) don't regress.
+    // The full end-to-end probe (synthetic 5 MB PUT through S3) lives
+    // at /api/cron/diag-upload-pipeline because it has external side
+    // effects.
+    check(
+      "/tests/upload — Document.bucket+key columns writable (presigned path)",
+      "document findFirst w/ bucket+key selected",
+      () =>
+        prisma.document.findFirst({
+          where: { bucket: { not: null } },
+          select: { id: true, bucket: true, key: true, url: true, kind: true },
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

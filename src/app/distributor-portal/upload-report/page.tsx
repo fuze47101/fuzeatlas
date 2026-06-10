@@ -6,6 +6,7 @@ import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { uploadTestReport } from "@/lib/upload-client";
 
 export default function DistributorUploadReportPage() {
   const { user } = useAuth();
@@ -49,24 +50,18 @@ export default function DistributorUploadReportPage() {
     setResult(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/tests/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-
-      if (data.error) {
-        setError(data.error);
+      // Presigned-S3 flow (handles >4.5 MB without hitting Vercel's
+      // body-size limit). See src/lib/upload-client.ts.
+      const result = await uploadTestReport(file);
+      if (!result.ok) {
+        setError(result.error || "Upload failed. Please try again.");
       } else {
-        setResult(data);
+        setResult(result.data);
         setFile(null);
         loadUploads();
       }
-    } catch {
-      setError("Upload failed. Please try again.");
+    } catch (err: any) {
+      setError(err?.message || "Upload failed. Please try again.");
     } finally {
       setUploading(false);
     }

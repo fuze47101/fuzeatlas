@@ -5,6 +5,39 @@ import { useI18n } from "@/i18n";
 import SearchableSelect, { type SelectOption } from "@/components/SearchableSelect";
 import CreateInlineForm from "@/components/CreateInlineForm";
 
+/**
+ * Safe-parse a fetch response. The old `res.json()` blindly parsed
+ * whatever came back — when Vercel rejected a >4.5 MB upload it
+ * returned plain-text "Request Entity Too Large", which `res.json()`
+ * crashed with "Unexpected token 'R'". Now we check status + content-
+ * type before parsing, and surface a readable error otherwise.
+ * Tickets cmq5jnzyp / cmq6wonit / cmq8ipirf.
+ */
+async function safeJson(res: Response, label = "request"): Promise<any> {
+  const ct = (res.headers.get("content-type") || "").toLowerCase();
+  if (ct.includes("application/json")) {
+    try {
+      return await res.json();
+    } catch (e: any) {
+      return { ok: false, error: `Invalid JSON from server for ${label}: ${e?.message || e}` };
+    }
+  }
+  const text = await res.text().catch(() => "");
+  if (res.status === 413) {
+    return {
+      ok: false,
+      error: `Upload failed (HTTP 413): file too large for the server. Try a smaller file.`,
+    };
+  }
+  const snippet = text.slice(0, 200).trim();
+  return {
+    ok: false,
+    error: snippet
+      ? `Upload failed (HTTP ${res.status}): ${snippet}`
+      : `Upload failed (HTTP ${res.status}) for ${label}.`,
+  };
+}
+
 // ── Types ─────────────────────────────────────────────────
 
 interface ParsedData {
@@ -235,16 +268,52 @@ export default function TestUploadPage() {
         // option label fell back to customerCode first, so the FUZE number was
         // never in any field SearchableSelect filters. Pack every code into the
         // visible label so any of fuzeNumber / customerCode / factoryCode hits.
-        setFabrics(faData.fabrics.map((f: any) => {
-          const fuzeStr = f.fuzeNumber ? `FUZE ${f.fuzeNumber}` : null;
-          const labelParts = [fuzeStr, f.customerCode, f.factoryCode].filter(Boolean);
+        //
+        // Ticket cmq5kndvz (June 2026) — when a fabric is registered via
+        // intake the codes can live on FabricSubmission rather than the
+        // flat Fabric columns; her fabric had all-null flat codes so the
+        // label fell back to the bare cuid and was unsearchable. Fall
+        // back into the latest submission's fuze/customer/factory codes
+        // for both label and detail so search hits even on intake-only
+        // fabrics. /api/fabrics already includes `submissions` with those
+        // fields.
+        const fabricOptions: SelectOption[] = faData.fabrics.map((f: any) => {
+          const sub = Array.isArray(f.submissions) && f.submissions.length
+            ? f.submissions[0]
+            : null;
+          const fuzeNumber = f.fuzeNumber ?? sub?.fuzeFabricNumber ?? null;
+          const customerCode = f.customerCode || sub?.customerFabricCode || null;
+          const factoryCode = f.factoryCode || sub?.factoryFabricCode || null;
+          const fuzeStr = fuzeNumber ? `FUZE ${fuzeNumber}` : null;
+          const labelParts = [fuzeStr, customerCode, factoryCode].filter(Boolean);
           const detailParts = [f.brand, f.factory, f.construction, f.color].filter(Boolean);
+          // Last-resort label so we never show a bare cuid: include the
+          // brand/factory name (also searchable) so Kaylee can find a
+          // bare-code fabric by typing the brand.
+          const fallbackLabel = [f.brand, f.factory].filter(Boolean).join(" · ");
           return {
             id: f.id,
-            name: labelParts.length ? labelParts.join(" · ") : f.id,
+            name: labelParts.length
+              ? labelParts.join(" · ")
+              : fallbackLabel || f.id,
             detail: detailParts.length ? detailParts.join(" · ") : undefined,
           };
-        }));
+        });
+        setFabrics(fabricOptions);
+
+        // ?fabricId=<id> preselect (Phase 60) — also resolve the
+        // display name once fabrics are loaded so SearchableSelect
+        // renders the green "Selected" chip instead of the empty
+        // search box. The preselect useEffect above sets the id
+        // but can't know the name until /api/fabrics finishes.
+        try {
+          const p = new URLSearchParams(window.location.search);
+          const preFabricId = p.get("fabricId");
+          if (preFabricId) {
+            const match = fabricOptions.find((o) => o.id === preFabricId);
+            if (match) setFabricName(match.name);
+          }
+        } catch {}
       }
       if (pData.ok && pData.projects) {
         setProjects(pData.projects.map((p: any) => ({ id: p.id, name: p.name, detail: p.brandName ? `Brand: ${p.brandName}` : undefined })));
@@ -265,14 +334,65 @@ export default function TestUploadPage() {
     setAiNotes({});
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      // ── 3-step presigned-S3 upload flow ──
+      //   1. POST /api/tests/upload-url → presigned PUT URL
+      //   2. PUT file directly to S3 (no 4.5 MB Vercel body limit)
+      //   3. POST /api/tests/upload (JSON metadata) → Document + parse
+      //
+      // Replaces the old single-step multipart POST that hit Vercel's
+      // ~4.5 MB request-body limit and surfaced as the cryptic
+      // "Unexpected token 'R', \"Request En\"..." JSON-parse crash.
+      // Tickets cmq5jnzyp / cmq6wonit / cmq8ipirf all reduce to this.
 
-      const res = await fetch("/api/tests/upload", { method: "POST", body: formData });
-      const data = await res.json();
+      // ── Step 1: request presigned URL ──
+      const urlRes = await fetch("/api/tests/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type || "application/pdf",
+          fileSize: file.size,
+        }),
+      });
+      const urlData = await safeJson(urlRes, "presigned URL");
+      if (!urlRes.ok || !urlData?.ok) {
+        setUploadError(urlData?.error || `Could not get upload URL (HTTP ${urlRes.status})`);
+        setUploading(false);
+        return;
+      }
 
-      if (!data.ok) {
-        setUploadError(data.error || "Upload failed");
+      // ── Step 2: PUT file to S3 directly ──
+      const putRes = await fetch(urlData.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type || "application/pdf" },
+        body: file,
+      });
+      if (!putRes.ok) {
+        // S3 returns XML/text on error — read as text, not JSON.
+        const errText = await putRes.text().catch(() => "");
+        setUploadError(
+          `S3 upload failed (HTTP ${putRes.status}). ${errText.slice(0, 200)}`,
+        );
+        setUploading(false);
+        return;
+      }
+
+      // ── Step 3: commit metadata to /api/tests/upload ──
+      const res = await fetch("/api/tests/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: urlData.key,
+          bucket: urlData.bucket,
+          filename: file.name,
+          fileSize: file.size,
+          contentType: file.type || "application/pdf",
+        }),
+      });
+      const data = await safeJson(res, "upload commit");
+
+      if (!res.ok || !data?.ok) {
+        setUploadError(data?.error || `Upload failed (HTTP ${res.status})`);
         return;
       }
 

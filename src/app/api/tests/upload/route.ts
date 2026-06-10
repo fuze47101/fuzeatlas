@@ -7,7 +7,7 @@ import { parseITSReport } from "@/lib/parsers/testReportParser";
 import type { ParsedITSReport } from "@/lib/parsers/testReportParser";
 import { extractTestDataWithAIVision } from "@/lib/parsers/aiVisionExtractor";
 import type { AIExtractedTestData } from "@/lib/parsers/aiVisionExtractor";
-import { isS3Configured } from "@/lib/s3";
+import { isS3Configured, downloadFromS3, getS3Bucket, getS3Region } from "@/lib/s3";
 import { uploadDocument } from "@/lib/upload";
 
 /* ── PDF text extraction (lightweight, no native deps) ────────── */
@@ -492,32 +492,139 @@ function isITSReport(text: string): boolean {
 }
 
 /* ── POST /api/tests/upload ─────────────────────────────────── */
+/**
+ * Two supported request shapes:
+ *
+ *  A) JSON body (preferred, no size limit) — client first POSTs to
+ *     /api/tests/upload-url, PUTs the file to S3, then sends:
+ *     {
+ *       key, bucket?, filename, fileSize, contentType,
+ *       // (any other metadata fields — currently advisory only,
+ *       //  Document is created here; downstream /api/tests/confirm
+ *       //  attaches brand/factory/fabric linkage.)
+ *     }
+ *     Handler downloads bytes from S3 to run pdf-parse + AI vision,
+ *     creates the Document row pointing at the existing S3 object
+ *     (no duplicate upload).
+ *
+ *  B) multipart/form-data (legacy small-file path) — `file` field.
+ *     Kept so the lab-portal / distributor-portal / factory-portal
+ *     pages don't regress while they migrate to (A). Vercel's
+ *     ~4.5 MB body limit applies on this path — anything bigger
+ *     MUST go through (A) or it 413s before the handler runs.
+ */
 export async function POST(req: Request) {
   try {
     // Capture uploading user (lab or admin) for attribution
     const sessionUser = await getCurrentUser().catch(() => null);
     const uploaderLabId = sessionUser?.labId || null;
 
-    const formData = await req.formData();
-    const file = formData.get("file") as File | null;
+    const contentTypeHeader = (req.headers.get("content-type") || "").toLowerCase();
+    const isJsonBody = contentTypeHeader.includes("application/json");
 
-    if (!file) {
-      return NextResponse.json({ ok: false, error: "No file uploaded" }, { status: 400 });
+    let file: { name: string; type: string; size: number; buffer: Buffer };
+    let prefetchedS3: {
+      bucket: string;
+      key: string;
+      url: string;
+    } | null = null;
+
+    if (isJsonBody) {
+      // (A) Presigned-S3 path. File is already in S3; we read the
+      // bytes back to parse, and skip the second upload to S3 since
+      // the object key is the same one we'll record on Document.
+      const body = await req.json().catch(() => ({}));
+      const key = String(body?.key || "").trim();
+      const filename = String(body?.filename || "").trim();
+      const fileSize = Number(body?.fileSize ?? 0);
+      const contentType = String(body?.contentType || "application/pdf").trim();
+      const bucket = String(body?.bucket || getS3Bucket()).trim();
+
+      if (!key || !filename) {
+        return NextResponse.json(
+          { ok: false, error: "key and filename are required in JSON body" },
+          { status: 400 },
+        );
+      }
+      if (contentType !== "application/pdf") {
+        return NextResponse.json(
+          { ok: false, error: "Only PDF files are accepted" },
+          { status: 400 },
+        );
+      }
+      if (Number.isFinite(fileSize) && fileSize > 25 * 1024 * 1024) {
+        return NextResponse.json(
+          { ok: false, error: "File too large (max 25MB)" },
+          { status: 400 },
+        );
+      }
+
+      let buffer: Buffer;
+      try {
+        buffer = await downloadFromS3(key);
+      } catch (e: any) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: `Could not retrieve uploaded file from S3 (key=${key}): ${e?.message || e}`,
+          },
+          { status: 502 },
+        );
+      }
+
+      file = {
+        name: filename,
+        type: contentType,
+        size: buffer.length,
+        buffer,
+      };
+      prefetchedS3 = {
+        bucket,
+        key,
+        url: `https://${bucket}.s3.${getS3Region()}.amazonaws.com/${key}`,
+      };
+    } else {
+      // (B) Legacy multipart path — capped by Vercel at ~4.5 MB.
+      let formData: FormData;
+      try {
+        formData = await req.formData();
+      } catch (e: any) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error:
+              "Could not read multipart body. For files >4MB, use the presigned-URL flow (POST /api/tests/upload-url first).",
+          },
+          { status: 400 },
+        );
+      }
+      const rawFile = formData.get("file") as File | null;
+
+      if (!rawFile) {
+        return NextResponse.json({ ok: false, error: "No file uploaded" }, { status: 400 });
+      }
+
+      if (rawFile.type !== "application/pdf") {
+        return NextResponse.json(
+          { ok: false, error: "Only PDF files are accepted" },
+          { status: 400 },
+        );
+      }
+
+      if (rawFile.size > 25 * 1024 * 1024) {
+        return NextResponse.json({ ok: false, error: "File too large (max 25MB)" }, { status: 400 });
+      }
+
+      const arrayBuffer = await rawFile.arrayBuffer();
+      file = {
+        name: rawFile.name,
+        type: rawFile.type,
+        size: rawFile.size,
+        buffer: Buffer.from(arrayBuffer),
+      };
     }
 
-    if (file.type !== "application/pdf") {
-      return NextResponse.json(
-        { ok: false, error: "Only PDF files are accepted" },
-        { status: 400 },
-      );
-    }
-
-    if (file.size > 25 * 1024 * 1024) {
-      return NextResponse.json({ ok: false, error: "File too large (max 25MB)" }, { status: 400 });
-    }
-
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const buffer = file.buffer;
 
     // Extract text from PDF first so we have the parse error / text
     // ready before we write the Document row.
@@ -538,7 +645,41 @@ export async function POST(req: Request) {
     const uploaderFactoryId = (sessionUser as any)?.factoryId || null;
     const uploaderBrandId = (sessionUser as any)?.brandId || null;
     let document: any;
-    if (isS3Configured()) {
+    if (prefetchedS3) {
+      // Presigned-S3 path — file is already at prefetchedS3.key, so
+      // skip the second uploadToS3() and just create the Document row
+      // pointing at the existing object.
+      const raw: Record<string, any> = {
+        scanStatus: "pending",
+        uploadedAt: new Date().toISOString(),
+        uploadedVia: "presigned-s3",
+      };
+      if (uploaderUserId) raw.uploaderUserId = uploaderUserId;
+      if (uploaderBrandId) raw.uploaderBrandId = uploaderBrandId;
+      if (uploaderFactoryId) raw.uploaderFactoryId = uploaderFactoryId;
+      if (uploaderDistributorId) raw.uploaderDistributorId = uploaderDistributorId;
+      if (uploaderLabId) raw.uploaderLabId = uploaderLabId;
+      raw.uploaderRole = sessionUser?.role || null;
+      const doc = await prisma.document.create({
+        data: {
+          kind: "REPORT",
+          filename: file.name,
+          contentType: file.type,
+          sizeBytes: file.size,
+          bucket: prefetchedS3.bucket,
+          key: prefetchedS3.key,
+          url: prefetchedS3.url,
+          labId: uploaderLabId,
+          raw,
+        },
+      });
+      document = {
+        id: doc.id,
+        bucket: prefetchedS3.bucket,
+        key: prefetchedS3.key,
+        url: prefetchedS3.url,
+      };
+    } else if (isS3Configured()) {
       const result = await uploadDocument({
         kind: "REPORT",
         file: {

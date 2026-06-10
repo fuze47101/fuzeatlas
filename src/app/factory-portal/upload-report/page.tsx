@@ -6,6 +6,7 @@ import { useI18n } from "@/i18n";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { uploadTestReport } from "@/lib/upload-client";
 
 /**
  * Factory Portal — Upload Test Report
@@ -62,24 +63,18 @@ export default function FactoryUploadReportPage() {
     setResult(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/tests/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-
-      if (data.error) {
-        setError(data.error);
+      // Presigned-S3 flow (handles >4.5 MB without hitting Vercel's
+      // body-size limit). See src/lib/upload-client.ts.
+      const result = await uploadTestReport(file);
+      if (!result.ok) {
+        setError(result.error || tx.uploadFailed);
       } else {
-        setResult(data);
+        setResult(result.data);
         setFile(null);
         loadUploads();
       }
-    } catch {
-      setError(tx.uploadFailed);
+    } catch (err: any) {
+      setError(err?.message || tx.uploadFailed);
     } finally {
       setUploading(false);
     }
