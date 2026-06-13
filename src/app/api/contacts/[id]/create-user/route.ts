@@ -47,9 +47,15 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   try {
     // Permission gate — real session user, ignore impersonation.
     const me = await getRealUser();
-    if (!me || !hasMinRole(me.role, "ADMIN")) {
+    // Provisioning only ever grants EXTERNAL entity roles (BRAND/FACTORY/
+    // DISTRIBUTOR USER|MANAGER), clamped below via COMPATIBLE_ROLES — there
+    // is no path to mint an internal/admin account here. So BD/sales reps
+    // may provision logins for their own contacts, matching the
+    // /api/admin/invitations ACL. (Barth, BD rep, was blocked otherwise.)
+    const PROVISIONERS = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP"];
+    if (!me || !PROVISIONERS.includes(me.role)) {
       return NextResponse.json(
-        { ok: false, error: "Only admins can provision Atlas users" },
+        { ok: false, error: "You don't have permission to provision Atlas users" },
         { status: 403 },
       );
     }
