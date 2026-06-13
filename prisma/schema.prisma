@@ -1023,6 +1023,13 @@ model Contact {
   linkedinValidity String? // valid | invalid | unknown (shape-only)
   hiddenFromWizard Boolean   @default(false) // reversible — admin can unflag
 
+  // Loose bag for verification + research timestamps that don't merit
+  // their own column. Holds e.g. { emailVerifiedAt, linkedinCheckedAt,
+  // lastResearchAt }. Added with the per-contact verify/research feature
+  // so the UI can show "last checked" beside each affordance without a
+  // dedicated schema delta per timestamp.
+  raw Json?
+
   brandId       String?
   factoryId     String?
   distributorId String?

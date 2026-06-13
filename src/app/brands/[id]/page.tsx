@@ -9,6 +9,7 @@ import ClaimBrandButton from "@/components/ClaimBrandButton";
 import ReferralBadge from "@/components/ReferralBadge";
 import ChurnRiskBanner from "@/components/ChurnRiskBanner";
 import BrandSuggestionsPanel from "@/components/BrandSuggestionsPanel";
+import ContactVerifyButtons from "@/components/ContactVerifyButtons";
 
 const STAGES = [
   "LEAD",
@@ -2085,6 +2086,26 @@ function ContactsTab({
     onUpdate(updated);
   };
 
+  // Splice partial updates from ContactVerifyButtons (emailValidity /
+  // linkedinValidity / raw timestamps) into local state so chips show
+  // the new "last checked" without a full refetch.
+  const handleVerifyMutated = (contactId: string, patch: any) => {
+    setContacts((prev) =>
+      prev.map((c: any) =>
+        c.id === contactId
+          ? {
+              ...c,
+              ...patch,
+              raw:
+                patch.raw && typeof patch.raw === "object"
+                  ? { ...(c.raw || {}), ...patch.raw }
+                  : c.raw,
+            }
+          : c,
+      ),
+    );
+  };
+
   const handleAdd = async () => {
     if (!form.firstName.trim() && !form.email.trim()) return;
     setSaving(true);
@@ -2459,6 +2480,16 @@ function ContactsTab({
                       </a>
                     </div>
                   )}
+                  {/* Per-contact verification + research row. stopPropagation
+                     keeps these affordances from triggering the card's
+                     navigate-to-detail handler. */}
+                  <div className="mt-1.5" onClick={(e) => e.stopPropagation()}>
+                    <ContactVerifyButtons
+                      contact={ct}
+                      variant="card"
+                      onMutated={(u) => handleVerifyMutated(ct.id, u)}
+                    />
+                  </div>
                 </div>
                 {/* stopPropagation keeps the action buttons (Email/Call/Edit/Delete)
                    working without triggering the card's navigate-to-detail handler. */}

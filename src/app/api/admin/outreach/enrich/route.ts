@@ -16,8 +16,8 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
-    if (!["ADMIN", "EMPLOYEE", "SALES_MANAGER"].includes(user.role)) {
-      return NextResponse.json({ ok: false, error: "Admin or manager only" }, { status: 403 });
+    if (!["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP"].includes(user.role)) {
+      return NextResponse.json({ ok: false, error: "Rep, manager, or admin only" }, { status: 403 });
     }
 
     const apiKey = process.env.APOLLO_API_KEY;

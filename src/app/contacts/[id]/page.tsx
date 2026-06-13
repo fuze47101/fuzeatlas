@@ -37,6 +37,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
 import { useI18n } from "@/i18n";
+import ContactVerifyButtons from "@/components/ContactVerifyButtons";
 
 // ──────────────────────────────────────────────────────────────────────
 // Types
@@ -69,6 +70,9 @@ type Contact = {
   brand?: { id: string; name: string } | null;
   factory?: { id: string; name: string } | null;
   distributor?: { id: string; name: string } | null;
+  emailValidity?: string | null;
+  linkedinValidity?: string | null;
+  raw?: any;
 };
 
 type TimelineItem = {
@@ -181,6 +185,7 @@ export default function ContactDetailPage() {
   }, [id]);
 
   useEffect(() => {
+    console.log(`[PAGE-MOUNT] /contacts/${id}`);
     if (id) fetchEverything();
   }, [id, fetchEverything]);
 
@@ -406,6 +411,15 @@ export default function ContactDetailPage() {
                   )}
                 </div>
               )}
+            </div>
+
+            {/* ─── Per-contact verification + research row ─── */}
+            <div className="mt-4 pt-4 border-t border-slate-100">
+              <ContactVerifyButtons
+                contact={contact}
+                variant="page"
+                onMutated={(u) => setContact((c) => (c ? { ...c, ...u } : c))}
+              />
             </div>
           </div>
         </div>

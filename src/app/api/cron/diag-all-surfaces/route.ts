@@ -854,6 +854,48 @@ export async function GET(req: Request) {
           select: { id: true, bucket: true, key: true, url: true, kind: true },
         }),
     ),
+    // Per-contact verify-email endpoint (Barth 2026-06-13). Confirms
+    // Contact.emailValidity + Contact.emailStatus + Contact.raw exist —
+    // POST /api/contacts/[id]/verify-email persists into all three.
+    // If raw is missing the migrate-contact-raw cron hasn't been fired
+    // and the endpoint will 500 on first call.
+    check(
+      "/api/contacts/[id]/verify-email — Contact.emailValidity+emailStatus+raw readable",
+      "contact findFirst w/ emailValidity+emailStatus+raw",
+      () =>
+        prisma.contact.findFirst({
+          select: { id: true, email: true, emailValidity: true, emailStatus: true, raw: true },
+        }),
+    ),
+    // Per-contact verify-linkedin endpoint (Barth 2026-06-13). Confirms
+    // Contact.linkedinValidity + Contact.linkedinUrl + Contact.raw exist.
+    check(
+      "/api/contacts/[id]/verify-linkedin — Contact.linkedinValidity+linkedinUrl+raw readable",
+      "contact findFirst w/ linkedinValidity+linkedinUrl+raw",
+      () =>
+        prisma.contact.findFirst({
+          select: { id: true, linkedinUrl: true, linkedinValidity: true, raw: true },
+        }),
+    ),
+    // Per-contact research endpoint (Barth 2026-06-13). Confirms the
+    // brand/factory/distributor include used to derive Apollo's domain
+    // hint still resolves — and that Contact.apolloId + enrichedAt are
+    // writable (the columns the endpoint stamps).
+    check(
+      "/api/contacts/[id]/research — Contact w/ brand+factory+distributor includes",
+      "contact findFirst w/ apolloId+enrichedAt+entity includes",
+      () =>
+        prisma.contact.findFirst({
+          select: {
+            id: true,
+            apolloId: true,
+            enrichedAt: true,
+            brand: { select: { id: true, name: true, website: true } },
+            factory: { select: { id: true, name: true, website: true } },
+            distributor: { select: { id: true, name: true } },
+          },
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
