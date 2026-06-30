@@ -25,7 +25,7 @@ import {
   normaliseEmail,
   normaliseLinkedIn,
 } from "@/lib/enrich-cross-validate";
-import { runVerifyEmail } from "../verify-email/route";
+import { runVerifyEmail } from "@/lib/verify-email-core";
 
 const ALLOWED_ROLES = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP"];
 

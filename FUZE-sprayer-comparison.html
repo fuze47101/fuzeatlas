@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUZE Dry-Fog System — Comparison</title>
+<style>
+  :root{
+    --fuze:#00b4c3;
+    --fuze-deep:#009ba8;
+    --fuze-dark:#0c8ea8;
+    --navy:#1a1a2e;
+    --slate:#475569;
+    --slate-lt:#64748b;
+    --line:#e2e8f0;
+    --ours-bg:#e8fafc;
+    --theirs-bg:#f4f5f7;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--navy);
+    background:#fff;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .page{max-width:980px;margin:0 auto;padding:38px 44px 50px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;
+    border-bottom:3px solid var(--fuze);padding-bottom:16px;margin-bottom:26px;}
+  .topbar img{height:34px;}
+  .topbar .tag{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--fuze-deep);font-weight:700;}
+  h1{font-size:27px;font-weight:800;letter-spacing:-0.5px;line-height:1.15;}
+  h1 .accent{color:var(--fuze);}
+  .sub{color:var(--slate);font-size:15px;margin:6px 0 26px;}
+  h2{font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--fuze-deep);
+    font-weight:800;margin:34px 0 12px;display:flex;align-items:center;gap:10px;}
+  h2::before{content:"";width:18px;height:18px;border-radius:50%;
+    background:var(--fuze);display:inline-block;flex:none;
+    box-shadow:0 0 0 4px rgba(0,180,195,.18);}
+  table{width:100%;border-collapse:collapse;}
+  th,td{padding:12px 15px;text-align:left;vertical-align:top;font-size:14.5px;line-height:1.4;}
+  thead th{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:#fff;}
+  thead th:nth-child(1){width:19%;color:var(--slate);}
+  thead th.ours-h{background:var(--fuze);width:40.5%;border-radius:8px 8px 0 0;}
+  thead th.theirs-h{background:var(--slate-lt);width:40.5%;border-radius:8px 8px 0 0;}
+  tbody tr{border-bottom:1px solid var(--line);}
+  tbody td:first-child{font-weight:700;color:var(--slate);}
+  td.ours{background:var(--ours-bg);}
+  td.ours strong{color:var(--fuze-deep);}
+  td.theirs{background:var(--theirs-bg);color:var(--slate);}
+  .spec{font-weight:800;font-size:15.5px;color:var(--fuze-deep);}
+  .footer{margin-top:26px;font-size:12.5px;color:var(--slate-lt);line-height:1.55;
+    border-top:1px solid var(--line);padding-top:16px;}
+  .footer b{color:var(--slate);}
+  .disc{margin-top:10px;font-size:10.5px;color:#94a3b8;line-height:1.5;}
+  @media print{.page{padding:14px 18px;}h2{page-break-after:avoid;}table{page-break-inside:avoid;}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar">
+    <img src="data:image/png;base64,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" alt="FUZE">
+    <span class="tag">Dry-Fog Application System</span>
+  </div>
+
+  <h1>One <span class="accent">FUZE</span> dry-fog pass beats spraying wet disinfectant every cycle.</h1>
+  <p class="sub">A hardware advantage (sub-5-micron fog) and a chemistry advantage (durable, bonded, non-leaching) in one system.</p>
+
+  <!-- ============ DEVICE ============ -->
+  <h2>The Hardware — Dry Fog vs. Electrostatic Sprayer</h2>
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th class="ours-h">FUZE Dry-Fog System</th>
+        <th class="theirs-h">Typical Electrostatic Sprayer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Droplet size</td>
+        <td class="ours"><span class="spec">Under 5 microns</span> — true dry fog; coats evenly and flashes off without wetting.</td>
+        <td class="theirs"><span class="spec" style="color:var(--slate)">40–160 microns</span> — 10–30× larger. E-Mist EPIX360 = 75µm; EvaClean Protexus = 40/60/80µm; Ryobi = 50/75/100µm.</td>
+      </tr>
+      <tr>
+        <td>Surface result</td>
+        <td class="ours"><strong>Stays dry</strong> — no pooling, streaks, or wipe-down.</td>
+        <td class="theirs">Charged droplets wrap the surface but still leave it wet — visible deposit, needs dwell/dry time.</td>
+      </tr>
+      <tr>
+        <td>Power</td>
+        <td class="ours"><strong>20V Dewalt-style battery</strong>, adapter for 18V Milwaukee M18 packs.</td>
+        <td class="theirs">Proprietary pack (e.g. 16.8V Protexus, 12V Electro-Mist).</td>
+      </tr>
+      <tr>
+        <td>Runtime</td>
+        <td class="ours"><strong>8 hours on a single 2Ah pack</strong> (~5W draw). All-day cordless.</td>
+        <td class="theirs">~4 hours typical (EvaClean Protexus, 16.8V).</td>
+      </tr>
+      <tr>
+        <td>Battery flexibility</td>
+        <td class="ours">Runs the platforms you <strong>already own</strong>.</td>
+        <td class="theirs">Locked to the maker's proprietary battery.</td>
+      </tr>
+      <tr>
+        <td>Coverage mechanism</td>
+        <td class="ours">Particle size alone carries fog into every gap — no charge needed.</td>
+        <td class="theirs">Relies on electrostatic charge to pull oversized droplets onto the surface.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============ CHEMISTRY ============ -->
+  <h2>The Chemistry — FUZE Metamaterial vs. Sprayed Disinfectants</h2>
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th class="ours-h">FUZE Metamaterial</th>
+        <th class="theirs-h">Quats / Bleach / Peroxide / Alcohol</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>How it works</td>
+        <td class="ours"><strong>Non-leaching contact-kill.</strong> Metamaterial bonds permanently to the surface and dismantles microbes on contact.</td>
+        <td class="theirs">Wet chemical kill — active only while the surface stays wet; works by leaching ions / oxidizing.</td>
+      </tr>
+      <tr>
+        <td>Durability</td>
+        <td class="ours"><strong>Durable, bonded protection</strong> that keeps working between cleanings.</td>
+        <td class="theirs">Evaporates — protection ends when the surface dries. No meaningful residual.</td>
+      </tr>
+      <tr>
+        <td>Re-application</td>
+        <td class="ours"><strong>Apply once</strong> — long service life per treatment.</td>
+        <td class="theirs">Re-spray every cleaning cycle, often multiple times a day.</td>
+      </tr>
+      <tr>
+        <td>Dwell time</td>
+        <td class="ours">No wet dwell required — always on.</td>
+        <td class="theirs">Quats/bleach need a wet contact/dwell window (often up to ~10 min) to be effective.</td>
+      </tr>
+      <tr>
+        <td>Resistance risk</td>
+        <td class="ours">Physical kill mechanism — <strong>no resistance pathway</strong>.</td>
+        <td class="theirs">Quaternary ammonium tolerance/resistance is documented in the literature.</td>
+      </tr>
+      <tr>
+        <td>Chemistry &amp; safety</td>
+        <td class="ours"><strong>PFAS-free</strong>, no binders, no harsh chemistry, no corrosive residue.</td>
+        <td class="theirs">Quats &amp; bleach are skin/respiratory irritants and asthma triggers; bleach corrodes; aquatic toxicity.</td>
+      </tr>
+      <tr>
+        <td>Surface impact</td>
+        <td class="ours">Gentle on substrates; no discoloration or corrosion.</td>
+        <td class="theirs">Bleach corrodes metal/grout; repeated quats build sticky film.</td>
+      </tr>
+      <tr>
+        <td>Validation</td>
+        <td class="ours">Third-party tested — <strong>ASTM E2149, AATCC 100, ISO 20743</strong>; OEKO-TEX Standard 100 Class I, bluesign® approved, EPA registered.</td>
+        <td class="theirs">Performance ends at dry-down; no durable, test-backed residual claim.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="footer">
+    <b>The combined advantage:</b> the FUZE dry-fog system lays down a sub-5-micron, even coat of a durable, non-leaching antimicrobial that bonds to the surface — so instead of re-spraying wet quat or bleach every cleaning cycle (toxic, corrosive, gone at dry-down), you treat once and stay protected between cleanings.
+  </p>
+  <p class="disc">
+    Competitor figures are typical published manufacturer specs (E-Mist, EvaClean Protexus, Ryobi) and general chemistry-class characteristics, shown for comparison. FUZE certifications: OEKO-TEX Standard 100 Class I, bluesign® approved, EPA registered (federal), PFAS-free. Public-facing antimicrobial claims should follow EPA Treated Article guidance — e.g. "inhibits the growth of odor-causing bacteria." Specific organism kill-rate claims require product-specific public-health pesticide registration.
+  </p>
+
+</div>
+</body>
+</html>

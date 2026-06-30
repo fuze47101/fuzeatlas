@@ -1182,6 +1182,13 @@ export default function DashboardPage() {
         Redirecting to Factory Portal...
       </div>
     );
+  } else if (data.role === "LAB_USER") {
+    if (typeof window !== "undefined") window.location.href = "/lab-portal";
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-400 text-lg">
+        Redirecting to Lab Portal...
+      </div>
+    );
   } else if (data.role === "BRAND_USER") {
     return <BrandDashboard data={data} t={t} />;
   } else if (data.role === "DISTRIBUTOR_USER") {

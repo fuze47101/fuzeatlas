@@ -34,3 +34,7 @@ test-classifier.mjs
 .claude/
 .vercel-prod.env
 .vercel/
+
+.env.local
+.env*.bak*
+.env.local.bak*

@@ -1,0 +1,12 @@
+Mill,Mill Fabric #,Type,Content,Weight (gsm),Brand Article #,Customer Code,Fabric Trial Completed (Y/N),ICP Result Available (Y/N),Antimicrobial Result Available (Y/N),ICP Value (mg/kg),ICP Notes,Report Date (YYYY-MM-DD),Workflow Status,Notes
+,,,,,,,,,,,,,NEW,Example row — delete before sending to brand
+"Wuxi Paradise Textile","PT-WX-EXAMPLE","DEVELOPMENT","100% Polyester",190,"BRAND-001","FA27K001",Y,Y,N,0.85,"single result from BV","2026-03-15","BULK_PRODUCTION",""
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,

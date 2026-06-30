@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+/* ---------- Fonts ---------- */
+@font-face{font-family:'Montserrat';font-weight:300;font-style:normal;src:url(fonts/mont-300.woff2) format('woff2');}
+@font-face{font-family:'Montserrat';font-weight:400;font-style:normal;src:url(fonts/mont-400.woff2) format('woff2');}
+@font-face{font-family:'Montserrat';font-weight:400;font-style:italic;src:url(fonts/mont-400i.woff2) format('woff2');}
+@font-face{font-family:'Montserrat';font-weight:500;font-style:normal;src:url(fonts/mont-500.woff2) format('woff2');}
+@font-face{font-family:'Montserrat';font-weight:600;font-style:normal;src:url(fonts/mont-600.woff2) format('woff2');}
+@font-face{font-family:'Montserrat';font-weight:600;font-style:italic;src:url(fonts/mont-600i.woff2) format('woff2');}
+@font-face{font-family:'Montserrat';font-weight:700;font-style:normal;src:url(fonts/mont-700.woff2) format('woff2');}
+@font-face{font-family:'Montserrat';font-weight:800;font-style:normal;src:url(fonts/mont-800.woff2) format('woff2');}
+@font-face{font-family:'Montserrat';font-weight:900;font-style:normal;src:url(fonts/mont-900.woff2) format('woff2');}
+
+/* ---------- Tokens ---------- */
+:root{
+  --navy:#043D4C;      /* Pantone 309 C */
+  --cyan:#03A7CE;      /* Pantone 312 C */
+  --mint:#48C0BB;      /* Pantone 3255 C */
+  --ink:#22323A;
+  --slate:#5C6E76;
+  --line:#DCE6E9;
+  --paper:#FFFFFF;
+  --wash:#F4F8F9;
+  --washcy:#EAF6FA;
+  --grad: linear-gradient(120deg,#13B4CC 0%,#00A7CE 45%,#4FC8B4 100%);
+  --grad-deep: linear-gradient(125deg,#0E8FB0 0%,#06A2C6 40%,#3FBFB2 100%);
+}
+*{box-sizing:border-box;-weasy-hyphens:none;}
+@page{size:Letter;margin:0;}
+html,body{margin:0;padding:0;}
+body{font-family:'Montserrat',sans-serif;color:var(--ink);font-size:10.2pt;line-height:1.5;-webkit-font-smoothing:antialiased;}
+
+.page{position:relative;width:8.5in;height:11in;overflow:hidden;page-break-after:always;background:var(--paper);}
+.page:last-child{page-break-after:auto;}
+.pad{padding:0.92in 0.85in 0.95in 0.85in;height:100%;position:relative;}
+
+/* ---------- Header band ---------- */
+.band{position:absolute;top:0;left:0;right:0;height:0.92in;background:var(--grad);display:flex;align-items:center;padding:0 0.85in;}
+.band .sec{color:#fff;font-weight:700;font-size:15pt;letter-spacing:.02em;}
+.band .sec .sub{font-weight:300;opacity:.9;}
+.band .ic{position:absolute;right:0.7in;top:50%;transform:translateY(-50%);height:0.46in;opacity:.95;}
+.band.thin{height:0.62in;}
+.with-band .pad{padding-top:1.34in;}
+
+/* ---------- Footer ---------- */
+.foot{position:absolute;left:0.85in;right:0.85in;bottom:0.48in;border-top:1px solid var(--line);padding-top:7px;display:flex;justify-content:space-between;align-items:center;color:var(--slate);font-size:7pt;font-weight:600;letter-spacing:.14em;text-transform:uppercase;}
+.foot .pg{color:var(--cyan);font-weight:800;}
+.foot img{height:13px;vertical-align:middle;opacity:.85;}
+
+/* ---------- Type ---------- */
+h1,h2,h3,h4{margin:0;font-weight:800;color:var(--navy);line-height:1.12;}
+.kicker{font-size:8pt;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--cyan);margin:0 0 8px;}
+.eyebrow{font-size:7.5pt;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--slate);}
+p{margin:0 0 9px;}
+.lead{font-size:11.2pt;line-height:1.62;color:var(--ink);font-weight:400;}
+strong{font-weight:700;color:var(--navy);}
+em{font-style:italic;}
+.small{font-size:8.6pt;color:var(--slate);line-height:1.5;}
+.tiny{font-size:7.4pt;color:var(--slate);line-height:1.45;}
+a{color:var(--cyan);text-decoration:none;}
+.rule{height:3px;width:54px;background:var(--grad);border-radius:3px;margin:10px 0 16px;}
+
+/* ---------- Reusable ---------- */
+.cols2{display:flex;gap:26px;}
+.cols2>div{flex:1;}
+.cols3{display:flex;gap:18px;}
+.cols3>div{flex:1;}
+.card{background:var(--wash);border:1px solid var(--line);border-radius:11px;padding:16px 18px;}
+.card.cy{background:var(--washcy);border-color:#CDE9F2;}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:40px;padding:5px 13px;font-size:8pt;font-weight:600;color:var(--navy);margin:3px 4px 3px 0;}
+.chip.solid{background:var(--navy);color:#fff;border-color:var(--navy);}
+ul.clean{list-style:none;padding:0;margin:0;}
+ul.clean li{position:relative;padding-left:18px;margin-bottom:7px;line-height:1.45;}
+ul.clean li:before{content:"";position:absolute;left:0;top:.5em;width:7px;height:7px;border-radius:2px;background:var(--grad);}
+ul.dash{list-style:none;padding:0;margin:6px 0;}
+ul.dash li{position:relative;padding-left:16px;margin-bottom:5px;font-size:9pt;}
+ul.dash li:before{content:"–";position:absolute;left:0;color:var(--cyan);font-weight:700;}
+
+table{border-collapse:collapse;width:100%;}
+.tbl th{background:var(--navy);color:#fff;font-size:8pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-align:left;padding:9px 12px;}
+.tbl td{border-bottom:1px solid var(--line);padding:9px 12px;font-size:9pt;vertical-align:top;}
+.tbl tr:nth-child(even) td{background:var(--wash);}
+.tbl td .t{font-weight:700;color:var(--navy);}
+.snap .tbl td{padding:6px 10px;font-size:8.4pt;}
+.snap .tbl th{padding:7px 10px;font-size:7.6pt;}
+
+/* claim columns */
+.claimcol{border-radius:11px;overflow:hidden;border:1px solid var(--line);}
+.claimcol .hd{padding:10px 14px;color:#fff;font-weight:700;font-size:9.5pt;display:flex;align-items:center;gap:8px;}
+.claimcol .bd{padding:12px 14px;background:#fff;}
+.claimcol .bd li{font-size:8.7pt;margin-bottom:7px;}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block;}
+.hd.green{background:#1E9E7E;} .hd.amber{background:#D98A1F;} .hd.red{background:#C4453B;}
+
+.swatch{border-radius:12px;height:1.85in;position:relative;color:#fff;padding:14px 16px;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 1px 0 rgba(0,0,0,.04);}
+.swatch .pn{font-weight:800;font-size:13pt;}
+.swatch .vals{font-size:7.6pt;line-height:1.55;opacity:.95;margin-top:4px;font-weight:500;}
+
+.bignum{font-size:30pt;font-weight:800;color:var(--cyan);line-height:1;}
+.biglabel{font-size:7.6pt;color:var(--slate);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-top:7px;line-height:1.4;}
+
+.donot{border:1px solid #EBD3D0;background:#FCF5F4;border-radius:9px;padding:9px 12px;font-size:8.4pt;color:#7A2820;}
+.donot b{color:#A23329;}
+
+/* tier strip */
+.tier{border:1px solid var(--line);border-radius:10px;overflow:hidden;text-align:center;}
+.tier .cap{background:var(--grad);color:#fff;font-weight:800;font-size:12pt;padding:8px 0;}
+.tier .body{padding:9px 6px;}
+.tier .w{font-size:18pt;font-weight:800;color:var(--navy);line-height:1;}
+.tier .lab{font-size:7.4pt;color:var(--slate);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:3px;}
+.tier .nm{font-size:8.2pt;font-weight:700;color:var(--cyan);margin-top:5px;}
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1 — COVER ============ -->
+<section class="page" style="background:var(--grad-deep);">
+  <div style="position:absolute;inset:0;background:
+      radial-gradient(120% 80% at 18% 12%, rgba(255,255,255,.20), rgba(255,255,255,0) 50%),
+      radial-gradient(120% 90% at 88% 96%, rgba(4,61,76,.34), rgba(4,61,76,0) 55%);"></div>
+  <div style="position:absolute;top:0.7in;left:0.85in;color:#fff;font-size:8pt;font-weight:700;letter-spacing:.34em;text-transform:uppercase;opacity:.9;">FUZE&reg; Technologies</div>
+  <div style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+     <img src="assets/fuze_white_stacked.png" style="width:2.75in;">
+     <div style="width:1.1in;height:2px;background:rgba(255,255,255,.7);margin:30px 0 22px;"></div>
+     <div style="color:#fff;font-weight:300;font-size:21pt;letter-spacing:.30em;text-transform:uppercase;">Brand &amp; Compliance</div>
+     <div style="color:#fff;font-weight:800;font-size:21pt;letter-spacing:.30em;text-transform:uppercase;margin-top:2px;">Standards</div>
+  </div>
+  <div style="position:absolute;bottom:0.7in;left:0.85in;right:0.85in;display:flex;justify-content:space-between;align-items:flex-end;color:#fff;">
+     <div style="font-size:8.5pt;font-weight:600;letter-spacing:.18em;opacity:.92;">VERSION 2.0 &nbsp;&middot;&nbsp; 2026</div>
+     <div style="font-size:8.5pt;font-weight:700;letter-spacing:.14em;opacity:.92;">FUZE47.COM</div>
+  </div>
+</section>
+
+<!-- ============ PAGE 2 — STRATEGIC BRAND OBJECTIVES ============ -->
+<section class="page">
+  <div class="pad">
+    <div class="kicker">A Letter to Our Partners</div>
+    <h1 style="font-size:24pt;">Strategic Brand Objectives</h1>
+    <div class="rule"></div>
+    <p class="lead">Protecting the FUZE&reg; brand &mdash; not only in how it looks, but in how it is messaged, claimed, and understood &mdash; is essential to everything we build together. Our goal is a single, consistent brand voice and story across every partner, so that the FUZE&reg; name reliably signals authority, performance, and trust to both our customers and the consumers they serve.</p>
+    <p>FUZE&reg; Technologies maintains a Brand &amp; Compliance Program that reinforces our brand agreements and guidelines to strengthen brand equity, create demand, communicate a clear point of difference, and ensure quality, long-lasting partnerships. This program tells your customers that you are using a best-in-class, independently validated, and genuinely sustainable antimicrobial technology &mdash; one engineered to elevate the performance of the textiles you make.</p>
+    <p>Since our first edition in 2021, FUZE&reg; has matured into a federally <strong>EPA-registered</strong> platform with <strong>California EPA</strong> approval, a four-tier product system, and a body of independent third-party validation. This edition brings our standards current with that reality &mdash; most importantly, it codifies the <strong>claim discipline</strong> that keeps every partner&rsquo;s marketing both compelling and compliant under U.S. EPA rules.</p>
+    <p>Please treat these guidelines as binding whenever you use the FUZE&reg; name, marks, or approved messaging. Together, we are building a cleaner, healthier, more sustainable world &mdash; one textile at a time.</p>
+
+    <div class="card cy" style="margin-top:20px;">
+      <div class="eyebrow" style="color:var(--cyan);">What this edition adds</div>
+      <div class="cols2" style="margin-top:9px;gap:30px;">
+        <ul class="dash" style="margin:0;">
+          <li>EPA Treated Article claim framework &amp; approved claim lists</li>
+          <li>Current certifications: EPA (federal), California EPA, PFAS-free</li>
+          <li>Brand language standard &mdash; the FUZE&reg; metamaterial vocabulary</li>
+        </ul>
+        <ul class="dash" style="margin:0;">
+          <li>F1&ndash;F4 product system &amp; application methods</li>
+          <li>Global market claims &mdash; US &middot; EU &middot; Canada &middot; China</li>
+          <li>ASTM E2149 vs. AATCC 100 testing position</li>
+          <li>Refreshed identity, color, and digital standards</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;font-weight:800;color:var(--navy);letter-spacing:.16em;">TEAM FUZE&trade;</div>
+    <div class="small" style="margin-top:2px;">FUZE&reg; Technologies &middot; Salt Lake City, Utah</div>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">02</span></div>
+</section>
+
+<!-- ============ PAGE 3 — TABLE OF CONTENTS ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Contents</div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <p class="small" style="max-width:5.9in;margin-bottom:14px;">Organized in four parts: <strong>Compliance</strong> (what may be said), <strong>Identity</strong> (how the brand looks and sounds), <strong>Product &amp; Partnership</strong>, and <strong>Global Compliance</strong> (market-by-market claim rules).</p>
+
+    <table style="width:100%;font-size:10pt;">
+      <tr><td style="padding:7px 0;color:var(--cyan);font-weight:800;letter-spacing:.2em;font-size:8pt;text-transform:uppercase;border-bottom:1px solid var(--line);" colspan="2">Part One &mdash; Compliance</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Regulatory &amp; Certifications</td><td style="text-align:right;color:var(--slate);font-weight:700;">05</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Approved, Restricted &amp; Prohibited Claims</td><td style="text-align:right;color:var(--slate);font-weight:700;">06</td></tr>
+
+      <tr><td style="padding:7px 0;color:var(--cyan);font-weight:800;letter-spacing:.2em;font-size:8pt;text-transform:uppercase;border-bottom:1px solid var(--line);padding-top:9px;" colspan="2">Part Two &mdash; Brand Identity</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Brand Language &amp; Voice</td><td style="text-align:right;color:var(--slate);font-weight:700;">07</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Logo &amp; the FUZE Mark</td><td style="text-align:right;color:var(--slate);font-weight:700;">08</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Logo Standards, Co-Branding &amp; Misuse</td><td style="text-align:right;color:var(--slate);font-weight:700;">09</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Color Palette</td><td style="text-align:right;color:var(--slate);font-weight:700;">10</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Typography</td><td style="text-align:right;color:var(--slate);font-weight:700;">11</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Packaging, Hangtags &amp; Digital Use</td><td style="text-align:right;color:var(--slate);font-weight:700;">12</td></tr>
+
+      <tr><td style="padding:7px 0;color:var(--cyan);font-weight:800;letter-spacing:.2em;font-size:8pt;text-transform:uppercase;border-bottom:1px solid var(--line);padding-top:9px;" colspan="2">Part Three &mdash; Product &amp; Partnership</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">The FUZE Product System (F1&ndash;F4)</td><td style="text-align:right;color:var(--slate);font-weight:700;">13</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Technology &amp; Testing</td><td style="text-align:right;color:var(--slate);font-weight:700;">14</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Partner Quality, Assurance &amp; Sales Support</td><td style="text-align:right;color:var(--slate);font-weight:700;">15</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Sustainability</td><td style="text-align:right;color:var(--slate);font-weight:700;">16</td></tr>
+
+      <tr><td style="padding:7px 0;color:var(--cyan);font-weight:800;letter-spacing:.2em;font-size:8pt;text-transform:uppercase;border-bottom:1px solid var(--line);padding-top:9px;" colspan="2">Part Four &mdash; Global Compliance &amp; Market Claims</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Global Claims Framework &mdash; at a Glance</td><td style="text-align:right;color:var(--slate);font-weight:700;">17</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">United States &middot; EPA / FIFRA</td><td style="text-align:right;color:var(--slate);font-weight:700;">18</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">European Union &middot; BPR</td><td style="text-align:right;color:var(--slate);font-weight:700;">19</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Canada &middot; PMRA</td><td style="text-align:right;color:var(--slate);font-weight:700;">20</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">China &middot; GB Standards</td><td style="text-align:right;color:var(--slate);font-weight:700;">21</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">United Kingdom &middot; GB BPR</td><td style="text-align:right;color:var(--slate);font-weight:700;">22</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Japan &middot; SEK Mark</td><td style="text-align:right;color:var(--slate);font-weight:700;">23</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Korea &middot; K-BPR</td><td style="text-align:right;color:var(--slate);font-weight:700;">24</td></tr>
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);">Australia &middot; APVMA</td><td style="text-align:right;color:var(--slate);font-weight:700;">25</td></tr>
+
+      <tr><td style="padding:4px 0;font-weight:600;color:var(--navy);padding-top:9px;">Getting Started &amp; Contacts</td><td style="text-align:right;color:var(--slate);font-weight:700;padding-top:9px;">26</td></tr>
+    </table>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">03</span></div>
+</section>
+
+<!-- ============ PAGE 4 — AT A GLANCE ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">The FUZE Brand <span class="sub">&middot; At a Glance</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <p class="lead" style="margin-bottom:6px;">FUZE&reg; is a non-leaching antimicrobial textile treatment that bonds a proprietary <strong>metamaterial</strong> permanently into fiber surfaces during standard finishing.</p>
+    <p class="small" style="max-width:6.0in;">Unlike surface coatings or leaching biocides, FUZE&reg; does not wash out, does not migrate to skin, and requires no PFAS, binders, or chemical curing. The bond is <strong>permanent at every application level</strong> &mdash; it works through direct contact, so protection holds through commercial laundering instead of fading like leaching treatments.</p>
+
+    <div class="eyebrow" style="margin:20px 0 8px;">Certifications &amp; Standards</div>
+    <div>
+      <span class="chip solid">EPA Registered &middot; Federal</span>
+      <span class="chip solid">California EPA Approved</span>
+      <span class="chip">OEKO-TEX&reg; Standard 100 Class I</span>
+      <span class="chip">bluesign&reg; system partner</span>
+      <span class="chip">ZDHC conformant</span>
+      <span class="chip">PFAS-Free</span>
+      <span class="chip">AATCC 100</span>
+      <span class="chip">ASTM E2149</span>
+      <span class="chip">AATCC 30</span>
+      <span class="chip">ISO 20743</span>
+      <span class="chip">ISO 18184</span>
+    </div>
+
+    <div class="eyebrow" style="margin:22px 0 9px;">The Four-Tier System &mdash; permanent at every level</div>
+    <div class="cols3" style="gap:12px;">
+      <div class="tier"><div class="cap">F1</div><div class="body"><div class="w">1.0</div><div class="lab">mg/kg &middot; Flagship</div><div class="nm">Full Spectrum</div></div></div>
+      <div class="tier"><div class="cap">F2</div><div class="body"><div class="w">0.75</div><div class="lab">mg/kg</div><div class="nm">Advanced</div></div></div>
+      <div class="tier"><div class="cap">F3</div><div class="body"><div class="w">0.5</div><div class="lab">mg/kg</div><div class="nm">Core</div></div></div>
+      <div class="tier"><div class="cap">F4</div><div class="body"><div class="w">0.25</div><div class="lab">mg/kg</div><div class="nm">Foundation</div></div></div>
+    </div>
+    <p class="tiny" style="margin-top:9px;"><strong>The bond is permanent at every tier.</strong> Application level sets antimicrobial test performance, the ancillary benefit stack (reduced water surface tension, faster drying, UV), and price &mdash; not durability. F1 delivers the full stack; lower tiers are better-priced, not lower quality.</p>
+
+    <div class="cols2" style="margin-top:24px;gap:22px;">
+      <div class="card">
+        <div class="eyebrow" style="color:var(--cyan);">Made responsibly</div>
+        <p class="small" style="margin:8px 0 0;">Manufactured at a solar-capable facility in Salt Lake City, Utah from recycled-electronics feedstock, then delivered as a water-based finishing liquid applied on standard equipment &mdash; exhaust, pad-dry-cure, or spray.</p>
+      </div>
+      <div class="card">
+        <div class="eyebrow" style="color:var(--cyan);">One platform, one voice</div>
+        <p class="small" style="margin:8px 0 0;">Applied across hospitality, healthcare, activewear, performance apparel, and home textiles. Every partner uses the same marks, the same vocabulary, and the same approved claims.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">04</span></div>
+</section>
+
+<!-- ============ PAGE 5 — REGULATORY & CERTIFICATIONS ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Regulatory <span class="sub">&middot; Compliance</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="kicker">Part One &middot; Compliance</div>
+    <h2 style="font-size:17pt;">Certifications &amp; the Treated Article Framework</h2>
+    <div class="rule"></div>
+    <p class="small" style="max-width:6.1in;">FUZE&reg; is regulated in the United States as an antimicrobial pesticide. Textiles treated with FUZE&reg; are marketed under the U.S. EPA <strong>Treated Article Exemption</strong> (FIFRA / EPA PR Notice 2000-1), which governs what every partner may &mdash; and may not &mdash; claim.</p>
+
+    <div class="eyebrow" style="margin:14px 0 8px;">Current certifications &amp; registrations</div>
+    <table class="tbl">
+      <tr><th style="width:32%;">Certification</th><th style="width:30%;">Scope</th><th>What it means for partners</th></tr>
+      <tr><td class="t">EPA Registered &mdash; Federal</td><td>U.S. EPA antimicrobial registration</td><td>Federally registered antimicrobial. Registration details shared with partners under agreement.</td></tr>
+      <tr><td class="t">California EPA Approved</td><td>CA Dept. of Pesticide Regulation</td><td>Cleared for sale in California &mdash; a differentiator for activewear, infant, and healthcare positioning.</td></tr>
+      <tr><td class="t">OEKO-TEX&reg; Standard 100</td><td>Class I &mdash; direct skin contact</td><td>Validated for all textile categories, including baby and infant products.</td></tr>
+      <tr><td class="t">bluesign&reg; system partner</td><td>Approved product &middot; on-site factory audit</td><td>Facility passed an on-site bluesign&reg; audit; recognized for responsible chemistry management.</td></tr>
+      <tr><td class="t">ZDHC conformant</td><td>MRSL &mdash; self-declared</td><td>Self-declared conformance to the ZDHC MRSL; formal verification in progress.</td></tr>
+      <tr><td class="t">PFAS-Free</td><td>Composition</td><td>No per- or polyfluoroalkyl substances &mdash; aligned with tightening U.S./EU restrictions.</td></tr>
+    </table>
+
+    <div class="card cy" style="margin-top:14px;">
+      <div class="eyebrow" style="color:var(--cyan);">The Treated Article Exemption &mdash; in one paragraph</div>
+      <p class="small" style="margin:7px 0 0;">Because FUZE&reg; is registered as the <em>pesticide</em>, a textile <em>treated with</em> FUZE&reg; may claim only to <strong>protect the article itself</strong> &mdash; resisting odor-causing bacteria, mildew, and deterioration. It may <strong>not</strong> make public-health claims (wearer disease protection, &ldquo;kills 99.9%,&rdquo; pathogen kill rates) without its own product-specific registration. Overstating scope creates FIFRA Section 12 exposure.</p>
+    </div>
+
+    <p class="tiny" style="margin-top:12px;"><strong>Retired in this edition.</strong> The 2021 reference to FDA EUA <em>EUA200344</em> is obsolete and must no longer be used &mdash; COVID-era EUAs have lapsed. FUZE&reg; compliance now rests on EPA registration and the Treated Article framework above.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">05</span></div>
+</section>
+
+<!-- ============ PAGE 6 — CLAIMS ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Approved Claims <span class="sub">&middot; Use With Confidence</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <p class="small" style="max-width:6.2in;margin-bottom:14px;">Use the <strong>green</strong> language freely on consumer-facing materials. Treat <strong>amber</strong> language as technical &mdash; permitted only in clearly-labeled validation contexts, never as a consumer headline. <strong>Red</strong> language is prohibited on treated-article marketing without a product-specific public-health registration. When in doubt, request approval at <a>brand@fuze47.com</a>.</p>
+
+    <div class="cols3" style="gap:12px;align-items:stretch;">
+      <div class="claimcol">
+        <div class="hd green"><span class="dot" style="background:#fff;"></span>Approved &middot; Green</div>
+        <div class="bd"><ul class="clean">
+          <li>Inhibits the growth of odor-causing bacteria</li>
+          <li>Inhibits the growth of mildew &amp; mold that cause product deterioration</li>
+          <li>Keeps fabric fresher, longer</li>
+          <li>Durable, long-lasting freshness protection</li>
+          <li>Won&rsquo;t wash out &mdash; bonds permanently to the fiber</li>
+          <li>Non-leaching</li>
+          <li>PFAS-free</li>
+          <li>OEKO-TEX&reg; Class I &middot; safe for skin contact</li>
+          <li>Factual certification statements (EPA registered, bluesign&reg;)</li>
+        </ul></div>
+      </div>
+      <div class="claimcol">
+        <div class="hd amber"><span class="dot" style="background:#fff;"></span>Technical &middot; Amber</div>
+        <div class="bd"><ul class="clean">
+          <li>Antifungal / anti-mildew efficacy <span class="tiny">(tie to AATCC 30 / ASTM G21)</span></li>
+          <li>Antiviral activity <span class="tiny">(ISO 18184 data only &mdash; never a disease-protection claim)</span></li>
+          <li>Durability &mdash; &ldquo;permanently bonded; efficacy retained through repeated commercial laundering&rdquo; (third-party tested)</li>
+          <li>Log-reduction / efficacy figures in <em>labeled</em> technical reports</li>
+        </ul>
+        <p class="tiny" style="margin-top:6px;">Amber claims live in spec sheets, lab reports, and B2B technical decks &mdash; supporting the green claims, never replacing them as consumer headlines.</p>
+        </div>
+      </div>
+      <div class="claimcol">
+        <div class="hd red"><span class="dot" style="background:#fff;"></span>Prohibited &middot; Red</div>
+        <div class="bd"><ul class="clean">
+          <li>&ldquo;Antibacterial / bactericidal / germicidal&rdquo; as a product claim</li>
+          <li>&ldquo;Kills 99.9%&rdquo; or any kill-rate percentage</li>
+          <li>Named-pathogen claims (MRSA, Staph, E.&nbsp;coli)</li>
+          <li>Protects the wearer from illness or infection</li>
+          <li>Any virus / COVID-19 protection claim</li>
+          <li>&ldquo;EPA-approved&rdquo; / &ldquo;EPA-validated&rdquo; durability or efficacy</li>
+          <li>silver, nano, nanoparticle, silver-ion, Ag</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <div class="cols2" style="margin-top:16px;gap:18px;">
+      <div class="donot"><b>Why &ldquo;kills 99.9%&rdquo; is off-limits.</b> Specific kill claims convert a treated article into a &ldquo;public-health pesticide&rdquo; in the EPA&rsquo;s eyes, requiring a separate product registration. The same lever we use against competitors who overclaim applies to us.</div>
+      <div class="donot"><b>Why never &ldquo;EPA-validated.&rdquo;</b> The EPA registers chemistry &mdash; it does not certify durability or efficacy. FUZE&reg;&rsquo;s permanent bond and antimicrobial performance are <em>third-party</em> tested (AATCC 100 / ASTM E2149 / ISO 20743), with reports on request. Say <em>&ldquo;third-party validated,&rdquo;</em> not &ldquo;EPA-validated.&rdquo;</div>
+    </div>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">06</span></div>
+</section>
+
+<!-- ============ PAGE 7 — BRAND LANGUAGE & VOICE ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Brand Language <span class="sub">&middot; &amp; Voice</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="kicker">Part Two &middot; Brand Identity</div>
+    <h2 style="font-size:17pt;">How We Talk About FUZE</h2>
+    <div class="rule"></div>
+    <p class="small" style="max-width:6.1in;">The FUZE&reg; brand is built on a precise vocabulary. In all marketing, web, and customer-facing content, our active technology is the <strong>metamaterial</strong> &mdash; never &ldquo;silver,&rdquo; &ldquo;nano,&rdquo; or &ldquo;ion.&rdquo; This is both a positioning choice and a compliance discipline. The distinction that matters is our <em>physical form and bonding mechanism</em>, not the underlying element.</p>
+
+    <div class="cols2" style="gap:22px;margin-top:8px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">The vocabulary standard</div>
+        <table class="tbl">
+          <tr><th style="width:50%;">Never say</th><th>Always say</th></tr>
+          <tr><td>silver</td><td class="t">FUZE&reg;</td></tr>
+          <tr><td>nanoparticle / nano</td><td class="t">metamaterial</td></tr>
+          <tr><td>silver-ion / silver ion</td><td class="t">non-leaching treatment</td></tr>
+          <tr><td>nano-silver, Ag</td><td class="t">FUZE&reg; metamaterial</td></tr>
+          <tr><td>&ldquo;water-based silver&rdquo;</td><td class="t">high-density allotrope</td></tr>
+        </table>
+        <p class="tiny" style="margin-top:8px;"><strong>One exception:</strong> regulatory &amp; technical documents (SDS, CIL, ARSL) may name the chemistry by CAS number. Marketing, web, and partner collateral may not.</p>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">Naming the company</div>
+        <div class="card" style="padding:13px 15px;">
+          <p class="small" style="margin:0 0 7px;"><strong>FUZE&reg; Technologies</strong> &mdash; the umbrella name for cross-vertical positioning (textiles, thermal, IR-deflection). Use for press, partnerships, and general brand.</p>
+          <p class="small" style="margin:0 0 7px;"><strong>FUZE&reg; Biotech</strong> &mdash; use where the context is strictly microbiology, chemistry, or regulatory filings.</p>
+          <p class="small" style="margin:0;"><strong>FUZE&reg;</strong> &mdash; the product itself. Tiers are written <strong>F1, F2, F3, F4</strong> (e.g. &ldquo;FUZE&reg; F1 Full Spectrum&rdquo;).</p>
+        </div>
+        <div class="eyebrow" style="margin:16px 0 8px;">Tone of voice</div>
+        <ul class="clean small">
+          <li><strong>Confident, not boastful.</strong> Let third-party validation carry the weight.</li>
+          <li><strong>Precise, not hype.</strong> Specific standards beat superlatives.</li>
+          <li><strong>Clean &amp; modern.</strong> Short sentences. Active voice. No jargon walls.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card cy" style="margin-top:16px;">
+      <div class="eyebrow" style="color:var(--cyan);">Approved one-line description &mdash; copy &amp; paste</div>
+      <p style="margin:8px 0 0;font-size:10pt;font-style:italic;color:var(--navy);">&ldquo;FUZE&reg; is a non-leaching antimicrobial textile treatment that bonds proprietary metamaterial permanently into fibers during standard finishing &mdash; OEKO-TEX&reg; Class I, bluesign&reg; approved, EPA-registered, and PFAS-free.&rdquo;</p>
+    </div>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">07</span></div>
+</section>
+
+<!-- ============ PAGE 8 — LOGO ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">The Logo <span class="sub">&middot; &amp; FUZE Mark</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <p class="small" style="max-width:6.1in;margin-bottom:6px;">The FUZE&reg; identity pairs the <strong>molecular mark</strong> &mdash; a bonded cluster that signals our metamaterial chemistry &mdash; with a custom rounded wordmark. Always reproduce the logo from approved master artwork. Never recreate, redraw, or re-typeset it.</p>
+
+    <div class="cols2" style="gap:20px;margin-top:14px;align-items:stretch;">
+      <div class="card" style="text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <img src="assets/fuze_grad_stacked.png" style="height:2.0in;margin:0 auto;">
+        <div class="eyebrow" style="margin-top:14px;">Primary &middot; Stacked</div>
+        <p class="tiny" style="margin-top:4px;">Default lockup. Use whenever space and layout allow, especially centered applications.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card" style="text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <img src="assets/fuze_grad_horiz.png" style="height:0.62in;margin:0 auto;">
+          <div class="eyebrow" style="margin-top:12px;">Horizontal</div>
+          <p class="tiny" style="margin-top:3px;">For left- or right-aligned and width-constrained layouts.</p>
+        </div>
+        <div class="card" style="text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <img src="assets/fuze_grad_icon.png" style="height:0.92in;margin:0 auto;">
+          <div class="eyebrow" style="margin-top:12px;">The Mark / Icon</div>
+          <p class="tiny" style="margin-top:3px;">App icons, favicons, and stamps &mdash; only where the brand is already established.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="eyebrow" style="margin:20px 0 9px;">Approved color treatments</div>
+    <div class="cols3" style="gap:12px;">
+      <div class="card" style="text-align:center;padding:18px;"><img src="assets/fuze_grad_horiz.png" style="height:0.46in;"><div class="tiny" style="margin-top:9px;">Gradient on white &mdash; preferred</div></div>
+      <div class="card" style="text-align:center;padding:18px;background:var(--navy);border-color:var(--navy);"><img src="assets/fuze_white_horiz.png" style="height:0.46in;"><div class="tiny" style="margin-top:9px;color:#cfe;">White (knockout) on dark / photo</div></div>
+      <div class="card" style="text-align:center;padding:18px;"><img src="assets/fuze_navy_horiz.png" style="height:0.46in;"><div class="tiny" style="margin-top:9px;">Solid navy &mdash; single-color print</div></div>
+    </div>
+    <p class="tiny" style="margin-top:12px;">Use the gradient lockup as the default. Use the white knockout on dark or photographic backgrounds; use the solid navy mark for single-color or low-cost reproduction. The mint single-color version is available for tonal applications on request.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">08</span></div>
+</section>
+
+<!-- ============ PAGE 9 — LOGO STANDARDS / CO-BRAND / MISUSE ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Logo Standards <span class="sub">&middot; Co-Branding &amp; Misuse</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="cols2" style="gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:9px;">Clear space &amp; minimum size</div>
+        <div class="card" style="text-align:center;padding:22px;">
+          <div style="display:inline-block;border:1px dashed #B9D6DE;padding:0.32in;border-radius:8px;">
+            <img src="assets/fuze_grad_horiz.png" style="height:0.5in;">
+          </div>
+          <p class="tiny" style="margin-top:11px;">Maintain clear space equal to the height of the mark&rsquo;s central cluster on all sides. Keep all other logos, type, and graphics outside this zone.</p>
+        </div>
+        <div class="cols2" style="gap:12px;margin-top:14px;">
+          <div class="card" style="text-align:center;"><img src="assets/fuze_grad_horiz.png" style="height:0.26in;"><div class="tiny" style="margin-top:8px;">Horizontal &mdash; min <strong>1.0&Prime;</strong> wide</div></div>
+          <div class="card" style="text-align:center;"><img src="assets/fuze_grad_icon.png" style="height:0.4in;"><div class="tiny" style="margin-top:8px;">Icon &mdash; min <strong>0.25&Prime;</strong></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:9px;">Co-branding &mdash; &ldquo;Treated with FUZE&rdquo;</div>
+        <div class="card cy" style="padding:16px;">
+          <div style="text-align:center;padding:6px 0 10px;">
+            <div style="font-size:7pt;font-weight:700;letter-spacing:.24em;color:var(--slate);text-transform:uppercase;margin-bottom:7px;">Treated With</div>
+            <img src="assets/fuze_grad_horiz.png" style="height:0.42in;">
+          </div>
+          <p class="tiny" style="margin:6px 0 0;">When FUZE&reg; serves as the technology platform behind a partner brand, use the approved &ldquo;Treated with FUZE&reg;&rdquo; lockup. The FUZE&reg; mark should be <strong>no smaller than 35%</strong> of the partner&rsquo;s primary logo. Custom co-branded hangtags are available through the FUZE&reg; Marketing Team.</p>
+        </div>
+
+        <div class="eyebrow" style="margin:18px 0 9px;">Never do this</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div class="donot"><b>Don&rsquo;t</b> recolor the logo outside the approved palette.</div>
+          <div class="donot"><b>Don&rsquo;t</b> stretch, rotate, skew, or add effects/shadows.</div>
+          <div class="donot"><b>Don&rsquo;t</b> recreate the wordmark in another typeface.</div>
+          <div class="donot"><b>Don&rsquo;t</b> place the gradient mark on busy or low-contrast backgrounds &mdash; use the white knockout.</div>
+          <div class="donot"><b>Don&rsquo;t</b> separate the mark from the wordmark to invent new lockups.</div>
+        </div>
+      </div>
+    </div>
+    <p class="tiny" style="margin-top:16px;">Any off-guideline use must be approved in advance by the U.S. FUZE&reg; Marketing Team. Request master artwork and approvals at <a>brand@fuze47.com</a>.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">09</span></div>
+</section>
+
+<!-- ============ PAGE 10 — COLOR ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Color <span class="sub">&middot; Palette</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <p class="small" style="max-width:6.1in;margin-bottom:16px;">The FUZE&reg; palette is anchored by three core colors and the signature cyan-to-mint gradient. Reproduce these values exactly. Do not produce materials in colors outside this palette without written consent from the FUZE&reg; Marketing Team.</p>
+
+    <div class="cols3" style="gap:16px;">
+      <div class="swatch" style="background:#043D4C;">
+        <div class="pn">Pantone 309 C</div>
+        <div class="vals">HEX&nbsp; #043D4C<br>RGB&nbsp; 4 &middot; 61 &middot; 76<br>CMYK&nbsp; 100 &middot; 64 &middot; 52 &middot; 45</div>
+      </div>
+      <div class="swatch" style="background:#03A7CE;">
+        <div class="pn">Pantone 312 C</div>
+        <div class="vals">HEX&nbsp; #03A7CE<br>RGB&nbsp; 3 &middot; 167 &middot; 206<br>CMYK&nbsp; 96 &middot; 6 &middot; 15 &middot; 0</div>
+      </div>
+      <div class="swatch" style="background:#48C0BB;">
+        <div class="pn">Pantone 3255 C</div>
+        <div class="vals">HEX&nbsp; #48C0BB<br>RGB&nbsp; 72 &middot; 192 &middot; 187<br>CMYK&nbsp; 64 &middot; 0 &middot; 32 &middot; 0</div>
+      </div>
+    </div>
+
+    <div class="eyebrow" style="margin:24px 0 10px;">Signature gradient</div>
+    <div style="height:1.0in;border-radius:12px;background:var(--grad);display:flex;align-items:flex-end;padding:12px 16px;color:#fff;">
+      <div style="font-size:8pt;font-weight:600;letter-spacing:.04em;">312 C Cyan &nbsp;&rarr;&nbsp; 3255 C Mint &nbsp;&middot;&nbsp; 120&deg; linear &middot; reserved for hero surfaces, covers, and the logo mark</div>
+    </div>
+
+    <div class="cols2" style="margin-top:22px;gap:24px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:9px;">Usage hierarchy</div>
+        <ul class="clean small">
+          <li><strong>Navy 309 C</strong> &mdash; primary text, headlines, and dark surfaces.</li>
+          <li><strong>Cyan 312 C</strong> &mdash; primary accent: links, rules, key figures, CTAs.</li>
+          <li><strong>Mint 3255 C</strong> &mdash; secondary accent and gradient endpoint.</li>
+          <li><strong>Gradient</strong> &mdash; covers, section bands, and the logo only.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:9px;">Neutrals &amp; support</div>
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;height:0.55in;border-radius:8px;background:#22323A;"></div>
+          <div style="flex:1;height:0.55in;border-radius:8px;background:#5C6E76;"></div>
+          <div style="flex:1;height:0.55in;border-radius:8px;background:#DCE6E9;"></div>
+          <div style="flex:1;height:0.55in;border-radius:8px;background:#F4F8F9;border:1px solid var(--line);"></div>
+        </div>
+        <p class="tiny" style="margin-top:8px;">Ink #22323A &middot; Slate #5C6E76 &middot; Line #DCE6E9 &middot; Wash #F4F8F9. Use neutrals for body copy, captions, dividers, and panel fills to keep the brand colors high-impact.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">10</span></div>
+</section>
+
+<!-- ============ PAGE 11 — TYPOGRAPHY ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Typography</div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <p class="small" style="max-width:6.1in;margin-bottom:14px;"><strong>Montserrat</strong> is the FUZE&reg; typeface across all weights. Its geometric, rounded forms echo the wordmark. Use Montserrat for everything; where it is unavailable (e.g. email clients), substitute Arial or system sans-serif.</p>
+
+    <div class="card" style="padding:20px 22px;">
+      <div style="font-size:54pt;font-weight:800;color:var(--navy);line-height:1;letter-spacing:-.01em;">Aa</div>
+      <div style="font-size:11pt;font-weight:700;color:var(--cyan);letter-spacing:.04em;margin-top:8px;">Montserrat</div>
+      <div style="font-size:13pt;color:var(--ink);letter-spacing:.02em;margin-top:10px;">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</div>
+      <div style="font-size:13pt;color:var(--ink);letter-spacing:.02em;">a b c d e f g h i j k l m n o p q r s t u v w x y z &nbsp; 1 2 3 4 5 6 7 8 9 0</div>
+      <div style="margin-top:14px;display:flex;gap:18px;flex-wrap:wrap;">
+        <span style="font-weight:300;">Light 300</span>
+        <span style="font-weight:400;">Regular 400</span>
+        <span style="font-weight:500;">Medium 500</span>
+        <span style="font-weight:600;">SemiBold 600</span>
+        <span style="font-weight:700;">Bold 700</span>
+        <span style="font-weight:800;">ExtraBold 800</span>
+      </div>
+    </div>
+
+    <div class="eyebrow" style="margin:22px 0 10px;">Type scale &amp; roles</div>
+    <table class="tbl">
+      <tr><th style="width:30%;">Role</th><th style="width:34%;">Specification</th><th>Sample</th></tr>
+      <tr><td class="t">Display / H1</td><td>ExtraBold 800 &middot; 24&ndash;30pt</td><td><span style="font-weight:800;font-size:14pt;color:var(--navy);">Brand &amp; Compliance</span></td></tr>
+      <tr><td class="t">Section / H2</td><td>ExtraBold 800 &middot; 16&ndash;18pt</td><td><span style="font-weight:800;font-size:11pt;color:var(--navy);">How We Talk About FUZE</span></td></tr>
+      <tr><td class="t">Kicker / Eyebrow</td><td>Bold 700 &middot; 8pt &middot; +0.24em &middot; UPPER</td><td><span style="font-weight:700;font-size:8pt;letter-spacing:.24em;color:var(--cyan);">PART ONE &middot; COMPLIANCE</span></td></tr>
+      <tr><td class="t">Body</td><td>Regular 400 / Medium 500 &middot; 10&ndash;11pt</td><td><span style="font-weight:400;font-size:9.5pt;">Clear, precise sentences carry the brand.</span></td></tr>
+      <tr><td class="t">Caption / Legal</td><td>Medium 500 &middot; 7.5&ndash;8.5pt &middot; Slate</td><td><span style="font-size:8pt;color:var(--slate);">Third-party reports available on request.</span></td></tr>
+    </table>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">11</span></div>
+</section>
+
+<!-- ============ PAGE 12 — PACKAGING / HANGTAG / DIGITAL ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Packaging, Hangtags <span class="sub">&amp; Digital Use</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="cols2" style="gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:9px;">Hangtags &amp; packaging</div>
+        <div class="card" style="text-align:center;padding:18px;">
+          <div style="display:inline-block;background:var(--grad);border-radius:12px;padding:22px 26px;color:#fff;width:1.9in;">
+            <img src="assets/fuze_white_stacked.png" style="height:1.0in;">
+            <div style="font-size:6.5pt;letter-spacing:.18em;margin-top:12px;font-weight:600;">FRESHER, LONGER</div>
+            <div style="height:1px;background:rgba(255,255,255,.5);margin:9px 0;"></div>
+            <div style="font-size:5.6pt;line-height:1.5;opacity:.92;">Inhibits the growth of odor-causing bacteria &amp; mildew. Non-leaching &middot; PFAS-free.</div>
+          </div>
+          <p class="tiny" style="margin-top:12px;">FUZE&reg; provides a standard hangtag to explain the technology. Partners may also commission a custom co-branded hangtag through the Marketing Team. All hangtag copy must use approved (green) claims only.</p>
+        </div>
+        <div class="donot" style="margin-top:12px;"><b>Approval required.</b> All packaging, hangtags, and on-product copy must be pre-approved before production.</div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:9px;">Digital &amp; linking</div>
+        <div class="card cy">
+          <p class="small" style="margin:0 0 9px;">When using the FUZE&reg; name or marks online &mdash; website, social, e-commerce, or press &mdash; include the following attribution:</p>
+          <div style="background:#fff;border:1px solid #CDE9F2;border-radius:8px;padding:11px 13px;font-size:9pt;font-style:italic;color:var(--navy);">&ldquo;For more information on FUZE&reg;, please visit <span style="font-style:normal;font-weight:700;color:var(--cyan);">fuze47.com</span>.&rdquo;</div>
+        </div>
+        <div class="eyebrow" style="margin:18px 0 9px;">Official destinations</div>
+        <table class="tbl">
+          <tr><th style="width:42%;">Property</th><th>URL</th></tr>
+          <tr><td class="t">Corporate &amp; brand</td><td>fuze47.com</td></tr>
+          <tr><td class="t">Partner portal (Atlas)</td><td>fuzeatlas.com</td></tr>
+          <tr><td class="t">Public FAQ &amp; calculator</td><td>fuzefaq.com</td></tr>
+        </table>
+        <p class="tiny" style="margin-top:10px;"><strong>Retired:</strong> the legacy domain <em>fuzebiotech.com</em> from the 2021 edition should no longer be referenced in new materials.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">12</span></div>
+</section>
+
+<!-- ============ PAGE 13 — PRODUCT SYSTEM ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">The Product System <span class="sub">&middot; F1&ndash;F4</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="kicker">Part Three &middot; Product &amp; Partnership</div>
+    <h2 style="font-size:17pt;">One Chemistry, Four Tiers &mdash; Permanent at Every Level</h2>
+    <div class="rule"></div>
+    <p class="small" style="max-width:6.3in;">FUZE&reg; is offered in four tiers set by application dose. <strong>Every tier bonds permanently and does not wash out.</strong> Tiers differ in antimicrobial test performance and the <strong>ancillary benefit stack</strong> &mdash; not durability. F1 is the flagship with the full benefit set; lower tiers are priced for value, not lower in quality.</p>
+
+    <table class="tbl" style="margin-top:8px;">
+      <tr><th style="width:21%;">Tier</th><th style="width:13%;">Dose</th><th style="width:39%;">Ancillary benefit stack</th><th>Positioning</th></tr>
+      <tr><td class="t">F1 &middot; Full Spectrum</td><td>1.0 mg/kg</td><td>Full stack &mdash; antimicrobial + reduced water surface tension, faster drying, UV &amp; color protection, microfiber benefits</td><td>Flagship &middot; all benefits</td></tr>
+      <tr><td class="t">F2 &middot; Advanced</td><td>0.75 mg/kg</td><td>Antimicrobial + selected ancillary benefits</td><td>Strong performance, better price</td></tr>
+      <tr><td class="t">F3 &middot; Core</td><td>0.5 mg/kg</td><td>Antimicrobial protection &middot; core benefits</td><td>Everyday value</td></tr>
+      <tr><td class="t">F4 &middot; Foundation</td><td>0.25 mg/kg</td><td>Antimicrobial protection &middot; essential</td><td>Best price point</td></tr>
+    </table>
+    <p class="tiny" style="margin-top:7px;"><strong>Durability is not a tier setting.</strong> The metamaterial bonds permanently into the fiber at every application level; longevity is a function of the bond and the <em>substrate</em>, not the dose. Antimicrobial performance is third-party tested (AATCC 100 / ASTM E2149 / ISO 20743); reports available to partners on request.</p>
+
+    <div class="cols2" style="margin-top:18px;gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">How FUZE works</div>
+        <p class="small" style="margin:0;">During finishing, FUZE&reg; metamaterial bonds permanently into the fiber surface &mdash; <strong>at every tier</strong>. Protection is <strong>contact-based and non-leaching</strong> &mdash; the bonded material disrupts microorganisms on contact rather than releasing chemistry into the wash water. The bond does not wash out (durability follows the fiber/substrate, not the dose), with no effect on hand feel, color, breathability, or drape.</p>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">Three application methods</div>
+        <ul class="clean small">
+          <li><strong>Exhaust (dyebath)</strong> &mdash; ideal for knits and piece-dyed fabric.</li>
+          <li><strong>Pad-dry-cure</strong> &mdash; for wovens and high-volume production.</li>
+          <li><strong>Spray</strong> &mdash; for nonwovens, composites, and localized treatment.</li>
+        </ul>
+        <p class="tiny" style="margin-top:5px;">Standard finishing equipment &middot; cure 150&ndash;170&deg;C &middot; water-based &middot; no shelf-life limit.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">13</span></div>
+</section>
+
+<!-- ============ PAGE 14 — TECHNOLOGY & TESTING ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Technology <span class="sub">&amp; Testing</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <p class="small" style="max-width:6.2in;margin-bottom:14px;">FUZE&reg; is <strong>non-leaching by design</strong> &mdash; which means the <em>right test</em> matters. Our lead method is <strong>ASTM E2149</strong>, the dynamic-contact test built for non-leaching antimicrobials. This is our clearest point of technical difference, and partners should state it with confidence.</p>
+
+    <div class="cols2" style="gap:18px;">
+      <div class="card cy">
+        <div class="eyebrow" style="color:var(--cyan);">ASTM E2149 &mdash; our lead test</div>
+        <p class="small" style="margin:8px 0 0;">Treated fabric is shaken in a bacterial suspension; reduction is measured after dynamic contact. It rewards direct surface contact &mdash; exactly how FUZE&reg; works. No ion cloud required.</p>
+      </div>
+      <div class="card">
+        <div class="eyebrow">AATCC 100 &mdash; historical method</div>
+        <p class="small" style="margin:8px 0 0;">Stacks fabric layers around an inoculated coupon. It was designed for <em>leaching</em> chemistries, whose ions saturate the layers. FUZE&reg; still passes at higher tiers (F1/F2), where density overcomes the test&rsquo;s geometry.</p>
+      </div>
+    </div>
+
+    <div style="background:var(--navy);border-radius:11px;padding:15px 18px;margin-top:16px;color:#EAF6FA;">
+      <div class="eyebrow" style="color:#7FD8E8;margin-bottom:6px;">The position &mdash; partners may use verbatim</div>
+      <p style="margin:0;font-size:9.6pt;font-style:italic;line-height:1.6;color:#EAF6FA;">&ldquo;We test on ASTM E2149 because it&rsquo;s the method designed for non-leaching antimicrobials. Leaching chemistries rely on AATCC 100 because its geometry helps their ions saturate the layers. FUZE&reg; doesn&rsquo;t leach, by design. Meet us on the right test.&rdquo;</p>
+    </div>
+
+    <div class="eyebrow" style="margin:18px 0 9px;">The right test by tier</div>
+    <table class="tbl">
+      <tr><th style="width:26%;">Tier</th><th style="width:34%;">Primary method</th><th>Why</th></tr>
+      <tr><td class="t">F4 / F3</td><td>ASTM E2149</td><td>Dynamic-contact test &mdash; direct mechanism match for non-leaching chemistry.</td></tr>
+      <tr><td class="t">F2 / F1</td><td>ASTM E2149 + AATCC 100</td><td>Sufficient metamaterial density to pass both, including the layered AATCC 100.</td></tr>
+    </table>
+
+    <div class="cols2" style="margin-top:14px;gap:18px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:7px;">Full standards battery</div>
+        <p class="small" style="margin:0;">Antimicrobial efficacy: <strong>ASTM E2149</strong>, AATCC 100, ISO 20743 &middot; Antifungal: <strong>AATCC 30</strong> &middot; Antiviral: <strong>ISO 18184</strong> (data only) &middot; Substrate &amp; skin: OEKO-TEX&reg; Class I, bluesign&reg;.</p>
+      </div>
+      <div class="donot" style="align-self:center;"><b>Say &ldquo;third-party validated,&rdquo; not &ldquo;EPA-validated.&rdquo;</b> Our advantage is that we <em>share</em> independent lab reports &mdash; competitors self-publish wash claims and don&rsquo;t.</div>
+    </div>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">14</span></div>
+</section>
+
+<!-- ============ PAGE 15 — QUALITY ASSURANCE & SALES SUPPORT ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Partner Quality <span class="sub">&middot; Assurance &amp; Support</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <p class="small" style="max-width:6.1in;margin-bottom:14px;">To maintain consistent messaging, performance, and quality across every partner, the following items require <strong>FUZE&reg; pre-approval</strong> before treatment, application, or commercialization.</p>
+
+    <div class="cols2" style="gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:9px;">Requires pre-approval</div>
+        <div class="card">
+          <p class="small" style="margin:0 0 4px;font-weight:700;color:var(--navy);">Fabric &amp; treatment</p>
+          <ul class="dash" style="margin-top:0;"><li>Fabric submission &amp; specifications</li><li>Anticipated minimums &amp; volumes</li><li>Treatment tier (F1&ndash;F4) selection</li></ul>
+          <p class="small" style="margin:10px 0 4px;font-weight:700;color:var(--navy);">Marketing &amp; brand</p>
+          <ul class="dash" style="margin-top:0;"><li>Hangtags &amp; on-product copy</li><li>Web, social &amp; e-commerce claims</li><li>Domain linking &amp; co-branded assets</li></ul>
+          <p class="small" style="margin:10px 0 4px;font-weight:700;color:var(--navy);">Partnership</p>
+          <ul class="dash" style="margin-top:0;"><li>Environmental &amp; philanthropic initiatives</li><li>Press releases naming FUZE&reg;</li></ul>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:9px;">How we support you</div>
+        <ul class="clean small">
+          <li><strong>FUZE&reg; Atlas partner portal</strong> &mdash; submit fabrics, track tests, review approved results, book meetings.</li>
+          <li><strong>Marketing kits &amp; collateral</strong> &mdash; approved copy, imagery, and claim guidance.</li>
+          <li><strong>Third-party test reports</strong> &mdash; AATCC 100 / E2149 / ISO data on request.</li>
+          <li><strong>Technical &amp; regulatory support</strong> &mdash; SDS, certifications, and compliance Q&amp;A.</li>
+          <li><strong>Account servicing</strong> &mdash; a dedicated team executing brand agreements and timelines.</li>
+          <li><strong>Trade-show &amp; co-marketing</strong> &mdash; shared booth and partnership programs.</li>
+        </ul>
+        <div class="card cy" style="margin-top:12px;">
+          <p class="small" style="margin:0;"><strong>Validation on demand.</strong> Testing standards, requirements, and current data are available through the Atlas portal &mdash; integrated into every brand agreement and certification.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">15</span></div>
+</section>
+
+<!-- ============ PAGE 16 — SUSTAINABILITY ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Sustainability</div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <p class="lead" style="margin-bottom:4px;">Sustainability isn&rsquo;t a claim we add on &mdash; it&rsquo;s built into how FUZE&reg; is made and how it performs.</p>
+    <p class="small" style="max-width:6.1in;">From recycled-electronics feedstock to solar-capable production and PFAS-free chemistry, FUZE&reg; is engineered to lower impact at every stage &mdash; and to extend the useful life of the textiles it protects.</p>
+
+    <div class="cols3" style="gap:14px;margin-top:18px;">
+      <div class="card"><div class="bignum">0</div><div class="biglabel">PFAS &amp; forever chemicals</div><p class="tiny" style="margin-top:10px;">Completely PFAS-free, aligned with tightening U.S. and EU restrictions.</p></div>
+      <div class="card"><div class="bignum">PPM</div><div class="biglabel">Active ingredient dose</div><p class="tiny" style="margin-top:10px;">Effective at parts-per-million; trace wastewater levels well below limits.</p></div>
+      <div class="card"><div class="bignum">&infin;</div><div class="biglabel">Shelf life &middot; no expiry</div><p class="tiny" style="margin-top:10px;">FUZE&reg; does not expire &mdash; factories hold stock with zero spoilage waste.</p></div>
+    </div>
+
+    <div class="cols2" style="margin-top:18px;gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">How we lower impact</div>
+        <ul class="clean small">
+          <li><strong>Recycled feedstock</strong> &mdash; source material reclaimed from recycled electronics.</li>
+          <li><strong>Solar-capable manufacturing</strong> in Salt Lake City, Utah.</li>
+          <li><strong>Drop-in process</strong> &mdash; adds minimal energy to existing finishing; no new machinery.</li>
+          <li><strong>Non-leaching</strong> &mdash; designed to keep active material in the fabric, not the wash water.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">Longer life, less waste</div>
+        <ul class="clean small">
+          <li><strong>Extends garment life</strong> by controlling odor and microbial deterioration &mdash; fewer textiles discarded.</li>
+          <li><strong>Circularity-compatible</strong> &mdash; does not impair recyclability of base textiles.</li>
+          <li><strong>ESG-aligned</strong> &mdash; supports corporate sustainability goals and the UN SDGs for health and responsible production.</li>
+        </ul>
+        <p class="tiny" style="margin-top:6px;">Sustainability and lifecycle comparisons vs. specific competitor chemistries are available to partners on request.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">16</span></div>
+</section>
+
+<!-- ============ PAGE 17 — GLOBAL CLAIMS FRAMEWORK ============ -->
+<section class="page with-band snap">
+  <div class="band"><div class="sec">Global Compliance <span class="sub">&middot; Market Claims</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="kicker">Part Four &middot; Global Compliance &amp; Market Claims</div>
+    <h2 style="font-size:17pt;">One Principle, Eight Markets</h2>
+    <div class="rule"></div>
+    <p class="small" style="max-width:6.3in;">Across every major market the same line holds: a FUZE&reg;-treated textile may claim to protect <strong>the article itself</strong> &mdash; odor, freshness, resistance to mildew and deterioration &mdash; but never to protect <strong>the wearer</strong> from disease. What changes is the <em>mechanism</em> behind the active and the exact wording each regulator accepts.</p>
+
+    <div class="eyebrow" style="margin:11px 0 6px;">Primary markets &mdash; pages 18&ndash;21</div>
+    <table class="tbl" style="margin-top:0;">
+      <tr><th style="width:14%;">Market</th><th style="width:24%;">Governing framework</th><th style="width:30%;">You may claim</th><th>Key compliance hook</th></tr>
+      <tr><td class="t">United States</td><td>EPA / FIFRA &mdash; Treated Article Exemption (PR Notice 2000-1)</td><td>Inhibits odor-causing bacteria; resists mildew/deterioration; freshness &amp; durability</td><td>Active federally EPA-registered &middot; no kill/public-health claims &middot; no &ldquo;safe/non-toxic&rdquo;</td></tr>
+      <tr><td class="t">European Union</td><td>BPR (EU) 528/2012, Art. 58 &mdash; Treated Articles</td><td>The article&rsquo;s own biocidal property (odor / freshness / material protection)</td><td>Active approved or under BPR review for PT9 + supplier on Article&nbsp;95 list &middot; Art.&nbsp;58(3) labeling</td></tr>
+      <tr><td class="t">Canada</td><td>PCPA / PMRA &mdash; Treated Articles (2023 PCPR)</td><td>&ldquo;Treated&hellip; to control odours&rdquo;; resist bacterial odours; mildew/deterioration</td><td>Preservative PMRA-registered &middot; claims qualified &middot; non-public-health disclaimer</td></tr>
+      <tr><td class="t">China</td><td>GB/T 20944 (test) + GB/T 31713 (safety)</td><td>An &ldquo;antibacterial (&#25239;&#33740;)&rdquo; grade tied to the measured GB test result</td><td>Test to GB/T 20944.3 (shake-flask) + meet GB/T 31713 &middot; label the grade honestly</td></tr>
+    </table>
+
+    <div class="eyebrow" style="margin:12px 0 6px;">Expansion markets &mdash; pages 22&ndash;25</div>
+    <table class="tbl">
+      <tr><th style="width:22%;">Market</th><th style="width:34%;">Model</th><th>Route to claim</th></tr>
+      <tr><td class="t">United Kingdom</td><td>GB BPR (HSE) &mdash; treated articles</td><td>Active approved/under GB review &middot; NI follows EU BPR &middot; <strong>2026 deadline &mdash; verify</strong></td></tr>
+      <tr><td class="t">Japan</td><td>SEK Mark (JTETC) &mdash; voluntary certification</td><td>Certify via JIS L 1902 &middot; display the SEK Mark category</td></tr>
+      <tr><td class="t">Korea</td><td>K-BPR (MOE) &mdash; treated articles</td><td>Active approved/notified under K-BPR &middot; test to KS K 0693</td></tr>
+      <tr><td class="t">Australia</td><td>APVMA (Agvet Code)</td><td>Article-protection claims generally exempt &middot; health claims &rarr; APVMA/TGA</td></tr>
+    </table>
+    <p class="tiny" style="margin-top:11px;">&dagger; The FUZE&reg; active substance is identified by chemical name and CAS number in the product SDS. This guide is directional; confirm market-specific status with FUZE&reg; and local regulatory counsel before publishing claims in a new market.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">17</span></div>
+</section>
+
+<!-- ============ PAGE 18 — UNITED STATES ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">United States <span class="sub">&middot; EPA / FIFRA</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="cols2" style="gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">The framework</div>
+        <p class="small" style="margin:0 0 12px;">FUZE&reg; is federally EPA-registered as an antimicrobial. A textile treated with it is an <strong>exempt treated article</strong> (40 CFR 152.25(a) / EPA PR Notice 2000-1) &mdash; provided every claim stays on protecting the article and the treatment follows the registered use.</p>
+        <div class="card cy">
+          <div class="eyebrow" style="color:var(--cyan);">The compliance hook</div>
+          <p class="small" style="margin:8px 0 0;">The registration lives with the <em>active</em>, not the textile. The moment downstream copy claims to protect <em>people</em> (kill rates, pathogens, disease), the textile becomes an unregistered public-health pesticide &mdash; the exact FIFRA exposure we use against competitors.</p>
+        </div>
+        <div class="donot" style="margin-top:12px;"><b>The &ldquo;safe / non-toxic&rdquo; trap.</b> FIFRA &sect;25(j) prohibits &ldquo;safe,&rdquo; &ldquo;non-toxic,&rdquo; and &ldquo;harmless&rdquo; on anything with pesticidal registration. Use <em>OEKO-TEX&reg; Class I</em> and <em>PFAS-free</em> instead of blanket safety claims.</div>
+      </div>
+      <div>
+        <div class="claimcol" style="margin-bottom:12px;">
+          <div class="hd green"><span class="dot" style="background:#fff;"></span>You may say</div>
+          <div class="bd"><ul class="clean">
+            <li>Inhibits the growth of odor-causing bacteria</li>
+            <li>Inhibits the growth of mildew/mold that deteriorates the article</li>
+            <li>Keeps fabric fresher, longer &middot; durable, non-leaching</li>
+            <li>PFAS-free &middot; OEKO-TEX&reg; Class I &middot; factual certifications</li>
+          </ul></div>
+        </div>
+        <div class="claimcol">
+          <div class="hd red"><span class="dot" style="background:#fff;"></span>You may not say</div>
+          <div class="bd"><ul class="clean">
+            <li>Antibacterial / germicidal &middot; &ldquo;kills 99.9%&rdquo;</li>
+            <li>Named pathogens (MRSA, Staph, E.&nbsp;coli)</li>
+            <li>Protects the wearer / disease / virus claims</li>
+            <li>&ldquo;EPA-approved/validated&rdquo; durability &middot; &ldquo;safe&rdquo; &middot; &ldquo;non-toxic&rdquo;</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+    <p class="tiny" style="margin-top:14px;"><strong>Source:</strong> EPA PR Notice 2000-1; 40 CFR 152.25(a); FIFRA &sect;25(j). See also the U.S. claims framework on pages 05&ndash;06.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">18</span></div>
+</section>
+
+<!-- ============ PAGE 19 — EUROPEAN UNION ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">European Union <span class="sub">&middot; BPR</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="cols2" style="gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">The framework</div>
+        <p class="small" style="margin:0 0 10px;">Under the EU Biocidal Products Regulation (528/2012), a FUZE&reg;-treated textile is a <strong>&ldquo;treated article&rdquo; (Art. 58)</strong>. It may be placed on the EU market provided the FUZE&reg; active&dagger; is <strong>approved &mdash; or still under assessment in the BPR Review Programme &mdash; for product-type&nbsp;9</strong> (fibre/textile preservatives), and the active&rsquo;s supplier is on the <strong>ECHA Article&nbsp;95 list</strong>.</p>
+        <div class="card">
+          <div class="eyebrow">Mandatory labeling &mdash; Art. 58(3)</div>
+          <p class="small" style="margin:8px 0 0;">When any biocidal property is claimed, the article must be labeled with the claim, the <strong>name of the active substance(s)</strong>, and relevant instructions. Suppliers must answer a consumer&rsquo;s information request <strong>within 45 days</strong>.</p>
+        </div>
+      </div>
+      <div>
+        <div class="claimcol" style="margin-bottom:12px;">
+          <div class="hd green"><span class="dot" style="background:#fff;"></span>You may say</div>
+          <div class="bd"><ul class="clean">
+            <li>The article&rsquo;s own biocidal property &mdash; odor &amp; freshness control</li>
+            <li>Resists microbial deterioration of the fabric</li>
+            <li>Durable, non-leaching, PFAS-free</li>
+            <li>&hellip; with the required active-substance labeling</li>
+          </ul></div>
+        </div>
+        <div class="claimcol">
+          <div class="hd red"><span class="dot" style="background:#fff;"></span>You may not say</div>
+          <div class="bd"><ul class="clean">
+            <li>Human-health protection &middot; disease / virus claims</li>
+            <li>Biocidal benefit beyond the article itself</li>
+            <li>Any implication the textile is a registered biocidal product</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+    <div class="card cy" style="margin-top:14px;">
+      <div class="eyebrow" style="color:var(--cyan);">Before selling in the EU &mdash; confirm with counsel</div>
+      <p class="small" style="margin:8px 0 0;">Verify (1) the FUZE&reg; active&rsquo;s current PT9 status in the BPR Review Programme, (2) Article&nbsp;95 listing for the active/supplier, and (3) any classification &amp; labeling outcome. EU active-substance reviews are live and can change market-access conditions.</p>
+    </div>
+    <p class="tiny" style="margin-top:12px;"><strong>Source:</strong> Regulation (EU) 528/2012, Art. 58 &amp; 95; ECHA Treated Articles guidance. &nbsp;&dagger; Active identity in SDS.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">19</span></div>
+</section>
+
+<!-- ============ PAGE 20 — CANADA ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Canada <span class="sub">&middot; PMRA</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="cols2" style="gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">The framework</div>
+        <p class="small" style="margin:0 0 10px;">Under Canada&rsquo;s <em>Pest Control Products Act</em>, a FUZE&reg;-treated textile is an <strong>exempt treated article</strong> when: (1) the FUZE&reg; preservative is registered/authorized in Canada, (2) use is limited to protecting the article, and (3) it is applied per the registered rates and methods. Claims must match the preservative&rsquo;s approved label and be <strong>qualified</strong> &mdash; &ldquo;antimicrobial&rdquo; or &ldquo;preservative&rdquo; may never stand alone.</p>
+        <div class="donot"><b>Required where confusion is possible:</b> &ldquo;This product does not protect users or others against bacteria, viruses, germs or other disease-causing organisms.&rdquo;</div>
+      </div>
+      <div>
+        <div class="claimcol" style="margin-bottom:12px;">
+          <div class="hd green"><span class="dot" style="background:#fff;"></span>PMRA-accepted textile claims</div>
+          <div class="bd"><ul class="clean">
+            <li>&ldquo;Treated with an antimicrobial agent to <strong>control odours</strong>.&rdquo;</li>
+            <li>&ldquo;Treated to <strong>resist the development of bacterial odours</strong>.&rdquo;</li>
+            <li>&ldquo;Extends the useful life of the article by controlling <strong>deterioration caused by mould/mildew</strong>.&rdquo;</li>
+            <li>&ldquo;Contains a preservative to <strong>mitigate the development of odours</strong>.&rdquo;</li>
+          </ul></div>
+        </div>
+        <div class="claimcol">
+          <div class="hd red"><span class="dot" style="background:#fff;"></span>You may not say</div>
+          <div class="bd"><ul class="clean">
+            <li>&ldquo;Antimicrobial&rdquo; / &ldquo;preservative&rdquo; unqualified</li>
+            <li>Pathogens not on the active&rsquo;s registered label</li>
+            <li>&ldquo;Prevents infection&rdquo; or any health benefit</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+    <p class="tiny" style="margin-top:14px;"><strong>Source:</strong> PMRA, <em>Acceptable Claims for Articles Treated with Antimicrobial Preservatives</em> (12 Mar 2024, &sect;3.4); PCPR amendments (in force 5 Jun 2023); DIR2016-01. Claims above are verbatim PMRA examples and are conditional on the FUZE&reg; preservative being registered in Canada for this use.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">20</span></div>
+</section>
+
+<!-- ============ PAGE 21 — CHINA ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">China <span class="sub">&middot; GB Standards</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <p class="small" style="max-width:6.2in;margin-bottom:12px;">China uses a <strong>performance-grade</strong> model rather than pesticide registration: a textile is tested to a national <strong>GB</strong> method, and an <strong>&ldquo;antibacterial (&#25239;&#33740;)&rdquo;</strong> grade may then be labeled honestly against the measured result &mdash; provided the product also meets the GB safety standard.</p>
+
+    <div class="eyebrow" style="margin:4px 0 8px;">The governing standards</div>
+    <table class="tbl">
+      <tr><th style="width:26%;">Standard</th><th style="width:30%;">Method</th><th>Note</th></tr>
+      <tr><td class="t">GB/T 20944.1</td><td>Agar diffusion (qualitative)</td><td>Screening for antibacterial activity.</td></tr>
+      <tr><td class="t">GB/T 20944.2</td><td>Absorption (quantitative)</td><td>Static quantitative method.</td></tr>
+      <tr><td class="t">GB/T 20944.3</td><td>Shake-flask / oscillation (quantitative &mdash; <strong>dynamic contact</strong>)</td><td><strong>FUZE&rsquo;s strongest method</strong> &mdash; rewards non-leaching contact-kill. China&rsquo;s analog to ASTM E2149.</td></tr>
+      <tr><td class="t">GB/T 31713</td><td>Hygienic safety requirements</td><td>Safety layer for antibacterial textiles.</td></tr>
+    </table>
+
+    <div class="cols2" style="margin-top:16px;gap:22px;">
+      <div class="card cy">
+        <div class="eyebrow" style="color:var(--cyan);">Why this favors FUZE</div>
+        <p class="small" style="margin:8px 0 0;">The shake-flask method (GB/T 20944.3) is a <strong>dynamic-contact</strong> test &mdash; the same mechanism logic as ASTM E2149. It is the method that best demonstrates FUZE&reg;&rsquo;s non-leaching, contact-based performance. Lead with it in China the way we lead with E2149 elsewhere.</p>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">Claiming in China</div>
+        <ul class="clean small">
+          <li>State the <strong>antibacterial grade</strong> achieved under GB/T 20944, no more.</li>
+          <li>Meet <strong>GB/T 31713</strong> safety requirements before labeling.</li>
+          <li>Antiviral data via <strong>ISO 18184</strong> &mdash; technical reference only.</li>
+          <li>No disease-protection or kill-rate marketing claims.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="tiny" style="margin-top:14px;"><strong>Source:</strong> GB/T 20944.1/.2/.3; GB/T 31713-2015. &nbsp;<strong>To confirm:</strong> the specific updated GB standard version with the FUZE&reg; lab partner before citing it as binding.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">21</span></div>
+</section>
+
+<!-- ============ PAGE 22 — UNITED KINGDOM ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">United Kingdom <span class="sub">&middot; GB BPR</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="cols2" style="gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">The framework</div>
+        <p class="small" style="margin:0 0 10px;">Post-Brexit, Great Britain runs its own <strong>GB Biocidal Products Regulation</strong> (administered by the <strong>HSE</strong>), which mirrors the EU treated-article rules: a FUZE&reg;-treated textile may be placed on the GB market only if the FUZE&reg; active&dagger; is approved or under assessment in the <strong>GB Review Programme</strong> for the relevant product-type, with the same Art.&nbsp;58-style labeling and claim limits.</p>
+        <div class="card">
+          <div class="eyebrow">Two regimes, one island group</div>
+          <p class="small" style="margin:8px 0 0;"><strong>Great Britain</strong> &rarr; GB BPR (HSE). <strong>Northern Ireland</strong> &rarr; <strong>EU BPR</strong> under the Windsor Framework. Plan GB and NI separately &mdash; an EU-compliant route covers NI but not GB.</p>
+        </div>
+      </div>
+      <div>
+        <div class="claimcol" style="margin-bottom:12px;">
+          <div class="hd green"><span class="dot" style="background:#fff;"></span>You may say</div>
+          <div class="bd"><ul class="clean">
+            <li>The article&rsquo;s own biocidal property &mdash; odor &amp; freshness</li>
+            <li>Resists microbial deterioration of the fabric</li>
+            <li>Durable, non-leaching, PFAS-free &middot; with required labeling</li>
+          </ul></div>
+        </div>
+        <div class="claimcol">
+          <div class="hd red"><span class="dot" style="background:#fff;"></span>You may not say</div>
+          <div class="bd"><ul class="clean">
+            <li>Human-health protection &middot; disease / virus claims</li>
+            <li>Biocidal benefit beyond the article itself</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+    <div class="donot" style="margin-top:14px;"><b>Live deadline &mdash; confirm before GB entry.</b> The HSE has begun issuing <b>non-approval</b> decisions under the GB Review Programme; affected antimicrobial-treated articles must stop being placed on the GB market by <b>28&nbsp;September&nbsp;2026</b>. Confirm the FUZE&reg; active&rsquo;s current GB status with UK regulatory counsel before committing to the GB market.</div>
+    <p class="tiny" style="margin-top:12px;"><strong>Source:</strong> HSE &mdash; GB Biocidal Products Regulation &amp; Northern Ireland overview; GB BPR review decisions (2026). &nbsp;&dagger; Active identity in SDS.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">22</span></div>
+</section>
+
+<!-- ============ PAGE 23 — JAPAN ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Japan <span class="sub">&middot; SEK Mark</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <p class="small" style="max-width:6.2in;margin-bottom:12px;">Japan uses a <strong>voluntary performance-certification</strong> model. The recognized credential for antibacterial, deodorant, and antiviral textiles is the <strong>SEK Mark</strong>, issued by JTETC (Sengikyo) and accredited to ISO/IEC&nbsp;17065. It is earned through <strong>JIS&nbsp;L&nbsp;1902</strong> testing &mdash; not pesticide registration.</p>
+
+    <div class="eyebrow" style="margin:4px 0 8px;">SEK Mark categories &amp; methods</div>
+    <table class="tbl">
+      <tr><th style="width:34%;">SEK category</th><th style="width:30%;">Test method</th><th>Claim basis</th></tr>
+      <tr><td class="t">Antibacterial &amp; Deodorant</td><td>JIS L 1902</td><td>Controls bacterial growth &amp; resulting odor on the fabric.</td></tr>
+      <tr><td class="t">Antimicrobial (&#21046;&#33740;)</td><td>JIS L 1902</td><td>Higher-bar bacterial control on the textile.</td></tr>
+      <tr><td class="t">Antiviral</td><td>JIS L 1922 / ISO 18184</td><td>Reduces specific viruses on the fabric (data-based, no health claim).</td></tr>
+    </table>
+
+    <div class="cols2" style="margin-top:16px;gap:22px;">
+      <div class="card cy">
+        <div class="eyebrow" style="color:var(--cyan);">The route to market</div>
+        <p class="small" style="margin:8px 0 0;">Test the FUZE&reg;-treated fabric to JIS&nbsp;L&nbsp;1902 through a JTETC-affiliated lab, certify the appropriate SEK category, then display the SEK Mark. The mark itself carries the credibility &mdash; Japanese buyers look for it.</p>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">Claiming in Japan</div>
+        <ul class="clean small">
+          <li>Use the <strong>SEK Mark</strong> and its category wording &mdash; nothing beyond it.</li>
+          <li>Antiviral = fabric-surface data only; never disease protection.</li>
+          <li>Keep performance figures in technical references.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="tiny" style="margin-top:14px;"><strong>Source:</strong> JTETC (Japan Textile Evaluation Technology Council) &mdash; SEK Mark certification standards; JIS L 1902.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">23</span></div>
+</section>
+
+<!-- ============ PAGE 24 — KOREA ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Korea <span class="sub">&middot; K-BPR</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="cols2" style="gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">The framework</div>
+        <p class="small" style="margin:0 0 10px;">South Korea&rsquo;s <strong>Consumer Chemical Products and Biocides Safety Act (K-BPR)</strong>, administered by the Ministry of Environment, is modeled on the EU BPR and explicitly covers <strong>biocide-treated articles</strong>. A FUZE&reg;-treated textile may be sold only if the FUZE&reg; active&dagger; is <strong>approved/notified under K-BPR</strong> for the relevant product-type, with K-BPR labeling and advertising controls.</p>
+        <div class="card cy">
+          <div class="eyebrow" style="color:var(--cyan);">Performance testing</div>
+          <p class="small" style="margin:8px 0 0;">Antibacterial performance is demonstrated to <strong>KS&nbsp;K&nbsp;0693</strong> (Korea&rsquo;s antibacterial textile test, analogous to JIS&nbsp;L&nbsp;1902).</p>
+        </div>
+      </div>
+      <div>
+        <div class="claimcol" style="margin-bottom:12px;">
+          <div class="hd green"><span class="dot" style="background:#fff;"></span>You may say</div>
+          <div class="bd"><ul class="clean">
+            <li>Article&rsquo;s own antibacterial / deodorizing property</li>
+            <li>Freshness &amp; material-protection benefits</li>
+            <li>&hellip; with the K-BPR-required treated-article labeling</li>
+          </ul></div>
+        </div>
+        <div class="claimcol">
+          <div class="hd red"><span class="dot" style="background:#fff;"></span>You may not say</div>
+          <div class="bd"><ul class="clean">
+            <li>Human-health / disease protection</li>
+            <li>Claims using a non-approved biocidal active</li>
+            <li>Anything beyond the approved K-BPR scope</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+    <div class="donot" style="margin-top:14px;"><b>Confirm before Korea entry.</b> K-BPR is a registration-style regime &mdash; the FUZE&reg; active must be approved or notified for its product-type before any treated-textile is placed on the Korean market. Confirm status with Korean regulatory counsel.</div>
+    <p class="tiny" style="margin-top:12px;"><strong>Source:</strong> Consumer Chemical Products and Biocides Safety Act (K-BPR), Ministry of Environment (in force 2019); KS K 0693. &nbsp;&dagger; Active identity in SDS.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">24</span></div>
+</section>
+
+<!-- ============ PAGE 25 — AUSTRALIA ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Australia <span class="sub">&middot; APVMA</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="cols2" style="gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px;">The framework</div>
+        <p class="small" style="margin:0 0 10px;">Australia regulates antimicrobial chemistries under the <strong>Agvet Code</strong> (APVMA). The dividing line is the claim: a textile treated to <strong>protect itself</strong> &mdash; odor control and material preservation (&ldquo;bacteriostatic&rdquo;) &mdash; generally does not require product registration, while claims to <strong>protect people</strong> from microbes or disease move the product into APVMA registration and/or the <strong>TGA</strong> (therapeutic goods).</p>
+        <div class="card">
+          <div class="eyebrow">The same principle, again</div>
+          <p class="small" style="margin:8px 0 0;">Protect the <em>article</em> &rarr; freely claimable. Protect the <em>person</em> &rarr; regulated. Keep FUZE&reg; messaging firmly on the article side.</p>
+        </div>
+      </div>
+      <div>
+        <div class="claimcol" style="margin-bottom:12px;">
+          <div class="hd green"><span class="dot" style="background:#fff;"></span>You may say</div>
+          <div class="bd"><ul class="clean">
+            <li>Controls odor-causing bacteria on the fabric</li>
+            <li>Resists deterioration &amp; staining from mould/mildew</li>
+            <li>Keeps the textile fresher, longer &middot; PFAS-free</li>
+          </ul></div>
+        </div>
+        <div class="claimcol">
+          <div class="hd red"><span class="dot" style="background:#fff;"></span>You may not say</div>
+          <div class="bd"><ul class="clean">
+            <li>Protects the wearer / hygiene / sanitiser claims</li>
+            <li>Kills germs, viruses, or named pathogens</li>
+            <li>Any therapeutic / disease-prevention benefit</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+    <p class="tiny" style="margin-top:14px;"><strong>Confirm:</strong> Australia&rsquo;s treated-article position is less codified than the U.S./EU. Confirm the classification of FUZE&reg;-treated textiles and any registration trigger with the APVMA (and TGA, if a health benefit is ever implied) before entering the market. <strong>Source:</strong> APVMA &mdash; Agvet Code / chemicals we regulate.</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">25</span></div>
+</section>
+
+<!-- ============ PAGE 26 — GETTING STARTED & CONTACTS ============ -->
+<section class="page with-band">
+  <div class="band"><div class="sec">Getting Started <span class="sub">&amp; Contacts</span></div><img class="ic" src="assets/fuze_white_icon.png"></div>
+  <div class="pad">
+    <div class="cols2" style="gap:22px;">
+      <div>
+        <div class="eyebrow" style="margin-bottom:9px;">The path to production</div>
+        <table style="width:100%;">
+          <tr><td style="width:30px;vertical-align:top;"><div style="width:22px;height:22px;border-radius:50%;background:var(--grad);color:#fff;font-weight:800;font-size:9pt;text-align:center;line-height:22px;">1</div></td><td style="padding-bottom:11px;"><strong style="color:var(--navy);">Consult</strong><div class="small">Identify fabrics, target tier, and performance goals with your FUZE&reg; rep.</div></td></tr>
+          <tr><td style="vertical-align:top;"><div style="width:22px;height:22px;border-radius:50%;background:var(--grad);color:#fff;font-weight:800;font-size:9pt;text-align:center;line-height:22px;">2</div></td><td style="padding-bottom:11px;"><strong style="color:var(--navy);">Sample</strong><div class="small">Treat sample fabric at a partner factory (typically 2&ndash;4 weeks).</div></td></tr>
+          <tr><td style="vertical-align:top;"><div style="width:22px;height:22px;border-radius:50%;background:var(--grad);color:#fff;font-weight:800;font-size:9pt;text-align:center;line-height:22px;">3</div></td><td style="padding-bottom:11px;"><strong style="color:var(--navy);">Validate</strong><div class="small">Independent lab testing of treated samples (1&ndash;2 weeks).</div></td></tr>
+          <tr><td style="vertical-align:top;"><div style="width:22px;height:22px;border-radius:50%;background:var(--grad);color:#fff;font-weight:800;font-size:9pt;text-align:center;line-height:22px;">4</div></td><td style="padding-bottom:11px;"><strong style="color:var(--navy);">Approve</strong><div class="small">Review results and lock production specifications &amp; brand assets.</div></td></tr>
+          <tr><td style="vertical-align:top;"><div style="width:22px;height:22px;border-radius:50%;background:var(--grad);color:#fff;font-weight:800;font-size:9pt;text-align:center;line-height:22px;">5</div></td><td><strong style="color:var(--navy);">Produce</strong><div class="small">Begin production-scale treatment with ongoing QC verification.</div></td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:9px;">Submit &amp; get approvals</div>
+        <div class="card cy">
+          <p class="small" style="margin:0 0 9px;">Start a brand application, request marks, or submit copy for claim approval through the partner portal or your account team.</p>
+          <ul class="clean small" style="margin:0;">
+            <li>Brand application &amp; fabric submission</li>
+            <li>Logo / master artwork requests</li>
+            <li>Claim &amp; collateral pre-approval</li>
+            <li>Test reports &amp; certifications</li>
+          </ul>
+        </div>
+        <div style="margin-top:16px;background:var(--navy);border-radius:11px;padding:16px 18px;color:#EAF6FA;">
+          <img src="assets/fuze_white_horiz.png" style="height:0.34in;margin-bottom:11px;">
+          <div style="font-size:8.6pt;line-height:1.7;">
+            <div><strong style="color:#fff;">Brand &amp; approvals</strong> &middot; brand@fuze47.com</div>
+            <div><strong style="color:#fff;">General</strong> &middot; andrew@fuze47.com</div>
+            <div><strong style="color:#fff;">Partner portal</strong> &middot; fuzeatlas.com</div>
+            <div><strong style="color:#fff;">Web</strong> &middot; fuze47.com</div>
+            <div style="margin-top:8px;opacity:.85;">FUZE&reg; Biotech<br>1895 West 2100 South<br>Salt Lake City, Utah 84119 USA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="tiny" style="margin-top:16px;">Questions about whether specific language is approved? Always ask before you publish &mdash; <a>brand@fuze47.com</a>. This guide supersedes the 2021 Brand Compliance edition (Version 1.0).</p>
+  </div>
+  <div class="foot"><span>FUZE&reg; Brand &amp; Compliance Standards &middot; 2026</span><span class="pg">26</span></div>
+</section>
+
+<!-- ============ PAGE 18 — BACK COVER ============ -->
+<section class="page" style="background:var(--grad-deep);">
+  <div style="position:absolute;inset:0;background:radial-gradient(120% 90% at 85% 90%, rgba(4,61,76,.34), rgba(4,61,76,0) 55%);"></div>
+  <div style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+    <img src="assets/fuze_white_icon.png" style="width:1.15in;opacity:.96;">
+    <div style="color:#fff;font-weight:300;letter-spacing:.34em;text-transform:uppercase;font-size:11pt;margin-top:26px;">Building a cleaner,</div>
+    <div style="color:#fff;font-weight:700;letter-spacing:.30em;text-transform:uppercase;font-size:11pt;">healthier world &mdash; one textile at a time</div>
+  </div>
+  <div style="position:absolute;bottom:0.7in;left:0.85in;right:0.85in;display:flex;justify-content:space-between;align-items:flex-end;color:#fff;">
+    <div style="font-size:8pt;font-weight:500;opacity:.9;line-height:1.6;">&copy; 2026 FUZE&reg; Biotech. All rights reserved.<br>FUZE&reg; and the FUZE&reg; mark are trademarks of FUZE&reg; Biotech.</div>
+    <div style="font-size:9pt;font-weight:800;letter-spacing:.16em;">FUZE47.COM</div>
+  </div>
+</section>
+
+</body>
+</html>

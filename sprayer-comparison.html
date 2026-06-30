@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atomizer Comparison</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #111;
+    background: #fff;
+    padding: 40px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .sheet { max-width: 940px; margin: 0 auto; }
+  h1 {
+    font-size: 29px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .sub { color: #555; font-size: 15px; margin-bottom: 28px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 14px 16px; text-align: left; vertical-align: top; font-size: 15px; }
+  thead th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+  thead th:nth-child(1) { width: 20%; }
+  thead th:nth-child(2) {
+    background: #0a7d2c; color: #fff; width: 40%; border-radius: 8px 8px 0 0;
+  }
+  thead th:nth-child(3) {
+    background: #6b6b6b; color: #fff; width: 40%; border-radius: 8px 8px 0 0;
+  }
+  tbody tr { border-bottom: 1px solid #e7e7e7; }
+  tbody td:first-child { font-weight: 700; color: #333; }
+  .ours { background: #f1faf2; }
+  .ours strong { color: #0a7d2c; }
+  .theirs { background: #f4f4f4; color: #555; }
+  .spec { font-weight: 800; font-size: 16px; }
+  .footer { margin-top: 26px; font-size: 13px; color: #777; line-height: 1.5; }
+  @media print { body { padding: 0; } }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <h1>Dry-Fog Atomizer vs. Typical Electrostatic Sprayer</h1>
+  <p class="sub">Same job. One leaves the surface bone dry. The other still wets it.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Our Unit</th>
+        <th>Typical Electrostatic Sprayer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Droplet size</td>
+        <td class="ours"><span class="spec">Under 5 microns</span> &mdash; true dry fog. Coats every surface evenly and flashes off without wetting.</td>
+        <td class="theirs"><span class="spec">40&ndash;160 microns</span> &mdash; 10&ndash;30&times; larger. E-Mist EPIX360 = 75&micro;m; EvaClean Protexus = 40/60/80&micro;m; Ryobi = 50/75/100&micro;m.</td>
+      </tr>
+      <tr>
+        <td>Surface result</td>
+        <td class="ours"><strong>Stays dry</strong> &mdash; no pooling, no streaks, no wipe-down.</td>
+        <td class="theirs">Charged droplets wrap the surface but still <strong>leave it wet</strong> &mdash; visible deposit, needs dwell/dry time.</td>
+      </tr>
+      <tr>
+        <td>Power</td>
+        <td class="ours"><strong>20V Dewalt-style battery</strong>, with adapter for 18V Milwaukee M18 packs.</td>
+        <td class="theirs">Proprietary pack (e.g. 16.8V Protexus, 12V Electro-Mist).</td>
+      </tr>
+      <tr>
+        <td>Runtime</td>
+        <td class="ours"><strong>8 hours on a single 2Ah pack</strong> (~5W draw). All-day cordless.</td>
+        <td class="theirs">~4 hours typical (EvaClean Protexus, 16.8V).</td>
+      </tr>
+      <tr>
+        <td>Battery flexibility</td>
+        <td class="ours">Runs the battery platforms you <strong>already own</strong>.</td>
+        <td class="theirs">Locked to the maker's proprietary battery.</td>
+      </tr>
+      <tr>
+        <td>Coverage mechanism</td>
+        <td class="ours">Particle size alone carries the fog into every gap &mdash; no charge needed.</td>
+        <td class="theirs">Relies on electrostatic charge to pull oversized droplets onto the surface.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="footer">Sub-5-micron output is why the surface stays dry: droplets that small carry far less liquid per unit area and evaporate on contact &mdash; full, even coverage without ever wetting the material. Electrostatic sprayers charge their droplets to improve wrap-around, but at 40&ndash;160&micro;m those droplets are still 10&ndash;30&times; larger, so they deposit visible liquid and need dry time.</p>
+</div>
+</body>
+</html>

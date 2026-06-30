@@ -206,7 +206,9 @@ All other distributors (Archroma, CHT, DyStar, Pulcra, etc.) are INACTIVE — th
 | **Daily CRM Digest Email**      | LIVE — 14:00 UTC cron, includes Daily Sales (L + kg booked vs shipped), CRM activity, new orders, outreach. Has error-fallback email on handler crash.                                                                             |
 | **Daily Feedback Digest Email** | LIVE — 13:30 UTC cron emails Andrew the open `FeedbackReport` queue. Subject says "🎉 Inbox zero" when empty. Built May 2026.                                                                                                       |
 | **Weekly Exec Review Email**    | LIVE — Mondays 14:00 UTC cron generates the snapshot, upserts the `WeeklyExecReport` row, emails the headline KPIs + at-risk customers + agenda + report link. Closes the gap from #70 (manual-only flow). Built May 2026.        |
-| **GitHub Actions Auto-Triage**  | LIVE — `.github/workflows/auto-triage.yml`, fires daily 14:30 UTC. Pulls open tickets via `/api/cron/feedback-list`, hands them to `claude-code-action@v1` with strict triage rules, opens one PR per `auto/<ticketId>` branch.   |
+| **GitHub Actions Auto-Triage**  | LIVE (Phase 57 rebuild June 3, 2026) — `.github/workflows/auto-triage.yml`. Was failing silently on every run since May 27 (27 consecutive red runs — missing id-token:write perm + Claude Code Action API drift + missing bot git identity). Rebuilt with direct `@anthropic-ai/claude-code` CLI invocation, secret pre-check, smoke test, callback to `/api/cron/triage-callback`, run summary panel, failure forensics dump, and `workflow_dispatch` input for single-ticket testing. New `TriageRun` model + `triage-status` endpoint + diag probes. Daily 14:30 UTC schedule + manual dispatch from Actions tab. |
+| **Meeting Notes + Project workflow (Phase 53–56)** | LIVE (June 1-3, 2026) — full Monday Global Meeting workflow: `MeetingSeries` + `MeetingNote` + `MeetingNoteEntry` + `MeetingActionItem` + `MeetingProjectBlock` schema. `/meeting-notes/[id]` with collapsible single-line per-project rows (Gmail-style), click to expand inline, Prev/Next/Close & Next sticky footer, ✓ Project Complete (archives) + 🗑 Delete Project (destructive with confirm) + per-task × delete, optimistic UI on every mutation. `/admin/projects/new` 4-step wizard (BRAND/FACTORY/DISTRIBUTOR/INTERNAL with INTERNAL admin-only + Brand.subtype=OEM tag for middlemen like MMI). `/admin/projects/weekly` stale-sorted inline-update flow with Mark Complete/Reopen + `/admin/projects?status=closed` archive. `/my-tasks` + `/admin/all-tasks` action item boards. Inline @mention parser auto-creates action items with assignee/priority/due-date inheritance from section headers. Immediate-assignment + 7am UTC daily digest emails. Auto-create-next-meeting hourly cron. 16 Monday Global Meeting projects seeded from Andrew's 2026-05-27 agenda. |
+| **CRM ActivityFeed integration for Project/MeetingBlock/ActionItem** | PENDING — Phase 53-56 entities currently siloed on `/meeting-notes/[id]` + `/admin/projects/[id]`. Brand/factory CRM ActivityFeed component doesn't surface project weekly updates, action items, or meeting block discussions yet. Task #69. |
 | **Bearer-Authed Cron Endpoints**| LIVE — `/api/cron/feedback-list` (read-only ticket queue), `/api/cron/admin-resolve` (one-off ticket + brand + email actions). Bypasses local Prisma issues; pattern for future "trigger admin action via curl" needs.            |
 | **ICP Sample Prep Flow**        | LIVE (wizard + SOP + print packet); awaiting first real CTLA submission                                                                                                                                                            |
 | **Scoped Module Sidebar**       | LIVE — sidebar scopes to active module, "← All Modules (Home)" returns to 6-card picker                                                                                                                                            |
@@ -671,6 +673,166 @@ Keep `seed-sanmar` as-is for back-compat — SanMar reruns still go
 through it and it has SanMar-specific logic baked in. But **do
 not write new per-brand seed endpoints**. Any new brand goes
 through the importer.
+
+## Built Features (Session — June 1-3, 2026 — meeting workflow + auto-triage + Rudolf intel + Nomad Home)
+
+The most productive 48-hour stretch yet. Shipped **5 sequential phases (53 → 57)** that rebuild the Monday Global Meeting workflow end-to-end, completed a full **Rudolf Group competitive deep-dive** with new sustainability archetype, generated **Nomad Home (JLA) B2B retail marketing collateral** with EPA Treated Article compliance framework, fixed the **GitHub Actions auto-triage workflow** that had been silently failing for 27 consecutive runs, and resolved a dozen schema-drift / hydration / claim-language bugs along the way.
+
+### Phase 53 — Meeting Notes module (shipped Sunday)
+
+Foundational meeting-notes infrastructure. Schema additions: `MeetingSeries`, `MeetingNote`, `MeetingNoteEntry`, `MeetingActionItem`. The `MeetingActionItem.doneAt` / `doneById` columns are the correct fields for completion (a later commit caught code referencing nonexistent `completedAt` — the right field is `doneAt`).
+
+UI surfaces shipped:
+- `/meeting-notes` — series + recent meetings index
+- `/meeting-notes/[id]` — meeting detail with append-only entries
+- `/my-tasks` — personal action item board sorted by priority desc + due date asc
+- `/admin/all-tasks` — admin rollup of every assignee's open items
+
+Inline `@mention` parser at `src/lib/meeting-mentions.ts` extracts assignee + priority + due date from natural language (`@Tina to send Silvadur SDS by Friday URGENT`). Section-header priority inheritance — `**Brand — Priority 1 URGENT**` flags every bullet in that section as URGENT unless the bullet's own sentence overrides. Reparse cron at `/api/cron/reparse-meeting-action-items?meetingId=` for re-running the parser after fixes.
+
+Email pipeline: immediate assignment email + 7am UTC daily digest cron. Auto-create-next-meeting hourly cron auto-creates the Sunday 7pm Mountain Monday Global Meeting note 24h before it's due. Seed cron `/api/cron/seed-monday-meeting-2026-05-27` populated the first historical meeting with 16 sections + ~30 @-mentioned action items.
+
+### Phase 54 — Project Start Wizard (shipped Sunday-Monday)
+
+Extended the existing `Project` model with `ownerId`, `goalMd`, `kickoffMeetingNoteId`, `projectType` (initially BRAND/FACTORY/INTERNAL). New 4-step wizard at `/admin/projects/new` — customer type → entity pick → name+owner+goal → explicit task form rows. Atomic POST creates Project + Kickoff MeetingNote + MeetingActionItems in one transaction. New `/admin/projects` list page (was missing pre-Phase-54). Detail page at `/admin/projects/[id]` extended with Overview/Tasks/Meetings tabs + change-owner modal.
+
+### Phase 54.5 — Distributor + OEM + Weekly Update + Mark Complete (Monday evening)
+
+Wizard taxonomy refinements after Andrew used Phase 54 and flagged gaps. Schema delta via `migrate-54-5-bundle`:
+- Project: `priority` (URGENT/HIGH/NORMAL/LOW), `weeklyStatus`, `lastUpdatedAt`, `closedAt`, `closedById` (FK), `closingNotes`, indexes
+- Brand: `subtype` (OEM/middleman tag — MMI / WTS / Active Apparel Group are tagged here, stored as Brand rows rather than introducing a 5th entity type)
+- Reverse relation `User.projectsClosed`
+
+Wizard card row reordered to BRAND / FACTORY / DISTRIBUTOR / INTERNAL — INTERNAL hidden from non-admin role pickers (server-side defense-in-depth too). New `/admin/projects/weekly` page — stale-sorted (oldest update first), URGENT floated to top, per-row chips, inline Update form with markdown status + add-task + Mark Complete checkbox + "Save & next" jump-to-next-stale. New `/admin/projects/[id]/weekly-update` single atomic endpoint behind both the inline form and the header button. `/admin/projects?status=closed` read-only archive with Reopen flow. Sidebar gained "Weekly Update" + "Completed" links under Projects module.
+
+### Phase 55 — Structured meeting project blocks (Monday overnight)
+
+Replaced free-text Monday Global Meeting markdown with structured per-project blocks. New `MeetingProjectBlock` model with customer-type dropdown, brand/factory picker (or freeform internal label), owner dropdown, priority dropdown A→D, per-block discussion textarea, inline add-task form with assignee + priority + due-date. `MeetingActionItem.projectBlockId` FK with onDelete SetNull. Full REST surface: `GET/POST /api/meeting-notes/[id]/project-blocks`, `PATCH/DELETE` per block, `POST /api/meeting-notes/[id]/project-blocks/[blockId]/tasks`, `PATCH/DELETE` per task.
+
+Backfill crons (`backfill-55`, `cleanup-55-other-blocks`, `create-missing-brands`) walked the existing 16-section Monday meeting → 16 structured blocks with disambiguated brand/factory/owner resolution. Position-based action-item pairing via parser re-run (fingerprint match was too fragile across parser rewrites). Seed cron `seed-monday-2026-05-27-projects` materialized one Project per section using the Phase 54 atomic flow (16 Projects + 38 action items + 6 digest emails sent). Fixup cron canonicalized MMI as Brand.subtype=OEM ("MMI Textiles"), re-pointed 5 Andrew projects to andrew@fuze47.com, set Nike priority=URGENT.
+
+### Phase 56 — Collapsible row UX overhaul (Tuesday)
+
+Andrew used the structured-block page from Phase 55 and pushed back hard on the UX. Seven-item rebuild in one commit:
+- **Gmail-style single-line rows.** Every block collapsed to one line by default — left-to-right: type chip + project name + owner avatar + priority pill + task count + status pill + ▼ disclosure. Click row to expand inline.
+- **Prev / Next / Close & Next sticky footer** inside expanded view for fast Monday walkthrough.
+- **"✓ Project Complete"** button — reuses Phase 54.5 weekly-update markComplete endpoint, archives to /admin/projects?status=closed (recoverable, not destructive).
+- **"🗑 Delete Project"** with confirm modal — actual destruction for mistakes, cascade-deletes kickoff MeetingNote + all MeetingActionItems + MeetingProjectBlock.
+- **Per-task × delete** with confirm.
+- **Optimistic UI on EVERY mutation** — addBlock / patchBlock / deleteBlock / addTask / patchTask / deleteTask / markProjectComplete / doDeleteProject. Snapshot → apply locally → fetch → revert on error. Fixed the "changes show up several seconds later" complaint.
+- **useNotifications guard fix** — silenced "Cannot connect: no user ID available" console noise that was firing twice per page.
+
+Schema delta: `MeetingProjectBlock.projectId` nullable FK + index + `Project.meetingBlocks` reverse relation so "Project Complete" can find the canonical project to archive. `link-blocks-to-projects` cron linked 9/16 blocks (7 unmatched — Tencate, Hurricane, Allied, Classic Fashion, MMI, Target, Patriots — all due to factory-name lookup drift from the earlier seed runs; "Project Complete" on those falls back to removing the meeting block only).
+
+### Phase 57 — Auto-triage GitHub Action repair (Tuesday late)
+
+The `.github/workflows/auto-triage.yml` workflow had been failing on every scheduled run since May 27 — 27 consecutive red runs. Daily feedback digest was firing (Andrew got the email with 11 open tickets) but the auto-fix-and-PR pipeline was silently broken. Run #27 annotations surfaced four real errors:
+
+1. `Could not fetch an OIDC token. Did you remember to add 'id-token: write'` — workflow permissions missing `id-token: write`
+2. `Unexpected input(s) 'model', valid inputs are ['trigger_phrase', 'assignee_trigger', 'label_trigger', 'base_branch']` — Claude Code Action API drifted; `model` no longer valid
+3. `git failed with exit code 128` — cascading from missing OIDC + no bot identity set
+4. `Node.js 20 actions are deprecated` — bump to 22
+
+Workflow rebuilt with direct `@anthropic-ai/claude-code` CLI invocation (sidesteps the comment-trigger flow the new action wrapper expects), explicit secret pre-check, smoke-test on `/api/cron/feedback-list`, callback to `/api/cron/triage-callback`, run summary panel, failure-forensics dump, and `workflow_dispatch` input for `ticket_id` so a single ticket can be manually targeted. New `TriageRun` Prisma model + `triage-callback` POST + `triage-status` GET + 2 new `diag-all-surfaces` probes. Triage prompt relaxed to attempt BUG/BROKEN_LINK/ERROR/PROBLEM + clear-UI-SUGGESTION; skips only OTHER + ACCEPTED-parked + ambiguous-single-sentence.
+
+Manual `workflow_dispatch` from `https://github.com/fuze47101/fuzeatlas/actions/workflows/auto-triage.yml` is the way to attempt the 11-ticket backlog without waiting for the next 14:30 UTC scheduled run.
+
+### Rudolf Group competitive deep-dive (Wednesday morning)
+
+5-product deep dive per the CLAUDE.md Competitive Intelligence Persistence Rule:
+- `rudolf-ruco-bac-rox` (Heraeus AGXX silver-ruthenium catalytic)
+- `rudolf-ruco-bac-agp` (silver chloride 1.75%, EPA Reg 84189-2 VERIFIED)
+- `rudolf-ruco-bac-agl` (silver chloride 0.20%, EPA Reg 84189-1 VERIFIED)
+- `rudolf-silverplus` (apparel sub-brand wrapping AGP/AGL)
+- `sanitized-puretec` (updated to clarify Rudolf-exclusive global distribution)
+
+New `silver_ruthenium_catalytic` archetype in `UPSTREAM_MANUFACTURING` — first ruthenium entry in the catalog. Ruthenium carries ~5000 kg CO2/kg refinery-gate vs silver's 158 (Aurubis EFD 2024 + CRU Group LCA). At AGXX's published 87.5% Ag / 12.5% Ru ratio, ruthenium dominates the per-kg-active CO2 despite being the minority component. AGXX is the highest-CO2 antimicrobial in our entire catalog (~763 kg CO2/kg active).
+
+**EPA PPLS verification finding:** both AGP and AGL ARE federally registered (Rudolf GmbH, Geretsried, Germany, master labels dated 2016-07-25, public PPLS PDFs). BUT the registered scope explicitly prohibits public health claims on manufactured products: "manufactured products incorporating Product EP ... may not make any public health claims." Rudolf's marketing of "antibacterial / antiviral / germicidal" exceeds the registered scope → FIFRA Section 12(a)(1)(E) misbranding exposure (stronger lever than "no registration" because the EPA label itself is the smoking gun).
+
+Audit transcript appended to `deliverables/Competitor_SDS_Audit_2026-05.md`. Four customer-facing comparison docs at `deliverables/Sustainability_Comparison_FUZE_vs_*.md`. New `/api/admin/competitor-comparison-pdf?competitorId=` endpoint for single-product PDF generation. Master `FUZE_vs_Rudolf_Group_Master_Comparison.pdf` regenerated with corrected Section 12(a)(1)(E) framing (replaced an earlier draft that incorrectly framed AGP/AGL as unregistered).
+
+### JLA / Nomad Home B2B retail marketing materials
+
+JLA brand setup — vertical Chinese mill, hospitality accessories + bedding for Choice / Hilton / Marriott. Both a Brand AND a Factory entity (vertical integration) with BrandFactory link. Brett Rife + Jessika invited as BRAND_MANAGER via the new Invite User flow.
+
+Nomad Home (JLA's consumer-facing antimicrobial sub-brand) marketing collateral:
+- Hero infographic (4-page PDF + page PNGs)
+- Feature comparison sheet (Nomad Home + FUZE vs Standard Silver-Treated vs Untreated, 16 rows)
+- Compliant Claim Language Guide with green "CAN say" / red "CANNOT say" tables
+- EPA PR Notice 2000-1 Treated Article Framework disclaimer
+
+Critical EPA compliance discipline locked in: per the Treated Article Exemption framework, downstream consumer claims are restricted to "inhibits growth of odor-causing bacteria" + "inhibits growth of mildew that causes product deterioration" + factual certification statements. Specific organism kill rates (MRSA, Staph, E.coli) and "antibacterial" / "kills 99.9%" claims trigger FIFRA Section 12 exposure without product-specific public health pesticide registration — same lever used against Rudolf, now applied internally to ensure our own customer-facing collateral stays inside acceptable scope.
+
+Real Marriott/hotel data from the legacy FUZE 47 brochures (99.991% AATCC 100 after 100 washes, hard-surface kill rates on ceramic/porcelain/stainless/formica/plastic ABS/marble) was preserved but reframed into a "Technical Validation — internal reference" section rather than consumer-facing claim.
+
+Files at `deliverables/Nomad_Home_FUZE_Hero_Infographic.pdf` + Page PNGs + `Nomad_Home_FUZE_Feature_Comparison.pdf`.
+
+### External technical responses (drafted, sent)
+
+- **Dario at Spanx** — ionic vs non-ionic silver question + EU regulatory framing. Andrew corrected the "FUZE is not silver" framing to the honest characterization: FUZE metamaterial is elemental silver (Ag⁰) in a proprietary non-leaching allotrope form, bonded permanently into the fiber surface. Distinguishes from colloidal nanosilver (banned in EU cosmetics under Regulation 2024/858), silver-ion delivery systems, and silver chloride dispersions. Reframed the EU regulatory trend as favorable to FUZE rather than threatening.
+- **Resitha Somasiri at Inqube** — DWR-treated fabric application guidance. Three application sequences ranked: **C blended (preferred)** > A FUZE-first > B isopropyl-wicking-booster. Mix evaluation Q answered: yes, validated multiple times including Bass Pro production-scale. Bonding mechanism corrected — FUZE binds on contact via **Van der Waals forces + polarity differential** between metamaterial and fiber surface functional groups (polar OH on cotton, ester carbonyl on polyester, amide on nylon); does NOT require thermal curing for attachment. Medical-grade uses **10 nm particle size** (smaller than textile-grade, optimized for medical-device kill efficiency). Medical-program status: small animal trials completed, large mammal in progress, in vivo + in vitro + skin/eye studies done.
+
+### Bug fixes shipped this session
+
+A lot of schema-drift + claim-language + hydration bugs. Each one a real production issue surfaced by Andrew's testing or a customer ticket:
+
+1. **Ryan Prince role change** — root cause was `getCurrentUser()` returning the IMPERSONATED user when `fuze-impersonate` cookie is set. Per `src/lib/auth.ts:111` docstring: "Use `getRealUser()` for audit logs and permission gates." Migrated every admin permission gate (`/api/users/[id]` PUT, `/api/settings/users/[id]` PATCH, `/api/admin/invitations`, `/api/access-requests`, etc.) to `getRealUser()`. Andrew had a stale View-As cookie on a BD_REP class user; every admin write was failing the ADMIN hasMinRole gate.
+
+2. **Inline-edit stomp race on /settings/users** — Change Role modal PUT succeeded (200, role flipped to ADMIN in DB), inline edit row 7 seconds later PATCH stomped it back to BD_REP because `editRole` was captured stale when the edit opened and the PATCH body unconditionally sent every field. Fix: PATCH now diffs against the loaded user record; only changed fields land in the body; empty body short-circuits.
+
+3. **Kaylee Pace test request bug** (FeedbackReport cmpok6z67) — FUZE Atlas Lab's `LabService` rows use testTypes ANTIMICROBIAL, RECIPE_DEVELOPMENT, PERFORMANCE, SOLAR_PERFORMANCE, HEAT_DEFLECTION (stored as String?), but when brand-portal/test-request creates a TestRequestLine the testType passes through to the Prisma TestType enum which only allowed ICP/ANTIBACTERIAL/FUNGAL/ODOR/UV/MICROFIBER/OTHER. Every FUZE Atlas Lab service submission failed with "Argument testType: Invalid value provided. Expected TestType." Fix: extended TestType enum with the 6 missing members. Diagnostic replay probe at `/api/cron/diag-replay-brand-test-request` surfaces the full Prisma error inside a rolled-back transaction.
+
+4. **Jany Lu document Replace/Delete** — fabric documents had no UI to replace or delete. `Document.deletedAt` soft-delete column + PATCH/DELETE `/api/fabrics/[id]/documents/[docId]` + Replace + soft-Delete buttons + `/api/cron/admin-swap-fabric-document` bearer-authed escape hatch for cases where the customer can't or won't use the UI.
+
+5. **ICP correlation chart 0-points bug** — `loadCorrelationPoints` required both `icpResult` AND `abResult` on the same TestRun row, but TestRun.testType is single-valued enum so no TestRun ever has both. Chart returned 0 points since shipped May 12. Fix: pair ICP and AB TestRuns by shared FabricSubmission.
+
+6. **Phase 17 backfill** — 34 legacy TestRequests had no TrackingToken; `/api/cron/backfill-tracking-tokens` populated them all idempotently.
+
+7. **Invite User button + BD rep ACL** — `/admin/users` had no invitation flow; admin had to set passwords inline. Added `✉ Invite User` button. Extended `/api/admin/invitations` ACL to BD_REP + SALES_REP with role-picker filter preventing them from inviting into ADMIN/EMPLOYEE/SALES_MANAGER tiers.
+
+8. **Meeting-notes PATCH 500** — `/api/meeting-notes/[id]/project-blocks/[blockId]/tasks/[taskId]` PATCH referenced `MeetingActionItem.completedAt` in both the select on findUnique and the write inside the status==DONE branch. The schema field is `doneAt` / `doneById` — no `completedAt` column. Every status flip surfaced as "Unknown argument completedAt." Fixed both refs; wrapped update in try/catch that returns `{message, code, meta}` instead of generic 500. New `/api/cron/diag-replay-meeting-note-patch` probe.
+
+9. **/api/admin/home-activity prisma error swallowed** — `Promise.all([...]).catch((e) => return [[], [], ...])` swallowed every prisma error and returned 200 with empty arrays. Activity feed silently broken. Fix: per-model `safeQuery()` wrapper; each query reports its own failure into `modelErrors[]` exposed in the response body.
+
+10. **+ Add Project button doing nothing → Suspense wrap** — Next 15 `useSearchParams` in a client component without a `<Suspense>` parent throws during initial render → page blanks → Link's destination renders nothing → click looks like a no-op. Wrapped `/admin/projects/new` + `/admin/projects` in `<Suspense>` + `WizardErrorBoundary` that renders a rose stack-trace panel instead of blanking. Same fix pattern available for any other Next 15 client component using useSearchParams.
+
+11. **Hydration debug — checkbox / button clicks not firing on /admin/projects/weekly + /my-tasks** — symptom looked like broken hydration. Diagnostic instrumentation added (PAGE-MOUNT / CLICK / FETCH-RESULT console logs + `window.__lastClick` globals + `/api/cron/diag-checkbox-roundtrip` server-side probe). Diagnostic revealed clicks WERE firing and POSTs WERE returning 200 — the bug was that new MeetingProjectBlocks were being created but invisible because they landed at the bottom of 16 priority-C blocks. Fix in d90cd5e: new blocks default to priority A → top of sorted list, auto-scroll to new block, emerald flash for 4s, Cache-Control: no-store. Lesson — when symptom is "click doesn't work," always start with: did the click fire (PAGE-MOUNT/CLICK logs), did the fetch fire (Vercel runtime logs), did the server return success? Then trace from there.
+
+12. **GitHub Actions auto-triage** — covered under Phase 57 above.
+
+### Standing rules clarifications
+
+- **Brand voice nuance for technical/compliance Q&A.** Marketing context uses FUZE / metamaterial / F1-F4 only — never silver/nano/Ag (rule from earlier sessions, still binding). BUT a customer's compliance team asking a regulatory chemistry question (Dario / Resitha pattern) gets the honest technical characterization: FUZE metamaterial is elemental silver (Ag⁰) in a proprietary non-leaching allotrope form. Saying "not silver" in that context is misrepresentation — they'll catch it on the first SDS/EPA-label review. The competitive distinction is the PHYSICAL FORM and BONDING MECHANISM, not the underlying element. Per CLAUDE.md original rule: "Technical/compliance docs (CIL, ARSL, SDS) may use chemical names (Silver, CAS 7440-22-4) but ALL marketing, website, and customer-facing content uses FUZE and metamaterial." Compliance Q&A is in the technical/compliance bucket.
+
+- **Bonding mechanism clarification.** FUZE binds on CONTACT via Van der Waals forces + polarity differential between metamaterial and fiber surface functional groups (polar OH on cotton, ester carbonyl on polyester, amide on nylon). Does NOT require thermal curing for attachment. The cure step in textile finishing removes the water carrier and locks the final surface state — it does not create the bond. Old brochure language ("cure-bonded at 150-170°C") is incorrect and should not be repeated to customers.
+
+- **EPA Treated Article Framework discipline applies to OUR collateral too.** The same Section 12 levers we used against Rudolf and IFTNA apply to FUZE-side downstream materials. Customer-facing claims on consumer products and retail listings must stay inside EPA-acceptable scope: "inhibits growth of odor-causing bacteria," "inhibits growth of mildew that causes product deterioration," factual certifications, freshness/lasting/durability language. Specific organism kill rates + "antibacterial / bactericidal / germicidal / kills X%" framing requires product-specific public health pesticide registration. Technical validation data (third-party lab reports, ICP confirmation, AATCC 100 results) stays in clearly-labeled "Technical Validation — internal reference" sections supporting the EPA-acceptable consumer claims, not appearing AS the consumer claims themselves.
+
+- **Competitive Intelligence Persistence Rule extended.** Per the original rule, every competitive deep-dive ends in `src/lib/competitors.ts` + audit transcript + (optional) customer-facing comparison doc. Added: when a deep-dive surfaces a new chemistry class not represented in `UPSTREAM_MANUFACTURING` (e.g., silver-ruthenium catalytic from the Rudolf AGXX deep-dive), an archetype entry with full `sourced()` citations is required so sustainability page math doesn't fall back to a wrong archetype.
+
+- **Hydration / Next 15 client-component pattern.** Any new `"use client"` page using `useSearchParams` or `useSearchParams`-equivalent client hooks must be wrapped in `<Suspense>` + an error boundary that surfaces render failures as a visible rose panel rather than silently blanking. Standard pattern shipped at `/admin/projects/new` (commit d4bc5f1) — copy that wrapper structure when adding new client pages.
+
+- **Diagnostic instrumentation as standing standard.** Every interactive surface ships with `[PAGE-MOUNT]` console log on hydration + `[CLICK]` / `[FETCH] / [FETCH-RESULT]` logs on every onChange/onClick handler + `window.__lastClick` / `window.__lastClickResult` globals for inspection. When a user reports "doesn't work," the first diagnostic is "open DevTools console, click the thing, paste what shows up" — and the answer routes to either client (no logs = hydration broken) or server (logs present + failed fetch = server bug) within 60 seconds.
+
+### Pending / queued for next session
+
+- **11-ticket auto-triage backlog** — workflow rebuild shipped (Phase 57), awaits manual `workflow_dispatch` trigger from the Actions tab to attempt the backlog. After first green run, daily 14:30 UTC schedule resumes automatically.
+- **Wire Project / MeetingBlock / ActionItem into brand + factory CRM ActivityFeed** (Task #69) — Phase 53/54/54.5/56 entities currently live in their own silo. `/brands/[id]` + `/factories/[id]` CRM tabs don't surface project weekly updates, action items assigned around the brand, or meeting block discussions tagged to the entity. Data models all carry the right FKs; just needs the ActivityFeed source query extended.
+- **7 unlinked factory rows from Monday seed** — Tencate, Hurricane, Allied, Classic Fashion, MMI, Target, Patriots — canonical Factory rows use different names than the Monday-notes shorthand. Fuzzy-match cron extension would resolve.
+- **i18n writer silent no-op debug** (Task #48) — Phase 19 smoke test showed `writeTranslatedKeys` returns applied=2 but git diff shows no file change. Blocks any further auto-translation run. Local script refactor shipped, but the writer bug under it hasn't been diagnosed yet.
+- **JLA textile-onboarding wizard fix** (Task #62) — Brett and Jessika hit textile-only onboarding questions despite JLA being hospitality/accessories. Wizard needs to skip for users joining an existing brand (most likely fix) or add non-textile path.
+- **Phase 19.1 react-hooks/purity violations** — still deferred. `eslint.ignoreDuringBuilds: true` escape hatch from commit 33557f2 stays in place. ~169 violations across legitimate pre-existing patterns; tsc + Next type-check still catch real errors. Lower priority.
+
+### What's stable and good as of session end
+
+- diag-all-surfaces holding at 70-72/72 green across all the new probes (Phase 53/54/54.5/56/57 each added 2-4 probes)
+- Vercel deploys clean (no consecutive ERROR states this session — the Phase 19 cascade is a memory)
+- The Monday Global Meeting workflow ships end-to-end: structured blocks + collapsible rows + Prev/Next nav + Mark Complete + per-task delete + optimistic UI. The original "I want a wizard for each project, click to expand, walk through, mark complete, move on" vision from Andrew is live and tested.
+- Rudolf competitive intel is the most defensible deep-dive in the catalog. EPA Master Label citations bound to actual PPLS PDFs. The ruthenium archetype is the biggest customer-positioning lever in the antimicrobial textile space.
+- Nomad Home (JLA) marketing collateral is the template for every future B2B retail customer that wants FUZE-treated consumer goods. EPA Treated Article compliance discipline + green/red claim language guide is reusable.
+
+---
 
 ## Built Features (Session — May 20-22, 2026 — i18n full rollout + protocol publish)
 
@@ -1668,6 +1830,8 @@ Schema synced via `npx prisma db push` (see Debugging Lessons note — this repo
 ## NON-NEGOTIABLE WORKFLOW RULES (Cowork ↔ Claude Code)
 
 These rules are how Andrew works. Violating them wastes his time.
+
+0. **Identity check before applying any rule below.** These rules describe a two-session split: **Cowork** (the Claude desktop/Cowork session — diagnoses, reads live state, writes prompts) and **Claude Code** (the CLI on Andrew's Mac — edits files, commits, pushes, deploys). If you are the session reading files inside `~/Desktop/fuzeatlas` via the Claude Code CLI, **you are the EXECUTOR**. Execute the prompt you were handed end-to-end — edit, commit, push, deploy, self-verify. Do NOT read this section and conclude "I'm Cowork, I shouldn't be editing files" and hand the work back — that is the exact identity-flip failure this rule exists to prevent. Rules 1–6 below ("never ask Andrew to edit a file," "prompts must be a single paste," etc.) govern how **Cowork** addresses Andrew; they do NOT tell Claude Code to stop executing. When in doubt: if a Code prompt was pasted into your terminal, run it.
 
 1. **NEVER ask Andrew to manually edit a file, find a line, or replace text by hand.** Andrew does not open files. Andrew does not hunt for code. Andrew pastes prompts into Code. If a fix requires editing a file, the answer is ALWAYS "write a Code prompt that does the edit" — never "open foo.tsx and change line 42." This applies to next.config.ts, eslint.config.mjs, locale files, page components — every file. No exceptions.
 
