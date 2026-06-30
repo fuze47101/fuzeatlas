@@ -308,7 +308,7 @@ function AuditLogItem({ log }: { log: any }) {
 
 // ADMIN/EMPLOYEE full dashboard
 function AdminDashboard({ data, t }: { data: DashData; t: any }) {
-  const c = data.counts;
+  const c = data.counts ?? {};
   const stageLabels = getStageLabels(t);
 
   return (
@@ -510,12 +510,12 @@ function AdminDashboard({ data, t }: { data: DashData; t: any }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         <div className="lg:col-span-2">
           <PipelineBar
-            data={data.pipeline}
+            data={data.pipeline ?? []}
             brandPipelineLabel={t.dashboard.brandPipeline}
             stageLabels={stageLabels}
           />
         </div>
-        <TestTypeChart data={data.testTypes} testsByTypeLabel={t.dashboard.testsByType} />
+        <TestTypeChart data={data.testTypes ?? []} testsByTypeLabel={t.dashboard.testsByType} />
       </div>
 
       {/* Recent Activity + Audit Logs */}
@@ -1189,6 +1189,13 @@ export default function DashboardPage() {
     return (
       <div className="flex items-center justify-center h-64 text-slate-400 text-lg">
         Redirecting to Distributor Portal...
+      </div>
+    );
+  } else if (data.role === "LAB_USER" || data.role === "LAB_MANAGER") {
+    if (typeof window !== "undefined") window.location.href = "/lab-portal";
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-400 text-lg">
+        Redirecting to Lab Portal...
       </div>
     );
   }
