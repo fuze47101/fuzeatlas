@@ -53,7 +53,7 @@ export async function GET(request: Request) {
         orderBy: [{ priority: "asc" }, { createdAt: "desc" }],
         include: {
           brand: { select: { id: true, name: true } },
-          fabric: { select: { id: true, fuzeNumber: true, customerCode: true, construction: true, weightGsm: true } },
+          fabric: { select: { id: true, fuzeNumber: true, customerCode: true, construction: true, weightGsm: true, factory: { select: { id: true, name: true, country: true } } } },
           lab: { select: { id: true, name: true, customerNumber: true } },
           project: { select: { id: true, name: true } },
           sow: { select: { id: true, title: true } },

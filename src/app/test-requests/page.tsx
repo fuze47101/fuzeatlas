@@ -51,7 +51,7 @@ interface TestRequest {
   brandId?: string;
   brand?: { id: string; name: string };
   fabricId?: string;
-  fabric?: { id: string; fuzeNumber?: number; customerCode?: string; construction?: string; weightGsm?: number };
+  fabric?: { id: string; fuzeNumber?: number; customerCode?: string; construction?: string; weightGsm?: number; factory?: { id: string; name: string; country?: string } };
   labId: string;
   lab?: { id: string; name: string; customerNumber?: string };
   distributorId?: string;
@@ -648,6 +648,7 @@ export default function TestRequestsPage() {
                     <div className="flex items-center gap-3 text-sm text-slate-500 flex-wrap">
                       <span className="font-medium text-slate-700">{req.lab?.name || T.unknownLab}</span>
                       {req.brand && <><span>·</span><span>{req.brand.name}</span></>}
+                      {req.fabric?.factory && <><span>·</span><span className="text-slate-600">{req.fabric.factory.name}</span></>}
                       {req.fuzeFabricNumber && <><span>·</span><span className="font-mono text-xs">{req.fuzeFabricNumber}</span></>}
                       {req.estimatedCost != null && (
                         <><span>·</span><span className="font-semibold text-slate-700">${req.estimatedCost.toFixed(2)}</span></>
@@ -694,6 +695,7 @@ export default function TestRequestsPage() {
                         <h4 className="text-xs font-bold text-slate-500 uppercase">{T.testingInfoHeader}</h4>
                         <div><span className="text-xs text-slate-500">{T.labRow}</span> <span className="text-sm font-medium text-slate-800">{req.lab?.name}</span></div>
                         {req.brand && <div><span className="text-xs text-slate-500">{T.brandRow}</span> <span className="text-sm text-slate-800">{req.brand.name}</span></div>}
+                        {req.fabric?.factory && <div><span className="text-xs text-slate-500">Factory</span> <span className="text-sm font-medium text-slate-800">{req.fabric.factory.name}{req.fabric.factory.country ? ` · ${req.fabric.factory.country}` : ""}</span></div>}
                         {req.project && <div><span className="text-xs text-slate-500">{T.projectRow}</span> <span className="text-sm text-slate-800">{req.project.name}</span></div>}
                         {req.fabric && (
                           <div><span className="text-xs text-slate-500">{T.fabricRow}</span> <span className="text-sm text-slate-800">
