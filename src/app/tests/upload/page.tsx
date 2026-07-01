@@ -199,6 +199,9 @@ export default function TestUploadPage() {
   // AI review notes (editable per test)
   const [aiNotes, setAiNotes] = useState<Record<number, string>>({});
 
+  // General report-level notes (legacy form path — Kaylee ticket cmql7d9ct)
+  const [reportNotes, setReportNotes] = useState("");
+
   // Assignment state
   const [brands, setBrands] = useState<SelectOption[]>([]);
   const [factories, setFactories] = useState<SelectOption[]>([]);
@@ -571,6 +574,8 @@ export default function TestUploadPage() {
         submissionWashStatus: submissionWashStatus || null,
         submissionStorage: submissionStorage || null,
         forceDuplicate: forceDuplicate,
+        // Kaylee ticket cmql7d9ct — report-level notes
+        aiReviewNotes: reportNotes || null,
       };
 
       if (testType === "ANTIBACTERIAL") {
@@ -1372,6 +1377,18 @@ export default function TestUploadPage() {
                       <input type="radio" name="overallPass" value="" checked={overallPass === ""} onChange={(e) => setOverallPass(e.target.value)} className="w-4 h-4 text-slate-600" />
                       <span className="text-sm text-slate-500">Not specified</span>
                     </label>
+                  </div>
+
+                  {/* Testing notes — Kaylee ticket cmql7d9ct */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Testing Notes &amp; Remarks</label>
+                    <textarea
+                      value={reportNotes}
+                      onChange={(e) => setReportNotes(e.target.value)}
+                      rows={3}
+                      placeholder="Add any notes, remarks, or observations about this test report..."
+                      className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500"
+                    />
                   </div>
 
                   {/* Raw text */}
