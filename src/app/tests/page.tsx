@@ -22,6 +22,8 @@ interface TestRun {
   hasFungal: boolean;
   hasOdor: boolean;
   brandVisible?: boolean;
+  submissionId?: string | null;
+  needsAssociation?: boolean;
 }
 
 interface TestData {
@@ -29,6 +31,7 @@ interface TestData {
   typeBreakdown: { type: string; count: number }[];
   runs: TestRun[];
   resultCounts: { icp: number; fungal: number; odor: number; antibacterial: number };
+  orphanCount?: number;
 }
 
 interface ProjectOption {
@@ -55,6 +58,8 @@ export default function TestsPage() {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("");
   const [filterProject, setFilterProject] = useState("");
+  // D2 — Needs association filter
+  const [filterNeedsAssociation, setFilterNeedsAssociation] = useState(false);
   const [savedBanner, setSavedBanner] = useState(false);
 
   // Projects for filter dropdown
@@ -103,7 +108,7 @@ export default function TestsPage() {
       const d = await res.json();
       if (d.ok) {
         setSelectedIds(new Set());
-        loadData(filterType, filterProject);
+        loadData(filterType, filterProject, filterNeedsAssociation);
       }
     } catch (e) {
       console.error("Batch stamp error:", e);
@@ -145,7 +150,7 @@ export default function TestsPage() {
       const d = await res.json();
       if (!d.ok) { setEditError(d.error || "Save failed"); return; }
       setEditingTest(null);
-      loadData(filterType, filterProject);
+      loadData(filterType, filterProject, filterNeedsAssociation);
     } catch (e: any) {
       setEditError(e.message);
     } finally {
@@ -153,10 +158,11 @@ export default function TestsPage() {
     }
   };
 
-  const loadData = (type?: string, project?: string) => {
+  const loadData = (type?: string, project?: string, needs?: boolean) => {
     const params = new URLSearchParams();
     if (type) params.set("type", type);
     if (project) params.set("project", project);
+    if (needs) params.set("needsAssociation", "true");
     fetch(`/api/tests?${params.toString()}`)
       .then((r) => r.json())
       .then((d) => {
@@ -187,10 +193,10 @@ export default function TestsPage() {
     loadData();
   }, []);
 
-  // Re-fetch when filter type or project changes
+  // Re-fetch when filter type / project / needsAssociation changes
   useEffect(() => {
-    loadData(filterType, filterProject);
-  }, [filterType, filterProject]);
+    loadData(filterType, filterProject, filterNeedsAssociation);
+  }, [filterType, filterProject, filterNeedsAssociation]);
 
   const filtered = data?.runs.filter((r) => {
     const q = search.toLowerCase();
@@ -271,6 +277,30 @@ export default function TestsPage() {
         })}
       </div>
 
+      {/* D2 — Needs association filter chip */}
+      {(data?.orphanCount ?? 0) > 0 && (
+        <div className="mb-4">
+          <button
+            onClick={() => setFilterNeedsAssociation((v) => !v)}
+            className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-semibold transition-all ${
+              filterNeedsAssociation
+                ? "bg-amber-100 border-amber-400 text-amber-900 ring-2 ring-amber-200"
+                : "bg-amber-50 border-amber-300 text-amber-800 hover:bg-amber-100"
+            }`}
+            title="Runs with no submission linkage — need a brand/factory/fabric assigned."
+          >
+            <span>⚠</span>
+            <span>Needs association</span>
+            <span className="ml-1 px-1.5 py-0.5 rounded-full bg-amber-600 text-white text-[10px] font-bold">
+              {data?.orphanCount}
+            </span>
+            {filterNeedsAssociation && (
+              <span className="ml-1 text-xs text-amber-700 underline">clear</span>
+            )}
+          </button>
+        </div>
+      )}
+
       {/* Search + Project filter */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <input
@@ -333,6 +363,11 @@ export default function TestsPage() {
               <div className="flex items-center justify-between">
                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}>
                   {run.testType}
+                  {run.needsAssociation && (
+                    <span className="ml-1 px-1 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded border border-amber-300" title="Needs association">
+                      ⚠
+                    </span>
+                  )}
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-400">{run.testDate || ""}</span>
@@ -420,6 +455,14 @@ export default function TestsPage() {
                             BP
                           </span>
                         )}
+                        {run.needsAssociation && (
+                          <span
+                            className="px-1.5 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded border border-amber-300"
+                            title="Needs association — no brand/factory/fabric linked"
+                          >
+                            ⚠ orphan
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-slate-900 font-medium">{run.testReportNumber || "—"}</td>
@@ -501,7 +544,7 @@ export default function TestsPage() {
           onClose={() => setAssigningTest(null)}
           onAssigned={() => {
             setAssigningTest(null);
-            loadData(filterType, filterProject);
+            loadData(filterType, filterProject, filterNeedsAssociation);
             // Refresh project list in case new one was created
             fetch("/api/projects").then(r => r.json()).then(d => {
               if (d.ok && d.projects) setProjectOptions(d.projects);

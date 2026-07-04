@@ -91,7 +91,7 @@ export async function GET() {
         flags: r.flags,
         action: r.recommendedAction,
         notes: r.reviewedNotes,
-        link: `/test-results/${r.testRunId}`,
+        link: `/tests/${r.testRunId}`,
       };
     }),
     ...rejected.map((s) => ({

@@ -1193,7 +1193,7 @@ export async function notifyRawDataReceived(params: {
 
   const title = `📥 Raw test data received${params.labName ? ` from ${params.labName}` : ""}`;
   const message = `${params.testType || "Test"} run ${params.testRunId.slice(-6)} is ready for FUZE Ops review before brand-visible stamping.`;
-  const link = `/test-results/${params.testRunId}`;
+  const link = `/tests/${params.testRunId}`;
   await Promise.all(
     Array.from(recipientIds).map((userId) =>
       createNotification({

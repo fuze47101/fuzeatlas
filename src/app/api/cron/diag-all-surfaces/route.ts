@@ -896,6 +896,56 @@ export async function GET(req: Request) {
           },
         }),
     ),
+    // D1 (Bureau Veritas 2026-07) — /api/tests/confirm with fabricId
+    // auto-match path. Confirms Fabric.fuzeNumber Int @unique is queryable
+    // and FabricSubmission.fuzeFabricNumber Int? is queryable — those
+    // two lookups drive the auto-match when the lab-portal confirm-step
+    // form doesn't pass an explicit fabricId.
+    check(
+      "/api/tests/confirm — fabric auto-match by parsed FUZE number",
+      "fabric findFirst by fuzeNumber + submission findFirst by fuzeFabricNumber",
+      () =>
+        Promise.all([
+          prisma.fabric.findFirst({
+            where: { fuzeNumber: 1 },
+            select: { id: true, brandId: true, factoryId: true },
+          }),
+          prisma.fabricSubmission.findFirst({
+            where: { fuzeFabricNumber: 1 },
+            select: { id: true, brandId: true, factoryId: true, fabricId: true },
+          }),
+        ]).then(() => 1),
+    ),
+    // D2 (Bureau Veritas 2026-07) — /tests page "Needs association"
+    // filter chip. Confirms the OR clause (submissionId null OR
+    // raw.needsAssociation flag) evaluates and returns a count without
+    // Prisma choking on the JSON path filter.
+    check(
+      "/tests — Needs association filter chip",
+      "testRun count where submissionId null OR raw.needsAssociation",
+      () =>
+        prisma.testRun.count({
+          where: {
+            OR: [
+              { submissionId: null },
+              { raw: { path: ["needsAssociation"], equals: true } },
+            ],
+          },
+        }),
+    ),
+    // E (2026-07) — /api/admin/home-activity meeting.startTime +
+    // outreachMessage.channel field-drift regression check. Both were
+    // renamed at some point (scheduledFor → startTime, type → channel)
+    // and the admin activity feed silently blanked for a month.
+    check(
+      "/api/admin/home-activity — meeting.startTime + outreachMessage.channel",
+      "meeting findFirst w/ startTime + outreachMessage findFirst w/ channel",
+      () =>
+        Promise.all([
+          prisma.meeting.findFirst({ select: { id: true, startTime: true } }),
+          prisma.outreachMessage.findFirst({ select: { id: true, channel: true } }),
+        ]).then(() => 1),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

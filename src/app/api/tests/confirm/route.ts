@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { notifyTestRequestStatus } from "@/lib/notify";
+import { notifyTestRequestStatus, notifyTestResult } from "@/lib/notify";
 
 /* ── POST /api/tests/confirm ───────────────────────────────────
    Accepts reviewed test data and creates TestRun + result records.
@@ -26,6 +26,9 @@ export async function POST(req: Request) {
       factoryId,
       fabricId,
       projectId,
+      // D1 (Bureau Veritas) — parsed FUZE number for server-side
+      // auto-match when the client didn't pick a fabric explicitly.
+      parsedFuzeNumber,
       // Phase 58 — when the upload originated from a TestRequest detail
       // page, the client passes testRequestId so we can flip the
       // request's status to RESULTS_RECEIVED + COMPLETE + create the
@@ -128,23 +131,76 @@ export async function POST(req: Request) {
       if (!isNaN(d.getTime())) parsedDate = d;
     }
 
+    // D1 (Bureau Veritas) — auto-match by parsed FUZE number if the
+    // client didn't provide any assignment. Populate brand/factory/fabric
+    // from the matched Fabric or FabricSubmission so downstream code
+    // paths (submission resolve, notify) get the right ids.
+    let effectiveBrandId: string | null = brandId || null;
+    let effectiveFactoryId: string | null = factoryId || null;
+    let effectiveFabricId: string | null = fabricId || null;
+    let autoMatched = false;
+    const parsedFz =
+      parsedFuzeNumber != null && !isNaN(parseInt(String(parsedFuzeNumber), 10))
+        ? parseInt(String(parsedFuzeNumber), 10)
+        : null;
+    if (
+      !submissionId &&
+      !effectiveBrandId &&
+      !effectiveFactoryId &&
+      !effectiveFabricId &&
+      parsedFz != null
+    ) {
+      // First try Fabric.fuzeNumber (Int @unique).
+      const fab = await prisma.fabric
+        .findFirst({
+          where: { fuzeNumber: parsedFz },
+          select: { id: true, brandId: true, factoryId: true },
+        })
+        .catch(() => null);
+      if (fab) {
+        effectiveFabricId = fab.id;
+        effectiveBrandId = fab.brandId || null;
+        effectiveFactoryId = fab.factoryId || null;
+        autoMatched = true;
+      } else {
+        // Fallback: FabricSubmission.fuzeFabricNumber.
+        const sub = await prisma.fabricSubmission
+          .findFirst({
+            where: { fuzeFabricNumber: parsedFz },
+            select: { id: true, brandId: true, factoryId: true, fabricId: true },
+          })
+          .catch(() => null);
+        if (sub) {
+          effectiveFabricId = sub.fabricId || null;
+          effectiveBrandId = sub.brandId || null;
+          effectiveFactoryId = sub.factoryId || null;
+          autoMatched = true;
+        }
+      }
+    }
+
     // Resolve FabricSubmission if brand/factory/fabric provided
     let resolvedSubmissionId = submissionId || null;
-    if (!resolvedSubmissionId && (brandId || factoryId || fabricId)) {
+    let resolvedBrandId: string | null = effectiveBrandId;
+    let resolvedFactoryId: string | null = effectiveFactoryId;
+    if (
+      !resolvedSubmissionId &&
+      (effectiveBrandId || effectiveFactoryId || effectiveFabricId)
+    ) {
       const where: any = {};
-      if (brandId) where.brandId = brandId;
+      if (effectiveBrandId) where.brandId = effectiveBrandId;
       else where.brandId = null;
-      if (factoryId) where.factoryId = factoryId;
+      if (effectiveFactoryId) where.factoryId = effectiveFactoryId;
       else where.factoryId = null;
-      if (fabricId) where.fabricId = fabricId;
+      if (effectiveFabricId) where.fabricId = effectiveFabricId;
       else where.fabricId = null;
 
       let submission = await prisma.fabricSubmission.findFirst({ where });
       if (!submission) {
         const data: any = {};
-        if (brandId) data.brandId = brandId;
-        if (factoryId) data.factoryId = factoryId;
-        if (fabricId) data.fabricId = fabricId;
+        if (effectiveBrandId) data.brandId = effectiveBrandId;
+        if (effectiveFactoryId) data.factoryId = effectiveFactoryId;
+        if (effectiveFabricId) data.fabricId = effectiveFabricId;
         // Phase 60 — stamp lot/wash/storage on first create.
         if (submissionLotNumber) data.lotNumber = String(submissionLotNumber);
         if (submissionWashStatus) data.washStatus = String(submissionWashStatus);
@@ -162,7 +218,22 @@ export async function POST(req: Request) {
         }
       }
       resolvedSubmissionId = submission.id;
+      resolvedBrandId = resolvedBrandId || (submission as any).brandId || null;
+      resolvedFactoryId = resolvedFactoryId || (submission as any).factoryId || null;
+    } else if (resolvedSubmissionId && (!resolvedBrandId || !resolvedFactoryId)) {
+      // Explicit submissionId path — pull brand/factory for the notify
+      // fan-out below so we don't have to re-query later.
+      const s = await prisma.fabricSubmission.findUnique({
+        where: { id: resolvedSubmissionId },
+        select: { brandId: true, factoryId: true },
+      });
+      resolvedBrandId = resolvedBrandId || s?.brandId || null;
+      resolvedFactoryId = resolvedFactoryId || s?.factoryId || null;
     }
+
+    // D1 — if we still have no submission linkage, flag the run so it
+    // shows up on the tests page "⚠ Needs association" filter.
+    const needsAssociation = !resolvedSubmissionId;
 
     // Create TestRun
     const testRunData: any = {
@@ -182,6 +253,16 @@ export async function POST(req: Request) {
       aiReviewData: aiReviewData || null,
       aiReviewDate: aiReviewData ? new Date() : null,
       aiReviewNotes: aiReviewNotes || null,
+      // D1 — flag orphan runs for the "Needs association" filter and
+      // stamp whether the fabric/brand/factory came from auto-match so
+      // ops can audit.
+      raw: needsAssociation || autoMatched || parsedFz != null
+        ? {
+            ...(needsAssociation ? { needsAssociation: true } : {}),
+            ...(autoMatched ? { autoMatchedFuzeNumber: parsedFz } : {}),
+            ...(parsedFz != null ? { parsedFuzeNumber: parsedFz } : {}),
+          }
+        : undefined,
       // Link document
       documents: documentId
         ? { connect: { id: documentId } }
@@ -189,6 +270,30 @@ export async function POST(req: Request) {
     };
 
     const testRun = await prisma.testRun.create({ data: testRunData });
+
+    // D3 (Bureau Veritas) — notify brand + factory user pools as soon
+    // as the submission resolves, not only on the later brand-visible
+    // stamp. Fire-and-forget; a notify failure must not block the save.
+    if (resolvedBrandId || resolvedFactoryId) {
+      const testName = testReportNumber
+        ? `${testType} · ${testReportNumber}`
+        : `${testType} run`;
+      const overallResult =
+        methodPass === true || abPass === true || overallPass === true
+          ? "PASS"
+          : methodPass === false || abPass === false || overallPass === false
+          ? "FAIL"
+          : "recorded";
+      void notifyTestResult({
+        testId: testRun.id,
+        testName,
+        result: overallResult,
+        brandId: resolvedBrandId || undefined,
+        factoryId: resolvedFactoryId || undefined,
+      }).catch((e) =>
+        console.error("[confirm] notifyTestResult failed:", e?.message),
+      );
+    }
 
     // Create type-specific result
     if (testType === "ANTIBACTERIAL") {
@@ -349,7 +454,12 @@ export async function POST(req: Request) {
       submissionId: resolvedSubmissionId,
       testType,
       testRequestFlipped,
-      message: `Test run created successfully (${testType})`,
+      autoMatched,
+      needsAssociation,
+      matchedFuzeNumber: autoMatched ? parsedFz : null,
+      message: `Test run created successfully (${testType})${
+        autoMatched ? ` · auto-matched to FUZE-${parsedFz}` : ""
+      }${needsAssociation ? " · needs association" : ""}`,
     });
   } catch (err: any) {
     console.error("Confirm error:", err);

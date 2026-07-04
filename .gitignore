@@ -38,3 +38,9 @@ test-classifier.mjs
 .env.local
 .env*.bak*
 .env.local.bak*
+
+# Generated/tracked-by-mistake artifacts (2026-07)
+deliverables/
+sprayer-comparison.html
+~$*
+*.bak

@@ -730,13 +730,18 @@ export async function POST(req: Request) {
     // Phase 15 IMP-6 — internal-only ping to admin + lab manager
     // when raw test data lands, BEFORE the brand-visible stamp.
     // Fire-and-forget so a notify failure can't block the upload.
-    if (uploaderLabId) {
-      const labRow = await prisma.lab
-        .findUnique({ where: { id: uploaderLabId }, select: { name: true } })
-        .catch(() => null);
+    // D3 (Bureau Veritas) — always notify FUZE admins on any lab
+    // upload, not only when the uploader has a labId. Lab managers
+    // are still only pinged when a labId is present.
+    {
+      const labRow = uploaderLabId
+        ? await prisma.lab
+            .findUnique({ where: { id: uploaderLabId }, select: { name: true } })
+            .catch(() => null)
+        : null;
       notifyRawDataReceived({
         testRunId: document.id,
-        labId: uploaderLabId,
+        labId: uploaderLabId || null,
         labName: labRow?.name || null,
         testType: "Lab upload",
       }).catch((e) => console.warn("[raw-data-received] notify failed:", e));

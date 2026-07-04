@@ -50,6 +50,9 @@ export async function GET(request: Request) {
 
     const brandId = searchParams.get("brandId") || "";
     const brandVisible = searchParams.get("brandVisible") || "";
+    // D2 (Bureau Veritas) — orphan filter for the "Needs association"
+    // chip on /tests. Matches runs with no submission OR raw.needsAssociation.
+    const needsAssociationFilter = searchParams.get("needsAssociation") === "true";
 
     // Ticket #34 additions ───────────────────────────────────────
     const q = (searchParams.get("q") || "").trim();
@@ -72,6 +75,13 @@ export async function GET(request: Request) {
     if (filterProject) where.projectId = filterProject;
     if (brandId) where.submission = { brandId };
     if (brandVisible === "true") where.brandVisible = true;
+    if (needsAssociationFilter) {
+      where.OR = [
+        ...(where.OR || []),
+        { submissionId: null },
+        { raw: { path: ["needsAssociation"], equals: true } },
+      ];
+    }
 
     if (washMin != null || washMax != null) {
       where.washCount = {};
@@ -146,6 +156,7 @@ export async function GET(request: Request) {
       abCount,
       fungalCount,
       odorCount,
+      orphanCount,
     ] = await Promise.all([
       prisma.testRun.count(),
       prisma.testRun.groupBy({ by: ["testType"], _count: { id: true } }),
@@ -161,6 +172,17 @@ export async function GET(request: Request) {
       prisma.antibacterialResult.count(),
       prisma.fungalResult.count(),
       prisma.odorResult.count(),
+      // D2 — orphan count: unassigned OR flagged needsAssociation.
+      prisma.testRun
+        .count({
+          where: {
+            OR: [
+              { submissionId: null },
+              { raw: { path: ["needsAssociation"], equals: true } },
+            ],
+          },
+        })
+        .catch(() => 0),
     ]);
 
     const typeBreakdown = byType.map((t) => ({
@@ -169,6 +191,8 @@ export async function GET(request: Request) {
     }));
 
     let runs = recentRuns.map((r) => {
+      const rawFlag =
+        r.raw && typeof r.raw === "object" && (r.raw as any).needsAssociation === true;
       const base: any = {
         id: r.id,
         testType: r.testType,
@@ -189,6 +213,8 @@ export async function GET(request: Request) {
         hasFungal: r.fungalResult != null,
         hasOdor: r.odorResult != null,
         brandVisible: r.brandVisible || false,
+        submissionId: r.submissionId || null,
+        needsAssociation: !r.submissionId || rawFlag,
       };
       if (withResults) {
         const scored = scoreTestRun({
@@ -253,6 +279,7 @@ export async function GET(request: Request) {
         fungal: fungalCount,
         odor: odorCount,
       },
+      orphanCount,
     });
   } catch (e: any) {
     console.error("Tests API error:", e);

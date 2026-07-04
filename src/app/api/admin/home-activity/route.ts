@@ -157,7 +157,7 @@ export async function GET() {
           select: {
             id: true,
             sentAt: true,
-            type: true,
+            channel: true,
             subject: true,
             sentBy: { select: { name: true, role: true } },
             contact: { select: { name: true, brand: { select: { name: true } } } },
@@ -173,7 +173,7 @@ export async function GET() {
             id: true,
             createdAt: true,
             title: true,
-            scheduledFor: true,
+            startTime: true,
             bookedByUser: { select: { name: true, role: true } },
             brand: { select: { name: true } },
           },
@@ -244,13 +244,13 @@ export async function GET() {
     });
   }
   for (const m of outreach) {
-    const channel = m.type === "EMAIL" ? "email" : m.type === "LINKEDIN" ? "LinkedIn DM" : (m.type || "message").toLowerCase();
+    const label = m.channel === "EMAIL" ? "email" : m.channel === "LINKEDIN" ? "LinkedIn DM" : (m.channel || "message").toLowerCase();
     events.push({
       id: `om-${m.id}`,
       type: "OUTREACH",
       actorName: m.sentBy?.name || "BD rep",
       actorRole: m.sentBy?.role || null,
-      action: `sent ${channel} to ${m.contact?.name || "a contact"}${m.contact?.brand?.name ? ` (${m.contact.brand.name})` : ""}${m.subject ? ` — “${m.subject.slice(0, 60)}”` : ""}`,
+      action: `sent ${label} to ${m.contact?.name || "a contact"}${m.contact?.brand?.name ? ` (${m.contact.brand.name})` : ""}${m.subject ? ` — “${m.subject.slice(0, 60)}”` : ""}`,
       timestamp: m.sentAt,
       link: `/admin/bd/scoreboard`,
       entityName: null,
@@ -262,7 +262,7 @@ export async function GET() {
       type: "MEETING",
       actorName: mt.bookedByUser?.name || "Someone",
       actorRole: mt.bookedByUser?.role || null,
-      action: `booked meeting ${mt.title ? `“${mt.title}”` : ""}${mt.brand?.name ? ` with ${mt.brand.name}` : ""}${mt.scheduledFor ? ` (${new Date(mt.scheduledFor).toLocaleDateString()})` : ""}`,
+      action: `booked meeting ${mt.title ? `“${mt.title}”` : ""}${mt.brand?.name ? ` with ${mt.brand.name}` : ""}${mt.startTime ? ` (${new Date(mt.startTime).toLocaleDateString()})` : ""}`,
       timestamp: mt.createdAt,
       link: `/meetings`,
       entityName: null,

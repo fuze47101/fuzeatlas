@@ -12,7 +12,7 @@
  * scoped to admin tools (Command Center + Globe + Sales &
  * Pipeline + Quality & Labs + Resources + Admin).
  */
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
@@ -42,6 +42,18 @@ export default function AdminLandingPage() {
   const { t } = useI18n();
   const T = t.adminLanding;
 
+  // D2 (Bureau Veritas) — surface orphan test-run count on admin landing.
+  const [orphanCount, setOrphanCount] = useState<number | null>(null);
+  useEffect(() => {
+    if (!user || !ADMIN_ROLES.has(user.role)) return;
+    fetch("/api/tests?needsAssociation=true")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.ok) setOrphanCount(d.orphanCount ?? 0);
+      })
+      .catch(() => {});
+  }, [user]);
+
   useEffect(() => {
     if (user === null) return; // still loading
     if (!user || !ADMIN_ROLES.has(user.role)) {
@@ -70,6 +82,25 @@ export default function AdminLandingPage() {
       <p className="text-slate-600 mt-1 mb-6">
         {T.subtitle}
       </p>
+
+      {orphanCount !== null && orphanCount > 0 && (
+        <Link
+          href="/tests?needsAssociation=true"
+          className="mb-6 flex items-center gap-3 px-4 py-3 bg-amber-50 border-2 border-amber-300 rounded-xl hover:bg-amber-100 transition-colors"
+        >
+          <span className="text-2xl">⚠</span>
+          <div className="flex-1">
+            <p className="font-bold text-amber-900">
+              {orphanCount} test run{orphanCount === 1 ? "" : "s"} need association
+            </p>
+            <p className="text-xs text-amber-700">
+              Uploaded results are sitting without a brand/factory/fabric linkage. Click to
+              assign so they surface on the right customer reports.
+            </p>
+          </div>
+          <span className="text-sm text-amber-800 font-semibold">Assign →</span>
+        </Link>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {tiles.map((m) => (

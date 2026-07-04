@@ -50,8 +50,18 @@ interface TestRequest {
   priority: string;
   brandId?: string;
   brand?: { id: string; name: string };
+  factoryId?: string;
+  factory?: { id: string; name: string };
   fabricId?: string;
-  fabric?: { id: string; fuzeNumber?: number; customerCode?: string; construction?: string; weightGsm?: number };
+  fabric?: {
+    id: string;
+    fuzeNumber?: number;
+    customerCode?: string;
+    construction?: string;
+    weightGsm?: number;
+    brand?: { id: string; name: string };
+    factory?: { id: string; name: string };
+  };
   labId: string;
   lab?: { id: string; name: string; customerNumber?: string };
   distributorId?: string;
@@ -67,7 +77,13 @@ interface TestRequest {
   estimatedCost?: number;
   actualCost?: number;
   currency: string;
-  requestedBy?: { id: string; name: string };
+  requestedBy?: {
+    id: string;
+    name: string;
+    brand?: { id: string; name: string };
+    factory?: { id: string; name: string };
+    distributor?: { id: string; name: string };
+  };
   requestedAt?: string;
   approvedBy?: { id: string; name: string };
   approvedAt?: string;
@@ -648,6 +664,25 @@ export default function TestRequestsPage() {
                     <div className="flex items-center gap-3 text-sm text-slate-500 flex-wrap">
                       <span className="font-medium text-slate-700">{req.lab?.name || T.unknownLab}</span>
                       {req.brand && <><span>·</span><span>{req.brand.name}</span></>}
+                      {(() => {
+                        const applyingCo =
+                          req.factory?.name ||
+                          req.fabric?.factory?.name ||
+                          req.requestedBy?.factory?.name ||
+                          req.requestedBy?.brand?.name ||
+                          req.requestedBy?.distributor?.name;
+                        return applyingCo ? (
+                          <>
+                            <span>·</span>
+                            <span
+                              className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-semibold"
+                              title="Applying company"
+                            >
+                              🏭 {applyingCo}
+                            </span>
+                          </>
+                        ) : null;
+                      })()}
                       {req.fuzeFabricNumber && <><span>·</span><span className="font-mono text-xs">{req.fuzeFabricNumber}</span></>}
                       {req.estimatedCost != null && (
                         <><span>·</span><span className="font-semibold text-slate-700">${req.estimatedCost.toFixed(2)}</span></>
@@ -694,6 +729,20 @@ export default function TestRequestsPage() {
                         <h4 className="text-xs font-bold text-slate-500 uppercase">{T.testingInfoHeader}</h4>
                         <div><span className="text-xs text-slate-500">{T.labRow}</span> <span className="text-sm font-medium text-slate-800">{req.lab?.name}</span></div>
                         {req.brand && <div><span className="text-xs text-slate-500">{T.brandRow}</span> <span className="text-sm text-slate-800">{req.brand.name}</span></div>}
+                        {(() => {
+                          const applyingCo =
+                            req.factory?.name ||
+                            req.fabric?.factory?.name ||
+                            req.requestedBy?.factory?.name ||
+                            req.requestedBy?.brand?.name ||
+                            req.requestedBy?.distributor?.name;
+                          return applyingCo ? (
+                            <div>
+                              <span className="text-xs text-slate-500">Applying company:</span>{" "}
+                              <span className="text-sm font-semibold text-indigo-700">{applyingCo}</span>
+                            </div>
+                          ) : null;
+                        })()}
                         {req.project && <div><span className="text-xs text-slate-500">{T.projectRow}</span> <span className="text-sm text-slate-800">{req.project.name}</span></div>}
                         {req.fabric && (
                           <div><span className="text-xs text-slate-500">{T.fabricRow}</span> <span className="text-sm text-slate-800">

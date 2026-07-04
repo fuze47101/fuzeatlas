@@ -75,12 +75,25 @@ export default function LabUploadPage() {
   const [confirming, setConfirming] = useState(false);
   const [confirmMsg, setConfirmMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
+  // Fabric association state (D1 Bureau Veritas fabric selector)
+  const [fabricQuery, setFabricQuery] = useState("");
+  const [fabricResults, setFabricResults] = useState<any[]>([]);
+  const [fabricSearching, setFabricSearching] = useState(false);
+  const [selectedFabric, setSelectedFabric] = useState<any>(null);
+
   // When result arrives, pre-fill confirm fields from parsed data
   useEffect(() => {
     if (!result) return;
     const its = result.itsReport;
     const p = result.parsed;
     const firstTest = its?.tests?.[0];
+    // Extract parsed FUZE fabric number (any digit run tagged FUZE-XXXX)
+    // so the confirm route can auto-match against Fabric.fuzeNumber /
+    // FabricSubmission.fuzeFabricNumber when the user hasn't picked one.
+    const rawFabricLabel: string =
+      firstTest?.fabricInfo || p?.fabricInfo || its?.header?.fabricInfo || "";
+    const fuzeMatch = String(rawFabricLabel).match(/FUZE[-\s]*(\d{3,6})/i);
+    const parsedFuzeNumber = fuzeMatch ? parseInt(fuzeMatch[1], 10) : null;
     const defaults: Record<string, any> = {
       testType: firstTest?.testType || p?.testType || (its ? "ANTIBACTERIAL" : ""),
       testReportNumber: its?.header?.reportNumber || p?.testReportNumber || "",
@@ -92,10 +105,61 @@ export default function LabUploadPage() {
       percentReduction: firstTest?.percentReduction ?? "",
       methodPass: firstTest?.methodPass ?? null,
       testNumberInReport: firstTest?.testNumber ?? "",
+      aiReviewNotes: "",
+      parsedFuzeNumber,
+      fabricId: null,
+      brandId: null,
+      factoryId: null,
     };
     setConfirmFields(defaults);
     setConfirmMsg(null);
+    setSelectedFabric(null);
+    setFabricQuery(parsedFuzeNumber ? String(parsedFuzeNumber) : "");
+    setFabricResults([]);
   }, [result?.documentId]);
+
+  // Fabric search — debounced GET /api/fabrics?q=
+  useEffect(() => {
+    if (!fabricQuery || fabricQuery.trim().length < 2) {
+      setFabricResults([]);
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      setFabricSearching(true);
+      try {
+        const res = await fetch(
+          `/api/fabrics?q=${encodeURIComponent(fabricQuery.trim())}&pageSize=10`,
+          { signal: controller.signal },
+        );
+        const j = await res.json();
+        setFabricResults(j.fabrics || j.items || []);
+      } catch {
+        // ignore aborts / transient errors
+      } finally {
+        setFabricSearching(false);
+      }
+    }, 250);
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [fabricQuery]);
+
+  const pickFabric = (fab: any) => {
+    setSelectedFabric(fab);
+    setConfirmFields((p) => ({
+      ...p,
+      fabricId: fab?.id || null,
+      brandId: fab?.brand?.id || fab?.brandId || null,
+      factoryId: fab?.factory?.id || fab?.factoryId || null,
+    }));
+    setFabricResults([]);
+  };
+  const clearFabric = () => {
+    setSelectedFabric(null);
+    setConfirmFields((p) => ({ ...p, fabricId: null, brandId: null, factoryId: null }));
+  };
 
   const handleConfirm = async () => {
     if (!result?.documentId) return;
@@ -564,6 +628,82 @@ export default function LabUploadPage() {
                     </div>
                   </div>
 
+                  {/* ── Fabric association (D1 — Bureau Veritas fix) ─────── */}
+                  <div className="mb-4 p-3 bg-white border border-indigo-200 rounded-lg">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-indigo-800">
+                        🧵 Link to fabric
+                        {confirmFields.parsedFuzeNumber && (
+                          <span className="ml-2 font-mono text-[10px] text-indigo-600">
+                            (parsed FUZE-{confirmFields.parsedFuzeNumber})
+                          </span>
+                        )}
+                      </span>
+                      {selectedFabric && (
+                        <button
+                          type="button"
+                          onClick={clearFabric}
+                          className="text-[10px] text-slate-500 hover:text-red-600 underline"
+                        >
+                          clear
+                        </button>
+                      )}
+                    </div>
+                    {selectedFabric ? (
+                      <div className="px-2 py-1.5 bg-emerald-50 border border-emerald-200 rounded text-xs">
+                        <span className="font-mono font-bold text-emerald-800">
+                          {selectedFabric.fuzeNumber
+                            ? `FUZE-${selectedFabric.fuzeNumber}`
+                            : selectedFabric.customerCode || "(no FUZE#)"}
+                        </span>
+                        {selectedFabric.brand?.name && (
+                          <span className="ml-2 text-emerald-700">· {selectedFabric.brand.name}</span>
+                        )}
+                        {selectedFabric.factory?.name && (
+                          <span className="ml-2 text-emerald-700">· {selectedFabric.factory.name}</span>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={fabricQuery}
+                          onChange={(e) => setFabricQuery(e.target.value)}
+                          placeholder="Search by FUZE#, brand, or factory…"
+                          className="w-full px-2 py-1.5 border border-slate-300 rounded-md text-xs"
+                        />
+                        {fabricResults.length > 0 && (
+                          <div className="absolute z-20 mt-1 w-full max-h-60 overflow-y-auto bg-white border border-slate-300 rounded-md shadow-lg">
+                            {fabricResults.map((fab: any) => (
+                              <button
+                                key={fab.id}
+                                type="button"
+                                onClick={() => pickFabric(fab)}
+                                className="w-full text-left px-2 py-1.5 hover:bg-indigo-50 text-xs border-b border-slate-100 last:border-b-0"
+                              >
+                                <div className="font-mono font-bold text-slate-800">
+                                  {fab.fuzeNumber ? `FUZE-${fab.fuzeNumber}` : fab.customerCode || "(no code)"}
+                                </div>
+                                <div className="text-[10px] text-slate-500">
+                                  {fab.brand?.name || "no brand"} · {fab.factory?.name || "no factory"}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        {fabricSearching && (
+                          <div className="absolute right-2 top-1.5 text-[10px] text-slate-400">
+                            searching…
+                          </div>
+                        )}
+                        <p className="mt-1 text-[10px] text-slate-500">
+                          Leave blank to auto-match the parsed FUZE number. If we can&apos;t match,
+                          the run is saved as &quot;needs association&quot; for a FUZE admin to assign.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <label className="text-xs">
                       <span className="block font-semibold text-slate-700 mb-1">Test Type *</span>
@@ -714,6 +854,25 @@ export default function LabUploadPage() {
                       <span className="text-slate-600">N/A</span>
                     </label>
                   </div>
+
+                  {/* Testing Notes & Remarks (Kaylee — cmql7d9ct0003jm04hqrbe7xx) */}
+                  <label className="block mt-4 text-xs">
+                    <span className="block font-semibold text-slate-700 mb-1">
+                      📝 Testing Notes & Remarks
+                    </span>
+                    <textarea
+                      value={confirmFields.aiReviewNotes || ""}
+                      onChange={(e) =>
+                        setConfirmFields((p) => ({ ...p, aiReviewNotes: e.target.value }))
+                      }
+                      rows={3}
+                      placeholder="Anything the brand should know — sample prep quirks, deviations from protocol, retest reasons, storage/handling notes…"
+                      className="w-full px-2 py-1.5 border border-slate-300 rounded-md text-xs bg-white"
+                    />
+                    <p className="mt-1 text-[10px] text-slate-500">
+                      Visible on the brand report views.
+                    </p>
+                  </label>
 
                   {confirmMsg && (
                     <div
