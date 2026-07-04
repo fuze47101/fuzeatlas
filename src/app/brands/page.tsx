@@ -48,7 +48,6 @@ export default function BrandsPage() {
   const router = useRouter();
   const { t } = useI18n();
   const [grouped, setGrouped] = useState<Record<string, Brand[]>>({});
-  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
@@ -58,6 +57,7 @@ export default function BrandsPage() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [adminCode, setAdminCode] = useState("");
   const [addCompanyOpen, setAddCompanyOpen] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   // Build stage labels from translations
   const STAGE_LABELS: Record<string, string> = {
@@ -73,14 +73,17 @@ export default function BrandsPage() {
   };
 
   const loadBrands = () => {
+    setApiError(null);
     fetch("/api/brands")
       .then((r) => r.json())
       .then((j) => {
         if (j.ok) {
           setGrouped(j.grouped);
-          setTotal(j.total);
+        } else {
+          setApiError(j.error || "Failed to load brand partners");
         }
       })
+      .catch((e) => setApiError(e?.message || "Network error loading brands"))
       .finally(() => setLoading(false));
   };
 
@@ -108,7 +111,6 @@ export default function BrandsPage() {
           }
           return next;
         });
-        setTotal((prev) => prev - 1);
       } else {
         setDeleteError(j.error || "Delete failed");
       }
@@ -126,14 +128,29 @@ export default function BrandsPage() {
       </div>
     );
 
+  if (apiError)
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-3">
+        <p className="text-red-600 font-semibold">Failed to load brand partners</p>
+        <p className="text-slate-500 text-sm">{apiError}</p>
+        <button
+          onClick={() => { setLoading(true); loadBrands(); }}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+
   const q = search.toLowerCase();
+  const visibleTotal = STAGES.reduce((sum, s) => sum + (grouped[s] || []).length, 0);
 
   return (
     <div className="max-w-[1600px] mx-auto">
       <div className="flex items-center justify-between mb-3">
         <div>
           <h1 className="text-2xl font-black text-slate-900">Brand Partners</h1>
-          <p className="text-sm text-slate-500 mt-1">Active and production-stage brand partnerships. {total} brands across {STAGES.length} stages.</p>
+          <p className="text-sm text-slate-500 mt-1">Active and production-stage brand partnerships. {visibleTotal} brands across {STAGES.length} stages.</p>
         </div>
         <div className="flex items-center gap-3">
           <input
@@ -275,6 +292,20 @@ export default function BrandsPage() {
           );
         })}
       </div>
+
+      {/* All-stages empty state */}
+      {visibleTotal === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <p className="text-slate-700 font-semibold text-base">{t.accountsAdmin.emptyTitle}</p>
+          <p className="text-slate-500 text-sm mt-1 max-w-sm">{t.accountsAdmin.emptyBody}</p>
+          <a
+            href="/admin/brand-pipeline"
+            className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700"
+          >
+            {t.accountsAdmin.goToPipelineBtn} →
+          </a>
+        </div>
+      )}
 
       {/* Delete confirmation modal */}
       {deleteTarget && (
