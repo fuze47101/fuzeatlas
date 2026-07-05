@@ -154,12 +154,18 @@ export async function GET() {
           where: { sentAt: { gte: since } },
           orderBy: { sentAt: "desc" },
           take: TAKE_PER_TYPE,
+          // E2 — OutreachMessage.sentBy is a scalar String (user id or
+          // literal "system"), NOT a relation. Selecting nested fields
+          // on it triggers Prisma's "SelectionSetOnScalar" error and
+          // erases the entire outreach group from the feed. Fetch the
+          // raw scalar and resolve the sender name via a separate
+          // user map below.
           select: {
             id: true,
             sentAt: true,
             channel: true,
             subject: true,
-            sentBy: { select: { name: true, role: true } },
+            sentBy: true,
             contact: { select: { name: true, brand: { select: { name: true } } } },
           },
         }),
@@ -169,17 +175,41 @@ export async function GET() {
           where: { createdAt: { gte: since } },
           orderBy: { createdAt: "desc" },
           take: TAKE_PER_TYPE,
+          // E2 — The real relation is `organizer` (User via
+          // organizerId), not `bookedByUser` — that field simply
+          // doesn't exist on Meeting and P2009'd the whole query.
           select: {
             id: true,
             createdAt: true,
             title: true,
             startTime: true,
-            bookedByUser: { select: { name: true, role: true } },
+            organizer: { select: { name: true, role: true } },
             brand: { select: { name: true } },
           },
         }),
       ),
     ]);
+
+    // E2 — Resolve OutreachMessage.sentBy (scalar user id) to display
+    // names / roles via one deduped user lookup. Sentinel value
+    // "system" (used for cron-generated messages) is skipped.
+    const sentByIds = Array.from(
+      new Set(
+        outreach
+          .map((m: any) => m.sentBy)
+          .filter((id: any) => typeof id === "string" && id && id !== "system"),
+      ),
+    );
+    const senderMap = new Map<string, { name: string | null; role: string | null }>();
+    if (sentByIds.length > 0) {
+      const senders = await prisma.user
+        .findMany({
+          where: { id: { in: sentByIds } },
+          select: { id: true, name: true, role: true },
+        })
+        .catch(() => [] as any[]);
+      for (const u of senders) senderMap.set(u.id, { name: u.name, role: u.role });
+    }
 
   for (const f of fabricSubs) {
     const fz = f.fabric?.fuzeNumber || f.fuzeFabricNumber;
@@ -245,11 +275,15 @@ export async function GET() {
   }
   for (const m of outreach) {
     const label = m.channel === "EMAIL" ? "email" : m.channel === "LINKEDIN" ? "LinkedIn DM" : (m.channel || "message").toLowerCase();
+    const sender =
+      typeof m.sentBy === "string" && m.sentBy !== "system"
+        ? senderMap.get(m.sentBy) || null
+        : null;
     events.push({
       id: `om-${m.id}`,
       type: "OUTREACH",
-      actorName: m.sentBy?.name || "BD rep",
-      actorRole: m.sentBy?.role || null,
+      actorName: sender?.name || (m.sentBy === "system" ? "System" : "BD rep"),
+      actorRole: sender?.role || null,
       action: `sent ${label} to ${m.contact?.name || "a contact"}${m.contact?.brand?.name ? ` (${m.contact.brand.name})` : ""}${m.subject ? ` — “${m.subject.slice(0, 60)}”` : ""}`,
       timestamp: m.sentAt,
       link: `/admin/bd/scoreboard`,
@@ -260,8 +294,8 @@ export async function GET() {
     events.push({
       id: `mt-${mt.id}`,
       type: "MEETING",
-      actorName: mt.bookedByUser?.name || "Someone",
-      actorRole: mt.bookedByUser?.role || null,
+      actorName: mt.organizer?.name || "Someone",
+      actorRole: mt.organizer?.role || null,
       action: `booked meeting ${mt.title ? `“${mt.title}”` : ""}${mt.brand?.name ? ` with ${mt.brand.name}` : ""}${mt.startTime ? ` (${new Date(mt.startTime).toLocaleDateString()})` : ""}`,
       timestamp: mt.createdAt,
       link: `/meetings`,

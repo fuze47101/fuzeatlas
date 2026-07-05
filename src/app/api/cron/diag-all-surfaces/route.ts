@@ -933,17 +933,32 @@ export async function GET(req: Request) {
           },
         }),
     ),
-    // E (2026-07) — /api/admin/home-activity meeting.startTime +
-    // outreachMessage.channel field-drift regression check. Both were
-    // renamed at some point (scheduledFor → startTime, type → channel)
-    // and the admin activity feed silently blanked for a month.
+    // E + E2 (2026-07) — /api/admin/home-activity full-select drift check.
+    // Meeting: `organizer` relation (not `bookedByUser`) + `startTime`
+    // (not `scheduledFor`). OutreachMessage: `channel` scalar (not
+    // `type`) + `sentBy` is a scalar String (nested select was
+    // triggering "SelectionSetOnScalar" and erasing the group).
     check(
-      "/api/admin/home-activity — meeting.startTime + outreachMessage.channel",
-      "meeting findFirst w/ startTime + outreachMessage findFirst w/ channel",
+      "/api/admin/home-activity — Meeting w/ organizer + OutreachMessage w/ channel+sentBy scalar",
+      "meeting findFirst w/ organizer relation + outreachMessage findFirst w/ channel+sentBy",
       () =>
         Promise.all([
-          prisma.meeting.findFirst({ select: { id: true, startTime: true } }),
-          prisma.outreachMessage.findFirst({ select: { id: true, channel: true } }),
+          prisma.meeting.findFirst({
+            select: {
+              id: true,
+              startTime: true,
+              organizer: { select: { name: true, role: true } },
+              brand: { select: { name: true } },
+            },
+          }),
+          prisma.outreachMessage.findFirst({
+            select: {
+              id: true,
+              channel: true,
+              sentBy: true,
+              contact: { select: { name: true } },
+            },
+          }),
         ]).then(() => 1),
     ),
   ]);
