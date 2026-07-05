@@ -206,9 +206,20 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     // ─── Action: Approve ─────────────────────────
     if (action === "approve") {
-      // Only ADMIN or EMPLOYEE can approve
-      if (!["ADMIN", "EMPLOYEE"].includes(userRole)) {
-        return NextResponse.json({ ok: false, error: "Only administrators can approve test requests" }, { status: 403 });
+      // Tina's authorized-approver toggle — ADMINs always can; anyone
+      // else needs canApproveTests. Load the actor from Prisma so
+      // header-role spoofing can't sneak past.
+      const actor = userId
+        ? await prisma.user.findUnique({
+            where: { id: userId },
+            select: { role: true, canApproveTests: true },
+          })
+        : null;
+      if (!(actor && (actor.role === "ADMIN" || actor.canApproveTests === true))) {
+        return NextResponse.json(
+          { ok: false, error: "You are not an authorized approver for test requests" },
+          { status: 403 },
+        );
       }
       if (existing.status !== "PENDING_APPROVAL") {
         return NextResponse.json({ ok: false, error: "Only pending requests can be approved" }, { status: 400 });
@@ -295,8 +306,17 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     // ─── Action: Reject ─────────────────────────
     if (action === "reject") {
-      if (!["ADMIN", "EMPLOYEE"].includes(userRole)) {
-        return NextResponse.json({ ok: false, error: "Only administrators can reject test requests" }, { status: 403 });
+      const actor = userId
+        ? await prisma.user.findUnique({
+            where: { id: userId },
+            select: { role: true, canApproveTests: true },
+          })
+        : null;
+      if (!(actor && (actor.role === "ADMIN" || actor.canApproveTests === true))) {
+        return NextResponse.json(
+          { ok: false, error: "You are not an authorized approver for test requests" },
+          { status: 403 },
+        );
       }
       if (existing.status !== "PENDING_APPROVAL") {
         return NextResponse.json({ ok: false, error: "Only pending requests can be rejected" }, { status: 400 });

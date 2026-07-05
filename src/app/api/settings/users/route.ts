@@ -21,6 +21,7 @@ export async function GET() {
         status: true,
         createdAt: true,
         canClaim: true,
+        canApproveTests: true,
         emailVerified: true,
         emailVerifiedAt: true,
         emailBounceCount: true,

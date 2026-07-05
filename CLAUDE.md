@@ -674,6 +674,156 @@ through it and it has SanMar-specific logic baked in. But **do
 not write new per-brand seed endpoints**. Any new brand goes
 through the importer.
 
+## Built Features (Session — July 4, 2026 — email verification, prod-outage recovery, Bureau Veritas, meeting rename, deliverables)
+
+Long marathon session. Shipped an email-verification feature, recovered a
+production outage the feature caused, fixed cascading schema-drift in the
+admin activity feed, wired Bureau Veritas lab uploads back to their
+fabric/factory/brand, renamed the weekly meeting + added date-stamping,
+reassigned SanMar fabrics, cleared the support queue to a single parked
+ticket, and produced a stack of customer/investor deliverables.
+
+### Email verification feature (verify / linkedin / fresh-research + ZeroBounce)
+
+Reps were wasting time on fabricated/enriched-but-dead email addresses.
+Added per-contact **Confirm Email (bounce check)**, **Confirm LinkedIn**,
+and **Fresh Research** buttons on `/contacts/[id]`.
+
+- Route handler `src/app/api/contacts/[id]/verify-email/route.ts` — thin
+  POST that gates on `ALLOWED_ROLES` (ADMIN/EMPLOYEE/SALES_MANAGER/
+  SALES_REP/BD_REP), loads the contact, and delegates to
+  `runVerifyEmail()`.
+- **IMPORTANT Next.js gotcha (bit us — build break `87ccedb`):** a route
+  file may ONLY export the HTTP verbs (`GET`/`POST`/…). Exporting a helper
+  like `runVerifyEmail` from the route file fails the build with
+  `"runVerifyEmail" is not a valid Route export field`. Fix: the helper
+  lives in **`src/lib/verify-email-core.ts`** and the route imports it.
+  Any shared logic goes in `src/lib/*`, never exported from a route.
+- Provider: ZeroBounce (the "NeverBounce/ZeroBounce" ask). Code ships with
+  **graceful fallback** — if `ZEROBOUNCE_API_KEY` is unset it degrades to
+  format/MX heuristics without erroring. **PENDING (Andrew):** set
+  `ZEROBOUNCE_API_KEY` in Vercel → Production to enable live bounce checks.
+- `Contact.raw Json?` column added (schema.prisma ~line 60) to stash
+  verification provider payloads. **This column caused the outage below** —
+  code shipped referencing it before the prod DB had it.
+
+### PRODUCTION OUTAGE + recovery (the "search errors after months")
+
+Symptom: fuzeatlas search + brand/contact pages returned "Not found" /
+500s. Root cause: the verify feature added `Contact.raw` to the schema and
+shipped code selecting it, but prod DB (caboose) never got the column →
+`P2022 The column Contact.raw does not exist`. Every query touching
+Contact threw.
+
+- Fix: `ALTER TABLE "Contact" ADD COLUMN IF NOT EXISTS "raw" JSONB` on
+  caboose; errors stopped immediately.
+- Then a full `prisma db push` to sync remaining drift. Hit two snags:
+  `P1017` (Railway proxy dropped mid-op — retried) and
+  `relation "Project_kickoffMeetingNoteId_key" already exists` (partial
+  prior apply) — cleared with `ALTER TABLE "Project" DROP CONSTRAINT IF
+  EXISTS ...; DROP INDEX IF EXISTS ...` then re-push → "in sync."
+- **Standing lesson (reinforced):** never ship code selecting a new Prisma
+  field without running `prisma db push` against caboose FIRST.
+  `DATABASE_URL="$DATABASE_URL_DEV" npx prisma db push` — `DATABASE_URL_DEV`
+  = caboose = the DB Vercel actually reads. Confirmed by the outage
+  clearing the instant caboose was altered.
+
+### GitHub secret-scanning block (do NOT bypass)
+
+Commit `ca8b9c1` push was blocked (GH013) — push protection found API keys
+(Anthropic/AWS/xAI/HubSpot) in a stray `.env.local.bak.<ts>` that had been
+`git add -A`'d. Correct handling: `git reset --soft`, `git rm --cached` the
+.env backups, add `.env*.bak*` to `.gitignore`, recommit → `6dbb52e`
+pushed clean. **Secrets were never leaked** — push was blocked before
+reaching GitHub. Never disable push protection.
+
+### Admin activity feed — cascading schema drift (`5091943`, `57d7565`)
+
+`/api/admin/home-activity` was 500-ing (feed empty). Prisma `select` drift,
+fixed in two passes:
+- Meeting: `scheduledFor`→`startTime`, `type`→`channel`, then
+  `bookedByUser`→`organizer` (User via `organizerId`).
+- OutreachMessage: `sentBy` is a scalar `String`, NOT a relation —
+  `SelectionSetOnScalar`. Fixed to `sentBy: true` + a deduped
+  `user.findMany()` name lookup.
+
+### Bureau Veritas — orphaned lab uploads (D1–D4)
+
+BV uploaded several completed tests but they landed disconnected from
+fabric/factory/brand — nobody could find them. Fixed the association path
+so uploaded lab reports link back to fabric → factory → brand, fire
+notifications to the right pools, and added a **manual flag/override** to
+hand-select the association when auto-match fails.
+
+### Meeting rename + date-stamping (`2660a1d`)
+
+Renamed **"Monday Global Meeting" → "FUZE Global Meeting"** across the
+meeting crons (`roll-monday-meeting-date`, `seed-monday-meeting-2026-05-27`,
+`create-next-meeting-notes`) and the live data row. Notes + action items
+date-stamp with the date entered/assigned.
+
+### SanMar / Fountain Set fabric reassignment
+
+FUZE fabrics **#2580, 2581, 2582** moved from brand "Fountain Set" → brand
+**SanMar**, factory **Dongguan Shatian Lihai**, with **Fountain Set
+retained as an OEM/trading-company intermediary** (Brand.subtype=OEM).
+Guarded one-liner (acts only on exact match). Confirmed against caboose.
+
+### Support queue → 1 (parked)
+
+Closed this session: Alex Yang (Brand Partners search — the Contact.raw
+fix), Ryan (delete Lucy Wang contact), + Kaylee & Tina (applying-company)
+auto-closed via commit `Closes` tags. **Only open ticket: Tina
+`cmq96o1eg…` "comment section for administration"** — specced (see Pending).
+
+### Deliverables produced (in `deliverables/` and repo root)
+
+- **FUZE dry-fog sprayer comparison** — `FUZE-sprayer-comparison.html` +
+  `FUZE-dry-fog-comparison.pdf`. Sub-5-micron mist vs electrostatic
+  (40–160µm) hardware table + chemistry table (vs quats/bleach/peroxide/
+  alcohol) with Corrosion + Surface-feel rows. Hero = enhanced product
+  photo with a navy (#17255c) vertical **TPU FUZE logo** composited onto
+  sprayer-two's center panel (`assets/sprayer-2-logo.jpg`).
+- **`FUZE_Why_Invest_Mitsui.pdf`** — "Why invest in FUZE" brief ($10M+).
+  Use-of-funds: 30% key field talent / 25% BD / 25% supply scale / 20%
+  brand recognition. Modeled on the Sanitized/Transfar briefs.
+- **`FUZE_Competitor_Landscape_Recruiting.pdf`** +
+  **`FUZE_Competitor_Talent_Targets.xlsx`** — 8 competitors profiled
+  (Microban #1, LANXESS/Silvadur #2, Sciessent #3 US recruiting targets);
+  xlsx has Company Targets / LinkedIn X-ray strings / Outreach Tracker
+  tabs. No Apollo spend.
+- **`FUZE_Shower_Curtain_Innovations.pdf/.png`** — 5 innovations
+  (Mold/Mildew, Odor, Quick-Dry, Built to Last, Clean by Design) + trust
+  band. Genericized for reuse. Built for Barth → Gul Ahmed → Walmart.
+- **SanMar / Susan Matter letter** — standardized-testing + F1 baseline
+  reply with ICP loading gate + post-wash ICP.
+- **Spanx / Bureau Veritas deep-dive** — two Intertek reports (retest
+  failing after 10× wash; no ICP, autoclave suspected). Team email drafted
+  (Tina/Tandy/Danny → CAI); push Spanx gatekeeper Jorge to enforce
+  **ICP-first** (>0.5 production, 1.0 trial). Bulk deadline **July 12**.
+
+## Pending — Test Request Approvals + Administration Remark Thread (Tina ticket)
+
+**SPECCED, NOT SHIPPED.** Self-sufficient Code prompt at
+`deliverables/CODE_PROMPT_test-request-approvals.md`. Builds:
+
+- `User.canApproveTests Boolean @default(false)` — authorized-approver
+  toggle (admins always can). Set on `/settings/users`.
+- New `TestRequestComment` model — internal-staff-only remark thread per
+  test request (AM writes project details / to-dos / tracking; lab reads;
+  brand/factory do NOT see).
+- New API `src/app/api/test-requests/[id]/comments/route.ts` (GET/POST,
+  gated to INTERNAL_STAFF_ROLES) + staff notify fan-out via
+  `pushCustomNotification`.
+- Approve/reject in `src/app/api/test-requests/[id]/route.ts` regated from
+  ADMIN/EMPLOYEE-only to `role==="ADMIN" || canApproveTests`.
+- Remark-thread UI + approver-gated buttons on `/test-requests`.
+- Admin checkbox on `/settings/users` (+ PATCH accepts `canApproveTests`).
+- Commit body carries `Closes cmq96o1eg0001l504iaaddsh0` to auto-close.
+
+Reuses existing PENDING_APPROVAL → regional-approver routing
+(`pushTestRequestStatus({ labId })` + `LabRegionalApprover`, Tina = Asia).
+
 ## Built Features (Session — June 1-3, 2026 — meeting workflow + auto-triage + Rudolf intel + Nomad Home)
 
 The most productive 48-hour stretch yet. Shipped **5 sequential phases (53 → 57)** that rebuild the Monday Global Meeting workflow end-to-end, completed a full **Rudolf Group competitive deep-dive** with new sustainability archetype, generated **Nomad Home (JLA) B2B retail marketing collateral** with EPA Treated Article compliance framework, fixed the **GitHub Actions auto-triage workflow** that had been silently failing for 27 consecutive runs, and resolved a dozen schema-drift / hydration / claim-language bugs along the way.

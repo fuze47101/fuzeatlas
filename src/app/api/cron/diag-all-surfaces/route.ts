@@ -933,6 +933,28 @@ export async function GET(req: Request) {
           },
         }),
     ),
+    // G (2026-07) — Tina's authorized-approver toggle + remark thread.
+    // Confirms User.canApproveTests + TestRequestComment table +
+    // relation resolve cleanly against Prisma. If either query fails,
+    // the /test-requests approve gate / remark UI is broken.
+    check(
+      "/api/test-requests/[id]/comments — TestRequestComment + User.canApproveTests",
+      "user findFirst w/ canApproveTests + testRequestComment findFirst w/ author",
+      () =>
+        Promise.all([
+          prisma.user.findFirst({
+            select: { id: true, canApproveTests: true },
+          }),
+          prisma.testRequestComment.findFirst({
+            select: {
+              id: true,
+              body: true,
+              createdAt: true,
+              author: { select: { id: true, name: true, role: true } },
+            },
+          }),
+        ]).then(() => 1),
+    ),
     // E + E2 (2026-07) — /api/admin/home-activity full-select drift check.
     // Meeting: `organizer` relation (not `bookedByUser`) + `startTime`
     // (not `scheduledFor`). OutreachMessage: `channel` scalar (not

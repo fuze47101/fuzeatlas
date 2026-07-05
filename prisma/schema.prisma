@@ -198,6 +198,11 @@ model User {
   // Admins always can (enforced in code). Everyone else needs canClaim = true.
   canClaim Boolean @default(false)
 
+  // Tina's test-request approval workflow — per-user opt-in. Admins always
+  // can approve/reject; anyone else needs this flag (enforced in
+  // /api/test-requests/[id] approve/reject blocks).
+  canApproveTests Boolean @default(false)
+
   // Phase 10K — IANA timezone for quiet-hours-aware notifications.
   // Null = no quiet-hours respect; everything fires immediately.
   timezone String?
@@ -242,6 +247,7 @@ model User {
   accessRequest        AccessRequest?
   testRequestsCreated  TestRequest[]             @relation("TestRequestRequester")
   testRequestsApproved TestRequest[]             @relation("TestRequestApprover")
+  testRequestComments  TestRequestComment[]      @relation("TestRequestCommentAuthor")
   notifications        Notification[]            @relation("UserNotifications")
   notifSubscription    NotificationSubscription? @relation("UserNotifSub")
   crmTasksOwned        CrmTask[]                 @relation("OwnedCrmTasks")
@@ -2253,6 +2259,9 @@ model TestRequest {
   lines     TestRequestLine[]
   shipments SampleShipment[]
 
+  // Tina's administration remark thread — internal-staff-only.
+  comments TestRequestComment[]
+
   // Phase 17 — real-time tracking
   trackingEvents        TestTrackingEvent[]        @relation("TestTrackingEventRequest")
   trackingSubscriptions TestTrackingSubscription[] @relation("TestTrackingSubRequest")
@@ -2274,6 +2283,22 @@ model TestRequest {
   @@index([poDate])
   @@index([priority])
   @@index([trackingState])
+}
+
+/// Threaded internal-staff remarks on a TestRequest. Rendered inline
+/// on /test-requests within the expanded detail block. Access gated
+/// server-side to INTERNAL_STAFF_ROLES (never lab-external partners).
+model TestRequestComment {
+  id            String      @id @default(cuid())
+  testRequestId String
+  testRequest   TestRequest @relation(fields: [testRequestId], references: [id], onDelete: Cascade)
+  authorId      String
+  author        User        @relation("TestRequestCommentAuthor", fields: [authorId], references: [id])
+  body          String
+  createdAt     DateTime    @default(now())
+
+  @@index([testRequestId])
+  @@index([authorId])
 }
 
 // ─────────────────────────────────────────────

@@ -60,6 +60,7 @@ export async function GET() {
             mustChangePassword: false, // never show this when impersonating
             emailVerified: target.emailVerified,
             canClaim: target.canClaim,
+            canApproveTests: target.canApproveTests,
             brandId: target.brandId,
             factoryId: target.factoryId,
             distributorId: target.distributorId,
@@ -96,6 +97,7 @@ export async function GET() {
         mustChangePassword: true,
         emailVerified: true,
         canClaim: true,
+        canApproveTests: true,
         brandId: true,
         factoryId: true,
         distributorId: true,

@@ -12,6 +12,7 @@ interface UserRecord {
   status: string;
   createdAt: string;
   canClaim?: boolean;
+  canApproveTests?: boolean;
   emailVerified?: boolean;
   emailVerifiedAt?: string | null;
   emailBounceCount?: number;
@@ -144,6 +145,8 @@ export default function UserManagementPage() {
   const [editFactoryId, setEditFactoryId] = useState("");
   const [editDistributorId, setEditDistributorId] = useState("");
   const [editLabId, setEditLabId] = useState("");
+  // Tina's authorized-approver toggle — per-user opt-in.
+  const [editCanApproveTests, setEditCanApproveTests] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
   // Action dropdown
@@ -341,6 +344,7 @@ export default function UserManagementPage() {
     setEditFactoryId(u.factoryId || "");
     setEditDistributorId(u.distributorId || "");
     setEditLabId(u.labId || "");
+    setEditCanApproveTests(Boolean(u.canApproveTests));
     setEditError(null);
   };
 
@@ -395,6 +399,13 @@ export default function UserManagementPage() {
         if (isFactory && editFactoryId !== (original?.factoryId || "")) body.factoryId = editFactoryId || null;
         if (isDistributor && editDistributorId !== (original?.distributorId || "")) body.distributorId = editDistributorId || null;
         if (isLab && editLabId !== (original?.labId || "")) body.labId = editLabId || null;
+      }
+
+      // Authorized-approver toggle — send when it differs from the
+      // loaded row (or unconditionally on the fallback no-original path).
+      const originalCanApprove = Boolean(original?.canApproveTests);
+      if (editCanApproveTests !== originalCanApprove) {
+        body.canApproveTests = editCanApproveTests;
       }
 
       // No-op save — exit without hitting the API.
@@ -1008,6 +1019,14 @@ export default function UserManagementPage() {
                         {T.bdBadge}
                       </span>
                     )}
+                    {u.canApproveTests && (
+                      <span
+                        title="Authorized to approve/reject test requests"
+                        className="text-[10px] px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded font-bold"
+                      >
+                        ✓ APV
+                      </span>
+                    )}
                   </div>
                   <div className="text-xs text-slate-500 truncate">{u.email}</div>
                 </div>
@@ -1194,6 +1213,16 @@ export default function UserManagementPage() {
                   </div>
                 )}
 
+                <label className="flex items-center gap-2 text-xs text-slate-700 mt-1">
+                  <input
+                    type="checkbox"
+                    checked={editCanApproveTests}
+                    onChange={(e) => setEditCanApproveTests(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <span>Can approve test requests</span>
+                </label>
+
                 {editError && (
                   <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded px-2 py-1">
                     {editError}
@@ -1266,6 +1295,14 @@ export default function UserManagementPage() {
                             className="text-[10px] px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded font-bold ml-1"
                           >
                             {T.bdBadge}
+                          </span>
+                        )}
+                        {u.canApproveTests && (
+                          <span
+                            title="Authorized to approve/reject test requests"
+                            className="text-[10px] px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded font-bold ml-1"
+                          >
+                            ✓ APV
                           </span>
                         )}
                         <div className="text-xs text-slate-400 lg:hidden truncate">{u.email}</div>
@@ -1524,6 +1561,17 @@ export default function UserManagementPage() {
                             </select>
                           </div>
                         )}
+                        <div className="flex-1 min-w-[200px] flex items-end">
+                          <label className="flex items-center gap-2 text-xs text-slate-700">
+                            <input
+                              type="checkbox"
+                              checked={editCanApproveTests}
+                              onChange={(e) => setEditCanApproveTests(e.target.checked)}
+                              className="w-4 h-4"
+                            />
+                            <span>Can approve test requests</span>
+                          </label>
+                        </div>
                         {editError && (
                           <div className="flex-1 min-w-[300px] text-xs text-red-700 bg-red-50 border border-red-200 rounded px-2 py-2">
                             {editError}

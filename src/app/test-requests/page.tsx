@@ -23,6 +23,18 @@ interface LineItem {
   notes: string;
 }
 
+interface TestRequestComment {
+  id: string;
+  body: string;
+  createdAt: string;
+  author: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    role: string | null;
+  };
+}
+
 interface TestRequestLine {
   id: string;
   testType: string;
@@ -138,6 +150,12 @@ export default function TestRequestsPage() {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [stats, setStats] = useState<Record<string, { count: number; totalCost: number }>>({});
+  // Tina's authorized-approver toggle — resolved from /api/auth/me.
+  const [canApprove, setCanApprove] = useState(false);
+  // Administration remark thread — lazy-fetched per expanded row.
+  const [commentsByReq, setCommentsByReq] = useState<Record<string, TestRequestComment[]>>({});
+  const [remarkDraft, setRemarkDraft] = useState<Record<string, string>>({});
+  const [remarkSending, setRemarkSending] = useState<Record<string, boolean>>({});
 
   // Create form state
   const [showCreate, setShowCreate] = useState(false);
@@ -244,6 +262,63 @@ export default function TestRequestsPage() {
   useEffect(() => {
     loadReferenceData();
   }, []);
+
+  // Resolve authorized-approver flag from the session (admins always
+  // can; anyone else needs canApproveTests).
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.ok && d.user) {
+          setCanApprove(
+            d.user.role === "ADMIN" || d.user.canApproveTests === true,
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Lazy-fetch comments when a row expands. Cached in commentsByReq
+  // so re-expanding the same row doesn't refetch.
+  useEffect(() => {
+    if (!expandedId) return;
+    if (commentsByReq[expandedId]) return;
+    fetch(`/api/test-requests/${expandedId}/comments`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.ok) {
+          setCommentsByReq((prev) => ({ ...prev, [expandedId]: d.comments || [] }));
+        }
+      })
+      .catch(() => {});
+  }, [expandedId, commentsByReq]);
+
+  const addRemark = async (id: string) => {
+    const draft = (remarkDraft[id] || "").trim();
+    if (!draft) return;
+    setRemarkSending((prev) => ({ ...prev, [id]: true }));
+    try {
+      const res = await fetch(`/api/test-requests/${id}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ body: draft }),
+      });
+      const d = await res.json();
+      if (d.ok && d.comment) {
+        setCommentsByReq((prev) => ({
+          ...prev,
+          [id]: [...(prev[id] || []), d.comment],
+        }));
+        setRemarkDraft((prev) => ({ ...prev, [id]: "" }));
+      } else {
+        setError(d.error || "Failed to add remark");
+      }
+    } catch (e: any) {
+      setError(e?.message || "Failed to add remark");
+    } finally {
+      setRemarkSending((prev) => ({ ...prev, [id]: false }));
+    }
+  };
 
   // Handle workflow actions
   const handleAction = async (id: string, action: string, extra?: Record<string, any>) => {
@@ -861,6 +936,61 @@ export default function TestRequestsPage() {
                       </div>
                     )}
 
+                    {/* Remarks — Administration (internal staff only) */}
+                    <div className="mb-4 p-3 bg-indigo-50/40 border border-indigo-200 rounded-lg">
+                      <p className="text-xs font-bold text-indigo-700 uppercase tracking-wide mb-2">
+                        📝 Remarks — Administration
+                      </p>
+                      <ul className="space-y-2 mb-3">
+                        {(commentsByReq[req.id] || []).map((c) => (
+                          <li
+                            key={c.id}
+                            className="rounded-md border border-indigo-100 bg-white px-3 py-2"
+                          >
+                            <div className="flex items-center gap-2 mb-1 text-[11px]">
+                              <span className="font-semibold text-slate-800">
+                                {c.author?.name || c.author?.email || "Someone"}
+                              </span>
+                              {c.author?.role && (
+                                <span className="px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-semibold">
+                                  {c.author.role}
+                                </span>
+                              )}
+                              <span className="text-slate-400 ml-auto">
+                                {new Date(c.createdAt).toLocaleString()}
+                              </span>
+                            </div>
+                            <p className="text-sm text-slate-700 whitespace-pre-wrap">
+                              {c.body}
+                            </p>
+                          </li>
+                        ))}
+                        {(commentsByReq[req.id] || []).length === 0 && (
+                          <li className="text-xs italic text-slate-500">No remarks yet.</li>
+                        )}
+                      </ul>
+                      <div className="flex items-start gap-2">
+                        <textarea
+                          value={remarkDraft[req.id] || ""}
+                          onChange={(e) =>
+                            setRemarkDraft((prev) => ({ ...prev, [req.id]: e.target.value }))
+                          }
+                          placeholder="Add an internal remark…"
+                          rows={2}
+                          className="flex-1 px-2 py-1.5 text-sm border border-slate-300 rounded-md bg-white"
+                        />
+                        <button
+                          onClick={() => addRemark(req.id)}
+                          disabled={
+                            remarkSending[req.id] || !(remarkDraft[req.id] || "").trim()
+                          }
+                          className="px-3 py-1.5 bg-indigo-600 text-white rounded-md text-xs font-semibold hover:bg-indigo-700 disabled:opacity-50"
+                        >
+                          {remarkSending[req.id] ? "Adding…" : "Add remark"}
+                        </button>
+                      </div>
+                    </div>
+
                     {/* Line Items Table */}
                     <div className="mb-4">
                       <h4 className="text-xs font-bold text-slate-500 uppercase mb-2">{T.lineItemsHeader}</h4>
@@ -937,7 +1067,7 @@ export default function TestRequestsPage() {
                           </button>
                         </>
                       )}
-                      {isPending && (
+                      {isPending && canApprove && (
                         <>
                           <button onClick={() => handleAction(req.id, "approve")} disabled={processing === req.id}
                             className="px-5 py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-2">
@@ -958,6 +1088,11 @@ export default function TestRequestsPage() {
                             {T.returnForRevisionBtn}
                           </button>
                         </>
+                      )}
+                      {isPending && !canApprove && (
+                        <span className="text-xs text-slate-500 italic self-center">
+                          Awaiting approval from an authorized approver.
+                        </span>
                       )}
                       {isApproved && (
                         <button onClick={() => handleAction(req.id, "submit_to_lab")} disabled={processing === req.id}
