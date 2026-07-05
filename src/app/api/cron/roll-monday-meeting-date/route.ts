@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 /**
  * POST /api/cron/roll-monday-meeting-date
  *
- * Rolls the seeded Monday Global Meeting's `meetingDate` forward to
+ * Rolls the seeded FUZE Global Meeting's `meetingDate` forward to
  * the most recent Monday at 19:00 Mountain (the actual time Andrew
  * runs the call). Idempotent: if the meeting already shows that
  * Monday, it's a no-op.
@@ -64,7 +64,7 @@ async function handle(req: Request) {
     });
   }
 
-  const newTitle = `Monday Global Meeting — ${target.toISOString().slice(0, 10).replace(/^(\d{4})-(\d{2})-(\d{2})$/, (_, y, m, d) => {
+  const newTitle = `FUZE Global Meeting — ${target.toISOString().slice(0, 10).replace(/^(\d{4})-(\d{2})-(\d{2})$/, (_, y, m, d) => {
     // Render as YYYY-MM-DD of the Monday in Mountain time
     const mountain = new Date(target.getTime() - 6 * 60 * 60 * 1000);
     return mountain.toISOString().slice(0, 10);

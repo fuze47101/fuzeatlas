@@ -36,6 +36,10 @@ export type TaskInlineRowItem = {
   dueDate: string | null;
   assignee: UserLite | null;
   meetingNote?: { id: string; title: string } | null;
+  // F (2026-07) — MeetingActionItem.createdAt surfaced as an
+  // "assigned {date}" chip so /my-tasks + /admin/all-tasks show at a
+  // glance when a task was picked up.
+  createdAt?: string | null;
 };
 
 type Props = {
@@ -148,13 +152,23 @@ function TaskInlineRowImpl({ item, users, onPatched, onError, showMeeting, surfa
             <span className="opacity-0 group-hover:opacity-50 ml-1 text-[10px]">✏</span>
           </button>
         )}
-        {showMeeting && item.meetingNote && (
-          <div className="mt-0.5">
-            <Link href={`/meeting-notes/${item.meetingNote.id}`} className="text-[10px] text-indigo-600 hover:underline">
-              {item.meetingNote.title}
-            </Link>
+        {(showMeeting && item.meetingNote) || item.createdAt ? (
+          <div className="mt-0.5 flex flex-wrap items-center gap-2">
+            {showMeeting && item.meetingNote && (
+              <Link href={`/meeting-notes/${item.meetingNote.id}`} className="text-[10px] text-indigo-600 hover:underline">
+                {item.meetingNote.title}
+              </Link>
+            )}
+            {item.createdAt && (
+              <span
+                className="text-[10px] text-slate-400"
+                title={`Task created ${new Date(item.createdAt).toLocaleString()}`}
+              >
+                assigned {new Date(item.createdAt).toLocaleDateString()}
+              </span>
+            )}
           </div>
-        )}
+        ) : null}
       </td>
       <td className="px-2 py-1.5 align-top w-[110px]">
         <select
@@ -260,6 +274,7 @@ export const TaskInlineRow = memo(TaskInlineRowImpl, (prev, next) => {
     a.priority === b.priority &&
     a.status === b.status &&
     a.dueDate === b.dueDate &&
-    (a.assignee?.id || null) === (b.assignee?.id || null)
+    (a.assignee?.id || null) === (b.assignee?.id || null) &&
+    (a.createdAt || null) === (b.createdAt || null)
   );
 });

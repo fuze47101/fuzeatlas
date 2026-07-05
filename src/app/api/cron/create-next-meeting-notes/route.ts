@@ -90,7 +90,18 @@ async function handle(req: Request) {
       continue;
     }
 
-    const title = `${s.name} — ${nextDate.toISOString().slice(0, 10)}`;
+    // F (2026-07 rename): the legacy series name "Monday Global Meeting"
+    // is being retired in favor of "FUZE Global Meeting". Rewrite the
+    // stored series name on first encounter so downstream links + this
+    // note title both reflect the new brand.
+    let seriesName = s.name;
+    if (seriesName === "Monday Global Meeting") {
+      seriesName = "FUZE Global Meeting";
+      await (prisma as any).meetingSeries
+        .update({ where: { id: s.id }, data: { name: seriesName } })
+        .catch(() => null);
+    }
+    const title = `${seriesName} — ${nextDate.toISOString().slice(0, 10)}`;
     const note = await (prisma as any).meetingNote.create({
       data: {
         seriesId: s.id,
@@ -113,7 +124,7 @@ async function handle(req: Request) {
           data: {
             userId: s.createdById,
             type: "SYSTEM",
-            title: `Next meeting auto-created — ${s.name}`,
+            title: `Next meeting auto-created — ${seriesName}`,
             message: `${title} is in your queue. Add agenda items before the meeting.`,
             link: `/meeting-notes/${note.id}`,
           },

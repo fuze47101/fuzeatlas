@@ -17,6 +17,7 @@ interface AssigneeGroup {
     dueDate: string | null;
     meetingNote: { id: string; title: string } | null;
     assignee?: UserLite | null;
+    createdAt?: string | null;
   }>;
 }
 
@@ -133,6 +134,7 @@ function AdminAllTasksPage() {
                       dueDate: i.dueDate,
                       assignee: i.assignee || null,
                       meetingNote: i.meetingNote,
+                      createdAt: i.createdAt || null,
                     }}
                     users={users}
                     showMeeting

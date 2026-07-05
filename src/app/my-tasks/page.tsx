@@ -161,6 +161,7 @@ function MyTasksPage() {
                   dueDate: i.dueDate,
                   assignee: i.assignee || null,
                   meetingNote: i.meetingNote,
+                  createdAt: i.createdAt || null,
                 }}
                 users={users}
                 showMeeting

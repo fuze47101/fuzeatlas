@@ -7,14 +7,14 @@ import { sendImmediateAssignmentEmail } from "@/lib/meeting-emails";
 /**
  * POST /api/cron/seed-monday-meeting-2026-05-27
  *
- * One-shot seeder for Andrew's 2026-05-27 Monday Global Meeting notes.
+ * One-shot seeder for Andrew's 2026-05-27 FUZE Global Meeting notes.
  * Bearer-authed via CRON_SECRET. Idempotent — if a MeetingNote with
  * the exact title already exists, skips and returns
  * { ok: true, skipped: true, existingMeetingId }.
  *
  * Pipeline mirrors POST /api/meeting-notes/[id]/entries:
  *   - Author = andrew@fuze47.com
- *   - Series = cmpob1jv80001l204a56xutem (Monday Global Meeting)
+ *   - Series = cmpob1jv80001l204a56xutem (FUZE Global Meeting)
  *   - Creates MeetingNote + MeetingNoteEntry + MeetingActionItem rows
  *     for every @mention via extractActionItems()
  *   - Fires immediate-assignment notifications + emails for every
@@ -22,7 +22,7 @@ import { sendImmediateAssignmentEmail } from "@/lib/meeting-emails";
  */
 const CRON_SECRET = process.env.CRON_SECRET;
 const SERIES_ID = "cmpob1jv80001l204a56xutem";
-const MEETING_TITLE = "Monday Global Meeting — 2026-05-27";
+const MEETING_TITLE = "FUZE Global Meeting — 2026-05-27";
 const MEETING_DATE = new Date("2026-05-28T01:00:00.000Z"); // 2026-05-27 19:00 Mountain (UTC-6)
 
 const NOTES_BODY = `**MMI**

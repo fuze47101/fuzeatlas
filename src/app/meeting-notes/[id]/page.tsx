@@ -15,6 +15,7 @@ type ActionItem = {
   status: string;
   assignee: UserLite | null;
   projectBlockId?: string | null;
+  createdAt?: string | null;
 };
 type ProjectBlock = {
   id: string;
@@ -669,16 +670,53 @@ function MeetingNotePage() {
           </h2>
           <ul className="space-y-1 rounded-md border border-slate-200 bg-white p-3">
             {orphanTasks.map((a) => (
-              <li key={a.id} className="text-xs text-slate-700 flex items-start gap-2">
+              <li key={a.id} className="text-xs text-slate-700 flex items-start gap-2 flex-wrap">
                 <span className={`inline-flex rounded px-1.5 py-0.5 text-[10px] font-semibold ${TASK_PRIORITY_CHIP[a.priority] || ""}`}>
                   {a.priority}
                 </span>
                 <span>{a.description}</span>
                 {a.assignee?.name && <span className="text-slate-500">→ {a.assignee.name}</span>}
+                {a.createdAt && (
+                  <span
+                    className="text-[10px] text-slate-400 italic"
+                    title={`Assigned ${new Date(a.createdAt).toLocaleString()}`}
+                  >
+                    assigned {new Date(a.createdAt).toLocaleDateString()}
+                  </span>
+                )}
               </li>
             ))}
           </ul>
         </section>
+      )}
+
+      {/* F (2026-07) — MeetingNoteEntry history with "added {date}" chip. */}
+      {meeting.entries && meeting.entries.length > 0 && (
+        <details className="mt-8 rounded-md border border-slate-200 bg-white p-3" open>
+          <summary className="cursor-pointer text-xs font-medium text-slate-600">
+            Note entries ({meeting.entries.length})
+          </summary>
+          <ul className="mt-2 space-y-2">
+            {meeting.entries.map((e) => (
+              <li key={e.id} className="rounded-md border border-slate-100 bg-slate-50 px-3 py-2">
+                <div className="flex flex-wrap items-center gap-2 mb-1 text-[10px] text-slate-500">
+                  <span className="font-semibold text-slate-700">
+                    {e.author?.name || e.author?.email || "someone"}
+                  </span>
+                  <span
+                    className="text-slate-400 italic"
+                    title={`Added ${new Date(e.createdAt).toLocaleString()}`}
+                  >
+                    added {new Date(e.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <pre className="whitespace-pre-wrap font-mono text-[11px] text-slate-700 leading-relaxed">
+                  {e.bodyMd}
+                </pre>
+              </li>
+            ))}
+          </ul>
+        </details>
       )}
 
       {meeting.notesMd && (
@@ -1097,6 +1135,14 @@ function TaskRow({
       <span className={`text-xs ${task.status === "DONE" ? "line-through text-slate-400" : "text-slate-800"}`}>
         {task.description}
       </span>
+      {task.createdAt && (
+        <span
+          className="text-[10px] text-slate-400 italic"
+          title={`Assigned ${new Date(task.createdAt).toLocaleString()}`}
+        >
+          assigned {new Date(task.createdAt).toLocaleDateString()}
+        </span>
+      )}
       <select
         value={task.assignee?.id || ""}
         onChange={(e) => onPatch({ assigneeId: e.target.value || null })}
