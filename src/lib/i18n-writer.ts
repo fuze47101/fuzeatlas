@@ -155,8 +155,8 @@ export async function writeTranslatedKeys(
   translations: WriterInput[],
 ): Promise<WriteResult> {
   const file = localeFilePath(locale);
-  let src = fs.readFileSync(file, "utf8");
-  let sf = parse(src);
+  const src = fs.readFileSync(file, "utf8");
+  const sf = parse(src);
   const root = findRootObject(sf);
   if (!root) {
     return {
@@ -204,7 +204,7 @@ export async function writeTranslatedKeys(
       const propLine = `${indent}${newKey}: ${tsString(item.translatedValue)},\n`;
       // Make sure there's a newline before our insertion point if the
       // file uses compact single-line objects.
-      let insertAt = close;
+      const insertAt = close;
       let insertText = propLine;
       // If the character immediately before `}` is not a newline, add one.
       const beforeClose = src[close - 1];

@@ -30,6 +30,7 @@ export async function GET() {
           mustChangePassword: true,
           emailVerified: true,
           canClaim: true,
+          canApproveTests: true,
           brandId: true,
           factoryId: true,
           distributorId: true,

@@ -16,7 +16,7 @@ async function main() {
   const sanmar = sanmars[0];
   const fountain = (await findBrand(INTERMEDIARY))[0] ?? null;
 
-  let factory = await p.factory.findFirst({ where: { name: { contains: FACTORY_NAME_HINT, mode: "insensitive" } } });
+  const factory = await p.factory.findFirst({ where: { name: { contains: FACTORY_NAME_HINT, mode: "insensitive" } } });
   if (!factory) throw new Error("Dongguan Shatian Lihai factory not found");
   console.log(`SanMar=${sanmar.id} | Fountain Set=${fountain?.id ?? "(none)"} | Factory=${factory.id} (${factory.name})`);
 
