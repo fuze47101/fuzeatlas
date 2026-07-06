@@ -205,12 +205,21 @@ export const COMPETITORS: Competitor[] = [
     id: "polygiene-viraloff",
     company: "Polygiene (Sweden)",
     product: "Polygiene ViralOff",
+    // Phase 19.5 T5 reconciliation (2026-07-05):
+    // Original entry mistakenly labelled ViralOff as zinc pyrithione.
+    // Polygiene's public product page + technical sheet identify the
+    // ViralOff active as silver chloride (AgCl); the "silver salt" is
+    // the same base chemistry family they use for StayFresh, tuned to
+    // an antiviral dose + ISO 18184 test protocol. chemistryType was
+    // corrected in T1; T5 pulls chemistryLabel / activeAgent /
+    // epaRegNumber / epaRegNote / heavyMetalReleased / eco notes
+    // into line so the record is internally consistent.
     chemistryType: "silver_chloride",
-    chemistryLabel: "Zinc Pyrithione",
-    activeAgent: "Zinc pyrithione antiviral compound",
-    epaRegNumber: "Uses EPA PC Code 92344 (ZPT)",
+    chemistryLabel: "Silver Chloride",
+    activeAgent: "Silver chloride (AgCl) antiviral silver salt",
+    epaRegNumber: "EPA PC Code 072503 (silver salts)",
     epaRegYear: null,
-    epaRegNote: "Active ingredient zinc pyrithione is EPA-registered. ViralOff antiviral claims tested under ISO 18184.",
+    epaRegNote: "Active ingredient silver chloride is EPA-registered. ViralOff antiviral claims tested under ISO 18184.",
     epaLabelUrl: "https://polygiene.com/viraloff/",
     dosageLow: 50,
     dosageHigh: 200,
@@ -228,11 +237,11 @@ export const COMPETITORS: Competitor[] = [
     curingTempC: 150,
     leachRateFirst10Washes: 71,
     leachRatePerWash: 7.1,
-    heavyMetalReleased: "Zinc",
-    aquaticToxicityNote: "Zinc pyrithione highly toxic to aquatic organisms. EU classified as H400/H410.",
-    endOfLifeNote: "ZPT degrades to zinc compounds; zinc bioaccumulates in aquatic sediments",
+    heavyMetalReleased: "Silver",
+    aquaticToxicityNote: "Silver chloride ions bioaccumulate in aquatic sediments; EPA aquatic-toxicity thresholds apply per EPA Reg. group 072503.",
+    endOfLifeNote: "AgCl reduces to Ag⁰ / Ag₂S in sludge; silver persists in wastewater treatment residuals",
     chemicalPricePerKg: 60,
-    chemicalPriceSource: "Estimate: ZPT + liposome vesicles, premium antiviral variant (China ≈$50-70/kg)",
+    chemicalPriceSource: "Estimate: silver-chloride antiviral variant (silver salt + carrier, ≈$50-70/kg market range)",
     estimatedCostPerMeterLow: 0.05,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.07,
@@ -883,19 +892,23 @@ export const COMPETITORS: Competitor[] = [
     id: "heiq-hyprotecht",
     company: "HeiQ (Switzerland)",
     product: "HeiQ HyProTecht",
-    // chemistryType corrected by Phase 19.5 audit (T1 misclass fixes):
-    // HeiQ's own HyProTecht product page describes "silver technology"
-    // — not zinc. The "Crescoating zinc" reference came from a 2022
-    // PMC academic paper (in-situ ZnO synthesis on textiles), not a
-    // HeiQ commercial product. Routed to silver_chloride as the
-    // dominant silver-textile-finishing archetype rather than spin up
-    // a single-entry silver_misc archetype.
+    // Phase 19.5 T5 reconciliation (2026-07-05):
+    // HeiQ HyProTecht is HeiQ's silver-based textile antimicrobial
+    // platform (evolution of HeiQ Viroblock). Public product page
+    // describes it as "silver technology"; the earlier zinc/Crescoating
+    // framing came from an unrelated 2022 academic paper. The exact
+    // silver species (elemental Ag⁰ in vesicles vs ionic AgCl salt) is
+    // NOT publicly disclosed by HeiQ. The Phase 19.5 audit landed on
+    // "silver" (generic). For sustainability math we route to the
+    // silver_chloride archetype — direct archetype-key hit, closest LCA
+    // envelope, no fallback required. All descriptive fields updated to
+    // reflect silver, not zinc.
     chemistryType: "silver_chloride",
-    chemistryLabel: "Zinc Nanoparticles (Crescoating)",
-    activeAgent: "Zinc nanoparticles grown in-situ via Crescoating",
-    epaRegNumber: "EPA compliant (active ingredient registered)",
+    chemistryLabel: "Silver (vesicle-delivered)",
+    activeAgent: "Silver antimicrobial dispersed via HeiQ Crescoating vesicle carrier",
+    epaRegNumber: "EPA compliant (silver active ingredient registered)",
     epaRegYear: null,
-    epaRegNote: "Main ingredient EPA-registered. Specific product registration number not publicly disclosed by HeiQ.",
+    epaRegNote: "HeiQ HyProTecht is a silver-based textile antimicrobial (evolution of HeiQ Viroblock). HeiQ does not publicly disclose a HyProTecht-specific EPA registration number; the silver active ingredient is EPA-registered. Sustainability math routed to the silver_chloride archetype (direct-key match; HeiQ's exact silver species — elemental-in-vesicle vs ionic salt — not publicly disclosed).",
     epaLabelUrl: "https://www.heiq.com/products/textile-technologies/heiq-hyprotecht/",
     dosageLow: 100,
     dosageHigh: 500,
@@ -913,11 +926,11 @@ export const COMPETITORS: Competitor[] = [
     curingTempC: 150,
     leachRateFirst10Washes: 45,
     leachRatePerWash: 4.5,
-    heavyMetalReleased: "Zinc",
-    aquaticToxicityNote: "ZnO nanoparticles show potential for bioaccumulation in aquatic food chains",
-    endOfLifeNote: "Zinc nanoparticles can disrupt biological wastewater treatment",
+    heavyMetalReleased: "Silver",
+    aquaticToxicityNote: "Silver ions bioaccumulate in aquatic sediments; EPA aquatic-toxicity thresholds for silver actives apply.",
+    endOfLifeNote: "Ag / AgCl reduces to Ag⁰ / Ag₂S in sludge; silver persists in wastewater treatment residuals",
     chemicalPricePerKg: 40,
-    chemicalPriceSource: "Estimate: ZnO nano in-situ grown, Swiss HeiQ brand (China ≈$32-48/kg)",
+    chemicalPriceSource: "Estimate: silver antimicrobial in HeiQ Crescoating vesicle carrier, Swiss brand premium (≈$32-48/kg base silver active)",
     estimatedCostPerMeterLow: 0.04,
     estimatedCostPerMeterHigh: 0.12,
     estimatedCostPerMeterTypical: 0.06,

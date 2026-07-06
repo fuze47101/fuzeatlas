@@ -40,7 +40,13 @@ test-classifier.mjs
 .env.local.bak*
 
 # Generated/tracked-by-mistake artifacts (2026-07)
-deliverables/
+# NOTE: use `deliverables/*` (glob) not `deliverables/` — a bare directory
+# ignore blocks negation of any file inside per gitignore semantics.
+deliverables/*
+# But keep the append-only competitor-SDS audit transcripts — those are
+# the CLAUDE.md-documented source-of-truth for every competitive
+# deep-dive and MUST be committed.
+!deliverables/Competitor_SDS_Audit_*.md
 sprayer-comparison.html
 ~$*
 *.bak

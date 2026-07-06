@@ -320,6 +320,7 @@ runtime logs for `[resend-inbound]`.
 - **Clear lock files before commit**: `rm -f .git/HEAD.lock .git/index.lock`
 - Production branch: `main` (auto-deploys to Vercel)
 - **Prisma migrations**: Use `npx prisma db push` (shadow DB migration is broken due to constraint conflict)
+- **ALWAYS run the full `npm run build` before signing off on / pushing a commit — NOT just `tsc`.** CI (`.github/workflows/ci.yml`) runs `npm run lint` → `npx tsc --noEmit` → `npm run build` in sequence, and halts on the FIRST failure. `tsc` passing is false confidence: it misses (a) lint errors like `prefer-const` (this is what red-streaked main 3× on 2026-07-05 — `prefer-const` in `src/lib/i18n-writer.ts` + a `git add -A` bonus script, fixed in `b842f25`), and (b) `next build` prerender/SSG + client↔server-boundary errors. Reproduce CI locally with `npm run lint && npx tsc --noEmit && npm run build` before every push. Watch the `git add -A` bonus files too — stray scripts get linted by CI's `eslint .`.
 
 ### Auto-close feedback tickets from commits
 
@@ -489,9 +490,14 @@ Audit transcripts append-only at `deliverables/Competitor_SDS_Audit_<YYYY-MM>.md
   - `heiq-hyprotecht` (zinc → actually silver)
   - `microban-additive-gs` (qac_silane → actually benzoic acid)
   - `ultrafresh-dw56` (qac_silane → actually zinc pyrithione + thiabendazole)
-  These misclassifications are escalated in the audit transcript;
-  the `chemistryType` pointers in `competitors.ts` were intentionally
-  left unchanged pending Andrew's sign-off. New archetypes
+  These misclassifications were escalated in the audit transcript and
+  **Andrew signed off 2026-07-05 — the `chemistryType` pointers in
+  `competitors.ts` are now corrected** (polygiene-viraloff→silver_chloride,
+  sanitized-zinc-pyrithione→qac_silane, heiq-hyprotecht→silver_chloride,
+  microban-additive-gs→organic_acid, ultrafresh-dw56→zinc_pyrithione).
+  Track-5 reconciliation (2026-07-05) fixes two residual note/chemistry
+  inconsistencies (polygiene epaRegNote, heiq silver-vs-silver_chloride).
+  New archetypes
   `zinc_oxide`, `organic_acid`, `chitosan`, `citric_acid`,
   `resin_acid`, `wood_extract` were added so the fix has somewhere
   to land.
@@ -802,10 +808,12 @@ auto-closed via commit `Closes` tags. **Only open ticket: Tina
   (Tina/Tandy/Danny → CAI); push Spanx gatekeeper Jorge to enforce
   **ICP-first** (>0.5 production, 1.0 trial). Bulk deadline **July 12**.
 
-## Pending — Test Request Approvals + Administration Remark Thread (Tina ticket)
+## Test Request Approvals + Administration Remark Thread (Tina ticket — SHIPPED)
 
-**SPECCED, NOT SHIPPED.** Self-sufficient Code prompt at
-`deliverables/CODE_PROMPT_test-request-approvals.md`. Builds:
+**SHIPPED July 5, 2026** (commits `61368bf` + CI-fix `b842f25`, live on
+fuzeatlas.com, CI green, 82/82 diag surfaces healthy). Closes Tina ticket
+`cmq96o1eg0001l504iaaddsh0`. Spec archived at
+`deliverables/CODE_PROMPT_test-request-approvals.md`. What shipped:
 
 - `User.canApproveTests Boolean @default(false)` — authorized-approver
   toggle (admins always can). Set on `/settings/users`.
