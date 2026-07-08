@@ -191,6 +191,8 @@ export default function TestRequestsPage() {
       if (d.ok) {
         setRequests(d.requests);
         setStats(d.stats);
+      } else {
+        setError(d.error || T.failedLoadRequests);
       }
     } catch {
       setError(T.failedLoadRequests);
