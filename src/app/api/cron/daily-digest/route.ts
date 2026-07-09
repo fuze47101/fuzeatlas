@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
+import { getAdminAlerts } from "@/lib/admin-alerts";
 
 /**
  * GET /api/cron/daily-digest
@@ -273,12 +274,45 @@ export async function GET(req: Request) {
     const now = new Date();
     const dateStr = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
 
+    // Fetch action-required alerts from the shared rollup so the digest
+    // subject + top-of-email section stay in sync with the /admin banner.
+    // .catch guards a partial-failure so a lib crash can't kill the whole
+    // digest.
+    const alerts = await getAdminAlerts().catch(
+      () => ({ items: [], total: 0 } as Awaited<ReturnType<typeof getAdminAlerts>>),
+    );
+
+    const alertRowsHtml = alerts.items
+      .map(
+        (i) => `
+      <div style="display:flex;align-items:center;padding:10px 0;border-top:1px solid #fecaca;">
+        <div style="min-width:36px;text-align:center;font-weight:900;color:#ffffff;background:#dc2626;border-radius:6px;padding:4px 8px;font-size:13px;">${i.count}</div>
+        <div style="flex:1;padding-left:12px;font-weight:600;color:#7f1d1d;font-size:13px;">${i.label}</div>
+        <a href="${baseUrl}${i.link}" style="color:#b91c1c;font-weight:700;text-decoration:none;font-size:13px;white-space:nowrap;">Open →</a>
+      </div>`,
+      )
+      .join("");
+
+    const alertsSectionHtml =
+      alerts.total > 0
+        ? `
+<!-- Action Required — shared getAdminAlerts() -->
+<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:12px;padding:20px;margin-bottom:24px;">
+  <div style="font-size:16px;font-weight:900;color:#b91c1c;margin-bottom:8px;">🔴 Action Required · ${alerts.total}</div>
+  ${alertRowsHtml}
+</div>`
+        : `
+<!-- Action Required — clear -->
+<div style="font-size:12px;color:#059669;margin-bottom:16px;font-weight:600;">✓ All operational queues clear.</div>`;
+
     let html = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
 <div style="max-width:640px;margin:0 auto;padding:24px;">
+
+${alertsSectionHtml}
 
 <!-- Header -->
 <div style="background:linear-gradient(135deg,#0f172a,#1e3a5f);border-radius:16px;padding:32px;margin-bottom:24px;color:white;">
@@ -667,7 +701,7 @@ export async function GET(req: Request) {
         : "";
     const result = await sendEmail({
       to: DIGEST_RECIPIENTS,
-      subject: `FUZE Daily Digest — ${subjectSales}, ${notes.length} activities, ${outreachChecks.length} outreach${ticketTag}`,
+      subject: `${alerts.total > 0 ? `🔴 ${alerts.total} to action · ` : ""}FUZE Daily Digest — ${subjectSales}, ${notes.length} activities, ${outreachChecks.length} outreach${ticketTag}`,
       html,
     });
 
