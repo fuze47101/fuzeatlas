@@ -53,7 +53,12 @@ export async function GET(request: Request) {
         orderBy: [{ priority: "asc" }, { createdAt: "desc" }],
         include: {
           brand: { select: { id: true, name: true } },
-          factory: { select: { id: true, name: true } },
+          // NOTE: TestRequest has no top-level `factory` relation — the
+          // only factory linkage is factoryFabricCode (a string) plus
+          // the fabric.factory and requestedBy.factory nested relations
+          // (below). Adding a top-level factory include here throws
+          // Prisma "Unknown field" at query time and blanks the list.
+          distributor: { select: { id: true, name: true } },
           fabric: {
             select: {
               id: true,

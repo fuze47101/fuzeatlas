@@ -191,6 +191,13 @@ export default function TestRequestsPage() {
       if (d.ok) {
         setRequests(d.requests);
         setStats(d.stats);
+      } else {
+        // Surface API errors instead of rendering an empty list
+        // silently — the invalid-factory-include regression on the
+        // GET route (cmrb3z19t / 2026-07-09) had already made the
+        // list blank once with no user-visible signal.
+        setError(d.error || T.failedLoadRequests);
+        setRequests([]);
       }
     } catch {
       setError(T.failedLoadRequests);
