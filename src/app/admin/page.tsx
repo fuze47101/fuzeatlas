@@ -36,23 +36,87 @@ const ADMIN_LANDING_TILES = [
   { key: "admin", spotlight: "/settings/users" },
 ];
 
+type AlertItem = {
+  key: string;
+  label: string;
+  count: number;
+  link: string;
+  tone: "red";
+};
+
+/**
+ * Prominent RED banner at the very top of /admin listing every
+ * actionable queue nobody is watching. Auto-refreshes every 60s.
+ * Fold-in for the older amber orphan banner — orphan reports are
+ * now one of six alert categories.
+ */
+function AdminAlertBanner() {
+  const [items, setItems] = useState<AlertItem[] | null>(null);
+  const [total, setTotal] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const r = await fetch("/api/admin/alerts", { cache: "no-store" });
+        const d = await r.json();
+        if (cancelled) return;
+        if (d.ok) {
+          setItems(d.items || []);
+          setTotal(d.total ?? 0);
+        }
+      } catch {
+        // silent — banner just doesn't render on network flake
+      }
+    };
+    load();
+    const timer = setInterval(load, 60_000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, []);
+
+  if (total === null || items === null) return null;
+  if (total === 0) {
+    return (
+      <div className="mb-6 flex items-center gap-2 rounded-lg bg-slate-50 border border-slate-200 px-4 py-2 text-xs text-slate-500">
+        <span className="text-emerald-600 text-sm">✓</span>
+        <span>All queues clear — no action-required items right now.</span>
+      </div>
+    );
+  }
+  return (
+    <div className="mb-6 rounded-xl border-2 border-rose-400 bg-rose-50 shadow-sm">
+      <div className="px-5 pt-4 pb-2 flex items-center gap-3">
+        <span className="text-2xl">⚠</span>
+        <p className="text-rose-900 font-black text-lg sm:text-xl">
+          {total} item{total === 1 ? "" : "s"} need attention — action required
+        </p>
+      </div>
+      <div className="px-5 pb-4 flex flex-wrap gap-2">
+        {items.map((i) => (
+          <Link
+            key={i.key}
+            href={i.link}
+            className="inline-flex items-center gap-2 rounded-lg border border-rose-300 bg-white px-3 py-2 text-sm hover:bg-rose-100 transition-colors focus-ring"
+          >
+            <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full bg-rose-600 text-white text-xs font-black">
+              {i.count}
+            </span>
+            <span className="text-rose-900 font-semibold">{i.label}</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminLandingPage() {
   const { user } = useAuth();
   const router = useRouter();
   const { t } = useI18n();
   const T = t.adminLanding;
-
-  // D2 (Bureau Veritas) — surface orphan test-run count on admin landing.
-  const [orphanCount, setOrphanCount] = useState<number | null>(null);
-  useEffect(() => {
-    if (!user || !ADMIN_ROLES.has(user.role)) return;
-    fetch("/api/tests?needsAssociation=true")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.ok) setOrphanCount(d.orphanCount ?? 0);
-      })
-      .catch(() => {});
-  }, [user]);
 
   useEffect(() => {
     if (user === null) return; // still loading
@@ -71,6 +135,7 @@ export default function AdminLandingPage() {
 
   return (
     <div className="p-4 sm:p-8 max-w-7xl mx-auto">
+      <AdminAlertBanner />
       <Breadcrumbs className="mb-2" items={[{ label: T.crumb }]} />
       <OnboardingChecklist
         surface="admin"
@@ -82,25 +147,6 @@ export default function AdminLandingPage() {
       <p className="text-slate-600 mt-1 mb-6">
         {T.subtitle}
       </p>
-
-      {orphanCount !== null && orphanCount > 0 && (
-        <Link
-          href="/tests?needsAssociation=true"
-          className="mb-6 flex items-center gap-3 px-4 py-3 bg-amber-50 border-2 border-amber-300 rounded-xl hover:bg-amber-100 transition-colors"
-        >
-          <span className="text-2xl">⚠</span>
-          <div className="flex-1">
-            <p className="font-bold text-amber-900">
-              {orphanCount} test run{orphanCount === 1 ? "" : "s"} need association
-            </p>
-            <p className="text-xs text-amber-700">
-              Uploaded results are sitting without a brand/factory/fabric linkage. Click to
-              assign so they surface on the right customer reports.
-            </p>
-          </div>
-          <span className="text-sm text-amber-800 font-semibold">Assign →</span>
-        </Link>
-      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {tiles.map((m) => (

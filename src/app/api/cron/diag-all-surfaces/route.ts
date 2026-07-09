@@ -933,6 +933,36 @@ export async function GET(req: Request) {
           },
         }),
     ),
+    // H (2026-07) — /api/admin/alerts red banner rollup. Confirms every
+    // model+field the alerts route reads is queryable: TestRequest.status,
+    // SampleTrialRequest.status, SampleShipment.status (PREPARING/SHIPPED/
+    // IN_TRANSIT/AT_LAB), TestRun.raw JSON path, FabricSubmission.status,
+    // AccessRequest.status. If any drift, the banner silently drops that
+    // category — diag makes the drift visible.
+    check(
+      "/api/admin/alerts — action-required rollup counts",
+      "count TestRequest/SampleTrialRequest/SampleShipment/TestRun/FabricSubmission/AccessRequest",
+      () =>
+        Promise.all([
+          prisma.testRequest.count({ where: { status: "PENDING_APPROVAL" } }),
+          prisma.sampleTrialRequest.count({
+            where: { status: { in: ["SUBMITTED", "UNDER_REVIEW"] } },
+          }),
+          prisma.sampleShipment.count({
+            where: { status: { in: ["SHIPPED", "IN_TRANSIT", "AT_LAB"] } },
+          }),
+          prisma.testRun.count({
+            where: {
+              OR: [
+                { submissionId: null },
+                { raw: { path: ["needsAssociation"], equals: true } },
+              ],
+            },
+          }),
+          prisma.fabricSubmission.count({ where: { status: "SUBMITTED" } }),
+          prisma.accessRequest.count({ where: { status: "PENDING" } }),
+        ]).then(() => 1),
+    ),
     // G (2026-07) — Tina's authorized-approver toggle + remark thread.
     // Confirms User.canApproveTests + TestRequestComment table +
     // relation resolve cleanly against Prisma. If either query fails,
