@@ -53,20 +53,40 @@ type AlertItem = {
 function AdminAlertBanner() {
   const [items, setItems] = useState<AlertItem[] | null>(null);
   const [total, setTotal] = useState<number | null>(null);
+  // K (2026-07) — surface a visible error state instead of silently
+  // rendering nothing when the fetch fails (network) or the API
+  // responds ok:false (e.g. a stale View-As cookie 403s). The banner
+  // was invisible for weeks because of that silent-fail.
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
       try {
         const r = await fetch("/api/admin/alerts", { cache: "no-store" });
-        const d = await r.json();
+        let d: any = null;
+        try {
+          d = await r.json();
+        } catch {
+          d = null;
+        }
         if (cancelled) return;
-        if (d.ok) {
+        if (r.ok && d?.ok) {
           setItems(d.items || []);
           setTotal(d.total ?? 0);
+          setError(null);
+        } else {
+          const msg = `${r.status} ${d?.error || r.statusText || "unknown"}`;
+          // eslint-disable-next-line no-console
+          console.warn("[admin-alerts] load failed:", msg, d);
+          setError(msg);
         }
-      } catch {
-        // silent — banner just doesn't render on network flake
+      } catch (e: any) {
+        if (cancelled) return;
+        const msg = e?.message || "network error";
+        // eslint-disable-next-line no-console
+        console.warn("[admin-alerts] load threw:", msg);
+        setError(msg);
       }
     };
     load();
@@ -77,6 +97,14 @@ function AdminAlertBanner() {
     };
   }, []);
 
+  if (error) {
+    return (
+      <div className="mb-6 flex items-center gap-2 rounded-lg bg-amber-50 border border-amber-300 px-4 py-2 text-xs text-amber-900">
+        <span>⚠</span>
+        <span>Couldn&apos;t load alerts — {error}</span>
+      </div>
+    );
+  }
   if (total === null || items === null) return null;
   if (total === 0) {
     return (

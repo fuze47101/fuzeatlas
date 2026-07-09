@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
+import { getRealUser } from "@/lib/auth";
 import { getAdminAlerts } from "@/lib/admin-alerts";
 
 /**
@@ -8,12 +8,14 @@ import { getAdminAlerts } from "@/lib/admin-alerts";
  *
  * Thin wrapper around getAdminAlerts() (the single source of truth,
  * also consumed by the daily-digest cron). Gate: ADMIN, EMPLOYEE,
- * SALES_MANAGER, TESTING_MANAGER.
+ * SALES_MANAGER, TESTING_MANAGER — resolved via getRealUser so a
+ * stale View-As cookie can't silently 403 the real admin and blank
+ * the /admin banner (root cause of the "banner never renders" bug).
  */
 const ALLOWED = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER", "TESTING_MANAGER"]);
 
 export async function GET() {
-  const me = await getCurrentUser();
+  const me = await getRealUser();
   if (!me) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }

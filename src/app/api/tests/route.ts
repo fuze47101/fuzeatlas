@@ -70,12 +70,23 @@ export async function GET(request: Request) {
     const withResults =
       searchParams.get("withResults") === "true" || sort === "fantastic";
 
+    // K (2026-07) — the "needs association" queue is scoped to runs
+    // with testDate in the last 6 months. A legacy bulk import
+    // backdated ~1,275 orphan rows by insert date — those are
+    // unrecoverable and only floodedthe banner. Runs with a null
+    // testDate fall outside the gte filter and are treated as legacy.
+    // Defined ONCE here and reused by both the filter branch (below)
+    // and the orphanCount query further down so the list count and
+    // the admin-landing count can never drift.
+    const sixMonthsAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 183);
+
     const where: any = {};
     if (filterType) where.testType = filterType;
     if (filterProject) where.projectId = filterProject;
     if (brandId) where.submission = { brandId };
     if (brandVisible === "true") where.brandVisible = true;
     if (needsAssociationFilter) {
+      where.testDate = { ...(where.testDate || {}), gte: sixMonthsAgo };
       where.OR = [
         ...(where.OR || []),
         { submissionId: null },
@@ -172,10 +183,14 @@ export async function GET(request: Request) {
       prisma.antibacterialResult.count(),
       prisma.fungalResult.count(),
       prisma.odorResult.count(),
-      // D2 — orphan count: unassigned OR flagged needsAssociation.
+      // D2 — orphan count: unassigned OR flagged needsAssociation,
+      // scoped to the same 6-month testDate window the needsAssociation
+      // filter branch uses (K, 2026-07). Legacy backdated rows stay out
+      // of both the count AND the list so they can't drift.
       prisma.testRun
         .count({
           where: {
+            testDate: { gte: sixMonthsAgo },
             OR: [
               { submissionId: null },
               { raw: { path: ["needsAssociation"], equals: true } },

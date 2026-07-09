@@ -19,9 +19,24 @@ import { prisma } from "@/lib/prisma";
  *  - SampleShipment.status enum     — PREPARING / SHIPPED / IN_TRANSIT /
  *                                     DELIVERED / AT_LAB / RETURNED
  *  - TestRun.raw (Json?)            — path ["needsAssociation"] === true
- *  - FabricSubmission.status        — "SUBMITTED" (the state the
+ *                                     OR TestRun.submissionId is null,
+ *                                     AND TestRun.testDate is within
+ *                                     the last 6 months. The date cutoff
+ *                                     matters: a legacy bulk-import
+ *                                     backdated ~1,275 rows by insert
+ *                                     date, and those are unrecoverable
+ *                                     — no lab-portal confirm flow will
+ *                                     ever re-associate them. Runs with
+ *                                     a null testDate are treated as
+ *                                     legacy and excluded by the gte
+ *                                     filter (null is not >= a date).
+ *  - FabricSubmission.status        — exact "SUBMITTED" (the state the
  *                                     factory-portal intake endpoint
- *                                     creates rows with)
+ *                                     creates rows with). Field is
+ *                                     String? and also carries legacy
+ *                                     values ("Submitted" / "active" /
+ *                                     null); exact-match filter is
+ *                                     intentional to skip those.
  *  - AccessRequest.status           — "PENDING"
  */
 
@@ -58,9 +73,16 @@ export async function getAdminAlerts(): Promise<AdminAlerts> {
     prisma.sampleShipment
       .count({ where: { status: { in: ["SHIPPED", "IN_TRANSIT", "AT_LAB"] } } })
       .catch(() => 0),
+    // Orphan reports = (submissionId null OR raw.needsAssociation) AND
+    // testDate within the last 6 months. The date scope is what makes
+    // this actionable — a bulk import backdated ~1,275 legacy rows and
+    // those are unrecoverable orphans, not an incoming queue. Runs
+    // with a null testDate fall outside the gte filter and are
+    // correctly excluded as legacy.
     prisma.testRun
       .count({
         where: {
+          testDate: { gte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 183) },
           OR: [
             { submissionId: null },
             { raw: { path: ["needsAssociation"], equals: true } },
@@ -68,6 +90,10 @@ export async function getAdminAlerts(): Promise<AdminAlerts> {
         },
       })
       .catch(() => 0),
+    // Exact-match "SUBMITTED" only — the FabricSubmission.status field
+    // is String? and carries legacy values ("Submitted" title-case,
+    // "active", null) that are NOT actionable. Case-insensitive or
+    // includes-null broadening would refill the banner with noise.
     prisma.fabricSubmission
       .count({ where: { status: "SUBMITTED" } })
       .catch(() => 0),
