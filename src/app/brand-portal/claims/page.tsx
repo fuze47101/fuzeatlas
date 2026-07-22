@@ -3,41 +3,31 @@
 /**
  * Brand Claims (brand-portal item 13).
  *
- * Shows the defensible claim language a brand may use for FUZE-treated goods,
- * strictly within the EPA Treated-Article Exemption framework (PR Notice
- * 2000-1). "Claims you can make" (allowed) vs "Claims that require
- * product-specific registration" (restricted). Certifications + tier are
- * pulled from the brand's spec (Brand.requiredFuzeTier).
+ * A positive "you can say this" list of the claims a brand may make for
+ * FUZE-treated goods, using the registered odor / article-protection language
+ * (EPA Reg. No. 90890-1 textile / 90890-2 surfaces). Certifications + tier are
+ * pulled from the brand's spec (Brand.requiredFuzeTier). Intentionally shows
+ * NO restricted / "cannot say" content on the brand-facing page.
  *
- * The compliance bullet content is intentionally kept inline (and English) —
- * EPA claim language is legally load-bearing and should not be machine-
- * translated. Section chrome is i18n'd.
+ * The claim bullet content is intentionally kept inline (and English) — EPA
+ * claim language is legally load-bearing and should not be machine-translated.
+ * Section chrome is i18n'd.
  */
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/i18n";
 
-// EPA Treated-Article-safe claims (per CLAUDE.md compliance discipline).
+// Registered odor / article-protection claims a brand may make.
 const ALLOWED_CLAIMS = [
   "Inhibits the growth of odor-causing bacteria on the fabric",
-  "Inhibits the growth of mildew and mold that cause product deterioration, staining, and odors",
+  "Guards against odors caused by bacteria, mold, and mildew",
+  "Contains an antimicrobial agent that controls odors",
+  "Inhibits the growth of mildew that causes product deterioration and staining",
   "Keeps fabric fresher for longer between washes",
-  "Odor control / freshness technology built into the fiber",
-  "Durable, long-lasting finish — bonded to the fiber, not a spray-on coating",
-  "PFAS-free, non-leaching antimicrobial finish",
-  "Treated with FUZE metamaterial — a proprietary antimicrobial textile treatment",
+  "Durable, long-lasting freshness — bonded to the fiber, not a spray-on coating",
+  "PFAS-free, non-leaching finish",
   "Factual certification statements (OEKO-TEX Standard 100 Class I, bluesign® approved, EPA-registered active, PFAS-free)",
-];
-
-// Claims that need product-specific public-health pesticide registration.
-const RESTRICTED_CLAIMS = [
-  "“Antibacterial”, “antimicrobial protection”, “bactericidal”, or “germicidal” as a product benefit",
-  "“Kills 99.9% of bacteria” or any specific kill-rate / log-reduction percentage",
-  "Named-pathogen claims — kills or protects against MRSA, Staph, E. coli, Salmonella, etc.",
-  "Any human-health or disease claim (prevents infection, protects your health, hospital-grade, etc.)",
-  "“Antiviral” / “kills viruses” as a consumer product claim",
-  "Implying the garment protects the wearer rather than the fabric",
 ];
 
 const CERTS = [
@@ -99,41 +89,21 @@ export default function BrandClaimsPage() {
         ))}
       </div>
 
-      {/* Allowed vs Restricted */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-        {/* Allowed */}
-        <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">✅</span>
-            <h2 className="font-black text-emerald-900">{tx.allowedTitle}</h2>
-          </div>
-          <p className="text-xs text-emerald-800/80 mb-3">{tx.allowedBlurb}</p>
-          <ul className="space-y-2">
-            {ALLOWED_CLAIMS.map((c) => (
-              <li key={c} className="flex items-start gap-2 text-sm text-slate-800">
-                <span className="text-emerald-600 mt-0.5">✓</span>
-                <span>{c}</span>
-              </li>
-            ))}
-          </ul>
+      {/* Approved claims — "you can say this" */}
+      <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-6 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xl">✅</span>
+          <h2 className="font-black text-emerald-900">{tx.allowedTitle}</h2>
         </div>
-
-        {/* Restricted */}
-        <div className="rounded-2xl border-2 border-red-300 bg-red-50 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">⛔</span>
-            <h2 className="font-black text-red-900">{tx.restrictedTitle}</h2>
-          </div>
-          <p className="text-xs text-red-800/80 mb-3">{tx.restrictedBlurb}</p>
-          <ul className="space-y-2">
-            {RESTRICTED_CLAIMS.map((c) => (
-              <li key={c} className="flex items-start gap-2 text-sm text-slate-800">
-                <span className="text-red-600 mt-0.5">✕</span>
-                <span>{c}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <p className="text-sm text-emerald-800/80 mb-4">{tx.allowedBlurb}</p>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+          {ALLOWED_CLAIMS.map((c) => (
+            <li key={c} className="flex items-start gap-2 text-sm text-slate-800">
+              <span className="text-emerald-600 mt-0.5">✓</span>
+              <span>{c}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Certifications you can cite */}
@@ -149,13 +119,12 @@ export default function BrandClaimsPage() {
         </div>
       </div>
 
-      {/* EPA framework note */}
-      <div className="rounded-xl bg-slate-900 text-white p-5">
-        <h3 className="font-black mb-2">{tx.frameworkTitle}</h3>
-        <p className="text-sm text-white/85 leading-relaxed">{tx.frameworkBody}</p>
-        <p className="text-xs text-white/60 mt-3">
-          {tx.frameworkFootnote}{" "}
-          <Link href="/claims" className="underline hover:text-white">
+      {/* EPA registration footer */}
+      <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <p className="text-sm text-slate-700 leading-relaxed">{tx.epaRegNote}</p>
+        <p className="text-xs text-slate-500 mt-2">
+          {tx.epaRegLine}{" "}
+          <Link href="/claims" className="text-[#00b4c3] underline hover:text-[#009ba8]">
             {tx.publicClaimsLink}
           </Link>
         </p>
