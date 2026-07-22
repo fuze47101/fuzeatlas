@@ -877,6 +877,7 @@ const en = {
     weeklyExecReview: "Weekly Exec Review",
     fuzeAiFaq: "FUZE FAQ",
     generalFuzePricing: "General FUZE Pricing",
+    environmentalScore: "Environmental Score",
     // Admin module
     myProfile: "My Profile",
     notifications: "Notifications",
@@ -4570,9 +4571,15 @@ const en = {
   },
   pricingPage: {
     crumbDashboard: "Dashboard",
-    crumbCurrent: "Pricing & Environmental Comparison",
-    pageTitle: "FUZE Pricing & Environmental Score",
-    pageSubtitle: "Calculate FUZE application cost, compare against competitors, and generate environmental impact scores.",
+    crumbCurrent: "General FUZE Pricing",
+    pageTitle: "General FUZE Pricing",
+    pageSubtitle: "Worldwide general pricing, delivered to the factory door — inclusive of shipping, duty, and delivery.",
+    volumePromptTitle: "Talk to your FUZE account manager about volume pricing",
+    volumePromptBody: "Volumes at this scale may qualify for direct pricing and volume discounts — please discuss with your FUZE account manager.",
+    envCrumbCurrent: "Environmental Score",
+    envPageTitle: "Environmental Score",
+    envPageSubtitle: "Compare FUZE against competitor chemistries and generate a per-meter environmental impact score.",
+    envInputsTitle: "Fabric & Tier Inputs",
 
     calculatorTitle: "FUZE Quote Calculator",
     currencyLabel: "Currency",

@@ -301,6 +301,7 @@ export default function Sidebar() {
           { href: "/compliance-library", label: "Document Center", labelKey: "documentCenter", icon: "📋" },
           { href: "/brand-portal/chat", label: "FUZE FAQ", labelKey: "fuzeAiFaq", icon: "💬" },
           { href: "/factories", label: "Factory Search", labelKey: "factorySearch", icon: "🔍" },
+          { href: "/environmental-score", label: "Environmental Score", labelKey: "environmentalScore", icon: "🏅" },
           { href: "/sustainability", label: "Sustainability", labelKey: "sustainability", icon: "🌍" },
           { href: "/admin/esg-reports", label: "ESG Impact Report", labelKey: "esgImpactReport", icon: "🌱" },
         ],
