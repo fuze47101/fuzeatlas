@@ -10,6 +10,12 @@ import {
   getTagLabel,
   calcProfileCompleteness,
 } from "@/lib/factoryDiscovery";
+import {
+  CAPABILITY_GROUPS,
+  FACTORY_COUNTRIES,
+  parseCapabilities,
+  groupCapabilities,
+} from "@/lib/factory-capabilities";
 import ActivityFeed from "@/components/ActivityFeed";
 
 const NOTE_TYPES = ["NOTE", "CALL", "EMAIL", "MEETING", "TASK", "FOLLOW_UP"];
@@ -74,17 +80,16 @@ export default function FactoryDetailPage() {
             chineseName: f.chineseName || "",
             millType: f.millType || "",
             specialty: f.specialty || "",
-            purchasing: f.purchasing || "",
-            annualSales: f.annualSales || "",
+            email: f.email || "",
+            website: f.website || "",
             address: f.address || "",
-            city: f.city || "",
-            state: f.state || "",
             country: f.country || "",
             secondaryCountry: f.secondaryCountry || "",
             development: f.development || "",
             customerType: f.customerType || "",
             brandNominated: f.brandNominated || "",
             salesRepId: f.salesRepId || "",
+            capabilities: parseCapabilities(f.capabilities),
           });
         }
       })
@@ -392,20 +397,14 @@ export default function FactoryDetailPage() {
 
       {/* ── Details Tab ── */}
       {tab === "details" && (
-        <div className="bg-white rounded-xl p-6 shadow-sm border">
+        <div className="bg-white rounded-xl p-6 shadow-sm border space-y-6">
           <div className="grid grid-cols-2 gap-4">
+            {/* Plain text fields */}
             {[
               [t.factories.factoryName, "name"],
               [t.factories.chineseName, "chineseName"],
               [t.factories.millType, "millType"],
               [t.factories.specialty, "specialty"],
-              [t.factories.purchasing, "purchasing"],
-              [t.factories.annualSales, "annualSales"],
-              [t.factories.address, "address"],
-              [t.factories.city, "city"],
-              [t.factories.state, "state"],
-              [t.factories.country, "country"],
-              [t.factories.secondaryCountry, "secondaryCountry"],
               [t.factories.development, "development"],
               [t.factories.customerType, "customerType"],
               [t.factories.brandNominated, "brandNominated"],
@@ -424,28 +423,169 @@ export default function FactoryDetailPage() {
                 )}
               </div>
             ))}
-            {/* Sales rep selector */}
+
+            {/* Contact Email */}
             <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">
-                {t.brands.salesRep || "Sales Rep"}
-              </label>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t.factories.contactEmail}</label>
               {editing ? (
-                <select
-                  value={form.salesRepId || ""}
-                  onChange={(e) => setForm({ ...form, salesRepId: e.target.value })}
+                <input
+                  type="email"
+                  value={form.email || ""}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">—</option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
+                />
+              ) : factory.email ? (
+                <a href={`mailto:${factory.email}`} className="text-sm text-[#00b4c3] hover:underline break-all">{factory.email}</a>
               ) : (
-                <div className="text-sm text-slate-900">{factory.salesRep?.name || "—"}</div>
+                <div className="text-sm text-slate-900">—</div>
               )}
             </div>
+
+            {/* Website */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t.factories.websiteLabel}</label>
+              {editing ? (
+                <input
+                  type="text"
+                  value={form.website || ""}
+                  onChange={(e) => setForm({ ...form, website: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              ) : factory.website ? (
+                <a href={factory.website.startsWith("http") ? factory.website : `https://${factory.website}`} target="_blank" rel="noopener noreferrer" className="text-sm text-[#00b4c3] hover:underline break-all">{factory.website} ↗</a>
+              ) : (
+                <div className="text-sm text-slate-900">—</div>
+              )}
+            </div>
+
+            {/* Country + secondary country as selects */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t.factories.country}</label>
+              {editing ? (
+                <select
+                  value={form.country || ""}
+                  onChange={(e) => setForm({ ...form, country: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">—</option>
+                  {FACTORY_COUNTRIES.map((c) => (<option key={c} value={c}>{c}</option>))}
+                </select>
+              ) : (
+                <div className="text-sm text-slate-900">{factory.country || "—"}</div>
+              )}
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t.factories.secondaryCountry}</label>
+              {editing ? (
+                <select
+                  value={form.secondaryCountry || ""}
+                  onChange={(e) => setForm({ ...form, secondaryCountry: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">—</option>
+                  {FACTORY_COUNTRIES.map((c) => (<option key={c} value={c}>{c}</option>))}
+                </select>
+              ) : (
+                <div className="text-sm text-slate-900">{factory.secondaryCountry || "—"}</div>
+              )}
+            </div>
+
+            {/* Sales rep selector (internal) */}
+            {!isBrandViewer && (
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">
+                  {t.brands.salesRep || "Sales Rep"}
+                </label>
+                {editing ? (
+                  <select
+                    value={form.salesRepId || ""}
+                    onChange={(e) => setForm({ ...form, salesRepId: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">—</option>
+                    {users.map((u) => (
+                      <option key={u.id} value={u.id}>{u.name}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="text-sm text-slate-900">{factory.salesRep?.name || "—"}</div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Full address — single textarea */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1">{t.factories.fullAddress}</label>
+            {editing ? (
+              <textarea
+                value={form.address || ""}
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
+                rows={3}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            ) : (
+              <div className="text-sm text-slate-900 whitespace-pre-line">{factory.address || "—"}</div>
+            )}
+          </div>
+
+          {/* Capabilities */}
+          <div className="border-t pt-4">
+            <h3 className="text-sm font-bold text-slate-800 mb-1">{t.factories.capabilitiesTitle}</h3>
+            {editing ? (
+              <>
+                <p className="text-xs text-slate-500 mb-3">{t.factories.capabilitiesHint}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {CAPABILITY_GROUPS.map((g) => (
+                    <div key={g.key} className="rounded-lg border border-slate-200 p-3">
+                      <div className="text-xs font-bold text-slate-700 mb-2">{g.icon} {g.label}</div>
+                      <div className="space-y-1">
+                        {g.options.map((o) => {
+                          const checked = (form.capabilities || []).includes(o.id);
+                          return (
+                            <label key={o.id} className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() =>
+                                  setForm({
+                                    ...form,
+                                    capabilities: checked
+                                      ? (form.capabilities || []).filter((x: string) => x !== o.id)
+                                      : [...(form.capabilities || []), o.id],
+                                  })
+                                }
+                                className="rounded text-blue-600 focus:ring-blue-500"
+                              />
+                              {o.label}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              (() => {
+                const grouped = groupCapabilities(parseCapabilities(factory.capabilities));
+                if (grouped.length === 0) return <div className="text-sm text-slate-500">{t.factories.noCapabilities}</div>;
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                    {grouped.map((g) => (
+                      <div key={g.key}>
+                        <div className="text-xs font-bold text-slate-700 mb-1">{g.icon} {g.label}</div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {g.options.map((o) => (
+                            <span key={o.id} className="px-2 py-0.5 rounded-full bg-[#00b4c3]/10 text-[#00b4c3] text-xs font-medium">{o.label}</span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()
+            )}
           </div>
         </div>
       )}

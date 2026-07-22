@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
 import { useAuth } from "@/lib/AuthContext";
 import AddCompanyModal from "@/components/AddCompanyModal";
+import { CAPABILITY_GROUPS, parseCapabilities } from "@/lib/factory-capabilities";
 
 export default function FactoriesPage() {
   const router = useRouter();
@@ -19,6 +20,11 @@ export default function FactoriesPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [addCompanyOpen, setAddCompanyOpen] = useState(false);
+  // Capability facets — a factory must have ALL selected capabilities.
+  const [capFilters, setCapFilters] = useState<string[]>([]);
+  const [showFacets, setShowFacets] = useState(false);
+  const toggleCap = (id: string) =>
+    setCapFilters((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   useEffect(() => {
     fetch("/api/factories")
@@ -41,13 +47,17 @@ export default function FactoriesPage() {
     );
 
   const q = search.toLowerCase();
-  const filtered = factories.filter(
-    (f) =>
+  const filtered = factories.filter((f) => {
+    const matchesText =
       !q ||
       f.name.toLowerCase().includes(q) ||
       (f.country && f.country.toLowerCase().includes(q)) ||
-      (f.specialty && f.specialty.toLowerCase().includes(q)),
-  );
+      (f.specialty && f.specialty.toLowerCase().includes(q));
+    if (!matchesText) return false;
+    if (capFilters.length === 0) return true;
+    const caps = parseCapabilities(f.capabilities);
+    return capFilters.every((id) => caps.includes(id));
+  });
   const topCountries = Object.entries(byCountry)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8);
@@ -120,6 +130,51 @@ export default function FactoriesPage() {
             </button>
           );
         })}
+      </div>
+
+      {/* Capability facets */}
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <button
+            onClick={() => setShowFacets((v) => !v)}
+            className="text-sm font-semibold text-slate-700 hover:text-[#00b4c3] flex items-center gap-1.5"
+          >
+            <span>{showFacets ? "▾" : "▸"}</span>
+            {t.factories.filterByCapability}
+            {capFilters.length > 0 && (
+              <span className="ml-1 px-2 py-0.5 rounded-full bg-[#00b4c3] text-white text-xs font-bold">
+                {capFilters.length}
+              </span>
+            )}
+          </button>
+          {capFilters.length > 0 && (
+            <button onClick={() => setCapFilters([])} className="text-xs text-slate-500 hover:text-red-500">
+              {t.factories.clearFilters}
+            </button>
+          )}
+        </div>
+        {showFacets && (
+          <div className="bg-white rounded-xl border border-slate-200 p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {CAPABILITY_GROUPS.map((g) => (
+              <div key={g.key}>
+                <div className="text-xs font-bold text-slate-700 mb-2">{g.icon} {g.label}</div>
+                <div className="space-y-1">
+                  {g.options.map((o) => (
+                    <label key={o.id} className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={capFilters.includes(o.id)}
+                        onChange={() => toggleCap(o.id)}
+                        className="rounded text-[#00b4c3] focus:ring-[#00b4c3]"
+                      />
+                      {o.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Table */}

@@ -517,6 +517,10 @@ model Factory {
   purchasing  String?
   annualSales String?
 
+  // Factory contact email (brand-facing). address is the full free-text
+  // address; country is kept separate for filtering. state/city retained
+  // (non-destructive) but no longer surfaced in the UI.
+  email            String?
   address          String?
   city             String?
   state            String?

@@ -32,11 +32,18 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
     const body = await req.json();
     const data: any = {};
     const strFields = ["name","chineseName","millType","specialty","category","purchasing","annualSales",
-      "address","city","state","country","secondaryCountry","development","customerType","brandNominated","salesRepId",
-      "productTypes","capabilities","certifications","fabricTypes","fuzeApplications",
+      "email","address","city","state","country","secondaryCountry","development","customerType","brandNominated","salesRepId",
+      "productTypes","certifications","fabricTypes","fuzeApplications",
       "website","description"];
     for (const f of strFields) {
       if (body[f] !== undefined) data[f] = body[f] || null;
+    }
+    // capabilities may arrive as a string[] (registration form) or a JSON
+    // string — store as a JSON string either way.
+    if (body.capabilities !== undefined) {
+      data.capabilities = Array.isArray(body.capabilities)
+        ? JSON.stringify(body.capabilities)
+        : body.capabilities || null;
     }
     // Integer fields
     const intFields = ["moqMeters","leadTimeDays","capacityMtMonth","yearEstablished","employeeCount"];

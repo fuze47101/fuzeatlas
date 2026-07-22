@@ -255,7 +255,11 @@ export default function AddCompanyModal({ open, onClose, initialType, onCreated 
                     value={form.country || ""}
                     onChange={(v) => set("country", v)}
                   />
-                  <Field label="City" value={form.city || ""} onChange={(v) => set("city", v)} />
+                  <Field
+                    label="Contact email"
+                    value={form.email || ""}
+                    onChange={(v) => set("email", v)}
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <Field

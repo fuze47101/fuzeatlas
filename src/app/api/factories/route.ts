@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { name, chineseName, millType, specialty, purchasing, annualSales,
-      address, city, state, country, secondaryCountry, development,
+      email, address, city, state, country, secondaryCountry, development,
       customerType, brandNominated, salesRepId,
       productTypes, capabilities, certifications, fabricTypes,
       fuzeEnabled, fuzeApplications, moqMeters, leadTimeDays,
@@ -68,6 +68,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Factory name is required" }, { status: 400 });
     }
 
+    // capabilities may arrive as a string[] (new registration form) or an
+    // already-serialized JSON string — store as JSON string either way.
+    const capabilitiesStr = Array.isArray(capabilities)
+      ? JSON.stringify(capabilities)
+      : capabilities || null;
+
     const factory = await prisma.factory.create({
       data: {
         name: name.trim(),
@@ -76,6 +82,7 @@ export async function POST(req: Request) {
         specialty: specialty || null,
         purchasing: purchasing || null,
         annualSales: annualSales || null,
+        email: email || null,
         address: address || null,
         city: city || null,
         state: state || null,
@@ -86,7 +93,7 @@ export async function POST(req: Request) {
         brandNominated: brandNominated || null,
         salesRepId: salesRepId || null,
         productTypes: productTypes || null,
-        capabilities: capabilities || null,
+        capabilities: capabilitiesStr,
         certifications: certifications || null,
         fabricTypes: fabricTypes || null,
         fuzeEnabled: fuzeEnabled ?? null,
