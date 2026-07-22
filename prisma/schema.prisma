@@ -510,6 +510,10 @@ model Factory {
   chineseName String?
   millType    String?
   specialty   String?
+  // Item 11b — coarse factory category for the upcoming factory-data
+  // outreach campaign. Allowed values: GARMENT | DYE_FINISH | KNIT_WEAVE.
+  // Nullable until the data is populated.
+  category    String?
   purchasing  String?
   annualSales String?
 

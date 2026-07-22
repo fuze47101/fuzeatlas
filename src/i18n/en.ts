@@ -370,6 +370,12 @@ const en = {
     chineseName: "Chinese Name",
     millType: "Mill Type",
     specialty: "Specialty",
+    categoryLabel: "Category",
+    websiteLabel: "Website",
+    contactUs: "Contact Us",
+    interestedTitle: "Interested in this factory?",
+    interestedBlurb:
+      "Your FUZE team can introduce you and coordinate testing, samples, and treatment for this mill.",
     purchasing: "Purchasing",
     annualSales: "Annual Sales",
     address: "Address",

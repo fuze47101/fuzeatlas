@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { useI18n } from "@/i18n";
+import { useAuth } from "@/lib/AuthContext";
 import {
   ALL_TAG_CATEGORIES,
   parseTags,
@@ -12,10 +14,21 @@ import ActivityFeed from "@/components/ActivityFeed";
 
 const NOTE_TYPES = ["NOTE", "CALL", "EMAIL", "MEETING", "TASK", "FOLLOW_UP"];
 
+// Item 11b — coarse factory category display labels.
+const CATEGORY_LABELS: Record<string, string> = {
+  GARMENT: "Garment",
+  DYE_FINISH: "Dye & Finish",
+  KNIT_WEAVE: "Knit / Weave",
+};
+
 export default function FactoryDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const { t } = useI18n();
+  const { user } = useAuth();
+  // Item 11a — brand viewers see a customer-safe detail page: no internal
+  // count cards, no edit/delete, a prominent Contact Us action instead.
+  const isBrandViewer = user?.role === "BRAND_USER";
   const [factory, setFactory] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -232,11 +245,21 @@ export default function FactoryDetailPage() {
               </span>
             )}
             {factory.millType && <span>· {factory.millType}</span>}
-            {factory.salesRep && <span>· Rep: {factory.salesRep.name}</span>}
+            {factory.category && CATEGORY_LABELS[factory.category] && (
+              <span>· {CATEGORY_LABELS[factory.category]}</span>
+            )}
+            {!isBrandViewer && factory.salesRep && <span>· Rep: {factory.salesRep.name}</span>}
           </div>
         </div>
         <div className="flex gap-2">
-          {!editing ? (
+          {isBrandViewer ? (
+            <Link
+              href="/brand-portal/contacts"
+              className="px-5 py-2.5 bg-[#00b4c3] text-white rounded-lg text-sm font-bold hover:bg-[#009ba8] shadow-sm"
+            >
+              {t.factories.contactUs}
+            </Link>
+          ) : !editing ? (
             <>
               <button
                 onClick={() => setShowDeleteConfirm(true)}
@@ -282,22 +305,54 @@ export default function FactoryDetailPage() {
         </div>
       )}
 
-      {/* Stats row */}
-      <div className="grid grid-cols-5 gap-3 mb-6">
-        {[
-          [t.factories.brands, c.brands, "🎯"],
-          [t.factories.fabrics, c.fabrics, "🧵"],
-          [t.dashboard.submissions, c.submissions, "📋"],
-          [t.contacts.title, c.contacts, "👤"],
-          [t.nav.testResults || "Tests", testRuns.length || 0, "🧪"],
-        ].map(([l, v, i]) => (
-          <div key={l as string} className="bg-white rounded-xl p-3 shadow-sm border text-center">
-            <div className="text-lg">{i}</div>
-            <div className="text-xl font-black text-slate-900">{v as number}</div>
-            <div className="text-xs text-slate-500">{l}</div>
+      {/* Item 11a — brand viewers get a Contact Us panel with the customer-safe
+          facts (specialty, category, website) instead of internal count cards. */}
+      {isBrandViewer ? (
+        <div className="rounded-2xl border-2 border-[#00b4c3]/40 bg-[#00b4c3]/5 p-6 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-black text-slate-900">{t.factories.interestedTitle}</h2>
+              <p className="text-sm text-slate-600 mt-1 max-w-xl">{t.factories.interestedBlurb}</p>
+              <div className="flex flex-wrap gap-x-6 gap-y-1 mt-3 text-sm">
+                {factory.specialty && (
+                  <div><span className="text-slate-500">{t.factories.specialty}:</span> <span className="font-medium text-slate-800">{factory.specialty}</span></div>
+                )}
+                {factory.category && CATEGORY_LABELS[factory.category] && (
+                  <div><span className="text-slate-500">{t.factories.categoryLabel}:</span> <span className="font-medium text-slate-800">{CATEGORY_LABELS[factory.category]}</span></div>
+                )}
+                {factory.website && (
+                  <a href={factory.website.startsWith("http") ? factory.website : `https://${factory.website}`} target="_blank" rel="noopener noreferrer" className="text-[#00b4c3] hover:underline font-medium">
+                    {t.factories.websiteLabel} ↗
+                  </a>
+                )}
+              </div>
+            </div>
+            <Link
+              href="/brand-portal/contacts"
+              className="px-5 py-3 bg-[#00b4c3] text-white rounded-lg text-sm font-bold hover:bg-[#009ba8] whitespace-nowrap text-center"
+            >
+              {t.factories.contactUs}
+            </Link>
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        /* Stats row */
+        <div className="grid grid-cols-5 gap-3 mb-6">
+          {[
+            [t.factories.brands, c.brands, "🎯"],
+            [t.factories.fabrics, c.fabrics, "🧵"],
+            [t.dashboard.submissions, c.submissions, "📋"],
+            [t.contacts.title, c.contacts, "👤"],
+            [t.nav.testResults || "Tests", testRuns.length || 0, "🧪"],
+          ].map(([l, v, i]) => (
+            <div key={l as string} className="bg-white rounded-xl p-3 shadow-sm border text-center">
+              <div className="text-lg">{i}</div>
+              <div className="text-xl font-black text-slate-900">{v as number}</div>
+              <div className="text-xs text-slate-500">{l}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex border-b border-slate-200 mb-4 overflow-x-auto">

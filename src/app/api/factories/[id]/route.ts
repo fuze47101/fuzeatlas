@@ -31,7 +31,7 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
     const params = await props.params;
     const body = await req.json();
     const data: any = {};
-    const strFields = ["name","chineseName","millType","specialty","purchasing","annualSales",
+    const strFields = ["name","chineseName","millType","specialty","category","purchasing","annualSales",
       "address","city","state","country","secondaryCountry","development","customerType","brandNominated","salesRepId",
       "productTypes","capabilities","certifications","fabricTypes","fuzeApplications",
       "website","description"];

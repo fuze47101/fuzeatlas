@@ -2,11 +2,17 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/i18n";
+import { useAuth } from "@/lib/AuthContext";
 import AddCompanyModal from "@/components/AddCompanyModal";
 
 export default function FactoriesPage() {
   const router = useRouter();
   const { t } = useI18n();
+  const { user } = useAuth();
+  // Item 11 — brand viewers get a slim, non-competitive column set (no
+  // Brands / Fabrics / Submissions counts, which expose other customers'
+  // activity). Internal roles keep the full table.
+  const isBrandViewer = user?.role === "BRAND_USER";
   const [factories, setFactories] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [byCountry, setByCountry] = useState<Record<string, number>>({});
@@ -120,15 +126,24 @@ export default function FactoriesPage() {
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-slate-50 text-left text-xs text-slate-500 uppercase tracking-wider">
-              <th className="px-4 py-3">{t.factories.factoryName}</th>
-              <th className="px-4 py-3">{t.factories.millType}</th>
-              <th className="px-4 py-3">{t.factories.specialty}</th>
-              <th className="px-4 py-3">{t.factories.country}</th>
-              <th className="px-4 py-3 text-center">{t.factories.brands}</th>
-              <th className="px-4 py-3 text-center">{t.factories.fabrics}</th>
-              <th className="px-4 py-3 text-center">{t.dashboard.submissions}</th>
-            </tr>
+            {isBrandViewer ? (
+              <tr className="bg-slate-50 text-left text-xs text-slate-500 uppercase tracking-wider">
+                <th className="px-4 py-3">{t.factories.factoryName}</th>
+                <th className="px-4 py-3">{t.factories.country}</th>
+                <th className="px-4 py-3">{t.factories.specialty}</th>
+                <th className="px-4 py-3">{t.factories.millType}</th>
+              </tr>
+            ) : (
+              <tr className="bg-slate-50 text-left text-xs text-slate-500 uppercase tracking-wider">
+                <th className="px-4 py-3">{t.factories.factoryName}</th>
+                <th className="px-4 py-3">{t.factories.millType}</th>
+                <th className="px-4 py-3">{t.factories.specialty}</th>
+                <th className="px-4 py-3">{t.factories.country}</th>
+                <th className="px-4 py-3 text-center">{t.factories.brands}</th>
+                <th className="px-4 py-3 text-center">{t.factories.fabrics}</th>
+                <th className="px-4 py-3 text-center">{t.dashboard.submissions}</th>
+              </tr>
+            )}
           </thead>
           <tbody>
             {filtered.map((f) => (
@@ -141,12 +156,22 @@ export default function FactoriesPage() {
                   <div className="font-bold text-slate-900">{f.name}</div>
                   {f.chineseName && <div className="text-xs text-slate-400">{f.chineseName}</div>}
                 </td>
-                <td className="px-4 py-3 text-slate-600">{f.millType || "—"}</td>
-                <td className="px-4 py-3 text-slate-600">{f.specialty || "—"}</td>
-                <td className="px-4 py-3 text-slate-600">{f.country || "—"}</td>
-                <td className="px-4 py-3 text-center font-bold">{f.brandCount || 0}</td>
-                <td className="px-4 py-3 text-center font-bold">{f.fabricCount || 0}</td>
-                <td className="px-4 py-3 text-center font-bold">{f.submissionCount || 0}</td>
+                {isBrandViewer ? (
+                  <>
+                    <td className="px-4 py-3 text-slate-600">{f.country || "—"}</td>
+                    <td className="px-4 py-3 text-slate-600">{f.specialty || "—"}</td>
+                    <td className="px-4 py-3 text-slate-600">{f.millType || "—"}</td>
+                  </>
+                ) : (
+                  <>
+                    <td className="px-4 py-3 text-slate-600">{f.millType || "—"}</td>
+                    <td className="px-4 py-3 text-slate-600">{f.specialty || "—"}</td>
+                    <td className="px-4 py-3 text-slate-600">{f.country || "—"}</td>
+                    <td className="px-4 py-3 text-center font-bold">{f.brandCount || 0}</td>
+                    <td className="px-4 py-3 text-center font-bold">{f.fabricCount || 0}</td>
+                    <td className="px-4 py-3 text-center font-bold">{f.submissionCount || 0}</td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
