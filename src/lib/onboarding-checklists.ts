@@ -15,6 +15,9 @@ export interface ChecklistItem {
   label: string;
   hint?: string;
   href: string;
+  /** Optional secondary link rendered under the item (e.g. a reference doc). */
+  secondaryHref?: string;
+  secondaryLabel?: string;
 }
 
 export type Surface =
@@ -33,12 +36,6 @@ export const ONBOARDING_CHECKLISTS: Record<Surface, ChecklistItem[]> = {
       href: "/brand-portal/profile",
     },
     {
-      id: "set-spec",
-      label: "Set required FUZE tier + ICP cadence",
-      hint: "Every factory in your supply chain is held to this spec.",
-      href: "/brand-portal/spec",
-    },
-    {
       id: "link-factory",
       label: "Add at least one factory to your supply chain",
       hint: "Factories you'd like under your FUZE program.",
@@ -49,12 +46,21 @@ export const ONBOARDING_CHECKLISTS: Record<Surface, ChecklistItem[]> = {
       label: "Upload your testing protocol PDF",
       hint: "Stored on your spec; auto-attached to lab handoffs.",
       href: "/brand-portal/spec",
+      secondaryHref: "/education/testing-protocol",
+      secondaryLabel: "FUZE recommended testing and protocol",
     },
     {
       id: "invite-team",
       label: "Invite a teammate",
       hint: "Brand managers can approve test results + edit the spec.",
       href: "/brand-portal/team",
+    },
+    // Item 14 — set-spec moved to the bottom of the checklist.
+    {
+      id: "set-spec",
+      label: "Set required FUZE tier + ICP cadence",
+      hint: "Every factory in your supply chain is held to this spec.",
+      href: "/brand-portal/spec",
     },
   ],
   "factory-portal": [

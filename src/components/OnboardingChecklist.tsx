@@ -153,6 +153,14 @@ export default function OnboardingChecklist({
                       {it.hint && (
                         <p className="text-xs text-slate-600 mt-0.5">{it.hint}</p>
                       )}
+                      {it.secondaryHref && it.secondaryLabel && (
+                        <Link
+                          href={it.secondaryHref}
+                          className="inline-block text-xs text-[#00b4c3] font-semibold hover:underline mt-1"
+                        >
+                          {it.secondaryLabel} →
+                        </Link>
+                      )}
                     </div>
                     {!done && (
                       <Link
