@@ -1,153 +1,205 @@
-// FUZE Team resolver (brand-portal item 8).
+// FUZE Team directory + resolver (brand-portal item 8).
 //
-// The brand-portal "Contacts" page used to list the brand's OWN contacts.
-// It now shows the brand's FUZE-side people — the humans at FUZE who own the
-// relationship: Account Manager, Region Manager, Lab Manager, and the Exec
-// Team. The Account Manager is resolved from live data (EntityManager →
-// Brand.salesRepId). The other three come from the defaults below, with a
-// per-brand override when an EntityManager row with the matching role exists.
+// The brand-portal "FUZE Team" page tells a brand WHO AT FUZE to contact to
+// get answers — scoped to the region/countries their supply chain operates
+// in. This is NOT the brand's own contacts. The Account Manager is resolved
+// from live data (EntityManager → Brand.salesRepId); Corporate is always
+// shown; Regional Managers and Technical Contacts are computed from the
+// brand's factory countries against the directory below.
 //
-// ⚠️ ANDREW — CONFIRM THESE NAMES + EMAILS. The static roster below is a
-// best-guess seed from CLAUDE.md (Tina = lab ops / Asia; Tandy + Scott =
-// regional; Andrew + Scott Pace = exec). Correct the emails to the real
-// mailboxes and adjust the region→director mapping as needed.
+// Names/titles/emails below are authoritative per Andrew (2026-07 spec).
 
 import { prisma } from "@/lib/prisma";
 
-export interface TeamMember {
+export interface TeamContact {
   name: string;
+  title: string;
   email: string;
-  role: string;
-  note?: string;
+  /** Human-readable coverage: "Corporate Office", "Asia", a country, etc. */
+  scope: string;
 }
 
 export interface FuzeTeam {
-  accountManager: TeamMember | null;
-  regionManager: TeamMember | null;
-  labManager: TeamMember | null;
-  execTeam: TeamMember[];
+  accountManager: TeamContact | null;
+  corporate: TeamContact[];
+  regionalManagers: TeamContact[];
+  technicalContacts: TeamContact[];
+  /** False when no factory/region could be resolved yet. */
+  hasRegion: boolean;
 }
 
-// ── Static roster (override per-brand via EntityManager roles below) ──
-const REGION_DIRECTORS: Record<string, TeamMember> = {
-  ASIA: { name: "Tina Hong", email: "tina@fuze47.com", role: "Region Manager — Asia" },
-  AMERICAS: { name: "Scott Pace", email: "scott@fuze47.com", role: "Region Manager — Americas" },
-  EUROPE: { name: "Tandy", email: "tandy@fuze47.com", role: "Region Manager — Europe / EMEA" },
-};
-const DEFAULT_REGION = "ASIA";
-
-const LAB_MANAGER: TeamMember = {
-  name: "Tina Hong",
-  email: "tina@fuze47.com",
-  role: "Lab Manager",
-};
-
-const EXEC_TEAM: TeamMember[] = [
-  { name: "Andrew Peterson", email: "andrew@fuze47.com", role: "CEO / Founder" },
-  { name: "Scott Pace", email: "scott@fuze47.com", role: "Executive Team" },
+// ── Corporate / Exec — always shown to every brand ──
+const CORPORATE: TeamContact[] = [
+  {
+    name: "Andrew Peterson",
+    title: "Founder & President",
+    email: "Andrew@fuze47.com",
+    scope: "Corporate Office",
+  },
+  {
+    name: "Scott Pace",
+    title: "Director of Operations",
+    email: "Scott@fuze47.com",
+    scope: "Corporate Office",
+  },
 ];
 
-const DEFAULT_ACCOUNT_MANAGER: TeamMember = {
-  name: "FUZE Account Team",
-  email: "hello@fuze47.com",
-  role: "Account Manager",
-};
-
-// Country → region bucket. Extend as new mills come online.
-const COUNTRY_REGION: Record<string, string> = {
-  china: "ASIA", "chinese mainland": "ASIA", taiwan: "ASIA", vietnam: "ASIA",
-  bangladesh: "ASIA", india: "ASIA", korea: "ASIA", "south korea": "ASIA",
-  thailand: "ASIA", japan: "ASIA", indonesia: "ASIA", malaysia: "ASIA",
-  pakistan: "ASIA", cambodia: "ASIA", turkey: "ASIA", "türkiye": "ASIA",
-  usa: "AMERICAS", "united states": "AMERICAS", mexico: "AMERICAS",
-  brazil: "AMERICAS", canada: "AMERICAS",
-  italy: "EUROPE", spain: "EUROPE", portugal: "EUROPE", germany: "EUROPE",
-  france: "EUROPE", "united kingdom": "EUROPE", uk: "EUROPE",
-};
-
-function regionForCountry(country?: string | null): string {
-  if (!country) return DEFAULT_REGION;
-  return COUNTRY_REGION[country.trim().toLowerCase()] || DEFAULT_REGION;
+// ── Regional managers, keyed by a region whose country set decides coverage ──
+interface Region {
+  key: string;
+  label: string;
+  countries: string[]; // lowercased country names / aliases
+  manager: Omit<TeamContact, "scope">;
 }
 
-function memberFromUser(u: { name: string | null; email: string; role?: string } | null, roleLabel: string): TeamMember | null {
-  if (!u) return null;
-  return { name: u.name || u.email, email: u.email, role: roleLabel };
+const REGIONS: Region[] = [
+  {
+    key: "ASIA",
+    label: "Asia",
+    countries: [
+      "taiwan", "vietnam", "japan", "china", "chinese mainland", "korea",
+      "south korea", "hong kong", "thailand", "indonesia", "malaysia", "cambodia",
+    ],
+    manager: { name: "Tina Hong", title: "Director of Asia Operations", email: "Tina@fuze47.com" },
+  },
+  {
+    key: "SOUTH_ASIA_GULF",
+    label: "South Asia & Gulf",
+    countries: [
+      "india", "sri lanka", "bangladesh", "pakistan", "uae",
+      "united arab emirates", "dubai",
+    ],
+    manager: { name: "Scott Pace", title: "Director of Operations", email: "Scott@fuze47.com" },
+  },
+  {
+    key: "EUROPE_TURKEY",
+    label: "Europe & Türkiye",
+    countries: [
+      "turkey", "türkiye", "italy", "spain", "portugal", "germany", "france",
+      "united kingdom", "uk", "netherlands", "poland",
+    ],
+    // Until a named EMEA regional manager exists, Andrew covers it.
+    manager: { name: "Andrew Peterson", title: "Founder & President", email: "Andrew@fuze47.com" },
+  },
+  {
+    key: "AMERICAS",
+    label: "Americas",
+    countries: ["usa", "united states", "mexico", "canada", "brazil", "peru", "colombia"],
+    manager: { name: "Andrew Peterson", title: "Founder & President", email: "Andrew@fuze47.com" },
+  },
+];
+
+// ── Country-level technical / director contacts (extend as more are named) ──
+const TECHNICAL_BY_COUNTRY: Record<string, Omit<TeamContact, "scope">> = {
+  china: { name: "Tandy Xia", title: "Director of China / Technical Contact", email: "Tandy@fuze47.com" },
+  "chinese mainland": { name: "Tandy Xia", title: "Director of China / Technical Contact", email: "Tandy@fuze47.com" },
+};
+
+const norm = (c?: string | null) => (c || "").trim().toLowerCase();
+
+/** Collect the distinct lowercased countries of a brand's factories. */
+async function brandCountries(brandId: string): Promise<string[]> {
+  const set = new Set<string>();
+  try {
+    const [bf, fabrics] = await Promise.all([
+      prisma.brandFactory.findMany({
+        where: { brandId },
+        select: { factory: { select: { country: true, secondaryCountry: true } } },
+      }),
+      prisma.fabric.findMany({
+        where: { brandId, factoryId: { not: null } },
+        select: { factory: { select: { country: true, secondaryCountry: true } } },
+      }),
+    ]);
+    for (const r of [...bf, ...fabrics]) {
+      if (r.factory?.country) set.add(norm(r.factory.country));
+      if (r.factory?.secondaryCountry) set.add(norm(r.factory.secondaryCountry));
+    }
+  } catch {
+    /* fall through — no region resolved */
+  }
+  set.delete("");
+  return Array.from(set);
 }
 
 /**
- * Resolve the FUZE-side team for a brand.
- * Real data drives the Account Manager; static defaults (overridable via
- * EntityManager roles) fill Region/Lab/Exec.
+ * Resolve the FUZE-side team for a brand: Account Manager (live), Corporate
+ * (always), Regional Managers + Technical Contacts (from the brand's factory
+ * countries).
  */
 export async function resolveFuzeTeam(brandId: string): Promise<FuzeTeam> {
-  const [brand, ems] = await Promise.all([
+  const [brand, ems, countries] = await Promise.all([
     prisma.brand.findUnique({
       where: { id: brandId },
-      select: { id: true, salesRep: { select: { name: true, email: true } } },
+      select: { salesRep: { select: { name: true, email: true } } },
     }),
     prisma.entityManager.findMany({
-      where: { entityType: "BRAND", entityId: brandId },
-      select: { userId: true, role: true, isPrimary: true },
+      where: { entityType: "BRAND", entityId: brandId, role: "ACCOUNT_MANAGER" },
+      select: { userId: true, isPrimary: true },
     }),
+    brandCountries(brandId),
   ]);
 
-  // Resolve the users referenced by EntityManager rows in one query.
-  const userIds = Array.from(new Set(ems.map((e) => e.userId)));
-  const users = userIds.length
-    ? await prisma.user.findMany({
-        where: { id: { in: userIds } },
-        select: { id: true, name: true, email: true },
-      })
-    : [];
-  const userMap = new Map(users.map((u) => [u.id, u]));
-
-  const pickByRole = (role: string) => {
-    const rows = ems.filter((e) => e.role === role);
-    const primary = rows.find((r) => r.isPrimary) || rows[0];
-    return primary ? userMap.get(primary.userId) || null : null;
-  };
-
-  // Account Manager — EntityManager(ACCOUNT_MANAGER) → salesRep → default.
-  const amUser = pickByRole("ACCOUNT_MANAGER");
-  const accountManager: TeamMember =
-    memberFromUser(amUser || null, "Account Manager") ||
-    memberFromUser(brand?.salesRep || null, "Account Manager") ||
-    DEFAULT_ACCOUNT_MANAGER;
-
-  // Region — override via EntityManager(REGION_MANAGER), else map from the
-  // brand's factory countries, else default region.
-  const regionOverride = pickByRole("REGION_MANAGER");
-  let regionManager: TeamMember | null = memberFromUser(regionOverride || null, "Region Manager");
-  if (!regionManager) {
-    let region = DEFAULT_REGION;
-    try {
-      const bf = await prisma.brandFactory.findMany({
-        where: { brandId },
-        select: { isPrimary: true, factory: { select: { country: true } } },
-        orderBy: { isPrimary: "desc" },
-      });
-      const country = bf.find((r) => r.factory?.country)?.factory?.country;
-      region = regionForCountry(country);
-    } catch {
-      /* fall back to default region */
+  // Account Manager — EntityManager(ACCOUNT_MANAGER) → salesRep.
+  let accountManager: TeamContact | null = null;
+  const amRow = ems.find((e) => e.isPrimary) || ems[0];
+  if (amRow) {
+    const u = await prisma.user.findUnique({
+      where: { id: amRow.userId },
+      select: { name: true, email: true },
+    });
+    if (u) {
+      accountManager = {
+        name: u.name || u.email,
+        title: "Account Manager",
+        email: u.email,
+        scope: "Your account",
+      };
     }
-    regionManager = REGION_DIRECTORS[region] || REGION_DIRECTORS[DEFAULT_REGION];
+  }
+  if (!accountManager && brand?.salesRep) {
+    accountManager = {
+      name: brand.salesRep.name || brand.salesRep.email,
+      title: "Account Manager",
+      email: brand.salesRep.email,
+      scope: "Your account",
+    };
   }
 
-  // Lab Manager — override via EntityManager(LAB_MANAGER), else default.
-  const labOverride = pickByRole("LAB_MANAGER");
-  const labManager: TeamMember =
-    memberFromUser(labOverride || null, "Lab Manager") || LAB_MANAGER;
+  // Regional managers — one per matched region, deduped by email so a manager
+  // covering multiple regions (e.g. Andrew over Europe + Americas) shows once
+  // with a combined scope.
+  const regionalByEmail = new Map<string, TeamContact>();
+  for (const region of REGIONS) {
+    const matched = countries.filter((c) => region.countries.includes(c));
+    if (matched.length === 0) continue;
+    const key = region.manager.email.toLowerCase();
+    if (regionalByEmail.has(key)) {
+      const existing = regionalByEmail.get(key)!;
+      existing.scope = `${existing.scope}, ${region.label}`;
+    } else {
+      regionalByEmail.set(key, { ...region.manager, scope: region.label });
+    }
+  }
 
-  // Exec Team — any EntityManager(EXEC) rows override the static exec list.
-  const execRows = ems.filter((e) => e.role === "EXEC");
-  const execOverrides = execRows
-    .map((e) => userMap.get(e.userId))
-    .filter(Boolean)
-    .map((u) => memberFromUser(u!, "Executive Team")!)
-    .filter(Boolean);
-  const execTeam = execOverrides.length ? execOverrides : EXEC_TEAM;
+  // Technical / country contacts — deduped by email.
+  const techByEmail = new Map<string, TeamContact>();
+  for (const c of countries) {
+    const tech = TECHNICAL_BY_COUNTRY[c];
+    if (!tech) continue;
+    const key = tech.email.toLowerCase();
+    if (!techByEmail.has(key)) {
+      // Title-case the matched country for the scope label.
+      const scope = c.replace(/\b\w/g, (m) => m.toUpperCase());
+      techByEmail.set(key, { ...tech, scope });
+    }
+  }
 
-  return { accountManager, regionManager, labManager, execTeam };
+  return {
+    accountManager,
+    corporate: CORPORATE,
+    regionalManagers: Array.from(regionalByEmail.values()),
+    technicalContacts: Array.from(techByEmail.values()),
+    hasRegion: countries.length > 0,
+  };
 }

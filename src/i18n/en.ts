@@ -2756,9 +2756,17 @@ const en = {
 
     fuzeTeam: {
       crumbCurrent: "Your FUZE Team",
-      pageTitle: "Your FUZE Team",
-      pageSubtitle: "The people at FUZE who support your program — reach any of them directly.",
-      execHeader: "FUZE Exec Team",
+      pageTitle: "Your FUZE Team — who to contact",
+      pageSubtitle:
+        "The people at FUZE you can reach for answers, scoped to where your supply chain operates.",
+      accountManagerHeader: "Your Account Manager",
+      corporateHeader: "Corporate Office",
+      regionalHeader: "Regional Manager(s)",
+      technicalHeader: "Technical Contact(s)",
+      noAccountManager:
+        "No account manager assigned yet — reach the Corporate Office below and we'll connect you.",
+      noRegionNote:
+        "Regional and country technical contacts appear here once your supply chain (factories) is linked to your brand.",
       loading: "Loading your FUZE team…",
       loadFailed: "Unable to load your FUZE team",
     },

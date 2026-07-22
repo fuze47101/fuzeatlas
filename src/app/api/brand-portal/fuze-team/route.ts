@@ -4,9 +4,10 @@ import { getCurrentUser } from "@/lib/auth";
 import { resolveFuzeTeam } from "@/lib/fuze-team";
 
 /* ── GET /api/brand-portal/fuze-team ───────────────────────────────
-   Item 8 — returns the brand's FUZE-side people (Account Manager,
-   Region Manager, Lab Manager, Exec Team) for the "Your FUZE Team"
-   page. Scoped to the caller's brand.                                 */
+   Item 8 — returns the brand's FUZE-side people for the "Your FUZE
+   Team" page: { accountManager, corporate[], regionalManagers[],
+   technicalContacts[] }. Scoped to the caller's brand; region/technical
+   sets are computed from the brand's factory countries.               */
 export async function GET() {
   try {
     const user = await getCurrentUser();
