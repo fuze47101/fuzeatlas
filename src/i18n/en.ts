@@ -885,6 +885,7 @@ const en = {
     generalFuzePricing: "General FUZE Pricing",
     environmentalScore: "Environmental Score",
     fuzeTeam: "FUZE Team",
+    claims: "Claims",
     // Admin module
     myProfile: "My Profile",
     notifications: "Notifications",
@@ -2754,6 +2755,27 @@ const en = {
       cancel: "Cancel",
     },
 
+    claims: {
+      crumbCurrent: "Claims",
+      pageTitle: "Claims",
+      pageSubtitle:
+        "The claims you can make for FUZE-treated goods — within the EPA Treated-Article framework.",
+      yourProgram: "Your program",
+      tierLabel: "FUZE {tier}",
+      tierUnset: "Tier not set — ask your account manager",
+      allowedTitle: "Claims you can make",
+      allowedBlurb:
+        "Treated-article-safe language about the fabric — freshness, odor control, and durability, plus factual certifications.",
+      restrictedTitle: "Claims that require product-specific registration",
+      restrictedBlurb:
+        "These need a product-specific public-health pesticide registration and trigger FIFRA Section 12 exposure without it.",
+      certsTitle: "Certifications you can cite",
+      frameworkTitle: "The EPA Treated-Article framework",
+      frameworkBody:
+        "Under EPA PR Notice 2000-1, a treated article may make claims about protecting the ARTICLE ITSELF (inhibits odor-causing bacteria and product-degrading mildew) but may not make public-health claims about protecting people without a product-specific pesticide registration. Keep technical validation data (lab reports, AATCC/ASTM results) in clearly-labeled internal-reference sections, not as consumer claims.",
+      frameworkFootnote: "Questions on a specific claim? Ask your FUZE team or see the",
+      publicClaimsLink: "public claims & standards page →",
+    },
     fuzeTeam: {
       crumbCurrent: "Your FUZE Team",
       pageTitle: "Your FUZE Team — who to contact",

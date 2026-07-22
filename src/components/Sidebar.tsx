@@ -299,6 +299,7 @@ export default function Sidebar() {
         items: [
           { href: "/fabric-library", label: "FUZE Fabric Library", labelKey: "fuzeFabricLibrary", icon: "📚" },
           { href: "/compliance-library", label: "Document Center", labelKey: "documentCenter", icon: "📋" },
+          { href: "/brand-portal/claims", label: "Claims", labelKey: "claims", icon: "📜" },
           { href: "/brand-portal/chat", label: "FUZE FAQ", labelKey: "fuzeAiFaq", icon: "💬" },
           { href: "/factories", label: "Factory Search", labelKey: "factorySearch", icon: "🔍" },
           { href: "/environmental-score", label: "Environmental Score", labelKey: "environmentalScore", icon: "🏅" },
