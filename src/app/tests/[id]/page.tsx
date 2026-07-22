@@ -1,9 +1,58 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Component, useEffect, useState, type ReactNode } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useI18n } from "@/i18n";
+import { useAuth } from "@/lib/AuthContext";
+
+// Client error boundary — orphan ITS uploads (submissionId null, no parsed
+// result rows) used to throw a client-side exception that blanked the whole
+// route to Next's white "Application error" screen, so Tina couldn't reach
+// the association form to fix the run. This renders a visible panel with the
+// actual error message instead, keeping the page recoverable.
+class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+  componentDidCatch(error: Error, info: unknown) {
+    console.error("[tests/[id]] render crashed:", error, info);
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="p-4 sm:p-8 max-w-4xl mx-auto">
+          <Link
+            href="/tests"
+            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium text-sm mb-6"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+          </Link>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+            <p className="text-red-800 font-semibold mb-1">Couldn&apos;t render this test</p>
+            <p className="text-sm text-red-700 break-words">
+              {this.state.error.message || "Unexpected error"}
+            </p>
+            <button
+              onClick={() => this.setState({ error: null })}
+              className="mt-4 text-xs px-3 py-1.5 rounded-md border border-red-300 text-red-700 hover:bg-red-100"
+            >
+              Try again
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Helper: Format CFU values to scientific notation
 function formatCFU(value: number | null | undefined): string {
@@ -121,9 +170,32 @@ interface ApiResponse {
 }
 
 export default function TestDetailPage() {
+  return (
+    <ErrorBoundary>
+      <TestDetailInner />
+    </ErrorBoundary>
+  );
+}
+
+function TestDetailInner() {
   const { t } = useI18n();
+  const { user } = useAuth();
   const params = useParams();
   const id = params.id as string;
+
+  // Internal-staff gate for the ICP entry editor (mirrors the assign/ICP
+  // API role gate). Tina & lab/testing managers can hand-key ICP values.
+  const isInternalStaff =
+    !!user?.role &&
+    [
+      "ADMIN",
+      "EMPLOYEE",
+      "SALES_MANAGER",
+      "SALES_REP",
+      "BD_REP",
+      "FABRIC_MANAGER",
+      "TESTING_MANAGER",
+    ].includes(user.role);
 
   const [test, setTest] = useState<TestRun | null>(null);
   const [loading, setLoading] = useState(true);
@@ -135,22 +207,36 @@ export default function TestDetailPage() {
   // first time the panel is opened.
   const [editingLinks, setEditingLinks] = useState(false);
   const [savingLinks, setSavingLinks] = useState(false);
+  const [linkBrandId, setLinkBrandId] = useState("");
   const [linkFactoryId, setLinkFactoryId] = useState("");
   const [linkProjectId, setLinkProjectId] = useState("");
+  const [brandOpts, setBrandOpts] = useState<Array<{ id: string; name: string }>>([]);
   const [factoryOpts, setFactoryOpts] = useState<Array<{ id: string; name: string }>>([]);
   const [projectOpts, setProjectOpts] = useState<Array<{ id: string; name: string }>>([]);
 
+  // ICP entry editor (internal staff) — hand-key an Ag/Au value onto an
+  // orphan run that arrived without a parsed icpResult.
+  const [editingIcp, setEditingIcp] = useState(false);
+  const [savingIcp, setSavingIcp] = useState(false);
+  const [icpAg, setIcpAg] = useState("");
+  const [icpAu, setIcpAu] = useState("");
+  const [icpUnit, setIcpUnit] = useState("mg/kg");
+  const [icpDate, setIcpDate] = useState("");
+
   async function openLinksEditor() {
     if (!test) return;
+    setLinkBrandId(test.submission?.brand?.id || "");
     setLinkFactoryId(test.submission?.factory?.id || "");
     setLinkProjectId(test.project?.id || "");
     setEditingLinks(true);
-    if (factoryOpts.length === 0 || projectOpts.length === 0) {
+    if (brandOpts.length === 0 || factoryOpts.length === 0 || projectOpts.length === 0) {
       try {
-        const [fr, pr] = await Promise.all([
+        const [br, fr, pr] = await Promise.all([
+          fetch("/api/brands").then((r) => r.json()),
           fetch("/api/factories").then((r) => r.json()),
           fetch("/api/projects").then((r) => r.json()),
         ]);
+        if (br?.brands) setBrandOpts(br.brands.map((b: any) => ({ id: b.id, name: b.name })));
         if (fr?.factories)
           setFactoryOpts(fr.factories.map((f: any) => ({ id: f.id, name: f.name })));
         if (pr?.projects) setProjectOpts(pr.projects.map((p: any) => ({ id: p.id, name: p.name })));
@@ -162,13 +248,17 @@ export default function TestDetailPage() {
     if (!test) return;
     setSavingLinks(true);
     try {
-      // Always send factoryId — the API creates a FabricSubmission on the fly
-      // if one doesn't exist yet. Ticket cmo8d1yuy.
+      // Assign endpoint links brand + factory (+ fabric) together by
+      // creating/finding a FabricSubmission bridge, and clears the orphan
+      // flag. Preserve any existing fabric link so re-tagging doesn't drop
+      // it. Ticket cmo8d1yuy.
       const body: any = {
-        projectId: linkProjectId || null,
+        brandId: linkBrandId || null,
         factoryId: linkFactoryId || null,
+        fabricId: test.submission?.fabric?.id || null,
+        projectId: linkProjectId || null,
       };
-      const res = await fetch(`/api/tests/${test.id}`, {
+      const res = await fetch(`/api/tests/${test.id}/assign`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -186,6 +276,44 @@ export default function TestDetailPage() {
       alert(e?.message || "Network error");
     } finally {
       setSavingLinks(false);
+    }
+  }
+
+  function openIcpEditor() {
+    if (!test) return;
+    setIcpAg(test.icpResult?.agValue != null ? String(test.icpResult.agValue) : "");
+    setIcpAu(test.icpResult?.auValue != null ? String(test.icpResult.auValue) : "");
+    setIcpUnit(test.icpResult?.unit || "mg/kg");
+    setIcpDate(test.testDate ? new Date(test.testDate).toISOString().slice(0, 10) : "");
+    setEditingIcp(true);
+  }
+
+  async function saveIcp() {
+    if (!test) return;
+    setSavingIcp(true);
+    try {
+      const res = await fetch(`/api/tests/${test.id}/icp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agValue: icpAg,
+          auValue: icpAu,
+          unit: icpUnit,
+          testDate: icpDate || null,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        const fresh = await fetch(`/api/tests/${test.id}`).then((r) => r.json());
+        if (fresh.ok && fresh.testRun) setTest(fresh.testRun);
+        setEditingIcp(false);
+      } else {
+        alert(data.error || "Failed to save ICP result");
+      }
+    } catch (e: any) {
+      alert(e?.message || "Network error");
+    } finally {
+      setSavingIcp(false);
     }
   }
 
@@ -500,7 +628,29 @@ export default function TestDetailPage() {
           </div>
 
           {editingLinks ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs text-slate-500 uppercase tracking-wide mb-1">
+                  Brand
+                </label>
+                <select
+                  value={linkBrandId}
+                  onChange={(e) => setLinkBrandId(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+                >
+                  <option value="">— None —</option>
+                  {brandOpts.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+                {!test.submission?.id && (
+                  <p className="text-[11px] text-slate-400 italic mt-1">
+                    No submission yet — picking brand/factory will create one.
+                  </p>
+                )}
+              </div>
               <div>
                 <label className="block text-xs text-slate-500 uppercase tracking-wide mb-1">
                   Factory
@@ -517,11 +667,6 @@ export default function TestDetailPage() {
                     </option>
                   ))}
                 </select>
-                {!test.submission?.id && (
-                  <p className="text-[11px] text-slate-400 italic mt-1">
-                    No submission yet — picking a factory will create one.
-                  </p>
-                )}
               </div>
               <div>
                 <label className="block text-xs text-slate-500 uppercase tracking-wide mb-1">
@@ -625,12 +770,112 @@ export default function TestDetailPage() {
         </div>
       )}
 
+      {/* ICP Result editor — internal staff only. Lets Tina hand-key an
+          Ag/Au value onto an ITS orphan run that arrived without a parsed
+          icpResult. Renders whether or not an icpResult exists yet. */}
+      {isInternalStaff && (
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-slate-900">ICP Result (internal entry)</h3>
+            {!editingIcp ? (
+              <button
+                onClick={openIcpEditor}
+                className="text-xs px-2.5 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50"
+              >
+                {test.icpResult ? "Edit" : "Add ICP value"}
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setEditingIcp(false)}
+                  className="text-xs px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveIcp}
+                  disabled={savingIcp}
+                  className="text-xs px-3 py-1 rounded-md bg-[#00b4c3] text-white font-semibold hover:bg-[#009ba8] disabled:opacity-50"
+                >
+                  {savingIcp ? "Saving…" : "Save"}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {editingIcp ? (
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-xs text-slate-500 uppercase tracking-wide mb-1">
+                  Ag value
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  inputMode="decimal"
+                  value={icpAg}
+                  onChange={(e) => setIcpAg(e.target.value)}
+                  placeholder="e.g. 0.68"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 uppercase tracking-wide mb-1">
+                  Unit
+                </label>
+                <select
+                  value={icpUnit}
+                  onChange={(e) => setIcpUnit(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+                >
+                  <option value="mg/kg">mg/kg</option>
+                  <option value="ppm">ppm</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 uppercase tracking-wide mb-1">
+                  Au value (optional)
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  inputMode="decimal"
+                  value={icpAu}
+                  onChange={(e) => setIcpAu(e.target.value)}
+                  placeholder="—"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 uppercase tracking-wide mb-1">
+                  Test date
+                </label>
+                <input
+                  type="date"
+                  value={icpDate}
+                  onChange={(e) => setIcpDate(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+                />
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500">
+              {test.icpResult && test.icpResult.agValue != null
+                ? `Ag ${test.icpResult.agValue} ${test.icpResult.unit || "mg/kg"}${
+                    test.icpResult.auValue != null ? ` · Au ${test.icpResult.auValue}` : ""
+                  }`
+                : "No ICP value recorded yet."}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* ICP Results */}
       {test.icpResult && (
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
           <h3 className="font-semibold text-slate-900 mb-4">{t.tests.icp}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {test.icpResult.agValue !== undefined && (
+            {test.icpResult.agValue != null && (
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Ag Content</p>
                 <div className="flex items-baseline gap-2">
@@ -645,7 +890,7 @@ export default function TestDetailPage() {
                 </div>
               </div>
             )}
-            {test.icpResult.auValue !== undefined && (
+            {test.icpResult.auValue != null && (
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Gold (Au)</p>
                 <div className="flex items-baseline gap-2">
@@ -787,7 +1032,9 @@ export default function TestDetailPage() {
                       {t.tests.percentReduction}
                     </p>
                     <p className="text-lg font-semibold text-slate-900">
-                      {test.abResult.percentReduction.toFixed(2)}%
+                      {test.abResult.percentReduction == null
+                        ? "—"
+                        : `${test.abResult.percentReduction.toFixed(2)}%`}
                     </p>
                   </div>
                 )}
@@ -797,7 +1044,9 @@ export default function TestDetailPage() {
                       {t.tests.growthValue} (F)
                     </p>
                     <p className="text-lg font-semibold text-slate-900">
-                      {test.abResult.growthValue.toFixed(2)}
+                      {test.abResult.growthValue == null
+                        ? "—"
+                        : test.abResult.growthValue.toFixed(2)}
                     </p>
                   </div>
                 )}
@@ -852,7 +1101,7 @@ export default function TestDetailPage() {
                 <p className="text-slate-900 font-medium">{test.abResult.organism1}</p>
               </div>
             )}
-            {test.abResult.result1 !== undefined && (
+            {test.abResult.result1 != null && (
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
                   {t.tests.result}
