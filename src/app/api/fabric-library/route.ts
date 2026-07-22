@@ -14,6 +14,10 @@ export async function GET(req: Request) {
     const search = url.searchParams.get("search") || "";
     const construction = url.searchParams.get("construction") || "";
     const testType = url.searchParams.get("testType") || "";
+    // Item 10 — search-first library. Two new search axes: by test method
+    // (TestRun.testMethodStd) and by organism (abResult.organism/organism1).
+    const testMethod = url.searchParams.get("testMethod") || "";
+    const organism = url.searchParams.get("organism") || "";
     const passOnly = url.searchParams.get("passOnly") === "true";
     const page = parseInt(url.searchParams.get("page") || "1");
     const limit = 50;
@@ -22,6 +26,7 @@ export async function GET(req: Request) {
     // Build fabric where clause
     const where: any = {};
 
+    // "Search by Fabric Construction" — no FUZE-number search anymore (item 10).
     if (search) {
       where.OR = [
         { construction: { contains: search, mode: "insensitive" } },
@@ -29,74 +34,43 @@ export async function GET(req: Request) {
         { fabricCategory: { contains: search, mode: "insensitive" } },
         { endUse: { contains: search, mode: "insensitive" } },
         { weavePattern: { contains: search, mode: "insensitive" } },
+        { knitStitchType: { contains: search, mode: "insensitive" } },
       ];
-      const numSearch = parseInt(search);
-      if (!isNaN(numSearch)) {
-        where.OR.push({ fuzeNumber: numSearch });
-      }
     }
 
     if (construction) {
       where.construction = { contains: construction, mode: "insensitive" };
     }
 
-    // Only fabrics that have at least one test run with results.
-    // When the user filters by a specific test type, narrow this to
-    // fabrics that actually have that type of test on file — fixes
-    // Brian Hyman's #cmo9jnuhp bug where filtering by Antifungal still
-    // returned cotton fabrics with only ICP results (and an empty test
-    // list rendering the row useless). Result-driven for fungal/AB/odor:
-    // include rows whose typed result is present even if the legacy
-    // testType label is something different (older CSV imports
-    // misclassified some fungal tests as ANTIBACTERIAL).
+    // Narrow to fabrics that have at least one matching test run. Combine the
+    // test-type intent (result-driven so legacy label drift still matches —
+    // Brian Hyman's #cmo9jnuhp bug) with the new method/organism filters.
+    const testRunAnd: any[] = [];
     if (testType === "FUNGAL") {
-      where.submissions = {
-        some: {
-          testRuns: {
-            some: {
-              OR: [{ testType: "FUNGAL" }, { fungalResult: { isNot: null } }],
-            },
-          },
-        },
-      };
+      testRunAnd.push({ OR: [{ testType: "FUNGAL" }, { fungalResult: { isNot: null } }] });
     } else if (testType === "ANTIBACTERIAL") {
-      where.submissions = {
-        some: {
-          testRuns: {
-            some: {
-              OR: [
-                { testType: "ANTIBACTERIAL" },
-                { abResult: { isNot: null } },
-              ],
-            },
-          },
-        },
-      };
+      testRunAnd.push({ OR: [{ testType: "ANTIBACTERIAL" }, { abResult: { isNot: null } }] });
     } else if (testType === "ICP") {
-      where.submissions = {
-        some: {
-          testRuns: {
-            some: {
-              OR: [{ testType: "ICP" }, { icpResult: { isNot: null } }],
-            },
-          },
-        },
-      };
+      testRunAnd.push({ OR: [{ testType: "ICP" }, { icpResult: { isNot: null } }] });
     } else if (testType === "ODOR") {
-      where.submissions = {
-        some: {
-          testRuns: {
-            some: {
-              OR: [{ testType: "ODOR" }, { odorResult: { isNot: null } }],
-            },
-          },
-        },
-      };
-    } else {
-      where.submissions = {
-        some: { testRuns: { some: {} } },
-      };
+      testRunAnd.push({ OR: [{ testType: "ODOR" }, { odorResult: { isNot: null } }] });
     }
+    if (testMethod) {
+      testRunAnd.push({ testMethodStd: { contains: testMethod, mode: "insensitive" } });
+    }
+    if (organism) {
+      testRunAnd.push({
+        abResult: {
+          OR: [
+            { organism: { contains: organism, mode: "insensitive" } },
+            { organism1: { contains: organism, mode: "insensitive" } },
+          ],
+        },
+      });
+    }
+    where.submissions = {
+      some: { testRuns: { some: testRunAnd.length ? { AND: testRunAnd } : {} } },
+    };
 
     // Get total count for pagination
     const totalCount = await prisma.fabric.count({ where });

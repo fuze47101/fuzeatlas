@@ -6498,7 +6498,24 @@ const en = {
   },
   fabricLibraryPage: {
     pageTitle: "FUZE Fabric Library",
-    pageSubtitle: "Browse FUZE-treated fabrics and verified test results across our global network. All data is anonymized — factory and brand identities are confidential.",
+    pageSubtitle: "Search FUZE-treated fabrics and verified test results across our global network. All data is anonymized — factory and brand identities are confidential.",
+
+    // Item 10 — search-first cards
+    sbConstructionTitle: "Search by Fabric Construction",
+    sbConstructionDesc: "Find fabrics by construction, weave, knit stitch, or category.",
+    sbConstructionPlaceholder: "e.g. jersey, twill, interlock…",
+    sbMethodTitle: "Search by Test Method",
+    sbMethodDesc: "Find fabrics tested under a specific method or standard.",
+    sbMethodPlaceholder: "e.g. AATCC 100, ASTM E2149, ISO 20743…",
+    sbOrganismTitle: "Search by Organism",
+    sbOrganismDesc: "Find antibacterial results tested against a specific organism.",
+    sbOrganismPlaceholder: "e.g. Staphylococcus, Klebsiella, E. coli…",
+    searchBtn: "Search",
+    newSearch: "← New search",
+    chooseIntro: "Choose a search above to explore the fabric library.",
+    resultsFound: "{n} result(s) for “{q}”",
+    noResults: "No fabrics matched your search. Try a different term.",
+    fabricGeneric: "FUZE-treated fabric",
 
     statFabrics: "Fabrics Tested",
     statTests: "Total Tests",
