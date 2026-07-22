@@ -878,6 +878,7 @@ const en = {
     fuzeAiFaq: "FUZE FAQ",
     generalFuzePricing: "General FUZE Pricing",
     environmentalScore: "Environmental Score",
+    fuzeTeam: "FUZE Team",
     // Admin module
     myProfile: "My Profile",
     notifications: "Notifications",
@@ -2747,6 +2748,14 @@ const en = {
       cancel: "Cancel",
     },
 
+    fuzeTeam: {
+      crumbCurrent: "Your FUZE Team",
+      pageTitle: "Your FUZE Team",
+      pageSubtitle: "The people at FUZE who support your program — reach any of them directly.",
+      execHeader: "FUZE Exec Team",
+      loading: "Loading your FUZE team…",
+      loadFailed: "Unable to load your FUZE team",
+    },
     contacts: {
       pageTitle: "Contacts & Approvers",
       pageSubtitle: "{brand} — Manage contacts who interact with FUZE",

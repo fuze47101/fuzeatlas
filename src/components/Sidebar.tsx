@@ -288,7 +288,7 @@ export default function Sidebar() {
           { href: "/brand-portal/fabrics", label: "Fabrics", labelKey: "fabrics", icon: "🧵" },
           { href: "/brand-portal/submissions", label: "Submissions", labelKey: "submissions", icon: "📋" },
           { href: "/brand-portal/tests", label: "Test Results", labelKey: "testResults", icon: "🧪" },
-          { href: "/brand-portal/contacts", label: "Contacts", labelKey: "contacts", icon: "👥" },
+          { href: "/brand-portal/contacts", label: "FUZE Team", labelKey: "fuzeTeam", icon: "👥" },
           // Item 2/12 — Pricing calculator moved into My Program; the
           // Application Calculator (/pricing/calculator) is dropped from brand.
           { href: "/pricing", label: "General FUZE Pricing", labelKey: "generalFuzePricing", icon: "💰" },
