@@ -221,10 +221,26 @@ export default function BrandPricingPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-dashed border-slate-300 p-6 mb-6 text-center">
-          <div className="text-4xl mb-2">📊</div>
-          <div className="text-sm font-bold text-slate-900 mb-1">{tx.standardTitle}</div>
-          <p className="text-xs text-slate-500 max-w-md mx-auto">{tx.standardBlurb}</p>
+        // Item 7 — no negotiated pricing on file. This must be unmissable:
+        // tinted, bordered panel + CTA, not a quiet dash. The AM then works
+        // volume/accumulated-use pricing with the distributor.
+        <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-6 mb-6 shadow-sm">
+          <div className="flex items-start gap-4">
+            <span className="text-3xl leading-none">💬</span>
+            <div className="flex-1">
+              <div className="text-base font-black text-amber-900 mb-1">
+                {tx.noNegotiatedTitle}
+              </div>
+              <p className="text-sm text-amber-800/90 max-w-2xl">{tx.noNegotiatedBody}</p>
+              <Link
+                href="/brand-portal/contacts"
+                className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-lg bg-amber-500 text-white text-sm font-bold hover:bg-amber-600 transition-colors"
+              >
+                {tx.noNegotiatedCta}
+                <span aria-hidden>→</span>
+              </Link>
+            </div>
+          </div>
         </div>
       )}
 

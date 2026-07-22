@@ -2844,7 +2844,7 @@ const en = {
       networkError: "Network error",
       unableToLoad: "Unable to load pricing",
       // Hero card
-      yourPricing: "Your Pricing",
+      yourPricing: "Your negotiated pricing",
       discountPct: "{pct}% off",
       noDiscountFallback:
         "Standard pricing — additional discounts unlock as cumulative volume grows.",
@@ -2865,6 +2865,11 @@ const en = {
       standardTitle: "Standard pricing",
       standardBlurb:
         "Volume discounts will appear here once your contract terms are configured. Reach out to your account manager to discuss pricing.",
+      // Item 7 — no negotiated pricing on file (prominent empty state)
+      noNegotiatedTitle: "No negotiated pricing on file yet",
+      noNegotiatedBody:
+        "Speak with your FUZE account manager to discuss volume and accumulated-use pricing. They'll work your rate with the distributor based on your supply chain's cumulative FUZE use.",
+      noNegotiatedCta: "Contact your FUZE account manager",
       // Per-factory breakdown
       factoryHeader: "Consumption by factory",
       factoryHint: "Where the {total} came from. Sorted by largest contributor.",
