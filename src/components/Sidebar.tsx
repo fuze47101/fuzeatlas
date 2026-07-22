@@ -289,6 +289,9 @@ export default function Sidebar() {
           { href: "/brand-portal/submissions", label: "Submissions", labelKey: "submissions", icon: "📋" },
           { href: "/brand-portal/tests", label: "Test Results", labelKey: "testResults", icon: "🧪" },
           { href: "/brand-portal/contacts", label: "Contacts", labelKey: "contacts", icon: "👥" },
+          // Item 2/12 — Pricing calculator moved into My Program; the
+          // Application Calculator (/pricing/calculator) is dropped from brand.
+          { href: "/pricing", label: "General FUZE Pricing", labelKey: "generalFuzePricing", icon: "💰" },
         ],
       },
       {
@@ -296,11 +299,8 @@ export default function Sidebar() {
         items: [
           { href: "/fabric-library", label: "FUZE Fabric Library", labelKey: "fuzeFabricLibrary", icon: "📚" },
           { href: "/compliance-library", label: "Document Center", labelKey: "documentCenter", icon: "📋" },
-          { href: "/book-meeting", label: "Book Meeting", labelKey: "bookMeeting", icon: "📅" },
           { href: "/brand-portal/chat", label: "FUZE FAQ", labelKey: "fuzeAiFaq", icon: "💬" },
           { href: "/factories", label: "Factory Search", labelKey: "factorySearch", icon: "🔍" },
-          { href: "/pricing", label: "Pricing & Environment", labelKey: "pricingEnvironment", icon: "💰" },
-          { href: "/pricing/calculator", label: "Application Calculator", labelKey: "applicationCalculator", icon: "🧮" },
           { href: "/sustainability", label: "Sustainability", labelKey: "sustainability", icon: "🌍" },
           { href: "/admin/esg-reports", label: "ESG Impact Report", labelKey: "esgImpactReport", icon: "🌱" },
         ],

@@ -875,7 +875,8 @@ const en = {
     marketLandscape: "Market Landscape",
     weeklySummary: "Weekly Summary",
     weeklyExecReview: "Weekly Exec Review",
-    fuzeAiFaq: "FUZE AI FAQ",
+    fuzeAiFaq: "FUZE FAQ",
+    generalFuzePricing: "General FUZE Pricing",
     // Admin module
     myProfile: "My Profile",
     notifications: "Notifications",
@@ -2697,12 +2698,12 @@ const en = {
 
     chat: {
       goBack: "Go back",
-      title: "FUZE AI Assistant",
+      title: "FUZE FAQ",
       subtitle: "Ask anything about FUZE antimicrobial technology",
       newChat: "New Chat",
       onlineLabel: "Online",
       // Welcome
-      greetingTitle: "Hi! I'm FUZE AI",
+      greetingTitle: "Hi! Welcome to the FUZE FAQ",
       greetingBlurb:
         "I'm trained on FUZE's complete product documentation. Ask me about antimicrobial tiers, testing standards, pricing, safety certifications, application methods, and more.",
       // Suggested
@@ -2722,7 +2723,7 @@ const en = {
       sendButton: "Send",
       // Footer
       footerNote:
-        "FUZE AI is powered by product documentation. For specific contract or order inquiries, contact your sales representative.",
+        "The FUZE FAQ is powered by product documentation. For specific contract or order inquiries, contact your sales representative.",
       // Bubble identifiers
       youLabel: "You",
     },
@@ -4081,8 +4082,8 @@ const en = {
     antiOdorBadge: "Anti-odor positioning — why Moraxella matters",
     runItLabel: "How to run it:",
     questionsCardTitle: "Questions about the protocol?",
-    questionsCardBlurb: "Ask in the FUZE AI FAQ chat — it has this protocol indexed and can answer specific questions about ICP thresholds, lab selection, sample prep, test sequencing, or how to ask your lab for the right conditions.",
-    openFaqBtn: "Open FUZE AI FAQ →",
+    questionsCardBlurb: "Ask in the FUZE FAQ chat — it has this protocol indexed and can answer specific questions about ICP thresholds, lab selection, sample prep, test sequencing, or how to ask your lab for the right conditions.",
+    openFaqBtn: "Open FUZE FAQ →",
     versionFooter: "Protocol v1.0 · Published 2026-05-20 · Based on BV Hong Kong validation battery (May 2026) and the CAI-Textile failure investigation. Updates published quarterly.",
   },
   educationLifecycle: {

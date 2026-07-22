@@ -238,7 +238,7 @@ export const MODULES: ModuleDef[] = [
       // Reports
       { label: "Weekly Summary", labelKey: "weeklySummary", href: "/reports", icon: "📈" },
       { label: "Weekly Exec Review", labelKey: "weeklyExecReview", href: "/admin/weekly-review", icon: "📊", adminOnly: true },
-      { label: "FUZE AI FAQ", labelKey: "fuzeAiFaq", href: "/brand-portal/chat", icon: "💬" },
+      { label: "FUZE FAQ", labelKey: "fuzeAiFaq", href: "/brand-portal/chat", icon: "💬" },
     ],
   },
 
