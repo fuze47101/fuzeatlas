@@ -25,6 +25,7 @@ const ALLOWED_CLAIMS = [
   "Contains an antimicrobial agent that controls odors",
   "Inhibits the growth of mildew that causes product deterioration and staining",
   "Keeps fabric fresher for longer between washes",
+  "Bonded to last — FUZE bonds permanently into the fiber and won't wash out, so the protection stays wash after wash",
   "Durable, long-lasting freshness — bonded to the fiber, not a spray-on coating",
   "PFAS-free, non-leaching finish",
   "Factual certification statements (OEKO-TEX Standard 100 Class I, bluesign® approved, EPA-registered active, PFAS-free)",
