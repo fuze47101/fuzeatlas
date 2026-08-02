@@ -1013,6 +1013,25 @@ export async function GET(req: Request) {
           }),
         ]).then(() => 1),
     ),
+    // Red Rover (2026-08) — /admin/red-rover dashboard + dossier. Confirms
+    // the RedRoverTarget / RedRoverContact / RedRoverActivity tables and the
+    // owner relation + activity _count the dashboard list query drives all
+    // resolve. A schema-drift / missing-migration surfaces here instead of
+    // 500'ing the dashboard.
+    check(
+      "/api/admin/red-rover — targets w/ owner + contacts + activity count",
+      "redRoverTarget findMany w/ owner + contacts + _count.activities",
+      () =>
+        prisma.redRoverTarget.findMany({
+          include: {
+            owner: { select: { id: true, name: true } },
+            contacts: { select: { id: true, side: true, role: true } },
+            _count: { select: { activities: true } },
+          },
+          orderBy: [{ tier: "asc" }, { rank: "asc" }],
+          take: 25,
+        }),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);

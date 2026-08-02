@@ -70,6 +70,7 @@ export const MODULES: ModuleDef[] = [
       { label: "BD Playbooks", labelKey: "bdPlaybooks", href: "/admin/bd/playbooks", icon: "📘" },
       // Unified pipeline
       { label: "Brand Pipeline", labelKey: "brandPipeline", href: "/admin/brand-pipeline", icon: "🔥" },
+      { label: "Red Rover", labelKey: "redRover", href: "/admin/red-rover", icon: "🚀", adminOnly: true },
       { label: "Brand Discovery", labelKey: "brandDiscovery", href: "/admin/brand-discovery", icon: "🌎" },
       { label: "Contact Hygiene", labelKey: "contactHygiene", href: "/admin/contact-hygiene", icon: "🧽" },
       // Conversion + revenue
