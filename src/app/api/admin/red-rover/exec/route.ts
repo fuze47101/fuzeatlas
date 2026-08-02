@@ -8,6 +8,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getRealUser } from "@/lib/auth";
+import { weightedValue } from "@/lib/red-rover-ui";
 
 const ADMIN_ROLES = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER"]);
 const RED_ROVER_PROJECT_ID = "cmpvutgx1001vks04s7v48sqj";
@@ -108,10 +109,18 @@ export async function GET() {
     totalTargets: targets.length,
   };
 
+  let projectedTotal = 0;
+  let weightedTotal = 0;
+  for (const r of rows) {
+    projectedTotal += r.projectedValueUsd || 0;
+    weightedTotal += weightedValue(r.projectedValueUsd, r.winProbabilityPct, r.stage);
+  }
+
   return NextResponse.json({
     ok: true,
     brief: { name: project?.name || "Project Red Rover", goalMd: project?.goalMd || null },
     kpis,
+    forecast: { projectedTotal, weightedTotal },
     targets,
   });
 }

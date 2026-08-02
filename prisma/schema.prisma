@@ -4805,6 +4805,10 @@ model RedRoverTarget {
   stage        RedRoverStage @default(IDENTIFIED)
   // Which acquisition trip leg this target is worked on (Red Rover trips view).
   tripLeg      RedRoverTripLeg @default(OTHER)
+  // Weighted forecast (Phase 3). projectedValueUsd = deal size; winProbabilityPct
+  // is a manual 0–100 override — when null, the stage default is used.
+  projectedValueUsd Float?
+  winProbabilityPct Int?
 
   // BD point of contact who owns this target's relationship.
   ownerId String?
@@ -4830,6 +4834,15 @@ model RedRoverTarget {
   @@index([tier, rank])
   @@index([stage])
   @@index([tripLeg])
+}
+
+// Single-row admin setting: the Red Rover annual book-value goal, used for
+// the dashboard forecast gap. Always id = "singleton".
+model RedRoverGoal {
+  id            String   @id @default("singleton")
+  annualGoalUsd Float    @default(0)
+  updatedById   String?
+  updatedAt     DateTime @updatedAt
 }
 
 model RedRoverContact {

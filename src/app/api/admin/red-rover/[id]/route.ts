@@ -98,6 +98,15 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if ("companyClass" in body) data.companyClass = body.companyClass?.trim() || null;
   if ("geo" in body) data.geo = body.geo?.trim() || null;
   if ("ownerId" in body) data.ownerId = body.ownerId || null;
+  if ("projectedValueUsd" in body) {
+    const v = body.projectedValueUsd;
+    data.projectedValueUsd = v == null || v === "" ? null : Math.max(0, Number(v));
+  }
+  if ("winProbabilityPct" in body) {
+    const v = body.winProbabilityPct;
+    data.winProbabilityPct =
+      v == null || v === "" ? null : Math.max(0, Math.min(100, Math.trunc(Number(v))));
+  }
   for (const f of TEXT_FIELDS) {
     if (f in body) data[f] = body[f] === "" ? null : (body[f] ?? null);
   }

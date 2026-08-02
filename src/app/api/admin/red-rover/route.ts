@@ -12,6 +12,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getRealUser } from "@/lib/auth";
+import { weightedValue, effectiveProb } from "@/lib/red-rover-ui";
 
 const ADMIN_ROLES = new Set(["ADMIN", "EMPLOYEE", "SALES_MANAGER"]);
 const RED_ROVER_PROJECT_ID = "cmpvutgx1001vks04s7v48sqj";
@@ -73,6 +74,10 @@ export async function GET() {
         geo: t.geo,
         stage: t.stage,
         tripLeg: t.tripLeg,
+        projectedValueUsd: t.projectedValueUsd,
+        winProbabilityPct: t.winProbabilityPct,
+        effectiveProb: effectiveProb(t.stage, t.winProbabilityPct),
+        weightedValue: weightedValue(t.projectedValueUsd, t.winProbabilityPct, t.stage),
         ownerId: t.ownerId,
         ownerName: t.owner?.name || null,
         nextStep: t.nextStep,
@@ -146,6 +151,38 @@ export async function GET() {
     totalTargets: targets.length,
   };
 
+  // ── Weighted forecast ─────────────────────────────────────
+  let projectedTotal = 0;
+  let weightedTotal = 0;
+  const byStage: Record<string, { projected: number; weighted: number; count: number }> = {};
+  const byTier: Record<string, { projected: number; weighted: number; count: number }> = {};
+  for (const t of targets) {
+    const p = t.projectedValueUsd || 0;
+    const w = t.weightedValue || 0;
+    projectedTotal += p;
+    weightedTotal += w;
+    (byStage[t.stage] ??= { projected: 0, weighted: 0, count: 0 });
+    byStage[t.stage].projected += p;
+    byStage[t.stage].weighted += w;
+    byStage[t.stage].count += 1;
+    (byTier[t.tier] ??= { projected: 0, weighted: 0, count: 0 });
+    byTier[t.tier].projected += p;
+    byTier[t.tier].weighted += w;
+    byTier[t.tier].count += 1;
+  }
+  const goalRow = await prisma.redRoverGoal
+    .upsert({ where: { id: "singleton" }, update: {}, create: { id: "singleton", annualGoalUsd: 0 } })
+    .catch(() => null);
+  const goal = goalRow?.annualGoalUsd || 0;
+  const forecast = {
+    projectedTotal,
+    weightedTotal,
+    byStage,
+    byTier,
+    goal,
+    gapToGoal: goal - weightedTotal,
+  };
+
   return NextResponse.json({
     ok: true,
     targets,
@@ -158,6 +195,7 @@ export async function GET() {
       noActivity14d,
       ownedByJosh,
       kpis,
+      forecast,
     },
     brief: {
       projectId: RED_ROVER_PROJECT_ID,

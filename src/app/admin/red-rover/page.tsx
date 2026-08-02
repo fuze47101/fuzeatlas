@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
 import { RedRoverBoard } from "@/components/RedRoverBoard";
 import { KpiStrip } from "@/components/RedRoverKpiStrip";
+import { fmtUsd, STAGE_ORDER as RR_STAGES, STAGE_COLORS as RR_STAGE_COLORS } from "@/lib/red-rover-ui";
 
 /* ── Types ─────────────────────────────────────────────── */
 interface Contact {
@@ -48,6 +49,14 @@ interface Kpis {
   advancedThisMonth: number;
   totalTargets: number;
 }
+interface Forecast {
+  projectedTotal: number;
+  weightedTotal: number;
+  byStage: Record<string, { projected: number; weighted: number; count: number }>;
+  byTier: Record<string, { projected: number; weighted: number; count: number }>;
+  goal: number;
+  gapToGoal: number;
+}
 interface Summary {
   total: number;
   stageFunnel: Record<string, number>;
@@ -56,6 +65,7 @@ interface Summary {
   noActivity14d: number;
   ownedByJosh: number;
   kpis: Kpis;
+  forecast: Forecast;
 }
 interface ApiResp {
   ok: boolean;
@@ -428,6 +438,9 @@ function RedRoverDashboard() {
       {/* KPI strip — agreement-progress metrics */}
       {s?.kpis && <KpiStrip kpis={s.kpis} />}
 
+      {/* Forecast — weighted book value */}
+      {s?.forecast && <ForecastPanel forecast={s.forecast} onSaved={load} />}
+
       {/* Summary cards */}
       {s && (
         <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
@@ -578,6 +591,116 @@ function RedRoverDashboard() {
         </table>
       </div>
       )}
+    </div>
+  );
+}
+
+/* ── Forecast panel ────────────────────────────────────── */
+function ForecastPanel({ forecast, onSaved }: { forecast: Forecast; onSaved: () => void }) {
+  const [editing, setEditing] = useState(false);
+  const [goalInput, setGoalInput] = useState(String(forecast.goal || ""));
+  const [busy, setBusy] = useState(false);
+  useEffect(() => setGoalInput(String(forecast.goal || "")), [forecast.goal]);
+
+  async function saveGoal() {
+    setBusy(true);
+    const res = await fetch("/api/admin/red-rover/goal", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ annualGoalUsd: Number(goalInput) || 0 }),
+    });
+    setBusy(false);
+    if (res.ok) {
+      setEditing(false);
+      onSaved();
+    } else alert("Could not save goal");
+  }
+
+  const pct = forecast.goal > 0 ? Math.min(100, Math.round((forecast.weightedTotal / forecast.goal) * 100)) : 0;
+  const gap = forecast.gapToGoal;
+
+  return (
+    <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4">
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-slate-800">📈 Forecast — weighted book value</h2>
+        {!editing ? (
+          <button onClick={() => setEditing(true)} className="text-xs text-rose-600 hover:underline">
+            Goal: {fmtUsd(forecast.goal)} · edit
+          </button>
+        ) : (
+          <span className="flex items-center gap-1">
+            <span className="text-xs text-slate-500">Annual goal $</span>
+            <input
+              type="number"
+              className="w-32 rounded border border-slate-300 px-2 py-0.5 text-xs"
+              value={goalInput}
+              onChange={(e) => setGoalInput(e.target.value)}
+            />
+            <button disabled={busy} onClick={saveGoal} className="rounded bg-emerald-600 px-2 py-0.5 text-xs font-semibold text-white disabled:opacity-50">
+              {busy ? "…" : "Save"}
+            </button>
+            <button onClick={() => setEditing(false)} className="rounded bg-slate-200 px-2 py-0.5 text-xs">
+              ✕
+            </button>
+          </span>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <ForecastTile label="Projected (total)" value={fmtUsd(forecast.projectedTotal)} sub="sum of deal sizes" />
+        <ForecastTile label="Weighted book value" value={fmtUsd(forecast.weightedTotal)} sub="× win probability" tone="emerald" />
+        <ForecastTile
+          label={gap > 0 ? "Gap to goal" : "Over goal by"}
+          value={fmtUsd(Math.abs(gap))}
+          sub={forecast.goal > 0 ? `${pct}% of ${fmtUsd(forecast.goal)}` : "set an annual goal"}
+          tone={gap > 0 ? "rose" : "emerald"}
+        />
+      </div>
+
+      {forecast.goal > 0 && (
+        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+          <div className="h-full rounded-full bg-emerald-500" style={{ width: `${pct}%` }} />
+        </div>
+      )}
+
+      {/* weighted-by-stage / by-tier breakdown */}
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Weighted by stage</div>
+          <div className="space-y-1">
+            {RR_STAGES.filter((st) => forecast.byStage[st]).map((st) => (
+              <div key={st} className="flex items-center gap-2 text-xs">
+                <span className={`w-24 rounded px-1.5 py-0.5 text-center ${RR_STAGE_COLORS[st]}`}>{st}</span>
+                <span className="font-medium text-slate-800">{fmtUsd(forecast.byStage[st].weighted)}</span>
+                <span className="text-slate-400">of {fmtUsd(forecast.byStage[st].projected)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Weighted by tier</div>
+          <div className="space-y-1">
+            {["TIER1", "TIER2", "PARKED"].filter((tr) => forecast.byTier[tr]).map((tr) => (
+              <div key={tr} className="flex items-center gap-2 text-xs">
+                <span className="w-16 font-medium text-slate-700">{tr}</span>
+                <span className="font-medium text-slate-800">{fmtUsd(forecast.byTier[tr].weighted)}</span>
+                <span className="text-slate-400">of {fmtUsd(forecast.byTier[tr].projected)} · {forecast.byTier[tr].count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ForecastTile({ label, value, sub, tone = "slate" }: { label: string; value: string; sub?: string; tone?: "slate" | "emerald" | "rose" }) {
+  const cls = tone === "emerald" ? "text-emerald-600" : tone === "rose" ? "text-rose-600" : "text-slate-900";
+  return (
+    <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+      <div className="text-xs uppercase tracking-wide text-slate-500">{label}</div>
+      <div className={`mt-1 text-2xl font-bold ${cls}`}>{value}</div>
+      {sub && <div className="text-[11px] text-slate-400">{sub}</div>}
     </div>
   );
 }

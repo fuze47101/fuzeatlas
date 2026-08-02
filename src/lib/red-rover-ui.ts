@@ -49,6 +49,47 @@ export const ACTIVITY_ICON: Record<string, string> = {
 
 export const ACTIVITY_TYPES = ["NOTE", "MEETING", "EMAIL", "STATUS_CHANGE", "MILESTONE"];
 
+/** Stage → default win probability (%). Used when a target has no manual
+ * winProbabilityPct override. Server- and client-safe. */
+export const STAGE_WIN_PROB: Record<string, number> = {
+  IDENTIFIED: 5,
+  CONTACTED: 15,
+  PRESENTATION: 25,
+  TESTING: 40,
+  AGREEMENT: 65,
+  ACTIVE: 90,
+  STALLED: 10,
+  PARKED: 0,
+};
+
+export function stageDefaultProb(stage: string): number {
+  return STAGE_WIN_PROB[stage] ?? 0;
+}
+
+/** Effective probability = manual override if set, else the stage default. */
+export function effectiveProb(stage: string, winProbabilityPct: number | null | undefined): number {
+  return winProbabilityPct == null ? stageDefaultProb(stage) : winProbabilityPct;
+}
+
+/** weightedValue = projectedValueUsd × effectiveProb / 100. */
+export function weightedValue(
+  projectedValueUsd: number | null | undefined,
+  winProbabilityPct: number | null | undefined,
+  stage: string,
+): number {
+  const v = projectedValueUsd ?? 0;
+  return v * (effectiveProb(stage, winProbabilityPct) / 100);
+}
+
+/** Compact USD formatter for the forecast strip ($1.2M, $850K, $0). */
+export function fmtUsd(n: number): string {
+  if (!n) return "$0";
+  const abs = Math.abs(n);
+  if (abs >= 1_000_000) return `$${(n / 1_000_000).toFixed(abs >= 10_000_000 ? 0 : 1)}M`;
+  if (abs >= 1_000) return `$${Math.round(n / 1_000)}K`;
+  return `$${Math.round(n)}`;
+}
+
 /** Staleness label + tailwind class from a days-since-activity value. */
 export function staleness(daysSinceActivity: number | null): { text: string; cls: string } {
   if (daysSinceActivity == null) return { text: "No activity", cls: "text-rose-600 font-semibold" };

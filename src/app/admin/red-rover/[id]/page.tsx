@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
+import { stageDefaultProb, effectiveProb, weightedValue, fmtUsd } from "@/lib/red-rover-ui";
 
 /* ── Types ─────────────────────────────────────────────── */
 interface Contact {
@@ -41,6 +42,8 @@ interface Target {
   nextStep: string | null;
   whoDroveIt: string | null;
   intel: string | null;
+  projectedValueUsd: number | null;
+  winProbabilityPct: number | null;
   lastActivityAt: string | null;
   contacts: Contact[];
   activities: Activity[];
@@ -264,6 +267,46 @@ function RedRoverDossier() {
             Last activity: {new Date(target.lastActivityAt).toLocaleString()}
           </div>
         )}
+
+        {/* Forecast editor */}
+        <div className="mt-4 flex flex-wrap items-end gap-4 border-t border-slate-100 pt-3">
+          <label className="text-xs text-slate-500">
+            Projected value (USD)
+            <div className="mt-0.5 flex items-center">
+              <span className="mr-1 text-slate-400">$</span>
+              <InlineText
+                value={target.projectedValueUsd != null ? String(target.projectedValueUsd) : ""}
+                placeholder="—"
+                className="text-sm font-semibold"
+                onSave={(v) => patch({ projectedValueUsd: v === "" ? null : Number(v) })}
+              />
+            </div>
+          </label>
+          <label className="text-xs text-slate-500">
+            Win probability (%)
+            <div className="mt-0.5">
+              <InlineText
+                value={target.winProbabilityPct != null ? String(target.winProbabilityPct) : ""}
+                placeholder={`${stageDefaultProb(target.stage)} (stage default)`}
+                className="text-sm font-semibold"
+                onSave={(v) => patch({ winProbabilityPct: v === "" ? null : Number(v) })}
+              />
+            </div>
+          </label>
+          <div className="text-xs text-slate-500">
+            Effective
+            <div className="mt-0.5 text-sm font-semibold text-slate-800">
+              {effectiveProb(target.stage, target.winProbabilityPct)}%
+              {target.winProbabilityPct == null && <span className="ml-1 text-[10px] font-normal text-slate-400">(default)</span>}
+            </div>
+          </div>
+          <div className="text-xs text-slate-500">
+            Weighted value
+            <div className="mt-0.5 text-sm font-bold text-emerald-600">
+              {fmtUsd(weightedValue(target.projectedValueUsd, target.winProbabilityPct, target.stage))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ── AI Next Best Action ── */}

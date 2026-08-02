@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
 import { KpiStrip, type RedRoverKpis } from "@/components/RedRoverKpiStrip";
 import { MarkdownBrief } from "@/components/RedRoverBrief";
-import { STAGE_COLORS, TIER_COLORS } from "@/lib/red-rover-ui";
+import { STAGE_COLORS, TIER_COLORS, fmtUsd } from "@/lib/red-rover-ui";
 
 interface ExecTarget {
   id: string;
@@ -28,6 +28,7 @@ interface ExecResp {
   ok: boolean;
   brief: { name: string; goalMd: string | null };
   kpis: RedRoverKpis;
+  forecast: { projectedTotal: number; weightedTotal: number };
   targets: ExecTarget[];
 }
 
@@ -99,6 +100,20 @@ function RedRoverExec() {
           ← Dashboard
         </Link>
       </div>
+
+      {/* Weighted book value */}
+      {data.forecast && (
+        <div className="mb-4 grid grid-cols-2 gap-3">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-center">
+            <div className="text-xs uppercase tracking-wide text-slate-500">Projected book value</div>
+            <div className="mt-1 text-2xl font-bold text-slate-900">{fmtUsd(data.forecast.projectedTotal)}</div>
+          </div>
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-center">
+            <div className="text-xs uppercase tracking-wide text-slate-500">Weighted book value</div>
+            <div className="mt-1 text-2xl font-bold text-emerald-600">{fmtUsd(data.forecast.weightedTotal)}</div>
+          </div>
+        </div>
+      )}
 
       {/* KPI strip */}
       <KpiStrip kpis={data.kpis} />

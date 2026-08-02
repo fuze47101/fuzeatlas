@@ -1050,6 +1050,20 @@ export async function GET(req: Request) {
           prisma.user.count({ where: { canViewRedRover: true } }),
         ]).then(() => 1),
     ),
+    // Red Rover P3 — weighted forecast columns + goal singleton. Confirms
+    // RedRoverTarget.projectedValueUsd/winProbabilityPct and the RedRoverGoal
+    // table resolve (missing migration → throw).
+    check(
+      "/admin/red-rover forecast — projectedValueUsd/winProbabilityPct + RedRoverGoal",
+      "redRoverTarget findFirst forecast cols; redRoverGoal count",
+      () =>
+        Promise.all([
+          prisma.redRoverTarget.findFirst({
+            select: { id: true, projectedValueUsd: true, winProbabilityPct: true },
+          }),
+          (prisma as any).redRoverGoal.count(),
+        ]).then(() => 1),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
