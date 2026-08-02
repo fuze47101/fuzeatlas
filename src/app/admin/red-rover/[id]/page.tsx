@@ -266,6 +266,9 @@ function RedRoverDossier() {
         )}
       </div>
 
+      {/* ── AI Next Best Action ── */}
+      <NextActionPanel targetId={id} onLogged={load} />
+
       {/* ── Questionnaire cards ── */}
       <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
         <EditableCard label="Initial contact (who / when)" value={target.initialContact} onSave={(v) => patch({ initialContact: v })} />
@@ -452,6 +455,156 @@ function EditableCard({
         <p className="whitespace-pre-wrap text-sm text-slate-700">
           {value || <span className="text-slate-400">Not set.</span>}
         </p>
+      )}
+    </div>
+  );
+}
+
+/* ── AI Next Best Action ───────────────────────────────── */
+function htmlToText(html: string): string {
+  return html
+    .replace(/<\s*br\s*\/?>/gi, "\n")
+    .replace(/<\/\s*p\s*>/gi, "\n\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function NextActionPanel({ targetId, onLogged }: { targetId: string; onLogged: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [flagged, setFlagged] = useState<string | null>(null);
+  const [actions, setActions] = useState<string[]>([]);
+  const [to, setTo] = useState("");
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
+  const [generated, setGenerated] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  async function generate() {
+    setBusy(true);
+    setErr(null);
+    setFlagged(null);
+    try {
+      const res = await fetch(`/api/admin/red-rover/${targetId}/next-action`, { method: "POST" });
+      const j = await res.json();
+      if (!res.ok) {
+        setErr(j.error || `API ${res.status}`);
+        return;
+      }
+      setGenerated(true);
+      if (j.flagged || !j.draftEmail) {
+        setFlagged(j.flagReason || "Could not produce a brand-voice-compliant draft.");
+        setActions(j.nextActions || []);
+        setTo("");
+        setSubject("");
+        setBody("");
+        return;
+      }
+      setActions(j.nextActions || []);
+      setTo(j.draftEmail.to || "");
+      setSubject(j.draftEmail.subject || "");
+      setBody(htmlToText(j.draftEmail.bodyHtml || ""));
+    } catch (e: any) {
+      setErr(e?.message || "Generate failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function copyDraft() {
+    const text = `To: ${to}\nSubject: ${subject}\n\n${body}`;
+    navigator.clipboard?.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+
+  function openMail() {
+    const url = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = url;
+  }
+
+  async function logActivity() {
+    const summary =
+      `Drafted outreach${to ? ` to ${to}` : ""}: "${subject}".` +
+      (actions.length ? `\n\nRecommended next actions:\n- ${actions.join("\n- ")}` : "") +
+      (body ? `\n\nDraft:\n${body}` : "");
+    const res = await fetch(`/api/admin/red-rover/${targetId}/activities`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "NOTE", body: summary }),
+    });
+    if (res.ok) onLogged();
+    else alert("Could not log activity");
+  }
+
+  return (
+    <div className="mt-4 rounded-lg border border-rose-200 bg-gradient-to-r from-rose-50 to-white p-5">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-slate-800">🤖 Next Best Action</h2>
+        <button
+          onClick={generate}
+          disabled={busy}
+          className="rounded bg-rose-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
+        >
+          {busy ? "Thinking…" : generated ? "Regenerate" : "✨ Generate"}
+        </button>
+      </div>
+      <p className="mt-1 text-xs text-slate-500">
+        AI recommends the next moves + drafts an outreach email in FUZE voice. Review before sending — nothing is sent automatically.
+      </p>
+
+      {err && <div className="mt-3 rounded border border-rose-300 bg-rose-50 px-3 py-2 text-sm text-rose-700">{err}</div>}
+      {flagged && (
+        <div className="mt-3 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          ⚠ Draft dropped — could not comply with the brand-voice / EPA-scope guard ({flagged}). Try regenerating.
+        </div>
+      )}
+
+      {actions.length > 0 && (
+        <div className="mt-4">
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Recommended next actions</div>
+          <ol className="mt-1 list-decimal space-y-1 pl-5 text-sm text-slate-700">
+            {actions.map((a, i) => (
+              <li key={i}>{a}</li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {generated && !flagged && (
+        <div className="mt-4 rounded border border-slate-200 bg-white p-3">
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Draft outreach (editable)</div>
+          <div className="space-y-2">
+            <label className="block text-xs text-slate-500">
+              To
+              <input className="mt-0.5 w-full rounded border border-slate-300 px-2 py-1 text-sm" value={to} onChange={(e) => setTo(e.target.value)} />
+            </label>
+            <label className="block text-xs text-slate-500">
+              Subject
+              <input className="mt-0.5 w-full rounded border border-slate-300 px-2 py-1 text-sm" value={subject} onChange={(e) => setSubject(e.target.value)} />
+            </label>
+            <label className="block text-xs text-slate-500">
+              Body
+              <textarea rows={8} className="mt-0.5 w-full rounded border border-slate-300 px-2 py-1.5 text-sm" value={body} onChange={(e) => setBody(e.target.value)} />
+            </label>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button onClick={copyDraft} className="rounded border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
+              {copied ? "Copied ✓" : "Copy"}
+            </button>
+            <button onClick={openMail} className="rounded border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
+              ✉️ Open in mail
+            </button>
+            <button onClick={logActivity} className="rounded bg-slate-700 px-2.5 py-1 text-xs font-semibold text-white hover:bg-slate-800">
+              Log as activity
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
