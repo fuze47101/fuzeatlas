@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
 import { RedRoverBoard } from "@/components/RedRoverBoard";
+import { KpiStrip } from "@/components/RedRoverKpiStrip";
 
 /* ── Types ─────────────────────────────────────────────── */
 interface Contact {
@@ -39,6 +40,14 @@ interface Owner {
   id: string;
   name: string;
 }
+interface Kpis {
+  execMeetings: number;
+  lois: number;
+  draftContracts: number;
+  ndasExecuted: number;
+  advancedThisMonth: number;
+  totalTargets: number;
+}
 interface Summary {
   total: number;
   stageFunnel: Record<string, number>;
@@ -46,6 +55,7 @@ interface Summary {
   stalledCount: number;
   noActivity14d: number;
   ownedByJosh: number;
+  kpis: Kpis;
 }
 interface ApiResp {
   ok: boolean;
@@ -322,6 +332,7 @@ function RedRoverDashboard() {
       <div className="mb-4 flex flex-wrap gap-3 text-sm">
         <Link href="/admin/red-rover/board" className="text-rose-700 hover:underline">🗂 Board (full)</Link>
         <Link href="/admin/red-rover/trips" className="text-rose-700 hover:underline">✈️ Trips</Link>
+        <Link href="/admin/red-rover/network" className="text-rose-700 hover:underline">🕸 Network</Link>
       </div>
 
       {err && (
@@ -412,6 +423,9 @@ function RedRoverDashboard() {
           </div>
         </form>
       )}
+
+      {/* KPI strip — agreement-progress metrics */}
+      {s?.kpis && <KpiStrip kpis={s.kpis} />}
 
       {/* Summary cards */}
       {s && (

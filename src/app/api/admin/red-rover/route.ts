@@ -32,7 +32,7 @@ export async function GET() {
   const g = await gate();
   if (g.error) return g.error;
 
-  const [rows, project, owners] = await Promise.all([
+  const [rows, project, owners, activityRows] = await Promise.all([
     prisma.redRoverTarget.findMany({
       include: {
         owner: { select: { id: true, name: true } },
@@ -49,6 +49,9 @@ export async function GET() {
       where: { role: { in: ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"] } },
       select: { id: true, name: true },
       orderBy: { name: "asc" },
+    }),
+    prisma.redRoverActivity.findMany({
+      select: { targetId: true, type: true, body: true, occurredAt: true },
     }),
   ]);
 
@@ -104,6 +107,45 @@ export async function GET() {
   ).length;
   const ownedByJosh = targets.filter((t) => t.ownerId === JOSH_ID).length;
 
+  // ── KPI strip — agreement-progress metrics from activity types + the
+  // per-target agreement text (distinct targets, not raw counts). ────────
+  const lc = (s: any) => String(s || "").toLowerCase();
+  const monthStart = new Date();
+  monthStart.setUTCDate(1);
+  monthStart.setUTCHours(0, 0, 0, 0);
+
+  const execMeetings = activityRows.filter((a) => a.type === "MEETING").length;
+  const ndaTargets = new Set<string>();
+  const loiTargets = new Set<string>();
+  const draftTargets = new Set<string>();
+
+  for (const r of rows) {
+    const b = lc((r as any).currentAgreements);
+    if (/nda/.test(b) && /(execut|signed|complet)/.test(b)) ndaTargets.add(r.id);
+    if (/\bloi\b|letter of intent/.test(b)) loiTargets.add(r.id);
+    if (/term sheet|draft (agreement|contract)|distribution agreement|offtake/.test(b)) draftTargets.add(r.id);
+  }
+  for (const a of activityRows) {
+    const b = lc(a.body);
+    if (/nda/.test(b) && /execut/.test(b)) ndaTargets.add(a.targetId);
+    if (/\bloi\b|letter of intent/.test(b)) loiTargets.add(a.targetId);
+    if (/term sheet|draft (agreement|contract)|offtake/.test(b)) draftTargets.add(a.targetId);
+  }
+  const advancedThisMonth = new Set(
+    activityRows
+      .filter((a) => a.type === "STATUS_CHANGE" && new Date(a.occurredAt) >= monthStart)
+      .map((a) => a.targetId),
+  ).size;
+
+  const kpis = {
+    execMeetings,
+    lois: loiTargets.size,
+    draftContracts: draftTargets.size,
+    ndasExecuted: ndaTargets.size,
+    advancedThisMonth,
+    totalTargets: targets.length,
+  };
+
   return NextResponse.json({
     ok: true,
     targets,
@@ -115,6 +157,7 @@ export async function GET() {
       stalledCount,
       noActivity14d,
       ownedByJosh,
+      kpis,
     },
     brief: {
       projectId: RED_ROVER_PROJECT_ID,
