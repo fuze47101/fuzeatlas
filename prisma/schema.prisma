@@ -303,6 +303,10 @@ model User {
   // Phase 54.5 — projects this user closed (Mark complete).
   projectsClosed Project[] @relation("ProjectCloser")
 
+  // Red Rover — industry-negotiation targets this user owns (BD point
+  // of contact). Josh Lujan owns the whole book except Mitsui (Andrew).
+  redRoverTargets RedRoverTarget[] @relation("RedRoverOwner")
+
   // Phase 55 — meeting project blocks this user is in charge of (owner)
   // + blocks this user created.
   ownedMeetingProjectBlocks   MeetingProjectBlock[] @relation("MeetingProjectBlockOwner")
@@ -4744,4 +4748,100 @@ model TriageRun {
   fetchHttpCode    Int?
 
   @@index([runAt])
+}
+
+// ─────────────────────────────────────────────
+// RED ROVER — Industry outreach / negotiation tracker
+//
+// Project Red Rover (owner Josh Lujan): targeted outreach to textile
+// chemical suppliers, manufacturers, and distributors — including
+// competitors — to land partnership / white-label / distribution
+// agreements on FUZE's exclusive technology, plus talent intel.
+//
+// The dashboard at /admin/red-rover lets Andrew review every target's
+// live status and hold the owner accountable. Per Andrew (2026-08-01):
+// track NEGOTIATION contacts SEPARATELY from TECHNICAL_GATEKEEPERS on
+// every target; Josh may negotiate but not sign.
+// ─────────────────────────────────────────────
+
+enum RedRoverStage {
+  IDENTIFIED
+  CONTACTED
+  PRESENTATION
+  TESTING
+  AGREEMENT
+  ACTIVE
+  STALLED
+  PARKED
+}
+
+enum RedRoverTier {
+  TIER1
+  TIER2
+  PARKED
+}
+
+model RedRoverTarget {
+  id           String        @id @default(cuid())
+  name         String
+  rank         Int? // locked priority rank (1..N); null = unranked / parked
+  tier         RedRoverTier  @default(TIER2)
+  companyClass String? // one-line "what they are" (e.g. "Textile-chemical major")
+  geo          String? // country / city
+  stage        RedRoverStage @default(IDENTIFIED)
+
+  // BD point of contact who owns this target's relationship.
+  ownerId String?
+  owner   User?   @relation("RedRoverOwner", fields: [ownerId], references: [id])
+
+  // Per-target dossier questionnaire (single-page deep brief per target).
+  initialContact     String? @db.Text // who/when first contact
+  keyMeetings        String? @db.Text // high-impact meetings + dates
+  currentAgreements  String? @db.Text // NDA / MOU / pricing / terms in place
+  currentStatus      String? @db.Text // narrative status
+  nextStep           String? @db.Text // the single next action
+  whoDroveIt         String? @db.Text // credit — who on the FUZE team drove each stage
+  intel              String? @db.Text // receptivity levers, competitive intel, regulatory catalyst
+
+  lastActivityAt DateTime? // bumped whenever an activity is logged
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  contacts   RedRoverContact[]
+  activities RedRoverActivity[]
+
+  @@index([tier, rank])
+  @@index([stage])
+}
+
+model RedRoverContact {
+  id       String         @id @default(cuid())
+  targetId String
+  target   RedRoverTarget @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  name     String
+  title    String?
+  email    String?
+  // Which side of the table: TARGET (their people) or FUZE (our lead-in).
+  side String @default("TARGET") // TARGET | FUZE
+  // Andrew's structural rule: separate negotiation contacts from
+  // technical gatekeepers on every target.
+  role  String  @default("NEGOTIATION") // NEGOTIATION | TECHNICAL_GATEKEEPER
+  notes String? @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@index([targetId])
+}
+
+model RedRoverActivity {
+  id       String         @id @default(cuid())
+  targetId String
+  target   RedRoverTarget @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  userId   String? // who logged it (no FK — keep the feed resilient to user deletion)
+  type     String         @default("NOTE") // NOTE | MEETING | EMAIL | STATUS_CHANGE | MILESTONE
+  body     String         @db.Text
+  occurredAt DateTime     @default(now())
+  createdAt  DateTime     @default(now())
+
+  @@index([targetId, occurredAt])
 }
