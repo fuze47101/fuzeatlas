@@ -22,6 +22,7 @@ export async function GET() {
     select: {
       id: true,
       name: true,
+      rank: true,
       tier: true,
       stage: true,
       contacts: { select: { name: true, side: true, role: true, title: true } },
@@ -34,7 +35,7 @@ export async function GET() {
 
   for (const t of targets) {
     const tid = `t:${t.id}`;
-    nodes.push({ id: tid, label: t.name, kind: "target", tier: t.tier, stage: t.stage, degree: 0 });
+    nodes.push({ id: tid, label: t.name, kind: "target", tier: t.tier, stage: t.stage, rank: t.rank, degree: 0 });
     for (const c of t.contacts) {
       const key = c.name.trim().toLowerCase();
       const pid = `p:${key}`;
