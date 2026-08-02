@@ -41,6 +41,7 @@ export const S3_PREFIXES = {
   DISTRIBUTOR_DOCS: "distributor-docs",
   SAMPLE_TRIAL: "sample-trial",
   FEEDBACK: "feedback-screenshots",
+  RED_ROVER: "red-rover-attachments",
 } as const;
 
 /* ─── UPLOAD FILE ─── */

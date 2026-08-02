@@ -44,6 +44,15 @@ interface Target {
   lastActivityAt: string | null;
   contacts: Contact[];
   activities: Activity[];
+  attachments: Attachment[];
+}
+interface Attachment {
+  id: string;
+  filename: string | null;
+  contentType: string | null;
+  sizeBytes: number | null;
+  url: string | null;
+  createdAt: string;
 }
 interface Owner {
   id: string;
@@ -272,6 +281,9 @@ function RedRoverDossier() {
 
       {/* ── Contacts ── */}
       <ContactsPanel targetId={id} negotiation={negotiation} gatekeepers={gatekeepers} onChange={load} />
+
+      {/* ── Attachments ── */}
+      <AttachmentsPanel targetId={id} attachments={target.attachments} onChange={load} />
 
       {/* ── Activity feed ── */}
       <ActivityPanel targetId={id} activities={target.activities} owners={owners} onChange={load} />
@@ -692,6 +704,119 @@ function ContactForm({
         </button>
       </div>
     </form>
+  );
+}
+
+/* ── Attachments ───────────────────────────────────────── */
+function fmtBytes(n: number | null): string {
+  if (!n) return "";
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`;
+  return `${(n / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function AttachmentsPanel({
+  targetId,
+  attachments,
+  onChange,
+}: {
+  targetId: string;
+  attachments: Attachment[];
+  onChange: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function upload(file: File) {
+    setBusy(true);
+    setErr(null);
+    try {
+      // 1) presigned URL
+      const pre = await fetch(`/api/admin/red-rover/${targetId}/attachments/upload-url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: file.name, contentType: file.type || "application/octet-stream" }),
+      });
+      const pj = await pre.json();
+      if (!pre.ok) throw new Error(pj.error || "Could not get upload URL");
+      // 2) PUT to S3
+      const put = await fetch(pj.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+        body: file,
+      });
+      if (!put.ok) throw new Error(`S3 upload failed (${put.status})`);
+      // 3) record the Document
+      const rec = await fetch(`/api/admin/red-rover/${targetId}/attachments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type || null,
+          sizeBytes: file.size,
+          s3Key: pj.s3Key,
+          bucket: pj.bucket,
+          publicUrl: pj.publicUrl,
+        }),
+      });
+      if (!rec.ok) {
+        const rj = await rec.json().catch(() => ({}));
+        throw new Error(rj.error || "Could not record attachment");
+      }
+      onChange();
+    } catch (e: any) {
+      setErr(e?.message || "Upload failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function del(docId: string) {
+    if (!confirm("Delete this attachment?")) return;
+    const res = await fetch(`/api/admin/red-rover/${targetId}/attachments?docId=${docId}`, { method: "DELETE" });
+    if (res.ok) onChange();
+    else alert("Delete failed");
+  }
+
+  return (
+    <div className="mt-5 rounded-lg border border-slate-200 bg-white p-5">
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-slate-800">Attachments <span className="font-normal text-slate-400">(NDAs · term sheets · dossier PDFs)</span></h2>
+        <label className="cursor-pointer rounded bg-rose-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-rose-700">
+          {busy ? "Uploading…" : "＋ Upload"}
+          <input
+            type="file"
+            className="hidden"
+            disabled={busy}
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) upload(f);
+              e.target.value = "";
+            }}
+          />
+        </label>
+      </div>
+      {err && <div className="mb-2 rounded border border-rose-200 bg-rose-50 px-2 py-1 text-xs text-rose-700">{err}</div>}
+      {attachments.length === 0 ? (
+        <p className="text-sm text-slate-400">No attachments yet.</p>
+      ) : (
+        <ul className="divide-y divide-slate-100">
+          {attachments.map((a) => (
+            <li key={a.id} className="flex items-center justify-between py-1.5 text-sm">
+              <a href={a.url || "#"} target="_blank" rel="noopener noreferrer" className="text-rose-700 hover:underline">
+                📎 {a.filename || "file"}
+              </a>
+              <span className="flex items-center gap-3 text-xs text-slate-400">
+                <span>{fmtBytes(a.sizeBytes)}</span>
+                <span>{new Date(a.createdAt).toLocaleDateString()}</span>
+                <button onClick={() => del(a.id)} className="text-rose-500 hover:underline">del</button>
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

@@ -53,6 +53,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (typeof body.canClaim === "boolean") update.canClaim = body.canClaim;
     if (typeof body.canApproveTests === "boolean")
       update.canApproveTests = body.canApproveTests;
+    if (typeof body.canViewRedRover === "boolean")
+      update.canViewRedRover = body.canViewRedRover;
 
     // Entity assignment — partially addresses task #73 (role-change flow).
     // Pass `null` to explicitly clear an assignment.

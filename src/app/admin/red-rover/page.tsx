@@ -333,6 +333,7 @@ function RedRoverDashboard() {
         <Link href="/admin/red-rover/board" className="text-rose-700 hover:underline">🗂 Board (full)</Link>
         <Link href="/admin/red-rover/trips" className="text-rose-700 hover:underline">✈️ Trips</Link>
         <Link href="/admin/red-rover/network" className="text-rose-700 hover:underline">🕸 Network</Link>
+        <Link href="/admin/red-rover/exec" className="text-rose-700 hover:underline">📊 Exec view</Link>
       </div>
 
       {err && (

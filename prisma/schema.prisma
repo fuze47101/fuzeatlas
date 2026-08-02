@@ -306,6 +306,9 @@ model User {
   // Red Rover — industry-negotiation targets this user owns (BD point
   // of contact). Josh Lujan owns the whole book except Mitsui (Andrew).
   redRoverTargets RedRoverTarget[] @relation("RedRoverOwner")
+  // Read-only access to the Red Rover exec view for board / management
+  // logins who aren't full admins. Admins always have access.
+  canViewRedRover Boolean @default(false)
 
   // Phase 55 — meeting project blocks this user is in charge of (owner)
   // + blocks this user created.
@@ -1944,15 +1947,17 @@ model Document {
   key    String? @unique
   url    String?
 
-  submissionId String?
-  testRunId    String?
-  sowId        String?
-  labId        String?
+  submissionId     String?
+  testRunId        String?
+  sowId            String?
+  labId            String?
+  redRoverTargetId String?
 
-  submission FabricSubmission? @relation(fields: [submissionId], references: [id])
-  testRun    TestRun?          @relation(fields: [testRunId], references: [id])
-  sow        SOW?              @relation(fields: [sowId], references: [id])
-  lab        Lab?              @relation(fields: [labId], references: [id])
+  submission     FabricSubmission? @relation(fields: [submissionId], references: [id])
+  testRun        TestRun?          @relation(fields: [testRunId], references: [id])
+  sow            SOW?              @relation(fields: [sowId], references: [id])
+  lab            Lab?              @relation(fields: [labId], references: [id])
+  redRoverTarget RedRoverTarget?   @relation(fields: [redRoverTargetId], references: [id], onDelete: Cascade)
 
   raw Json?
 
@@ -1968,6 +1973,7 @@ model Document {
   @@index([testRunId])
   @@index([sowId])
   @@index([deletedAt])
+  @@index([redRoverTargetId])
 }
 
 // ─────────────────────────────────────────────
@@ -4817,8 +4823,9 @@ model RedRoverTarget {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  contacts   RedRoverContact[]
-  activities RedRoverActivity[]
+  contacts    RedRoverContact[]
+  activities  RedRoverActivity[]
+  attachments Document[] // NDAs / term sheets / dossier PDFs
 
   @@index([tier, rank])
   @@index([stage])

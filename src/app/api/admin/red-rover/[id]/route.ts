@@ -57,6 +57,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       owner: { select: { id: true, name: true } },
       contacts: { orderBy: { createdAt: "asc" } },
       activities: { orderBy: { occurredAt: "desc" }, take: 200 },
+      attachments: {
+        where: { deletedAt: null },
+        select: { id: true, filename: true, contentType: true, sizeBytes: true, url: true, createdAt: true },
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
   if (!target) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });

@@ -1032,6 +1032,24 @@ export async function GET(req: Request) {
           take: 25,
         }),
     ),
+    // Red Rover P2 — trip legs + exec attachments + canViewRedRover. Confirms
+    // the new RedRoverTarget.tripLeg column, Document.redRoverTargetId link,
+    // and User.canViewRedRover flag all resolve (missing migration → throw).
+    check(
+      "/admin/red-rover/exec — tripLeg + attachments + canViewRedRover",
+      "redRoverTarget findFirst w/ tripLeg + attachments; user count canViewRedRover",
+      () =>
+        Promise.all([
+          prisma.redRoverTarget.findFirst({
+            select: {
+              id: true,
+              tripLeg: true,
+              attachments: { where: { deletedAt: null }, select: { id: true }, take: 1 },
+            },
+          }),
+          prisma.user.count({ where: { canViewRedRover: true } }),
+        ]).then(() => 1),
+    ),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
