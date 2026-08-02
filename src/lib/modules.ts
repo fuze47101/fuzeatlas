@@ -70,7 +70,6 @@ export const MODULES: ModuleDef[] = [
       { label: "BD Playbooks", labelKey: "bdPlaybooks", href: "/admin/bd/playbooks", icon: "📘" },
       // Unified pipeline
       { label: "Brand Pipeline", labelKey: "brandPipeline", href: "/admin/brand-pipeline", icon: "🔥" },
-      { label: "Red Rover", labelKey: "redRover", href: "/admin/red-rover", icon: "🚀", adminOnly: true },
       { label: "Brand Discovery", labelKey: "brandDiscovery", href: "/admin/brand-discovery", icon: "🌎" },
       { label: "Contact Hygiene", labelKey: "contactHygiene", href: "/admin/contact-hygiene", icon: "🧽" },
       // Conversion + revenue
@@ -80,6 +79,29 @@ export const MODULES: ModuleDef[] = [
       // ACM essentials folded in
       { label: "My Tasks", labelKey: "myTasks", href: "/acm/tasks", icon: "✅" },
       { label: "Meetings", labelKey: "meetings", href: "/meetings", icon: "📅" },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  // Red Rover — industry outreach & negotiation tracker. Promoted to its
+  // own top-level module (2nd, right after Sales & Pipeline). All routes
+  // live under /admin/red-rover so findActiveModule's longest-prefix match
+  // scopes the sidebar to these five items.
+  {
+    key: "red-rover",
+    label: "Red Rover",
+    icon: "🚀",
+    accent: "from-cyan-500 to-cyan-700",
+    sidebarAccent: "text-cyan-400",
+    blurb: "Target book — negotiations, dossiers, trips, network",
+    landing: "/admin/red-rover",
+    adminOnly: true,
+    items: [
+      { label: "Dashboard", labelKey: "redRoverDashboard", href: "/admin/red-rover", icon: "🎯" },
+      { label: "Board", labelKey: "redRoverBoard", href: "/admin/red-rover/board", icon: "🗂️" },
+      { label: "Trips", labelKey: "redRoverTrips", href: "/admin/red-rover/trips", icon: "✈️" },
+      { label: "Network", labelKey: "redRoverNetwork", href: "/admin/red-rover/network", icon: "🕸️" },
+      { label: "Exec View", labelKey: "redRoverExec", href: "/admin/red-rover/exec", icon: "📄", adminOnly: true },
     ],
   },
 

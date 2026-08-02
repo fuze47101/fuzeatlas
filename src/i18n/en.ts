@@ -833,6 +833,13 @@ const en = {
     invoices: "Invoices",
     myTasks: "My Tasks",
     meetings: "Meetings",
+    // Red Rover
+    redRover: "Red Rover",
+    redRoverDashboard: "Dashboard",
+    redRoverBoard: "Board",
+    redRoverTrips: "Trips",
+    redRoverNetwork: "Network",
+    redRoverExec: "Exec View",
     // Operations
     kpiDashboard: "KPI Dashboard",
     submissions: "Submissions",
