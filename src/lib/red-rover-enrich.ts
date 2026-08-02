@@ -52,13 +52,13 @@ export const ENRICH: ETarget[] = [
       currentAgreements:
         "Signed FUZE–Archroma distribution agreement (2024, Dave Parkinson-approved).",
       currentStatus:
-        "Warm but STALLED — awaiting Archroma's engagement decision. The Rudolf–Sanitized exclusive deal left Archroma (Sanitized's prior distributor) without an antimicrobial → the opening for FUZE. Andrew pushing Roland Borufka directly; Nike launch (Jan 2026) = supply urgency. Georg Lang's departure slowed the Archroma side.",
+        "Archroma signed a large deal with HeiQ that appears to have OUSTED FUZE despite the 2024 distribution agreement (Georg Lang also left). FIRST JOB: check the temperature with Roland Borufka — is FUZE still viable at Archroma or displaced by the HeiQ deal? The Rudolf–Sanitized exclusive deal reshaped the landscape — Archroma was Sanitized's prior distributor and lost it to Rudolf, the opening for FUZE to fill that antimicrobial gap. Andrew pushing Roland Borufka directly; Nike launch (Jan 2026) = supply urgency.",
       nextStep:
-        "Re-engage Roland Borufka; open the May 27 2024 signed-agreement thread to confirm scope/terms; convert 'our little project' into a live distribution SKU ahead of the Nike supply need.",
+        "Check the temperature with Roland Borufka — is FUZE still viable at Archroma or displaced by the new HeiQ deal? Open the May 27 2024 signed-agreement thread to confirm scope/terms; convert 'our little project' into a live distribution SKU ahead of the Nike supply need.",
       whoDroveIt:
         "Andrew (relationship + all follow-ups); Dave Parkinson (agreement approval); Roland Borufka = live Archroma-side owner.",
       intel:
-        "Levers: (1) Rudolf–Sanitized deal left Archroma without an antimicrobial → FUZE fills it; (2) Bob Monticello + Jim Krueger (ex-Sanitized quaternary developers) independently validated FUZE at the facility; (3) Bluesign partnership resolved; (4) Nike launch = supply urgency. Archroma was Polygiene's distributor in Colombia/Peru historically. EU biocide 2028/2030 catalyst. Munich-reachable.",
+        "Levers: (1) Rudolf–Sanitized deal left Archroma without an antimicrobial → FUZE fills it; (2) Bluesign partnership resolved; (3) Nike launch = supply urgency. Archroma was Polygiene's distributor in Colombia/Peru historically. EU biocide 2028/2030 catalyst. Munich-reachable.",
     },
     contacts: [
       { name: "Roland Borufka", title: "Archroma — Reinach, Switzerland", email: "roland.borufka@archroma.com", side: "TARGET", role: "NEGOTIATION", notes: "Live Archroma-side owner." },
@@ -70,7 +70,7 @@ export const ENRICH: ETarget[] = [
       { date: "2024-05-27", type: "MILESTONE", body: "'RE: Signed agreement' (Roland Borufka) — the signed FUZE–Archroma distribution agreement (Dave Parkinson-approved)." },
       { date: "2024-09-19", type: "EMAIL", body: "Georg Lang 'RE: Agreement' (flagged, attachment)." },
       { date: "2024-11-07", type: "EMAIL", body: "Paul Cowell 'RE: Fuze technology.'" },
-      { date: "2025-08-09", type: "EMAIL", body: "Andrew → Georg + Roland: 'Follow-Up on Recent Rudolf–Sanitized Agreement.' Flags Bob Monticello + Jim Krueger termination + FUZE validation; wants to meet re moving forward." },
+      { date: "2025-08-09", type: "EMAIL", body: "Andrew → Georg + Roland: 'Follow-Up on Recent Rudolf–Sanitized Agreement.' Learned at a Shanghai tradeshow that Rudolf + Sanitized had signed; wants to meet re moving forward with FUZE. Notes Bluesign partnership + St. Gallen visit that week." },
       { date: "2025-08-11", type: "MEETING", body: "Roland: 'Georg has left the company'; still based in Reinach; agrees to meet." },
       { date: "2025-11-05", type: "MEETING", body: "'FUZE Catchup' (Andrew → Roland)." },
       { date: "2026-01-12", type: "EMAIL", body: "Andrew → Roland: follow-up — large Nike launch this month, critical to have supply engaged; asks whether to keep pushing current distribution channels." },
@@ -201,15 +201,13 @@ export const ENRICH: ETarget[] = [
       whoDroveIt:
         "Andrew (direct); Ryan Prince; Josh Lujan (introduced to Lee 7/24). Internal champion: Lee Howarth.",
       intel:
-        "Levers: internal champion (Lee Howarth, inside Sanitized); ex-Sanitized quaternary developers (Bob Monticello + Jim Krueger) already validated FUZE at the facility; Sanitized sidelined by the Rudolf exclusive-distribution switch (receptivity); 58-patent single-source open-book pitch; EU 2028/2030 biocide catalyst; Munich-reachable.",
+        "Levers: internal champion (Lee Howarth, inside Sanitized); Sanitized sidelined by the Rudolf exclusive-distribution switch (receptivity); 58-patent single-source open-book pitch; EU 2028/2030 biocide catalyst; Munich-reachable.",
     },
     contacts: [
       { name: "Lee Howarth", title: "Head Brand Marketing / BU Textiles, SANITIZED AG — internal champion / lead-in", email: "lee.howarth@sanitized.com", side: "TARGET", role: "NEGOTIATION", notes: "Inside Sanitized, championing FUZE — 'our way in.'" },
       { name: "Stefan Mueller", title: "Sanitized AG", email: "Stefan.Mueller@sanitized.com", side: "TARGET", role: "NEGOTIATION" },
       { name: "Urs Zihlmann", title: "Sanitized AG", email: "Urs.Zihlmann@sanitized.com", side: "TARGET", role: "NEGOTIATION" },
       { name: "Thomas Semling", title: "Sanitized AG — signed the NDA (DocuSign)", email: "Thomas.Semling@sanitized.com", side: "TARGET", role: "NEGOTIATION" },
-      { name: "Bob Monticello", title: "Ex-Sanitized quaternary developer — validated FUZE at the facility", side: "FUZE", role: "TECHNICAL_GATEKEEPER", notes: "Sanitized contract terminated June 2025; visited FUZE, ran a full eval confirming claims." },
-      { name: "Jim Krueger", title: "Ex-Sanitized quaternary developer — validated FUZE", side: "FUZE", role: "TECHNICAL_GATEKEEPER", notes: "Sanitized contract terminated June 2025; validated FUZE with Monticello." },
     ],
     activities: [
       { date: "2026-06-04", type: "EMAIL", body: "Andrew 'Thoughts' to Lee Howarth." },
@@ -290,13 +288,13 @@ export const ENRICH: ETarget[] = [
     fields: {
       initialContact: "10/16/2023 — Shaun Rothwell 'Microban/FUZE introduction' meeting.",
       keyMeetings:
-        "11/14/2023 'Microban intro to EVOQ'; 11/17/2023 'Microban–Fuze discussion 2'; 11/20/2023 Michael Ruby's 6-step partnership plan; 11/21/2023 Microban NDA EXECUTED; 4/2/2024 'Samples for Microban' (James Clayton).",
+        "11/14/2023 'Microban intro to EVOQ'; 11/17/2023 'Microban–Fuze discussion 2'; 11/20/2023 Michael Ruby's 6-step partnership plan; 11/21/2023 Microban NDA EXECUTED; Andrew did full ONSITE training at Microban's facility (team trained on FUZE testing); 4/2/2024 'Samples for Microban' (James Clayton).",
       currentAgreements:
         "Microban NDA EXECUTED 11/21/2023 (President Michael Ruby — all requested modifications accepted, both-side legal review done). Proposed buy/sell OFFTAKE of FUZE's silver/gold pair for textile treatments (ideally post-Bluesign).",
       currentStatus:
-        "Serious buy/sell OFFTAKE partnership proposed by Microban's President with an EXECUTED NDA (Nov 2023) — went quiet on Bluesign/EPA timing. RE-OPEN LEVER: FUZE now has federal + California EPA and Bluesign in progress — the exact gates Microban set are clearing. Shaun Rothwell = relationship owner; strong warm re-entry. Upgraded to Tier 1.",
+        "NDA executed (Nov 2023) + Andrew did full ONSITE training at Microban's facility (confirmed + trained their team on FUZE testing). The working test group then went DARK / faded off (stopped returning emails); it was never driven at the working level by Ruby. Gates (Bluesign + EPA) now clearing. NEEDS A REGROUP — re-engage TOP-DOWN via Michael Ruby. RE-OPEN LEVER: FUZE now has federal + California EPA and Bluesign in progress — the exact gates Microban set are clearing. Shaun Rothwell = relationship owner; strong warm re-entry. Tier 1.",
       nextStep:
-        "Re-engage Michael Ruby now that EPA is done; advance the MTA + offtake pricing (Microban offtake costs + volume/$ breakpoints); confirm where Bluesign stands.",
+        "Regroup and re-engage TOP-DOWN via Michael Ruby now that EPA is done (the working group faded); advance the MTA + offtake pricing (Microban offtake costs + volume/$ breakpoints); confirm where Bluesign stands.",
       whoDroveIt: "Shaun Rothwell (Chairman & CEO, EVOQ Nano) led it; Andrew on-thread.",
       intel:
         "6-step plan (Ruby, 11/20/2023): (1) NDA [done], (2) test data per yarn/fabric, (3) MTA for samples (no-binder + pre-blended with-binder) + ICP method, (4) Microban offtake costs + volume/$ breakpoints, (5) Bluesign timeline, (6) review → commercial launch, + 2 secondary interest areas. This is a President-level offtake deal — NOT a competitor lead. US talent anchor.",
@@ -358,11 +356,11 @@ export const ENRICH: ETarget[] = [
       keyMeetings: "4/24 Andrew sends the Initial Term Sheet; 4/29 Shauna Ge 'thank you for drafting' + Andrew follow-up — term sheet in active negotiation.",
       currentAgreements: "Initial Term Sheet sent 4/24/2026, under active review / negotiation (Shauna Ge).",
       currentStatus:
-        "Initial Term Sheet in negotiation (April 2026) + antimicrobial performance testing underway. Further along than 'existing distributor' — an active partnership / term-sheet deal. Shanghai; pairs with Transfar on the Asia leg.",
+        "Initial Term Sheet in negotiation (April 2026); Hi-Goal is actively testing against the new GB (China national) standards. SEQUENCING: Hi-Goal takes a back seat to Transfar — both Shanghai/China; if the larger Transfar relationship comes into play, Hi-Goal is secondary. Shanghai / Asia leg.",
       nextStep:
-        "Advance the term sheet to signature; identify 'Bob' on the testing thread; confirm Shauna Ge's title/role. Define the elevation plan.",
+        "Advance the term sheet; hold the Transfar sequencing (Hi-Goal secondary if the larger Transfar deal advances); track the GB-standard testing; identify 'Bob' on the testing thread; confirm Shauna Ge's title/role.",
       whoDroveIt: "Andrew (drafted the term sheet); Danny / Tina (distributor relationship).",
-      intel: "Active distributor being elevated (Shanghai HiGoal factory testing). Asia (Shanghai) leg with Transfar.",
+      intel: "Active distributor being elevated (Shanghai HiGoal factory testing against the new GB China national standards). Secondary to Transfar on the Asia (Shanghai) leg.",
     },
     contacts: [
       { name: "Shauna Ge", title: "Hi-Goal", side: "TARGET", role: "NEGOTIATION", notes: "Term sheet under active review." },
@@ -387,13 +385,13 @@ export const ENRICH: ETarget[] = [
         "May 2023 video presentation → interested, paths forward WITHOUT EPA (esp. flame-retardant); June 2023 Todd waiting on Milliken regulatory to approve silver; June/July shipped 1 L; Oct 2023 Todd asked for the EPA registration numbers; 4/22/2024 Robby 'Introduction to Fuze Technology'; 7/22/2025 Scott Smith re-intro; 6/23/2026 Barth Getto 'Cleaned up NCTO list.'",
       currentAgreements: null,
       currentStatus:
-        "Deep 2023 pre-EPA history. Milliken's own blocker was 'regulatory won't approve silver / waiting on EPA registration numbers.' FUZE now HAS federal EPA (90890-1 textile) + California EPA — removing the exact objection Todd raised. Warm re-open via Todd Moore + Bob (Getto), on the protective / FR / defense angle (Westex, Steve Lucas).",
+        "Deep 2023 pre-EPA history. Bob Getto has a relationship with Milliken's PRESIDENT — the play is to go in at the President level (OVER Todd Moore) now that EPA is done. Milliken's own 2023 blocker was 'regulatory won't approve silver / waiting on EPA registration numbers'; FUZE now HAS federal EPA (90890-1 textile) + California EPA — removing the exact objection Todd raised. Protective / FR / defense angle (Westex, Steve Lucas).",
       nextStep:
-        "Reconnect via Todd Moore with the EPA registration numbers in hand + the protective/FR/defense angle; confirm Todd still at Milliken/Westex; clarify whether 'Bob' = Barth Getto.",
+        "Go in at the President level via Bob Getto (over Todd Moore) with the EPA registration numbers in hand + the protective/FR/defense angle; confirm Todd still at Milliken/Westex.",
       whoDroveIt:
-        "Andrew (then CTO, FUZE Technologies) + Robby Nelsen (follow-ups); later Scott Smith re-intro (7/2025); reported up to Shaun Rothwell.",
+        "Andrew (then CTO, FUZE Technologies) + Robby Nelsen (follow-ups); later Scott Smith re-intro (7/2025); reported up to Shaun Rothwell. Bob Getto = the President-level path.",
       intel:
-        "Milliken / Westex = flame-resistant / protective / defense fabrics (same lane as TenCate). EPA now clears the 2023 blocker. Warm path: Bob Getto (NCTO) + Todd Moore. US leg.",
+        "Milliken / Westex = flame-resistant / protective / defense fabrics (same lane as TenCate). EPA now clears the 2023 blocker. Top-down path: Bob Getto (NCTO) ↔ Milliken's President, over Todd Moore. US leg.",
     },
     contacts: [
       { name: "Todd Moore", title: "Director of Development & Technology, Protective Fabrics, Milliken & Company (Spartanburg SC; Westex)", side: "TARGET", role: "NEGOTIATION", notes: "T 864.503.1792 / C 864.909.2673." },
@@ -597,9 +595,35 @@ export async function enrichRedRover(prisma: any) {
     });
   }
 
+  // Dossier correction (2026-08): Bob Monticello / Jim Krueger are "DO NOT
+  // USE" per Andrew — fully removed (not validators/references/channel).
+  // Scrub any lingering contact or activity that references them so a prior
+  // enrich run's rows don't survive (upsert alone never deletes).
+  let scrubbedContacts = 0;
+  let scrubbedActivities = 0;
+  for (const term of ["Monticello", "Krueger"]) {
+    const c = await prisma.redRoverContact.deleteMany({
+      where: { name: { contains: term, mode: "insensitive" } },
+    });
+    const a = await prisma.redRoverActivity.deleteMany({
+      where: { body: { contains: term, mode: "insensitive" } },
+    });
+    scrubbedContacts += c.count;
+    scrubbedActivities += a.count;
+  }
+
   const totalTargets = await prisma.redRoverTarget.count();
   const totalContacts = await prisma.redRoverContact.count();
   const totalActivities = await prisma.redRoverActivity.count();
 
-  return { ok: true, enriched: results.length, totalTargets, totalContacts, totalActivities, results };
+  return {
+    ok: true,
+    enriched: results.length,
+    totalTargets,
+    totalContacts,
+    totalActivities,
+    scrubbedContacts,
+    scrubbedActivities,
+    results,
+  };
 }
