@@ -318,6 +318,12 @@ function RedRoverDashboard() {
         </div>
       </div>
 
+      {/* Sub-nav */}
+      <div className="mb-4 flex flex-wrap gap-3 text-sm">
+        <Link href="/admin/red-rover/board" className="text-rose-700 hover:underline">🗂 Board (full)</Link>
+        <Link href="/admin/red-rover/trips" className="text-rose-700 hover:underline">✈️ Trips</Link>
+      </div>
+
       {err && (
         <div className="mb-4 rounded-md border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">
           Failed to load Red Rover: {err}

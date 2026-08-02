@@ -69,6 +69,7 @@ export async function GET() {
         companyClass: t.companyClass,
         geo: t.geo,
         stage: t.stage,
+        tripLeg: t.tripLeg,
         ownerId: t.ownerId,
         ownerName: t.owner?.name || null,
         nextStep: t.nextStep,

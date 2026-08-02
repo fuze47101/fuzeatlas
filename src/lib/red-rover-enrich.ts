@@ -476,6 +476,26 @@ export const ENRICH: ETarget[] = [
   },
 ];
 
+// Trip-leg assignment (Red Rover trips view). EU/Munich = the Performance
+// Days anchor cluster; Shanghai = Transfar + Hi-Goal; Japan = Kaneyo; US.
+export const TRIP_LEG: Record<string, string> = {
+  CHT: "EU_MUNICH",
+  "Rudolf (Duraner/Turkey)": "EU_MUNICH",
+  Sanitized: "EU_MUNICH",
+  Archroma: "EU_MUNICH",
+  Polygiene: "EU_MUNICH",
+  "Pulcra Chemicals": "EU_MUNICH",
+  DyStar: "EU_MUNICH",
+  Transfar: "ASIA_SHANGHAI",
+  "Hi-Goal": "ASIA_SHANGHAI",
+  "Kaneyo / Kanematsu": "JAPAN",
+  Microban: "US",
+  Milliken: "US",
+  Sciessent: "US",
+  "Concept III": "US",
+  TenCate: "US",
+};
+
 /**
  * Idempotent enrichment. Overwrites the dossier fields (authoritative real-
  * data load), sets stage/tier, upserts contacts by (target, name), and
@@ -505,12 +525,13 @@ export async function enrichRedRover(prisma: any) {
       });
     }
 
-    // Update fields / stage / tier / class / geo.
+    // Update fields / stage / tier / class / geo / trip leg.
     const data: Record<string, any> = {};
     if (t.stage) data.stage = t.stage;
     if (t.tier) data.tier = t.tier;
     if (t.companyClass) data.companyClass = t.companyClass;
     if (t.geo) data.geo = t.geo;
+    if (TRIP_LEG[t.name]) data.tripLeg = TRIP_LEG[t.name];
     if (t.fields) for (const [k, v] of Object.entries(t.fields)) data[k] = v;
     if (Object.keys(data).length) {
       target = await prisma.redRoverTarget.update({ where: { id: target.id }, data });

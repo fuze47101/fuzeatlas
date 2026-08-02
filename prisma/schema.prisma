@@ -4781,6 +4781,14 @@ enum RedRoverTier {
   PARKED
 }
 
+enum RedRoverTripLeg {
+  EU_MUNICH
+  ASIA_SHANGHAI
+  JAPAN
+  US
+  OTHER
+}
+
 model RedRoverTarget {
   id           String        @id @default(cuid())
   name         String
@@ -4789,6 +4797,8 @@ model RedRoverTarget {
   companyClass String? // one-line "what they are" (e.g. "Textile-chemical major")
   geo          String? // country / city
   stage        RedRoverStage @default(IDENTIFIED)
+  // Which acquisition trip leg this target is worked on (Red Rover trips view).
+  tripLeg      RedRoverTripLeg @default(OTHER)
 
   // BD point of contact who owns this target's relationship.
   ownerId String?
@@ -4812,6 +4822,7 @@ model RedRoverTarget {
 
   @@index([tier, rank])
   @@index([stage])
+  @@index([tripLeg])
 }
 
 model RedRoverContact {
