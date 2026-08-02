@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { HydrationFrame, useMountLog } from "@/components/HydrationFrame";
+import { RedRoverBoard } from "@/components/RedRoverBoard";
 
 /* ── Types ─────────────────────────────────────────────── */
 interface Contact {
@@ -182,6 +183,7 @@ function RedRoverDashboard() {
   const [stageFilter, setStageFilter] = useState("ALL");
   const [ownerFilter, setOwnerFilter] = useState("ALL");
   const [briefOpen, setBriefOpen] = useState(false);
+  const [view, setView] = useState<"table" | "board">("table");
 
   const [addOpen, setAddOpen] = useState(false);
   const [addBusy, setAddBusy] = useState(false);
@@ -287,6 +289,20 @@ function RedRoverDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <div className="inline-flex overflow-hidden rounded-md border border-slate-300">
+            <button
+              onClick={() => setView("table")}
+              className={`px-3 py-2 text-sm font-medium ${view === "table" ? "bg-rose-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
+            >
+              Table
+            </button>
+            <button
+              onClick={() => setView("board")}
+              className={`px-3 py-2 text-sm font-medium ${view === "board" ? "bg-rose-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
+            >
+              Board
+            </button>
+          </div>
           <a
             href="/api/admin/red-rover/export"
             className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
@@ -459,7 +475,11 @@ function RedRoverDashboard() {
         </span>
       </div>
 
-      {/* Table */}
+      {/* Board view */}
+      {view === "board" ? (
+        <RedRoverBoard targets={filtered} onReload={load} />
+      ) : (
+      /* Table view */
       <div className="overflow-x-auto rounded-lg border border-slate-200">
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">
@@ -536,6 +556,7 @@ function RedRoverDashboard() {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 }

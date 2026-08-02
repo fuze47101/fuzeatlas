@@ -735,12 +735,45 @@ function ActivityPanel({
     }
   }
 
+  // Time-ordered, newest first (activities arrive reverse-chron from the API).
+  const ordered = [...activities].sort(
+    (a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime(),
+  );
+
   return (
     <div className="mt-5 rounded-lg border border-slate-200 bg-white p-5">
-      <h2 className="mb-3 text-sm font-semibold text-slate-800">Activity feed</h2>
+      <h2 className="mb-3 text-sm font-semibold text-slate-800">Timeline</h2>
 
-      {/* Always-visible log form */}
-      <form onSubmit={submit} className="mb-4 rounded border border-slate-200 bg-slate-50 p-3">
+      {/* Vertical time-ordered timeline (above the log form) */}
+      {ordered.length === 0 ? (
+        <p className="mb-4 text-sm text-slate-400">No activity logged yet.</p>
+      ) : (
+        <ol className="relative mb-5 ml-3 border-l-2 border-slate-200">
+          {ordered.map((a) => (
+            <li key={a.id} className="relative ml-5 pb-5 last:pb-0">
+              <span className="absolute -left-[26px] flex h-5 w-5 items-center justify-center rounded-full bg-white text-[11px] ring-2 ring-slate-200">
+                {ACTIVITY_ICON[a.type] || "•"}
+              </span>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                <span className="font-semibold text-slate-700">{a.type}</span>
+                <span>·</span>
+                <time>{new Date(a.occurredAt).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}</time>
+                {ownerName(a.userId) && (
+                  <>
+                    <span>·</span>
+                    <span>{ownerName(a.userId)}</span>
+                  </>
+                )}
+              </div>
+              <p className="whitespace-pre-wrap text-sm text-slate-700">{a.body}</p>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      {/* Always-visible log form (below the timeline) */}
+      <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Log activity</div>
+      <form onSubmit={submit} className="rounded border border-slate-200 bg-slate-50 p-3">
         <div className="flex flex-wrap gap-2">
           <select
             className="rounded border border-slate-300 px-2 py-1 text-sm"
@@ -776,33 +809,6 @@ function ActivityPanel({
           {busy ? "Logging…" : "Log activity"}
         </button>
       </form>
-
-      {/* Reverse-chron list */}
-      {activities.length === 0 ? (
-        <p className="text-sm text-slate-400">No activity logged yet.</p>
-      ) : (
-        <ol className="space-y-3">
-          {activities.map((a) => (
-            <li key={a.id} className="flex gap-3">
-              <div className="text-lg">{ACTIVITY_ICON[a.type] || "•"}</div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                  <span className="font-medium text-slate-700">{a.type}</span>
-                  <span>·</span>
-                  <span>{new Date(a.occurredAt).toLocaleString()}</span>
-                  {ownerName(a.userId) && (
-                    <>
-                      <span>·</span>
-                      <span>{ownerName(a.userId)}</span>
-                    </>
-                  )}
-                </div>
-                <p className="whitespace-pre-wrap text-sm text-slate-700">{a.body}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      )}
     </div>
   );
 }
