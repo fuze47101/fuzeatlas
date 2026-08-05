@@ -51,6 +51,7 @@ export default function FactoriesPage() {
     const matchesText =
       !q ||
       f.name.toLowerCase().includes(q) ||
+      (q === "unknown" && !f.country) ||
       (f.country && f.country.toLowerCase().includes(q)) ||
       (f.specialty && f.specialty.toLowerCase().includes(q));
     if (!matchesText) return false;
@@ -148,7 +149,10 @@ export default function FactoriesPage() {
             )}
           </button>
           {capFilters.length > 0 && (
-            <button onClick={() => setCapFilters([])} className="text-xs text-slate-500 hover:text-red-500">
+            <button
+              onClick={() => setCapFilters([])}
+              className="text-xs text-slate-500 hover:text-red-500"
+            >
               {t.factories.clearFilters}
             </button>
           )}
@@ -157,10 +161,15 @@ export default function FactoriesPage() {
           <div className="bg-white rounded-xl border border-slate-200 p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {CAPABILITY_GROUPS.map((g) => (
               <div key={g.key}>
-                <div className="text-xs font-bold text-slate-700 mb-2">{g.icon} {g.label}</div>
+                <div className="text-xs font-bold text-slate-700 mb-2">
+                  {g.icon} {g.label}
+                </div>
                 <div className="space-y-1">
                   {g.options.map((o) => (
-                    <label key={o.id} className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
+                    <label
+                      key={o.id}
+                      className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"
+                    >
                       <input
                         type="checkbox"
                         checked={capFilters.includes(o.id)}
