@@ -1,15 +1,17 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, getRealUser } from "@/lib/auth";
 
 /**
  * Product Documents — product-wide static docs (TDS, SDS, etc.)
  *
- * GET  /api/admin/product-documents — list (auth only, any role)
- * POST /api/admin/product-documents — create/update (admin only)
+ * GET    /api/admin/product-documents — list ALL docs (auth only, any role)
+ * POST   /api/admin/product-documents — create/replace (ADMIN/EMPLOYEE)
+ * DELETE /api/admin/product-documents?id= — delete one (ADMIN/EMPLOYEE)
+ * PATCH  /api/admin/product-documents — bulk re-tag (ADMIN/EMPLOYEE)
  *
- * docType is unique — uploading a new TDS replaces the old one.
+ * MANY docs per docType now, keyed by (docType, productLine, language).
  */
 
 const DOC_TYPES = ["TDS", "SDS", "PRODUCT_SPEC", "HANDLING_GUIDE", "APPLICATION_GUIDE"];
@@ -27,15 +29,20 @@ const CATEGORIES = [
 
 const AUDIENCE_TAGS = ["BRAND", "FACTORY", "DISTRIBUTOR", "LAB", "PUBLIC"];
 
-const PRODUCT_LINES = ["F1", "F2", "F3", "F4"];
+// Normalize a free-form product-line / language value to a stable token.
+function norm(v: any, fallback: string): string {
+  const s = String(v ?? "").trim();
+  if (!s) return fallback;
+  return s.toUpperCase().replace(/[\s-]+/g, "_");
+}
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 
     const docs = await prisma.productDocument.findMany({
-      orderBy: { docType: "asc" },
+      orderBy: [{ docType: "asc" }, { productLine: "asc" }, { language: "asc" }],
     });
     return NextResponse.json({ ok: true, documents: docs });
   } catch (e: any) {
@@ -45,23 +52,13 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const user = await getCurrentUser();
+    const user = await getRealUser();
     if (!user || !["ADMIN", "EMPLOYEE"].includes(user.role)) {
       return NextResponse.json({ ok: false, error: "Admin access required" }, { status: 403 });
     }
 
     const body = await req.json();
-    const {
-      docType,
-      title,
-      description,
-      fileUrl,
-      version,
-      effectiveDate,
-      category,
-      audience,
-      productLine,
-    } = body;
+    const { docType, title, description, fileUrl, version, effectiveDate, category, audience } = body;
 
     if (!DOC_TYPES.includes(docType)) {
       return NextResponse.json({ ok: false, error: "Invalid docType" }, { status: 400 });
@@ -69,14 +66,15 @@ export async function POST(req: Request) {
     if (!fileUrl || !title) {
       return NextResponse.json({ ok: false, error: "title and fileUrl required" }, { status: 400 });
     }
-
-    // Phase 6A/6D fields — optional but validated when present.
     if (category && !CATEGORIES.includes(category)) {
       return NextResponse.json({ ok: false, error: "Invalid category" }, { status: 400 });
     }
-    if (productLine && !PRODUCT_LINES.includes(productLine)) {
-      return NextResponse.json({ ok: false, error: "Invalid productLine" }, { status: 400 });
-    }
+
+    // Many-per-type key fields. productLine is free-ish (F1_SILVER /
+    // HELIOS_GOLD / COMBINED / DEFAULT / custom); language is EN/VI/ZH/…
+    const productLine = norm(body.productLine, "DEFAULT");
+    const language = norm(body.language, "EN");
+
     let audienceArray: string[] | undefined = undefined;
     if (audience !== undefined) {
       if (!Array.isArray(audience)) {
@@ -89,6 +87,7 @@ export async function POST(req: Request) {
       audienceArray = audience;
     }
 
+    // Fields that update on replace (NOT the composite key).
     const baseData: any = {
       title,
       description: description || null,
@@ -100,14 +99,35 @@ export async function POST(req: Request) {
     };
     if (category) baseData.category = category;
     if (audienceArray) baseData.audience = audienceArray;
-    if (productLine !== undefined) baseData.productLine = productLine || null;
 
     const doc = await prisma.productDocument.upsert({
-      where: { docType },
-      create: { docType, ...baseData },
+      where: { docType_productLine_language: { docType, productLine, language } },
+      create: { docType, productLine, language, ...baseData },
       update: baseData,
     });
     return NextResponse.json({ ok: true, document: doc });
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
+  }
+}
+
+/**
+ * DELETE /api/admin/product-documents?id=<id> — remove a single document.
+ */
+export async function DELETE(req: Request) {
+  try {
+    const user = await getRealUser();
+    if (!user || !["ADMIN", "EMPLOYEE"].includes(user.role)) {
+      return NextResponse.json({ ok: false, error: "Admin access required" }, { status: 403 });
+    }
+    const id = new URL(req.url).searchParams.get("id");
+    if (!id) return NextResponse.json({ ok: false, error: "id required" }, { status: 400 });
+
+    const existing = await prisma.productDocument.findUnique({ where: { id }, select: { id: true } });
+    if (!existing) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
+
+    await prisma.productDocument.delete({ where: { id } });
+    return NextResponse.json({ ok: true, deleted: id });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
@@ -119,7 +139,7 @@ export async function POST(req: Request) {
  */
 export async function PATCH(req: Request) {
   try {
-    const user = await getCurrentUser();
+    const user = await getRealUser();
     if (!user || !["ADMIN", "EMPLOYEE"].includes(user.role)) {
       return NextResponse.json({ ok: false, error: "Admin access required" }, { status: 403 });
     }
@@ -146,10 +166,8 @@ export async function PATCH(req: Request) {
       data.audience = body.audience;
     }
     if (body.productLine !== undefined) {
-      if (body.productLine && !PRODUCT_LINES.includes(body.productLine)) {
-        return NextResponse.json({ ok: false, error: "Invalid productLine" }, { status: 400 });
-      }
-      data.productLine = body.productLine || null;
+      // productLine is non-null now — never write null; fall back to DEFAULT.
+      data.productLine = norm(body.productLine, "DEFAULT");
     }
 
     if (Object.keys(data).length === 0) {

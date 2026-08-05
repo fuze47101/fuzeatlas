@@ -3730,7 +3730,10 @@ model BatchScanLog {
 // ─────────────────────────────────────────────
 model ProductDocument {
   id            String    @id @default(cuid())
-  docType       String    @unique // TDS | SDS | PRODUCT_SPEC | HANDLING_GUIDE | APPLICATION_GUIDE
+  docType       String // TDS | SDS | PRODUCT_SPEC | HANDLING_GUIDE | APPLICATION_GUIDE (no longer unique — many per type)
+  // Language of this document (EN | VI | ZH | others later). Many docs per
+  // type now, keyed by (docType, productLine, language).
+  language      String    @default("EN")
   title         String
   description   String?
   fileUrl       String
@@ -3749,7 +3752,9 @@ model ProductDocument {
   // when product-line-specific, null otherwise.
   category    String   @default("tds_sds")
   audience    String[] @default(["BRAND", "FACTORY", "DISTRIBUTOR", "LAB"])
-  productLine String?
+  // Which product line this doc is for. Non-null; "DEFAULT" when not
+  // line-specific. Values e.g. F1_SILVER | HELIOS_GOLD | COMBINED | DEFAULT.
+  productLine String   @default("DEFAULT")
 
   // ─── Phase 14B — per-entity scoping for sensitive docs ─────
   // When set, document is only visible to users whose
@@ -3764,6 +3769,7 @@ model ProductDocument {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([docType, productLine, language])
   @@index([docType])
   @@index([category])
 }
