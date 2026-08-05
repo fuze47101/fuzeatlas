@@ -14,8 +14,11 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const category = searchParams.get("category");
+    // Partition: COMPLIANCE (default) or MARKETING. Unknown values fall back
+    // to COMPLIANCE so the technical library never leaks marketing docs.
+    const libraryType = searchParams.get("libraryType") === "MARKETING" ? "MARKETING" : "COMPLIANCE";
 
-    const where: any = {};
+    const where: any = { libraryType };
     if (category) {
       where.category = category;
     }
@@ -28,6 +31,7 @@ export async function GET(req: Request) {
         title: true,
         description: true,
         category: true,
+        libraryType: true,
         version: true,
         filename: true,
         contentType: true,
@@ -104,6 +108,7 @@ export async function POST(req: Request) {
       data,       // legacy base64 (small files only)
       s3Key,      // S3 key from presigned upload flow
       visibleTo,
+      libraryType, // COMPLIANCE (default) | MARKETING
     } = body;
 
     if (!title) {
@@ -115,6 +120,7 @@ export async function POST(req: Request) {
         title,
         description: description || null,
         category: category || "OTHER",
+        libraryType: libraryType === "MARKETING" ? "MARKETING" : "COMPLIANCE",
         version: version || null,
         filename: filename || null,
         contentType: contentType || null,

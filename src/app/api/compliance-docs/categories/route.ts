@@ -11,7 +11,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ ok: false, error: "Only admins can manage categories" }, { status: 403 });
     }
 
-    const { oldCategory, newCategory } = await req.json();
+    const { oldCategory, newCategory, libraryType } = await req.json();
 
     if (!oldCategory || !newCategory) {
       return NextResponse.json({ ok: false, error: "Both oldCategory and newCategory are required" }, { status: 400 });
@@ -22,8 +22,10 @@ export async function PUT(req: Request) {
       return NextResponse.json({ ok: false, error: "Invalid category name" }, { status: 400 });
     }
 
+    // Scope to the partition so a rename only touches that library's docs.
+    const lib = libraryType === "MARKETING" ? "MARKETING" : "COMPLIANCE";
     const result = await prisma.complianceDocument.updateMany({
-      where: { category: oldCategory },
+      where: { category: oldCategory, libraryType: lib },
       data: { category: sanitized },
     });
 
@@ -47,7 +49,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ ok: false, error: "Only administrators can delete categories" }, { status: 403 });
     }
 
-    const { category, moveTo } = await req.json();
+    const { category, moveTo, libraryType } = await req.json();
 
     if (!category) {
       return NextResponse.json({ ok: false, error: "category is required" }, { status: 400 });
@@ -57,8 +59,9 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ ok: false, error: "moveTo category is required — documents must be reassigned" }, { status: 400 });
     }
 
+    const lib = libraryType === "MARKETING" ? "MARKETING" : "COMPLIANCE";
     const result = await prisma.complianceDocument.updateMany({
-      where: { category },
+      where: { category, libraryType: lib },
       data: { category: moveTo },
     });
 

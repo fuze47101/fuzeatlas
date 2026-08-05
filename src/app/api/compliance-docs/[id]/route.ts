@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, getRealUser } from "@/lib/auth";
 import { deleteFromS3, isS3Configured } from "@/lib/s3";
 
 /* ── GET /api/compliance-docs/[id] ── Get single document ──── */
@@ -64,6 +64,8 @@ export async function PUT(
     if (body.url !== undefined) data.url = body.url || null;
     if (body.data !== undefined) data.data = body.data || null;
     if (body.visibleTo !== undefined) data.visibleTo = body.visibleTo;
+    if (body.libraryType !== undefined)
+      data.libraryType = body.libraryType === "MARKETING" ? "MARKETING" : "COMPLIANCE";
 
     const doc = await prisma.complianceDocument.update({
       where: { id },
@@ -73,6 +75,36 @@ export async function PUT(
       },
     });
 
+    return NextResponse.json({ ok: true, document: doc });
+  } catch (err: any) {
+    return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
+  }
+}
+
+/* ── PATCH /api/compliance-docs/[id] ── Move a doc between library partitions
+ * (COMPLIANCE ↔ MARKETING). Admin/Employee only, gated on getRealUser(). ──── */
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await getRealUser();
+    if (!user || (user.role !== "ADMIN" && user.role !== "EMPLOYEE")) {
+      return NextResponse.json({ ok: false, error: "Only admins can move documents" }, { status: 403 });
+    }
+    const { id } = await params;
+    const body = await req.json();
+    if (body.libraryType !== "COMPLIANCE" && body.libraryType !== "MARKETING") {
+      return NextResponse.json(
+        { ok: false, error: "libraryType must be COMPLIANCE or MARKETING" },
+        { status: 400 },
+      );
+    }
+    const doc = await prisma.complianceDocument.update({
+      where: { id },
+      data: { libraryType: body.libraryType },
+      select: { id: true, libraryType: true },
+    });
     return NextResponse.json({ ok: true, document: doc });
   } catch (err: any) {
     return NextResponse.json({ ok: false, error: err.message }, { status: 500 });

@@ -3249,6 +3249,9 @@ model ComplianceDocument {
   title       String
   description String?
   category    String  @default("OTHER") // Flexible string categories (SDS_MSDS, TDS, BLUESIGN, ZDHC, OEKO_TEX, GOTS, EPA, REACH, COA, COC, ISO, IMPORT_EXPORT, OTHER, or custom)
+  // Which library partition this doc lives in: COMPLIANCE (technical/compliance
+  // docs, /compliance-library) or MARKETING (collateral, /marketing-library).
+  libraryType String  @default("COMPLIANCE")
   version     String?
   filename    String?
   contentType String?
@@ -3269,6 +3272,7 @@ model ComplianceDocument {
 
   @@index([category])
   @@index([uploadedById])
+  @@index([libraryType, category])
 }
 
 // ─────────────────────────────────────────────

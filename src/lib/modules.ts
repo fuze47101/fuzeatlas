@@ -239,6 +239,7 @@ export const MODULES: ModuleDef[] = [
     items: [
       // Document library
       { label: "Document Library", labelKey: "documentLibrary", href: "/compliance-library", icon: "📋" },
+      { label: "Marketing Material", labelKey: "marketingLibrary", href: "/marketing-library", icon: "📣" },
       { label: "Product Documents (TDS/SDS/COA)", labelKey: "productDocuments", href: "/admin/product-documents", icon: "📘" },
       { label: "SOWs", labelKey: "sows", href: "/sow", icon: "📄" },
       { label: "Pricing Calculator", labelKey: "pricingCalculator", href: "/pricing", icon: "💰" },
