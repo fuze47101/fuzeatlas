@@ -24,6 +24,7 @@ export default function DistributorFactoriesPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [adding, setAdding] = useState(false);
   const [search, setSearch] = useState("");
+  const [listFilter, setListFilter] = useState("");
   const [candidates, setCandidates] = useState<any[]>([]);
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
@@ -111,8 +112,14 @@ export default function DistributorFactoriesPage() {
     );
   }
 
-  const roster = rows.filter((r) => r.via === "roster");
-  const primary = rows.filter((r) => r.via === "primary");
+  const lf = listFilter.toLowerCase().trim();
+  const matchesFilter = (f: any) =>
+    !lf ||
+    (f.name && f.name.toLowerCase().includes(lf)) ||
+    (f.country && f.country.toLowerCase().includes(lf)) ||
+    (f.city && f.city.toLowerCase().includes(lf));
+  const roster = rows.filter((r) => r.via === "roster" && matchesFilter(r));
+  const primary = rows.filter((r) => r.via === "primary" && matchesFilter(r));
 
   return (
     <div className="p-4 sm:p-8 max-w-5xl mx-auto">
@@ -123,10 +130,10 @@ export default function DistributorFactoriesPage() {
           </p>
           <h1 className="text-3xl font-black text-slate-900">Factory Roster</h1>
           <p className="text-slate-600 max-w-2xl mt-1 text-sm">
-            Factories you supply FUZE to. Includes primary-distributor factories
-            (assigned by FUZE) plus any factories you have added directly.
-            Adding a factory here does not change which distributor FUZE bills
-            them through — talk to FUZE admin if you need primary reassignment.
+            Factories you supply FUZE to. Includes primary-distributor factories (assigned by FUZE)
+            plus any factories you have added directly. Adding a factory here does not change which
+            distributor FUZE bills them through — talk to FUZE admin if you need primary
+            reassignment.
           </p>
         </div>
         <button
@@ -137,6 +144,16 @@ export default function DistributorFactoriesPage() {
         </button>
       </div>
 
+      <div className="mb-5">
+        <input
+          type="text"
+          value={listFilter}
+          onChange={(e) => setListFilter(e.target.value)}
+          placeholder="Filter by name, country, or city…"
+          className="w-full sm:w-80 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+        />
+      </div>
+
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
           {error}
@@ -145,9 +162,7 @@ export default function DistributorFactoriesPage() {
 
       {showAdd && (
         <div className="mb-6 p-4 bg-cyan-50/50 border border-cyan-200 rounded-xl">
-          <label className="block text-xs font-bold text-slate-700 mb-1">
-            Search factories
-          </label>
+          <label className="block text-xs font-bold text-slate-700 mb-1">Search factories</label>
           <input
             type="text"
             value={search}
@@ -200,8 +215,8 @@ export default function DistributorFactoriesPage() {
             Primary distributor ({primary.length})
           </h2>
           <p className="text-xs text-slate-500 mb-3">
-            FUZE has assigned you as the primary distributor for these factories.
-            They appear on your pricing tiers and FuzeOrder rollups automatically.
+            FUZE has assigned you as the primary distributor for these factories. They appear on
+            your pricing tiers and FuzeOrder rollups automatically.
           </p>
           <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
             {primary.map((f: any) => (
@@ -229,8 +244,8 @@ export default function DistributorFactoriesPage() {
           Roster ({roster.length})
         </h2>
         <p className="text-xs text-slate-500 mb-3">
-          Factories you have added to your own roster. Useful for shared
-          factories or downstream sub-distributor relationships.
+          Factories you have added to your own roster. Useful for shared factories or downstream
+          sub-distributor relationships.
         </p>
         {roster.length === 0 ? (
           <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl px-4 py-8 text-center text-sm text-slate-500">
