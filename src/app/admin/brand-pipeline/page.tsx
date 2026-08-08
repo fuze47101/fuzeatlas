@@ -811,6 +811,15 @@ export default function BrandPipelinePage() {
                                           `Em: ${new Date(emMe.sentAt).toLocaleDateString()}`}
                                       </span>
                                     )}
+                                    {emMe && (
+                                      <Link
+                                        href={`/contacts/${c.id}`}
+                                        className="text-[9px] text-violet-600 hover:underline font-medium"
+                                        title="View sent emails for this contact"
+                                      >
+                                        View sent →
+                                      </Link>
+                                    )}
                                   </div>
                                 </div>
                               );
