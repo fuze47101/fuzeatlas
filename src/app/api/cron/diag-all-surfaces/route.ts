@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { scanDuplicates } from "@/lib/dedupe-scan";
+import { buildFkMap, countRefsForRecord } from "@/lib/dedupe-refs";
 
 /**
  * GET /api/cron/diag-all-surfaces
@@ -1063,6 +1065,28 @@ export async function GET(req: Request) {
           }),
           (prisma as any).redRoverGoal.count(),
         ]).then(() => 1),
+    ),
+    // Dedupe — /api/cron/diag-duplicates + /admin/dedupe data endpoint.
+    // Exercises the full read-only scan (normalize + cluster + per-record
+    // linked-count queries). A schema drift in any FK-bearing model surfaces
+    // here as a failed count query before the dashboard 500s.
+    check(
+      "/admin/dedupe + /api/cron/diag-duplicates — duplicate scan",
+      "scanDuplicates() full cluster build",
+      () => scanDuplicates().then((r) => r.summary.totalClusters + 1),
+    ),
+    // Dedupe merge engine — reference-count path. Confirms the DMMF-derived FK
+    // map resolves and every derived delegate/count query executes against a
+    // real record (the path merge/reallocate re-point over).
+    check(
+      "/api/admin/dedupe/merge — DMMF FK map + reference counting",
+      "buildFkMap(BRAND) + countRefsForRecord on a sample brand",
+      async () => {
+        const fkCount = buildFkMap("BRAND").length + buildFkMap("FACTORY").length;
+        const sample = await prisma.brand.findFirst({ select: { id: true } });
+        if (sample) await countRefsForRecord(prisma, "BRAND", sample.id);
+        return fkCount;
+      },
     ),
   ]);
 
