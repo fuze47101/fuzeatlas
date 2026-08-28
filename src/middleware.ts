@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "fuze-atlas-dev-secret-change-in-production"
+  process.env.JWT_SECRET || "fuze-atlas-dev-secret-change-in-production",
 );
 const COOKIE_NAME = "fuze-session";
 
@@ -20,7 +20,43 @@ const COOKIE_NAME = "fuze-session";
 // the token-protected Full Application Report from the email link
 // without needing an Atlas login (the token in the URL is the
 // credential). Phase 2 Penfabric work.
-const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/forgot-password", "/reset-password", "/verify-email", "/api/auth/login", "/api/auth/register", "/api/auth/logout", "/api/auth/setup-check", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/verify-email", "/api/auth/invitation/", "/signup/invitation/", "/api/access-requests", "/api/cron", "/calendar/", "/api/inbound/", "/report/", "/api/fabric-report/", "/factory-invitation/", "/api/factory-invitations/", "/docs/", "/api/docs/public", "/api/tracking/", "/api/webhooks/", "/verified/", "/verify/sku/", "/claims", "/press", "/api/public/", "/track/", "/sitemap.xml", "/robots.txt"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/request-access",
+  "/request-factory-access",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+  "/api/auth/login",
+  "/api/auth/register",
+  "/api/auth/logout",
+  "/api/auth/setup-check",
+  "/api/auth/forgot-password",
+  "/api/auth/reset-password",
+  "/api/auth/verify-email",
+  "/api/auth/invitation/",
+  "/signup/invitation/",
+  "/api/access-requests",
+  "/api/cron",
+  "/calendar/",
+  "/api/inbound/",
+  "/report/",
+  "/api/fabric-report/",
+  "/factory-invitation/",
+  "/api/factory-invitations/",
+  "/docs/",
+  "/api/docs/public",
+  "/api/tracking/",
+  "/api/webhooks/",
+  "/verified/",
+  "/verify/sku/",
+  "/claims",
+  "/press",
+  "/api/public/",
+  "/track/",
+  "/sitemap.xml",
+  "/robots.txt",
+];
 
 // Routes restricted to internal roles only (ADMIN, EMPLOYEE, SALES_*, TESTING_*, FABRIC_*)
 // Factory, Brand, and Distributor users CANNOT access these even with a valid session.
@@ -29,24 +65,51 @@ const PUBLIC_PATHS = ["/login", "/request-access", "/request-factory-access", "/
 // throwing data-fetch errors instead of bouncing cleanly. The middleware
 // gate now stops that at the door. Tina and Jett both reported May 13.
 const INTERNAL_ONLY_PATHS = [
-  "/pipeline", "/revenue", "/invoices", "/brand-engagement",
-  "/brands", "/factories",
-  "/fabrics", "/recipes",
-  "/test-requests", "/tests", "/labs",
-  "/sow", "/meetings", "/shipments", "/reports",
-  "/settings", "/admin",
-  "/api/admin", "/api/pipeline", "/api/revenue",
-  "/api/settings", "/api/invoices",
+  "/pipeline",
+  "/revenue",
+  "/invoices",
+  "/brand-engagement",
+  "/brands",
+  "/factories",
+  "/fabrics",
+  "/recipes",
+  "/test-requests",
+  "/tests",
+  "/labs",
+  "/sow",
+  "/meetings",
+  "/shipments",
+  "/reports",
+  "/settings",
+  "/admin",
+  // Owner-only planning board at exactly /calendar (no trailing slash).
+  //
+  // CAREFUL: PUBLIC_PATHS contains "/calendar/" WITH a trailing slash, for the
+  // per-rep ICS subscription feeds at /calendar/[token]. The public check runs
+  // first and matches by startsWith, so:
+  //   /calendar/abc123  -> matches "/calendar/"  -> public, feed still works
+  //   /calendar         -> does NOT match        -> falls through to here
+  // If anyone ever drops that trailing slash from PUBLIC_PATHS, this board goes
+  // public. The API at /api/operating-calendar re-checks isOwner() on every
+  // method, so the data stays protected even if this gate is bypassed — but do
+  // not rely on that alone. The page itself holds no data; it fetches.
+  "/calendar",
+  "/api/operating-calendar",
+  "/api/admin",
+  "/api/pipeline",
+  "/api/revenue",
+  "/api/settings",
+  "/api/invoices",
 ];
 
 // Exemptions: internal paths that external users CAN access
 const EXTERNAL_ALLOWED_PATHS = [
   "/fabrics/intake",
-  "/fabrics/",        // Allow fabric detail pages for all users (read-only)
-  "/api/fabrics/",    // Allow fabric API for all users
+  "/fabrics/", // Allow fabric detail pages for all users (read-only)
+  "/api/fabrics/", // Allow fabric API for all users
   "/api/brand-portal/test-request",
-  "/education",       // Education hub — accessible to every signed-in role
-  "/education/",      // Education sub-pages (story, application, compliance, claims)
+  "/education", // Education hub — accessible to every signed-in role
+  "/education/", // Education sub-pages (story, application, compliance, claims)
   // Recipe report + print pages live under /admin/recipe-calculator/* but the
   // API ACLs by fabric ownership (factory/brand users see only their own).
   // Without these exemptions middleware bounced KK Chan to /home when he
@@ -56,14 +119,18 @@ const EXTERNAL_ALLOWED_PATHS = [
 ];
 
 // Roles that are considered "external" (cannot access internal pages)
-const EXTERNAL_ROLES = ["FACTORY_USER", "FACTORY_MANAGER", "BRAND_USER", "BRAND_MANAGER", "DISTRIBUTOR_USER", "LAB_USER", "PUBLIC"];
+const EXTERNAL_ROLES = [
+  "FACTORY_USER",
+  "FACTORY_MANAGER",
+  "BRAND_USER",
+  "BRAND_MANAGER",
+  "DISTRIBUTOR_USER",
+  "LAB_USER",
+  "PUBLIC",
+];
 
 // Static file patterns to skip
-const STATIC_PATTERNS = [
-  /^\/_next/,
-  /^\/favicon/,
-  /\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2)$/,
-];
+const STATIC_PATTERNS = [/^\/_next/, /^\/favicon/, /\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2)$/];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -84,10 +151,7 @@ export async function middleware(req: NextRequest) {
   if (!token) {
     // API routes return 401
     if (pathname.startsWith("/api/")) {
-      return NextResponse.json(
-        { ok: false, error: "Authentication required" },
-        { status: 401 }
-      );
+      return NextResponse.json({ ok: false, error: "Authentication required" }, { status: 401 });
     }
     // Page routes redirect to login
     const loginUrl = new URL("/login", req.url);
@@ -138,15 +202,22 @@ export async function middleware(req: NextRequest) {
         DISTRIBUTOR_USER: ["/distributor-portal"],
         LAB_USER: ["/lab-portal"],
       };
-      const ALL_PORTAL_PREFIXES = ["/factory-portal", "/brand-portal", "/distributor-portal", "/lab-portal"];
+      const ALL_PORTAL_PREFIXES = [
+        "/factory-portal",
+        "/brand-portal",
+        "/distributor-portal",
+        "/lab-portal",
+      ];
       const ownPrefixes = PORTAL_PATHS[user.role] || [];
-      const onSomePortal = ALL_PORTAL_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
+      const onSomePortal = ALL_PORTAL_PREFIXES.some(
+        (p) => pathname === p || pathname.startsWith(p + "/"),
+      );
       const onOwnPortal = ownPrefixes.some((p) => pathname === p || pathname.startsWith(p + "/"));
       if (onSomePortal && !onOwnPortal) {
         if (pathname.startsWith("/api/")) {
           return NextResponse.json(
             { ok: false, error: "Wrong portal for this role" },
-            { status: 403 }
+            { status: 403 },
           );
         }
         return NextResponse.redirect(new URL(ownPrefixes[0] || "/login", req.url));
@@ -159,10 +230,7 @@ export async function middleware(req: NextRequest) {
       const isInternalRoute = !isExempt && INTERNAL_ONLY_PATHS.some((p) => pathname.startsWith(p));
       if (isInternalRoute) {
         if (pathname.startsWith("/api/")) {
-          return NextResponse.json(
-            { ok: false, error: "Access denied" },
-            { status: 403 }
-          );
+          return NextResponse.json({ ok: false, error: "Access denied" }, { status: 403 });
         }
         // Redirect external users to their portal
         const role = user.role;
@@ -198,10 +266,7 @@ export async function middleware(req: NextRequest) {
   } catch {
     // Invalid token — clear cookie and redirect
     if (pathname.startsWith("/api/")) {
-      return NextResponse.json(
-        { ok: false, error: "Session expired" },
-        { status: 401 }
-      );
+      return NextResponse.json({ ok: false, error: "Session expired" }, { status: 401 });
     }
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("from", pathname);
