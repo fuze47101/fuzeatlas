@@ -4886,3 +4886,39 @@ model RedRoverActivity {
 
   @@index([targetId, occurredAt])
 }
+
+// ─────────────────────────────────────────────
+// Operating Calendar — Andrew's personal planning board.
+//
+// Deliberately standalone: no relation to User, no column added to any
+// existing model. Ownership is by email string so the migration is a single
+// additive CREATE TABLE and cannot affect anything already running.
+//
+// This is NOT the ICS subscription feed at /calendar/[token] — that path is
+// in PUBLIC_PATHS and needs no session. This board is owner-gated and lives
+// at /operating-calendar, which is registered in INTERNAL_ONLY_PATHS.
+// ─────────────────────────────────────────────
+
+model OperatingCalendarEvent {
+  id        String   @id @default(cuid())
+  ownerEmail String
+
+  title     String
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+
+  lane      String   @default("fuze") // fuze | travel | show | personal | critical
+  account   String? // fuze | ledge | null
+  status    String   @default("tentative") // locked | tentative
+  isPrivate Boolean  @default(false) // masks on any shared copy
+  isShow    Boolean  @default(false) // show-floor highlight
+  holds     Boolean  @default(true) // occupies runway; false = informational
+
+  detail    String?
+  sortHint  Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerEmail, startDate])
+}
