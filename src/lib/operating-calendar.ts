@@ -11,11 +11,24 @@
 export const HORIZON_START = "2026-08-01";
 export const HORIZON_END = "2027-01-31";
 
-/** Only this account may read or write the board. Not role-based on purpose. */
+/**
+ * Ownership.
+ *
+ * Deliberately NOT role-based. This instance has ten ADMIN accounts, several
+ * of them external (evoqmm.com, actif.ltd) — gating on role would hand the
+ * board to all of them. It is gated on identity instead.
+ *
+ * OWNER_EMAIL is the canonical storage key: every row is written with it, so
+ * the data has one owner regardless of which login was used.
+ * OWNER_LOGINS is the set of accounts allowed to reach that data — Andrew has
+ * two admin accounts on this instance and signs in with either.
+ */
 export const OWNER_EMAIL = "andrew@801inc.com";
 
+export const OWNER_LOGINS = ["andrew@801inc.com", "andrew@fuze47.com"];
+
 export function isOwner(email?: string | null): boolean {
-  return !!email && email.toLowerCase() === OWNER_EMAIL;
+  return !!email && OWNER_LOGINS.includes(email.toLowerCase().trim());
 }
 
 /**
