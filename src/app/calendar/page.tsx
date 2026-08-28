@@ -34,6 +34,16 @@ interface Win {
 }
 
 const LANES = ["fuze", "travel", "show", "personal", "critical"];
+
+const VIEW_TABS: { key: "all" | "fuze" | "ledge"; label: string; note: string }[] = [
+  { key: "all", label: "Combined", note: "Everything named. Yours only — do not hand this out." },
+  { key: "fuze", label: "FUZE", note: "FUZE work named. Ledge/Pulse and personal both masked." },
+  {
+    key: "ledge",
+    label: "Ledge / Pulse",
+    note: "Ledge/Pulse work named. FUZE and personal both masked.",
+  },
+];
 const BLANK = {
   title: "",
   startDate: "",
@@ -60,6 +70,7 @@ const laneColor: Record<string, string> = {
   travel: "bg-sky-600",
   personal: "bg-emerald-700",
   critical: "bg-red-800",
+  mask: "bg-slate-300",
 };
 
 export default function OperatingCalendarPage() {
@@ -71,9 +82,10 @@ export default function OperatingCalendarPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [view, setView] = useState<"all" | "fuze" | "ledge">("all");
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/operating-calendar");
+    const res = await fetch(`/api/operating-calendar?view=${view}`);
     if (res.status === 403) return setState("denied");
     if (!res.ok) return setState("error");
     const d = await res.json();
@@ -81,7 +93,7 @@ export default function OperatingCalendarPage() {
     setRunway(d.runway);
     setConflicts(d.conflicts);
     setState("ok");
-  }, []);
+  }, [view]);
 
   useEffect(() => {
     load();
@@ -135,6 +147,34 @@ export default function OperatingCalendarPage() {
           land. Private to you.
         </p>
       </header>
+
+      <div className="mb-5">
+        <div className="inline-flex rounded border border-slate-300 overflow-hidden">
+          {VIEW_TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setView(t.key)}
+              className={
+                "px-4 py-1.5 text-sm border-r border-slate-300 last:border-r-0 " +
+                (view === t.key
+                  ? "bg-slate-900 text-white font-medium"
+                  : "bg-white text-slate-600 hover:bg-slate-50")
+              }
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-1.5 text-xs text-slate-500">
+          {VIEW_TABS.find((t) => t.key === view)?.note}
+        </p>
+        {view !== "all" && (
+          <p className="mt-1 text-xs text-slate-400">
+            Masked items are withheld by the server — the hidden names are never sent to this page.
+            Dates and durations still show, so the time reads as blocked.
+          </p>
+        )}
+      </div>
 
       {conflicts.length > 0 && (
         <div className="mb-5 rounded border border-red-300 bg-red-50 p-3">
@@ -233,148 +273,152 @@ export default function OperatingCalendarPage() {
                 </p>
                 {ev.detail && <p className="text-xs text-slate-500 mt-0.5">{ev.detail}</p>}
               </div>
-              <div className="flex gap-2 shrink-0">
-                <button
-                  onClick={() => {
-                    setEditing(ev.id);
-                    setForm({ ...ev, detail: ev.detail || "" });
-                    window.scrollTo(0, document.body.scrollHeight);
-                  }}
-                  className="text-xs text-sky-700 hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => remove(ev.id)}
-                  disabled={busy}
-                  className="text-xs text-red-700 hover:underline"
-                >
-                  Remove
-                </button>
-              </div>
+              {view === "all" && (
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    onClick={() => {
+                      setEditing(ev.id);
+                      setForm({ ...ev, detail: ev.detail || "" });
+                      window.scrollTo(0, document.body.scrollHeight);
+                    }}
+                    className="text-xs text-sky-700 hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => remove(ev.id)}
+                    disabled={busy}
+                    className="text-xs text-red-700 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="rounded border border-slate-200 bg-slate-50 p-4">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
-          {editing ? "Edit item" : "Add to the board"}
-        </h2>
-        <form onSubmit={submit} className="grid gap-3 sm:grid-cols-2">
-          <label className="sm:col-span-2 text-xs text-slate-600">
-            Title
-            <input
-              required
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
-            />
-          </label>
-          <label className="text-xs text-slate-600">
-            Start
-            <input
-              required
-              type="date"
-              value={form.startDate}
-              onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-              className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
-            />
-          </label>
-          <label className="text-xs text-slate-600">
-            End
-            <input
-              required
-              type="date"
-              value={form.endDate}
-              onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-              className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
-            />
-          </label>
-          <label className="text-xs text-slate-600">
-            Lane
-            <select
-              value={form.lane}
-              onChange={(e) => setForm({ ...form, lane: e.target.value })}
-              className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
-            >
-              {LANES.map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-xs text-slate-600">
-            Status
-            <select
-              value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value })}
-              className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
-            >
-              <option value="tentative">tentative</option>
-              <option value="locked">locked</option>
-            </select>
-          </label>
-          <label className="sm:col-span-2 text-xs text-slate-600">
-            Detail
-            <textarea
-              rows={2}
-              value={form.detail}
-              onChange={(e) => setForm({ ...form, detail: e.target.value })}
-              className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
-            />
-          </label>
-          <div className="sm:col-span-2 flex flex-wrap items-center gap-4 text-xs text-slate-600">
-            <label className="flex items-center gap-1.5">
+      {view === "all" && (
+        <section className="rounded border border-slate-200 bg-slate-50 p-4">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+            {editing ? "Edit item" : "Add to the board"}
+          </h2>
+          <form onSubmit={submit} className="grid gap-3 sm:grid-cols-2">
+            <label className="sm:col-span-2 text-xs text-slate-600">
+              Title
               <input
-                type="checkbox"
-                checked={form.holds}
-                onChange={(e) => setForm({ ...form, holds: e.target.checked })}
+                required
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
               />
-              Holds time (counts against runway)
             </label>
-            <label className="flex items-center gap-1.5">
+            <label className="text-xs text-slate-600">
+              Start
               <input
-                type="checkbox"
-                checked={form.isPrivate}
-                onChange={(e) => setForm({ ...form, isPrivate: e.target.checked })}
+                required
+                type="date"
+                value={form.startDate}
+                onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+                className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
               />
-              Private
             </label>
-            <label className="flex items-center gap-1.5">
+            <label className="text-xs text-slate-600">
+              End
               <input
-                type="checkbox"
-                checked={form.isShow}
-                onChange={(e) => setForm({ ...form, isShow: e.target.checked })}
+                required
+                type="date"
+                value={form.endDate}
+                onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+                className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
               />
-              Show floor
             </label>
-          </div>
-          <div className="sm:col-span-2 flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={busy}
-              className="rounded bg-slate-900 px-4 py-1.5 text-sm text-white disabled:opacity-50"
-            >
-              {busy ? "Saving…" : editing ? "Save changes" : "Add"}
-            </button>
-            {editing && (
-              <button
-                type="button"
-                onClick={() => {
-                  setEditing(null);
-                  setForm(BLANK);
-                }}
-                className="text-sm text-slate-500 hover:underline"
+            <label className="text-xs text-slate-600">
+              Lane
+              <select
+                value={form.lane}
+                onChange={(e) => setForm({ ...form, lane: e.target.value })}
+                className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
               >
-                Cancel
+                {LANES.map((l) => (
+                  <option key={l} value={l}>
+                    {l}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-xs text-slate-600">
+              Status
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
+              >
+                <option value="tentative">tentative</option>
+                <option value="locked">locked</option>
+              </select>
+            </label>
+            <label className="sm:col-span-2 text-xs text-slate-600">
+              Detail
+              <textarea
+                rows={2}
+                value={form.detail}
+                onChange={(e) => setForm({ ...form, detail: e.target.value })}
+                className="mt-1 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
+              />
+            </label>
+            <div className="sm:col-span-2 flex flex-wrap items-center gap-4 text-xs text-slate-600">
+              <label className="flex items-center gap-1.5">
+                <input
+                  type="checkbox"
+                  checked={form.holds}
+                  onChange={(e) => setForm({ ...form, holds: e.target.checked })}
+                />
+                Holds time (counts against runway)
+              </label>
+              <label className="flex items-center gap-1.5">
+                <input
+                  type="checkbox"
+                  checked={form.isPrivate}
+                  onChange={(e) => setForm({ ...form, isPrivate: e.target.checked })}
+                />
+                Private
+              </label>
+              <label className="flex items-center gap-1.5">
+                <input
+                  type="checkbox"
+                  checked={form.isShow}
+                  onChange={(e) => setForm({ ...form, isShow: e.target.checked })}
+                />
+                Show floor
+              </label>
+            </div>
+            <div className="sm:col-span-2 flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={busy}
+                className="rounded bg-slate-900 px-4 py-1.5 text-sm text-white disabled:opacity-50"
+              >
+                {busy ? "Saving…" : editing ? "Save changes" : "Add"}
               </button>
-            )}
-            {msg && <span className="text-xs text-emerald-700">{msg}</span>}
-          </div>
-        </form>
-      </section>
+              {editing && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditing(null);
+                    setForm(BLANK);
+                  }}
+                  className="text-sm text-slate-500 hover:underline"
+                >
+                  Cancel
+                </button>
+              )}
+              {msg && <span className="text-xs text-emerald-700">{msg}</span>}
+            </div>
+          </form>
+        </section>
+      )}
     </div>
   );
 }

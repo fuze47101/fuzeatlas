@@ -18,6 +18,40 @@ export function isOwner(email?: string | null): boolean {
   return !!email && email.toLowerCase() === OWNER_EMAIL;
 }
 
+/**
+ * The three copies. Masking is applied SERVER-SIDE in the API before the
+ * response is serialised — a masked view never ships the real title or
+ * detail to the browser. Switching tabs refetches; it does not unhide
+ * something the client already holds. That is the whole point.
+ */
+export type View = "all" | "fuze" | "ledge";
+
+export const MASK_PERSONAL = "Unavailable";
+export const MASK_BIZ = "Business commitment";
+
+export const VIEWS: { key: View; label: string; note: string }[] = [
+  { key: "all", label: "Combined", note: "Everything named. Yours only — do not hand this out." },
+  { key: "fuze", label: "FUZE", note: "FUZE named. Ledge/Pulse and personal both masked." },
+  {
+    key: "ledge",
+    label: "Ledge / Pulse",
+    note: "Ledge/Pulse named. FUZE and personal both masked.",
+  },
+];
+
+/** Dates and durations always survive; only the name and detail are withheld. */
+export function project<T extends BoardEvent>(ev: T, view: View): T {
+  if (view === "all") return ev;
+  if (ev.isPrivate) {
+    return { ...ev, title: MASK_PERSONAL, detail: null, lane: "mask", isShow: false };
+  }
+  const mine = view === "fuze" ? "fuze" : "ledge";
+  if (ev.account !== mine) {
+    return { ...ev, title: MASK_BIZ, detail: null, lane: "mask", isShow: false };
+  }
+  return ev;
+}
+
 export interface BoardEvent {
   id: string;
   title: string;

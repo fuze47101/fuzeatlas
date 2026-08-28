@@ -7,7 +7,11 @@ import {
   isOwner,
   computeRunway,
   findConflicts,
+  project,
   BLACKOUTS,
+  MASK_PERSONAL,
+  MASK_BIZ,
+  type View,
 } from "@/lib/operating-calendar";
 
 /**
@@ -43,20 +47,42 @@ const shape = (r: any) => ({
   detail: r.detail,
 });
 
-export async function GET() {
+export async function GET(req: Request) {
   if (!(await gate())) {
     return NextResponse.json({ ok: false, error: "Not authorised" }, { status: 403 });
   }
+  const raw = new URL(req.url).searchParams.get("view");
+  const view: View = raw === "fuze" || raw === "ledge" ? raw : "all";
+
   const rows = await prisma.operatingCalendarEvent.findMany({
     where: { ownerEmail: OWNER_EMAIL },
     orderBy: [{ startDate: "asc" }, { endDate: "asc" }],
   });
-  const events = rows.map(shape);
+  const full = rows.map(shape);
+
+  // Runway is computed on the FULL set: masked items still hold time, so the
+  // capacity numbers are identical across copies. Only names are withheld.
+  const runway = computeRunway(full);
+
+  // Conflicts are filtered to pairs where BOTH sides are visible on this copy —
+  // otherwise the pairing itself leaks what was masked.
+  const conflicts = findConflicts(full)
+    .map(([a, b]) => [project(a, view), project(b, view)] as const)
+    .filter(
+      ([a, b]) =>
+        a.title !== MASK_PERSONAL &&
+        a.title !== MASK_BIZ &&
+        b.title !== MASK_PERSONAL &&
+        b.title !== MASK_BIZ,
+    )
+    .map(([a, b]) => ({ a: a.title, b: b.title }));
+
   return NextResponse.json({
     ok: true,
-    events,
-    runway: computeRunway(events),
-    conflicts: findConflicts(events).map(([a, b]) => ({ a: a.title, b: b.title })),
+    view,
+    events: full.map((e) => project(e, view)),
+    runway,
+    conflicts,
     blackouts: BLACKOUTS,
   });
 }
