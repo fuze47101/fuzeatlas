@@ -28,6 +28,7 @@ export default function ProductDocumentsPage() {
   const canEdit = !!user && ["ADMIN", "EMPLOYEE"].includes(user.role);
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const CATEGORIES = [
     { value: "tds_sds", label: T.catTdsSds },
@@ -112,6 +113,7 @@ export default function ProductDocumentsPage() {
   }
 
   function openAdd(docType: string) {
+    setSaveError(null);
     setForm({
       title: "",
       description: "",
@@ -148,12 +150,34 @@ export default function ProductDocumentsPage() {
     setFormFor(null);
     setForm({});
     setUploadProgress(null);
+    setSaveError(null);
   }
 
   async function save() {
     if (!formFor) return;
+    setSaveError(null);
     const productLine =
       form.productLine === "OTHER" ? (form.productLineOther?.trim() || "OTHER") : form.productLine;
+
+    // Warn when adding (not replacing) would overwrite an existing doc with the same key.
+    if (!formFor.replaceId) {
+      const normPL = (productLine || "DEFAULT").trim().toUpperCase().replace(/[\s-]+/g, "_");
+      const normLang = (form.language || "EN").trim().toUpperCase().replace(/[\s-]+/g, "_");
+      const collision = docs.find(
+        (d) =>
+          d.docType === formFor.docType &&
+          (d.productLine || "DEFAULT").toUpperCase().replace(/[\s-]+/g, "_") === normPL &&
+          (d.language || "EN").toUpperCase().replace(/[\s-]+/g, "_") === normLang,
+      );
+      if (collision) {
+        setSaveError(
+          `A document already exists for this category with Product Line "${productLineLabel(collision.productLine)}" and Language "${languageLabel(collision.language)}". ` +
+            `Use the "Replace" button on the existing document to update it, or choose a different Product Line or Language to add a new one.`,
+        );
+        return;
+      }
+    }
+
     const res = await fetch("/api/admin/product-documents", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -348,6 +372,11 @@ export default function ProductDocumentsPage() {
                     </div>
                   </div>
 
+                  {saveError && (
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-xs">
+                      {saveError}
+                    </div>
+                  )}
                   <div className="flex gap-2 pt-1">
                     <button onClick={save} disabled={!form.title || !form.fileUrl} className="px-5 py-2 bg-[#00b4c3] text-white text-sm font-semibold rounded-lg disabled:opacity-50">{T.saveBtn}</button>
                     <button onClick={closeForm} className="px-4 py-2 text-slate-500 hover:text-slate-700 text-sm font-medium">{T.cancelBtn}</button>
