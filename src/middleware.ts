@@ -42,6 +42,9 @@ const PUBLIC_PATHS = [
   "/api/inbound/",
   "/report/",
   "/api/fabric-report/",
+  // Public shareable document links (/d/<token>) — the /d/[token] route does
+  // its own token+expiry check and intentionally has no login gate.
+  "/d/",
   "/factory-invitation/",
   "/api/factory-invitations/",
   "/docs/",

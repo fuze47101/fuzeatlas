@@ -38,6 +38,7 @@ export async function GET(req: Request) {
         sizeBytes: true,
         url: true,
         s3Key: true,
+        shareToken: true,
         // Exclude 'data' from list query — large base64 blobs kill performance
         visibleTo: true,
         createdAt: true,

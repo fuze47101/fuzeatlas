@@ -30,6 +30,7 @@ interface ComplianceDoc {
   sizeBytes: number | null;
   url: string | null;
   s3Key: string | null;
+  shareToken: string | null;
   downloadUrl: string | null;
   visibleTo: string[];
   uploadedBy: { id: string; name: string } | null;
@@ -117,7 +118,8 @@ export default function DocumentLibraryView({
     customCategory: "",
     version: "",
     url: "",
-    visibleTo: ["ADMIN", "EMPLOYEE", "BRAND_USER", "FACTORY_USER", "FACTORY_MANAGER"] as string[],
+    // Safe default: internal-only. Presets / chips widen it explicitly.
+    visibleTo: ["ADMIN", "EMPLOYEE"] as string[],
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -205,11 +207,39 @@ export default function DocumentLibraryView({
     setForm({
       title: "", description: "", category: defaultCategory, customCategory: "",
       version: "", url: "",
-      visibleTo: ["ADMIN", "EMPLOYEE", "BRAND_USER", "FACTORY_USER", "FACTORY_MANAGER"],
+      visibleTo: ["ADMIN", "EMPLOYEE"],
     });
     setSelectedFile(null);
     setUploadProgress(null);
   };
+
+  // Visibility presets — set the whole chip set in one click. The user can
+  // still toggle individual chips afterward.
+  const VISIBILITY_PRESETS: { id: string; labelKey: string; fallback: string; roles: string[] }[] = [
+    {
+      id: "internal",
+      labelKey: "presetInternalOnly",
+      fallback: "Internal only",
+      roles: ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP"],
+    },
+    {
+      id: "brand",
+      labelKey: "presetBrandPack",
+      fallback: "Brand pack",
+      roles: [
+        "ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP",
+        "BRAND_USER", "DISTRIBUTOR_USER", "FABRIC_MANAGER",
+        "TESTING_MANAGER", "FACTORY_MANAGER", "FACTORY_USER",
+      ],
+    },
+    {
+      id: "factory",
+      labelKey: "presetFactoryPack",
+      fallback: "Factory pack",
+      roles: ["ADMIN", "EMPLOYEE", "FACTORY_MANAGER", "FACTORY_USER", "FABRIC_MANAGER", "TESTING_MANAGER"],
+    },
+  ];
+  const applyPreset = (roles: string[]) => setForm((f) => ({ ...f, visibleTo: [...roles] }));
 
   const handleUpload = async () => {
     if (!form.title) return;
@@ -275,8 +305,62 @@ export default function DocumentLibraryView({
     }
   };
 
+  // Presigned S3 upload for a single file → returns the stored-file metadata.
+  // Shared by the Upload flow and the Edit "replace file" flow.
+  const uploadFileToS3 = async (file: File) => {
+    setUploadProgress(T.uploadPreparing);
+    const urlRes = await fetch("/api/compliance-docs/upload-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename: file.name, contentType: file.type || "application/octet-stream" }),
+    });
+    const urlData = await urlRes.json();
+    if (!urlData.ok) throw new Error(urlData.error || T.uploadPrepareFailed);
+    setUploadProgress(T.uploadUploading.replace("{size}", formatFileSize(file.size)));
+    const s3Res = await fetch(urlData.uploadUrl, {
+      method: "PUT",
+      headers: { "Content-Type": file.type || "application/octet-stream" },
+      body: file,
+    });
+    if (!s3Res.ok) throw new Error(T.uploadStorageFailed);
+    setUploadProgress(T.uploadSavingRecord);
+    return {
+      s3Key: urlData.s3Key as string,
+      filename: file.name,
+      contentType: file.type || "application/octet-stream",
+      sizeBytes: file.size,
+    };
+  };
+
+  // Issue/copy a public share link (ADMIN/EMPLOYEE; server re-checks getRealUser).
+  const shareDoc = async (doc: ComplianceDoc) => {
+    try {
+      const res = await fetch(`/api/compliance-docs/${doc.id}/share`, { method: "POST" });
+      const d = await res.json();
+      if (!d.ok) { toast.error(d.error || T.toastShareFailed); return; }
+      try {
+        await navigator.clipboard.writeText(d.url);
+      } catch {
+        // Clipboard can be unavailable (permissions / insecure context) — the
+        // link is still created; surface it so it can be copied manually.
+        toast.error((T.toastShareNoClipboard || "Link created: {url}").replace("{url}", d.url));
+        load();
+        return;
+      }
+      toast.success(T.toastShareCopied || "Link copied — expires in 90 days");
+      load();
+    } catch {
+      toast.error(T.toastShareFailed || T.toastUpdateFailed);
+    }
+  };
+
   const startEdit = (doc: ComplianceDoc) => {
-    const isCustom = !categories.some((c) => c.id === doc.category);
+    // Use the SAME option source as the Upload dropdown (allCategories =
+    // built-ins + existing custom/tag categories). Only a category that isn't
+    // an option at all falls through to the free-text "__CUSTOM__" branch, so
+    // an existing tag category (e.g. COMPETITOR_EVALUATION) preselects and a
+    // save can't spawn a duplicate.
+    const isCustom = !allCategories.some((c) => c.id === doc.category);
     setForm({
       title: doc.title,
       description: doc.description || "",
@@ -286,27 +370,40 @@ export default function DocumentLibraryView({
       url: doc.url || "",
       visibleTo: Array.isArray(doc.visibleTo) ? doc.visibleTo : ["ADMIN", "EMPLOYEE"],
     });
+    setSelectedFile(null);
     setEditingDoc(doc);
   };
 
   const saveEdit = async () => {
     if (!editingDoc) return;
     setSaving(true);
+    setUploadProgress(null);
     try {
       const effectiveCategory = form.category === "__CUSTOM__"
         ? (form.customCategory.trim().toUpperCase().replace(/[\s-]+/g, "_") || "OTHER")
         : form.category;
+      const payload: any = {
+        title: form.title,
+        description: form.description || null,
+        category: effectiveCategory,
+        version: form.version || null,
+        url: form.url || null,
+        visibleTo: form.visibleTo,
+      };
+      // FIX 4 — if a replacement file was chosen, upload it and swap the stored
+      // file. The document row + shareToken are preserved server-side, so links
+      // already sent keep resolving (now to the new version).
+      if (selectedFile) {
+        const meta = await uploadFileToS3(selectedFile);
+        payload.s3Key = meta.s3Key;
+        payload.filename = meta.filename;
+        payload.contentType = meta.contentType;
+        payload.sizeBytes = meta.sizeBytes;
+      }
       const res = await fetch(`/api/compliance-docs/${editingDoc.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: form.title,
-          description: form.description || null,
-          category: effectiveCategory,
-          version: form.version || null,
-          url: form.url || null,
-          visibleTo: form.visibleTo,
-        }),
+        body: JSON.stringify(payload),
       });
       const d = await res.json();
       if (d.ok) {
@@ -316,10 +413,11 @@ export default function DocumentLibraryView({
         load();
         refreshCounts();
       } else toast.error(d.error || T.toastUpdateFailed);
-    } catch {
-      toast.error(T.toastUpdateFailed);
+    } catch (err: any) {
+      toast.error(err.message || T.toastUpdateFailed);
     } finally {
       setSaving(false);
+      setUploadProgress(null);
     }
   };
 
@@ -574,6 +672,17 @@ export default function DocumentLibraryView({
                             <button onClick={() => downloadDoc(doc)} className="text-xs text-blue-600 hover:text-blue-800 font-medium">{T.downloadAction}</button>
                           )}
                           {isAdmin && (
+                            <button
+                              onClick={() => shareDoc(doc)}
+                              className="text-xs text-teal-600 hover:text-teal-800 font-medium inline-flex items-center gap-1"
+                              title={T.shareTooltip || "Copy a public link (expires in 90 days)"}
+                            >
+                              {doc.shareToken
+                                ? `\u{1F517} ${T.shareCopyAction || "Copy Link"}`
+                                : (T.shareAction || "Share")}
+                            </button>
+                          )}
+                          {isAdmin && (
                             <div className="relative">
                               {movingDoc === doc.id ? (
                                 <div className="flex items-center gap-1">
@@ -650,6 +759,29 @@ export default function DocumentLibraryView({
                   <p className="text-xs text-slate-400 mt-1">{T.orUrl}</p>
                 </div>
               )}
+              {editingDoc && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{T.replaceFileLabel || "Replace file (optional)"}</label>
+                  {selectedFile ? (
+                    <div className="flex items-center justify-between border border-slate-300 rounded-lg px-3 py-2">
+                      <div className="text-left">
+                        <p className="text-sm font-medium text-slate-800">{selectedFile.name}</p>
+                        <p className="text-xs text-slate-500">{formatFileSize(selectedFile.size)}</p>
+                      </div>
+                      <button onClick={() => setSelectedFile(null)} className="text-red-500 text-sm hover:text-red-700">{T.removeFile}</button>
+                    </div>
+                  ) : (
+                    <label className="cursor-pointer block border-2 border-dashed border-slate-300 hover:border-[#00b4c3] rounded-lg px-3 py-3 text-center transition-colors">
+                      <p className="text-sm text-slate-600">{T.replaceFileHint || "Choose a new file to replace the current one"}</p>
+                      {editingDoc.filename && (
+                        <p className="text-[10px] text-slate-400 mt-0.5">{(T.currentFileLabel || "Current") + ": " + editingDoc.filename}</p>
+                      )}
+                      <input type="file" className="hidden" onChange={handleFileSelect} accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.xlsx,.xls,.csv,.txt,.zip,.mp4,.mov,.avi,.wmv,.webm,.mp3,.wav,.pptx,.ppt,.svg,.webp,.tiff,.bmp" />
+                    </label>
+                  )}
+                  <p className="text-xs text-slate-400 mt-1">{T.replaceFileKeepsLink || "Keeps the same document row and any shared link."}</p>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">{T.titleLabel}</label>
                 <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder={T.titlePlaceholder} />
@@ -680,6 +812,18 @@ export default function DocumentLibraryView({
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">{T.visibleToRoles}</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {VISIBILITY_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => applyPreset(preset.roles)}
+                      className="px-3 py-1 rounded-full text-xs font-semibold border border-[#00b4c3]/40 text-[#00b4c3] bg-[#00b4c3]/5 hover:bg-[#00b4c3]/15 transition-colors"
+                    >
+                      {(T as any)[preset.labelKey] || preset.fallback}
+                    </button>
+                  ))}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {ALL_ROLE_KEYS.map((role) => (
                     <button key={role.id} type="button" onClick={() => toggleRole(role.id)}

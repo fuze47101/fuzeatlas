@@ -63,9 +63,23 @@ export async function PUT(
     if (body.sizeBytes !== undefined) data.sizeBytes = body.sizeBytes ? parseInt(body.sizeBytes) : null;
     if (body.url !== undefined) data.url = body.url || null;
     if (body.data !== undefined) data.data = body.data || null;
+    // File replacement (FIX 4): a new s3Key swaps the stored file. shareToken
+    // is intentionally NOT touched here, so links already sent keep resolving
+    // — now to the new version.
+    if (body.s3Key !== undefined) data.s3Key = body.s3Key || null;
     if (body.visibleTo !== undefined) data.visibleTo = body.visibleTo;
     if (body.libraryType !== undefined)
       data.libraryType = body.libraryType === "MARKETING" ? "MARKETING" : "COMPLIANCE";
+
+    // If the file is being replaced, capture the old key to clean up after.
+    let oldS3Key: string | null = null;
+    if (body.s3Key) {
+      const existing = await prisma.complianceDocument.findUnique({
+        where: { id },
+        select: { s3Key: true },
+      });
+      oldS3Key = existing?.s3Key || null;
+    }
 
     const doc = await prisma.complianceDocument.update({
       where: { id },
@@ -74,6 +88,15 @@ export async function PUT(
         uploadedBy: { select: { id: true, name: true } },
       },
     });
+
+    // Best-effort delete of the now-orphaned previous file (non-fatal).
+    if (oldS3Key && oldS3Key !== body.s3Key && isS3Configured()) {
+      try {
+        await deleteFromS3(oldS3Key);
+      } catch (e) {
+        console.warn("Failed to delete replaced S3 object:", e);
+      }
+    }
 
     return NextResponse.json({ ok: true, document: doc });
   } catch (err: any) {

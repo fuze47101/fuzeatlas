@@ -3267,6 +3267,15 @@ model ComplianceDocument {
   uploadedById String?
   uploadedBy   User?   @relation(fields: [uploadedById], references: [id])
 
+  // ─── Shareable links ───────────────────────────────────────
+  // A public, no-login download link at /d/<shareToken>, so a doc can be
+  // sent to an outside party without an Atlas account. Generated on demand
+  // (ADMIN/EMPLOYEE only); shareExpiresAt is set to now + 90 days each time
+  // a link is (re)issued. The token survives file replacement so links
+  // already sent resolve to the new version.
+  shareToken     String?   @unique
+  shareExpiresAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
