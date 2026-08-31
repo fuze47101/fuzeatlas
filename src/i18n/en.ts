@@ -6141,6 +6141,8 @@ const en = {
     exportCsvHint: "Downloads the brand list with current filters applied",
     exportExcel: "Download Excel",
     exportExcelHint: "Downloads the brand list as Excel with current filters applied",
+    exportContacts: "Contact List",
+    exportContactsHint: "Company, website, contact name and email only",
 
     emptyBrands: "No brands match your filters",
 

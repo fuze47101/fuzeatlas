@@ -430,6 +430,33 @@ export default function BrandPipelinePage() {
           </svg>
           {T.exportExcel || "Download Excel"}
         </button>
+        <button
+          type="button"
+          onClick={() => {
+            const params = new URLSearchParams();
+            if (search) params.set("search", search);
+            if (stageFilter !== "all") params.set("stage", stageFilter);
+            if (relevanceFilter !== "all") params.set("relevance", relevanceFilter);
+            params.set("view", viewFilter);
+            params.set("mode", "pipeline");
+            params.set("format", "contacts");
+            window.location.href = `/api/admin/brand-pipeline/export?${params.toString()}`;
+          }}
+          title={T.exportContactsHint || "Company, website, contact name and email only"}
+          className="px-3 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-sm font-medium whitespace-nowrap inline-flex items-center gap-1.5"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="h-4 w-4"
+            aria-hidden="true"
+          >
+            <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.69L6.97 9.22a.75.75 0 1 0-1.06 1.06l3.5 3.5a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 1 0-1.06-1.06l-2.28 2.22V2.75Z" />
+            <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+          </svg>
+          {T.exportContacts || "Contact List"}
+        </button>
       </div>
 
       {/* Brand List */}

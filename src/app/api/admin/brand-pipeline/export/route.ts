@@ -105,6 +105,113 @@ export async function GET(req: Request) {
     const format = (url.searchParams.get("format") || "xlsx").toLowerCase();
     const where = buildBrandPipelineWhere(url.searchParams);
 
+    // ─── Contacts stripped export (Viktor) ────────────────────────────
+    // A second, deliberately minimal export: one row per contact with just
+    // company / website / contact person / email. Short-circuits BEFORE the
+    // heavy 19-column query below so the existing xlsx + csv branches stay
+    // exactly as they are and we don't pay for fields we won't emit.
+    if (format === "contacts") {
+      const contactBrands = await prisma.brand.findMany({
+        where,
+        select: {
+          id: true,
+          name: true,
+          website: true,
+          contacts: {
+            where: { hiddenFromWizard: false },
+            select: {
+              firstName: true,
+              lastName: true,
+              name: true,
+              email: true,
+              isPrimary: true,
+            },
+            orderBy: [{ isPrimary: "desc" }, { lastName: "asc" }, { name: "asc" }],
+          },
+        },
+        orderBy: [{ name: "asc" }],
+      });
+
+      const today = new Date().toISOString().slice(0, 10);
+      const view = url.searchParams.get("view") || "actionable";
+      const stage = url.searchParams.get("stage");
+      const stageSuffix = stage && stage !== "all" ? `_${stage}` : "";
+
+      const contactDisplayName = (c: any): string => {
+        if (c?.name && String(c.name).trim()) return String(c.name).trim();
+        const joined = [c?.firstName, c?.lastName].filter(Boolean).join(" ").trim();
+        return joined;
+      };
+
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = "FUZE Atlas";
+      workbook.created = new Date();
+      workbook.subject = `Brand Pipeline Contacts — ${view} — ${today}`;
+      workbook.company = "FUZE Biotech";
+
+      const sheet = workbook.addWorksheet("Contacts", {
+        views: [{ state: "frozen", ySplit: 1 }],
+      });
+      sheet.columns = [
+        { header: "Company Name", key: "company", width: 34 },
+        { header: "Company Website", key: "website", width: 40 },
+        { header: "Contact Person", key: "contact", width: 26 },
+        { header: "Contact Email", key: "email", width: 34 },
+      ];
+
+      const headerRow = sheet.getRow(1);
+      headerRow.values = ["Company Name", "Company Website", "Contact Person", "Contact Email"];
+      headerRow.font = { bold: true, color: { argb: "FFFFFFFF" } };
+      headerRow.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF17255C" },
+      };
+      headerRow.alignment = { vertical: "middle", horizontal: "left" };
+      headerRow.height = 22;
+
+      for (const b of contactBrands) {
+        // A brand with zero (non-hidden) contacts still emits one row with
+        // blank name + email, so coverage gaps stay visible in the sheet.
+        const list = b.contacts && b.contacts.length ? b.contacts : [null];
+        for (const c of list) {
+          const displayName = c ? contactDisplayName(c) : "";
+          const email = c && c.email ? c.email : "";
+          const row = sheet.addRow({
+            company: b.name,
+            website: b.website || null,
+            contact: displayName,
+            email: email || null,
+          });
+
+          if (b.website && b.website.toLowerCase().startsWith("http")) {
+            const cell = row.getCell("website");
+            cell.value = { text: b.website, hyperlink: b.website };
+            cell.font = { color: { argb: "FF2563EB" }, underline: true };
+          }
+          if (email) {
+            const cell = row.getCell("email");
+            cell.value = { text: email, hyperlink: `mailto:${email}` };
+            cell.font = { color: { argb: "FF2563EB" }, underline: true };
+          }
+        }
+      }
+
+      sheet.autoFilter = { from: "A1", to: "D1" };
+
+      const buf = await workbook.xlsx.writeBuffer();
+      const filename = `brand_pipeline_contacts_${today}_${view}${stageSuffix}.xlsx`;
+      return new Response(buf as any, {
+        status: 200,
+        headers: {
+          "Content-Type":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "Content-Disposition": `attachment; filename="${filename}"`,
+          "Cache-Control": "no-store",
+        },
+      });
+    }
+
     const brands = await prisma.brand.findMany({
       where,
       select: {

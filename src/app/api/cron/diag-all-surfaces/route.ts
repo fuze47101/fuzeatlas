@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { scanDuplicates } from "@/lib/dedupe-scan";
 import { buildFkMap, countRefsForRecord } from "@/lib/dedupe-refs";
+import { buildBrandPipelineWhere } from "@/lib/brand-pipeline-where";
 
 /**
  * GET /api/cron/diag-all-surfaces
@@ -1087,6 +1088,38 @@ export async function GET(req: Request) {
         if (sample) await countRefsForRecord(prisma, "BRAND", sample.id);
         return fkCount;
       },
+    ),
+    // Brand-pipeline contact-list export (Viktor). Exercises the exact
+    // brand + non-hidden-contacts query the ?format=contacts branch serializes
+    // to xlsx, using the same where-builder as the on-screen list. A drift in
+    // the contacts relation select surfaces here before the download 500s.
+    check(
+      "/api/admin/brand-pipeline/export?format=contacts — contact-list export",
+      "brand findMany + contacts (view=actionable, mode=pipeline)",
+      () =>
+        prisma.brand.findMany({
+          where: buildBrandPipelineWhere(
+            new URLSearchParams("view=actionable&mode=pipeline"),
+          ),
+          select: {
+            id: true,
+            name: true,
+            website: true,
+            contacts: {
+              where: { hiddenFromWizard: false },
+              select: {
+                firstName: true,
+                lastName: true,
+                name: true,
+                email: true,
+                isPrimary: true,
+              },
+              orderBy: [{ isPrimary: "desc" }, { lastName: "asc" }, { name: "asc" }],
+            },
+          },
+          orderBy: [{ name: "asc" }],
+          take: 5,
+        }),
     ),
   ]);
 
