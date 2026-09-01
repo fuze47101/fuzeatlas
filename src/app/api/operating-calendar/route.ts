@@ -5,6 +5,8 @@ import { getCurrentUser } from "@/lib/auth";
 import {
   OWNER_EMAIL,
   isOwner,
+  canRead,
+  canWrite,
   computeRunway,
   findConflicts,
   project,
@@ -27,9 +29,20 @@ import {
  * DELETE → remove an event by id (?id=...)
  */
 
-async function gate() {
+/** Read gate: owner or a named read-only viewer. */
+async function readGate() {
   const user = await getCurrentUser();
-  if (!isOwner(user?.email)) return null;
+  if (!canRead(user?.email)) return null;
+  return user;
+}
+
+/**
+ * Write gate: owner only. Enforced here, not just hidden in the UI — a
+ * viewer who hand-crafts a POST/PATCH/DELETE still gets 403.
+ */
+async function writeGate() {
+  const user = await getCurrentUser();
+  if (!canWrite(user?.email)) return null;
   return user;
 }
 
@@ -48,7 +61,8 @@ const shape = (r: any) => ({
 });
 
 export async function GET(req: Request) {
-  if (!(await gate())) {
+  const reader = await readGate();
+  if (!reader) {
     return NextResponse.json({ ok: false, error: "Not authorised" }, { status: 403 });
   }
   const raw = new URL(req.url).searchParams.get("view");
@@ -80,6 +94,8 @@ export async function GET(req: Request) {
   return NextResponse.json({
     ok: true,
     view,
+    canWrite: canWrite(reader.email),
+    isOwner: isOwner(reader.email),
     events: full.map((e) => project(e, view)),
     runway,
     conflicts,
@@ -103,7 +119,7 @@ function parseBody(body: any) {
 }
 
 export async function POST(req: Request) {
-  if (!(await gate())) {
+  if (!(await writeGate())) {
     return NextResponse.json({ ok: false, error: "Not authorised" }, { status: 403 });
   }
   const body = await req.json();
@@ -127,7 +143,7 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
-  if (!(await gate())) {
+  if (!(await writeGate())) {
     return NextResponse.json({ ok: false, error: "Not authorised" }, { status: 403 });
   }
   const body = await req.json();
@@ -153,7 +169,7 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  if (!(await gate())) {
+  if (!(await writeGate())) {
     return NextResponse.json({ ok: false, error: "Not authorised" }, { status: 403 });
   }
   const id = new URL(req.url).searchParams.get("id");

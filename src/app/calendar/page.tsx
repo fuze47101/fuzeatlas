@@ -83,6 +83,7 @@ export default function OperatingCalendarPage() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [view, setView] = useState<"all" | "fuze" | "ledge">("all");
+  const [canWrite, setCanWrite] = useState(false);
 
   const load = useCallback(async () => {
     const res = await fetch(`/api/operating-calendar?view=${view}`);
@@ -92,6 +93,7 @@ export default function OperatingCalendarPage() {
     setEvents(d.events);
     setRunway(d.runway);
     setConflicts(d.conflicts);
+    setCanWrite(!!d.canWrite);
     setState("ok");
   }, [view]);
 
@@ -147,6 +149,12 @@ export default function OperatingCalendarPage() {
           land. Private to you.
         </p>
       </header>
+
+      {!canWrite && (
+        <div className="mb-4 rounded border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-900">
+          Read-only. You are viewing Andrew&apos;s calendar and cannot change it.
+        </div>
+      )}
 
       <div className="mb-5">
         <div className="inline-flex rounded border border-slate-300 overflow-hidden">
@@ -273,7 +281,7 @@ export default function OperatingCalendarPage() {
                 </p>
                 {ev.detail && <p className="text-xs text-slate-500 mt-0.5">{ev.detail}</p>}
               </div>
-              {view === "all" && (
+              {view === "all" && canWrite && (
                 <div className="flex gap-2 shrink-0">
                   <button
                     onClick={() => {
@@ -299,7 +307,7 @@ export default function OperatingCalendarPage() {
         </ul>
       </section>
 
-      {view === "all" && (
+      {view === "all" && canWrite && (
         <section className="rounded border border-slate-200 bg-slate-50 p-4">
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
             {editing ? "Edit item" : "Add to the board"}

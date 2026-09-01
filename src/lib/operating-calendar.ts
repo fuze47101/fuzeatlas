@@ -27,8 +27,31 @@ export const OWNER_EMAIL = "andrew@801inc.com";
 
 export const OWNER_LOGINS = ["andrew@801inc.com", "andrew@fuze47.com"];
 
+/**
+ * Read-only viewers. These accounts see the board exactly as the owner does,
+ * including private entries, but cannot create, edit or delete anything.
+ *
+ * Enforced in the API on every mutating method — not merely hidden in the UI.
+ * A viewer who crafts a POST by hand still gets 403.
+ */
+export const VIEWER_LOGINS = ["chickbpick@gmail.com"];
+
 export function isOwner(email?: string | null): boolean {
   return !!email && OWNER_LOGINS.includes(email.toLowerCase().trim());
+}
+
+export function isViewer(email?: string | null): boolean {
+  return !!email && VIEWER_LOGINS.includes(email.toLowerCase().trim());
+}
+
+/** Who may load the board at all. */
+export function canRead(email?: string | null): boolean {
+  return isOwner(email) || isViewer(email);
+}
+
+/** Who may change it. Owner only. */
+export function canWrite(email?: string | null): boolean {
+  return isOwner(email);
 }
 
 /**
