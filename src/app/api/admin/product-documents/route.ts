@@ -72,7 +72,7 @@ export async function POST(req: Request) {
 
     // Many-per-type key fields. productLine is free-ish (F1_SILVER /
     // HELIOS_GOLD / COMBINED / DEFAULT / custom); language is EN/VI/ZH/…
-    const productLine = norm(body.productLine, "DEFAULT");
+    const productLineBase = norm(body.productLine, "DEFAULT");
     const language = norm(body.language, "EN");
 
     let audienceArray: string[] | undefined = undefined;
@@ -100,11 +100,28 @@ export async function POST(req: Request) {
     if (category) baseData.category = category;
     if (audienceArray) baseData.audience = audienceArray;
 
-    const doc = await prisma.productDocument.upsert({
-      where: { docType_productLine_language: { docType, productLine, language } },
-      create: { docType, productLine, language, ...baseData },
-      update: baseData,
-    });
+    // If replaceId is provided, update the specific document by id (replace flow).
+    const replaceId: string | undefined = body.replaceId || undefined;
+    if (replaceId) {
+      const existing = await prisma.productDocument.findUnique({ where: { id: replaceId }, select: { id: true } });
+      if (!existing) return NextResponse.json({ ok: false, error: "Document not found" }, { status: 404 });
+      const doc = await prisma.productDocument.update({ where: { id: replaceId }, data: baseData });
+      return NextResponse.json({ ok: true, document: doc });
+    }
+
+    // New document — always create.  If (docType, productLine, language) already
+    // exists, append a sequence suffix (_2, _3, …) until we find a free slot.
+    let doc: any = null;
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const productLine = attempt === 0 ? productLineBase : `${productLineBase}_${attempt + 1}`;
+      try {
+        doc = await prisma.productDocument.create({ data: { docType, productLine, language, ...baseData } });
+        break;
+      } catch (e: any) {
+        if (e.code !== "P2002") throw e; // re-throw non-unique-constraint errors
+      }
+    }
+    if (!doc) return NextResponse.json({ ok: false, error: "Could not create document after 10 attempts" }, { status: 500 });
     return NextResponse.json({ ok: true, document: doc });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });

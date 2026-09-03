@@ -55,8 +55,9 @@ export default function ProductDocumentsPage() {
 
   function productLineLabel(v: string) {
     if (!v || v === "DEFAULT") return T.plDefaultLabel;
-    const opt = PRODUCT_LINE_OPTIONS.find((o) => o.value === v);
-    return opt ? opt.label : v.replace(/_/g, " ");
+    const base = v.replace(/_\d+$/, ""); // strip auto-sequence suffix (_2, _3, …)
+    const opt = PRODUCT_LINE_OPTIONS.find((o) => o.value === base);
+    return opt ? opt.label : base.replace(/_/g, " ");
   }
   function languageLabel(v: string) {
     const opt = LANGUAGES.find((o) => o.value === v);
@@ -159,6 +160,7 @@ export default function ProductDocumentsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         docType: formFor.docType,
+        replaceId: formFor.replaceId ?? null,
         title: form.title,
         description: form.description,
         fileUrl: form.fileUrl,
