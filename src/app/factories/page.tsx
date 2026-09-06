@@ -51,7 +51,7 @@ export default function FactoriesPage() {
     const matchesText =
       !q ||
       f.name.toLowerCase().includes(q) ||
-      (f.country && f.country.toLowerCase().includes(q)) ||
+      (f.country || "Unknown").toLowerCase().includes(q) ||
       (f.specialty && f.specialty.toLowerCase().includes(q));
     if (!matchesText) return false;
     if (capFilters.length === 0) return true;
