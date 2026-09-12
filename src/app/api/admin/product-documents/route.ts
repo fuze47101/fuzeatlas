@@ -100,6 +100,25 @@ export async function POST(req: Request) {
     if (category) baseData.category = category;
     if (audienceArray) baseData.audience = audienceArray;
 
+    // When replaceId is provided, update the specific doc by id (not by
+    // composite key) so the Replace button updates the right document even
+    // when two docs share the same productLine+language combo.
+    const replaceId = body.replaceId ? String(body.replaceId).trim() : null;
+    if (replaceId) {
+      const existing = await prisma.productDocument.findUnique({
+        where: { id: replaceId },
+        select: { id: true, docType: true },
+      });
+      if (!existing) {
+        return NextResponse.json({ ok: false, error: "Document not found" }, { status: 404 });
+      }
+      const doc = await prisma.productDocument.update({
+        where: { id: replaceId },
+        data: { docType, productLine, language, ...baseData },
+      });
+      return NextResponse.json({ ok: true, document: doc });
+    }
+
     const doc = await prisma.productDocument.upsert({
       where: { docType_productLine_language: { docType, productLine, language } },
       create: { docType, productLine, language, ...baseData },
