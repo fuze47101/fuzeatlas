@@ -24,6 +24,7 @@ export default function DistributorFactoriesPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [adding, setAdding] = useState(false);
   const [search, setSearch] = useState("");
+  const [filterQ, setFilterQ] = useState("");
   const [candidates, setCandidates] = useState<any[]>([]);
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
@@ -111,8 +112,14 @@ export default function DistributorFactoriesPage() {
     );
   }
 
-  const roster = rows.filter((r) => r.via === "roster");
-  const primary = rows.filter((r) => r.via === "primary");
+  const fq = filterQ.toLowerCase().trim();
+  const matchFactory = (f: any) =>
+    !fq ||
+    (f.name || "").toLowerCase().includes(fq) ||
+    (f.city || "").toLowerCase().includes(fq) ||
+    (f.country || "").toLowerCase().includes(fq);
+  const roster = rows.filter((r) => r.via === "roster" && matchFactory(r));
+  const primary = rows.filter((r) => r.via === "primary" && matchFactory(r));
 
   return (
     <div className="p-4 sm:p-8 max-w-5xl mx-auto">
@@ -129,12 +136,21 @@ export default function DistributorFactoriesPage() {
             them through — talk to FUZE admin if you need primary reassignment.
           </p>
         </div>
-        <button
-          onClick={() => setShowAdd(!showAdd)}
-          className="flex-shrink-0 px-4 py-2 bg-[#00b4c3] text-white text-sm font-bold rounded-lg hover:bg-[#009aa8]"
-        >
-          {showAdd ? "Cancel" : "+ Add Factory"}
-        </button>
+        <div className="flex flex-col sm:flex-row items-end gap-2 flex-shrink-0">
+          <input
+            type="text"
+            value={filterQ}
+            onChange={(e) => setFilterQ(e.target.value)}
+            placeholder="Filter by name, city, country…"
+            className="px-3 py-2 border border-slate-300 rounded-lg text-sm w-56 focus:outline-none focus:ring-2 focus:ring-[#00b4c3]/40"
+          />
+          <button
+            onClick={() => setShowAdd(!showAdd)}
+            className="flex-shrink-0 px-4 py-2 bg-[#00b4c3] text-white text-sm font-bold rounded-lg hover:bg-[#009aa8]"
+          >
+            {showAdd ? "Cancel" : "+ Add Factory"}
+          </button>
+        </div>
       </div>
 
       {error && (
