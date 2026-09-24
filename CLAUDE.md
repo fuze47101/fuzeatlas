@@ -2034,3 +2034,9 @@ These rules are how Andrew works. Violating them wastes his time.
 - **California SB 707** — restricting PFAS in textiles
 - FUZE advantage: zero PFAS, zero binders, zero curing, zero toxic chemistry
 - Use in outreach messaging to brands
+
+## 2026-09-24 — F1 Nylon Application Protocol (pH-assisted) → TDS Rev 1.1
+- Root cause of nylon under-exhaustion (ICP 0.85 vs 1.0 mg/kg): neutral-pH nylon is near its isoelectric point; F1's active is negatively charged (ligand-free PLAL Ag). Fix = **bath pH 4.5–5.0 with acetic acid at point of use** → nylon amines protonate positive → electrostatic deposition. Same conditions as acid-dyeing nylon.
+- **Rules:** acetic acid ONLY (never HCl / chloride → AgCl); DI/chloride-free water; apply within 60 min; do NOT pre-acidify stock or store F1 at low pH (Ag⁺ drift → ionic, aggregation, reformulation paperwork). Polyester & cotton: neutral pH (cotton → cationic pretreat if needed).
+- Docs: `docs/F1_Nylon_Protocol.md` (internal + stability gate + validation test). **TDS-FTP-F1-002 regenerated as Rev 1.1** (`Product_Documents/FUZE_FTP_F1_TDS.pdf`, v1.0 kept as `_v1.0.pdf`; staging copy synced). Built with reportlab (`/tmp/tds/build_tds.py` — copy into repo tools if kept).
+- **TODO:** upload Rev 1.1 EN via /admin/product-documents (docType TDS, productLine F1, language EN, version 1.1) — site serves ProductDocument records from DB, not repo. VI/ZH Rev 1.1 translations PENDING — do not ship mixed revisions. Validate with the pH 7 vs 4.5 exhaustion + ICP test.
