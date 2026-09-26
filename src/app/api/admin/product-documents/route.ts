@@ -75,6 +75,9 @@ export async function POST(req: Request) {
     const productLine = norm(body.productLine, "DEFAULT");
     const language = norm(body.language, "EN");
 
+    // replaceId is set when the caller clicked "Replace" on an existing doc.
+    const replaceId: string | undefined = body.id || undefined;
+
     let audienceArray: string[] | undefined = undefined;
     if (audience !== undefined) {
       if (!Array.isArray(audience)) {
@@ -87,7 +90,6 @@ export async function POST(req: Request) {
       audienceArray = audience;
     }
 
-    // Fields that update on replace (NOT the composite key).
     const baseData: any = {
       title,
       description: description || null,
@@ -100,11 +102,31 @@ export async function POST(req: Request) {
     if (category) baseData.category = category;
     if (audienceArray) baseData.audience = audienceArray;
 
-    const doc = await prisma.productDocument.upsert({
-      where: { docType_productLine_language: { docType, productLine, language } },
-      create: { docType, productLine, language, ...baseData },
-      update: baseData,
-    });
+    let doc;
+    if (replaceId) {
+      // Explicit replace — update the specific document by ID.
+      const existing = await prisma.productDocument.findUnique({ where: { id: replaceId }, select: { id: true } });
+      if (!existing) return NextResponse.json({ ok: false, error: "Document not found" }, { status: 404 });
+      doc = await prisma.productDocument.update({
+        where: { id: replaceId },
+        data: { ...baseData, productLine, language },
+      });
+    } else {
+      // Add new — create a new document without replacing any existing one.
+      try {
+        doc = await prisma.productDocument.create({
+          data: { docType, productLine, language, ...baseData },
+        });
+      } catch (e: any) {
+        if (e.code === "P2002") {
+          return NextResponse.json({
+            ok: false,
+            error: `A ${docType} document with this product line and language already exists. Use the Replace button on the existing document to update it.`,
+          }, { status: 409 });
+        }
+        throw e;
+      }
+    }
     return NextResponse.json({ ok: true, document: doc });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
