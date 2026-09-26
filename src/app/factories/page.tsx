@@ -52,6 +52,7 @@ export default function FactoriesPage() {
       !q ||
       f.name.toLowerCase().includes(q) ||
       (f.country && f.country.toLowerCase().includes(q)) ||
+      (!f.country && q === "unknown") ||
       (f.specialty && f.specialty.toLowerCase().includes(q));
     if (!matchesText) return false;
     if (capFilters.length === 0) return true;
