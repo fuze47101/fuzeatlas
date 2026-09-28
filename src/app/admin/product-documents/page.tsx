@@ -159,6 +159,7 @@ export default function ProductDocumentsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         docType: formFor.docType,
+        replaceId: formFor.replaceId || null,
         title: form.title,
         description: form.description,
         fileUrl: form.fileUrl,

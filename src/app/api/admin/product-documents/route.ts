@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { docType, title, description, fileUrl, version, effectiveDate, category, audience } = body;
+    const { docType, replaceId, title, description, fileUrl, version, effectiveDate, category, audience } = body;
 
     if (!DOC_TYPES.includes(docType)) {
       return NextResponse.json({ ok: false, error: "Invalid docType" }, { status: 400 });
@@ -100,12 +100,27 @@ export async function POST(req: Request) {
     if (category) baseData.category = category;
     if (audienceArray) baseData.audience = audienceArray;
 
-    const doc = await prisma.productDocument.upsert({
-      where: { docType_productLine_language: { docType, productLine, language } },
-      create: { docType, productLine, language, ...baseData },
-      update: baseData,
-    });
-    return NextResponse.json({ ok: true, document: doc });
+    if (replaceId) {
+      // Targeted replace — update the specific document by ID.
+      const existing = await prisma.productDocument.findUnique({ where: { id: replaceId }, select: { id: true } });
+      if (!existing) return NextResponse.json({ ok: false, error: "Document not found" }, { status: 404 });
+      const doc = await prisma.productDocument.update({ where: { id: replaceId }, data: baseData });
+      return NextResponse.json({ ok: true, document: doc });
+    }
+
+    // New document — pure create. Fail clearly if the (docType, productLine, language) combo is taken.
+    try {
+      const doc = await prisma.productDocument.create({ data: { docType, productLine, language, ...baseData } });
+      return NextResponse.json({ ok: true, document: doc });
+    } catch (e: any) {
+      if (e.code === "P2002") {
+        return NextResponse.json({
+          ok: false,
+          error: `A "${productLine} / ${language}" document already exists for this type. Use the Replace button to update it, or choose a different product line or language.`,
+        }, { status: 409 });
+      }
+      throw e;
+    }
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
