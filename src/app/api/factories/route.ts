@@ -4,13 +4,30 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const q = searchParams.get("q")?.trim() || "";
+    const pageSize = Math.min(parseInt(searchParams.get("pageSize") || "0", 10) || 0, 500);
+
+    const where = q
+      ? {
+          OR: [
+            { name: { contains: q, mode: "insensitive" as const } },
+            { city: { contains: q, mode: "insensitive" as const } },
+            { country: { contains: q, mode: "insensitive" as const } },
+            { chineseName: { contains: q, mode: "insensitive" as const } },
+          ],
+        }
+      : undefined;
+
     const factories = await prisma.factory.findMany({
+      where,
       include: {
         _count: { select: { brands: true, submissions: true, fabrics: true, contacts: true } },
       },
       orderBy: { name: "asc" },
+      ...(pageSize > 0 ? { take: pageSize } : {}),
     });
 
     const list = factories.map(f => ({
