@@ -100,11 +100,35 @@ export async function POST(req: Request) {
     if (category) baseData.category = category;
     if (audienceArray) baseData.audience = audienceArray;
 
-    const doc = await prisma.productDocument.upsert({
-      where: { docType_productLine_language: { docType, productLine, language } },
-      create: { docType, productLine, language, ...baseData },
-      update: baseData,
-    });
+    let doc: any;
+    if (body.id) {
+      // Replace path — update the specific doc by id (no unique-key enforcement).
+      doc = await prisma.productDocument.update({
+        where: { id: String(body.id) },
+        data: baseData,
+      });
+    } else {
+      // Add path — always create a new document. If the (docType, productLine,
+      // language) combo already exists, append a numeric suffix to productLine
+      // so the new doc gets its own slot.
+      let pl = productLine;
+      let attempt = 0;
+      while (true) {
+        try {
+          doc = await prisma.productDocument.create({
+            data: { docType, productLine: pl, language, ...baseData },
+          });
+          break;
+        } catch (err: any) {
+          if (err?.code === "P2002" && attempt < 9) {
+            attempt++;
+            pl = `${productLine}_${attempt + 1}`;
+          } else {
+            throw err;
+          }
+        }
+      }
+    }
     return NextResponse.json({ ok: true, document: doc });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
