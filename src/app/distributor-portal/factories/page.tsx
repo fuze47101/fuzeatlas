@@ -24,6 +24,7 @@ export default function DistributorFactoriesPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [adding, setAdding] = useState(false);
   const [search, setSearch] = useState("");
+  const [filterQuery, setFilterQuery] = useState("");
   const [candidates, setCandidates] = useState<any[]>([]);
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
@@ -111,8 +112,17 @@ export default function DistributorFactoriesPage() {
     );
   }
 
-  const roster = rows.filter((r) => r.via === "roster");
-  const primary = rows.filter((r) => r.via === "primary");
+  const fq = filterQuery.toLowerCase().trim();
+  const matchesFilter = (f: any) =>
+    !fq ||
+    (f.name && f.name.toLowerCase().includes(fq)) ||
+    (f.city && f.city.toLowerCase().includes(fq)) ||
+    (f.country && f.country.toLowerCase().includes(fq));
+
+  const roster = rows.filter((r) => r.via === "roster" && matchesFilter(r));
+  const primary = rows.filter((r) => r.via === "primary" && matchesFilter(r));
+  const rosterTotal = rows.filter((r) => r.via === "roster").length;
+  const primaryTotal = rows.filter((r) => r.via === "primary").length;
 
   return (
     <div className="p-4 sm:p-8 max-w-5xl mx-auto">
@@ -135,6 +145,17 @@ export default function DistributorFactoriesPage() {
         >
           {showAdd ? "Cancel" : "+ Add Factory"}
         </button>
+      </div>
+
+      {/* Search filter for existing roster */}
+      <div className="mb-4">
+        <input
+          type="text"
+          value={filterQuery}
+          onChange={(e) => setFilterQuery(e.target.value)}
+          placeholder="Filter by name, city, or country…"
+          className="w-full sm:w-80 px-3 py-2 border border-slate-300 rounded-lg text-sm"
+        />
       </div>
 
       {error && (
@@ -194,10 +215,10 @@ export default function DistributorFactoriesPage() {
         </div>
       )}
 
-      {primary.length > 0 && (
+      {primaryTotal > 0 && (
         <section className="mb-8">
           <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide mb-2">
-            Primary distributor ({primary.length})
+            Primary distributor ({fq ? `${primary.length} of ${primaryTotal}` : primaryTotal})
           </h2>
           <p className="text-xs text-slate-500 mb-3">
             FUZE has assigned you as the primary distributor for these factories.
@@ -226,7 +247,7 @@ export default function DistributorFactoriesPage() {
 
       <section>
         <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide mb-2">
-          Roster ({roster.length})
+          Roster ({fq ? `${roster.length} of ${rosterTotal}` : rosterTotal})
         </h2>
         <p className="text-xs text-slate-500 mb-3">
           Factories you have added to your own roster. Useful for shared
@@ -234,7 +255,9 @@ export default function DistributorFactoriesPage() {
         </p>
         {roster.length === 0 ? (
           <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl px-4 py-8 text-center text-sm text-slate-500">
-            No factories added yet. Click <strong>+ Add Factory</strong> above to start.
+            {fq && rosterTotal > 0
+              ? `No roster factories match "${filterQuery}".`
+              : "No factories added yet. Click + Add Factory above to start."}
           </div>
         ) : (
           <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
