@@ -2,7 +2,7 @@
 Internal engineering note + TDS language. Author: Andrew Peterson / Claude · 2026-09-24 · Added to TDS-FTP-F1-002 Rev 1.1
 
 ## Why nylon under-exhausts at neutral pH
-FTP F1's active (ligand-free, laser-ablated metallic silver, ~10 nm) carries a **negative surface charge** in water (ζ ≈ −30 to −40 mV) and is stabilized electrostatically only (no ligand/steric shell). Nylon (polyamide) at neutral pH sits near its isoelectric point — little net surface charge — so deposition relies on van der Waals + polarity differential alone, and part of the dose rinses off. Observed: ICP 0.85 mg/kg vs 1.0 mg/kg F1 target on nylon.
+FTP F1 is 99.997% 18 MΩ DI water carrying 0.003% metallic silver allotrope — non-ionic, non-reactive, no ligand. In water the particle surface carries a modest **negative charge**, which is what the fiber-side pH adjustment exploits. Nylon (polyamide) at neutral pH sits near its isoelectric point — little net surface charge — so deposition relies on van der Waals + polarity differential alone, and part of the dose rinses off. Observed: ICP 0.85 mg/kg vs 1.0 mg/kg F1 target on nylon.
 
 **Below ~pH 5 nylon's amine end groups protonate → fiber surface goes POSITIVE → electrostatic attraction to the negative active.** This is the same chemistry acid dyes use on nylon; every nylon mill already runs these conditions.
 
