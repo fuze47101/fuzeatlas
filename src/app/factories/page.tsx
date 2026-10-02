@@ -52,7 +52,8 @@ export default function FactoriesPage() {
       !q ||
       f.name.toLowerCase().includes(q) ||
       (f.country && f.country.toLowerCase().includes(q)) ||
-      (f.specialty && f.specialty.toLowerCase().includes(q));
+      (f.specialty && f.specialty.toLowerCase().includes(q)) ||
+      (q === "unknown" && !f.country);
     if (!matchesText) return false;
     if (capFilters.length === 0) return true;
     const caps = parseCapabilities(f.capabilities);
