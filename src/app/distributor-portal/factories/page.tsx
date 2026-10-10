@@ -24,6 +24,7 @@ export default function DistributorFactoriesPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [adding, setAdding] = useState(false);
   const [search, setSearch] = useState("");
+  const [filterText, setFilterText] = useState("");
   const [candidates, setCandidates] = useState<any[]>([]);
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
@@ -111,8 +112,23 @@ export default function DistributorFactoriesPage() {
     );
   }
 
-  const roster = rows.filter((r) => r.via === "roster");
-  const primary = rows.filter((r) => r.via === "primary");
+  const ft = filterText.toLowerCase();
+  const roster = rows.filter(
+    (r) =>
+      r.via === "roster" &&
+      (!ft ||
+        r.name?.toLowerCase().includes(ft) ||
+        r.country?.toLowerCase().includes(ft) ||
+        r.city?.toLowerCase().includes(ft)),
+  );
+  const primary = rows.filter(
+    (r) =>
+      r.via === "primary" &&
+      (!ft ||
+        r.name?.toLowerCase().includes(ft) ||
+        r.country?.toLowerCase().includes(ft) ||
+        r.city?.toLowerCase().includes(ft)),
+  );
 
   return (
     <div className="p-4 sm:p-8 max-w-5xl mx-auto">
@@ -191,6 +207,18 @@ export default function DistributorFactoriesPage() {
               No matching factories. Ask FUZE admin to invite a new factory into Atlas.
             </p>
           )}
+        </div>
+      )}
+
+      {rows.length > 0 && (
+        <div className="mb-4">
+          <input
+            type="text"
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            placeholder="Filter by name, country, city…"
+            className="w-full sm:w-72 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+          />
         </div>
       )}
 
