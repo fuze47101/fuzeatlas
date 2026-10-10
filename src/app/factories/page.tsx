@@ -48,10 +48,14 @@ export default function FactoriesPage() {
 
   const q = search.toLowerCase();
   const filtered = factories.filter((f) => {
+    const countryMatch =
+      q === "unknown"
+        ? !f.country
+        : f.country && f.country.toLowerCase().includes(q);
     const matchesText =
       !q ||
       f.name.toLowerCase().includes(q) ||
-      (f.country && f.country.toLowerCase().includes(q)) ||
+      countryMatch ||
       (f.specialty && f.specialty.toLowerCase().includes(q));
     if (!matchesText) return false;
     if (capFilters.length === 0) return true;
