@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { notifyNewOrder } from "@/lib/notify";
+import { keepAlive } from "@/lib/keep-alive";
 
 /**
  * GET /api/consumption
@@ -263,7 +264,11 @@ export async function POST(req: Request) {
       // so the assigned account manager (and admins) see it the moment
       // it's logged. Non-fatal: order create still returns 200 if
       // notify throws.
-      (async () => {
+      // keepAlive: this block is intentionally not awaited, but on Vercel the
+      // function instance is frozen as soon as the response is returned, which
+      // cancelled the work in flight. keepAlive() hands it to the Next.js
+      // runtime so it finishes without delaying the response.
+      keepAlive((async () => {
         try {
           const factory = await prisma.factory.findUnique({
             where: { id: factoryId },
@@ -281,7 +286,7 @@ export async function POST(req: Request) {
         } catch (notifyErr) {
           console.error("[consumption] notifyNewOrder failed:", notifyErr);
         }
-      })();
+      })());
 
       return NextResponse.json({ ok: true, order });
     }

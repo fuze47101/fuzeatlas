@@ -140,7 +140,14 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         brand: { select: { id: true, name: true } },
         factory: { select: { id: true, name: true, country: true, city: true } },
         requestedBy: { select: { id: true, name: true, email: true } },
-        icpLab: { select: { id: true, name: true, city: true, country: true } },
+        icpLab: {
+          select: {
+            id: true, name: true, address: true, city: true, state: true,
+            country: true, email: true, phone: true,
+            opsContactName: true, opsContactEmail: true, opsContactPhone: true,
+            notes: true,
+          },
+        },
       },
     });
 
@@ -188,19 +195,24 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
       // Send shipping instructions to factory when ICP lab testing is needed
       if (newStatus === "ICP_PENDING" && updated.icpLab && updated.requestedBy?.email) {
-        (async () => {
+        {
           try {
             const lab = updated.icpLab;
+            if (!lab.address) {
+              console.warn(`[SHIPPING] lab "${lab.name}" has no street address on file — instructions sent without one`);
+            }
             await sendShippingInstructionsEmail({
               email: updated.requestedBy.email,
               name: updated.requestedBy.name || "Factory User",
               testRequestId: id,
               poNumber: `TRIAL-${id.slice(0, 8).toUpperCase()}`,
               labName: lab.name || "ICP Lab",
-              labAddress: "",
+              labAddress: lab.address || "Street address not on file \u2014 contact the lab before shipping.",
               labCity: lab.city || "",
+              labState: lab.state || undefined,
               labCountry: lab.country || "",
-              labEmail: lab.email || undefined,
+              labEmail: lab.opsContactEmail || lab.email || undefined,
+              labPhone: lab.opsContactPhone || lab.phone || undefined,
               testTypes: ["ICP-OES"],
               fabricInfo,
               samplePrepInstructions:
@@ -211,27 +223,45 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
           } catch (err) {
             console.error("[SHIPPING] ICP shipping instructions failed:", err);
           }
-        })();
+        }
       }
 
       // Notify admins when ICP results are submitted
       if (newStatus === "ICP_SUBMITTED") {
-        prisma.user.findMany({
-          where: { role: { in: ["ADMIN", "EMPLOYEE"] }, email: { not: null } },
-          select: { email: true },
-        }).then((admins: any[]) => {
+        try {
+          const admins = await prisma.user.findMany({
+            where: { role: "ADMIN", status: "ACTIVE", email: { not: null } },
+            select: { id: true, email: true },
+          });
           const emails = admins.map((a: any) => a.email).filter(Boolean);
           if (emails.length > 0) {
-            sendTrialAdminNotification({
+            const sent: any = await sendTrialAdminNotification({
               adminEmails: emails,
               trialId: id,
               factoryName,
               fabricInfo,
               requestedByName: updated.requestedBy?.name || "Factory User",
               event: "ICP_SUBMITTED",
-            }).catch((err: any) => console.error("Admin trial email failed:", err));
+            });
+            if (sent?.ok === false) console.error("[SAMPLE-TRIAL] ICP admin email rejected:", sent.error);
+          } else {
+            console.error("[SAMPLE-TRIAL] no active admin with an email address — nobody notified");
           }
-        }).catch(() => {});
+          await Promise.all(
+            admins.map((a: any) =>
+              pushCustomNotification(
+                a.id,
+                "TEST_RESULTS",
+                "ICP Results Submitted",
+                `${factoryName} submitted ICP results for ${fabricInfo}.`,
+                "/admin/sample-trials",
+                { trialId: id },
+              ),
+            ),
+          );
+        } catch (err: any) {
+          console.error("[SAMPLE-TRIAL] ICP admin notification failed:", err?.message || err);
+        }
       }
     }
 

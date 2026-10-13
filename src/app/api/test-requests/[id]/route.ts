@@ -14,6 +14,7 @@ import {
 } from "@/lib/email";
 import { getNotifyEmails } from "@/lib/notify-workflow";
 import { recordTrackingEvent } from "@/lib/test-tracking";
+import { keepAlive } from "@/lib/keep-alive";
 
 const prisma = new PrismaClient();
 
@@ -237,7 +238,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       notifyTestRequestChange(id, "APPROVED", existing).catch(() => {});
 
       // ── Send shipping instructions to requester on approval ──
-      (async () => {
+      // keepAlive: this block is intentionally not awaited, but on Vercel the
+      // function instance is frozen as soon as the response is returned, which
+      // cancelled the work in flight. keepAlive() hands it to the Next.js
+      // runtime so it finishes without delaying the response.
+      keepAlive((async () => {
         try {
           // Fetch full test request with lab + fabric + requester + lines
           const fullTR = await prisma.testRequest.findUnique({
@@ -299,7 +304,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         } catch (shipErr) {
           console.error("[SHIPPING] Shipping instructions email failed:", shipErr);
         }
-      })();
+      })());
 
       return NextResponse.json({ ok: true, testRequest: updated, message: "Test request approved" });
     }
@@ -461,7 +466,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       });
 
       // Send emails (non-blocking)
-      (async () => {
+      // keepAlive: this block is intentionally not awaited, but on Vercel the
+      // function instance is frozen as soon as the response is returned, which
+      // cancelled the work in flight. keepAlive() hands it to the Next.js
+      // runtime so it finishes without delaying the response.
+      keepAlive((async () => {
         try {
           const fullTR = await prisma.testRequest.findUnique({
             where: { id },
@@ -502,7 +511,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         } catch (emailErr) {
           console.error("[EMAIL] mark_shipped emails failed:", emailErr);
         }
-      })();
+      })());
 
       return NextResponse.json({ ok: true, testRequest: updated, shipment, message: "Sample marked as shipped" });
     }
@@ -548,7 +557,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       });
 
       // Send email to customer + AM
-      (async () => {
+      // keepAlive: this block is intentionally not awaited, but on Vercel the
+      // function instance is frozen as soon as the response is returned, which
+      // cancelled the work in flight. keepAlive() hands it to the Next.js
+      // runtime so it finishes without delaying the response.
+      keepAlive((async () => {
         try {
           const notify = await getNotifyEmails(id, "SAMPLE_RECEIVED");
           const fullTR = await prisma.testRequest.findUnique({
@@ -601,7 +614,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         } catch (emailErr) {
           console.error("[EMAIL] receive_sample emails failed:", emailErr);
         }
-      })();
+      })());
 
       return NextResponse.json({ ok: true, testRequest: updated, message: condition === "DAMAGED" || condition === "INSUFFICIENT" ? "Sample received with issue — customer notified" : "Sample received — customer notified" });
     }
@@ -641,7 +654,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       notifyTestRequestChange(id, "IN_PROGRESS", existing).catch(() => {});
 
       // Send testing started email to customer + AM
-      (async () => {
+      // keepAlive: this block is intentionally not awaited, but on Vercel the
+      // function instance is frozen as soon as the response is returned, which
+      // cancelled the work in flight. keepAlive() hands it to the Next.js
+      // runtime so it finishes without delaying the response.
+      keepAlive((async () => {
         try {
           const notify = await getNotifyEmails(id, "TESTING_STARTED");
           const fullTR = await prisma.testRequest.findUnique({
@@ -691,7 +708,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         } catch (emailErr) {
           console.error("[EMAIL] start_testing email failed:", emailErr);
         }
-      })();
+      })());
 
       return NextResponse.json({ ok: true, testRequest: updated, message: `Testing started — est. completion ${estCompletion.toLocaleDateString()}` });
     }

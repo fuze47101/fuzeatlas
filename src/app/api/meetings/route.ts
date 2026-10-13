@@ -8,6 +8,7 @@ import {
   meetingIcsUid,
 } from "@/lib/meeting-templates";
 import { sendMeetingInvite } from "@/lib/email";
+import { keepAlive } from "@/lib/keep-alive";
 
 /* ── GET /api/meetings ── List meetings with filtering ──── */
 export async function GET(req: Request) {
@@ -166,7 +167,11 @@ export async function POST(req: Request) {
     }
 
     /* ── Fire calendar invite emails to attendees (non-blocking) ── */
-    (async () => {
+    // keepAlive: this block is intentionally not awaited, but on Vercel the
+    // function instance is frozen as soon as the response is returned, which
+    // cancelled the work in flight. keepAlive() hands it to the Next.js
+    // runtime so it finishes without delaying the response.
+    keepAlive((async () => {
       try {
         const attendeeList: { name: string; email: string }[] = (attendees || [])
           .filter((a: any) => a && a.email)
@@ -202,7 +207,7 @@ export async function POST(req: Request) {
       } catch (inviteErr) {
         console.error("[MEETINGS] Calendar invite send failed:", inviteErr);
       }
-    })();
+    })());
 
     return NextResponse.json({ ok: true, meeting });
   } catch (err: any) {

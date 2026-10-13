@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { autoScheduleMeeting } from "@/lib/meeting-templates";
 import { pushPipelineChange } from "@/lib/notify-realtime";
+import { keepAlive } from "@/lib/keep-alive";
 
 const prisma = new PrismaClient();
 
@@ -215,7 +216,11 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
 
     // BD Portal #36 Phase 6: alert admins in-app when a new handoff lands
     if (handoffPendingUpdate === true) {
-      (async () => {
+      // keepAlive: this block is intentionally not awaited, but on Vercel the
+      // function instance is frozen as soon as the response is returned, which
+      // cancelled the work in flight. keepAlive() hands it to the Next.js
+      // runtime so it finishes without delaying the response.
+      keepAlive((async () => {
         try {
           const admins = await prisma.user.findMany({
             where: { role: "ADMIN", status: "ACTIVE" },
@@ -233,7 +238,7 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
         } catch (e) {
           console.warn("[bd-handoff] admin alert failed:", e);
         }
-      })();
+      })());
     }
 
     // Auto-schedule meeting when pipeline stage changes

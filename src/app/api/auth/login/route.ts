@@ -5,6 +5,7 @@ import { verifyPassword, createToken, setSessionCookie } from "@/lib/auth";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { notifyUserLogin } from "@/lib/notify";
 import { sendLoginNotificationEmail } from "@/lib/email";
+import { keepAlive } from "@/lib/keep-alive";
 
 export async function POST(req: Request) {
   try {
@@ -101,7 +102,11 @@ export async function POST(req: Request) {
       // Email notification to AM (for brand/factory logins only)
       const isBrandOrFactory = ["BRAND_USER", "BRAND_MANAGER", "FACTORY_USER", "FACTORY_MANAGER"].includes(user.role);
       if (isBrandOrFactory) {
-        (async () => {
+        // keepAlive: this block is intentionally not awaited, but on Vercel the
+        // function instance is frozen as soon as the response is returned, which
+        // cancelled the work in flight. keepAlive() hands it to the Next.js
+        // runtime so it finishes without delaying the response.
+        keepAlive((async () => {
           try {
             let entityName = "";
             let entityType = "";
@@ -132,7 +137,7 @@ export async function POST(req: Request) {
               }
             }
           } catch {}
-        })();
+        })());
       }
     } catch {
       // Non-blocking

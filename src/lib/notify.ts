@@ -7,6 +7,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { filterSubscribed } from "@/lib/notification-subscription";
+import { keepAlive } from "@/lib/keep-alive";
 
 type NotificationType =
   | "TEST_APPROVED"
@@ -27,7 +28,14 @@ interface NotifyParams {
   metadata?: Record<string, any>;
 }
 
-async function createNotification(params: NotifyParams) {
+function createNotification(params: NotifyParams) {
+  // keepAlive: callers throughout the API fire these without awaiting, and on
+  // Vercel the instance is frozen as soon as the response returns — the write
+  // would be cancelled before it reached the database.
+  return keepAlive(createNotificationNow(params));
+}
+
+async function createNotificationNow(params: NotifyParams) {
   try {
     await prisma.notification.create({
       data: {
@@ -64,7 +72,7 @@ async function notifyAdmins(type: NotificationType, title: string, message: stri
 // ─── Public trigger functions ───
 
 /** When a test status changes to PASSED, FAILED, or RETEST */
-export async function notifyTestResult(params: {
+async function notifyTestResultNow(params: {
   testId: string;
   testName: string;
   result: string;
@@ -136,7 +144,7 @@ export async function notifyTestResult(params: {
  * Andrew has a tracking copy. Tries to send an email if RESEND
  * is configured; in-app notification always fires.
  */
-export async function notifyApprovalPending(params: {
+async function notifyApprovalPendingNow(params: {
   brandId: string;
   brandName: string;
   kind: "submission" | "test" | "order";
@@ -183,7 +191,7 @@ export async function notifyApprovalPending(params: {
 }
 
 /** When a SOW status changes */
-export async function notifySOWStatusChange(params: {
+async function notifySOWStatusChangeNow(params: {
   sowId: string;
   sowTitle: string;
   newStatus: string;
@@ -238,7 +246,7 @@ export async function notifySOWStatusChange(params: {
 }
 
 /** When an access request is submitted */
-export async function notifyNewAccessRequest(params: {
+async function notifyNewAccessRequestNow(params: {
   requestId: string;
   name: string;
   company: string;
@@ -253,7 +261,7 @@ export async function notifyNewAccessRequest(params: {
 }
 
 /** When a brand moves pipeline stages */
-export async function notifyPipelineChange(params: {
+async function notifyPipelineChangeNow(params: {
   brandId: string;
   brandName: string;
   oldStage: string;
@@ -287,7 +295,7 @@ export async function notifyPipelineChange(params: {
 }
 
 /** When a new fabric submission comes in from the factory portal */
-export async function notifyNewSubmission(params: {
+async function notifyNewSubmissionNow(params: {
   factoryName: string;
   fabricName: string;
   submittedBy: string;
@@ -381,7 +389,7 @@ export async function notifyNewSubmission(params: {
 }
 
 /** When a test request status changes */
-export async function notifyTestRequestStatus(params: {
+async function notifyTestRequestStatusNow(params: {
   testRequestId: string;
   status: string;
   createdByUserId?: string;
@@ -538,7 +546,7 @@ export async function notifyTestRequestStatus(params: {
 }
 
 /** When a factory submits a new test request — notify admins so they can approve */
-export async function notifyTestRequestCreated(params: {
+async function notifyTestRequestCreatedNow(params: {
   testRequestId: string;
   poNumber?: string;
   factoryName?: string;
@@ -562,7 +570,7 @@ export async function notifyTestRequestCreated(params: {
 // ─── Order Notifications ───
 
 /** When a factory places a new order — notify account manager + admins */
-export async function notifyNewOrder(params: {
+async function notifyNewOrderNow(params: {
   orderId: string;
   orderNumber: string;
   orderType: string;
@@ -609,7 +617,7 @@ export async function notifyNewOrder(params: {
 }
 
 /** When order status changes — notify factory + relevant parties */
-export async function notifyOrderStatusChange(params: {
+async function notifyOrderStatusChangeNow(params: {
   orderId: string;
   orderNumber: string;
   newStatus: string;
@@ -691,7 +699,7 @@ export async function notifyOrderStatusChange(params: {
 }
 
 /** When distributor inventory hits low threshold */
-export async function notifyLowInventory(params: {
+async function notifyLowInventoryNow(params: {
   distributorId: string;
   distributorName: string;
   currentLiters: number;
@@ -711,7 +719,7 @@ export async function notifyLowInventory(params: {
  * Notify all entity managers when CRM activity is logged (note, call, email, meeting, etc.)
  * Uses EntityManager table for multi-manager support, falls back to salesRepId.
  */
-export async function notifyCRMActivity(params: {
+async function notifyCRMActivityNow(params: {
   entityType: "BRAND" | "FACTORY";
   entityId: string;
   entityName: string;
@@ -799,7 +807,7 @@ export async function notifyCRMActivity(params: {
  * - Factory users: notify factory's salesRep
  * - Also notifies all ADMIN users
  */
-export async function notifyUserLogin(params: {
+async function notifyUserLoginNow(params: {
   userId: string;
   userName: string;
   userEmail: string;
@@ -901,7 +909,7 @@ async function alreadyNotified(kind: string, scopeId: string): Promise<boolean> 
  * notification via the existing admin-fan path; this helper covers
  * the brand-user side.
  */
-export async function notifyPricingTierChange(params: {
+async function notifyPricingTierChangeNow(params: {
   brandId: string;
   brandName?: string | null;
   changeSummary: string;
@@ -941,7 +949,7 @@ export async function notifyPricingTierChange(params: {
  * an active SupplyChainLink (BRAND→FACTORY, SUPPLIES) to this brand.
  * Plus admins for visibility.
  */
-export async function notifySpecChange(params: {
+async function notifySpecChangeNow(params: {
   brandId: string;
   brandName?: string | null;
   changedFields: string[];
@@ -1008,7 +1016,7 @@ export async function notifySpecChange(params: {
  * EntityManager (ACCOUNT_MANAGER, isPrimary=true) + admins. Closes
  * the loop on notifySpecChange.
  */
-export async function notifySpecAcknowledged(params: {
+async function notifySpecAcknowledgedNow(params: {
   brandId: string;
   factoryId: string;
   factoryName?: string | null;
@@ -1084,7 +1092,7 @@ export async function notifySpecAcknowledged(params: {
  * admins so the test can be reassigned. The brand needs to know
  * because their expected completion just slipped.
  */
-export async function notifyLabAssignmentRejected(params: {
+async function notifyLabAssignmentRejectedNow(params: {
   testRequestId: string;
   poNumber?: string | null;
   brandId?: string | null;
@@ -1135,7 +1143,7 @@ export async function notifyLabAssignmentRejected(params: {
  * when a lab hasn't accepted or rejected an assignment within 24h.
  * Admin-only ping so the assignment can be moved manually.
  */
-export async function notifyLabAssignmentOverdue(params: {
+async function notifyLabAssignmentOverdueNow(params: {
   testRequestId: string;
   poNumber?: string | null;
   labName?: string | null;
@@ -1173,7 +1181,7 @@ export async function notifyLabAssignmentOverdue(params: {
  * uploading lab's lab managers. Brand is NOT pinged here — that
  * happens later via notifyTestResult on the brand-visible flip.
  */
-export async function notifyRawDataReceived(params: {
+async function notifyRawDataReceivedNow(params: {
   testRunId: string;
   testType?: string | null;
   labId?: string | null;
@@ -1218,7 +1226,7 @@ export async function notifyRawDataReceived(params: {
  * primary EntityManager (the AM who owns the relationship) so they
  * can welcome the factory and follow up.
  */
-export async function notifyInvitationAccepted(params: {
+async function notifyInvitationAcceptedNow(params: {
   invitationId: string;
   brandId: string;
   factoryName?: string | null;
@@ -1266,3 +1274,35 @@ export async function notifyInvitationAccepted(params: {
     ),
   );
 }
+
+/* ──────────────────────────────────────────────────────────────
+   keepAlive wrappers.
+
+   Every function below is fired without await from one or more API
+   routes. On Vercel the function instance is frozen the moment the
+   response is returned, so that floating work was cancelled before
+   it finished — no notification row, no email, and no error either,
+   because the .catch() never ran. keepAlive() hands the promise to
+   the Next.js runtime, which holds the instance open until it
+   settles. Awaiting callers are unaffected.
+   ────────────────────────────────────────────────────────────── */
+export function notifyTestResult(...args: any[]) { return keepAlive((notifyTestResultNow as any)(...args)); }
+export function notifyApprovalPending(...args: any[]) { return keepAlive((notifyApprovalPendingNow as any)(...args)); }
+export function notifySOWStatusChange(...args: any[]) { return keepAlive((notifySOWStatusChangeNow as any)(...args)); }
+export function notifyNewAccessRequest(...args: any[]) { return keepAlive((notifyNewAccessRequestNow as any)(...args)); }
+export function notifyPipelineChange(...args: any[]) { return keepAlive((notifyPipelineChangeNow as any)(...args)); }
+export function notifyNewSubmission(...args: any[]) { return keepAlive((notifyNewSubmissionNow as any)(...args)); }
+export function notifyTestRequestStatus(...args: any[]) { return keepAlive((notifyTestRequestStatusNow as any)(...args)); }
+export function notifyTestRequestCreated(...args: any[]) { return keepAlive((notifyTestRequestCreatedNow as any)(...args)); }
+export function notifyNewOrder(...args: any[]) { return keepAlive((notifyNewOrderNow as any)(...args)); }
+export function notifyOrderStatusChange(...args: any[]) { return keepAlive((notifyOrderStatusChangeNow as any)(...args)); }
+export function notifyLowInventory(...args: any[]) { return keepAlive((notifyLowInventoryNow as any)(...args)); }
+export function notifyCRMActivity(...args: any[]) { return keepAlive((notifyCRMActivityNow as any)(...args)); }
+export function notifyUserLogin(...args: any[]) { return keepAlive((notifyUserLoginNow as any)(...args)); }
+export function notifyPricingTierChange(...args: any[]) { return keepAlive((notifyPricingTierChangeNow as any)(...args)); }
+export function notifySpecChange(...args: any[]) { return keepAlive((notifySpecChangeNow as any)(...args)); }
+export function notifySpecAcknowledged(...args: any[]) { return keepAlive((notifySpecAcknowledgedNow as any)(...args)); }
+export function notifyLabAssignmentRejected(...args: any[]) { return keepAlive((notifyLabAssignmentRejectedNow as any)(...args)); }
+export function notifyLabAssignmentOverdue(...args: any[]) { return keepAlive((notifyLabAssignmentOverdueNow as any)(...args)); }
+export function notifyRawDataReceived(...args: any[]) { return keepAlive((notifyRawDataReceivedNow as any)(...args)); }
+export function notifyInvitationAccepted(...args: any[]) { return keepAlive((notifyInvitationAcceptedNow as any)(...args)); }

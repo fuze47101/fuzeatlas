@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { notifyTestResult } from "@/lib/notify";
 import { generateAndPersistNarration } from "@/lib/test-narration";
 import { recordTrackingEvent } from "@/lib/test-tracking";
+import { keepAlive } from "@/lib/keep-alive";
 
 /* ── GET /api/tests/[id] ── fetch single test run with all details */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -301,7 +302,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     // ── Phase 7D: fan out approval-pending notification when this
     //    flip put the row into PENDING. Fire-and-forget; non-blocking. ──
     if (brandVisible === true && brandVisData.brandApprovalStatus === "PENDING") {
-      (async () => {
+      // keepAlive: this block is intentionally not awaited, but on Vercel the
+      // function instance is frozen as soon as the response is returned, which
+      // cancelled the work in flight. keepAlive() hands it to the Next.js
+      // runtime so it finishes without delaying the response.
+      keepAlive((async () => {
         try {
           const ctx = await prisma.testRun.findUnique({
             where: { id },
@@ -323,12 +328,16 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         } catch (err) {
           console.error("[approval-pending] test notify failed:", err);
         }
-      })();
+      })());
     }
 
     // ── Send enhanced results email when stamping for brand visibility ──
     if (brandVisible === true) {
-      (async () => {
+      // keepAlive: this block is intentionally not awaited, but on Vercel the
+      // function instance is frozen as soon as the response is returned, which
+      // cancelled the work in flight. keepAlive() hands it to the Next.js
+      // runtime so it finishes without delaying the response.
+      keepAlive((async () => {
         try {
           // Get the full test run with related data
           const fullTest = await prisma.testRun.findUnique({
@@ -484,7 +493,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         } catch (narrationErr) {
           console.error("[NARRATION] generation failed (non-blocking):", narrationErr);
         }
-      })();
+      })());
     }
 
     return NextResponse.json({ ok: true, testRunId: id, message: "Test run updated" });

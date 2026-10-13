@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateIcsContent, meetingIcsUid } from "@/lib/meeting-templates";
 import { sendMeetingInvite } from "@/lib/email";
+import { keepAlive } from "@/lib/keep-alive";
 
 /**
  * Monotonic sequence number for .ics updates. We don't persist a sequence
@@ -88,7 +89,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
       /* ── Fire cancel / update invites when appropriate (non-blocking) ── */
       if (body.action === "cancel" || body.action === "reschedule") {
-        (async () => {
+        // keepAlive: this block is intentionally not awaited, but on Vercel the
+        // function instance is frozen as soon as the response is returned, which
+        // cancelled the work in flight. keepAlive() hands it to the Next.js
+        // runtime so it finishes without delaying the response.
+        keepAlive((async () => {
           try {
             const attendeeList = pickAttendees(meeting.attendees);
             if (attendeeList.length === 0) return;
@@ -111,7 +116,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
           } catch (err) {
             console.error("[MEETINGS] Calendar action email failed:", err);
           }
-        })();
+        })());
       }
 
       return NextResponse.json({ ok: true, meeting });
@@ -162,7 +167,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       data.attendees !== undefined;
 
     if (calendarFieldChanged) {
-      (async () => {
+      // keepAlive: this block is intentionally not awaited, but on Vercel the
+      // function instance is frozen as soon as the response is returned, which
+      // cancelled the work in flight. keepAlive() hands it to the Next.js
+      // runtime so it finishes without delaying the response.
+      keepAlive((async () => {
         try {
           const attendeeList = pickAttendees(meeting.attendees);
           if (attendeeList.length === 0) return;
@@ -185,7 +194,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         } catch (err) {
           console.error("[MEETINGS] Calendar update email failed:", err);
         }
-      })();
+      })());
     }
 
     return NextResponse.json({ ok: true, meeting });
@@ -205,7 +214,11 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     await prisma.meeting.delete({ where: { id } });
 
     if (meeting) {
-      (async () => {
+      // keepAlive: this block is intentionally not awaited, but on Vercel the
+      // function instance is frozen as soon as the response is returned, which
+      // cancelled the work in flight. keepAlive() hands it to the Next.js
+      // runtime so it finishes without delaying the response.
+      keepAlive((async () => {
         try {
           const attendeeList = pickAttendees(meeting.attendees);
           if (attendeeList.length === 0) return;
@@ -228,7 +241,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         } catch (err) {
           console.error("[MEETINGS] Calendar cancel email failed:", err);
         }
-      })();
+      })());
     }
 
     return NextResponse.json({ ok: true });

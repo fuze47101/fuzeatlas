@@ -7,6 +7,8 @@
  * If RESEND_API_KEY is not set, emails are logged to console instead.
  */
 
+import { keepAlive } from "@/lib/keep-alive";
+
 const FUZE_FROM = "FUZE Atlas <notifications@fuzeatlas.com>";
 const FUZE_COLOR = "#00b4c3";
 
@@ -73,11 +75,24 @@ interface EmailOptions {
   cc?: string | string[];
 }
 
-export async function sendEmail({ to, subject, html, attachments, replyTo, from, bcc, cc }: EmailOptions) {
+/**
+ * Send one email through Resend.
+ *
+ * Callers may await this or fire it and forget — keepAlive() registers the
+ * send with the Next.js runtime so it completes even after the response has
+ * been returned. Before that wrapper existed every un-awaited caller had its
+ * send cancelled by the serverless freeze, which is why no admin
+ * notification was ever delivered.
+ */
+export function sendEmail(options: EmailOptions) {
+  return keepAlive(sendEmailNow(options));
+}
+
+async function sendEmailNow({ to, subject, html, attachments, replyTo, from, bcc, cc }: EmailOptions) {
   const apiKey = process.env.RESEND_API_KEY;
 
   if (!apiKey) {
-    console.log("[EMAIL-STUB] No RESEND_API_KEY set. Would send:");
+    console.warn("[EMAIL-STUB] NOT DELIVERED \u2014 no RESEND_API_KEY set. Would have sent:");
     console.log(`  From: ${from || process.env.RESEND_FROM || FUZE_FROM}`);
     console.log(`  To: ${Array.isArray(to) ? to.join(", ") : to}`);
     if (cc) console.log(`  Cc: ${Array.isArray(cc) ? cc.join(", ") : cc}`);

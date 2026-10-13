@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { pushNewSubmission } from "@/lib/notify-realtime";
+import { keepAlive } from "@/lib/keep-alive";
 
 export async function POST(req: Request) {
   try {
@@ -90,7 +91,11 @@ export async function POST(req: Request) {
     // factory teammates of the submitter (so the rest of the floor sees
     // it), and the brand owner's team if the fabric is linked to a
     // brand. Failure is non-fatal — intake never rolls back on notify.
-    (async () => {
+    // keepAlive: this block is intentionally not awaited, but on Vercel the
+    // function instance is frozen as soon as the response is returned, which
+    // cancelled the work in flight. keepAlive() hands it to the Next.js
+    // runtime so it finishes without delaying the response.
+    keepAlive((async () => {
       try {
         const factoryRow = await prisma.factory.findUnique({
           where: { id: factoryId },
@@ -113,7 +118,7 @@ export async function POST(req: Request) {
       } catch (notifyErr) {
         console.error("[factory-portal/intake] notify failed:", notifyErr);
       }
-    })();
+    })());
 
     return NextResponse.json({
       ok: true,

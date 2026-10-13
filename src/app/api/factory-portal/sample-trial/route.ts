@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { sendTrialAdminNotification } from "@/lib/email";
-import { pushAccessRequest } from "@/lib/notify-realtime";
+import { pushCustomNotification } from "@/lib/notify-realtime";
 
 /* ── GET  /api/factory-portal/sample-trial ── list trials for factory ── */
 export async function GET(req: Request) {
@@ -186,28 +186,68 @@ export async function POST(req: Request) {
       include: {
         fabric: { select: { fuzeNumber: true, customerCode: true } },
         brand: { select: { name: true } },
+        factory: { select: { name: true } },
         icpLab: { select: { name: true, city: true, country: true } },
       },
     });
 
-    // ── Notify admins of new trial request (non-blocking) ──
+    // ── Notify admins of the new trial request ──
+    // Awaited deliberately. This used to be a floating .then() chain, which on
+    // Vercel is cancelled by the serverless freeze the moment the response is
+    // returned — no email was ever sent and no error was ever logged. The work
+    // is two queries and one API call, so awaiting it costs little and makes
+    // the outcome visible in the logs.
     const fabricInfo = `${trial.fabric?.fuzeNumber ? `FUZE-${trial.fabric.fuzeNumber}` : ""} ${trial.fabric?.customerCode || ""}`.trim() || "N/A";
-    prisma.user.findMany({
-      where: { role: { in: ["ADMIN", "EMPLOYEE"] }, email: { not: null } },
-      select: { email: true },
-    }).then((admins: any[]) => {
+    const factoryName = trial.factory?.name || effectiveFactoryId || "Unknown";
+    const requestedByName = user.name || user.email || "Factory User";
+
+    try {
+      // ADMIN + ACTIVE only. The previous query included every EMPLOYEE, which
+      // put factory trial requests in front of external partner accounts.
+      const admins = await prisma.user.findMany({
+        where: { role: "ADMIN", status: "ACTIVE", email: { not: null } },
+        select: { id: true, email: true },
+      });
       const emails = admins.map((a: any) => a.email).filter(Boolean);
+
       if (emails.length > 0) {
-        sendTrialAdminNotification({
+        const sent: any = await sendTrialAdminNotification({
           adminEmails: emails,
           trialId: trial.id,
-          factoryName: effectiveFactoryId || "Unknown",
+          factoryName,
           fabricInfo,
-          requestedByName: user.name || user.email || "Factory User",
+          requestedByName,
           event: "NEW_REQUEST",
-        }).catch((err: any) => console.error("Admin trial notification failed:", err));
+        });
+        if (sent?.ok === false) {
+          console.error("[SAMPLE-TRIAL] admin email rejected:", sent.error);
+        } else if (sent?.stub) {
+          console.warn("[SAMPLE-TRIAL] admin email stubbed — RESEND_API_KEY not set");
+        } else {
+          console.log(`[SAMPLE-TRIAL] admin email sent to ${emails.length} recipient(s), id=${sent?.id}`);
+        }
+      } else {
+        console.error("[SAMPLE-TRIAL] no active admin with an email address — nobody notified");
       }
-    }).catch(() => {});
+
+      // In-app notification as well, so the request also shows up in the bell
+      // menu for anyone who does not read the email.
+      await Promise.all(
+        admins.map((a: any) =>
+          pushCustomNotification(
+            a.id,
+            "BRAND_ACTIVITY",
+            "New Sample Trial Request",
+            `${factoryName} requested a FUZE sample trial for ${fabricInfo} (by ${requestedByName}).`,
+            "/admin/sample-trials",
+            { trialId: trial.id, factoryName },
+          ),
+        ),
+      );
+    } catch (err: any) {
+      // Never fail the factory's submission because a notification failed.
+      console.error("[SAMPLE-TRIAL] admin notification failed:", err?.message || err);
+    }
 
     return NextResponse.json({ ok: true, trial });
   } catch (e: any) {

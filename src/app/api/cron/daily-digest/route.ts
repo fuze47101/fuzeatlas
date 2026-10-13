@@ -129,16 +129,10 @@ export async function GET(req: Request) {
       orderBy: { createdAt: "desc" },
     });
 
-    // 6. Test status changes
-    const testUpdates = await prisma.testRun?.findMany?.({
-      where: { updatedAt: { gte: since } },
-      include: {
-        brand: { select: { name: true } },
-        factory: { select: { name: true } },
-      },
-      orderBy: { updatedAt: "desc" },
-      take: 10,
-    }).catch(() => []) || [];
+    // 6. Test status changes — removed. TestRun has no brand/factory relation
+    //    (it reaches them through `submission`), so this include threw a
+    //    Prisma validation error on every run, was swallowed by .catch(() => [])
+    //    and the result was never read. It only polluted the logs.
 
     // 6a. Overdue orders — rolling backlog, NOT a delta.
     //     Same philosophy as tickets: Andrew sees these every morning until

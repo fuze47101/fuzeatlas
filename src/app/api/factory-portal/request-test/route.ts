@@ -207,8 +207,11 @@ export async function POST(req: Request) {
       console.error("Auto-create admin PO failed (non-fatal):", poErr);
     }
 
-    // ── Notify admins (non-blocking) ──
-    (async () => {
+    // ── Notify admins ──
+    // Awaited. As a floating IIFE this never completed on Vercel: the instance
+    // is frozen the moment the response is returned, so the admin emails were
+    // cancelled mid-flight and the catch() never ran to report it.
+    await (async () => {
       try {
         const admins = await prisma.user.findMany({
           where: { role: { in: ["ADMIN", "EMPLOYEE"] }, email: { not: null }, status: "ACTIVE" },
@@ -242,14 +245,25 @@ export async function POST(req: Request) {
           </div>
         `;
 
-        for (const admin of admins) {
-          if (admin.email) {
-            sendEmail({
-              to: admin.email,
-              subject: `🧪 Test Request ${poNum} — ${factoryName} → FUZE Atlas Lab`,
-              html: adminHtml,
-            }).catch(() => {});
-          }
+        const results = await Promise.all(
+          admins
+            .filter((a: any) => a.email)
+            .map((admin: any) =>
+              sendEmail({
+                to: admin.email,
+                subject: `🧪 Test Request ${poNum} — ${factoryName} → FUZE Atlas Lab`,
+                html: adminHtml,
+              }),
+            ),
+        );
+        const failed = results.filter((r: any) => r?.ok === false);
+        if (failed.length) {
+          console.error(`[NOTIFY] ${failed.length}/${results.length} admin test-request emails rejected:`, failed[0]?.error);
+        } else {
+          console.log(`[NOTIFY] test-request ${poNum}: emailed ${results.length} admin(s)`);
+        }
+        if (!results.length) {
+          console.error("[NOTIFY] no active admin with an email address — nobody notified");
         }
 
         // Push real-time notification to requester
@@ -273,6 +287,7 @@ export async function POST(req: Request) {
         console.error("[NOTIFY] Factory test request notification failed:", err);
       }
     })();
+
 
     return NextResponse.json({
       ok: true,

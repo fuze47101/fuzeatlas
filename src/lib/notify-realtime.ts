@@ -14,6 +14,7 @@ import {
 } from "@/lib/notify";
 import { sseManager } from "@/lib/sse";
 import { prisma } from "@/lib/prisma";
+import { keepAlive } from "@/lib/keep-alive";
 
 type Notification = {
   id: string;
@@ -98,7 +99,7 @@ async function pushCreatedNotifications(userIds: string[], title: string): Promi
 /**
  * Notify test result with real-time SSE push
  */
-export async function pushTestResult(params: {
+async function pushTestResultNow(params: {
   testId: string;
   testName: string;
   result: string;
@@ -144,7 +145,7 @@ export async function pushTestResult(params: {
 /**
  * Notify SOW status change with real-time SSE push
  */
-export async function pushSOWUpdate(params: {
+async function pushSOWUpdateNow(params: {
   sowId: string;
   sowTitle: string;
   newStatus: string;
@@ -190,7 +191,7 @@ export async function pushSOWUpdate(params: {
 /**
  * Notify access request with real-time SSE push
  */
-export async function pushAccessRequest(params: {
+async function pushAccessRequestNow(params: {
   requestId: string;
   name: string;
   company: string;
@@ -214,7 +215,7 @@ export async function pushAccessRequest(params: {
 /**
  * Notify pipeline change with real-time SSE push
  */
-export async function pushPipelineChange(params: {
+async function pushPipelineChangeNow(params: {
   brandId: string;
   brandName: string;
   oldStage: string;
@@ -247,7 +248,7 @@ export async function pushPipelineChange(params: {
 /**
  * Notify new fabric submission with real-time SSE push
  */
-export async function pushNewSubmission(params: {
+async function pushNewSubmissionNow(params: {
   factoryName: string;
   fabricName: string;
   submittedBy: string;
@@ -293,7 +294,7 @@ export async function pushNewSubmission(params: {
 /**
  * Notify test request status change with real-time SSE push
  */
-export async function pushTestRequestStatus(params: {
+async function pushTestRequestStatusNow(params: {
   testRequestId: string;
   status: string;
   createdByUserId?: string;
@@ -333,7 +334,7 @@ export async function pushTestRequestStatus(params: {
  * System alert - push notification directly to specified user(s)
  * This creates a notification in the database and sends it via SSE
  */
-export async function pushSystemAlert(
+async function pushSystemAlertNow(
   userIds: string | string[],
   title: string,
   message: string,
@@ -368,7 +369,19 @@ export async function pushSystemAlert(
 /**
  * Generic notification push - for custom notifications not covered by specific functions
  */
-export async function pushCustomNotification(
+export function pushCustomNotification(
+  userId: string,
+  type: string,
+  title: string,
+  message: string,
+  link?: string,
+  metadata?: Record<string, any>,
+): Promise<void> {
+  // keepAlive: most call sites fire this without awaiting it.
+  return keepAlive(pushCustomNotificationNow(userId, type, title, message, link, metadata));
+}
+
+async function pushCustomNotificationNow(
   userId: string,
   type: string,
   title: string,
@@ -396,3 +409,22 @@ export async function pushCustomNotification(
     console.error("[NOTIFY-REALTIME] Error in pushCustomNotification:", error);
   }
 }
+
+/* ──────────────────────────────────────────────────────────────
+   keepAlive wrappers.
+
+   Every function below is fired without await from one or more API
+   routes. On Vercel the function instance is frozen the moment the
+   response is returned, so that floating work was cancelled before
+   it finished — no notification row, no email, and no error either,
+   because the .catch() never ran. keepAlive() hands the promise to
+   the Next.js runtime, which holds the instance open until it
+   settles. Awaiting callers are unaffected.
+   ────────────────────────────────────────────────────────────── */
+export function pushTestResult(...args: any[]) { return keepAlive((pushTestResultNow as any)(...args)); }
+export function pushSOWUpdate(...args: any[]) { return keepAlive((pushSOWUpdateNow as any)(...args)); }
+export function pushAccessRequest(...args: any[]) { return keepAlive((pushAccessRequestNow as any)(...args)); }
+export function pushPipelineChange(...args: any[]) { return keepAlive((pushPipelineChangeNow as any)(...args)); }
+export function pushNewSubmission(...args: any[]) { return keepAlive((pushNewSubmissionNow as any)(...args)); }
+export function pushTestRequestStatus(...args: any[]) { return keepAlive((pushTestRequestStatusNow as any)(...args)); }
+export function pushSystemAlert(...args: any[]) { return keepAlive((pushSystemAlertNow as any)(...args)); }

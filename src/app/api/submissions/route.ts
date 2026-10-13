@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { pushNewSubmission } from "@/lib/notify-realtime";
 import { sendNewSubmissionEmail } from "@/lib/email";
+import { keepAlive } from "@/lib/keep-alive";
 
 export async function POST(req: Request) {
   try {
@@ -53,7 +54,11 @@ export async function POST(req: Request) {
     const submission = await prisma.fabricSubmission.create({ data });
 
     // ── Notify admins + factory + brand of new submission (non-blocking) ──
-    (async () => {
+    // keepAlive: this block is intentionally not awaited, but on Vercel the
+    // function instance is frozen as soon as the response is returned, which
+    // cancelled the work in flight. keepAlive() hands it to the Next.js
+    // runtime so it finishes without delaying the response.
+    keepAlive((async () => {
       try {
         // Look up factory and fabric names + ids for the notification
         const fabric = await prisma.fabric.findUnique({
@@ -99,7 +104,7 @@ export async function POST(req: Request) {
       } catch (err) {
         console.error("[NOTIFY] Submission notification failed:", err);
       }
-    })();
+    })());
 
     return NextResponse.json({ ok: true, submission }, { status: 201 });
   } catch (e: any) {
