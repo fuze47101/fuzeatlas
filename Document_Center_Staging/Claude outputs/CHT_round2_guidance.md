@@ -5,9 +5,9 @@
 
 Robert,
 
-Thank you for a first-class first round — and for making the time in Stuttgart today; it was good to go through the data in person. You hit the 2.0 mg/kg target on both fabrics, which tells me the recipe, the pick-up and your padding are all exactly where they should be, and it means our two ICP-MS laboratories are already reading the same fabric the same way. That was the part I was least sure of going in, so it's a good place to be after one round.
+Thank you for a first-class first round — and for making the time in Stuttgart today; it was good to go through the data in person. You hit the 2.0 mg/kg target on both fabrics, which tells me the recipe, the pick-up and your padding are all exactly where they should be. That's the foundation, and it's solid after one round.
 
-The post-wash numbers are lower than we see on our side, so we're doing two things in parallel: your samples go onto our ICP-MS the moment they arrive, and you run Round 2 with the application tuned up. By the time your Round 2 fabric is through the wash series we'll have both sets of numbers to compare. Here is what I'd like to run.
+The post-wash numbers are lower than we would expect, so let's run two things in parallel: your Round 1 samples go onto our ICP-MS as soon as they arrive, which gives us the first cross-check between the two laboratories, and you run Round 2 with the application tuned up. By the time your Round 2 fabric is through the wash series we'll have both sets of numbers side by side. Here is what I'd like to run.
 
 **Round 2 — application guidance**
 
