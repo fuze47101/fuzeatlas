@@ -11,7 +11,7 @@ The post-wash numbers are lower than we'd expect, so let's run two tracks in par
 
 **Round 2**
 
-Same 2.0 mg/kg, FUZE alone in the bath, DI make-up water, no pH adjustment.
+Same 2.0 mg/kg, FUZE alone in the bath, DI make-up water. Bath pH as made should read 5.5–7.0 — please record it but leave it unadjusted.
 
 | | CO twill | PES jersey |
 |---|---|---|
