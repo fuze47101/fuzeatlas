@@ -100,11 +100,40 @@ export async function POST(req: Request) {
     if (category) baseData.category = category;
     if (audienceArray) baseData.audience = audienceArray;
 
-    const doc = await prisma.productDocument.upsert({
-      where: { docType_productLine_language: { docType, productLine, language } },
-      create: { docType, productLine, language, ...baseData },
-      update: baseData,
-    });
+    let doc;
+    if (body.replaceId) {
+      // Replacing a specific existing document by id — update in place.
+      const existing = await prisma.productDocument.findUnique({
+        where: { id: body.replaceId },
+        select: { id: true },
+      });
+      if (!existing) {
+        return NextResponse.json({ ok: false, error: "Document not found" }, { status: 404 });
+      }
+      doc = await prisma.productDocument.update({
+        where: { id: body.replaceId },
+        data: baseData,
+      });
+    } else {
+      // Adding a new document — create a fresh row.
+      try {
+        doc = await prisma.productDocument.create({
+          data: { docType, productLine, language, ...baseData },
+        });
+      } catch (createErr: any) {
+        if (createErr?.code === "P2002") {
+          return NextResponse.json(
+            {
+              ok: false,
+              error:
+                "A document with this product line and language already exists for that type. Use the Replace button on the existing document to update it.",
+            },
+            { status: 409 }
+          );
+        }
+        throw createErr;
+      }
+    }
     return NextResponse.json({ ok: true, document: doc });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
