@@ -24,6 +24,7 @@ export default function DistributorFactoriesPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [adding, setAdding] = useState(false);
   const [search, setSearch] = useState("");
+  const [rosterSearch, setRosterSearch] = useState("");
   const [candidates, setCandidates] = useState<any[]>([]);
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
@@ -111,8 +112,23 @@ export default function DistributorFactoriesPage() {
     );
   }
 
-  const roster = rows.filter((r) => r.via === "roster");
-  const primary = rows.filter((r) => r.via === "primary");
+  const rosterQ = rosterSearch.trim().toLowerCase();
+  const roster = rows
+    .filter((r) => r.via === "roster")
+    .filter((r) =>
+      !rosterQ ||
+      String(r.name || "").toLowerCase().includes(rosterQ) ||
+      String(r.country || "").toLowerCase().includes(rosterQ) ||
+      String(r.city || "").toLowerCase().includes(rosterQ)
+    );
+  const primary = rows
+    .filter((r) => r.via === "primary")
+    .filter((r) =>
+      !rosterQ ||
+      String(r.name || "").toLowerCase().includes(rosterQ) ||
+      String(r.country || "").toLowerCase().includes(rosterQ) ||
+      String(r.city || "").toLowerCase().includes(rosterQ)
+    );
 
   return (
     <div className="p-4 sm:p-8 max-w-5xl mx-auto">
@@ -191,6 +207,19 @@ export default function DistributorFactoriesPage() {
               No matching factories. Ask FUZE admin to invite a new factory into Atlas.
             </p>
           )}
+        </div>
+      )}
+
+      {/* Roster search */}
+      {rows.length > 0 && (
+        <div className="mb-4">
+          <input
+            type="text"
+            value={rosterSearch}
+            onChange={(e) => setRosterSearch(e.target.value)}
+            placeholder="Filter by name, country, or city…"
+            className="w-full sm:w-80 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00b4c3]"
+          />
         </div>
       )}
 
