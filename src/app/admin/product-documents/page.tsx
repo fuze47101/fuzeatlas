@@ -168,6 +168,7 @@ export default function ProductDocumentsPage() {
         audience: form.audience,
         productLine,
         language: form.language,
+        replaceId: formFor.replaceId || null,
       }),
     });
     const d = await res.json();

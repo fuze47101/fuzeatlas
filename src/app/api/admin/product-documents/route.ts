@@ -100,12 +100,45 @@ export async function POST(req: Request) {
     if (category) baseData.category = category;
     if (audienceArray) baseData.audience = audienceArray;
 
-    const doc = await prisma.productDocument.upsert({
-      where: { docType_productLine_language: { docType, productLine, language } },
-      create: { docType, productLine, language, ...baseData },
-      update: baseData,
-    });
-    return NextResponse.json({ ok: true, document: doc });
+    // When replacing an existing doc (clicked Replace), update it by ID so
+    // we don't touch the wrong record. When adding a new one, use create so
+    // a different (productLine, language) is always a fresh upload — never a
+    // silent replacement.
+    const replaceId = body.replaceId ? String(body.replaceId).trim() : null;
+    if (replaceId) {
+      const existing = await prisma.productDocument.findUnique({
+        where: { id: replaceId },
+        select: { id: true },
+      });
+      if (!existing) {
+        return NextResponse.json({ ok: false, error: "Document to replace not found" }, { status: 404 });
+      }
+      const doc = await prisma.productDocument.update({
+        where: { id: replaceId },
+        data: { docType, productLine, language, ...baseData },
+      });
+      return NextResponse.json({ ok: true, document: doc });
+    }
+
+    // New upload — create only, never upsert.
+    try {
+      const doc = await prisma.productDocument.create({
+        data: { docType, productLine, language, ...baseData },
+      });
+      return NextResponse.json({ ok: true, document: doc });
+    } catch (e: any) {
+      if (e.code === "P2002") {
+        return NextResponse.json(
+          {
+            ok: false,
+            error:
+              "A document already exists for this product line and language. Use the Replace button on that document to update it, or choose a different product line / language.",
+          },
+          { status: 409 },
+        );
+      }
+      throw e;
+    }
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
   }
