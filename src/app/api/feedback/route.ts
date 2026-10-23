@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, getRealUser } from "@/lib/auth";
 import { uploadToS3, generateS3Key, isS3Configured, S3_PREFIXES } from "@/lib/s3";
 
 /**
@@ -54,7 +54,15 @@ function parseDataUrl(dataUrl: string): { buffer: Buffer; contentType: string } 
 
 export async function POST(req: Request) {
   try {
-    const sessionUser = await getCurrentUser().catch(() => null);
+    // Attribute the report to the person actually typing it. While an admin is
+    // using "View as", getCurrentUser() returns the impersonated account — so
+    // reports were being filed under (and "we fixed it" emails sent to) an
+    // external user who never saw the page. Record who was being viewed as in
+    // triageNotes instead, which only admins see.
+    const sessionUser = await getRealUser().catch(() => null);
+    const viewedAs = await getCurrentUser().catch(() => null);
+    const impersonating =
+      sessionUser && viewedAs && viewedAs.id !== sessionUser.id ? viewedAs : null;
 
     const body = await req.json();
     const category = String(body.category || "").toUpperCase();
@@ -154,6 +162,10 @@ export async function POST(req: Request) {
         screenshotUrl,
         screenshotBucket,
         screenshotKey,
+
+        triageNotes: impersonating
+          ? `Filed while viewing as ${impersonating.name || impersonating.email} <${impersonating.email}> (${impersonating.role}).`
+          : null,
       },
       select: { id: true, createdAt: true },
     });
