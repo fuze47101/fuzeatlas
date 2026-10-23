@@ -3778,7 +3778,12 @@ model ProductDocument {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([docType, productLine, language])
+  // Deliberately NOT unique on (docType, productLine, language). It used to
+  // be, which silently turned every second upload into a replace — the
+  // library ended up with documents filed under the wrong type. Many
+  // documents per type is the intended model; the comment on docType above
+  // always said so, the constraint just never caught up.
+  @@index([docType, productLine, language])
   @@index([docType])
   @@index([category])
 }

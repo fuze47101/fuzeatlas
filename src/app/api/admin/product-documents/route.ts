@@ -58,7 +58,8 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { docType, title, description, fileUrl, version, effectiveDate, category, audience } = body;
+    const { docType, title, description, fileUrl, version, effectiveDate, category, audience } =
+      body;
 
     if (!DOC_TYPES.includes(docType)) {
       return NextResponse.json({ ok: false, error: "Invalid docType" }, { status: 400 });
@@ -78,11 +79,17 @@ export async function POST(req: Request) {
     let audienceArray: string[] | undefined = undefined;
     if (audience !== undefined) {
       if (!Array.isArray(audience)) {
-        return NextResponse.json({ ok: false, error: "audience must be an array" }, { status: 400 });
+        return NextResponse.json(
+          { ok: false, error: "audience must be an array" },
+          { status: 400 },
+        );
       }
       const bad = audience.find((a: any) => !AUDIENCE_TAGS.includes(a));
       if (bad) {
-        return NextResponse.json({ ok: false, error: `Invalid audience tag: ${bad}` }, { status: 400 });
+        return NextResponse.json(
+          { ok: false, error: `Invalid audience tag: ${bad}` },
+          { status: 400 },
+        );
       }
       audienceArray = audience;
     }
@@ -100,11 +107,31 @@ export async function POST(req: Request) {
     if (category) baseData.category = category;
     if (audienceArray) baseData.audience = audienceArray;
 
-    const doc = await prisma.productDocument.upsert({
-      where: { docType_productLine_language: { docType, productLine, language } },
-      create: { docType, productLine, language, ...baseData },
-      update: baseData,
-    });
+    // Adding a document adds a document. Replacing one requires the caller to
+    // name the row it is replacing — previously this was an upsert on
+    // (docType, productLine, language), so a second upload into the same slot
+    // overwrote the first with no warning and no way to get it back.
+    const replaceId =
+      typeof body.replaceId === "string" && body.replaceId.trim() ? body.replaceId.trim() : null;
+
+    let doc;
+    if (replaceId) {
+      const target = await prisma.productDocument.findUnique({ where: { id: replaceId } });
+      if (!target) {
+        return NextResponse.json(
+          { ok: false, error: "Document to replace no longer exists" },
+          { status: 404 },
+        );
+      }
+      doc = await prisma.productDocument.update({
+        where: { id: replaceId },
+        data: { docType, productLine, language, ...baseData },
+      });
+    } else {
+      doc = await prisma.productDocument.create({
+        data: { docType, productLine, language, ...baseData },
+      });
+    }
     return NextResponse.json({ ok: true, document: doc });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
@@ -123,7 +150,10 @@ export async function DELETE(req: Request) {
     const id = new URL(req.url).searchParams.get("id");
     if (!id) return NextResponse.json({ ok: false, error: "id required" }, { status: 400 });
 
-    const existing = await prisma.productDocument.findUnique({ where: { id }, select: { id: true } });
+    const existing = await prisma.productDocument.findUnique({
+      where: { id },
+      select: { id: true },
+    });
     if (!existing) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
 
     await prisma.productDocument.delete({ where: { id } });
@@ -157,11 +187,17 @@ export async function PATCH(req: Request) {
     }
     if (body.audience !== undefined) {
       if (!Array.isArray(body.audience)) {
-        return NextResponse.json({ ok: false, error: "audience must be an array" }, { status: 400 });
+        return NextResponse.json(
+          { ok: false, error: "audience must be an array" },
+          { status: 400 },
+        );
       }
       const bad = body.audience.find((a: any) => !AUDIENCE_TAGS.includes(a));
       if (bad) {
-        return NextResponse.json({ ok: false, error: `Invalid audience tag: ${bad}` }, { status: 400 });
+        return NextResponse.json(
+          { ok: false, error: `Invalid audience tag: ${bad}` },
+          { status: 400 },
+        );
       }
       data.audience = body.audience;
     }

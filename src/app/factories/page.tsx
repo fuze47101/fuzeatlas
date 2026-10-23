@@ -6,6 +6,9 @@ import { useAuth } from "@/lib/AuthContext";
 import AddCompanyModal from "@/components/AddCompanyModal";
 import { CAPABILITY_GROUPS, parseCapabilities } from "@/lib/factory-capabilities";
 
+// Must match the fallback label the API uses when a factory has no country.
+const UNKNOWN_COUNTRY = "Unknown";
+
 export default function FactoriesPage() {
   const router = useRouter();
   const { t } = useI18n();
@@ -23,6 +26,11 @@ export default function FactoriesPage() {
   // Capability facets — a factory must have ALL selected capabilities.
   const [capFilters, setCapFilters] = useState<string[]>([]);
   const [showFacets, setShowFacets] = useState(false);
+  // Country chips used to work by stuffing the country name into the free-text
+  // search. That broke for the "Unknown" chip: those factories have an empty
+  // country, so a text search for "Unknown" matched almost nothing and the
+  // 70-odd mills behind the chip were unreachable. Country is its own filter now.
+  const [countryFilter, setCountryFilter] = useState<string | null>(null);
   const toggleCap = (id: string) =>
     setCapFilters((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
@@ -48,6 +56,15 @@ export default function FactoriesPage() {
 
   const q = search.toLowerCase();
   const filtered = factories.filter((f) => {
+    if (countryFilter !== null) {
+      const c = (f.country || "").trim();
+      // UNKNOWN_COUNTRY is the same bucket the API builds with `f.country || "Unknown"`.
+      const inBucket =
+        countryFilter === UNKNOWN_COUNTRY
+          ? c === ""
+          : c.toLowerCase() === countryFilter.toLowerCase();
+      if (!inBucket) return false;
+    }
     const matchesText =
       !q ||
       f.name.toLowerCase().includes(q) ||
@@ -58,6 +75,7 @@ export default function FactoriesPage() {
     const caps = parseCapabilities(f.capabilities);
     return capFilters.every((id) => caps.includes(id));
   });
+  const shownCount = filtered.length;
   const topCountries = Object.entries(byCountry)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8);
@@ -106,13 +124,29 @@ export default function FactoriesPage() {
       />
 
       {/* Country distribution — click to filter */}
+      {countryFilter !== null && (
+        <div className="mb-3 flex items-center gap-2 text-sm">
+          <span className="px-2.5 py-1 rounded-lg bg-[#00b4c3]/10 text-[#00797f] font-semibold">
+            {countryFilter === UNKNOWN_COUNTRY ? "No country on file" : countryFilter}
+          </span>
+          <span className="text-slate-500">
+            {shownCount.toLocaleString()} of {total.toLocaleString()} factories
+          </span>
+          <button
+            onClick={() => setCountryFilter(null)}
+            className="text-slate-500 hover:text-[#00b4c3] font-semibold"
+          >
+            clear
+          </button>
+        </div>
+      )}
       <div className="flex gap-2 mb-6 flex-wrap">
         {topCountries.map(([country, count]) => {
-          const isActive = search.toLowerCase() === country.toLowerCase();
+          const isActive = countryFilter === country;
           return (
             <button
               key={country}
-              onClick={() => setSearch(isActive ? "" : country)}
+              onClick={() => setCountryFilter(isActive ? null : country)}
               className={`rounded-lg px-3 py-2 shadow-sm border text-center min-w-[100px] transition-all cursor-pointer ${
                 isActive
                   ? "bg-[#00b4c3] border-[#00b4c3] ring-2 ring-[#00b4c3]/30"
@@ -148,7 +182,10 @@ export default function FactoriesPage() {
             )}
           </button>
           {capFilters.length > 0 && (
-            <button onClick={() => setCapFilters([])} className="text-xs text-slate-500 hover:text-red-500">
+            <button
+              onClick={() => setCapFilters([])}
+              className="text-xs text-slate-500 hover:text-red-500"
+            >
               {t.factories.clearFilters}
             </button>
           )}
@@ -157,10 +194,15 @@ export default function FactoriesPage() {
           <div className="bg-white rounded-xl border border-slate-200 p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {CAPABILITY_GROUPS.map((g) => (
               <div key={g.key}>
-                <div className="text-xs font-bold text-slate-700 mb-2">{g.icon} {g.label}</div>
+                <div className="text-xs font-bold text-slate-700 mb-2">
+                  {g.icon} {g.label}
+                </div>
                 <div className="space-y-1">
                   {g.options.map((o) => (
-                    <label key={o.id} className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
+                    <label
+                      key={o.id}
+                      className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer"
+                    >
                       <input
                         type="checkbox"
                         checked={capFilters.includes(o.id)}
