@@ -62,9 +62,7 @@ export function buildFkMap(type: EntityType): FkRef[] {
     const singleUnique = new Set(
       model.fields.filter((f: any) => f.isUnique).map((f: any) => f.name),
     );
-    const compositeUniques: string[][] = (model.uniqueFields || []).map(
-      (u: any) => [...u],
-    );
+    const compositeUniques: string[][] = (model.uniqueFields || []).map((u: any) => [...u]);
 
     for (const field of model.fields) {
       if (
@@ -114,11 +112,7 @@ export function fillableScalars(type: EntityType): string[] {
   return model.fields
     .filter(
       (f: any) =>
-        f.kind === "scalar" &&
-        !f.isId &&
-        !f.isUnique &&
-        !f.isUpdatedAt &&
-        f.name !== "createdAt",
+        f.kind === "scalar" && !f.isId && !f.isUnique && !f.isUpdatedAt && f.name !== "createdAt",
     )
     .map((f: any) => f.name);
 }
@@ -169,6 +163,12 @@ export async function countRefsForRecord(
     where: { entityType: type, entityId: id },
   });
   if (oi > 0) byModel["OrgInvitation"] = oi;
+
+  // My Book (Nov 2026) — polymorphic check-ins and help requests.
+  const ac = await client.accountCheckin.count({ where: { entityType: type, entityId: id } });
+  if (ac > 0) byModel["AccountCheckin"] = ac;
+  const hr = await client.helpRequest.count({ where: { entityType: type, entityId: id } });
+  if (hr > 0) byModel["HelpRequest"] = hr;
 
   const scl = await client.supplyChainLink.count({
     where: {
@@ -227,8 +227,7 @@ export async function batchCountRefs(
         where: { [fkField]: { in: ids } },
         select: { [fkField]: true, _count: { select: { testRuns: true } } },
       });
-      for (const s of subs)
-        add(s[fkField], "TestRun (via submission)", s._count.testRuns);
+      for (const s of subs) add(s[fkField], "TestRun (via submission)", s._count.testRuns);
     })(),
     // Polymorphic — EntityManager / OrgInvitation.
     (async () => {
@@ -302,6 +301,14 @@ export async function countRemainingRefs(
       where: { entityType: type, entityId: id },
     });
     if (oi > 0) byModel["OrgInvitation.entityId"] = oi;
+  }
+  if (want("AccountCheckin")) {
+    const ac = await client.accountCheckin.count({ where: { entityType: type, entityId: id } });
+    if (ac > 0) byModel["AccountCheckin.entityId"] = ac;
+  }
+  if (want("HelpRequest")) {
+    const hr = await client.helpRequest.count({ where: { entityType: type, entityId: id } });
+    if (hr > 0) byModel["HelpRequest.entityId"] = hr;
   }
   if (want("SupplyChainLink")) {
     const scl = await client.supplyChainLink.count({
@@ -568,6 +575,20 @@ export async function repointAllReferences(
   }
   if (want("EntityManager")) await repointEntityManager(tx, type, keeperId, loserId, moved);
   if (want("OrgInvitation")) await repointOrgInvitation(tx, type, keeperId, loserId, moved);
+  if (want("AccountCheckin")) {
+    const u = await tx.accountCheckin.updateMany({
+      where: { entityType: type, entityId: loserId },
+      data: { entityId: keeperId },
+    });
+    bump(moved, "AccountCheckin", u.count);
+  }
+  if (want("HelpRequest")) {
+    const u = await tx.helpRequest.updateMany({
+      where: { entityType: type, entityId: loserId },
+      data: { entityId: keeperId },
+    });
+    bump(moved, "HelpRequest", u.count);
+  }
   if (want("SupplyChainLink")) await repointSupplyChainLink(tx, type, keeperId, loserId, moved);
 }
 

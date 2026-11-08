@@ -32,7 +32,8 @@ const zhCN: Translations = {
     groupLabPortal: "实验室门户",
     allModules: "全部模块(主页)",
     module: "模块",
-    pickModuleHint: "从右侧卡片选择一个模块。侧边栏将仅显示该模块的工具。点击\"主页\"可随时切换模块。",
+    pickModuleHint:
+      '从右侧卡片选择一个模块。侧边栏将仅显示该模块的工具。点击"主页"可随时切换模块。',
     viewAs: "以...身份查看",
     exitViewAs: "退出查看",
     viewAsSwitching: "切换中...",
@@ -136,6 +137,8 @@ const zhCN: Translations = {
 
   // ─── 模块导航 ──────────────────────────────────
   modules: {
+    myBook: "我的客户册",
+    teamBoard: "团队看板",
     bdWizard: "BD 向导",
     bdSequences: "BD 序列",
     bdScoreboard: "BD 计分板",
@@ -699,7 +702,8 @@ const zhCN: Translations = {
   // ─── CSV 导入 ──────────────────────────────────
   ingest: {
     title: "导入 CSV",
-    subtitle: "上传 CSV 导出文件。我们将创建/更新面料，在 FUZE 编号存在时创建提交，并将每行存储在来源记录中以便追溯。",
+    subtitle:
+      "上传 CSV 导出文件。我们将创建/更新面料，在 FUZE 编号存在时创建提交，并将每行存储在来源记录中以便追溯。",
     sourceLabel: "来源表标签",
     sourcePlaceholder: "knack_fabrics / knack_tests_icp 等",
     csvFile: "CSV 文件",
@@ -736,7 +740,6 @@ const zhCN: Translations = {
     trim: "名称（已修剪）",
   },
 
-
   // ─── 登录 ──────────────────────────────────────
   login: {
     loading: "加载中...",
@@ -758,10 +761,12 @@ const zhCN: Translations = {
     signInBtn: "登录",
     setupHelp: "这将创建第一个管理员账户。您可以稍后在设置中添加更多用户。",
     brandAccessTitle: "品牌合作伙伴入口",
-    brandAccessDesc: "您是寻找抗菌纺织解决方案的品牌吗？申请访问权限以查看您的面料、测试结果并管理您的 FUZE 项目。",
+    brandAccessDesc:
+      "您是寻找抗菌纺织解决方案的品牌吗？申请访问权限以查看您的面料、测试结果并管理您的 FUZE 项目。",
     requestBrandAccess: "申请品牌访问",
     factoryAccessTitle: "工厂 / 纺织厂入口",
-    factoryAccessDesc: "您是纺织厂或工厂合作伙伴吗？注册以提交面料、申请 FUZE 测试、跟踪结果并管理生产。",
+    factoryAccessDesc:
+      "您是纺织厂或工厂合作伙伴吗？注册以提交面料、申请 FUZE 测试、跟踪结果并管理生产。",
     requestFactoryAccess: "申请工厂访问",
     faqTitle: "FUZE 常见问题与知识库",
     faqDesc: "对 FUZE 抗菌技术有疑问？搜索我们的知识库。",
@@ -776,7 +781,8 @@ const zhCN: Translations = {
   requestAccess: {
     title: "申请门户访问",
     subtitle: "品牌门户访问申请",
-    description: "填写以下表格以申请 FUZE 品牌门户的访问权限。您将可以跟踪布料提交、测试结果和项目进度。",
+    description:
+      "填写以下表格以申请 FUZE 品牌门户的访问权限。您将可以跟踪布料提交、测试结果和项目进度。",
     section1: "个人信息",
     section2: "公司详情",
     section3: "项目兴趣",
@@ -1268,7 +1274,8 @@ const zhCN: Translations = {
       aiVisionBlurb:
         "该 PDF 文本层很少或没有(图像扫描件)。Claude AI 视觉直接读取文档并抽取了下列字段。请仔细核对——AI 抽取可能在质量差的扫描件上漏读或误读数字。",
       confidence: "{count}% 置信度",
-      lowConfidence: "低置信度解析。报告可能使用我们解析器尚未识别的格式。管理员会复核所上传的文件。",
+      lowConfidence:
+        "低置信度解析。报告可能使用我们解析器尚未识别的格式。管理员会复核所上传的文件。",
       fieldTestType: "检测类型",
       fieldReportNumber: "报告号",
       fieldLab: "实验室",
@@ -1292,7 +1299,8 @@ const zhCN: Translations = {
       factoryLabel: "工厂:{code}",
       download: "↓ 下载",
       awaitingReview: "等待管理员审核",
-      footerNote: "报告在解析器自动关联到品牌或面料前显示为「未关联」。若报告等待审核超过 24 小时,请联系 {email},我们将手动关联。",
+      footerNote:
+        "报告在解析器自动关联到品牌或面料前显示为「未关联」。若报告等待审核超过 24 小时,请联系 {email},我们将手动关联。",
     },
     network: {
       crumbCurrent: "品牌网络",
@@ -1319,7 +1327,8 @@ const zhCN: Translations = {
     specs: {
       crumbCurrent: "品牌规格",
       pageTitle: "品牌规格",
-      pageSubtitle: "从您工厂采购面料的每个品牌,以及他们的 FUZE 等级与 ICP 频次要求。把这里当成各品牌期望值的对照表。",
+      pageSubtitle:
+        "从您工厂采购面料的每个品牌,以及他们的 FUZE 等级与 ICP 频次要求。把这里当成各品牌期望值的对照表。",
       loading: "加载规格中…",
       noBrands: "暂无品牌规格——当前没有品牌关联到这家工厂。",
       tierLabel: "需求等级:",
@@ -1334,7 +1343,8 @@ const zhCN: Translations = {
     inventoryView: {
       crumbCurrent: "FUZE 库存",
       pageTitle: "FUZE 库存",
-      pageSubtitle: "您工厂的 FUZE 现有库存,以及 30 天消耗速率和预计剩余天数。现存量 = 已收订单 − 已记录消耗。",
+      pageSubtitle:
+        "您工厂的 FUZE 现有库存,以及 30 天消耗速率和预计剩余天数。现存量 = 已收订单 − 已记录消耗。",
       loading: "加载库存中…",
       onHandLabel: "现有量(升)",
       orderedLabel: "累计接收(升)",
@@ -1352,7 +1362,8 @@ const zhCN: Translations = {
     },
     recipeRequests: {
       pageTitle: "配方申请",
-      pageSubtitle: "品牌就您的面料发起 FUZE 配方申请。确认接受后开始工作;研发完成后 FUZE Ops 会附上经过验证的配方。",
+      pageSubtitle:
+        "品牌就您的面料发起 FUZE 配方申请。确认接受后开始工作;研发完成后 FUZE Ops 会附上经过验证的配方。",
       loading: "加载申请中…",
       empty: "暂无配方申请。",
       emptyBlurb: "当品牌就您的某块面料请求配方时,会在此处显示。",
@@ -1593,7 +1604,8 @@ const zhCN: Translations = {
       additionalNotesLabel: "其他备注",
       additionalNotesPlaceholder: "本订单的任何特殊说明…",
       sampleSubsidyTitle: "FUZE 样品支持",
-      sampleSubsidyBlurb: "FUZE 补贴 50% 的样品订单成本,助您开发新客户、测试新面料。报价中已自动反映补贴。",
+      sampleSubsidyBlurb:
+        "FUZE 补贴 50% 的样品订单成本,助您开发新客户、测试新面料。报价中已自动反映补贴。",
       getQuote: "获取报价",
       generatingQuote: "生成报价中…",
       cancel: "取消",
@@ -2011,7 +2023,8 @@ const zhCN: Translations = {
       edit: "编辑",
       del: "删除",
       emptyTitle: "暂无模板",
-      emptyBlurb: "新建您的第一个模板——例如 ICP 入库表——ICP 样品准备向导在选择该实验室时会自动使用。",
+      emptyBlurb:
+        "新建您的第一个模板——例如 ICP 入库表——ICP 样品准备向导在选择该实验室时会自动使用。",
       save: "保存",
       saving: "保存中…",
       cancel: "取消",
@@ -2125,7 +2138,8 @@ const zhCN: Translations = {
       totalOpenRequests: "未结申请",
       totalFuzeConsumed: "FUZE 总消耗",
       noFactoriesTitle: "暂无工厂",
-      noFactoriesBlurb: "当您的供应商首次以您品牌名义提交面料接受 FUZE 处理时,他们将出现在这里,并包含全部提交与检测历史。",
+      noFactoriesBlurb:
+        "当您的供应商首次以您品牌名义提交面料接受 FUZE 处理时,他们将出现在这里,并包含全部提交与检测历史。",
       colFactory: "工厂",
       colFabrics: "面料",
       colSubmissions: "提交单",
@@ -2139,13 +2153,13 @@ const zhCN: Translations = {
       statusNoTests: "暂无检测",
       statusPassRateOk: "✓ {pct}% 通过率",
       statusPassRate: "{pct}% 通过率",
-      footerNote: "需要为各工厂设置检测频次,或批准新提交?这些控制即将上线——目前可点击任一工厂查看底层数据。",
+      footerNote:
+        "需要为各工厂设置检测频次,或批准新提交?这些控制即将上线——目前可点击任一工厂查看底层数据。",
     },
     approvals: {
       crumbCurrent: "审批",
       pageTitle: "审批",
-      pageSubtitle:
-        "等待您决定的事项:面料提交、检测结果、生产订单。批准以放行;拒绝须填写理由。",
+      pageSubtitle: "等待您决定的事项:面料提交、检测结果、生产订单。批准以放行;拒绝须填写理由。",
       loading: "加载队列中…",
       statSubmissions: "提交单",
       statTests: "检测结果",
@@ -2349,7 +2363,8 @@ const zhCN: Translations = {
       unableToLoad: "无法加载品牌规格",
       savedAt: "已于 {time} 保存。",
       tierLabel: "需求 FUZE 等级",
-      tierBlurb: "您供应链上的任何工厂下单都必须使用此等级。偏离等级的订单将被标记复核,并通知您的团队。",
+      tierBlurb:
+        "您供应链上的任何工厂下单都必须使用此等级。偏离等级的订单将被标记复核,并通知您的团队。",
       tierPlaceholder: "— 无等级要求 —",
       tierF1: "F1 全谱(1.0 mg/kg)",
       tierF2: "F2 增强性能(0.75 mg/kg)",
@@ -2379,7 +2394,8 @@ const zhCN: Translations = {
       newChat: "新对话",
       onlineLabel: "在线",
       greetingTitle: "嗨!我是 FUZE AI",
-      greetingBlurb: "我学习了 FUZE 的全部产品文档。可问我关于抗菌等级、检测标准、定价、安全认证、应用方法等。",
+      greetingBlurb:
+        "我学习了 FUZE 的全部产品文档。可问我关于抗菌等级、检测标准、定价、安全认证、应用方法等。",
       qTiers: "FUZE 有哪些等级可选?",
       qBaby: "FUZE 对婴幼儿产品安全吗?",
       qCost: "每米处理成本是多少?",
@@ -2564,8 +2580,7 @@ const zhCN: Translations = {
     icpCorrelation: {
       crumbCurrent: "ICP × 抗菌相关性",
       pageTitle: "ICP × 抗菌相关性",
-      pageSubtitle:
-        "面料 ICP 含量与实测抗菌减少量的散点图。验证您供应链上剂量—响应曲线的稳定性。",
+      pageSubtitle: "面料 ICP 含量与实测抗菌减少量的散点图。验证您供应链上剂量—响应曲线的稳定性。",
     },
   },
 
@@ -2720,7 +2735,8 @@ const zhCN: Translations = {
   // ─── 产品文档 ───────────────────────────────
   productDocs: {
     title: "产品文档",
-    subtitle: "适用于全产品的文档(TDS、SDS、应用指南)。这些文档为静态,适用于每个批次。批次专属 COA 在「生产批次」中按批次上传。",
+    subtitle:
+      "适用于全产品的文档(TDS、SDS、应用指南)。这些文档为静态,适用于每个批次。批次专属 COA 在「生产批次」中按批次上传。",
     upload: "上传",
     update: "更新",
     cancel: "取消",
@@ -2894,7 +2910,8 @@ const zhCN: Translations = {
     validatedOn: "验证日期:",
     reportRefPrefix: "报告编号:",
     certifications: "FUZE 认证",
-    aboutBody: "FUZE 是 FUZE Biotech 公司的专有抗菌纺织品处理技术。它采用元材料化学,在标准纺织品后整理过程中与纤维结合 —— 无 PFAS、无粘合剂、无需固化烘箱。",
+    aboutBody:
+      "FUZE 是 FUZE Biotech 公司的专有抗菌纺织品处理技术。它采用元材料化学,在标准纺织品后整理过程中与纤维结合 —— 无 PFAS、无粘合剂、无需固化烘箱。",
     learnMore: "了解更多关于 FUZE →",
     footerAddress: "FUZE Biotech · 美国犹他州盐湖城 · fuzeatlas.com",
   },
@@ -3205,7 +3222,7 @@ const zhCN: Translations = {
     days: "天数",
     rush: "加急",
     preferredLabel: "首选",
-    deletePrompt: "删除 \"{name}\"?",
+    deletePrompt: '删除 "{name}"?',
     uploadedToast: "已上传 {name}",
     deletedToast: "已删除 {name}",
     labAdded: "实验室新增成功",
@@ -3218,14 +3235,16 @@ const zhCN: Translations = {
   educationMain: {
     kicker: "FUZE 基础",
     pageTitle: "FUZE 的真实工作原理 —— 以及它为何与众不同",
-    pageIntro: "四大板块,深入讲解 FUZE 涂覆在面料上的物质、杀菌机制、正确的测试方法,以及品牌方在 FUZE 与传统抗菌竞品之间做选择时所应考虑的要点。",
+    pageIntro:
+      "四大板块,深入讲解 FUZE 涂覆在面料上的物质、杀菌机制、正确的测试方法,以及品牌方在 FUZE 与传统抗菌竞品之间做选择时所应考虑的要点。",
     forBrands: "面向品牌",
     forFactories: "面向工厂",
     forDistributors: "面向经销商",
     forSalesReps: "面向销售代表",
     segmentKicker: "按细分市场的话术",
     segmentTitle: "FUZE 在您所在行业的应用",
-    segmentIntro: "上述科学原理通用于各行业。下方每个细分市场均配有推荐的 FUZE 等级阶梯、测试组合、法规核对清单,以及为该受众量身定制的外联切入点。",
+    segmentIntro:
+      "上述科学原理通用于各行业。下方每个细分市场均配有推荐的 FUZE 等级阶梯、测试组合、法规核对清单,以及为该受众量身定制的外联切入点。",
     openSegment: "打开细分市场页面 →",
     dosageKicker: "第 1 节 —— 用量",
     mechanismKicker: "第 2 节 —— 机理",
@@ -3242,20 +3261,24 @@ const zhCN: Translations = {
 
   educationTestingProtocol: {
     metaTitle: "FUZE 认证测试规程",
-    metaDescription: "FUZE 处理面料的必备测试规程。ICP 优先验证、仅 UV 灭菌、低硫培养基、ASTM E2149 作为主要测试方法。",
+    metaDescription:
+      "FUZE 处理面料的必备测试规程。ICP 优先验证、仅 UV 灭菌、低硫培养基、ASTM E2149 作为主要测试方法。",
     breadcrumbEducation: "教育",
     breadcrumbCurrent: "认证测试规程",
     requiredReadingBadge: "必读",
     pageTitle: "FUZE 认证测试规程",
-    heroBlurb: "这是 FUZE Technologies 唯一支持的测试规程。任何偏离 —— 不同的灭菌方式、不同的培养基、不同的接触时间,或跳过 ICP 验证 —— 都会使结果作废,浪费各方的时间与金钱。在申请测试、申请 Atlas 访问权限,或向任何实验室寄送样品之前,请通读本页。",
+    heroBlurb:
+      "这是 FUZE Technologies 唯一支持的测试规程。任何偏离 —— 不同的灭菌方式、不同的培养基、不同的接触时间,或跳过 ICP 验证 —— 都会使结果作废,浪费各方的时间与金钱。在申请测试、申请 Atlas 访问权限,或向任何实验室寄送样品之前,请通读本页。",
     sevenRulesLabel: "七条规则",
     rule1: "ICP 优先。任何抗菌测试都不得在未通过 ICP 确认面料载量 (mg/kg) 的情况下开始。",
     rule2: "灭菌方式仅限 UV。120°C 高压灭菌会打开尼龙、聚酯及合成混纺纤维 —— 摧毁测试。",
     rule3: "培养基须为低硫。优先选用 Mueller Hinton Broth (MHB)。",
     rule4: "ASTM E2149 接触时间至少 24 小时。使用大肠杆菌作为测试菌种。",
     rule5: "ASTM E2149 是适用于所有 FUZE 等级的首选推荐测试。",
-    rule6: "AATCC 100、ISO 20743 与 JIS L 1902 仅在 ICP ≥ 1.0 mg/kg (F1 Full Spectrum) 且采用 UV 灭菌时支持。",
-    rule7: "按测试方法选择正确的菌种(参见 §4b 表格)。如做防异味/运动服声明,使用 Moraxella osloensis。",
+    rule6:
+      "AATCC 100、ISO 20743 与 JIS L 1902 仅在 ICP ≥ 1.0 mg/kg (F1 Full Spectrum) 且采用 UV 灭菌时支持。",
+    rule7:
+      "按测试方法选择正确的菌种(参见 §4b 表格)。如做防异味/运动服声明,使用 Moraxella osloensis。",
     section1Title: "ICP 优先 —— 无任何例外",
     section2Title: "灭菌 —— 仅 UV",
     section3Title: "培养基 —— 低硫",
@@ -3280,9 +3303,11 @@ const zhCN: Translations = {
     antiOdorBadge: "防异味定位 —— Moraxella 的重要性",
     runItLabel: "执行方式:",
     questionsCardTitle: "对规程有疑问?",
-    questionsCardBlurb: "请在 FUZE AI FAQ 聊天中提问 —— 它已索引此规程,可解答关于 ICP 阈值、实验室选择、样品制备、测试顺序,或如何向实验室提出正确条件等具体问题。",
+    questionsCardBlurb:
+      "请在 FUZE AI FAQ 聊天中提问 —— 它已索引此规程,可解答关于 ICP 阈值、实验室选择、样品制备、测试顺序,或如何向实验室提出正确条件等具体问题。",
     openFaqBtn: "打开 FUZE AI FAQ →",
-    versionFooter: "规程 v1.0 · 发布于 2026-05-20 · 基于 BV 香港验证组(2026 年 5 月)与 CAI-Textile 失败调查。每季度更新。",
+    versionFooter:
+      "规程 v1.0 · 发布于 2026-05-20 · 基于 BV 香港验证组(2026 年 5 月)与 CAI-Textile 失败调查。每季度更新。",
   },
 
   meetingsAdmin: {
@@ -3421,7 +3446,7 @@ const zhCN: Translations = {
     failedUpdate: "更新配方失败",
     recipeDeleted: "配方已删除",
     failedDelete: "删除配方失败",
-    recipeCloned: "配方已克隆为 \"{name}\"",
+    recipeCloned: '配方已克隆为 "{name}"',
     failedClone: "克隆配方失败",
     copySuffix: "(副本)",
   },
@@ -3482,7 +3507,7 @@ const zhCN: Translations = {
     estimatedTotal: "预估总额:",
     cancelBtn: "取消",
     createBtn: "创建 PO 并保存草稿",
-    noRequestsWithStatus: "无状态为 \"{label}\" 的测试申请",
+    noRequestsWithStatus: '无状态为 "{label}" 的测试申请',
     noRequestsYet: "暂无测试申请",
     createFirst: "创建您的第一个测试申请",
     returnedForRevision: "已退回修订",
@@ -3599,7 +3624,7 @@ const zhCN: Translations = {
     manageCategoryTooltip: "管理类别",
     noDocsThisCategory: "此类别下无文档。",
     noDocsYet: "暂未上传合规文档。",
-    getStartedHint: "点击 \"上传文档\" 以开始。",
+    getStartedHint: '点击 "上传文档" 以开始。',
     colDocument: "文档",
     colCategory: "类别",
     colVersion: "版本",
@@ -3688,13 +3713,15 @@ const zhCN: Translations = {
 
   educationLifecycle: {
     metaTitle: "FUZE 生命周期分析",
-    metaDescription: "FUZE 抗菌纺织品处理的全生命周期评估(LCA)—— 生产、配送、施加、使用阶段、报废处理。",
+    metaDescription:
+      "FUZE 抗菌纺织品处理的全生命周期评估(LCA)—— 生产、配送、施加、使用阶段、报废处理。",
     backLink: "← 返回 FUZE 基础",
     heroEyebrow: "生命周期分析",
     heroTitle: "FUZE —— 从摇篮到坟墓",
     heroBlurbPrefix: "依据",
     heroBlurbStandard: "ISO 14040 / 14044",
-    heroBlurbSuffix: " LCA 框架,对 FUZE 抗菌处理的环境概况进行结构化的五阶段评估。功能单位:1 平方米 F1 处理的针织面料(200 g/m²,100 次工业水洗循环)。系统边界:从摇篮到坟墓,无任何排除项。",
+    heroBlurbSuffix:
+      " LCA 框架,对 FUZE 抗菌处理的环境概况进行结构化的五阶段评估。功能单位:1 平方米 F1 处理的针织面料(200 g/m²,100 次工业水洗循环)。系统边界:从摇篮到坟墓,无任何排除项。",
     badgeBrandTeams: "面向品牌可持续团队",
     badgeFramework: "ISO 14040 / 14044 框架",
     badgeCradle: "全生命周期",
@@ -3709,13 +3736,15 @@ const zhCN: Translations = {
     compareColSilvadur: "Silvadur",
     compareColPolygiene: "Polygiene",
     compareColQAC: "QAC",
-    compareFooter: "最关键的区别在于面料上的活性载量。FUZE 在活性载量比现有释放型化学品低 50–500 倍的情况下,实现等同或更优的抗菌性能 —— 这是 FUZE 在每个下游生命周期阶段环境表现的根本驱动因素。",
+    compareFooter:
+      "最关键的区别在于面料上的活性载量。FUZE 在活性载量比现有释放型化学品低 50–500 倍的情况下,实现等同或更优的抗菌性能 —— 这是 FUZE 在每个下游生命周期阶段环境表现的根本驱动因素。",
     headlineEyebrow: "核心结论",
     headlineNumber: "50–500×",
     headlineMid: " 更低的面料活性载量,实现",
     headlineEquivalent: "等同或更优",
     headlineSuffix: " 的抗菌性能",
-    headlineBlurb: "对比现有 silver-ion、silver-chloride 及季铵盐后整理。更少的活性物质意味着更少的原料、更少的水洗废液、更少的废水处理负荷,以及在每个后续生命周期阶段更少的下游环境释放。",
+    headlineBlurb:
+      "对比现有 silver-ion、silver-chloride 及季铵盐后整理。更少的活性物质意味着更少的原料、更少的水洗废液、更少的废水处理负荷,以及在每个后续生命周期阶段更少的下游环境释放。",
     badgeOekoTex: "OEKO-TEX Std 100 · Class I",
     badgeBluesign: "bluesign® approved",
     badgeEPA: "EPA 联邦注册",
@@ -3735,11 +3764,15 @@ const zhCN: Translations = {
     esgBullet6Text: " —— 无任何被标记物质。兼容 ZDHC Conformance Level 3。",
     methodologyEyebrow: "方法学说明",
     methodologyTitle: "为何 ASTM E2149 是 FUZE 的首选效能测试",
-    methodologyPara1: "品牌可持续团队常问,为何 F3 与 F4 等级下,FUZE 的首选效能测试采用 ASTM E2149 而非 AATCC 100。简短的答案是:ASTM E2149 是为非释放型接触杀菌化学品而设计的动态接触测试。它奖励细菌细胞与元材料结合的纤维表面之间的直接物理接触 —— 这正是 FUZE 的作用机制。",
-    methodologyPara2Lead: "AATCC 100 将多层面料堆叠在接种标本周围,测量存活的菌落形成单位。它的设计针对",
+    methodologyPara1:
+      "品牌可持续团队常问,为何 F3 与 F4 等级下,FUZE 的首选效能测试采用 ASTM E2149 而非 AATCC 100。简短的答案是:ASTM E2149 是为非释放型接触杀菌化学品而设计的动态接触测试。它奖励细菌细胞与元材料结合的纤维表面之间的直接物理接触 —— 这正是 FUZE 的作用机制。",
+    methodologyPara2Lead:
+      "AATCC 100 将多层面料堆叠在接种标本周围,测量存活的菌落形成单位。它的设计针对",
     methodologyPara2Em: "释放型",
-    methodologyPara2Suffix: "抗菌剂 —— 释放离子至周围湿气并通过离子场杀菌的化学品。层叠几何结构有助于释放型化学品;释放的离子会饱和层间空间。",
-    methodologyPara3: "FUZE 在 F1 与 F2 这些元材料密度足以克服测试几何结构的高等级下能够通过 AATCC 100。对于 F3 与 F4,合适的首选效能测试是 ASTM E2149。品牌审核可获得覆盖全部四个等级的 ASTM E2149 数据,F1 与 F2 等级同时附带 AATCC 100 作为补充视图。",
+    methodologyPara2Suffix:
+      "抗菌剂 —— 释放离子至周围湿气并通过离子场杀菌的化学品。层叠几何结构有助于释放型化学品;释放的离子会饱和层间空间。",
+    methodologyPara3:
+      "FUZE 在 F1 与 F2 这些元材料密度足以克服测试几何结构的高等级下能够通过 AATCC 100。对于 F3 与 F4,合适的首选效能测试是 ASTM E2149。品牌审核可获得覆盖全部四个等级的 ASTM E2149 数据,F1 与 F2 等级同时附带 AATCC 100 作为补充视图。",
     ctaBack: "← 返回 FUZE 基础",
     ctaStory: "FUZE 的故事 →",
     ctaApplication: "施加方式 →",
@@ -3828,12 +3861,14 @@ const zhCN: Translations = {
   requestFactoryAccessPage: {
     brandTitle: "FUZE Atlas",
     submittedTitle: "申请已提交",
-    submittedBlurb: "感谢您有意成为 FUZE 合作工厂。我们的团队将审核您的申请并在 2-3 个工作日内与您联系。",
+    submittedBlurb:
+      "感谢您有意成为 FUZE 合作工厂。我们的团队将审核您的申请并在 2-3 个工作日内与您联系。",
     alreadyHaveAccount: "已有账号?",
     signIn: "登录",
     pageEyebrow: "工厂门户访问申请",
     cardTitle: "申请门户访问",
-    cardBlurb: "请填写下方表单,申请 FUZE 工厂门户访问权限。管理面料提交、跟踪 FUZE 处理,并与品牌方协作。",
+    cardBlurb:
+      "请填写下方表单,申请 FUZE 工厂门户访问权限。管理面料提交、跟踪 FUZE 处理,并与品牌方协作。",
     section1Title: "您的信息",
     section2Title: "工厂详情",
     section3Title: "工厂能力",
@@ -3941,7 +3976,7 @@ const zhCN: Translations = {
     modalTitle: "批准访问申请",
     modalFromTemplate: " 来自 ",
     modalProvidedLabel: "他们提供的公司名:",
-    modalSaveAsLabel: "保存为(如需可编辑 —— 例如加上城市 \"BV 绍兴\"):",
+    modalSaveAsLabel: '保存为(如需可编辑 —— 例如加上城市 "BV 绍兴"):',
     modalCanonicalPlaceholder: "规范公司名",
     modalRequestSuffix: " 申请",
     modalTypeChangedTemplate: "(原为 {type} —— 您已更改)",
@@ -3971,7 +4006,7 @@ const zhCN: Translations = {
     modalCancelBtn: "取消",
     modalApproveAsTemplate: "以 {role} 批准",
     modalApproveLinkTemplate: "批准并关联至 {name}",
-    modalApproveCreateTemplate: "批准并创建 \"{name}\"",
+    modalApproveCreateTemplate: '批准并创建 "{name}"',
     modalApproveCreateFallback: "公司",
     factoriesPlural: "工厂",
     entityPluralSuffix: "",
@@ -3989,7 +4024,8 @@ const zhCN: Translations = {
     cancelBtn: "取消",
     addUserBtn: "+ 新增用户",
     unassignedHeaderTemplate: "{count} 名活跃{label}缺少实体分配",
-    unassignedBlurb: "这些用户的角色需要关联品牌/工厂/经销商/实验室,但尚未设置。他们可以登录,但门户将为空,直到您为其分配为止。",
+    unassignedBlurb:
+      "这些用户的角色需要关联品牌/工厂/经销商/实验室,但尚未设置。他们可以登录,但门户将为空,直到您为其分配为止。",
     missingLabel: " —— 缺少 {entity}",
     fixBtn: "修复 →",
     addFormTitle: "新增用户",
@@ -4084,10 +4120,12 @@ const zhCN: Translations = {
     statusLabel: "状态",
     timezoneLabel: "时区 (IANA,例如 America/Denver、Asia/Shanghai)",
     timezonePlaceholder: "Asia/Shanghai",
-    timezoneHint: "本地时间 22:00 至 07:00 之间的非紧急通知将延迟到次日早上 08:00。错误与需审批信号不论时段均立即发送。",
+    timezoneHint:
+      "本地时间 22:00 至 07:00 之间的非紧急通知将延迟到次日早上 08:00。错误与需审批信号不论时段均立即发送。",
     outboundHeader: "发件人邮箱身份",
     bdWizardBadge: "BD 向导",
-    outboundBlurb: "您通过 BD 向导发送邮件时,邮件将显示为来自此地址。回复仍正常路由至您的收件箱。每次发送您都会收到一份密送摘要,以便您准确了解发出内容。",
+    outboundBlurb:
+      "您通过 BD 向导发送邮件时,邮件将显示为来自此地址。回复仍正常路由至您的收件箱。每次发送您都会收到一份密送摘要,以便您准确了解发出内容。",
     fromEmailLabel: "发件人:邮箱",
     allowedDomainsLabel: "允许的域名:",
     fromDisplayNameLabel: "发件人:显示名称",
@@ -4095,12 +4133,14 @@ const zhCN: Translations = {
     previewLabel: "预览",
     defaultPreview: "FUZE Atlas <notifications@fuzeatlas.com>(默认)",
     signatureHeader: "邮件签名",
-    signatureBlurb: "附加到通过 BD 向导发送的邮件末尾。纯文本即可 —— 请保持简短。如留空,则不添加签名。",
+    signatureBlurb:
+      "附加到通过 BD 向导发送的邮件末尾。纯文本即可 —— 请保持简短。如留空,则不添加签名。",
     signaturePlaceholder: "Andrew Moger\nFUZE Industries\n801-555-0123",
     charCountTemplate: "{count} / 4000 字符",
     calendarHeader: "日历订阅",
     calendarBadge: "Outlook · Google · Apple",
-    calendarBlurb: "将您的日历应用订阅至 Atlas 会议与未结 CRM 任务的只读叠加层。更新自动同步 —— 无需 IT 权限。URL 包含私有令牌,请勿分享。",
+    calendarBlurb:
+      "将您的日历应用订阅至 Atlas 会议与未结 CRM 任务的只读叠加层。更新自动同步 —— 无需 IT 权限。URL 包含私有令牌,请勿分享。",
     copyUrl: "复制 URL",
     copiedCheck: "已复制 ✓",
     subscribeBtn: "订阅 →",
@@ -4170,7 +4210,8 @@ const zhCN: Translations = {
     noteHeader: "注:",
     noteBody: " 所有自动生成数据均带有 ",
     noteCodeMarker: "[FI]",
-    noteAfterCode: " (FUZE Input) 标记,在用于面向客户的报告之前应进行复核。补全过程可逆 —— 在备注中按 \"[FI]\" 筛选即可找到全部自动填充记录。",
+    noteAfterCode:
+      ' (FUZE Input) 标记,在用于面向客户的报告之前应进行复核。补全过程可逆 —— 在备注中按 "[FI]" 筛选即可找到全部自动填充记录。',
     confirmEnrichApply: "这将使用 FI 估算数据更新面料记录。继续?",
     confirmIcpApply: "这将为缺少 ICP 数据的面料创建 FI 估算 ICP 测试档案。继续?",
   },
@@ -4179,7 +4220,8 @@ const zhCN: Translations = {
     backLink: "← 返回 FUZE 基础",
     eyebrow: "可声明的内容",
     pageTitle: "FUZE 处理面料的可辩护品牌声明",
-    pageIntro: "供合规团队、品牌营销与吊牌文案参考。三大类:产品声明、可持续性声明、认证声明。每一项均评为",
+    pageIntro:
+      "供合规团队、品牌营销与吊牌文案参考。三大类:产品声明、可持续性声明、认证声明。每一项均评为",
     introCiteFreely: "可自由引用",
     introWithData: "需配合等级数据引用",
     introAvoid: "应避免",
@@ -4191,7 +4233,8 @@ const zhCN: Translations = {
     badgeWithData: "需配数据",
     badgeAvoid: "应避免",
     fifraTitle: "关于 FIFRA 的说明",
-    fifraBody: "FIFRA(美国联邦杀虫剂、杀菌剂与杀鼠剂法案)规范美国境内的抗菌声明。已处理物品豁免允许使用 \"经抗菌处理\" 等描述性声明,无需单独的产品级 EPA 注册,但具体病原体声明(\"杀灭 99.9% 大肠杆菌\")需有与活性成分注册相关联的测试数据支撑。本页为指导性内容,非法律意见 —— 拟定的营销文案在发布前请与内部合规团队复核。",
+    fifraBody:
+      'FIFRA(美国联邦杀虫剂、杀菌剂与杀鼠剂法案)规范美国境内的抗菌声明。已处理物品豁免允许使用 "经抗菌处理" 等描述性声明,无需单独的产品级 EPA 注册,但具体病原体声明("杀灭 99.9% 大肠杆菌")需有与活性成分注册相关联的测试数据支撑。本页为指导性内容,非法律意见 —— 拟定的营销文案在发布前请与内部合规团队复核。',
     backToBasics: "返回 FUZE 基础",
     seeCerts: "查看认证组合",
   },
@@ -4248,7 +4291,8 @@ const zhCN: Translations = {
     tierLadderSubtitle: "每一步都在抗菌基线之上叠加一层 FUZE 性能",
     validatedByLabel: "验证机构",
     selectedBadge: "已选",
-    tierLadderFooter: "点击任一等级即可将其设为下方的主对比项。无论您选哪一等级,每米成本在整个水洗寿命内保持不变 —— FUZE 不按次或按周期收费。",
+    tierLadderFooter:
+      "点击任一等级即可将其设为下方的主对比项。无论您选哪一等级,每米成本在整个水洗寿命内保持不变 —— FUZE 不按次或按周期收费。",
 
     activeTierVsTemplate: "FUZE {id} {name} vs {product}",
     millAppliedNote: "两款产品均为工厂施加。发到客户手中的成衣已无法重新施加。两者的关键区别在于",
@@ -4328,7 +4372,8 @@ const zhCN: Translations = {
     competitorAppsTemplate: "{product} —— 需 {n} 次施加{s}",
     appLabel: "施加",
     lifetimeProtection: "EPA 终身保护 —— 单次施加",
-    retreatmentNote: "每次重新处理都需要剥离、重新施加化学品 + 粘合剂并再次固化 —— 增加工厂成本、废料和环境排放",
+    retreatmentNote:
+      "每次重新处理都需要剥离、重新施加化学品 + 粘合剂并再次固化 —— 增加工厂成本、废料和环境排放",
 
     saveTemplate: "节省 {amount}/m",
     trueCostWinner: "真实成本胜出",
@@ -4354,7 +4399,8 @@ const zhCN: Translations = {
     curingRequiredLabel: "需固化:",
     heavyMetalLeachLabel: "重金属释出:",
     zeroValue: "零",
-    fuzeEpaNote: "FUZE 是唯一具有 EPA 验证终身耐久性的抗菌纺织品处理。单次施加、无粘合剂、无固化、无环境排放。",
+    fuzeEpaNote:
+      "FUZE 是唯一具有 EPA 验证终身耐久性的抗菌纺织品处理。单次施加、无粘合剂、无固化、无环境排放。",
     regContextHeader: "法规背景",
 
     fullCompetitorTitle: "完整竞品 EPA 注册库",
@@ -4384,7 +4430,8 @@ const zhCN: Translations = {
     annualProduction: "年产量 (m)",
 
     exportTitle: "导出可持续性 + 竞品情报报告",
-    exportSubtitle: "生成具有品牌标识、可直接打印为 PDF 的报告,含完整竞品拆解、EPA 数据与环境影响分析。",
+    exportSubtitle:
+      "生成具有品牌标识、可直接打印为 PDF 的报告,含完整竞品拆解、EPA 数据与环境影响分析。",
     generating: "生成中...",
     exportSingleTemplate: "导出 {product} vs FUZE",
     exportAll: "导出全部竞品",
@@ -4402,7 +4449,8 @@ const zhCN: Translations = {
     sustainabilityScore: "可持续性评分",
     versusTemplate: "vs {product}",
     co2SavedLabel: "每米 CO₂ 节省",
-    co2BreakdownTemplate: "来源:消除的粘合剂生产 ({binder}g)、固化能耗 ({curing}g)、化学品 ({chem}g)",
+    co2BreakdownTemplate:
+      "来源:消除的粘合剂生产 ({binder}g)、固化能耗 ({curing}g)、化学品 ({chem}g)",
     waterSavedLabel: "每米节水量",
     waterSavedNote: "未产生受污染废水 —— FUZE 的生产与施加均产生零废液",
     energySavedLabel: "每米工厂节能",
@@ -4423,7 +4471,8 @@ const zhCN: Translations = {
     recyclableLabel: "可回收",
     notRecyclableLabel: "不可回收",
     sb707Header: "加州 SB 707 —— 负责任的纺织品回收法案",
-    sb707Body: "要求纺织品生产者出资并实施回收与再利用计划。妨碍纤维洁净回收的化学粘合剂与固化剂将带来合规风险与更高的生产者责任费用。FUZE 处理的纺织品仍可完全回收。",
+    sb707Body:
+      "要求纺织品生产者出资并实施回收与再利用计划。妨碍纤维洁净回收的化学粘合剂与固化剂将带来合规风险与更高的生产者责任费用。FUZE 处理的纺织品仍可完全回收。",
 
     stage1Nav: "化工厂",
     stage2Nav: "工厂施加",
@@ -4480,9 +4529,10 @@ const zhCN: Translations = {
     treatmentEnergyNote: "泵、反应器、过滤",
     whatThisCovers: "涵盖范围:",
     aboutWashTemplate: "关于这 {n} 次水洗的数字:",
-    epaRegistersBody: "EPA 将活性成分注册为农药。EPA 不验证、不认证任何水洗次数。{product} 的 {n} 次水洗声明由 {company} 自行发布 ——",
+    epaRegistersBody:
+      "EPA 将活性成分注册为农药。EPA 不验证、不认证任何水洗次数。{product} 的 {n} 次水洗声明由 {company} 自行发布 ——",
     noEpaRegHeader: "无 EPA 注册。",
-    noEpaRegBody: "未作为抗菌剂在联邦注册。在营销中将此产品宣传为 \"抗菌\" 的品牌面临 FIFRA 风险。",
+    noEpaRegBody: '未作为抗菌剂在联邦注册。在营销中将此产品宣传为 "抗菌" 的品牌面临 FIFRA 风险。',
     competitorTrueCost: "{product} 真实每米成本",
     antimicrobialLine: "抗菌剂:",
     wastewaterLine: "+ 废水处理:",
@@ -4509,7 +4559,8 @@ const zhCN: Translations = {
     zeroLeaching: "零释出。",
     zeroMicroplastic: "零微塑料。",
     zeroMunicipalBurden: "零市政负担。",
-    fuzeConsumerBody: "FUZE 元材料不释入家庭洗涤水。无粘合剂 = 无聚合物脱落。市政水处理设施零成本。",
+    fuzeConsumerBody:
+      "FUZE 元材料不释入家庭洗涤水。无粘合剂 = 无聚合物脱落。市政水处理设施零成本。",
 
     per10kHeaderTemplate: "每 10,000 件 —— 由 {product} 切换至 FUZE",
     kgCo2: "kg CO₂",
@@ -4533,7 +4584,8 @@ const zhCN: Translations = {
     laserSynthesis: "激光合成",
     laserSynthesisNote: "30 安培激光是元材料生产的唯一能源。无热、无压、无化学反应。仅有物理。",
     pureWater: "99.98% 纯水",
-    pureWaterNote: "产品为 99.98% 去离子水与 FUZE 元材料悬浮液。无任何粘合剂、表面活性剂、稳定剂或任何添加剂。",
+    pureWaterNote:
+      "产品为 99.98% 去离子水与 FUZE 元材料悬浮液。无任何粘合剂、表面活性剂、稳定剂或任何添加剂。",
     closedLoopPackaging: "闭环包装",
     closedLoopNote: "PET-1 可回收瓶,回收复用。唯一的生产废弃物:定期 DI 水滤芯更换(非危险)。",
     producesZeroHeader: "FUZE 产生 零 的内容:",
@@ -4735,14 +4787,18 @@ const zhCN: Translations = {
     executiveSummaryHeader: "执行摘要",
     summaryValidatedPrefix: "FUZE Biotech 已验证",
     summaryFuzeTier: "与 FUZE",
-    summaryTreatmentSuffix: "处理的兼容性,采用专有的元材料抗菌后整理体系。下方配方基于在台架测试中实测的浴液带液率",
+    summaryTreatmentSuffix:
+      "处理的兼容性,采用专有的元材料抗菌后整理体系。下方配方基于在台架测试中实测的浴液带液率",
     summaryOnBenchTest: "推导得出",
-    summaryApplicationDetails: ",并通过标准纺织品后整理设备(轧-烘-焙)在常温下施加,无需助剂、粘合剂或漂洗步骤。",
+    summaryApplicationDetails:
+      ",并通过标准纺织品后整理设备(轧-烘-焙)在常温下施加,无需助剂、粘合剂或漂洗步骤。",
     summaryBenchDepositPrefix: "内部台架验证沉积量为",
     summaryBenchExpectedPrefix: ",对应预期目标",
     summaryBenchAffinityTemplate: "(面料亲和度 {n}%),确认配方在标准操作公差范围内命中等级。",
-    summaryThirdPartyLab: "第三方实验室对已处理样品独立测定了 FUZE 沉积量,验证配方已可用于生产(见第 5 节)。",
-    summaryComplianceLine: "FUZE 符合 OEKO-TEX Standard 100 Class I、bluesign® approved、EPA 注册及无 PFAS。FUZE 元材料在标准纺织品后整理过程中与纤维元素性结合。",
+    summaryThirdPartyLab:
+      "第三方实验室对已处理样品独立测定了 FUZE 沉积量,验证配方已可用于生产(见第 5 节)。",
+    summaryComplianceLine:
+      "FUZE 符合 OEKO-TEX Standard 100 Class I、bluesign® approved、EPA 注册及无 PFAS。FUZE 元材料在标准纺织品后整理过程中与纤维元素性结合。",
 
     recommendedRecipeHeader: "推荐配方",
     recipeFor100L: "每",
@@ -4766,14 +4822,17 @@ const zhCN: Translations = {
     noBenchTestBody: "请运行配方计算器以测得带液率 %,然后才能填写本节。",
 
     productionScaleHeader: "FUZE 用量(生产浴量参考)",
-    productionScaleNoteTemplate: "FUZE 母液浓度 {stock} mg/L。数据基于实测带液率 {pickup}% 精确计算 —— 如生产条件导致带液率变化超过 ±2 个百分点,请重新核算。",
+    productionScaleNoteTemplate:
+      "FUZE 母液浓度 {stock} mg/L。数据基于实测带液率 {pickup}% 精确计算 —— 如生产条件导致带液率变化超过 ±2 个百分点,请重新核算。",
     colBathSize: "浴液体积",
     fuzeStockLabel: "FUZE 母液",
     bathPpmLabel: "浴液:",
     fabricPpmLabel: "面料:",
-    bathTopupNote: "用去离子水将浴液补足至列标题所示的浴液体积。例如:F1 的 200 L 浴液,将所列毫升的 FUZE 母液与 DI 水混合至总体积 200 L。",
+    bathTopupNote:
+      "用去离子水将浴液补足至列标题所示的浴液体积。例如:F1 的 200 L 浴液,将所列毫升的 FUZE 母液与 DI 水混合至总体积 200 L。",
     unitReference: "单位说明:",
-    unitReferenceBody: "浴液 ppm = 每升浴水的 FUZE 元材料毫克数。面料 ppm = 每千克干面料的毫克数(OWF,面料重量基)。1 ppm = 1 mg/kg = 0.0001%。",
+    unitReferenceBody:
+      "浴液 ppm = 每升浴水的 FUZE 元材料毫克数。面料 ppm = 每千克干面料的毫克数(OWF,面料重量基)。1 ppm = 1 mg/kg = 0.0001%。",
     matrixUnavailable: "FUZE 用量矩阵不可用 —— 需要来自已验证台架测试的实测带液率 %。",
 
     inHouseValidationHeader: "内部验证",
@@ -4798,7 +4857,8 @@ const zhCN: Translations = {
     colFuzeOnFabric: "面料 FUZE (ppm)",
     colMgKgOwf: "mg/kg OWF",
     colMethod: "方法",
-    icpExplainer: "ICP-OES 结果以 FUZE 元材料的元素形式表示。在固体面料上,ppm 与 mg/kg 数值等价 (1 ppm = 每 kg 面料 1 mg)。",
+    icpExplainer:
+      "ICP-OES 结果以 FUZE 元材料的元素形式表示。在固体面料上,ppm 与 mg/kg 数值等价 (1 ppm = 每 kg 面料 1 mg)。",
     noLabResults: "该面料尚无第三方实验室 ICP 结果。台架验证(第 5 节)为当前的配方依据。",
     antibacterialHeader: "抗菌效能(第三方)",
     reductionLabel: "减少",
@@ -4812,22 +4872,26 @@ const zhCN: Translations = {
     portalStepsIntro: "下个月查找方法:",
     portalStep1: "打开",
     portalStep2a: "使用本报告发送至的邮箱登录。如还没有密码,请点击",
-    portalStep2b: "\"忘记密码 / 设置密码\"",
+    portalStep2b: '"忘记密码 / 设置密码"',
     portalStep2c: ",我们将向您发送一次性链接邮件。",
     portalStep3: "在侧边栏打开",
     portalStep3Tail: "—— 您的报告按最新优先排序,可通过客户参考、产品编号或 FUZE 编号搜索。",
-    portalStep4: "本报告投递邮件中的下载链接保持 90 天有效;之后请登录获取包含最新实验室结果的副本。",
+    portalStep4:
+      "本报告投递邮件中的下载链接保持 90 天有效;之后请登录获取包含最新实验室结果的副本。",
     troubleLoggingIn: "登录有困难?请回复本报告的发件邮件 —— 邮件将路由至您的 FUZE 客户经理。",
 
     appendixHeader: "附录",
     fuzeCompliance: "FUZE 合规",
-    fuzeComplianceBody: "OEKO-TEX Standard 100 Class I · bluesign® approved · EPA 注册(联邦) · 加州 EPA 批准 (2026 Q1) · 无 PFAS。",
+    fuzeComplianceBody:
+      "OEKO-TEX Standard 100 Class I · bluesign® approved · EPA 注册(联邦) · 加州 EPA 批准 (2026 Q1) · 无 PFAS。",
     testStandards: "测试标准",
     testStandardsBody: "AATCC 100 · AATCC 30 · ISO 20743 · ISO 18184 · ICP-OES 按实验室方法。",
     issuedBy: "签发方",
-    issuedByBody: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, UT 84119 USA · andrew@fuze47.com",
+    issuedByBody:
+      "FUZE Biotech · 1895 West 2100 South, Salt Lake City, UT 84119 USA · andrew@fuze47.com",
     documentVersion: "文档版本",
-    documentVersionTemplate: "实时报告 —— 每次下载时由 Atlas 数据库重新生成。台架测试 {testNum} · 带液率 {pickup}%。",
+    documentVersionTemplate:
+      "实时报告 —— 每次下载时由 Atlas 数据库重新生成。台架测试 {testNum} · 带液率 {pickup}%。",
     footerTemplate: "FUZE Atlas · 施加报告 ·",
     printedTemplate: "打印于 {date}",
   },
@@ -5102,7 +5166,8 @@ const zhCN: Translations = {
     errorFailedCreate: "创建文档失败",
 
     formHeading: "创建文档条目",
-    formHelp: "直接输入文档详情。这会创建一条经销商可见的数据库记录。可附加已上传文件的 URL,或留空以填写打印/邮寄详情。",
+    formHelp:
+      "直接输入文档详情。这会创建一条经销商可见的数据库记录。可附加已上传文件的 URL,或留空以填写打印/邮寄详情。",
     labelDistributor: "经销商 *",
     placeholderDistributor: "选择经销商...",
     labelDocType: "文档类型 *",
@@ -5330,7 +5395,8 @@ const zhCN: Translations = {
     crumbWizard: "BD 向导",
     crumbHere: "品牌发现",
     pageTitle: "🌎 全球品牌发现",
-    pageSubtitle: "多 AI 引擎 — 跨 Anthropic、OpenAI 和 Grok 寻找并验证纺织品牌,自动为每个新品牌附加 Apollo 联系人,以便 BD 向导立即使用。",
+    pageSubtitle:
+      "多 AI 引擎 — 跨 Anthropic、OpenAI 和 Grok 寻找并验证纺织品牌,自动为每个新品牌附加 Apollo 联系人,以便 BD 向导立即使用。",
 
     statTotalLabel: "数据库中品牌总数",
     backToWizard: "← 返回向导",
@@ -5341,7 +5407,8 @@ const zhCN: Translations = {
     statsNetworkError: "加载发现统计时发生网络错误。",
 
     autoEnrichTitle: "自动补全已开启",
-    autoEnrichBody: "此处创建的每个新品牌将通过 Apollo 按域名搜索附加最多 8 位高级联系人(创始人/C 级/副总裁/部门负责人/总监)。BD 向导的筛选器会立即放行这些品牌 — 无需另行补全。",
+    autoEnrichBody:
+      "此处创建的每个新品牌将通过 Apollo 按域名搜索附加最多 8 位高级联系人(创始人/C 级/副总裁/部门负责人/总监)。BD 向导的筛选器会立即放行这些品牌 — 无需另行补全。",
 
     settingsHeading: "发现设置",
     labelCategory: "类别",
@@ -5405,7 +5472,8 @@ const zhCN: Translations = {
     labFallback: "CTLA Laboratories",
 
     requestedTestsLabel: "申请测试",
-    requestedTestsBody: "对处理后织物进行 ICP-MS 银(Ag)定量分析。微波辅助王水消解。每次消解 0.5 g。按织物提交编号以 mg/kg(ppm)报告织物重量基准的银含量。",
+    requestedTestsBody:
+      "对处理后织物进行 ICP-MS 银(Ag)定量分析。微波辅助王水消解。每次消解 0.5 g。按织物提交编号以 mg/kg(ppm)报告织物重量基准的银含量。",
     billingLabel: "结算:",
     billingBody: "请按织物提交编号开票,以便与上方 Atlas PO 行项目对账。",
 
@@ -5835,7 +5903,8 @@ const zhCN: Translations = {
   icpSamplePrepPage: {
     headerBadge: "FUZE Biotech · 质量与实验室",
     headerTitle: "ICP 样品制备",
-    headerSubtitle: "用一个或多个经 FUZE 处理的面料样品建立 CTLA 送样包。一张 PO 覆盖整批；CTLA 按每个面料送样编号计费。",
+    headerSubtitle:
+      "用一个或多个经 FUZE 处理的面料样品建立 CTLA 送样包。一张 PO 覆盖整批；CTLA 按每个面料送样编号计费。",
     btnHowTo: "📋 操作指南 (SOP)",
 
     stepPick: "选择面料",
@@ -5853,7 +5922,8 @@ const zhCN: Translations = {
     btnContinue: "继续 →",
 
     step2Heading: "2. 确认我们从面料库调取的面料详情",
-    step2Sub: "这些数据直接来自 Atlas 面料档案——无需重新输入。如果某一行实际上不在袋中，请删除该行，或返回添加更多。",
+    step2Sub:
+      "这些数据直接来自 Atlas 面料档案——无需重新输入。如果某一行实际上不在袋中，请删除该行，或返回添加更多。",
     colFuze: "FUZE #",
     colCustomerCode: "客户编码",
     colFactoryCode: "工厂编码",
@@ -5865,10 +5935,12 @@ const zhCN: Translations = {
     btnBack: "← 返回",
 
     step3Heading: "3. 应用 FUZE——配浴、轧液并烘干",
-    step3Sub: "直接从此面料最新的配方台试调取配方。选择 FUZE 等级和浴量——我们将实时计算 30 ppm FUZE 母液的 mL 数与去离子水的 mL 数。按保存的设置通过立式微型轧车轧液，在烘箱中烘干，然后点击「轧+烘完成」以记录 SampleApplication。",
+    step3Sub:
+      "直接从此面料最新的配方台试调取配方。选择 FUZE 等级和浴量——我们将实时计算 30 ppm FUZE 母液的 mL 数与去离子水的 mL 数。按保存的设置通过立式微型轧车轧液，在烘箱中烘干，然后点击「轧+烘完成」以记录 SampleApplication。",
     sampleFallback: "样品",
     noRecipeTitle: "此面料未关联任何配方台试。",
-    noRecipeBody: "您必须先运行配方计算器——那里会测量带液率%并保存每个等级的稀释比。没有它我们无法配浴。",
+    noRecipeBody:
+      "您必须先运行配方计算器——那里会测量带液率%并保存每个等级的稀释比。没有它我们无法配浴。",
     openRecipeCalc: "打开配方计算器 →",
     labelRecipeBench: "配方台试",
     pickupPrefix: "带液率：",
@@ -5902,7 +5974,8 @@ const zhCN: Translations = {
     errorBathVolume: "浴量必须大于 0 L。",
 
     step4Heading: "4. 称重每个样品并确认等级",
-    step4SubTpl: "用 {wheel} cm² 切片刀切割，剪成约 5 mm 的碎片，并称量整袋重量。每种面料需多于 {ship} g——CTLA 每次消解 {digest} g。",
+    step4SubTpl:
+      "用 {wheel} cm² 切片刀切割，剪成约 5 mm 的碎片，并称量整袋重量。每种面料需多于 {ship} g——CTLA 每次消解 {digest} g。",
     labelSampleMass: "样品质量 (g)",
     massBelow: "⚠ 低于 {ship} g 寄送下限——请切更多。",
     labelTierLocked: "FUZE 等级（在步骤 3 锁定）",
@@ -5914,7 +5987,8 @@ const zhCN: Translations = {
     underSummary: "不足",
 
     step5Heading: "5. 审核并提交至 CTLA",
-    step5Sub: "提交将创建 FUZE PO、按面料自动添加行项目（以便 CTLA 按送样编号开票），并打开可打印的包件以放入运输袋中。",
+    step5Sub:
+      "提交将创建 FUZE PO、按面料自动添加行项目（以便 CTLA 按送样编号开票），并打开可打印的包件以放入运输袋中。",
     labelPriority: "优先级",
     priorityNormal: "正常",
     priorityHigh: "高",
@@ -5938,7 +6012,8 @@ const zhCN: Translations = {
     crumbAdmin: "管理",
     crumbHere: "联系人清洁",
     pageTitle: "联系人清洁",
-    pageSubtitle: "标记占位、角色邮箱和格式错误的联系人，避免销售在 Jane Doe 上浪费触达。可逆——取消隐藏即可将联系人重新带回向导。",
+    pageSubtitle:
+      "标记占位、角色邮箱和格式错误的联系人，避免销售在 Jane Doe 上浪费触达。可逆——取消隐藏即可将联系人重新带回向导。",
 
     btnPreviewScan: "🔍 预览扫描",
     btnAutoHide: "🙈 扫描并自动隐藏",
@@ -5946,7 +6021,8 @@ const zhCN: Translations = {
     btnHiding: "隐藏中……",
     titlePreviewScan: "在每个联系人上重新运行清洁快照，不改变可见性",
     titleAutoHide: "扫描并自动从 BD 向导中隐藏占位联系人",
-    confirmAutoHide: "自动隐藏会将扫描标记为占位或无效邮箱的每个联系人的 hiddenFromWizard 翻为 true。此操作可逆（您可以从本页取消隐藏），但会立即影响每位销售的 BD 向导。继续？",
+    confirmAutoHide:
+      "自动隐藏会将扫描标记为占位或无效邮箱的每个联系人的 hiddenFromWizard 翻为 true。此操作可逆（您可以从本页取消隐藏），但会立即影响每位销售的 BD 向导。继续？",
     promptHide: "从 BD 向导中隐藏此联系人？原因（可选）：",
     promptUnhide: "取消隐藏此联系人？原因（可选，将写入其备注）：",
     failedPrefix: "失败：",
@@ -6001,7 +6077,8 @@ const zhCN: Translations = {
     actionHide: "隐藏",
     actionUnhide: "取消隐藏",
 
-    helpFooter: "扫描会遍历每个联系人，将判定+标记快照到该行。预览仅记录判定；扫描+自动隐藏还会为占位和无效邮箱联系人翻转 hiddenFromWizard。两者均可逆——点击「取消隐藏」即可恢复联系人，这也会重新运行快照以防数据已修复。",
+    helpFooter:
+      "扫描会遍历每个联系人，将判定+标记快照到该行。预览仅记录判定；扫描+自动隐藏还会为占位和无效邮箱联系人翻转 hiddenFromWizard。两者均可逆——点击「取消隐藏」即可恢复联系人，这也会重新运行快照以防数据已修复。",
 
     verdictReal: "真实",
     verdictSuspect: "可疑",
@@ -6044,7 +6121,8 @@ const zhCN: Translations = {
     previewBodyLabel: "正文",
 
     slotsHeading: "BD 向导快速选择槽位",
-    slotsHelp: "将最多 10 个您的模板固定到编号槽位。在向导的草稿步骤中，您将看到 1–10 按钮条，一键填充主题和正文。",
+    slotsHelp:
+      "将最多 10 个您的模板固定到编号槽位。在向导的草稿步骤中，您将看到 1–10 按钮条，一键填充主题和正文。",
     openBdWizard: "打开 BD 向导 →",
     slotEmptyTitle: "空槽位——在下方分配。",
     slotEmpty: "空",
@@ -6108,7 +6186,8 @@ const zhCN: Translations = {
 
   fabricLibraryPage: {
     pageTitle: "FUZE 面料库",
-    pageSubtitle: "浏览我们全球网络中经 FUZE 处理的面料和经过验证的测试结果。所有数据均已匿名化——工厂和品牌身份保密。",
+    pageSubtitle:
+      "浏览我们全球网络中经 FUZE 处理的面料和经过验证的测试结果。所有数据均已匿名化——工厂和品牌身份保密。",
 
     statFabrics: "已测试面料",
     statTests: "测试总数",
@@ -6231,25 +6310,32 @@ const zhCN: Translations = {
     backLink: "← 返回 FUZE 基础",
     kicker: "应用方法",
     heroTitle: "FUZE 可在您现有的整理线上使用",
-    heroBody: "您不需要新的浴槽、新的烘箱或新的设备来应用 FUZE。三种应用路径覆盖了当今所有的纺织生产配置。F4 Essential Protection 在许多基底上完全不需要固化烘箱。",
+    heroBody:
+      "您不需要新的浴槽、新的烘箱或新的设备来应用 FUZE。三种应用路径覆盖了当今所有的纺织生产配置。F4 Essential Protection 在许多基底上完全不需要固化烘箱。",
     methodExhaustName: "竭染（染浴）",
-    methodExhaustDesc: "将 FUZE 加入染浴。元材料在现有的染色竭染过程中结合。无需新的浴槽、新的容器、新的产线。",
+    methodExhaustDesc:
+      "将 FUZE 加入染浴。元材料在现有的染色竭染过程中结合。无需新的浴槽、新的容器、新的产线。",
     methodExhaustWhen: "最适合大批量连续染色。元材料与染色定型步骤集成。",
     methodPdcName: "轧-烘-焙",
-    methodPdcDesc: "让面料通过装有稀释 FUZE 浴液的标准轧车。按您平时的方式压辊、烘干、焙烘。焙烘温度 150-170°C。",
+    methodPdcDesc:
+      "让面料通过装有稀释 FUZE 浴液的标准轧车。按您平时的方式压辊、烘干、焙烘。焙烘温度 150-170°C。",
     methodPdcWhen: "最常见的应用路径。与当今运行中的每一条纺织整理线兼容。",
     methodSprayName: "喷涂（头部间距）",
-    methodSprayDesc: "6 英寸头部间距，15 m/min 线速度。将稀释的 FUZE 雾化到面料表面，然后烘干/焙烘。非常适合成衣或无纺基底。",
+    methodSprayDesc:
+      "6 英寸头部间距，15 m/min 线速度。将稀释的 FUZE 雾化到面料表面，然后烘干/焙烘。非常适合成衣或无纺基底。",
     methodSprayWhen: "已剪裁/缝制的成衣，或不适用竭染/PDC 的特殊基底。",
     whenToUseLabel: "何时使用",
     operatorTitle: "为什么这对工厂操作员很重要",
     operatorBullet1: "✓ 无需新的资本设备。FUZE 可直接接入您现有的轧/染/喷线。",
     operatorBullet2: "✓ 无粘合剂、无交联剂、无甲醛。要管理的库存更少，无需致癌物质处理规程。",
-    operatorBullet3: "✓ F4 等级无需固化烘箱依赖。低等级应用可空气干燥；F1-F3 使用 150-170°C，与标准 PDC 整理范围相同。",
+    operatorBullet3:
+      "✓ F4 等级无需固化烘箱依赖。低等级应用可空气干燥；F1-F3 使用 150-170°C，与标准 PDC 整理范围相同。",
     operatorBullet4: "✓ 储存的 FUZE 无保质期。桶和大桶可在您的整理车间无限期放置而不降解。",
-    operatorBullet5: "✓ 标准 19L 大桶是最小订购单位。需要精确匹配时可订购定制容量（47L、285L、1300L）。",
+    operatorBullet5:
+      "✓ 标准 19L 大桶是最小订购单位。需要精确匹配时可订购定制容量（47L、285L、1300L）。",
     runNumbersTitle: "计算您的数据",
-    runNumbersBody: "应用计算器会根据您选择的等级计算每平方米面料所需的 FUZE 精确用量。输入面料克重 (gsm)、宽度和目标等级——即可得到 FUZE 浴液升数、母液 mL 数以及每米的金额。",
+    runNumbersBody:
+      "应用计算器会根据您选择的等级计算每平方米面料所需的 FUZE 精确用量。输入面料克重 (gsm)、宽度和目标等级——即可得到 FUZE 浴液升数、母液 mL 数以及每米的金额。",
     runNumbersCta: "打开应用计算器 →",
     backBasicsBtn: "返回 FUZE 基础",
     seePricingBtn: "查看定价与等级",
@@ -6286,7 +6372,8 @@ const zhCN: Translations = {
     healthyBadge: "✓ 健康",
     neverLabel: "从未",
     burnSuffix: "L/天",
-    footerNote: "排序：低库存优先，然后闲置，然后按剩余库存天数升序。「每日消耗」= 发往工厂的 90 天滚动平均升数。「剩余天数」= 当前库存 ÷ 每日消耗。「闲置」= 过去 90 天内无工厂订单。「无价格」表示 FUZE 批发价未设置；经销商无法下补货订单。在每个经销商页面编辑。",
+    footerNote:
+      "排序：低库存优先，然后闲置，然后按剩余库存天数升序。「每日消耗」= 发往工厂的 90 天滚动平均升数。「剩余天数」= 当前库存 ÷ 每日消耗。「闲置」= 过去 90 天内无工厂订单。「无价格」表示 FUZE 批发价未设置；经销商无法下补货订单。在每个经销商页面编辑。",
   },
 
   conversionTracking: {
@@ -6561,7 +6648,7 @@ const zhCN: Translations = {
     title: "数据录入中心",
     subtitle: "常见设置任务的快速小表单。每个都是快速路径；更丰富的编辑在每个实体的页面上。",
     toastSpecSavedTpl: "已保存 {name} 的规格",
-    toastPricingSavedTpl: "已保存定价层级 \"{label}\"",
+    toastPricingSavedTpl: '已保存定价层级 "{label}"',
     toastLinkedTpl: "已关联 {brand} → {factory}",
     toastCatalogSavedTpl: "已保存 {test} 的目录行",
     cliHeader: "或使用 CLI 进行批量导入：",
@@ -6612,15 +6699,17 @@ const zhCN: Translations = {
     kicker: "BD 向导 — 回复",
     draftTitleTpl: "起草对 {contact} 的回复",
     exitedRepliedBadge: "✓ 序列已退出 — 已回复",
-    stillActiveBadge: "序列仍处于活动状态 — 将在首次自动检测时作为\"已回复\"退出。",
+    stillActiveBadge: '序列仍处于活动状态 — 将在首次自动检测时作为"已回复"退出。',
     originalColdLabel: "原始冷邮件",
     subjectPrefix: "主题：",
     noSubject: "(无主题)",
     sentAtTpl: "已发送 {when}",
     noPriorSent: "此序列中无先前发送的电子邮件。",
     summaryLabel: "他们说了什么？（回复摘要）",
-    summaryPlaceholder: "他们感兴趣,但想知道 FUZE F1 与现有处理方法的对比。还询问了样品订单的最小起订量。",
-    summaryHint: "这将用于起草生成器 — 草稿将以他们的回复开头,而非以 FUZE 开头。保持对话式,1-3 句。",
+    summaryPlaceholder:
+      "他们感兴趣,但想知道 FUZE F1 与现有处理方法的对比。还询问了样品订单的最小起订量。",
+    summaryHint:
+      "这将用于起草生成器 — 草稿将以他们的回复开头,而非以 FUZE 开头。保持对话式,1-3 句。",
     draftingBtn: "起草中……",
     regenerateBtn: "重新生成草稿",
     generateBtn: "生成草稿",
@@ -6638,7 +6727,8 @@ const zhCN: Translations = {
 
   productDocumentsAdmin: {
     title: "产品文档",
-    introPrefix: "产品范围内的文档（TDS、SDS、应用指南）。这些是静态的,适用于每个批次。批次特定的 COA 在每个批次中上传 — ",
+    introPrefix:
+      "产品范围内的文档（TDS、SDS、应用指南）。这些是静态的,适用于每个批次。批次特定的 COA 在每个批次中上传 — ",
     introLink: "生产批次",
     introSuffix: "。",
     docTypeTDSLabel: "技术数据表 (TDS)",
@@ -6711,7 +6801,8 @@ const zhCN: Translations = {
     colPipeline: "管道 $",
     colRefs: "推荐",
     colWon: "赢得 (90 天)",
-    footerTpl: "时间段开始 {date}。每 5 分钟刷新一次。\"邮件\" = 代表发送的每封出站邮件（向导 + 品牌页面 + 联系人页面）。\"序列\"是通过多步骤节奏运行的子集。\"联系人\"是代表通过邮件或 LinkedIn 接触的独立人员数量。\"已转化\" = 在时间段内超出 PRESENTATION 阶段的品牌。ACM 移交后,来源代表仍作为客户经理 — 佣金归属得以保留。",
+    footerTpl:
+      '时间段开始 {date}。每 5 分钟刷新一次。"邮件" = 代表发送的每封出站邮件（向导 + 品牌页面 + 联系人页面）。"序列"是通过多步骤节奏运行的子集。"联系人"是代表通过邮件或 LinkedIn 接触的独立人员数量。"已转化" = 在时间段内超出 PRESENTATION 阶段的品牌。ACM 移交后,来源代表仍作为客户经理 — 佣金归属得以保留。',
   },
 
   brandPricingTiers: {
@@ -6757,7 +6848,8 @@ const zhCN: Translations = {
     configuredHintSuffix: " 将一行加载到上方表单中。",
     emptyEmoji: "📊",
     emptyTitle: "尚未配置数量定价",
-    emptyBody: "在上方添加第一个级别。没有任何活跃定价的品牌将在其定价页面上看到友好的标准定价消息。",
+    emptyBody:
+      "在上方添加第一个级别。没有任何活跃定价的品牌将在其定价页面上看到友好的标准定价消息。",
     colThreshold: "阈值",
     colDiscount: "折扣",
     colLabel: "标签",
@@ -6840,11 +6932,13 @@ const zhCN: Translations = {
     crumbAdmin: "管理",
     crumbCurrent: "HubSpot 导入",
     title: "HubSpot → Atlas 迁移",
-    intro: "第 1 天 — 将每个公司和联系人从您的 HubSpot 帐户拉入 Atlas。幂等性：重新运行会从上次停止的地方继续,并更新现有行而不重复。第 2 天将添加备注 + 互动。",
+    intro:
+      "第 1 天 — 将每个公司和联系人从您的 HubSpot 帐户拉入 Atlas。幂等性：重新运行会从上次停止的地方继续,并更新现有行而不重复。第 2 天将添加备注 + 互动。",
     authChecking: "正在检查 HubSpot 连接……",
     authReady: "✓ HubSpot 密钥可用。准备导入。",
     authFailed: "HubSpot 连接失败：",
-    authHint: "在 Vercel 设置 → 环境变量（生产范围）中设置 HUBSPOT_API_KEY。该令牌是私有应用访问令牌（HubSpot 中的设置 → 集成 → 私有应用）。添加后,重新部署或硬刷新。",
+    authHint:
+      "在 Vercel 设置 → 环境变量（生产范围）中设置 HUBSPOT_API_KEY。该令牌是私有应用访问令牌（HubSpot 中的设置 → 集成 → 私有应用）。添加后,重新部署或硬刷新。",
     previewTitle: "源预览",
     previewRefresh: "↻ 刷新",
     previewRefreshing: "正在刷新……",
@@ -6856,13 +6950,17 @@ const zhCN: Translations = {
     previewNoCompanies: "无公司",
     previewMostRecent: "最近 5 条",
     previewNoName: "(无名称)",
-    previewFooter: "这些是运行下方两个阶段后您应该期望在 Atlas 中获得的总数。样本行是最近修改的 5 条 — 有助于发现字段漂移（缺失邮箱、垃圾域、过时的表单提交联系人）。",
+    previewFooter:
+      "这些是运行下方两个阶段后您应该期望在 Atlas 中获得的总数。样本行是最近修改的 5 条 — 有助于发现字段漂移（缺失邮箱、垃圾域、过时的表单提交联系人）。",
     apiPathLabel: "API 路径（旧版 — 需要可用的 HubSpot 令牌）",
-    apiPathHint: "如果您在 HUBSPOT_API_KEY 中有私有应用访问令牌,请使用此选项。如果身份验证失败,则回退到上方的 CSV 路径。",
+    apiPathHint:
+      "如果您在 HUBSPOT_API_KEY 中有私有应用访问令牌,请使用此选项。如果身份验证失败,则回退到上方的 CSV 路径。",
     step1Title: "1. 拉取公司 → 品牌",
-    step1Description: "首先运行。HubSpot 公司成为 LEAD 阶段的 Atlas 品牌行。按 hubspotId → 网站域名 → 名称匹配。后续联系人将通过此匹配与品牌关联。",
+    step1Description:
+      "首先运行。HubSpot 公司成为 LEAD 阶段的 Atlas 品牌行。按 hubspotId → 网站域名 → 名称匹配。后续联系人将通过此匹配与品牌关联。",
     step2Title: "2. 拉取联系人",
-    step2Description: "在公司之后运行,以便每个联系人可以通过 HubSpot 公司关联与其品牌关联。按 hubspotId → 邮箱匹配。其公司尚未导入的联系人将未关联 — 重新运行公司然后联系人以修复。",
+    step2Description:
+      "在公司之后运行,以便每个联系人可以通过 HubSpot 公司关联与其品牌关联。按 hubspotId → 邮箱匹配。其公司尚未导入的联系人将未关联 — 重新运行公司然后联系人以修复。",
     pullNext50: "拉取下一批 50 条",
     pullUntilDone: "拉取直到完成",
     pullingState: "⏳ 拉取中……",
@@ -6871,7 +6969,8 @@ const zhCN: Translations = {
     allPulled: "✓ 已拉取所有 HubSpot 行",
     resumeNote: "已保存恢复光标 — 下次点击将从上次停止的地方继续。",
     requireCompaniesFirst: "先拉取公司,以便联系人可以关联到其品牌。",
-    day2Note: "第 2 天（下次发布）：备注 + 互动（通话、邮件、会议）→ 成为正确 brandId 上的 Atlas 备注行,保留原始作者 + 时间戳。",
+    day2Note:
+      "第 2 天（下次发布）：备注 + 互动（通话、邮件、会议）→ 成为正确 brandId 上的 Atlas 备注行,保留原始作者 + 时间戳。",
     statPulled: "已拉取",
     statBatches: "批次",
     statBrandsCreated: "已创建品牌",
@@ -6909,7 +7008,7 @@ const zhCN: Translations = {
     triageNotesLabel: "分类备注（内部）",
     triageNotesPlaceholder: "仅供内部使用 — 为何有效 / 该做什么 / 谁负责",
     resolutionLabel: "解决方案（在通知邮件中显示给用户）",
-    resolutionPlaceholder: "例如\"工厂下拉菜单现在显示所有已批准的工厂。请在同一页面上重试。\"",
+    resolutionPlaceholder: '例如"工厂下拉菜单现在显示所有已批准的工厂。请在同一页面上重试。"',
     changeStatusLabel: "更改状态 →",
     fixPromptMessage: "添加一行解决方案备注（在邮件中显示给用户）：",
     catBroken: "已损坏",
@@ -7077,9 +7176,11 @@ const zhCN: Translations = {
     colPerLab: "各实验室结果",
     emptyTitle: "尚无多实验室面料",
     emptyBodyBefore: "实验室间差异比较过去",
-    emptyBodyAfter: "天内被 ≥2 个实验室测试的面料。一旦您在合作伙伴实验室和 FUZE 美国（或任何 2 个实验室对）测试了相同的面料,它将显示在这里。",
+    emptyBodyAfter:
+      "天内被 ≥2 个实验室测试的面料。一旦您在合作伙伴实验室和 FUZE 美国（或任何 2 个实验室对）测试了相同的面料,它将显示在这里。",
     biasTitle: "各实验室校准偏差",
-    biasHint: "（此实验室的结果 − 组平均值）在每个共享面料上的平均值。正值 = 比同级实验室运行得更高；负值 = 运行得更低。",
+    biasHint:
+      "（此实验室的结果 − 组平均值）在每个共享面料上的平均值。正值 = 比同级实验室运行得更高；负值 = 运行得更低。",
     emptyBias: "尚无偏差数据。",
   },
 
@@ -7108,7 +7209,8 @@ const zhCN: Translations = {
     crumbSalesPipeline: "销售与管道",
     crumbBdFunnel: "BD 漏斗",
     title: "管道漏斗",
-    subtitle: "过去 30 / 60 / 90 天的流入 / 流出,以及阶段到阶段的转化率。来源于每次 Brand.pipelineStage 翻转时写入的 BrandStageTransition 行。",
+    subtitle:
+      "过去 30 / 60 / 90 天的流入 / 流出,以及阶段到阶段的转化率。来源于每次 Brand.pipelineStage 翻转时写入的 BrandStageTransition 行。",
     colStage: "阶段",
     colCurrent: "当前",
     colIn30: "30 天内进入",
@@ -7119,7 +7221,8 @@ const zhCN: Translations = {
     colOut90: "90 天内退出",
     colAvgDwell: "平均停留",
     colToNext: "→ 下一步",
-    footerHint: "转化 = 在过去 90 天内,落在规范的下一阶段的退出数 / 观察到的退出总数。在时间段内没有退出的阶段显示为 n=0 — 它们速度慢或稳定,而非不好。",
+    footerHint:
+      "转化 = 在过去 90 天内,落在规范的下一阶段的退出数 / 观察到的退出总数。在时间段内没有退出的阶段显示为 n=0 — 它们速度慢或稳定,而非不好。",
     errLoadFailed: "加载漏斗失败",
   },
 
@@ -7199,7 +7302,8 @@ const zhCN: Translations = {
 
   accountsAdmin: {
     title: "客户",
-    subtitleBefore: "超过 Lead 阶段的品牌 — 已接收演示、正在测试、生产中或已是客户。新潜在客户请前往",
+    subtitleBefore:
+      "超过 Lead 阶段的品牌 — 已接收演示、正在测试、生产中或已是客户。新潜在客户请前往",
     brandPipelineLink: "品牌管道",
     allFilter: "全部",
     stagePresentation: "演示",
@@ -7225,7 +7329,8 @@ const zhCN: Translations = {
     title: "供应链地球仪",
     emptyTitle: "尚无已地理编码的实体",
     emptyHint: "运行地理编码器以从每个实体的城市 + 国家填充经纬度：",
-    emptyFooter: "Nominatim 有 1 req/sec 的速率限制 — 完整运行需要几分钟。重新运行会跳过已有坐标的行。",
+    emptyFooter:
+      "Nominatim 有 1 req/sec 的速率限制 — 完整运行需要几分钟。重新运行会跳过已有坐标的行。",
     factoriesLabel: "工厂",
     brandsLabel: "品牌",
     labsLabel: "实验室",
@@ -7253,7 +7358,8 @@ const zhCN: Translations = {
     crumbDistributors: "分销商",
     crumbTiers: "层级",
     headerPrefix: "定价层级 —",
-    subtitle: "为此分销商设置最多 5 个定价层级。层级按名称通用（层级 1……层级 5）；分销商决定每个层级的含义 — 地理位置、运输/关税带、终端用途利润、链中的位置。分配给此分销商的工厂将被放置在下方的层级中。",
+    subtitle:
+      "为此分销商设置最多 5 个定价层级。层级按名称通用（层级 1……层级 5）；分销商决定每个层级的含义 — 地理位置、运输/关税带、终端用途利润、链中的位置。分配给此分销商的工厂将被放置在下方的层级中。",
     subDistNoteBefore: "注意：此分销商是以下方的子分销商：",
     subDistNoteAfter: "他们的补货订单从主分销商订购,而非从 FUZE。",
     distributorNotFound: "未找到分销商。",
@@ -7292,7 +7398,8 @@ const zhCN: Translations = {
     crumbAdmin: "管理",
     crumbSampleRequests: "样品请求",
     title: "工厂样品请求",
-    subtitle: "来自工厂的入站 FUZE 样品 / 试用请求。需要处理的行（SUBMITTED、UNDER_REVIEW、ICP_PENDING）会浮到顶部,以免被遗漏。",
+    subtitle:
+      "来自工厂的入站 FUZE 样品 / 试用请求。需要处理的行（SUBMITTED、UNDER_REVIEW、ICP_PENDING）会浮到顶部,以免被遗漏。",
     tileTotal: "总计",
     tileSubmitted: "已提交",
     tileUnderReview: "审核中",
@@ -7330,7 +7437,8 @@ const zhCN: Translations = {
     crumbSOWs: "SOW",
     crumbDashboard: "仪表盘",
     title: "SOW 仪表盘",
-    subtitle: "客户组合中的所有活跃 SOW。停滞和已签署但无进展的项目浮到顶部,以免遗漏。点击进入品牌以采取行动。",
+    subtitle:
+      "客户组合中的所有活跃 SOW。停滞和已签署但无进展的项目浮到顶部,以免遗漏。点击进入品牌以采取行动。",
     cardTotal: "SOW 总数",
     cardStale: "停滞 14+ 天",
     cardSignedNoProgress: "已签署,无进展",
@@ -7356,7 +7464,8 @@ const zhCN: Translations = {
     duePrefix: "到期",
     daysAgoSuffix: "天前",
     healthyLabel: "✓ 健康",
-    footerHint: "停滞 = 仍处于 DRAFT/SENT/SIGNED/ACTIVE 状态时 14+ 天无活动。已签署无进展 = SIGNED 或 ACTIVE 状态 30+ 天,定义了里程碑但未完成。最后活动是 SOW 编辑、里程碑完成或测试请求提交中的最新一项。",
+    footerHint:
+      "停滞 = 仍处于 DRAFT/SENT/SIGNED/ACTIVE 状态时 14+ 天无活动。已签署无进展 = SIGNED 或 ACTIVE 状态 30+ 天,定义了里程碑但未完成。最后活动是 SOW 编辑、里程碑完成或测试请求提交中的最新一项。",
   },
 
   acmTasks: {
@@ -7451,13 +7560,17 @@ const zhCN: Translations = {
     page1TitleBold: "第 1 页 — 载体贴纸：",
     page1Body: "垂直堆叠 5 张不同标签。沿虚线裁切，每张样品贴一张。",
     page2TitleBold: "第 2 页 — 样品袋贴纸：",
-    page2Body: "整张 4×6 显示面料信息 + ICP 申请数据（PO#、等级、实验室）。贴在装有裁切样品的塑料袋外侧。",
-    paperHint: "两页均使用 4×6 纸张 — 请将标签打印机设为 4 × 6 英寸 + 实际尺寸，并作为单个作业运行。",
+    page2Body:
+      "整张 4×6 显示面料信息 + ICP 申请数据（PO#、等级、实验室）。贴在装有裁切样品的塑料袋外侧。",
+    paperHint:
+      "两页均使用 4×6 纸张 — 请将标签打印机设为 4 × 6 英寸 + 实际尺寸，并作为单个作业运行。",
     multiRequestsTitleBefore: "此面料共有",
     multiRequestsTitleAfter: "条测试申请记录",
-    multiRequestsBody: "样品袋贴纸取自所选申请。默认为最新的一条。选择其他申请可为过往 ICP 重新打印标签：",
+    multiRequestsBody:
+      "样品袋贴纸取自所选申请。默认为最新的一条。选择其他申请可为过往 ICP 重新打印标签：",
     noRequestWarn: "⚠ 此面料尚未关联任何 ICP 申请。",
-    noRequestBody: "样品袋贴纸将打印面料身份信息，但不会包含 PO#、等级或实验室。如果要送实验室，请先运行 ICP 样品准备向导：",
+    noRequestBody:
+      "样品袋贴纸将打印面料身份信息，但不会包含 PO#、等级或实验室。如果要送实验室，请先运行 ICP 样品准备向导：",
     noRequestSuffix: "（送实验室之前）。",
     ofLabel: "/",
     icpSampleSubmission: "ICP 样品提交",
@@ -7554,7 +7667,8 @@ const zhCN: Translations = {
     crumbPublicDocs: "公开文档",
     headerPrefix: "FUZE",
     headerLeadBefore: "FUZE 产品线的公开参考文档：",
-    headerLeadAfter: "如需访问私有文档（完整 TDS/SDS、内部价格、应用指南），请登录 FUZE Atlas 角色门户。",
+    headerLeadAfter:
+      "如需访问私有文档（完整 TDS/SDS、内部价格、应用指南），请登录 FUZE Atlas 角色门户。",
     catTdsSds: "TDS / SDS",
     catToxicology: "毒理学",
     catPricing: "价格",
@@ -7604,21 +7718,29 @@ const zhCN: Translations = {
     backLink: "← 返回 FUZE 基础",
     kicker: "FUZE 故事",
     heroTitle: "从回收电子产品到永久抗菌",
-    heroBody: "FUZE 元材料采用液态激光烧蚀技术生产：30 安培激光、1 平方米生产平台、以回收电子产品为原料。整个生产单元可由太阳能供电。我们不只是抗菌剂——我们是一项以纺织品为终端的电子废物循环再利用工艺。",
+    heroBody:
+      "FUZE 元材料采用液态激光烧蚀技术生产：30 安培激光、1 平方米生产平台、以回收电子产品为原料。整个生产单元可由太阳能供电。我们不只是抗菌剂——我们是一项以纺织品为终端的电子废物循环再利用工艺。",
     card1Title: "回收原料",
-    card1Body: "每克 FUZE 活性成分都来自报废电子产品中回收的元素级贵金属。我们不开采矿山，也不精炼原生材料，而是回收原本会被填埋或焚烧的金属。",
+    card1Body:
+      "每克 FUZE 活性成分都来自报废电子产品中回收的元素级贵金属。我们不开采矿山，也不精炼原生材料，而是回收原本会被填埋或焚烧的金属。",
     card2Title: "液态激光烧蚀",
-    card2Body: "30 安培激光脉冲将浸没于 99.998% 超纯 18 兆欧去离子水中的金属原料汽化。凝结物即为 FUZE 元材料——一种高密度元素同素异形体，交付库存浓度为 20 ppm。无溶剂、无前体化学品、无表面活性剂。",
+    card2Body:
+      "30 安培激光脉冲将浸没于 99.998% 超纯 18 兆欧去离子水中的金属原料汽化。凝结物即为 FUZE 元材料——一种高密度元素同素异形体，交付库存浓度为 20 ppm。无溶剂、无前体化学品、无表面活性剂。",
     card3Title: "可太阳能驱动生产",
-    card3Body: "1 平方米生产单元的耗电量大致相当于一组家用太阳能阵列在晴天一天的发电量。承诺采用 FUZE 的品牌，等于承诺一条在生产环节可实现净零排放的抗菌供应链——这是任何其他抗菌竞争品都无法做到的。",
+    card3Body:
+      "1 平方米生产单元的耗电量大致相当于一组家用太阳能阵列在晴天一天的发电量。承诺采用 FUZE 的品牌，等于承诺一条在生产环节可实现净零排放的抗菌供应链——这是任何其他抗菌竞争品都无法做到的。",
     esgTitle: "对您 ESG 报告的意义",
     esgBullet1: "✓ 循环原料声明——FUZE 由报废电子产品制成，支持您的循环经济承诺。",
-    esgBullet2: "✓ 可实现净零的生产——生产单元兼容太阳能。配合可再生能源采购合同，抗菌环节的范围 2 排放可降至零。",
+    esgBullet2:
+      "✓ 可实现净零的生产——生产单元兼容太阳能。配合可再生能源采购合同，抗菌环节的范围 2 排放可降至零。",
     esgBullet3: "✓ 零原矿开采贡献——无需对接任何冲突矿产或采矿衍生供应链。",
-    esgBullet4: "✓ 无 PFAS、无甲醛、无粘合剂、无烘烤固化——竞争对手所需的每一种石化原料，FUZE 全部去除。",
-    esgBullet5: "✓ 经验证的水质洁净度——FUZE 不向洗涤水中浸出任何物质。您对市政污水处理负担的下游贡献 = 0。",
+    esgBullet4:
+      "✓ 无 PFAS、无甲醛、无粘合剂、无烘烤固化——竞争对手所需的每一种石化原料，FUZE 全部去除。",
+    esgBullet5:
+      "✓ 经验证的水质洁净度——FUZE 不向洗涤水中浸出任何物质。您对市政污水处理负担的下游贡献 = 0。",
     differentTitle: "与众不同的抗菌公司",
-    differentBody: "大多数抗菌纺织公司是化工公司。他们配方、稀释、合成，再把成桶化学品运到工厂。我们是材料科学团队：在水中烧蚀金属并交付成品。简洁本身就是差异化优势。面料上的化学品更少。洗涤水中的化学品更少。生产线上的化学品更少。ESG 报告中的化学品更少。",
+    differentBody:
+      "大多数抗菌纺织公司是化工公司。他们配方、稀释、合成，再把成桶化学品运到工厂。我们是材料科学团队：在水中烧蚀金属并交付成品。简洁本身就是差异化优势。面料上的化学品更少。洗涤水中的化学品更少。生产线上的化学品更少。ESG 报告中的化学品更少。",
     backBasicsBtn: "返回 FUZE 基础",
     seeSustainabilityBtn: "查看可持续发展影响",
   },
@@ -7627,8 +7749,10 @@ const zhCN: Translations = {
     heroTitle: "媒体资料包",
     heroSubtitle: "FUZE Biotech 的标识、图像、新闻稿与公司背景。",
     aboutTitle: "关于 FUZE Biotech",
-    aboutBody1: "FUZE Biotech 总部位于美国犹他州盐湖城，研发以 FUZE 元材料为核心的专利抗菌纺织品处理工艺。该处理在标准纺织后整理过程中与纤维永久结合——不含 PFAS、不含粘合剂，亦不改变面料手感或透气性。",
-    aboutBody2: "产品已获得美国联邦 EPA 注册、加州 EPA 认证（2026 年第一季度）、OEKO-TEX Standard 100 Class I 以及 bluesign® 认证。性能由独立第三方实验室依据 ASTM E2149、AATCC 100、AATCC 30、ISO 18184 和 ISO 20743 进行验证。",
+    aboutBody1:
+      "FUZE Biotech 总部位于美国犹他州盐湖城，研发以 FUZE 元材料为核心的专利抗菌纺织品处理工艺。该处理在标准纺织后整理过程中与纤维永久结合——不含 PFAS、不含粘合剂，亦不改变面料手感或透气性。",
+    aboutBody2:
+      "产品已获得美国联邦 EPA 注册、加州 EPA 认证（2026 年第一季度）、OEKO-TEX Standard 100 Class I 以及 bluesign® 认证。性能由独立第三方实验室依据 ASTM E2149、AATCC 100、AATCC 30、ISO 18184 和 ISO 20743 进行验证。",
     foundedLabel: "成立地",
     foundedValue: "犹他州盐湖城",
     addressLabel: "地址",
@@ -7673,9 +7797,12 @@ const zhCN: Translations = {
     heroTitle: "声明、认证与方法论",
     heroSubtitle: "FUZE 如何运作、获得哪些认证，以及我们为何如此测试。",
     techTitle: "FUZE 技术",
-    techBody1: "FUZE 是一种以 FUZE 元材料为核心的专利抗菌纺织品处理工艺——通过液态激光烧蚀工艺，在盐湖城工厂以回收电子产品为原料制成。该处理在标准纺织后整理（浸轧、轧烘焙或喷涂）过程中与纤维永久结合，不改变面料的手感、染色、悬垂或透气性。",
-    techBody2: "FUZE 在设计上即为非浸出型。细菌减少通过细菌细胞与纤维表面结合的 FUZE 元材料之间的直接物理接触实现——洗涤水中无化学品释放、无 PFAS、无粘合剂、无固化化学品。这一姿态使 FUZE 在所有监管利好（得州 AG PFAS 调查、加州 SB-707）面前都处于有利的一侧。",
-    techBody3: "处理等级：F1 Full Spectrum（1.0 mg/kg，已验证 100 次水洗）· F2 Advanced（0.75 mg/kg，75 次水洗）· F3 Core（0.5 mg/kg，50 次水洗）· F4 Foundation（0.25 mg/kg，25 次水洗）。水洗次数通过独立实验室的 AATCC 100 + ISO 20743 测试记录，可应要求提供。",
+    techBody1:
+      "FUZE 是一种以 FUZE 元材料为核心的专利抗菌纺织品处理工艺——通过液态激光烧蚀工艺，在盐湖城工厂以回收电子产品为原料制成。该处理在标准纺织后整理（浸轧、轧烘焙或喷涂）过程中与纤维永久结合，不改变面料的手感、染色、悬垂或透气性。",
+    techBody2:
+      "FUZE 在设计上即为非浸出型。细菌减少通过细菌细胞与纤维表面结合的 FUZE 元材料之间的直接物理接触实现——洗涤水中无化学品释放、无 PFAS、无粘合剂、无固化化学品。这一姿态使 FUZE 在所有监管利好（得州 AG PFAS 调查、加州 SB-707）面前都处于有利的一侧。",
+    techBody3:
+      "处理等级：F1 Full Spectrum（1.0 mg/kg，已验证 100 次水洗）· F2 Advanced（0.75 mg/kg，75 次水洗）· F3 Core（0.5 mg/kg，50 次水洗）· F4 Foundation（0.25 mg/kg，25 次水洗）。水洗次数通过独立实验室的 AATCC 100 + ISO 20743 测试记录，可应要求提供。",
     certsTitle: "认证",
     certEpaTitle: "EPA 注册（联邦级）",
     certEpaBody: "FUZE 化学品已在美国环境保护署（EPA）注册为抗菌农药。",
@@ -7688,12 +7815,16 @@ const zhCN: Translations = {
     certPfasTitle: "无 PFAS",
     certPfasBody: "配方中完全不含全氟与多氟烷基物质。无粘合剂、无固化助剂。",
     certStandardsTitle: "标准验证",
-    certStandardsBody: "AATCC 100、ASTM E2149、AATCC 30、ISO 18184、ISO 20743——第三方报告可应要求提供。",
+    certStandardsBody:
+      "AATCC 100、ASTM E2149、AATCC 30、ISO 18184、ISO 20743——第三方报告可应要求提供。",
     standardsTitle: "测试标准",
-    standardsBody: "纺织品抗菌性能并非单一数字——它在很大程度上取决于您采用何种标准测试，以及该标准是否契合所测化学品。以下是 FUZE 与各方法的对应关系。",
+    standardsBody:
+      "纺织品抗菌性能并非单一数字——它在很大程度上取决于您采用何种标准测试，以及该标准是否契合所测化学品。以下是 FUZE 与各方法的对应关系。",
     jabTitle: "为何我们首选 ASTM E2149",
-    jabBody: "我们以 ASTM E2149 为主要测试方法，因为它是为非浸出型抗菌剂设计的。竞争对手采用 AATCC 100 的化学品依赖该测试是因为其叠层几何结构有助于浸出离子在层间扩散——该测试在构造上偏向浸出型。FUZE 在设计上不浸出。请在正确的测试上与我们较量。",
-    jabFootnote: "（竞品归因：叠层测试这一限制适用于离子浸出型与季铵盐类整理剂——并不适用于 FUZE。）",
+    jabBody:
+      "我们以 ASTM E2149 为主要测试方法，因为它是为非浸出型抗菌剂设计的。竞争对手采用 AATCC 100 的化学品依赖该测试是因为其叠层几何结构有助于浸出离子在层间扩散——该测试在构造上偏向浸出型。FUZE 在设计上不浸出。请在正确的测试上与我们较量。",
+    jabFootnote:
+      "（竞品归因：叠层测试这一限制适用于离子浸出型与季铵盐类整理剂——并不适用于 FUZE。）",
     documentsTitle: "文档",
     pressKitLink: "媒体资料包",
   },
@@ -7702,10 +7833,12 @@ const zhCN: Translations = {
     backLink: "← 返回 FUZE 基础",
     kicker: "合规与认证",
     heroTitle: "品牌所要求的每一项认证清单",
-    heroBody: "一张截图搞定您的供应商问卷。EPA 联邦 + 加州、OEKO-TEX Standard 100 Class I、bluesign® 认证、无 PFAS、无甲醛、符合 ZDHC。四个等级均覆盖抗菌、抗病毒、抗真菌测试数据——报告可应要求提供。",
+    heroBody:
+      "一张截图搞定您的供应商问卷。EPA 联邦 + 加州、OEKO-TEX Standard 100 Class I、bluesign® 认证、无 PFAS、无甲醛、符合 ZDHC。四个等级均覆盖抗菌、抗病毒、抗真菌测试数据——报告可应要求提供。",
     activeBadge: "有效 ✓",
     docCopiesTitle: "需要文档原件？",
-    docCopiesBody: "文档中心收录每一项认证、SDS、TDS 和 COA 的实时 PDF 副本。合规团队可直接下载用于供应商问卷。",
+    docCopiesBody:
+      "文档中心收录每一项认证、SDS、TDS 和 COA 的实时 PDF 副本。合规团队可直接下载用于供应商问卷。",
     docCenterCta: "打开文档中心 →",
     backBasicsBtn: "返回 FUZE 基础",
     whatYouCanClaimBtn: "可声明的内容 →",
@@ -7741,7 +7874,8 @@ const zhCN: Translations = {
     batchPlaceholder: "批次代码",
     mintBtn: "生成",
     mintingBusy: "正在生成…",
-    mintFootnote: "每次最多 500 个。使用您选择的二维码生成器将令牌作为二维码打印到吊牌上（每个网址即为核验页面网址）。",
+    mintFootnote:
+      "每次最多 500 个。使用您选择的二维码生成器将令牌作为二维码打印到吊牌上（每个网址即为核验页面网址）。",
     mintFailedError: "生成失败",
     tokenSingular: "个令牌",
     tokenPlural: "个令牌",
@@ -7894,7 +8028,8 @@ const zhCN: Translations = {
 
   recipeSearch: {
     heading: "配方搜索",
-    subtitle: "覆盖全网络的 FUZE 配方库。可在 Atlas 中所有已验证面料间搜索——即使面料不属于您，也能匹配到经过验证的配方。超出权限的行将匿名显示，但配方物理参数可见。",
+    subtitle:
+      "覆盖全网络的 FUZE 配方库。可在 Atlas 中所有已验证面料间搜索——即使面料不属于您，也能匹配到经过验证的配方。超出权限的行将匿名显示，但配方物理参数可见。",
     keywordPlaceholder: "关键词（棉、平纹针织、斜纹……）",
     anyCategory: "任意类别",
     knit: "针织",
@@ -7913,12 +8048,13 @@ const zhCN: Translations = {
 
   importBrands: {
     title: "批量导入 — 品牌",
-    subtitle: "粘贴或上传来自展会、名单或调研整理的品牌候选 CSV。我们将映射列、预览校验，并通过 CLI 所用的同一 seed-brand 辅助方法幂等写入。",
+    subtitle:
+      "粘贴或上传来自展会、名单或调研整理的品牌候选 CSV。我们将映射列、预览校验，并通过 CLI 所用的同一 seed-brand 辅助方法幂等写入。",
     backLabel: "品牌管线",
     brandNameLabel: "品牌名称",
     brandNameHint: "（自然主键 — 以此进行 upsert）",
     domainLabel: "邮箱域名",
-    domainHint: "例如：\"rhone.com\"",
+    domainHint: '例如："rhone.com"',
     repEmailLabel: "主客户经理邮箱",
     repEmailHint: "必须是已存在的 Atlas 用户",
     tierLabel: "所需 FUZE 等级",
@@ -7931,7 +8067,8 @@ const zhCN: Translations = {
 
   importContacts: {
     title: "批量导入 — 联系人",
-    subtitle: "粘贴或上传联系人 CSV。邮箱为自然主键——存在时按邮箱 upsert。无邮箱但有 LinkedIn URL 的行将作为「邮箱缺失」导入，留给现有 Apollo 增强任务后续补全。两者都没有的行将被拒绝。",
+    subtitle:
+      "粘贴或上传联系人 CSV。邮箱为自然主键——存在时按邮箱 upsert。无邮箱但有 LinkedIn URL 的行将作为「邮箱缺失」导入，留给现有 Apollo 增强任务后续补全。两者都没有的行将被拒绝。",
     backLabel: "线索管理",
     firstNameLabel: "名",
     lastNameLabel: "姓",
@@ -7949,7 +8086,8 @@ const zhCN: Translations = {
 
   importFactories: {
     title: "批量导入 — 工厂",
-    subtitle: "粘贴或上传工厂 CSV。按名称（自然主键）upsert，若提供经销商则关联，并为每个已存在于 Atlas 的品牌生成 SupplyChainLink 行。尚不存在的品牌将报为「缺失」，请先运行品牌导入。",
+    subtitle:
+      "粘贴或上传工厂 CSV。按名称（自然主键）upsert，若提供经销商则关联，并为每个已存在于 Atlas 的品牌生成 SupplyChainLink 行。尚不存在的品牌将报为「缺失」，请先运行品牌导入。",
     backLabel: "工厂",
     factoryNameLabel: "工厂名称",
     factoryNameHint: "（自然主键 — 以此进行 upsert）",
@@ -8050,10 +8188,13 @@ const zhCN: Translations = {
     afterWashesPrefix: "经历",
     afterWashesSuffix: "次水洗后",
     whatDoesThisMean: "这意味着什么?",
-    explainerP1: "FUZE 是一种专有的抗菌纺织品处理技术。FUZE metamaterial 在标准纺织后整理过程中与纤维表面永久结合——不释出、无 PFAS、不改变面料手感与透气性。",
-    explainerP2: "细菌减少是通过与已结合的 metamaterial 直接接触实现的——这就是 FUZE 以 ASTM E2149(专为非释出型抗菌剂设计的接触式杀菌测试)为主导,并以 AATCC 100 作为分层几何验证的原因。",
+    explainerP1:
+      "FUZE 是一种专有的抗菌纺织品处理技术。FUZE metamaterial 在标准纺织后整理过程中与纤维表面永久结合——不释出、无 PFAS、不改变面料手感与透气性。",
+    explainerP2:
+      "细菌减少是通过与已结合的 metamaterial 直接接触实现的——这就是 FUZE 以 ASTM E2149(专为非释出型抗菌剂设计的接触式杀菌测试)为主导,并以 AATCC 100 作为分层几何验证的原因。",
     certificationsLabel: "认证:",
-    certificationsBody: "OEKO-TEX Standard 100 Class I、bluesign® approved、EPA 注册、California EPA 批准 (Q1 2026)、PFAS-free。",
+    certificationsBody:
+      "OEKO-TEX Standard 100 Class I、bluesign® approved、EPA 注册、California EPA 批准 (Q1 2026)、PFAS-free。",
     sustainabilityTitle: "可持续性",
     sustainabilityBody: "此面料迄今为止消耗的 FUZE 总量。",
     seeMorePrefix: "查看更多",
@@ -8106,7 +8247,8 @@ const zhCN: Translations = {
     headingMiddle: "邀请",
     headingSuffix: "加入其 FUZE 供应链",
     heroSubtitleFallbackPrefix: "使用 FUZE Atlas 在其供应链中协调抗菌纺织品项目。",
-    heroSubtitleFallbackSuffix: "加入后,工厂可提交面料进行测试、下达 FUZE 订单,并跟踪 ICP 结果——全部直接与该品牌关联。",
+    heroSubtitleFallbackSuffix:
+      "加入后,工厂可提交面料进行测试、下达 FUZE 订单,并跟踪 ICP 结果——全部直接与该品牌关联。",
     notePrefix: "来自以下方的备注:",
     closedPrefix: "此邀请已被",
     closedReachOutPrefix: "请联系",
@@ -8126,7 +8268,8 @@ const zhCN: Translations = {
     bdCrumb: "BD",
     crumb: "操作手册",
     heading: "BD 操作手册",
-    subtitle: "按类别标记的外联指南。收藏您常用的;品牌会根据 Brand.textileCategory 显示推荐操作手册。",
+    subtitle:
+      "按类别标记的外联指南。收藏您常用的;品牌会根据 Brand.textileCategory 显示推荐操作手册。",
     failedFallback: "失败",
     emptyBody: "该类别下暂无操作手册。",
     emptySeedHint: "触发",
@@ -8139,12 +8282,14 @@ const zhCN: Translations = {
     adminCrumb: "管理员",
     crumb: "ICP 相关性",
     heading: "ICP × AB 相关性",
-    subtitle: "Joseph (KUIU) 询问过的图表。FUZE 在面料上的残留量(ICP 测量)与 Atlas 中每次品牌可见测试运行的抗菌杀灭率的对比。叠加最佳拟合线 + R²。",
+    subtitle:
+      "Joseph (KUIU) 询问过的图表。FUZE 在面料上的残留量(ICP 测量)与 Atlas 中每次品牌可见测试运行的抗菌杀灭率的对比。叠加最佳拟合线 + R²。",
     errorContext: "加载 ICP 相关性",
     couldntLoadPrefix: "无法加载相关性数据",
     networkError: "网络错误。",
     loadingState: "正在加载相关性数据…",
-    footnote: "面向客户的文案使用「FUZE residual」——来自实验室 ICP 报告的 metamaterial 测量值。在客户交付物中始终标注为 FUZE / metamaterial(CLAUDE.md 品牌语言规则)。",
+    footnote:
+      "面向客户的文案使用「FUZE residual」——来自实验室 ICP 报告的 metamaterial 测量值。在客户交付物中始终标注为 FUZE / metamaterial(CLAUDE.md 品牌语言规则)。",
   },
 
   engagementDebug: {
@@ -8166,7 +8311,6 @@ const zhCN: Translations = {
     loading: "加载中…",
     failedToLoad: "加载失败",
   },
-
 
   // Phase 16.5
   bdScoreboardCard: {
@@ -8264,6 +8408,94 @@ const zhCN: Translations = {
     errorHeadline: "导入失败",
     errorBlurb: "请修复下方问题后重试。",
     fetchTemplateError: "无法下载模板 — 请重试或使用上方链接。",
+  },
+
+  // ─── 我的客户册 / 每周打卡 ───────────────────────────
+  book: {
+    title: "我的客户册",
+    accounts: "个客户",
+    toTouch: "本周待跟进",
+    cold: "已冷却",
+    me: "我",
+    teamBoard: "团队",
+    startCheckin: "开始本周打卡",
+    accountsLeft: "个客户本周待跟进",
+    helpWaiting: "个求助在等你处理",
+    allDone: "本周所有客户均已跟进。",
+    needsYou: "需要你",
+    youAsked: "你已请求",
+    overdue: "已逾期",
+    ack: "我来处理",
+    doneBtn: "完成",
+    escalate: "升级",
+    searchPh: "搜索客户、联系人、备注",
+    fAll: "全部",
+    fTodo: "待跟进",
+    fNext: "即将到期",
+    fHelp: "求助",
+    fCold: "正在冷却",
+    empty: "客户册还没有客户。",
+    assignSome: "分配客户",
+    noUpdate: "无更新",
+    noUpdateHint: "本周没有变化",
+    update: "更新",
+    updateHint: "添加备注或下一步",
+    superUpdate: "重要更新",
+    superHint: "团队可见，并列入高管周会",
+    help: "求助",
+    helpHint: "请同事协助",
+    back: "返回",
+    headlinePh: "给团队的一句话标题",
+    whoPh: "需要谁协助？",
+    askPh: "需要对方做什么？",
+    notePh: "本周发生了什么？",
+    notePhOpt: "关于该客户的其他情况（选填）",
+    nextPh: "下一步（选填）",
+    more: "阶段、预测、订单…",
+    less: "收起阶段、预测、订单",
+    stage: "阶段",
+    forecast: "预计下单季度",
+    orderKg: "订单 / 用量（公斤）",
+    product: "产品",
+    sendHelp: "发送请求",
+    saveNext: "保存并下一个",
+    touch: "打卡",
+    history: "历史",
+    contacts: "联系人",
+    openFull: "打开完整档案",
+    saved: "已保存。",
+    another: "再添加一条",
+    lastNote: "最近备注",
+    noHistory: "暂无历史。",
+    noContacts: "暂无联系人。",
+    owners: "负责人",
+    helpFirst: "同事在等你协助",
+    lastTouch: "最近跟进",
+    silentWeeks: "周无更新",
+    prev: "上一个",
+    skip: "暂时跳过",
+    weekDone: "本周完成。",
+    nothingDue: "没有待办，本周所有客户均已跟进。",
+    updates: "条更新",
+    noChange: "无变化",
+    backToBook: "返回我的客户册",
+    teamBoardTitle: "团队看板",
+    weekOf: "周始于",
+    thisWeek: "本周",
+    weeks: "周",
+    person: "成员",
+    touched: "已跟进",
+    openBook: "客户册",
+    superUpdates: "重要更新",
+    helpQueue: "求助队列",
+    none: "无。",
+    due: "截止",
+    changes: "阶段、预测与订单变动",
+    assign: "分配客户",
+    pickPerson: "选择成员",
+    searchAdd: "搜索品牌或工厂以添加",
+    add: "添加",
+    emptyBook: "客户册为空。",
   },
 };
 

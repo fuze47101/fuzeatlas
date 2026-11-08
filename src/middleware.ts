@@ -57,6 +57,8 @@ const PUBLIC_PATHS = [
   "/press",
   "/api/public/",
   "/track/",
+  // My Book — signed one-click link from the Friday check-in email
+  "/book/go/",
   "/sitemap.xml",
   "/robots.txt",
 ];

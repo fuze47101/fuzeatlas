@@ -315,6 +315,11 @@ model User {
   ownedMeetingProjectBlocks   MeetingProjectBlock[] @relation("MeetingProjectBlockOwner")
   createdMeetingProjectBlocks MeetingProjectBlock[] @relation("MeetingProjectBlockCreator")
 
+  // My Book / weekly check-in (Nov 2026)
+  checkins           AccountCheckin[] @relation("CheckinUser")
+  helpRequestsMade   HelpRequest[]    @relation("HelpRequester")
+  helpRequestsOwned  HelpRequest[]    @relation("HelpAssignee")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -409,6 +414,12 @@ model Brand {
   // Drives the 90-day inactivity auto-release job. Stamped in application code
   // whenever a Note, Meeting, or CRM email is written against this brand.
   lastActivityAt DateTime?
+
+  // My Book (Nov 2026) — forecast quarter the account is expected to order in
+  // ("2027 Q1"), and whether it came in through a Gala lead. Both were columns
+  // on Barth's spreadsheet; the book is the forecast of record now.
+  forecastQuarter String?
+  galaLead        Boolean @default(false)
 
   // BD Portal — set to true when brand moves past PRESENTATION stage. Flags the
   // handoff queue for Andrew / Scott / Tina without forcing the rep to release.
@@ -576,6 +587,14 @@ model Factory {
 
   salesRepId String?
   salesRep   User?   @relation("FactorySalesRep", fields: [salesRepId], references: [id])
+
+  // My Book (Nov 2026) — mills carried as accounts in a rep's book get the
+  // same pipeline fields a Brand has. Nullable: most of the 540 factories are
+  // directory rows, not accounts.
+  pipelineStage   PipelineStage?
+  forecastQuarter String?
+  galaLead        Boolean   @default(false)
+  lastActivityAt  DateTime?
 
   contacts             Contact[]
   brands               BrandFactory[]
@@ -4935,4 +4954,92 @@ model OperatingCalendarEvent {
   updatedAt DateTime @updatedAt
 
   @@index([ownerEmail, startDate])
+}
+
+// ─────────────────────────────────────────────
+// MY BOOK — weekly account check-in (Nov 2026)
+// ─────────────────────────────────────────────
+
+/// One touch on one account by one person. Written by the Friday wizard or
+/// any day from /book. `kind`:
+///   NONE   — "No Update": the silent clock keeps running
+///   UPDATE — note, optional next step / stage / forecast change
+///   SUPER  — UPDATE + headline; posted to the team feed and the exec review
+///   HELP   — UPDATE + a HelpRequest to a teammate
+/// entityType is BRAND | FACTORY | DISTRIBUTOR; entityId is that row's id.
+model AccountCheckin {
+  id String @id @default(cuid())
+
+  entityType String
+  entityId   String
+
+  userId String
+  user   User   @relation("CheckinUser", fields: [userId], references: [id])
+
+  kind   String
+  weekOf DateTime // Monday 00:00 UTC of the week the check-in belongs to
+
+  headline String?
+  note     String? @db.Text
+  noteLang String? // BCP-47 of the note as typed ("zh-CN"); null = en
+  noteEn   String? @db.Text // machine translation for the digest when noteLang != en
+
+  nextStep   String?
+  nextStepAt DateTime?
+
+  stageBefore    String?
+  stageAfter     String?
+  forecastBefore String?
+  forecastAfter  String?
+
+  // Optional order / consumption captured in the same touch
+  orderProduct String?
+  orderKg      Float?
+  orderMonth   String? // "2026-11"
+
+  helpRequestId String?
+  helpRequest   HelpRequest? @relation(fields: [helpRequestId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([entityType, entityId, createdAt])
+  @@index([userId, weekOf])
+  @@index([kind, createdAt])
+  @@index([weekOf])
+}
+
+/// "Help" from the wizard: the requester asks a teammate for something on an
+/// account. Due the following Friday. If it is still OPEN then, the requester
+/// can mark it ESCALATED, which notifies the manager and puts it on the exec
+/// review.
+model HelpRequest {
+  id String @id @default(cuid())
+
+  entityType String
+  entityId   String
+
+  requesterId String
+  requester   User   @relation("HelpRequester", fields: [requesterId], references: [id])
+  assigneeId  String
+  assignee    User   @relation("HelpAssignee", fields: [assigneeId], references: [id])
+
+  ask        String  @db.Text
+  resolution String? @db.Text
+
+  status String   @default("OPEN") // OPEN | ACKED | DONE | ESCALATED | CANCELLED
+  dueAt  DateTime
+
+  ackedAt     DateTime?
+  doneAt      DateTime?
+  escalatedAt DateTime?
+
+  checkins AccountCheckin[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([assigneeId, status])
+  @@index([requesterId, status])
+  @@index([entityType, entityId])
+  @@index([status, dueAt])
 }

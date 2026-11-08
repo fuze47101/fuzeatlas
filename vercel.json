@@ -107,6 +107,14 @@
     {
       "path": "/api/cron/red-rover-report",
       "schedule": "0 15 * * 1"
+    },
+    {
+      "path": "/api/cron/book-friday",
+      "schedule": "0 * * * 5"
+    },
+    {
+      "path": "/api/cron/book-monday",
+      "schedule": "0 13 * * 1"
     }
   ]
 }

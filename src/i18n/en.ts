@@ -98,7 +98,8 @@ const en = {
     // Phase 16.5 — sidebar polish
     allModules: "All Modules (Home)",
     module: "Module",
-    pickModuleHint: "Pick a module from the cards on the right. The sidebar will scope itself to just that module's tools. Hit \"Home\" any time to switch modules.",
+    pickModuleHint:
+      'Pick a module from the cards on the right. The sidebar will scope itself to just that module\'s tools. Hit "Home" any time to switch modules.',
     viewAs: "View As...",
     exitViewAs: "Exit View As",
     viewAsSwitching: "Switching...",
@@ -600,7 +601,8 @@ const en = {
   // ─── RESEARCH ──────────────────────────────────
   research: {
     title: "AI Brand Intelligence",
-    subtitle: "AI-powered research on {name} — finds decision makers, company intel, and sales opportunities",
+    subtitle:
+      "AI-powered research on {name} — finds decision makers, company intel, and sales opportunities",
     lastResearched: "Last researched: {date} at {time}",
     runResearch: "Run Research",
     rerunResearch: "Re-run Research",
@@ -608,7 +610,8 @@ const en = {
     saveContacts: "Save Contacts to Brand",
     dualAiResearching: "Dual-AI is researching {name}...",
     readyToResearch: "Ready to research {name}",
-    readyDescription: "Click 'Run Research' to have AI analyze this brand and find key contacts, opportunities, and sales angles.",
+    readyDescription:
+      "Click 'Run Research' to have AI analyze this brand and find key contacts, opportunities, and sales angles.",
     // Sections
     companyOverview: "Company Overview",
     keyDecisionMakers: "Key Decision Makers",
@@ -653,7 +656,8 @@ const en = {
   // ─── CSV INGEST ────────────────────────────────
   ingest: {
     title: "Ingest CSV",
-    subtitle: "Upload a CSV export. We'll create/update Fabrics, create Submissions when FUZE # exists, and store every row in SourceRecord for traceability.",
+    subtitle:
+      "Upload a CSV export. We'll create/update Fabrics, create Submissions when FUZE # exists, and store every row in SourceRecord for traceability.",
     sourceLabel: "Source table label",
     sourcePlaceholder: "knack_fabrics / knack_tests_icp / etc",
     csvFile: "CSV file",
@@ -690,7 +694,6 @@ const en = {
     trim: "Name (trimmed)",
   },
 
-
   // ─── LOGIN ──────────────────────────────────────
   login: {
     loading: "Loading...",
@@ -712,13 +715,16 @@ const en = {
     signInBtn: "Sign In",
     setupHelp: "This creates the first admin account. You can add more users later from Settings.",
     brandAccessTitle: "Brand Partner Access",
-    brandAccessDesc: "Are you a brand looking for antimicrobial textile solutions? Request access to view your fabrics, test results, and manage your FUZE program.",
+    brandAccessDesc:
+      "Are you a brand looking for antimicrobial textile solutions? Request access to view your fabrics, test results, and manage your FUZE program.",
     requestBrandAccess: "Request Brand Access",
     factoryAccessTitle: "Factory / Mill Access",
-    factoryAccessDesc: "Are you a textile mill or factory partner? Register to submit fabrics, request FUZE testing, track results, and manage your production.",
+    factoryAccessDesc:
+      "Are you a textile mill or factory partner? Register to submit fabrics, request FUZE testing, track results, and manage your production.",
     requestFactoryAccess: "Request Factory Access",
     labAccessTitle: "Laboratory Access",
-    labAccessDesc: "Are you a testing laboratory? Register to manage your test catalog, pricing, and receive test requests from FUZE customers.",
+    labAccessDesc:
+      "Are you a testing laboratory? Register to manage your test catalog, pricing, and receive test requests from FUZE customers.",
     requestLabAccess: "Request Lab Access",
     faqTitle: "FUZE FAQ & Knowledge Base",
     faqDesc: "Have questions about FUZE antimicrobial technology? Search our knowledge base.",
@@ -733,7 +739,8 @@ const en = {
   requestAccess: {
     title: "Request Portal Access",
     subtitle: "Brand Portal Access Request",
-    description: "Fill out the form below to request access to the FUZE Brand Portal. You'll be able to track your fabric submissions, test results, and program progress.",
+    description:
+      "Fill out the form below to request access to the FUZE Brand Portal. You'll be able to track your fabric submissions, test results, and program progress.",
     section1: "Your Information",
     section2: "Company Details",
     section3: "Program Interest",
@@ -752,7 +759,8 @@ const en = {
     submitButton: "Submit Access Request",
     submitting: "Submitting...",
     successTitle: "Request Submitted",
-    successMessage: "Thank you for your interest in FUZE. Our team will review your request and reach out to you within 1-2 business days.",
+    successMessage:
+      "Thank you for your interest in FUZE. Our team will review your request and reach out to you within 1-2 business days.",
     alreadyHaveAccount: "Already have an account?",
     signIn: "Sign in",
     networkError: "Network error. Please check your connection and try again.",
@@ -818,6 +826,8 @@ const en = {
   // `t.modules[item.labelKey]` with fallback to the English `label`
   // field that still lives on the ModuleItem for back-compat.
   modules: {
+    myBook: "My Book",
+    teamBoard: "Team Board",
     // Sales & Pipeline
     bdWizard: "BD Wizard",
     bdSequences: "BD Sequences",
@@ -952,7 +962,8 @@ const en = {
   // ─── ACCOUNTS ──────────────────────────────────
   accounts: {
     title: "Accounts",
-    subtitle: "Brands past the Lead stage — received a presentation, in testing, producing, or already customers.",
+    subtitle:
+      "Brands past the Lead stage — received a presentation, in testing, producing, or already customers.",
     searchPlaceholder: "Search accounts by name or contact...",
     empty: "No accounts yet in this view",
     emptyBlurb: "Accounts appear when brands move from LEAD to PRESENTATION or later.",
@@ -970,7 +981,8 @@ const en = {
   // ─── ORDERS DASHBOARD ─────────────────────────
   ordersDashboard: {
     title: "Orders Dashboard",
-    subtitle: "Global view of the FUZE order pipeline — factory orders, distributor restocks, consumption, and stock.",
+    subtitle:
+      "Global view of the FUZE order pipeline — factory orders, distributor restocks, consumption, and stock.",
     activeOrders: "Active Orders",
     pendingApproval: "pending approval",
     shippedWeek: "Shipped This Week",
@@ -1163,8 +1175,7 @@ const en = {
     restock: {
       crumbCurrent: "Restock",
       pageTitle: "Restock from FUZE",
-      pageSubtitle:
-        "Order carboys, gaylords, or containers from FUZE Direct in Salt Lake City.",
+      pageSubtitle: "Order carboys, gaylords, or containers from FUZE Direct in Salt Lake City.",
     },
     restockNew: {
       crumbCurrent: "New",
@@ -1203,8 +1214,7 @@ const en = {
     documentsPage: {
       crumbCurrent: "Documents",
       pageTitle: "Documents",
-      pageSubtitle:
-        "Compliance pack, C of A, BOL, customs and import/export documents.",
+      pageSubtitle: "Compliance pack, C of A, BOL, customs and import/export documents.",
     },
     testRequestPage: {
       crumbCurrent: "Apply for Test",
@@ -1221,8 +1231,7 @@ const en = {
     uploadReportPage: {
       crumbCurrent: "Upload Report",
       pageTitle: "Upload Test Report",
-      pageSubtitle:
-        "Drag-and-drop a lab PDF. We parse and link it to the right fabric.",
+      pageSubtitle: "Drag-and-drop a lab PDF. We parse and link it to the right fabric.",
     },
     ordersPage: {
       crumbCurrent: "Orders",
@@ -1247,8 +1256,7 @@ const en = {
     teamPage: {
       crumbCurrent: "Team",
       pageTitle: "Team",
-      pageSubtitle:
-        "Invite teammates, manage roles, and revoke access for departed members.",
+      pageSubtitle: "Invite teammates, manage roles, and revoke access for departed members.",
     },
   },
 
@@ -1286,7 +1294,8 @@ const en = {
   // ─── BATCHES & VERIFY ─────────────────────────
   batches: {
     title: "Production Batches",
-    subtitle: "Each batch gets a QR sticker design printed and applied identically to every 19L carboy from that batch.",
+    subtitle:
+      "Each batch gets a QR sticker design printed and applied identically to every 19L carboy from that batch.",
     newBatch: "+ New Batch",
     logNew: "Log New Production Batch",
     productionDate: "Production Date",
@@ -1413,7 +1422,7 @@ const en = {
       uploadFailed: "Upload failed. Please try again.",
       savedBanner: "✓ File uploaded and saved",
       savedBlurb:
-        "Your file is in the system. The parser confidence below is only about how much test data we could auto-extract — even at 0%, the PDF is stored and an admin will review it. You'll see it in the table at the bottom of this page tagged ⏳ \"Pending review\".",
+        'Your file is in the system. The parser confidence below is only about how much test data we could auto-extract — even at 0%, the PDF is stored and an admin will review it. You\'ll see it in the table at the bottom of this page tagged ⏳ "Pending review".',
       parsedReport: "Parsed Report",
       aiVisionBadge: "🧠 AI vision",
       aiVisionBlurb:
@@ -1446,7 +1455,7 @@ const en = {
       download: "↓ Download",
       awaitingReview: "Awaiting admin review",
       footerNote:
-        "Reports show as \"unlinked\" until our parser auto-links them to a brand or fabric. If a report has been pending review for more than 24h, message {email} and we'll attach it manually.",
+        'Reports show as "unlinked" until our parser auto-links them to a brand or fabric. If a report has been pending review for more than 24h, message {email} and we\'ll attach it manually.',
     },
 
     // Brand Network — /factory-portal/network (Phase 5C)
@@ -1694,20 +1703,22 @@ const en = {
       acceptQuote: "Accept Quote & Submit",
       acceptingQuote: "Accepting...",
       reviewLater: "Review Later",
-      acceptInfoBlurb: "Accepting sends this order to your FUZE account manager for approval and fulfillment.",
+      acceptInfoBlurb:
+        "Accepting sends this order to your FUZE account manager for approval and fulfillment.",
       // Form sections
       orderTypePrompt: "What would you like to order?",
       // Calculator
       calcToggle: "Calculate from Fabric Spec",
       calcRecommended: "(recommended)",
-      calcIntro: "Enter your fabric specs and we'll calculate the exact FUZE volume needed — including your wastage buffer.",
+      calcIntro:
+        "Enter your fabric specs and we'll calculate the exact FUZE volume needed — including your wastage buffer.",
       calcMethodLabel: "Treatment Method",
       methodExhaustLabel: "Exhaust (dyebath)",
       methodExhaustDesc: "Bath exhaustion method",
       methodPadDryCureLabel: "Pad-Dry-Cure",
       methodPadDryCureDesc: "Foulard + dry + cure",
       methodSprayLabel: "Spray",
-      methodSprayDesc: "6\" head spacing, 15 m/min",
+      methodSprayDesc: '6" head spacing, 15 m/min',
       calcMassLabel: "Total Fabric Mass (kg)",
       calcMassPlaceholder: "If you already know total mass, enter it here",
       calcOrCompute: "OR compute from dimensions",
@@ -1769,28 +1780,32 @@ const en = {
       brandsAttributionLabel: "Brand(s) this order is for",
       brandsAttributionRequired: "*",
       addAnotherBrand: "+ Add Another Brand",
-      brandsAttributionBlurb: "Every order must be linked to at least one brand. This tracks usage for account management, commissions, and brand rebates.",
+      brandsAttributionBlurb:
+        "Every order must be linked to at least one brand. This tracks usage for account management, commissions, and brand rebates.",
       brandsAttributionSplit: " Split the volume percentage across brands.",
       brandSelectPlaceholder: "Select brand...",
       brandNotListed: "Brand not listed? Request to add it",
       requestNewBrand: "Request New Brand",
-      requestNewBrandBlurb: "Submit a request and FUZE will reach out to the brand and add them to the system. You can continue placing your order once the brand is approved.",
+      requestNewBrandBlurb:
+        "Submit a request and FUZE will reach out to the brand and add them to the system. You can continue placing your order once the brand is approved.",
       requestBrandNamePlaceholder: "Brand name *",
       requestBrandWebsitePlaceholder: "Website (optional)",
       requestBrandContactPlaceholder: "Your contact there (optional)",
       requestBrandSubmit: "Submit Brand Request",
       requestBrandSubmitting: "Submitting...",
-      requestBrandSuccess: "Brand \"{name}\" request submitted! FUZE will review and reach out.",
+      requestBrandSuccess: 'Brand "{name}" request submitted! FUZE will review and reach out.',
       requestBrandFailed: "Failed to submit brand request",
       // Validation messages from form
-      atLeastOneBrand: "Please select at least one brand this order is for. If the brand isn't listed, use 'Request New Brand' to add it.",
+      atLeastOneBrand:
+        "Please select at least one brand this order is for. If the brand isn't listed, use 'Request New Brand' to add it.",
       allocationsTotalError: "Brand volume allocations should total 100%. Currently: {pct}%",
       // Fabric / purpose / shipping
       fabricLabelOptional: "Fabric (optional)",
       fabricSelectPlaceholder: "Select fabric...",
       fabricHint: "Which fabric is being treated?",
       purposeLabel: "Purpose / Notes",
-      purposePlaceholderSample: "e.g. New account development — testing FUZE on polyester jersey for Rhone",
+      purposePlaceholderSample:
+        "e.g. New account development — testing FUZE on polyester jersey for Rhone",
       purposePlaceholderHangtag: "e.g. FUZE-certified hangtags for Q3 production run",
       purposePlaceholderDefault: "e.g. Production run for Brand X — Q3 delivery",
       shippingAddressHeader: "Shipping Address",
@@ -1801,7 +1816,8 @@ const en = {
       additionalNotesPlaceholder: "Any special instructions for this order...",
       // Sample subsidy notice
       sampleSubsidyTitle: "FUZE Sample Support",
-      sampleSubsidyBlurb: "FUZE subsidizes 50% of sample order costs to help you develop new accounts and test new fabrics. Your quote will reflect the subsidy automatically.",
+      sampleSubsidyBlurb:
+        "FUZE subsidizes 50% of sample order costs to help you develop new accounts and test new fabrics. Your quote will reflect the subsidy automatically.",
       // Submit
       getQuote: "Get Quote",
       generatingQuote: "Generating Quote...",
@@ -2094,8 +2110,7 @@ const en = {
       savingButton: "Saving…",
       tryAgainButton: "Try again",
       micErrorTitle: "Microphone error",
-      micErrorBody:
-        "We couldn't access your microphone. Check browser permissions and retry.",
+      micErrorBody: "We couldn't access your microphone. Check browser permissions and retry.",
     },
   },
 
@@ -2288,7 +2303,7 @@ const en = {
       save: "Save",
       saving: "Saving…",
       cancel: "Cancel",
-      delConfirm: "Delete template \"{name}\"?",
+      delConfirm: 'Delete template "{name}"?',
       saveFailed: "Save failed",
     },
     inventory: {
@@ -2379,13 +2394,12 @@ const en = {
       gettingStartedTitle: "Getting Started",
       gettingStarted1Title: "Add your fabrics",
       gettingStarted1Body:
-        "Go to Fabrics and click \"+ Add Fabric\" to register your fabrics with composition, weight, and construction details.",
+        'Go to Fabrics and click "+ Add Fabric" to register your fabrics with composition, weight, and construction details.',
       gettingStarted2Title: "Request testing",
       gettingStarted2Body:
-        "Click \"Request Testing\" on any fabric to select tests and submit a test request to FUZE or a partner lab.",
+        'Click "Request Testing" on any fabric to select tests and submit a test request to FUZE or a partner lab.',
       gettingStarted3Title: "Track progress",
-      gettingStarted3Body:
-        "Monitor your submissions through the pipeline in the Submissions page.",
+      gettingStarted3Body: "Monitor your submissions through the pipeline in the Submissions page.",
       // Recent fabrics table
       yourFabricsHeader: "Your Fabrics",
       viewAll: "View All →",
@@ -2647,8 +2661,7 @@ const en = {
       // Fields
       logoUrlLabel: "Logo URL",
       logoUrlPlaceholder: "https://…/brand-logo.png",
-      logoUrlHint:
-        "Square or near-square image. Surfaces top-left of the brand portal landing.",
+      logoUrlHint: "Square or near-square image. Surfaces top-left of the brand portal landing.",
       logoPreview: "Preview logo →",
       primaryColorLabel: "Primary brand colour",
       primaryColorPlaceholder: "#0c8ea8",
@@ -2774,8 +2787,7 @@ const en = {
     claims: {
       crumbCurrent: "Claims",
       pageTitle: "Claims you can make",
-      pageSubtitle:
-        "The approved claim language you can use for FUZE-treated goods.",
+      pageSubtitle: "The approved claim language you can use for FUZE-treated goods.",
       yourProgram: "Your program",
       tierLabel: "FUZE {tier}",
       tierUnset: "Tier not set — ask your account manager",
@@ -2958,8 +2970,7 @@ const en = {
     testsList: {
       crumbCurrent: "Tests",
       pageTitle: "Test Results",
-      pageSubtitle:
-        "Lab-verified results for fabrics in your supply chain.",
+      pageSubtitle: "Lab-verified results for fabrics in your supply chain.",
     },
     libraryPage: {
       crumbCurrent: "Library",
@@ -2974,8 +2985,7 @@ const en = {
     documentsPage: {
       crumbCurrent: "Documents",
       pageTitle: "Documents",
-      pageSubtitle:
-        "Compliance pack, ESG snapshots, protocol docs you've shared with factories.",
+      pageSubtitle: "Compliance pack, ESG snapshots, protocol docs you've shared with factories.",
     },
     testRequestNew: {
       crumbCurrent: "New Test Request",
@@ -3034,7 +3044,8 @@ const en = {
       pageSubtitle:
         "Specs from every brand whose fabrics you test. Use this to score results against the right tier and cadence.",
       loading: "Loading specs…",
-      noBrands: "No brand specs yet — no factories you handle currently link to a brand with a stipulated spec.",
+      noBrands:
+        "No brand specs yet — no factories you handle currently link to a brand with a stipulated spec.",
       tierLabel: "Required tier:",
       cadenceHeader: "ICP cadence",
       cadenceEveryOrders: "Every {n} orders",
@@ -3093,14 +3104,12 @@ const en = {
     formsPage: {
       crumbCurrent: "Forms",
       pageTitle: "Lab Forms",
-      pageSubtitle:
-        "Templates for the lab forms your team fills in alongside each test run.",
+      pageSubtitle: "Templates for the lab forms your team fills in alongside each test run.",
     },
     catalogPage: {
       crumbCurrent: "Test Catalog",
       pageTitle: "Test Catalog",
-      pageSubtitle:
-        "Tests this lab offers, with turnaround days, prices, and methodology notes.",
+      pageSubtitle: "Tests this lab offers, with turnaround days, prices, and methodology notes.",
     },
     labTestsPage: {
       crumbCurrent: "Lab Tests",
@@ -3110,8 +3119,7 @@ const en = {
     uploadsPage: {
       crumbCurrent: "Uploads",
       pageTitle: "Uploaded Reports",
-      pageSubtitle:
-        "Test reports uploaded by your lab team, with parse status.",
+      pageSubtitle: "Test reports uploaded by your lab team, with parse status.",
     },
     uploadPage: {
       crumbCurrent: "Upload",
@@ -3138,14 +3146,12 @@ const en = {
     profilePage: {
       crumbCurrent: "Profile",
       pageTitle: "Lab Profile",
-      pageSubtitle:
-        "Update your lab's contact info, capabilities, and turnaround times.",
+      pageSubtitle: "Update your lab's contact info, capabilities, and turnaround times.",
     },
     teamPage: {
       crumbCurrent: "Team",
       pageTitle: "Team",
-      pageSubtitle:
-        "Invite teammates, manage roles, and revoke access for departed members.",
+      pageSubtitle: "Invite teammates, manage roles, and revoke access for departed members.",
     },
     documentsPage: {
       crumbCurrent: "Documents",
@@ -3155,21 +3161,20 @@ const en = {
     creditsPage: {
       crumbCurrent: "Credits",
       pageTitle: "Lab Credits",
-      pageSubtitle:
-        "Prepaid testing credits remaining on your account, with consumption history.",
+      pageSubtitle: "Prepaid testing credits remaining on your account, with consumption history.",
     },
     wizardPage: {
       crumbCurrent: "Wizard",
       pageTitle: "Test Wizard",
-      pageSubtitle:
-        "Step-by-step lab form for this test type. Save as you go.",
+      pageSubtitle: "Step-by-step lab form for this test type. Save as you go.",
     },
   },
 
   // ─── PRODUCT DOCUMENTS ────────────────────────
   productDocs: {
     title: "Product Documents",
-    subtitle: "Product-wide documents (TDS, SDS, Application Guide). These are static and apply to every batch. Batch-specific COAs are uploaded per batch in Production Batches.",
+    subtitle:
+      "Product-wide documents (TDS, SDS, Application Guide). These are static and apply to every batch. Batch-specific COAs are uploaded per batch in Production Batches.",
     upload: "Upload",
     update: "Update",
     cancel: "Cancel",
@@ -3187,8 +3192,7 @@ const en = {
   // ─── HANGTAG SKU VERIFICATION (public garment QR landing) ───
   verifySku: {
     errorTitle: "Couldn't verify this code",
-    errorBlurb:
-      "We had trouble reaching the verification database. Try again in a moment.",
+    errorBlurb: "We had trouble reaching the verification database. Try again in a moment.",
     notCertifiedTitle: "Not a FUZE-certified SKU",
     notCertifiedBlurbPrefix: "The code",
     notCertifiedBlurbSuffix:
@@ -3220,8 +3224,7 @@ const en = {
   verifyBatch: {
     authRequired: "Atlas Login Required",
     authBatchPrefix: "Batch",
-    authBlurb:
-      "details — including COA, TDS, SDS — are available to Atlas users only.",
+    authBlurb: "details — including COA, TDS, SDS — are available to Atlas users only.",
     loginCta: "Log in to Atlas →",
     noAccountQuestion: "Don't have an account? Contact",
     notFoundTitle: "Batch Not Found",
@@ -3445,7 +3448,8 @@ const en = {
     sampleConditionPlaceholder: "Good, Damaged, etc.",
     saveChanges: "Save Changes",
     advanceTo: "Advance to {status}?",
-    advanceMessage: "This will update the shipment status and log a chain-of-custody event. This action can be reversed by an admin.",
+    advanceMessage:
+      "This will update the shipment status and log a chain-of-custody event. This action can be reversed by an admin.",
     updateTo: "Update to {status}",
     statusUpdated: "Shipment status updated to {status}",
     failedUpdateStatus: "Failed to update shipment status",
@@ -3507,8 +3511,10 @@ const en = {
     invoiceMarkedAs: "Invoice marked as {status}",
     markPaidPrompt: "Mark this invoice as paid?",
     cancelInvoicePrompt: "Cancel this invoice?",
-    paidConfirmMsg: "This will record the invoice as paid and update revenue calculations. Are you sure?",
-    cancelConfirmMsg: "This will cancel the invoice. You can change the status back later if needed.",
+    paidConfirmMsg:
+      "This will record the invoice as paid and update revenue calculations. Are you sure?",
+    cancelConfirmMsg:
+      "This will cancel the invoice. You can change the status back later if needed.",
     markAsPaid: "Mark as Paid",
     cancelInvoice: "Cancel Invoice",
     confirm: "Confirm",
@@ -3538,7 +3544,8 @@ const en = {
     moveBrandHint: "Move this contact to a different brand (career change, M&A, etc.)",
     moveBrandBtn: "↪ Move to different brand",
     moveContactTitle: "Move contact to another brand",
-    moveContactDesc: "A note is logged on both the old and new brand timelines so the audit trail stays clean.",
+    moveContactDesc:
+      "A note is logged on both the old and new brand timelines so the audit trail stays clean.",
     searchBrands: "Search brands...",
     noMatches: "No matches.",
     current: "(current)",
@@ -3669,7 +3676,7 @@ const en = {
     days: "Days",
     rush: "Rush",
     preferredLabel: "Preferred",
-    deletePrompt: "Delete \"{name}\"?",
+    deletePrompt: 'Delete "{name}"?',
     uploadedToast: "Uploaded {name}",
     deletedToast: "Deleted {name}",
     labAdded: "Lab added successfully",
@@ -3683,14 +3690,16 @@ const en = {
   educationMain: {
     kicker: "FUZE Basics",
     pageTitle: "How FUZE actually works — and why it's different",
-    pageIntro: "A four-section primer on what FUZE puts on a fabric, how it kills bacteria, which tests measure it correctly, and what that means when a brand is choosing between us and a silver-ion / zinc / QAC competitor.",
+    pageIntro:
+      "A four-section primer on what FUZE puts on a fabric, how it kills bacteria, which tests measure it correctly, and what that means when a brand is choosing between us and a silver-ion / zinc / QAC competitor.",
     forBrands: "For brands",
     forFactories: "For factories",
     forDistributors: "For distributors",
     forSalesReps: "For sales reps",
     segmentKicker: "Pitch by segment",
     segmentTitle: "FUZE for your specific industry",
-    segmentIntro: "The science above is universal. Each segment below has the recommended FUZE tier ladder, test stack, regulatory checkmarks, and an outreach hook tailored to that audience.",
+    segmentIntro:
+      "The science above is universal. Each segment below has the recommended FUZE tier ladder, test stack, regulatory checkmarks, and an outreach hook tailored to that audience.",
     openSegment: "Open segment page →",
     dosageKicker: "Section 1 — Footprint",
     mechanismKicker: "Section 2 — Mechanism",
@@ -3763,7 +3772,8 @@ const en = {
     deleteMeetingMsg: "This will permanently delete this meeting. This action cannot be undone.",
     deleteMeetingConfirm: "Delete Meeting",
     cancelMeetingTitle: "Cancel Meeting?",
-    cancelMeetingMsg: "This will mark the meeting as cancelled. You can still view it in the cancelled filter.",
+    cancelMeetingMsg:
+      "This will mark the meeting as cancelled. You can still view it in the cancelled filter.",
     cancelMeetingConfirm: "Cancel Meeting",
     scheduleFromTpl: "Schedule: {tpl}",
     newMeetingTitle: "New Meeting",
@@ -3835,7 +3845,8 @@ const en = {
     notes: "Notes",
     saveChanges: "Save Changes",
     deleteRecipeTitle: "Delete Recipe?",
-    deleteRecipeMsg: "This will permanently delete this recipe from the library. This action cannot be undone.",
+    deleteRecipeMsg:
+      "This will permanently delete this recipe from the library. This action cannot be undone.",
     deleteRecipeConfirm: "Delete Recipe",
     recipeCreated: "Recipe created",
     failedCreate: "Failed to create recipe",
@@ -3843,7 +3854,7 @@ const en = {
     failedUpdate: "Failed to update recipe",
     recipeDeleted: "Recipe deleted",
     failedDelete: "Failed to delete recipe",
-    recipeCloned: "Recipe cloned as \"{name}\"",
+    recipeCloned: 'Recipe cloned as "{name}"',
     failedClone: "Failed to clone recipe",
     copySuffix: "(Copy)",
   },
@@ -3903,7 +3914,7 @@ const en = {
     estimatedTotal: "Estimated Total:",
     cancelBtn: "Cancel",
     createBtn: "Create PO & Save Draft",
-    noRequestsWithStatus: "No test requests with status \"{label}\"",
+    noRequestsWithStatus: 'No test requests with status "{label}"',
     noRequestsYet: "No test requests yet",
     createFirst: "Create your first test request",
     returnedForRevision: "Returned for revision",
@@ -4071,7 +4082,8 @@ const en = {
     saveChanges: "Save Changes",
     cancel: "Cancel",
     deleteDocConfirmTitle: "Delete Document?",
-    deleteDocConfirmMsg: "This will permanently remove this compliance document from the library. This action cannot be undone.",
+    deleteDocConfirmMsg:
+      "This will permanently remove this compliance document from the library. This action cannot be undone.",
     deleteDocConfirmBtn: "Delete Document",
     manageHeaderTemplate: "Manage: {icon} {label}",
     inCategoryCount: "{count} {label} in this category",
@@ -4122,7 +4134,8 @@ const en = {
   },
   marketingLibrary: {
     pageTitle: "Marketing Material",
-    pageSubtitleTemplate: "Brochures, sell sheets, presentations & brand collateral — {count} {label}",
+    pageSubtitleTemplate:
+      "Brochures, sell sheets, presentations & brand collateral — {count} {label}",
     docSingular: "item",
     docPlural: "items",
     uploadDocument: "+ Upload Material",
@@ -4190,7 +4203,8 @@ const en = {
     saveChanges: "Save Changes",
     cancel: "Cancel",
     deleteDocConfirmTitle: "Delete Material?",
-    deleteDocConfirmMsg: "This will permanently remove this marketing material from the library. This action cannot be undone.",
+    deleteDocConfirmMsg:
+      "This will permanently remove this marketing material from the library. This action cannot be undone.",
     deleteDocConfirmBtn: "Delete Material",
     manageHeaderTemplate: "Manage: {icon} {label}",
     inCategoryCount: "{count} {label} in this category",
@@ -4240,20 +4254,26 @@ const en = {
   },
   educationTestingProtocol: {
     metaTitle: "FUZE Certified Testing Protocol",
-    metaDescription: "Required testing protocol for FUZE-treated fabric. ICP-first verification, UV-only sterilization, low-sulfur growth medium, ASTM E2149 as primary test.",
+    metaDescription:
+      "Required testing protocol for FUZE-treated fabric. ICP-first verification, UV-only sterilization, low-sulfur growth medium, ASTM E2149 as primary test.",
     breadcrumbEducation: "Education",
     breadcrumbCurrent: "Certified Testing Protocol",
     requiredReadingBadge: "Required reading",
     pageTitle: "FUZE Certified Testing Protocol",
-    heroBlurb: "This is the only test protocol FUZE Technologies will support. Any deviation — different sterilization, different growth medium, different contact period, or skipping ICP verification — voids the results and wastes everyone's time and money. Read this page in full before requesting a test, applying for Atlas access, or shipping samples to any lab.",
+    heroBlurb:
+      "This is the only test protocol FUZE Technologies will support. Any deviation — different sterilization, different growth medium, different contact period, or skipping ICP verification — voids the results and wastes everyone's time and money. Read this page in full before requesting a test, applying for Atlas access, or shipping samples to any lab.",
     sevenRulesLabel: "The seven rules",
-    rule1: "ICP first. No antimicrobial test starts without ICP confirmation of fabric loading in mg/kg.",
-    rule2: "Sterilization is UV ONLY. Autoclave at 120°C opens nylon, polyester, and synthetic blends — destroys the test.",
+    rule1:
+      "ICP first. No antimicrobial test starts without ICP confirmation of fabric loading in mg/kg.",
+    rule2:
+      "Sterilization is UV ONLY. Autoclave at 120°C opens nylon, polyester, and synthetic blends — destroys the test.",
     rule3: "Growth medium is low-sulfur. Mueller Hinton Broth is preferred.",
     rule4: "ASTM E2149 contact time is 24 hours minimum. Use E. coli as the test organism.",
     rule5: "ASTM E2149 is the primary recommended test for every FUZE tier.",
-    rule6: "AATCC 100, ISO 20743, and JIS L 1902 are supported ONLY at ICP ≥ 1.0 mg/kg (F1 Full Spectrum) with UV sterilization.",
-    rule7: "Use the right test organism per method (see table in §4b). For anti-odor / activewear claims, run Moraxella osloensis.",
+    rule6:
+      "AATCC 100, ISO 20743, and JIS L 1902 are supported ONLY at ICP ≥ 1.0 mg/kg (F1 Full Spectrum) with UV sterilization.",
+    rule7:
+      "Use the right test organism per method (see table in §4b). For anti-odor / activewear claims, run Moraxella osloensis.",
     section1Title: "ICP First — No Exceptions",
     section2Title: "Sterilization — UV Only",
     section3Title: "Growth Medium — Low Sulfur",
@@ -4278,19 +4298,24 @@ const en = {
     antiOdorBadge: "Anti-odor positioning — why Moraxella matters",
     runItLabel: "How to run it:",
     questionsCardTitle: "Questions about the protocol?",
-    questionsCardBlurb: "Ask in the FUZE FAQ chat — it has this protocol indexed and can answer specific questions about ICP thresholds, lab selection, sample prep, test sequencing, or how to ask your lab for the right conditions.",
+    questionsCardBlurb:
+      "Ask in the FUZE FAQ chat — it has this protocol indexed and can answer specific questions about ICP thresholds, lab selection, sample prep, test sequencing, or how to ask your lab for the right conditions.",
     openFaqBtn: "Open FUZE FAQ →",
-    versionFooter: "Protocol v1.0 · Published 2026-05-20 · Based on BV Hong Kong validation battery (May 2026) and the CAI-Textile failure investigation. Updates published quarterly.",
+    versionFooter:
+      "Protocol v1.0 · Published 2026-05-20 · Based on BV Hong Kong validation battery (May 2026) and the CAI-Textile failure investigation. Updates published quarterly.",
   },
   educationLifecycle: {
     metaTitle: "FUZE Life Cycle Analysis",
-    metaDescription: "Cradle-to-grave LCA for FUZE antimicrobial textile treatment — production, distribution, application, use phase, end-of-life.",
+    metaDescription:
+      "Cradle-to-grave LCA for FUZE antimicrobial textile treatment — production, distribution, application, use phase, end-of-life.",
     backLink: "← Back to FUZE Basics",
     heroEyebrow: "Life Cycle Analysis",
     heroTitle: "FUZE — Cradle to Grave",
-    heroBlurbPrefix: "A structured five-stage environmental profile of the FUZE antimicrobial treatment, following the",
+    heroBlurbPrefix:
+      "A structured five-stage environmental profile of the FUZE antimicrobial treatment, following the",
     heroBlurbStandard: "ISO 14040 / 14044",
-    heroBlurbSuffix: " LCA framework. Functional unit: one square meter of F1-treated knit fabric (200 g/m², 100 industrial wash cycles). System boundary: cradle-to-grave, no exclusions.",
+    heroBlurbSuffix:
+      " LCA framework. Functional unit: one square meter of F1-treated knit fabric (200 g/m², 100 industrial wash cycles). System boundary: cradle-to-grave, no exclusions.",
     badgeBrandTeams: "For brand sustainability teams",
     badgeFramework: "ISO 14040 / 14044 framework",
     badgeCradle: "Cradle-to-grave",
@@ -4299,43 +4324,54 @@ const en = {
     stageOfTemplate: "Stage {n} of 5 — {label}",
     compareEyebrow: "Comparative analysis",
     compareTitle: "FUZE vs. incumbent antimicrobial chemistries",
-    compareBlurb: "Side-by-side comparison against the three most common incumbent chemistries used in apparel and home-textile finishing.",
+    compareBlurb:
+      "Side-by-side comparison against the three most common incumbent chemistries used in apparel and home-textile finishing.",
     compareColAttribute: "Attribute",
     compareColFUZE: "FUZE",
     compareColSilvadur: "Silvadur",
     compareColPolygiene: "Polygiene",
     compareColQAC: "QAC",
-    compareFooter: "The most material distinction is the active loading on fabric. FUZE achieves equivalent or superior antimicrobial performance at 50–500× lower active loading than incumbent leaching chemistries — the fundamental driver of FUZE's environmental profile across every downstream life-cycle stage.",
+    compareFooter:
+      "The most material distinction is the active loading on fabric. FUZE achieves equivalent or superior antimicrobial performance at 50–500× lower active loading than incumbent leaching chemistries — the fundamental driver of FUZE's environmental profile across every downstream life-cycle stage.",
     headlineEyebrow: "The headline",
     headlineNumber: "50–500×",
     headlineMid: " lower active loading on fabric at ",
     headlineEquivalent: "equivalent or superior",
     headlineSuffix: " antimicrobial performance",
-    headlineBlurb: "vs. incumbent silver-ion, silver-chloride, and quaternary ammonium finishes. Less active means less feedstock, less wash effluent, less wastewater treatment load, and less downstream environmental release at every subsequent life-cycle stage.",
+    headlineBlurb:
+      "vs. incumbent silver-ion, silver-chloride, and quaternary ammonium finishes. Less active means less feedstock, less wash effluent, less wastewater treatment load, and less downstream environmental release at every subsequent life-cycle stage.",
     badgeOekoTex: "OEKO-TEX Std 100 · Class I",
     badgeBluesign: "bluesign® approved",
     badgeEPA: "EPA federally registered",
     badgePFASfree: "PFAS-free",
     esgTitle: "What this means in your ESG / sustainability report",
     esgBullet1Title: "Circular feedstock claim",
-    esgBullet1Text: " — FUZE is produced from end-of-life electronics, supporting your circular-economy commitments.",
+    esgBullet1Text:
+      " — FUZE is produced from end-of-life electronics, supporting your circular-economy commitments.",
     esgBullet2Title: "Net-zero-capable production",
-    esgBullet2Text: " — the production cell is solar-compatible, supporting renewable-energy commitments upstream of your supply chain.",
+    esgBullet2Text:
+      " — the production cell is solar-compatible, supporting renewable-energy commitments upstream of your supply chain.",
     esgBullet3Title: "Zero wash-effluent metallic release",
-    esgBullet3Text: " — FUZE is non-leaching by design. Your downstream contribution to municipal water-treatment burden from this finish = 0.",
+    esgBullet3Text:
+      " — FUZE is non-leaching by design. Your downstream contribution to municipal water-treatment burden from this finish = 0.",
     esgBullet4Title: "PFAS-free, formaldehyde-free, binder-free",
     esgBullet4Text: " — every petrochemical input incumbents require, FUZE eliminates.",
     esgBullet5Title: "Mechanical and chemical recycling compatible",
-    esgBullet5Text: " — treated articles can re-enter your circularity programs without contaminating recovered fiber streams.",
+    esgBullet5Text:
+      " — treated articles can re-enter your circularity programs without contaminating recovered fiber streams.",
     esgBullet6Title: "ZDHC MRSL compatible",
     esgBullet6Text: " — no flagged substances. Compatible with ZDHC Conformance Level 3.",
     methodologyEyebrow: "Methodology note",
     methodologyTitle: "Why ASTM E2149 is FUZE's primary efficacy test",
-    methodologyPara1: "Brand sustainability teams often ask why FUZE primary efficacy testing is reported under ASTM E2149 rather than AATCC 100 at F3 and F4. The short answer: ASTM E2149 is the dynamic-contact test designed for non-leaching contact-kill chemistry. It rewards direct physical contact between the bacterial cell and the metamaterial-bonded fiber surface — which is exactly FUZE's mechanism.",
-    methodologyPara2Lead: "AATCC 100 stacks fabric layers around an inoculated coupon and measures surviving colony-forming units. It was designed for ",
+    methodologyPara1:
+      "Brand sustainability teams often ask why FUZE primary efficacy testing is reported under ASTM E2149 rather than AATCC 100 at F3 and F4. The short answer: ASTM E2149 is the dynamic-contact test designed for non-leaching contact-kill chemistry. It rewards direct physical contact between the bacterial cell and the metamaterial-bonded fiber surface — which is exactly FUZE's mechanism.",
+    methodologyPara2Lead:
+      "AATCC 100 stacks fabric layers around an inoculated coupon and measures surviving colony-forming units. It was designed for ",
     methodologyPara2Em: "leaching",
-    methodologyPara2Suffix: " antimicrobials — chemistries that release ions into the surrounding moisture and kill bacteria via that ion field. The layered geometry helps leaching chemistries; released ions saturate the inter-layer space.",
-    methodologyPara3: "FUZE passes AATCC 100 at the higher tiers (F1 and F2) where metamaterial density is sufficient to overcome the test geometry. For F3 and F4, the appropriate primary efficacy test is ASTM E2149. Brand audits receive ASTM E2149 across all four tiers with AATCC 100 alongside at F1 and F2 as a complementary view.",
+    methodologyPara2Suffix:
+      " antimicrobials — chemistries that release ions into the surrounding moisture and kill bacteria via that ion field. The layered geometry helps leaching chemistries; released ions saturate the inter-layer space.",
+    methodologyPara3:
+      "FUZE passes AATCC 100 at the higher tiers (F1 and F2) where metamaterial density is sufficient to overcome the test geometry. For F3 and F4, the appropriate primary efficacy test is ASTM E2149. Brand audits receive ASTM E2149 across all four tiers with AATCC 100 alongside at F1 and F2 as a complementary view.",
     ctaBack: "← Back to FUZE Basics",
     ctaStory: "The FUZE Story →",
     ctaApplication: "Application methods →",
@@ -4422,12 +4458,14 @@ const en = {
   requestFactoryAccessPage: {
     brandTitle: "FUZE Atlas",
     submittedTitle: "Request Submitted",
-    submittedBlurb: "Thank you for your interest in becoming a FUZE partner factory. Our team will review your application and reach out within 2-3 business days.",
+    submittedBlurb:
+      "Thank you for your interest in becoming a FUZE partner factory. Our team will review your application and reach out within 2-3 business days.",
     alreadyHaveAccount: "Already have an account?",
     signIn: "Sign in",
     pageEyebrow: "Factory Portal Access Request",
     cardTitle: "Request Portal Access",
-    cardBlurb: "Fill out the form below to request access to the FUZE Factory Portal. Manage fabric submissions, track FUZE treatments, and collaborate with brands.",
+    cardBlurb:
+      "Fill out the form below to request access to the FUZE Factory Portal. Manage fabric submissions, track FUZE treatments, and collaborate with brands.",
     section1Title: "Your Information",
     section2Title: "Factory Details",
     section3Title: "Factory Capabilities",
@@ -4468,7 +4506,8 @@ const en = {
     productTypesPlaceholder: "e.g., Athletic wear, Denim, Medical textiles",
     methodsLabel: "FUZE Application Methods of Interest",
     notesLabel: "Additional Notes",
-    notesPlaceholder: "Tell us about your factory and why you're interested in partnering with FUZE...",
+    notesPlaceholder:
+      "Tell us about your factory and why you're interested in partnering with FUZE...",
     submittingBtn: "Submitting...",
     submitBtn: "Submit Access Request",
     pageFooter: "FUZE Biotech Inc. · Textile Intelligence Platform",
@@ -4534,7 +4573,7 @@ const en = {
     modalTitle: "Approve Access Request",
     modalFromTemplate: " from ",
     modalProvidedLabel: "Company name they provided:",
-    modalSaveAsLabel: "Save as (edit if needed — e.g. add city \"BV Xiaoxing\"):",
+    modalSaveAsLabel: 'Save as (edit if needed — e.g. add city "BV Xiaoxing"):',
     modalCanonicalPlaceholder: "Canonical company name",
     modalRequestSuffix: " request",
     modalTypeChangedTemplate: "(was {type} — you changed it)",
@@ -4564,7 +4603,7 @@ const en = {
     modalCancelBtn: "Cancel",
     modalApproveAsTemplate: "Approve as {role}",
     modalApproveLinkTemplate: "Approve & Link to {name}",
-    modalApproveCreateTemplate: "Approve & Create \"{name}\"",
+    modalApproveCreateTemplate: 'Approve & Create "{name}"',
     modalApproveCreateFallback: "Company",
     factoriesPlural: "factories",
     entityPluralSuffix: "s",
@@ -4581,7 +4620,8 @@ const en = {
     cancelBtn: "Cancel",
     addUserBtn: "+ Add User",
     unassignedHeaderTemplate: "{count} active {label} missing entity assignment",
-    unassignedBlurb: "These users have a role that requires a brand/factory/distributor/lab link, but none is set. They can sign in but their portal will be empty until you assign them.",
+    unassignedBlurb:
+      "These users have a role that requires a brand/factory/distributor/lab link, but none is set. They can sign in but their portal will be empty until you assign them.",
     missingLabel: " — missing {entity}",
     fixBtn: "Fix →",
     addFormTitle: "Add New User",
@@ -4651,7 +4691,8 @@ const en = {
     deleteConfirmPre: "This will ",
     deleteConfirmEm: "permanently delete",
     deleteConfirmFromSystem: " from the system.",
-    deleteIrreversible: "This action cannot be undone. All associated data (notifications, audit logs, notes) will also be removed.",
+    deleteIrreversible:
+      "This action cannot be undone. All associated data (notifications, audit logs, notes) will also be removed.",
     failedCreate: "Failed to create user",
     failedUpdate: "Failed to update user",
     networkError: "Network error",
@@ -4675,10 +4716,12 @@ const en = {
     statusLabel: "Status",
     timezoneLabel: "Timezone (IANA, e.g. America/Denver, Asia/Taipei)",
     timezonePlaceholder: "America/Denver",
-    timezoneHint: "Non-urgent notifications between 22:00 and 07:00 local time are deferred to 08:00 the next morning. Errors and approval-required signals fire immediately regardless.",
+    timezoneHint:
+      "Non-urgent notifications between 22:00 and 07:00 local time are deferred to 08:00 the next morning. Errors and approval-required signals fire immediately regardless.",
     outboundHeader: "Outbound Email Identity",
     bdWizardBadge: "BD Wizard",
-    outboundBlurb: "When you send outbound through the BD Wizard, the email will appear to come from this address. Replies route back to your inbox normally. You'll also receive a BCC summary of every send so you know exactly what went out.",
+    outboundBlurb:
+      "When you send outbound through the BD Wizard, the email will appear to come from this address. Replies route back to your inbox normally. You'll also receive a BCC summary of every send so you know exactly what went out.",
     fromEmailLabel: "From: Email",
     allowedDomainsLabel: "Allowed domains: ",
     fromDisplayNameLabel: "From: Display Name",
@@ -4686,12 +4729,14 @@ const en = {
     previewLabel: "Preview",
     defaultPreview: "FUZE Atlas <notifications@fuzeatlas.com> (default)",
     signatureHeader: "Email Signature",
-    signatureBlurb: "Appended to outbound emails sent through the BD Wizard. Plain text is fine — keep it short. If you leave this blank, no signature is added.",
+    signatureBlurb:
+      "Appended to outbound emails sent through the BD Wizard. Plain text is fine — keep it short. If you leave this blank, no signature is added.",
     signaturePlaceholder: "Andrew Moger\nFUZE Industries\n801-555-0123",
     charCountTemplate: "{count} / 4000 characters",
     calendarHeader: "Calendar Subscription",
     calendarBadge: "Outlook · Google · Apple",
-    calendarBlurb: "Subscribe your calendar app to a read-only overlay of your Atlas meetings and open CRM tasks. Updates flow automatically — no IT permission required. The URL contains a private token, so don't share it.",
+    calendarBlurb:
+      "Subscribe your calendar app to a read-only overlay of your Atlas meetings and open CRM tasks. Updates flow automatically — no IT permission required. The URL contains a private token, so don't share it.",
     copyUrl: "Copy URL",
     copiedCheck: "Copied ✓",
     subscribeBtn: "Subscribe →",
@@ -4701,7 +4746,8 @@ const en = {
     calendarGoogle: "Google Calendar:",
     calendarGoogleSteps: " Other calendars + → From URL → paste URL.",
     calendarApple: "Apple Calendar:",
-    calendarAppleSteps: " File → New Calendar Subscription → paste URL → set auto-refresh to 1 hour.",
+    calendarAppleSteps:
+      " File → New Calendar Subscription → paste URL → set auto-refresh to 1 hour.",
     loadingSubscriptionUrl: "Loading subscription URL…",
     savedFlag: "Saved.",
     cancelBtn: "Cancel",
@@ -4714,13 +4760,15 @@ const en = {
     accessDenied: "Super admin access required",
     backLink: "← Fabrics",
     pageTitle: "FUZE Input (FI) Data Enrichment",
-    pageSubtitle: "Scan, extrapolate, and generate missing fabric data with probability-based heuristics",
+    pageSubtitle:
+      "Scan, extrapolate, and generate missing fabric data with probability-based heuristics",
     step1Title: "Step 1: Data Completeness Scan",
     runScan: "Run Scan",
     scanning: "Scanning...",
     totalFabricsTemplate: "{n} total fabrics",
     step2Title: "Step 2: FI Field Enrichment",
-    step2Subtitle: "Extrapolate construction, weight, width, yarn, blend from raw CSV data + heuristics",
+    step2Subtitle:
+      "Extrapolate construction, weight, width, yarn, blend from raw CSV data + heuristics",
     previewDryRun: "Preview (Dry Run)",
     analyzing: "Analyzing...",
     applyToTemplate: "Apply to {n} Fabrics",
@@ -4737,7 +4785,8 @@ const en = {
     colContentAdded: "Content Added",
     colReasons: "Reasons",
     step3Title: "Step 3: ICP Test Profile Generation",
-    step3Subtitle: "Generate probable ICP antimicrobial test results + corroborating antibacterial estimates",
+    step3Subtitle:
+      "Generate probable ICP antimicrobial test results + corroborating antibacterial estimates",
     previewIcp: "Preview ICP Profiles",
     generateIcpTemplate: "Generate {n} ICP Profiles",
     creating: "Creating...",
@@ -4760,20 +4809,25 @@ const en = {
     noteHeader: "Note:",
     noteBody: " All auto-generated data is tagged with ",
     noteCodeMarker: "[FI]",
-    noteAfterCode: " (FUZE Input) markers and should be reviewed before use in customer-facing reports. Enrichment is reversible — filter by \"[FI]\" in notes to find all auto-populated records.",
+    noteAfterCode:
+      ' (FUZE Input) markers and should be reviewed before use in customer-facing reports. Enrichment is reversible — filter by "[FI]" in notes to find all auto-populated records.',
     confirmEnrichApply: "This will update fabric records with FI-estimated data. Continue?",
-    confirmIcpApply: "This will create FI-estimated ICP test profiles for fabrics without ICP data. Continue?",
+    confirmIcpApply:
+      "This will create FI-estimated ICP test profiles for fabrics without ICP data. Continue?",
   },
   pricingPage: {
     crumbDashboard: "Dashboard",
     crumbCurrent: "General FUZE Pricing",
     pageTitle: "General FUZE Pricing",
-    pageSubtitle: "Worldwide general pricing, delivered to the factory door — inclusive of shipping, duty, and delivery.",
+    pageSubtitle:
+      "Worldwide general pricing, delivered to the factory door — inclusive of shipping, duty, and delivery.",
     volumePromptTitle: "Talk to your FUZE account manager about volume pricing",
-    volumePromptBody: "Volumes at this scale may qualify for direct pricing and volume discounts — please discuss with your FUZE account manager.",
+    volumePromptBody:
+      "Volumes at this scale may qualify for direct pricing and volume discounts — please discuss with your FUZE account manager.",
     envCrumbCurrent: "Environmental Score",
     envPageTitle: "Environmental Score",
-    envPageSubtitle: "Compare FUZE against competitor chemistries and generate a per-meter environmental impact score.",
+    envPageSubtitle:
+      "Compare FUZE against competitor chemistries and generate a per-meter environmental impact score.",
     envInputsTitle: "Fabric & Tier Inputs",
 
     calculatorTitle: "FUZE Quote Calculator",
@@ -4811,7 +4865,8 @@ const en = {
 
     comparisonTitle: "Competitor Displacement Analysis",
     editCompetitorPricing: "Edit Competitor Pricing →",
-    comparisonSubtitle: "Select the antimicrobial your customer currently uses to see environmental and cost savings.",
+    comparisonSubtitle:
+      "Select the antimicrobial your customer currently uses to see environmental and cost savings.",
     realIntelTemplate: "({n} with real intel)",
     competitorProductLabel: "Current Competitor Product",
     competitorSelectPlaceholder: "Select competitor...",
@@ -4819,13 +4874,16 @@ const en = {
     benchmarkValueTemplate: "FUZE {id} — Permanent integration vs competitor re-application cycles",
 
     tierLadderTitle: "FUZE tier ladder — every tier is permanent",
-    tierLadderSubtitle: "Each step adds another layer of FUZE performance on top of the antimicrobial baseline",
+    tierLadderSubtitle:
+      "Each step adds another layer of FUZE performance on top of the antimicrobial baseline",
     validatedByLabel: "Validated by",
     selectedBadge: "Selected",
-    tierLadderFooter: "Click any tier to make it the active comparison below. Per-meter cost stays flat across the entire wash life of whichever tier you pick — there is no per-wash or per-cycle pricing on FUZE.",
+    tierLadderFooter:
+      "Click any tier to make it the active comparison below. Per-meter cost stays flat across the entire wash life of whichever tier you pick — there is no per-wash or per-cycle pricing on FUZE.",
 
     activeTierVsTemplate: "FUZE {id} {name} vs {product}",
-    millAppliedNote: "Both products are mill-applied. Neither can be reapplied to a garment that has shipped to a customer. What separates them is",
+    millAppliedNote:
+      "Both products are mill-applied. Neither can be reapplied to a garment that has shipped to a customer. What separates them is",
     millAppliedNoteEmphasis: "whether the wash claim is third-party validated",
     costPerMeterLabel: "Cost per meter",
     washClaimLabel: "Wash claim",
@@ -4837,7 +4895,8 @@ const en = {
     costDifferenceLabel: "Cost difference at FUZE {id}:",
     cheaperThanTemplate: "{delta}/m cheaper than {competitor}",
     premiumForTemplate: "+{delta}/m premium for {washes}-wash third-party validation",
-    priceMatchText: "price match — pivot the conversation to chemistry, leaching, and validated wash data",
+    priceMatchText:
+      "price match — pivot the conversation to chemistry, leaching, and validated wash data",
     defendHeader: "What you can actually defend in a brand conversation",
 
     meetUsTitle: "Meet us on the right test",
@@ -4893,7 +4952,8 @@ const en = {
     binderKeptFromWater: "Binder kept from water",
     totalDischargeEliminated: "Total discharge eliminated",
     carbonReductionLabel: "Estimated carbon footprint reduction",
-    carbonReductionNote: "From eliminated binder production, curing energy, and reduced chemistry manufacturing",
+    carbonReductionNote:
+      "From eliminated binder production, curing energy, and reduced chemistry manufacturing",
     compositeScoreLabel: "Environmental Composite Score",
     competitorToxicityHeader: "Competitor Aquatic & Environmental Toxicity",
 
@@ -4902,7 +4962,8 @@ const en = {
     competitorAppsTemplate: "{product} — {n} Application{s} Required",
     appLabel: "App",
     lifetimeProtection: "Lifetime EPA Protection — Single Application",
-    retreatmentNote: "Each re-treatment requires stripping, re-applying chemistry + binder, and curing again — increasing factory cost, waste, and environmental discharge",
+    retreatmentNote:
+      "Each re-treatment requires stripping, re-applying chemistry + binder, and curing again — increasing factory cost, waste, and environmental discharge",
 
     saveTemplate: "Save {amount}/m",
     trueCostWinner: "True Cost Winner",
@@ -4911,7 +4972,8 @@ const en = {
     lifetimeApprovalLabel: "The Only Lifetime Approval",
 
     epaComparisonTitle: "EPA Registration Comparison",
-    epaComparisonSubtitle: "Many competitor products were registered decades ago under far less stringent efficacy and toxicity standards.",
+    epaComparisonSubtitle:
+      "Many competitor products were registered decades ago under far less stringent efficacy and toxicity standards.",
     epaRegNumLabel: "EPA Reg #:",
     epaFirstRegLabel: "First registered:",
     epaYearsAgoTemplate: "({n} years ago)",
@@ -4928,7 +4990,8 @@ const en = {
     curingRequiredLabel: "Curing Required:",
     heavyMetalLeachLabel: "Heavy Metal Leaching:",
     zeroValue: "Zero",
-    fuzeEpaNote: "FUZE is the only antimicrobial textile treatment with EPA-verified lifetime durability. Single application, no binder, no curing, no environmental discharge.",
+    fuzeEpaNote:
+      "FUZE is the only antimicrobial textile treatment with EPA-verified lifetime durability. Single application, no binder, no curing, no environmental discharge.",
     regContextHeader: "Regulatory Context",
 
     fullCompetitorTitle: "Full Competitor EPA Registry",
@@ -4942,11 +5005,13 @@ const en = {
     colLink: "Link",
     viewLink: "View",
 
-    selectCompetitorPlaceholder: "Select a competitor product above to generate the environmental displacement analysis",
+    selectCompetitorPlaceholder:
+      "Select a competitor product above to generate the environmental displacement analysis",
   },
   sustainabilityPage: {
     heroTitle: "FUZE Sustainability Impact Calculator",
-    heroSubtitle: "Quantify the environmental benefit of switching to FUZE — for ESG reports, brand marketing, and hangtag claims.",
+    heroSubtitle:
+      "Quantify the environmental benefit of switching to FUZE — for ESG reports, brand marketing, and hangtag claims.",
 
     configTitle: "Configure Your Comparison",
     currentAntimicrobial: "Current Antimicrobial",
@@ -4957,7 +5022,8 @@ const en = {
     annualProduction: "Annual Production (m)",
 
     exportTitle: "Export Sustainability + Competitive Intelligence Report",
-    exportSubtitle: "Generate a branded PDF-ready report with full competitor teardowns, EPA data, and environmental impact analysis.",
+    exportSubtitle:
+      "Generate a branded PDF-ready report with full competitor teardowns, EPA data, and environmental impact analysis.",
     generating: "Generating...",
     exportSingleTemplate: "Export {product} vs FUZE",
     exportAll: "Export All Competitors",
@@ -4975,9 +5041,11 @@ const en = {
     sustainabilityScore: "Sustainability Score",
     versusTemplate: "vs {product}",
     co2SavedLabel: "CO₂ Saved per Meter",
-    co2BreakdownTemplate: "From eliminated binder production ({binder}g), curing energy ({curing}g), chemistry ({chem}g)",
+    co2BreakdownTemplate:
+      "From eliminated binder production ({binder}g), curing energy ({curing}g), chemistry ({chem}g)",
     waterSavedLabel: "Water Saved per Meter",
-    waterSavedNote: "Contaminated wastewater not generated — FUZE production and application create zero effluent",
+    waterSavedNote:
+      "Contaminated wastewater not generated — FUZE production and application create zero effluent",
     energySavedLabel: "Factory Energy Saved per Meter",
     energyNoCuringTemplate: "No {temp}°C curing oven needed — FUZE bonds at ambient temperature",
     energyCompetitorNoCuring: "Competitor also doesn't require curing",
@@ -4996,7 +5064,8 @@ const en = {
     recyclableLabel: "Recyclable",
     notRecyclableLabel: "Not Recyclable",
     sb707Header: "California SB 707 — Responsible Textile Recovery Act",
-    sb707Body: "Requires textile producers to fund and implement collection and recycling programs. Chemical binders and curing agents that prevent clean fiber recovery create compliance risk and increased producer responsibility fees. FUZE-treated textiles remain fully recyclable.",
+    sb707Body:
+      "Requires textile producers to fund and implement collection and recycling programs. Chemical binders and curing agents that prevent clean fiber recovery create compliance risk and increased producer responsibility fees. FUZE-treated textiles remain fully recyclable.",
 
     stage1Nav: "Chemical Plant",
     stage2Nav: "Factory Application",
@@ -5018,7 +5087,8 @@ const en = {
     synthesisLabel: "kg CO₂ — Synthesis",
     synthesisNote: "Product formulation, compounding",
     fuzeMfgHeader: "FUZE Manufacturing Profile",
-    fuzeMfgBody: "30-amp liquid laser ablation on a 1m² table. Recycled electronics feedstock. Solar-capable.",
+    fuzeMfgBody:
+      "30-amp liquid laser ablation on a 1m² table. Recycled electronics feedstock. Solar-capable.",
     fuzeMfgEmph: "Zero chemicals. Zero waste. Zero VOCs. Zero process water.",
 
     stage2Title: "Stage 2: Textile Factory Application",
@@ -5036,7 +5106,8 @@ const en = {
     offGassingRequired: "Off-gassing required",
     zeroOffGassing: "Zero off-gassing",
     fuzeAppHeader: "FUZE Application Profile",
-    fuzeAppBody: "Integrates into existing dye bath, exhaust, or spray equipment. Zero additional steps. Bonds at ambient temperature.",
+    fuzeAppBody:
+      "Integrates into existing dye bath, exhaust, or spray equipment. Zero additional steps. Bonds at ambient temperature.",
     noBinder: "No binder.",
     noCuring: "No curing.",
     noEnergy: "No energy.",
@@ -5053,9 +5124,11 @@ const en = {
     treatmentEnergyNote: "Pumps, reactors, filtration",
     whatThisCovers: "What this covers:",
     aboutWashTemplate: "About that {n}-wash number:",
-    epaRegistersBody: "EPA registers the active ingredient as a pesticide. EPA does NOT validate or certify any wash count. The {n}-wash claim for {product} is self-published by {company} —",
+    epaRegistersBody:
+      "EPA registers the active ingredient as a pesticide. EPA does NOT validate or certify any wash count. The {n}-wash claim for {product} is self-published by {company} —",
     noEpaRegHeader: "No EPA registration.",
-    noEpaRegBody: "is not federally registered as an antimicrobial. Brands citing this product as \"antimicrobial\" in marketing are exposed to FIFRA risk.",
+    noEpaRegBody:
+      'is not federally registered as an antimicrobial. Brands citing this product as "antimicrobial" in marketing are exposed to FIFRA risk.',
     competitorTrueCost: "{product} True Cost/Meter",
     antimicrobialLine: "Antimicrobial:",
     wastewaterLine: "+ Wastewater remediation:",
@@ -5082,7 +5155,8 @@ const en = {
     zeroLeaching: "Zero leaching.",
     zeroMicroplastic: "Zero microplastic.",
     zeroMunicipalBurden: "Zero municipal burden.",
-    fuzeConsumerBody: "FUZE metamaterial does not leach into home wash water. No binder = no polymer shedding. Zero treatment cost at municipal water facilities.",
+    fuzeConsumerBody:
+      "FUZE metamaterial does not leach into home wash water. No binder = no polymer shedding. Zero treatment cost at municipal water facilities.",
 
     per10kHeaderTemplate: "Per 10,000 Garments — Switching from {product} to FUZE",
     kgCo2: "kg CO₂",
@@ -5097,22 +5171,28 @@ const en = {
     totalTrueCostSavings: "Total true cost savings",
 
     annualImpactTemplate: "Annual Brand Impact at {n} Meters/Year",
-    annualImpactSubtitle: "Numbers your brand can use in ESG reports, sustainability statements, and marketing materials.",
+    annualImpactSubtitle:
+      "Numbers your brand can use in ESG reports, sustainability statements, and marketing materials.",
 
     productionProfileTitle: "FUZE Production Sustainability Profile",
     productionProfileSubtitle: "How FUZE is made — and why it matters for your brand.",
     recycledMetalSource: "Recycled Metal Source",
-    recycledMetalNote: "High density allotrope synthesized from metals recovered from electronic waste streams. No virgin mining required.",
+    recycledMetalNote:
+      "High density allotrope synthesized from metals recovered from electronic waste streams. No virgin mining required.",
     laserSynthesis: "Laser Synthesis",
-    laserSynthesisNote: "30 amp laser is the sole energy source for meta-material production. No heat, no pressure, no chemical reactions. Just physics.",
+    laserSynthesisNote:
+      "30 amp laser is the sole energy source for meta-material production. No heat, no pressure, no chemical reactions. Just physics.",
     pureWater: "99.98% Pure Water",
-    pureWaterNote: "Product is 99.98% deionized water with FUZE meta-material suspension. No binders, no surfactants, no stabilizers, no additives of any kind.",
+    pureWaterNote:
+      "Product is 99.98% deionized water with FUZE meta-material suspension. No binders, no surfactants, no stabilizers, no additives of any kind.",
     closedLoopPackaging: "Closed-Loop Packaging",
-    closedLoopNote: "PET-1 recyclable bottles returned for re-use. Only production waste: periodic DI water filter replacement (non-hazardous).",
+    closedLoopNote:
+      "PET-1 recyclable bottles returned for re-use. Only production waste: periodic DI water filter replacement (non-hazardous).",
     producesZeroHeader: "What FUZE Produces Zero Of:",
 
     appFlexTitle: "Factory Application Flexibility",
-    appFlexSubtitle: "FUZE integrates into your existing process — no equipment modification, no additional steps, no additional energy.",
+    appFlexSubtitle:
+      "FUZE integrates into your existing process — no equipment modification, no additional steps, no additional energy.",
 
     pricingLink: "Pricing & Environmental Comparison Tool →",
     exportReportTemplate: "Export {product} vs FUZE Report",
@@ -5121,7 +5201,8 @@ const en = {
     backLink: "← Back to FUZE Basics",
     eyebrow: "What you can claim",
     pageTitle: "Defensible brand claims for FUZE-treated fabric",
-    pageIntro: "A reference for compliance teams, brand marketing, and hangtag copy. Three categories: product claims, sustainability claims, and certification claims. Each row is rated",
+    pageIntro:
+      "A reference for compliance teams, brand marketing, and hangtag copy. Three categories: product claims, sustainability claims, and certification claims. Each row is rated",
     introCiteFreely: "cite freely",
     introWithData: "cite with tier-specific data",
     introAvoid: "avoid",
@@ -5133,7 +5214,8 @@ const en = {
     badgeWithData: "With data",
     badgeAvoid: "Avoid",
     fifraTitle: "A note on FIFRA",
-    fifraBody: "FIFRA (Federal Insecticide, Fungicide, and Rodenticide Act) governs antimicrobial claims in the United States. Treated-article exemption permits descriptive claims like \"antimicrobial-treated\" without separate product-level EPA registration, but specific pathogen claims (\"kills 99.9% of E. coli\") require backing test data tied to the active ingredient's registration. This page is guidance, not legal counsel — review proposed marketing copy with your in-house compliance team before it ships.",
+    fifraBody:
+      'FIFRA (Federal Insecticide, Fungicide, and Rodenticide Act) governs antimicrobial claims in the United States. Treated-article exemption permits descriptive claims like "antimicrobial-treated" without separate product-level EPA registration, but specific pathogen claims ("kills 99.9% of E. coli") require backing test data tied to the active ingredient\'s registration. This page is guidance, not legal counsel — review proposed marketing copy with your in-house compliance team before it ships.',
     backToBasics: "Back to FUZE Basics",
     seeCerts: "See certifications stack",
   },
@@ -5141,12 +5223,14 @@ const en = {
     backToFabric: "← Back to Fabric",
     emailToCustomer: "Email to Customer",
     notSafeExternal: "⚠ Not Safe to Send Externally",
-    notSafeBody: "This report is missing identifying information that the customer needs in order to recognize the submission. Fill these in on the fabric record before emailing:",
+    notSafeBody:
+      "This report is missing identifying information that the customer needs in order to recognize the submission. Fill these in on the fabric record before emailing:",
     editFabricRecord: "→ Edit fabric record",
 
     coverEyebrow: "FUZE Biotech · Application & Validation Report",
     coverTitle: "FUZE Treatment Recipe & Validation",
-    issuedTemplate: "Issued {date} · Document covers recommended bath recipe, in-house pad/dry validation, and independent lab ICP verification.",
+    issuedTemplate:
+      "Issued {date} · Document covers recommended bath recipe, in-house pad/dry validation, and independent lab ICP verification.",
 
     preparedForHeader: "Prepared For",
     brandLabel: "Brand",
@@ -5165,19 +5249,25 @@ const en = {
     executiveSummaryHeader: "Executive Summary",
     summaryValidatedPrefix: "FUZE Biotech has validated",
     summaryFuzeTier: "for compatibility with FUZE",
-    summaryTreatmentSuffix: "treatment using a proprietary metamaterial antimicrobial finishing system. The recipe below was derived from a measured liquor pickup of",
+    summaryTreatmentSuffix:
+      "treatment using a proprietary metamaterial antimicrobial finishing system. The recipe below was derived from a measured liquor pickup of",
     summaryOnBenchTest: "on bench test",
-    summaryApplicationDetails: "and is applied via standard textile finishing equipment (pad-dry-cure) at room temperature with no auxiliary, binder, or rinse step required.",
+    summaryApplicationDetails:
+      "and is applied via standard textile finishing equipment (pad-dry-cure) at room temperature with no auxiliary, binder, or rinse step required.",
     summaryBenchDepositPrefix: "In-house bench validation deposited",
     summaryBenchExpectedPrefix: "against an expected target of",
-    summaryBenchAffinityTemplate: "on fabric ({n}% affinity), confirming the recipe lands on tier within standard operating tolerance.",
-    summaryThirdPartyLab: "A third-party laboratory independently measured FUZE deposit on the treated sample, validating the recipe is production-ready (see Section 5).",
-    summaryComplianceLine: "FUZE is OEKO-TEX Standard 100 Class I, bluesign® approved, EPA registered, and PFAS-free. FUZE metamaterial bonds elementally to fibers during standard textile finishing.",
+    summaryBenchAffinityTemplate:
+      "on fabric ({n}% affinity), confirming the recipe lands on tier within standard operating tolerance.",
+    summaryThirdPartyLab:
+      "A third-party laboratory independently measured FUZE deposit on the treated sample, validating the recipe is production-ready (see Section 5).",
+    summaryComplianceLine:
+      "FUZE is OEKO-TEX Standard 100 Class I, bluesign® approved, EPA registered, and PFAS-free. FUZE metamaterial bonds elementally to fibers during standard textile finishing.",
 
     recommendedRecipeHeader: "Recommended Recipe",
     recipeFor100L: "For every",
     recipeMixIn: "of bath, mix",
-    recipeOfFuzeStockTemplate: "of FUZE stock ({stock} mg/L) with DI water to volume. This yields a bath concentration of",
+    recipeOfFuzeStockTemplate:
+      "of FUZE stock ({stock} mg/L) with DI water to volume. This yields a bath concentration of",
     recipeYieldTemplate: "which deposits",
     recipeOnFabricTemplate: "on fabric — Tier",
     methodLabel: "Method:",
@@ -5193,18 +5283,23 @@ const en = {
     derivedFromBenchTemplate: "Derived from validated bench test",
     derivedPickupTemplate: "pickup",
     noBenchTestHeader: "No validated bench test on file for this fabric.",
-    noBenchTestBody: "Run the Recipe Calculator to produce a measured pickup % before this section can be filled in.",
+    noBenchTestBody:
+      "Run the Recipe Calculator to produce a measured pickup % before this section can be filled in.",
 
     productionScaleHeader: "FUZE Required (Production Bath Sizes)",
-    productionScaleNoteTemplate: "FUZE stock at {stock} mg/L. Numbers are exact for the measured pickup of {pickup}% — re-run if your line conditions change pickup by more than ±2 percentage points.",
+    productionScaleNoteTemplate:
+      "FUZE stock at {stock} mg/L. Numbers are exact for the measured pickup of {pickup}% — re-run if your line conditions change pickup by more than ±2 percentage points.",
     colBathSize: "Bath Size",
     fuzeStockLabel: "FUZE stock",
     bathPpmLabel: "bath:",
     fabricPpmLabel: "fabric:",
-    bathTopupNote: "Top-up the bath with DI water to reach the bath size column header. Example: for a 200 L bath at F1, mix the listed mL of FUZE stock with DI water until total volume equals 200 L.",
+    bathTopupNote:
+      "Top-up the bath with DI water to reach the bath size column header. Example: for a 200 L bath at F1, mix the listed mL of FUZE stock with DI water until total volume equals 200 L.",
     unitReference: "Unit reference:",
-    unitReferenceBody: "bath ppm = mg of FUZE metamaterial per L of bath water. Fabric ppm = mg per kg of dry fabric (OWF, on-weight-of-fabric). 1 ppm = 1 mg/kg = 0.0001%.",
-    matrixUnavailable: "FUZE Required matrix unavailable — requires a measured pickup % from a validated bench test.",
+    unitReferenceBody:
+      "bath ppm = mg of FUZE metamaterial per L of bath water. Fabric ppm = mg per kg of dry fabric (OWF, on-weight-of-fabric). 1 ppm = 1 mg/kg = 0.0001%.",
+    matrixUnavailable:
+      "FUZE Required matrix unavailable — requires a measured pickup % from a validated bench test.",
 
     inHouseValidationHeader: "In-House Validation",
     benchTestLabel: "Bench Test",
@@ -5228,8 +5323,10 @@ const en = {
     colFuzeOnFabric: "FUZE on fabric (ppm)",
     colMgKgOwf: "mg/kg OWF",
     colMethod: "Method",
-    icpExplainer: "ICP-OES results expressed as elemental FUZE metamaterial. On solid fabric, ppm and mg/kg are numerically equivalent (1 ppm = 1 mg per 1 kg of fabric).",
-    noLabResults: "No third-party lab ICP results on file for this fabric yet. Bench validation (Section 5) is the current proof of recipe.",
+    icpExplainer:
+      "ICP-OES results expressed as elemental FUZE metamaterial. On solid fabric, ppm and mg/kg are numerically equivalent (1 ppm = 1 mg per 1 kg of fabric).",
+    noLabResults:
+      "No third-party lab ICP results on file for this fabric yet. Bench validation (Section 5) is the current proof of recipe.",
     antibacterialHeader: "Antibacterial efficacy (third-party)",
     reductionLabel: "reduction",
     activityLabel: "A =",
@@ -5241,23 +5338,30 @@ const en = {
     myReports: "My Reports",
     portalStepsIntro: "To find it next month:",
     portalStep1: "Open",
-    portalStep2a: "Sign in with the email this report was sent to. If you don't have a password yet, click",
-    portalStep2b: "\"Forgot password / Set password\"",
+    portalStep2a:
+      "Sign in with the email this report was sent to. If you don't have a password yet, click",
+    portalStep2b: '"Forgot password / Set password"',
     portalStep2c: "and we'll email you a one-time link.",
     portalStep3: "In the sidebar, open",
-    portalStep3Tail: "— your reports are sorted newest-first and searchable by your customer reference, item number, or FUZE number.",
-    portalStep4: "The download link in the email that delivered this report stays live for 90 days; after that, sign in to pull a fresh copy that includes any new lab results.",
-    troubleLoggingIn: "Trouble logging in? Reply to the email this report came from — it routes to your FUZE account manager.",
+    portalStep3Tail:
+      "— your reports are sorted newest-first and searchable by your customer reference, item number, or FUZE number.",
+    portalStep4:
+      "The download link in the email that delivered this report stays live for 90 days; after that, sign in to pull a fresh copy that includes any new lab results.",
+    troubleLoggingIn:
+      "Trouble logging in? Reply to the email this report came from — it routes to your FUZE account manager.",
 
     appendixHeader: "Appendix",
     fuzeCompliance: "FUZE compliance",
-    fuzeComplianceBody: "OEKO-TEX Standard 100 Class I · bluesign® approved · EPA registered (federal) · California EPA approved (Q1 2026) · PFAS-free.",
+    fuzeComplianceBody:
+      "OEKO-TEX Standard 100 Class I · bluesign® approved · EPA registered (federal) · California EPA approved (Q1 2026) · PFAS-free.",
     testStandards: "Test standards",
     testStandardsBody: "AATCC 100 · AATCC 30 · ISO 20743 · ISO 18184 · ICP-OES per lab method.",
     issuedBy: "Issued by",
-    issuedByBody: "FUZE Biotech · 1895 West 2100 South, Salt Lake City, UT 84119 USA · andrew@fuze47.com",
+    issuedByBody:
+      "FUZE Biotech · 1895 West 2100 South, Salt Lake City, UT 84119 USA · andrew@fuze47.com",
     documentVersion: "Document version",
-    documentVersionTemplate: "Live report — regenerated on every download from the Atlas database. Bench test {testNum} · pickup {pickup}%.",
+    documentVersionTemplate:
+      "Live report — regenerated on every download from the Atlas database. Bench test {testNum} · pickup {pickup}%.",
     footerTemplate: "FUZE Atlas · Application Report ·",
     printedTemplate: "Printed {date}",
   },
@@ -5283,7 +5387,8 @@ const en = {
     step8Title: "Review & Save → ICP",
     step8Desc: "Confirm recipes, save, bag & tag for ICP",
 
-    step1Intro: "Link this bench test to a fabric that's already in Atlas. If it's not here, enter a free-text label.",
+    step1Intro:
+      "Link this bench test to a fabric that's already in Atlas. If it's not here, enter a free-text label.",
     linkedFabricLabel: "Linked fabric",
     freeTextLabel: "Or free-text label *",
     freeTextPlaceholder: "e.g. 180 gsm French Terry · Cotton",
@@ -5307,14 +5412,16 @@ const en = {
     liquorRatioLabel: "Liquor ratio",
 
     pickupHeader: "💧 Dry-to-wet pickup — run in triplicate",
-    pickupRunHelp: "* Run 1 required. Runs 2 & 3 strongly recommended — any run >10% from the mean flags the sample.",
+    pickupRunHelp:
+      "* Run 1 required. Runs 2 & 3 strongly recommended — any run >10% from the mean flags the sample.",
     meanPickupTemplate: "Mean pickup ({n} run{s})",
     meanPickupNote: "Used for all bath recipe calculations",
     maxDeviationLabel: "Max run deviation",
 
     bathPrepHeader: "🧪 Prepare the bench test bath",
     bathReservoirNote: "Typical bench test uses",
-    bathReservoirNoteAfter: "for the reservoir. Smaller 0.5 L batches are fine if you're tight on sample material.",
+    bathReservoirNoteAfter:
+      "for the reservoir. Smaller 0.5 L batches are fine if you're tight on sample material.",
     targetTierLabel: "Target tier",
     bathVolumeLabel: "Bath volume (reservoir)",
     recipeMeasureLabel: "Recipe — measure these exactly",
@@ -5363,7 +5470,8 @@ const en = {
     skipBrand: "Skip this brand →",
 
     setFromAddressHeader: "Set your outbound From: address before sending",
-    setFromAddressBody: "Without this, outbound ships from the generic FUZE Atlas notification address and replies won't land in your inbox.",
+    setFromAddressBody:
+      "Without this, outbound ships from the generic FUZE Atlas notification address and replies won't land in your inbox.",
     currentlyLabel: "Currently:",
     openProfile: "Open Profile",
   },
@@ -5618,7 +5726,8 @@ const en = {
     linkNone: "— none —",
 
     step2Heading: "2. Device setup snapshot",
-    step2Help: "These measurements are captured with the test so we can reproduce or compare across units. Defaults are from the standard Solaris bench.",
+    step2Help:
+      "These measurements are captured with the test so we can reproduce or compare across units. Defaults are from the standard Solaris bench.",
     deviceNameLabel: "Device name",
     bulbWattsLabel: "Bulb wattage (W)",
     bulbTypeLabel: "Bulb type",
@@ -5635,9 +5744,11 @@ const en = {
     sampleIntervalLabel: "Sample interval (ms)",
 
     step3Heading: "3. Baseline run (untreated control)",
-    step3Help: "Run the device with an UNTREATED fabric of the same construction/color or no fabric at all. This is our comparison line.",
+    step3Help:
+      "Run the device with an UNTREATED fabric of the same construction/color or no fabric at all. This is our comparison line.",
     step4Heading: "4. Treated run (FUZE applied)",
-    step4Help: "Run the device with the FUZE-treated fabric at the selected tier. Series format matches the baseline.",
+    step4Help:
+      "Run the device with the FUZE-treated fabric at the selected tier. Series format matches the baseline.",
     csvFormatLine: "Paste CSV from the Pi OR enter manually. Format:",
     csvFormatExample: "t_sec, plateA_C, plateB_C, air_C, humidity_pct",
     csvFormatHint: "Header row optional. Pi sampling at 1 Hz for 10 min = 600 rows.",
@@ -5671,7 +5782,8 @@ const en = {
     crumbDashboard: "Dashboard",
     crumbHere: "Distributor Documents",
     pageTitle: "Distributor Document Management",
-    pageSubtitle: "Create, upload, and manage C of A, BOL, customs, and logistics documents for distributors",
+    pageSubtitle:
+      "Create, upload, and manage C of A, BOL, customs, and logistics documents for distributors",
 
     btnNewDocument: "+ New Document",
     btnCancel: "Cancel",
@@ -5683,7 +5795,8 @@ const en = {
     errorFailedCreate: "Failed to create document",
 
     formHeading: "Create Document Entry",
-    formHelp: "Enter document details directly. This creates a database record the distributor can see. Attach a URL to an uploaded file, or leave blank to fill in details for printing/emailing.",
+    formHelp:
+      "Enter document details directly. This creates a database record the distributor can see. Attach a URL to an uploaded file, or leave blank to fill in details for printing/emailing.",
     labelDistributor: "Distributor *",
     placeholderDistributor: "Select distributor...",
     labelDocType: "Document Type *",
@@ -5752,7 +5865,8 @@ const en = {
   consumptionAdmin: {
     loading: "Loading consumption data...",
     pageTitle: "Consumption & Reorder",
-    pageSubtitle: "Track factory FUZE usage, projected run-out dates, and automated reorder triggers",
+    pageSubtitle:
+      "Track factory FUZE usage, projected run-out dates, and automated reorder triggers",
 
     btnNewOrder: "+ New Order",
     btnLogUsage: "+ Log Usage",
@@ -5908,7 +6022,8 @@ const en = {
     crumbWizard: "BD Wizard",
     crumbHere: "Brand Discovery",
     pageTitle: "🌎 Worldwide Brand Discovery",
-    pageSubtitle: "Multi-AI engine — finds + validates textile brands across Anthropic, OpenAI, and Grok, then auto-attaches Apollo contacts to every new brand so the BD Wizard can use them immediately.",
+    pageSubtitle:
+      "Multi-AI engine — finds + validates textile brands across Anthropic, OpenAI, and Grok, then auto-attaches Apollo contacts to every new brand so the BD Wizard can use them immediately.",
 
     statTotalLabel: "Total Brands in DB",
     backToWizard: "← Back to Wizard",
@@ -5919,7 +6034,8 @@ const en = {
     statsNetworkError: "Network error while loading discovery stats.",
 
     autoEnrichTitle: "Auto-enrichment is on",
-    autoEnrichBody: "Every new brand created here gets up to 8 senior contacts (founder / C-suite / VP / head / director) attached via Apollo people-search by domain. The BD Wizard's filter lets these brands through immediately — no separate enrichment pass needed.",
+    autoEnrichBody:
+      "Every new brand created here gets up to 8 senior contacts (founder / C-suite / VP / head / director) attached via Apollo people-search by domain. The BD Wizard's filter lets these brands through immediately — no separate enrichment pass needed.",
 
     settingsHeading: "Discovery Settings",
     labelCategory: "Category",
@@ -5930,7 +6046,8 @@ const en = {
     btnRunning: "Running...",
     btnAllCategories: "🌍 All Categories",
 
-    runningBanner: "⏳ Running multi-AI discovery across Anthropic + OpenAI + Grok... This takes 30-60 seconds per category.",
+    runningBanner:
+      "⏳ Running multi-AI discovery across Anthropic + OpenAI + Grok... This takes 30-60 seconds per category.",
     errorPrefix: "❌",
     errorDefault: "Discovery failed",
 
@@ -5982,9 +6099,11 @@ const en = {
     labFallback: "CTLA Laboratories",
 
     requestedTestsLabel: "Requested Tests",
-    requestedTestsBody: "ICP-MS quantitative determination of silver (Ag) on treated fabric. Microwave-assisted aqua regia digest. 0.5 g per digest run. Report silver content in mg/kg (ppm) on fabric weight basis per fabric submission number.",
+    requestedTestsBody:
+      "ICP-MS quantitative determination of silver (Ag) on treated fabric. Microwave-assisted aqua regia digest. 0.5 g per digest run. Report silver content in mg/kg (ppm) on fabric weight basis per fabric submission number.",
     billingLabel: "Billing:",
-    billingBody: "Please invoice per fabric submission number so we can reconcile to the Atlas PO line items above.",
+    billingBody:
+      "Please invoice per fabric submission number so we can reconcile to the Atlas PO line items above.",
 
     manifestHeading: "Sample Manifest",
     colIndex: "#",
@@ -6043,7 +6162,8 @@ const en = {
   },
   worldwideInventoryPage: {
     pageTitle: "Worldwide Inventory",
-    pageSubtitle: "Global FUZE stock levels, consumption trends, hangtag inventory, and shipment tracking — the CFO/dashboard view.",
+    pageSubtitle:
+      "Global FUZE stock levels, consumption trends, hangtag inventory, and shipment tracking — the CFO/dashboard view.",
     sidelineLead: "Looking to spot-check who's about to run out instead?",
     sidelineLink: "Open the burn-rate / days-of-stock view →",
     updatedPrefix: "Updated:",
@@ -6412,7 +6532,8 @@ const en = {
   icpSamplePrepPage: {
     headerBadge: "FUZE Biotech · Quality & Labs",
     headerTitle: "ICP Sample Prep",
-    headerSubtitle: "Build a CTLA submission packet with one or more FUZE-treated fabric samples. One PO covers the whole batch; CTLA bills per fabric submission number.",
+    headerSubtitle:
+      "Build a CTLA submission packet with one or more FUZE-treated fabric samples. One PO covers the whole batch; CTLA bills per fabric submission number.",
     btnHowTo: "📋 How-To (SOP)",
 
     stepPick: "Pick fabrics",
@@ -6430,7 +6551,8 @@ const en = {
     btnContinue: "Continue →",
 
     step2Heading: "2. Confirm the fabric details we pulled from the library",
-    step2Sub: "These come straight from the Atlas fabric record — no re-typing. Remove any row that isn't actually in the bag, or go back to add more.",
+    step2Sub:
+      "These come straight from the Atlas fabric record — no re-typing. Remove any row that isn't actually in the bag, or go back to add more.",
     colFuze: "FUZE #",
     colCustomerCode: "Customer code",
     colFactoryCode: "Factory code",
@@ -6442,10 +6564,12 @@ const en = {
     btnBack: "← Back",
 
     step3Heading: "3. Apply FUZE — build the bath, pad, and dry",
-    step3Sub: "Pull the recipe straight from this fabric's latest Recipe Bench Test. Pick the FUZE tier and bath volume — we compute mL of 30 ppm FUZE stock + mL of DI water on the fly. Pad through the vertical micro-padder at the saved settings, dry in the chamber, then hit Pad + dry complete to record the SampleApplication.",
+    step3Sub:
+      "Pull the recipe straight from this fabric's latest Recipe Bench Test. Pick the FUZE tier and bath volume — we compute mL of 30 ppm FUZE stock + mL of DI water on the fly. Pad through the vertical micro-padder at the saved settings, dry in the chamber, then hit Pad + dry complete to record the SampleApplication.",
     sampleFallback: "Sample",
     noRecipeTitle: "No Recipe Bench Test linked to this fabric.",
-    noRecipeBody: "You have to run the Recipe Calculator first — that's where we measure pickup % and save per-tier dilution. Without it we can't build a bath.",
+    noRecipeBody:
+      "You have to run the Recipe Calculator first — that's where we measure pickup % and save per-tier dilution. Without it we can't build a bath.",
     openRecipeCalc: "Open Recipe Calculator →",
     labelRecipeBench: "Recipe Bench Test",
     pickupPrefix: "Pickup:",
@@ -6479,7 +6603,8 @@ const en = {
     errorBathVolume: "Bath volume must be greater than 0 L.",
 
     step4Heading: "4. Weigh each sample + confirm tier",
-    step4SubTpl: "Cut with the {wheel} cm² wheel, fragment to ~5 mm bits, and weigh the whole bag. We need more than {ship} g per fabric — CTLA digests {digest} g at a time.",
+    step4SubTpl:
+      "Cut with the {wheel} cm² wheel, fragment to ~5 mm bits, and weigh the whole bag. We need more than {ship} g per fabric — CTLA digests {digest} g at a time.",
     labelSampleMass: "Sample mass (g)",
     massBelow: "⚠ Below the {ship} g ship minimum — cut more.",
     labelTierLocked: "FUZE tier (locked from Step 3)",
@@ -6491,7 +6616,8 @@ const en = {
     underSummary: "under",
 
     step5Heading: "5. Review & submit to CTLA",
-    step5Sub: "Submitting creates a FUZE PO, auto-adds a line per fabric (so CTLA can invoice per submission number), and opens the printable packet to drop in the shipping bag.",
+    step5Sub:
+      "Submitting creates a FUZE PO, auto-adds a line per fabric (so CTLA can invoice per submission number), and opens the printable packet to drop in the shipping bag.",
     labelPriority: "Priority",
     priorityNormal: "Normal",
     priorityHigh: "High",
@@ -6506,7 +6632,8 @@ const en = {
     colConstructionColor: "Construction / color",
     totalRow: "Total",
     warningShort: "samples below",
-    warningShortTail: "g. CTLA needs at least {digest} g per digest run — ship extra so they can re-run if needed.",
+    warningShortTail:
+      "g. CTLA needs at least {digest} g per digest run — ship extra so they can re-run if needed.",
     btnSubmitting: "Submitting…",
     btnCreatePo: "Create PO & Open Printable Packet →",
   },
@@ -6514,7 +6641,8 @@ const en = {
     crumbAdmin: "Admin",
     crumbHere: "Contact Hygiene",
     pageTitle: "Contact Hygiene",
-    pageSubtitle: "Flags placeholder, role-mailbox, and malformed contacts so reps stop wasting outreach on Jane Doe. Reversible — un-hide to bring a contact back into the wizard.",
+    pageSubtitle:
+      "Flags placeholder, role-mailbox, and malformed contacts so reps stop wasting outreach on Jane Doe. Reversible — un-hide to bring a contact back into the wizard.",
 
     btnPreviewScan: "🔍 Preview scan",
     btnAutoHide: "🙈 Scan + auto-hide",
@@ -6522,7 +6650,8 @@ const en = {
     btnHiding: "Hiding…",
     titlePreviewScan: "Re-run the hygiene snapshot on every contact, without changing visibility",
     titleAutoHide: "Scan + auto-hide placeholder contacts from the BD Wizard",
-    confirmAutoHide: "Auto-hide will flip hiddenFromWizard = true for every contact the scan flags as placeholder or invalid-email. This is reversible (you can un-hide from this page) but affects every rep's BD Wizard immediately. Continue?",
+    confirmAutoHide:
+      "Auto-hide will flip hiddenFromWizard = true for every contact the scan flags as placeholder or invalid-email. This is reversible (you can un-hide from this page) but affects every rep's BD Wizard immediately. Continue?",
     promptHide: "Hide this contact from the BD Wizard? Reason (optional):",
     promptUnhide: "Un-hide this contact? Reason (optional, written to their notes):",
     failedPrefix: "Failed:",
@@ -6558,7 +6687,7 @@ const en = {
     searchPlaceholder: "Search name or email…",
 
     emptyTitle: "No contacts match the current filter.",
-    emptyUnscannedTpl: "{n} contacts have never been scanned — hit \"Preview scan\" to populate.",
+    emptyUnscannedTpl: '{n} contacts have never been scanned — hit "Preview scan" to populate.',
 
     colContact: "Contact",
     colBrandFactory: "Brand / Factory",
@@ -6577,7 +6706,8 @@ const en = {
     actionHide: "Hide",
     actionUnhide: "Un-hide",
 
-    helpFooter: "Scan walks every contact and snapshots verdict + flags onto the row. Preview only records the verdict; Scan + auto-hide also flips hiddenFromWizard for placeholders and invalid-email contacts. Both are reversible — click \"Un-hide\" to restore a contact, which also re-runs the snapshot in case the data has been fixed.",
+    helpFooter:
+      'Scan walks every contact and snapshots verdict + flags onto the row. Preview only records the verdict; Scan + auto-hide also flips hiddenFromWizard for placeholders and invalid-email contacts. Both are reversible — click "Un-hide" to restore a contact, which also re-runs the snapshot in case the data has been fixed.',
 
     verdictReal: "real",
     verdictSuspect: "suspect",
@@ -6588,12 +6718,13 @@ const en = {
   settingsEmailTemplates: {
     backToSettings: "← Settings",
     pageTitle: "Email Templates",
-    pageSubtitle: "Reusable email scaffolds for outreach. Use {firstName}, {company}, etc. to personalize on the fly.",
+    pageSubtitle:
+      "Reusable email scaffolds for outreach. Use {firstName}, {company}, etc. to personalize on the fly.",
     btnNew: "+ New Template",
     errorRequired: "Title, subject, and body are required.",
     errorLoadUser: "Failed to load user",
     errorLoadTemplates: "Failed to load templates",
-    confirmArchive: "Archive \"{title}\"? It won't show up in the picker anymore.",
+    confirmArchive: 'Archive "{title}"? It won\'t show up in the picker anymore.',
 
     formHeadingEdit: "Edit template",
     formHeadingNew: "New template",
@@ -6619,7 +6750,8 @@ const en = {
     previewBodyLabel: "Body",
 
     slotsHeading: "BD Wizard quick-pick slots",
-    slotsHelp: "Pin up to 10 of your templates to numbered slots. On the wizard Draft step, you'll see a 1–10 button strip that one-click-fills the subject and body.",
+    slotsHelp:
+      "Pin up to 10 of your templates to numbered slots. On the wizard Draft step, you'll see a 1–10 button strip that one-click-fills the subject and body.",
     openBdWizard: "Open BD Wizard →",
     slotEmptyTitle: "Empty slot — assign below.",
     slotEmpty: "empty",
@@ -6681,7 +6813,8 @@ const en = {
   },
   fabricLibraryPage: {
     pageTitle: "FUZE Fabric Library",
-    pageSubtitle: "Search FUZE-treated fabrics and verified test results across our global network. All data is anonymized — factory and brand identities are confidential.",
+    pageSubtitle:
+      "Search FUZE-treated fabrics and verified test results across our global network. All data is anonymized — factory and brand identities are confidential.",
 
     // Item 10 — search-first cards
     sbConstructionTitle: "Search by Fabric Construction",
@@ -6759,7 +6892,8 @@ const en = {
     businessHoursTitle: "Business Hours",
     startHourLabel: "Start Hour",
     endHourLabel: "End Hour",
-    hoursHintTpl: "Hours are in 24-hour format (0-23). Slots available from {start}:00 to {end}:00.",
+    hoursHintTpl:
+      "Hours are in 24-hour format (0-23). Slots available from {start}:00 to {end}:00.",
     slotDurationLabel: "Time Slot Duration",
     minSuffix: "min",
     timezoneLabel: "Timezone",
@@ -6818,25 +6952,38 @@ const en = {
     backLink: "← Back to FUZE Basics",
     kicker: "Application Methods",
     heroTitle: "FUZE works in your existing finishing line",
-    heroBody: "You don't need a new tank, a new oven, or a new piece of equipment to apply FUZE. Three application paths cover every textile production setup in operation today. F4 Essential Protection requires no curing oven at all on many substrates.",
+    heroBody:
+      "You don't need a new tank, a new oven, or a new piece of equipment to apply FUZE. Three application paths cover every textile production setup in operation today. F4 Essential Protection requires no curing oven at all on many substrates.",
     methodExhaustName: "Exhaust (dyebath)",
-    methodExhaustDesc: "Add FUZE to the dyebath. The metamaterial bonds during the existing dye exhaust process. No new tank, no new vessel, no new line.",
-    methodExhaustWhen: "Best for high-volume continuous dyeing. The metamaterial integrates with the dye-fixation step.",
+    methodExhaustDesc:
+      "Add FUZE to the dyebath. The metamaterial bonds during the existing dye exhaust process. No new tank, no new vessel, no new line.",
+    methodExhaustWhen:
+      "Best for high-volume continuous dyeing. The metamaterial integrates with the dye-fixation step.",
     methodPdcName: "Pad-Dry-Cure",
-    methodPdcDesc: "Run the fabric through a standard padder loaded with diluted FUZE bath. Squeeze, dry, cure as you normally would. Cure temperature 150-170°C.",
-    methodPdcWhen: "Most common application path. Compatible with every textile finishing line in operation today.",
+    methodPdcDesc:
+      "Run the fabric through a standard padder loaded with diluted FUZE bath. Squeeze, dry, cure as you normally would. Cure temperature 150-170°C.",
+    methodPdcWhen:
+      "Most common application path. Compatible with every textile finishing line in operation today.",
     methodSprayName: "Spray (head-spaced)",
-    methodSprayDesc: "6-inch head spacing, 15 m/min line speed. Atomizes diluted FUZE onto the fabric surface, then dry/cure. Ideal for finished garments or non-woven substrates.",
-    methodSprayWhen: "Garments already cut/sewn, or specialty substrates where exhaust/PDC don't apply.",
+    methodSprayDesc:
+      "6-inch head spacing, 15 m/min line speed. Atomizes diluted FUZE onto the fabric surface, then dry/cure. Ideal for finished garments or non-woven substrates.",
+    methodSprayWhen:
+      "Garments already cut/sewn, or specialty substrates where exhaust/PDC don't apply.",
     whenToUseLabel: "When to use",
     operatorTitle: "Why this matters to a factory operator",
-    operatorBullet1: "✓ No new capital equipment. FUZE drops into your existing pad/dye/spray line.",
-    operatorBullet2: "✓ No binder, no crosslinker, no formaldehyde. Less inventory to manage, no carcinogenic-substance handling protocols.",
-    operatorBullet3: "✓ No curing-oven dependency at F4. Lower-tier applications can air-dry; F1-F3 use 150-170°C, the same range as standard PDC finishing.",
-    operatorBullet4: "✓ No shelf life on stored FUZE. Drums and carboys can sit in your finishing room indefinitely without degrading.",
-    operatorBullet5: "✓ Standard 19L carboy is the smallest order unit. Order custom volumes (47L, 285L, 1300L) when you need an exact match.",
+    operatorBullet1:
+      "✓ No new capital equipment. FUZE drops into your existing pad/dye/spray line.",
+    operatorBullet2:
+      "✓ No binder, no crosslinker, no formaldehyde. Less inventory to manage, no carcinogenic-substance handling protocols.",
+    operatorBullet3:
+      "✓ No curing-oven dependency at F4. Lower-tier applications can air-dry; F1-F3 use 150-170°C, the same range as standard PDC finishing.",
+    operatorBullet4:
+      "✓ No shelf life on stored FUZE. Drums and carboys can sit in your finishing room indefinitely without degrading.",
+    operatorBullet5:
+      "✓ Standard 19L carboy is the smallest order unit. Order custom volumes (47L, 285L, 1300L) when you need an exact match.",
     runNumbersTitle: "Run your numbers",
-    runNumbersBody: "The application calculator computes exact FUZE volume needed per square meter of fabric at your tier of choice. Plug in fabric weight (gsm), width, and target tier — get back liters of FUZE bath, mL of stock concentrate, and dollars per linear meter.",
+    runNumbersBody:
+      "The application calculator computes exact FUZE volume needed per square meter of fabric at your tier of choice. Plug in fabric weight (gsm), width, and target tier — get back liters of FUZE bath, mL of stock concentrate, and dollars per linear meter.",
     runNumbersCta: "Open the application calculator →",
     backBasicsBtn: "Back to FUZE Basics",
     seePricingBtn: "See pricing & tiers",
@@ -6846,8 +6993,10 @@ const en = {
     crumbDistributors: "Distributors",
     crumbInventory: "Inventory",
     title: "Distributor Inventory & Burn Rate",
-    subtitle: "Stock on hand, 90-day burn rate, projected runout — sortable spot-check view across every active distributor.",
-    worldwideHintPrefix: "Looking for hangtag inventory, weekly consumption charts, or in-transit shipment tracking? ",
+    subtitle:
+      "Stock on hand, 90-day burn rate, projected runout — sortable spot-check view across every active distributor.",
+    worldwideHintPrefix:
+      "Looking for hangtag inventory, weekly consumption charts, or in-transit shipment tracking? ",
     worldwideHintLink: "Open the worldwide dashboard view →",
     sumDistributors: "Distributors",
     sumTotalStock: "Total Stock",
@@ -6872,7 +7021,8 @@ const en = {
     healthyBadge: "✓ healthy",
     neverLabel: "never",
     burnSuffix: "L/day",
-    footerNote: "Sorted: low-stock first, then idle, then by days-of-stock-left ascending. \"Daily burn\" = rolling 90-day average of liters shipped to factories. \"Days left\" = current stock ÷ daily burn. \"Idle\" = no factory orders in last 90 days. \"No price\" means FUZE wholesale rate is unset; the distributor cannot place restock orders. Edit on the per-distributor page.",
+    footerNote:
+      'Sorted: low-stock first, then idle, then by days-of-stock-left ascending. "Daily burn" = rolling 90-day average of liters shipped to factories. "Days left" = current stock ÷ daily burn. "Idle" = no factory orders in last 90 days. "No price" means FUZE wholesale rate is unset; the distributor cannot place restock orders. Edit on the per-distributor page.',
   },
   conversionTracking: {
     crumbDashboard: "Dashboard",
@@ -6900,7 +7050,8 @@ const en = {
   },
   testCatalogAdmin: {
     title: "Test Catalog & Pricing",
-    subtitle: "Manage test types, pricing, turnaround times, and sample requirements. Changes are reflected immediately on the factory test request form.",
+    subtitle:
+      "Manage test types, pricing, turnaround times, and sample requirements. Changes are reflected immediately on the factory test request form.",
     sourcePrefix: "Source:",
     sourceDb: "Database (admin-managed)",
     sourceStatic: "Static defaults",
@@ -7038,7 +7189,8 @@ const en = {
     failLabel: "FAIL",
     emptyEmoji: "🔎",
     emptyTitle: "No tests match these filters",
-    emptyBody: "Try widening the date range, clearing the tier/passed filter, or removing the test-type constraint.",
+    emptyBody:
+      "Try widening the date range, clearing the tier/passed filter, or removing the test-type constraint.",
     compareHeader: "Compare",
     rowTestType: "Test type",
     rowDate: "Date",
@@ -7061,7 +7213,8 @@ const en = {
   },
   batchesAdmin: {
     title: "Production Batches",
-    subtitle: "Each batch gets a QR sticker design printed and applied identically to every 19L carboy from that batch.",
+    subtitle:
+      "Each batch gets a QR sticker design printed and applied identically to every 19L carboy from that batch.",
     newBatchBtn: "+ New Batch",
     formTitle: "Log New Production Batch",
     fProductionDate: "Production Date",
@@ -7096,7 +7249,8 @@ const en = {
   },
   competitorPricing: {
     title: "Market Landscape",
-    subtitle: "Antimicrobial textile treatment market — pricing, chemistry, and product comparison across providers.",
+    subtitle:
+      "Antimicrobial textile treatment market — pricing, chemistry, and product comparison across providers.",
     legendVerified: "Verified data",
     legendEstimated: "Estimated",
     loading: "Loading...",
@@ -7137,9 +7291,10 @@ const en = {
     crumbAdmin: "Admin",
     crumbCurrent: "Data entry",
     title: "Data entry hub",
-    subtitle: "Quick mini-forms for the common setup tasks. Each one is the fast path; richer editing lives on the per-entity page.",
+    subtitle:
+      "Quick mini-forms for the common setup tasks. Each one is the fast path; richer editing lives on the per-entity page.",
     toastSpecSavedTpl: "Spec saved for {name}",
-    toastPricingSavedTpl: "Pricing tier \"{label}\" saved",
+    toastPricingSavedTpl: 'Pricing tier "{label}" saved',
     toastLinkedTpl: "Linked {brand} → {factory}",
     toastCatalogSavedTpl: "Catalog row for {test} saved",
     cliHeader: "Or use the CLI for bulk seeding:",
@@ -7147,7 +7302,8 @@ const en = {
     fallbackFactory: "factory",
     errSave: "Save failed",
     secSpecTitle: "Set brand spec",
-    secSpecHint: "Tier + ICP cadence + protocol doc. Triggers cadence cron + supply chain dashboard.",
+    secSpecHint:
+      "Tier + ICP cadence + protocol doc. Triggers cadence cron + supply chain dashboard.",
     secSpecDeepLinkPrefix: "Or go deep: ",
     pickBrand: "— pick brand —",
     cadenceBatchesPlaceholder: "cadence (batches)",
@@ -7160,7 +7316,8 @@ const en = {
     discountPlaceholder: "discount %",
     pricingLabelPlaceholder: "label (Bronze / Steel / Gold)",
     secLinkTitle: "Link a brand to a factory",
-    secLinkHint: "Adds a SupplyChainLink — brand sees this factory in their supply chain dashboard.",
+    secLinkHint:
+      "Adds a SupplyChainLink — brand sees this factory in their supply chain dashboard.",
     pickBrandShort: "— brand —",
     pickFactory: "— factory —",
     linkBtn: "Link",
@@ -7189,15 +7346,18 @@ const en = {
     kicker: "BD Wizard — Reply",
     draftTitleTpl: "Draft a reply to {contact}",
     exitedRepliedBadge: "✓ Sequence exited — replied",
-    stillActiveBadge: "Sequence still active — it will be exited as \"replied\" on first auto-detect.",
+    stillActiveBadge:
+      'Sequence still active — it will be exited as "replied" on first auto-detect.',
     originalColdLabel: "Original cold email",
     subjectPrefix: "Subject:",
     noSubject: "(no subject)",
     sentAtTpl: "Sent {when}",
     noPriorSent: "No prior sent email in this sequence.",
     summaryLabel: "What did they say? (summary of the reply)",
-    summaryPlaceholder: "They're interested but want to know how FUZE F1 compares to their existing treatment. Also asked about MOQ for a sample run.",
-    summaryHint: "This feeds the draft generator — the draft will lead with their reply, not with FUZE. Keep it conversational, 1-3 sentences.",
+    summaryPlaceholder:
+      "They're interested but want to know how FUZE F1 compares to their existing treatment. Also asked about MOQ for a sample run.",
+    summaryHint:
+      "This feeds the draft generator — the draft will lead with their reply, not with FUZE. Keep it conversational, 1-3 sentences.",
     draftingBtn: "Drafting…",
     regenerateBtn: "Regenerate draft",
     generateBtn: "Generate draft",
@@ -7205,7 +7365,8 @@ const en = {
     reviewTitle: "Review & send",
     subjectFieldLabel: "Subject",
     bodyFieldLabel: "Body",
-    scrubberFlagTpl: "Anti-AI scrubber flagged: {list}. Scan the body and rewrite any phrases that still feel canned.",
+    scrubberFlagTpl:
+      "Anti-AI scrubber flagged: {list}. Scan the body and rewrite any phrases that still feel canned.",
     sendingBtn: "Sending…",
     sendBtnTpl: "Send to {recipient}",
     clearDraft: "Clear draft",
@@ -7214,7 +7375,8 @@ const en = {
   },
   productDocumentsAdmin: {
     title: "Product Documents",
-    introPrefix: "Product-wide documents (TDS, SDS, Application Guide). These are static and apply to every batch. Batch-specific COAs are uploaded per batch in ",
+    introPrefix:
+      "Product-wide documents (TDS, SDS, Application Guide). These are static and apply to every batch. Batch-specific COAs are uploaded per batch in ",
     introLink: "Production Batches",
     introSuffix: ".",
     docTypeTDSLabel: "Technical Data Sheet (TDS)",
@@ -7303,7 +7465,8 @@ const en = {
     colPipeline: "Pipeline $",
     colRefs: "Refs",
     colWon: "Won (90d)",
-    footerTpl: "Window starts {date}. Refreshes every 5 minutes. \"Emails\" = every outbound email the rep sent (wizard + brand page + contact page). \"Sequences\" is the subset that ran through a multi-step cadence. \"Contacts\" is the distinct number of humans the rep touched via email or LinkedIn. \"Converted\" = brands moved past PRESENTATION stage in window. ACM hand-off keeps sourcing rep as account manager — commission attribution is preserved.",
+    footerTpl:
+      'Window starts {date}. Refreshes every 5 minutes. "Emails" = every outbound email the rep sent (wizard + brand page + contact page). "Sequences" is the subset that ran through a multi-step cadence. "Contacts" is the distinct number of humans the rep touched via email or LinkedIn. "Converted" = brands moved past PRESENTATION stage in window. ACM hand-off keeps sourcing rep as account manager — commission attribution is preserved.',
   },
   brandPricingTiers: {
     loading: "Loading pricing tiers…",
@@ -7312,9 +7475,11 @@ const en = {
     backToBrandTpl: "← Back to {name}",
     titlePrefix: "Volume Pricing",
     titleBrandSuffixTpl: " — {name}",
-    introPrefix: "Cumulative consumption thresholds and the discount the brand qualifies for once they cross each level. Surfaces on the brand's ",
+    introPrefix:
+      "Cumulative consumption thresholds and the discount the brand qualifies for once they cross each level. Surfaces on the brand's ",
     introLink: "/brand-portal/pricing",
-    introSuffix: " dashboard. Pricing changes are contractual — only ADMIN / EMPLOYEE / SALES_MANAGER can edit.",
+    introSuffix:
+      " dashboard. Pricing changes are contractual — only ADMIN / EMPLOYEE / SALES_MANAGER can edit.",
     formAddTitle: "Add a new pricing level",
     formEditTitle: "Edit pricing level",
     fieldThresholdLabel: "Threshold liters",
@@ -7348,7 +7513,8 @@ const en = {
     configuredHintSuffix: " to load a row into the form above.",
     emptyEmoji: "📊",
     emptyTitle: "No volume pricing configured yet",
-    emptyBody: "Add the first level above. Brands without any active pricing see a friendly standard-pricing message on their pricing page.",
+    emptyBody:
+      "Add the first level above. Brands without any active pricing see a friendly standard-pricing message on their pricing page.",
     colThreshold: "Threshold",
     colDiscount: "Discount",
     colLabel: "Label",
@@ -7369,7 +7535,8 @@ const en = {
     backShort: "← Back",
     printButton: "🖨 Print / Save as PDF",
     unsafeBadge: "⚠ Not safe to share externally",
-    unsafeIntro: "This report is missing customer context that the recipient needs to identify it. Fill in the following on the fabric record before sending:",
+    unsafeIntro:
+      "This report is missing customer context that the recipient needs to identify it. Fill in the following on the fabric record before sending:",
     unsafeEditPrefix: "Edit the fabric → ",
     unsafeOpenLink: "open the fabric page",
     missingBrand: "Brand",
@@ -7419,7 +7586,8 @@ const en = {
     forKgPrefixTpl: "For {kg} kg",
     targetProdTpl: "Target production: {kg} kg fabric · Total bath volume: {volume} L",
     quickBathTitle: "Quick bath reference — FUZE stock per bath",
-    quickBathFootTpl: "Pickup {pickup}% · Stock {stock} mg/L · Top up with water to reach bath volume.",
+    quickBathFootTpl:
+      "Pickup {pickup}% · Stock {stock} mg/L · Top up with water to reach bath volume.",
     notesTitle: "Notes",
     footerCompany: "FUZE Biotech · Salt Lake City, UT · andrew@fuze47.com",
     footerPrintedTpl: "Printed {when}",
@@ -7429,11 +7597,13 @@ const en = {
     crumbAdmin: "Admin",
     crumbCurrent: "HubSpot Import",
     title: "HubSpot → Atlas Migration",
-    intro: "Day 1 — pull every Company and Contact from your HubSpot account into Atlas. Idempotent: re-running picks up where it left off and updates existing rows instead of duplicating. Day 2 will add Notes + Engagements.",
+    intro:
+      "Day 1 — pull every Company and Contact from your HubSpot account into Atlas. Idempotent: re-running picks up where it left off and updates existing rows instead of duplicating. Day 2 will add Notes + Engagements.",
     authChecking: "Checking HubSpot connection…",
     authReady: "✓ HubSpot key works. Ready to import.",
     authFailed: "HubSpot connection failed:",
-    authHint: "Set HUBSPOT_API_KEY in Vercel Settings → Environment Variables (Production scope). The token is a Private App access token (Settings → Integrations → Private Apps in HubSpot). After adding, redeploy or hard-refresh.",
+    authHint:
+      "Set HUBSPOT_API_KEY in Vercel Settings → Environment Variables (Production scope). The token is a Private App access token (Settings → Integrations → Private Apps in HubSpot). After adding, redeploy or hard-refresh.",
     previewTitle: "Source preview",
     previewRefresh: "↻ Refresh",
     previewRefreshing: "Refreshing…",
@@ -7445,13 +7615,17 @@ const en = {
     previewNoCompanies: "No companies",
     previewMostRecent: "Most-recent 5",
     previewNoName: "(no name)",
-    previewFooter: "These are the totals you should expect to land in Atlas after running both phases below. Sample rows are the 5 most-recently modified — useful to spot field drift (missing emails, junk domains, stale form-submission contacts).",
+    previewFooter:
+      "These are the totals you should expect to land in Atlas after running both phases below. Sample rows are the 5 most-recently modified — useful to spot field drift (missing emails, junk domains, stale form-submission contacts).",
     apiPathLabel: "API path (legacy — needs working HubSpot token)",
-    apiPathHint: "Use this if you have a Private App access token in HUBSPOT_API_KEY. Falls through to CSV path above if auth fails.",
+    apiPathHint:
+      "Use this if you have a Private App access token in HUBSPOT_API_KEY. Falls through to CSV path above if auth fails.",
     step1Title: "1. Pull Companies → Brands",
-    step1Description: "Runs first. HubSpot Companies become Atlas Brand rows in LEAD stage. Matched by hubspotId → website domain → name. Subsequent contacts will link to brands via this match.",
+    step1Description:
+      "Runs first. HubSpot Companies become Atlas Brand rows in LEAD stage. Matched by hubspotId → website domain → name. Subsequent contacts will link to brands via this match.",
     step2Title: "2. Pull Contacts",
-    step2Description: "Runs after companies so each contact can link to its Brand via the HubSpot company association. Matched by hubspotId → email. Contacts whose company hasn't been imported will land unlinked — re-run companies then contacts to fix.",
+    step2Description:
+      "Runs after companies so each contact can link to its Brand via the HubSpot company association. Matched by hubspotId → email. Contacts whose company hasn't been imported will land unlinked — re-run companies then contacts to fix.",
     pullNext50: "Pull next 50",
     pullUntilDone: "Pull until done",
     pullingState: "⏳ Pulling…",
@@ -7460,7 +7634,8 @@ const en = {
     allPulled: "✓ All HubSpot rows pulled",
     resumeNote: "Resume cursor saved — next click continues from where you left off.",
     requireCompaniesFirst: "Pull companies first so contacts can link to their brand.",
-    day2Note: "Day 2 (next ship): Notes + Engagements (calls, emails, meetings) → become Atlas Note rows on the right brandId with original author + timestamp preserved.",
+    day2Note:
+      "Day 2 (next ship): Notes + Engagements (calls, emails, meetings) → become Atlas Note rows on the right brandId with original author + timestamp preserved.",
     statPulled: "Pulled",
     statBatches: "Batches",
     statBrandsCreated: "Brands created",
@@ -7497,7 +7672,8 @@ const en = {
     triageNotesLabel: "Triage notes (internal)",
     triageNotesPlaceholder: "Internal only — why this is valid / what to do / who owns it",
     resolutionLabel: "Resolution (shown to user in the notification email)",
-    resolutionPlaceholder: 'E.g. "Factory dropdown now shows all approved factories. Try again on the same page."',
+    resolutionPlaceholder:
+      'E.g. "Factory dropdown now shows all approved factories. Try again on the same page."',
     changeStatusLabel: "Change status →",
     fixPromptMessage: "Add a one-line resolution note (shown to the user in the email):",
     catBroken: "Broken",
@@ -7554,10 +7730,13 @@ const en = {
     deleteIrrelevantTpl: "Irrelevant ({count})",
     deleteUnknownTpl: "Unknown ({count})",
     deleteNote: "Only brands with zero activity are deleted",
-    confirmDeleteDead: "DELETE all dead/non-existent brands with no activity? This cannot be undone.",
-    confirmDeleteIrrelevant: "DELETE all irrelevant brands with no activity? This cannot be undone.",
+    confirmDeleteDead:
+      "DELETE all dead/non-existent brands with no activity? This cannot be undone.",
+    confirmDeleteIrrelevant:
+      "DELETE all irrelevant brands with no activity? This cannot be undone.",
     confirmDeleteUnknown: "DELETE all unknown brands with no activity? This cannot be undone.",
-    confirmArchiveIrrelevant: "ARCHIVE all irrelevant LEAD brands? They will be moved to Archive stage.",
+    confirmArchiveIrrelevant:
+      "ARCHIVE all irrelevant LEAD brands? They will be moved to Archive stage.",
     confirmArchiveUnknown: "ARCHIVE all unknown LEAD brands? They will be moved to Archive stage.",
     confirmGeneric: "Run cleanup action: {action}?",
     validationLogTitle: "Validation Log",
@@ -7661,9 +7840,11 @@ const en = {
     colPerLab: "Per-lab results",
     emptyTitle: "No multi-lab fabrics yet",
     emptyBodyBefore: "Inter-lab variance compares fabrics tested by ≥2 labs in the last",
-    emptyBodyAfter: "days. Once you have the same fabric tested at a partner lab AND at FUZE USA (or any 2-lab pair), it'll show up here.",
+    emptyBodyAfter:
+      "days. Once you have the same fabric tested at a partner lab AND at FUZE USA (or any 2-lab pair), it'll show up here.",
     biasTitle: "Per-lab calibration bias",
-    biasHint: "Mean of (this lab's result − group mean) across every shared fabric. Positive = runs higher than peer labs; negative = runs lower.",
+    biasHint:
+      "Mean of (this lab's result − group mean) across every shared fabric. Positive = runs higher than peer labs; negative = runs lower.",
     emptyBias: "No bias data yet.",
   },
   labCreditsAdmin: {
@@ -7690,7 +7871,8 @@ const en = {
     crumbSalesPipeline: "Sales & Pipeline",
     crumbBdFunnel: "BD funnel",
     title: "Pipeline funnel",
-    subtitle: "Inflow / outflow over the last 30 / 60 / 90 days, plus stage-to-stage conversion rate. Sourced from BrandStageTransition rows written on every Brand.pipelineStage flip.",
+    subtitle:
+      "Inflow / outflow over the last 30 / 60 / 90 days, plus stage-to-stage conversion rate. Sourced from BrandStageTransition rows written on every Brand.pipelineStage flip.",
     colStage: "Stage",
     colCurrent: "Current",
     colIn30: "In 30d",
@@ -7701,7 +7883,8 @@ const en = {
     colOut90: "Out 90d",
     colAvgDwell: "Avg dwell",
     colToNext: "→ next",
-    footerHint: "Conversion = exits that landed on the canonical next stage / total exits observed in the last 90 days. Stages with no exits in the window show n=0 — they're slow or stable, not bad.",
+    footerHint:
+      "Conversion = exits that landed on the canonical next stage / total exits observed in the last 90 days. Stages with no exits in the window show n=0 — they're slow or stable, not bad.",
     errLoadFailed: "Failed to load funnel",
   },
   bdSequenceAnalytics: {
@@ -7739,7 +7922,8 @@ const en = {
     brandLocation: "Salt Lake City, Utah USA",
     orderLabel: "Order",
     scanToVerifyTitle: "Scan to verify",
-    scanToVerifyBody: "Open this label on a phone camera to load shipment status, lifecycle, SDS, and COA.",
+    scanToVerifyBody:
+      "Open this label on a phone camera to load shipment status, lifecycle, SDS, and COA.",
     tierLabel: "Tier",
     volumeLabel: "Volume",
     bottlesSuffix: "bottles",
@@ -7755,7 +7939,8 @@ const en = {
   },
   pressKitAdmin: {
     title: "Press kit",
-    subtitle: "Manage what appears on the public /press page. Toggling active hides a row without deleting it.",
+    subtitle:
+      "Manage what appears on the public /press page. Toggling active hides a row without deleting it.",
     addItemTitle: "Add item",
     urlPlaceholder: "URL",
     captionPlaceholder: "caption",
@@ -7777,7 +7962,8 @@ const en = {
   },
   accountsAdmin: {
     title: "Accounts",
-    subtitleBefore: "Brands past the Lead stage — received a presentation, in testing, producing, or already customers. For new prospects, go to",
+    subtitleBefore:
+      "Brands past the Lead stage — received a presentation, in testing, producing, or already customers. For new prospects, go to",
     brandPipelineLink: "Brand Pipeline",
     allFilter: "All",
     stagePresentation: "Presentation",
@@ -7802,7 +7988,8 @@ const en = {
     title: "Supply-chain globe",
     emptyTitle: "No geocoded entities yet",
     emptyHint: "Run the geocoder to populate lat/lng from each entity's city + country:",
-    emptyFooter: "Nominatim has a 1 req/sec rate limit — a full pass takes a few minutes. Re-runs skip rows that already have coordinates.",
+    emptyFooter:
+      "Nominatim has a 1 req/sec rate limit — a full pass takes a few minutes. Re-runs skip rows that already have coordinates.",
     factoriesLabel: "factories",
     brandsLabel: "brands",
     labsLabel: "labs",
@@ -7829,14 +8016,16 @@ const en = {
     crumbDistributors: "Distributors",
     crumbTiers: "Tiers",
     headerPrefix: "Pricing Tiers —",
-    subtitle: "Set up to 5 pricing tiers for this distributor. Tiers are generic by name (Tier 1…Tier 5); the distributor decides what each tier means — geography, shipping/tariff bands, end-use margin, position in the chain. Factories assigned to this distributor get placed into a tier below.",
+    subtitle:
+      "Set up to 5 pricing tiers for this distributor. Tiers are generic by name (Tier 1…Tier 5); the distributor decides what each tier means — geography, shipping/tariff bands, end-use margin, position in the chain. Factories assigned to this distributor get placed into a tier below.",
     subDistNoteBefore: "Note: this distributor is a sub of",
     subDistNoteAfter: "Their restocks order from the master, not from FUZE.",
     distributorNotFound: "Distributor not found.",
     savedMsg: "Saved.",
     saveBtn: "💾 Save Tier Table",
     savingBtn: "Saving...",
-    saveHint: "Empty $/L clears that tier. Factories assigned to a cleared tier will fall back to the default pricing row.",
+    saveHint:
+      "Empty $/L clears that tier. Factories assigned to a cleared tier will fall back to the default pricing row.",
     colTier: "Tier",
     colName: "Name",
     colPricePerL: "$/L",
@@ -7848,7 +8037,8 @@ const en = {
     colFactories: "Factories",
     optionalPlaceholder: "optional",
     assignTitle: "Assign Factories to Tiers",
-    noFactoriesLinked: "No factories are linked to this distributor yet — assign them on the factory edit page.",
+    noFactoriesLinked:
+      "No factories are linked to this distributor yet — assign them on the factory edit page.",
     factorySingularPart: "factory is",
     factoryPluralPart: "factories are",
     linkedToPrefix: "linked to",
@@ -7867,7 +8057,8 @@ const en = {
     crumbAdmin: "Admin",
     crumbSampleRequests: "Sample Requests",
     title: "Factory Sample Requests",
-    subtitle: "Inbound FUZE sample / trial requests from factories. Action needed rows (SUBMITTED, UNDER_REVIEW, ICP_PENDING) bubble to the top so they don't fall through the cracks.",
+    subtitle:
+      "Inbound FUZE sample / trial requests from factories. Action needed rows (SUBMITTED, UNDER_REVIEW, ICP_PENDING) bubble to the top so they don't fall through the cracks.",
     tileTotal: "Total",
     tileSubmitted: "Submitted",
     tileUnderReview: "Under review",
@@ -7904,7 +8095,8 @@ const en = {
     crumbSOWs: "SOWs",
     crumbDashboard: "Dashboard",
     title: "SOW Dashboard",
-    subtitle: "Every active SOW across the customer portfolio. Stale and signed-but-no-progress engagements bubble to the top so they don't slip. Click into a brand to act.",
+    subtitle:
+      "Every active SOW across the customer portfolio. Stale and signed-but-no-progress engagements bubble to the top so they don't slip. Click into a brand to act.",
     cardTotal: "Total SOWs",
     cardStale: "Stale 14+d",
     cardSignedNoProgress: "Signed, no progress",
@@ -7930,11 +8122,13 @@ const en = {
     duePrefix: "due",
     daysAgoSuffix: "d ago",
     healthyLabel: "✓ healthy",
-    footerHint: "Stale = 14+ days no activity while still in DRAFT/SENT/SIGNED/ACTIVE. Signed-no-progress = SIGNED or ACTIVE for 30+ days with milestones defined but none completed. Last activity is the most recent of SOW edit, milestone completion, or test request submission.",
+    footerHint:
+      "Stale = 14+ days no activity while still in DRAFT/SENT/SIGNED/ACTIVE. Signed-no-progress = SIGNED or ACTIVE for 30+ days with milestones defined but none completed. Last activity is the most recent of SOW edit, milestone completion, or test request submission.",
   },
   acmTasks: {
     title: "🗓️ ACM Tasks",
-    subtitle: "Week-before + day-before reminders go out automatically via bell + email at 8 AM Taipei.",
+    subtitle:
+      "Week-before + day-before reminders go out automatically via bell + email at 8 AM Taipei.",
     tabOpen: "Open",
     tabCompleted: "Completed",
     onlyMine: "Only mine",
@@ -8020,15 +8214,20 @@ const en = {
     printBtn: "🖨 Print",
     instructionsTitle: "Two 4×6 sheets will print:",
     page1TitleBold: "Page 1 — carrier sticker sheet:",
-    page1Body: "5 distinct labels stacked vertically. Cut along the dashed lines and apply one to each cut sample.",
+    page1Body:
+      "5 distinct labels stacked vertically. Cut along the dashed lines and apply one to each cut sample.",
     page2TitleBold: "Page 2 — baggie sticker:",
-    page2Body: "single full 4×6 with fabric info + the ICP request data (PO#, tier, lab). Stick on the outside of the plastic baggie holding the cut samples.",
-    paperHint: "Both pages use the same 4×6 paper size — set your label printer to 4 × 6 inches + scale actual size and run them as a single job.",
+    page2Body:
+      "single full 4×6 with fabric info + the ICP request data (PO#, tier, lab). Stick on the outside of the plastic baggie holding the cut samples.",
+    paperHint:
+      "Both pages use the same 4×6 paper size — set your label printer to 4 × 6 inches + scale actual size and run them as a single job.",
     multiRequestsTitleBefore: "This fabric has",
     multiRequestsTitleAfter: "test requests on file",
-    multiRequestsBody: "The baggie sticker pulls from the selected request. Default is the most recent. Pick a different one to re-print labels for a past ICP run:",
+    multiRequestsBody:
+      "The baggie sticker pulls from the selected request. Default is the most recent. Pick a different one to re-print labels for a past ICP run:",
     noRequestWarn: "⚠ No ICP request linked to this fabric yet.",
-    noRequestBody: "The baggie sticker will print fabric identity but won't have a PO#, tier, or lab. Run the ICP Sample Prep wizard at",
+    noRequestBody:
+      "The baggie sticker will print fabric identity but won't have a PO#, tier, or lab. Run the ICP Sample Prep wizard at",
     noRequestSuffix: "first if this is going to a lab.",
     ofLabel: "of",
     icpSampleSubmission: "ICP Sample Submission",
@@ -8037,7 +8236,8 @@ const en = {
     appliedRecipePrefix: "Applied recipe:",
     bathSuffix: "bath",
     driedPrefix: "dried",
-    noIcpRequestBox: "No ICP request linked. Run the Sample Prep wizard before shipping or write the PO# on this label by hand.",
+    noIcpRequestBox:
+      "No ICP request linked. Run the Sample Prep wizard before shipping or write the PO# on this label by hand.",
     footerCompany: "FUZE Biotech · 1895 W 2100 S, SLC UT 84119 · andrew@fuze47.com",
     fieldBrand: "Brand",
     fieldFactory: "Factory",
@@ -8088,7 +8288,8 @@ const en = {
     resettingBtn: "Resetting...",
     backToSignIn: "Back to Sign In",
     successTitle: "Password Reset Successful",
-    successBody: "Your password has been reset successfully. You can now sign in with your new password.",
+    successBody:
+      "Your password has been reset successfully. You can now sign in with your new password.",
     signInBtn: "Sign In",
     invalidLinkTitle: "Invalid Reset Link",
     invalidLinkBody: "The reset link is invalid or has expired. Please request a new one.",
@@ -8110,7 +8311,8 @@ const en = {
     failedTitle: "Verification Failed",
     resendVerificationBtn: "Resend Verification Email",
     checkEmailTitle: "Check Your Email",
-    checkEmailBody: "A verification link has been sent to your email address. Click the link to verify your account.",
+    checkEmailBody:
+      "A verification link has been sent to your email address. Click the link to verify your account.",
     resendEmailBtn: "Resend Email",
     sendingBtn: "Sending...",
     errVerifyFailed: "Failed to verify email",
@@ -8121,7 +8323,8 @@ const en = {
     crumbPublicDocs: "Public Documents",
     headerPrefix: "FUZE",
     headerLeadBefore: "Public reference documents for the FUZE",
-    headerLeadAfter: "product line. For private documents (full TDS/SDS, internal pricing, application guides), log in to the FUZE Atlas portal for your role.",
+    headerLeadAfter:
+      "product line. For private documents (full TDS/SDS, internal pricing, application guides), log in to the FUZE Atlas portal for your role.",
     catTdsSds: "TDS / SDS",
     catToxicology: "Toxicology",
     catPricing: "Pricing",
@@ -8169,21 +8372,31 @@ const en = {
     backLink: "← Back to FUZE Basics",
     kicker: "The FUZE Story",
     heroTitle: "From recycled electronics to permanent antimicrobial",
-    heroBody: "FUZE metamaterial is produced via liquid laser ablation: a 30-amp laser, a 1m² production table, and a feedstock of recycled electronics. The entire production cell can be powered by solar. We're not just antimicrobial — we're an e-waste upcycling operation that ends in your fabric.",
+    heroBody:
+      "FUZE metamaterial is produced via liquid laser ablation: a 30-amp laser, a 1m² production table, and a feedstock of recycled electronics. The entire production cell can be powered by solar. We're not just antimicrobial — we're an e-waste upcycling operation that ends in your fabric.",
     card1Title: "Recycled feedstock",
-    card1Body: "Every gram of FUZE active agent originates from elemental precious metal recovered from end-of-life electronics. We don't mine. We don't refine virgin material. We pull metal that would otherwise sit in a landfill or get incinerated.",
+    card1Body:
+      "Every gram of FUZE active agent originates from elemental precious metal recovered from end-of-life electronics. We don't mine. We don't refine virgin material. We pull metal that would otherwise sit in a landfill or get incinerated.",
     card2Title: "Liquid laser ablation",
-    card2Body: "A 30-amp laser pulse vaporizes the metal feedstock submerged in 99.998% ultrapure 18-megaohm DI water. What condenses out is FUZE metamaterial — a high-density elemental allotrope, 20 ppm in the delivered stock concentration. No solvents. No precursor chemistry. No surfactants.",
+    card2Body:
+      "A 30-amp laser pulse vaporizes the metal feedstock submerged in 99.998% ultrapure 18-megaohm DI water. What condenses out is FUZE metamaterial — a high-density elemental allotrope, 20 ppm in the delivered stock concentration. No solvents. No precursor chemistry. No surfactants.",
     card3Title: "Solar-capable production",
-    card3Body: "The 1m² production cell runs on roughly the electricity a residential solar array produces in a sunny day. Brands committing to FUZE are committing to an antimicrobial supply chain that can be net-zero at the production step — something no silver-ion / zinc / QAC competitor can claim.",
+    card3Body:
+      "The 1m² production cell runs on roughly the electricity a residential solar array produces in a sunny day. Brands committing to FUZE are committing to an antimicrobial supply chain that can be net-zero at the production step — something no silver-ion / zinc / QAC competitor can claim.",
     esgTitle: "What this means in your ESG report",
-    esgBullet1: "✓ Circular feedstock claim — FUZE is produced from end-of-life electronics, supporting your circular-economy commitments.",
-    esgBullet2: "✓ Net-zero-capable production — the production cell is solar-compatible. Pair with renewable supply contracts and the antimicrobial step contributes zero scope-2 emissions.",
-    esgBullet3: "✓ Zero virgin-mining contribution — no coordination required with conflict-mineral or mining-derived supply chains.",
-    esgBullet4: "✓ PFAS-free, formaldehyde-free, binder-free, curing-oven-free — every petrochemical input that competitors require, FUZE eliminates.",
-    esgBullet5: "✓ Documented water cleanliness — FUZE leaches nothing into wash water. Your downstream contribution to municipal water treatment burden = 0.",
+    esgBullet1:
+      "✓ Circular feedstock claim — FUZE is produced from end-of-life electronics, supporting your circular-economy commitments.",
+    esgBullet2:
+      "✓ Net-zero-capable production — the production cell is solar-compatible. Pair with renewable supply contracts and the antimicrobial step contributes zero scope-2 emissions.",
+    esgBullet3:
+      "✓ Zero virgin-mining contribution — no coordination required with conflict-mineral or mining-derived supply chains.",
+    esgBullet4:
+      "✓ PFAS-free, formaldehyde-free, binder-free, curing-oven-free — every petrochemical input that competitors require, FUZE eliminates.",
+    esgBullet5:
+      "✓ Documented water cleanliness — FUZE leaches nothing into wash water. Your downstream contribution to municipal water treatment burden = 0.",
     differentTitle: "A different kind of antimicrobial company",
-    differentBody: "Most antimicrobial textile companies are chemical companies. They blend, dilute, formulate, and ship drums of synthesized chemistry to mills. We're a materials-science operation: we ablate metal in water and ship the result. The simplicity is the differentiator. Less chemistry on the fabric. Less chemistry in the wash water. Less chemistry in the production line. Less chemistry in your ESG report.",
+    differentBody:
+      "Most antimicrobial textile companies are chemical companies. They blend, dilute, formulate, and ship drums of synthesized chemistry to mills. We're a materials-science operation: we ablate metal in water and ship the result. The simplicity is the differentiator. Less chemistry on the fabric. Less chemistry in the wash water. Less chemistry in the production line. Less chemistry in your ESG report.",
     backBasicsBtn: "Back to FUZE Basics",
     seeSustainabilityBtn: "See sustainability impact",
   },
@@ -8191,8 +8404,10 @@ const en = {
     heroTitle: "Press kit",
     heroSubtitle: "Logos, imagery, releases, and company background for FUZE Biotech.",
     aboutTitle: "About FUZE Biotech",
-    aboutBody1: "FUZE Biotech, headquartered in Salt Lake City, Utah, develops a proprietary antimicrobial textile treatment built around FUZE metamaterial. The treatment bonds permanently to fibers during standard textile finishing — no PFAS, no binders, no chemistry change to the fabric's hand or breathability.",
-    aboutBody2: "The product is EPA registered (federal), California EPA approved (Q1 2026), OEKO-TEX Standard 100 Class I, and bluesign® approved. Performance is validated to ASTM E2149, AATCC 100, AATCC 30, ISO 18184, and ISO 20743 by independent third-party labs.",
+    aboutBody1:
+      "FUZE Biotech, headquartered in Salt Lake City, Utah, develops a proprietary antimicrobial textile treatment built around FUZE metamaterial. The treatment bonds permanently to fibers during standard textile finishing — no PFAS, no binders, no chemistry change to the fabric's hand or breathability.",
+    aboutBody2:
+      "The product is EPA registered (federal), California EPA approved (Q1 2026), OEKO-TEX Standard 100 Class I, and bluesign® approved. Performance is validated to ASTM E2149, AATCC 100, AATCC 30, ISO 18184, and ISO 20743 by independent third-party labs.",
     foundedLabel: "Founded",
     foundedValue: "Salt Lake City, UT",
     addressLabel: "Address",
@@ -8210,7 +8425,8 @@ const en = {
   changePassword: {
     titleDefault: "Change Password",
     titleForced: "Set Your New Password",
-    forcedBanner: "You were assigned a temporary password. Please create a secure password to continue.",
+    forcedBanner:
+      "You were assigned a temporary password. Please create a secure password to continue.",
     currentPasswordLabel: "Current Password",
     newPasswordLabel: "New Password",
     newPasswordPlaceholder: "Min 8 chars, 1 uppercase, 1 number",
@@ -8235,27 +8451,38 @@ const en = {
     heroTitle: "Claims, certifications & methodology",
     heroSubtitle: "How FUZE works, what it's certified for, and why we test it the way we do.",
     techTitle: "FUZE technology",
-    techBody1: "FUZE is a proprietary antimicrobial textile treatment built around FUZE metamaterial — produced via liquid laser ablation from recycled electronics in our Salt Lake City facility. The treatment bonds permanently to fibers during standard textile finishing (exhaust, pad-dry-cure, or spray application) without changing the fabric's hand, dye, drape, or breathability.",
-    techBody2: "FUZE is non-leaching by design. Bacterial reduction happens through direct physical contact between bacterial cells and the bonded FUZE metamaterial on the fiber surface — there's no chemistry released into wash water, no PFAS, no binders, no curing chemistry. The posture sits FUZE on the right side of every regulatory tailwind (Texas AG PFAS investigations, California SB-707).",
-    techBody3: "Treatment tiers: F1 Full Spectrum (1.0 mg/kg, 100 washes validated) · F2 Advanced (0.75 mg/kg, 75 washes) · F3 Core (0.5 mg/kg, 50 washes) · F4 Foundation (0.25 mg/kg, 25 washes). Wash counts are documented through independent-lab AATCC 100 + ISO 20743 testing, published on request.",
+    techBody1:
+      "FUZE is a proprietary antimicrobial textile treatment built around FUZE metamaterial — produced via liquid laser ablation from recycled electronics in our Salt Lake City facility. The treatment bonds permanently to fibers during standard textile finishing (exhaust, pad-dry-cure, or spray application) without changing the fabric's hand, dye, drape, or breathability.",
+    techBody2:
+      "FUZE is non-leaching by design. Bacterial reduction happens through direct physical contact between bacterial cells and the bonded FUZE metamaterial on the fiber surface — there's no chemistry released into wash water, no PFAS, no binders, no curing chemistry. The posture sits FUZE on the right side of every regulatory tailwind (Texas AG PFAS investigations, California SB-707).",
+    techBody3:
+      "Treatment tiers: F1 Full Spectrum (1.0 mg/kg, 100 washes validated) · F2 Advanced (0.75 mg/kg, 75 washes) · F3 Core (0.5 mg/kg, 50 washes) · F4 Foundation (0.25 mg/kg, 25 washes). Wash counts are documented through independent-lab AATCC 100 + ISO 20743 testing, published on request.",
     certsTitle: "Certifications",
     certEpaTitle: "EPA registered (federal)",
-    certEpaBody: "FUZE chemistry is registered with the U.S. Environmental Protection Agency as an antimicrobial pesticide.",
+    certEpaBody:
+      "FUZE chemistry is registered with the U.S. Environmental Protection Agency as an antimicrobial pesticide.",
     certCaEpaTitle: "California EPA approved (Q1 2026)",
-    certCaEpaBody: "Cleared for activewear, baby/kids textiles, and healthcare use cases under California's stricter regime.",
+    certCaEpaBody:
+      "Cleared for activewear, baby/kids textiles, and healthcare use cases under California's stricter regime.",
     certOekoTitle: "OEKO-TEX Standard 100 Class I",
     certOekoBody: "Certified safe for direct skin contact — including baby and intimate apparel.",
     certBluesignTitle: "bluesign® approved",
-    certBluesignBody: "Chemistry verified safe for workers, consumers, and the environment under bluesign criteria.",
+    certBluesignBody:
+      "Chemistry verified safe for workers, consumers, and the environment under bluesign criteria.",
     certPfasTitle: "PFAS-free",
-    certPfasBody: "Zero per- and polyfluoroalkyl substances anywhere in the formulation. No binders, no curing aids.",
+    certPfasBody:
+      "Zero per- and polyfluoroalkyl substances anywhere in the formulation. No binders, no curing aids.",
     certStandardsTitle: "Standards validated",
-    certStandardsBody: "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — third-party reports available on request.",
+    certStandardsBody:
+      "AATCC 100, ASTM E2149, AATCC 30, ISO 18184, ISO 20743 — third-party reports available on request.",
     standardsTitle: "Test standards",
-    standardsBody: "Antimicrobial performance for textiles isn't a single number — it depends heavily on which standard you ran the test on, and whether that standard fits the chemistry. Here's how FUZE maps onto the methods.",
+    standardsBody:
+      "Antimicrobial performance for textiles isn't a single number — it depends heavily on which standard you ran the test on, and whether that standard fits the chemistry. Here's how FUZE maps onto the methods.",
     jabTitle: "Why we lead with ASTM E2149",
-    jabBody: "We test on ASTM E2149 because it's the test designed for non-leaching antimicrobials. Competitor chemistries that rely on AATCC 100 do so because AATCC 100's stacked-layer geometry helps leaching ions saturate the inter-layer space — the test favors leaching by construction. FUZE doesn't leach, by design. Meet us on the right test.",
-    jabFootnote: "(Competitor attribution: the layered-test caveat applies to silver-ion, silver-chloride, and quat-based finishers — not to FUZE.)",
+    jabBody:
+      "We test on ASTM E2149 because it's the test designed for non-leaching antimicrobials. Competitor chemistries that rely on AATCC 100 do so because AATCC 100's stacked-layer geometry helps leaching ions saturate the inter-layer space — the test favors leaching by construction. FUZE doesn't leach, by design. Meet us on the right test.",
+    jabFootnote:
+      "(Competitor attribution: the layered-test caveat applies to silver-ion, silver-chloride, and quat-based finishers — not to FUZE.)",
     documentsTitle: "Documents",
     pressKitLink: "Press kit",
   },
@@ -8263,10 +8490,12 @@ const en = {
     backLink: "← Back to FUZE Basics",
     kicker: "Compliance & Certifications",
     heroTitle: "Every certification stack a brand asks for",
-    heroBody: "One screenshot for your vendor questionnaire. EPA federal + California, OEKO-TEX Standard 100 Class I, bluesign® approved, PFAS-free, formaldehyde-free, ZDHC-aligned. Antibacterial / antiviral / antifungal test data across the four tiers — reports available on request.",
+    heroBody:
+      "One screenshot for your vendor questionnaire. EPA federal + California, OEKO-TEX Standard 100 Class I, bluesign® approved, PFAS-free, formaldehyde-free, ZDHC-aligned. Antibacterial / antiviral / antifungal test data across the four tiers — reports available on request.",
     activeBadge: "Active ✓",
     docCopiesTitle: "Need actual document copies?",
-    docCopiesBody: "The Document Center holds the live PDF copies of every certification, SDS, TDS, and COA. Compliance teams can download them directly for vendor questionnaires.",
+    docCopiesBody:
+      "The Document Center holds the live PDF copies of every certification, SDS, TDS, and COA. Compliance teams can download them directly for vendor questionnaires.",
     docCenterCta: "Open Document Center →",
     backBasicsBtn: "Back to FUZE Basics",
     whatYouCanClaimBtn: "What you can claim →",
@@ -8281,7 +8510,8 @@ const en = {
     lastPassedLabel: "Last passed",
     aboutSummaryTitle: "About FUZE technology",
     verifyCtaTitle: "Verify a specific product",
-    verifyCtaBody: "Every certified product carries a unique QR code linked to its production batch and test history.",
+    verifyCtaBody:
+      "Every certified product carries a unique QR code linked to its production batch and test history.",
     verifyCtaBtn: "Look up a product →",
     footerCertifiedBy: "Certified by FUZE Atlas",
     brandSiteLink: "Brand site →",
@@ -8300,7 +8530,8 @@ const en = {
     batchPlaceholder: "batch code",
     mintBtn: "Mint",
     mintingBusy: "Minting…",
-    mintFootnote: "Max 500 per mint. Print the resulting tokens as QR codes on hangtags using your QR generator of choice (each URL is exactly the verify-page URL).",
+    mintFootnote:
+      "Max 500 per mint. Print the resulting tokens as QR codes on hangtags using your QR generator of choice (each URL is exactly the verify-page URL).",
     mintFailedError: "Mint failed",
     tokenSingular: "token",
     tokenPlural: "tokens",
@@ -8342,7 +8573,8 @@ const en = {
     adminCrumb: "Admin",
     crumb: "Audit log",
     heading: "Audit log",
-    subtitle: "Full audit trail across every entity. Filter by action, entity, or date. 90-day retention.",
+    subtitle:
+      "Full audit trail across every entity. Filter by action, entity, or date. 90-day retention.",
     errorContext: "Load audit log",
     couldntLoadPrefix: "Couldn't load audit log",
     networkError: "Network error while loading audit log.",
@@ -8364,17 +8596,20 @@ const en = {
     loadingLabel: "Loading admin",
     crumb: "Admin",
     heading: "Admin",
-    subtitle: "FUZE-Ops control surfaces. Pick a module to dive in, or use the sidebar for the full nav.",
+    subtitle:
+      "FUZE-Ops control surfaces. Pick a module to dive in, or use the sidebar for the full nav.",
     openPrefix: "Open",
     fastPathLabel: "Fast path",
     dataEntryHubTitle: "Data entry hub",
-    dataEntryHubBody: "Set brand spec, pricing tier, supply-chain link, lab pricing — all in one page.",
+    dataEntryHubBody:
+      "Set brand spec, pricing tier, supply-chain link, lab pricing — all in one page.",
     liveStateLabel: "Live state",
     commandCenterTitle: "Command Center",
     commandCenterBody: "Six metric tiles, brand × factory cadence matrix, recent activity, queues.",
     weeklyLabel: "Weekly",
     mondayReviewTitle: "Monday review queue",
-    mondayReviewBody: "AI-flagged test runs + brand rejections. Sunday 22:00 UTC email seeds the agenda.",
+    mondayReviewBody:
+      "AI-flagged test runs + brand rejections. Sunday 22:00 UTC email seeds the agenda.",
   },
   brandEngagement: {
     heading: "Brand Health",
@@ -8406,7 +8641,8 @@ const en = {
     sendFailedError: "Send failed",
     sentSuccessPrefix: "✓ Report sent to",
     directUrlLabel: "Direct download URL:",
-    sentSuccessBody: "Customer can also access this under My Reports after signing in to FUZE Atlas.",
+    sentSuccessBody:
+      "Customer can also access this under My Reports after signing in to FUZE Atlas.",
     recipientEmailLabel: "Recipient email",
     recipientNameLabel: "Recipient name",
     optionalSuffix: "(optional)",
@@ -8446,7 +8682,8 @@ const en = {
   },
   recipeSearch: {
     heading: "Recipe Search",
-    subtitle: "Network-wide FUZE recipe library. Search across every validated fabric in Atlas — match what you're working on to a proven recipe, even when the fabric isn't yours. Out-of-scope rows are anonymized but the recipe physics are visible.",
+    subtitle:
+      "Network-wide FUZE recipe library. Search across every validated fabric in Atlas — match what you're working on to a proven recipe, even when the fabric isn't yours. Out-of-scope rows are anonymized but the recipe physics are visible.",
     keywordPlaceholder: "Keyword (cotton, jersey, twill...)",
     anyCategory: "Any category",
     knit: "Knit",
@@ -8460,11 +8697,13 @@ const en = {
     searchingBtn: "Searching...",
     searchBtn: "Search",
     emptyTitle: "No matching recipes yet.",
-    emptyBody: "Try widening the filters — or remove the \"validated bench test\" filter if you want to see fabrics that are still mid-development.",
+    emptyBody:
+      'Try widening the filters — or remove the "validated bench test" filter if you want to see fabrics that are still mid-development.',
   },
   importBrands: {
     title: "Bulk import — Brands",
-    subtitle: "Paste or upload a CSV of brand candidates from a trade show, list, or research dump. We'll map the columns, preview validation, and write idempotently through the same seed-brand helper the CLI uses.",
+    subtitle:
+      "Paste or upload a CSV of brand candidates from a trade show, list, or research dump. We'll map the columns, preview validation, and write idempotently through the same seed-brand helper the CLI uses.",
     backLabel: "Brand Pipeline",
     brandNameLabel: "Brand name",
     brandNameHint: "(natural key — upsert is keyed here)",
@@ -8481,7 +8720,8 @@ const en = {
   },
   importContacts: {
     title: "Bulk import — Contacts",
-    subtitle: "Paste or upload a CSV of contacts. Email is the natural key — we upsert by email when present. Rows with no email but a LinkedIn URL are imported as 'email missing' so the existing Apollo enrichment job can chase them. Rows with neither are rejected.",
+    subtitle:
+      "Paste or upload a CSV of contacts. Email is the natural key — we upsert by email when present. Rows with no email but a LinkedIn URL are imported as 'email missing' so the existing Apollo enrichment job can chase them. Rows with neither are rejected.",
     backLabel: "Lead Management",
     firstNameLabel: "First name",
     lastNameLabel: "Last name",
@@ -8498,7 +8738,8 @@ const en = {
   },
   importFactories: {
     title: "Bulk import — Factories",
-    subtitle: "Paste or upload a CSV of factories. We'll upsert by name (natural key), link to a distributor if you give one, and stamp SupplyChainLink rows for each brand that already exists in Atlas. Brands that don't exist yet are reported as 'missing' so you can run a brand import first.",
+    subtitle:
+      "Paste or upload a CSV of factories. We'll upsert by name (natural key), link to a distributor if you give one, and stamp SupplyChainLink rows for each brand that already exists in Atlas. Brands that don't exist yet are reported as 'missing' so you can run a brand import first.",
     backLabel: "Factories",
     factoryNameLabel: "Factory name",
     factoryNameHint: "(natural key — upsert is keyed here)",
@@ -8514,7 +8755,8 @@ const en = {
     unavailableTitle: "Report unavailable",
     unavailableBodyPrefix: "For long-term access, sign in at",
     fuzeAtlasLinkLabel: "FUZE Atlas",
-    unavailableBodySuffix: "and find the report under My Reports, or reply to the email this came from.",
+    unavailableBodySuffix:
+      "and find the report under My Reports, or reply to the email this came from.",
     backLink: "← FUZE Atlas",
     kicker: "FUZE Biotech · Application & Validation Report",
     heading: "FUZE Treatment Recipe & Validation",
@@ -8595,10 +8837,13 @@ const en = {
     afterWashesPrefix: "after",
     afterWashesSuffix: "washes",
     whatDoesThisMean: "What does this mean?",
-    explainerP1: "FUZE is a proprietary antimicrobial textile treatment. The FUZE metamaterial bonds permanently to the fiber surface during standard textile finishing — no leaching, no PFAS, no chemistry change to the fabric's hand or breathability.",
-    explainerP2: "Bacterial reduction happens through direct contact with the bonded metamaterial — that's why FUZE leads with ASTM E2149 (the contact-kill test designed for non-leaching antimicrobials), alongside AATCC 100 for layered geometry validation.",
+    explainerP1:
+      "FUZE is a proprietary antimicrobial textile treatment. The FUZE metamaterial bonds permanently to the fiber surface during standard textile finishing — no leaching, no PFAS, no chemistry change to the fabric's hand or breathability.",
+    explainerP2:
+      "Bacterial reduction happens through direct contact with the bonded metamaterial — that's why FUZE leads with ASTM E2149 (the contact-kill test designed for non-leaching antimicrobials), alongside AATCC 100 for layered geometry validation.",
     certificationsLabel: "Certifications:",
-    certificationsBody: "OEKO-TEX Standard 100 Class I, bluesign® approved, EPA registered, California EPA approved (Q1 2026), PFAS-free.",
+    certificationsBody:
+      "OEKO-TEX Standard 100 Class I, bluesign® approved, EPA registered, California EPA approved (Q1 2026), PFAS-free.",
     sustainabilityTitle: "Sustainability",
     sustainabilityBody: "FUZE consumed across this fabric to date.",
     seeMorePrefix: "See more",
@@ -8614,7 +8859,8 @@ const en = {
     backArrowPrefix: "←",
     headingSuffix: "— ESG impact",
     heroSubtitle: "Quarterly snapshots of FUZE-certified fabric and antimicrobial test outcomes.",
-    emptyBody: "No published snapshots yet. Quarterly reports publish at the start of the next quarter.",
+    emptyBody:
+      "No published snapshots yet. Quarterly reports publish at the start of the next quarter.",
     statFabricsCertified: "Fabrics certified",
     statTestsPassed: "Tests passed",
     statFuzeLiters: "FUZE liters",
@@ -8636,7 +8882,8 @@ const en = {
     failedFallback: "Failed to process request",
     networkError: "Network error",
     checkEmailTitle: "Check Your Email",
-    checkEmailBody: "If an account exists with that email, you'll receive a password reset link shortly.",
+    checkEmailBody:
+      "If an account exists with that email, you'll receive a password reset link shortly.",
     backToSignIn: "Back to Sign In",
     footerCompany: "FUZE Biotech Inc.",
   },
@@ -8647,8 +8894,10 @@ const en = {
     chipLabel: "FUZE Atlas invitation",
     headingMiddle: "invited",
     headingSuffix: "to their FUZE supply chain",
-    heroSubtitleFallbackPrefix: "uses FUZE Atlas to coordinate antimicrobial textile programs across their supply chain.",
-    heroSubtitleFallbackSuffix: "Joining lets the factory submit fabrics for testing, place FUZE orders, and track ICP results — all directly tied to the brand.",
+    heroSubtitleFallbackPrefix:
+      "uses FUZE Atlas to coordinate antimicrobial textile programs across their supply chain.",
+    heroSubtitleFallbackSuffix:
+      "Joining lets the factory submit fabrics for testing, place FUZE orders, and track ICP results — all directly tied to the brand.",
     notePrefix: "Note from",
     closedPrefix: "This invitation has already been",
     closedReachOutPrefix: "Reach out to",
@@ -8667,7 +8916,8 @@ const en = {
     bdCrumb: "BD",
     crumb: "Playbooks",
     heading: "BD playbooks",
-    subtitle: "Category-tagged outreach guidance. Favorite the ones you use; brands show a suggested playbook based on Brand.textileCategory.",
+    subtitle:
+      "Category-tagged outreach guidance. Favorite the ones you use; brands show a suggested playbook based on Brand.textileCategory.",
     failedFallback: "Failed",
     emptyBody: "No playbooks yet for this category.",
     emptySeedHint: "Trigger",
@@ -8679,12 +8929,14 @@ const en = {
     adminCrumb: "Admin",
     crumb: "ICP correlation",
     heading: "ICP × AB correlation",
-    subtitle: "Every brand-visible fabric submission with both an ICP residual measurement and an antibacterial percent-reduction result, paired per submission (and per wash count when available). Best-fit line + R² overlaid.",
+    subtitle:
+      "Every brand-visible fabric submission with both an ICP residual measurement and an antibacterial percent-reduction result, paired per submission (and per wash count when available). Best-fit line + R² overlaid.",
     errorContext: "Load ICP correlation",
     couldntLoadPrefix: "Couldn't load correlation data",
     networkError: "Network error.",
     loadingState: "Loading correlation data…",
-    footnote: "Customer-facing copy uses \"FUZE residual\" — the metamaterial measurement from the lab's ICP report. Always labelled FUZE / metamaterial in customer deliverables (CLAUDE.md brand-voice rule).",
+    footnote:
+      'Customer-facing copy uses "FUZE residual" — the metamaterial measurement from the lab\'s ICP report. Always labelled FUZE / metamaterial in customer deliverables (CLAUDE.md brand-voice rule).',
   },
   engagementDebug: {
     crumb: "Engagement debug",
@@ -8775,9 +9027,11 @@ const en = {
     summaryAmRows: "Antimicrobial records",
     summaryAliases: "Factory aliases learned",
     unknownHeaderTitle: "Unmapped columns",
-    unknownHeaderBlurb: "These columns weren't recognized. Values are preserved as notes on each fabric row.",
+    unknownHeaderBlurb:
+      "These columns weren't recognized. Values are preserved as notes on each fabric row.",
     aliasesUnresolvedTitle: "Map each mill to an existing factory",
-    aliasesUnresolvedBlurb: "We couldn't match these mill names. Pick an existing factory or create a new one before committing.",
+    aliasesUnresolvedBlurb:
+      "We couldn't match these mill names. Pick an existing factory or create a new one before committing.",
     aliasMillLabel: "Mill name in CSV",
     aliasFactoryPlaceholder: "Pick a factory…",
     aliasFactorySearch: "Search factories",
@@ -8842,6 +9096,94 @@ const en = {
     watch: "Watch",
     watching: "Watching",
     etaNext: "ETA next",
+  },
+
+  // ─── My Book / weekly check-in ───────────────────────────
+  book: {
+    title: "My Book",
+    accounts: "accounts",
+    toTouch: "to touch this week",
+    cold: "cold",
+    me: "Me",
+    teamBoard: "Team",
+    startCheckin: "Start check-in",
+    accountsLeft: "accounts left this week",
+    helpWaiting: "help requests waiting on you",
+    allDone: "Every account touched this week.",
+    needsYou: "needs you",
+    youAsked: "You asked",
+    overdue: "overdue",
+    ack: "On it",
+    doneBtn: "Done",
+    escalate: "Escalate",
+    searchPh: "Search accounts, contacts, notes",
+    fAll: "All",
+    fTodo: "To touch",
+    fNext: "Due soon",
+    fHelp: "Help",
+    fCold: "Going cold",
+    empty: "No accounts in this book yet.",
+    assignSome: "Assign some",
+    noUpdate: "No Update",
+    noUpdateHint: "Nothing changed this week",
+    update: "Update",
+    updateHint: "Add a note or next step",
+    superUpdate: "Super Update",
+    superHint: "Team sees it; on the exec review",
+    help: "Help",
+    helpHint: "Ask a teammate for something",
+    back: "Back",
+    headlinePh: "One-line headline for the team",
+    whoPh: "Who do you need?",
+    askPh: "What do you need from them?",
+    notePh: "What happened this week?",
+    notePhOpt: "Anything else on the account (optional)",
+    nextPh: "Next step (optional)",
+    more: "Stage, forecast, order…",
+    less: "Hide stage, forecast, order",
+    stage: "Stage",
+    forecast: "Forecast quarter",
+    orderKg: "Order / usage (kg)",
+    product: "Product",
+    sendHelp: "Send request",
+    saveNext: "Save & next",
+    touch: "Check in",
+    history: "History",
+    contacts: "Contacts",
+    openFull: "Open full record",
+    saved: "Saved.",
+    another: "Add another",
+    lastNote: "Last note",
+    noHistory: "No history yet.",
+    noContacts: "No contacts on file.",
+    owners: "Owners",
+    helpFirst: "Teammates are waiting on you",
+    lastTouch: "Last touch",
+    silentWeeks: "silent weeks",
+    prev: "Previous",
+    skip: "Skip for now",
+    weekDone: "Week done.",
+    nothingDue: "Nothing due. Every account is touched this week.",
+    updates: "updates",
+    noChange: "no change",
+    backToBook: "Back to My Book",
+    teamBoardTitle: "Team board",
+    weekOf: "Week of",
+    thisWeek: "This week",
+    weeks: "weeks",
+    person: "Person",
+    touched: "Touched",
+    openBook: "book",
+    superUpdates: "Super updates",
+    helpQueue: "Help queue",
+    none: "None.",
+    due: "due",
+    changes: "Stage, forecast and order changes",
+    assign: "Assign accounts",
+    pickPerson: "Pick a person",
+    searchAdd: "Search a brand or mill to add",
+    add: "Add",
+    emptyBook: "Empty book.",
   },
 };
 
