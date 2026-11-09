@@ -18,5 +18,16 @@ export async function GET() {
     select: { id: true, name: true, email: true, role: true, distributorId: true },
     orderBy: { name: "asc" },
   });
-  return NextResponse.json({ users: users.filter((u) => u.id !== user.id) });
+  // Two accounts can share a display name (Andrew has andrew@fuze47.com and
+  // andrew@801inc.com). Disambiguate with the mail domain so the Help picker
+  // never shows the same name twice.
+  const list = users.filter((u) => u.id !== user.id);
+  const counts = new Map<string, number>();
+  for (const u of list) counts.set(u.name, (counts.get(u.name) || 0) + 1);
+  const out = list.map((u) =>
+    (counts.get(u.name) || 0) > 1
+      ? { ...u, name: `${u.name} (${u.email.split("@")[1] || u.email})` }
+      : u,
+  );
+  return NextResponse.json({ users: out });
 }
