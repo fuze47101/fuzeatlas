@@ -361,7 +361,7 @@ export default function AccountCard({
                   onChange={(e) => setAddWho(e.target.value)}
                   className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
                 >
-                  <option value="">{b.whoPh || "Who?"}</option>
+                  <option value="">{b.whoAddPh || "Choose a person"}</option>
                   {meId && !(detail?.owners || []).some((o: any) => o.id === meId) && (
                     <option value={meId}>{b.me || "Me"}</option>
                   )}

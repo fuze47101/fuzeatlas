@@ -8524,6 +8524,7 @@ const zhCN: Translations = {
     makeOwner: "改为负责人",
     remove: "移除",
     addTeammate: "为该客户添加同事",
+    whoAddPh: "选择同事",
     addAsOwner: "添加为负责人",
     addAsSupport: "添加为协助",
     printTitle: "客户簿",

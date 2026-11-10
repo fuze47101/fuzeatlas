@@ -9214,6 +9214,7 @@ const en = {
     makeOwner: "Make owner",
     remove: "Remove",
     addTeammate: "Add a teammate to this account",
+    whoAddPh: "Choose a person",
     addAsOwner: "Add as owner",
     addAsSupport: "Add as support",
     printTitle: "Account book",
