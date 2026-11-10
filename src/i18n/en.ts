@@ -9220,6 +9220,21 @@ const en = {
     printTitle: "Account book",
     printBtn: "Print",
     backBtn: "Back",
+    masterList: "Master list",
+    handOver: "Hand this account over",
+    handOverHint:
+      "Moves it out of this book into theirs. They get your note by email and see it in the account history.",
+    handedTo: "Handed over to",
+    handToPh: "Hand over to…",
+    handNotePh: "Handover note: where it stands, who the contact is, what to do next",
+    keepSupport: "Keep the current owner on it as support",
+    handOverBtn: "Hand over",
+    moveAccounts: "Move accounts",
+    moveCancel: "Cancel move",
+    selected: "selected",
+    clearSel: "Clear",
+    selectShown: "Select all shown",
+    moveNotePh: "Handover note (goes to them and into each account's history)",
   },
 };
 

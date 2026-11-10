@@ -122,6 +122,45 @@ export function notifyHelpRequested(p: {
   );
 }
 
+/** HANDOVER → the new owner gets one in-app notice + one email listing what moved and why. */
+export function notifyHandover(p: {
+  actor: { id: string; name: string };
+  from: { id: string; name: string };
+  to: { id: string; email: string; name: string };
+  accounts: { entityType: EntityType; entityId: string; name: string }[];
+  note: string | null;
+  keepSupport: boolean;
+}) {
+  return keepAlive(
+    (async () => {
+      if (!p.accounts.length || p.to.id === p.actor.id) return;
+      const n = p.accounts.length;
+      const what = n === 1 ? p.accounts[0].name : `${n} accounts`;
+      await createNotification(
+        p.to.id,
+        `Handed to you · ${what}`,
+        (p.note || `From ${p.from.name}`).slice(0, 180),
+        "/book",
+      );
+      if (!p.to.email) return;
+      await sendEmail({
+        to: p.to.email,
+        subject: `📒 ${p.from.name} handed you ${what}`,
+        html: shell(
+          `${what} ${n === 1 ? "is" : "are"} now in your book`,
+          `<p><b>${esc(p.actor.name)}</b> moved ${n === 1 ? "this account" : "these accounts"} from <b>${esc(p.from.name)}</b> to you.</p>${p.note ? `<blockquote style="margin:12px 0;padding:10px 14px;border-left:3px solid #0DA8D2;background:#F4F7F8;white-space:pre-wrap">${esc(p.note)}</blockquote>` : ""}<ul style="margin:12px 0;padding-left:18px">${p.accounts
+            .slice(0, 60)
+            .map((a) => `<li>${esc(a.name)}</li>`)
+            .join(
+              "",
+            )}${n > 60 ? `<li>… and ${n - 60} more</li>` : ""}</ul><p style="color:#5C646A;font-size:12px">${p.keepSupport ? `${esc(p.from.name)} stays on as support. ` : ""}You will be asked about ${n === 1 ? "it" : "them"} in Friday's check-in.</p>`,
+          { href: `${appUrl()}/book`, label: "Open My Book" },
+        ),
+      });
+    })(),
+  );
+}
+
 /** ESCALATED → Andrew (+ Tandy when the requester is a distributor user) + the assignee. */
 export function notifyHelpEscalated(p: {
   requester: { id: string; name: string; distributorId: string | null };

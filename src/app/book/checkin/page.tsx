@@ -190,6 +190,8 @@ export default function CheckinWizard() {
                     </span>{" "}
                     {c.kind === "NONE" ? (
                       <i>{b.noUpdate || "No update"}</i>
+                    ) : c.kind === "HANDOVER" ? (
+                      [c.headline, c.note].filter(Boolean).join(" — ")
                     ) : (
                       c.headline || c.note || c.nextStep
                     )}

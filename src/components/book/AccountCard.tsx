@@ -47,12 +47,15 @@ export default function AccountCard({
   onClose,
   onCheckedIn,
   meId,
+  bookOwnerId,
 }: {
   account: BookAccount;
   team: TeamUser[];
   onClose: () => void;
   onCheckedIn: () => void;
   meId?: string;
+  /** whose book this card was opened from — the "from" side of a handover */
+  bookOwnerId?: string;
 }) {
   const { t } = useI18n();
   const b = (t as any).book || {};
@@ -62,6 +65,39 @@ export default function AccountCard({
   const [addWho, setAddWho] = useState("");
   const [peopleBusy, setPeopleBusy] = useState(false);
   const [peopleErr, setPeopleErr] = useState("");
+  const [hoTo, setHoTo] = useState("");
+  const [hoNote, setHoNote] = useState("");
+  const [hoKeep, setHoKeep] = useState(false);
+  const [hoDone, setHoDone] = useState("");
+
+  async function handOver() {
+    setPeopleBusy(true);
+    setPeopleErr("");
+    try {
+      const r = await fetch("/api/book/handover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: [{ entityType: account.entityType, entityId: account.entityId }],
+          fromUserId: bookOwnerId || meId,
+          toUserId: hoTo,
+          note: hoNote,
+          keepSupport: hoKeep,
+        }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "Failed");
+      setHoDone(d.to || "ok");
+      setHoNote("");
+      setHoTo("");
+      await reload();
+      onCheckedIn();
+    } catch (e: any) {
+      setPeopleErr(e.message);
+    } finally {
+      setPeopleBusy(false);
+    }
+  }
 
   const reload = () =>
     fetch(`/api/book/account?type=${account.entityType}&id=${account.entityId}`)
@@ -260,13 +296,15 @@ export default function AccountCard({
                 <div key={c.id} className="rounded-lg border border-slate-200 p-3 text-sm">
                   <div className="flex items-center justify-between text-[10px] uppercase tracking-wide text-slate-400">
                     <span>
-                      {c.kind === "SUPER"
-                        ? "⭐ Super"
-                        : c.kind === "HELP"
-                          ? "🙋 Help"
-                          : c.kind === "NONE"
-                            ? "No update"
-                            : "Update"}{" "}
+                      {c.kind === "HANDOVER"
+                        ? "⇄ Handover"
+                        : c.kind === "SUPER"
+                          ? "⭐ Super"
+                          : c.kind === "HELP"
+                            ? "🙋 Help"
+                            : c.kind === "NONE"
+                              ? "No update"
+                              : "Update"}{" "}
                       · {c.user?.name}
                     </span>
                     <span>{new Date(c.createdAt).toLocaleDateString()}</span>
@@ -391,6 +429,68 @@ export default function AccountCard({
                 </div>
                 {peopleErr && <div className="mt-2 text-xs text-rose-700">{peopleErr}</div>}
               </div>
+
+              {(account.isPrimary || hoDone) && (
+                <div className="rounded-lg border border-amber-300 bg-amber-50 p-3">
+                  <div className="text-xs font-bold text-amber-900">
+                    ⇄ {b.handOver || "Hand this account over"}
+                  </div>
+                  <p className="mt-0.5 text-[11px] text-amber-800">
+                    {b.handOverHint ||
+                      "Moves it out of this book into theirs. They get your note by email and see it in the account history."}
+                  </p>
+                  {hoDone ? (
+                    <div className="mt-2 rounded bg-emerald-50 p-2 text-xs text-emerald-800">
+                      ✓ {b.handedTo || "Handed over to"} {hoDone}
+                    </div>
+                  ) : (
+                    <>
+                      <select
+                        value={hoTo}
+                        onChange={(e) => setHoTo(e.target.value)}
+                        className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                      >
+                        <option value="">{b.handToPh || "Hand over to…"}</option>
+                        {meId && bookOwnerId && bookOwnerId !== meId && (
+                          <option value={meId}>{b.me || "Me"}</option>
+                        )}
+                        {team
+                          .filter((u) => u.id !== (bookOwnerId || meId))
+                          .map((u) => (
+                            <option key={u.id} value={u.id}>
+                              {u.name}
+                            </option>
+                          ))}
+                      </select>
+                      <textarea
+                        value={hoNote}
+                        onChange={(e) => setHoNote(e.target.value)}
+                        rows={3}
+                        placeholder={
+                          b.handNotePh ||
+                          "Handover note: where it stands, who the contact is, what to do next"
+                        }
+                        className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                      />
+                      <label className="mt-1 flex items-center gap-2 text-xs text-slate-700">
+                        <input
+                          type="checkbox"
+                          checked={hoKeep}
+                          onChange={(e) => setHoKeep(e.target.checked)}
+                        />
+                        {b.keepSupport || "Keep the current owner on it as support"}
+                      </label>
+                      <button
+                        disabled={!hoTo || peopleBusy}
+                        onClick={handOver}
+                        className="mt-2 w-full rounded-lg bg-amber-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-40"
+                      >
+                        {b.handOverBtn || "Hand over"}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

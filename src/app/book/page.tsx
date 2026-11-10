@@ -35,6 +35,45 @@ function MyBookInner() {
   const [open, setOpen] = useState<BookAccount | null>(null);
   const [busy, setBusy] = useState(false);
   const [adding, setAdding] = useState(false);
+  // Move mode: tick accounts, pick a person, write one note, hand them all over.
+  const [selecting, setSelecting] = useState(false);
+  const [picked, setPicked] = useState<string[]>([]);
+  const [moveTo, setMoveTo] = useState("");
+  const [moveNote, setMoveNote] = useState("");
+  const [moveKeep, setMoveKeep] = useState(false);
+  const [moveBusy, setMoveBusy] = useState(false);
+  const [moveMsg, setMoveMsg] = useState("");
+
+  async function moveAccounts() {
+    setMoveBusy(true);
+    setMoveMsg("");
+    try {
+      const r = await fetch("/api/book/handover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: picked.map((k) => ({
+            entityType: k.split(":")[0],
+            entityId: k.slice(k.indexOf(":") + 1),
+          })),
+          fromUserId: ownerId,
+          toUserId: moveTo,
+          note: moveNote,
+          keepSupport: moveKeep,
+        }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "Failed");
+      setMoveMsg(`✓ ${d.moved} → ${d.to}`);
+      setPicked([]);
+      setMoveNote("");
+      await load(ownerId);
+    } catch (e: any) {
+      setMoveMsg(e.message);
+    } finally {
+      setMoveBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (!loading && !user) router.replace("/login?next=/book");
@@ -166,6 +205,16 @@ function MyBookInner() {
         >
           🖨 {b.printReport || "Print report"}
         </Link>
+        <button
+          onClick={() => {
+            setSelecting((v) => !v);
+            setPicked([]);
+            setMoveMsg("");
+          }}
+          className={`rounded-lg border px-3 py-2 font-semibold ${selecting ? "border-amber-500 bg-amber-50 text-amber-900" : "border-slate-300 text-slate-700"}`}
+        >
+          ⇄ {selecting ? b.moveCancel || "Cancel move" : b.moveAccounts || "Move accounts"}
+        </button>
       </div>
 
       {!viewingOther && counts.todo > 0 && (
@@ -306,11 +355,26 @@ function MyBookInner() {
         {list.map((a) => (
           <button
             key={`${a.entityType}:${a.entityId}`}
-            onClick={() => setOpen(a)}
+            onClick={() => {
+              if (!selecting) return setOpen(a);
+              if (!a.isPrimary) return;
+              const k = `${a.entityType}:${a.entityId}`;
+              setPicked((p) => (p.includes(k) ? p.filter((x) => x !== k) : [...p, k]));
+            }}
             className="flex w-full items-start gap-3 px-3 py-3 text-left hover:bg-slate-50 active:bg-slate-100"
           >
             <div className="pt-1.5">
-              <AttentionDot a={a} />
+              {selecting ? (
+                <input
+                  type="checkbox"
+                  readOnly
+                  disabled={!a.isPrimary}
+                  checked={picked.includes(`${a.entityType}:${a.entityId}`)}
+                  className="h-4 w-4"
+                />
+              ) : (
+                <AttentionDot a={a} />
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline justify-between gap-2">
@@ -362,7 +426,70 @@ function MyBookInner() {
           onClose={() => setOpen(null)}
           onCheckedIn={() => load(ownerId)}
           meId={user.id}
+          bookOwnerId={ownerId || user.id}
         />
+      )}
+      {selecting && (
+        <div className="sticky bottom-2 z-20 mt-3 rounded-2xl border border-amber-300 bg-amber-50 p-3 shadow-lg">
+          <div className="flex items-center justify-between text-xs font-bold text-amber-900">
+            <span>
+              ⇄ {picked.length} {b.selected || "selected"}
+            </span>
+            <button
+              className="font-normal underline"
+              onClick={() =>
+                setPicked(
+                  picked.length
+                    ? []
+                    : list.filter((a) => a.isPrimary).map((a) => `${a.entityType}:${a.entityId}`),
+                )
+              }
+            >
+              {picked.length ? b.clearSel || "Clear" : b.selectShown || "Select all shown"}
+            </button>
+          </div>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+            <select
+              value={moveTo}
+              onChange={(e) => setMoveTo(e.target.value)}
+              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm sm:w-48"
+            >
+              <option value="">{b.handToPh || "Hand over to…"}</option>
+              {viewingOther && <option value={user.id}>{b.me || "Me"}</option>}
+              {team
+                .filter((u) => u.id !== ownerId)
+                .map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                  </option>
+                ))}
+            </select>
+            <input
+              value={moveNote}
+              onChange={(e) => setMoveNote(e.target.value)}
+              placeholder={
+                b.moveNotePh || "Handover note (goes to them and into each account's history)"
+              }
+              className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+            />
+            <button
+              disabled={!picked.length || !moveTo || moveBusy}
+              onClick={moveAccounts}
+              className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-40"
+            >
+              {moveBusy ? "…" : b.handOverBtn || "Hand over"}
+            </button>
+          </div>
+          <label className="mt-2 flex items-center gap-2 text-xs text-slate-700">
+            <input
+              type="checkbox"
+              checked={moveKeep}
+              onChange={(e) => setMoveKeep(e.target.checked)}
+            />
+            {b.keepSupport || "Keep the current owner on it as support"}
+          </label>
+          {moveMsg && <div className="mt-1 text-xs text-slate-800">{moveMsg}</div>}
+        </div>
       )}
       {adding && (
         <AddAccount

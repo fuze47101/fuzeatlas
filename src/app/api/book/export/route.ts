@@ -5,6 +5,7 @@ import {
   MANAGER_ROLES,
   canReadBook,
   getBook,
+  getUnassigned,
   visibleBookOwners,
   type BookAccount,
 } from "@/lib/book";
@@ -82,6 +83,40 @@ export async function GET(req: Request) {
     for (const o of owners) {
       const book = await getBook(o.id);
       lines.push(...rows(o.name, book));
+    }
+    if (MANAGER_ROLES.includes(user.role)) {
+      const un = await getUnassigned();
+      for (const a of un.accounts)
+        lines.push(
+          [
+            "Unassigned",
+            a.name,
+            a.entityType === "FACTORY"
+              ? "Mill"
+              : a.entityType === "BRAND"
+                ? "Brand"
+                : "Distributor",
+            "",
+            [
+              ...a.team.map((t) => `${t} (support)`),
+              ...(a.former ? [`${a.former} (left)`] : []),
+            ].join("; "),
+            a.country,
+            a.stage ? a.stage.replace(/_/g, " ") : "",
+            "",
+            "",
+            day(a.lastActivityAt),
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+          ]
+            .map(cell)
+            .join(","),
+        );
     }
     label = "All_Books";
   } else {

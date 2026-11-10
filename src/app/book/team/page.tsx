@@ -109,6 +109,12 @@ export default function TeamBoardPage() {
               </option>
             ))}
           </select>
+          <Link
+            href="/book/print?all=1"
+            className="rounded border border-slate-300 px-3 py-1.5 font-semibold text-slate-700"
+          >
+            🖨 {b.masterList || "Master list"}
+          </Link>
           <a
             href="/api/book/export?all=1"
             className="rounded border border-slate-300 px-3 py-1.5 font-semibold text-slate-700"

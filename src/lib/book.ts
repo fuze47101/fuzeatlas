@@ -21,6 +21,9 @@ import type { SessionUser } from "@/lib/auth";
 
 export type EntityType = "BRAND" | "FACTORY" | "DISTRIBUTOR";
 export type CheckinKind = "NONE" | "UPDATE" | "SUPER" | "HELP";
+/** Written when an account moves from one person to another. Carries the
+ *  handover note; never counts as a weekly touch. */
+export const HANDOVER_KIND = "HANDOVER";
 
 export const INTERNAL_ROLES: any[] = ["ADMIN", "EMPLOYEE", "SALES_MANAGER", "SALES_REP", "BD_REP"];
 export const MANAGER_ROLES: any[] = ["ADMIN", "EMPLOYEE", "SALES_MANAGER"];
@@ -323,7 +326,10 @@ export async function getBook(
       (a, b) => Number(b.isPrimary) - Number(a.isPrimary) || a.name.localeCompare(b.name),
     );
     const own = keys.find((k) => k.entityType === entityType && k.entityId === id);
-    const list = byEntity.get(key) || [];
+    const everything = byEntity.get(key) || [];
+    // A handover is history, not a touch: the new owner is still asked this week.
+    const list = everything.filter((c) => c.kind !== HANDOVER_KIND);
+    const handover = everything.find((c) => c.kind === HANDOVER_KIND) || null;
     const last = list[0] || null;
     const lastReal = list.find((c) => c.kind !== "NONE") || null;
     const lastRealTouchAt = lastReal?.createdAt || lastActivityAt || null;
@@ -347,7 +353,10 @@ export async function getBook(
       lastCheckinAt: last?.createdAt || null,
       lastCheckinKind: (last?.kind as CheckinKind) || null,
       lastRealTouchAt,
-      lastNote: lastReal?.headline || lastReal?.note || null,
+      lastNote:
+        handover && (!lastReal || handover.createdAt > lastReal.createdAt)
+          ? [handover.headline, handover.note].filter(Boolean).join(" — ")
+          : lastReal?.headline || lastReal?.note || null,
       nextStep: withNext?.nextStep || null,
       nextStepAt: withNext?.nextStepAt || null,
       silentWeeks,
@@ -401,6 +410,134 @@ export async function getBook(
     return a.name.localeCompare(b.name);
   });
   return out;
+}
+
+/* ── Unassigned: live accounts nobody owns ───────────────────────────── */
+export interface UnassignedAccount {
+  entityType: EntityType;
+  entityId: string;
+  name: string;
+  country: string | null;
+  stage: string | null;
+  /** people on it who are not owners (support / supervisor) */
+  team: string[];
+  /** the departed owner, when the account was left behind */
+  former: string | null;
+  lastActivityAt: Date | null;
+}
+
+/**
+ * Accounts with no active owner:
+ *   - brands past LEAD (not archived)
+ *   - mills that have sent fabric for testing
+ *   - every distributor
+ * LEAD brands and mills with no test history are counted, not listed.
+ */
+export async function getUnassigned(): Promise<{
+  accounts: UnassignedAccount[];
+  hiddenLeads: number;
+  hiddenMills: number;
+}> {
+  const em = await prisma.entityManager.findMany({
+    where: { entityType: { in: ["BRAND", "FACTORY", "DISTRIBUTOR"] } },
+    select: {
+      entityType: true,
+      entityId: true,
+      isPrimary: true,
+      user: { select: { name: true, status: true } },
+    },
+  });
+  const owned = {
+    BRAND: new Set<string>(),
+    FACTORY: new Set<string>(),
+    DISTRIBUTOR: new Set<string>(),
+  };
+  const others = new Map<string, string[]>();
+  for (const r of em) {
+    if (!r.user || r.user.status !== "ACTIVE") continue;
+    if (r.isPrimary) owned[r.entityType as EntityType]?.add(r.entityId);
+    else {
+      const k = `${r.entityType}:${r.entityId}`;
+      others.set(k, [...(others.get(k) || []), r.user.name]);
+    }
+  }
+  const noActiveRep = {
+    OR: [{ salesRepId: null }, { salesRep: { status: { not: "ACTIVE" as any } } }],
+  };
+  const [brands, factories, dists, hiddenLeads, hiddenMills] = await Promise.all([
+    prisma.brand.findMany({
+      where: {
+        ...noActiveRep,
+        pipelineStage: { notIn: ["LEAD", "ARCHIVE"] },
+        id: { notIn: [...owned.BRAND] },
+      },
+      select: {
+        id: true,
+        name: true,
+        pipelineStage: true,
+        lastActivityAt: true,
+        researchData: true,
+        salesRep: { select: { name: true } },
+      },
+      orderBy: { name: "asc" },
+    }),
+    prisma.factory.findMany({
+      where: { ...noActiveRep, submissions: { some: {} }, id: { notIn: [...owned.FACTORY] } },
+      select: {
+        id: true,
+        name: true,
+        country: true,
+        pipelineStage: true,
+        lastActivityAt: true,
+        salesRep: { select: { name: true } },
+      },
+      orderBy: { name: "asc" },
+    }),
+    prisma.distributor.findMany({
+      where: { id: { notIn: [...owned.DISTRIBUTOR] } },
+      select: { id: true, name: true, country: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.brand.count({
+      where: { ...noActiveRep, pipelineStage: "LEAD", id: { notIn: [...owned.BRAND] } },
+    }),
+    prisma.factory.count({
+      where: { ...noActiveRep, submissions: { none: {} }, id: { notIn: [...owned.FACTORY] } },
+    }),
+  ]);
+  const accounts: UnassignedAccount[] = [
+    ...brands.map((x) => ({
+      entityType: "BRAND" as EntityType,
+      entityId: x.id,
+      name: x.name,
+      country: (x.researchData as any)?.hubspotLocation?.split(",").pop()?.trim() || null,
+      stage: x.pipelineStage as string | null,
+      team: others.get(`BRAND:${x.id}`) || [],
+      former: x.salesRep?.name || null,
+      lastActivityAt: x.lastActivityAt,
+    })),
+    ...factories.map((x) => ({
+      entityType: "FACTORY" as EntityType,
+      entityId: x.id,
+      name: x.name,
+      country: x.country,
+      stage: x.pipelineStage as string | null,
+      team: others.get(`FACTORY:${x.id}`) || [],
+      former: x.salesRep?.name || null,
+      lastActivityAt: x.lastActivityAt,
+    })),
+    ...dists.map((x) => ({
+      entityType: "DISTRIBUTOR" as EntityType,
+      entityId: x.id,
+      name: x.name,
+      country: x.country,
+      stage: null,
+      team: others.get(`DISTRIBUTOR:${x.id}`) || [],
+      former: null,
+      lastActivityAt: null,
+    })),
+  ];
+  return { accounts, hiddenLeads, hiddenMills };
 }
 
 /* ── Magic link: one click from the Friday email into the wizard ──────── */
