@@ -52,6 +52,8 @@ export interface BookAccount {
   galaLead: boolean;
   primaryContact: string | null;
   isPrimary: boolean;
+  /** everyone on the account: primaries first */
+  team: { id: string; name: string; isPrimary: boolean }[];
   /** last touch of any kind written through the book */
   lastCheckinAt: Date | null;
   lastCheckinKind: CheckinKind | null;
@@ -143,10 +145,15 @@ export async function visibleBookOwners(viewer: SessionUser) {
  *  the account in that person's Friday queue. */
 export async function ownedEntityKeys(
   userId: string,
+  opts: { includeSupport?: boolean } = {},
 ): Promise<Array<{ entityType: EntityType; entityId: string; isPrimary: boolean }>> {
   const [em, brands, factories] = await Promise.all([
     prisma.entityManager.findMany({
-      where: { userId, entityType: { in: ["BRAND", "FACTORY", "DISTRIBUTOR"] }, isPrimary: true },
+      where: {
+        userId,
+        entityType: { in: ["BRAND", "FACTORY", "DISTRIBUTOR"] },
+        ...(opts.includeSupport ? {} : { isPrimary: true }),
+      },
       select: { entityType: true, entityId: true, isPrimary: true },
     }),
     // Legacy claims count only once a brand is past LEAD — a LEAD enters a book when someone adds it on purpose.
@@ -157,18 +164,19 @@ export async function ownedEntityKeys(
     prisma.factory.findMany({ where: { salesRepId: userId }, select: { id: true } }),
   ]);
   const map = new Map<string, { entityType: EntityType; entityId: string; isPrimary: boolean }>();
-  for (const r of em)
-    map.set(`${r.entityType}:${r.entityId}`, {
+  for (const r of em) {
+    const k = `${r.entityType}:${r.entityId}`;
+    const prev = map.get(k);
+    map.set(k, {
       entityType: r.entityType as EntityType,
       entityId: r.entityId,
-      isPrimary: r.isPrimary,
+      isPrimary: r.isPrimary || !!prev?.isPrimary,
     });
+  }
   for (const b of brands)
-    if (!map.has(`BRAND:${b.id}`))
-      map.set(`BRAND:${b.id}`, { entityType: "BRAND", entityId: b.id, isPrimary: true });
+    map.set(`BRAND:${b.id}`, { entityType: "BRAND", entityId: b.id, isPrimary: true });
   for (const f of factories)
-    if (!map.has(`FACTORY:${f.id}`))
-      map.set(`FACTORY:${f.id}`, { entityType: "FACTORY", entityId: f.id, isPrimary: true });
+    map.set(`FACTORY:${f.id}`, { entityType: "FACTORY", entityId: f.id, isPrimary: true });
   return [...map.values()];
 }
 
@@ -176,8 +184,12 @@ function weeksBetween(a: Date, b: Date): number {
   return Math.max(0, Math.floor((b.getTime() - a.getTime()) / (7 * 24 * 3600 * 1000)));
 }
 
-export async function getBook(userId: string, now = new Date()): Promise<BookAccount[]> {
-  const keys = await ownedEntityKeys(userId);
+export async function getBook(
+  userId: string,
+  now = new Date(),
+  opts: { includeSupport?: boolean } = {},
+): Promise<BookAccount[]> {
+  const keys = await ownedEntityKeys(userId, opts);
   if (!keys.length) return [];
   const thisWeek = mondayOf(now);
 
@@ -185,7 +197,7 @@ export async function getBook(userId: string, now = new Date()): Promise<BookAcc
   const factoryIds = keys.filter((k) => k.entityType === "FACTORY").map((k) => k.entityId);
   const distIds = keys.filter((k) => k.entityType === "DISTRIBUTOR").map((k) => k.entityId);
 
-  const [brands, factories, dists, checkins, help] = await Promise.all([
+  const [brands, factories, dists, checkins, help, managers] = await Promise.all([
     brandIds.length
       ? prisma.brand.findMany({
           where: { id: { in: brandIds } },
@@ -197,6 +209,7 @@ export async function getBook(userId: string, now = new Date()): Promise<BookAcc
             galaLead: true,
             lastActivityAt: true,
             researchData: true,
+            salesRep: { select: { id: true, name: true } },
             contacts: { where: { isPrimary: true }, take: 1, select: { name: true } },
           },
         })
@@ -212,6 +225,7 @@ export async function getBook(userId: string, now = new Date()): Promise<BookAcc
             forecastQuarter: true,
             galaLead: true,
             lastActivityAt: true,
+            salesRep: { select: { id: true, name: true } },
             contacts: { where: { isPrimary: true }, take: 1, select: { name: true } },
           },
         })
@@ -248,7 +262,34 @@ export async function getBook(userId: string, now = new Date()): Promise<BookAcc
       where: { status: { in: ["OPEN", "ACKED", "ESCALATED"] } },
       _count: { _all: true },
     }),
+    prisma.entityManager.findMany({
+      where: {
+        OR: [
+          ...(brandIds.length ? [{ entityType: "BRAND", entityId: { in: brandIds } }] : []),
+          ...(factoryIds.length ? [{ entityType: "FACTORY", entityId: { in: factoryIds } }] : []),
+          ...(distIds.length ? [{ entityType: "DISTRIBUTOR", entityId: { in: distIds } }] : []),
+        ],
+      },
+      select: {
+        entityType: true,
+        entityId: true,
+        isPrimary: true,
+        user: { select: { id: true, name: true, status: true } },
+      },
+    }),
   ]);
+
+  // Everyone on each account: EntityManager rows, plus the legacy sales rep.
+  const teamMap = new Map<string, Map<string, { id: string; name: string; isPrimary: boolean }>>();
+  const addTeam = (key: string, id: string, name: string, isPrimary: boolean) => {
+    if (!teamMap.has(key)) teamMap.set(key, new Map());
+    const m = teamMap.get(key)!;
+    const prev = m.get(id);
+    m.set(id, { id, name, isPrimary: isPrimary || !!prev?.isPrimary });
+  };
+  for (const m of managers)
+    if (m.user && m.user.status === "ACTIVE")
+      addTeam(`${m.entityType}:${m.entityId}`, m.user.id, m.user.name, m.isPrimary);
 
   const helpMap = new Map(help.map((h) => [`${h.entityType}:${h.entityId}`, h._count._all]));
   const byEntity = new Map<string, typeof checkins>();
@@ -269,8 +310,18 @@ export async function getBook(userId: string, now = new Date()): Promise<BookAcc
     galaLead: boolean,
     lastActivityAt: Date | null,
     primaryContact: string | null,
+    salesRep: { id: string; name: string } | null = null,
   ) => {
     const key = `${entityType}:${id}`;
+    if (
+      salesRep &&
+      !(entityType === "BRAND" && stage === "LEAD") &&
+      !teamMap.get(key)?.has(salesRep.id)
+    )
+      addTeam(key, salesRep.id, salesRep.name, true);
+    const team = [...(teamMap.get(key)?.values() || [])].sort(
+      (a, b) => Number(b.isPrimary) - Number(a.isPrimary) || a.name.localeCompare(b.name),
+    );
     const own = keys.find((k) => k.entityType === entityType && k.entityId === id);
     const list = byEntity.get(key) || [];
     const last = list[0] || null;
@@ -292,6 +343,7 @@ export async function getBook(userId: string, now = new Date()): Promise<BookAcc
       galaLead,
       primaryContact,
       isPrimary: own?.isPrimary ?? true,
+      team,
       lastCheckinAt: last?.createdAt || null,
       lastCheckinKind: (last?.kind as CheckinKind) || null,
       lastRealTouchAt,
@@ -317,6 +369,7 @@ export async function getBook(userId: string, now = new Date()): Promise<BookAcc
       b.galaLead,
       b.lastActivityAt,
       b.contacts[0]?.name || null,
+      b.salesRep,
     );
   }
   for (const f of factories)
@@ -330,6 +383,7 @@ export async function getBook(userId: string, now = new Date()): Promise<BookAcc
       f.galaLead,
       f.lastActivityAt,
       f.contacts[0]?.name || null,
+      f.salesRep,
     );
   for (const d of dists)
     build("DISTRIBUTOR", d.id, d.name, d.country, null, null, false, null, null);
@@ -337,6 +391,7 @@ export async function getBook(userId: string, now = new Date()): Promise<BookAcc
   // Needs-attention first: not yet checked in this week, then most silent,
   // then nearest next step, then name.
   out.sort((a, b) => {
+    if (a.isPrimary !== b.isPrimary) return a.isPrimary ? -1 : 1;
     if (a.checkedInThisWeek !== b.checkedInThisWeek) return a.checkedInThisWeek ? 1 : -1;
     if (a.openHelp !== b.openHelp) return b.openHelp - a.openHelp;
     if (a.silentWeeks !== b.silentWeeks) return b.silentWeeks - a.silentWeeks;

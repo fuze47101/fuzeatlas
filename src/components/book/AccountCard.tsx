@@ -13,6 +13,18 @@ function href(a: BookAccount) {
       : "/admin/distributors";
 }
 
+/** One row per person: owner wins over support when someone holds both. */
+function dedupePeople(owners: { id: string; name: string; isPrimary: boolean }[]) {
+  const m = new Map<string, { id: string; name: string; isPrimary: boolean }>();
+  for (const o of owners) {
+    const prev = m.get(o.id);
+    m.set(o.id, { id: o.id, name: o.name, isPrimary: o.isPrimary || !!prev?.isPrimary });
+  }
+  return [...m.values()].sort(
+    (a, b) => Number(b.isPrimary) - Number(a.isPrimary) || a.name.localeCompare(b.name),
+  );
+}
+
 export function AttentionDot({ a }: { a: BookAccount }) {
   const c =
     a.attention === "red"
@@ -34,17 +46,54 @@ export default function AccountCard({
   team,
   onClose,
   onCheckedIn,
+  meId,
 }: {
   account: BookAccount;
   team: TeamUser[];
   onClose: () => void;
   onCheckedIn: () => void;
+  meId?: string;
 }) {
   const { t } = useI18n();
   const b = (t as any).book || {};
   const [detail, setDetail] = useState<any>(null);
-  const [tab, setTab] = useState<"touch" | "history" | "contacts">("touch");
+  const [tab, setTab] = useState<"touch" | "history" | "contacts" | "people">("touch");
   const [done, setDone] = useState(false);
+  const [addWho, setAddWho] = useState("");
+  const [peopleBusy, setPeopleBusy] = useState(false);
+  const [peopleErr, setPeopleErr] = useState("");
+
+  const reload = () =>
+    fetch(`/api/book/account?type=${account.entityType}&id=${account.entityId}`)
+      .then((r) => r.json())
+      .then(setDetail)
+      .catch(() => null);
+
+  async function setPerson(userId: string, opts: { support?: boolean; remove?: boolean }) {
+    setPeopleBusy(true);
+    setPeopleErr("");
+    try {
+      const r = await fetch("/api/book/assign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          entityType: account.entityType,
+          entityId: account.entityId,
+          ...opts,
+        }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "Failed");
+      setAddWho("");
+      await reload();
+      onCheckedIn();
+    } catch (e: any) {
+      setPeopleErr(e.message);
+    } finally {
+      setPeopleBusy(false);
+    }
+  }
 
   useEffect(() => {
     setDetail(null);
@@ -104,7 +153,7 @@ export default function AccountCard({
             </button>
           </div>
           <div className="mt-2 flex gap-1 text-xs">
-            {(["touch", "history", "contacts"] as const).map((k) => (
+            {(["touch", "history", "contacts", "people"] as const).map((k) => (
               <button
                 key={k}
                 onClick={() => setTab(k)}
@@ -114,7 +163,9 @@ export default function AccountCard({
                   ? b.touch || "Check in"
                   : k === "history"
                     ? b.history || "History"
-                    : b.contacts || "Contacts"}
+                    : k === "contacts"
+                      ? b.contacts || "Contacts"
+                      : b.people || "People"}
               </button>
             ))}
             <Link
@@ -251,6 +302,95 @@ export default function AccountCard({
               {detail && !detail.checkins?.length && !detail.notes?.length && (
                 <div className="text-sm text-slate-400">{b.noHistory || "No history yet."}</div>
               )}
+            </div>
+          )}
+
+          {tab === "people" && (
+            <div className="space-y-3">
+              <p className="text-xs text-slate-500">
+                {b.peopleHint ||
+                  "Owners are asked about this account every Friday. Support is on the account and sees it in their book, but is not asked."}
+              </p>
+              {(detail?.owners || []).length === 0 && (
+                <div className="text-sm text-slate-400">
+                  {b.noPeople || "Nobody is assigned yet."}
+                </div>
+              )}
+              {dedupePeople(detail?.owners || []).map((o: any) => (
+                <div
+                  key={o.id}
+                  className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 p-3 text-sm"
+                >
+                  <div>
+                    <div className="font-semibold text-slate-800">
+                      {o.name}
+                      {o.id === meId ? (
+                        <span className="ml-1 text-xs font-normal text-slate-400">
+                          ({b.me || "Me"})
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="text-[11px] text-slate-500">
+                      {o.isPrimary ? b.owner || "Owner" : b.support || "Support"}
+                    </div>
+                  </div>
+                  <div className="flex gap-1 text-xs">
+                    <button
+                      disabled={peopleBusy}
+                      onClick={() => setPerson(o.id, { support: o.isPrimary })}
+                      className="rounded border border-slate-300 px-2 py-1 disabled:opacity-50"
+                    >
+                      {o.isPrimary ? b.makeSupport || "Make support" : b.makeOwner || "Make owner"}
+                    </button>
+                    <button
+                      disabled={peopleBusy}
+                      onClick={() => setPerson(o.id, { remove: true })}
+                      className="rounded border border-rose-200 px-2 py-1 text-rose-700 disabled:opacity-50"
+                    >
+                      {b.remove || "Remove"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-3">
+                <div className="text-xs font-semibold text-slate-700">
+                  {b.addTeammate || "Add a teammate to this account"}
+                </div>
+                <select
+                  value={addWho}
+                  onChange={(e) => setAddWho(e.target.value)}
+                  className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                >
+                  <option value="">{b.whoPh || "Who?"}</option>
+                  {meId && !(detail?.owners || []).some((o: any) => o.id === meId) && (
+                    <option value={meId}>{b.me || "Me"}</option>
+                  )}
+                  {team
+                    .filter((u) => !(detail?.owners || []).some((o: any) => o.id === u.id))
+                    .map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.name}
+                      </option>
+                    ))}
+                </select>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    disabled={!addWho || peopleBusy}
+                    onClick={() => setPerson(addWho, {})}
+                    className="flex-1 rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white disabled:opacity-40"
+                  >
+                    {b.addAsOwner || "Add as owner"}
+                  </button>
+                  <button
+                    disabled={!addWho || peopleBusy}
+                    onClick={() => setPerson(addWho, { support: true })}
+                    className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-40"
+                  >
+                    {b.addAsSupport || "Add as support"}
+                  </button>
+                </div>
+                {peopleErr && <div className="mt-2 text-xs text-rose-700">{peopleErr}</div>}
+              </div>
             </div>
           )}
 

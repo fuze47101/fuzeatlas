@@ -6,7 +6,7 @@ import GlobalSearch from "./GlobalSearch";
 import FuzeChat from "./FuzeChat";
 import ImpersonationBanner from "./ImpersonationBanner";
 
-const NO_SIDEBAR_ROUTES = ["/login"];
+const NO_SIDEBAR_ROUTES = ["/login", "/book/print"];
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -34,7 +34,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <ImpersonationBanner />
       <div className={`flex min-h-screen ${bannerActive ? "pt-10" : ""}`}>
         <Sidebar />
-        <main className={`flex-1 min-w-0 ${bannerActive ? "pt-14 lg:pt-0" : "pt-14 lg:pt-0"}`}>{children}</main>
+        <main className={`flex-1 min-w-0 ${bannerActive ? "pt-14 lg:pt-0" : "pt-14 lg:pt-0"}`}>
+          {children}
+        </main>
         <GlobalSearch />
         <FuzeChat />
       </div>

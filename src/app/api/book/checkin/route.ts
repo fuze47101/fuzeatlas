@@ -84,7 +84,7 @@ export async function POST(req: Request) {
 
   // Authorisation: owner of the account, or an internal manager.
   if (!MANAGER_ROLES.includes(user.role)) {
-    const mine = await ownedEntityKeys(user.id);
+    const mine = await ownedEntityKeys(user.id, { includeSupport: true });
     if (!mine.some((k) => k.entityType === entityType && k.entityId === entityId))
       return NextResponse.json({ error: "Not in your book" }, { status: 403 });
   }

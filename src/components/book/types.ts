@@ -11,6 +11,7 @@ export interface BookAccount {
   galaLead: boolean;
   primaryContact: string | null;
   isPrimary: boolean;
+  team: { id: string; name: string; isPrimary: boolean }[];
   lastCheckinAt: string | null;
   lastCheckinKind: CheckinKind | null;
   lastRealTouchAt: string | null;

@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Bad request" }, { status: 400 });
 
   if (!MANAGER_ROLES.includes(user.role)) {
-    const mine = await ownedEntityKeys(user.id);
+    const mine = await ownedEntityKeys(user.id, { includeSupport: true });
     if (!mine.some((k) => k.entityType === entityType && k.entityId === entityId))
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -131,17 +131,40 @@ export async function GET(req: Request) {
       select: { id: true, name: true, country: true },
     });
 
+  const legacyRep =
+    entityType === "BRAND"
+      ? (
+          await prisma.brand.findUnique({
+            where: { id: entityId },
+            select: { salesRep: { select: { id: true, name: true } } },
+          })
+        )?.salesRep || null
+      : entityType === "FACTORY"
+        ? (
+            await prisma.factory.findUnique({
+              where: { id: entityId },
+              select: { salesRep: { select: { id: true, name: true } } },
+            })
+          )?.salesRep || null
+        : null;
+
   return NextResponse.json({
     entity,
     checkins,
     help,
     contacts,
     notes,
-    owners: owners.map((o) => ({
-      id: o.user.id,
-      name: o.user.name,
-      role: o.role,
-      isPrimary: o.isPrimary,
-    })),
+    owners: [
+      ...owners.map((o) => ({
+        id: o.user.id,
+        name: o.user.name,
+        role: o.role,
+        isPrimary: o.isPrimary,
+      })),
+      // the legacy sales rep counts as an owner until someone reassigns it
+      ...(legacyRep && !owners.some((o) => o.user.id === legacyRep.id)
+        ? [{ id: legacyRep.id, name: legacyRep.name, role: "SALES_REP", isPrimary: true }]
+        : []),
+    ],
   });
 }

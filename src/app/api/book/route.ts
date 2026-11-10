@@ -23,7 +23,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const [accounts, help] = await Promise.all([
-    getBook(targetId),
+    getBook(targetId, new Date(), { includeSupport: true }),
     prisma.helpRequest.findMany({
       where: {
         OR: [{ assigneeId: targetId }, { requesterId: targetId }],

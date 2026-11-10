@@ -56,7 +56,7 @@ export default function CheckinWizard() {
     if (r?.accounts) {
       setAccounts(r.accounts);
       setHelp(r.help || []);
-      setQueue(r.accounts.filter((a: BookAccount) => !a.checkedInThisWeek));
+      setQueue(r.accounts.filter((a: BookAccount) => a.isPrimary && !a.checkedInThisWeek));
     }
     setTeam(tm.users || []);
     setReady(true);

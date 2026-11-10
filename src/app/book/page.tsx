@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { useI18n } from "@/i18n";
 import AccountCard, { AttentionDot } from "@/components/book/AccountCard";
+import AddAccount from "@/components/book/AddAccount";
 import { BookAccount, HelpItem, TeamUser, ago, stageLabel } from "@/components/book/types";
 
 const MANAGER_ROLES = ["ADMIN", "EMPLOYEE", "SALES_MANAGER"];
@@ -30,9 +31,10 @@ function MyBookInner() {
   const [help, setHelp] = useState<HelpItem[]>([]);
   const [team, setTeam] = useState<TeamUser[]>([]);
   const [q, setQ] = useState("");
-  const [filter, setFilter] = useState<"all" | "todo" | "help" | "red" | "next">("all");
+  const [filter, setFilter] = useState<"all" | "todo" | "help" | "red" | "next" | "support">("all");
   const [open, setOpen] = useState<BookAccount | null>(null);
   const [busy, setBusy] = useState(false);
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.replace("/login?next=/book");
@@ -64,19 +66,21 @@ function MyBookInner() {
       .catch(() => null);
   }, [user, load, params]);
 
-  const counts = useMemo(
-    () => ({
+  const counts = useMemo(() => {
+    const mine = accounts.filter((a) => a.isPrimary);
+    return {
       total: accounts.length,
-      todo: accounts.filter((a) => !a.checkedInThisWeek).length,
-      red: accounts.filter((a) => a.attention === "red").length,
-      amber: accounts.filter((a) => a.attention === "amber").length,
+      mine: mine.length,
+      support: accounts.length - mine.length,
+      todo: mine.filter((a) => !a.checkedInThisWeek).length,
+      red: mine.filter((a) => a.attention === "red").length,
+      amber: mine.filter((a) => a.attention === "amber").length,
       helpForMe: help.filter((h) => h.assignee.id === ownerId && h.status !== "DONE").length,
       next: accounts.filter(
         (a) => a.nextStepAt && new Date(a.nextStepAt) <= new Date(Date.now() + 7 * 86400000),
       ).length,
-    }),
-    [accounts, help, ownerId],
-  );
+    };
+  }, [accounts, help, ownerId]);
 
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -88,9 +92,10 @@ function MyBookInner() {
           .includes(s)
       )
         return false;
-      if (filter === "todo") return !a.checkedInThisWeek;
+      if (filter === "todo") return a.isPrimary && !a.checkedInThisWeek;
+      if (filter === "support") return !a.isPrimary;
       if (filter === "help") return a.openHelp > 0;
-      if (filter === "red") return a.attention !== "ok";
+      if (filter === "red") return a.isPrimary && a.attention !== "ok";
       if (filter === "next")
         return !!a.nextStepAt && new Date(a.nextStepAt) <= new Date(Date.now() + 7 * 86400000);
       return true;
@@ -108,8 +113,9 @@ function MyBookInner() {
         <div>
           <h1 className="text-xl font-bold text-slate-900">{b.title || "My Book"}</h1>
           <div className="text-xs text-slate-500">
-            {counts.total} {b.accounts || "accounts"} · {counts.todo}{" "}
-            {b.toTouch || "to touch this week"}
+            {counts.mine} {b.accounts || "accounts"}
+            {counts.support ? ` + ${counts.support} ${b.supporting || "supporting"}` : ""} ·{" "}
+            {counts.todo} {b.toTouch || "to touch this week"}
             {counts.red ? ` · ${counts.red} ${b.cold || "cold"}` : ""}
           </div>
         </div>
@@ -141,6 +147,27 @@ function MyBookInner() {
         </div>
       </div>
 
+      <div className="mt-3 flex flex-wrap gap-2 text-xs">
+        <button
+          onClick={() => setAdding(true)}
+          className="rounded-lg bg-sky-600 px-3 py-2 font-bold text-white"
+        >
+          + {b.addAccountBtn || "Add account"}
+        </button>
+        <a
+          href={`/api/book/export?userId=${ownerId}`}
+          className="rounded-lg border border-slate-300 px-3 py-2 font-semibold text-slate-700"
+        >
+          ⬇ {b.exportCsv || "Export CSV"}
+        </a>
+        <Link
+          href={`/book/print?userId=${ownerId}`}
+          className="rounded-lg border border-slate-300 px-3 py-2 font-semibold text-slate-700"
+        >
+          🖨 {b.printReport || "Print report"}
+        </Link>
+      </div>
+
       {!viewingOther && counts.todo > 0 && (
         <Link
           href="/book/checkin"
@@ -155,7 +182,7 @@ function MyBookInner() {
           </div>
         </Link>
       )}
-      {!viewingOther && counts.todo === 0 && accounts.length > 0 && (
+      {!viewingOther && counts.todo === 0 && counts.mine > 0 && (
         <div className="mt-3 rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
           ✓ {b.allDone || "Every account touched this week."}
         </div>
@@ -251,6 +278,7 @@ function MyBookInner() {
               ["todo", b.fTodo || "To touch", counts.todo],
               ["next", b.fNext || "Due soon", counts.next],
               ["help", b.fHelp || "Help", accounts.filter((a) => a.openHelp > 0).length],
+              ["support", b.fSupport || "Supporting", counts.support],
               ["red", b.fCold || "Going cold", counts.red + counts.amber],
             ] as const
           ).map(([k, l, n]) => (
@@ -270,11 +298,9 @@ function MyBookInner() {
         {!busy && !accounts.length && (
           <div className="p-6 text-center text-sm text-slate-500">
             {b.empty || "No accounts in this book yet."}{" "}
-            {isManager && (
-              <Link href="/book/team" className="text-sky-700 underline">
-                {b.assignSome || "Assign some"}
-              </Link>
-            )}
+            <button onClick={() => setAdding(true)} className="text-sky-700 underline">
+              {b.addFirst || "Add your first account"}
+            </button>
           </div>
         )}
         {list.map((a) => (
@@ -290,6 +316,11 @@ function MyBookInner() {
               <div className="flex items-baseline justify-between gap-2">
                 <div className="truncate font-semibold text-slate-900">
                   {a.name}
+                  {!a.isPrimary && (
+                    <span className="ml-1 rounded bg-slate-100 px-1 text-[10px] font-normal text-slate-500">
+                      {b.support || "Support"}
+                    </span>
+                  )}
                   {a.openHelp > 0 && <span className="ml-1 text-rose-600">🙋</span>}
                   {a.galaLead && (
                     <span className="ml-1 rounded bg-violet-100 px-1 text-[10px] text-violet-700">
@@ -304,7 +335,13 @@ function MyBookInner() {
                 </div>
               </div>
               <div className="truncate text-xs text-slate-500">
-                {[a.country, stageLabel(a.stage), a.forecastQuarter, a.primaryContact]
+                {[
+                  a.country,
+                  stageLabel(a.stage),
+                  a.forecastQuarter,
+                  a.primaryContact,
+                  withWho(a, ownerId, b.withWord || "with"),
+                ]
                   .filter(Boolean)
                   .join(" · ")}
               </div>
@@ -324,8 +361,28 @@ function MyBookInner() {
           team={team}
           onClose={() => setOpen(null)}
           onCheckedIn={() => load(ownerId)}
+          meId={user.id}
+        />
+      )}
+      {adding && (
+        <AddAccount
+          forUserId={ownerId || user.id}
+          book={accounts}
+          onClose={() => setAdding(false)}
+          onChanged={() => load(ownerId)}
         />
       )}
     </div>
   );
+}
+
+/** "with Viktor" / "with Barth (lead)" — everyone else on the account. */
+function withWho(a: BookAccount, ownerId: string, word: string) {
+  const others = (a.team || []).filter((p) => p.id !== ownerId);
+  if (!others.length) return "";
+  const names = others.map((p) => {
+    const first = p.name.split(" ")[0];
+    return !a.isPrimary && p.isPrimary ? `${first} (lead)` : first;
+  });
+  return `${word} ${names.join(", ")}`;
 }
