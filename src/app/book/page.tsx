@@ -430,7 +430,7 @@ function MyBookInner() {
         />
       )}
       {selecting && (
-        <div className="sticky bottom-2 z-20 mt-3 rounded-2xl border border-amber-300 bg-amber-50 p-3 shadow-lg">
+        <div className="sticky bottom-20 z-20 mt-3 rounded-2xl border border-amber-300 bg-amber-50 p-3 shadow-lg">
           <div className="flex items-center justify-between text-xs font-bold text-amber-900">
             <span>
               ⇄ {picked.length} {b.selected || "selected"}
