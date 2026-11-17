@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { MANAGER_ROLES, getBook, mondayOf, visibleBookOwners } from "@/lib/book";
+import { MANAGER_ROLES, fridayOf, getBook, mondayOf, visibleBookOwners } from "@/lib/book";
 
 /** GET /api/book/team-board → this week's status per person, super updates, help queue. */
 export async function GET(req: Request) {
@@ -11,7 +11,8 @@ export async function GET(req: Request) {
   if (!MANAGER_ROLES.includes(user.role) && owners.length <= 1)
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const weeks = Math.min(8, Math.max(1, Number(new URL(req.url).searchParams.get("weeks") || 1)));
-  const since = mondayOf(new Date());
+  // Cycle starts with the Friday email, so a Monday review still sees Friday's updates.
+  const since = fridayOf(new Date());
   since.setUTCDate(since.getUTCDate() - 7 * (weeks - 1));
   const ownerIds = owners.map((o) => o.id);
 

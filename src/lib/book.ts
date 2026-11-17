@@ -37,6 +37,18 @@ export function mondayOf(d: Date): Date {
   return x;
 }
 
+/**
+ * Start of the current check-in cycle: the most recent Friday 00:00 UTC.
+ * The Friday email opens a cycle, so an update made on Friday still counts as
+ * "touched" when the team is reviewed the following Monday. (Calendar weeks
+ * reset on Monday, which wiped Friday's updates off the board.)
+ */
+export function fridayOf(d: Date): Date {
+  const x = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  x.setUTCDate(x.getUTCDate() - ((x.getUTCDay() + 2) % 7));
+  return x;
+}
+
 /** The Friday 23:59 UTC that ends the week of `weekOf` + `weeks` ahead. */
 export function fridayAfter(weekOf: Date, weeks = 1): Date {
   const f = new Date(weekOf);
@@ -195,6 +207,7 @@ export async function getBook(
   const keys = await ownedEntityKeys(userId, opts);
   if (!keys.length) return [];
   const thisWeek = mondayOf(now);
+  const cycleStart = fridayOf(now).getTime();
 
   const brandIds = keys.filter((k) => k.entityType === "BRAND").map((k) => k.entityId);
   const factoryIds = keys.filter((k) => k.entityType === "FACTORY").map((k) => k.entityId);
@@ -360,7 +373,7 @@ export async function getBook(
       nextStep: withNext?.nextStep || null,
       nextStepAt: withNext?.nextStepAt || null,
       silentWeeks,
-      checkedInThisWeek: !!last && last.weekOf.getTime() === thisWeek.getTime(),
+      checkedInThisWeek: !!last && new Date(last.createdAt).getTime() >= cycleStart,
       openHelp: helpMap.get(key) || 0,
       attention: silentWeeks >= 4 ? "red" : silentWeeks >= 2 ? "amber" : "ok",
     });
