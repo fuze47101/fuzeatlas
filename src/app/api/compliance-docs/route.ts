@@ -16,7 +16,8 @@ export async function GET(req: Request) {
     const category = searchParams.get("category");
     // Partition: COMPLIANCE (default) or MARKETING. Unknown values fall back
     // to COMPLIANCE so the technical library never leaks marketing docs.
-    const libraryType = searchParams.get("libraryType") === "MARKETING" ? "MARKETING" : "COMPLIANCE";
+    const libraryType =
+      searchParams.get("libraryType") === "MARKETING" ? "MARKETING" : "COMPLIANCE";
 
     const where: any = { libraryType };
     if (category) {
@@ -60,7 +61,11 @@ export async function GET(req: Request) {
       visible.map(async (doc: any) => {
         if (doc.s3Key && s3Ready) {
           try {
-            const downloadUrl = await getPresignedDownloadUrl(doc.s3Key, 3600, doc.filename || undefined);
+            const downloadUrl = await getPresignedDownloadUrl(
+              doc.s3Key,
+              3600,
+              doc.filename || undefined,
+            );
             return { ...doc, downloadUrl };
           } catch {
             return { ...doc, downloadUrl: null };
@@ -93,7 +98,10 @@ export async function POST(req: Request) {
   try {
     const user = await getCurrentUser(req);
     if (!user || (user.role !== "ADMIN" && user.role !== "EMPLOYEE")) {
-      return NextResponse.json({ ok: false, error: "Only admins can upload compliance documents" }, { status: 403 });
+      return NextResponse.json(
+        { ok: false, error: "Only admins can upload compliance documents" },
+        { status: 403 },
+      );
     }
 
     const body = await req.json();
@@ -106,8 +114,8 @@ export async function POST(req: Request) {
       contentType,
       sizeBytes,
       url,
-      data,       // legacy base64 (small files only)
-      s3Key,      // S3 key from presigned upload flow
+      data, // legacy base64 (small files only)
+      s3Key, // S3 key from presigned upload flow
       visibleTo,
       libraryType, // COMPLIANCE (default) | MARKETING
     } = body;
@@ -129,7 +137,19 @@ export async function POST(req: Request) {
         url: url || null,
         data: data || null,
         s3Key: s3Key || null,
-        visibleTo: visibleTo || ["ADMIN", "EMPLOYEE", "BRAND_USER", "FACTORY_USER", "FACTORY_MANAGER"],
+        visibleTo: visibleTo || [
+          "ADMIN",
+          "EMPLOYEE",
+          "SALES_MANAGER",
+          "SALES_REP",
+          "FABRIC_MANAGER",
+          "TESTING_MANAGER",
+          "BRAND_USER",
+          "FACTORY_USER",
+          "FACTORY_MANAGER",
+          "DISTRIBUTOR_USER",
+          "LAB_USER",
+        ],
         uploadedById: user.id,
       },
       include: {
