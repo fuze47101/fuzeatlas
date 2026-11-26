@@ -108,6 +108,21 @@ export default function DocumentLibraryView({
   const [movingDoc, setMovingDoc] = useState<string | null>(null);
   const [moveTarget, setMoveTarget] = useState("");
 
+  // Free-text search over the loaded documents (title, description, file
+  // name, category, version) so a user can type "SDS", "Helios" or "HS code"
+  // instead of opening each category.
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
+  const shownDocs = q
+    ? docs.filter((d: any) =>
+        [d.title, d.description, d.filename, d.category, d.version].some((v) =>
+          String(v || "")
+            .toLowerCase()
+            .includes(q),
+        ),
+      )
+    : docs;
+
   const isAdmin = user?.role === "ADMIN" || user?.role === "EMPLOYEE";
   const canDelete = user?.role === "ADMIN";
 
@@ -720,6 +735,24 @@ export default function DocumentLibraryView({
         </div>
       )}
 
+      {/* Search */}
+      <div className="mb-4">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={
+            (T as any).searchPlaceholder || "Search documents: SDS, TDS, Helios, HS code, REACH..."
+          }
+          className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-[#00b4c3] focus:outline-none focus:ring-1 focus:ring-[#00b4c3]"
+        />
+        {q && (
+          <p className="mt-1 text-xs text-slate-500">
+            {shownDocs.length} of {docs.length}
+          </p>
+        )}
+      </div>
+
       {/* Document list */}
       {loading ? (
         <div className="flex items-center justify-center py-16">
@@ -747,7 +780,7 @@ export default function DocumentLibraryView({
                 </tr>
               </thead>
               <tbody>
-                {docs.map((doc) => {
+                {shownDocs.map((doc) => {
                   const cat = getCategoryMeta(doc.category);
                   return (
                     <tr key={doc.id} className="border-b border-slate-50 hover:bg-slate-50">
